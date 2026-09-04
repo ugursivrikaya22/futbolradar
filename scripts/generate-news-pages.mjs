@@ -110,7 +110,7 @@ function jsonLd(article) {
     headline: article.title,
     description: article.spot || article.summary || "",
     datePublished: article.publishedAt || null,
-    dateModified: article.publishedAt || null,
+    dateModified: article.updatedAt || article.publishedAt || null,
     inLanguage: "tr-TR",
     mainEntityOfPage: articleUrl(article),
     image: `${domain}/assets/og-image.svg`,
@@ -131,6 +131,9 @@ function pageHtml(article) {
   const title = String(seo.metaTitle || `${article.title} | FutbolRadar`).trim();
   const description = String(seo.metaDescription || article.spot || article.summary || article.title).trim();
   const dateLabel = formatDate(article.publishedAt);
+  const updatedLabel = article.updatedAt && article.updatedAt !== article.publishedAt
+    ? formatDate(article.updatedAt)
+    : "";
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
   const internalLinks = articleInternalLinks(article);
@@ -191,7 +194,7 @@ ${siteHeader({ base: "../" })}
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../haberler.html">Haberler</a><span>${escapeHtml(article.title)}</span></nav>
       <article class="column-article">
         <header class="column-article-head">
-          <div class="column-article-meta"><span>${escapeHtml(article.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time><span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
+          <div class="column-article-meta"><span>${escapeHtml(article.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">Güncelleme: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
           <p class="lead">${escapeHtml(description)}</p>
           ${tagHtml}

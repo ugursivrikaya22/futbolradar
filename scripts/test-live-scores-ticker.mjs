@@ -119,12 +119,13 @@ console.log(`Canlı skorlar bandı testleri geçti (yalnızca canlı maç, taraf
   const { LIVE_TICKER_PAGES, LIVE_TICKER_OWN_PAGES } = await import("./lib/liveScoresTicker.mjs");
 
   const BAND = 'data-component="LiveScoresTicker"';
-  // Eski, tepedeki transfer bandının işareti — apply-shared-layout.mjs'in
-  // LEGACY_TRANSFER_TICKER_RE ile temizlediği aynı yorum bloğu. Bilerek
-  // `data-component="TransferRadarTicker"` DEĞİL: ana sayfanın EN ALTINDAKİ
-  // güncel Transfer Radarı bandı (prerender-core-pages.mjs
-  // transferRadarBottomTicker) aynı bileşen özniteliğini taşıyor ve bu
-  // ayrı, kasıtlı bir yüzey — o bant burada "eski" sayılmamalı.
+  // Eski, ayrı bir enjeksiyon mekanizmasıyla basılan transfer bandının
+  // işareti — apply-shared-layout.mjs'in LEGACY_TRANSFER_TICKER_RE ile
+  // temizlediği aynı yorum bloğu. Bilerek `data-component="TransferRadarTicker"`
+  // DEĞİL: güncel Transfer Radarı bandı (prerender-core-pages.mjs
+  // transferRadarTicker(), ana sayfanın TEPESİNDE, üçüncü bant) aynı
+  // bileşen özniteliğini taşıyor ve bu ayrı, kasıtlı bir yüzey — o bant
+  // burada "eski" sayılmamalı.
   const OLD_BAND = "<!-- shared-layout:transfer-ticker:start -->";
   const hasBand = (file) => {
     const full = path.join(root, file);
@@ -179,4 +180,29 @@ console.log(`Canlı skorlar bandı testleri geçti (yalnızca canlı maç, taraf
     `Bant kapsamı testleri geçti (${expected.length} sayfada var, eski bant yok, ` +
     `kalan ${allPages.length - expected.length} sayfada yok, 4 dil çifti eşit).`
   );
+}
+
+// ── 9. Boşken bant görünmemeli ───────────────────────────────────────────
+//
+// Sunucu (liveTickerBlock) ve istemci (app.js#LiveScoresTicker.render) canlı
+// maç yokken `.live-scores-ticker` öğesine `data-empty` işareti koyar; page.css
+// bunu `display: none` ile gizler. Üçü de aynı işaretten okumalı, yoksa bant
+// içeriksiz bir çubuk olarak sayfada asılı kalır.
+
+{
+  const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
+  assert.match(
+    css,
+    /\.live-scores-ticker\[data-empty\]\s*\{[^}]*display:\s*none/,
+    "page.css .live-scores-ticker[data-empty] display:none içermeli — boşken bant görünmemeli"
+  );
+
+  const clientJs = fs.readFileSync(path.join(root, "app.js"), "utf8");
+  assert.match(
+    clientJs,
+    /toggleAttribute\("data-empty",\s*!items\.length\)/,
+    "istemci LiveScoresTicker.render() data-empty işaretini toggle etmeli"
+  );
+
+  console.log("Boş bant görünürlük testi geçti (data-empty → display:none, sunucu/istemci tutarlı).");
 }

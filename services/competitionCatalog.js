@@ -118,7 +118,16 @@ const AMBIGUOUS_COMPETITION_NAMES = new Set([
   "Primera Division",
   "Premier Division",
   "Primera A",
-  "Liga Profesional"
+  "Liga Profesional",
+  // "Premier League" adını İngiltere dışında da onlarca lig taşıyor
+  // (data/fixture-calendar.json'da tek başına 5 farklı `providerLeagueId`
+  // ile görülüyor: Uganda, Belize, Hong Kong...). İngiltere'nin gerçek maçları
+  // sağlayıcı lig kimliğiyle (39) zaten çözülüyor; bu satır yalnızca AD
+  // eşleşmesiyle yanlış ülkeye atanmayı engelliyor.
+  "Premier League",
+  // "Serie A" da aynı sorunu taşıyor: İtalya (135) ile Brezilya (71) aynı
+  // ada sahip, adla çözüm ikisini ayıramaz.
+  "Serie A"
 ].map(normalizeKey));
 
 /** Ad, ülkeyi ayırt etmeye yetmeyen türden mi? */

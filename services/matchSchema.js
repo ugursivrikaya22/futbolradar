@@ -105,6 +105,23 @@ function sportsEventNode(match, options = {}) {
   const url = absoluteUrl(options.url);
   if (url) node.url = url;
 
+  // Yayın kanalı: YALNIZCA çağıran gerçek bir kanal adı verdiyse eklenir.
+  // Opsiyonel — mevcut çağıranlar `options.broadcast` göndermez, davranışları
+  // değişmez. Uydurma yok: kanal bilinmiyorsa bu alan hiç yazılmaz.
+  const broadcast = text(options.broadcast);
+  if (broadcast) {
+    node.publication = {
+      "@type": "BroadcastEvent",
+      isLiveBroadcast: true,
+      videoFormat: "HD",
+      publishedOn: {
+        "@type": "BroadcastService",
+        name: broadcast,
+        broadcastDisplayName: broadcast
+      }
+    };
+  }
+
   return node;
 }
 
@@ -118,10 +135,11 @@ function sportsEventNode(match, options = {}) {
 function matchListSchema(matches, options = {}) {
   const list = Array.isArray(matches) ? matches : [];
   const urlFor = typeof options.urlFor === "function" ? options.urlFor : () => "";
+  const broadcastFor = typeof options.broadcastFor === "function" ? options.broadcastFor : () => "";
 
   const items = [];
   for (const match of list) {
-    const node = sportsEventNode(match, { url: urlFor(match) });
+    const node = sportsEventNode(match, { url: urlFor(match), broadcast: broadcastFor(match) });
     if (!node) continue;
     items.push({ "@type": "ListItem", position: items.length + 1, item: node });
   }

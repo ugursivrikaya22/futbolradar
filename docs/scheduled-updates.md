@@ -18,13 +18,32 @@ repository, and the short-lived `${{ github.token }}` context before it writes.
 
 GitHub cron is UTC. Istanbul is UTC+3 throughout the year.
 
-- Full update: `0 2 * * *` = 05:00 Europe/Istanbul.
-- Hourly update: `0 0-1,3-23 * * *` = every UTC hour except 02:00.
+- Full update: `7 2 * * *` = ~05:00 Europe/Istanbul.
+- Hourly update: `7 0-1,3-23 * * *` = every UTC hour except 02:00.
+
+Both crons fire at minute 7, not minute 0. GitHub's own scheduling docs name
+the start of every hour as the `schedule` event queue's highest-load window;
+runs pinned to `:00` on this repository were observed starting 4-8 hours late
+(e.g. the `05:00` full job landing past 09:00 Istanbul, some days not at all
+before the next day's run). Offsetting a few minutes off the hour is GitHub's
+documented mitigation and restored on-time starts. If the observed delay ever
+returns even off-peak, it is a GitHub Actions scheduler symptom, not a bug in
+this workflow — see "Detecting a missed or delayed run" below.
 
 There is deliberately no minute-20 reliability fallback: the two schedules
 above already trigger 25 runs/day, and each GitHub-hosted runner minute is
 billed against the account's Actions quota. A dropped top-of-hour event (rare)
 is simply picked up by the next scheduled run instead of a same-hour retry.
+
+### Detecting a missed or delayed run
+
+`data/update-status.json` → `lastFull.dedupeKey` should read `full:<today's
+Istanbul date>` shortly after 05:00 Europe/Istanbul. If it still names an
+earlier date, the scheduled trigger has not fired yet — check the
+`FutbolRadar Scheduled Updates` workflow's recent runs for a queued or
+delayed `schedule` event before assuming the pipeline itself failed. A manual
+`workflow_dispatch` with `update_type: full` on `main` runs the exact same
+pipeline immediately and is safe to use to unblock a delayed day.
 
 Both schedules and authorized manual runs share the
 `futbolradar-production-update` concurrency group with

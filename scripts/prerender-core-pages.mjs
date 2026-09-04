@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { transferTickerBlock } from "./lib/transferTicker.mjs";
+import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
@@ -39,7 +40,8 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
-const { selectTickerRecords } = require("../services/transferRadarTicker.js");
+const { latestQuotes } = require("../services/managerQuotes.js");
+const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -264,7 +266,63 @@ function programMatchPool() {
     .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match));
 }
 
-function programFixtureCard(match, today) {
+/**
+ * MAÇ KARTI İÇ LİNK SİSTEMİ — yalnızca ana sayfanın "Bugünün Maçları"
+ * önizlemesinde (bkz. calendarProgramCards). `programFixtureCard` gövdesi
+ * "Bugünün Maçları" sayfasıyla (matchProgramPageCards) PAYLAŞILIR ama bu
+ * satır yalnızca çağıran `quickLinks: true` verdiğinde basılır — o sayfanın
+ * ve İngilizce sürümün mevcut tasarımı değişmez.
+ *
+ * Amaç: ana sayfaya gelen okuyucu yalnızca skora bakıp çıkmasın, analiz/
+ * puan durumu/takım formuna tek dokunuşla geçebilsin.
+ */
+const HOME_QUICKLINK_TEAMS = [
+  { name: "Galatasaray", slug: "galatasaray" },
+  { name: "Fenerbahçe", slug: "fenerbahce" },
+  { name: "Beşiktaş", slug: "besiktas" },
+  { name: "Trabzonspor", slug: "trabzonspor" }
+];
+
+/** Kartın öncelikli takımı: önce ev sahibi, yoksa deplasman — dört büyükten biri. */
+function quickLinkTeamFor(match) {
+  return HOME_QUICKLINK_TEAMS.find((team) => sameClub(team.name, match.homeTeam)) ||
+    HOME_QUICKLINK_TEAMS.find((team) => sameClub(team.name, match.awayTeam)) ||
+    null;
+}
+
+/**
+ * Puan durumu hedefi: dört büyükten biri oynuyorsa kendi puan durumu
+ * sayfası, Süper Lig maçıysa lig sayfası, değilse genel puan durumu sayfası
+ * (yeni bir sayfa üretilmez — üçü de zaten yayında).
+ */
+function quickLinkStandingsHref(match) {
+  const team = quickLinkTeamFor(match);
+  if (team) return `./${team.slug}-puan-durumu.html`;
+  return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+}
+
+/** Takım formu hedefi: mevcut takım radarı sayfası (./takim-detay.html?team=...). */
+function quickLinkFormHref(match) {
+  const team = quickLinkTeamFor(match);
+  const name = (team && team.name) || match.homeTeam || match.awayTeam || "";
+  return `./takim-detay.html?team=${encodeURIComponent(name)}`;
+}
+
+/**
+ * Üç düğme. Maç bitince ilk düğme "Analiz"den "Sonuç Analizi"ne döner ama
+ * hedefi DEĞİŞMEZ: `matchDetailPath` zaten sitenin "bu maça git" için tek
+ * gerçek kaynağı, bittiğinde de aynı sayfa sonucu gösterir. Puan Durumu ve
+ * Takım Formu maçın durumundan bağımsızdır.
+ */
+function quickLinkButtonsHtml(match) {
+  const isFinal = String(match.status || "SCHEDULED").toUpperCase() === "FINISHED";
+  const analysisLabel = isFinal ? "Sonuç Analizi" : "Analiz";
+  return `<a href="${escapeHtml(matchDetailPath(match))}">${escapeHtml(analysisLabel)}</a>` +
+    `<a href="${escapeHtml(quickLinkStandingsHref(match))}">Puan Durumu</a>` +
+    `<a href="${escapeHtml(quickLinkFormHref(match))}">Takım Formu</a>`;
+}
+
+function programFixtureCard(match, today, options = {}) {
   const date = istanbulDay(match.kickoff);
   const isToday = date === today;
   const status = String(match.status || "SCHEDULED").toUpperCase();
@@ -274,8 +332,9 @@ function programFixtureCard(match, today) {
     ? `${match.score.home}-${match.score.away}`
     : null;
   const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
+  const quickLinksHtml = options.quickLinks ? quickLinkButtonsHtml(match) : "";
 
-  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore });
+  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore, quickLinksHtml });
 }
 
 function calendarProgramMatches(limit) {
@@ -292,7 +351,10 @@ function calendarProgramCards(limit) {
     return "";
   }
 
-  return upcoming.map((match) => programFixtureCard(match, today)).join("");
+  // `quickLinks: true` yalnızca BURADA: ana sayfanın "Bugünün Maçları"
+  // önizlemesi. matchProgramPageCards (bugunun-maclari.html) aynı
+  // `programFixtureCard`ı seçeneksiz çağırır, o sayfa değişmez.
+  return upcoming.map((match) => programFixtureCard(match, today, { quickLinks: true })).join("");
 }
 
 /**
@@ -445,7 +507,7 @@ function staticFormPercent(name) {
 const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
-  const { headlineValue, status, finalScore } = meta;
+  const { headlineValue, status, finalScore, quickLinksHtml } = meta;
   const isLive = status === "LIVE";
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
@@ -476,7 +538,8 @@ function staticFixtureCard(match, meta) {
     // başına hiçbir tarama yolu yok. JavaScript yüklendiğinde bağlantı zaten
     // maç ayrıntısına dönüyordu, yani statik hâl istemciyle çelişiyordu.
     actionHref: matchDetailPath(match),
-    withMatchClick: true
+    withMatchClick: true,
+    quickLinksHtml: quickLinksHtml || ""
   });
 }
 
@@ -1456,30 +1519,102 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN EN ALTINDAKİ TRANSFER RADARI BANDI — ÜÇÜNCÜ KAYAN BANT.
+ * ANA SAYFANIN ÜÇÜNCÜ KAYAN BANDI — TRANSFER RADARI.
  *
- * Ana sayfanın daimî bir parçası: haber bandı (tepede) ve Canlı Skorlar
- * bandından sonra üçüncü kayan şerit. Artık TFF tescil dönemine göre
- * KOŞULLU BASILMIYOR — önceki hâli pencere kapandığında ya da son 3 günde
- * "SON DAKİKA" sayılacak kayıt olmadığında bandı sayfadan TAMAMEN
- * kaldırıyordu; okuyucu "Transfer Radarı" bölümünün var olduğunu bile
- * bilmiyordu. Bant artık her derlemede basılır.
+ * Ana sayfanın tepesinde, haber bandı (1.) ve Canlı Skorlar bandından (2.)
+ * hemen sonra basılır — index.html'de sırasıyla `<!-- shared-layout:ticker:start -->`,
+ * `<!-- prerender:live-scores-ticker:start -->` ve bu fonksiyonun ürettiği
+ * `<!-- prerender:transfer-radar-ticker:start -->` işaretleri art arda
+ * durur. Daha önce ana sayfanın en altında, footer'ın ardında duruyordu —
+ * orası okuyucunun neredeyse hiç görmediği bir yerdi. Editör kararıyla
+ * üçüncü bant olarak ilk ikisinin hemen altına taşındı; bu konum artık
+ * kalıcı.
  *
- * Seçim kuralı hâlâ services/transferRadarTicker.js'te: yalnızca son 3
- * günün doğrulanmış hareketleri "SON DAKİKA" sayılır (bkz. o dosyanın
- * başındaki "UYDURMA YOK" kuralı) — bu editoryal kural değişmedi. Değişen
- * tek şey: seçilecek güncel kayıt yokken (ya da pencere kapalıyken) bant
- * KAYBOLMAK yerine kendi yer tutucusunu gösterir
+ * TFF tescil dönemine göre KOŞULLU BASILMIYOR — eski hâli pencere
+ * kapandığında ya da son 3 günde "SON DAKİKA" sayılacak kayıt olmadığında
+ * bandı sayfadan TAMAMEN kaldırıyordu; okuyucu "Transfer Radarı"
+ * bölümünün var olduğunu bile bilmiyordu. Bant artık her derlemede basılır
+ * ve diğer sayfa güncellemeleri (haber/skor tazeleme, SEO sayfa üretimi
+ * vb.) bu markerlara dokunmaz — yalnızca aralarındaki içerik değişir.
+ *
+ * Seçim kuralı hâlâ services/transferRadarTicker.js'te. Önce son 3 günün
+ * "SON DAKİKA" hareketleri denenir; sakin bir haftada bunlardan hiçbiri
+ * yoksa `selectRecentTickerRecords` 21 günlük pencereden yalnızca
+ * `status: "confirmed"` kayıtları SON DAKİKA rozeti OLMADAN, tarih
+ * etiketiyle gösterir (bkz. o dosyadaki "UYDURMA YOK" kuralı — söylenti
+ * hiçbir pencereden banda giremez). Her iki liste de boşsa (ya da pencere
+ * kapalıyken) bant KAYBOLMAK yerine kendi yer tutucusunu gösterir
  * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
  * `keepEmpty: true` bunu sağlıyor.
  *
- * Canlı Skorlar bandından (ana sayfanın TEPESİNDE) bilerek ayrı ve
- * bağımsız: farklı konum, farklı veri, farklı görünme kuralı. Onun
- * kodu/CSS'i burada değiştirilmez.
+ * Canlı Skorlar bandından bilerek ayrı ve bağımsız: farklı veri, farklı
+ * görünme kuralı. Onun kodu/CSS'i burada değiştirilmez, yalnızca komşusu.
  */
-function transferRadarBottomTicker() {
-  const records = selectTickerRecords(transfers);
+/**
+ * Alıntı deposu — SALT OKUNUR. Dosya yoksa ya da bozuksa şerit "bekleniyor"
+ * gösterir; ön derleme çökmez ve uydurma üretmez.
+ */
+const managerQuoteStore = (() => {
+  const file = path.join(root, "data", "manager-quotes.json");
+  if (!fs.existsSync(file)) return { quotes: [] };
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    console.warn(`[prerender] manager-quotes.json okunamadı: ${error.message}`);
+    return { quotes: [] };
+  }
+})();
+
+/** Maç raporu deposu — SALT OKUNUR; hangi maçın bittiğinin yetkili listesi. */
+function postMatchReportRecords() {
+  const file = path.join(root, "data", "post-match-reports.json");
+  if (!fs.existsSync(file)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (Array.isArray(parsed)) return parsed;
+    return Array.isArray(parsed && parsed.records) ? parsed.records : [];
+  } catch (error) {
+    console.warn(`[prerender] post-match-reports.json okunamadı: ${error.message}`);
+    return [];
+  }
+}
+
+function transferRadarTicker() {
+  const records = selectRecentTickerRecords(transfers);
   return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
+}
+
+/**
+ * MAÇ SONU AÇIKLAMALARI ŞERİDİ (ana sayfa, canlı maç alanının altında).
+ *
+ * Kural services/managerQuotes.js'te: kaynak bağlantısı ve zaman damgası
+ * zorunlu, tanınmayan rol reddedilir, uydurma alıntı asla üretilmez. Burada
+ * yalnızca son biten maçların doğrulanmış alıntıları toplanıp çiziliyor.
+ *
+ * Süzgeç BİTEN maçlarla sınırlı: "maç sonu açıklaması" başlığı bir iddia ve
+ * henüz oynanmamış bir maçın demeci onu yalanlar. Hangi maçın bittiğini bu
+ * modül biliyor, alıntı servisi bilmiyor — bu yüzden kimlik listesi buradan
+ * geçiriliyor.
+ *
+ * Doğrulanmış alıntı yoksa şerit KALDIRILMAZ, "Kaynaklardan bekleniyor"
+ * yazar: sessiz boşluk "kimse konuşmadı" diye okunurdu.
+ */
+function matchQuotesTicker() {
+  // Kaynak maç RAPORU deposu, sezon fikstürü değil: şerit maç raporuna
+  // bağlanıyor, dolayısıyla bir alıntının görünmesi için o maçın raporunun
+  // gerçekten var olması gerekiyor. Fikstür listesi bunu garanti etmez ve
+  // ilk denemede kırık bağlantı üretirdi.
+  const finishedIds = postMatchReportRecords()
+    .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()))
+    .map((record) => String(record.matchId || ""))
+    .filter(Boolean);
+
+  const verdict = latestQuotes(managerQuoteStore, { limit: 6, matchIds: finishedIds });
+
+  return matchQuotesTickerBlock(verdict, {
+    awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",
+    href: (quote) => (quote.matchId ? `./mac-raporu/${quote.matchId}.html` : null)
+  });
 }
 
 /**
@@ -1692,7 +1827,15 @@ writePage("index.html", {
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
-  "transfer-radar-bottom": transferRadarBottomTicker()
+  "transfer-radar-ticker": transferRadarTicker(),
+  "match-quotes": matchQuotesTicker(),
+  // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
+  // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
+  // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu
+  // satır unutulup kaybolmuştu (bkz. test-seo-integrity.mjs: sitemap'te
+  // olup hiçbir yerden bağlanmayan sayfa uyarısı). Artık her derlemede
+  // BURADAN yazılıyor, bir daha elle taşınmaya bağlı kalmıyor.
+  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda.html">Bugünkü maçlar hangi kanalda?</a>'
 });
 
 writePage("analizler.html", {

@@ -37,14 +37,58 @@ const {
   validateSpecial
 } = require("../services/matchSpecial.js");
 
+/**
+ * FİKSTÜR SATIRI TESTİN KENDİ ANLIK GÖRÜNTÜSÜNDEN GELİR.
+ *
+ * Aşağıdaki bloklar yayımlanmış bir maç dosyasının ÜRETİM MANTIĞINI sınıyor:
+ * kadro seçkisi, form etiketi, iki dil, hacim. Bu mantık maçın ne zaman
+ * oynandığından bağımsız. Fikstür takvimi ise KAYAN bir pencere
+ * (scripts/sync-fixture-calendar.mjs): maç oynanıp pencerenin gerisine
+ * düşünce satır siliniyordu ve testler, kodda hiçbir şey değişmediği hâlde
+ * "fikstürde maç yok" diyerek kırılıyordu — makinenin sınanması, ölçtüğü
+ * maçın takvim ömrüne bağlanmıştı.
+ *
+ * Anlık görüntü CANLI TAKVİMİN YERİNE GEÇMEZ, ONU TAMAMLAR: takvimde satır
+ * hâlâ varsa canlı olan kazanır. Snapshot yalnızca pencereden düşmüş
+ * satırları geri koyar.
+ *
+ * Bu, "stat bilgisi veriden gelir" iddiasını döngüsel yapmaz: iddia,
+ * dosyanın (data/match-specials.json) stat/saat/hafta YAZMADIĞINI ve bu
+ * alanların fikstür kaydından okunduğunu söylüyor. Kaydın canlı takvimden mi
+ * anlık görüntüden mi geldiği bu veri akışını değiştirmiyor.
+ */
+const liveCalendar = require(path.join(root, "data", "fixture-calendar.json"));
+const snapshotFixtures = require(path.join(root, "scripts", "fixtures", "match-special-fixtures.json"));
+
+const mergedFixtures = (() => {
+  const rows = [...(liveCalendar.matches || [])];
+  const seen = new Set(rows.map((row) => row && row.id));
+  for (const row of snapshotFixtures) {
+    if (!seen.has(row.id)) rows.push(row);
+  }
+  return { ...liveCalendar, matches: rows };
+})();
+
 const sources = {
   specials: require(path.join(root, "data", "match-specials.json")),
-  fixtures: require(path.join(root, "data", "fixture-calendar.json")),
+  fixtures: mergedFixtures,
   squads: require(path.join(root, "data", "super-lig-squads.json")),
   archive: require(path.join(root, "data", "season-archive.json"))
 };
 
 const MATCH_ID = "galatasaray-corum-fk-2026-08-14";
+
+// Anlık görüntü ile dosya deposu birbirinden kopmamalı: data/match-specials.json
+// içindeki her kayıt ya canlı takvimde ya snapshot'ta karşılık bulmalı. Yeni
+// bir dosya eklenip fikstürü snapshot'a girmezse bu satır uyarır — testin
+// sessizce eski maçı ölçmeye devam etmesindense.
+{
+  const known = new Set(mergedFixtures.matches.map((row) => row && row.id));
+  for (const record of sources.specials.specials || []) {
+    assert.ok(known.has(record.matchId),
+      `${record.matchId}: fikstür ne canlı takvimde ne scripts/fixtures/match-special-fixtures.json içinde`);
+  }
+}
 
 console.log("match-special");
 

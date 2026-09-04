@@ -75,6 +75,11 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   "ntvspor.net",
   "hurriyet.com.tr",
     "fanatik.com.tr",
+    // Ajansspor: yerleşik Türk spor haber ajansı; maç sonu açıklamalarını
+    // konuşmacı bazında ayrı haberlerde, zaman damgalı yayımlıyor. Listeye
+    // BİLİNÇLİ eklendi — data/manager-quotes.json'daki alıntılar bu sayfalar
+    // açılıp harfi harfine karşılaştırılarak girildi.
+    "ajansspor.com",
     "sporx.com",
     "sozcu.com.tr",
     "yenisafak.com",

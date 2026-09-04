@@ -1,4 +1,137 @@
 {
-  "_comment": "TEKNİK DİREKTÖR AÇIKLAMALARI — küratörlü ve kaynaklı. Kural: services/managerQuotes.js. Zorunlu alanlar: matchId, speaker, team, quote, at, source.{name,url}. Alıntı metni OLDUĞU GİBİ girilir; kısaltmak anlamı değiştirebilir ve kısaltılmış alıntı hâlâ tırnak içinde görünür. Kayıt yoksa maç raporundaki bölüm 'veri yok' der — uydurma alıntı ASLA üretilmez. Bu dosya bilerek boş: elde doğrulanmış, kaynak bağlantılı bir maç sonu demeci yok.",
-  "quotes": []
+  "_comment": "MAÇ SONU AÇIKLAMALARI — küratörlü ve kaynaklı. Kural: services/managerQuotes.js. Zorunlu alanlar: matchId, speaker, team, quote, at, source.{name,url}. `role` boş bırakılırsa teknik direktör varsayılır; doluysa tanınan bir değer olmalı (manager/player ya da teknik direktör/futbolcu) — tanınmayan rol kaydı reddettirir, yuvarlanmaz. Alıntı metni OLDUĞU GİBİ girilir; kısaltmak anlamı değiştirebilir ve kısaltılmış alıntı hâlâ tırnak içinde görünür. Kayıt yoksa ilgili yüzey 'Kaynaklardan bekleniyor' der — uydurma alıntı ASLA üretilmez. Buraya bir alıntı girmeden önce kaynak sayfa AÇILIP metin harfi harfine karşılaştırılır: okunamayan (bot korumasına takılan) bir sayfa doğrulanmış sayılmaz, o alıntı girilmez.",
+  "quotes": [
+    {
+      "matchId": "besiktas-corum-fk-2026-08-31",
+      "speaker": "Rıdvan Yılmaz",
+      "role": "player",
+      "team": "Beşiktaş",
+      "quote": "Fenerbahçe maçında elimizden gelen her şeyi yapacağız",
+      "at": "2026-08-31T22:35:07.000Z",
+      "source": {
+        "name": "Sabah",
+        "url": "https://www.sabah.com.tr/spor/futbol/2026/08/31/ridvan-yilmaz-fenerbahce-macinda-elimizden-gelen-her-seyi-yapacagiz"
+      },
+      "automation": {
+        "harvestedAt": "2026-09-01T07:18:37.666Z",
+        "feed": "sabah-spor",
+        "rosterName": "R. Yılmaz",
+        "verifiedInBody": true
+      }
+    },
+    {
+      "matchId": "amed-trabzonspor-2026-08-31",
+      "speaker": "Fatih Tekke",
+      "role": "manager",
+      "team": "Trabzonspor",
+      "quote": "Üzücü bir akşam",
+      "at": "2026-08-31T21:40:51.000Z",
+      "source": {
+        "name": "Sabah",
+        "url": "https://www.sabah.com.tr/spor/futbol/2026/08/31/fatih-tekke-uzucu-bir-aksam"
+      },
+      "automation": {
+        "harvestedAt": "2026-09-01T07:18:37.666Z",
+        "feed": "sabah-spor",
+        "rosterName": "Fatih Tekke",
+        "verifiedInBody": true
+      }
+    },
+    {
+      "matchId": "basaksehir-kasimpasa-2026-08-30",
+      "speaker": "Nuri Şahin",
+      "role": "manager",
+      "team": "Başakşehir",
+      "quote": "Çok gereksiz 2 puan kaybettik. İlk yarıdaki bu oyuna bu sonuç yakışmadı.",
+      "at": "2026-08-31T01:04:00+03:00",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/futbol/superlig/istanbulbb/nuri-sahin-cok-gereksiz-2-puan-kaybettik-SXHBQ1174255SXQ"
+      }
+    },
+    {
+      "matchId": "basaksehir-kasimpasa-2026-08-30",
+      "speaker": "Nuri Şahin",
+      "role": "manager",
+      "team": "Başakşehir",
+      "quote": "Bugünkü sonuç için büyük hayal kırıklığı yaşıyoruz ama cuma günü 3 puan için sahada olacağız.",
+      "at": "2026-08-31T01:04:00+03:00",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/futbol/superlig/istanbulbb/nuri-sahin-cok-gereksiz-2-puan-kaybettik-SXHBQ1174255SXQ"
+      }
+    },
+    {
+      "matchId": "basaksehir-kasimpasa-2026-08-30",
+      "speaker": "Emre Belözoğlu",
+      "role": "manager",
+      "team": "Kasımpaşa",
+      "quote": "Ne kulüp ne de oyuncular bu durumun böyle olmasını istiyor ama bu kural bizi çok zorluyor. Bu kuralı biraz gevşetmek lazım.",
+      "at": "2026-08-31T00:52:00+03:00",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/futbol/superlig/kasimpasa/emre-belozoglu-ndan-yabanci-kuralina-tepki-SXHBQ1174251SXQ"
+      }
+    },
+    {
+      "matchId": "basaksehir-kasimpasa-2026-08-30",
+      "speaker": "Emre Belözoğlu",
+      "role": "manager",
+      "team": "Kasımpaşa",
+      "quote": "Mecburi hamleler yapmak zorunda kalıyoruz. Bugün oyuna giren ve takıma çok katkı veren Diabate gibi bir oyuncudan vazgeçmek zorunda kalacağız.",
+      "at": "2026-08-31T00:52:00+03:00",
+      "source": {
+        "name": "Sporx",
+        "url": "https://www.sporx.com/futbol/superlig/kasimpasa/emre-belozoglu-ndan-yabanci-kuralina-tepki-SXHBQ1174251SXQ"
+      }
+    },
+    {
+      "matchId": "alanyaspor-besiktas-2026-08-23",
+      "speaker": "Joao Pereira",
+      "role": "manager",
+      "team": "Alanyaspor",
+      "quote": "Biz savunmada 5 oyuncu tercih ettik. İlk 20-25 dakika maçı tutabilirsek bizim için iyi olacaktı.",
+      "at": "2026-08-24T00:02:00+03:00",
+      "source": {
+        "name": "Ajansspor",
+        "url": "https://ajansspor.com/haber/joao-pereira-besiktasin-oyundan-dusecegini-biliyorduk-733278"
+      }
+    },
+    {
+      "matchId": "alanyaspor-besiktas-2026-08-23",
+      "speaker": "Joao Pereira",
+      "role": "manager",
+      "team": "Alanyaspor",
+      "quote": "Oyunu tuttuk ve duran toptan golü attık. Bir duran top hocası kadromuza katıldı.",
+      "at": "2026-08-24T00:02:00+03:00",
+      "source": {
+        "name": "Ajansspor",
+        "url": "https://ajansspor.com/haber/joao-pereira-besiktasin-oyundan-dusecegini-biliyorduk-733278"
+      }
+    },
+    {
+      "matchId": "alanyaspor-besiktas-2026-08-23",
+      "speaker": "Leandro Trossard",
+      "role": "player",
+      "team": "Beşiktaş",
+      "quote": "Bugün olması gerektiği gibi oynayamadık. İyi bir gün olmadı. İlk yarı çok fırsat harcadık.",
+      "at": "2026-08-23T23:53:00+03:00",
+      "source": {
+        "name": "Ajansspor",
+        "url": "https://ajansspor.com/haber/alanyaspor-besiktas-macinda-trossard-bana-net-bir-tokat-atildi-733275"
+      }
+    },
+    {
+      "matchId": "alanyaspor-besiktas-2026-08-23",
+      "speaker": "Leandro Trossard",
+      "role": "player",
+      "team": "Beşiktaş",
+      "quote": "Bana net bir tokat atıldı. Kararın değişmesi gerekiyordu.",
+      "at": "2026-08-23T23:53:00+03:00",
+      "source": {
+        "name": "Ajansspor",
+        "url": "https://ajansspor.com/haber/alanyaspor-besiktas-macinda-trossard-bana-net-bir-tokat-atildi-733275"
+      }
+    }
+  ]
 }

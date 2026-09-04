@@ -10,6 +10,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 
 const root = process.cwd();
@@ -22,6 +23,7 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
 const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
+const { quotesForMatch } = require("../services/managerQuotes.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
 const { PROVIDER_MISSING_LABEL } = require("../services/postMatchReportStore.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
@@ -48,6 +50,20 @@ const managerQuoteStore = (() => {
 })();
 
 /**
+ * Sayfa başındaki "Maç Sonu Açıklamaları" şeridi.
+ *
+ * Tam liste zaten omurga bölümünde (coreReportSection → manager-comment).
+ * Şerit onun kısaltılmış hâli: okuyucu sayfanın tepesinde kimin ne dediğini
+ * görüp aşağıda tamamını okuyor. İkisi de AYNI doğrulanmış listeden gelir.
+ */
+function matchQuotesTicker(report) {
+  const verdict = quotesForMatch(report && report.matchId, managerQuoteStore);
+  return matchQuotesTickerBlock(verdict, {
+    awaitingNote: "Bu karşılaşma için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı."
+  });
+}
+
+/**
  * BEŞ BÖLÜMLÜK OMURGA.
  *
  * Raporun on beş bölümü doğru ama okuyucu için düz bir döküm. Omurga beş
@@ -66,7 +82,7 @@ function coreReportSection(report, match) {
       // kısaltılmış alıntı hâlâ tırnak içinde görünür.
       return section.quotes.map((quote) => `<figure class="core-quote">
           <blockquote>${escapeHtml(quote.quote)}</blockquote>
-          <figcaption>${escapeHtml(`${quote.speaker} · ${quote.team}`)} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
+          <figcaption>${escapeHtml([quote.speaker, quote.roleLabel, quote.team].filter(Boolean).join(" · "))} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
         </figure>`).join("");
     }
 
@@ -668,6 +684,8 @@ function pageHtml(report, match) {
           <div><span class="team-monogram away">${escapeHtml(monogram(match.awayTeam))}</span><strong>${escapeHtml(match.awayTeam)}</strong></div>
         </div>
       </section>
+
+      ${matchQuotesTicker(report)}
 
       ${kpiSection(match)}
       ${coreReportSection(report, match)}

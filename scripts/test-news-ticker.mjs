@@ -114,6 +114,35 @@ function item(overrides = {}) {
   );
 }
 
+// ── 4b. "official" kategorisi resmî ağız gerektirir ────────────────────────
+//
+// Bu satır bandın en kritik güvenliği: "Resmî açıklama" rozeti okuyucuya
+// KURUMUN KENDİSİNİN konuştuğunu söyler. İki meşru yol var, ikisi de burada.
+{
+  // Varsayılan fikstür zaten resmî bir alan kullanıyor (galatasaray.org) —
+  // burada asıl sınanan, KENDİ haber sayfamıza giden bir bağlantının (bant
+  // öğesinin gerçek şekli, bkz. refresh-news-ticker.mjs → mirrorFromNews)
+  // TEK BAŞINA yeterli olmadığı.
+  const selfLinkOnly = validateTickerItem(item({
+    category: "official",
+    source: { name: "FutbolRadar", url: "https://www.futbolradar.com/haber/ornek-haber" }
+  }));
+  assert.equal(selfLinkOnly.valid, false, "kendi haber sayfamıza giden bağlantı tek başına 'official' saydırmamalı");
+  assert.ok(
+    selfLinkOnly.errors.some((error) => /resmî kaynak gerektirir/.test(error)),
+    "gerekçe resmî kaynak eksikliğini söylemeli"
+  );
+
+  // İKİNCİ YOL: `source.publisher` kulübün/UEFA'nın alanını taşıyorsa,
+  // `source.url` kendi sayfamıza gitse bile öğe geçerli sayılır. Bu,
+  // mirrorFromNews'in `ticker.publisher` alanını buraya taşıdığı senaryo.
+  const withPublisher = validateTickerItem(item({
+    category: "official",
+    source: { name: "FutbolRadar", url: "https://www.futbolradar.com/haber/ornek-haber", publisher: "https://www.galatasaray.org" }
+  }));
+  assert.equal(withPublisher.valid, true, "publisher resmî alansa öğe geçerli olmalı, url kendi sayfamız olsa da");
+}
+
 // ── 5. Kesinleşmemiş her öğe rozet TAŞIR ───────────────────────────────────
 {
   assert.equal(confidenceBadge("confirmed"), "", "doğrulanmış öğede rozet olmamalı");
@@ -168,9 +197,9 @@ function item(overrides = {}) {
   }, { now });
   assert.equal(fresh.items.length, 1, "üç günden yeni resmî açıklama kalmalı");
 
-  // TEK İSTİSNA: maç programı duyurusu, KENDİ BİTİŞ TARİHİNİ taşıyorsa
-  // varsayılanı aşabilir — süresiz asılı kalmaz, maç gelince kendiliğinden
-  // düşer. `expiresAt` yoksa o da varsayılana tabidir.
+  // İKİ İSTİSNA, İKİSİ DE UZATIR: (a) maç programı duyurusu KENDİ BİTİŞ
+  // TARİHİNİ taşıyorsa varsayılanı aşabilir — süresiz asılı kalmaz, maç
+  // gelince kendiliğinden düşer. `expiresAt` yoksa o da varsayılana tabidir.
   const datedFixture = normalizeTickerItems({
     items: [item({
       id: "tarihli-fikstur", category: "fixture", confidence: "confirmed",
@@ -183,6 +212,46 @@ function item(overrides = {}) {
     items: [item({ id: "tarihsiz-fikstur", category: "fixture", confidence: "confirmed", text: "Program açıklandı", timestamp: old })]
   }, { now });
   assert.equal(undatedFixture.items.length, 0, "bitiş tarihi olmayan maç programı duyurusu varsayılana tabidir");
+
+  // (b) editörün `important: true` işaretlediği haber (data/news.json →
+  // `isFeatured: true`, bkz. refresh-news-ticker.mjs) 5 güne kadar kalabilir.
+  // 12 gün önce ("old") hâlâ bu pencereyi de aşar — işaret süresizlik demek
+  // değil, yalnızca 72 saati 120 saate uzatır.
+  const importantOld = normalizeTickerItems({
+    items: [item({ id: "eski-onemli", category: "official", confidence: "confirmed", text: "Eski önemli haber", timestamp: old, important: true })]
+  }, { now });
+  assert.equal(importantOld.items.length, 0, "5 günü de aşan önemli haber banda girmemeli");
+
+  // 4 gün önce (96 saat): normal 72 saati aşar ama 5 günlük pencerenin
+  // içindedir — `important` OLMADAN bu kayıt düşerdi (yukarıdaki "eski-resmi"
+  // ile aynı sınıf, yalnızca yaşı farklı).
+  const importantWithinWindow = normalizeTickerItems({
+    items: [item({
+      id: "onemli-4-gun", category: "official", confidence: "confirmed",
+      text: "Dört gün önce yayımlanan önemli haber", timestamp: "2026-07-28T14:20:00+03:00", important: true
+    })]
+  }, { now });
+  assert.equal(importantWithinWindow.items.length, 1, "72 saati aşan ama 5 günü aşmayan önemli haber kalmalı");
+
+  const notImportantSameAge = normalizeTickerItems({
+    items: [item({
+      id: "onemsiz-4-gun", category: "official", confidence: "confirmed",
+      text: "Dört gün önce yayımlanan sıradan haber", timestamp: "2026-07-28T14:20:00+03:00"
+    })]
+  }, { now });
+  assert.equal(notImportantSameAge.items.length, 0, "aynı yaştaki işaretsiz haber normal 72 saatte düşmeli");
+
+  // Kategori zaten önemli-eşiğinden uzunsa (tarihli fixture) kısaltmaz —
+  // ikisinin büyüğü uygulanır.
+  const importantDatedFixture = normalizeTickerItems({
+    items: [item({
+      id: "onemli-tarihli-fikstur", category: "fixture", confidence: "confirmed", important: true,
+      text: "Kura sonucu", timestamp: old, expiresAt: "2026-08-20T12:00:00+03:00"
+    })]
+  }, { now });
+  assert.equal(importantDatedFixture.items.length, 1, "important, kategorinin kendi daha uzun penceresini kısaltmamalı");
+
+  assert.equal(validateTickerItem(item({ important: "evet" })).valid, false, "important alanı boolean olmayınca geçersiz olmalı");
 }
 
 // ── 7. Geleceğe tarihli kayıt reddedilir ───────────────────────────────────
@@ -237,7 +306,13 @@ function item(overrides = {}) {
     ids.add(entry.id);
   }
 
-  const { items, rejected } = normalizeTickerItems(payload, { now });
+  // Bu bölüm dosyanın synthetic testlerinde kullanılan sabit `now`'ı KASITLI
+  // OLARAK kullanmaz: burada sınanan gerçek, canlı veri dosyasının şu anki
+  // duvar saatine göre geçerli olup olmadığı. Sabit tarih kullanılsaydı
+  // gündem dosyası ilerledikçe test çürürdü — bkz. test-ticker-feed.mjs
+  // içindeki aynı hatanın belgelenmiş düzeltmesi ("Test saati VERİDEN
+  // türetilir, sabit yazılmaz").
+  const { items, rejected } = normalizeTickerItems(payload, { now: new Date() });
   console.log(`test-news-ticker: gerçek dosyadan ${items.length} öğe geçti, ${rejected.length} elendi`);
   for (const row of rejected) {
     console.log(`test-news-ticker:   elendi ${row.id}: ${row.errors.join("; ")}`);
