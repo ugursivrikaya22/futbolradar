@@ -405,7 +405,7 @@ function hubPage(special, modules, locale) {
   const base = baseFor(dir);
   const canonical = `${DOMAIN}/${dir}/${special.slug}.html`;
   const seo = seoFor(special, locale);
-  const liveHref = locale === "en" ? `${base}en/live-scores.html` : `${base}canli-skor.html`;
+  const liveHref = locale === "en" ? `${base}en/live-football-scores.html` : `${base}canli-skor.html`;
   const centreHref = locale === "en" ? `${base}en/match-centre.html` : `${base}mac-merkezi.html`;
 
   const body = `    <main class="container match-special">
@@ -513,11 +513,85 @@ const problems = [];
  */
 const manifest = [];
 
+/**
+ * MAÇ KİMLİĞİNDEKİ TARİH. Kimlikler `takim-takim-YYYY-AA-GG` biçiminde.
+ * Okunamayan kimlik boş döner ve aşağıdaki kural onu "eskimiş" saymaz —
+ * yani şüphede kalınca hata verilir, sessizce atlanmaz.
+ */
+function specialMatchDay(matchId) {
+  const match = /(\d{4}-\d{2}-\d{2})$/.exec(String(matchId || ""));
+  return match ? match[1] : "";
+}
+
+const todayIstanbul = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Istanbul" });
+
+/** Önceki sayfa listesi: süresi dolmuş dosyaların kaydı buradan taşınır. */
+const previousManifest = (() => {
+  const manifestPath = path.join(root, "data", "match-special-pages.json");
+  if (!fs.existsSync(manifestPath)) return [];
+  try {
+    const parsed = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.warn(`[match-special] match-special-pages.json okunamadı: ${error.message}`);
+    return [];
+  }
+})();
+
 for (const record of records) {
   const { special, rejected } = selectMatchSpecial(sources, { matchId: record.matchId });
   logRejected(rejected);
   if (!special) {
-    problems.push(`${record.matchId}: dosya üretilemedi`);
+    // SÜRESİ DOLMUŞ DOSYA HATA DEĞİL — AMA YALNIZCA İKİ KOŞUL BİRDEN.
+    //
+    // Maç dosyaları bir fikstür satırına bağlı, fikstür takvimi ise KAYAN bir
+    // pencere (scripts/sync-fixture-calendar.mjs, PAST_WINDOW_DAYS). Maç
+    // oynanıp pencerenin gerisine düşünce satır siliniyor ve dosya
+    // üretilemez hâle geliyor — beklenen son, arıza değil. Eskiden bu durum
+    // BÜTÜN derlemeyi düşürüyordu; zincir kırıldığı için devamındaki ön
+    // render hiç çalışmıyor ve "Bugünün Maçları" sayfası boş kalıyordu.
+    //
+    // Atlamak için İKİ koşul da gerekli:
+    //   1. Tek sorun fikstürün YOKLUĞU olacak. Bozuk modül, eksik alan gibi
+    //      başka bir doğrulama hatası varsa bu gerçek bir veri sorunudur.
+    //   2. Maç GEÇMİŞTE olacak. Bugünkü ya da gelecek bir maçın fikstürü
+    //      bulunamıyorsa eksik olan zaman değil: ya kimlik yanlış yazılmış
+    //      ya da fikstür henüz gelmemiş. İkisi de sessizce geçilemez.
+    const onlyMissingFixture = rejected.length > 0 && rejected.every((row) =>
+      row.errors.length === 1 && row.errors[0].startsWith("fikstürde maç yok")
+    );
+    const day = specialMatchDay(record.matchId);
+    const expired = onlyMissingFixture && day && day < todayIstanbul;
+
+    if (!expired) {
+      problems.push(`${record.matchId}: dosya üretilemedi`);
+      continue;
+    }
+
+    console.warn(`[futbolradar:match-special-expired] id=${record.matchId} reason="maç fikstür penceresinin gerisinde kaldı"`);
+
+    // SAYFA YAYINDA KALIR, KAYIT DA LİSTEDE KALIR.
+    //
+    // Dosya yeniden ÜRETİLEMİYOR (fikstür satırı yok) ama üretilmiş sayfalar
+    // diskte duruyor ve bağlantı/arama görünürlüğü taşıyorlar — bu dosyanın
+    // kendi kuralı (aşağıdaki `homepagePromo` notu) sayfaları silmemeyi
+    // zaten şart koşuyor. Kaydı listeden düşürmek, var olan sayfaları
+    // listede karşılıksız bırakır ve İngilizce yol haritasından da siler.
+    // Onun için önceki listedeki karşılığı olduğu gibi taşınır.
+    const carried = previousManifest.find((entry) => entry && entry.matchId === record.matchId);
+    if (carried) {
+      manifest.push(carried);
+      const tr = carried.locales && carried.locales.tr;
+      const en = carried.locales && carried.locales.en;
+      if (tr && en) {
+        pairs.push({ kind: "special", tr: tr.hub, en: en.hub });
+        const trModules = tr.modules || [];
+        const enModules = en.modules || [];
+        for (let index = 0; index < Math.min(trModules.length, enModules.length); index += 1) {
+          pairs.push({ kind: "special", tr: trModules[index].href, en: enModules[index].href });
+        }
+      }
+    }
     continue;
   }
   // Eşleşmeler servis çıktısında yok (editoryal ek); kayıttan alınır.

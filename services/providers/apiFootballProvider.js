@@ -260,6 +260,15 @@ function cacheResourceFor(path, params) {
     return "matches-live";
   }
 
+  // Tek fikstür kimliğiyle sorgu — mac-detay.html ve /api/live-latency bu
+  // yoldan geçiyor ve ikisi de o TEK maçın güncel durumunu istiyor.
+  // Eşleme yalnızca yola bakıyorduysa bu da günlük listenin 60 sn TTL'ini
+  // alıyordu: canlı bir maçın detay sayfası CDN/istemci tazeyken sağlayıcı
+  // katmanında bir dakikaya kadar bayat kalabiliyordu.
+  if (path === "/fixtures" && params && params.id) {
+    return "matches-live";
+  }
+
   return CACHE_RESOURCE_BY_PATH[path];
 }
 
@@ -776,6 +785,7 @@ function normalizeSquadPlayer(item, team) {
     team: teamName(team),
     position: item.position || "",
     age: item.age || null,
+    shirtNumber: numberOrNull(item.number),
     photo: item.photo || null,
     dataStatus: "provider",
     ratingStatus: "pending",
@@ -787,30 +797,82 @@ function firstStatistic(item) {
   return Array.isArray(item.statistics) && item.statistics[0] ? item.statistics[0] : {};
 }
 
+function sumOrNull(values) {
+  const numbers = values.map(numberOrNull).filter((value) => value !== null);
+  return numbers.length ? numbers.reduce((total, value) => total + value, 0) : null;
+}
+
+/**
+ * Bir oyuncunun sezon istatistikleri API-Football'da turnuva başına ayrı
+ * bloklar hâlinde gelir (lig, kupa, Avrupa). Yalnızca ilk bloğu okumak
+ * oyuncunun üretiminin bir kısmını görünmez yapıyordu; bu yüzden tüm
+ * bloklar toplanır. Reyting toplanamaz, oynanan dakikaya göre ağırlıklı
+ * ortalaması alınır.
+ */
+function aggregateStatistics(statistics) {
+  const blocks = Array.isArray(statistics) ? statistics.filter(Boolean) : [];
+  const pick = (path) => blocks.map((block) => {
+    return path.reduce((value, key) => (value && typeof value === "object" ? value[key] : undefined), block);
+  });
+  const minutesPerBlock = blocks.map((block) => numberOrNull(block.games && block.games.minutes) || 0);
+  const ratings = blocks.map((block) => numberOrNull(block.games && block.games.rating));
+  const ratingWeight = ratings.reduce((total, rating, index) => total + (rating === null ? 0 : minutesPerBlock[index] || 1), 0);
+  const ratingTotal = ratings.reduce((total, rating, index) => total + (rating === null ? 0 : rating * (minutesPerBlock[index] || 1)), 0);
+  const passAccuracyValues = pick(["passes", "accuracy"]).map(numberOrNull).filter((value) => value !== null && value <= 100);
+
+  return {
+    appearances: sumOrNull(pick(["games", "appearences"]).concat(pick(["games", "appearances"]))),
+    starts: sumOrNull(pick(["games", "lineups"])),
+    minutes: sumOrNull(pick(["games", "minutes"])),
+    goals: sumOrNull(pick(["goals", "total"])),
+    assists: sumOrNull(pick(["goals", "assists"])),
+    goalsConceded: sumOrNull(pick(["goals", "conceded"])),
+    saves: sumOrNull(pick(["goals", "saves"])),
+    shots: sumOrNull(pick(["shots", "total"])),
+    shotsOnTarget: sumOrNull(pick(["shots", "on"])),
+    passes: sumOrNull(pick(["passes", "total"])),
+    keyPasses: sumOrNull(pick(["passes", "key"])),
+    // `accuracy` yüzde olarak gelir; blok başına ortalaması alınır.
+    passAccuracy: passAccuracyValues.length
+      ? Math.round(passAccuracyValues.reduce((total, value) => total + value, 0) / passAccuracyValues.length)
+      : null,
+    tackles: sumOrNull(pick(["tackles", "total"])),
+    blocks: sumOrNull(pick(["tackles", "blocks"])),
+    interceptions: sumOrNull(pick(["tackles", "interceptions"])),
+    duelsTotal: sumOrNull(pick(["duels", "total"])),
+    duelsWon: sumOrNull(pick(["duels", "won"])),
+    dribbleAttempts: sumOrNull(pick(["dribbles", "attempts"])),
+    dribbles: sumOrNull(pick(["dribbles", "success"])),
+    foulsCommitted: sumOrNull(pick(["fouls", "committed"]).concat(pick(["fouls", "commited"]))),
+    yellowCards: sumOrNull(pick(["cards", "yellow"])),
+    redCards: sumOrNull(pick(["cards", "red"]).concat(pick(["cards", "yellowred"]))),
+    rating: ratingWeight ? Math.round((ratingTotal / ratingWeight) * 100) / 100 : null
+  };
+}
+
 function normalizePlayer(item) {
   const player = item.player || item;
-  const statistics = firstStatistic(item);
-  const team = statistics.team || item.team || {};
-  const games = statistics.games || {};
-  const goals = statistics.goals || {};
-  const cards = statistics.cards || {};
-  const rating = games.rating == null ? null : Number(games.rating);
-  const minutes = numberOrNull(games.minutes);
-  const appearances = numberOrNull(firstDefined(games.appearences, games.appearances));
-  const playerGoals = numberOrNull(goals.total);
-  const assists = numberOrNull(goals.assists);
-  const yellowCards = numberOrNull(cards.yellow);
-  const redCards = numberOrNull(cards.red);
+  const statistics = Array.isArray(item.statistics) && item.statistics.length ? item.statistics : [firstStatistic(item)];
+  const primary = statistics[0] || {};
+  const team = primary.team || item.team || {};
+  const games = primary.games || {};
+  const stats = aggregateStatistics(statistics);
+  const rating = stats.rating;
+  const shirtNumber = numberOrNull(games.number);
 
   return {
     id: String(player.id || player.name || ""),
     providerId: player.id ? String(player.id) : "",
     providerName: "api-football",
     name: player.name || "",
+    fullName: [player.firstname, player.lastname].filter(Boolean).join(" ") || player.name || "",
     currentTeam: teamName(team),
     team: teamName(team),
+    // Sağlayıcı takım kimliği; maç bazlı performans sorgusu takım kimliği
+    // olmadan yapılamıyor (oyuncu maç geçmişi uç noktası yok).
+    currentTeamProviderId: team && team.id ? String(team.id) : null,
     formerTeams: [],
-    league: "",
+    league: (primary.league && primary.league.name) || "",
     position: games.position || player.position || "",
     birthDate: player.birth && player.birth.date || null,
     computedAge: player.age || null,
@@ -818,26 +880,29 @@ function normalizePlayer(item) {
     nationality: player.nationality || null,
     height: player.height || null,
     weight: player.weight || null,
+    injured: typeof player.injured === "boolean" ? player.injured : null,
+    shirtNumber,
+    // Piyasa değeri ve sözleşme API-Football kapsamında yok; alan bilinçli
+    // olarak boş bırakılır ki UI tahmini bir rakam göstermesin.
     marketValueEur: null,
+    contractUntil: null,
     photo: player.photo || null,
-    stats: {
-      appearances,
-      minutes,
-      goals: playerGoals,
-      assists,
-      yellowCards,
-      redCards
-    },
-    appearances,
-    minutesPlayed: minutes,
-    minutes,
-    goals: playerGoals,
-    assists,
-    yellowCards,
-    redCards,
-    rating,
-    aiRating: rating,
-    overallRating: rating,
+    stats,
+    appearances: stats.appearances,
+    minutesPlayed: stats.minutes,
+    minutes: stats.minutes,
+    goals: stats.goals,
+    assists: stats.assists,
+    shots: stats.shots,
+    keyPasses: stats.keyPasses,
+    passAccuracy: stats.passAccuracy,
+    duelsWon: stats.duelsWon,
+    yellowCards: stats.yellowCards,
+    redCards: stats.redCards,
+    // 0-10 ölçeğindeki maç reytingi rating modeline karışmasın diye ayrı
+    // alanda taşınır; oyuncu skoru bu alanı "Puan" bileşeni olarak okur.
+    providerRating: rating,
+    matchRating: rating,
     transferHistory: [],
     dataStatus: "provider",
     ratingStatus: rating == null ? "pending" : "provider",
@@ -847,29 +912,152 @@ function normalizePlayer(item) {
   };
 }
 
+/**
+ * Sağlayıcı bazı transfer kayıtlarında tarih veya varış kulübünü BOŞ döner
+ * (örn. serbest kalış/kayıp belge). Böyle bir kaydı olduğu gibi geçirmek
+ * `validatePlayerData`in "transferHistory[i] date ve toTeam içermeli"
+ * kuralını kırar ve senkron adımını tamamen düşürür — tek eksik kayıt için
+ * bütün koşu kaybedilir. Doğru davranış eksik kaydı sessizce ATLAMAK: diğer
+ * transferler ve profil zenginleştirmesi etkilenmeden ilerler.
+ */
+function fixturePlayerStats(row) {
+  const block = Array.isArray(row.statistics) && row.statistics[0] ? row.statistics[0] : {};
+  const games = block.games || {};
+  const goals = block.goals || {};
+  const passes = block.passes || {};
+  const passAccuracy = numberOrNull(passes.accuracy);
+
+  return {
+    minutes: numberOrNull(games.minutes),
+    rating: numberOrNull(games.rating),
+    started: games.substitute === undefined ? null : games.substitute === false,
+    shirtNumber: numberOrNull(games.number),
+    position: games.position || null,
+    goals: numberOrNull(goals.total),
+    assists: numberOrNull(goals.assists),
+    saves: numberOrNull(goals.saves),
+    goalsConceded: numberOrNull(goals.conceded),
+    shots: numberOrNull(block.shots && block.shots.total),
+    shotsOnTarget: numberOrNull(block.shots && block.shots.on),
+    keyPasses: numberOrNull(passes.key),
+    // Maç bazlı yanıtta `accuracy` bazen isabetli pas sayısı olarak gelir;
+    // 100'ü aşan değer yüzde değildir ve yüzde alanına yazılmaz.
+    passAccuracy: passAccuracy !== null && passAccuracy <= 100 ? passAccuracy : null,
+    dribbles: numberOrNull(block.dribbles && block.dribbles.success),
+    duelsWon: numberOrNull(block.duels && block.duels.won),
+    tackles: numberOrNull(block.tackles && block.tackles.total),
+    interceptions: numberOrNull(block.tackles && block.tackles.interceptions)
+  };
+}
+
+/**
+ * Bir oyuncunun son N maçındaki bireysel istatistikleri.
+ *
+ * API-Football'da oyuncu bazlı maç geçmişi uç noktası yok; takımın son
+ * maçları çekilir ve her fikstürün oyuncu istatistiklerinden ilgili satır
+ * ayıklanır. İstek sayısı bu yüzden maç sayısıyla sınırlıdır (en fazla 10)
+ * ve yanıt uzun süreli önbelleğe alınır.
+ */
+async function getPlayerMatchLog(query) {
+  const playerId = query && (query.playerId || query.id);
+  const teamId = query && query.teamId;
+
+  if (!playerId || !teamId) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Mac performansi icin playerId ve teamId query gerekli.");
+  }
+
+  const last = Math.max(1, Math.min(Number(query.last) || 5, 10));
+  const fixturesPayload = await providerFetch("/fixtures", compactParams({ team: teamId, last, status: "FT-AET-PEN" }));
+  const fixtures = responseItems(fixturesPayload);
+
+  const entries = await Promise.all(fixtures.map(async (item) => {
+    const fixture = item.fixture || {};
+    if (!fixture.id) {
+      return null;
+    }
+
+    let payload = null;
+    try {
+      payload = await providerFetch("/fixtures/players", { fixture: fixture.id });
+    } catch (error) {
+      return null;
+    }
+
+    const teams = responseItems(payload);
+    const teamBlock = teams.find((block) => String(block.team && block.team.id) === String(teamId));
+    const row = (teamBlock && Array.isArray(teamBlock.players) ? teamBlock.players : [])
+      .find((entry) => String(entry.player && entry.player.id) === String(playerId));
+
+    if (!row) {
+      return null;
+    }
+
+    const home = (item.teams && item.teams.home) || {};
+    const away = (item.teams && item.teams.away) || {};
+    const isHome = String(home.id) === String(teamId);
+    const goals = item.goals || {};
+
+    return {
+      fixtureId: String(fixture.id),
+      date: fixture.date || null,
+      competition: (item.league && item.league.name) || null,
+      opponent: isHome ? teamName(away) : teamName(home),
+      venue: isHome ? "home" : "away",
+      teamGoals: numberOrNull(isHome ? goals.home : goals.away),
+      opponentGoals: numberOrNull(isHome ? goals.away : goals.home),
+      ...fixturePlayerStats(row)
+    };
+  }));
+
+  return entries.filter(Boolean);
+}
+
+/**
+ * Kadro kaydı: forma numarası yalnızca /players/squads yanıtında bulunur.
+ */
+async function getSquadEntry(query) {
+  const teamId = query && query.teamId;
+  const playerId = query && (query.playerId || query.id);
+
+  if (!teamId || !playerId) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Kadro kaydi icin teamId ve playerId query gerekli.");
+  }
+
+  const payload = await providerFetch("/players/squads", { team: teamId });
+  const item = responseItems(payload)[0] || {};
+  const squad = Array.isArray(item.players) ? item.players : [];
+  const entry = squad.find((player) => String(player.id) === String(playerId));
+
+  return entry
+    ? { id: String(entry.id), name: entry.name || "", number: numberOrNull(entry.number), position: entry.position || null, photo: entry.photo || null }
+    : null;
+}
+
 function normalizeTransfer(item) {
   const player = item.player || {};
   const transfers = Array.isArray(item.transfers) ? item.transfers : [];
-  return transfers.map((transfer, index) => {
-    const teams = transfer.teams || {};
-    const fromTeam = teams.out || {};
-    const toTeam = teams.in || {};
-    const date = transfer.date || null;
-    return {
-      id: String(`${player.id || player.name || "player"}-${date || index}-${teamName(toTeam)}`),
-      playerId: player.id ? String(player.id) : "",
-      playerName: player.name || "",
-      date,
-      season: date ? `${String(date).slice(0, 4)}/${String(Number(String(date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
-      fromTeam: teamName(fromTeam) || null,
-      toTeam: teamName(toTeam) || null,
-      type: transfer.type || null,
-      fee: null,
-      feeEur: null,
-      marketValueEur: null,
-      source: "api-football"
-    };
-  });
+  return transfers
+    .map((transfer, index) => {
+      const teams = transfer.teams || {};
+      const fromTeam = teams.out || {};
+      const toTeam = teams.in || {};
+      const date = transfer.date || null;
+      return {
+        id: String(`${player.id || player.name || "player"}-${date || index}-${teamName(toTeam)}`),
+        playerId: player.id ? String(player.id) : "",
+        playerName: player.name || "",
+        date,
+        season: date ? `${String(date).slice(0, 4)}/${String(Number(String(date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
+        fromTeam: teamName(fromTeam) || null,
+        toTeam: teamName(toTeam) || null,
+        type: transfer.type || null,
+        fee: null,
+        feeEur: null,
+        marketValueEur: null,
+        source: "api-football"
+      };
+    })
+    .filter((transfer) => Boolean(transfer.date && transfer.toTeam));
 }
 
 /**
@@ -1005,6 +1193,30 @@ async function getTeams(query) {
     search: query && query.search,
     id: query && (query.teamId || query.id),
     country: query && query.country || getConfig().country
+  }));
+  return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
+}
+
+/**
+ * ADA DÜNYA GENELİNDE TAKIM ARAR — Süper Lig'e daraltılmadan.
+ *
+ * `getTeams()` iki yerde sessizce Türkiye'ye kilitlenir: `resolveLeague`
+ * ligi vermezsen `config.leagueId`'ye (Süper Lig) düşer, `country` da
+ * vermezsen `config.country`'ye (Türkiye) düşer. Bu, `getTeams()`'i bir
+ * Avrupa kupası rakibini bulmak için kullanılamaz kılar — sonuç sessizce
+ * boş dönerdi ve "böyle bir takım yok" ile "yanlış ülkeye arandı" ayırt
+ * edilemezdi. Bu fonksiyon `league`'e HİÇ dokunmaz, `country`'yi de yalnız
+ * açıkça verilirse kullanır; aksi hâlde sağlayıcının global adı-arama
+ * davranışına bırakılır.
+ */
+async function searchTeams(query) {
+  const name = query && (query.name || query.search);
+  if (!name) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Takım arama icin name/search gerekli.");
+  }
+  const payload = await providerFetch("/teams", compactParams({
+    search: name,
+    country: query && query.country
   }));
   return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
 }
@@ -1702,6 +1914,7 @@ module.exports = {
   getConfig,
   hasConfig,
   providerFetch,
+  cacheResourceFor,
   apiKeyCandidates,
   looksLikeApiKey,
   classifyPayloadError,
@@ -1712,10 +1925,13 @@ module.exports = {
   getStandings,
   getLeagues,
   getTeams,
+  searchTeams,
   getSquad,
+  getSquadEntry,
   getPlayers,
   getPlayersPaginated,
   getPlayerById,
+  getPlayerMatchLog,
   getPlayerTransfers,
   getTopScorers,
   getInjuries,
@@ -1740,5 +1956,7 @@ module.exports = {
   normalizeStandingRow,
   normalizeTeam,
   normalizePlayer,
+  aggregateStatistics,
+  fixturePlayerStats,
   normalizeTransfer
 };

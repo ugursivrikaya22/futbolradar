@@ -25,6 +25,57 @@ const REQUIRED_FIELDS = ["matchId", "speaker", "team", "quote"];
 /** Bir alıntı bu kadar süre sonra da geçerlidir: söylendiği an sabittir. */
 const QUOTE_HAS_NO_EXPIRY = true;
 
+/**
+ * TANINAN ROLLER.
+ *
+ * Rol dekoratif bir etiket değil: aynı cümle teknik direktörden gelince
+ * kadro/plan beyanı, futbolcudan gelince kişisel değerlendirme olur. Okuyucu
+ * bu ayrımı görmeden alıntıyı doğru tartamaz.
+ *
+ * Liste bilerek dar. Rol alanı BOŞSA "teknik direktör" varsayılır — bu dosya
+ * yalnızca teknik direktör alıntısı taşıdığı dönemde girilmiş kayıtlar
+ * bozulmasın diye korunan geriye dönük davranış. Ama rol DOLU ve tanınmıyorsa
+ * ("başkan", "yetkili", "menajer") artık sessizce geçirilmiyor: tanınmayan
+ * rol bir tahmindir ve kayıt reddedilir.
+ */
+const ROLE_LABELS = {
+  manager: "Teknik direktör",
+  player: "Futbolcu"
+};
+
+const ROLE_ALIASES = {
+  manager: "manager",
+  coach: "manager",
+  "head-coach": "manager",
+  "teknik direktor": "manager",
+  "teknik direktör": "manager",
+  player: "player",
+  futbolcu: "player",
+  oyuncu: "player"
+};
+
+/** Rol alanı boşsa varsayılan; doluysa tanınmak zorunda. */
+const DEFAULT_ROLE = "manager";
+
+function normalizeRoleKey(value) {
+  return String(value === null || value === undefined ? "" : value)
+    .trim()
+    .toLocaleLowerCase("tr")
+    .replace(/\s+/g, " ");
+}
+
+/**
+ * @returns {{role: string}|{error: string}} Boş rol varsayılana düşer;
+ *   tanınmayan rol HATA döndürür, yuvarlanmaz.
+ */
+function resolveRole(value) {
+  const key = normalizeRoleKey(value);
+  if (!key) return { role: DEFAULT_ROLE };
+  const resolved = ROLE_ALIASES[key];
+  if (!resolved) return { error: `tanınmayan rol: ${String(value).trim()}` };
+  return { role: resolved };
+}
+
 function text(value) {
   return String(value === null || value === undefined ? "" : value).trim();
 }
@@ -56,6 +107,11 @@ function validateQuote(entry) {
   const at = text(entry.at);
   if (!at) errors.push("at (zaman damgası) yok");
   else if (Number.isNaN(Date.parse(at))) errors.push(`geçersiz zaman damgası: ${at}`);
+
+  // Rol doluysa tanınmalı: uydurma bir sıfat, uydurma bir cümle kadar
+  // yanıltıcıdır ("başkan şöyle dedi" diye basılan bir futbolcu alıntısı).
+  const roleVerdict = resolveRole(entry.role);
+  if (roleVerdict.error) errors.push(roleVerdict.error);
 
   return { valid: errors.length === 0, errors };
 }
@@ -90,9 +146,15 @@ function quotesForMatch(matchId, store) {
       continue;
     }
 
+    const { role } = resolveRole(entry.role);
+
     quotes.push({
       speaker: text(entry.speaker),
-      role: text(entry.role) || "Teknik direktör",
+      // `role` makine anahtarı (manager/player), `roleLabel` okuyucuya
+      // gösterilen ad. Arayüzün eşleme tablosu tutması gerekmesin diye
+      // ikisi de taşınıyor.
+      role,
+      roleLabel: ROLE_LABELS[role],
       team: text(entry.team),
       // Metin OLDUĞU GİBİ taşınır; kısaltma anlam değiştirebilir.
       quote: text(entry.quote),
@@ -108,18 +170,81 @@ function quotesForMatch(matchId, store) {
       rejected,
       // Gerekçe okuyucuya gösterilecek metnin ta kendisi: bölüm boş kalmaz,
       // NEDEN boş olduğunu söyler.
+      // Metin "teknik direktör"le sınırlı DEĞİL: depo futbolcu açıklamalarını
+      // da taşıyor, dar bir gerekçe okuyucuya yalnızca hocanın konuşmadığını
+      // söyleyip futbolcuların susmuş göründüğü bir boşluk bırakırdı.
       reason: rejected.length
-        ? "Bu maç için kayıtlı teknik direktör açıklaması doğrulanamadı."
-        : "Bu maç için doğrulanmış teknik direktör açıklaması kaydedilmedi."
+        ? "Bu maç için kayıtlı maç sonu açıklaması doğrulanamadı."
+        : "Bu maç için doğrulanmış maç sonu açıklaması kaydedilmedi."
     };
   }
 
   return { status: "ready", quotes, rejected };
 }
 
+/**
+ * EN YENİ AÇIKLAMALAR — birden çok maçtan.
+ *
+ * Maç sayfası tek maçın alıntısını sorar; ana sayfa "son maçlarda kim ne
+ * dedi" diye sorar. İkisi de AYNI doğrulamadan geçer, yalnızca kapsam
+ * değişir.
+ *
+ * `matchIds` verilirse yalnızca o maçlar taranır. Bu isteğe bağlı ama
+ * önemli: çağıran hangi maçların gerçekten bittiğini biliyor, bu modül
+ * bilmiyor. Süzgeç verilmezse depodaki her geçerli alıntı aday olur.
+ *
+ * @param {Object|Array} store `data/manager-quotes.json` içeriği.
+ * @param {{limit?: number, matchIds?: Iterable<string>}} [options]
+ * @returns {{status: "ready"|"unavailable", quotes: Array, reason?: string}}
+ */
+function latestQuotes(store, options = {}) {
+  const raw = Array.isArray(store)
+    ? store
+    : (store && Array.isArray(store.quotes) ? store.quotes : []);
+
+  const allowed = options.matchIds ? new Set(options.matchIds) : null;
+  const limit = Number.isFinite(options.limit) ? Math.max(0, options.limit) : 6;
+
+  const quotes = [];
+  for (const entry of raw) {
+    const matchId = text(entry && entry.matchId);
+    if (allowed && !allowed.has(matchId)) continue;
+    if (!validateQuote(entry).valid) continue;
+
+    const { role } = resolveRole(entry.role);
+    quotes.push({
+      matchId,
+      speaker: text(entry.speaker),
+      role,
+      roleLabel: ROLE_LABELS[role],
+      team: text(entry.team),
+      quote: text(entry.quote),
+      at: text(entry.at),
+      source: { name: text(entry.source.name), url: text(entry.source.url) }
+    });
+  }
+
+  // En yeni önce: bant bir güncellik iddiası taşıyor.
+  quotes.sort((left, right) => Date.parse(right.at) - Date.parse(left.at));
+
+  if (!quotes.length) {
+    return {
+      status: "unavailable",
+      quotes: [],
+      reason: "Doğrulanmış bir maç sonu açıklaması kaydedilmedi."
+    };
+  }
+
+  return { status: "ready", quotes: quotes.slice(0, limit) };
+}
+
 module.exports = {
   QUOTE_HAS_NO_EXPIRY,
   REQUIRED_FIELDS,
+  ROLE_LABELS,
+  DEFAULT_ROLE,
+  resolveRole,
   quotesForMatch,
+  latestQuotes,
   validateQuote
 };

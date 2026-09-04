@@ -157,6 +157,47 @@ function checkNoFabricatedZeros(record) {
   }
 }
 
+function checkHeadToHeadIntegrity(record) {
+  const h2h = record.headToHead;
+  if (!h2h) return;
+
+  const homeTally = h2h.home.wins + h2h.home.draws + h2h.home.losses;
+  const awayTally = h2h.away.wins + h2h.away.draws + h2h.away.losses;
+  expect(homeTally === h2h.sampleSize, `${record.fixtureId}: headToHead.home W/D/L (${homeTally}) does not sum to sampleSize (${h2h.sampleSize})`);
+  expect(awayTally === h2h.sampleSize, `${record.fixtureId}: headToHead.away W/D/L (${awayTally}) does not sum to sampleSize (${h2h.sampleSize})`);
+  expect(h2h.meetings.length === h2h.sampleSize, `${record.fixtureId}: headToHead.meetings length does not match sampleSize`);
+  expect(h2h.home.wins === h2h.away.losses, `${record.fixtureId}: headToHead home wins must equal away losses`);
+  expect(h2h.away.wins === h2h.home.losses, `${record.fixtureId}: headToHead away wins must equal home losses`);
+  expect(h2h.home.draws === h2h.away.draws, `${record.fixtureId}: headToHead draw counts must match on both sides`);
+
+  if (h2h.sampleSize === 0) {
+    expect(h2h.lastMeeting === null, `${record.fixtureId}: empty head-to-head sample must not report a fabricated lastMeeting`);
+  }
+
+  const fixtureTime = new Date(record.kickoff).getTime();
+  for (const meeting of h2h.meetings) {
+    const meetingTime = new Date(meeting.kickoff).getTime();
+    expect(meetingTime < fixtureTime, `${record.fixtureId}: headToHead meeting ${meeting.matchId} is not strictly before kickoff (post-match data leaking into a pre-match record)`);
+  }
+}
+
+function checkLeaguePositionAndMomentumIntegrity(record) {
+  for (const side of ["home", "away"]) {
+    const context = record[`${side}Context`];
+    if (!context) continue;
+
+    const league = context.leaguePosition;
+    if (league && league.status === "unavailable") {
+      expect(league.rank === null, `${record.fixtureId}/${side}: unavailable leaguePosition must not report a fabricated rank`);
+    }
+
+    const momentum = context.momentum;
+    if (momentum && momentum.status === "unavailable") {
+      expect(momentum.score === null, `${record.fixtureId}/${side}: unavailable momentum must not report a fabricated score`);
+    }
+  }
+}
+
 function checkNoFabricatedMarketData(record) {
   const text = JSON.stringify(record).toLowerCase();
   for (const key of SUSPICIOUS_KEYS) {
@@ -364,6 +405,8 @@ for (const record of analyses) {
   checkFreezeInvariant(record);
   checkKeyDuelConsistency(record);
   checkNoFabricatedZeros(record);
+  checkHeadToHeadIntegrity(record);
+  checkLeaguePositionAndMomentumIntegrity(record);
   checkNoFabricatedMarketData(record);
   checkNoSecretsOrInternalErrors(record);
   checkSlugLinkable(record);

@@ -142,7 +142,7 @@ function defaultStatus() {
   return {
     schemaVersion: 1,
     timezone: ISTANBUL_TIME_ZONE,
-    schedule: { fullUtc: "0 2 * * *", hourlyUtc: "0 0-1,3-23 * * *", fullLocal: "05:00" },
+    schedule: { fullUtc: "7 2 * * *", hourlyUtc: "7 0-1,3-23 * * *", fullLocal: "~05:00" },
     updatedAt: null,
     lastUpdate: null,
     lastFull: null,
@@ -297,6 +297,12 @@ function sourceSteps(type, providerReady) {
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
+    // MAÇ SONU AÇIKLAMALARI. Maç sonrası saatlerde toplanır; saatlik koşuda
+    // olmalı ki açıklamalar yayımlandıkları gece şeride girsin, ertesi güne
+    // kalmasın. Zaman aşımı diğer beslemelerden uzun: aday başlıkların bir
+    // kısmı için makale gövdesi de çekiliyor (alıntının gerçekten söylendiği
+    // orada doğrulanıyor, bkz. services/quoteHarvest.js).
+    nodeStep("manager-quotes", "sync-manager-quotes.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("official-lineups", "refresh-official-lineups.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("provider-identities", "backfill-provider-ids.mjs", ["--apply"], { kind: "source", source: "api-football", timeoutMs: 5 * 60 * 1000, skip: noProvider }),
     nodeStep("match-results", "sync-match-results.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
@@ -321,6 +327,11 @@ function fullMaintenanceSteps(providerReady) {
     // bayrağı ancak lig kimliği doğrulandıktan sonra güvenilir olur.
     nodeStep("league-standings", "sync-league-standings.mjs", ["--apply", "--json"], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 5 * 60 * 1000, skip: noProvider }),
     nodeStep("super-lig-squads", "sync-super-lig-squads.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 12 * 60 * 1000, skip: noProvider }),
+    // Türk kulüplerinin data/matches.json'daki UEFA kupası rakiplerinin
+    // kadrosu — super-lig-squads'tan SONRA çalışır: "bilinen takım" listesi
+    // (data/teams.json) o adımda güncellenmiş olur, rakip tespiti bu listeye
+    // bakar. Kapsamı dar: onlarca değil, birkaç rakip takım.
+    nodeStep("international-opponents", "sync-international-opponents.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000, skip: noProvider }),
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
     nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--incomplete-profiles", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
@@ -378,10 +389,20 @@ function hourlyBuildSteps(diff) {
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
     nodeStep("render-news-pages", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
+    // EN canlı skor/puan durumu/sonuçlar sayfaları (`en/live-scores.html`,
+    // `en/standings.html`, `en/results.html`, `en/todays-matches.html`,
+    // `en/match-centre.html`, `en/momentum.html`) aynı data/*.json'dan
+    // üretiliyor ama önceden yalnızca günlük tam derlemede yenileniyordu:
+    // TR tarafı saat başı tazelenirken EN tarafı bir sonraki tam derlemeye
+    // kadar (~24 saate kadar) eski skor/durum gösteriyordu. Buradaki adım
+    // TR ile aynı kaynaktan aynı anda üretildiği için ikisi arasında ek
+    // sağlayıcı isteği veya senkron gecikmesi yok.
+    nodeStep("render-en-pages", "generate-en-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    nodeStep("render-broadcast-schedule", "generate-broadcast-schedule-page.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
     nodeStep("render-league-pages", "generate-league-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
@@ -404,9 +425,9 @@ function hourlyBuildSteps(diff) {
   return steps;
 }
 
-function githubRunUrl() {
-  if (!process.env.GITHUB_SERVER_URL || !process.env.GITHUB_REPOSITORY || !process.env.GITHUB_RUN_ID) return null;
-  return `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+function githubRunUrl(env = process.env) {
+  if (!env.GITHUB_SERVER_URL || !env.GITHUB_REPOSITORY || !env.GITHUB_RUN_ID) return null;
+  return `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
 }
 
 function appendGithubSummary(record) {
@@ -560,6 +581,51 @@ async function main() {
   if (criticalFailure) process.exitCode = 1;
 }
 
+/**
+ * main() DIŞINDA PATLAYAN HATA İÇİN SAF KAYIT — writeStatus() ÖNCEDEN
+ * yalnızca normal dönüşte çalışıyordu; main() beklenmeyen bir yerde patlarsa
+ * (ör. validateCiContext, kilit alma, ya da runStep'in kendi try/catch'i
+ * dışında kalan bir hata) koşu data/update-status.json'a hiç yazılmıyordu —
+ * panoda "son çalışma" zamanı ilerlemeyi durdurup sessizce eskiyordu, gerçek
+ * hata sebebi de hiçbir yerde görünmüyordu.
+ *
+ * Mevcut durum sözlüğüyle ("success"/"partial"/"failed"/"skipped") aynı
+ * kalır — yeni bir değer, onu tanımayan tüketicilerde (ör. panonun .failed
+ * CSS sınıfı) sessizce renksiz kalırdı. errors[0].step "main" olması, normal
+ * bir adım hatasından ayrımı zaten taşıyor. Saf tutulup dışa açılmasının
+ * sebebi: main() gerçek dosya/ağ yan etkileri olmadan test edilemez, bu
+ * kayıt şekli edilebilir.
+ */
+function buildCrashRecord(error, options = {}) {
+  const argv = options.argv || process.argv.slice(2);
+  const env = options.env || process.env;
+  const now = options.now || new Date();
+  let type = "unknown";
+  try { type = parseArgs(argv).type || "unknown"; } catch { /* argv okunamadı, "unknown" kalır */ }
+  const finishedAt = now.toISOString();
+  return {
+    id: String(env.GITHUB_RUN_ID || `${now.getTime()}-${process.pid}`),
+    dedupeKey: dedupeKey(type === "unknown" ? "hourly" : type, now),
+    type,
+    trigger: env.GITHUB_EVENT_NAME || "local",
+    timezone: ISTANBUL_TIME_ZONE,
+    startedAt: finishedAt,
+    finishedAt,
+    durationMs: 0,
+    status: "failed",
+    sourceControl: {
+      repository: env.GITHUB_REPOSITORY || null,
+      commit: env.GITHUB_SHA || null,
+      runUrl: githubRunUrl(env)
+    },
+    sourcesChecked: [],
+    counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 },
+    changedDataFiles: [],
+    errors: [{ step: "main", source: null, message: redact(error && (error.message || String(error))) }],
+    steps: []
+  };
+}
+
 const isMain = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 if (isMain) {
   try {
@@ -567,6 +633,11 @@ if (isMain) {
   } catch (error) {
     console.error(`[scheduled-update] fatal: ${redact(error.stack || error.message)}`);
     process.exitCode = 1;
+    try {
+      writeStatus(buildCrashRecord(error));
+    } catch (writeError) {
+      console.error(`[scheduled-update] status write after crash also failed: ${redact(writeError.message || String(writeError))}`);
+    }
   } finally {
     if (acquiredLockHandle !== null) {
       try { fs.closeSync(acquiredLockHandle); } catch { /* no-op */ }
@@ -575,4 +646,4 @@ if (isMain) {
   }
 }
 
-export { collectionSnapshot, dedupeKey, snapshotDiff };
+export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff };

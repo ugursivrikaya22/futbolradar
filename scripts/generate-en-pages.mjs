@@ -35,6 +35,7 @@ import {
 import { transferTypeEn } from "./lib/enTicker.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
+import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -273,7 +274,7 @@ function fixtureCard(match) {
     homeScore: hasScore ? Number(match.score.home) : null,
     awayScore: hasScore ? Number(match.score.away) : null,
     formHtml: "",
-    actionHref: "./live-scores.html",
+    actionHref: "./live-football-scores.html",
     withMatchClick: false
   });
 }
@@ -289,6 +290,21 @@ function matchList(list, emptyKey = "common.noData") {
 /** Ortak bileşenin ince sarmalayıcısı: pozisyonel argümanları korur. */
 function sectionHead(kicker, titleId, title, lead, linkHref, linkText) {
   return sharedSectionHead({ locale: LOCALE, kicker, titleId, title, lead, linkHref, linkText });
+}
+
+/**
+ * ANA SAYFA "STANDINGS" SEKMELİ WIDGET'I (EN) — TR ana sayfasıyla (bkz.
+ * `prerender-core-pages.mjs#staticStandingsTabsSection`) AYNI paylaşılan
+ * fonksiyonu çağırır, yalnızca `locale: "en"` ve İngilizce sekme sırası
+ * (`EN_TAB_ORDER`, `scripts/lib/standingsCatalog.mjs`) farklıdır. Bu sayfa
+ * `en/` klasöründe yaşadığı için `base: "./"` hedef sayfalarla (ör.
+ * `en/premier-league-standings.html`) aynı klasörü işaret eder.
+ */
+function standingsTabsSection() {
+  return `<section class="container section standings-tabs-section" id="en-standings-tabs" aria-labelledby="en-standings-tabs-title">
+        ${sectionHead("9 Competitions", "en-standings-tabs-title", "Standings", "Süper Lig, the major European leagues and UEFA competitions — current tables in one place.", "", "")}
+        <div class="standings-tabs">${renderStandingsTabsInner("en", "./")}</div>
+      </section>`;
 }
 
 /**
@@ -348,7 +364,7 @@ function sectionLinks() {
         <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar</span><h2 id="en-sections-title">Explore FutbolRadar in English</h2></div></div>
         <div class="trend-link-grid">
           <a href="./todays-matches.html"><span>Fixtures</span><strong>Today's Matches</strong><p>Every match played today, kick-off times in Türkiye time.</p></a>
-          <a href="./live-scores.html"><span>Live</span><strong>Live Scores</strong><p>Match states and scores, only shown as live once verified.</p></a>
+          <a href="./live-football-scores.html"><span>Live</span><strong>Live Scores</strong><p>Match states and scores, only shown as live once verified.</p></a>
           <a href="./standings.html"><span>Table</span><strong>Süper Lig Standings</strong><p>The full Trendyol Süper Lig table.</p></a>
           <a href="./analysis.html"><span>Results</span><strong>Match Analysis</strong><p>Verified results for Turkish clubs at home and in Europe.</p></a>
           <a href="./teams.html"><span>Clubs</span><strong>Süper Lig Teams</strong><p>All 18 clubs with league position and form.</p></a>
@@ -555,7 +571,7 @@ function liveScoresTicker() {
  */
 function quickStatsStrip(counts) {
   const defs = [
-    { key: "live", label: "Live", href: "./live-scores.html", modifier: "is-live", valueClass: "live-number" },
+    { key: "live", label: "Live", href: "./live-football-scores.html", modifier: "is-live", valueClass: "live-number" },
     { key: "upcoming", label: "Upcoming", href: "./todays-matches.html", modifier: "", valueClass: "" },
     { key: "finished", label: "Finished", href: "./todays-matches.html", modifier: "", valueClass: "" },
     { key: "analysisReady", label: "Analysis ready", href: "./analysis.html", modifier: "is-ready", valueClass: "" },
@@ -620,7 +636,7 @@ function featuredCarousel() {
     return `<div class="featured-fixture">
       <div class="featured-fixture-head"><span class="featured-fixture-league">Live score board</span><span>Checking the schedule</span></div>
       <div class="home-match-command-empty"><strong>The match schedule is loading.</strong><span>Today's verified fixtures will be listed here.</span></div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
     </div>${stats}`;
   }
 
@@ -653,7 +669,7 @@ function featuredCarousel() {
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
         ${side(match.awayTeam)}
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
     </div>`;
   };
 
@@ -683,7 +699,7 @@ function heroSection() {
             <p class="hero-value-prop">Anyone can give you the score; we tell you why the match ended that way.</p>
             <p class="hero-copy">Turkish football first: the Trendyol Süper Lig, plus Galatasaray, Fenerbahçe, Beşiktaş and Trabzonspor in Europe. Every number comes from verified data — nothing is invented.</p>
             <div class="hero-actions">
-              <a class="button primary" href="./live-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a>
+              <a class="button primary" href="./live-football-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a>
               <a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a>
             </div>
           </div>
@@ -793,7 +809,7 @@ function dailyHeadlinesSection() {
     // Kancası olmayan başlık düşer — Türkçe taraftaki kuralın aynısı.
     if (!hook) return "";
 
-    const href = headline.state === "live" ? "./live-scores.html" : "./todays-matches.html";
+    const href = headline.state === "live" ? "./live-football-scores.html" : "./todays-matches.html";
     return `<a class="daily-headline${headline.state === "live" ? " is-live" : ""}" href="${href}" data-headline-match="${escapeHtml(headline.matchId)}" data-headline-state="${escapeHtml(headline.state)}">
       <span class="daily-headline-index" aria-hidden="true"></span>
       <span class="daily-headline-body">
@@ -854,8 +870,8 @@ function todaySection() {
   // SÜPER LİG BUGÜN ŞERİDİ — Türkçe ana sayfayla AYNI bileşen
   // (scripts/lib/matchCards.mjs). EN sayfalarında maç başına ayrı bir
   // ayrıntı sayfası yok (aşağıdaki genel ızgara da aynı nedenle her
-  // karta `./live-scores.html`e bağlanıyor); şerit de aynı kuralı izler.
-  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: () => "./live-scores.html" });
+  // karta `./live-football-scores.html`e bağlanıyor); şerit de aynı kuralı izler.
+  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: () => "./live-football-scores.html" });
 
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
@@ -1133,15 +1149,17 @@ function officialLineupAlertsSection() {
 
 function homePage() {
   // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
-  //   hero → köşe yazıları → günün başlıkları → bugünün maçları → günün
-  //   radar maçı → son maç raporu → son raporlar → oyuncu radarı → trend
-  //   takımlar → hızlı gezinme → transfer radarı → haber akışı → arşiv →
-  //   kaynak şeridi
+  //   hero → puan durumları (9 sekme) → köşe yazıları → günün başlıkları →
+  //   bugünün maçları → günün radar maçı → son maç raporu → son raporlar →
+  //   oyuncu radarı → trend takımlar → hızlı gezinme → transfer radarı →
+  //   haber akışı → arşiv → kaynak şeridi
   // Tahmin anketi prodüksiyonda kapatıldı (gerekçe: scripts/lib/postprocessChain.mjs),
   // sırada artık yok.
-  // Puan tablosu özeti Türkçe ana sayfada yok; İngilizce tarafta VAR olan
-  // tek tablo girişi olduğu için kaldırılmadı, arşivin ardına alındı.
+  // Puan tablosu artık arşivin ardındaki tek-lig özeti DEĞİL: canlı skorun
+  // hemen altında, 9 yarışmalı sekmeli widget (`standingsTabsSection`) —
+  // TR ana sayfasıyla (prerender-core-pages.mjs) aynı konum kuralı.
   const body = `      ${heroSection()}
+      ${standingsTabsSection()}
       ${officialLineupAlertsSection()}
       ${columnsSection()}
       ${dailyHeadlinesSection()}
@@ -1152,11 +1170,7 @@ function homePage() {
       ${quickNavSection()}
       ${transferWatchSection()}
       ${newsSection()}
-      ${archiveSection()}
-      <section class="container section" aria-labelledby="en-standings-title">
-        ${sectionHead("League table", "en-standings-title", "Trendyol Süper Lig standings", "", "./standings.html", label("common.viewAll"))}
-        ${standingsTable(standings.slice(0, 6))}
-      </section>`;
+      ${archiveSection()}`;
 
   return pageShell({
     routeKey: "home",
@@ -1193,8 +1207,8 @@ ${sectionLinks()}`;
     trPath: "bugunun-maclari.html",
     enPath: "en/todays-matches.html",
     heroKicker: "Fixtures",
-    heroTitle: "Today's Football Matches",
-    heroLead: "Every match scheduled for today, led by the Turkish Süper Lig and Turkish clubs in Europe.",
+    heroTitle: "Football Matches Today",
+    heroLead: "Today's football fixtures, led by the Turkish Süper Lig and Turkish clubs in Europe — every football match played today, kick-off times in Türkiye time.",
     heroMeta: todayLabel,
     body,
     schema: schemaFor("todaysMatches", "en/todays-matches.html", "CollectionPage")
@@ -1230,13 +1244,13 @@ ${sectionLinks()}`;
   return pageShell({
     routeKey: "liveScores",
     trPath: "canli-skor.html",
-    enPath: "en/live-scores.html",
+    enPath: "en/live-football-scores.html",
     heroKicker: "Live",
     heroTitle: "Live Football Scores",
-    heroLead: "Live scores and match states for the Turkish Süper Lig and European competitions, in Türkiye time.",
+    heroLead: "Live football scores and live soccer scores for the Turkish Süper Lig and European competitions — match states and minutes, in Türkiye time.",
     heroMeta: todayLabel,
     body,
-    schema: schemaFor("liveScores", "en/live-scores.html", "CollectionPage")
+    schema: schemaFor("liveScores", "en/live-football-scores.html", "CollectionPage")
   });
 }
 
@@ -1350,8 +1364,8 @@ ${sectionLinks()}`;
     trPath: "mac-sonuclari.html",
     enPath: "en/results.html",
     heroKicker: "Results",
-    heroTitle: "Turkish Football Results",
-    heroLead: "Confirmed final scores from the Trendyol Süper Lig and Turkish clubs in European competitions.",
+    heroTitle: "Football Results Today",
+    heroLead: "Live match results and football results today from the Trendyol Süper Lig and Turkish clubs in European competitions — confirmed final scores only.",
     heroMeta: `${results.length} matches`,
     body,
     schema: schemaFor("results", "en/results.html", "CollectionPage")
@@ -1397,7 +1411,7 @@ ${sectionLinks()}`;
 function matchCentrePage() {
   const screens = [
     { href: "./todays-matches.html", kicker: "Fixtures", title: "Today's Matches", copy: "Every match scheduled for today with kick-off times." },
-    { href: "./live-scores.html", kicker: "Live", title: "Live Scores", copy: "Scores and match states, never shown as live without verification." },
+    { href: "./live-football-scores.html", kicker: "Live", title: "Live Scores", copy: "Scores and match states, never shown as live without verification." },
     { href: "./results.html", kicker: "Results", title: "Match Results", copy: "Confirmed final scores from Turkish football." },
     { href: "./analysis.html", kicker: "Analysis", title: "Match Analysis", copy: "Statistical breakdowns of played matches." },
     { href: "./fixtures.html", kicker: "Season", title: "Süper Lig Fixtures", copy: "The full league fixture list, week by week." },

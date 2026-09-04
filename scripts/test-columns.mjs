@@ -316,6 +316,23 @@ function column(overrides = {}) {
   assert.match(detail, /name="twitter:card" content="summary_large_image"/, "X kart türü belirtilmeli");
   assert.match(detail, /name="twitter:title" content="Örnek yazı \| FutbolRadar"/, "X kart başlığı markalı olmalı");
 
+  // ── İç bağlantı notasyonu: `[metin](hedef.html)` ─────────────────────────
+  const linked = presentColumn(column({
+    body: [
+      "[Süper Lig](super-lig-puan-durumu.html)'de bir gelişme.",
+      "[Zararlı bağlantı](javascript:alert(1)) işlenmemeli.",
+      "Eşleşmeyen [köşeli parantez metni."
+    ]
+  }));
+  const linkedDetail = columnPageHtml(linked);
+  assert.match(
+    linkedDetail,
+    /<a href="\.\.\/super-lig-puan-durumu\.html">Süper Lig<\/a>&#39;de bir gelişme\./,
+    "gövdedeki [metin](hedef.html) iç bağlantıya çevrilmeli ve base ile önekli olmalı"
+  );
+  assert.ok(!/href="[^"]*javascript:/.test(linkedDetail), "yalnızca .html ile biten göreli hedeflere izin verilmeli");
+  assert.match(linkedDetail, /Eşleşmeyen \[köşeli parantez metni\./, "eşleşmeyen köşeli parantez metni olduğu gibi kalmalı");
+
   const authors = groupAuthors([presented]);
   assert.equal(authors.length, 1);
   const archive = authorPageHtml(authors[0]);

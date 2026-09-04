@@ -197,7 +197,16 @@ const cssFeatureMarkers = [
   "archive-table",
   "archive-squad-list",
   "archive-stat",
-  "archive-stat-grid"
+  "archive-stat-grid",
+  "player-score-card",
+  "player-score-components",
+  "player-form-chart",
+  "player-stat-grid",
+  "player-match-table",
+  "player-scouting-list",
+  "player-peer-card",
+  "player-transfer-timeline",
+  "player-empty-block"
 ];
 const failures = [];
 
@@ -252,7 +261,7 @@ function checkVercelFunctionLimit() {
 }
 
 function checkPublicMirrors() {
-  for (const file of ["page.css", "app.js", "site.js", "analytics.js", "performance-loader.js", "site.webmanifest"]) {
+  for (const file of ["page.css", "app.js", "player-profile.js", "site.js", "analytics.js", "performance-loader.js", "site.webmanifest"]) {
     const rootFile = path.join(root, file);
     const publicFile = path.join(root, "public", file);
     if (!fs.existsSync(rootFile) || !fs.existsSync(publicFile)) {
@@ -265,9 +274,29 @@ function checkPublicMirrors() {
   }
 }
 
+const playerProfileMarkers = [
+  "renderProfileHtml",
+  "buildPlayerProfile",
+  "credibilitySection",
+  "heroSection",
+  "scoreSection",
+  "formSection",
+  "analysisSection",
+  "seasonSection",
+  "recentSection",
+  "peerSection",
+  "SECTION_RENDERERS",
+  "UNVERIFIED_SECTIONS"
+];
+
 function checkFeatureMarkers() {
   const appJs = fs.readFileSync(path.join(root, "app.js"), "utf8");
   const pageCss = fs.readFileSync(path.join(root, "page.css"), "utf8");
+  const profileJs = fs.readFileSync(path.join(root, "player-profile.js"), "utf8");
+
+  for (const marker of playerProfileMarkers) {
+    expect(profileJs.includes(marker), `player-profile.js: missing feature marker ${marker}`);
+  }
 
   for (const marker of appFeatureMarkers) {
     expect(appJs.includes(marker), `app.js: missing feature marker ${marker}`);
@@ -466,6 +495,15 @@ function checkSeoAndLinks() {
     if (description) descriptions.set(description, (descriptions.get(description) || 0) + 1);
 
     if (playerProfilePages.includes(page)) {
+      expect(html.includes("player-profile.js"), `${page}: missing player profile module script`);
+      expect(html.includes('data-api-target="player-detail"'), `${page}: missing player profile hydration target`);
+      expect(html.includes('data-prerendered="1"'), `${page}: player profile must be prerendered for SEO`);
+      // Doğrulanmamış kayıtta ölçüm bölümleri BASILMAZ; beklenen tek şey
+      // gerekçe kartı. Doğrulanmış kayıtta kimlik ızgarası her zaman çizilir.
+      expect(
+        html.includes("Doğrulanmış veri bekleniyor") || html.includes("Kimlik ve Kulüp"),
+        `${page}: player profile body missing`
+      );
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
       expect(html.includes("../karsilastirma/"), `${page}: missing static comparison page href`);
       expect(html.includes('"@type": "Person"'), `${page}: missing Person schema`);

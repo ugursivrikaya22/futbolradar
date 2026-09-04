@@ -14,7 +14,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
-const { PLAIN_EXTERNAL_REL, SOURCE_LINK_REL } = require("../../services/sourceLinks.js");
+const { PLAIN_EXTERNAL_REL, SOURCE_LINK_REL, isExternalUrl } = require("../../services/sourceLinks.js");
 // Sözlük, rota eşlemesi ve dil yardımcıları tek yerde: services/i18n.js.
 const { NAV_KEYS, normalizeLocale, t } = require("../../services/i18n.js");
 
@@ -249,7 +249,10 @@ export function newsTicker(options = {}) {
 
   const renderItem = (item) => {
     const href = item.href ? item.href : allHref;
-    const external = /^https?:/i.test(href);
+    // Mutlak bir futbolradar.com bağlantısı (news.json'dan gelen haber
+    // URL'i gibi) İÇ sayılır: göreli yol gibi yeni sekme/nofollow almaz.
+    // Yalnızca gerçekten sitenin dışına çıkan bağlantı kaynak künyesidir.
+    const external = /^https?:/i.test(href) && isExternalUrl(href);
     // Banttaki dış bağlantı bir kaynak künyesidir: alıntı, tavsiye değil.
     const rel = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
     const label = item.label ? `<span class="news-ticker-tag">${escapeHtml(item.label)}</span>` : "";
@@ -378,7 +381,7 @@ function bottomNav(base, locale) {
   const items = [
     { key: "bottomNav.home", href: en ? "en/index.html" : "index.html", icon:
       '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>' },
-    { key: "bottomNav.live", href: en ? "en/live-scores.html" : "canli-skor.html", icon:
+    { key: "bottomNav.live", href: en ? "en/live-football-scores.html" : "canli-skor.html", icon:
       '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2.5"/>' },
     { key: "bottomNav.matches", href: en ? "en/todays-matches.html" : "bugunun-maclari.html", icon:
       '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/>' },

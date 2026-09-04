@@ -14,6 +14,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/public/:path*",
+      "destination": "https://www.futbolradar.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
@@ -57,6 +62,86 @@
       "permanent": true
     },
     {
+      "source": "/oyuncular/o-mimovia-fenerbahce",
+      "destination": "/oyuncular/o-mimovic-fenerbahce.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/o-mimovia-fenerbahce.html",
+      "destination": "/oyuncular/o-mimovic-fenerbahce.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/o-mimovia-fenerbahce",
+      "destination": "/en/player/o-mimovic-fenerbahce.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/o-mimovia-fenerbahce.html",
+      "destination": "/en/player/o-mimovic-fenerbahce.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/b-baa-kan-trabzonspor",
+      "destination": "/oyuncular/b-baskan-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/b-baa-kan-trabzonspor.html",
+      "destination": "/oyuncular/b-baskan-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/b-baa-kan-trabzonspor",
+      "destination": "/en/player/b-baskan-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/b-baa-kan-trabzonspor.html",
+      "destination": "/en/player/b-baskan-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/c-inao-oulaa-trabzonspor",
+      "destination": "/oyuncular/c-inao-oulai-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/c-inao-oulaa-trabzonspor.html",
+      "destination": "/oyuncular/c-inao-oulai-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/c-inao-oulaa-trabzonspor",
+      "destination": "/en/player/c-inao-oulai-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/c-inao-oulaa-trabzonspor.html",
+      "destination": "/en/player/c-inao-oulai-trabzonspor.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/u-ii-slamoa-lu-genclerbirligi-s-k",
+      "destination": "/oyuncular/u-islamoglu-genclerbirligi-s-k.html",
+      "permanent": true
+    },
+    {
+      "source": "/oyuncular/u-ii-slamoa-lu-genclerbirligi-s-k.html",
+      "destination": "/oyuncular/u-islamoglu-genclerbirligi-s-k.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/u-ii-slamoa-lu-genclerbirligi-s-k",
+      "destination": "/en/player/u-islamoglu-genclerbirligi-s-k.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/player/u-ii-slamoa-lu-genclerbirligi-s-k.html",
+      "destination": "/en/player/u-islamoglu-genclerbirligi-s-k.html",
+      "permanent": true
+    },
+    {
       "source": "/mac-analizi-galatasaray-fenerbahce.html",
       "destination": "/derbi-radari.html",
       "permanent": true
@@ -89,13 +174,91 @@
     {
       "source": "/haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html",
       "destination": "/haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi",
-      "permanent": false
+      "permanent": true
+    },
+    {
+      "source": "/en/live-scores.html",
+      "destination": "/en/live-football-scores.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/live-scores",
+      "destination": "/en/live-football-scores.html",
+      "permanent": true
     }
   ],
   "rewrites": [
     {
       "source": "/super-lig-puan-durumu",
       "destination": "/super-lig-puan-durumu.html"
+    },
+    {
+      "source": "/premier-lig-puan-durumu",
+      "destination": "/premier-lig-puan-durumu.html"
+    },
+    {
+      "source": "/la-liga-puan-durumu",
+      "destination": "/la-liga-puan-durumu.html"
+    },
+    {
+      "source": "/serie-a-puan-durumu",
+      "destination": "/serie-a-puan-durumu.html"
+    },
+    {
+      "source": "/bundesliga-puan-durumu",
+      "destination": "/bundesliga-puan-durumu.html"
+    },
+    {
+      "source": "/ligue-1-puan-durumu",
+      "destination": "/ligue-1-puan-durumu.html"
+    },
+    {
+      "source": "/sampiyonlar-ligi-puan-durumu",
+      "destination": "/sampiyonlar-ligi-puan-durumu.html"
+    },
+    {
+      "source": "/avrupa-ligi-puan-durumu",
+      "destination": "/avrupa-ligi-puan-durumu.html"
+    },
+    {
+      "source": "/konferans-ligi-puan-durumu",
+      "destination": "/konferans-ligi-puan-durumu.html"
+    },
+    {
+      "source": "/en/super-lig-standings",
+      "destination": "/en/super-lig-standings.html"
+    },
+    {
+      "source": "/en/premier-league-standings",
+      "destination": "/en/premier-league-standings.html"
+    },
+    {
+      "source": "/en/la-liga-standings",
+      "destination": "/en/la-liga-standings.html"
+    },
+    {
+      "source": "/en/serie-a-standings",
+      "destination": "/en/serie-a-standings.html"
+    },
+    {
+      "source": "/en/bundesliga-standings",
+      "destination": "/en/bundesliga-standings.html"
+    },
+    {
+      "source": "/en/ligue-1-standings",
+      "destination": "/en/ligue-1-standings.html"
+    },
+    {
+      "source": "/en/champions-league-standings",
+      "destination": "/en/champions-league-standings.html"
+    },
+    {
+      "source": "/en/europa-league-standings",
+      "destination": "/en/europa-league-standings.html"
+    },
+    {
+      "source": "/en/conference-league-standings",
+      "destination": "/en/conference-league-standings.html"
     },
     {
       "source": "/form-tablosu/super-lig",
@@ -126,8 +289,8 @@
       "destination": "/en/index.html"
     },
     {
-      "source": "/en/live-scores",
-      "destination": "/en/live-scores.html"
+      "source": "/en/live-football-scores",
+      "destination": "/en/live-football-scores.html"
     },
     {
       "source": "/en/todays-matches",
@@ -218,6 +381,10 @@
       "destination": "/bugunun-maclari.html"
     },
     {
+      "source": "/bugunun-maclari-hangi-kanalda",
+      "destination": "/bugunun-maclari-hangi-kanalda.html"
+    },
+    {
       "source": "/canli-skor",
       "destination": "/canli-skor.html"
     },
@@ -289,6 +456,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/player-profile.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
         }
       ]
     },

@@ -36,7 +36,7 @@ export const LIVE_TICKER_PAGES = [
   "arsiv.html",
   "kose-yazilari.html",
   "en/todays-matches.html",
-  "en/live-scores.html",
+  "en/live-football-scores.html",
   "en/analysis.html",
   "en/teams.html",
   "en/standings.html"
@@ -105,7 +105,8 @@ export function liveTickerItem(item, options = {}) {
  * gizlenir — bant boşken sayfada içeriksiz bir çubuk asılı kalmaz.
  *
  * Süre öğe başına 5sn, 18-45sn arasında — transfer bandının 9sn/34-80sn'ine
- * göre belirgin biçimde daha hızlı.
+ * göre belirgin biçimde daha hızlı. Tamamı /1.2 ile bölünür (%20 daha hızlı
+ * kaydırma — süre kısaldıkça hız aynı oranda artar).
  */
 export function liveTickerTrack(records, options = {}) {
   const { locale, base } = options;
@@ -117,7 +118,7 @@ export function liveTickerTrack(records, options = {}) {
           </div>`;
   }
 
-  const duration = Math.max(18, Math.min(45, items.length * 5));
+  const duration = Math.max(18, Math.min(45, items.length * 5)) / 1.2;
   const primary = items.map((item) => liveTickerItem(item, { duplicate: false, base })).join("");
   const duplicate = items.map((item) => liveTickerItem(item, { duplicate: true, base })).join("");
   return `<div class="live-scores-ticker__track" style="--live-ticker-duration:${duration}s" data-live-scores-track>
