@@ -416,9 +416,9 @@ function hourlyBuildSteps(diff) {
   return steps;
 }
 
-function githubRunUrl() {
-  if (!process.env.GITHUB_SERVER_URL || !process.env.GITHUB_REPOSITORY || !process.env.GITHUB_RUN_ID) return null;
-  return `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+function githubRunUrl(env = process.env) {
+  if (!env.GITHUB_SERVER_URL || !env.GITHUB_REPOSITORY || !env.GITHUB_RUN_ID) return null;
+  return `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
 }
 
 function appendGithubSummary(record) {
@@ -572,6 +572,51 @@ async function main() {
   if (criticalFailure) process.exitCode = 1;
 }
 
+/**
+ * main() DIŞINDA PATLAYAN HATA İÇİN SAF KAYIT — writeStatus() ÖNCEDEN
+ * yalnızca normal dönüşte çalışıyordu; main() beklenmeyen bir yerde patlarsa
+ * (ör. validateCiContext, kilit alma, ya da runStep'in kendi try/catch'i
+ * dışında kalan bir hata) koşu data/update-status.json'a hiç yazılmıyordu —
+ * panoda "son çalışma" zamanı ilerlemeyi durdurup sessizce eskiyordu, gerçek
+ * hata sebebi de hiçbir yerde görünmüyordu.
+ *
+ * Mevcut durum sözlüğüyle ("success"/"partial"/"failed"/"skipped") aynı
+ * kalır — yeni bir değer, onu tanımayan tüketicilerde (ör. panonun .failed
+ * CSS sınıfı) sessizce renksiz kalırdı. errors[0].step "main" olması, normal
+ * bir adım hatasından ayrımı zaten taşıyor. Saf tutulup dışa açılmasının
+ * sebebi: main() gerçek dosya/ağ yan etkileri olmadan test edilemez, bu
+ * kayıt şekli edilebilir.
+ */
+function buildCrashRecord(error, options = {}) {
+  const argv = options.argv || process.argv.slice(2);
+  const env = options.env || process.env;
+  const now = options.now || new Date();
+  let type = "unknown";
+  try { type = parseArgs(argv).type || "unknown"; } catch { /* argv okunamadı, "unknown" kalır */ }
+  const finishedAt = now.toISOString();
+  return {
+    id: String(env.GITHUB_RUN_ID || `${now.getTime()}-${process.pid}`),
+    dedupeKey: dedupeKey(type === "unknown" ? "hourly" : type, now),
+    type,
+    trigger: env.GITHUB_EVENT_NAME || "local",
+    timezone: ISTANBUL_TIME_ZONE,
+    startedAt: finishedAt,
+    finishedAt,
+    durationMs: 0,
+    status: "failed",
+    sourceControl: {
+      repository: env.GITHUB_REPOSITORY || null,
+      commit: env.GITHUB_SHA || null,
+      runUrl: githubRunUrl(env)
+    },
+    sourcesChecked: [],
+    counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 },
+    changedDataFiles: [],
+    errors: [{ step: "main", source: null, message: redact(error && (error.message || String(error))) }],
+    steps: []
+  };
+}
+
 const isMain = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 if (isMain) {
   try {
@@ -579,6 +624,11 @@ if (isMain) {
   } catch (error) {
     console.error(`[scheduled-update] fatal: ${redact(error.stack || error.message)}`);
     process.exitCode = 1;
+    try {
+      writeStatus(buildCrashRecord(error));
+    } catch (writeError) {
+      console.error(`[scheduled-update] status write after crash also failed: ${redact(writeError.message || String(writeError))}`);
+    }
   } finally {
     if (acquiredLockHandle !== null) {
       try { fs.closeSync(acquiredLockHandle); } catch { /* no-op */ }
@@ -587,4 +637,4 @@ if (isMain) {
   }
 }
 
-export { collectionSnapshot, dedupeKey, snapshotDiff };
+export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff };

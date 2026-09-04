@@ -191,7 +191,12 @@
     return {
       data: unwrapPayload(payload),
       source: payload && payload.source ? payload.source : "",
-      updatedAt: payload && payload.updatedAt ? payload.updatedAt : ""
+      updatedAt: payload && payload.updatedAt ? payload.updatedAt : "",
+      // `meta` (sunucunun services/dataFreshness.js ile hesapladığı
+      // freshness bayrağı dahil) burada düşürülüyordu: updateUpdatedAtLabel
+      // zaten `result.meta && result.meta.freshness` okumaya hazırdı ama
+      // hep undefined alıyordu, o yüzden bayat veri uyarısı hiç çıkmıyordu.
+      meta: payload && payload.meta ? payload.meta : null
     };
   }
 
