@@ -150,6 +150,30 @@ project's Production environment variables first. The most common causes are:
 After changing Vercel variables, redeploy the Production deployment. A refresh
 alone is not enough for serverless functions to see new values.
 
+## Daily health check
+
+`/api/daily-health-check` reports page reachability, stale match-card and
+stale ticker-item counts (read-only — it never deletes anything, see
+`services/dailyHealthCheckService.js`), and live-score latency stats read
+from Supabase. It requires a shared secret:
+
+```text
+curl -H "x-health-check-secret: $DAILY_HEALTH_CHECK_SECRET" \
+  https://www.futbolradar.com/api/daily-health-check
+```
+
+- `401 UNAUTHORIZED`: secret missing or wrong.
+- `503 HEALTH_CHECK_NOT_CONFIGURED`: `DAILY_HEALTH_CHECK_SECRET` is not set
+  in this environment's Production variables yet.
+
+`.github/workflows/daily-health-check.yml` runs `scripts/daily-health-check.mjs`
+every day at 05:05 Europe/Istanbul. That script does the actual cleanup —
+pruning stale pre-match analyses and ticker items older than three days —
+locally in the checkout (so the deletions become a commit), then calls this
+endpoint with the same secret to read live production numbers for the page
+check and latency section, and writes the merged result to
+`data/daily-health-check-report.json`.
+
 ## Post-deploy QA
 
 Run local static/API checks before pushing:

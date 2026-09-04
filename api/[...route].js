@@ -14,6 +14,7 @@ const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
 const { handleMatchLineup } = require("../server/matchLineupRoute");
 const { handleLiveLatency } = require("../server/liveLatencyRoute");
+const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
 const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const {
   DEFAULT_TIMEOUT_MS,
@@ -344,6 +345,13 @@ module.exports = async function handler(req, res) {
   // ve hız sınırını taşıyor, alttaki tek politikalı GET kapısına girmiyor.
   if (routeName(req) === "live-latency") {
     return handleLiveLatency(req, res);
+  }
+
+  // Günlük sağlık kontrolü kendi sır doğrulamasını ve önbellek politikasını
+  // taşır (bkz. server/dailyHealthCheckRoute.js); alttaki genel kapılara
+  // sokulmaz.
+  if (routeName(req) === "daily-health-check") {
+    return handleDailyHealthCheck(req, res);
   }
 
   if (routeName(req) === "live-score-stream") {
