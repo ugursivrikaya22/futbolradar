@@ -61,8 +61,20 @@ function escapeHtml(value) {
  * gövdeye HTML enjekte edilebilirdi. Bu yüzden desen, kaçırma sonrası
  * metinde kalan yıldızlara bakar; `<` ve `>` çoktan zararsızlaştırılmıştır.
  */
-function inlineText(value) {
-  return escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+/**
+ * İÇ BAĞLANTI NOTASYONU: `[metin](hedef.html)`.
+ *
+ * Yalnızca site içi, göreli hedeflere izin verilir: harf/rakamla başlar,
+ * `:` taşımaz (böylece `javascript:`/`http:` gibi şemalar giremez) ve `.html`
+ * ile biter. `base` derinliğe göre önekleniyor — aynı `base` her <a> için
+ * zaten kullanılıyor. Eşleşmeyen köşeli parantez metni olduğu gibi kalır.
+ */
+function inlineText(value, base = "") {
+  const bold = escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  return bold.replace(
+    /\[([^\]]+)\]\(([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
+    (match, label, href) => `<a href="${base}${href}">${label}</a>`
+  );
 }
 
 function writeGeneratedFile(file, contents) {
@@ -249,9 +261,9 @@ export function columnPageHtml(column, locale = "tr") {
   const body = column.body.map((paragraph) => {
     const line = String(paragraph ?? "");
     if (line.startsWith("## ")) {
-      return `<h2>${inlineText(line.slice(3).trim())}</h2>`;
+      return `<h2>${inlineText(line.slice(3).trim(), base)}</h2>`;
     }
-    return `<p>${inlineText(line)}</p>`;
+    return `<p>${inlineText(line, base)}</p>`;
   }).join("\n        ");
 
   // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.

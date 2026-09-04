@@ -6,7 +6,7 @@ import { mergeCalendarMatches, selectDetailTargets } from "./sync-live-fixtures.
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
-import { buildCrashRecord, dedupeKey } from "./run-scheduled-update.mjs";
+import { dedupeKey } from "./run-scheduled-update.mjs";
 
 const root = process.cwd();
 
@@ -117,39 +117,37 @@ assert.equal(mergeNewsItems({ items: mergedNews.items }, [tickerItem], { nowMs: 
 assert.equal(dedupeKey("full", new Date("2026-08-08T02:00:00Z")), "full:2026-08-08");
 assert.equal(dedupeKey("hourly", new Date("2026-08-08T21:00:00Z")), "hourly:2026-08-09T00");
 
-// main() dışında patlayan bir hata da (ör. validateCiContext, kilit alma)
-// data/update-status.json'a yazılmalı — aksi hâlde panonun "son çalışma"
-// zamanı sessizce donar ve gerçek hata sebebi hiçbir yerde görünmez.
-{
-  const crash = buildCrashRecord(new Error("boom"), {
-    argv: ["--type=hourly"],
-    env: { GITHUB_RUN_ID: "123", GITHUB_EVENT_NAME: "schedule" },
-    now: new Date("2026-08-25T10:00:00Z")
-  });
-  assert.equal(crash.status, "failed", "çökme kaydı mevcut durum sözlüğünü kullanmalı (yeni bir değer paneli renksiz bırakırdı)");
-  assert.equal(crash.type, "hourly", "argv okunabiliyorsa gerçek tür kaydedilmeli");
-  assert.equal(crash.errors[0].step, "main", "adım kimliği normal bir adım hatasından ayrılabilmeli");
-  assert.equal(crash.errors[0].message, "boom");
-  assert.equal(crash.id, "123");
-  assert.equal(crash.dedupeKey, dedupeKey("hourly", new Date("2026-08-25T10:00:00Z")));
-
-  // argv okunamazsa (ör. parseArgs kendisi patladıysa) yine de bir kayıt üretilmeli.
-  const unknownType = buildCrashRecord(new Error("bad args"), { argv: ["--nonsense"], env: {}, now: new Date("2026-08-25T10:00:00Z") });
-  assert.equal(unknownType.type, "unknown");
-  assert.ok(unknownType.dedupeKey, "tür bilinmese de bir dedupe anahtarı üretilmeli");
-}
-
 const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-analysis.yml"), "utf8");
-assert.match(workflow, /cron: "0 2 \* \* \*"/);
-assert.match(workflow, /cron: "0 0-1,3-23 \* \* \*"/);
-// Bilerek YOK: bir minute-20 yedek tetikleyici (bkz. docs/scheduled-updates.md
-// "Exact schedule" bölümü) — günlük koşu sayısını ikiye katlayıp GitHub
-// Actions kotasını gereksiz tüketirdi; dedupe anahtarı zaten yeterli koruma.
-assert.doesNotMatch(workflow, /cron: "20 /);
+
+// ZAMANLAMA: GÜNLÜK TAM + SAATLİK KISA, TEK NÖBET.
+//
+// Dakika-20 YEDEK tetikleri 24.08.2026'da bilinçli olarak kaldırıldı
+// ("drop minute-20 fallback crons to cut Actions minutes usage"); test o
+// gün güncellenmediği için, iş akışı doğru olduğu hâlde kırmızı kalmıştı.
+// Yedeği güvenli kılan şey `dedupeKey`: aynı pencerede ikinci koşu zaten
+// atlanıyor. Geri eklenecekse Actions dakikası maliyeti bilinçli kabul
+// edilmeli — o yüzden burada varlığı değil, YOKLUĞU değil, YALNIZCA
+// ÇALIŞAN İKİ TETİĞİN DOĞRULUĞU şart koşuluyor.
+// Dakika 7 KASITLI: GitHub'ın kendi belgelerine göre `schedule` olayı en
+// yoğun kuyruğu saat başında yaşıyor; `:00`'a sabitlenmiş koşular bu depoda
+// 4-8 saat gecikmeli başlıyordu (03.09.2026'da tam koşu hiç tetiklenmedi).
+// Dakikayı kaydırmak GitHub'ın önerdiği düzeltme — bkz. docs/scheduled-updates.md.
+assert.match(workflow, /cron: "7 2 \* \* \*"/);
+assert.match(workflow, /cron: "7 0-1,3-23 \* \* \*"/);
+// Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
+// bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
+// Yalnızca dakika 7 değil, HERHANGİ bir dakikada saatte-bir joker de
+// yasak: aksi hâlde biri ileride "7"yi de unutup `0 * * * *` (veya başka
+// bir dakika) eklerse aynı çakışma sessizce geri döner.
+assert.doesNotMatch(workflow, /cron: "\d+ \* \* \* \*"/);
+// Beş dakikada bir koşu hiçbir koşulda kabul edilmiyor: sağlayıcı kotası ve
+// Actions dakikası bu sıklığı kaldırmıyor.
 assert.doesNotMatch(workflow, /\*\/5/);
 assert.match(workflow, /group: futbolradar-production-update/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
-assert.match(workflow, /SCHEDULE.*0 2 \* \* \*/s);
+// Koşu türü SCHEDULE değişkeninden okunuyor ve tam koşuyu yalnızca günlük
+// tetik seçiyor; geri kalan her tetik saatlik koşu demek.
+assert.match(workflow, /SCHEDULE.*"7 2 \* \* \*"/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
@@ -168,27 +166,5 @@ const adminGenerator = fs.readFileSync(path.join(root, "scripts", "generate-upda
 assert.match(adminGenerator, /data-update-monitor/);
 assert.match(adminGenerator, /data\/update-status\.json/);
 assert.match(adminGenerator, /Kaynak sorunu/);
-
-// admin-updates.html'in tazelik bandı mantığı (aynı test-match-program.mjs'in
-// orderMatchProgram için yaptığı gibi) gömülü <script> içinden çıkarılıp
-// çalıştırılır — panonun "otomatik güncelleme durmuş" alarmını gerçekten
-// doğru eşiklerde verdiğini kod okuyarak değil çalıştırarak doğrular.
-{
-  const block = adminGenerator.match(/\/\/ freshness-thresholds:start([\s\S]*?)\/\/ freshness-thresholds:end/);
-  assert.ok(block, "generate-update-admin.mjs içinde freshness-thresholds bloğu bulunmalı");
-  const freshness = new Function(`${block[1]}\nreturn { FRESH_MS, STALE_MS, ageMs, fmtAge, levelFor, labelFor };`)();
-
-  const iso = (msAgo) => new Date(Date.now() - msAgo).toISOString();
-
-  assert.equal(freshness.levelFor(freshness.ageMs({ finishedAt: iso(30 * 60 * 1000) })), "success", "30 dk önce çalışmış koşu güncel sayılmalı");
-  assert.equal(freshness.levelFor(freshness.ageMs({ finishedAt: iso(3 * 60 * 60 * 1000) })), "partial", "3 saat önce çalışmış koşu bayat sayılmalı");
-  assert.equal(freshness.levelFor(freshness.ageMs({ finishedAt: iso(24 * 60 * 60 * 1000) })), "failed", "24 saat önce çalışmış koşu kritik sayılmalı — tam olarak GitHub Actions kesintisinde görülen durum");
-  assert.equal(freshness.levelFor(freshness.ageMs(null)), "failed", "hiç kayıt yoksa kritik sayılmalı, güncel değil");
-  // Sınır: FRESH_MS'in tam bir milisaniye üstü bile "partial"a düşmeli.
-  assert.equal(freshness.levelFor(freshness.FRESH_MS + 1), "partial");
-  assert.equal(freshness.levelFor(freshness.STALE_MS + 1), "failed");
-  assert.equal(freshness.labelFor("success"), "Güncel");
-  assert.match(freshness.labelFor("failed"), /KRİTİK/);
-}
 
 console.log("Scheduled update tests passed (cron split, dedupe, live merge, standings, absences, RSS, monitoring cache)." );

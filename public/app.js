@@ -2534,6 +2534,61 @@
     );
   }
 
+  /**
+   * MAÇ KARTI İÇ LİNK SİSTEMİ — istemci tarafı. Sunucudaki
+   * (scripts/prerender-core-pages.mjs) HOME_QUICKLINK_TEAMS/quickLink*
+   * fonksiyonlarıyla bilerek özdeş: JS yüklendiğinde ana sayfadaki kartlar
+   * yerinden oynamasın diye aynı kural, aynı hedefler.
+   */
+  var HOME_QUICKLINK_TEAMS = [
+    { name: "Galatasaray", slug: "galatasaray" },
+    { name: "Fenerbahçe", slug: "fenerbahce" },
+    { name: "Beşiktaş", slug: "besiktas" },
+    { name: "Trabzonspor", slug: "trabzonspor" }
+  ];
+
+  function quickLinkTeamFor(match) {
+    for (var index = 0; index < HOME_QUICKLINK_TEAMS.length; index += 1) {
+      if (sameClubName(HOME_QUICKLINK_TEAMS[index].name, match.homeTeam)) return HOME_QUICKLINK_TEAMS[index];
+    }
+    for (var awayIndex = 0; awayIndex < HOME_QUICKLINK_TEAMS.length; awayIndex += 1) {
+      if (sameClubName(HOME_QUICKLINK_TEAMS[awayIndex].name, match.awayTeam)) return HOME_QUICKLINK_TEAMS[awayIndex];
+    }
+    return null;
+  }
+
+  function quickLinkStandingsHref(match) {
+    var team = quickLinkTeamFor(match);
+    if (team) return "./" + team.slug + "-puan-durumu.html";
+    return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+  }
+
+  function quickLinkFormHref(match) {
+    var team = quickLinkTeamFor(match);
+    var name = (team && team.name) || match.homeTeam || match.awayTeam || "";
+    return teamDetailHref({ name: name });
+  }
+
+  function quickLinkButtonsHtml(match) {
+    var analysisLabel = fixtureStatusMeta(match).finished ? "Sonuç Analizi" : "Analiz";
+    return (
+      '<a href="' + escapeHtml(matchDetailHref(match)) + '">' + analysisLabel + "</a>" +
+      '<a href="' + escapeHtml(quickLinkStandingsHref(match)) + '">Puan Durumu</a>' +
+      '<a href="' + escapeHtml(quickLinkFormHref(match)) + '">Takım Formu</a>'
+    );
+  }
+
+  /**
+   * Yalnızca ana sayfanın "Bugünün Maçları" önizlemesi (today-matches
+   * hedefi) bu sarmalayıcıyı kullanır — `renderFixtureCard`ın kendisi
+   * değişmez, bugunun-maclari.html (renderMatchPageCard) ve diğer tüm
+   * kullanıcılar etkilenmez.
+   */
+  function renderHomeFixtureCard(match) {
+    var quickLinks = '<div class="fixture-card-quicklinks">' + quickLinkButtonsHtml(match) + "</div>";
+    return renderFixtureCard(match).replace("</article>", quickLinks + "</article>");
+  }
+
   // featured-match-selection:start
   // Bu blok scripts/test-featured-turkish-match.mjs tarafından ayıklanıp
   // services/featuredMatchSelector.js ile aynı girdilerde çalıştırılır; iki
@@ -2625,10 +2680,19 @@
     return hasTurkishClubSuffix(normalized);
   }
 
+  /**
+   * Lig adı ipucunu KELİME SINIRIYLA arar — services/turkishTeams.js eşi.
+   *
+   * Düz alt dize araması yetmiyor: Sırbistan'ın "Super Liga"sı "super lig"
+   * ipucunu İÇERİYOR ve FK Partizan - OFK Beograd ana sayfada "Canlı Türk
+   * takımı maçı" diye öne çıkıyordu.
+   */
   function isTurkishLeagueName(league) {
     var normalized = turkishKey(league);
-    return Boolean(normalized) && TURKISH_LEAGUE_HINTS.some(function (hint) {
-      return normalized.indexOf(hint) !== -1;
+    if (!normalized) return false;
+    return TURKISH_LEAGUE_HINTS.some(function (hint) {
+      var escaped = hint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp("(^|[^a-z0-9])" + escaped + "([^a-z0-9]|$)").test(normalized);
     });
   }
 
@@ -4327,7 +4391,7 @@
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
     // görünür, gerisi butonun arkasında; on ikiden azsa buton hiç basılmaz.
-    return renderMatchListWindow(ordered, renderFixtureCard, "today-matches");
+    return renderMatchListWindow(ordered, renderHomeFixtureCard, "today-matches");
   }
 
   // match-program-order:start
@@ -10781,6 +10845,77 @@
     );
   }
 
+  /** Şerit alıntısını kelime sınırında kısaltır — scripts/lib/matchQuotesTicker.mjs eşi. */
+  function mdShortenQuote(value, limit) {
+    var max = limit || 120;
+    var text = String(value || "").trim();
+    if (text.length <= max) return text;
+
+    var cut = text.slice(0, max);
+    var lastSpace = cut.lastIndexOf(" ");
+    var stem = lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut;
+    return stem.replace(/\s+$/, "") + "…";
+  }
+
+  /**
+   * MAÇ SONU AÇIKLAMALARI ŞERİDİ — maç detay sayfasının canlı yüzü.
+   *
+   * Kural burada DEĞİL: hangi alıntının yayımlanabileceğine sunucuda
+   * services/managerQuotes.js karar veriyor ve `api/match-detail` kararın
+   * sonucunu `detail.quotes` olarak gönderiyor. İstemci yalnızca çiziyor;
+   * bu yüzden burada bir filtre ya da varsayılan yok — olsaydı sunucuyla
+   * istemci aynı veriden iki farklı sonuç üretebilirdi.
+   *
+   * BÖLÜM YALNIZCA BİTMİŞ MAÇTA açılıyor. Başlamamış bir maçta "Kaynaklardan
+   * bekleniyor" yazmak yanlış olurdu: ortada henüz açıklanacak bir şey yok,
+   * eksik olan bizim doğrulamamız değil maçın kendisi.
+   *
+   * Bitmiş maçta bölüm alıntı yokken de KAPANMIYOR: şerit "Kaynaklardan
+   * bekleniyor" der. Sessizce kaldırılsaydı okuyucu "kimse konuşmadı" diye
+   * okurdu; doğrusu "biz henüz doğrulamadık".
+   */
+  function mdQuotesHtml(detail) {
+    if (!isFinishedMatch(detail)) {
+      return "";
+    }
+
+    var verdict = detail.quotes || {};
+    var quotes = Object.prototype.toString.call(verdict.quotes) === "[object Array]"
+      ? verdict.quotes.filter(Boolean)
+      : [];
+    var inner;
+
+    if (quotes.length) {
+      var track = quotes.map(function (quote) {
+        var who = [quote.speaker, quote.roleLabel, quote.team].filter(Boolean).join(" · ");
+        return '<a class="match-quotes__item" href="' + escapeHtml(quote.source.url) + '"' +
+          ' target="_blank" rel="nofollow noopener noreferrer">' +
+          '<span class="match-quotes__who">' + escapeHtml(who) + "</span>" +
+          '<span class="match-quotes__text">' + escapeHtml("“" + mdShortenQuote(quote.quote) + "”") + "</span>" +
+          "</a>";
+      }).join('<span class="match-quotes__sep" aria-hidden="true"></span>');
+
+      inner = '<div class="match-quotes__track">' +
+        '<div class="match-quotes__group">' + track + "</div>" +
+        '<div class="match-quotes__group" aria-hidden="true">' + track + "</div>" +
+        "</div>";
+    } else {
+      inner = '<p class="match-quotes__awaiting" data-quotes-state="awaiting">' +
+        "<strong>Kaynaklardan bekleniyor</strong>" +
+        "<span>" + escapeHtml(verdict.reason ||
+          "Doğrulanmış bir maç sonu açıklaması yayımlandığında burada gösterilecek.") + "</span>" +
+        "</p>";
+    }
+
+    return '<div class="match-quotes-ticker" data-component="MatchQuotesTicker" role="region"' +
+      ' aria-label="Maç Sonu Açıklamaları">' +
+      '<div class="container-wide match-quotes-ticker__inner">' +
+      '<span class="match-quotes-ticker__label">Maç Sonu Açıklamaları</span>' +
+      '<div class="match-quotes-ticker__viewport"' + (quotes.length ? "" : ' data-empty="true"') + ">" +
+      inner +
+      "</div></div></div>";
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
@@ -10791,6 +10926,9 @@
     return (
       '<article class="match-detail-card card md-shell" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
       mdScoreboardHtml(detail) +
+      // Şerit skorun hemen altında: okuyucu sonucu gördükten sonra "kim ne
+      // dedi"yi arıyor, istatistik tablolarının altında değil.
+      mdQuotesHtml(detail) +
       mdFactsHtml(detail) +
       (detail.summary ? '<p class="md-lead">' + escapeHtml(detail.summary) + "</p>" : "") +
       mdTimelineHtml(detail) +
@@ -11992,8 +12130,9 @@
       var primary = items.map(function (item) { return itemHtml(item, false); }).join("");
       var duplicate = items.map(function (item) { return itemHtml(item, true); }).join("");
       // Transfer bandına göre belirgin biçimde daha hızlı: öğe başına 5sn,
-      // 18-45sn arasında (transfer bandı 9sn/34-80sn kullanıyordu).
-      track.style.setProperty("--live-ticker-duration", Math.max(18, Math.min(45, items.length * 5)) + "s");
+      // 18-45sn arasında (transfer bandı 9sn/34-80sn kullanıyordu). Tamamı
+      // /1.2 ile bölünür (%20 daha hızlı kaydırma).
+      track.style.setProperty("--live-ticker-duration", (Math.max(18, Math.min(45, items.length * 5)) / 1.2) + "s");
       track.innerHTML =
         '<div class="live-scores-ticker__group">' + primary + '</div>' +
         '<div class="live-scores-ticker__group" aria-hidden="true">' + duplicate + '</div>';

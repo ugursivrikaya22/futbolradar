@@ -11937,12 +11937,13 @@ body .container {
 }
 
 /* Öğe başına 5sn, 18-45sn arasında — transfer bandının 9sn/34-80sn'inden
-   belirgin biçimde daha hızlı (bkz. scripts/lib/liveScoresTicker.mjs). */
+   belirgin biçimde daha hızlı (bkz. scripts/lib/liveScoresTicker.mjs).
+   Tamamı /1.2 ile bölünür (%20 daha hızlı kaydırma). */
 .live-scores-ticker__track {
   display: flex;
   width: max-content;
   min-height: 42px;
-  animation: ticker-scroll var(--live-ticker-duration, 26s) linear infinite;
+  animation: ticker-scroll var(--live-ticker-duration, 21.67s) linear infinite;
   backface-visibility: hidden;
   will-change: transform;
 }
@@ -13845,6 +13846,102 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   .fixture-card-action {
     min-height: 34px;
   }
+}
+
+/* ----------------------------------------------------------------------------
+   MAÇ KARTI İÇ LİNK SİSTEMİ — ana sayfanın "Bugünün Maçları" önizlemesinde
+   `.fixture-card-action`ın ALTINA eklenen üç küçük düğme (Analiz / Puan
+   Durumu / Takım Formu). Mevcut tek büyük eylem bağlantısı ve onun mobildeki
+   tam-kart dokunma alanı değişmeden kalır; bu satır yalnızca kartı biraz
+   uzatan, kendi yüksekliği sabit bir ek sıradır (düzen kayması yok, kart
+   ilk çizimde zaten bu haliyle basılır).
+   -------------------------------------------------------------------------- */
+.fixture-card-quicklinks {
+  display: flex;
+  gap: 6px;
+}
+
+.fixture-card-quicklinks a {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  color: var(--text-soft);
+  font-size: 0.72rem;
+  font-weight: 650;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.fixture-card-quicklinks a:hover {
+  color: var(--cyan);
+  border-color: rgba(13, 148, 136, 0.28);
+}
+
+/* ----------------------------------------------------------------------------
+   "BUGÜNKÜ MAÇLAR HANGİ KANALDA" — yayın kanalı satırı ve saat etiketi.
+   `.fixture-card`in mevcut kartına eklenen tek yeni satır; başka hiçbir
+   sayfa bu sınıfları kullanmadığı için mevcut kart tasarımına dokunmaz.
+   -------------------------------------------------------------------------- */
+.fixture-card-time {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.fixture-card-broadcast {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid rgba(14, 26, 22, 0.069);
+  padding-top: 6px;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.fixture-card-broadcast b {
+  color: var(--text);
+}
+
+.fixture-card-broadcast.is-unknown {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.fixture-card-broadcast-icon {
+  flex: 0 0 auto;
+}
+
+.fixture-card-live-minute {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: 4px;
+}
+
+.broadcast-schedule-grid {
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.broadcast-schedule-empty {
+  display: grid;
+  gap: 6px;
+  padding: var(--sp-4);
+  color: var(--text-soft);
+}
+
+.broadcast-schedule-empty span {
+  color: var(--muted);
+  font-size: var(--fs-sm);
 }
 
 /* ----------------------------------------------------------------------------
@@ -19930,6 +20027,24 @@ a.motm-week__card:focus-visible {
   /* Skor ve ad satırı sıkışmasın ama boşluk da yemesin. */
   .fixture-card-rows { gap: 4px; }
   .fixture-row-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* MAÇ KARTI İÇ LİNK SİSTEMİ — `.fixture-card-action` bu genişlikte
+     görünmez, kartın tamamını kaplayan tek bir bağlantıya dönüşüyor
+     (yukarıda). z-index verilmemiş o katmanın ÜSTÜNDE kalmazsa üç düğme de
+     görünmez kart bağlantısının altında kalır ve dokunulamaz olur; bu
+     yüzden kendi konumlanmış katmanına çıkarılıyor. Üç küçük düğme kartı
+     büyütmesin diye kompakt tutulur, yine de dokunma hedefi 28px'in altına
+     inmez. */
+  .fixture-card-quicklinks {
+    position: relative;
+    z-index: 1;
+  }
+
+  .fixture-card-quicklinks a {
+    min-height: 30px;
+    font-size: 0.68rem;
+    padding: 0 4px;
+  }
 }
 
 /* Rozet satırı boşsa hiç çizilmez: içi boş bir kutu, kart yüksekliğini
@@ -20664,4 +20779,140 @@ a.motm-week__card:focus-visible {
   background: rgba(11, 143, 90, 0.07);
   border-left: 3px solid var(--green);
   padding-left: 15px;
+}
+
+/* --------------------------------------------------------------------------
+   MAÇ SONU AÇIKLAMALARI
+
+   Ana sayfada canlı maç alanının altında, maç raporu sayfasında künyenin
+   altında kayan şerit; raporun omurga bölümünde tam liste.
+
+   Mevcut `ticker-scroll` animasyonu yeniden kullanılıyor — dördüncü bir
+   animasyon tanımlamak, aynı davranışın dört ayrı yerde sürüklenmesi olurdu.
+
+   Doğrulanmış alıntı yoksa şerit KALDIRILMAZ, "Kaynaklardan bekleniyor"
+   yazar: sessiz boşluk okuyucuya "kimse konuşmadı" diye okunurdu.
+   -------------------------------------------------------------------------- */
+.match-quotes-ticker {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin-block: var(--sp-3);
+  background: rgba(var(--surface-rgb), 0.6);
+}
+
+.match-quotes-ticker__inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+
+.match-quotes-ticker__label {
+  border-radius: 999px;
+  padding: 4px 10px;
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.match-quotes-ticker__viewport {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
+}
+
+/* Bekleme hâli kaymıyor: sabit bir cümle, kayan şerit değil. */
+.match-quotes-ticker__viewport[data-empty="true"] {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.match-quotes__track {
+  display: flex;
+  width: max-content;
+  animation: ticker-scroll var(--match-quotes-duration, 64s) linear infinite;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+.match-quotes-ticker:hover .match-quotes__track,
+.match-quotes-ticker:focus-within .match-quotes__track {
+  animation-play-state: paused;
+}
+
+.match-quotes__group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-inline-end: 10px;
+}
+
+.match-quotes__item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.match-quotes__who {
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.match-quotes__text {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-style: italic;
+}
+
+.match-quotes__sep {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--glass-border);
+}
+
+.match-quotes__awaiting {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 0;
+}
+
+.match-quotes__awaiting strong {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+
+.match-quotes__awaiting span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+}
+
+/* Azaltılmış hareket tercihinde şerit durur; içerik yatay kaydırmayla okunur. */
+@media (prefers-reduced-motion: reduce) {
+  .match-quotes__track {
+    animation: none;
+  }
+
+  .match-quotes-ticker__viewport {
+    overflow-x: auto;
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+
+  .match-quotes__group[aria-hidden="true"] {
+    display: none;
+  }
 }

@@ -2,6 +2,7 @@ const { classifyFixtureCompetition } = require("./competitionCatalog");
 
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
 const RECENT_FORM_LIMIT = 5;
+const HEAD_TO_HEAD_LIMIT = 10;
 const SCHEDULE_LOAD_WINDOW_DAYS = 14;
 const RECENCY_WEIGHTS = [1, 0.92, 0.84, 0.76, 0.68];
 // Non-league results still carry signal but never at full league weight;
@@ -271,6 +272,118 @@ function computeScheduleLoad(team, fixtureKickoff, matches) {
   return { matchesInWindow, windowDays: SCHEDULE_LOAD_WINDOW_DAYS, level };
 }
 
+/**
+ * İki takım arasındaki geçmiş karşılaşmalar. `eligiblePriorMatches`'ten
+ * farklı olarak TEK bir takımın değil, İKİ takımın birbirine karşı oynadığı
+ * (hangi tarafta oynadıklarından bağımsız) bitmiş maçları arar.
+ */
+function eligibleHeadToHeadMatches(homeTeam, awayTeam, fixtureKickoff, matches) {
+  const homeKey = teamKey(homeTeam);
+  const awayKey = teamKey(awayTeam);
+  const fixtureTime = new Date(fixtureKickoff);
+  if (!homeKey || !awayKey || Number.isNaN(fixtureTime.getTime())) {
+    return [];
+  }
+
+  return (Array.isArray(matches) ? matches : [])
+    .filter((match) => FINISHED_STATUSES.has(String(match.status || "").toUpperCase()))
+    .filter((match) => {
+      const matchHomeKey = normalizeText(match.homeTeam);
+      const matchAwayKey = normalizeText(match.awayTeam);
+      return (matchHomeKey === homeKey && matchAwayKey === awayKey) || (matchHomeKey === awayKey && matchAwayKey === homeKey);
+    })
+    .map((match) => ({ match, kickoffTime: matchKickoffTime(match) }))
+    .filter((entry) => entry.kickoffTime && entry.kickoffTime.getTime() < fixtureTime.getTime())
+    .sort((left, right) => right.kickoffTime.getTime() - left.kickoffTime.getTime());
+}
+
+function headToHeadMeeting(entry) {
+  const { match, kickoffTime } = entry;
+  const score = match.score || {};
+  const homeGoals = score.home;
+  const awayGoals = score.away;
+  if (homeGoals === null || homeGoals === undefined || awayGoals === null || awayGoals === undefined) {
+    return null;
+  }
+
+  const winner = homeGoals > awayGoals ? "home" : homeGoals < awayGoals ? "away" : "draw";
+  const competition = classifyFixtureCompetition(match);
+  return {
+    matchId: match.id || null,
+    // eligibleHeadToHeadMatches zaten kickoffTime'ı çözdü (kickoff||date
+    // düşer); burada match.kickoff'a AYRICA bakılırsa ikisi ıraksayabilir —
+    // kaynak yalnızca `date` taşıyorsa match.kickoff boş kalır ve eleman
+    // uygunken raporlanan kickoff null olurdu. Aynı Date nesnesi kullanılır.
+    kickoff: kickoffTime.toISOString(),
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    homeGoals,
+    awayGoals,
+    winner,
+    competitionType: competition.competitionType
+  };
+}
+
+/**
+ * İki takımın karşılıklı geçmişi (head-to-head). `home`/`away` alanları BU
+ * fikstürün ev sahibi/deplasman takımına göredir — geçmiş karşılaşmalarda
+ * hangi tarafta oynadıklarından BAĞIMSIZ. Örn. `home.wins`, bu fikstürün ev
+ * sahibi takımının geçmiş karşılaşmaları kaç kez kazandığıdır (o maçlarda
+ * kendisi deplasmanda oynamış olsa bile).
+ *
+ * Skoru olmayan/eksik kayıtlar sayılmaz — eksik bir skor 0-0 olarak
+ * uydurulmaz (bkz. headToHeadMeeting). Örneklem sıfırsa tüm sayaçlar
+ * gerçekten sıfırdır (bu, ortalama gibi UYDURULMUŞ bir sıfır değil,
+ * doğru bir SAYIM'dır) ve `lastMeeting` null kalır.
+ */
+function computeHeadToHead(homeTeam, awayTeam, fixtureKickoff, matches, limit) {
+  const take = Math.max(1, Number(limit) || HEAD_TO_HEAD_LIMIT);
+  const homeKey = teamKey(homeTeam);
+  const homeName = typeof homeTeam === "string" ? homeTeam : (homeTeam && (homeTeam.name || homeTeam.team)) || null;
+  const awayName = typeof awayTeam === "string" ? awayTeam : (awayTeam && (awayTeam.name || awayTeam.team)) || null;
+
+  const meetings = eligibleHeadToHeadMatches(homeTeam, awayTeam, fixtureKickoff, matches)
+    .slice(0, take)
+    .map(headToHeadMeeting)
+    .filter(Boolean);
+
+  const home = { team: homeName, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 };
+  const away = { team: awayName, wins: 0, draws: 0, losses: 0, goalsFor: 0, goalsAgainst: 0 };
+
+  for (const meeting of meetings) {
+    const meetingHomeIsFixtureHome = normalizeText(meeting.homeTeam) === homeKey;
+    const homeSideGoals = meetingHomeIsFixtureHome ? meeting.homeGoals : meeting.awayGoals;
+    const awaySideGoals = meetingHomeIsFixtureHome ? meeting.awayGoals : meeting.homeGoals;
+
+    home.goalsFor += homeSideGoals;
+    home.goalsAgainst += awaySideGoals;
+    away.goalsFor += awaySideGoals;
+    away.goalsAgainst += homeSideGoals;
+
+    if (homeSideGoals > awaySideGoals) {
+      home.wins += 1;
+      away.losses += 1;
+    } else if (homeSideGoals < awaySideGoals) {
+      away.wins += 1;
+      home.losses += 1;
+    } else {
+      home.draws += 1;
+      away.draws += 1;
+    }
+  }
+
+  const sampleSize = meetings.length;
+  return {
+    sampleSize,
+    limit: take,
+    home,
+    away,
+    lastMeeting: meetings[0] || null,
+    meetings,
+    dataStatus: sampleSize >= 3 ? "sufficient" : sampleSize >= 1 ? "limited" : "insufficient"
+  };
+}
+
 function componentConfidence(form, goalTrend, defensiveTrend, restDays) {
   const parts = [];
   if (form.sampleSize > 0) {
@@ -373,5 +486,7 @@ module.exports = {
   computeRestDays,
   computeScheduleLoad,
   computeContextConfidence,
-  RECENT_FORM_LIMIT
+  computeHeadToHead,
+  RECENT_FORM_LIMIT,
+  HEAD_TO_HEAD_LIMIT
 };

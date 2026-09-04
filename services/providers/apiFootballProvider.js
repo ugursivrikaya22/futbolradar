@@ -856,29 +856,39 @@ function normalizePlayer(item) {
   };
 }
 
+/**
+ * Sağlayıcı bazı transfer kayıtlarında tarih veya varış kulübünü BOŞ döner
+ * (örn. serbest kalış/kayıp belge). Böyle bir kaydı olduğu gibi geçirmek
+ * `validatePlayerData`in "transferHistory[i] date ve toTeam içermeli"
+ * kuralını kırar ve senkron adımını tamamen düşürür — tek eksik kayıt için
+ * bütün koşu kaybedilir. Doğru davranış eksik kaydı sessizce ATLAMAK: diğer
+ * transferler ve profil zenginleştirmesi etkilenmeden ilerler.
+ */
 function normalizeTransfer(item) {
   const player = item.player || {};
   const transfers = Array.isArray(item.transfers) ? item.transfers : [];
-  return transfers.map((transfer, index) => {
-    const teams = transfer.teams || {};
-    const fromTeam = teams.out || {};
-    const toTeam = teams.in || {};
-    const date = transfer.date || null;
-    return {
-      id: String(`${player.id || player.name || "player"}-${date || index}-${teamName(toTeam)}`),
-      playerId: player.id ? String(player.id) : "",
-      playerName: player.name || "",
-      date,
-      season: date ? `${String(date).slice(0, 4)}/${String(Number(String(date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
-      fromTeam: teamName(fromTeam) || null,
-      toTeam: teamName(toTeam) || null,
-      type: transfer.type || null,
-      fee: null,
-      feeEur: null,
-      marketValueEur: null,
-      source: "api-football"
-    };
-  });
+  return transfers
+    .map((transfer, index) => {
+      const teams = transfer.teams || {};
+      const fromTeam = teams.out || {};
+      const toTeam = teams.in || {};
+      const date = transfer.date || null;
+      return {
+        id: String(`${player.id || player.name || "player"}-${date || index}-${teamName(toTeam)}`),
+        playerId: player.id ? String(player.id) : "",
+        playerName: player.name || "",
+        date,
+        season: date ? `${String(date).slice(0, 4)}/${String(Number(String(date).slice(2, 4)) + 1).padStart(2, "0")}` : null,
+        fromTeam: teamName(fromTeam) || null,
+        toTeam: teamName(toTeam) || null,
+        type: transfer.type || null,
+        fee: null,
+        feeEur: null,
+        marketValueEur: null,
+        source: "api-football"
+      };
+    })
+    .filter((transfer) => Boolean(transfer.date && transfer.toTeam));
 }
 
 /**
@@ -1014,6 +1024,30 @@ async function getTeams(query) {
     search: query && query.search,
     id: query && (query.teamId || query.id),
     country: query && query.country || getConfig().country
+  }));
+  return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
+}
+
+/**
+ * ADA DÜNYA GENELİNDE TAKIM ARAR — Süper Lig'e daraltılmadan.
+ *
+ * `getTeams()` iki yerde sessizce Türkiye'ye kilitlenir: `resolveLeague`
+ * ligi vermezsen `config.leagueId`'ye (Süper Lig) düşer, `country` da
+ * vermezsen `config.country`'ye (Türkiye) düşer. Bu, `getTeams()`'i bir
+ * Avrupa kupası rakibini bulmak için kullanılamaz kılar — sonuç sessizce
+ * boş dönerdi ve "böyle bir takım yok" ile "yanlış ülkeye arandı" ayırt
+ * edilemezdi. Bu fonksiyon `league`'e HİÇ dokunmaz, `country`'yi de yalnız
+ * açıkça verilirse kullanır; aksi hâlde sağlayıcının global adı-arama
+ * davranışına bırakılır.
+ */
+async function searchTeams(query) {
+  const name = query && (query.name || query.search);
+  if (!name) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Takım arama icin name/search gerekli.");
+  }
+  const payload = await providerFetch("/teams", compactParams({
+    search: name,
+    country: query && query.country
   }));
   return stampProviderData(responseItems(payload).map(normalizeTeam), "teams", 24 * 60 * 60 * 1000);
 }
@@ -1722,6 +1756,7 @@ module.exports = {
   getStandings,
   getLeagues,
   getTeams,
+  searchTeams,
   getSquad,
   getPlayers,
   getPlayersPaginated,

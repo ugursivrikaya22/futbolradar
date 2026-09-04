@@ -31,6 +31,22 @@ const { normalizeText } = require("../api/_utils");
 /** Süper Lig'i işaret eden lig adları (maçın ligi de kanıt sayılır). */
 const TURKISH_LEAGUE_HINTS = ["super lig", "trendyol super lig", "turkiye kupasi", "ziraat turkiye kupasi", "1. lig", "trendyol 1. lig"];
 
+/**
+ * Lig adı ipucunu KELİME SINIRIYLA arar.
+ *
+ * Düz `includes` yetmiyor: Sırbistan'ın "Super Liga"sı "super lig" ipucunu
+ * İÇERİYOR ve FK Partizan - OFK Beograd ana sayfada "Canlı Türk takımı maçı"
+ * diye öne çıkıyordu. İpucunun ardından harf/rakam gelmemesi şartı, gerçek
+ * Türk liglerini ("Super Lig", "Trendyol Super Lig", "1. Lig") elemeden
+ * yalnızca bu yanlış eşleşmeyi kesiyor.
+ */
+function leagueHintMatches(normalized) {
+  return TURKISH_LEAGUE_HINTS.some((hint) => {
+    const escaped = hint.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(^|[^a-z0-9])${escaped}([^a-z0-9]|$)`).test(normalized);
+  });
+}
+
 /** Türkiye'yi işaret eden ülke değerleri (sağlayıcı İngilizce de yazabilir). */
 const TURKISH_COUNTRY_VALUES = ["turkiye", "turkey", "turkiye cumhuriyeti", "tur"];
 
@@ -131,7 +147,7 @@ function curatedTurkishTeamNames() {
     .filter((team) => {
       if (!team || !team.name) return false;
       if (TURKISH_COUNTRY_VALUES.includes(key(team.country))) return true;
-      return TURKISH_LEAGUE_HINTS.some((hint) => key(team.league).includes(hint));
+      return leagueHintMatches(key(team.league));
     })
     .map((team) => String(team.name).trim());
 }
@@ -179,7 +195,7 @@ function isTurkishTeamName(name) {
 /** Maçın ligi Türkiye organizasyonu mu? (Süper Lig, Türkiye Kupası…) */
 function isTurkishLeague(league) {
   const normalized = key(league);
-  return Boolean(normalized) && TURKISH_LEAGUE_HINTS.some((hint) => normalized.includes(hint));
+  return Boolean(normalized) && leagueHintMatches(normalized);
 }
 
 /**

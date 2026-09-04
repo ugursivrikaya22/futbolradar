@@ -1,13 +1,14 @@
 /**
  * TRANSFER RADARI BANDININ TEK İŞARETLEME KAYNAĞI.
  *
- * Bant ana sayfanın EN ALTINDA, yalnızca gerçek TFF tescil dönemi
- * içindeyken basılır (services/transferWindow.js) — prerender-core-
- * pages.mjs'in `transferRadarBottomTicker()`'ı tüketir. İstemci tarafında
- * ayrı bir kopyası YOK: ana sayfa zaten saatte bir yeniden derleniyor,
- * bant derleme anında karar veriliyor. (Ayrı bir bileşen olan Canlı
- * Skorlar bandı — scripts/lib/liveScoresTicker.mjs — istemcide tazelenir;
- * bu bant tazelenmez, karıştırılmamalı.)
+ * Bant ana sayfanın TEPESİNDE, haber bandı (1.) ve Canlı Skorlar
+ * bandından (2.) hemen sonra üçüncü sıra olarak basılır — her derlemede,
+ * TFF tescil dönemi kapalıyken bile (bkz. transferRadarTicker() yorumu).
+ * `prerender-core-pages.mjs`'in `transferRadarTicker()`'ı tüketir. İstemci
+ * tarafında ayrı bir kopyası YOK: ana sayfa zaten saatte bir yeniden
+ * derleniyor, bant derleme anında karar veriliyor. (Ayrı bir bileşen olan
+ * Canlı Skorlar bandı — scripts/lib/liveScoresTicker.mjs — istemcide
+ * tazelenir; bu bant tazelenmez, karıştırılmamalı.)
  *
  * SEÇİM buraya AİT DEĞİL: hangi transferin banda gireceği, sıralaması ve
  * durum anahtarı services/transferRadarTicker.js'te. Burası yalnızca
