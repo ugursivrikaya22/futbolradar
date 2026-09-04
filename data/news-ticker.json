@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-04T19:13:24.951Z",
+  "updatedAt": "2026-09-04T21:34:30.366Z",
   "items": [
     {
       "id": "auto-news-309efde513c13913e75a",
@@ -209,18 +209,32 @@
       }
     },
     {
-      "id": "news-galatasaray-basaksehir-muhtemel-11",
+      "id": "news-galatasaray-leao-e40f8477",
       "origin": "news.json",
-      "category": "fixture",
-      "confidence": "reported",
-      "text": "Başakşehir - Galatasaray'da muhtemel 11'ler basına yansıdı: Leao'nun yedek başlaması bekleniyor",
-      "timestamp": "2026-09-04T18:15:00+03:00",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Leao'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-04T21:18:40.000Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-basaksehir-muhtemel-11"
+        "url": "https://www.futbolradar.com/haber/galatasaray-leao-e40f8477"
       },
       "team": "Galatasaray",
-      "expiresAt": "2026-09-04T23:00:00+03:00"
+      "important": true
+    },
+    {
+      "id": "news-galatasaray-result-1f4661d8",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
+      "timestamp": "2026-09-04T20:42:42.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-result-1f4661d8"
+      },
+      "team": "Galatasaray",
+      "important": true
     },
     {
       "id": "news-galatasaray-mario-lemina-cb2e0635",
@@ -248,34 +262,6 @@
         "url": "https://www.futbolradar.com/haber/fenerbahce-caglar-soyuncu-3c750fd3"
       },
       "team": "Fenerbahçe",
-      "important": true
-    },
-    {
-      "id": "news-besiktas-samsunspor-serdal-adali-b66661d9",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Beşiktaş çevresinde Samsunspor Serdal Adalı'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-04T11:49:55.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/besiktas-samsunspor-serdal-adali-b66661d9"
-      },
-      "team": "Beşiktaş",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-aleksey-batrakov-ff38c8da",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Galatasaray çevresinde Aleksey Batrakov'a dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-04T11:42:20.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-aleksey-batrakov-ff38c8da"
-      },
-      "team": "Galatasaray",
       "important": true
     },
     {
