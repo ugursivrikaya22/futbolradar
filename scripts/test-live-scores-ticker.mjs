@@ -169,7 +169,7 @@ console.log(`Canlı skorlar bandı testleri geçti (yalnızca canlı maç, taraf
 
   [
     ["index.html", "en/index.html"],
-    ["canli-skor.html", "en/live-scores.html"],
+    ["canli-skor.html", "en/live-football-scores.html"],
     ["bugunun-maclari.html", "en/todays-matches.html"],
     ["puan-durumu.html", "en/standings.html"]
   ].forEach(([tr, en]) => {

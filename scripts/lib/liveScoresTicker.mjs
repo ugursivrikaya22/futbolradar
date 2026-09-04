@@ -36,7 +36,7 @@ export const LIVE_TICKER_PAGES = [
   "arsiv.html",
   "kose-yazilari.html",
   "en/todays-matches.html",
-  "en/live-scores.html",
+  "en/live-football-scores.html",
   "en/analysis.html",
   "en/teams.html",
   "en/standings.html"
