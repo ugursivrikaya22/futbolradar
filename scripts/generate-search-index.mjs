@@ -13,6 +13,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
+import { STANDINGS_LEAGUES, TR_TAB_ORDER, EN_TAB_ORDER } from "./lib/standingsCatalog.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -126,6 +127,23 @@ for (const competition of asArray(readJson("competitions.json"))) {
     title: competition.name,
     subtitle: competition.country || "Lig sayfası"
   });
+}
+
+// Puan durumu sayfaları (bkz. scripts/lib/standingsCatalog.mjs): dokuz TR
+// sayfa + dokuz EN sayfa. Süper Lig TR sayfası önceden var olan
+// `super-lig-puan-durumu.html`, diğer sekizi generate-league-standings-
+// pages.mjs üretir; EN'in tamamı generate-en-league-standings-pages.mjs'ten.
+for (const id of TR_TAB_ORDER) {
+  const entry = STANDINGS_LEAGUES[id];
+  const href = `${entry.slugTr}.html`;
+  if (!fs.existsSync(path.join(root, href))) continue;
+  push({ type: "page", badge: "SYF", href, title: `${entry.nameTr} Puan Durumu`, subtitle: "Güncel puan durumu" });
+}
+for (const id of EN_TAB_ORDER) {
+  const entry = STANDINGS_LEAGUES[id];
+  const href = `en/${entry.slugEn}.html`;
+  if (!fs.existsSync(path.join(root, href))) continue;
+  push({ type: "enPage", badge: "EN", href, title: `${entry.nameEn} Standings`, subtitle: "Current standings", locale: "en" });
 }
 
 for (const article of asArray(readJson("news.json"), "news", "items")) {

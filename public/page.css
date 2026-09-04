@@ -13629,6 +13629,15 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .fixture-card {
   position: relative;
   display: grid;
+  /* SÜTUN TAVANI OLMADAN `overflow:hidden` YALANCI GÜVENDİ. Tek örtük
+     sütun, sarmayan bir alt öğenin (ör. üç butonluk hızlı bağlantı satırı)
+     min-content genişliğine göre kartın gerçek kutusundan onlarca piksel
+     daha geniş hesaplanıyordu; kart görünürde 238px'te kalırken içerik
+     265px'e göre diziliyor ve fazlalık (skor sütunu dahil) `overflow:hidden`
+     tarafından SESSİZCE kırpılıyordu — skor hiç basılmamış gibi kayboluyordu.
+     `minmax(0, 1fr)` sütunu kartın kendi kutusuna sabitler; taşan içerik artık
+     kendi kuralıyla (ellipsis/flex-shrink) kutunun İÇİNDE kırpılır. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   overflow: hidden;
   border: 1px solid var(--glass-border);
@@ -13868,16 +13877,21 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   align-items: center;
   justify-content: center;
   min-height: 28px;
-  padding: 0 6px;
+  padding: 4px 6px;
   border-radius: 8px;
   border: 1px solid rgba(15, 23, 42, 0.08);
   color: var(--text-soft);
   font-size: 0.72rem;
   font-weight: 650;
+  line-height: 1.15;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  /* SARMAYA İZİN VER. `white-space:nowrap` + `text-overflow:ellipsis`,
+     ortalanmış metinde güvenilir değil: tarayıcı "…" basmadan metni HER
+     İKİ uçtan simetrik kırpıyor ("Puan Durumu" → "uan Durum"). Üç butonluk
+     dar sütunda "Puan Durumu"/"Takım Formu" hiçbir font boyutunda güvenle
+     tek satıra sığmıyor; metnin sarmasına izin vermek, harf kaybetmekten
+     iyidir. */
+  white-space: normal;
   transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
@@ -20508,6 +20522,104 @@ a.motm-week__card:focus-visible {
   gap: 10px;
 }
 
+/* ── PUAN DURUMLARI SEKMELERİ (ana sayfa, 9 yarışma) ──────────────────
+   `leaders-tabs` ile aynı saf-CSS desen (gizli radyo + `for` + genel kardeş
+   seçici). Fark: sekme çubuğu grid değil FLEX + `overflow-x: auto` —
+   masaüstünde 9 sekme tek satıra sığar, konteyner dar kaldığında (mobil)
+   satır kırılmaz, yatay kaydırılır. Satır işaretlemesi kasıtlı olarak
+   `.home-standing-row` sınıflarını PAYLAŞIR (yukarıdaki ana sayfa puan
+   durumu bileşeni) — yeni bir satır/duyarlılık kuralı yazılmadı. */
+.standings-tabs { display: flex; flex-direction: column; gap: 12px; }
+
+.standings-tabs__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.standings-tabs__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 2px;
+}
+
+.standings-tabs__list::-webkit-scrollbar { display: none; }
+
+.standings-tabs__label {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(var(--surface-rgb), 0.03);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.standings-tabs__label:hover { border-color: var(--green); color: var(--text); }
+
+#standings-tab-super-lig:checked ~ .standings-tabs__list #standings-tablabel-super-lig,
+#standings-tab-premier-league:checked ~ .standings-tabs__list #standings-tablabel-premier-league,
+#standings-tab-la-liga:checked ~ .standings-tabs__list #standings-tablabel-la-liga,
+#standings-tab-serie-a:checked ~ .standings-tabs__list #standings-tablabel-serie-a,
+#standings-tab-bundesliga:checked ~ .standings-tabs__list #standings-tablabel-bundesliga,
+#standings-tab-ligue-1:checked ~ .standings-tabs__list #standings-tablabel-ligue-1,
+#standings-tab-sampiyonlar-ligi:checked ~ .standings-tabs__list #standings-tablabel-sampiyonlar-ligi,
+#standings-tab-avrupa-ligi:checked ~ .standings-tabs__list #standings-tablabel-avrupa-ligi,
+#standings-tab-konferans-ligi:checked ~ .standings-tabs__list #standings-tablabel-konferans-ligi {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+}
+
+#standings-tab-super-lig:focus-visible ~ .standings-tabs__list #standings-tablabel-super-lig,
+#standings-tab-premier-league:focus-visible ~ .standings-tabs__list #standings-tablabel-premier-league,
+#standings-tab-la-liga:focus-visible ~ .standings-tabs__list #standings-tablabel-la-liga,
+#standings-tab-serie-a:focus-visible ~ .standings-tabs__list #standings-tablabel-serie-a,
+#standings-tab-bundesliga:focus-visible ~ .standings-tabs__list #standings-tablabel-bundesliga,
+#standings-tab-ligue-1:focus-visible ~ .standings-tabs__list #standings-tablabel-ligue-1,
+#standings-tab-sampiyonlar-ligi:focus-visible ~ .standings-tabs__list #standings-tablabel-sampiyonlar-ligi,
+#standings-tab-avrupa-ligi:focus-visible ~ .standings-tabs__list #standings-tablabel-avrupa-ligi,
+#standings-tab-konferans-ligi:focus-visible ~ .standings-tabs__list #standings-tablabel-konferans-ligi {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.standings-tabs__panel { display: none; }
+
+#standings-tab-super-lig:checked ~ .standings-tabs__panels #standings-panel-super-lig,
+#standings-tab-premier-league:checked ~ .standings-tabs__panels #standings-panel-premier-league,
+#standings-tab-la-liga:checked ~ .standings-tabs__panels #standings-panel-la-liga,
+#standings-tab-serie-a:checked ~ .standings-tabs__panels #standings-panel-serie-a,
+#standings-tab-bundesliga:checked ~ .standings-tabs__panels #standings-panel-bundesliga,
+#standings-tab-ligue-1:checked ~ .standings-tabs__panels #standings-panel-ligue-1,
+#standings-tab-sampiyonlar-ligi:checked ~ .standings-tabs__panels #standings-panel-sampiyonlar-ligi,
+#standings-tab-avrupa-ligi:checked ~ .standings-tabs__panels #standings-panel-avrupa-ligi,
+#standings-tab-konferans-ligi:checked ~ .standings-tabs__panels #standings-panel-konferans-ligi {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.standings-tabs__cta { align-self: flex-start; }
+
 .leaders-list { display: flex; flex-direction: column; gap: 6px; }
 
 .leaders-row {
@@ -20740,30 +20852,14 @@ a.motm-week__card:focus-visible {
   .evergreen-player-list, .evergreen-link-grid { grid-template-columns: 1fr; }
 }
 
-/* ── ANA SAYFA PUAN DURUMU: KOMPAKT YARI GENİŞLİK KART ──────────────
-   Görev: bölüm 1120px konteynerin tamamını kaplıyordu ve 18 satır
-   (~740px yükseklik) ana sayfanın en büyük bloğuydu. Satır sayısı 6'ya
-   indirildi (`app.js#renderStandingsTable`,
-   `scripts/prerender-core-pages.mjs#staticHomeStandingRows`) — bölge
-   sınıfı (şampiyonluk/Avrupa/küme düşme) hesaplaması yine TAM takım
-   sayısını kullanır, yalnızca görüntülenen satır azalır. Tam tabloya
-   bağlantı korunur (`section-link` + alt CTA, ikisi de `puan-durumu.html`).
-
-   Masaüstünde (641px+) başlık, kart ve CTA 600px'e sabitlenir — 1120px
-   konteynerin yarısı civarı, brifingin istediği 560-640px aralığında.
-   Blok bloktur (flex/grid değil), bu yüzden `max-width` tek başına sola
-   yaslı bırakır — ek saplama gerekmez. 640px ve altında (mobil) kart
-   tam genişliğe döner; satır yoğunluğu yukarıdaki
-   `@media (max-width: 640px)` / `(max-width: 360px)` kurallarında zaten
-   sıkılaştırılmıştı — burada yalnızca satır iç boşluğu bir basamak daha
-   daraltılır. */
+/* ── ANA SAYFA PUAN DURUMLARI: SATIR İÇ BOŞLUĞU (641px+) ────────────
+   Satır yoğunluğu mobilde zaten `@media (max-width: 640px)` /
+   `(max-width: 360px)` kurallarında sıkılaştırılmıştı; masaüstünde
+   `.home-standing-row` biraz daha nefes alır. 9 sekmeli widget artık
+   `.home-top-grid__main`ın TAM genişliğini kullanır (eski tek-lig kartının
+   600px sabiti kaldırıldı — dokuz sekmelik çubuğun masaüstünde tek satırda
+   kalması için tam genişlik gerekiyor). */
 @media (min-width: 641px) {
-  .home-standings .section-head,
-  .home-standings-panel,
-  .home-standings-cta {
-    max-width: 600px;
-  }
-
   .home-standing-row {
     padding: 8px 14px;
   }

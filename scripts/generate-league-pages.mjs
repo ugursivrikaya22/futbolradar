@@ -24,6 +24,7 @@ import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { fixtureCard as sharedFixtureCard } from "./lib/matchCards.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
+import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -124,7 +125,7 @@ function resultsSectionHtml(matches) {
     </section>`;
 }
 
-function standingsSectionHtml(standingsEntry) {
+function standingsSectionHtml(standingsEntry, competition) {
   if (!standingsEntry || !Array.isArray(standingsEntry.table) || !standingsEntry.table.length) return "";
   const rows = standingsEntry.table.map((row) => `<tr>
       <td>${escapeHtml(row.rank ?? "")}</td>
@@ -137,6 +138,14 @@ function standingsSectionHtml(standingsEntry) {
       <td><strong>${escapeHtml(row.points ?? "")}</strong></td>
     </tr>`).join("");
 
+  // Katalogda kayıtlı yarışmalar (bkz. scripts/lib/standingsCatalog.mjs) ayrıca
+  // kendi SEO'lu puan durumu sayfasına sahip (ör. `/premier-lig-puan-durumu`);
+  // Süper Lig için bu sayfa zaten var (`super-lig-puan-durumu.html`).
+  const catalogEntry = STANDINGS_LEAGUES[competition.id];
+  const dedicatedLink = catalogEntry
+    ? `<p class="league-page-standings-link"><a href="../${catalogEntry.slugTr}">${escapeHtml(catalogEntry.nameTr)} puan durumunun tüm ayrıntılarını gör</a></p>`
+    : "";
+
   return `<section class="league-page-section">
       <h2>Puan durumu</h2>
       <div class="table-scroll">
@@ -145,6 +154,7 @@ function standingsSectionHtml(standingsEntry) {
           <tbody>${rows}</tbody>
         </table>
       </div>
+      ${dedicatedLink}
     </section>`;
 }
 
@@ -199,7 +209,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
       </section>
 
       ${resultsSectionHtml(results)}
-      ${standingsSectionHtml(standingsEntry)}
+      ${standingsSectionHtml(standingsEntry, competition)}
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
