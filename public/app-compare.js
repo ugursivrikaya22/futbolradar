@@ -1527,6 +1527,10 @@
     return "./mac-detay.html?" + params.toString();
   }
 
+  function teamDetailHref(team) {
+    return "./takim-detay.html?team=" + encodeURIComponent(team.name || team.team || team.id || "");
+  }
+
   function statusTr(status) {
     var normalized = String(status || "").toUpperCase();
     // Sağlayıcının kısa kodları da karşılanır: eskiden "PST" ya da "SUSP"
@@ -2022,6 +2026,61 @@
       '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
       "</article>"
     );
+  }
+
+  /**
+   * MAÇ KARTI İÇ LİNK SİSTEMİ — istemci tarafı. Sunucudaki
+   * (scripts/prerender-core-pages.mjs) HOME_QUICKLINK_TEAMS/quickLink*
+   * fonksiyonlarıyla bilerek özdeş: JS yüklendiğinde ana sayfadaki kartlar
+   * yerinden oynamasın diye aynı kural, aynı hedefler.
+   */
+  var HOME_QUICKLINK_TEAMS = [
+    { name: "Galatasaray", slug: "galatasaray" },
+    { name: "Fenerbahçe", slug: "fenerbahce" },
+    { name: "Beşiktaş", slug: "besiktas" },
+    { name: "Trabzonspor", slug: "trabzonspor" }
+  ];
+
+  function quickLinkTeamFor(match) {
+    for (var index = 0; index < HOME_QUICKLINK_TEAMS.length; index += 1) {
+      if (sameClubName(HOME_QUICKLINK_TEAMS[index].name, match.homeTeam)) return HOME_QUICKLINK_TEAMS[index];
+    }
+    for (var awayIndex = 0; awayIndex < HOME_QUICKLINK_TEAMS.length; awayIndex += 1) {
+      if (sameClubName(HOME_QUICKLINK_TEAMS[awayIndex].name, match.awayTeam)) return HOME_QUICKLINK_TEAMS[awayIndex];
+    }
+    return null;
+  }
+
+  function quickLinkStandingsHref(match) {
+    var team = quickLinkTeamFor(match);
+    if (team) return "./" + team.slug + "-puan-durumu.html";
+    return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+  }
+
+  function quickLinkFormHref(match) {
+    var team = quickLinkTeamFor(match);
+    var name = (team && team.name) || match.homeTeam || match.awayTeam || "";
+    return teamDetailHref({ name: name });
+  }
+
+  function quickLinkButtonsHtml(match) {
+    var analysisLabel = fixtureStatusMeta(match).finished ? "Sonuç Analizi" : "Analiz";
+    return (
+      '<a href="' + escapeHtml(matchDetailHref(match)) + '">' + analysisLabel + "</a>" +
+      '<a href="' + escapeHtml(quickLinkStandingsHref(match)) + '">Puan Durumu</a>' +
+      '<a href="' + escapeHtml(quickLinkFormHref(match)) + '">Takım Formu</a>'
+    );
+  }
+
+  /**
+   * Yalnızca ana sayfanın "Bugünün Maçları" önizlemesi (today-matches
+   * hedefi) bu sarmalayıcıyı kullanır — `renderFixtureCard`ın kendisi
+   * değişmez, bugunun-maclari.html (renderMatchPageCard) ve diğer tüm
+   * kullanıcılar etkilenmez.
+   */
+  function renderHomeFixtureCard(match) {
+    var quickLinks = '<div class="fixture-card-quicklinks">' + quickLinkButtonsHtml(match) + "</div>";
+    return renderFixtureCard(match).replace("</article>", quickLinks + "</article>");
   }
 
   // featured-match-selection:start
@@ -3715,7 +3774,7 @@
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
     // görünür, gerisi butonun arkasında; on ikiden azsa buton hiç basılmaz.
-    return renderMatchListWindow(ordered, renderFixtureCard, "today-matches");
+    return renderMatchListWindow(ordered, renderHomeFixtureCard, "today-matches");
   }
 
   // match-program-order:start
@@ -4185,12 +4244,21 @@
       }
       // Kimlik ve editoryal alanlar korunur; sağlayıcı yalnızca canlı durumu
       // ve skoru ilerletir.
+      //
+      // SKOR YALNIZCA OKUNABİLİRSE DEVRALINIR. `liveMatch.score` dolu bir
+      // nesne olsa bile alanları `null` olabilir (ör. sağlayıcının canlı
+      // uç noktası bazı liglerde henüz gol alanını doldurmamışsa);
+      // `liveMatch.score || ...` bu nesneyi HER ZAMAN doğru sayar (boş
+      // nesne bile truthy'dir) ve zaten geçerli bir skoru sessizce `null`a
+      // düşürürdü — kart "Canlı veri doğrulanamadı"ya döner ve daha önce
+      // gösterilen skor kaybolurdu. Skor yalnızca yeni paket gerçekten
+      // okunabilirse ilerletilir; değilse elde olan korunur.
       base[existing] = Object.assign({}, base[existing], {
         status: liveMatch.status || base[existing].status,
         providerStatus: liveMatch.providerStatus || base[existing].providerStatus,
         minute: liveMatch.minute || base[existing].minute,
         elapsed: liveMatch.elapsed || base[existing].elapsed,
-        score: liveMatch.score || base[existing].score,
+        score: hasReadableScore(liveMatch) ? liveMatch.score : base[existing].score,
         // Kart ve penaltı rozetleri olay akışından okunur. Sağlayıcı canlı
         // uç noktada olay vermiyorsa mevcut (editoryal) kayıt korunur —
         // boş bir dizi doğrulanmış olayları silmemeli.

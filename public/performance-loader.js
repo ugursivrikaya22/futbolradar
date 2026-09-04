@@ -8,7 +8,7 @@
     loaded = true;
 
     var script = document.createElement("script");
-    script.src = "/app.js?v=58eeda74";
+    script.src = "/app.js?v=ee8be076";
     script.async = true;
     script.dataset.performanceLoaded = "true";
     if ("fetchPriority" in script) script.fetchPriority = "low";
@@ -19,12 +19,16 @@
     window.addEventListener(name, loadApplication, { once: true, passive: true });
   });
 
-  window.setTimeout(function () {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(loadApplication, { timeout: 1800 });
-      return;
-    }
-
-    loadApplication();
-  }, 1200);
+  // İlk ayrıştırmayı ASLA bloklamaz (script zaten `defer`, yükleme kendisi
+  // `async`) — bu yüzden boşta kalma kontrolünü ERTELEMEYE gerek yok. Eski
+  // sürüm önce sabit 1200ms bekliyor, SONRA 1800ms'e kadar boşta kalma
+  // arıyordu: meşgul bir ana iş parçacığında canlı skor kodu 3 saniyeye
+  // kadar hiç yüklenmiyordu. requestIdleCallback zaten yalnızca tarayıcı
+  // boştayken çalışır — hemen kaydetmek aynı garantiyi korurken gereksiz
+  // ön bekleme süresini kaldırır.
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(loadApplication, { timeout: 1200 });
+  } else {
+    window.setTimeout(loadApplication, 300);
+  }
 })();

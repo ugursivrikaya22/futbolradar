@@ -1,0 +1,87 @@
+name: FutbolRadar Sporx News Discovery
+
+# Sporx bir haber KEŞİF kaynağıdır (bkz. docs/sporx-news-pipeline.md). Bu iş
+# yalnızca yeni Sporx başlıklarını tarar, mükerrer olmayanlardan özgün
+# FutbolRadar haberleri üretir ve mevcut, test edilmiş sayfa/bant hattını
+# çalıştırır. Ayrı bir iş akışı olmasının nedeni sıklık: ana güncelleme
+# (match-analysis.yml) saatlik çalışır, görev tanımı burada 15 dakikada bir
+# istiyor.
+#
+# Dakika :00/:15/:30/:45 DEĞİL, :07/:22/:37/:52 kullanılıyor. Bu repo bunu
+# zaten match-analysis.yml'de biliyor (bkz. docs/scheduled-updates.md):
+# GitHub'ın kendi belgeleri saat başının `schedule` kuyruğunun en yoğun
+# penceresi olduğunu söylüyor; bu iş akışı ilk yayınlandığında saat
+# dakikasına sabitlenmiş halde ~26 dakika (birden fazla tetikleme penceresi)
+# boyunca HİÇ çalışmadı — gözlemlenen gecikme saatler sürebiliyor. Ofset,
+# GitHub'ın belgelediği düzeltme.
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: Bu koşuda işlenecek en fazla haber sayısı
+        required: false
+        default: "6"
+
+permissions:
+  contents: write
+
+# Aynı anda iki koşu data/news.json'a yazamaz. Bir sonraki 15 dakikalık
+# tetikleyici zaten yakında geleceği için bekleyen koşu iptal edilebilir.
+concurrency:
+  group: futbolradar-sporx-discovery
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout current production data
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Discover and write original Sporx-sourced articles
+        id: discover
+        continue-on-error: true
+        shell: bash
+        env:
+          LIMIT: ${{ inputs.limit || '6' }}
+        run: |
+          set -o pipefail
+          node scripts/discover-sporx-news.mjs --apply --limit="${LIMIT}" 2>&1 | tee sporx-discovery.log
+
+      - name: Render news pages, home/feed cards and ticker
+        if: steps.discover.outcome == 'success'
+        shell: bash
+        run: |
+          set -o pipefail
+          node scripts/generate-news-pages.mjs
+          node scripts/prerender-core-pages.mjs
+          node scripts/postprocess.mjs
+
+      - name: Commit valid changes
+        if: steps.discover.outcome == 'success'
+        shell: bash
+        run: |
+          node scripts/ci-commit-push.mjs "ci(sporx-news): otomatik Sporx keşif taraması"
+
+      - name: Preserve run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sporx-discovery-${{ github.run_id }}
+          path: sporx-discovery.log
+          retention-days: 14
+
+      - name: Fail workflow after log capture
+        if: always() && steps.discover.outcome == 'failure'
+        shell: bash
+        run: exit 1

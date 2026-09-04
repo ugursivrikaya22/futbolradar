@@ -267,7 +267,63 @@ function programMatchPool() {
     .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match));
 }
 
-function programFixtureCard(match, today) {
+/**
+ * MAÇ KARTI İÇ LİNK SİSTEMİ — yalnızca ana sayfanın "Bugünün Maçları"
+ * önizlemesinde (bkz. calendarProgramCards). `programFixtureCard` gövdesi
+ * "Bugünün Maçları" sayfasıyla (matchProgramPageCards) PAYLAŞILIR ama bu
+ * satır yalnızca çağıran `quickLinks: true` verdiğinde basılır — o sayfanın
+ * ve İngilizce sürümün mevcut tasarımı değişmez.
+ *
+ * Amaç: ana sayfaya gelen okuyucu yalnızca skora bakıp çıkmasın, analiz/
+ * puan durumu/takım formuna tek dokunuşla geçebilsin.
+ */
+const HOME_QUICKLINK_TEAMS = [
+  { name: "Galatasaray", slug: "galatasaray" },
+  { name: "Fenerbahçe", slug: "fenerbahce" },
+  { name: "Beşiktaş", slug: "besiktas" },
+  { name: "Trabzonspor", slug: "trabzonspor" }
+];
+
+/** Kartın öncelikli takımı: önce ev sahibi, yoksa deplasman — dört büyükten biri. */
+function quickLinkTeamFor(match) {
+  return HOME_QUICKLINK_TEAMS.find((team) => sameClub(team.name, match.homeTeam)) ||
+    HOME_QUICKLINK_TEAMS.find((team) => sameClub(team.name, match.awayTeam)) ||
+    null;
+}
+
+/**
+ * Puan durumu hedefi: dört büyükten biri oynuyorsa kendi puan durumu
+ * sayfası, Süper Lig maçıysa lig sayfası, değilse genel puan durumu sayfası
+ * (yeni bir sayfa üretilmez — üçü de zaten yayında).
+ */
+function quickLinkStandingsHref(match) {
+  const team = quickLinkTeamFor(match);
+  if (team) return `./${team.slug}-puan-durumu.html`;
+  return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+}
+
+/** Takım formu hedefi: mevcut takım radarı sayfası (./takim-detay.html?team=...). */
+function quickLinkFormHref(match) {
+  const team = quickLinkTeamFor(match);
+  const name = (team && team.name) || match.homeTeam || match.awayTeam || "";
+  return `./takim-detay.html?team=${encodeURIComponent(name)}`;
+}
+
+/**
+ * Üç düğme. Maç bitince ilk düğme "Analiz"den "Sonuç Analizi"ne döner ama
+ * hedefi DEĞİŞMEZ: `matchDetailPath` zaten sitenin "bu maça git" için tek
+ * gerçek kaynağı, bittiğinde de aynı sayfa sonucu gösterir. Puan Durumu ve
+ * Takım Formu maçın durumundan bağımsızdır.
+ */
+function quickLinkButtonsHtml(match) {
+  const isFinal = String(match.status || "SCHEDULED").toUpperCase() === "FINISHED";
+  const analysisLabel = isFinal ? "Sonuç Analizi" : "Analiz";
+  return `<a href="${escapeHtml(matchDetailPath(match))}">${escapeHtml(analysisLabel)}</a>` +
+    `<a href="${escapeHtml(quickLinkStandingsHref(match))}">Puan Durumu</a>` +
+    `<a href="${escapeHtml(quickLinkFormHref(match))}">Takım Formu</a>`;
+}
+
+function programFixtureCard(match, today, options = {}) {
   const date = istanbulDay(match.kickoff);
   const isToday = date === today;
   const status = String(match.status || "SCHEDULED").toUpperCase();
@@ -277,8 +333,9 @@ function programFixtureCard(match, today) {
     ? `${match.score.home}-${match.score.away}`
     : null;
   const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
+  const quickLinksHtml = options.quickLinks ? quickLinkButtonsHtml(match) : "";
 
-  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore });
+  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore, quickLinksHtml });
 }
 
 function calendarProgramMatches(limit) {
@@ -295,7 +352,10 @@ function calendarProgramCards(limit) {
     return "";
   }
 
-  return upcoming.map((match) => programFixtureCard(match, today)).join("");
+  // `quickLinks: true` yalnızca BURADA: ana sayfanın "Bugünün Maçları"
+  // önizlemesi. matchProgramPageCards (bugunun-maclari.html) aynı
+  // `programFixtureCard`ı seçeneksiz çağırır, o sayfa değişmez.
+  return upcoming.map((match) => programFixtureCard(match, today, { quickLinks: true })).join("");
 }
 
 /**
@@ -448,7 +508,7 @@ function staticFormPercent(name) {
 const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
-  const { headlineValue, status, finalScore } = meta;
+  const { headlineValue, status, finalScore, quickLinksHtml } = meta;
   const isLive = status === "LIVE";
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
@@ -479,7 +539,8 @@ function staticFixtureCard(match, meta) {
     // başına hiçbir tarama yolu yok. JavaScript yüklendiğinde bağlantı zaten
     // maç ayrıntısına dönüyordu, yani statik hâl istemciyle çelişiyordu.
     actionHref: matchDetailPath(match),
-    withMatchClick: true
+    withMatchClick: true,
+    quickLinksHtml: quickLinksHtml || ""
   });
 }
 
@@ -1712,7 +1773,14 @@ writePage("index.html", {
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
   "transfer-radar-ticker": transferRadarTicker(),
-  "match-quotes": matchQuotesTicker()
+  "match-quotes": matchQuotesTicker(),
+  // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
+  // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
+  // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu
+  // satır unutulup kaybolmuştu (bkz. test-seo-integrity.mjs: sitemap'te
+  // olup hiçbir yerden bağlanmayan sayfa uyarısı). Artık her derlemede
+  // BURADAN yazılıyor, bir daha elle taşınmaya bağlı kalmıyor.
+  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda.html">Bugünkü maçlar hangi kanalda?</a>'
 });
 
 writePage("analizler.html", {
