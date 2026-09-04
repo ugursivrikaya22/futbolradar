@@ -1,4 +1,5 @@
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
+const { checkStandings } = require("../services/standingsIntegrity");
 const {
   enforceRateLimit,
   getQuery,
@@ -44,5 +45,18 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result));
+  // validateStandings yalnızca ŞEKLİ doğrular (team + points var mı). O ≠
+  // G+B+M ya da P ≠ 3·G+B gibi ARİTMETİK tutarsızlıkları services/
+  // standingsIntegrity.js:checkStandings yakalar — qa.mjs ve
+  // sync-standings.mjs bu kapıdan geçiyor ama bu uç nokta (canlı sağlayıcı
+  // yolu) hiç geçmiyordu. Sayfa yine de servis edilir (tabloyu boşaltmak
+  // hatalı bir satırdan daha kötü olurdu); ihlal varsa yalnızca sunucu
+  // logunda ve `meta.integrity`de görünür — arayüz bunu okumaya bilerek
+  // zorlanmıyor, bu değişiklik yalnızca sorunu görünür kılıyor.
+  const violations = checkStandings(data);
+  if (violations.length) {
+    console.warn(`[futbolradar:standings-integrity] league=${query.league || "super-lig"} provider=${result.provider.name} violations=${JSON.stringify(violations)}`);
+  }
+
+  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result, { integrity: { violations } }));
 };

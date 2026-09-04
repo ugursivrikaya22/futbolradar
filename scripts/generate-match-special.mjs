@@ -405,7 +405,7 @@ function hubPage(special, modules, locale) {
   const base = baseFor(dir);
   const canonical = `${DOMAIN}/${dir}/${special.slug}.html`;
   const seo = seoFor(special, locale);
-  const liveHref = locale === "en" ? `${base}en/live-scores.html` : `${base}canli-skor.html`;
+  const liveHref = locale === "en" ? `${base}en/live-football-scores.html` : `${base}canli-skor.html`;
   const centreHref = locale === "en" ? `${base}en/match-centre.html` : `${base}mac-merkezi.html`;
 
   const body = `    <main class="container match-special">

@@ -55,6 +55,13 @@ Eksik veri olan oyuncularda skor yine 0-100 araliginda uretilebilir ama `ratingS
 
 Gerçek player API bağlandığında adapter, normalize edilmiş alanları `services/playerService.js` modeline göre üretmelidir.
 
+## Oyuncu Profili Modülü
+
+Profil sayfasının veri sözleşmesi, skor motoru, boş durum kuralları ve
+genişletme adımları `docs/player-radar-module.md` içinde anlatılır. Profil
+HTML'i `player-profile.js` tarafından hem statik üretimde hem tarayıcıda aynı
+şekilde basılır; `/api/player-detail?id=<slug>` aynı sözleşmeyi JSON döndürür.
+
 ## Oyuncu Radar Scouting Modeli
 
 `services/playerService.js` her oyuncuyu `currentTeam` öncelikli olacak şekilde normalize eder; `team` alanı yalnızca eski uyumluluk için aynı değere çekilir. `stats.minutes` ve `stats.minutesPlayed` birlikte desteklenir, böylece farklı provider alan adları UI tarafını bozmaz.

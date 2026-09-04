@@ -208,7 +208,7 @@ function nextMatchHtml(match, team) {
     homeScore: null,
     awayScore: null,
     formHtml: "",
-    actionHref: "../live-scores.html",
+    actionHref: "../live-football-scores.html",
     withMatchClick: false
   });
 }

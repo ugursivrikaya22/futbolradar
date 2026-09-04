@@ -5,11 +5,12 @@ const require = createRequire(import.meta.url);
 const utils = require("../api/_utils");
 const footballData = require("../services/providers/footballProvider");
 const apiFootball = require("../services/providers/apiFootballProvider");
-const { clearProviderCache } = require("../services/providerCache");
+const { clearProviderCache, DEFAULT_TTLS } = require("../services/providerCache");
 const providers = require("../services/providers");
 const competitionCatalog = require("../services/competitionCatalog");
 const playersHandler = require("../api/players");
 const matchesHandler = require("../api/matches");
+const standingsHandler = require("../api/standings");
 const mockProvider = require("../services/providers/mockProvider");
 const { resetProviderHealth } = require("../services/liveDataService");
 
@@ -861,5 +862,57 @@ async function testMatchPublishingPolicy() {
 }
 
 await testMatchPublishingPolicy();
+
+function testFixtureDetailUsesLiveCacheTtl() {
+  // mac-detay.html ve /api/live-latency tek fikstür kimliğiyle sorgular
+  // (getMatchDetail -> getFixtures({ fixtureId })); bu yol günlük listenin
+  // 60 sn TTL'ini almamalı, "matches-live"in 15 sn TTL'ini almalı — yoksa
+  // canlı bir maçın detay sayfası sağlayıcı katmaninda bir dakikaya kadar
+  // bayat kalır (bkz. cacheResourceFor'daki gerekçe).
+  assert.equal(apiFootball.cacheResourceFor("/fixtures", { id: "123" }), "matches-live");
+  assert.equal(apiFootball.cacheResourceFor("/fixtures", { live: "all" }), "matches-live");
+  // Günün fikstür listesi (kimlik yok, canlı bayrağı yok) uzun TTL'de kalmalı.
+  assert.equal(apiFootball.cacheResourceFor("/fixtures", { date: "2026-08-28" }), "matches");
+  assert.ok(
+    DEFAULT_TTLS["matches-live"] < DEFAULT_TTLS.matches,
+    "matches-live TTL'i matches TTL'inden kısa olmalı"
+  );
+}
+
+testFixtureDetailUsesLiveCacheTtl();
+
+/**
+ * /api/standings, services/standingsIntegrity.js:checkStandings'i hiç
+ * çağırmıyordu — validateStandings yalnızca "team ve points var mı" diye
+ * bakan bir şekil kontrolü, O=G+B+M / P=3G+B gibi aritmetik tutarsızlığı
+ * yakalamıyor. Bu test yalnızca TELİN gerçekten takılı olduğunu doğruluyor;
+ * checkStandings'in kendi kural testleri scripts/test-opening-week.mjs'te.
+ */
+async function testStandingsIntegrityIsWired() {
+  const envNames = [...utils.API_KEY_ENV_NAMES, "APIFOOTBALL_API_KEY", "FOOTBALL_PRIMARY_PROVIDER"];
+  const previous = Object.fromEntries(envNames.map((name) => [name, process.env[name]]));
+  try {
+    envNames.forEach((name) => delete process.env[name]);
+
+    const response = fakeResponse();
+    await standingsHandler({ method: "GET", url: "/api/standings", headers: {} }, response);
+
+    assert.equal(response.statusCode, 200);
+    assert.equal(response.payload.ok, true);
+    assert.ok(response.payload.meta, "yanit meta tasimali");
+    assert.ok(response.payload.meta.integrity, "meta.integrity eklenmeli");
+    assert.ok(Array.isArray(response.payload.meta.integrity.violations), "violations dizi olmali");
+    // Kürasyonlu (mock) tablo zaten tutarlı olmalı — boş dizi, kapının
+    // yanlışlıkla sağlam veriyi de işaretlemediğini gösteriyor.
+    assert.equal(response.payload.meta.integrity.violations.length, 0, "kurasyonlu tablo ihlal içermemeli");
+  } finally {
+    envNames.forEach((name) => {
+      if (previous[name] === undefined) delete process.env[name];
+      else process.env[name] = previous[name];
+    });
+  }
+}
+
+await testStandingsIntegrityIsWired();
 
 console.log("FutbolRadar API resilience tests passed");

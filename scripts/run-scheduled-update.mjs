@@ -142,7 +142,7 @@ function defaultStatus() {
   return {
     schemaVersion: 1,
     timezone: ISTANBUL_TIME_ZONE,
-    schedule: { fullUtc: "0 2 * * *", hourlyUtc: "0 0-1,3-23 * * *", fullLocal: "05:00" },
+    schedule: { fullUtc: "7 2 * * *", hourlyUtc: "7 0-1,3-23 * * *", fullLocal: "~05:00" },
     updatedAt: null,
     lastUpdate: null,
     lastFull: null,
@@ -389,10 +389,20 @@ function hourlyBuildSteps(diff) {
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
     nodeStep("render-news-pages", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
+    // EN canlı skor/puan durumu/sonuçlar sayfaları (`en/live-scores.html`,
+    // `en/standings.html`, `en/results.html`, `en/todays-matches.html`,
+    // `en/match-centre.html`, `en/momentum.html`) aynı data/*.json'dan
+    // üretiliyor ama önceden yalnızca günlük tam derlemede yenileniyordu:
+    // TR tarafı saat başı tazelenirken EN tarafı bir sonraki tam derlemeye
+    // kadar (~24 saate kadar) eski skor/durum gösteriyordu. Buradaki adım
+    // TR ile aynı kaynaktan aynı anda üretildiği için ikisi arasında ek
+    // sağlayıcı isteği veya senkron gecikmesi yok.
+    nodeStep("render-en-pages", "generate-en-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    nodeStep("render-broadcast-schedule", "generate-broadcast-schedule-page.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
     nodeStep("render-league-pages", "generate-league-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("search-index", "generate-search-index.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
@@ -415,9 +425,9 @@ function hourlyBuildSteps(diff) {
   return steps;
 }
 
-function githubRunUrl() {
-  if (!process.env.GITHUB_SERVER_URL || !process.env.GITHUB_REPOSITORY || !process.env.GITHUB_RUN_ID) return null;
-  return `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+function githubRunUrl(env = process.env) {
+  if (!env.GITHUB_SERVER_URL || !env.GITHUB_REPOSITORY || !env.GITHUB_RUN_ID) return null;
+  return `${env.GITHUB_SERVER_URL}/${env.GITHUB_REPOSITORY}/actions/runs/${env.GITHUB_RUN_ID}`;
 }
 
 function appendGithubSummary(record) {
@@ -571,6 +581,51 @@ async function main() {
   if (criticalFailure) process.exitCode = 1;
 }
 
+/**
+ * main() DIŞINDA PATLAYAN HATA İÇİN SAF KAYIT — writeStatus() ÖNCEDEN
+ * yalnızca normal dönüşte çalışıyordu; main() beklenmeyen bir yerde patlarsa
+ * (ör. validateCiContext, kilit alma, ya da runStep'in kendi try/catch'i
+ * dışında kalan bir hata) koşu data/update-status.json'a hiç yazılmıyordu —
+ * panoda "son çalışma" zamanı ilerlemeyi durdurup sessizce eskiyordu, gerçek
+ * hata sebebi de hiçbir yerde görünmüyordu.
+ *
+ * Mevcut durum sözlüğüyle ("success"/"partial"/"failed"/"skipped") aynı
+ * kalır — yeni bir değer, onu tanımayan tüketicilerde (ör. panonun .failed
+ * CSS sınıfı) sessizce renksiz kalırdı. errors[0].step "main" olması, normal
+ * bir adım hatasından ayrımı zaten taşıyor. Saf tutulup dışa açılmasının
+ * sebebi: main() gerçek dosya/ağ yan etkileri olmadan test edilemez, bu
+ * kayıt şekli edilebilir.
+ */
+function buildCrashRecord(error, options = {}) {
+  const argv = options.argv || process.argv.slice(2);
+  const env = options.env || process.env;
+  const now = options.now || new Date();
+  let type = "unknown";
+  try { type = parseArgs(argv).type || "unknown"; } catch { /* argv okunamadı, "unknown" kalır */ }
+  const finishedAt = now.toISOString();
+  return {
+    id: String(env.GITHUB_RUN_ID || `${now.getTime()}-${process.pid}`),
+    dedupeKey: dedupeKey(type === "unknown" ? "hourly" : type, now),
+    type,
+    trigger: env.GITHUB_EVENT_NAME || "local",
+    timezone: ISTANBUL_TIME_ZONE,
+    startedAt: finishedAt,
+    finishedAt,
+    durationMs: 0,
+    status: "failed",
+    sourceControl: {
+      repository: env.GITHUB_REPOSITORY || null,
+      commit: env.GITHUB_SHA || null,
+      runUrl: githubRunUrl(env)
+    },
+    sourcesChecked: [],
+    counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 },
+    changedDataFiles: [],
+    errors: [{ step: "main", source: null, message: redact(error && (error.message || String(error))) }],
+    steps: []
+  };
+}
+
 const isMain = process.argv[1] && pathToFileURL(path.resolve(process.argv[1])).href === import.meta.url;
 if (isMain) {
   try {
@@ -578,6 +633,11 @@ if (isMain) {
   } catch (error) {
     console.error(`[scheduled-update] fatal: ${redact(error.stack || error.message)}`);
     process.exitCode = 1;
+    try {
+      writeStatus(buildCrashRecord(error));
+    } catch (writeError) {
+      console.error(`[scheduled-update] status write after crash also failed: ${redact(writeError.message || String(writeError))}`);
+    }
   } finally {
     if (acquiredLockHandle !== null) {
       try { fs.closeSync(acquiredLockHandle); } catch { /* no-op */ }
@@ -586,4 +646,4 @@ if (isMain) {
   }
 }
 
-export { collectionSnapshot, dedupeKey, snapshotDiff };
+export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff };

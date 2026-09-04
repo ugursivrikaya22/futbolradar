@@ -128,11 +128,18 @@ const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-
 // atlanıyor. Geri eklenecekse Actions dakikası maliyeti bilinçli kabul
 // edilmeli — o yüzden burada varlığı değil, YOKLUĞU değil, YALNIZCA
 // ÇALIŞAN İKİ TETİĞİN DOĞRULUĞU şart koşuluyor.
-assert.match(workflow, /cron: "0 2 \* \* \*"/);
-assert.match(workflow, /cron: "0 0-1,3-23 \* \* \*"/);
+// Dakika 7 KASITLI: GitHub'ın kendi belgelerine göre `schedule` olayı en
+// yoğun kuyruğu saat başında yaşıyor; `:00`'a sabitlenmiş koşular bu depoda
+// 4-8 saat gecikmeli başlıyordu (03.09.2026'da tam koşu hiç tetiklenmedi).
+// Dakikayı kaydırmak GitHub'ın önerdiği düzeltme — bkz. docs/scheduled-updates.md.
+assert.match(workflow, /cron: "7 2 \* \* \*"/);
+assert.match(workflow, /cron: "7 0-1,3-23 \* \* \*"/);
 // Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
 // bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
-assert.doesNotMatch(workflow, /cron: "0 \* \* \* \*"/);
+// Yalnızca dakika 7 değil, HERHANGİ bir dakikada saatte-bir joker de
+// yasak: aksi hâlde biri ileride "7"yi de unutup `0 * * * *` (veya başka
+// bir dakika) eklerse aynı çakışma sessizce geri döner.
+assert.doesNotMatch(workflow, /cron: "\d+ \* \* \* \*"/);
 // Beş dakikada bir koşu hiçbir koşulda kabul edilmiyor: sağlayıcı kotası ve
 // Actions dakikası bu sıklığı kaldırmıyor.
 assert.doesNotMatch(workflow, /\*\/5/);
@@ -140,10 +147,14 @@ assert.match(workflow, /group: futbolradar-production-update/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
 // Koşu türü SCHEDULE değişkeninden okunuyor ve tam koşuyu yalnızca günlük
 // tetik seçiyor; geri kalan her tetik saatlik koşu demek.
-assert.match(workflow, /SCHEDULE.*"0 2 \* \* \*"/s);
+assert.match(workflow, /SCHEDULE.*"7 2 \* \* \*"/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
+// EN core pages (live scores, standings, results, today's matches) must
+// render every hour alongside their TR equivalents, or EN can silently
+// drift up to 24h behind until the next full build.
+assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");

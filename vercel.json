@@ -175,12 +175,90 @@
       "source": "/haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html",
       "destination": "/haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi",
       "permanent": true
+    },
+    {
+      "source": "/en/live-scores.html",
+      "destination": "/en/live-football-scores.html",
+      "permanent": true
+    },
+    {
+      "source": "/en/live-scores",
+      "destination": "/en/live-football-scores.html",
+      "permanent": true
     }
   ],
   "rewrites": [
     {
       "source": "/super-lig-puan-durumu",
       "destination": "/super-lig-puan-durumu.html"
+    },
+    {
+      "source": "/premier-lig-puan-durumu",
+      "destination": "/premier-lig-puan-durumu.html"
+    },
+    {
+      "source": "/la-liga-puan-durumu",
+      "destination": "/la-liga-puan-durumu.html"
+    },
+    {
+      "source": "/serie-a-puan-durumu",
+      "destination": "/serie-a-puan-durumu.html"
+    },
+    {
+      "source": "/bundesliga-puan-durumu",
+      "destination": "/bundesliga-puan-durumu.html"
+    },
+    {
+      "source": "/ligue-1-puan-durumu",
+      "destination": "/ligue-1-puan-durumu.html"
+    },
+    {
+      "source": "/sampiyonlar-ligi-puan-durumu",
+      "destination": "/sampiyonlar-ligi-puan-durumu.html"
+    },
+    {
+      "source": "/avrupa-ligi-puan-durumu",
+      "destination": "/avrupa-ligi-puan-durumu.html"
+    },
+    {
+      "source": "/konferans-ligi-puan-durumu",
+      "destination": "/konferans-ligi-puan-durumu.html"
+    },
+    {
+      "source": "/en/super-lig-standings",
+      "destination": "/en/super-lig-standings.html"
+    },
+    {
+      "source": "/en/premier-league-standings",
+      "destination": "/en/premier-league-standings.html"
+    },
+    {
+      "source": "/en/la-liga-standings",
+      "destination": "/en/la-liga-standings.html"
+    },
+    {
+      "source": "/en/serie-a-standings",
+      "destination": "/en/serie-a-standings.html"
+    },
+    {
+      "source": "/en/bundesliga-standings",
+      "destination": "/en/bundesliga-standings.html"
+    },
+    {
+      "source": "/en/ligue-1-standings",
+      "destination": "/en/ligue-1-standings.html"
+    },
+    {
+      "source": "/en/champions-league-standings",
+      "destination": "/en/champions-league-standings.html"
+    },
+    {
+      "source": "/en/europa-league-standings",
+      "destination": "/en/europa-league-standings.html"
+    },
+    {
+      "source": "/en/conference-league-standings",
+      "destination": "/en/conference-league-standings.html"
     },
     {
       "source": "/form-tablosu/super-lig",
@@ -211,8 +289,8 @@
       "destination": "/en/index.html"
     },
     {
-      "source": "/en/live-scores",
-      "destination": "/en/live-scores.html"
+      "source": "/en/live-football-scores",
+      "destination": "/en/live-football-scores.html"
     },
     {
       "source": "/en/todays-matches",
@@ -303,6 +381,10 @@
       "destination": "/bugunun-maclari.html"
     },
     {
+      "source": "/bugunun-maclari-hangi-kanalda",
+      "destination": "/bugunun-maclari-hangi-kanalda.html"
+    },
+    {
       "source": "/canli-skor",
       "destination": "/canli-skor.html"
     },
@@ -374,6 +456,15 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/player-profile.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
         }
       ]
     },
