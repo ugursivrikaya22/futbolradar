@@ -4545,10 +4545,12 @@
       var score = (live || finished) && match.score
         ? escapeHtml(displayValue(match.score.home)) + " - " + escapeHtml(displayValue(match.score.away))
         : escapeHtml(finished ? "MS" : (live ? "Canlı" : (match.time || "Planlandı")));
+      var minuteLabel = live ? liveMinuteLabel(match) : "";
+      var minuteHtml = minuteLabel ? ' <small class="superlig-strip-minute">' + escapeHtml(minuteLabel) + '</small>' : "";
 
       return '<a class="superlig-strip-row' + (live ? " is-live" : "") + '" data-card="superlig-strip" data-match="' + escapeHtml(match.id || "") + '" href="' + escapeHtml(matchDetailHref(match)) + '">' +
         '<span class="superlig-strip-team">' + superLigTeamLogoHtml(home, home.name) + '<b>' + escapeHtml(home.name) + '</b></span>' +
-        '<span class="superlig-strip-score' + (live ? " is-live" : "") + '">' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + score + '</span>' +
+        '<span class="superlig-strip-score' + (live ? " is-live" : "") + '">' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + score + minuteHtml + '</span>' +
         '<span class="superlig-strip-team is-away">' + superLigTeamLogoHtml(away, away.name) + '<b>' + escapeHtml(away.name) + '</b></span>' +
         '</a>';
     }).join("");

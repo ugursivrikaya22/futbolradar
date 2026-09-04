@@ -424,9 +424,10 @@ function superLigMatchState(match, locale) {
   const isLive = LIVE_STATES.has(canonical);
   const isFinal = PLAYED_STATES.has(canonical) && match && match.score &&
     Number.isFinite(Number(match.score.home)) && Number.isFinite(Number(match.score.away));
-  if (isLive) return { isLive: true, isFinal: false, label: t("status.LIVE", locale) };
-  if (isFinal) return { isLive: false, isFinal: true, label: t("card.fullTimeShort", locale) };
-  return { isLive: false, isFinal: false, label: match && match.time ? String(match.time) : t("card.scheduled", locale) };
+  const minute = isLive && match && Number.isFinite(Number(match.minute)) ? `${Number(match.minute)}'` : "";
+  if (isLive) return { isLive: true, isFinal: false, label: t("status.LIVE", locale), minute };
+  if (isFinal) return { isLive: false, isFinal: true, label: t("card.fullTimeShort", locale), minute: "" };
+  return { isLive: false, isFinal: false, label: match && match.time ? String(match.time) : t("card.scheduled", locale), minute: "" };
 }
 
 /**
@@ -441,10 +442,11 @@ function superLigMatchRowHtml(match, teamList, locale, hrefFor) {
   const score = state.isLive || state.isFinal
     ? `${escapeHtml(match.score && match.score.home !== undefined && match.score.home !== null ? match.score.home : "–")} - ${escapeHtml(match.score && match.score.away !== undefined && match.score.away !== null ? match.score.away : "–")}`
     : escapeHtml(state.label);
+  const minuteHtml = state.isLive && state.minute ? ` <small class="superlig-strip-minute">${escapeHtml(state.minute)}</small>` : "";
 
   return `<a class="superlig-strip-row${state.isLive ? " is-live" : ""}" data-card="superlig-strip" data-match="${escapeHtml(match.id || "")}" href="${escapeHtml(hrefFor(match))}">` +
     `<span class="superlig-strip-team">${teamLogoOrInitials(home, home.name)}<b>${escapeHtml(home.name)}</b></span>` +
-    `<span class="superlig-strip-score${state.isLive ? " is-live" : ""}">${state.isLive ? `<i class="live-pulse" aria-hidden="true"></i>` : ""}${score}</span>` +
+    `<span class="superlig-strip-score${state.isLive ? " is-live" : ""}">${state.isLive ? `<i class="live-pulse" aria-hidden="true"></i>` : ""}${score}${minuteHtml}</span>` +
     `<span class="superlig-strip-team is-away">${teamLogoOrInitials(away, away.name)}<b>${escapeHtml(away.name)}</b></span>` +
     `</a>`;
 }
