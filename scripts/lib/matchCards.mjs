@@ -121,6 +121,10 @@ export function fixtureRow(name, score, otherScore) {
  *   formHtml     hazır form bloğu (yalnızca Türkçe tarafta dolu)
  *   actionHref   kart altındaki bağlantının hedefi
  *   withMatchClick  data-match-click özniteliği (analytics; Türkçe taraf)
+ *   quickLinksHtml  kart altına, eylem bağlantısının ALTINA eklenen ek
+ *                   iç-link düğmeleri (ör. "Analiz — Puan Durumu — Takım
+ *                   Formu"); yalnızca çağıran bir şey verirse basılır —
+ *                   varsayılan davranış (mevcut tüm sayfalar) değişmez.
  *   locale
  */
 export function fixtureCard(options) {
@@ -130,7 +134,8 @@ export function fixtureCard(options) {
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(leagueLabel)}${escapeHtml(leagueLabel)}</span><span class="fixture-card-state ${options.stateClass || ""}">${escapeHtml(options.stateLabel || "")}</span></div>
     <div class="fixture-card-rows">${fixtureRow(options.homeTeam, options.homeScore, options.awayScore)}${fixtureRow(options.awayTeam, options.awayScore, options.homeScore)}</div>
     ${options.formHtml ? `<div class="fixture-card-meta">${options.formHtml}</div>` : ""}
-    <a class="fixture-card-action" href="${escapeHtml(options.actionHref)}"${options.withMatchClick ? " data-match-click" : ""}>${escapeHtml(t("card.openMatchDetail", locale))}</a>
+    <a class="fixture-card-action" href="${escapeHtml(options.actionHref)}"${options.withMatchClick ? " data-match-click" : ""}>${escapeHtml(t("card.openMatchDetail", locale))}</a>${options.quickLinksHtml ? `
+    <div class="fixture-card-quicklinks">${options.quickLinksHtml}</div>` : ""}
   </article>`;
 }
 

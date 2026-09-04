@@ -30,7 +30,26 @@ const {
   windowState
 } = require("../server/matchLineupRoute.js");
 
-const MATCH_ID = "galatasaray-corum-fk-2026-08-14";
+/**
+ * TEST FİKSTÜRÜ SABİT YAZILMAZ, TAKVİMDEN SEÇİLİR.
+ *
+ * Burada eskiden belirli bir maç kimliği ("galatasaray-corum-fk-2026-08-14")
+ * ve onun sağlayıcı numarası elle yazılıydı. Fikstür takvimi ise KAYAN bir
+ * pencere (scripts/sync-fixture-calendar.mjs): maç oynanıp pencerenin
+ * gerisine düşünce satır siliniyor, uç nokta 404 dönüyor ve test, kodda
+ * hiçbir şey bozulmadığı hâlde kırılıyordu. Beklenen değerler de aynı
+ * satırdan okunur; böylece test uç noktanın SÖZLEŞMESİNİ sınar (fikstür
+ * verisinden gelen kimlik ve takım adları), belirli bir maçın ezberini değil.
+ */
+const FIXTURE = (() => {
+  const file = path.join(root, "data", "fixture-calendar.json");
+  const rows = JSON.parse(fs.readFileSync(file, "utf8")).matches || [];
+  const picked = rows.find((row) => row && row.id && row.providerId && row.homeTeam && row.awayTeam);
+  assert.ok(picked, "ön koşul: takvimde sağlayıcı kimliği taşıyan en az bir fikstür olmalı");
+  return picked;
+})();
+
+const MATCH_ID = FIXTURE.id;
 
 function mockResponse() {
   const res = {
@@ -160,9 +179,25 @@ console.log("match-lineup-api");
 
   const data = payload.data;
   assert.equal(data.matchId, MATCH_ID);
-  assert.equal(data.fixtureId, "1584370", "sağlayıcı fikstür kimliği fikstür verisinden gelmeli");
-  assert.equal(data.home.team, "Galatasaray");
-  assert.equal(data.away.team, "Çorum FK");
+  // SAĞLAYICI KİMLİĞİ FİKSTÜR VERİSİNDEN GELİR — ve YALNIZCA API-Football
+  // kimliği olur. Kayıtta API-Football karşılığı yoksa alan boş kalır:
+  // TheSportsDB olay numarasını buraya yazmak, sağlayıcıya boşuna istek
+  // atılması demekti (bkz. server/matchLineupRoute.js providerFixtureId).
+  const apiFootballId = (FIXTURE.providerIds || {}).apiFootball;
+  if (apiFootballId) {
+    assert.equal(data.fixtureId, String(apiFootballId),
+      "API-Football kimliği varsa fikstür verisinden gelmeli");
+  } else {
+    assert.equal(data.fixtureId, null,
+      "API-Football kimliği yokken TheSportsDB numarası kimlik diye yazılmamalı");
+  }
+  const theSportsDbId = (FIXTURE.providerIds || {}).theSportsDb;
+  if (theSportsDbId && data.fixtureId) {
+    assert.notEqual(String(data.fixtureId), String(theSportsDbId),
+      "TheSportsDB numarası API-Football kimliği yerine geçmemeli");
+  }
+  assert.equal(data.home.team, FIXTURE.homeTeam, "ev sahibi adı fikstür verisinden gelmeli");
+  assert.equal(data.away.team, FIXTURE.awayTeam, "deplasman adı fikstür verisinden gelmeli");
   // Kadro yayımlanmadıysa liste BOŞ; yayımlandıysa tam on bir. Aradaki
   // hiçbir sayı kabul edilmez — eksik liste "resmî" sayılamaz (1. bölüm).
   for (const side of ["home", "away"]) {
@@ -175,8 +210,9 @@ console.log("match-lineup-api");
     `beklenmeyen durum: ${data.status}`);
 
   // SKOR KURALI FİKSTÜRÜN DURUMUNA BAĞLI. Bu bölüm yayındaki gerçek
-  // fikstürle çalışıyor ve o fikstür artık oynandı: "skor null olmalı"
-  // demek, oynanmış bir maçın sonucunu gizlemeyi şart koşmak olurdu.
+  // fikstürle çalışıyor ve o fikstür takvimden seçildiği için oynanmış da
+  // olabilir oynanmamış da: "skor null olmalı" demek, oynanmış bir maçın
+  // sonucunu gizlemeyi şart koşmak olurdu.
   // Kural şu: skor ANCAK maç canlı ya da bitmişken yazılır. Oynanmamış
   // maçın uydurma 0-0 almadığı, saf birim testiyle 4. bölümde
   // (`scoreboardFrom`) sınanıyor.
@@ -201,8 +237,9 @@ console.log("match-lineup-api");
   assert.match(String(res.headers["cdn-cache-control"] || ""),
     immutable ? /s-maxage=1800/ : /s-maxage=45/);
 
-  // Sabit bir geçmiş tarih her koşuda geçmişte kalır: bu blok pencere
-  // kapandıktan sonraki davranışı belirlenimci biçimde sınar.
+  // Yalnızca seçilen fikstür yeterince geçmişteyse çalışır; pencere
+  // kapandıktan sonraki davranışı sınar. Koşulsuz yazılsaydı, takvimden
+  // gelecek tarihli bir maç seçildiği koşularda yanlış yere düşerdi.
   if (Date.parse(data.kickoff) < Date.now() - 210 * 60 * 1000) {
     assert.equal(data.phase, "final", "pencere kapandıktan sonra faz `final` olmalı");
     assert.match(String(res.headers["cdn-cache-control"] || ""), /s-maxage=1800/,
