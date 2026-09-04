@@ -1121,35 +1121,46 @@ function trendTeamCards() {
 
 /**
  * TAM PUAN DURUMU TABLOSU (puan-durumu.html) — İSTEMCİYLE BİREBİR AYNI
- * İŞARETLEME (`app.js#renderStandingRow`).
+ * İŞARETLEME (`app.js#renderHomeStandingRow`). Ana sayfadaki kompakt
+ * widget'la AYNI satır bileşenini (aynı sütunlar: O, G, B, M, averaj, puan)
+ * ve AYNI veri kaynağını (`data/teams.json`) kullanır — sadece ilk altı
+ * takımla sınırlı kalmaz, ligin tamamını basar. İki sayfa arasında farklı
+ * sütun kümesi ya da farklı sayı göstermenin okuyucuya çelişkili puan
+ * durumu sunma riski böylece ortadan kalkar.
  *
  * Önceden bu fonksiyon veriye bakmadan HER ZAMAN "sezon başlamadı" boş
  * durumunu basıyordu — sezon başladıktan sonra bile statik HTML (JS'siz
  * ilk boyama, arama motoru önizlemesi) yanlış bilgi gösteriyordu, istemci
- * tarafı yalnızca `hydrate` sonrası düzeltiyordu. `staticHomeStandingRows()`
- * ile aynı kural: gerçek veri varsa gerçek satırlar, yoksa boş durum.
+ * tarafı yalnızca `hydrate` sonrası düzeltiyordu. Ana sayfa sekmeli
+ * widget'ı (`staticStandingsTabsSection()`) ile aynı kural: gerçek veri
+ * varsa gerçek satırlar, yoksa boş durum.
  */
-function staticStandingRows() {
-  const rows = teams.filter((team) => Number(team.played) > 0 &&
+/**
+ * Sezon gerçekten başladı mı — LİG SEVİYESİNDE karar verilir, takım
+ * seviyesinde değil. Önceden her takım tek başına `played > 0` şartına
+ * tabiydi: bir maçı ertelenen (played=0 kalan ama sırası/puanı senkronize)
+ * takım tam tablodan tamamen düşüyordu — "ligin tamamını basar" vaadiyle
+ * çelişen, sessiz eksik satır. Sezon en az bir maçla başladıysa artık rankı/
+ * puanı senkronize OLAN her takım (kendi maçı ertelense bile 0 oynanmış
+ * satırla) tabloya girer; hiç maç oynanmamışken (gerçek preseason) liste
+ * yine boş kalır.
+ */
+function standingsSeasonRows() {
+  const started = teams.some((team) => Number(team.played) > 0);
+  if (!started) return [];
+  return teams.filter((team) =>
     team.points !== null && team.points !== undefined &&
     team.rank !== null && team.rank !== undefined);
+}
+
+function staticStandingRows() {
+  const rows = standingsSeasonRows();
   if (!rows.length) {
     return standingsPreseason(false);
   }
   const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
-  return sorted.map((team) => fullStandingRowHtml(team)).join("");
-}
-
-function fullStandingRowHtml(team) {
-  const teamName = team.name || "";
-  return `<div class="table-row" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
-    `<span>${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
-    `<b>${escapeHtml(teamName)}</b>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.points))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.average))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.momentum))}</span>` +
-    "</div>";
+  const total = sorted.length;
+  return sorted.map((team) => homeStandingRowHtml(team, total)).join("");
 }
 
 function standingsPreseason(compact) {
@@ -1159,6 +1170,58 @@ function standingsPreseason(compact) {
 /** `fullStandingRowHtml` (tam puan durumu tablosu) için ortak "değer yoksa çizgi" kuralı. */
 function homeStandingDisplay(value) {
   return value === undefined || value === null || value === "" ? "-" : value;
+}
+
+/**
+ * TAM PUAN DURUMU TABLOSU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
+ *
+ * `app.js#renderHomeStandingRow` ile bilerek özdeş: JavaScript yüklenip
+ * `/api/standings`den taze veri gelince satırlar yerinden oynamasın, yalnızca
+ * içerik güncellensin. Bölge sınıfı (şampiyonluk/Avrupa/küme düşme) takım
+ * SAYISINA göre hesaplanır — "18 takım" sabit varsayılmaz, kadro sezon
+ * içinde değişirse (küme düşme/çıkma) doğru satırlara düşmeye devam eder.
+ */
+function homeStandingZoneClass(rank, total) {
+  const r = Number(rank);
+  const t = Number(total);
+  if (!Number.isFinite(r) || !Number.isFinite(t) || t <= 0) return "";
+  if (r === 1) return " is-leader";
+  if (r <= 4) return " is-europe";
+  if (r > t - 3) return " is-relegation";
+  return "";
+}
+
+function formatGoalDifference(value) {
+  if (value === null || value === undefined || value === "") return "-";
+  const n = Number(value);
+  if (!Number.isFinite(n)) return "-";
+  return `${n > 0 ? "+" : ""}${n}`;
+}
+
+function homeStandingLogoHtml(team) {
+  const initials = escapeHtml(fixtureTeamInitials(team.name));
+  if (!team.logo) {
+    return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
+  }
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(team.logo)}" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+}
+
+function homeStandingRowHtml(team, total) {
+  const zoneClass = homeStandingZoneClass(team.rank, total);
+  const gd = formatGoalDifference(team.goalDifference);
+  const gdClass = gd.charAt(0) === "+" ? " is-positive" : (gd.charAt(0) === "-" ? " is-negative" : "");
+  const href = `./takim-detay.html?team=${encodeURIComponent(team.name || "")}`;
+
+  return `<div class="home-standing-row${zoneClass}" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
+    `<span class="home-standing-rank">${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
+    `<a class="home-standing-team" href="${escapeHtml(href)}">${homeStandingLogoHtml(team)}<b>${escapeHtml(team.name || "")}</b></a>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.won))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.drawn))}</span>` +
+    `<span>${escapeHtml(homeStandingDisplay(team.lost))}</span>` +
+    `<span class="home-standing-gd${gdClass}">${escapeHtml(gd)}</span>` +
+    `<span class="home-standing-points">${escapeHtml(homeStandingDisplay(team.points))}</span>` +
+    "</div>";
 }
 
 /**
