@@ -21,6 +21,7 @@ function copyGeneratedFile(source, target) {
 for (const file of [
   "page.css",
   "app.js",
+  "player-profile.js",
   "site.js",
   "analytics.js",
   "performance-loader.js",

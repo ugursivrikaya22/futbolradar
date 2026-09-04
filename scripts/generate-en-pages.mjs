@@ -35,6 +35,7 @@ import {
 import { transferTypeEn } from "./lib/enTicker.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
+import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -289,6 +290,21 @@ function matchList(list, emptyKey = "common.noData") {
 /** Ortak bileşenin ince sarmalayıcısı: pozisyonel argümanları korur. */
 function sectionHead(kicker, titleId, title, lead, linkHref, linkText) {
   return sharedSectionHead({ locale: LOCALE, kicker, titleId, title, lead, linkHref, linkText });
+}
+
+/**
+ * ANA SAYFA "STANDINGS" SEKMELİ WIDGET'I (EN) — TR ana sayfasıyla (bkz.
+ * `prerender-core-pages.mjs#staticStandingsTabsSection`) AYNI paylaşılan
+ * fonksiyonu çağırır, yalnızca `locale: "en"` ve İngilizce sekme sırası
+ * (`EN_TAB_ORDER`, `scripts/lib/standingsCatalog.mjs`) farklıdır. Bu sayfa
+ * `en/` klasöründe yaşadığı için `base: "./"` hedef sayfalarla (ör.
+ * `en/premier-league-standings.html`) aynı klasörü işaret eder.
+ */
+function standingsTabsSection() {
+  return `<section class="container section standings-tabs-section" id="en-standings-tabs" aria-labelledby="en-standings-tabs-title">
+        ${sectionHead("9 Competitions", "en-standings-tabs-title", "Standings", "Süper Lig, the major European leagues and UEFA competitions — current tables in one place.", "", "")}
+        <div class="standings-tabs">${renderStandingsTabsInner("en", "./")}</div>
+      </section>`;
 }
 
 /**
@@ -1133,15 +1149,17 @@ function officialLineupAlertsSection() {
 
 function homePage() {
   // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
-  //   hero → köşe yazıları → günün başlıkları → bugünün maçları → günün
-  //   radar maçı → son maç raporu → son raporlar → oyuncu radarı → trend
-  //   takımlar → hızlı gezinme → transfer radarı → haber akışı → arşiv →
-  //   kaynak şeridi
+  //   hero → puan durumları (9 sekme) → köşe yazıları → günün başlıkları →
+  //   bugünün maçları → günün radar maçı → son maç raporu → son raporlar →
+  //   oyuncu radarı → trend takımlar → hızlı gezinme → transfer radarı →
+  //   haber akışı → arşiv → kaynak şeridi
   // Tahmin anketi prodüksiyonda kapatıldı (gerekçe: scripts/lib/postprocessChain.mjs),
   // sırada artık yok.
-  // Puan tablosu özeti Türkçe ana sayfada yok; İngilizce tarafta VAR olan
-  // tek tablo girişi olduğu için kaldırılmadı, arşivin ardına alındı.
+  // Puan tablosu artık arşivin ardındaki tek-lig özeti DEĞİL: canlı skorun
+  // hemen altında, 9 yarışmalı sekmeli widget (`standingsTabsSection`) —
+  // TR ana sayfasıyla (prerender-core-pages.mjs) aynı konum kuralı.
   const body = `      ${heroSection()}
+      ${standingsTabsSection()}
       ${officialLineupAlertsSection()}
       ${columnsSection()}
       ${dailyHeadlinesSection()}
@@ -1152,11 +1170,7 @@ function homePage() {
       ${quickNavSection()}
       ${transferWatchSection()}
       ${newsSection()}
-      ${archiveSection()}
-      <section class="container section" aria-labelledby="en-standings-title">
-        ${sectionHead("League table", "en-standings-title", "Trendyol Süper Lig standings", "", "./standings.html", label("common.viewAll"))}
-        ${standingsTable(standings.slice(0, 6))}
-      </section>`;
+      ${archiveSection()}`;
 
   return pageShell({
     routeKey: "home",

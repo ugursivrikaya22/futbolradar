@@ -155,7 +155,12 @@
     return {
       data: unwrapPayload(payload),
       source: payload && payload.source ? payload.source : "",
-      updatedAt: payload && payload.updatedAt ? payload.updatedAt : ""
+      updatedAt: payload && payload.updatedAt ? payload.updatedAt : "",
+      // `meta` (sunucunun services/dataFreshness.js ile hesapladığı
+      // freshness bayrağı dahil) burada düşürülüyordu: updateUpdatedAtLabel
+      // zaten `result.meta && result.meta.freshness` okumaya hazırdı ama
+      // hep undefined alıyordu, o yüzden bayat veri uyarısı hiç çıkmıyordu.
+      meta: payload && payload.meta ? payload.meta : null
     };
   }
 
@@ -5986,6 +5991,16 @@
 
   function initPlayerDetail(target) {
     if (!target) {
+      return;
+    }
+
+    // Oyuncu profili artık player-profile.js modülünde derleniyor: aynı
+    // görünüm hem statik sayfa üretiminde hem tarayıcıda kullanıldığı için
+    // SEO'ya basılan HTML ile tazelenen HTML ayrışmıyor. Modül sayfaya
+    // yüklenmişse render sorumluluğu onundur; buradaki eski akış yalnızca
+    // modülsüz sayfalar için yedek kalır.
+    if (window.FutbolRadarPlayerProfile && typeof window.FutbolRadarPlayerProfile.mount === "function") {
+      window.FutbolRadarPlayerProfile.mount(target);
       return;
     }
 

@@ -14,6 +14,7 @@ import {
   officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
+import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -1120,43 +1121,59 @@ function trendTeamCards() {
 
 /**
  * TAM PUAN DURUMU TABLOSU (puan-durumu.html) — İSTEMCİYLE BİREBİR AYNI
- * İŞARETLEME (`app.js#renderStandingRow`).
+ * İŞARETLEME (`app.js#renderHomeStandingRow`). Ana sayfadaki kompakt
+ * widget'la AYNI satır bileşenini (aynı sütunlar: O, G, B, M, averaj, puan)
+ * ve AYNI veri kaynağını (`data/teams.json`) kullanır — sadece ilk altı
+ * takımla sınırlı kalmaz, ligin tamamını basar. İki sayfa arasında farklı
+ * sütun kümesi ya da farklı sayı göstermenin okuyucuya çelişkili puan
+ * durumu sunma riski böylece ortadan kalkar.
  *
  * Önceden bu fonksiyon veriye bakmadan HER ZAMAN "sezon başlamadı" boş
  * durumunu basıyordu — sezon başladıktan sonra bile statik HTML (JS'siz
  * ilk boyama, arama motoru önizlemesi) yanlış bilgi gösteriyordu, istemci
- * tarafı yalnızca `hydrate` sonrası düzeltiyordu. `staticHomeStandingRows()`
- * ile aynı kural: gerçek veri varsa gerçek satırlar, yoksa boş durum.
+ * tarafı yalnızca `hydrate` sonrası düzeltiyordu. Ana sayfa sekmeli
+ * widget'ı (`staticStandingsTabsSection()`) ile aynı kural: gerçek veri
+ * varsa gerçek satırlar, yoksa boş durum.
  */
-function staticStandingRows() {
-  const rows = teams.filter((team) => Number(team.played) > 0 &&
+/**
+ * Sezon gerçekten başladı mı — LİG SEVİYESİNDE karar verilir, takım
+ * seviyesinde değil. Önceden her takım tek başına `played > 0` şartına
+ * tabiydi: bir maçı ertelenen (played=0 kalan ama sırası/puanı senkronize)
+ * takım tam tablodan tamamen düşüyordu — "ligin tamamını basar" vaadiyle
+ * çelişen, sessiz eksik satır. Sezon en az bir maçla başladıysa artık rankı/
+ * puanı senkronize OLAN her takım (kendi maçı ertelense bile 0 oynanmış
+ * satırla) tabloya girer; hiç maç oynanmamışken (gerçek preseason) liste
+ * yine boş kalır.
+ */
+function standingsSeasonRows() {
+  const started = teams.some((team) => Number(team.played) > 0);
+  if (!started) return [];
+  return teams.filter((team) =>
     team.points !== null && team.points !== undefined &&
     team.rank !== null && team.rank !== undefined);
+}
+
+function staticStandingRows() {
+  const rows = standingsSeasonRows();
   if (!rows.length) {
     return standingsPreseason(false);
   }
   const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
-  return sorted.map((team) => fullStandingRowHtml(team)).join("");
-}
-
-function fullStandingRowHtml(team) {
-  const teamName = team.name || "";
-  return `<div class="table-row" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
-    `<span>${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
-    `<b>${escapeHtml(teamName)}</b>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.played))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.points))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.average))}</span>` +
-    `<span>${escapeHtml(homeStandingDisplay(team.momentum))}</span>` +
-    "</div>";
+  const total = sorted.length;
+  return sorted.map((team) => homeStandingRowHtml(team, total)).join("");
 }
 
 function standingsPreseason(compact) {
   return `<div class="standings-empty${compact ? " compact" : ""}" data-card="standings-preseason"><span class="card-kicker">Süper Lig · 2026/27</span><strong>2026/27 sezonu henüz başlamadı</strong><p>Süper Lig 14 Ağustos'ta başlayacak. İlk maçlar tamamlandığında puan tablosu otomatik güncellenecek.</p><a class="detail-link" href="./super-lig-fikstur.html">Sezon fikstürünü aç</a></div>`;
 }
 
+/** `fullStandingRowHtml` (tam puan durumu tablosu) için ortak "değer yoksa çizgi" kuralı. */
+function homeStandingDisplay(value) {
+  return value === undefined || value === null || value === "" ? "-" : value;
+}
+
 /**
- * ANA SAYFA PUAN DURUMU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
+ * TAM PUAN DURUMU TABLOSU — İSTEMCİYLE BİREBİR AYNI İŞARETLEME.
  *
  * `app.js#renderHomeStandingRow` ile bilerek özdeş: JavaScript yüklenip
  * `/api/standings`den taze veri gelince satırlar yerinden oynamasın, yalnızca
@@ -1179,10 +1196,6 @@ function formatGoalDifference(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return "-";
   return `${n > 0 ? "+" : ""}${n}`;
-}
-
-function homeStandingDisplay(value) {
-  return value === undefined || value === null || value === "" ? "-" : value;
 }
 
 function homeStandingLogoHtml(team) {
@@ -1211,21 +1224,16 @@ function homeStandingRowHtml(team, total) {
     "</div>";
 }
 
-const HOME_STANDINGS_LIMIT = 6;
-
-function staticHomeStandingRows() {
-  const rows = teams.filter((team) => Number(team.played) > 0 &&
-    team.points !== null && team.points !== undefined &&
-    team.rank !== null && team.rank !== undefined);
-  if (!rows.length) {
-    return standingsPreseason(true);
-  }
-  const sorted = rows.slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
-  // Ana sayfa widget'ı kompakt: yalnızca ilk 6 takım (app.js#renderStandingsTable
-  // ile birebir aynı kural). `total` yine TAM takım sayısı — bölge sınıfı bu
-  // sayıya göre hesaplanır.
-  const total = sorted.length;
-  return sorted.slice(0, HOME_STANDINGS_LIMIT).map((team) => homeStandingRowHtml(team, total)).join("");
+/**
+ * ANA SAYFA "PUAN DURUMLARI" SEKMELİ WIDGET'I — 9 yarışma, her biri ilk 5
+ * takım. İşaretleme ve veri okuma `scripts/lib/standingsHomeWidget.mjs` /
+ * `scripts/lib/standingsData.mjs`de: TR ana sayfası (burada) ve EN ana
+ * sayfası (`generate-en-pages.mjs`) aynı fonksiyonu çağırır, yalnızca
+ * `locale` değişir — iki dilde sekme mekaniği ve satır işaretlemesi asla
+ * ayrışmaz.
+ */
+function staticStandingsTabsSection() {
+  return renderStandingsTabsInner("tr", "./");
 }
 
 function staticMomentumRows() {
@@ -1815,7 +1823,7 @@ writePage("index.html", {
   "league-directory": leagueDirectoryHtml(),
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
-  "home-standings": staticHomeStandingRows(),
+  "standings-tabs": staticStandingsTabsSection(),
   "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
   "leaders-scorers": homeLeadersScorersSlot(5),
