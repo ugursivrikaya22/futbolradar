@@ -90,6 +90,7 @@ function normalizeStats(player) {
 
   return {
     appearances: normalizeNumber(stats.appearances ?? player.appearances, null),
+    starts: normalizeNumber(stats.starts ?? player.starts ?? player.lineups, null),
     goals: normalizeNumber(stats.goals ?? player.goals, null),
     assists: normalizeNumber(stats.assists ?? player.assists, null),
     minutesPlayed: normalizeNumber(stats.minutesPlayed ?? player.minutesPlayed ?? player.minutes, null),
@@ -97,17 +98,33 @@ function normalizeStats(player) {
     yellowCards: normalizeNumber(stats.yellowCards ?? player.yellowCards, null),
     redCards: normalizeNumber(stats.redCards ?? player.redCards, null),
     passAccuracy: normalizeNumber(stats.passAccuracy ?? player.passAccuracy, null),
+    passes: normalizeNumber(stats.passes ?? player.passes, null),
     shotsPerGame: normalizeNumber(stats.shotsPerGame ?? player.shotsPerGame, null),
     tacklesPerGame: normalizeNumber(stats.tacklesPerGame ?? player.tacklesPerGame, null),
     interceptionsPerGame: normalizeNumber(stats.interceptionsPerGame ?? player.interceptionsPerGame, null),
     shots: normalizeNumber(stats.shots ?? player.shots, null),
+    shotsOnTarget: normalizeNumber(stats.shotsOnTarget ?? player.shotsOnTarget, null),
     keyPasses: normalizeNumber(stats.keyPasses ?? player.keyPasses, null),
     xg: normalizeNumber(stats.xg ?? player.xg, null),
     xa: normalizeNumber(stats.xa ?? player.xa, null),
+    // Sağlayıcı alan adları: dripling başarılı/deneme, ikili mücadele
+    // kazanılan/toplam ayrı ayrı taşınır ki oran hesabı mümkün olsun.
+    dribbles: normalizeNumber(stats.dribbles ?? player.dribbles, null),
+    dribbleAttempts: normalizeNumber(stats.dribbleAttempts ?? player.dribbleAttempts, null),
     duelsWon: normalizeNumber(stats.duelsWon ?? player.duelsWon ?? player.duels, null),
+    duelsTotal: normalizeNumber(stats.duelsTotal ?? player.duelsTotal, null),
+    tackles: normalizeNumber(stats.tackles ?? player.tackles, null),
+    interceptions: normalizeNumber(stats.interceptions ?? player.interceptions, null),
+    blocks: normalizeNumber(stats.blocks ?? player.blocks, null),
+    recoveries: normalizeNumber(stats.recoveries ?? player.recoveries ?? player.ballRecoveries, null),
+    foulsCommitted: normalizeNumber(stats.foulsCommitted ?? player.foulsCommitted ?? player.fouls, null),
     pressures: normalizeNumber(stats.pressures ?? player.pressures ?? player.press, null),
+    saves: normalizeNumber(stats.saves ?? player.saves, null),
     cleanSheets: normalizeNumber(stats.cleanSheets ?? player.cleanSheets, null),
-    goalsConceded: normalizeNumber(stats.goalsConceded ?? player.goalsConceded, null)
+    goalsConceded: normalizeNumber(stats.goalsConceded ?? player.goalsConceded, null),
+    // 0-10 ölçeğindeki sağlayıcı maç reytingi; 0-100 rating alanlarıyla
+    // karışmaması için stats altında ayrı tutulur.
+    rating: normalizeNumber(stats.rating ?? player.providerRating ?? player.matchRating, null)
   };
 }
 
@@ -483,8 +500,24 @@ function mergePlayerWithProvider(localPlayer, providerPlayer, providerName) {
   });
 
   if (provider.stats && typeof provider.stats === "object") {
-    merged.stats = { ...(provider.stats || {}), ...(merged.stats || {}) };
+    // Yerel istatistik nesnesi eksik metrikleri `null` ile taşır. Düz yayma
+    // sağlayıcının dolu değerini bu null'larla eziyor ve canlı veri
+    // görünmez oluyordu; bu yüzden yalnızca dolu yerel alanlar korunur.
+    const localStats = merged.stats && typeof merged.stats === "object" ? merged.stats : {};
+    const combined = { ...provider.stats };
+    Object.entries(localStats).forEach(([key, value]) => {
+      if (hasValue(value)) {
+        combined[key] = value;
+      }
+    });
+    merged.stats = combined;
   }
+
+  ["photo", "shirtNumber", "injured", "providerRating", "matchRating", "currentTeamProviderId"].forEach((flatField) => {
+    if (!hasValue(merged[flatField]) && hasValue(provider[flatField])) {
+      merged[flatField] = provider[flatField];
+    }
+  });
 
   merged.formerTeams = Array.from(new Set(normalizeArray(local.formerTeams).concat(normalizeArray(provider.formerTeams))))
     .filter((team) => normalizeText(team) !== normalizeText(merged.currentTeam));
