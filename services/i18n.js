@@ -109,7 +109,7 @@ const ROUTES = Object.freeze([
   {
     key: "liveScores",
     tr: "canli-skor.html",
-    en: "en/live-scores.html",
+    en: "en/live-football-scores.html",
     changefreq: "hourly",
     priority: "0.9"
   },
@@ -249,8 +249,8 @@ const ROUTE_META = Object.freeze({
       description: "Bugün oynanacak maçlar, başlama saatleri ve turnuvaları; Türkiye saatiyle güncel program."
     },
     en: {
-      title: "Today's Football Matches | FutbolRadar",
-      description: "Every match played today with kick-off times and competitions, listed in Türkiye time and led by the Turkish Süper Lig."
+      title: "Football Matches Today | FutbolRadar",
+      description: "Today's football fixtures for the Turkish Süper Lig and European competitions — every football match played today, with kick-off times in Türkiye time."
     }
   },
   liveScores: {
@@ -260,7 +260,7 @@ const ROUTE_META = Object.freeze({
     },
     en: {
       title: "Live Football Scores | FutbolRadar",
-      description: "Live football scores and match states for the Turkish Süper Lig and European competitions, never shown as live without verification."
+      description: "Live football scores and live soccer scores for the Turkish Süper Lig and European competitions — never shown as live without verification."
     }
   },
   standings: {
@@ -299,8 +299,8 @@ const ROUTE_META = Object.freeze({
       description: "Tamamlanan maçların doğrulanmış skorları; Süper Lig ve Türk kulüplerinin Avrupa maçları."
     },
     en: {
-      title: "Turkish Football Results | FutbolRadar",
-      description: "Verified final scores from the Trendyol Süper Lig and Turkish clubs in European competitions, with links to full match reports."
+      title: "Football Results Today | FutbolRadar",
+      description: "Live match results and football results today from the Trendyol Süper Lig and Turkish clubs in Europe — confirmed final scores only."
     }
   },
   fixtures: {
@@ -458,7 +458,7 @@ const NAV_KEYS = Object.freeze({
   en: {
     primary: [
       { href: "en/todays-matches.html", key: "nav.todayMatches" },
-      { href: "en/live-scores.html", key: "nav.liveScores" },
+      { href: "en/live-football-scores.html", key: "nav.liveScores" },
       { href: "en/results.html", key: "nav.results" },
       { href: "en/fixtures.html", key: "nav.superLig" },
       { href: "en/analysis.html", key: "nav.analysis" },

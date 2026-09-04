@@ -240,7 +240,7 @@ const CASES = [
     "EN canlı skor sayfası başlamamış maç listesi kurmamalı");
   assert.ok(!producer[0].includes("Still to kick off"), "skorsuz program bölümü geri gelmemeli");
 
-  const enPage = fs.readFileSync(path.join(root, "en", "live-scores.html"), "utf8");
+  const enPage = fs.readFileSync(path.join(root, "en", "live-football-scores.html"), "utf8");
   const cards = enPage.match(/<article class="fixture-card[^"]*" data-card="fixture">[\s\S]*?<\/article>/g) || [];
   for (const card of cards) {
     assert.ok(/fixture-row-score">\d/.test(card),

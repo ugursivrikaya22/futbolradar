@@ -381,7 +381,7 @@ function bottomNav(base, locale) {
   const items = [
     { key: "bottomNav.home", href: en ? "en/index.html" : "index.html", icon:
       '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/>' },
-    { key: "bottomNav.live", href: en ? "en/live-scores.html" : "canli-skor.html", icon:
+    { key: "bottomNav.live", href: en ? "en/live-football-scores.html" : "canli-skor.html", icon:
       '<circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 2.5"/>' },
     { key: "bottomNav.matches", href: en ? "en/todays-matches.html" : "bugunun-maclari.html", icon:
       '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18"/>' },
