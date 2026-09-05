@@ -648,6 +648,7 @@ function staticFeaturedFixture() {
       <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Önceki maç"><span aria-hidden="true">‹</span></button>
       <div class="featured-carousel-dots" role="tablist" aria-label="Öne çıkan maçlar">${selections.map((entry, index) => `<button type="button" class="featured-carousel-dot${index === 0 ? " is-active" : ""}" data-featured-go="${index}" role="tab" aria-selected="${index === 0 ? "true" : "false"}" aria-label="${escapeHtml(`${entry.match.homeTeam || "?"} - ${entry.match.awayTeam || "?"}`)}"><span aria-hidden="true"></span></button>`).join("")}</div>
       <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç"><span aria-hidden="true">›</span></button>
+      <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Otomatik geçişi durdur"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
     </div>`;
 
   // Canlı maç varsa büyük/vurgulu, yoksa küçük kart modu — bkz. page.css

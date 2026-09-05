@@ -13411,8 +13411,56 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   transform: scale(1.35);
 }
 
+/* Pause tuşu: aynı yuvarlak `.featured-carousel-arrow` gövdesini paylaşır,
+   yalnızca ikonu ve "sabitlendi" durumunu ekler. İkon iki çubuk (duraklat) /
+   tek üçgen (oynat) olarak salt CSS ile çizilir — emoji/glif desteğine bağlı
+   kalınmaz. */
+.featured-carousel-pause-icon {
+  position: relative;
+  display: block;
+  width: 10px;
+  height: 12px;
+}
+
+.featured-carousel-pause-icon::before,
+.featured-carousel-pause-icon::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 3px;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.featured-carousel-pause-icon::before { left: 0; }
+.featured-carousel-pause-icon::after { right: 0; }
+
+.featured-carousel-pause.is-paused .featured-carousel-pause-icon {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 6px 0 6px 10px;
+  border-color: transparent transparent transparent currentColor;
+}
+
+.featured-carousel-pause.is-paused .featured-carousel-pause-icon::before,
+.featured-carousel-pause.is-paused .featured-carousel-pause-icon::after {
+  content: none;
+}
+
+/* Maç sabitlendiğinde düğme aktif nokta ile aynı vurgu rengini alır, yani
+   "ekranda sabit" durumu bir bakışta anlaşılır. */
+.featured-carousel-pause.is-paused {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* Hareket azaltma tercihi: otomatik dönüş JS tarafında zaten kapanıyor,
-   geçiş animasyonu da burada kapatılır. */
+   geçiş animasyonu da burada kapatılır. Pause tuşu da gizlenir: otomatik
+   dönüş hiç başlamadığından "devam ettir" durumuna geçebilen ama hiçbir
+   şeyi değiştirmeyen bir düğme, özellikle ekran okuyucu için yanıltıcı
+   olurdu. Elle gezinme (ok/nokta) bu durumdan etkilenmeden çalışmaya
+   devam eder. */
 @media (prefers-reduced-motion: reduce) {
   .featured-carousel-slide.is-active {
     animation: none;
@@ -13420,6 +13468,10 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
   .featured-carousel-dot span {
     transition: none;
+  }
+
+  .featured-carousel-pause {
+    display: none;
   }
 }
 
