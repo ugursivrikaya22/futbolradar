@@ -3552,7 +3552,7 @@
     }
 
     // Sabitleme (pause) tercihi yeniden çizimler arası kalıcı: canlı
-    // yoklama karti 20 saniyede bir yeniden bastığında düğme az önceki
+    // yoklama kartı 20 saniyede bir yeniden bastığında düğme az önceki
     // sabitlenmiş durumla senkronlanır, aksi halde her yoklamada dönüş
     // sessizce yeniden başlardı.
     var manualPause = featuredCarouselManualPause;

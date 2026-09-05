@@ -13456,7 +13456,11 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 /* Hareket azaltma tercihi: otomatik dönüş JS tarafında zaten kapanıyor,
-   geçiş animasyonu da burada kapatılır. */
+   geçiş animasyonu da burada kapatılır. Pause tuşu da gizlenir: otomatik
+   dönüş hiç başlamadığından "devam ettir" durumuna geçebilen ama hiçbir
+   şeyi değiştirmeyen bir düğme, özellikle ekran okuyucu için yanıltıcı
+   olurdu. Elle gezinme (ok/nokta) bu durumdan etkilenmeden çalışmaya
+   devam eder. */
 @media (prefers-reduced-motion: reduce) {
   .featured-carousel-slide.is-active {
     animation: none;
@@ -13464,6 +13468,10 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
   .featured-carousel-dot span {
     transition: none;
+  }
+
+  .featured-carousel-pause {
+    display: none;
   }
 }
 
