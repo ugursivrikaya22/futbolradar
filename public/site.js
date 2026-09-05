@@ -1471,6 +1471,260 @@
 })();
 
 /**
+ * FENERBAHÇE - BEŞİKTAŞ "KİM KAZANIR" ANKETİ.
+ *
+ * Maçın adamı anketiyle AYNI kabuk (`.motm-poll__*` sınıfları) ve AYNI
+ * cihaz-yerel yedek düzeni kullanılıyor; yalnızca veri kancaları farklı
+ * (`data-fbbjk-*`) — bu TEK bir maça özel, takvimsiz bir anket ve
+ * `services/homePoll.js`in 14 günlük kampanya modeline girmiyor (bkz.
+ * server/matchWinnerVoteRoute.js).
+ *
+ * MAÇ BİTİNCE TAMAMEN GİZLENİR. Maçın adamı anketi kapanınca kilitli
+ * sonucu göstermeye devam eder; bu anket "yayından kaldırma" istiyor —
+ * kapanış saatinden (`data-fbbjk-closes`) sonra bölüm bir daha hiç
+ * görünmez, kilitli sonuç bile çizilmez. Sunucu da aynı saatten sonra
+ * oyu ayrıca reddeder (409); buradaki saat yalnızca görünümü yönetir.
+ */
+(function () {
+  var STORAGE_KEY = "futbolradar:fbbjk-poll";
+  var REFRESH_INTERVAL_MS = 60000;
+
+  function readStore() {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeStore(state) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function toPercent(count, total) {
+    if (!total) return 0;
+    return Math.round((count / total) * 100);
+  }
+
+  function renderResults(poll, state) {
+    var results = poll.querySelector("[data-fbbjk-results]");
+    var noteCommunity = poll.querySelector('[data-fbbjk-note="community"]');
+    var noteLocal = poll.querySelector('[data-fbbjk-note="local"]');
+    var form = poll.querySelector("[data-fbbjk-form]");
+    var thanks = poll.querySelector("[data-fbbjk-thanks]");
+    if (!results) return;
+
+    var counts = state && state.counts ? state.counts : {};
+    var total = 0;
+    var key;
+    for (key in counts) {
+      if (Object.prototype.hasOwnProperty.call(counts, key)) total += counts[key];
+    }
+
+    // Seçenek adı işaretlemeden okunur: istemci hiçbir seçenek adını
+    // kendisi üretmez, sayfada zaten basılı olanı kullanır.
+    var rows = [];
+    var labels = poll.querySelectorAll(".motm-poll__option");
+    Array.prototype.forEach.call(labels, function (item) {
+      var input = item.querySelector(".motm-poll__radio");
+      var nameNode = item.querySelector(".motm-poll__name");
+      if (!input || !nameNode) return;
+      var id = input.value;
+      var count = counts[id] || 0;
+      if (!count) return;
+      rows.push({ id: id, name: nameNode.textContent, count: count, percent: toPercent(count, total) });
+    });
+
+    rows.sort(function (left, right) {
+      return right.count - left.count || left.name.localeCompare(right.name, "tr");
+    });
+
+    results.innerHTML = "";
+    rows.forEach(function (row) {
+      var line = document.createElement("div");
+      line.className = "motm-poll__result" + (state && state.choice === row.id ? " is-yours" : "");
+
+      var head = document.createElement("div");
+      head.className = "motm-poll__result-head";
+
+      var name = document.createElement("span");
+      name.className = "motm-poll__result-name";
+      name.textContent = row.name;
+      head.appendChild(name);
+
+      if (state && state.choice === row.id) {
+        var mine = document.createElement("span");
+        mine.className = "motm-poll__result-mine";
+        mine.textContent = "Senin oyun";
+        head.appendChild(mine);
+      }
+
+      var percent = document.createElement("span");
+      percent.className = "motm-poll__result-percent";
+      percent.textContent = row.percent + "%";
+      head.appendChild(percent);
+
+      var bar = document.createElement("div");
+      bar.className = "motm-poll__bar";
+      var fill = document.createElement("span");
+      fill.className = "motm-poll__bar-fill";
+      fill.style.width = row.percent + "%";
+      bar.appendChild(fill);
+
+      line.appendChild(head);
+      line.appendChild(bar);
+      results.appendChild(line);
+    });
+
+    if (form) form.hidden = true;
+    if (thanks) thanks.hidden = false;
+
+    var remote = Boolean(state && state.remote);
+    if (noteCommunity) noteCommunity.hidden = !remote;
+    if (noteLocal) noteLocal.hidden = remote;
+    results.hidden = false;
+  }
+
+  /** Ağ hatası anketi KIRMAZ: her başarısızlık cihaz-yerel kipe düşer. */
+  function requestTally(optionId) {
+    var options = { headers: { Accept: "application/json" }, credentials: "same-origin" };
+    var url = "/api/match-winner-vote";
+
+    if (optionId) {
+      options.method = "POST";
+      options.headers["Content-Type"] = "application/json";
+      options.body = JSON.stringify({ optionId: optionId });
+    }
+
+    if (typeof window.fetch !== "function") return Promise.resolve(null);
+
+    return window.fetch(url, options)
+      .then(function (response) { return response.ok ? response.json() : null; })
+      .then(function (payload) {
+        var data = payload && payload.data ? payload.data : null;
+        return data && data.storage === "ready" ? data : null;
+      })
+      .catch(function () { return null; });
+  }
+
+  function serverState(data, choice) {
+    var counts = {};
+    (data.results || []).forEach(function (row) { counts[row.optionId] = row.votes; });
+    return { counts: counts, choice: choice || data.choice || null, remote: true };
+  }
+
+  function setupPoll(poll) {
+    var form = poll.querySelector("[data-fbbjk-form]");
+    if (!form) return;
+
+    // KAPANIŞ SAATİ işaretlemede taşınır, karar ANLIK verilir — sayfa
+    // pencere açıkken derlenmiş olabilir. Sunucu kendi kapısını ayrıca
+    // tutar; buradaki kilit yalnızca görünümü yönetir.
+    var closesStamp = Date.parse(poll.getAttribute("data-fbbjk-closes") || "");
+    function isClosed() {
+      return isFinite(closesStamp) && closesStamp > 0 && Date.now() >= closesStamp;
+    }
+
+    if (isClosed()) {
+      poll.hidden = true;
+      return;
+    }
+
+    poll.hidden = false;
+
+    var stored = readStore();
+    var refreshTimer = null;
+
+    function stopRefresh() {
+      if (refreshTimer) {
+        window.clearInterval(refreshTimer);
+        refreshTimer = null;
+      }
+    }
+
+    function startRefresh() {
+      if (refreshTimer || typeof window.fetch !== "function") return;
+      refreshTimer = window.setInterval(function () {
+        if (document.hidden) return;
+        if (isClosed()) {
+          poll.hidden = true;
+          stopRefresh();
+          return;
+        }
+        requestTally(null).then(function (data) {
+          if (!data) return;
+          if (data.alreadyVoted || (stored && stored.choice)) {
+            renderResults(poll, serverState(data, stored && stored.choice));
+          }
+        });
+      }, REFRESH_INTERVAL_MS);
+    }
+
+    requestTally(null).then(function (data) {
+      if (data && data.alreadyVoted) {
+        renderResults(poll, serverState(data, stored && stored.choice));
+        startRefresh();
+        return;
+      }
+      if (stored && stored.choice) {
+        renderResults(poll, stored);
+        startRefresh();
+      }
+    });
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var selected = form.querySelector(".motm-poll__radio:checked");
+      if (!selected) return;
+
+      if (isClosed()) {
+        poll.hidden = true;
+        stopRefresh();
+        return;
+      }
+
+      var submit = form.querySelector("[data-fbbjk-submit]");
+      if (submit) submit.disabled = true;
+
+      // Oy her hâlükârda cihaza yazılır: sunucu erişilemese de kullanıcı
+      // tekrar tekrar oy vermeye çağrılmasın.
+      var local = readStore() || { counts: {} };
+      if (!local.counts || typeof local.counts !== "object") local.counts = {};
+      local.counts[selected.value] = (local.counts[selected.value] || 0) + 1;
+      local.choice = selected.value;
+      local.votedAt = new Date().toISOString();
+      writeStore(local);
+      stored = local;
+
+      requestTally(selected.value).then(function (data) {
+        if (submit) submit.disabled = false;
+        renderResults(poll, data ? serverState(data, selected.value) : local);
+        startRefresh();
+      });
+    });
+  }
+
+  function setupFbBjkPolls() {
+    var polls = document.querySelectorAll("[data-fbbjk-poll]");
+    Array.prototype.forEach.call(polls, setupPoll);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupFbBjkPolls);
+  } else {
+    setupFbBjkPolls();
+  }
+})();
+
+/**
  * BU HAFTANIN EN ÇOK OY ALAN OYUNCULARI — ANA SAYFA WIDGET'I.
  *
  * Bölüm `hidden` doğar ve yalnızca `/api/motm-week` GERÇEK bir sayım

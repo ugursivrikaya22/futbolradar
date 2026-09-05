@@ -48,10 +48,6 @@
     })();
   </script>
     <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -62,7 +58,11 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <!-- favicon:end -->
-  <!-- hreflang:start -->
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+<!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/" />
@@ -551,6 +551,38 @@
               <a class="button secondary" href="./kose-yazilari/fenerbahce-besiktas-derbisi-kadikoyde-sezonun-tonu.html">Köşe Yazısını Oku</a>
             </div>
           </div>
+        </section>
+
+        <!-- Fenerbahçe-Beşiktaş "kim kazanır" anketi: yalnızca bu derbi için,
+             takvimsiz bir maç anketi (bkz. server/matchWinnerVoteRoute.js).
+             Blok hidden doğar; site.js açar. Maç bitince (data-fbbjk-closes)
+             istemci bölümü TAMAMEN gizler — kilitli sonuç değil, yayından
+             kaldırma amaçlanıyor. -->
+        <section class="container section motm-poll" id="fb-bjk-anket" aria-labelledby="fbbjk-poll-title" data-fbbjk-poll data-fbbjk-closes="2026-09-05T22:30:00+03:00" hidden>
+          <div class="motm-poll__badge" aria-hidden="true">🔮 Okuyucu Tahmini</div>
+          <h2 class="motm-poll__title" id="fbbjk-poll-title">Fenerbahçe - Beşiktaş: Sence kim kazanır?</h2>
+          <p class="motm-poll__subtitle">Okuyucu tahminidir; sitenin doğrulanmış maç verisinden ayrı bir topluluk beklentisidir. Her tarayıcı bir kez oy kullanabilir.</p>
+          <form class="motm-poll__form" data-fbbjk-form>
+            <ul class="motm-poll__options">
+              <li class="motm-poll__option">
+                <input class="motm-poll__radio" type="radio" name="fbbjk-winner" id="fbbjk-fenerbahce" value="fenerbahce">
+                <label class="motm-poll__label" for="fbbjk-fenerbahce"><span class="motm-poll__name">Fenerbahçe kazanır</span></label>
+              </li>
+              <li class="motm-poll__option">
+                <input class="motm-poll__radio" type="radio" name="fbbjk-winner" id="fbbjk-berabere" value="berabere">
+                <label class="motm-poll__label" for="fbbjk-berabere"><span class="motm-poll__name">Beraberlik</span></label>
+              </li>
+              <li class="motm-poll__option">
+                <input class="motm-poll__radio" type="radio" name="fbbjk-winner" id="fbbjk-besiktas" value="besiktas">
+                <label class="motm-poll__label" for="fbbjk-besiktas"><span class="motm-poll__name">Beşiktaş kazanır</span></label>
+              </li>
+            </ul>
+            <button class="motm-poll__submit" type="submit" data-fbbjk-submit>Oy Ver</button>
+          </form>
+          <p class="motm-poll__thanks" data-fbbjk-thanks hidden>Oyun kaydedildi, teşekkürler.</p>
+          <div class="motm-poll__results" data-fbbjk-results hidden></div>
+          <p class="motm-poll__note" data-fbbjk-note="community" hidden>Sonuçlar tüm okuyucuların oylarını yansıtır.</p>
+          <p class="motm-poll__note" data-fbbjk-note="local" hidden>Oy deposuna ulaşılamadı; bu sonuç yalnızca bu cihazdaki oyu yansıtıyor.</p>
         </section>
 
         <!-- post-match-feature:start -->
