@@ -223,7 +223,21 @@ function computeLineupStrength(lineup) {
 function computeBenchStrength(squad, lineup) {
   const players = Array.isArray(squad) ? squad : [];
   const starterIds = new Set((lineup && lineup.starters || []).map((player) => player.id || player.name));
-  const bench = players.filter((player) => !starterIds.has(player.id || player.name));
+  // Yalnızca "ilk 11'de değil" bench yapmaz: sakat/cezalı bir oyuncu da ilk
+  // 11'de değildir ama SAHAYA ÇIKAMAZ. Aynı uygunluk listesi (`eligibleSquad`
+  // ilk 11'i seçerken de bunu kullanıyor) burada da uygulanmazsa, sakatlığı
+  // yüzden ilk 11 dışında kalan bir oyuncu "yedek adayı" gibi görünür.
+  const unavailableIds = new Set(
+    ((lineup && lineup.availability && lineup.availability.unavailable) || [])
+      .map((row) => row.playerId)
+      .filter(Boolean)
+  );
+  const bench = players.filter((player) => {
+    const key = player.id || player.name;
+    if (starterIds.has(key)) return false;
+    if (player.id && unavailableIds.has(player.id)) return false;
+    return true;
+  });
 
   if (!bench.length) {
     return { score: null, confidence: 0, sampleSize: 0, players: [] };

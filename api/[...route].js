@@ -12,6 +12,7 @@ const { providerMeta, resolveFromProviders } = require("../services/liveDataServ
 const { handleMotmVote } = require("../server/motmVoteRoute");
 const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
+const { handleMatchWinnerVote } = require("../server/matchWinnerVoteRoute");
 const { handleMatchLineup } = require("../server/matchLineupRoute");
 const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
@@ -331,6 +332,13 @@ module.exports = async function handler(req, res) {
   // Ana sayfa tahmin anketi: oy vermek POST, yanıt seçmene özel.
   if (routeName(req) === "home-poll") {
     return handleHomePoll(req, res);
+  }
+
+  // Fenerbahçe-Beşiktaş derbisi "kim kazanır" anketi: tekil maça özel,
+  // takvimsiz bir pencere (bkz. server/matchWinnerVoteRoute.js); aynı
+  // gerekçeyle alttaki genel kapılara sokulmuyor.
+  if (routeName(req) === "match-winner-vote") {
+    return handleMatchWinnerVote(req, res);
   }
 
   // Maç dosyası ilk 11 + canlı skor: kendi önbellek politikasını maçın

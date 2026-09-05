@@ -682,6 +682,7 @@ function featuredCarousel() {
       <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches">${selections.map((entry, index) =>
     `<button type="button" class="featured-carousel-dot${index === 0 ? " is-active" : ""}" data-featured-go="${index}" role="tab" aria-selected="${index === 0 ? "true" : "false"}" aria-label="${escapeHtml(`${entry.match.homeTeam || "?"} - ${entry.match.awayTeam || "?"}`)}"><span aria-hidden="true"></span></button>`).join("")}</div>
       <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Next match"><span aria-hidden="true">&rsaquo;</span></button>
+      <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
     </div>`;
 
   return `<div class="featured-carousel" data-featured-carousel data-featured-interval="10000" data-featured-count="${selections.length}" aria-roledescription="carousel" aria-label="Featured matches">
