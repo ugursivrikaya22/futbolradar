@@ -21460,3 +21460,126 @@ a.motm-week__card:focus-visible {
     display: none;
   }
 }
+
+/* Fenerbahçe-Beşiktaş derbi vitrini: anasayfanın en dikkat çekici statik
+   kartı olması için büyütüldü — takım rozetleri, kickoff saati ve hızlı
+   bilgi çubuğu eklendi. Kart çerçevesi/metni mevcut tema değişkenlerinden
+   (--green, --green-tint, --surface, --surface-rgb, --text, --muted,
+   --line) geldiği için koyu temada da uyumlu. Rozet arka planları ise
+   BİLEREK sabit (tema değişkeni değil): --green ve --ink gibi değişkenler
+   koyu temada renk/parlaklık değiştiriyor (okunurluk için), bu yüzden
+   üstlerindeki sabit beyaz metin koyu temada kontrastı kaybederdi. */
+.derby-spotlight-card {
+  padding: clamp(20px, 3vw, 32px);
+  border: 2px solid var(--green);
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--green-tint) 0%, var(--surface) 60%);
+  box-shadow: 0 14px 34px rgba(11, 143, 90, 0.14);
+}
+
+.derby-matchup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 4vw, 40px);
+  margin: 20px 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.derby-matchup-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 96px;
+}
+
+.derby-matchup-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  /* Sabit koyu yeşil — var(--green) koyu temada açık bir tona döner ve
+     üstündeki beyaz metnin kontrastını kırardı. */
+  background: #086a43;
+  color: #fff;
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.derby-matchup-badge.is-away {
+  /* Sabit koyu (Beşiktaş'ın siyah-beyaz renklerine de uygun) — var(--ink)
+     koyu temada neredeyse beyaza döner ve beyaz metni okunmaz kılardı. */
+  background: #16181c;
+}
+
+.derby-matchup-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--text);
+  text-align: center;
+}
+
+.derby-matchup-kickoff {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.derby-matchup-time {
+  font-size: clamp(1.6rem, 4vw, 2.2rem);
+  font-weight: 900;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.derby-matchup-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.derby-quickfacts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.derby-quickfact {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(var(--surface-rgb), 0.6);
+  border: 1px solid var(--line);
+}
+
+.derby-quickfact span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.derby-quickfact strong {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .derby-matchup { gap: 14px; }
+  .derby-matchup-badge { width: 46px; height: 46px; font-size: 0.85rem; }
+  .derby-matchup-name { font-size: 0.82rem; }
+  .derby-quickfacts { grid-template-columns: 1fr; }
+}
