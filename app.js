@@ -3445,6 +3445,12 @@
   var featuredCarouselTicker = null;
   var featuredCarouselControl = null;
 
+  // Duraklatma bitince bir sonraki otomatik adımın en erken ne zaman
+  // olabileceği. Zamanlayıcı hiç sıfırlanmadığından (bkz. aşağıdaki yorum),
+  // bu eşik olmadan duraklatmayı kaldırmak bazen bir sonraki turu neredeyse
+  // hemen tetikleyebilirdi — "kaldığı yerden devam" beklentisini bozardı.
+  var featuredCarouselResumeAt = 0;
+
   // Kullanıcı pause tuşuna bastığında maç ekranda sabitlenir. Diğer modül
   // düzeyi durumlar gibi (featuredCarouselActiveId) yeniden çizimler arası
   // hayatta kalır; aksi halde 20 saniyelik canlı yoklama sabitlemeyi iptal
@@ -3477,7 +3483,7 @@
         return;
       }
 
-      if (control.paused() || isDocumentHidden()) {
+      if (control.paused() || isDocumentHidden() || Date.now() < featuredCarouselResumeAt) {
         return;
       }
 
@@ -3585,6 +3591,9 @@
       if (target.hasAttribute("data-featured-pause")) {
         manualPause = !manualPause;
         featuredCarouselManualPause = manualPause;
+        if (!manualPause) {
+          featuredCarouselResumeAt = Date.now() + interval;
+        }
         updatePauseButton();
       } else if (target.hasAttribute("data-featured-prev")) {
         step(-1);
@@ -3610,7 +3619,12 @@
       root.addEventListener(name, function () { paused = true; });
     });
     ["mouseleave", "focusout"].forEach(function (name) {
-      root.addEventListener(name, function () { paused = false; });
+      root.addEventListener(name, function () {
+        paused = false;
+        if (!manualPause) {
+          featuredCarouselResumeAt = Date.now() + interval;
+        }
+      });
     });
 
     featuredCarouselControl = {
