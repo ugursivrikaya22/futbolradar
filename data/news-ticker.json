@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-05T19:23:53.616Z",
+  "updatedAt": "2026-09-05T21:23:36.028Z",
   "items": [
     {
       "id": "auto-news-309efde513c13913e75a",
@@ -43,40 +43,6 @@
         "priority": 3,
         "status": "OFFICIAL"
       }
-    },
-    {
-      "id": "auto-news-0d47d8e258645c428cba",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "2026 FIBA Kadınlar Süper Kupa finali 7 Ekim’de Mersin’de oynanacak",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-02T20:25:42.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxNYk5yd1g1eHFzakcxR2JzaDU2c2VXTEloSVIzMzNpOGxPNGlWaktPMndPckpWT1kyN1R6N20zSnRoRzZsMGhyaU1KY0JRVnhtZ0RfTHc4RGc0RXpRbnNTVGVvOWl3OXpRRzlNVEUzcF85YXhsU2NnamFlQ0toaFlfN2VBNDB0Nmt6c0JwNl93VXhjeXhoem5WWHYxeERQOUNGVEhPajJXWWFhblZiMkYtZkxDUDRsdG82QmVGSFpDX1BwbFk?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "news-besiktas-kerem-akturkoglu-33674946",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Beşiktaş çevresinde Kerem Aktürkoğlu'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-05T19:11:00.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/besiktas-kerem-akturkoglu-33674946"
-      },
-      "team": "Beşiktaş",
-      "important": true
     },
     {
       "id": "news-fenerbahce-vedat-muriqi-63c7a495",
@@ -146,6 +112,20 @@
         "url": "https://www.futbolradar.com/haber/fenerbahce-caglar-soyuncu-3c750fd3"
       },
       "team": "Fenerbahçe",
+      "important": true
+    },
+    {
+      "id": "news-besiktas-samsunspor-serdal-adali-b66661d9",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Beşiktaş çevresinde Samsunspor Serdal Adalı'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-04T11:49:55.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-samsunspor-serdal-adali-b66661d9"
+      },
+      "team": "Beşiktaş",
       "important": true
     },
     {
