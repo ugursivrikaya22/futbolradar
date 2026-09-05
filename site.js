@@ -848,11 +848,22 @@
     }
 
     var dots = Array.prototype.slice.call(root.querySelectorAll("[data-featured-go]"));
+    var pauseButton = root.querySelector("[data-featured-pause]");
     var interval = Number(root.dataset.featuredInterval) > 0 ? Number(root.dataset.featuredInterval) : 10000;
     var index = Math.max(0, slides.findIndex(function (slide) {
       return slide.classList.contains("is-active");
     }));
     var timer = null;
+    var manualPause = false;
+
+    function updatePauseButton() {
+      if (!pauseButton) {
+        return;
+      }
+      pauseButton.classList.toggle("is-paused", manualPause);
+      pauseButton.setAttribute("aria-pressed", manualPause ? "true" : "false");
+      pauseButton.setAttribute("aria-label", manualPause ? "Resume automatic rotation" : "Pause automatic rotation");
+    }
 
     function show(next) {
       index = (next + slides.length) % slides.length;
@@ -877,12 +888,22 @@
 
     root.addEventListener("click", function (event) {
       var target = event.target && event.target.closest
-        ? event.target.closest("[data-featured-go], [data-featured-prev], [data-featured-next]")
+        ? event.target.closest("[data-featured-go], [data-featured-prev], [data-featured-next], [data-featured-pause]")
         : null;
       if (!target) {
         return;
       }
       event.preventDefault();
+      if (target.hasAttribute("data-featured-pause")) {
+        manualPause = !manualPause;
+        updatePauseButton();
+        if (manualPause) {
+          stop();
+        } else {
+          restart();
+        }
+        return;
+      }
       if (target.hasAttribute("data-featured-prev")) {
         show(index - 1);
       } else if (target.hasAttribute("data-featured-next")) {
@@ -901,6 +922,11 @@
     }
 
     function restart() {
+      // Pause düğmesiyle sabitlenmişse fare/klavye kartın üzerinden
+      // ayrılsa bile dönüş kendiliğinden geri gelmez.
+      if (manualPause) {
+        return;
+      }
       stop();
       // Hareketi azaltmak isteyen kullanıcı için kendiliğinden dönme yok;
       // oklar ve noktalar çalışmaya devam eder.
