@@ -119,6 +119,18 @@ async function main() {
   const batch = scoped.slice(0, LIMIT);
   log(`${scoped.length} aday kapsam içi; bu koşuda ${batch.length} tanesi işlenecek.`);
 
+  // Şablonlar oyuncu adı çıkarılamadığında ("statement"/"squad" gibi genel
+  // olaylarda) sabit, takıma özgü bir başlığa düşer — aynı takım için ard
+  // arda birden fazla haber aynı Sporx sayfasına göre AYNI başlığı üretebilir.
+  // qa.mjs her başlığın SEO için biricik olmasını şart koşar; bu yüzden
+  // burada, `data/news.json`'a yazmadan önce üretilen başlığın hem mevcut
+  // hem de bu koşudaki diğer haberlerle çakışmadığından emin olunur.
+  const usedTitles = new Set(
+    news
+      .filter((entry) => entry && String(entry.status || "").toLowerCase() === "verified")
+      .map((entry) => text(entry.title))
+  );
+
   const newArticles = [];
   const newlySeen = [];
 
@@ -130,6 +142,14 @@ async function main() {
       transfers: transferRows,
       now
     });
+
+    if (usedTitles.has(article.title)) {
+      log(`atlandı (başlık çakışması — özgünleştirecek ayırt edici bilgi yok): ${article.title}`);
+      newlySeen.push({ url: candidate.url, at: now.toISOString(), slug: article.slug });
+      continue;
+    }
+
+    usedTitles.add(article.title);
     newArticles.push(article);
     newlySeen.push({ url: candidate.url, at: now.toISOString(), slug: article.slug });
     log(`özgün haber üretildi [${classification.category}]: "${article.title}" (kaynak: ${candidate.url})`);
@@ -140,8 +160,15 @@ async function main() {
     return;
   }
 
-  if (!newArticles.length) {
+  if (!newlySeen.length) {
     log("yeni haber yok, dosyalar değişmedi.");
+    return;
+  }
+
+  if (!newArticles.length) {
+    const updatedSeen = pruneSeen([...seen, ...newlySeen], now);
+    fs.writeFileSync(SEEN_PATH, `${JSON.stringify({ processed: updatedSeen }, null, 2)}\n`, "utf8");
+    log(`yeni haber yok (hepsi başlık çakışması nedeniyle atlandı); data/sporx-seen.json güncellendi (${updatedSeen.length} kayıt).`);
     return;
   }
 
