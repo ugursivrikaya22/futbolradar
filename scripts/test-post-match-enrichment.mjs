@@ -542,15 +542,19 @@ const injected = view.enrichmentSection({
 });
 assert.doesNotMatch(injected, /<script>/, "sağlayıcı metni kaçışsız basılmamalı");
 
-// ÜRETİCİ BAĞLANTISI: depo salt okunur biçimde okunmalı ve sayfaya girmeli.
+// ÜRETİCİ BAĞLANTISI: maç raporu şablonu bu bölümü ARTIK basmıyor.
+//
+// `enrichmentSection` "X/Y bölüm (%kapsam)" sayacı ve eksik alt bölüm için
+// "doğrulanmış veri gelmedi" bekleme satırları basıyordu — tam olarak maç
+// raporu şablonunun "dolu bölüm / hiç bölüm" disiplininin kaldırdığı
+// checklist tiyatrosu. Bölüm bilinçli olarak sayfadan çıkarıldı; servis
+// (`postMatchEnrichmentView.js`) ve veri deposu (`data/match-enrichment.json`)
+// hâlâ salt okunur biçimde duruyor, yalnızca rapor sayfasına bağlanmıyor.
 const generator = fs.readFileSync(path.join(root, "scripts", "generate-post-match-pages.mjs"), "utf8");
-assert.match(generator, /enrichmentSection\(enrichmentStore\[match\.id\] \|\| null\)/, "bölüm sayfaya eklenmeli");
-assert.match(generator, /readEnrichmentStore/, "depo okuyucusu bulunmalı");
-assert.match(generator, /if \(!fs\.existsSync\(storePath\)\) return \{\}/, "dosya yokken üretim durmamalı");
 assert.doesNotMatch(
   generator,
-  /writeFileSync\([^)]*match-enrichment/,
-  "üretici zenginleştirme deposuna YAZMAMALI — salt okunur"
+  /enrichmentSection|match-enrichment/,
+  "maç raporu şablonu zenginleştirme checklist'ini basmamalı"
 );
 
 /* ------------------------------------------------------------------ *

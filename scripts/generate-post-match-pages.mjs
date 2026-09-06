@@ -2,9 +2,16 @@
  * Tamamlanan her maç için otomatik maç raporu sayfası üretir.
  *
  * İçerik services/matchReportService.js tarafından maçın gerçek verisinden
- * türetilir; bu script yalnızca sunum katmanıdır. Verisi olmayan bölümler
- * gizlenmez, "veri bekleniyor" olarak yazılır — okuyucu neyin ölçülmüş
- * neyin eksik olduğunu görür.
+ * türetilir; bu script yalnızca sunum katmanıdır.
+ *
+ * DİSİPLİN: "dolu bölüm / hiç bölüm". Sabit sırayla yalnızca ölçülmüş
+ * bölümler basılır — skor başlığı, goller ve olaylar, kadrolar, takım
+ * istatistikleri, maç sonu açıklamaları (yalnızca doğrulanmış alıntı) ve
+ * sonraki maç (yalnızca doğrulanmış fikstür). Verisi olmayan bölüm
+ * gizlenir; "veri sağlayıcı tarafından sunulmadı" kartı, "X/5 bölüm dolu"
+ * sayacı ya da "bilgiler güncelleniyor" gibi bekleme metinleri YAZILMAZ.
+ * Hiçbir bölümün verisi yoksa sayfa; skor başlığı, paylaşım ve gezinme
+ * bağlantılarından oluşan kısa bir sonuç kartına küçülür.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -18,16 +25,11 @@ const require = createRequire(import.meta.url);
 const domain = "https://www.futbolradar.com";
 
 const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
-const { buildMatchReport } = require("../services/matchReportService.js");
+const { buildMatchReport, buildMatchEvents } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
-const { buildPostMatchIntelligence } = require("../services/postMatchIntelligence.js");
-const { enrichmentSection } = require("../services/postMatchEnrichmentView.js");
 const { quotesForMatch } = require("../services/managerQuotes.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
-const { PROVIDER_MISSING_LABEL } = require("../services/postMatchReportStore.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
-const { buildCoreReport } = require("../services/postMatchCoreReport.js");
 const { t } = require("../services/i18n.js");
 
 /**
@@ -52,8 +54,8 @@ const managerQuoteStore = (() => {
 /**
  * Sayfa başındaki "Maç Sonu Açıklamaları" şeridi.
  *
- * Tam liste zaten omurga bölümünde (coreReportSection → manager-comment).
- * Şerit onun kısaltılmış hâli: okuyucu sayfanın tepesinde kimin ne dediğini
+ * Tam liste artık `quotesSectionHtml`'de (bkz. aşağıda) basılıyor. Şerit
+ * onun kısaltılmış hâli: okuyucu sayfanın tepesinde kimin ne dediğini
  * görüp aşağıda tamamını okuyor. İkisi de AYNI doğrulanmış listeden gelir.
  */
 function matchQuotesTicker(report) {
@@ -62,108 +64,6 @@ function matchQuotesTicker(report) {
     awaitingNote: "Bu karşılaşma için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı."
   });
 }
-
-/**
- * BEŞ BÖLÜMLÜK OMURGA.
- *
- * Raporun on beş bölümü doğru ama okuyucu için düz bir döküm. Omurga beş
- * soruya indirger ve her bölümün NE SORDUĞUNU da yazar.
- *
- * Boş bölüm gizlenmez, "Veri yok" yazıp GEREKÇESİNİ söyler. Sağlayıcının
- * vermediği bir istatistiği tahmin etmek ya da teknik direktörün ağzına
- * cümle koymak, boş bırakmaktan çok daha kötü olurdu.
- */
-function coreReportSection(report, match) {
-  const core = buildCoreReport(report, { quoteStore: managerQuoteStore });
-
-  const renderBody = (section) => {
-    if (section.key === "manager-comment") {
-      // ALINTI OLDUĞU GİBİ BASILIR. Kısaltmak anlamı değiştirebilir ve
-      // kısaltılmış alıntı hâlâ tırnak içinde görünür.
-      return section.quotes.map((quote) => `<figure class="core-quote">
-          <blockquote>${escapeHtml(quote.quote)}</blockquote>
-          <figcaption>${escapeHtml([quote.speaker, quote.roleLabel, quote.team].filter(Boolean).join(" · "))} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
-        </figure>`).join("");
-    }
-
-    const body = section.body || {};
-    const parts = [];
-
-    if (body.paragraph) parts.push(`<p>${escapeHtml(body.paragraph)}</p>`);
-    if (body.lead) parts.push(`<p>${escapeHtml(body.lead)}</p>`);
-
-    // HER BÖLÜMÜN KENDİ ŞEKLİ VAR. Tek bir "text || note || label" tahmini
-    // dolu bölümleri boş sanıp "Veri yok" bastırıyordu — ölçülmüş veri
-    // varken. Eşleme gerçek kayıt şekillerinden yazıldı:
-    //   moments    → {minute, team, type, detail}
-    //   readings   → düz metin
-    //   highlights → {type, home, away, unit}
-    //   players    → {name, team, contribution, impact}
-    //   notes      → düz metin
-    const lines = [
-      ...(body.moments || []).map((entry) => entry && [entry.minute, entry.team, entry.detail]
-        .filter(Boolean).join(" · ")),
-      ...(body.readings || []).map((entry) => (typeof entry === "string" ? entry : "")),
-      ...(body.highlights || []).map((entry) => {
-        if (!entry || !entry.type) return "";
-        const unit = entry.unit || "";
-        return `${entry.type}: ${entry.home}${unit} - ${entry.away}${unit}`;
-      }),
-      ...(body.notes || []).map((entry) => (typeof entry === "string" ? entry : "")),
-      ...(body.players || []).map((entry) => entry && entry.name
-        ? [entry.name, entry.team, entry.contribution].filter(Boolean).join(" · ")
-        : "")
-    ].filter((line) => typeof line === "string" && line.trim());
-
-    if (lines.length) {
-      parts.push(`<ul class="core-list">${lines.slice(0, 5).map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`);
-    }
-
-    // Buraya düşmek bir ÇELİŞKİDİR: bölüm "ready" ama gösterilecek satır
-    // çıkmadı. Sessizce "Veri yok" basmak yerine gerekçe de yazılıyor ki
-    // eşleme hatası fark edilsin.
-    return parts.join("") ||
-      `<p class="core-empty"><b>${escapeHtml(section.noDataLabel)}</b> Bölüm verisi okunamadı (${escapeHtml(section.sourceKey || section.key)}).</p>`;
-  };
-
-  const blocks = core.sections.map((section) => `<article class="core-section${section.status === "ready" ? "" : " is-empty"}" data-core-section="${escapeHtml(section.key)}">
-      <header class="core-section-head">
-        <h3>${escapeHtml(section.title)}</h3>
-        <span class="core-section-question">${escapeHtml(section.question)}</span>
-      </header>
-      ${section.status === "ready"
-    ? renderBody(section)
-    : `<p class="core-empty"><b>${escapeHtml(section.noDataLabel)}</b> ${escapeHtml(section.reason)}</p>`}
-    </article>`).join("");
-
-  return `<section class="post-match-section post-match-core" aria-labelledby="rapor-omurga">
-      <div class="section-head"><div class="section-title"><span class="section-kicker">Maç sonu raporu</span><h2 id="rapor-omurga">${escapeHtml(`${match.homeTeam} - ${match.awayTeam}`)} beş soruda</h2><p>${escapeHtml(`${core.readyCount}/${core.total} bölüm doğrulanmış veriyle dolu. Eksik bölümler gerekçesiyle birlikte gösteriliyor; tahmin üretilmiyor.`)}</p></div></div>
-      <div class="core-grid">${blocks}</div>
-    </section>`;
-}
-
-/**
- * Sağlayıcı zenginleştirme deposu — SALT OKUNUR.
- *
- * Dosya `scripts/enrich-post-match.mjs --apply` tarafından yazılıyor ve
- * henüz hiç yazılmadı. Yokluğu bir hata değil, normal durum: o zaman
- * hiçbir rapora zenginleştirme bölümü eklenmiyor. Bu script dosyayı
- * asla yazmaz, yalnızca okur.
- */
-function readEnrichmentStore() {
-  const storePath = path.join(root, "data", "match-enrichment.json");
-  if (!fs.existsSync(storePath)) return {};
-  try {
-    const parsed = JSON.parse(fs.readFileSync(storePath, "utf8"));
-    return parsed && typeof parsed === "object" ? parsed : {};
-  } catch (error) {
-    // Bozuk depo sayfayı çökertmemeli; bölüm açılmaz, sebep günlüğe düşer.
-    console.warn(`[post-match] match-enrichment.json okunamadı: ${error.message}`);
-    return {};
-  }
-}
-
-const enrichmentStore = readEnrichmentStore();
 
 const fixturePool = curatedMatches();
 
@@ -239,12 +139,6 @@ function metricValue(value, metric) {
   return `${number.toFixed(decimals).replace(".", ",")}${metric.unit || ""}`;
 }
 
-function noteCard(text) {
-  // Maç bitti: eksik alan artık "beklenen" değil, sağlayıcının vermediği
-  // veridir. İki durumu aynı cümleye indirmek okuyucuyu yanıltır.
-  return `<article class="card data-empty" data-card="empty-state"><strong>${escapeHtml(PROVIDER_MISSING_LABEL)}</strong><span>${escapeHtml(text)}</span></article>`;
-}
-
 /**
  * Bir satır ancak İKİ TARAF DA ölçülmüşse anlamlıdır.
  *
@@ -303,279 +197,92 @@ function substitutionsHtml(match) {
 }
 
 // ── Rapor bölümleri ─────────────────────────────────────────────────────────
-function summarySection(report) {
-  const summary = report.sections.summary;
-  if (summary.status !== "ready") return noteCard(summary.reason);
-  return `<article class="card post-match-summary-card"><span class="card-kicker">Maç özeti</span><h2>${escapeHtml(summary.headline)}</h2><p>${escapeHtml(summary.paragraph)}</p></article>`;
+//
+// DİSİPLİN: her bölüm ya DOLU basılır ya HİÇ basılmaz. "Veri sağlayıcı
+// tarafından sunulmadı" kartı, "X/5 bölüm dolu" sayacı ya da "bilgiler
+// güncelleniyor" gibi bekleme metinleri YOK — bunlar boş bölümü doluymuş
+// gibi göstermeden okuyucunun önüne "iş yapılıyor" izlenimi bırakan
+// tiyatro. Bölümlerin hiçbiri veri getirmiyorsa sayfa; skor başlığı,
+// paylaşım ve gezinme bağlantılarından oluşan kısa bir sonuç kartına
+// küçülür — bu da geçerli bir sonuç, gizlenecek bir eksiklik değil.
+
+/**
+ * 2. Goller ve olaylar — dakika, oyuncu (varsa), tür. Sağlayıcı olay akışı
+ * paylaşmadıysa bölüm hiç açılmaz.
+ */
+function eventsSectionHtml(match) {
+  const block = buildMatchEvents(match);
+  if (block.status !== "ready") return "";
+
+  return `<section class="post-match-section" aria-labelledby="rapor-olaylar">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-olaylar">Goller ve olaylar</h2><p>Sağlayıcının bildirdiği dakika, oyuncu ve olay türüyle doğrulanmış akış.</p></div></div>
+        <div class="post-match-events">${block.events.map((event) => `<article class="post-match-event${event.isGoal ? " is-goal" : ""}">
+          <time>${escapeHtml(event.minute)}</time>
+          <div><span>${escapeHtml(event.type)}${event.team ? ` · ${escapeHtml(event.team)}` : ""}</span><p>${escapeHtml(event.detail || "")}</p></div>
+        </article>`).join("")}</div>
+      </section>`;
 }
 
 /**
- * Öne çıkan oyuncunun görseli. Kural services/playerPhotoService.js'de:
- * yalnızca lisanslı kaynak, gerçek sağlayıcı kimliği yoksa baş harfler.
- *
- * Buradaki alt DOLU: görsel, adın hemen bitişiğinde değil, kartın üstünde
- * ayrı bir öge olarak duruyor.
+ * 4. Takım istatistikleri — sağlayıcı bir tek metrik bile vermediyse bölüm
+ * (başlığıyla birlikte) hiç açılmaz.
  */
-function playerPhotoHtml(player) {
-  const photo = resolvePlayerPhoto(player);
-  if (photo.isPlaceholder) {
-    return `<span class="post-match-face is-placeholder" aria-hidden="true">${escapeHtml(photo.initials)}</span>`;
-  }
-
-  return `<img class="post-match-face" src="${escapeHtml(photo.url)}" ` +
-    `alt="${escapeHtml(playerPhotoAlt(player, `${player.name}, maç sonrası öne çıkan oyuncu`))}" ` +
-    `loading="lazy" decoding="async" width="56" height="56">`;
-}
-
-/**
- * MAÇ SONRASI ANALİZ PANOSU
- *
- * Her bölüm yalnızca ölçülmüş girdilerden üretilir; verisi olmayan bölüm
- * hiç basılmaz (services/postMatchIntelligence.js). Bu yüzden burada
- * "veri yok" kartı yok — boş bölüm, ölçüm yapılmış ama sonuç çıkmamış
- * izlenimi verirdi.
- *
- * Grafikler satır içi SVG/CSS: harici kütüphane yok, tema değişkenleriyle
- * boyanıyor, açık ve koyu temada aynı okunurluk.
- */
-function confidenceBadge(confidence) {
-  if (!confidence) return "";
-  const level = confidence.level;
-  const cls = level === "yüksek" ? "is-high" : level === "orta" ? "is-medium" : "is-low";
-  return `<span class="pmi-confidence ${cls}" title="Bu bölümün dayandığı ölçülerin ne kadarı mevcut">
-    <i aria-hidden="true"></i>Güven: ${escapeHtml(level)}</span>`;
-}
-
-/** Ev-deplasman karşılaştırma çubuğu. Sayılar her zaman yazılır. */
-function comparisonBar(metric, match) {
-  const home = Number(metric.home);
-  const away = Number(metric.away);
-  const total = Math.abs(home) + Math.abs(away);
-  const homePct = total ? Math.round((Math.abs(home) / total) * 100) : 50;
-  const decimals = metric.decimals || 0;
-  const fmt = (value) => (decimals ? Number(value).toFixed(decimals) : String(value)).replace(".", ",");
-  const unit = metric.unit ? escapeHtml(metric.unit) : "";
-
-  return `<div class="pmi-metric">
-    <div class="pmi-metric-head">
-      <b>${escapeHtml(fmt(home))}${unit}</b>
-      <span>${escapeHtml(metric.label)}</span>
-      <b>${escapeHtml(fmt(away))}${unit}</b>
-    </div>
-    <div class="pmi-bar" role="img" aria-label="${escapeHtml(`${metric.label}: ${match.homeTeam} ${fmt(home)}, ${match.awayTeam} ${fmt(away)}`)}">
-      <span class="pmi-bar-home" style="width:${homePct}%"></span>
-      <span class="pmi-bar-away" style="width:${100 - homePct}%"></span>
-    </div>
-  </div>`;
-}
-
-function derivedNote(derived) {
-  if (!derived) return "";
-  return `<details class="pmi-derived">
-    <summary>Bu ölçü nasıl hesaplandı?</summary>
-    <p><b>Formül:</b> ${escapeHtml(derived.formula)}</p>
-    <p><b>Girdiler:</b> ${escapeHtml(derived.inputs.join(", "))}</p>
-    <p>${escapeHtml(derived.note)}</p>
-  </details>`;
-}
-
-function intelligenceSectionHtml(section, match) {
-  const metrics = (section.metrics || []).map((metric) => comparisonBar(metric, match)).join("");
-  const readings = (section.readings || []).length
-    ? `<ul class="pmi-readings">${section.readings.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>`
-    : "";
-
-  const lines = (section.lines || []).length
-    ? `<ul class="pmi-readings">${section.lines.map((line) =>
-        `<li>${escapeHtml(line.text)} <em class="pmi-basis">${escapeHtml(line.basis)}</em></li>`).join("")}</ul>`
-    : "";
-
-  const performers = (section.performers || []).length
-    ? `<ul class="pmi-performers">${section.performers.map((player) =>
-        `<li><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.team)}</span>` +
-        `<b>${player.goals} gol</b>${player.minutes.length ? `<em>${escapeHtml(player.minutes.join(", "))}</em>` : ""}</li>`).join("")}</ul>`
-    : "";
-
-  const note = section.note ? `<p class="pmi-note">${escapeHtml(section.note)}</p>` : "";
-  const sources = section.sources
-    ? `<p class="pmi-sources">Kaynak: ${escapeHtml(section.sources.join(" · "))}</p>`
-    : "";
-
-  return `<article class="card pmi-section" id="pmi-${escapeHtml(section.id)}" data-pmi-section="${escapeHtml(section.id)}">
-    <div class="pmi-section-head">
-      <h3>${escapeHtml(section.title)}</h3>
-      ${confidenceBadge(section.confidence)}
-    </div>
-    ${metrics}
-    ${readings}${lines}${performers}
-    ${note}
-    ${derivedNote(section.derived)}
-    ${sources}
-  </article>`;
-}
-
-function intelligenceDashboard(match) {
-  const intelligence = buildPostMatchIntelligence(match);
-  if (!intelligence.sections.length) return "";
-
-  return `<section class="post-match-section pmi-dashboard" aria-labelledby="rapor-analiz">
-    <div class="section-head"><div class="section-title">
-      <span class="section-kicker">Maç sonrası analiz</span>
-      <h2 id="rapor-analiz">Veri panosu</h2>
-      <p>Her bölüm yalnızca bu maç için ölçülmüş istatistiklerden üretildi; verisi olmayan analiz hiç gösterilmiyor.</p>
-    </div></div>
-    <div class="pmi-grid">${intelligence.sections.map((section) => intelligenceSectionHtml(section, match)).join("")}</div>
-  </section>`;
-}
-
-function standoutSection(report) {
-  const block = report.sections.standoutPlayers;
-  if (block.status !== "ready") return noteCard(block.reason);
-  return `<div class="post-match-standouts">${block.players.map((player) => `<article class="card post-match-standout" data-impact="${escapeHtml(player.impact)}">
-    ${playerPhotoHtml(player)}
-    <span class="card-kicker">${escapeHtml(player.team)}</span>
-    <h3>${escapeHtml(player.name)}</h3>
-    <p>${escapeHtml(player.contribution)}</p>
-  </article>`).join("")}</div>`;
-}
-
-/**
- * Momentum: ölçülen olay dağılımı. Çubuklar uydurma bir eğri değil, dilim
- * başına düşen gerçek olay sayısı — bu yüzden sayılar da yazılıyor.
- */
-function momentumSection(report) {
-  const block = report.sections.momentum;
-  if (block.status !== "ready") return noteCard(block.reason);
-
-  const bars = block.phases.map((phase) => {
-    const total = phase.home + phase.away;
-    const homePct = total ? Math.round((phase.home / total) * 100) : 50;
-    return `<div class="pm-momentum-row">
-      <span class="pm-momentum-label">${escapeHtml(phase.label)}</span>
-      <span class="pm-momentum-bar" role="img" aria-label="${escapeHtml(`${phase.label}: ${phase.home}-${phase.away}`)}">
-        <b style="width:${total ? homePct : 0}%"></b>
-      </span>
-      <span class="pm-momentum-count">${phase.home}-${phase.away}</span>
-    </div>`;
-  }).join("");
-
-  return `<div class="card pm-momentum">
-    <p class="pm-momentum-meta">${escapeHtml(`${block.sampleSize} dakikalı olaydan türetildi · güven: ${block.confidence}`)}</p>
-    ${bars}
-    <ul class="pm-momentum-readings">${block.readings.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
-  </div>`;
-}
-
-/**
- * Takım sinyalleri. Her sinyal hangi ölçüden geldiğini taşır; okuyucu
- * "sinyal" kelimesine güvenmek zorunda kalmaz, sayıyı görür.
- */
-function signalsSection(report) {
-  const block = report.sections.signals;
-  if (block.status !== "ready") return noteCard(block.reason);
-
-  return `<div class="pm-signals">${block.signals.map((signal) => `<article class="card pm-signal${signal.strong ? " is-strong" : ""}">
-    <span class="card-kicker">${escapeHtml(signal.label)}</span>
-    <strong>${escapeHtml(signal.team)}</strong>
-    <p>${escapeHtml(`${signal.metric}: ${signal.value}`)}</p>
-  </article>`).join("")}</div>`;
-}
-
-function statisticsSection(report, match) {
+function statsSectionHtml(report, match) {
   const block = report.sections.statistics;
-  if (block.status !== "ready") return noteCard(block.reason);
+  if (block.status !== "ready") return "";
 
   const conversion = block.conversion.length
     ? `<div class="post-match-conversion">${block.conversion.map((row) => `<article><span>${escapeHtml(row.team)}</span><strong>%${escapeHtml(String(row.rate).replace(".", ","))}</strong><small>${escapeHtml(row.goals)} gol / ${escapeHtml(row.shots)} şut</small></article>`).join("")}</div>`
     : "";
 
-  return `<article class="card post-match-stat-reading">
-    <span class="card-kicker">İstatistik analizi</span>
-    <p>${escapeHtml(block.lead)}</p>
-    <ul>${block.readings.map((reading) => `<li>${escapeHtml(reading)}</li>`).join("")}</ul>
-    ${conversion}
-  </article>
-  <div class="post-match-team-labels"><strong>${escapeHtml(match.homeTeam)}</strong><span>Karşılaştırma</span><strong>${escapeHtml(match.awayTeam)}</strong></div>
-  <div class="post-match-stats-grid">${statsHtml(match)}</div>`;
-}
-
-function tacticalSection(report) {
-  const block = report.sections.tactical;
-  if (block.status === "unavailable") return noteCard(block.reason);
-  return `<article class="card post-match-tactical">
-    <span class="card-kicker">Taktik değerlendirme</span>
-    <ul>${block.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join("")}</ul>
-    ${block.status === "partial" ? '<p class="muted-copy">Diziliş ve oyun yapısı verisinin bir bölümü henüz doğrulanmadı; bölüm veri geldikçe genişler.</p>' : ""}
-  </article>`;
-}
-
-function turningPointsSection(report) {
-  const block = report.sections.turningPoints;
-  if (block.status === "unavailable") return noteCard(block.reason);
-  return `<div class="post-match-events">${block.moments.map((moment) => `<article class="post-match-event${moment.pivotal ? " is-goal" : ""}">
-    <time>${escapeHtml(moment.minute)}</time>
-    <div><span>${escapeHtml(moment.type)}${moment.team ? ` · ${escapeHtml(moment.team)}` : ""}</span><p>${escapeHtml(moment.detail || "Ayrıntı doğrulanmadı.")}</p></div>
-  </article>`).join("")}</div>`;
-}
-
-function aiRatingSection(report) {
-  const block = report.sections.aiRating;
-  if (block.status !== "ready") return noteCard(block.reason);
-  return `<article class="card post-match-ai-rating">
-    <span class="card-kicker">FutbolRadar performans puanı</span>
-    <div class="post-match-ai-scores">
-      <div><span>${escapeHtml(block.home.team)}</span><strong>${escapeHtml(block.home.score)}</strong></div>
-      <div><span>${escapeHtml(block.away.team)}</span><strong>${escapeHtml(block.away.score)}</strong></div>
-    </div>
-    <p>${escapeHtml(block.basis)}</p>
-    <div class="tag-row"><span class="tag soft">Veri güveni %${escapeHtml(block.confidence)}</span><span class="tag soft">100 üzerinden</span></div>
-  </article>`;
-}
-
-function nextMatchSection(report) {
-  const block = report.sections.nextMatch;
-  return `<article class="card post-match-next">
-    <span class="card-kicker">Sonraki maç öngörüsü</span>
-    <ul>${block.entries.map((entry) => `<li>${escapeHtml(entry.text)}</li>`).join("")}</ul>
-    <p class="muted-copy">${escapeHtml(block.note)}</p>
-  </article>`;
-}
-
-/** Elle yazılmış editoryal analiz varsa üretilen içeriğe ek olarak sunulur. */
-function editorialSection(match) {
-  const analysis = match.analysis;
-  if (!analysis || !analysis.headline) return "";
-  const reads = [
-    ["Hücum", analysis.attackingRead],
-    ["Orta saha", analysis.midfieldRead],
-    ["Savunma", analysis.defensiveRead]
-  ].filter(([, text]) => text);
-
-  return `<section class="post-match-section">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Editör analizi</span><h2>${escapeHtml(analysis.headline)}</h2><p>${escapeHtml(analysis.verdict || "")}</p></div></div>
-        ${reads.length ? `<div class="post-match-analysis-grid">${reads.map(([label, text]) => `<article class="card"><span class="card-kicker">${escapeHtml(label)}</span><p>${escapeHtml(text)}</p></article>`).join("")}</div>` : ""}
-        ${Array.isArray(analysis.keyPoints) && analysis.keyPoints.length ? `<aside class="post-match-key-points card"><h3>Analiz notları</h3><ul>${analysis.keyPoints.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}</ul></aside>` : ""}
+  return `<section class="post-match-section" aria-labelledby="rapor-istatistik">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-istatistik">Takım istatistikleri</h2><p>${escapeHtml(match.homeTeam)} ve ${escapeHtml(match.awayTeam)} verilerinin karşılaştırmalı okuması.</p></div></div>
+        <article class="card post-match-stat-reading">
+          <p>${escapeHtml(block.lead)}</p>
+          ${block.readings.length ? `<ul>${block.readings.map((reading) => `<li>${escapeHtml(reading)}</li>`).join("")}</ul>` : ""}
+          ${conversion}
+        </article>
+        <div class="post-match-team-labels"><strong>${escapeHtml(match.homeTeam)}</strong><span>Karşılaştırma</span><strong>${escapeHtml(match.awayTeam)}</strong></div>
+        <div class="post-match-stats-grid">${statsHtml(match)}</div>
       </section>`;
 }
 
-function kpiSection(match) {
-  const pick = (type) => (match.statistics || []).find((row) => String(row.type).toLocaleLowerCase("tr-TR") === type.toLocaleLowerCase("tr-TR"));
-  const tiles = [];
-  const possession = pick("Topla oynama");
-  const xg = pick("Gol beklentisi (xG)");
-  const shots = pick("Toplam şut");
-  const onTarget = pick("İsabetli şut");
-  const passAccuracy = pick("Pas isabeti");
+/**
+ * 5. Maç sonu açıklamaları — YALNIZCA kaynağı doğrulanmış alıntı. Alıntı
+ * yoksa bölüm açılmaz; sayfanın tepesindeki şerit zaten bekleme durumunu
+ * dürüstçe gösteriyor (bkz. matchQuotesTicker).
+ */
+function quotesSectionHtml(report) {
+  const verdict = quotesForMatch(report && report.matchId, managerQuoteStore);
+  const quotes = (verdict && verdict.quotes) || [];
+  if (!quotes.length) return "";
 
-  if (possession) tiles.push(["Topla oynama", `%${possession.home}`, match.homeTeam]);
-  if (xg) tiles.push(["xG", String(xg.home).replace(".", ","), `${String(xg.away).replace(".", ",")}'ye karşı`]);
-  if (shots) tiles.push(["Şut", String(shots.home), onTarget ? `${onTarget.home} isabet` : "toplam"]);
-  if (passAccuracy) tiles.push(["Pas isabeti", `%${passAccuracy.home}`, match.homeTeam]);
+  return `<section class="post-match-section" aria-labelledby="rapor-aciklama">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-aciklama">Maç sonu açıklamaları</h2><p>Kaynağı ve zaman damgası doğrulanmış alıntılar; hiçbiri uydurulmaz.</p></div></div>
+        <div class="post-match-quotes">${quotes.map((quote) => `<figure class="core-quote">
+          <blockquote>${escapeHtml(quote.quote)}</blockquote>
+          <figcaption>${escapeHtml([quote.speaker, quote.roleLabel, quote.team].filter(Boolean).join(" · "))} — <a href="${escapeHtml(quote.source.url)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(quote.source.name)}</a></figcaption>
+        </figure>`).join("")}</div>
+      </section>`;
+}
 
-  if (!tiles.length) return "";
-  return `<section class="post-match-kpi-grid" aria-label="Öne çıkan maç istatistikleri">${tiles
-    .map(([label, value, note]) => `<article><span>${escapeHtml(label)}</span><strong>${escapeHtml(value)}</strong><small>${escapeHtml(note)}</small></article>`)
-    .join("")}</section>`;
+/**
+ * 6. Sonraki maç — YALNIZCA doğrulanmış fikstürden. Skor tahmini içermez;
+ * fikstürde bir takım için sonraki maç yoksa o takım hiç satır almaz,
+ * ikisi de yoksa bölüm hiç açılmaz.
+ */
+function nextMatchSectionHtml(report) {
+  const block = report.sections.nextMatch;
+  const ready = (block.entries || []).filter((entry) => entry.status === "ready");
+  if (!ready.length) return "";
+
+  return `<section class="post-match-section" aria-labelledby="rapor-sonraki">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-sonraki">Sonraki maç</h2><p>Doğrulanmış fikstüre dayanır.</p></div></div>
+        <article class="card post-match-next">
+          <ul>${ready.map((entry) => `<li>${escapeHtml(entry.text)}</li>`).join("")}</ul>
+          <p class="muted-copy">${escapeHtml(block.note)}</p>
+        </article>
+      </section>`;
 }
 
 function pageHtml(report, match) {
@@ -588,13 +295,8 @@ function pageHtml(report, match) {
     ? `${match.homeTeam} ${score.home}-${score.away} ${match.awayTeam} Maç Raporu`
     : `${match.homeTeam} - ${match.awayTeam} Maç Raporu`;
   const summary = report.sections.summary;
-  const lead = summary.status === "ready" ? summary.paragraph : (match.summary || "Maç verisi doğrulandıkça bu rapor genişler.");
-
-  // Boşken TEK BAYT bile eklemiyoruz: boş bir interpolasyon, deponun hiç
-  // yazılmadığı bugünkü durumda yirmi HTML dosyasına boş satır farkı
-  // basardı — anlamsız üretim gürültüsü.
-  const enrichmentHtml = enrichmentSection(enrichmentStore[match.id] || null);
-  const enrichmentBlock = enrichmentHtml ? `\n\n      ${enrichmentHtml}` : "";
+  // Uydurulan "bu rapor genişler" beklemesi yok: cümle yoksa hiç basılmaz.
+  const lead = summary.status === "ready" ? summary.paragraph : "";
 
   // PAYLAŞIM METNİ. Yalnızca doğrulanmış alanlardan kurulur
   // (services/shareText.js): skor kayıtta varsa yazılır, analiz başlığı
@@ -677,7 +379,7 @@ function pageHtml(report, match) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${depth}index.html">Ana Sayfa</a><span>/</span><a href="${depth}mac-merkezi.html">Maç Merkezi</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
-        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(pageHeading)}</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}<span>Veri kapsamı %${escapeHtml(report.coverage)}</span></div></div>
+        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(pageHeading)}</h1>${lead ? `<p>${escapeHtml(lead)}</p>` : ""}<div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}</div></div>
         <div class="post-match-scoreboard" aria-label="Maç sonucu">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
           ${hasScore ? `<div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home)}<i>-</i>${escapeHtml(score.away)}</b>${hasHalftime(score) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>` : '<div class="post-match-score is-empty" aria-label="Skor verisi bekleniyor"></div>'}
@@ -687,64 +389,21 @@ function pageHtml(report, match) {
 
       ${matchQuotesTicker(report)}
 
-      ${kpiSection(match)}
-      ${coreReportSection(report, match)}
       ${shareHtml}
 
-      <section class="post-match-section" aria-labelledby="rapor-ozet">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-ozet">Maç özeti</h2><p>Sonuç, goller ve karşılaşmanın künyesi.</p></div></div>
-        ${summarySection(report)}
-      </section>
-
-      <section class="post-match-section" aria-labelledby="rapor-oyuncu">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-oyuncu">Öne çıkan oyuncular</h2><p>Gol, asist, kart ve kritik aksiyon kayıtlarından çıkarılan katkılar.</p></div></div>
-        ${standoutSection(report)}
-      </section>
-
-      ${intelligenceDashboard(match)}
-
-      <section class="post-match-section" aria-labelledby="rapor-momentum">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-momentum">Maç momentumu</h2><p>Dakikalı olay akışından çıkarılan bölüm bölüm üstünlük dağılımı.</p></div></div>
-        ${momentumSection(report)}
-      </section>
-
-      <section class="post-match-section" aria-labelledby="rapor-sinyal">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-sinyal">Takım sinyalleri</h2><p>Her sinyal tek bir ölçülmüş istatistiğe dayanır; ölçü yoksa sinyal üretilmez.</p></div></div>
-        ${signalsSection(report)}
-      </section>
-
-      <section class="post-match-section" aria-labelledby="rapor-istatistik">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-istatistik">İstatistik analizi</h2><p>${escapeHtml(match.homeTeam)} ve ${escapeHtml(match.awayTeam)} verilerinin karşılaştırmalı okuması.</p></div></div>
-        ${statisticsSection(report, match)}
-      </section>${enrichmentBlock}
-
-      <section class="post-match-section" aria-labelledby="rapor-taktik">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-taktik">Taktik değerlendirme</h2><p>Diziliş, oyun kontrolü ve müdahalelerin veriye dayalı okuması.</p></div></div>
-        ${tacticalSection(report)}
-      </section>
-
-      <section class="post-match-section" aria-labelledby="rapor-kirilma">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-kirilma">Maçın kırılma anları</h2><p>Skoru ve oyunun seyrini değiştiren dakikalar.</p></div></div>
-        ${turningPointsSection(report)}
-      </section>
-
-      <section class="post-match-section" aria-labelledby="rapor-puan">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-puan">AI puanlaması</h2><p>Ölçülmüş istatistiklerden hesaplanan takım performans puanı.</p></div></div>
-        ${aiRatingSection(report)}
-      </section>
-
-      <section class="post-match-section" aria-labelledby="rapor-sonraki">
-        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-sonraki">Sonraki maça dair öngörü</h2><p>Doğrulanmış fikstüre göre iki takımı bekleyen karşılaşma.</p></div></div>
-        ${nextMatchSection(report)}
-      </section>
-
-      ${editorialSection(match)}
+      ${eventsSectionHtml(match)}
 
       ${lineups ? `<section class="post-match-section">
         <div class="section-head"><div class="section-title"><span class="section-kicker">Kadrolar</span><h2>İlk 11 ve dizilişler</h2><p>Başlangıç kadroları ve maç içindeki oyuncu değişiklikleri.</p></div></div>
         <div class="post-match-lineups">${lineups}</div>
         ${subs ? `<div class="post-match-substitutions"><h3>Oyuncu değişiklikleri</h3><div>${subs}</div></div>` : ""}
       </section>` : ""}
+
+      ${statsSectionHtml(report, match)}
+
+      ${quotesSectionHtml(report)}
+
+      ${nextMatchSectionHtml(report)}
 
       <section class="post-match-next-grid">
         <a href="${depth}mac-merkezi.html"><span>Maç merkezi</span><strong>Tüm maç raporları</strong><p>Tamamlanan karşılaşmaların veri odaklı okumalarına geç.</p></a>
@@ -815,7 +474,7 @@ function addReportIndex(entries) {
   }).join("");
 
   const block = `<section class="section match-report-index" aria-labelledby="match-report-index-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">Maç raporları</span><h2 id="match-report-index-title">Tamamlanan maçların otomatik raporları</h2><p>Her rapor; özet, öne çıkan oyuncular, istatistik analizi, taktik değerlendirme, kırılma anları, performans puanı ve sonraki maç öngörüsü içerir.</p></div></div>
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Maç raporları</span><h2 id="match-report-index-title">Tamamlanan maçların otomatik raporları</h2><p>Her rapor yalnızca ölçülmüş bölümleri gösterir: skor başlığı, goller ve olaylar, kadrolar, takım istatistikleri, doğrulanmış maç sonu açıklamaları ve sonraki maç.</p></div></div>
           <div class="match-report-grid">${cards}</div>
         </section>`;
 
