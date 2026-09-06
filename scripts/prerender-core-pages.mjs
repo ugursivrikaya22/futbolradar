@@ -71,6 +71,16 @@ const news = publishableNews(newsPayload);
 const freshnessData = JSON.parse(fs.readFileSync(path.join(root, "data", "freshness.json"), "utf8"));
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+// `scripts/sync-super-lig-leaders.mjs` yazar; `/players/topscorers` ve
+// `/players/topassists` LİGİN KENDİSİYLE sorgulanır, yani players.json'un
+// turnuva-toplamı goals/assists alanlarından bağımsız, yalnızca Süper
+// Lig'e ait bir kaynaktır (bkz. o betikteki dosya başı notu). Dosya henüz
+// hiç üretilmemişse (yerel geliştirme, ilk kurulum) boş liste ile devam
+// edilir — uydurma satır basılmaz.
+const leagueLeadersPath = path.join(root, "data", "league-leaders.json");
+const leagueLeaders = fs.existsSync(leagueLeadersPath)
+  ? JSON.parse(fs.readFileSync(leagueLeadersPath, "utf8"))
+  : { topScorers: [], topAssists: [] };
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const fixtureCalendarPath = path.join(root, "data", "fixture-calendar.json");
 const calendarMatches = fs.existsSync(fixtureCalendarPath)
@@ -1291,37 +1301,22 @@ function trendPlayerSlot(limit) {
  * ANA SAYFA "SÜPER LİG LİDERLERİ" RAFI — dört sekme, sekme başına en çok 5
  * satır.
  *
- * Gol/asist sekmeleri `verifiedTrendPlayers`in bara tabi DEĞİL: kadro
- * senkronu gol/asist hiç göndermiyor (yukarıdaki denetim notuna bkz.), yani
- * o bar burada her zaman sıfır satır üretirdi. Bunun yerine gol-kralligi.html
- * ve asist-kralligi.html'in zaten kullandığı düzenlenmiş örnek veri
- * havuzundan besleniyor — TEK şart, oyuncunun hâlâ gerçekten o Süper Lig
- * kulübünde olması. Serbest kalan ya da yurt dışına giden oyuncular
- * (Icardi, Dzeko, Szymanski, Gedson) bu yüzden burada hiç görünmez; kalan
- * havuz üçten fazla değil, o yüzden bazı sekmeler beşten az satır basar —
- * sayfayı doldurmak için sahte bir satır uydurulmuyor.
+ * Gol/asist sekmeleri `data/league-leaders.json`den beslenir — bu dosya
+ * `/players/topscorers` ve `/players/topassists`ten (ligin kendisiyle
+ * sorgulanır) üretilir, players.json'un turnuva-toplamı goals/assists
+ * alanlarından bağımsızdır. gol-kralligi.html/asist-kralligi.html AYNI
+ * kaynağı okur, böylece ana sayfa rafıyla o sayfalar arasında sayı farkı
+ * olmaz. Kaynak dosya henüz üretilmemişse boş liste döner ve
+ * `homeLeadersSlot` bunu dürüst bir "veri bekleniyor" durumuna çevirir —
+ * sayfayı doldurmak için sahte bir satır uydurulmaz.
  */
-function isCurrentSuperLigClub(team) {
-  const value = String(team || "").trim();
-  if (!value || /serbest|free agent|kulüpsüz/i.test(value)) return false;
-  const leagueTeams = fixtureTeamNames();
-  const normalized = value.toLocaleLowerCase("tr-TR");
-  return leagueTeams.some((name) => {
-    const candidate = String(name || "").toLocaleLowerCase("tr-TR");
-    return candidate && (candidate === normalized || candidate.includes(normalized) || normalized.includes(candidate));
-  });
-}
-
-function homeLeaderPlayerPool(statField) {
-  return excludeHomepageBlockedPlayers(players)
-    .filter((player) => Number(player[statField]) > 0)
-    .filter((player) => isCurrentSuperLigClub(player.currentTeam || player.team))
-    .sort((left, right) => Number(right[statField]) - Number(left[statField]));
-}
-
-function homeLeaderPlayerRow(rank, player, statField, statUnit) {
-  const team = escapeHtml(player.currentTeam || player.team || "");
-  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${team}</span></a><span class="leaders-value">${escapeHtml(player[statField])}<small>${escapeHtml(statUnit)}</small></span></li>`;
+function homeLeaderLeagueRow(rank, row, metric, unit) {
+  const team = escapeHtml(row.team || "");
+  const value = escapeHtml(String(row[metric] ?? 0));
+  const nameHtml = row.slug
+    ? `<a class="leaders-name" href="./oyuncular/${escapeHtml(row.slug)}.html"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></a>`
+    : `<span class="leaders-name"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></span>`;
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span>${nameHtml}<span class="leaders-value">${value}<small>${escapeHtml(unit)}</small></span></li>`;
 }
 
 function homeLeaderFormRow(rank, player) {
@@ -1341,21 +1336,63 @@ function homeLeadersSlot(rows, rowHtmlFor, emptyNote) {
 }
 
 function homeLeadersScorersSlot(limit) {
-  const rows = homeLeaderPlayerPool("goals").slice(0, limit);
+  const rows = (leagueLeaders.topScorers || []).slice(0, limit);
   return homeLeadersSlot(
     rows,
-    (rank, player) => homeLeaderPlayerRow(rank, player, "goals", "gol"),
+    (rank, row) => homeLeaderLeagueRow(rank, row, "goals", "gol"),
     "Gol krallığı sıralaması, oyuncular resmî maçlarda gol attıkça güncellenir."
   );
 }
 
 function homeLeadersAssistsSlot(limit) {
-  const rows = homeLeaderPlayerPool("assists").slice(0, limit);
+  const rows = (leagueLeaders.topAssists || []).slice(0, limit);
   return homeLeadersSlot(
     rows,
-    (rank, player) => homeLeaderPlayerRow(rank, player, "assists", "asist"),
+    (rank, row) => homeLeaderLeagueRow(rank, row, "assists", "asist"),
     "Asist krallığı sıralaması, oyuncular resmî maçlarda asist yaptıkça güncellenir."
   );
+}
+
+/**
+ * GOL/ASİST KRALLIĞI TABLOSU — gol-kralligi.html / asist-kralligi.html.
+ *
+ * Aynı `data/league-leaders.json`den, ana sayfa rafıyla aynı satırları
+ * kullanır. Mobilde taşmaması için `evergreen-table-wrap` (puan durumu
+ * sayfalarındaki yatay kaydırma sarmalayıcısı), takım logosu için de
+ * `home-standing-logo*`/`home-standing-team` (ana sayfa puan tablosu
+ * widget'ı) YENİDEN kullanılır — yeni bir CSS sınıfı eklemek page.css'in
+ * tek sürüm damgasını (ve dolayısıyla binlerce sayfanın `?v=` referansını)
+ * gereksiz yere değiştirirdi.
+ */
+function leagueLeaderLogoHtml(row) {
+  const initials = escapeHtml(fixtureTeamInitials(row.team));
+  if (!row.teamLogo) {
+    return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
+  }
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(row.teamLogo)}" alt="" width="20" height="20" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+}
+
+function leagueLeaderNameHtml(row) {
+  const name = escapeHtml(row.name || "");
+  return row.slug ? `<a href="./oyuncular/${escapeHtml(row.slug)}.html">${name}</a>` : `<span>${name}</span>`;
+}
+
+function leagueLeaderTableHtml(rows, metric, metricLabel) {
+  if (!rows || !rows.length) {
+    return emptyStateCard("Veri bekleniyor", `Süper Lig ${metricLabel.toLocaleLowerCase("tr-TR")} sıralaması, resmî lig maçları oynandıkça güncellenir.`);
+  }
+  const body = rows.map((row) => `<tr>
+              <td>${escapeHtml(String(row.rank))}</td>
+              <th scope="row">${leagueLeaderNameHtml(row)}</th>
+              <td><span class="home-standing-team">${leagueLeaderLogoHtml(row)}<span>${escapeHtml(row.team || "")}</span></span></td>
+              <td><strong>${escapeHtml(String(row[metric] ?? 0))}</strong></td>
+              <td>${row.appearances ? escapeHtml(String(row.appearances)) : "-"}</td>
+            </tr>`).join("");
+
+  return `<div class="evergreen-table-wrap"><table class="evergreen-table">
+          <thead><tr><th scope="col">Sıra</th><th scope="col">Oyuncu</th><th scope="col">Takım</th><th scope="col">${escapeHtml(metricLabel)}</th><th scope="col">Maç</th></tr></thead>
+          <tbody>${body}</tbody>
+        </table></div>`;
 }
 
 function homeLeadersFormSlot(limit) {
@@ -1855,6 +1892,14 @@ writePage("index.html", {
 writePage("analizler.html", {
   "post-match-analyses": postMatchAnalysisCards(undefined, { verifiedScoresOnly: true })
 }, fixtureFreshness);
+
+writePage("gol-kralligi.html", {}, fixtureFreshness, {
+  "league-leaders-table": leagueLeaderTableHtml(leagueLeaders.topScorers, "goals", "Gol")
+});
+
+writePage("asist-kralligi.html", {}, fixtureFreshness, {
+  "league-leaders-table": leagueLeaderTableHtml(leagueLeaders.topAssists, "assists", "Asist")
+});
 
 /**
  * MAÇ LİSTESİ BASAN SAYFALARIN ORTAK ŞEMASI.

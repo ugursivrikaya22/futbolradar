@@ -1033,6 +1033,39 @@ async function getSquadEntry(query) {
     : null;
 }
 
+/**
+ * Gol/asist krallığı satırı — `normalizePlayer`den KASITLI olarak ayrı.
+ *
+ * `/players/topscorers` ve `/players/topassists` zaten `league`+`season`
+ * parametreleriyle TEK ligi sorgular; dönen `statistics` blokları bu yüzden
+ * hepsi aynı ligdendir (yalnızca sezon içi takım değişikliğinde birden
+ * fazla blok olur). `normalizePlayer`in `aggregateStatistics`i ise genel
+ * `/players` uç noktası için yazılmıştı ve TÜM turnuvaları (kupa, Avrupa)
+ * toplar — krallık tablosu için burada kullanılırsa lig dışı gol/asist
+ * karışır. Bu fonksiyon yalnızca ligin kendi bloklarını toplar ve son
+ * bloğun takımını (sezon içi transferde güncel kulüp) gösterir.
+ */
+function normalizeLeagueLeaderEntry(item) {
+  const player = item.player || {};
+  const blocks = Array.isArray(item.statistics) ? item.statistics.filter(Boolean) : [];
+  const lastBlock = blocks[blocks.length - 1] || {};
+  const team = lastBlock.team || {};
+
+  return {
+    providerId: player.id ? String(player.id) : "",
+    name: player.name || "",
+    photo: player.photo || null,
+    team: teamName(team),
+    teamLogo: team.logo || null,
+    teamProviderId: team.id ? String(team.id) : null,
+    league: (lastBlock.league && lastBlock.league.name) || "",
+    appearances: sumOrNull(blocks.map((block) => numberOrNull(block.games && (block.games.appearences ?? block.games.appearances)))) || 0,
+    minutes: sumOrNull(blocks.map((block) => numberOrNull(block.games && block.games.minutes))) || 0,
+    goals: sumOrNull(blocks.map((block) => numberOrNull(block.goals && block.goals.total))) || 0,
+    assists: sumOrNull(blocks.map((block) => numberOrNull(block.goals && block.goals.assists))) || 0
+  };
+}
+
 function normalizeTransfer(item) {
   const player = item.player || {};
   const transfers = Array.isArray(item.transfers) ? item.transfers : [];
@@ -1345,7 +1378,13 @@ async function getPlayerTransfers(query) {
 async function getTopScorers(query) {
   const league = ensureLeagueForData(query);
   const payload = await providerFetch("/players/topscorers", { league, season: resolveSeason(query && query.season) });
-  return stampProviderData(responseItems(payload).map(normalizePlayer), "players", 6 * 60 * 60 * 1000);
+  return stampProviderData(responseItems(payload).map(normalizeLeagueLeaderEntry), "players", 6 * 60 * 60 * 1000);
+}
+
+async function getTopAssists(query) {
+  const league = ensureLeagueForData(query);
+  const payload = await providerFetch("/players/topassists", { league, season: resolveSeason(query && query.season) });
+  return stampProviderData(responseItems(payload).map(normalizeLeagueLeaderEntry), "players", 6 * 60 * 60 * 1000);
 }
 
 async function getInjuries(query) {
@@ -1934,6 +1973,8 @@ module.exports = {
   getPlayerMatchLog,
   getPlayerTransfers,
   getTopScorers,
+  getTopAssists,
+  normalizeLeagueLeaderEntry,
   getInjuries,
   getLineups,
   getFixtureEvents,
