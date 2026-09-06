@@ -148,6 +148,15 @@ assert.equal(bareRecord.digest.lateGame.status, "unavailable", "Olay yokken son 
 assert.equal(bareRecord.digest.analysis.length, 0, "İstatistik yokken analiz bölümü üretilmemeli");
 assert.equal(bareRecord.availability.events, 0, "Sayım gerçeği yansıtmalı");
 
+// Skor var (0-3) ama golcü/dakika ya da resmi olay listesi yok: TAM RAPOR
+// eşiği geçilmez — sayfa kısa sonuç kartı olarak kalır. Tam olarak
+// Trabzonspor 5-0 Gençlerbirliği hatasının tekrarı: gol var, golcü yok.
+assert.equal(
+  bareRecord.publishState,
+  "summary-card",
+  "Golcü/dakika ya da resmi olay listesi yoksa tam rapor açılmamalı"
+);
+
 // Skoru da olmayan maçta hiçbir bölüm ölçülmüş değildir → bağımsız sayfa yok.
 const scoreless = buildReportRecord({ ...bareMatch, id: "test-scoreless", score: null }, {});
 assert.equal(scoreless.publishState, "store-only", "Ölçülmüş bölüm yoksa bağımsız sayfa basılmamalı");
@@ -240,7 +249,7 @@ for (const record of live.records) {
   assert.ok(record.seo && record.seo.title && record.seo.description, `${record.matchId}: SEO başlığı ve açıklaması olmalı`);
   assert.ok(record.fingerprint, `${record.matchId}: parmak izi olmalı`);
   assert.equal(record.modelVersion, MODEL_VERSION, `${record.matchId}: model sürümü işaretlenmeli`);
-  assert.ok(["page", "store-only"].includes(record.publishState), `${record.matchId}: yayın durumu geçerli olmalı`);
+  assert.ok(["page", "summary-card", "store-only"].includes(record.publishState), `${record.matchId}: yayın durumu geçerli olmalı`);
   // Uydurma koruması: skor yoksa alan null kalmalı, 0-0 yazılmamalı.
   if (record.score) {
     assert.equal(typeof record.score.home, "number", `${record.matchId}: skor sayısal olmalı`);
@@ -275,7 +284,26 @@ for (const record of pageRecords) {
   assert.ok(record.readySections.length > 0, `${record.matchId}: sayfa basılan raporun ölçülmüş bölümü olmalı`);
 }
 
+// --- TAM RAPOR yalnızca asgari eşik geçildiğinde: skor + (golcü/dakika
+// için resmi olay listesi) YA DA gol yok (0-0). Bu, "5-0 ama golcüsüz tam
+// rapor" hatasının gerçek veride tekrarlanmadığını doğrular.
+const matchById = new Map(pool.map((match) => [match.id, match]));
+for (const record of pageRecords) {
+  const match = matchById.get(record.matchId);
+  if (!match) continue;
+  const totalGoals = (Number(record.score && record.score.home) || 0) + (Number(record.score && record.score.away) || 0);
+  if (totalGoals > 0) {
+    assert.ok(
+      Array.isArray(match.events) && match.events.length > 0,
+      `${record.matchId}: gol var ama olay akışı yok — tam rapor açılmamalıydı`
+    );
+  }
+}
+
+const summaryCardRecords = live.records.filter((record) => record.publishState === "summary-card");
+
 console.log(
   `test-post-match-reports: OK (${live.records.length} tamamlanmış maç, ` +
-  `${pageRecords.length} rapor sayfası, ${live.records.length - pageRecords.length} yalnızca depoda)`
+  `${pageRecords.length} tam rapor, ${summaryCardRecords.length} kısa sonuç kartı, ` +
+  `${live.records.length - pageRecords.length - summaryCardRecords.length} yalnızca depoda)`
 );

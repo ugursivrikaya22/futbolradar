@@ -1403,6 +1403,45 @@ function buildSeo(match, summary) {
   return { title, description, path, competition };
 }
 
+// ── Tam rapor eşiği ──────────────────────────────────────────────────────────
+/**
+ * TAM RAPOR EŞİĞİ.
+ *
+ * SORUN. "Ölçülmüş en az bir bölüm" çubuğu çok alçaktı: yalnızca skor bilinen
+ * bir maç bile (golcü yok, dakika yok, olay yok) "summary" bölümü ready
+ * sayıldığı için TAM RAPOR sayfası olarak yayımlanıyordu. Trabzonspor 5-0
+ * Gençlerbirliği bunun örneğiydi — beş gol, sıfır golcü, sıfır dakika, yine
+ * de "Maç Raporu" başlığıyla açılan bir sayfa.
+ *
+ * ÇÖZÜM. Tam rapor yalnızca şu asgari veri varsa açılır:
+ *
+ *   skor + [(golcüler VE gol dakikaları) VEYA sağlayıcının resmi olay listesi]
+ *
+ * Gol yoksa (0-0) ikinci koşul zaten anlamsızdır — anlatacak bir golcü/dakika
+ * yoktur, skor tek başına yeterlidir. Gol VARSA, sağlayıcının olay akışı
+ * (`match.events`) boşsa golcü ve dakika hiçbir zaman doğrulanamaz; bu
+ * durumda eşik geçilmez ve sayfa kısa sonuç kartı olarak kalır.
+ *
+ * Eşiğin altındaki maçlar sayfasız BIRAKILMAZ — kısa bir sonuç kartı olarak
+ * yayımlanır ve veri geldiğinde AYNI URL tam rapora yükselir.
+ */
+function meetsFullReportThreshold(match, report) {
+  const summary = report && report.sections && report.sections.summary;
+  if (!sectionIsReady(summary)) return false; // skor doğrulanmadan tam rapor olmaz
+
+  const score = match.score || {};
+  const totalGoals = (Number(score.home) || 0) + (Number(score.away) || 0);
+  if (totalGoals === 0) return true; // gol yok: golcü/dakika sorusu düşer
+
+  // Resmi olay listesi (sağlayıcının events dökümü) golcü ve dakika
+  // bilgisinin TEK kaynağıdır; boşsa ikisi de uydurulamaz.
+  return Array.isArray(match.events) && match.events.length > 0;
+}
+
+function sectionIsReady(section) {
+  return Boolean(section) && section.status === "ready";
+}
+
 /** Tüm bölümleri tek raporda toplar. */
 function buildMatchReport(match, context) {
   // FT/AET/PEN dahil tüm tamamlanmış maçlar rapor üretir; hükmen sonuçlar
@@ -1455,6 +1494,7 @@ module.exports = {
   buildHalfAnalysis,
   buildLateGame,
   buildMatchReport,
+  meetsFullReportThreshold,
   buildSummary,
   buildStandoutPlayers,
   buildStatisticsAnalysis,

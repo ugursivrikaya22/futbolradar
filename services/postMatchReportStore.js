@@ -33,7 +33,7 @@
 
 const crypto = require("node:crypto");
 
-const { buildMatchReport } = require("./matchReportService");
+const { buildMatchReport, meetsFullReportThreshold } = require("./matchReportService");
 const { buildPostMatchIntelligence } = require("./postMatchIntelligence");
 const {
   PROVIDER_MISSING_LABEL,
@@ -57,7 +57,12 @@ const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 // `value` alanında; v4 yalnızca `detail`e baktığı için golcü "Normal Goal"
 // diye yazılıyor ve sağlayıcıdan gelen kırmızı kartlar kırılma anlarına
 // hiç girmiyordu (167 yayınlanmış sayfa etkilendi).
-const MODEL_VERSION = "futbolradar-post-match-v5";
+// v6: `publishState` artık üçlü. v5 yalnızca "ölçülmüş bir bölüm var mı"
+// diye soruyordu; skoru bilinen ama golcüsü/dakikası/olay akışı olmayan
+// maçlar (ör. Trabzonspor 5-0 Gençlerbirliği) bu yüzden TAM RAPOR
+// sayılıyordu. Artık "page" yalnızca asgari eşik (skor + golcü/dakika ya da
+// resmi olay listesi) geçildiğinde; eşik altındaki maçlar "summary-card".
+const MODEL_VERSION = "futbolradar-post-match-v6";
 
 /**
  * ANALİZ YAŞAM DÖNGÜSÜ.
@@ -83,6 +88,23 @@ const ANALYSIS_STATUSES = Object.freeze({
   PARTIAL: "partial_data",
   FAILED: "failed",
   RETRY: "retry_scheduled"
+});
+
+/**
+ * YAYIN DURUMU — sayfa hangi biçimde basılır.
+ *
+ *   page          — asgari veri eşiği geçildi (skor + golcü/dakika ya da
+ *                    resmi olay listesi): tam rapor sayfası.
+ *   summary-card  — skor doğrulandı ama eşik altında: kısa sonuç kartı
+ *                    (skor, lig, stadyum, saat). Aynı URL, veri gelince
+ *                    "page"e yükselir.
+ *   store-only    — ölçülmüş tek bölüm yok (skor bile yok): bağımsız sayfa
+ *                    basılmaz, analiz yalnızca depoda durur.
+ */
+const PUBLISH_STATES = Object.freeze({
+  PAGE: "page",
+  SUMMARY_CARD: "summary-card",
+  STORE_ONLY: "store-only"
 });
 
 /** Bir maç için en fazla kaç kez üretim denenir. */
@@ -401,11 +423,16 @@ function buildReportRecord(match, context) {
     dataStatus: report.dataStatus,
     intelligenceCoverage: intelligence.coverage,
 
-    // Bağımsız bir rapor SAYFASI yalnızca ölçülmüş en az bir bölüm varsa
-    // basılır. Tamamen boş bir sayfa okuyucuya da arama motoruna da değer
-    // vermez; analiz yine de depoda durur ve maç detay/analiz sayfalarında
-    // eksik veri açıkça yazılarak gösterilir.
-    publishState: ready.length ? "page" : "store-only"
+    // Bağımsız bir sayfa yalnızca ölçülmüş en az bir bölüm varsa basılır —
+    // tamamen boş bir sayfa okuyucuya da arama motoruna da değer vermez.
+    // Ölçülmüş bir bölüm VARSA ama asgari eşik (skor + golcü/dakika ya da
+    // resmi olay listesi) geçilmediyse sayfa yine basılır, sadece TAM RAPOR
+    // değil kısa sonuç kartı olarak — "5-0 ama golcüsüz tam rapor" hatası
+    // burada önlenir. Analiz her durumda depoda durur; eksik veri açıkça
+    // yazılarak gösterilir.
+    publishState: !ready.length
+      ? PUBLISH_STATES.STORE_ONLY
+      : (meetsFullReportThreshold(match, report) ? PUBLISH_STATES.PAGE : PUBLISH_STATES.SUMMARY_CARD)
   };
 }
 
@@ -438,7 +465,7 @@ function markAnalysisFailure(match, error, context) {
       ? new Date(Date.parse(generatedAt) + RETRY_BACKOFF_MS * (2 ** (attempts - 1))).toISOString()
       : null,
     analysisVersion: MODEL_VERSION,
-    publishState: "store-only"
+    publishState: PUBLISH_STATES.STORE_ONLY
   };
 }
 
@@ -551,6 +578,7 @@ module.exports = {
   MAX_ANALYSIS_ATTEMPTS,
   MODEL_VERSION,
   PROVIDER_MISSING_LABEL,
+  PUBLISH_STATES,
   RETRY_BACKOFF_MS,
   TRACKED_INPUTS,
   analysisFingerprint,

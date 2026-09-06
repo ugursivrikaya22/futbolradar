@@ -7065,11 +7065,6 @@
     return String((record && record.coverageGrade) || "unknown");
   }
 
-  /** Veri kapsam yüzdesi — rapor bölüm kapsamı değil, SAĞLAYICI verisi. */
-  function postMatchCoveragePercent(record) {
-    return Number.isFinite(record && record.coveragePercent) ? record.coveragePercent : 0;
-  }
-
   function renderPostMatchCard(record, options) {
     var settings = options || {};
     var digest = record.digest || {};
@@ -7095,12 +7090,12 @@
       (settings.detailed ? postMatchMomentsHtml(record) + postMatchPlayersHtml(record) : "") +
       postMatchMissingHtml(record) +
       '<div class="post-match-footer">' +
-      '<span class="post-match-coverage">Veri kapsamı %' + escapeHtml(String(postMatchCoveragePercent(record))) +
-      " · " + escapeHtml(postMatchSourceLabel(record)) +
+      '<span class="post-match-coverage">' + escapeHtml(postMatchSourceLabel(record)) +
       (updated ? " · " + escapeHtml(updated) : "") + "</span>" +
-      (record.publishState === "page"
-        ? '<a class="detail-link" href="' + escapeHtml(record.reportUrl || "#") + '">Tam raporu aç</a>'
-        : '<span class="post-match-note">Analiz hazırlanıyor</span>') +
+      (record.publishState === "store-only"
+        ? '<span class="post-match-note">Analiz hazırlanıyor</span>'
+        : '<a class="detail-link" href="' + escapeHtml(record.reportUrl || "#") + '">' +
+          (record.publishState === "page" ? "Tam raporu aç" : "Maç sonucunu aç") + "</a>") +
       "</div>" +
       "</article>";
   }
