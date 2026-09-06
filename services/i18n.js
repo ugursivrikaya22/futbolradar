@@ -175,6 +175,13 @@ const ROUTES = Object.freeze([
     priority: "0.7"
   },
   {
+    key: "topAssists",
+    tr: "asist-kralligi.html",
+    en: "en/top-assists.html",
+    changefreq: "weekly",
+    priority: "0.7"
+  },
+  {
     key: "momentum",
     tr: "momentum.html",
     en: "en/momentum.html",
@@ -341,6 +348,16 @@ const ROUTE_META = Object.freeze({
     en: {
       title: "Turkish Süper Lig Top Scorers | FutbolRadar",
       description: "The Trendyol Süper Lig scoring charts: goals and assists for every player with a verified record."
+    }
+  },
+  topAssists: {
+    tr: {
+      title: "Asist Krallığı | FutbolRadar",
+      description: "Süper Lig asist krallığı sıralaması; yalnızca lig maçlarındaki asistler."
+    },
+    en: {
+      title: "Turkish Süper Lig Top Assists | FutbolRadar",
+      description: "The Trendyol Süper Lig assist charts: league-only assists for every player with a verified record."
     }
   },
   momentum: {

@@ -118,6 +118,12 @@ const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
 const curatedMatches = readJson("matches.json", []);
 const teams = readJson("teams.json", []);
 const players = getPlayers(readJson("players.json", []));
+// `scripts/sync-super-lig-leaders.mjs` yazar; `/players/topscorers` ve
+// `/players/topassists` LİGİN KENDİSİYLE sorgulanır — players.json'un
+// turnuva-toplamı goals/assists alanlarından bağımsız, yalnızca Trendyol
+// Süper Lig'e ait bir kaynak. TR ve EN taraflar AYNI dosyayı okur, böylece
+// iki dil arasında sayı farkı olmaz (bkz. görev notu: TR/EN parity).
+const leagueLeaders = readJson("league-leaders.json", { topScorers: [], topAssists: [] });
 const columnList = (() => {
   const doc = readJson("columns.json", { columns: [] });
   const list = Array.isArray(doc) ? doc : (doc.columns || []);
@@ -1523,29 +1529,40 @@ ${sectionLinks()}`;
   });
 }
 
-function topScorersPage() {
-  const scorers = verifiedPlayerCards()
-    .filter((player) => Number(player.goals || 0) > 0)
-    .sort((left, right) => Number(right.goals || 0) - Number(left.goals || 0) ||
-      Number(right.assists || 0) - Number(left.assists || 0));
+/**
+ * GOL/ASİST KRALLIĞI (EN) — `data/league-leaders.json`den, TR tarafla AYNI
+ * kaynaktan. `verifiedPlayerCards()`in düz `goals`/`assists` alanları
+ * turnuva-toplamıdır (bkz. o fonksiyonun notu); krallık tablosu için burada
+ * KULLANILMAZ — Süper Lig dışı gol/asist karışmasın diye.
+ */
+function leagueLeaderCell(row) {
+  const name = escapeHtml(row.name || "");
+  return row.slug ? `<a href="./player/${escapeHtml(row.slug)}.html">${name}</a>` : name;
+}
 
-  const rows = scorers.map((player, index) => `<tr>
-              <td>${index + 1}</td>
-              <th scope="row">${escapeHtml(player.name)}</th>
-              <td>${escapeHtml(statCell(player.team))}</td>
-              <td><b>${escapeHtml(statCell(player.goals))}</b></td>
-              <td>${escapeHtml(statCell(player.assists))}</td>
+function leagueLeaderRows(list, metric) {
+  return (Array.isArray(list) ? list : []).map((row) => `<tr>
+              <td>${escapeHtml(String(row.rank))}</td>
+              <th scope="row">${leagueLeaderCell(row)}</th>
+              <td>${escapeHtml(statCell(row.team))}</td>
+              <td><b>${escapeHtml(String(row[metric] ?? 0))}</b></td>
+              <td>${row.appearances ? escapeHtml(String(row.appearances)) : "—"}</td>
             </tr>`).join("");
+}
+
+function topScorersPage() {
+  const scorers = leagueLeaders.topScorers || [];
+  const rows = leagueLeaderRows(scorers, "goals");
 
   const body = `      <section class="data-panel" aria-labelledby="en-scorers-title">
         <h2 class="panel-title" id="en-scorers-title">Scoring charts</h2>
         ${rows
           ? `<div class="standings-table-wrap"><table class="en-table">
-          <thead><tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">Club</th><th scope="col">Goals</th><th scope="col">Assists</th></tr></thead>
+          <thead><tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">Club</th><th scope="col">Goals</th><th scope="col">Apps</th></tr></thead>
           <tbody>${rows}</tbody>
         </table></div>`
           : `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
-        <p class="muted-copy">A club is shown only where the player record is verified; an unverified club claim is left blank rather than guessed.</p>
+        <p class="muted-copy">Only goals scored in Süper Lig league matches are counted; cup and European competition goals are excluded.</p>
       </section>
 ${sectionLinks()}`;
 
@@ -1555,10 +1572,39 @@ ${sectionLinks()}`;
     enPath: "en/top-scorers.html",
     heroKicker: "Goals",
     heroTitle: "Turkish Süper Lig Top Scorers",
-    heroLead: "Goals and assists for every player with a verified record this season.",
+    heroLead: "Süper Lig league-only goals for the 2026/27 season — no cup or European competition goals mixed in.",
     heroMeta: `${scorers.length} scorers`,
     body,
     schema: schemaFor("topScorers", "en/top-scorers.html", "CollectionPage")
+  });
+}
+
+function topAssistsPage() {
+  const assisters = leagueLeaders.topAssists || [];
+  const rows = leagueLeaderRows(assisters, "assists");
+
+  const body = `      <section class="data-panel" aria-labelledby="en-assists-title">
+        <h2 class="panel-title" id="en-assists-title">Assist charts</h2>
+        ${rows
+          ? `<div class="standings-table-wrap"><table class="en-table">
+          <thead><tr><th scope="col">#</th><th scope="col">Player</th><th scope="col">Club</th><th scope="col">Assists</th><th scope="col">Apps</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table></div>`
+          : `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
+        <p class="muted-copy">Only assists made in Süper Lig league matches are counted; cup and European competition assists are excluded.</p>
+      </section>
+${sectionLinks()}`;
+
+  return pageShell({
+    routeKey: "topAssists",
+    trPath: "asist-kralligi.html",
+    enPath: "en/top-assists.html",
+    heroKicker: "Assists",
+    heroTitle: "Turkish Süper Lig Top Assists",
+    heroLead: "Süper Lig league-only assists for the 2026/27 season — no cup or European competition assists mixed in.",
+    heroMeta: `${assisters.length} playmakers`,
+    body,
+    schema: schemaFor("topAssists", "en/top-assists.html", "CollectionPage")
   });
 }
 
@@ -1641,7 +1687,8 @@ function statsHubPage() {
   // (oyuncu kıyaslama, takım trendleri) Türkçe sürüme işaretli bağlanır.
   const screens = [
     { href: "./player-radar.html", kicker: "Players", title: "Player Radar", copy: "Süper Lig players by rating, goals and market value." },
-    { href: "./top-scorers.html", kicker: "Goals", title: "Top Scorers", copy: "The scoring charts, goals and assists." },
+    { href: "./top-scorers.html", kicker: "Goals", title: "Top Scorers", copy: "The Süper Lig scoring charts, league goals only." },
+    { href: "./top-assists.html", kicker: "Assists", title: "Top Assists", copy: "The Süper Lig assist charts, league assists only." },
     { href: "./momentum.html", kicker: "Form", title: "Team Momentum", copy: "Which clubs are trending up and which are falling away." },
     { href: "./standings.html", kicker: "Table", title: "Standings", copy: "The full Trendyol Süper Lig table." },
     { href: "./teams.html", kicker: "Clubs", title: "Teams", copy: "All 18 clubs with position and form." },
@@ -1872,6 +1919,7 @@ const PAGE_BUILDERS = {
   matchCentre: matchCentrePage,
   playerRadar: playerRadarPage,
   topScorers: topScorersPage,
+  topAssists: topAssistsPage,
   momentum: momentumPage,
   transferRadar: transferRadarPage,
   statsHub: statsHubPage,
