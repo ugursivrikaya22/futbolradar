@@ -42,6 +42,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Repair generated news SEO metadata before QA
+        run: |
+          node scripts/dedupe-news-seo.mjs --apply
+          node scripts/generate-news-pages.mjs
+
       - name: Lint (scripts/qa.mjs)
         run: npm run lint
 
