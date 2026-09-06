@@ -558,6 +558,41 @@ h1 {
   font-size: 0.88rem;
 }
 
+.data-empty-retry {
+  justify-self: center;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border: 1px solid rgba(11, 143, 90, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.data-empty-retry:hover,
+.data-empty-retry:focus-visible {
+  background: rgba(11, 143, 90, 0.1);
+}
+
+/*
+ * "Yükleniyor" statik iskeletinin süresiz nabız atması, sağlayıcı yanıt
+ * vermeyi bıraktığında sayfanın asılı kaldığı izlenimini güçlendiriyordu.
+ * Animasyon sabit sayıda tekrardan sonra durur (2 x 1.1s < 3sn); bölüm hâlâ
+ * "loading" durumundaysa okuyucu artık hareketsiz ama sakin bir kart görür,
+ * asıl üst sınırı app.js'teki PROVIDER_LOAD_DEADLINE_MS belirler.
+ */
+[data-state="loading"] > .data-empty {
+  animation: fr-loading-pulse 1.1s ease-in-out 2;
+}
+
+@keyframes fr-loading-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
 .match-empty-actions {
   display: flex;
   flex-wrap: wrap;
@@ -11261,6 +11296,12 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
   .match-balance-track span,
 .matchup-row-track span {
     transition: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-state="loading"] > .data-empty {
+    animation: none !important;
   }
 }
 

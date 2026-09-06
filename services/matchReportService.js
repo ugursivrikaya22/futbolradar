@@ -310,7 +310,7 @@ function buildSummary(match, seed) {
   const result = outcome(match);
   const score = scoreLine(match);
   if (!result || !score) {
-    return { status: "unavailable", reason: "Maç sonucu henüz doğrulanmadı." };
+    return { status: "unavailable", reason: "Maç sonucu sağlayıcı tarafından paylaşılmadı." };
   }
 
   const goals = goalEvents(match);
@@ -387,7 +387,7 @@ function buildSummary(match, seed) {
     // değil, gerçekten gol yok.
     sentences.push("İki takım da gol bulamadı.");
   } else {
-    sentences.push("Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.");
+    sentences.push("Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.");
   }
 
   const htHome = match.score && match.score.halftimeHome;
@@ -448,7 +448,7 @@ function buildStandoutPlayers(match) {
   if (!ranked.length) {
     return {
       status: "unavailable",
-      reason: `${match.homeTeam} - ${match.awayTeam} maçında oyuncu bazlı katkı verisi (gol, asist, kart, kurtarış) henüz doğrulanmadı.`
+      reason: `${match.homeTeam} - ${match.awayTeam} maçında oyuncu bazlı katkı verisi (gol, asist, kart, kurtarış) sağlayıcı tarafından paylaşılmadı.`
     };
   }
 
@@ -757,7 +757,7 @@ function buildTacticalRead(match) {
   if (!notes.length) {
     return {
       status: "unavailable",
-      reason: `${match.homeTeam} ve ${match.awayTeam} için diziliş ve oyun yapısı verisi (formasyon, topla oynama, mücadele dağılımı) bu karşılaşmada henüz doğrulanmadı.`
+      reason: `${match.homeTeam} ve ${match.awayTeam} için diziliş ve oyun yapısı verisi (formasyon, topla oynama, mücadele dağılımı) bu karşılaşmada sağlayıcı tarafından paylaşılmadı.`
     };
   }
 
@@ -770,7 +770,7 @@ function buildTurningPoints(match) {
   if (!events.length) {
     return {
       status: "unavailable",
-      reason: `${match.homeTeam} - ${match.awayTeam} maçının olay akışı henüz doğrulanmadı.`
+      reason: `${match.homeTeam} - ${match.awayTeam} maçının olay akışı sağlayıcı tarafından paylaşılmadı.`
     };
   }
 
