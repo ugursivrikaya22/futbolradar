@@ -1,7 +1,21 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-06T09:31:26.990Z",
+  "updatedAt": "2026-09-06T16:11:37.516Z",
   "items": [
+    {
+      "id": "news-galatasaray-kadin-futbol-79c8a336",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
+      "timestamp": "2026-09-06T15:37:09.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-kadin-futbol-79c8a336"
+      },
+      "team": "Galatasaray",
+      "important": true
+    },
     {
       "id": "news-galatasaray-rafael-leao-356183c3",
       "origin": "news.json",
@@ -45,20 +59,6 @@
       "important": true
     },
     {
-      "id": "news-galatasaray-result-1f4661d8",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
-      "timestamp": "2026-09-04T20:42:42.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-result-1f4661d8"
-      },
-      "team": "Galatasaray",
-      "important": true
-    },
-    {
       "id": "news-fenerbahce-caglar-soyuncu-3c750fd3",
       "origin": "news.json",
       "category": "club-agenda",
@@ -84,21 +84,6 @@
         "url": "https://www.futbolradar.com/haber/besiktas-samsunspor-serdal-adali-b66661d9"
       },
       "team": "Beşiktaş",
-      "important": true
-    },
-    {
-      "id": "news-trabzonspor-fatih-tekke-ile-yollar-ayrildi",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Trabzonspor, teknik direktör Fatih Tekke ile yollarını ayırdı",
-      "timestamp": "2026-09-01T17:11:00+03:00",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/trabzonspor-fatih-tekke-ile-yollar-ayrildi"
-      },
-      "team": "Trabzonspor",
-      "updatedAt": "2026-09-01T20:10:00+03:00",
       "important": true
     }
   ]
