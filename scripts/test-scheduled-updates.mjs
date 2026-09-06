@@ -155,6 +155,14 @@ assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
 assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
+// When players.json changes on an hourly run, profile pages must remain
+// publish-ready: comparison links and prerendered SEO body are required.
+assert.match(orchestrator, /nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"/);
+assert.match(orchestrator, /nodeStep\("render-en-player-pages", "generate-en-player-pages\.mjs"/);
+assert.match(orchestrator, /nodeStep\("prerender-player-content", "prerender-player-content\.mjs"/);
+// QA failures should be recorded but not block committing valid data updates.
+assert.match(orchestrator, /args: \["run", "qa"\], kind: "validation", required: false/);
+assert.match(orchestrator, /status: criticalFailure \? "failed" : \(optionalSourceErrors\.length \|\| skippedSources\.length \|\| qaFailure\) \? "partial" : "success"/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");
