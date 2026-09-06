@@ -24,7 +24,11 @@ const NEWS_PATH = path.join(root, "data", "news.json");
 const apply = process.argv.includes("--apply");
 
 const payload = JSON.parse(fs.readFileSync(NEWS_PATH, "utf8"));
-const list = Array.isArray(payload) ? payload : (payload.items || payload.news || []);
+// Depo bugün düz bir dizi; nesne biçimi için liste ANAHTARI dizi olan alandır
+// (`items` boş bir dizi olsa bile o anahtar korunur — truthy/falsy seçimi
+// yanlış listeyi işlerdi).
+const listKey = Array.isArray(payload) ? null : ["items", "news"].find((key) => Array.isArray(payload[key])) || null;
+const list = Array.isArray(payload) ? payload : (listKey ? payload[listKey] : []);
 const next = dedupeArticleSeo(list);
 
 const changed = [];
@@ -43,7 +47,7 @@ changed.forEach((line) => console.log(`  - ${line}`));
 if (!apply) {
   console.log("[dedupe-news-seo] kuru koşu — --apply ile yazılır.");
 } else if (changed.length) {
-  const output = Array.isArray(payload) ? next : { ...payload, [payload.items ? "items" : "news"]: next };
+  const output = Array.isArray(payload) ? next : { ...payload, [listKey || "news"]: next };
   fs.writeFileSync(NEWS_PATH, `${JSON.stringify(output, null, 2)}\n`, "utf8");
   console.log("[dedupe-news-seo] data/news.json güncellendi.");
 }

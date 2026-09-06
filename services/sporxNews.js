@@ -642,9 +642,11 @@ function dedupeArticleSeo(articles) {
     const seo = article.seo && typeof article.seo === "object" ? article.seo : {};
     const baseTitle = stripSeoSuffix(article.title);
     // Sayfaya basılan açıklama (scripts/generate-news-pages.mjs ile aynı
-    // öncelik): metaDescription → spot → summary → title. Yalnızca bu
-    // ETKİN değer çakışırsa yazılır; alanı boş olan eski kayıtlara
-    // dokunulmaz.
+    // öncelik): metaDescription → spot → summary → title. Karşılaştırma bu
+    // ETKİN değer üzerinden yapılır; `seo.metaDescription` yalnızca etkin
+    // değer başka bir kayıtla çakışırsa yazılır. Alanı boş olan eski bir
+    // kayıt, etkin açıklaması tekilse olduğu gibi kalır; çakışıyorsa
+    // ayrıştırılmış açıklama o alana yazılır (sayfa bunu basar).
     const effectiveDescription = text(seo.metaDescription) || text(article.spot) || text(article.summary) || text(article.title);
     const baseDescription = stripSeoSuffix(effectiveDescription);
 
