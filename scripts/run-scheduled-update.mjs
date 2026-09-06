@@ -32,7 +32,15 @@ const WATCHED_COLLECTIONS = {
   teams: { file: "data/teams.json", rows: (value) => Array.isArray(value) ? value : value.teams || [], key: (row) => row.id || row.name },
   players: { file: "data/players.json", rows: (value) => Array.isArray(value) ? value : value.players || [], key: (row) => row.id || row.providerId || row.name },
   squadStatuses: { file: "data/squad-statuses.json", rows: (value) => value.teams || [], key: (row) => row.team || row.name },
-  analyses: { file: "data/match-analyses.json", rows: (value) => Array.isArray(value) ? value : value.records || [], key: (row) => row.fixtureId || row.id }
+  analyses: { file: "data/match-analyses.json", rows: (value) => Array.isArray(value) ? value : value.records || [], key: (row) => row.fixtureId || row.id },
+  leagueLeaders: {
+    file: "data/league-leaders.json",
+    rows: (value) => [
+      ...(Array.isArray(value.topScorers) ? value.topScorers.map((row) => ({ ...row, list: "goals" })) : []),
+      ...(Array.isArray(value.topAssists) ? value.topAssists.map((row) => ({ ...row, list: "assists" })) : [])
+    ],
+    key: (row) => `${row.list}:${row.providerId || row.name}`
+  }
 };
 
 function parseArgs(argv) {
@@ -116,7 +124,8 @@ function snapshotDiff(before, after) {
     teamsUpdated: changedRows(before, after, "teams"),
     playersUpdated: changedRows(before, after, "players"),
     squadStatusesUpdated: changedRows(before, after, "squadStatuses"),
-    analysesUpdated: changedRows(before, after, "analyses")
+    analysesUpdated: changedRows(before, after, "analyses"),
+    leagueLeadersUpdated: changedRows(before, after, "leagueLeaders")
   };
 }
 
@@ -295,6 +304,12 @@ function sourceSteps(type, providerReady) {
     // sağlayıcı tahmini gün içinde anlamlı değişmez.
     ...(full ? [nodeStep("match-predictions", "sync-match-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
+    // Gol/asist krallığı: `/players/topscorers` + `/players/topassists`
+    // ligin kendisiyle sorgulandığı için players.json'un turnuva-toplamı
+    // gol/asist alanlarından BAĞIMSIZ, yalnızca Süper Lig'e ait bir kaynak.
+    // Saatlik koşuda maç sonrası güncellenir, tam koşuda da tazelenir —
+    // ayrı bir paralel workflow gerekmiyor.
+    nodeStep("super-lig-leaders", "sync-super-lig-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
     // MAÇ SONU AÇIKLAMALARI. Maç sonrası saatlerde toplanır; saatlik koşuda
