@@ -151,12 +151,7 @@ assert.match(workflow, /SCHEDULE.*"7 2 \* \* \*"/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
-const playersUpdatedBlock = orchestrator.match(/if \(diff\.playersUpdated\) \{([\s\S]*?)\r?\n  \}/)?.[1];
-assert.ok(playersUpdatedBlock, "playersUpdated hourly build block must remain detectable");
-assert.match(playersUpdatedBlock, /nodeStep\("render-player-pages", "generate-player-profile-pages\.mjs"/);
-assert.match(playersUpdatedBlock, /nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"/);
-assert.match(playersUpdatedBlock, /nodeStep\("render-en-player-pages", "generate-en-player-pages\.mjs"/);
-assert.match(playersUpdatedBlock, /nodeStep\("prerender-player-content", "prerender-player-content\.mjs"/);
+assert.match(orchestrator, /if \(diff\.playersUpdated\) \{[\s\S]*?nodeStep\("render-player-pages", "generate-player-profile-pages\.mjs"[\s\S]*?nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"[\s\S]*?nodeStep\("render-en-player-pages", "generate-en-player-pages\.mjs"[\s\S]*?nodeStep\("prerender-player-content", "prerender-player-content\.mjs"[\s\S]*?\}\s*if \(diff\.teamsUpdated\)/);
 // EN core pages (live scores, standings, results, today's matches) must
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
