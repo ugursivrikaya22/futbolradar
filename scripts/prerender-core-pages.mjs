@@ -62,6 +62,9 @@ const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), 
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
 const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
+// Muhtemel/resmî ilk 11 verisi: services/lineupPredictionService.js ve
+// services/officialLineupService.js tarafından doldurulan tek gerçek kaynak.
+const matchAnalyses = JSON.parse(fs.readFileSync(path.join(root, "data", "match-analyses.json"), "utf8"));
 // Haber akışı kuralı servistedir (services/newsFeed.js); İngilizce üretici de
 // aynı listeyi oradan alır. Süzgeç yalnızca `verified` demiyor: haberin
 // GÖVDESİ de olmalı, çünkü sayfa üreticisi gövdesizler için sayfa yazmıyor ve
@@ -971,6 +974,78 @@ function officialLineupAlerts() {
 }
 
 /**
+ * TRABZONSPOR İLK 11 KARTI — ana sayfada, Trabzonspor'un bugünkü/yaklaşan
+ * maçının ilk 11'i. Resmî ilk 11 açıklandıysa o gösterilir; henüz yoksa
+ * `lineupPredictionService`'in ürettiği "Muhtemel İlk 11" gösterilir ve
+ * ETİKET AÇIKÇA BUNU SÖYLER — resmî diye sunulmaz (bkz. officialLineupAlerts
+ * üstündeki not: doğrulanmadan yayınlanmaz kuralı burada da geçerli).
+ */
+function trabzonsporLineupSideHtml(teamName, formation, players) {
+  if (!Array.isArray(players) || !players.length) return "";
+  const items = players.map((name) => `<li class="lineup-alert-player">${escapeHtml(name)}</li>`).join("");
+  return `<div class="trabzon-lineup-side">` +
+    `<h3>${escapeHtml(teamName)}${formation ? ` <span class="muted-copy">(${escapeHtml(formation)})</span>` : ""}</h3>` +
+    `<ol class="lineup-alert-grid">${items}</ol>` +
+    `</div>`;
+}
+
+function trabzonsporLineupCard() {
+  const today = istanbulToday();
+  const candidate = curatedMatches()
+    .filter((match) => sameClub(match.homeTeam, "Trabzonspor") || sameClub(match.awayTeam, "Trabzonspor"))
+    .filter((match) => istanbulDay(match.kickoff) >= today)
+    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED")
+    .sort((left, right) => Date.parse(left.kickoff || 0) - Date.parse(right.kickoff || 0))[0];
+
+  if (!candidate) return "";
+
+  const fixtureId = String(candidate.id || candidate.fixtureId || candidate.providerId || "");
+  const record = matchAnalyses.find((entry) => String(entry.fixtureId || "") === fixtureId);
+  if (!record) return "";
+
+  const official = record.officialLineups || {};
+  const probable = record.probableLineups || {};
+  const isOfficial = record.officialLineupStatus === "available"
+    && official.home && Array.isArray(official.home.startingXI) && official.home.startingXI.length
+    && official.away && Array.isArray(official.away.startingXI) && official.away.startingXI.length;
+
+  // "Muhtemel" yalnızca `predictionStatus === "available"` olduğunda
+  // basılır — düşük güvenli/eksik tahmin (ör. 11 kişiden 2'si bilinen bir
+  // liste) okuyucuya "ilk 11" diye sunulamayacak kadar eksik.
+  const homeSide = isOfficial
+    ? trabzonsporLineupSideHtml(candidate.homeTeam, official.home.formation, official.home.startingXI.map((p) => p.name))
+    : (probable.home && probable.home.predictionStatus === "available" && Array.isArray(probable.home.starters) && probable.home.starters.length
+      ? trabzonsporLineupSideHtml(candidate.homeTeam, probable.home.formation, probable.home.starters.map((p) => p.name))
+      : "");
+  const awaySide = isOfficial
+    ? trabzonsporLineupSideHtml(candidate.awayTeam, official.away.formation, official.away.startingXI.map((p) => p.name))
+    : (probable.away && probable.away.predictionStatus === "available" && Array.isArray(probable.away.starters) && probable.away.starters.length
+      ? trabzonsporLineupSideHtml(candidate.awayTeam, probable.away.formation, probable.away.starters.map((p) => p.name))
+      : "");
+
+  if (!homeSide && !awaySide) return "";
+
+  const badgeLabel = isOfficial ? "Resmî İlk 11" : "Muhtemel İlk 11";
+  const footNote = isOfficial
+    ? "Kulüplerin açıkladığı resmî ilk 11."
+    : "Model tahmini — resmî ilk 11 açıklanınca burada güncellenir.";
+  const title = homeSide && awaySide
+    ? `${escapeHtml(candidate.homeTeam)} – ${escapeHtml(candidate.awayTeam)} İlk 11'leri`
+    : `${escapeHtml("Trabzonspor")} İlk 11`;
+
+  return `<div class="lineup-alert trabzon-lineup" data-card="trabzon-lineup" data-match="${escapeHtml(candidate.id || fixtureId)}">` +
+    `<div class="lineup-alert-head">` +
+    `<span class="card-badge${isOfficial ? " breaking" : ""}">${escapeHtml(badgeLabel)}</span>` +
+    `<h2>${title}</h2>` +
+    `<span class="lineup-alert-fixture">${escapeHtml(candidate.homeTeam)} – ${escapeHtml(candidate.awayTeam)} · ${escapeHtml(candidate.league || "Süper Lig")}</span>` +
+    `</div>` +
+    `<div class="grid two trabzon-lineup-grid">${homeSide}${awaySide}</div>` +
+    `<div class="lineup-alert-foot"><span>${escapeHtml(footNote)}</span>` +
+    `<a class="detail-link" href="${escapeHtml(matchDetailPath(candidate))}">Maç analizini aç</a></div>` +
+    `</div>`;
+}
+
+/**
  * LİG SAYFALARI DİZİNİ (ana sayfadaki "Ligler" bandı).
  *
  * `scripts/generate-league-pages.mjs`in ürettiği /lig/<slug>.html sayfaları,
@@ -1841,6 +1916,7 @@ writePage("index.html", {
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
+  "trabzonspor-lineup": trabzonsporLineupCard(),
   "transfer-radar-ticker": transferRadarTicker(),
   "match-quotes": matchQuotesTicker(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
