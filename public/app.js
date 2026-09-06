@@ -912,6 +912,7 @@
   }
 
   function barRowHtml(label, valueLabel, value, extraClass) {
+    if (presentStat(value) === null) return "";
     var width = clampPercent(value);
     return (
       '<div class="bar-row' + (extraClass ? " " + escapeHtml(extraClass) : "") + '"><span>' +
@@ -1007,7 +1008,7 @@
       { label: "Savunma", value: radarMetric(player, "defense", "Savunma") },
       { label: "Potansiyel", value: radarMetric(player, "potential", "Potansiyel") },
       { label: "Veri", value: radarMetric(player, "dataConfidence", "Veri") }
-    ];
+    ].filter(function (row) { return presentStat(row.value) !== null; });
 
     return [
       { label: "Bitiricilik", value: radarMetric(player, "finishing", "Bitiricilik") },
@@ -1129,6 +1130,22 @@
     var leftRows = playerRadarRows(left);
     var rightRows = right ? playerRadarRows(right) : null;
     var thirdRows = third ? playerRadarRows(third) : null;
+
+    // Karşılaştırma modunda her poligon aynı eksenleri paylaşmalı; aksi
+    // hâlde açı hizası kayar ve üst üste binen şekiller anlamsızlaşır. Bu
+    // yüzden ortak eksen kümesi kesişimdir — bir oyuncuda eksik olan metrik
+    // hiçbir poligonda uydurma sıfırla çizilmez, ekseni tamamen düşer.
+    if (rightRows || thirdRows) {
+      var sharedLabels = leftRows.map(function (row) { return row.label; }).filter(function (label) {
+        return (!rightRows || rightRows.some(function (row) { return row.label === label; })) &&
+          (!thirdRows || thirdRows.some(function (row) { return row.label === label; }));
+      });
+      var keepShared = function (row) { return sharedLabels.indexOf(row.label) !== -1; };
+      leftRows = leftRows.filter(keepShared);
+      if (rightRows) rightRows = rightRows.filter(keepShared);
+      if (thirdRows) thirdRows = thirdRows.filter(keepShared);
+    }
+
     var grids = [0.25, 0.5, 0.75, 1].map(function (scale) {
       return '<polygon class="radar-grid-ring" points="' + radarGridPoints(leftRows, scale) + '"></polygon>';
     }).join("");
@@ -1216,6 +1233,26 @@
 
   function displayValue(value) {
     return value === undefined || value === null || value === "" ? "-" : value;
+  }
+
+  /**
+   * TEK YETKİLİ "GÖSTER Mİ" KAPISI.
+   *
+   * Eksik/geçersiz değer (null, undefined, "", NaN) için null döner — çağıran
+   * o satırı/kutuyu hiç çizmez. Sağlayıcı gerçekten 0 gönderdiyse "0" döner;
+   * ölçülmemiş bir alan asla uydurma sıfır olarak basılmaz.
+   */
+  function presentStat(value) {
+    if (value === null || value === undefined || value === "") return null;
+    var number = Number(value);
+    if (!Number.isFinite(number)) return null;
+    return String(number);
+  }
+
+  /** presentStat'ın sayısal biçimi: gösterilemiyorsa null, aksi hâlde Number. */
+  function presentStatNumber(value) {
+    var presented = presentStat(value);
+    return presented === null ? null : Number(presented);
   }
 
   function calculateAgeFromBirthDate(birthDate) {
@@ -1508,7 +1545,9 @@
     return (
       '<section class="profile-radar-snapshot" aria-label="Radar hizli ozeti">' +
       rows.map(function (row) {
-        var value = Math.max(0, Math.min(100, Number(row[1]) || 0));
+        var presented = presentStat(row[1]);
+        if (presented === null) return "";
+        var value = Math.max(0, Math.min(100, Number(presented)));
         return '<article><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(displayValue(value)) + '</strong><i style="--value:' + escapeHtml(value) + '%"></i></article>';
       }).join("") +
       "</section>"
@@ -1713,11 +1752,9 @@
   }
 
   function playerScore(player, key, fallback) {
-    if (player[key] !== undefined && player[key] !== null && player[key] !== "") {
-      return Number(player[key]) || 0;
-    }
-
-    return Number(fallback) || 0;
+    var raw = player[key] !== undefined && player[key] !== null && player[key] !== "" ? player[key] : fallback;
+    var presented = presentStat(raw);
+    return presented === null ? null : Number(presented);
   }
 
   function playerStats(player) {
@@ -6768,7 +6805,7 @@
         profileStatHtml("Top kapma / maç", player.tacklesPerGame),
         profileStatHtml("Araya girme / maç", player.interceptionsPerGame)
       ]) +
-      '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" +
+      (playerRadarRows(player).length ? '<section class="profile-section"><h2>Radar Profili</h2>' + playerRadarChartHtml(player, null, player.name + " radar profili") + playerRadarHtml(player) + "</section>" : "") +
       '<section class="profile-section"><h2>AI Rating Notu</h2><p class="profile-note">' + escapeHtml(player.ratingExplanation || "Bu rating; dakika, gol/asist, form, disiplin ve veri güvenilirliği bileşenlerinden hesaplanır.") + "</p></section>" +
       scoutingListSectionHtml("Guclu Yonler", player.strengths, "Guclu yonler yakinda") +
       scoutingListSectionHtml("Gelisim Alanlari", player.weaknesses, "Gelisim alani sinyali yok") +
@@ -8894,11 +8931,16 @@
       return "";
     }
 
+    var value = getter(leader);
+    if (presentStat(value) === null) {
+      return "";
+    }
+
     return (
       '<article class="compare-insight-card">' +
       '<span>' + escapeHtml(label) + '</span>' +
       '<strong>' + escapeHtml(leader.name) + '</strong>' +
-      '<b>' + escapeHtml(displayValue(getter(leader))) + '</b>' +
+      '<b>' + escapeHtml(displayValue(value)) + '</b>' +
       '<p>' + escapeHtml(note) + '</p>' +
       '<a href="' + escapeHtml(playerProfileHref(leader.id)) + '">Profili aç</a>' +
       "</article>"
@@ -8916,11 +8958,35 @@
       return "";
     }
 
+    // Bileşik metrikler iki yarıdan oluşur; ikisi de ölçülmediyse toplam
+    // uydurma bir sıfır olur — bu yüzden ikisi de eksikse kart null döner ve
+    // compareInsightCardHtml onu hiç çizmez. Yalnızca biri eksikse diğer
+    // yarı gerçek bir sinyal taşıdığından 0 ile tamamlanır.
     var cards = [
-      compareInsightCardHtml("Skor tehdidi", selected, function (player) { return playerScore(player, "threatScore") + playerStats(player).goals * 2; }, "Gol tehdidi, xG ve bitiricilik etkisi birlikte okunur."),
-      compareInsightCardHtml("Oyun kurma", selected, function (player) { return playerScore(player, "creativityScore") + playerStats(player).assists * 2; }, "Yaratıcılık, xA ve kilit pas etkisi önde."),
-      compareInsightCardHtml("Pres direnci", selected, function (player) { return playerScore(player, "pressingScore") + playerStats(player).pressures / 5; }, "Pres, ikili mucadele ve ikinci top takibi izlenir."),
-      compareInsightCardHtml("Form / potansiyel", selected, function (player) { return radarMetric(player, "form") * 0.55 + radarMetric(player, "potential") * 0.45; }, "Anlik form ile gelecek tavanini birlikte tartar.")
+      compareInsightCardHtml("Skor tehdidi", selected, function (player) {
+        var score = playerScore(player, "threatScore");
+        var goals = playerStats(player).goals;
+        if (score === null && goals === null) return null;
+        return (score === null ? 0 : score) + (goals === null ? 0 : goals) * 2;
+      }, "Gol tehdidi, xG ve bitiricilik etkisi birlikte okunur."),
+      compareInsightCardHtml("Oyun kurma", selected, function (player) {
+        var score = playerScore(player, "creativityScore");
+        var assists = playerStats(player).assists;
+        if (score === null && assists === null) return null;
+        return (score === null ? 0 : score) + (assists === null ? 0 : assists) * 2;
+      }, "Yaratıcılık, xA ve kilit pas etkisi önde."),
+      compareInsightCardHtml("Pres direnci", selected, function (player) {
+        var score = playerScore(player, "pressingScore");
+        var pressures = playerStats(player).pressures;
+        if (score === null && pressures === null) return null;
+        return (score === null ? 0 : score) + (pressures === null ? 0 : pressures) / 5;
+      }, "Pres, ikili mucadele ve ikinci top takibi izlenir."),
+      compareInsightCardHtml("Form / potansiyel", selected, function (player) {
+        var form = radarMetric(player, "form");
+        var potential = radarMetric(player, "potential");
+        if (form === null && potential === null) return null;
+        return (form === null ? 0 : form) * 0.55 + (potential === null ? 0 : potential) * 0.45;
+      }, "Anlik form ile gelecek tavanini birlikte tartar.")
     ].filter(Boolean);
 
     return (
@@ -9410,23 +9476,27 @@
   }
 
   function teamRadarSnapshotHtml(team, players) {
-    var attack = Number(team.attackRating || team.attack || 0);
-    var defense = Number(team.defenseRating || team.defense || 0);
+    var attackRaw = team.attackRating != null ? team.attackRating : team.attack;
+    var defenseRaw = team.defenseRating != null ? team.defenseRating : team.defense;
     var squad = Array.isArray(players) ? players : [];
-    var avgRating = squad.length
+    var avgRatingRaw = squad.length
       ? Math.round(squad.reduce(function (sum, player) { return sum + playerAiScore(player); }, 0) / squad.length)
-      : Number(team.rating || team.momentum || 0);
+      : (team.rating != null ? team.rating : team.momentum);
+    var formRaw = team.formScore != null ? Math.round(Number(team.formScore) * 10) : team.momentum;
+    var attackNumber = presentStatNumber(attackRaw);
     var rows = [
-      ["Momentum", team.momentum || team.rating],
-      ["Form", Math.round(Number(team.formScore || 0) * 10) || team.momentum],
-      ["Hücum", attack],
-      ["Savunma", defense],
-      ["Kadro", avgRating],
-      ["Gol trendi", attack >= 78 ? 82 : attack]
+      ["Momentum", team.momentum != null ? team.momentum : team.rating],
+      ["Form", formRaw],
+      ["Hücum", attackRaw],
+      ["Savunma", defenseRaw],
+      ["Kadro", avgRatingRaw],
+      ["Gol trendi", attackNumber !== null && attackNumber >= 78 ? 82 : attackRaw]
     ];
 
     return '<section class="team-radar-snapshot">' + rows.map(function (row) {
-      var value = clampPercent(row[1]);
+      var presented = presentStat(row[1]);
+      if (presented === null) return "";
+      var value = clampPercent(presented);
       return '<article><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(displayValue(value)) + '</strong><i style="--value:' + escapeHtml(value) + '%"></i></article>';
     }).join("") + "</section>";
   }
@@ -10997,7 +11067,7 @@
         return 38;
       }
 
-      return 0;
+      return null;
     }
 
     if (formMetric && number <= 10) {
@@ -11008,17 +11078,17 @@
   }
 
   function matchDetailInsight(match) {
-    var homeMomentum = Number(matchMetric(match, "homeMomentum") || 0);
-    var awayMomentum = Number(matchMetric(match, "awayMomentum") || 0);
-    var tempo = Number(match.tempo || 0);
-    var difference = Math.abs(homeMomentum - awayMomentum);
+    var homeMomentum = presentStatNumber(matchMetric(match, "homeMomentum"));
+    var awayMomentum = presentStatNumber(matchMetric(match, "awayMomentum"));
+    var tempo = presentStatNumber(match.tempo);
+    var difference = homeMomentum !== null && awayMomentum !== null ? Math.abs(homeMomentum - awayMomentum) : null;
     var risk = normalizeSearchText(match.risk);
 
-    if (difference >= 12) {
+    if (difference !== null && difference >= 12) {
       return (homeMomentum > awayMomentum ? displayValue(match.homeTeam) : displayValue(match.awayTeam)) + " momentum tarafında belirgin avantaja sahip.";
     }
 
-    if (tempo >= 75) {
+    if (tempo !== null && tempo >= 75) {
       return "Tempo yüksek; geçiş oyunları ve gol potansiyeli öne çıkıyor.";
     }
 
@@ -11063,23 +11133,27 @@
       ["Ev momentum", normalizedMetricPercent(matchMetric(match, "homeMomentum"))],
       ["Dep. momentum", normalizedMetricPercent(matchMetric(match, "awayMomentum"))],
       ["Tempo", normalizedMetricPercent(match.tempo)],
-      ["Gol", normalizedMetricPercent(match.goalExpectation || match.goalPotential, true)]
+      ["Gol", normalizedMetricPercent(match.goalExpectation != null ? match.goalExpectation : match.goalPotential, true)]
     ];
 
     return '<section class="match-radar-snapshot">' + rows.map(function (row) {
-      var value = clampPercent(row[1]);
+      var presented = presentStat(row[1]);
+      if (presented === null) return "";
+      var value = clampPercent(presented);
       return '<article><span>' + escapeHtml(row[0]) + '</span><strong>' + escapeHtml(displayValue(value)) + '</strong><i style="--value:' + escapeHtml(value) + '%"></i></article>';
     }).join("") + "</section>";
   }
 
   function matchSignalCardsHtml(match) {
-    var homeMomentum = Number(matchMetric(match, "homeMomentum") || 0);
-    var awayMomentum = Number(matchMetric(match, "awayMomentum") || 0);
-    var leader = homeMomentum >= awayMomentum ? match.homeTeam : match.awayTeam;
+    var homeMomentum = presentStatNumber(matchMetric(match, "homeMomentum"));
+    var awayMomentum = presentStatNumber(matchMetric(match, "awayMomentum"));
+    var bothMomentaKnown = homeMomentum !== null && awayMomentum !== null;
+    var leader = bothMomentaKnown ? (homeMomentum >= awayMomentum ? match.homeTeam : match.awayTeam) : null;
+    var momentumDiff = bothMomentaKnown ? Math.abs(homeMomentum - awayMomentum) : null;
     var cards = [
       { label: "AI tahmin", title: displayValue(match.aiPrediction || match.prediction && match.prediction.label), text: "Model risk: " + displayValue(match.risk || match.prediction && match.prediction.risk), href: "./bugunun-maclari.html" },
-      { label: "Momentum", title: displayValue(leader), text: "Avantaj farkı " + displayValue(Math.abs(homeMomentum - awayMomentum)), href: "./momentum.html" },
-      { label: "Gol potansiyeli", title: displayValue(match.goalPotential || match.goalExpectation), text: "Tempo " + displayValue(match.tempo), href: "./canli-skor.html" },
+      { label: "Momentum", title: displayValue(leader), text: "Avantaj farkı " + displayValue(momentumDiff), href: "./momentum.html" },
+      { label: "Gol potansiyeli", title: displayValue(match.goalPotential != null ? match.goalPotential : match.goalExpectation), text: "Tempo " + displayValue(match.tempo), href: "./canli-skor.html" },
       { label: "Radar yorumu", title: "Maç okuması", text: matchDetailInsight(match), href: "./analizler.html" }
     ];
 
@@ -11326,9 +11400,11 @@
   }
 
   function analysisConfidenceBadge(value, label) {
-    var level = confidenceLevel(value);
+    var presented = presentStatNumber(value);
+    if (presented === null) return "";
+    var level = confidenceLevel(presented);
     var levelLabels = { high: "Yüksek güven", medium: "Orta güven", low: "Sınırlı güven" };
-    var text = (label || levelLabels[level]) + " · %" + Math.round(Number(value) || 0);
+    var text = (label || levelLabels[level]) + " · %" + Math.round(presented);
     return '<span class="analysis-confidence" data-level="' + level + '">' + escapeHtml(text) + "</span>";
   }
 
@@ -11932,10 +12008,11 @@
 
   function confidenceWarningCardHtml(record) {
     var band = predictionConfidenceBand(record.dataConfidence);
-    var value = Math.round(Number(record.dataConfidence) || 0);
+    var value = presentStatNumber(record.dataConfidence);
+    var scoreSuffix = value === null ? "" : " — " + Math.round(value) + "/100";
     return '<div class="match-intelligence-card confidence-warning-card" data-confidence-band="' + escapeHtml(band) + '">' +
       '<span class="card-kicker">Veri güveni</span>' +
-      "<p>" + escapeHtml(predictionConfidenceLabel(band)) + " — " + value + "/100</p>" +
+      "<p>" + escapeHtml(predictionConfidenceLabel(band)) + scoreSuffix + "</p>" +
       "</div>";
   }
 
