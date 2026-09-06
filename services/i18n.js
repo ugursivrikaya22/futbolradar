@@ -436,6 +436,7 @@ const NAV_KEYS = Object.freeze({
       { route: null, href: "arsiv.html", key: "nav.archive" }
     ],
     secondary: [
+      { href: "mac-takvimi.html", key: "nav.matchCalendar" },
       { href: "oyuncu-radari.html", key: "nav.playerRadar" },
       { href: "istatistik-merkezi.html", key: "nav.statsHub" },
       { href: "transfer-radari.html", key: "nav.transferRadar" },
@@ -468,6 +469,7 @@ const NAV_KEYS = Object.freeze({
       { href: "en/archive.html", key: "nav.archive" }
     ],
     secondary: [
+      { href: "en/matches.html", key: "nav.matchCalendar" },
       { href: "en/player-radar.html", key: "nav.playerRadar" },
       { href: "en/stats-hub.html", key: "nav.statsHub" },
       { href: "en/transfer-radar.html", key: "nav.transferRadar" },
@@ -558,7 +560,16 @@ function writeDynamicRoutePairs(kind, pairs) {
     existing = [];
   }
   const kept = (Array.isArray(existing) ? existing : []).filter((row) => row && row.kind !== kind);
-  const next = kept.concat(pairs.map((pair) => ({ kind, tr: pair.tr, en: pair.en })));
+  // Uzantısız kanonik adres taşıyan çiftler (maç SEO sayfaları) `trUrl`/`enUrl`
+  // alanlarını da yazar; hreflang enjeksiyonu bu alan varsa onu kullanır,
+  // yoksa `absoluteUrl(path)` (uzantılı) üretir. Eski üreticiler etkilenmez.
+  const next = kept.concat(pairs.map((pair) => ({
+    kind,
+    tr: pair.tr,
+    en: pair.en,
+    ...(pair.trUrl ? { trUrl: pair.trUrl } : {}),
+    ...(pair.enUrl ? { enUrl: pair.enUrl } : {})
+  })));
   next.sort((left, right) => (left.tr < right.tr ? -1 : left.tr > right.tr ? 1 : 0));
   fs.mkdirSync(path.dirname(DYNAMIC_ROUTE_MAP_PATH), { recursive: true });
   const tempPath = `${DYNAMIC_ROUTE_MAP_PATH}.tmp-${process.pid}`;
@@ -612,6 +623,19 @@ function ogLocale(locale) {
  *
  * Türkçe ana sayfa `/` istisnadır: kökün eğik çizgisi atılmaz.
  */
+/**
+ * Dinamik çift satırının kanonik adresi: satır açıkça `trUrl`/`enUrl`
+ * taşıyorsa o (uzantısız maç sayfaları), yoksa dosya yolundan türetilen
+ * uzantılı adres.
+ */
+function pairUrl(row, locale) {
+  const target = normalizeLocale(locale);
+  if (!row) return "";
+  const explicit = target === "en" ? row.enUrl : row.trUrl;
+  if (explicit) return explicit;
+  return absoluteUrl(target === "en" ? row.en : row.tr);
+}
+
 function absoluteUrl(path) {
   const normalized = normalizePath(path);
   if (normalized === "index.html") return `${DOMAIN}/`;
@@ -758,6 +782,7 @@ module.exports = {
   normalizeLocale,
   normalizePath,
   ogLocale,
+  pairUrl,
   resetDynamicRouteMapCache,
   routeFor,
   routeMeta,

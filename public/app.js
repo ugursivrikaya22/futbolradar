@@ -1911,8 +1911,10 @@
   }
 
   function matchDetailHref(match) {
-    if (match && match.analysisPage) {
-      return "./" + String(match.analysisPage).replace(/^\.\//, "");
+    // Kalıcı maç sayfası (services/matchSeoPages.js `matchPage`) editoryal
+    // analiz sayfasından önce gelir; ikisi de yoksa dinamik maç detayı.
+    if (match && (match.matchPage || match.analysisPage)) {
+      return "./" + String(match.matchPage || match.analysisPage).replace(/^\.\//, "");
     }
 
     var params = new URLSearchParams();
@@ -3415,6 +3417,9 @@
       "</div>" +
       '<button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç">' +
       '<span aria-hidden="true">›</span></button>' +
+      '<button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause' +
+      ' aria-pressed="false" aria-label="Otomatik geçişi durdur">' +
+      '<span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>' +
       "</div>"
     );
 
@@ -3442,6 +3447,18 @@
   var featuredCarouselTicker = null;
   var featuredCarouselControl = null;
 
+  // Duraklatma bitince bir sonraki otomatik adımın en erken ne zaman
+  // olabileceği. Zamanlayıcı hiç sıfırlanmadığından (bkz. aşağıdaki yorum),
+  // bu eşik olmadan duraklatmayı kaldırmak bazen bir sonraki turu neredeyse
+  // hemen tetikleyebilirdi — "kaldığı yerden devam" beklentisini bozardı.
+  var featuredCarouselResumeAt = 0;
+
+  // Kullanıcı pause tuşuna bastığında maç ekranda sabitlenir. Diğer modül
+  // düzeyi durumlar gibi (featuredCarouselActiveId) yeniden çizimler arası
+  // hayatta kalır; aksi halde 20 saniyelik canlı yoklama sabitlemeyi iptal
+  // ederdi.
+  var featuredCarouselManualPause = false;
+
   function prefersReducedMotion() {
     return Boolean(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
@@ -3468,7 +3485,7 @@
         return;
       }
 
-      if (control.paused() || isDocumentHidden()) {
+      if (control.paused() || isDocumentHidden() || Date.now() < featuredCarouselResumeAt) {
         return;
       }
 
@@ -3482,8 +3499,10 @@
    * olduğunu yönetir.
    *
    * Otomatik dönüş şu durumlarda durur: fare kartın üzerinde, klavye odağı
-   * kartın içinde, sekme arka planda, ya da kullanıcı hareket azaltma
-   * tercihi bildirmiş. Elle gezinme her durumda çalışır.
+   * kartın içinde, sekme arka planda, kullanıcı hareket azaltma tercihi
+   * bildirmiş, ya da pause tuşuna basılmış (o durumda maç ekranda sabit
+   * kalır, sonraki bir yoklama sabitlemeyi bozmaz). Elle gezinme her
+   * durumda çalışır.
    */
   function initFeaturedCarousel(scope) {
     var root = (scope || document).querySelector("[data-featured-carousel]");
@@ -3502,6 +3521,7 @@
     }
 
     var dots = Array.prototype.slice.call(root.querySelectorAll("[data-featured-go]"));
+    var pauseButton = root.querySelector("[data-featured-pause]");
     var interval = Number(root.dataset.featuredInterval) > 0
       ? Number(root.dataset.featuredInterval)
       : FEATURED_ROTATION_MS;
@@ -3539,10 +3559,30 @@
       return;
     }
 
+    // Sabitleme (pause) tercihi yeniden çizimler arası kalıcı: canlı
+    // yoklama kartı 20 saniyede bir yeniden bastığında düğme az önceki
+    // sabitlenmiş durumla senkronlanır, aksi halde her yoklamada dönüş
+    // sessizce yeniden başlardı.
+    var manualPause = featuredCarouselManualPause;
+
+    function updatePauseButton() {
+      if (!pauseButton) {
+        return;
+      }
+      pauseButton.classList.toggle("is-paused", manualPause);
+      pauseButton.setAttribute("aria-pressed", manualPause ? "true" : "false");
+      pauseButton.setAttribute(
+        "aria-label",
+        manualPause ? "Otomatik geçişi devam ettir" : "Otomatik geçişi durdur"
+      );
+    }
+
+    updatePauseButton();
+
     root.addEventListener("click", function (event) {
       var origin = event.target;
       var target = origin && origin.closest
-        ? origin.closest("[data-featured-go], [data-featured-prev], [data-featured-next]")
+        ? origin.closest("[data-featured-go], [data-featured-prev], [data-featured-next], [data-featured-pause]")
         : null;
       if (!target) {
         return;
@@ -3550,7 +3590,14 @@
 
       event.preventDefault();
 
-      if (target.hasAttribute("data-featured-prev")) {
+      if (target.hasAttribute("data-featured-pause")) {
+        manualPause = !manualPause;
+        featuredCarouselManualPause = manualPause;
+        if (!manualPause) {
+          featuredCarouselResumeAt = Date.now() + interval;
+        }
+        updatePauseButton();
+      } else if (target.hasAttribute("data-featured-prev")) {
         step(-1);
       } else if (target.hasAttribute("data-featured-next")) {
         step(1);
@@ -3574,13 +3621,18 @@
       root.addEventListener(name, function () { paused = true; });
     });
     ["mouseleave", "focusout"].forEach(function (name) {
-      root.addEventListener(name, function () { paused = false; });
+      root.addEventListener(name, function () {
+        paused = false;
+        if (!manualPause) {
+          featuredCarouselResumeAt = Date.now() + interval;
+        }
+      });
     });
 
     featuredCarouselControl = {
       root: root,
       step: step,
-      paused: function () { return paused; }
+      paused: function () { return paused || manualPause; }
     };
 
     if (prefersReducedMotion()) {

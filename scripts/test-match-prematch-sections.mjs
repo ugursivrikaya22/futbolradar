@@ -286,7 +286,10 @@ check("canlı istatistik kabuğu yalnızca sağlayıcı kimliği varken basılı
 
 check("üretilmiş sayfalarda analiz YA tam bölümlerle YA bekleme notuyla var — ikisi birden asla", () => {
   const dir = path.join(root, "mac");
-  const files = fs.readdirSync(dir).filter((file) => file.endsWith(".html"));
+  // Aynı dizinde kalıcı maç SEO sayfaları da yaşıyor (tarih slug'lı,
+  // scripts/generate-match-seo-pages.mjs); bu denetim yalnızca hafta
+  // numaralı maç önü analiz sayfalarına aittir.
+  const files = fs.readdirSync(dir).filter((file) => /-r\d{2}\.html$/.test(file));
   assert.ok(files.length > 0, "mac/ boş olmamalı");
   let withSections = 0;
   let withPending = 0;
@@ -324,7 +327,7 @@ check("data-provider-fixture yalnızca DOĞRULANMIŞ API-Football kimliği taş�
     if (declared) knownIds.add(String(declared));
   }
   const dir = path.join(root, "mac");
-  for (const file of fs.readdirSync(dir).filter((name) => name.endsWith(".html"))) {
+  for (const file of fs.readdirSync(dir).filter((name) => /-r\d{2}\.html$/.test(name))) {
     const html = fs.readFileSync(path.join(dir, file), "utf8");
     const found = html.match(/data-provider-fixture="(\d+)"/);
     if (found) {

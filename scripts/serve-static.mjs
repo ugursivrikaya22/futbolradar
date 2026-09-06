@@ -15,7 +15,13 @@ const contentTypes = {
 http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
   const relative = pathname === "/" ? "index.html" : pathname.replace(/^\/+/, "");
-  const filePath = path.resolve(root, relative);
+  let filePath = path.resolve(root, relative);
+  // Uzantısız temiz adresler (vercel.json rewrite'ları) yerelde de çözülsün.
+  // Aynı adda dizin de olabilir (`mac-takvimi/` + `mac-takvimi.html`): dizin
+  // listelenmez, sayfa dosyası kazanır — Vercel'deki davranışla aynı.
+  if (!path.extname(filePath) && (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) && fs.existsSync(`${filePath}.html`)) {
+    filePath = `${filePath}.html`;
+  }
 
   if (!filePath.startsWith(`${root}${path.sep}`) || !fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
     response.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });

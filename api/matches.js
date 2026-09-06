@@ -1,5 +1,7 @@
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { withRelevance } = require("../services/matchRelevance");
+// Kalıcı maç sayfası bağlantısı: sicilde sayfası olan maça `matchPage`.
+const { withMatchPages } = require("../services/matchSeoPages");
 // Yanıtın bayat olup olmadığı verinin kendisinden okunur.
 const { assessFreshness } = require("../services/dataFreshness");
 const {
@@ -66,7 +68,7 @@ module.exports = async function handler(req, res) {
   // kulüp listeleri tarayıcıya inmeden istemci de sunucu da aynı sırayı
   // üretebilsin diye puan kaydın kendisine yazılıyor. Hiçbir maç elenmez;
   // yalnızca ne kadar öne çıkacağı belirlenir.
-  const data = withRelevance(rawData);
+  const data = withMatchPages(withRelevance(rawData));
 
   // BAYATLIK YANITTA BİLDİRİLİR.
   //

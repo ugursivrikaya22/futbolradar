@@ -71,6 +71,8 @@ const { matchListSchema } = require("../services/matchSchema.js");
 // Anket seçimi servistedir; işaretleme iki dilde ORTAK bileşenden gelir.
 const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
+const { enPathForMatch: seoEnPathForMatch, loadRegistry: loadSeoRegistry } = require("../services/matchSeoPages.js");
+const seoRegistryPages = loadSeoRegistry().pages;
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
@@ -872,7 +874,11 @@ function todaySection() {
   // (scripts/lib/matchCards.mjs). EN sayfalarında maç başına ayrı bir
   // ayrıntı sayfası yok (aşağıdaki genel ızgara da aynı nedenle her
   // karta `./live-football-scores.html`e bağlanıyor); şerit de aynı kuralı izler.
-  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: () => "./live-football-scores.html" });
+  // Kalıcı EN maç sayfası varsa şerit satırı oraya gider; yoksa canlı skor.
+  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: (match) => {
+    const enPath = seoEnPathForMatch(match, seoRegistryPages);
+    return enPath ? `../${enPath}` : "./live-football-scores.html";
+  } });
 
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}

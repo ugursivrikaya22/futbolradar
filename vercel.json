@@ -447,6 +447,30 @@
     {
       "source": "/anketler",
       "destination": "/anketler.html"
+    },
+    {
+      "source": "/mac-takvimi",
+      "destination": "/mac-takvimi.html"
+    },
+    {
+      "source": "/mac-takvimi/:slug",
+      "destination": "/mac-takvimi/:slug.html"
+    },
+    {
+      "source": "/mac/:slug",
+      "destination": "/mac/:slug.html"
+    },
+    {
+      "source": "/en/matches",
+      "destination": "/en/matches.html"
+    },
+    {
+      "source": "/en/matches/:slug",
+      "destination": "/en/matches/:slug.html"
+    },
+    {
+      "source": "/en/match/:slug",
+      "destination": "/en/match/:slug.html"
     }
   ],
   "headers": [
@@ -488,6 +512,15 @@
     },
     {
       "source": "/performance-loader.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/match-center.js",
       "headers": [
         {
           "key": "Cache-Control",

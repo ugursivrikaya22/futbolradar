@@ -838,6 +838,7 @@ function postMatchAnalysisCards(limit, options = {}) {
 }
 
 function verifiedResultHref(match, reportsByMatch) {
+  if (match.matchPage) return `./${String(match.matchPage).replace(/^\.\//, "")}`;
   if (match.analysisPage) return `./${String(match.analysisPage).replace(/^\.\//, "")}`;
   const report = reportsByMatch.get(String(match.id || ""));
   if (report && report.publishState === "page" && report.reportUrl) return report.reportUrl;
@@ -1871,7 +1872,7 @@ writePage("analizler.html", {
 function matchListSchemaBlock(matches, name) {
   const schema = matchListSchema(matches, {
     name,
-    urlFor: (match) => (match && match.analysisPage ? matchDetailPath(match) : "")
+    urlFor: (match) => (match && (match.matchPage || match.analysisPage) ? matchDetailPath(match) : "")
   });
   return schema ? jsonLdScript(schema) : "";
 }
@@ -2010,7 +2011,7 @@ writePage("bugunun-maclari.html", {
       // `url` YALNIZCA maçın kalıcı, dizine açık bir sayfası varsa yazılır.
       // `mac-detay.html` `noindex,follow`; onu etkinliğin adresi diye vermek
       // makineye var olmayan bir hedef göstermek olurdu.
-      urlFor: (match) => (match && match.analysisPage ? matchDetailPath(match) : "")
+      urlFor: (match) => (match && (match.matchPage || match.analysisPage) ? matchDetailPath(match) : "")
     }),
     faqSchema(matchProgramFaqEntries)
   ].filter(Boolean).map(jsonLdScript).join("\n")

@@ -400,6 +400,10 @@ function hourlyBuildSteps(diff) {
     nodeStep("render-en-pages", "generate-en-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    // Kalıcı maç SEO sayfaları: her saat yeni skor/durumla yeniden üretilir,
+    // sicil (data/match-seo-pages.json) commit'e girer. Çekirdek sayfalardan
+    // ÖNCE koşar: ana sayfa/bugünün maçları bağlantıları dizini okur.
+    nodeStep("render-match-seo-pages", "generate-match-seo-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-broadcast-schedule", "generate-broadcast-schedule-page.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
