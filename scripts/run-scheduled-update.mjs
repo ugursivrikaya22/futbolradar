@@ -350,8 +350,12 @@ function supabaseConfigured() {
 }
 
 function transformSteps(type, hasChanges, providerReady) {
-  if (type === "hourly" && !hasChanges) return [];
-  return [
+  // Haber SEO tekilleştirmesi daima koşar: geçmişten kalmış yinelenen
+  // başlık/açıklamalar, o saat yeni kaynak verisi gelmese bile QA'yı kırmızıya
+  // çekebilir. Bu adım idempotent ve yerel; değişiklik üretmezse sonraki
+  // derleme yine `shouldBuild` guard'ında atlanır.
+  const steps = [
+    nodeStep("dedupe-news-seo", "dedupe-news-seo.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 }),
     // 7 gün: Süper Lig haftalık ritimde oynanıyor; 3 günlük pencere hafta
     // ortasında sıradaki turu görmüyor ve maç sayfaları analizsiz kalıyordu.
     // Motor çevrimdışı hesaplıyor (API çağrısı yok), genişletmenin maliyeti
@@ -373,6 +377,10 @@ function transformSteps(type, hasChanges, providerReady) {
       skip: supabaseConfigured() ? false : "SUPABASE_URL/SUPABASE_SERVICE_ROLE_KEY tanımlı değil; Supabase alımı atlandı."
     })
   ];
+  if (type === "hourly" && !hasChanges) {
+    return steps.slice(0, 1);
+  }
+  return steps;
 }
 
 function validationSteps() {
