@@ -14,7 +14,7 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const { buildMatchReport, accusative, dative, locative } = require("../services/matchReportService.js");
+const { buildMatchReport, meetsFullReportThreshold, accusative, dative, locative } = require("../services/matchReportService.js");
 const { selectSyncTargets, mergeProviderDetail } = require("../services/matchResultSyncService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 
@@ -270,8 +270,69 @@ function testSyncTargetSelection() {
   assert.deepEqual(selected.duplicates, [], "farklı maçlar yinelenen sayılmamalı");
 }
 
+/**
+ * TAM RAPOR EŞİĞİ — "5-0 ama golcüsüz tam rapor" hatasının regresyon testi.
+ *
+ * Trabzonspor 5-0 Gençlerbirliği raporu, sağlayıcı hiçbir olay vermediği
+ * hâlde yalnızca skor bilindiği için tam rapor sayfası olarak açılıyordu.
+ * Kural: tam rapor yalnızca skor + (golcü/dakikanın tek kaynağı olan resmi
+ * olay listesi) VARSA açılır; gol yoksa (0-0) bu koşul zaten anlamsızdır.
+ */
+function testFullReportThreshold() {
+  const base = {
+    id: "test-threshold",
+    homeTeam: "Trabzonspor",
+    awayTeam: "Gençlerbirliği",
+    kickoff: "2026-09-06T20:00:00+03:00",
+    league: "Süper Lig",
+    status: "FT",
+    statistics: []
+  };
+
+  // Trabzonspor 5-0 Gençlerbirliği'nin ta kendisi: skor var, olay yok.
+  const noEvents = { ...base, score: { home: 5, away: 0 }, events: [] };
+  const noEventsReport = buildMatchReport(noEvents, {});
+  assert.equal(
+    meetsFullReportThreshold(noEvents, noEventsReport),
+    false,
+    "Golü olan ama olay akışı olmayan maç tam rapor eşiğini geçmemeli"
+  );
+
+  // Aynı skor, ama sağlayıcının resmi olay listesi var: eşik geçilir.
+  const withEvents = {
+    ...base,
+    score: { home: 1, away: 0 },
+    events: [{ time: "10'", type: "Goal", team: "Trabzonspor", value: "Onuachu" }]
+  };
+  const withEventsReport = buildMatchReport(withEvents, {});
+  assert.equal(
+    meetsFullReportThreshold(withEvents, withEventsReport),
+    true,
+    "Resmi olay listesi varsa tam rapor eşiği geçilmeli"
+  );
+
+  // 0-0: golcü/dakika sorusu düşer, skor tek başına yeterli.
+  const scoreless = { ...base, score: { home: 0, away: 0 }, events: [] };
+  const scorelessReport = buildMatchReport(scoreless, {});
+  assert.equal(
+    meetsFullReportThreshold(scoreless, scorelessReport),
+    true,
+    "Gol yoksa olay akışı olmadan da eşik geçilir"
+  );
+
+  // Skor doğrulanmadıysa (özet hazır değilse) eşik hiçbir zaman geçilmez.
+  const noScore = { ...base, score: null, events: [] };
+  const noScoreReport = buildMatchReport(noScore, {});
+  assert.equal(
+    meetsFullReportThreshold(noScore, noScoreReport),
+    false,
+    "Skor doğrulanmadan tam rapor açılmamalı"
+  );
+}
+
 testTurkishSuffixes();
 testEverySectionIsPresent();
+testFullReportThreshold();
 testOnlyFinishedMatchesProduceReports();
 testNoRatingWithoutStatistics();
 testWinnerFirstScore();

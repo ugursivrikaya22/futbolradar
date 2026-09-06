@@ -24,7 +24,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { syncPostMatchReports, MODEL_VERSION } = require("../services/postMatchReportStore.js");
+const { syncPostMatchReports, MODEL_VERSION, PUBLISH_STATES } = require("../services/postMatchReportStore.js");
 const { isAnalyzableMatch, isAwardedMatch, isFinishedMatch } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
 
@@ -128,18 +128,19 @@ const previousBody = JSON.stringify(previousStore.records);
 const nextBody = JSON.stringify(records);
 const changed = previousBody !== nextBody;
 
-const withPage = records.filter((record) => record.publishState === "page").length;
-const storeOnly = records.length - withPage;
+const withPage = records.filter((record) => record.publishState === PUBLISH_STATES.PAGE).length;
+const withSummaryCard = records.filter((record) => record.publishState === PUBLISH_STATES.SUMMARY_CARD).length;
+const storeOnly = records.length - withPage - withSummaryCard;
 
 console.log(
   `[post-match-reports] ${stats.total} tamamlanmış maç · ` +
   `${stats.created} yeni, ${stats.regenerated} yenilendi, ${stats.reused} korundu` +
   (stats.failed ? `, ${stats.failed} üretilemedi` : "") +
-  ` · ${withPage} rapor sayfası, ${storeOnly} yalnızca depoda`
+  ` · ${withPage} tam rapor, ${withSummaryCard} kısa sonuç kartı, ${storeOnly} yalnızca depoda`
 );
 
 for (const record of records) {
-  if (record.publishState === "store-only") {
+  if (record.publishState === PUBLISH_STATES.STORE_ONLY) {
     console.log(
       `[post-match-reports] sayfa basılmadı (ölçülmüş bölüm yok): ${record.matchId} — ` +
       `eksik: ${record.missingInputs.map((item) => item.label).join(", ") || "-"}`

@@ -298,6 +298,9 @@ assert.equal(bareRecord.digest.coaching.status, "unavailable", "Diziliş/değiş
 assert.equal(bareRecord.digest.firstHalf.status, "unavailable", "Olay ve devre skoru yokken devre analizi üretilmemeli");
 assert.equal(bareRecord.availability.statistics, 0, "Sayım gerçeği yansıtmalı");
 assert.equal(bareRecord.analysisStatus, ANALYSIS_STATUSES.PARTIAL, "Eksik veri partial_data olmalı");
+// Gol var (0-3) ama olay akışı yok: golcü/dakika doğrulanamaz, tam rapor
+// eşiği geçilmez — sayfa kısa sonuç kartı olarak kalır.
+assert.equal(bareRecord.publishState, "summary-card", "Golcüsüz gol içeren maç tam rapor açmamalı");
 
 const serialized = JSON.stringify(bareRecord);
 for (const term of ["xG", "possession", "playerRating"]) {
