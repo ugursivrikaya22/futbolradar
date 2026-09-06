@@ -469,8 +469,13 @@ function updateSitemap(entries) {
   const sitemapPath = path.join(root, "sitemap.xml");
   if (!fs.existsSync(sitemapPath)) return;
   const current = fs.readFileSync(sitemapPath, "utf8");
+  // Slug çakışmalarında (rövanş) "-maci" ekine tarih eklenir (bkz.
+  // registerImportantMatches) — bu yüzden temizleme deseni yalnızca
+  // "-maci</loc>" ile değil, "-maci-YYYY-MM-DD</loc>" ile bitenleri de
+  // kapsamalı; aksi hâlde eski girdi silinmez ve sitemap'te aynı sayfa
+  // için iki <url> bloğu birikir.
   const retained = (current.match(URL_ENTRY_RE) || [])
-    .filter((entry) => !/-maci<\/loc>/.test(entry));
+    .filter((entry) => !/-maci(-\d{4}-\d{2}-\d{2})?<\/loc>/.test(entry));
   const content = wrapUrlset(retained.concat(entries));
   fs.writeFileSync(sitemapPath, content, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), content, "utf8");
