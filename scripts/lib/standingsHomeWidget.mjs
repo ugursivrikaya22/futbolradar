@@ -13,7 +13,7 @@
  * CSS/duyarlı tasarım burada yeniden yazılmıyor; yalnızca sekme çubuğu ve
  * panel mekaniği için yeni sınıflar (`standings-tabs__*`) eklenir.
  */
-import { orderedLeagues } from "./standingsCatalog.mjs";
+import { orderedLeagues, STANDINGS_LEAGUES } from "./standingsCatalog.mjs";
 import { getTopStandings } from "./standingsData.mjs";
 
 function escapeHtml(value) {
@@ -161,6 +161,19 @@ export function renderStandingsTabsInner(locale = "tr", base = "./") {
 /** Ana sayfadaki `.section-head` başlığı için statik metin (marker'a dahil değil — sekme içeriğinden ayrı, elle yazılan kalıpta kullanılır). */
 export function standingsSectionCopy(locale = "tr") {
   return COPY[locale] || COPY.tr;
+}
+
+/**
+ * ANA SAYFANIN 4 BLOKLU SÜRÜMÜ İÇİN TEK LİG TABLOSU — sekme çubuğu yok,
+ * yalnızca Süper Lig'in üst 5 sırası ve "tümünü gör" bağlantısı. 9 sekmeli
+ * `renderStandingsTabsInner` burada KULLANILMAZ (o hâlâ EN ana sayfasında
+ * ve olası başka çağıranlarda geçerli) — homepage'i 5 büyük lig ve UEFA
+ * kupalarından arındırmak için ayrı, daha dar bir çıktı gerekiyordu.
+ */
+export function renderSuperLigStandingsHome(base = "./") {
+  const copy = COPY.tr;
+  const entry = STANDINGS_LEAGUES["super-lig"];
+  return panelBody(entry, "tr", copy, base);
 }
 
 export const STANDINGS_TAB_IDS = ["super-lig", "premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1", "sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"];

@@ -263,20 +263,6 @@ function comparisonHub() {
   });
 }
 
-function patchHomePage(file) {
-  if (!fs.existsSync(file)) return;
-  let html = fs.readFileSync(file, "utf8");
-  const block = `<!-- evergreen-seo-links:start -->
-        <section class="container section evergreen-home-links" aria-labelledby="evergreen-home-title">
-          <div class="section-head"><div class="section-title"><span class="section-kicker">Futbol Rehberi</span><h2 id="evergreen-home-title">Puan, form, takım ve karşılaştırma sayfaları</h2><p>Bugünün programından takım profillerine uzanan kalıcı FutbolRadar rehberleri.</p></div></div>
-          <nav class="evergreen-link-grid" aria-label="Futbol rehberleri"><a href="./bugunun-maclari">Bugünün maçları</a><a href="./super-lig-puan-durumu">Süper Lig puan durumu</a><a href="./form-tablosu/super-lig">Süper Lig form tablosu</a><a href="./takimlar/galatasaray">Galatasaray</a><a href="./takimlar/fenerbahce">Fenerbahçe</a><a href="./takimlar/besiktas">Beşiktaş</a><a href="./takimlar/trabzonspor">Trabzonspor</a><a href="./takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="./oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a></nav>
-        </section>
-        <!-- evergreen-seo-links:end -->`;
-  const pattern = /\s*<!-- evergreen-seo-links:start -->[\s\S]*?<!-- evergreen-seo-links:end -->/;
-  html = pattern.test(html) ? html.replace(pattern, `\n${block}`) : html.replace(/\s*<\/main>/, `\n${block}\n      </main>`);
-  fs.writeFileSync(file, html, "utf8");
-}
-
 function updateSitemap(file) {
   if (!fs.existsSync(file)) return;
   const xml = fs.readFileSync(file, "utf8");
@@ -297,7 +283,6 @@ writePage("takim-karsilastirmalari.html", comparisonHub());
 for (const team of featuredTeams) writePage(path.join("takimlar", `${team.slug}.html`), teamPage(team));
 for (const [left, right] of comparisonPairs) writePage(path.join("karsilastirma", "takimlar", `${left.slug}-vs-${right.slug}.html`), comparisonPage(left, right));
 for (const outputRoot of [root, path.join(root, "public")]) {
-  patchHomePage(path.join(outputRoot, "index.html"));
   updateSitemap(path.join(outputRoot, "sitemap.xml"));
 }
 

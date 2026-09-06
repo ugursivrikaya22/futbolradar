@@ -8341,7 +8341,7 @@
 
     // Satır rozeti dürüstlük kuralına tabi: yalnızca zaten doğrulanmış
     // kayıtlar "TRANSFER" der, gerisi "RADAR" — henüz izleniyor demektir.
-    var miniRows = list.slice(1, 5).map(function (record) {
+    var miniRows = list.slice(1, 3).map(function (record) {
       var rowStatusClass = transferStatusClass(record.status);
       var rowBadge = rowStatusClass === "confirmed" ? "TRANSFER" : "RADAR";
       return (

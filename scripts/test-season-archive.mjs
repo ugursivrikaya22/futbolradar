@@ -217,11 +217,14 @@ function match(overrides = {}) {
   }
 }
 
-// ── 7. Arşiv ana sayfadan ve menüden erişilebilir ──────────────────────────
+// ── 7. Arşiv menüden erişilebilir ───────────────────────────────────────────
+//
+// Ana sayfa 4 bloğa indirildiğinde arşiv artık kendi bölümüyle ana sayfada
+// basılmıyor (bkz. görev: "diğer her şey ... nav'da kalsın") — erişim
+// menüden sağlanıyor, dosyası ve iç bağlantıları hâlâ duruyor.
 {
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
-  assert.ok(index.includes('href="./arsiv.html"'), "ana sayfada arşiv bağlantısı olmalı");
-  assert.ok(index.includes('id="arsiv-girisi"'), "ana sayfada arşiv bölümü olmalı");
+  assert.ok(index.includes('href="./arsiv.html"'), "ana sayfada (menüde) arşiv bağlantısı olmalı");
 
   // Denetim ÜRETİLEN MENÜYE bakıyor, kaynak dosyanın metnine değil.
   //

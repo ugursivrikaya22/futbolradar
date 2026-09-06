@@ -287,7 +287,10 @@ function column(overrides = {}) {
   assert.equal(rewrites.get("/yazarlar/:slug"), "/yazarlar/:slug.html");
 
   const generator = fs.readFileSync(path.join(root, "scripts", "generate-column-pages.mjs"), "utf8");
-  assert.match(generator, /columns\.slice\(0, 3\)/, "ana sayfa yalnızca son üç yazıyı göstermeli");
+  // Ana sayfa 4 bloğa indirildiğinde "Radar Yorumu" bloğu tek parça (bkz.
+  // görev: "günün öne çıkan ... köşe (tek parça)") — üç kart yerine en son
+  // yazının yalnızca kendisi basılıyor.
+  assert.match(generator, /columns\.slice\(0, 1\)/, "ana sayfa yalnızca en son yazıyı (tek parça) göstermeli");
   assert.match(generator, /function authorPageHtml\(/, "yazar arşivi üreticisi bulunmalı");
   assert.match(generator, /class="column-card-detail"/, "kartta detay bağlantısı bulunmalı");
   assert.match(generator, /class="column-standfirst"/, "detay sayfasında özet bulunmalı");
@@ -356,4 +359,4 @@ function column(overrides = {}) {
   assert.match(siteScript, /noopener,noreferrer/, "popup noopener ve noreferrer korumasıyla açılmalı");
 }
 
-console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, son üç yazı, temiz rotalar, elle yayın).");
+console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, ana sayfada tek parça yazı, temiz rotalar, elle yayın).");

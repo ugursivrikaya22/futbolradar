@@ -2,7 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
-import { transferTickerBlock } from "./lib/transferTicker.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -14,7 +13,7 @@ import {
   officialLineupAlertHtml
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
-import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
+import { renderSuperLigStandingsHome } from "./lib/standingsHomeWidget.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -42,7 +41,6 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { latestQuotes } = require("../services/managerQuotes.js");
-const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1241,15 +1239,14 @@ function homeStandingRowHtml(team, total) {
 }
 
 /**
- * ANA SAYFA "PUAN DURUMLARI" SEKMELİ WIDGET'I — 9 yarışma, her biri ilk 5
- * takım. İşaretleme ve veri okuma `scripts/lib/standingsHomeWidget.mjs` /
- * `scripts/lib/standingsData.mjs`de: TR ana sayfası (burada) ve EN ana
- * sayfası (`generate-en-pages.mjs`) aynı fonksiyonu çağırır, yalnızca
- * `locale` değişir — iki dilde sekme mekaniği ve satır işaretlemesi asla
- * ayrışmaz.
+ * ANA SAYFANIN "PUAN DURUMU" BLOĞU — 4 bloklu ana sayfa tasarımında yalnızca
+ * Süper Lig'in üst 5'i ve "tümünü gör" bağlantısı basılır (9 sekmeli tam
+ * widget artık burada KULLANILMAZ). Sekmeli tam sürüm hâlâ
+ * `scripts/lib/standingsHomeWidget.mjs`de yaşıyor ve EN ana sayfası
+ * (`generate-en-pages.mjs`) onu değişmeden kullanmaya devam ediyor.
  */
 function staticStandingsTabsSection() {
-  return renderStandingsTabsInner("tr", "./");
+  return renderSuperLigStandingsHome("./");
 }
 
 function staticMomentumRows() {
@@ -1570,38 +1567,6 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN ÜÇÜNCÜ KAYAN BANDI — TRANSFER RADARI.
- *
- * Ana sayfanın tepesinde, haber bandı (1.) ve Canlı Skorlar bandından (2.)
- * hemen sonra basılır — index.html'de sırasıyla `<!-- shared-layout:ticker:start -->`,
- * `<!-- prerender:live-scores-ticker:start -->` ve bu fonksiyonun ürettiği
- * `<!-- prerender:transfer-radar-ticker:start -->` işaretleri art arda
- * durur. Daha önce ana sayfanın en altında, footer'ın ardında duruyordu —
- * orası okuyucunun neredeyse hiç görmediği bir yerdi. Editör kararıyla
- * üçüncü bant olarak ilk ikisinin hemen altına taşındı; bu konum artık
- * kalıcı.
- *
- * TFF tescil dönemine göre KOŞULLU BASILMIYOR — eski hâli pencere
- * kapandığında ya da son 3 günde "SON DAKİKA" sayılacak kayıt olmadığında
- * bandı sayfadan TAMAMEN kaldırıyordu; okuyucu "Transfer Radarı"
- * bölümünün var olduğunu bile bilmiyordu. Bant artık her derlemede basılır
- * ve diğer sayfa güncellemeleri (haber/skor tazeleme, SEO sayfa üretimi
- * vb.) bu markerlara dokunmaz — yalnızca aralarındaki içerik değişir.
- *
- * Seçim kuralı hâlâ services/transferRadarTicker.js'te. Önce son 3 günün
- * "SON DAKİKA" hareketleri denenir; sakin bir haftada bunlardan hiçbiri
- * yoksa `selectRecentTickerRecords` 21 günlük pencereden yalnızca
- * `status: "confirmed"` kayıtları SON DAKİKA rozeti OLMADAN, tarih
- * etiketiyle gösterir (bkz. o dosyadaki "UYDURMA YOK" kuralı — söylenti
- * hiçbir pencereden banda giremez). Her iki liste de boşsa (ya da pencere
- * kapalıyken) bant KAYBOLMAK yerine kendi yer tutucusunu gösterir
- * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
- * `keepEmpty: true` bunu sağlıyor.
- *
- * Canlı Skorlar bandından bilerek ayrı ve bağımsız: farklı veri, farklı
- * görünme kuralı. Onun kodu/CSS'i burada değiştirilmez, yalnızca komşusu.
- */
-/**
  * Alıntı deposu — SALT OKUNUR. Dosya yoksa ya da bozuksa şerit "bekleniyor"
  * gösterir; ön derleme çökmez ve uydurma üretmez.
  */
@@ -1628,11 +1593,6 @@ function postMatchReportRecords() {
     console.warn(`[prerender] post-match-reports.json okunamadı: ${error.message}`);
     return [];
   }
-}
-
-function transferRadarTicker() {
-  const records = selectRecentTickerRecords(transfers);
-  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
 }
 
 /**
@@ -1858,8 +1818,6 @@ const topPlayers = players.slice().sort((left, right) => Number(right.overallRat
 
 writePage("index.html", {
   "featured-match": staticFeaturedFixture(),
-  "daily-headlines": dailyHeadlineCards(),
-  "home-trend-teams": trendTeamCards(),
   "home-transfer-watch": transferWatch(),
   "today-superlig-matches": todaySuperLigStrip(),
   "today-matches": matchProgramState("today"),
@@ -1867,18 +1825,11 @@ writePage("index.html", {
   "radar-signals": signalCards(),
   "team-radar": topTeams.slice(0, 4).map(staticTeamCard).join(""),
   "standings-tabs": staticStandingsTabsSection(),
-  "player-radar": trendPlayerSlot(3),
   "player-signals": playerSignalsSlot(),
-  "leaders-scorers": homeLeadersScorersSlot(5),
-  "leaders-assists": homeLeadersAssistsSlot(5),
-  "leaders-form": homeLeadersFormSlot(5),
-  "leaders-team-form": homeLeadersTeamFormSlot(5),
-  "news-preview": newsCards(3),
   "analysis-preview": analysisCards(),
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
-  "transfer-radar-ticker": transferRadarTicker(),
   "match-quotes": matchQuotesTicker(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci

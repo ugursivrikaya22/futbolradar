@@ -529,13 +529,18 @@ function checkSeoAndLinks() {
     }
 
     if (page === "index.html") {
+      // Ana sayfa 4 bloğa indirildi (bkz. görev: canlı+program, Süper Lig
+      // puan durumu, günün öne çıkan yazısı, son 3 transfer). Trend oyuncu
+      // ve "Futbol Rehberi" gibi diğer her şey ana sayfadan kaldırıldı;
+      // hâlâ nav üzerinden erişilebilirler, bu yüzden onların denetimi
+      // burada değil (test-seo-foundation.mjs zincirleme bağlantılarını
+      // ayrıca doğruluyor).
       expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
       expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
-      expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
+      expect(html.includes('data-api-target="standings-tabs"'), `${page}: missing standings block`);
       expect(html.includes('data-api-target="home-transfer-watch"'), `${page}: missing transfer watch`);
       expect(html.includes("istatistik-merkezi.html"), `${page}: missing statistics center route`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
-      expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
       expect(html.includes("super-lig-fikstur.html"), `${page}: missing fixture traffic link`);
       expect(html.includes("premier-league"), `${page}: missing Premier League route`);
       expect(html.includes("sampiyonlar-ligi"), `${page}: missing Champions League route`);
@@ -544,7 +549,7 @@ function checkSeoAndLinks() {
       expect(html.includes("momentum.html"), `${page}: missing momentum route`);
       expect(html.includes("analizler.html"), `${page}: missing analysis hub route`);
       expect(html.includes('data-api-target="home-columns"'), `${page}: missing latest columns block`);
-      expect(html.includes("Son Köşe Yazıları"), `${page}: latest columns heading is unclear`);
+      expect(html.includes("Günün Öne Çıkan Yazısı"), `${page}: latest column heading is unclear`);
     }
 
     if (page === "kose-yazilari.html") {
