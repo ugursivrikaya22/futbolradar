@@ -102,7 +102,9 @@ function groupMatchesByLeague(matches) {
  * maçı görmesine hizmet eder. Var olmayan bir adres ÜRETİLMEZ.
  */
 function matchDetailPath(match) {
-  const page = text(match && match.analysisPage);
+  // Kalıcı maç SEO sayfası (`matchPage`, services/matchSeoPages.js) editoryal
+  // analiz sayfasından önce gelir: ne zaman / canlı skor / sonuç aynı adreste.
+  const page = text(match && match.matchPage) || text(match && match.analysisPage);
   if (page) return `./${page.replace(/^\.\//, "")}`;
 
   const id = text(match && (match.fixtureId || match.providerId || match.id));

@@ -1,7 +1,21 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-06T09:31:26.990Z",
+  "updatedAt": "2026-09-06T16:59:28.638Z",
   "items": [
+    {
+      "id": "news-galatasaray-kadin-futbol-79c8a336",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
+      "timestamp": "2026-09-06T15:37:09.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-kadin-futbol-79c8a336"
+      },
+      "team": "Galatasaray",
+      "important": true
+    },
     {
       "id": "news-galatasaray-rafael-leao-356183c3",
       "origin": "news.json",
@@ -15,6 +29,26 @@
       },
       "team": "Galatasaray",
       "important": true
+    },
+    {
+      "id": "auto-news-2a02877adb6ef95dbe4c",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe-Beşiktaş derbisini yazdılar: Hezimete tanıklık edebilirdik! Koca bir sıfır, puan sıfır",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-06T04:50:00.000Z",
+      "source": {
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-besiktas-derbisini-yazdilar-hezimete-taniklik-edebilirdik-koca-bir-sifir-puan-sifir-43297614",
+        "publisher": "hurriyet.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
+      }
     },
     {
       "id": "news-fenerbahce-orkun-kokcu-vlahovic-751e59e3",
@@ -40,20 +74,6 @@
       "source": {
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/haber/galatasaray-squad-ac2e3281"
-      },
-      "team": "Galatasaray",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-result-1f4661d8",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
-      "timestamp": "2026-09-04T20:42:42.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-result-1f4661d8"
       },
       "team": "Galatasaray",
       "important": true
@@ -87,19 +107,24 @@
       "important": true
     },
     {
-      "id": "news-trabzonspor-fatih-tekke-ile-yollar-ayrildi",
-      "origin": "news.json",
+      "id": "auto-news-ad368c036ddb28027303",
       "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Trabzonspor, teknik direktör Fatih Tekke ile yollarını ayırdı",
-      "timestamp": "2026-09-01T17:11:00+03:00",
+      "confidence": "reported",
+      "section": "news",
+      "text": "İşte Süper Lig'in yaş raporu",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-06T12:10:00.000Z",
       "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/trabzonspor-fatih-tekke-ile-yollar-ayrildi"
+        "name": "trt-spor",
+        "url": "https://www.trtspor.com.tr/haber/futbol/iste-super-ligin-yas-raporu-32980444",
+        "publisher": "trtspor.com.tr"
       },
-      "team": "Trabzonspor",
-      "updatedAt": "2026-09-01T20:10:00+03:00",
-      "important": true
+      "automation": {
+        "source": "rss",
+        "feed": "trt-spor",
+        "priority": 6,
+        "status": "REPORTED"
+      }
     }
   ]
 }

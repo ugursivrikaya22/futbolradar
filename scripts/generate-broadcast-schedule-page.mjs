@@ -198,7 +198,7 @@ const listHtml = matches.length
 const schema = [
   matchListSchema(matches, {
     name: "Bugünkü öncelikli futbol maçları ve yayın bilgileri",
-    urlFor: (match) => (match && match.analysisPage ? matchDetailPath(match) : ""),
+    urlFor: (match) => (match && (match.matchPage || match.analysisPage) ? matchDetailPath(match) : ""),
     broadcastFor: (match) => broadcastChannel(match)
   }),
   {

@@ -21,6 +21,8 @@ const { validateTickerItem } = require("../services/newsTicker.js");
 const {
   classifyCandidate,
   buildArticle,
+  dedupeArticleSeo,
+  isGenericArticle,
   jaccard,
   PRIORITY,
   withLocative,
@@ -198,6 +200,48 @@ const duplicateArticle = buildArticle({
   now
 });
 assert(duplicateArticle.sources[0].url === candidates[0].url, "aynı Sporx adresi kaynak olarak izlenebilir kalıyor (üst seviye betik bunu data/sporx-seen.json ile eler)");
+
+// --- Öznesiz şablon haberi yayımlanmaz -------------------------------------
+// 2026-09-03..06: "Fenerbahçe'de gündeme ilişkin açıklama iddiası" 22 sayfada
+// aynı başlıkla çıktı; QA yinelenen başlığı reddedip saatlik veri
+// güncellemesini üç gün bloke etti.
+const genericArticle = buildArticle({
+  candidate: { ...candidates[0], title: "Fenerbahçe cephesinden açıklama geldi", summary: "Kulüp çevresinden gündeme dair bir açıklama aktarıldı.", url: "https://www.sporx.com/generic-1", publishedAt: now.toISOString(), id: "fb-g1" },
+  classification: fbClass,
+  transfers: [],
+  now
+});
+assert(genericArticle.discovery.eventType === "statement" && !genericArticle.discovery.subject, "kişi adı çıkarılamayan açıklama haberi öznesiz kabul ediliyor");
+assert(isGenericArticle(genericArticle), "öznesiz açıklama/kadro/sonuç haberi 'generic' sayılıyor (yayımlanmaz)");
+assert(!isGenericArticle(fbArticle), "kişi adı taşıyan haber generic DEĞİL (yayımlanır)");
+
+// --- Başlık/açıklama tekilliği deterministik ve idempotent ----------------
+const twin = (publishedAt, slug) => ({
+  ...genericArticle,
+  slug,
+  id: slug,
+  publishedAt,
+  seo: { ...genericArticle.seo }
+});
+const sameTitled = [
+  twin("2026-09-04T20:15:00.000Z", "fb-c"),
+  twin("2026-09-04T20:15:00.000Z", "fb-d"),
+  twin("2026-09-04T08:17:00.000Z", "fb-b"),
+  twin("2026-09-03T07:19:00.000Z", "fb-a")
+];
+const deduped = dedupeArticleSeo(sameTitled);
+const bySlug = Object.fromEntries(deduped.map((article) => [article.slug, article]));
+assert(bySlug["fb-a"].title === genericArticle.title, "en eski kayıt başlığını olduğu gibi koruyor");
+assert(bySlug["fb-b"].title === `${genericArticle.title} (4 Eylül)`, "aynı başlıklı sonraki kayıt yayın günüyle ayrışıyor");
+assert(bySlug["fb-c"].title === `${genericArticle.title} (4 Eylül, 23:15)`, "aynı günkü üçüncü kayıt saatle ayrışıyor (TSİ)");
+assert(bySlug["fb-d"].title === `${genericArticle.title} (4 Eylül, 23:15, 2)`, "aynı dakikadaki dördüncü kayıt sıra numarasıyla ayrışıyor");
+assert(new Set(deduped.map((article) => article.title)).size === 4, "dört başlık da tekil");
+assert(new Set(deduped.map((article) => article.seo.metaDescription)).size === 4, "dört meta açıklama da tekil");
+assert(bySlug["fb-d"].seo.metaTitle === `${bySlug["fb-d"].title} | FutbolRadar`, "metaTitle yeni başlığı izliyor");
+assert(deduped.every((article, index) => article.slug === sameTitled[index].slug), "slug/URL ve sıra değişmiyor");
+const again = dedupeArticleSeo(deduped);
+assert(again.every((article, index) => article === deduped[index]), "ikinci koşu hiçbir kaydı değiştirmiyor (idempotent)");
+assert(dedupeArticleSeo([fbArticle])[0] === fbArticle, "tekil başlıklı kayıt aynı nesne olarak dönüyor");
 
 if (failures > 0) {
   console.error(`\n${failures} test başarısız oldu.`);

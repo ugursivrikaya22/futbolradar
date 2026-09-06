@@ -20,7 +20,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { ROUTES, absoluteUrl, dynamicRoutePairs, hreflangOf } = require("../services/i18n.js");
+const { ROUTES, dynamicRoutePairs, hreflangOf, pairUrl } = require("../services/i18n.js");
 
 const root = process.cwd();
 const CHECK_ONLY = process.argv.includes("--check");
@@ -29,8 +29,10 @@ const MARKER_END = "<!-- hreflang:end -->";
 const BLOCK_RE = /[\t ]*<!-- hreflang:start -->[\s\S]*?<!-- hreflang:end -->\n?/g;
 
 function alternateBlock(route) {
-  const trUrl = absoluteUrl(route.tr);
-  const enUrl = absoluteUrl(route.en);
+  // Satır uzantısız kanonik taşıyorsa (maç SEO sayfaları) hreflang da aynı
+  // adresi gösterir: canonical ile alternate birbirinden ayrışmaz.
+  const trUrl = pairUrl(route, "tr");
+  const enUrl = pairUrl(route, "en");
   return `${MARKER_START}
 <link rel="alternate" hreflang="${hreflangOf("tr")}" href="${trUrl}" />
 <link rel="alternate" hreflang="${hreflangOf("en")}" href="${enUrl}" />

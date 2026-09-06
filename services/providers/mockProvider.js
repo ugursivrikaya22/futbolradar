@@ -1,6 +1,7 @@
 const { filterPublishable, logExcluded, logDataGaps } = require("../matchEligibility.js");
 const { mergeSuperLigTeams, isFixtureOnly, sameClub, confirmedHomeVenue } = require("../superLigTeams.js");
 const matches = require("../../data/matches.json");
+const { withMatchPages } = require("../matchSeoPages.js");
 const teams = require("../../data/teams.json");
 const players = require("../../data/players.json");
 const transfers = require("../../data/transfers.json");
@@ -485,7 +486,11 @@ function curatedMatches() {
   const { eligible, excluded, pending } = filterPublishable([...merged.values()].map(withHomeGroundVenue));
   logExcluded("curated-matches", excluded);
   logDataGaps("curated-matches", pending);
-  return eligible;
+  // KALICI MAÇ SAYFASI BAĞLANTISI. Sicilde (data/match-seo-index.json)
+  // sayfası olan her maç `matchPage` alır; sitenin "bu maça git"
+  // bağlantıları (matchDetailPath, app.js#matchDetailHref) o alanı okur.
+  // `analysisPage` alanına dokunulmaz (rapor üreticisi o yola yazıyor).
+  return withMatchPages(eligible);
 }
 
 /**
@@ -617,7 +622,11 @@ async function getMatchDetail(query) {
   }
 
   const wanted = normalizeText(id);
-  return data.find((match) => normalizeText(match.id) === wanted || normalizeText(match.fixtureId) === wanted) || null;
+  // Sağlayıcı fikstür kimliği (`providerIds.apiFootball`) ile de bulunur:
+  // maç sayfaları canlı yenilemeyi bu kimlikle sorar; canlı sağlayıcı
+  // yapılandırılmamışken bile aynı sorgu kürasyonlu kayda düşebilmeli.
+  return data.find((match) => normalizeText(match.id) === wanted || normalizeText(match.fixtureId) === wanted ||
+    (match.providerIds && match.providerIds.apiFootball && normalizeText(match.providerIds.apiFootball) === wanted)) || null;
 }
 
 async function getStandings(query) {

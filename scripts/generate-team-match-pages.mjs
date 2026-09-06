@@ -35,6 +35,7 @@ const { istanbulDay } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 const { normalizeKey } = require("../services/competitionCatalog.js");
+const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
 
 const DOMAIN = "https://www.futbolradar.com";
 
@@ -167,6 +168,10 @@ function teamTransfers(team) {
 }
 
 function matchPageHref(match) {
+  // Kalıcı maç SEO sayfası (ne zaman / canlı skor / sonuç aynı adreste)
+  // editoryal analiz sayfasından önce gelir.
+  const seoSlug = slugForMatch(match);
+  if (seoSlug) return `./${trPagePath(seoSlug).replace(/\.html$/, "")}`;
   if (match.analysisPage) return `./${match.analysisPage}`;
   const fixtureId = match.providerId || match.id;
   return fixtureId ? `./mac-detay.html?fixtureId=${encodeURIComponent(fixtureId)}` : "./mac-merkezi.html";

@@ -33,7 +33,7 @@ import { readJsonFile } from "./lib/readJsonFile.mjs";
 import { fetchSporxCandidates, fetchArticlePublishedAt } from "./lib/sporxFeed.mjs";
 
 const require = createRequire(import.meta.url);
-const { classifyCandidate, buildArticle, jaccard } = require("../services/sporxNews.js");
+const { classifyCandidate, buildArticle, dedupeArticleSeo, isGenericArticle, jaccard } = require("../services/sporxNews.js");
 const { asList } = require("../services/newsFeed.js");
 
 const root = process.cwd();
@@ -130,6 +130,14 @@ async function main() {
       transfers: transferRows,
       now
     });
+    // Öznesiz şablon haberi (takım adı + olay türü dışında bilgi yok)
+    // yayımlanmaz ama adres "görüldü" sayılır; gerekçe services/sporxNews.js
+    // → isGenericArticle.
+    if (isGenericArticle(article)) {
+      newlySeen.push({ url: candidate.url, at: now.toISOString(), slug: null, skipped: "generic" });
+      log(`atlandı (öznesiz şablon haberi, yayımlanmaz): ${candidate.title}`);
+      continue;
+    }
     newArticles.push(article);
     newlySeen.push({ url: candidate.url, at: now.toISOString(), slug: article.slug });
     log(`özgün haber üretildi [${classification.category}]: "${article.title}" (kaynak: ${candidate.url})`);
@@ -141,11 +149,21 @@ async function main() {
   }
 
   if (!newArticles.length) {
+    // Yalnızca "görüldü" listesi büyümüş olabilir (öznesiz adresler);
+    // yazılmazsa aynı adresler her 15 dakikada bir yeniden işlenir.
+    if (newlySeen.length) {
+      const updatedSeen = pruneSeen([...seen, ...newlySeen], now);
+      fs.writeFileSync(SEEN_PATH, `${JSON.stringify({ processed: updatedSeen }, null, 2)}\n`, "utf8");
+      log(`yeni haber yok; ${newlySeen.length} atlanan adres data/sporx-seen.json'a işlendi.`);
+      return;
+    }
     log("yeni haber yok, dosyalar değişmedi.");
     return;
   }
 
-  const updatedNews = [...newArticles, ...news];
+  // Başlık/açıklama tekilliği depo genelinde garanti edilir (SEO denetimi
+  // yinelenen başlığı reddeder); kural tek yerde: dedupeArticleSeo.
+  const updatedNews = dedupeArticleSeo([...newArticles, ...news]);
   fs.writeFileSync(NEWS_PATH, `${JSON.stringify(updatedNews, null, 2)}\n`, "utf8");
 
   const updatedSeen = pruneSeen([...seen, ...newlySeen], now);

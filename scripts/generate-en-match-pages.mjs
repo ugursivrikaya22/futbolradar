@@ -43,6 +43,8 @@ const { sameClub, slug: teamSlug } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
+const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
+const seoRegistryPages = loadRegistry().pages;
 
 const root = process.cwd();
 const LOCALE = "en";
@@ -152,6 +154,13 @@ function radarCardEn(name, radar) {
   </article>`;
 }
 
+/** Permanent match page (kick-off, channel, live score, result) when registered. */
+function liveCentreCard(match) {
+  const enPath = match.kickoff ? enPathForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }, seoRegistryPages) : null;
+  if (!enPath) return "";
+  return `<a class="match-related-card" href="${BASE}${escapeHtml(enPath)}"><span>Match centre</span><strong>Kick-off, TV channel &amp; live score</strong><p>Kick-off time, broadcaster, line-ups and the result on one permanent page.</p></a>`;
+}
+
 function shortDateLabel(value, locale) {
   return formatDate(value, locale);
 }
@@ -254,7 +263,7 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
         <article class="card"><span class="card-kicker">${teamLink(match.awayTeam)}</span><h2>${escapeHtml(label("match.form"))} &amp; ${escapeHtml(label("match.squad"))}</h2>${squadNoteHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article>
       </section>
       <section class="match-related-grid" aria-label="${escapeHtml(label("match.related"))}">
-        <a class="match-related-card" href="../standings.html"><span>Table</span><strong>Süper Lig standings</strong><p>See where both sides stand this season.</p></a>
+        ${liveCentreCard(match)}<a class="match-related-card" href="../standings.html"><span>Table</span><strong>Süper Lig standings</strong><p>See where both sides stand this season.</p></a>
         <a class="match-related-card" href="../todays-matches.html"><span>Fixtures</span><strong>Today's matches</strong><p>The full Süper Lig fixture list.</p></a>
       </section>`;
 
@@ -321,7 +330,8 @@ const registered = writeDynamicRoutePairs("match", pairs);
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
   const current = fs.readFileSync(sitemapPath, "utf8");
-  const retained = (current.match(URL_ENTRY_RE) || []).filter((entry) => !entry.includes(`${DOMAIN}/en/match/`));
+  // Yalnızca hafta numaralı kendi girdileri; kalıcı EN maç sayfaları korunur.
+  const retained = (current.match(URL_ENTRY_RE) || []).filter((entry) => !/<loc>[^<]*\/en\/match\/[^<]*-\d{4}-\d{4}-r\d{2}\.html<\/loc>/.test(entry));
   fs.writeFileSync(sitemapPath, wrapUrlset(retained.concat(sitemapEntries)), "utf8");
 }
 
