@@ -177,17 +177,90 @@ function normalizeRadar(player, base, context) {
   };
 }
 
+function knownOrNull(value) {
+  const text = String(value == null ? "" : value).trim();
+  return text && normalizeText(text) !== "bilinmiyor" ? value : null;
+}
+
 function normalizeTransferHistory(history) {
   return normalizeArray(history).map((item) => ({
-    date: item.date || null,
-    fromTeam: item.fromTeam || item.from || null,
-    toTeam: item.toTeam || item.to || null,
-    type: item.type || item.transferType || inferTransferType(item),
+    date: knownOrNull(item.date),
+    fromTeam: knownOrNull(item.fromTeam || item.from),
+    toTeam: knownOrNull(item.toTeam || item.to),
+    type: knownOrNull(item.type || item.transferType) || inferTransferType(item),
     feeEur: item.feeEur == null ? null : Number(item.feeEur),
-    feeLabel: item.feeLabel || formatMarketValueEur(item.feeEur) || "Bilinmiyor",
+    // "Bilinmiyor" bir ücret DEĞERİ değil, sağlayıcının bu alanı hiç
+    // doldurmadığının işareti (bazı sağlayıcı kayıtları bunu literal
+    // string olarak yazıyor). Burada süzülmezse her sağlayıcı kaydı
+    // yayına "Bilinmiyor" diye sızar; bunun yerine null kalır ve gösterim
+    // katmanı kendi "açıklanmadı" metnini basar.
+    feeLabel: knownOrNull(item.feeLabel) || formatMarketValueEur(item.feeEur) || null,
     source: item.source || "manual",
     note: item.note || ""
   }));
+}
+
+/** Gerçekten bilinen bir transfer tipi mi (elle/sağlayıcı alanı ya da
+ * "Free"/"Academy" ücret etiketi), yoksa null mü. */
+function transferKnownType(transfer) {
+  if (!transfer) {
+    return null;
+  }
+
+  const rawType = transfer.type || transfer.transferType;
+  if (rawType && normalizeText(rawType) !== "bilinmiyor") {
+    return rawType;
+  }
+
+  if (transfer.feeLabel === "Free") {
+    return "Serbest transfer";
+  }
+
+  if (transfer.feeLabel === "Academy") {
+    return "Altyapı";
+  }
+
+  return null;
+}
+
+function transferRecordIsComplete(transfer) {
+  const fromTeam = String((transfer && transfer.fromTeam) || "").trim();
+  const toTeam = String((transfer && transfer.toTeam) || "").trim();
+  const date = String((transfer && transfer.date) || "").trim();
+
+  return Boolean(
+    fromTeam && normalizeText(fromTeam) !== "bilinmiyor" &&
+    toTeam && normalizeText(toTeam) !== "bilinmiyor" &&
+    date &&
+    transferKnownType(transfer)
+  );
+}
+
+/**
+ * Bir oyuncunun transfer geçmişini kulüp/tarih/tip eksik satırlardan
+ * arındırır ve aynı oyuncu+tarih+kulüp kombinasyonunu tekilleştirir.
+ * Kulüp, tarih veya tip bilinmiyorsa satır hiç yayımlanmaz.
+ */
+function sanitizeTransferHistory(history) {
+  const normalized = normalizeTransferHistory(history);
+  const seen = new Set();
+  const result = [];
+
+  for (const transfer of normalized) {
+    if (!transferRecordIsComplete(transfer)) {
+      continue;
+    }
+
+    const key = [String(transfer.date).slice(0, 10), normalizeText(transfer.fromTeam), normalizeText(transfer.toTeam)].join("|");
+    if (seen.has(key)) {
+      continue;
+    }
+
+    seen.add(key);
+    result.push(transfer);
+  }
+
+  return result;
 }
 
 function inferTransferType(item) {
@@ -774,7 +847,7 @@ function updatePlayerTransfer(rawPlayers, update, now) {
       toTeam: currentTeam,
       type: update.type || update.transferType || inferTransferType(update),
       feeEur: update.feeEur == null ? null : Number(update.feeEur),
-      feeLabel: update.feeLabel || formatMarketValueEur(update.feeEur) || "Bilinmiyor",
+      feeLabel: update.feeLabel || formatMarketValueEur(update.feeEur) || null,
       source: update.source || "manual",
       note: update.note || ""
     };
@@ -809,7 +882,9 @@ module.exports = {
   normalizePlayer,
   normalizeStats,
   normalizeText,
+  sanitizeTransferHistory,
   slug,
+  transferKnownType,
   updatePlayerTransfer,
   validatePlayerData
 };

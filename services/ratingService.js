@@ -219,6 +219,67 @@ function dataConfidenceScore(player) {
   return 68;
 }
 
+function perNinety(value, minutes) {
+  if (!hasNumber(value) || !hasNumber(minutes) || Number(minutes) < 90) {
+    return null;
+  }
+
+  return (Number(value) / Number(minutes)) * 90;
+}
+
+const ATTACK_PER90_BENCHMARK = {
+  forward: { goals: 0.6, assists: 0.3 },
+  winger: { goals: 0.4, assists: 0.4 }
+};
+
+/**
+ * Forvet/kanat hücum skoru gol/90 ve katkı (gol+asist)/90 üretimine dayanır.
+ * Şut/xG alanı gol atılmışken "0" geliyorsa sağlayıcı bu alanı hiç ölçmemiş
+ * demektir (0 şut/0 xG ile gol atmak imkânsız); bu durumda o alan ortalamaya
+ * uydurma düşük değer olarak girmez. Az dakikalı örneklemde oranın uç
+ * değerlere savrulmaması için dakika sayısına göre nötr bir taban puana
+ * (60) doğru yumuşatılır.
+ */
+function attackingProductionScore(player, group, goals, assists, shots, xg) {
+  const minutes = statValue(player, "minutesPlayed", hasNumber(player.minutes) ? Number(player.minutes) : null);
+  const benchmark = ATTACK_PER90_BENCHMARK[group] || ATTACK_PER90_BENCHMARK.forward;
+  const goals90 = perNinety(goals, minutes);
+  const assists90 = perNinety(assists, minutes);
+  const sampleWeight = hasNumber(minutes) ? clamp(Number(minutes) / (Number(minutes) + 450), 0, 1) : 0;
+
+  function shrink(raw) {
+    return raw === null ? null : raw * sampleWeight + 60 * (1 - sampleWeight);
+  }
+
+  const goalRateScore = goals90 !== null
+    ? shrink(clamp((goals90 / benchmark.goals) * 70, 0, 100))
+    : (hasNumber(goals) ? score(goals, group === "winger" ? 8 : 10) : null);
+
+  const contributionScore = goals90 !== null || assists90 !== null
+    ? shrink(clamp((((goals90 || 0) + (assists90 || 0)) / (benchmark.goals + benchmark.assists)) * 70, 0, 100))
+    : (hasNumber(goals) || hasNumber(assists))
+      ? score(Number(goals || 0) + Number(assists || 0), group === "winger" ? 10 : 12)
+      : null;
+
+  const shotsReal = hasNumber(shots) && !(Number(goals) > 0 && Number(shots) === 0);
+  const xgReal = hasNumber(xg) && !(Number(goals) > 0 && Number(xg) === 0);
+
+  const signals = [
+    Number(player.attackingRating),
+    Number(player.shootingRating),
+    Number(player.threatScore),
+    goalRateScore,
+    contributionScore,
+    shotsReal ? score(shots, 22) : null,
+    xgReal ? score(xg, 6) : null
+  ].filter(hasNumber);
+
+  const hasAnyData = hasNumber(goals) || hasNumber(assists) || shotsReal || xgReal ||
+    hasNumber(player.attackingRating) || hasNumber(player.shootingRating) || hasNumber(player.threatScore);
+
+  return { value: signals.length ? average(signals, null) : null, hasAnyData };
+}
+
 function computePlayerRadar(player, context) {
   const group = positionGroup(player.position);
   const stats = player.stats || {};
@@ -234,16 +295,26 @@ function computePlayerRadar(player, context) {
   const goalsConceded = numberFrom({ value: player.goalsConceded ?? stats.goalsConceded }, ["value"], null);
   const existingRadar = player.radar && typeof player.radar === "object" ? player.radar : {};
 
-  const attack = clamp(average([
-    Number(player.attackingRating),
-    Number(player.shootingRating),
-    Number(player.threatScore),
-    existingRadar.attack,
-    existingRadar.finishing,
-    score(goals, group === "forward" || group === "winger" ? 10 : 6),
-    score(shots, 22),
-    score(xg, 6)
-  ], group === "goalkeeper" ? 18 : 58), 0, 100);
+  const isAttackingGroup = group === "forward" || group === "winger";
+  const attackingProduction = isAttackingGroup
+    ? attackingProductionScore(player, group, goals, assists, shots, xg)
+    : null;
+
+  // Forvet/kanat için gol/90 ve katkı verisi hiç yoksa (ne gol/asist ne şut/xG
+  // ne de elle girilmiş bir hücum reytingi) uydurma bir taban puan basılmaz;
+  // `attack` null kalır ve genel rating "veri yetersiz" olarak işaretlenir.
+  const attack = isAttackingGroup
+    ? attackingProduction.value
+    : clamp(average([
+      Number(player.attackingRating),
+      Number(player.shootingRating),
+      Number(player.threatScore),
+      existingRadar.attack,
+      existingRadar.finishing,
+      score(goals, 6),
+      score(shots, 22),
+      score(xg, 6)
+    ], group === "goalkeeper" ? 18 : 58), 0, 100);
 
   const creativity = clamp(average([
     Number(player.creativityScore),
@@ -285,7 +356,7 @@ function computePlayerRadar(player, context) {
   const radar = {
     overall: null,
     form: Math.round(form),
-    attack: Math.round(attack),
+    attack: attack === null ? null : Math.round(clamp(attack, 0, 100)),
     creativity: Math.round(creativity),
     defense: Math.round(defense),
     discipline: Math.round(discipline),
@@ -312,15 +383,27 @@ function weighted(parts, weights) {
   return Object.keys(weights).reduce((sum, key) => sum + Number(parts[key] || 0) * weights[key], 0) / totalWeight;
 }
 
+function isInsufficientForRating(playerRadar, group) {
+  return (group === "forward" || group === "winger") && playerRadar && playerRadar.attack === null;
+}
+
 function computeOverallRating(playerRadar, group, player) {
   const weights = POSITION_WEIGHTS[group] || POSITION_WEIGHTS.forward;
   const existing = Number(player && (player.overallRating || player.aiRating || player.rating));
   const manualRating = player && normalizeText(player.ratingStatus).includes("manual");
-  const computed = weighted(playerRadar || {}, weights);
 
   if (manualRating && Number.isFinite(existing)) {
     return clamp(Math.round(existing), 0, 100);
   }
+
+  // Forvet/kanat için gol/90 ve katkı verisi yoksa (bkz. attackingProductionScore)
+  // uydurma bir düşük skor basmak yerine rating hiç üretilmez; çağıran taraf
+  // bunu "veri yetersiz" olarak işaretler.
+  if (!manualRating && isInsufficientForRating(playerRadar, group)) {
+    return null;
+  }
+
+  const computed = weighted(playerRadar || {}, weights);
 
   if (Number.isFinite(existing) && existing > 0) {
     return clamp(Math.round(computed * 0.62 + existing * 0.38), 0, 100);
@@ -369,19 +452,24 @@ function deriveWeaknesses(player, radar) {
 function computePlayerRating(player, context) {
   const group = positionGroup(player.position);
   const radar = computePlayerRadar(player, context || {});
-  const aiRating = computeOverallRating(radar, group, player);
+  const aiRating = radar.overall;
   const manualRating = normalizeText(player.ratingStatus).includes("manual");
+  const insufficientData = aiRating === null && !manualRating;
 
   return {
     aiRating,
     overallRating: aiRating,
-    ratingStatus: manualRating ? player.ratingStatus : (player.ratingStatus === "provider" ? "provider" : "estimated"),
-    ratingExplanation: "Bu rating; pozisyona göre ağırlıklanan hücum, yaratıcılık, savunma, form, süreklilik, potansiyel ve veri güveni skorlarından hesaplanır.",
+    ratingStatus: manualRating
+      ? player.ratingStatus
+      : (insufficientData ? "insufficient_data" : (player.ratingStatus === "provider" ? "provider" : "estimated")),
+    ratingExplanation: insufficientData
+      ? "Bu oyuncu için gol/90 ve katkı verisi yok; rating hesaplanamadı."
+      : "Bu rating; pozisyona göre ağırlıklanan hücum, yaratıcılık, savunma, form, süreklilik, potansiyel ve veri güveni skorlarından hesaplanır.",
     ratingComponents: radar,
     radar,
     positionGroup: group,
-    strengths: deriveStrengths(player, radar),
-    weaknesses: deriveWeaknesses(player, radar)
+    strengths: insufficientData ? [] : deriveStrengths(player, radar),
+    weaknesses: insufficientData ? [] : deriveWeaknesses(player, radar)
   };
 }
 
@@ -389,12 +477,13 @@ function enrichPlayerRating(player, context) {
   const result = computePlayerRating(player, context);
   const manualRating = normalizeText(player.ratingStatus).includes("manual");
   const protectedValue = Number(player.overallRating || player.aiRating || player.rating);
+  const insufficientData = result.ratingStatus === "insufficient_data";
   const rating = manualRating && Number.isFinite(protectedValue) ? clamp(Math.round(protectedValue), 0, 100) : result.aiRating;
 
   return {
     ...player,
     aiRating: rating,
-    rating: player.rating || rating,
+    rating: insufficientData ? null : (player.rating || rating),
     overallRating: rating,
     ratingStatus: result.ratingStatus,
     ratingExplanation: result.ratingExplanation,

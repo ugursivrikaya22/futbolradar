@@ -1085,6 +1085,9 @@
     if (normalized === "pending" || normalized === "transfer_needs_monitoring") {
       return "Bu kayit izleme listesinde.";
     }
+    if (normalized === "insufficient_data") {
+      return "Bu oyuncu için rating hesaplanacak yeterli performans verisi (gol/90, katkı) yok.";
+    }
     return "Veri durumu kaydi.";
   }
 
@@ -1123,6 +1126,10 @@
       return "Provider";
     }
 
+    if (normalized === "insufficient_data") {
+      return "Veri yetersiz";
+    }
+
     return status || "Bilinmiyor";
   }
 
@@ -1137,7 +1144,7 @@
     if (normalized === "stale" || normalized === "mock_needs_verification" || normalized === "manual-review") {
       return "stale";
     }
-    if (normalized === "pending" || normalized === "transfer_needs_monitoring") {
+    if (normalized === "pending" || normalized === "transfer_needs_monitoring" || normalized === "insufficient_data") {
       return "pending";
     }
     return "neutral";
@@ -1156,7 +1163,7 @@
   }
 
   function playerHasTransferHistory(player) {
-    return Array.isArray(player && player.transferHistory) && player.transferHistory.length > 0;
+    return playerTransferHistory(player).length > 0;
   }
 
   function playerNeedsDataRefresh(player) {
@@ -1165,7 +1172,7 @@
   }
 
   function playerProfileHeroHtml(player, team) {
-    var score = displayValue(player.overallRating || player.aiRating || player.rating);
+    var score = playerRatingDisplayValue(player);
     var age = playerAge(player);
     var market = playerMarketValue(player) || "Piyasa değeri yakında";
     var teamLine = playerTeamEyebrow(player) + " - " + (player.league || "Lig bilgisi yakinda");
@@ -1251,32 +1258,32 @@
     }).format(date);
   }
 
+  /**
+   * "Bilinmiyor" bir tip/ücret DEĞERİ değildir — sağlayıcının bu alanı hiç
+   * doldurmadığının işaretidir. Buradan geçip görüntüye "Bilinmiyor" olarak
+   * sızmaması için tip yalnızca gerçekten bilinen kaynaklardan (type/
+   * transferType alanı, ya da "Free"/"Academy" ücret etiketi) türetilir;
+   * aksi hâlde null döner ve satır tamamlanmamış sayılır.
+   */
   function transferTypeLabel(transfer) {
     if (!transfer) {
       return null;
     }
 
-    if (transfer.type || transfer.transferType) {
-      return transfer.type || transfer.transferType;
+    var rawType = transfer.type || transfer.transferType;
+    if (rawType && normalizeSearchText(rawType) !== "bilinmiyor") {
+      return rawType;
     }
 
-    if (transfer.feeLabel) {
-      if (transfer.feeLabel === "Free") {
-        return "Serbest transfer";
-      }
-
-      if (transfer.feeLabel === "Academy") {
-        return "Altyapı";
-      }
-
-      return transfer.feeLabel;
+    if (transfer.feeLabel === "Free") {
+      return "Serbest transfer";
     }
 
-    if (Number(transfer.feeEur) > 0) {
-      return "Transfer";
+    if (transfer.feeLabel === "Academy") {
+      return "Altyapı";
     }
 
-    return "Serbest / altyapı";
+    return null;
   }
 
   function transferFeeLabel(transfer) {
@@ -1289,16 +1296,63 @@
       return fee >= 1000000 ? "€" + (Math.round(fee / 100000) / 10).toFixed(1) + "M" : "€" + fee.toLocaleString("tr-TR");
     }
 
-    return transfer.feeLabel && transfer.feeLabel !== "Free" && transfer.feeLabel !== "Academy" ? transfer.feeLabel : null;
+    var label = transfer.feeLabel;
+    if (!label || label === "Free" || label === "Academy" || normalizeSearchText(label) === "bilinmiyor") {
+      return null;
+    }
+
+    return label;
+  }
+
+  /**
+   * Bir transfer satırının gösterilebilir sayılması için kulüp (giden VE
+   * gelen), tarih ve tip bilgisinin GERÇEKTEN bilinmesi gerekir. Bunlardan
+   * biri eksikse satır hiç çizilmez — "Bilinmiyor" ile doldurulmuş bir satır
+   * bilgi değil gürültüdür.
+   */
+  function transferRecordIsComplete(transfer) {
+    if (!transfer) {
+      return false;
+    }
+
+    var fromTeam = String(transfer.fromTeam || "").trim();
+    var toTeam = String(transfer.toTeam || "").trim();
+    var date = String(transfer.date || "").trim();
+
+    return Boolean(
+      fromTeam && normalizeSearchText(fromTeam) !== "bilinmiyor" &&
+      toTeam && normalizeSearchText(toTeam) !== "bilinmiyor" &&
+      date &&
+      transferTypeLabel(transfer)
+    );
+  }
+
+  /** Oyuncunun transfer geçmişini tamamlanmamış satırlardan arındırır ve
+   * aynı oyuncu+tarih+kulüp kombinasyonunu tekilleştirir. */
+  function playerTransferHistory(player) {
+    var raw = Array.isArray(player && player.transferHistory) ? player.transferHistory : [];
+    var seen = {};
+    var result = [];
+
+    raw.filter(transferRecordIsComplete).forEach(function (transfer) {
+      var key = String(transfer.date).slice(0, 10) + "|" + normalizeSearchText(transfer.fromTeam) + "|" + normalizeSearchText(transfer.toTeam);
+      if (seen[key]) {
+        return;
+      }
+      seen[key] = true;
+      result.push(transfer);
+    });
+
+    return result;
   }
 
   function latestTransferEvent(player) {
-    var history = Array.isArray(player && player.transferHistory) ? player.transferHistory.slice() : [];
+    var history = playerTransferHistory(player);
     if (!history.length) {
       return null;
     }
 
-    return history.sort(function (a, b) {
+    return history.slice().sort(function (a, b) {
       return String(b.date || b.season || "").localeCompare(String(a.date || a.season || ""));
     })[0];
   }
@@ -1318,7 +1372,7 @@
   }
 
   function transferTimelineHtml(player) {
-    var history = Array.isArray(player && player.transferHistory) ? player.transferHistory.slice() : [];
+    var history = playerTransferHistory(player);
     if (!history.length) {
       return '<section class="profile-section transfer-section"><h2>Transfer Geçmişi</h2><article class="data-empty compact"><strong>Transfer geçmişi yakında</strong><span>Bu oyuncu için transfer çizelgesi güncelleniyor.</span></article></section>';
     }
@@ -1339,9 +1393,9 @@
           '<article class="transfer-event">' +
           '<span class="transfer-date">' + escapeHtml(formatProfileDate(transfer.date) || transfer.season || "Tarih yakında") + "</span>" +
           '<div class="transfer-body">' +
-          '<div class="transfer-route"><b>' + escapeHtml(transfer.fromTeam || "Bilinmiyor") + "</b><em>→</em><b>" + escapeHtml(transfer.toTeam || playerCurrentTeam(player)) + "</b></div>" +
+          '<div class="transfer-route"><b>' + escapeHtml(transfer.fromTeam) + "</b><em>→</em><b>" + escapeHtml(transfer.toTeam) + "</b></div>" +
           '<div class="transfer-meta">' +
-          (transferTypeLabel(transfer) ? "<span>" + escapeHtml(transferTypeLabel(transfer)) + "</span>" : "") +
+          "<span>" + escapeHtml(transferTypeLabel(transfer)) + "</span>" +
           (fee ? "<span>" + escapeHtml(fee) + "</span>" : "") +
           statusBadgeHtml(transfer.source || player.dataStatus, "data") +
           "</div>" +
@@ -1406,8 +1460,26 @@
   }
 
   function playerAiScore(player) {
-    var rating = Number(player.overallRating || player.aiRating || player.rating || 0);
+    var raw = player && (player.overallRating != null ? player.overallRating : (player.aiRating != null ? player.aiRating : player.rating));
+    if (raw === null || raw === undefined || raw === "") return null;
+    var rating = Number(raw);
+    if (!Number.isFinite(rating)) return null;
     return rating <= 10 ? rating * 10 : rating;
+  }
+
+  function playerRatingIsInsufficient(player) {
+    return normalizeSearchText(player && player.ratingStatus) === "insufficient_data";
+  }
+
+  /** Ana "Overall"/puan rozetlerinin TEK gösterim kapısı: puan yoksa ve
+   * neden gol/90 + katkı verisinin eksikliğiyse "Veri yetersiz" basılır;
+   * aksi hâlde "-" (henüz hesaplanmadı). */
+  function playerRatingDisplayValue(player) {
+    var raw = player && (player.overallRating != null ? player.overallRating : (player.aiRating != null ? player.aiRating : player.rating));
+    if (raw === null || raw === undefined || raw === "") {
+      return playerRatingIsInsufficient(player) ? "Veri yetersiz" : "-";
+    }
+    return displayValue(raw);
   }
 
   function playerScore(player, key, fallback) {

@@ -29,7 +29,7 @@ const {
   buildTransferRumors
 } = require("./playerInsightService");
 const { positionGroup: resolvePositionGroup } = require("./ratingService");
-const { formatMarketValueEur } = require("./playerService");
+const { formatMarketValueEur, sanitizeTransferHistory } = require("./playerService");
 const {
   publicPlayerView,
   ratingIsVerified,
@@ -458,7 +458,7 @@ function buildPlayerProfile(input) {
     similarPlayers: buildSimilarPlayers(player, pool, settings.similarLimit || 4),
     alternatives: buildAlternatives(player, pool, settings.alternativeLimit || 4),
     rumors: buildTransferRumors(player, settings.transfers),
-    transferHistory: Array.isArray(player.transferHistory) ? player.transferHistory : [],
+    transferHistory: sanitizeTransferHistory(player.transferHistory),
     formerTeams: Array.isArray(player.formerTeams) ? player.formerTeams : [],
     badges: Array.isArray(player.badges) ? player.badges : [],
     data: dataSection(player, identity, metrics, recent.available)
