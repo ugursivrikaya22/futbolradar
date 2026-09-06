@@ -46,9 +46,18 @@ for (const [relativePath, canonicalPath, schemaType] of pages) {
   assert.ok(!html.includes("data-api-target"), `${relativePath}: istemci kabuğu olmamalı`);
 }
 
-const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
-for (const href of ["./bugunun-maclari", "./super-lig-puan-durumu", "./form-tablosu/super-lig", "./takimlar/galatasaray", "./takimlar/fenerbahce", "./takimlar/besiktas", "./takimlar/trabzonspor", "./takim-karsilastirmalari", "./oyuncu-karsilastirmalari"]) {
-  assert.ok(home.includes(`href="${href}"`), `Ana sayfa bağlantısı eksik: ${href}`);
+// Ana sayfa 4 bloğa indirildiğinde "Futbol Rehberi" bağlantı ızgarası
+// (bkz. görev: "diğer her şey ... rehber ... nav'da kalsın") artık ana
+// sayfada BASILMIYOR — bu yüzden bu sayfaların taranabilirliği ana sayfa
+// bağlantısına değil, birbirlerine verdikleri iç bağlantılara dayanıyor.
+// Aşağıdaki denetim o zincirin hâlâ sağlam olduğunu doğruluyor (orphan
+// sayfa denetimi test-seo-integrity.mjs'te ayrıca genel olarak yapılıyor).
+const comparisonHub = fs.readFileSync(path.join(root, "takim-karsilastirmalari.html"), "utf8");
+assert.ok(comparisonHub.includes('href="./super-lig-puan-durumu"'), "Takım karşılaştırmaları: puan durumuna bağlantı eksik");
+
+const standingsHub = fs.readFileSync(path.join(root, "super-lig-puan-durumu.html"), "utf8");
+for (const href of ["./form-tablosu/super-lig", "./takimlar/galatasaray", "./takimlar/fenerbahce", "./takimlar/besiktas", "./takimlar/trabzonspor", "./takim-karsilastirmalari"]) {
+  assert.ok(standingsHub.includes(`href="${href}"`), `Süper Lig puan durumu: bağlantı eksik: ${href}`);
 }
 
 const today = fs.readFileSync(path.join(root, "bugunun-maclari.html"), "utf8");

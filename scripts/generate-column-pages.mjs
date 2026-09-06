@@ -199,10 +199,10 @@ function listingHtml(columns) {
   return columns.map((column) => columnCard(column, "./", { showShareControls: true })).join("");
 }
 
-/** Ana sayfadaki son üç yazı. Yazı yoksa BOŞ DİZE — bölüm gizlenir. */
+/** Ana sayfanın 4 bloklu tasarımında tek parça: en son yazı. Yazı yoksa BOŞ DİZE — bölüm gizlenir. */
 function homeHtml(columns) {
   if (!columns.length) return "";
-  return columns.slice(0, 3).map((column) => columnCard(column, "./")).join("");
+  return columns.slice(0, 1).map((column) => columnCard(column, "./")).join("");
 }
 
 export function groupAuthors(columns) {
