@@ -13993,6 +13993,20 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   flex: 0 0 auto;
 }
 
+.fixture-card-broadcast-platform {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+}
+
+/* Mobilde tek satırlık sade görünüm: yalnızca kanal, platform (💻) gizlenir. */
+@media (max-width: 640px) {
+  .fixture-card-broadcast-platform {
+    display: none;
+  }
+}
+
 .fixture-card-live-minute {
   display: inline-flex;
   align-items: center;

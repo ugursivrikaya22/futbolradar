@@ -378,6 +378,40 @@ function analysisReport(record, sourceId) {
   };
 }
 
+/**
+ * Maç yayın kaydı. `confidence` yalnızca bilinen kademelere düşer;
+ * tanınmayan bir dize NULL kalır — CHECK kısıtının reddetmesi yerine
+ * burada erken elenir (bkz. transfer() ile aynı disiplin: bozuk bir alan,
+ * satırın tamamını düşürmemeli).
+ */
+function broadcastConfidence(value) {
+  const raw = String(value || "").trim().toLowerCase();
+  return ["official", "provider", "press", "derived"].includes(raw) ? raw : null;
+}
+
+function matchBroadcast(record) {
+  const fixtureId = text(record && record.fixtureId);
+  const homeTeam = text(record && record.homeTeam);
+  const awayTeam = text(record && record.awayTeam);
+  const matchDate = isoStamp(record && record.matchDate);
+  if (!fixtureId || !homeTeam || !awayTeam || !matchDate) return null;
+
+  return {
+    fixture_id: fixtureId,
+    home_team: homeTeam,
+    away_team: awayTeam,
+    match_date: matchDate,
+    broadcaster: text(record.broadcaster),
+    platform: text(record.platform),
+    country: text(record.country) || "TR",
+    source_url: text(record.sourceUrl),
+    source_name: text(record.sourceName),
+    confidence: broadcastConfidence(record.confidence),
+    is_manual: Boolean(record.isManual),
+    verified_at: isoStamp(record.verifiedAt)
+  };
+}
+
 module.exports = {
   analysisReport,
   birthDate,
@@ -386,6 +420,7 @@ module.exports = {
   isoDate,
   isoStamp,
   match,
+  matchBroadcast,
   moneyEur,
   player,
   playerStats,

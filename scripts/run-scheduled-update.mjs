@@ -32,7 +32,8 @@ const WATCHED_COLLECTIONS = {
   teams: { file: "data/teams.json", rows: (value) => Array.isArray(value) ? value : value.teams || [], key: (row) => row.id || row.name },
   players: { file: "data/players.json", rows: (value) => Array.isArray(value) ? value : value.players || [], key: (row) => row.id || row.providerId || row.name },
   squadStatuses: { file: "data/squad-statuses.json", rows: (value) => value.teams || [], key: (row) => row.team || row.name },
-  analyses: { file: "data/match-analyses.json", rows: (value) => Array.isArray(value) ? value : value.records || [], key: (row) => row.fixtureId || row.id }
+  analyses: { file: "data/match-analyses.json", rows: (value) => Array.isArray(value) ? value : value.records || [], key: (row) => row.fixtureId || row.id },
+  broadcasts: { file: "data/match-broadcasts.json", rows: (value) => value.records || [], key: (row) => row.fixtureId }
 };
 
 function parseArgs(argv) {
@@ -116,7 +117,8 @@ function snapshotDiff(before, after) {
     teamsUpdated: changedRows(before, after, "teams"),
     playersUpdated: changedRows(before, after, "players"),
     squadStatusesUpdated: changedRows(before, after, "squadStatuses"),
-    analysesUpdated: changedRows(before, after, "analyses")
+    analysesUpdated: changedRows(before, after, "analyses"),
+    broadcastsUpdated: changedRows(before, after, "broadcasts")
   };
 }
 
@@ -294,6 +296,17 @@ function sourceSteps(type, providerReady) {
     // (maç başına tek /predictions isteği). Günlük full koşu yeter:
     // sağlayıcı tahmini gün içinde anlamlı değişmez.
     ...(full ? [nodeStep("match-predictions", "sync-match-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider })] : []),
+    // TÜRK TAKIMLARININ YAYIN BİLGİSİ. beIN SPORTS ve TRT'nin herkese açık
+    // yayın programını tarar; API-Football anahtarına bağlı DEĞİL, bu
+    // yüzden `noProvider` durumunda bile atlanmaz. Günlük full koşuda
+    // çalışır: "her Pazartesi 8 gün tara" ve "her gün doğrula" istekleri
+    // TEK bir idempotent taramayla karşılanır — 8 günlük pencere her koşuda
+    // yeniden taranır, maça 24 saatten az kalan bir kayıt da aynı taramanın
+    // parçası olarak güncellenir (bkz. scripts/sync-match-broadcasts.mjs
+    // başlığı). beIN ya da TRT'den biri başarısız olursa diğeri ve geri
+    // kalan tüm adımlar etkilenmeden devam eder; kalıcı depo hiçbir zaman
+    // eski doğru kaydı silmez.
+    ...(full ? [nodeStep("match-broadcasts", "sync-match-broadcasts.mjs", ["--apply", "--days=8"], { kind: "source", source: "bein-trt-broadcast", attempts: 1, timeoutMs: 3 * 60 * 1000 })] : []),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),

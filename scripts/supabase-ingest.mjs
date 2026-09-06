@@ -252,6 +252,14 @@ async function ingestPolls() {
   return { read: entries.length, written: pollRows + optionRows, skipped: 0 };
 }
 
+async function ingestBroadcasts() {
+  const store = readJson("data/match-broadcasts.json") || {};
+  const records = Array.isArray(store.records) ? store.records : [];
+  const rows = records.map((r) => normalize.matchBroadcast(r)).filter(Boolean);
+  const written = dryRun ? 0 : (await client.upsert(TABLES.matchBroadcasts.name, rows, TABLES.matchBroadcasts.conflict)).written;
+  return { read: records.length, written, skipped: records.length - rows.length };
+}
+
 const STEPS = {
   sources: () => runStep("data_sources", "internal", ingestSources),
   teams: () => runStep("teams", "internal", ingestTeams),
@@ -259,12 +267,17 @@ const STEPS = {
   matches: () => runStep("matches", "internal", ingestMatches),
   transfers: () => runStep("transfers", "internal", ingestTransfers),
   reports: () => runStep("analysis_reports", "api-football", ingestReports),
-  polls: () => runStep("polls", "internal", ingestPolls)
+  polls: () => runStep("polls", "internal", ingestPolls),
+  // "internal" — beIN/TRT taraması zaten kendi source_name/source_url'ini
+  // satır bazında taşıyor (bkz. normalize.matchBroadcast); bu alım
+  // adımının kendisi yalnızca depoyu okuyup Supabase'e yazan dahili adım.
+  broadcasts: () => runStep("match_broadcasts", "internal", ingestBroadcasts)
 };
 
 // Sıra ÖNEMLİ: yabancı anahtarlar yüzünden kaynaklar takımlardan,
-// takımlar oyunculardan/maçlardan önce yazılmalı.
-const ORDER = ["sources", "teams", "players", "matches", "transfers", "reports", "polls"];
+// takımlar oyunculardan/maçlardan önce yazılmalı. `broadcasts` en sonda:
+// mantıksal olarak maçlardan sonra gelir (bkz. schema.js INGEST_ORDER).
+const ORDER = ["sources", "teams", "players", "matches", "transfers", "reports", "polls", "broadcasts"];
 
 async function main() {
   if (!dryRun && !client.isConfigured()) {

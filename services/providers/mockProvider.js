@@ -1,5 +1,6 @@
 const { filterPublishable, logExcluded, logDataGaps } = require("../matchEligibility.js");
 const { mergeSuperLigTeams, isFixtureOnly, sameClub, confirmedHomeVenue } = require("../superLigTeams.js");
+const { attachBroadcastInfo } = require("../matchBroadcasts.js");
 const matches = require("../../data/matches.json");
 const { withMatchPages } = require("../matchSeoPages.js");
 const teams = require("../../data/teams.json");
@@ -490,7 +491,13 @@ function curatedMatches() {
   // sayfası olan her maç `matchPage` alır; sitenin "bu maça git"
   // bağlantıları (matchDetailPath, app.js#matchDetailHref) o alanı okur.
   // `analysisPage` alanına dokunulmaz (rapor üreticisi o yola yazıyor).
-  return withMatchPages(eligible);
+  //
+  // YAYIN BİLGİSİ TEK NOKTADAN EKLENİR (services/matchBroadcasts.js).
+  // Kürasyonlu bir `broadcast` alanı zaten varsa bu adım hiçbir şeyi
+  // DEĞİŞTİRMEZ; yalnızca scripts/sync-match-broadcasts.mjs'in bulduğu
+  // kanalı BOŞ alana doldurur. Burada uygulandığı için ana sayfa, maç
+  // kartları, maç dosyası ve SEO sayfalarının hepsi otomatik kapsanır.
+  return withMatchPages(eligible.map((match) => attachBroadcastInfo(match)));
 }
 
 /**

@@ -2718,6 +2718,38 @@
     return chips.length ? '<div class="fixture-card-chips">' + chips.join("") + "</div>" : "";
   }
 
+  /**
+   * YAYIN SATIRI — yalnızca kanal biliniyorsa render edilir.
+   *
+   * Kanal boşsa fonksiyon boş dize döner ve satır TAMAMEN gizlenir; "Yayın
+   * bilgisi henüz açıklanmadı" gibi bir yer tutucu YAZILMAZ (bkz. görev
+   * tanımının FRONTEND maddesi). `match.broadcast.turkey`
+   * services/matchBroadcasts.js#attachBroadcastInfo tarafından dolduruluyor
+   * — kürasyonlu bir değer zaten varsa o katman hiç dokunmuyor, yani bu
+   * satır her iki kaynak için de aynı alanı okuyor.
+   *
+   * Platform (`💻 TOD` gibi) yalnızca masaüstünde görünür; mobilde tek
+   * satırlık sade görünüm için `.fixture-card-broadcast-platform` CSS'te
+   * gizlenir (page.css).
+   */
+  function broadcastMiniHtml(match) {
+    var broadcast = match && match.broadcast;
+    var channel = typeof broadcast === "string" ? broadcast : (broadcast && broadcast.turkey);
+    channel = channel ? String(channel).trim() : "";
+    if (!channel) return "";
+
+    var platform = match.broadcastPlatform ? String(match.broadcastPlatform).trim() : "";
+    return (
+      '<div class="fixture-card-broadcast">' +
+      '<span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span>' +
+      "<span><b>" + escapeHtml(channel) + "</b></span>" +
+      (platform
+        ? '<span class="fixture-card-broadcast-platform"><span aria-hidden="true">💻</span> ' + escapeHtml(platform) + "</span>"
+        : "") +
+      "</div>"
+    );
+  }
+
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
     var metrics = fixtureFormHtml(match) + fixtureProbabilityHtml(match);
@@ -2735,6 +2767,7 @@
       "</div>" +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
+      broadcastMiniHtml(match) +
       (metrics ? '<div class="fixture-card-meta">' + metrics + "</div>" : "") +
       '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
       "</article>"

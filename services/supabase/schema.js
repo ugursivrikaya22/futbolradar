@@ -121,6 +121,18 @@ const TABLES = {
     conflict: "id",
     columns: ["occurred_at", "kind", "subject_type", "subject_id", "locale", "session_key", "meta"]
   },
+  // Türk takımlarının maç yayın bilgisi — bkz. services/matchBroadcasts.js.
+  // `fixture_id` benzersiz anahtar: aynı maç ikinci kez tarandığında yeni
+  // satır değil, ÜZERİNE YAZMA olur (öngörülen davranış, bkz. 0003 göçü).
+  matchBroadcasts: {
+    name: "match_broadcasts",
+    conflict: "fixture_id",
+    columns: [
+      "fixture_id", "home_team", "away_team", "match_date", "broadcaster",
+      "platform", "country", "source_url", "source_name", "confidence",
+      "is_manual", "verified_at"
+    ]
+  },
   // Canlı skor veri hattı gecikme kütüğü — bkz. services/liveEventLatency.js
   // başlığındaki mimari notu. `event_key` üzerinden upsert edilir: satır
   // önce sunucu zaman damgalarıyla yazılır, istemci ekrana bastığında aynı
@@ -141,6 +153,6 @@ const TABLES = {
  * Sıra ÖNEMLİ: yabancı anahtarlar yüzünden takımlar oyunculardan, maçlar
  * takımlardan, analizler maçlardan önce yazılmalı.
  */
-const INGEST_ORDER = ["sources", "teams", "players", "matches", "transfers", "reports", "polls"];
+const INGEST_ORDER = ["sources", "teams", "players", "matches", "transfers", "reports", "polls", "broadcasts"];
 
 module.exports = { TABLES, INGEST_ORDER };

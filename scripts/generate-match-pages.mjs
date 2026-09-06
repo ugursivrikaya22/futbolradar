@@ -34,6 +34,7 @@ const { sameClub } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
+const { findBroadcastRecord } = require("../services/matchBroadcasts.js");
 const {
   confidenceLabel,
   formatFreshnessDate,
@@ -277,8 +278,20 @@ function pageHtml(match) {
   // göre değişiyor ("Rams Park'ta", "Tüpraş Stadyumu'nda") ve stat adları
   // veriden geliyor. Tek bir ek kalıbı yazmak kaçınılmaz olarak yanlış
   // Türkçe üretir; cümle eki gerektirmeyecek biçimde kuruluyor.
+  // YAYIN CÜMLESİ — yalnızca kanal BİLİNİYORSA eklenir, asla uydurulmaz.
+  // scripts/sync-match-broadcasts.mjs'in yazdığı data/match-broadcasts.json
+  // kaydına ev+deplasman+tarih üzerinden bakılır (services/matchBroadcasts.js);
+  // burada da "hiç bilgi yok" durumu, uydurulmuş/eski bir bilgiden iyidir.
+  // Tek, doğal bir cümle: SEO doldurma (keyword stuffing) yapılmaz.
+  const broadcastRecord = match.kickoff
+    ? findBroadcastRecord({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff })
+    : null;
+  const broadcastChannel = broadcastRecord && broadcastRecord.broadcaster ? String(broadcastRecord.broadcaster).trim() : "";
+  const broadcastSentence = broadcastChannel
+    ? ` ${match.homeTeam} - ${match.awayTeam} maçı Türkiye'de ${broadcastChannel} ekranlarından yayınlanacak.`
+    : "";
   const description = match.kickoff
-    ? `${match.homeTeam} - ${match.awayTeam} maçı ${kickoffDay} saat ${kickoffClock} TSİ'de oynanacak.${match.venue ? ` Stat: ${match.venue}.` : ""} Maç öncesi form, radar puanı, kadro durumu ve kilit oyuncu etkisi FutbolRadar'da.`
+    ? `${match.homeTeam} - ${match.awayTeam} maçı ${kickoffDay} saat ${kickoffClock} TSİ'de oynanacak.${match.venue ? ` Stat: ${match.venue}.` : ""}${broadcastSentence} Maç öncesi form, radar puanı, kadro durumu ve kilit oyuncu etkisi FutbolRadar'da.`
     : `${match.homeTeam} - ${match.awayTeam} Süper Lig maç öncesi analizi; form, radar puanı, kadro durumu ve kilit oyuncu etkisiyle FutbolRadar'da.`;
   const schema = {
     "@context": "https://schema.org",
