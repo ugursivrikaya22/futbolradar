@@ -528,7 +528,10 @@ function buildArticle({ candidate, classification, transfers = [], now = new Dat
       sourceUrl: text(candidate.url),
       discoveredAt: now.toISOString(),
       confidence,
-      eventType
+      eventType,
+      // Başlığa giren somut özne (kişi adı). Yoksa `null`: haber yalnızca
+      // takım + olay türü şablonundan ibarettir (bkz. isGenericArticle).
+      subject: playerName || null
     }
   };
 
@@ -556,6 +559,124 @@ function buildArticle({ candidate, classification, transfers = [], now = new Dat
   return article;
 }
 
+/**
+ * ÖZNESİZ ŞABLON HABERİ — YAYIMLANMAZ.
+ *
+ * `statement`/`squad`/`result` şablonları kişi adı çıkarılamadığında
+ * takım adı dışında hiçbir bilgi taşımayan bir başlık üretir
+ * ("Fenerbahçe'de gündeme ilişkin açıklama iddiası"). Sporx günde birkaç
+ * kez aynı kulüp hakkında böyle haber geçince aynı başlık ve aynı açıklama
+ * 20'den fazla sayfada tekrarlandı; SEO denetimi (scripts/qa.mjs) yinelenen
+ * başlığı reddettiği için saatlik veri güncellemesi üç gün boyunca hiç
+ * commit'lenemedi. Gövdesi de tamamen şablon olan bu sayfaların arama
+ * değeri yok; keşif betiği bunları hiç üretmez, Sporx adresini yine de
+ * "görüldü" olarak işaretler ki her koşuda yeniden denenmesin.
+ */
+const GENERIC_EVENT_TYPES = new Set(["statement", "squad", "result"]);
+
+function isGenericArticle(article) {
+  const discovery = (article && article.discovery) || {};
+  const subject = text(discovery.subject);
+  const eventType = text(discovery.eventType) || "statement";
+  return GENERIC_EVENT_TYPES.has(eventType) && !subject;
+}
+
+const ISTANBUL_DAY_MONTH = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", timeZone: "Europe/Istanbul" });
+const ISTANBUL_CLOCK = new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" });
+
+/** Daha önce eklenmiş bir ayırt edici son eki soyar; işlev böylece idempotent kalır. */
+const SEO_SUFFIX_RE = / \(\d{1,2} \p{L}+(?:, \d{2}:\d{2})?(?:, \d+)?\)$/u;
+
+function stripSeoSuffix(value) {
+  return text(value).replace(SEO_SUFFIX_RE, "");
+}
+
+/** Sırayla denenen ekler: "", " (3 Eylül)", " (3 Eylül, 11:13)"; sonra sıra numarası. */
+function seoSuffixCandidates(publishedAt) {
+  const date = new Date(publishedAt || "");
+  const valid = Number.isFinite(date.getTime());
+  const day = valid ? ISTANBUL_DAY_MONTH.format(date) : "";
+  const clock = valid ? ISTANBUL_CLOCK.format(date) : "";
+  const candidates = [""];
+  if (day) candidates.push(` (${day})`, ` (${day}, ${clock})`);
+  return { candidates, base: day ? `${day}, ${clock}` : "" };
+}
+
+function pickUnique(baseValue, used, suffixes) {
+  for (const suffix of suffixes.candidates) {
+    const candidate = `${baseValue}${suffix}`;
+    if (!used.has(candidate)) return candidate;
+  }
+  for (let index = 2; index < 1000; index += 1) {
+    const candidate = suffixes.base ? `${baseValue} (${suffixes.base}, ${index})` : `${baseValue} (${index})`;
+    if (!used.has(candidate)) return candidate;
+  }
+  return baseValue;
+}
+
+/**
+ * HABER DEPOSUNDA BAŞLIK VE AÇIKLAMA TEKİLLİĞİ — DETERMİNİSTİK.
+ *
+ * Aynı başlığı taşıyan kayıtlardan EN ESKİSİ başlığını korur; sonrakiler
+ * yayın günü, gerekirse saat, o da yetmezse sıra numarasıyla ayrışır.
+ * Sonuç her koşuda aynıdır (yayın tarihine bağlı, çalışma saatine değil),
+ * daha önce eklenen ek yeniden hesaplanır (idempotent) ve slug/URL hiç
+ * değişmez. `seo.metaTitle` ve `seo.metaDescription` sayfaya basılan
+ * alanlar olduğu için onlar da güncellenir. Değişmeyen kayıt aynı nesne
+ * olarak döner.
+ */
+function dedupeArticleSeo(articles) {
+  const list = Array.isArray(articles) ? articles : [];
+  const order = list
+    .map((article, index) => ({ article, index }))
+    .filter(({ article }) => article && typeof article === "object")
+    .sort((left, right) =>
+      text(left.article.publishedAt).localeCompare(text(right.article.publishedAt)) || left.index - right.index);
+
+  const usedTitles = new Set();
+  const usedDescriptions = new Set();
+  const output = list.slice();
+
+  for (const { article, index } of order) {
+    const suffixes = seoSuffixCandidates(article.publishedAt);
+    const seo = article.seo && typeof article.seo === "object" ? article.seo : {};
+    const baseTitle = stripSeoSuffix(article.title);
+    // Sayfaya basılan açıklama (scripts/generate-news-pages.mjs ile aynı
+    // öncelik): metaDescription → spot → summary → title. Yalnızca bu
+    // ETKİN değer çakışırsa yazılır; alanı boş olan eski kayıtlara
+    // dokunulmaz.
+    const effectiveDescription = text(seo.metaDescription) || text(article.spot) || text(article.summary) || text(article.title);
+    const baseDescription = stripSeoSuffix(effectiveDescription);
+
+    const title = baseTitle ? pickUnique(baseTitle, usedTitles, suffixes) : text(article.title);
+    const description = baseDescription ? pickUnique(baseDescription, usedDescriptions, suffixes) : effectiveDescription;
+    if (title) usedTitles.add(title);
+    if (description) usedDescriptions.add(description);
+
+    const previousTitle = text(article.title);
+    const titleChanged = title !== previousTitle;
+    const descriptionChanged = description !== effectiveDescription;
+    if (!titleChanged && !descriptionChanged) continue;
+
+    const previousMetaTitle = text(seo.metaTitle);
+    const metaTitle = previousTitle && previousMetaTitle.startsWith(previousTitle)
+      ? `${title}${previousMetaTitle.slice(previousTitle.length)}`
+      : `${title} | FutbolRadar`;
+
+    output[index] = {
+      ...article,
+      title,
+      seo: {
+        ...seo,
+        ...(titleChanged ? { metaTitle } : {}),
+        ...(descriptionChanged ? { metaDescription: description } : {})
+      }
+    };
+  }
+
+  return output;
+}
+
 module.exports = {
   PRIORITY,
   PRIORITY_LABELS,
@@ -570,6 +691,9 @@ module.exports = {
   resolveConfidence,
   corroborateWithConfirmedTransfers,
   buildArticle,
+  isGenericArticle,
+  dedupeArticleSeo,
+  stripSeoSuffix,
   jaccard,
   slugify,
   BIG_FOUR,

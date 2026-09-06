@@ -94,9 +94,22 @@ continues to require the existing traceable-source rules.
 ## Failure and monitoring behavior
 
 Every source runs independently with timeouts and retry/backoff. A failed source
-is recorded and the pipeline continues with other sources. Validation/build/QA
+is recorded and the pipeline continues with other sources. Validation and build
 failures stop publication; the workflow log and `update-status.json` artifact
 are still retained for diagnosis.
+
+The final QA pass (`npm run qa`, page-level SEO/integrity lint) does **not**
+stop publication. It used to: between 2026-09-03 and 2026-09-06 a set of
+duplicate Sporx news titles turned every hourly run red, the commit step was
+skipped and three days of live scores, standings and squad data were fetched
+and thrown away. Data validity is guarded by the `validate-*` steps; a QA
+failure now marks the run `partial`, lists the step under `errors`, and is
+surfaced again by the daily health check (`npm run lint`).
+
+When the hourly run regenerates player profiles (`playersUpdated`), it also
+runs the comparison pages, English player pages and the player prerender pass.
+A profile without those is not publishable (broken `karsilastirma/` links, no
+prerendered body) and QA rejects it.
 
 Successful and partially successful runs commit `data/update-status.json` with:
 
