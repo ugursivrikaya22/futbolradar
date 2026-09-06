@@ -139,6 +139,29 @@ const tickerFeed = buildTickerFeed();
 const tickerItems = tickerFeed.items;
 const enTickerItems = buildEnTickerItems();
 
+// TAM sekiz öğelik akış YALNIZCA bu iki yüzeyde: ana sayfa ve haber listesi.
+// Geri kalan ~900 sayfanın hepsi "iç sayfa" — maç raporu, oyuncu, takım,
+// transfer, köşe yazısı, arşiv... Aynı sekiz haberin onlarca sayfada birebir
+// tekrarı hem okuru yanıltır (hepsi "şu an" güncelmiş görünür) hem de
+// gereksiz ağırlıktır.
+const FULL_TICKER_PAGES = new Set(["index.html", "en/index.html", "haberler.html", "en/news.html"]);
+
+/**
+ * Maç raporunun İLK içeriği maçın kendisi olmalı; bant orada kompakt hâliyle
+ * bile araya girmez. Rapor sayfalarının şu an için İngilizce karşılığı yok
+ * (bkz. mac-raporu/ dizini), bu yüzden yalnızca tek bir önek yeterli.
+ */
+function isMatchReportPage(sitePath) {
+  return sitePath.startsWith("mac-raporu/");
+}
+
+/** Sayfa hangi bant modunu alır: "full" | "compact" | "none". */
+function tickerModeFor(sitePath) {
+  if (FULL_TICKER_PAGES.has(sitePath)) return "full";
+  if (isMatchReportPage(sitePath)) return "none";
+  return "compact";
+}
+
 // Bandın hangi sayfalarda çıkacağı scripts/lib/liveScoresTicker.mjs'te —
 // enjeksiyon ve test aynı listeyi oradan okur.
 const LIVE_TICKER_PAGE_SET = new Set(LIVE_TICKER_PAGES);
@@ -175,9 +198,12 @@ for (const file of files) {
   // yerine yapısal veriden üretilmiş İngilizce öğeler taşır (enTicker.mjs):
   // Türkçe serbest metin çevrilmeden İngilizce sayfaya giremez, bandın
   // yokluğu ise iki sürüm arasındaki tasarım eşitliğini bozuyordu.
-  const ticker = locale === "en"
-    ? newsTicker({ base, locale, items: rebaseItems(enTickerItems, base) })
-    : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge });
+  const tickerMode = tickerModeFor(sitePath);
+  const ticker = tickerMode === "none"
+    ? ""
+    : locale === "en"
+      ? newsTicker({ base, locale, items: rebaseItems(enTickerItems, base), compact: tickerMode === "compact" })
+      : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge, compact: tickerMode === "compact" });
   // Canlı skor bandı haber bandının ALTINA girer ve yalnızca listedeki
   // sayfalara. Ana sayfalarda bant zaten sayfanın KENDİ işaretlemesinde;
   // oraya ikinci bir kopya basılmaz.
