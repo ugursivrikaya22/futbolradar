@@ -4,6 +4,13 @@
   var API_ROOT = "/api/";
   var DATA_ROOT = "/data/";
   var FETCH_TIMEOUT_MS = 6500;
+  // "Loading" bir final durum değil: sağlayıcı zincirinin (istek + yedek
+  // istek) toplam süresi FETCH_TIMEOUT_MS'in üstüne çıkabiliyordu, bu da
+  // ekranda kalıcı "yükleniyor" hissi veriyordu. Bu üst sınır, kaç yedek
+  // katman denenirse denensin bir bölümün en geç ne zaman "sağlayıcı veri
+  // göndermedi" durumuna düşeceğini garanti eder.
+  var PROVIDER_LOAD_DEADLINE_MS = 8000;
+  var PROVIDER_NO_DATA_MESSAGE = "Bu maç/takım için sağlayıcı veri göndermedi.";
   // Slow discovery only. Once a match is live, SSE takes over and the
   // fallback follows the provider's documented 15-second refresh cadence.
   var MATCH_LIVE_POLL_MS = 60000;
@@ -485,6 +492,67 @@
       "<span>" + escapeHtml(text) + "</span>" +
       "</article>";
     target.dataset.state = "empty";
+  }
+
+  /**
+   * Sağlayıcı gerçekten veri göndermediğinde (ya da PROVIDER_LOAD_DEADLINE_MS
+   * içinde yanıt gelmediğinde) gösterilen tek satırlık, kalıcı durum.
+   * "loading" ile karıştırılmaması için ayrı bir data-state taşır; retry
+   * verilirse tek bir düğme ile aynı yükleme fonksiyonu yeniden tetiklenir.
+   */
+  function setUnavailable(target, message, onRetry) {
+    if (!target) {
+      return;
+    }
+
+    var retryButton = typeof onRetry === "function"
+      ? '<button type="button" class="data-empty-retry" data-retry-action>Yeniden dene</button>'
+      : "";
+
+    target.innerHTML =
+      '<article class="data-empty" data-card="empty-state">' +
+      "<span>" + escapeHtml(message) + "</span>" +
+      retryButton +
+      "</article>";
+    target.dataset.state = "unavailable";
+
+    if (typeof onRetry === "function") {
+      var button = target.querySelector("[data-retry-action]");
+      if (button) {
+        button.addEventListener("click", function () {
+          onRetry();
+        }, { once: true });
+      }
+    }
+  }
+
+  /**
+   * Bir promise'i sabit bir süreyle sınırlar. Sağlayıcı isteği + yedek
+   * isteği zincirlediğinde (bkz. loadData) toplam süre tek bir fetch'in
+   * zaman aşımını aşabiliyor; bu sarmalayıcı olmadan "loading" durumu
+   * sağlayıcı gerçekten yanıt vermeyi bırakana kadar sürebiliyordu.
+   */
+  function withDeadline(promise, ms) {
+    return new Promise(function (resolve, reject) {
+      var settled = false;
+      var timer = window.setTimeout(function () {
+        if (settled) return;
+        settled = true;
+        reject(new Error("provider-deadline-exceeded"));
+      }, ms);
+
+      promise.then(function (value) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        resolve(value);
+      }, function (error) {
+        if (settled) return;
+        settled = true;
+        window.clearTimeout(timer);
+        reject(error);
+      });
+    });
   }
 
   function normalizeSearchText(value) {
@@ -10091,39 +10159,68 @@
       return;
     }
 
-    target.dataset.state = "loading";
-    Promise.all([
-      loadData("teams"),
-      loadData("squad"),
-      // Fikstür kartı takımın tüm maçlarını ister; loadData("matches") günün
-      // listesini önbelleğe aldığı için ayrı bir "date=all" isteği yapılır.
-      // Hata durumunda sayfa yine açılır, yalnızca fikstür kartı boş kalır.
-      loadAllMatches(),
-      // Doğrulanmış transferler takım sayfasına buradan bağlanıyor. Kayıtlar
-      // vardı ama hiçbir takıma bağlı değildi: kart `team.recentTransfers`
-      // alanını okuyor, o alan hiçbir yerde doldurulmuyordu. Transfer verisi
-      // gelmezse sayfa yine açılır, yalnızca transfer kartı kapalı kalır.
-      loadData("transfers").catch(function () { return []; })
-    ]).then(function (results) {
-      var teams = results[0] || [];
-      var squad = results[1] || [];
-      var matches = results[2] || [];
-      var transfers = Array.isArray(results[3]) ? results[3] : [];
-      var query = new URLSearchParams(window.location.search);
-      var wanted = normalizeSearchText(query.get("team") || query.get("teamId") || query.get("id"));
-      var team = teams.find(function (item) {
-        return normalizeSearchText(item.name) === wanted || normalizeSearchText(item.id) === wanted || normalizeSearchText(item.providerId) === wanted;
-      }) || teams[0];
+    function attemptLoad(isRetry) {
+      target.dataset.state = "loading";
 
-      if (!team) {
-        setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok.");
-        return;
+      if (isRetry) {
+        // Önceki deneme reddedilmiş bir promise'i cache'e yazmış olabilir;
+        // loadData aynı reddi tekrar döndürür, bu yüzden retry gerçek bir
+        // ağ isteği başlatsın diye ilgili girişler zorla temizlenir.
+        forceReload("teams");
+        forceReload("squad");
+        forceReload("transfers");
       }
 
-      setContent(target, renderTeamDetail(team, squad, matches, transfers));
-    }).catch(function () {
-      setEmpty(target, "Takım detayı yüklenemedi", "Takım ve kadro verisi geçici olarak okunamıyor.");
-    });
+      function retry() {
+        attemptLoad(true);
+      }
+
+      // Takımın kimliği yalnızca "teams" kaydına bağlı: sağlayıcı bu temel
+      // veriyi göndermediyse (boş dizi) ya da PROVIDER_LOAD_DEADLINE_MS
+      // içinde hiç yanıt vermediyse sayfa "loading"de takılı kalmadan tek
+      // satırlık "unavailable" durumuna düşer.
+      withDeadline(loadData("teams"), PROVIDER_LOAD_DEADLINE_MS).then(function (teams) {
+        teams = teams || [];
+        if (!teams.length) {
+          setUnavailable(target, PROVIDER_NO_DATA_MESSAGE, retry);
+          return;
+        }
+
+        var query = new URLSearchParams(window.location.search);
+        var wanted = normalizeSearchText(query.get("team") || query.get("teamId") || query.get("id"));
+        var team = teams.find(function (item) {
+          return normalizeSearchText(item.name) === wanted || normalizeSearchText(item.id) === wanted || normalizeSearchText(item.providerId) === wanted;
+        }) || teams[0];
+
+        if (!team) {
+          setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok.");
+          return;
+        }
+
+        // Kadro, fikstür ve transfer verisi tamamlayıcıdır: takım kaydı elde
+        // olduğu sürece bunlardan biri gecikse ya da hiç gelmese de kart
+        // hâlâ açılır — yalnızca ilgili bölüm boş kalır (bkz. tdOptionalCard).
+        // Fikstür kartı takımın tüm maçlarını ister; loadData("matches")
+        // günün listesini önbelleğe aldığı için ayrı bir "date=all" isteği
+        // yapılır.
+        withDeadline(Promise.all([
+          loadData("squad").catch(function () { return []; }),
+          loadAllMatches().catch(function () { return []; }),
+          loadData("transfers").catch(function () { return []; })
+        ]), PROVIDER_LOAD_DEADLINE_MS).catch(function () {
+          return [[], [], []];
+        }).then(function (results) {
+          var squad = results[0] || [];
+          var matches = results[1] || [];
+          var transfers = Array.isArray(results[2]) ? results[2] : [];
+          setContent(target, renderTeamDetail(team, squad, matches, transfers));
+        });
+      }).catch(function () {
+        setUnavailable(target, PROVIDER_NO_DATA_MESSAGE, retry);
+      });
+    }
+
+    attemptLoad(false);
   }
 
   // ── Maç detayı: premium bölümler ──────────────────────────────────────────
@@ -11339,39 +11436,53 @@
     }
 
     var staticFallback = target.dataset.staticFallback === "true" ? target.innerHTML : "";
-    target.dataset.state = "loading";
-    // Saklanmış maç sonrası raporlar detayla BİRLİKTE yükleniyor: sonradan
-    // gelseydi bölüm ilk boyamadan sonra belirir ve sayfa zıplardı. Depo
-    // okunamazsa detay yine de çizilir, yalnızca bölüm açılmaz.
-    Promise.all([
-      loadData("matchDetail"),
-      loadData("postMatchReports").catch(function () { return null; })
-    ]).then(function (results) {
-      var data = results[0];
-      postMatchRecords(results[1]).forEach(function (record) {
-        latestPostMatchIndex[String(record.matchId || "")] = record;
-      });
-      var detail = Array.isArray(data) ? data[0] : data;
-      if (!detail) {
+
+    function attemptLoad(isRetry) {
+      target.dataset.state = "loading";
+
+      if (isRetry) {
+        forceReload("matchDetail");
+        forceReload("postMatchReports");
+      }
+
+      // Saklanmış maç sonrası raporlar detayla BİRLİKTE yükleniyor: sonradan
+      // gelseydi bölüm ilk boyamadan sonra belirir ve sayfa zıplardı. Depo
+      // okunamazsa detay yine de çizilir, yalnızca bölüm açılmaz.
+      // withDeadline: sağlayıcı zinciri (istek + yedek istek) hiç yanıt
+      // vermezse "loading" PROVIDER_LOAD_DEADLINE_MS'in üstüne çıkmadan
+      // sonlanır — statik yedek yoksa okuyucu tek satırlık net bir duruma
+      // düşer, sonsuz "yükleniyor" görmez.
+      withDeadline(Promise.all([
+        loadData("matchDetail"),
+        loadData("postMatchReports").catch(function () { return null; })
+      ]), PROVIDER_LOAD_DEADLINE_MS).then(function (results) {
+        var data = results[0];
+        postMatchRecords(results[1]).forEach(function (record) {
+          latestPostMatchIndex[String(record.matchId || "")] = record;
+        });
+        var detail = Array.isArray(data) ? data[0] : data;
+        if (!detail) {
+          if (staticFallback) {
+            target.innerHTML = staticFallback;
+            target.dataset.state = "fallback";
+            return;
+          }
+          setEmpty(target, "Maç bulunamadı", "Bu maç için detay verisi yok.");
+          return;
+        }
+
+        setContent(target, renderMatchDetail(detail));
+      }).catch(function () {
         if (staticFallback) {
           target.innerHTML = staticFallback;
           target.dataset.state = "fallback";
           return;
         }
-        setEmpty(target, "Maç bulunamadı", "Bu maç için detay verisi yok.");
-        return;
-      }
+        setUnavailable(target, PROVIDER_NO_DATA_MESSAGE, function () { attemptLoad(true); });
+      });
+    }
 
-      setContent(target, renderMatchDetail(detail));
-    }).catch(function () {
-      if (staticFallback) {
-        target.innerHTML = staticFallback;
-        target.dataset.state = "fallback";
-        return;
-      }
-      setEmpty(target, "Maç detayı yüklenemedi", "Maç merkezi verisi geçici olarak okunamıyor.");
-    });
-
+    attemptLoad(false);
     initMatchDetailPolling(target);
   }
 
