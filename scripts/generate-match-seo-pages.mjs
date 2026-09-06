@@ -431,7 +431,7 @@ function pageHtml(match, slugValue) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
-    <script type="application/ld+json">${JSON.stringify(schema)}</script>
+    <script type="application/ld+json">${JSON.stringify(schema).replace(/</g, "\\u003c")}</script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../page.css" />
@@ -486,8 +486,20 @@ function run() {
   if (changed) saveRegistry(registry);
 
   const matchById = new Map(calendarMatches.filter((match) => match && match.id).map((match) => [match.id, match]));
+
+  /**
+   * `match.id` sağlayıcı yazımına bağlı ("Amed" / "Amed Sportif
+   * Faaliyetler" gibi) — zamanla değişebilir. Kimlik artık eşleşmiyorsa
+   * kayıt defterindeki günü/kulüp çiftini kullanarak takvimde aynı
+   * karşılaşmayı ara; bulunamazsa sayfa bu koşuda güncellenmez (silinmez,
+   * son bilinen hâliyle kalır) ama kalıcı olarak kaybolmaz.
+   */
+  function findMatchForEntry(id, entry) {
+    return matchById.get(id) || calendarMatches.find((match) => match && match.kickoff && isSameFixture(entry, match)) || null;
+  }
+
   const activeEntries = Object.entries(registry.entries)
-    .map(([id, entry]) => ({ id, entry, match: matchById.get(id) }))
+    .map(([id, entry]) => ({ id, entry, match: findMatchForEntry(id, entry) }))
     .filter((row) => row.match)
     .sort((left, right) => compareByImportance(left.match, right.match));
 
