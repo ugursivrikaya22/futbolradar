@@ -385,7 +385,21 @@ function validationSteps() {
 
 function hourlyBuildSteps(diff) {
   const steps = [];
-  if (diff.playersUpdated) steps.push(nodeStep("render-player-pages", "generate-player-profile-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }));
+  if (diff.playersUpdated) {
+    steps.push(nodeStep("render-player-pages", "generate-player-profile-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }));
+    // Oyuncu profili tek başına YAYINA HAZIR DEĞİL: tam derleme bu üretimden
+    // sonra karşılaştırma sayfalarını (profilin bağlandığı
+    // karsilastirma/<a>-vs-<b>.html) ve SEO ön-render gövdesini
+    // (`data-prerendered="1"`) ayrıca yazar. Saatlik hat yalnızca ilk adımı
+    // koşturduğu için kadro senkronuyla gelen her yeni oyuncu, bağlantısı
+    // kırık ve gövdesi boş bir profil olarak çıkıyor ve QA (haklı olarak)
+    // koşuyu reddediyordu — 2026-09 başında saatlik güncelleme bu yüzden
+    // günlerce commit'lenemedi. Üç adım da yalnızca oyuncu verisi
+    // değiştiğinde koşar; karşılaştırma üretimi ~45 sn, ön-render ~7 sn.
+    steps.push(nodeStep("render-player-comparisons", "generate-player-comparison-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }));
+    steps.push(nodeStep("render-en-player-pages", "generate-en-player-pages.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }));
+    steps.push(nodeStep("prerender-player-content", "prerender-player-content.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
+  }
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
     nodeStep("render-news-pages", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
@@ -499,6 +513,7 @@ async function main() {
   const before = collectionSnapshot();
   const steps = [];
   let criticalFailure = false;
+  let qaFailure = false;
   let providerReady = providerKeyConfigured();
 
   if (args.type === "full" && providerReady) {
@@ -543,8 +558,23 @@ async function main() {
       }
     }
     if (!criticalFailure) {
-      const qa = await runStep({ id: "qa", command: NPM, args: ["run", "qa"], kind: "validation", required: true, timeoutMs: 12 * 60 * 1000 }, steps);
-      if (qa.status === "failed") criticalFailure = true;
+      // QA (scripts/qa.mjs) BLOKLAMAZ — RAPORLAR.
+      //
+      // QA sayfa düzeyinde SEO/bütünlük denetimidir (başlık tekilliği,
+      // canonical, kırık bağlantı...). Eskiden başarısızlığı koşuyu
+      // "failed" yapıyor ve iş akışı commit adımını atlıyordu: yani tek bir
+      // yinelenen haber başlığı, o saat çekilen canlı skorların, puan
+      // durumunun ve kadro verisinin TAMAMINI çöpe attırıyordu (2026-09-03
+      // → 09-06 arası 25 koşu böyle kaybedildi; site üç gün eski skor
+      // gösterdi). Veri geçerliliğini yukarıdaki `validate-*` adımları
+      // zaten koruyor. QA hatası artık koşuyu "partial" yapar, hata
+      // listesine ve GitHub özetine girer, günlük sağlık kontrolü (npm run
+      // lint) ayrıca kırmızı gösterir — ama veri yayına çıkar.
+      const qa = await runStep({ id: "qa", command: NPM, args: ["run", "qa"], kind: "validation", required: false, timeoutMs: 12 * 60 * 1000 }, steps);
+      if (qa.status === "failed") {
+        qaFailure = true;
+        console.warn("[scheduled-update] QA başarısız; veri ve sayfalar yine de yayımlanıyor, bulgular data/update-status.json içinde.");
+      }
     }
   } else if (!shouldBuild) {
     console.log("[scheduled-update] No data changed; page generation and cache-affecting deployment output were skipped.");
@@ -565,7 +595,7 @@ async function main() {
     startedAt: started.toISOString(),
     finishedAt: finished.toISOString(),
     durationMs: finished.getTime() - started.getTime(),
-    status: criticalFailure ? "failed" : (optionalSourceErrors.length || skippedSources.length) ? "partial" : "success",
+    status: criticalFailure ? "failed" : (optionalSourceErrors.length || skippedSources.length || qaFailure) ? "partial" : "success",
     sourceControl: {
       repository: process.env.GITHUB_REPOSITORY || null,
       commit: process.env.GITHUB_SHA || null,
