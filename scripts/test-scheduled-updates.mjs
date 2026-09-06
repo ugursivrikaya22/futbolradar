@@ -155,6 +155,18 @@ assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
 assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
+const playerDiffBuildGuard = orchestrator.match(/if \(diff\.playersUpdated\) \{([\s\S]*?)\r?\n  \}/)?.[1];
+assert.ok(playerDiffBuildGuard, "player-diff build guard must remain detectable");
+assert.match(playerDiffBuildGuard, /nodeStep\("render-player-pages", "generate-player-profile-pages\.mjs"/);
+assert.match(playerDiffBuildGuard, /nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"/);
+assert.match(playerDiffBuildGuard, /nodeStep\("render-en-player-pages", "generate-en-player-pages\.mjs"/);
+assert.match(playerDiffBuildGuard, /nodeStep\("prerender-player-content", "prerender-player-content\.mjs"/);
+assert.match(
+  playerDiffBuildGuard,
+  /render-player-pages[\s\S]*render-player-comparisons[\s\S]*render-en-player-pages[\s\S]*prerender-player-content/,
+  "player rebuild chain must render comparisons, EN profiles and prerendered bodies after TR profiles"
+);
+assert.match(orchestrator, /const qa = await runStep\(\{ id: "qa", command: NPM, args: \["run", "qa"\], kind: "validation", required: false/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");
