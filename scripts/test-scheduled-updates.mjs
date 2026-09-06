@@ -155,7 +155,7 @@ assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
 assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
-const playerDiffBuildGuard = orchestrator.match(/if \(diff\.playersUpdated\) \{([\s\S]*?)\n  \}/)?.[1];
+const playerDiffBuildGuard = orchestrator.match(/if \(diff\.playersUpdated\) \{([\s\S]*?)\r?\n  \}/)?.[1];
 assert.ok(playerDiffBuildGuard, "player-diff build guard must remain detectable");
 assert.match(playerDiffBuildGuard, /nodeStep\("render-player-pages", "generate-player-profile-pages\.mjs"/);
 assert.match(playerDiffBuildGuard, /nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"/);
