@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-06T16:11:37.516Z",
+  "updatedAt": "2026-09-06T16:59:28.638Z",
   "items": [
     {
       "id": "news-galatasaray-kadin-futbol-79c8a336",
@@ -29,6 +29,26 @@
       },
       "team": "Galatasaray",
       "important": true
+    },
+    {
+      "id": "auto-news-2a02877adb6ef95dbe4c",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe-Beşiktaş derbisini yazdılar: Hezimete tanıklık edebilirdik! Koca bir sıfır, puan sıfır",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-06T04:50:00.000Z",
+      "source": {
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-besiktas-derbisini-yazdilar-hezimete-taniklik-edebilirdik-koca-bir-sifir-puan-sifir-43297614",
+        "publisher": "hurriyet.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
+      }
     },
     {
       "id": "news-fenerbahce-orkun-kokcu-vlahovic-751e59e3",
@@ -85,6 +105,26 @@
       },
       "team": "Beşiktaş",
       "important": true
+    },
+    {
+      "id": "auto-news-ad368c036ddb28027303",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "İşte Süper Lig'in yaş raporu",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-06T12:10:00.000Z",
+      "source": {
+        "name": "trt-spor",
+        "url": "https://www.trtspor.com.tr/haber/futbol/iste-super-ligin-yas-raporu-32980444",
+        "publisher": "trtspor.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trt-spor",
+        "priority": 6,
+        "status": "REPORTED"
+      }
     }
   ]
 }
