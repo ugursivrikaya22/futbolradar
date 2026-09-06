@@ -155,10 +155,20 @@ assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
 assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
+const hourlyPlayerBuild = orchestrator.match(/if \(diff\.playersUpdated\) \{([\s\S]*?)\n  \}/)?.[1];
+assert.ok(hourlyPlayerBuild, "hourly player rebuild block must remain detectable");
+assert.match(hourlyPlayerBuild, /nodeStep\("render-player-pages", "generate-player-profile-pages\.mjs"/);
+assert.match(hourlyPlayerBuild, /nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"/);
+assert.match(hourlyPlayerBuild, /nodeStep\("render-en-player-pages", "generate-en-player-pages\.mjs"/);
+assert.match(hourlyPlayerBuild, /nodeStep\("prerender-player-content", "prerender-player-content\.mjs"/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");
 assert.match(duplicateGuard, /appendGithubSummary\(record\)/);
+const qaBlock = orchestrator.match(/const qa = await runStep\(([\s\S]*?)\n      if \(qa\.status === "failed"\) \{/);
+assert.ok(qaBlock, "QA step block must remain detectable");
+assert.match(qaBlock[1], /required: false/, "QA must not block publication of otherwise valid data");
+assert.match(orchestrator, /status: criticalFailure \? "failed" : \(optionalSourceErrors\.length \|\| skippedSources\.length \|\| qaFailure\) \? "partial" : "success"/);
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 assert.ok(vercel.headers.some((entry) => entry.source === "/data/update-status.json" && entry.headers.some((header) => header.value.includes("no-store"))));
