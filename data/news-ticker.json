@@ -1,270 +1,20 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-06T16:09:11.579Z",
+  "updatedAt": "2026-09-06T16:11:37.516Z",
   "items": [
     {
-      "id": "auto-news-da95357d043d46c06db1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Antrenman Raporu | 6 Eylül Pazar",
+      "id": "news-galatasaray-kadin-futbol-79c8a336",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
+      "timestamp": "2026-09-06T15:37:09.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-kadin-futbol-79c8a336"
+      },
       "team": "Galatasaray",
-      "timestamp": "2026-09-06T12:50:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxPZ05rZEpEd05kY29xbUlfeWtRZEpVR1YxZUV6VlFTNmM0dXJGSHBMWk1URXhjWU9hT2p4NFBabHY3RWN1dW4zQkwyOGV6cXF0NkJ0dGI4NlVNTklVQUkxanFFU3RYbTRSa0FRX1JfQ3VxMGg2U1k3RjVXcmlUYm1YMjI5NA?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-05T09:00:00.000Z"
-      }
-    },
-    {
-      "id": "auto-news-96d3a1bc421b15f82c8e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Hakkarigücü Spor 1-1 Galatasaray",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-06T12:10:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxNS0ctcGZkd0tTRXRBYUotWHNFRjJ1V0xMemM2TFpoeDFFNGR3aUtnYzNTQ3phRC1Jbkt0UngtdFhQeVVjMFBXdWh5UkpqTTAzb0FrXzctODFvYnBGYmhXUklNYXcxNzdkVjRieHFuMWFqS25CYjZ0WlhVZ2kyMEl5cl9FcndOcDdTVFNqVFdvdnllYlN6c0FF?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-0b555a90af56a2ed93e5",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Roma maçı hazırlıkları başladı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-06T11:16:08.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNMkdLaHhuM0JORXlwSkFOSmZFRUVTc205WU1JZmhQYmE5ZkpTMkZpbzBlZXBFak5wY0JwTU1WYkxyZE5pcmcwX3V0bjV4TjB4eGRlb1pHVkNSV1gyUHVRcDBhTHJFUk8xbUxCNnlGV1ZEMFEwMk1YbGpxd0RWeDd6TEQ2R3RjSkU?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-9cd0f8bf0d53078f72f8",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başsağlığı dileriz",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-05T22:39:28.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTE5ZYnhqaFV5QVZGX0VabVZPY2dPR25FNFREVS1kVFBOc3J1RGpJVUpPd25sSWtWYnRUbHhxanRPeGQtNGFGNXpPeWpjSi03a0J4ejJNQkhoVkQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-8427645a02d123b715b8",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başkanımız Aziz Yıldırım’dan hakem kararlarına tepki",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-05T21:29:37.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxORERKbUtiMzVLREw4cl9IdWJwMnpOQTRvOFZxX05scXVldUswcmwzNk5oeHlMTlFZNlhsQUdmXzktenlfUFZRVTB5dWVVY2RSTGRJbEJoeGtzcTFMUnFCTW91Yk1INWxTNkFfblNya2FuSUxOSmFxME1fYjFKSjJWOUtrQnBmeVNnUEd3QmZJeU5EOVdBRXpLRUZTSmZyeG91eWF4cA?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-29ab6d74fb435a56cd7e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Rıdvan Yılmaz: “Harika oynadık” - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-05T20:06:20.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9oeDYwVEhiVUpQUHd5Rk9sbDB1NzlZOThpSnlJeGR0Z0wzYVQ2LWMxaVRSa0xrWFZSMDNXREtkdjN4ai1CVGNweGttTzMzZ1lwZVBJWjJ2Rkh5T3c?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-f724ec527cb5b128516d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Teknik Direktörümüz İsmail Kartal, Beşiktaş maçını değerlendirdi",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-05T20:05:29.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxORFJSU0JtVnNSTHFoRHV6NElLMFZ4UVkyQldWVzVHMTk1T1JwUHNlSFJOV0tuMkNCZ3dsZVBYWnVIX3NRak5qU21fbzdnQmMyMFBkTEVJdVFhbGhra2VHczVDRmxtSmdsVWpMcjhjLXdLTDRaY25CY0twRVBVRnFFVFhNdTdwRzdJMGs0ckZ2cHNRbzZVQ0dQcXE0MEVXNzNZYWZyNVoxSGpmVkE2U1RwQXFFdw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-9bfb38188669fb3b3fa0",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe:1 Beşiktaş:2 (U-19)",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-05T15:01:36.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1vQXRnZk1Sa0VqcVRFWWhfTTdSWEpfakZIUDZ4RTVnM1pPallfaXBHQ3AyVlRNTHg0SllJRVdoclVlMERoOE0xbTN2TDgtSzYtNnUwNFNSdmxNRVluY21FUmE4aVljQU5fVU9XcE9TQnZleVhrTFRBN3lPQQ?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-05T15:01:36.000Z"
-      }
-    },
-    {
-      "id": "auto-news-5603a58f0a0234adbc06",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Gençlerbirliği maçı hazırlıklarımız tamamlandı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-05T13:04:49.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOSG5rS1lRNE5kVnpqclJuaGtGTTdjdUQxaDhQNFhCdjlQcDBqN3JmWDhfeWhBWWo4cGIweUpVZHM4d1haS0dDa0x4MHJpOE1HSElfaG0zVmhCejRPNWJiTlFxZzJXWklvZl9GMG5kbmxDZHRHSFNLNVE3STRKUFUzXzlNUTA2dVR2R0ppMkdjMlNqX1g5QjdTSjRUYw?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-42f77fff5e2d5910e19d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Sporting maçı hazırlıkları başladı",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-05T11:18:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNcFZydFllaVg4cGtrNE5XbE5MazcxcnI2c01fd0d4TE9ZZndEMmxKazdET1RkSTZEUGFYWG1XZzhkNDNSUkQ2alVnYjVPYlJKWldtRkVsSG1IZzZyRnVRTG9EMFZPOG9ZSW42QUI4bTJHaWpYc2NobXdZNEhyMkpwVUVkYm55LVJidEcyUWxIM2NLYXBEaHViVVIzblVyMms?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-de0c6e98c51a2c79684c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Sporting maçı medya programı belli oldu",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-05T11:09:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPanJkeVdhV2QzZTBybU9fS2Jsb28wRm9GUDZHRXQ1OERYcVhEd1lldUVQWHZWcTM0MjF6WjVMWGJBV3BaN0RZSDJYTW1Pb1V4UTltSFN0ZnBlMFVVeEVaSUZmeG1fM0xmVzdqSU5IbkVObmhTSmdSM2hvUmNDU0FJRVUtQW1GbGFQNlIzRXVpU1FFYmpaZGN3VXdlR1JmbkQ0S2E5ajln?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-a9b14ac6806eef087708",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Gençlerbirliği maçı hazırlıklarımız sürüyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-04T13:48:57.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOalJJckJOQlYwLWhfY0hBdFpDakI1NkZNQVNFMDRQUnpreTdreGdMSUJMal91OXU0MHFLN1J2VUtBT1ZQNDJ1SnpReE9IaWZkZUdSNFBXajk3TklwUFU0UmhjVDlFNGRnMnJzV1JkdGxSeWhFSFVQWWRzdjZrdWtIdnIyaTNxcDZLemVnR2sxZ2xSNmk5aXg0?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-e0ef4d151f314106493d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Gençlerbirliği maçı hazırlıklarımız devam ediyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-03T18:13:12.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxPRVVJSXNUbERKNjZkSTJ1MDRWY01Zd2xwWnZwTTI0Z1hfa29rT2RUOHVlelpudVpLVFp4VW55dHg3ZlJ5TU1BYmFLdFZiQmR4MEFXWE9iby02RkdwQWZYT0lvQnVJRFJBVTBMdTQ0QlpKekRWcDBDeE5JRE9mUVVDVlpTNmk1RlE5MzZaZGd4dHQwTnlMTjdLamZsVDZoZw?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
+      "important": true
     },
     {
       "id": "news-galatasaray-rafael-leao-356183c3",
@@ -279,26 +29,6 @@
       },
       "team": "Galatasaray",
       "important": true
-    },
-    {
-      "id": "auto-news-d9226023300227a0358f",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Trabzonspor'da hedef 3 puan! İşte Hüseyin Çimşir'in muhtemel 11'i",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-05T22:01:16.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/trabzonspor/2026/09/06/trabzonsporda-hedef-3-puan-iste-huseyin-cimsirin-muhtemel-11i",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
     },
     {
       "id": "news-fenerbahce-orkun-kokcu-vlahovic-751e59e3",
@@ -324,20 +54,6 @@
       "source": {
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/haber/galatasaray-squad-ac2e3281"
-      },
-      "team": "Galatasaray",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-result-1f4661d8",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in aktardığına göre Galatasaray ile ilgili sahadaki son gelişmeler gündeme geldi.",
-      "timestamp": "2026-09-04T20:42:42.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-result-1f4661d8"
       },
       "team": "Galatasaray",
       "important": true
@@ -369,88 +85,6 @@
       },
       "team": "Beşiktaş",
       "important": true
-    },
-    {
-      "id": "auto-news-d362f8c6ca4e754d9ff6",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "2026-2027 Sezonu Yerel Amatör Ligler Statüsü Yayınlandı",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-04T13:34:08.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE45NldodGdrOXhuVm9aWFB2T0JYQ1VTN09yeGliQVRkcUVVNmE5NFBNRlh6MExuX2htV2U1TkxnSzdGT2EzUDBaUEdiYTVoaUwxOHZMbHd1N1RhSUdVTTdSZ3BJcTV2LVk?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-0102809c1af47c31df56",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "2026/27 Women's Champions League league phase draw: Contenders learn opponents",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-09-04T11:28:44.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPYnhzVjV4bkxrR0hCUExaR1BLdmxZNXBjSWJTVzNkdEVxZHJKTnBvRDA3M1VPMzlfeHZhQm5BOVJrZGlXc2Q5VjhKSDZWNC1xOUdIa2x2bU1wVkRDQ3hoQjNWZkI0Wm5waU1xZDY3WmdhRko2ajFMb2tFYVRfZG4zeENtTm5Qbm1kM01PN2FwWnVIN0NBMmFVc1BQZ1ZhcE14ZGtTTUo3V0JFNGFrUTd1WDFjanlBazdpLUdSQ3N6UkxRNnNOOU9ObzBLZ20zM2xlWngxWklQQ0tKLTQ?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 4,
-        "firstSeenAt": "2026-09-03T19:40:40.000Z"
-      }
-    },
-    {
-      "id": "auto-news-a243b514553c5a90002b",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "PFDK Kararları - 03.09.2026",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-03T17:43:31.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5FMGhUTEUwREs4aGZzWDAtWV90Njg3MGprLUxLSkxITkp3SGdhc0x4RHlEYXFIM1FEdDlITFptWk0wNTh5MXJzOFc4Ui1yblVKNU43VnhvM25Ob21peWVlNmVUZTJaWHM?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ad368c036ddb28027303",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "İşte Süper Lig'in yaş raporu",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-06T12:10:00.000Z",
-      "source": {
-        "name": "trt-spor",
-        "url": "https://www.trtspor.com.tr/haber/futbol/iste-super-ligin-yas-raporu-32980444",
-        "publisher": "trtspor.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trt-spor",
-        "priority": 6,
-        "status": "REPORTED"
-      }
     }
   ]
 }
