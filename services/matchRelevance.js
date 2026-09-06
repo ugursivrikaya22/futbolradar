@@ -69,6 +69,22 @@ const TIER_STEP = 100;
 const MAX_TIER = TIER.FRIENDLY;
 
 /**
+ * ANA SAYFA EŞİĞİ — canlı bant ve "Bugünün programı" önizlemesinin
+ * gösterebileceği EN DÜŞÜK puan. `TIER.TOP_EUROPEAN_LEAGUE`e kadar olan her
+ * kademe (dört büyük, Süper Lig, TFF ligleri, Türk kulübünün Avrupa maçı,
+ * üç UEFA kupası, beş büyük Avrupa ligi) bu eşiğin üstünde puan alır;
+ * `TIER.MAJOR_CLUB` ve sonrası (tanınmayan yarışmadaki büyük kulüp maçı,
+ * diğer yarışmalar, hazırlık maçları) hep altında kalır — durum bonusu
+ * (en fazla 60) kademe adımını (100) hiç aşamadığı için bu sınır durumdan
+ * bağımsız, sabit bir kesme noktasıdır.
+ *
+ * Ana sayfanın en görünür yüzeyleri (canlı bant, "Bugünün programı") bunu
+ * kullanır; "Bugünün Maçları" sayfası (matchProgramPageCards) hâlâ TÜM
+ * maçları gösterir — eşik yalnızca ana sayfanın kıt yerine uygulanır.
+ */
+const HOME_RELEVANCE_MIN_SCORE = (MAX_TIER - TIER.TOP_EUROPEAN_LEAGUE) * TIER_STEP;
+
+/**
  * Dört büyük, kendi aralarındaki sırayla. Sıra buradan okunur; kademe
  * numarası dizideki konumdan üretilir.
  */
@@ -241,6 +257,17 @@ function relevanceScore(match, options = {}) {
   return (MAX_TIER - tier) * TIER_STEP + (STATE_BONUS[state] || 0) + tiebreak;
 }
 
+/**
+ * ANA SAYFAYA GİREBİLİR Mİ? Süper Lig, TFF ligleri, Türk kulübünün Avrupa
+ * maçı, UEFA kupaları ve beş büyük Avrupa ligi — bkz. HOME_RELEVANCE_MIN_SCORE.
+ * Geri kalan her şey (tanınmayan yarışmadaki büyük kulüp maçı dahil) ana
+ * sayfada GÖSTERİLMEZ; "Tüm canlı skorlar" / "Bugünün Maçları" gibi ayrı
+ * sayfalarda yerini korur.
+ */
+function isHomeRelevantMatch(match, options = {}) {
+  return relevanceScore(match, options) >= HOME_RELEVANCE_MIN_SCORE;
+}
+
 /** Puanın nasıl oluştuğu — kayıt ve test için, sıralama için değil. */
 function explainRelevance(match, options = {}) {
   const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
@@ -314,6 +341,7 @@ function withRelevance(matches, options = {}) {
 module.exports = {
   BIG_FOUR,
   withRelevance,
+  HOME_RELEVANCE_MIN_SCORE,
   MAJOR_CLUB_TIEBREAK,
   MAX_TIER,
   STATE_BONUS,
@@ -322,6 +350,7 @@ module.exports = {
   TIER_STEP,
   bigFourIndexOf,
   explainRelevance,
+  isHomeRelevantMatch,
   relevanceScore,
   sortByRelevance,
   stateOf,

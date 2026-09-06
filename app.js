@@ -2898,7 +2898,13 @@
    */
   function renderHomeFixtureCard(match) {
     var quickLinks = '<div class="fixture-card-quicklinks">' + quickLinkButtonsHtml(match) + "</div>";
-    return renderFixtureCard(match).replace("</article>", quickLinks + "</article>");
+    var html = renderFixtureCard(match).replace("</article>", quickLinks + "</article>");
+    // `#home-league-filter-*` saf-CSS süzgecinin okuduğu işaret — sunucu
+    // tarafındaki homeRelevanceGroup ile aynı kural (prerender-core-pages.mjs).
+    var group = matchCompetitionMatches(match, "super-lig") ? "super-lig" : "avrupa";
+    return html.replace(/^(<article\b[^>]*)>/, function (full, openTag) {
+      return openTag + ' data-relevance-group="' + group + '">';
+    });
   }
 
   // featured-match-selection:start
@@ -4720,7 +4726,13 @@
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
     var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+      // Ana sayfa yalnızca İLGİLİ maçları gösterir — Süper Lig, Türk
+      // kulübünün Avrupa maçı, UEFA kupaları, beş büyük Avrupa ligi (bkz.
+      // isHomeRelevantMatch). Diğer onlarca lig burada hiç görünmez;
+      // "Bugünün Maçları" / "Tüm canlı skorlar" sayfaları onları göstermeye
+      // devam eder.
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today &&
+        isHomeRelevantMatch(match);
     });
 
     function rank(match) {
@@ -12545,6 +12557,40 @@
     });
   }
 
+  // home-relevance:start
+  /**
+   * ANA SAYFA EŞİĞİ — services/matchRelevance.js#HOME_RELEVANCE_MIN_SCORE ile
+   * BİREBİR AYNI SAYI (kademe adımı 100, TOP_EUROPEAN_LEAGUE kademesi 10,
+   * MAX_TIER 14 → (14-10)*100 = 400). Sunucu her maça `/api/matches`te bu
+   * puanı damgalıyor (withRelevance); istemci yarışma kataloğunu hiç
+   * görmeden aynı eşiği uygulayabiliyor — kural yine TEK yerde duruyor.
+   */
+  var HOME_RELEVANCE_MIN_SCORE = 400;
+  var HOME_BIG_LEAGUE_IDS = [
+    "premier-league", "la-liga", "serie-a", "bundesliga", "ligue-1",
+    "sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"
+  ];
+
+  /**
+   * Maç canlı bant / "Bugünün programı" önizlemesinde gösterilebilir mi?
+   *
+   * Puan varsa (normal yol: `/api/matches` her kaydı damgalar) doğrudan
+   * eşikle kıyaslanır. Puan yoksa (statik yedek, sağlayıcı erişilemedi)
+   * yarışma kataloğu tarayıcıya hiç inmediği için tam kademe kıyaslaması
+   * yapılamaz — ama Türk takımı ve beş büyük Avrupa ligi/UEFA kupaları
+   * adından tanınabilir, bu yüzden bant o durumda bomboş kalmaz.
+   */
+  function isHomeRelevantMatch(match) {
+    if (!match) return false;
+    var score = match.relevance;
+    if (typeof score === "number" && isFinite(score)) {
+      return score >= HOME_RELEVANCE_MIN_SCORE;
+    }
+    if (isTurkishMatch(match)) return true;
+    return HOME_BIG_LEAGUE_IDS.some(function (id) { return matchCompetitionMatches(match, id); });
+  }
+  // home-relevance:end
+
   var LiveScoresTicker = (function () {
     var TARGET_SELECTOR = '[data-component="LiveScoresTicker"]';
     var POLL_MS = 20000;
@@ -12581,10 +12627,21 @@
     }
 
     function selectRecords(matches) {
-      return (Array.isArray(matches) ? matches : [])
-        .map(normalizeRecord)
-        .filter(Boolean)
-        .slice(0, 16);
+      // Bant "canlı olan HER maç" değil, "canlı olan İLGİLİ maç" bandı —
+      // sunucu tarafıyla (services/liveScoresTicker.js) aynı kural, bkz.
+      // isHomeRelevantMatch. Aksi hâlde tanımadığımız bir alt lig maçı,
+      // sağlayıcı verisinde şans eseri önce geldiği için, Süper Lig'in veya
+      // bir Türk kulübünün Avrupa maçının önüne geçip bandın başında kalır.
+      var relevant = (Array.isArray(matches) ? matches : [])
+        .filter(function (match) { return isLiveMatch(match) && isHomeRelevantMatch(match); });
+
+      relevant.sort(function (left, right) {
+        var leftScore = typeof left.relevance === "number" && isFinite(left.relevance) ? left.relevance : 0;
+        var rightScore = typeof right.relevance === "number" && isFinite(right.relevance) ? right.relevance : 0;
+        return rightScore - leftScore;
+      });
+
+      return relevant.map(normalizeRecord).filter(Boolean).slice(0, 16);
     }
 
     function scoreText(value) {

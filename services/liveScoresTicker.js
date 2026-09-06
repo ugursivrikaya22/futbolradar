@@ -14,6 +14,12 @@
  * Lig adı fixture.league.id üzerinden doğrulanmış katalog adına çözülür
  * (services/competitionCatalog.js, Faz B'nin kök hata düzeltmesiyle aynı
  * kural) — ham sağlayıcı metni değil.
+ *
+ * "Canlı" tek başına yeterli değil, İLGİLİ de olmalı: bkz.
+ * services/matchRelevance.js#isHomeRelevantMatch. Aksi hâlde dünyanın
+ * herhangi bir yerindeki bir alt lig maçı — sağlayıcı verisinde şans eseri
+ * önce geldiği için — Süper Lig'in veya bir Türk kulübünün Avrupa maçının
+ * önüne geçip bandın en başında kalabiliyordu.
  */
 
 const { LIVE_STATUSES, isScoreNumber } = (() => {
@@ -29,6 +35,7 @@ const { LIVE_STATUSES, isScoreNumber } = (() => {
 })();
 const { resolveCompetitionId, findCompetition } = require("./competitionCatalog");
 const { matchDetailPath } = require("./matchProgram");
+const { isHomeRelevantMatch, sortByRelevance } = require("./matchRelevance");
 
 /** Bantta en fazla kaç maç? Kayan bir şerit liste değildir. */
 const MAX_ITEMS = 16;
@@ -87,12 +94,26 @@ function leagueLabelOf(match) {
   return (competition && competition.name) || String((match && match.league) || "").trim() || "Futbol";
 }
 
-/** Ham maç listesini banda çevirir. `now` yalnızca sıralama için, filtre zaten durumdan gelir. */
+/**
+ * Ham maç listesini banda çevirir.
+ *
+ * SIRALAMA/KAPSAM: bant "şu anda oynanan HER maç" değil, "şu anda oynanan
+ * İLGİLİ maç" bandıdır. Kural services/matchRelevance.js'te (aynı kademe
+ * sistemi "Bugünün Maçları" sayfasını da sıralıyor): Süper Lig, Türk
+ * kulübünün Avrupa maçı, UEFA kupaları ve beş büyük Avrupa ligi bandı
+ * doldurur; tanımadığımız yüzlerce küçük lig (ör. Ekvador Liga Pro) artık
+ * bandı doldurup asıl aranan maçı ekrandan atmıyor. Elenen maçlar
+ * SİLİNMEZ — `canli-skor.html` gibi "tüm canlı skorlar" sayfaları kendi
+ * ayrı listesinde göstermeye devam eder.
+ */
 function selectLiveTickerRecords(matches, options = {}) {
   const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;
 
-  return (Array.isArray(matches) ? matches : [])
+  const relevant = (Array.isArray(matches) ? matches : [])
     .filter(isCurrentlyLive)
+    .filter(isHomeRelevantMatch);
+
+  return sortByRelevance(relevant)
     .map((match) => {
       const homeTeam = String((match && match.homeTeam) || "").trim();
       const awayTeam = String((match && match.awayTeam) || "").trim();
