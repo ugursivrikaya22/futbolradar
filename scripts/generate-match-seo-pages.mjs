@@ -317,15 +317,15 @@ function mergeRegistry(registry, candidates) {
   }
   let added = 0;
   let updated = 0;
+  // "Güncellendi" kararı KOŞU SONUNDA verilir: aynı maçın iki sağlayıcı
+  // kaydı ara adımda bir alanı ileri-geri yazabilir; koşu sonunda kayıt
+  // başlangıçtakiyle aynıysa `updatedAt` ilerlemez (sicil boşuna değişmez).
+  const snapshot = new Map(registry.pages.map((entry) => [entry.slug, JSON.stringify(entry)]));
   const ordered = candidates.slice().sort((left, right) => (SOURCE_PRIORITY[right.source] || 0) - (SOURCE_PRIORITY[left.source] || 0));
   for (const candidate of ordered) {
     const existing = findEntry(registry, candidate, lookup);
     if (existing) {
-      if (mergeCandidate(existing, candidate)) {
-        existing.updatedAt = new Date(NOW).toISOString();
-        updated += 1;
-        indexEntry(existing, lookup);
-      }
+      if (mergeCandidate(existing, candidate)) indexEntry(existing, lookup);
       continue;
     }
     const entry = newEntry(candidate);
@@ -340,6 +340,13 @@ function mergeRegistry(registry, candidates) {
     registry.pages.push(entry);
     indexEntry(entry, lookup);
     added += 1;
+  }
+  for (const entry of registry.pages) {
+    const before = snapshot.get(entry.slug);
+    if (before !== undefined && before !== JSON.stringify(entry)) {
+      entry.updatedAt = new Date(NOW).toISOString();
+      updated += 1;
+    }
   }
   return { added, updated };
 }
