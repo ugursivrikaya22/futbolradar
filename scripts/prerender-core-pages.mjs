@@ -44,7 +44,7 @@ const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { latestQuotes } = require("../services/managerQuotes.js");
 const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
-const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
+const { isHomeRelevantMatch, sortByRelevance, TIER, tierOf, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
 // "Bugünün Maçları" yüzeyinin kuralı — sıra, lig blokları, bağlantı, SSS.
 const {
@@ -278,6 +278,31 @@ function programMatchPool() {
 }
 
 /**
+ * ANA SAYFA ÖNİZLEMESİNİN HAVUZU — "Bugünün programı" (calendarProgramCards).
+ *
+ * `programMatchPool()`den ayrı: bu havuz yalnızca ANA SAYFAYA girebilecek
+ * maçları taşır (services/matchRelevance.js#isHomeRelevantMatch — Süper Lig,
+ * Türk kulübünün Avrupa maçı, UEFA kupaları, beş büyük Avrupa ligi). Diğer
+ * onlarca lig (ör. Ekvador Liga Pro) burada hiç görünmez; "Bugünün Maçları"
+ * sayfası (matchProgramPageCards → programMatchPool) onları göstermeye
+ * devam eder — kısıtlama yalnızca ana sayfanın kıt yerine uygulanır.
+ *
+ * Gün filtresi istemciyle (app.js#selectTodayMatchCards) BİLEREK aynı —
+ * yalnızca BUGÜN. Dünün maçını burada, istemcide değil basmak sayfa
+ * JavaScript yüklendiğinde bir kartın sessizce kaybolmasına yol açardı.
+ */
+function homeRelevantMatchPool() {
+  const today = istanbulToday();
+
+  return sortByRelevance(
+    curatedMatches()
+      .filter((match) => istanbulDay(match.kickoff) === today)
+      .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match))
+      .filter(isHomeRelevantMatch)
+  );
+}
+
+/**
  * MAÇ KARTI İÇ LİNK SİSTEMİ — yalnızca ana sayfanın "Bugünün Maçları"
  * önizlemesinde (bkz. calendarProgramCards). `programFixtureCard` gövdesi
  * "Bugünün Maçları" sayfasıyla (matchProgramPageCards) PAYLAŞILIR ama bu
@@ -333,6 +358,18 @@ function quickLinkButtonsHtml(match) {
     `<a href="${escapeHtml(quickLinkFormHref(match))}">Takım Formu</a>`;
 }
 
+/**
+ * Kart filtre grubu — yalnızca ana sayfa önizlemesinde (`quickLinks: true`)
+ * basılır ve `#home-league-filter-*` saf-CSS süzgecinin okuduğu tek işaret.
+ * Bu noktaya ulaşan her maç zaten `isHomeRelevantMatch` süzgecinden geçmiş
+ * olduğu için yalnızca iki grup kalır: Süper Lig ya da "Avrupa" (Türk
+ * kulübünün Avrupa maçı, UEFA kupaları, beş büyük Avrupa ligi — hepsi tek
+ * çipte toplanır, ayrım kullanıcı için değil veri modeli için var).
+ */
+function homeRelevanceGroup(match) {
+  return tierOf(match) <= TIER.SUPER_LIG ? "super-lig" : "avrupa";
+}
+
 function programFixtureCard(match, today, options = {}) {
   const date = istanbulDay(match.kickoff);
   const isToday = date === today;
@@ -344,14 +381,20 @@ function programFixtureCard(match, today, options = {}) {
     : null;
   const headlineValue = status === "FINISHED" && finalScore ? finalScore : (match.time || "");
   const quickLinksHtml = options.quickLinks ? quickLinkButtonsHtml(match) : "";
+  const relevanceGroup = options.quickLinks ? homeRelevanceGroup(match) : "";
 
-  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore, quickLinksHtml });
+  return staticFixtureCard(match, { headlineValue, isToday, status, finalScore, quickLinksHtml, relevanceGroup });
 }
 
+/**
+ * Ana sayfa önizlemesinin maç listesi — services/matchRelevance.js#sortByRelevance
+ * ile sıralı, homeRelevantMatchPool() ile Süper Lig/TR Avrupa/beş büyük
+ * lig+UEFA'ya kısıtlı (bkz. o fonksiyonun başındaki not). Kickoff saatine
+ * göre düz sıralama artık YOK — "en yakın oynanacak maç" değil "en ilgili
+ * maç" önce gelir, bant ve "Bugünün Maçları" sayfasıyla aynı kural.
+ */
 function calendarProgramMatches(limit) {
-  return programMatchPool()
-    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
-    .slice(0, limit || 6);
+  return homeRelevantMatchPool().slice(0, limit || 6);
 }
 
 function calendarProgramCards(limit) {
@@ -518,7 +561,7 @@ function staticFormPercent(name) {
 const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
-  const { headlineValue, status, finalScore, quickLinksHtml } = meta;
+  const { headlineValue, status, finalScore, quickLinksHtml, relevanceGroup } = meta;
   const isLive = status === "LIVE";
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
@@ -550,7 +593,8 @@ function staticFixtureCard(match, meta) {
     // maç ayrıntısına dönüyordu, yani statik hâl istemciyle çelişiyordu.
     actionHref: matchDetailPath(match),
     withMatchClick: true,
-    quickLinksHtml: quickLinksHtml || ""
+    quickLinksHtml: quickLinksHtml || "",
+    relevanceGroup: relevanceGroup || ""
   });
 }
 

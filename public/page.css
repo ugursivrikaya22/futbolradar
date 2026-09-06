@@ -341,6 +341,82 @@ h1 {
   outline: 0;
 }
 
+/* ANA SAYFA MAÇ FİLTRESİ — Tümü / Süper Lig / Avrupa.
+   Saf-CSS gizli radyo + `for` + genel kardeş seçici deseni, standings-tabs
+   ile AYNI (bkz. #standings-tab-*). Radyolar ve #today-matches-grid,
+   bugunun-maclari-preview bölümünün DOĞRUDAN çocukları olmalı — `~` yalnızca
+   kardeşler arasında çalışır. Sayfa navigasyona gitmez: kartlar zaten
+   yalnızca Süper Lig/Avrupa'ya kısıtlı geldiği için (services/matchRelevance.js)
+   filtre sayfada kalıp görünürlüğü değiştirir. */
+.home-league-filter__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.home-league-filter__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2px 2px 7px;
+  scrollbar-width: thin;
+}
+
+.home-league-filter__label {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(11, 143, 90, 0.076);
+  border-radius: 999px;
+  padding: 0 13px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+}
+
+.home-league-filter__label:hover { border-color: rgba(11, 143, 90, 0.264); color: var(--green); }
+
+#home-league-filter-all:checked ~ .home-league-filter__list label[for="home-league-filter-all"],
+#home-league-filter-super-lig:checked ~ .home-league-filter__list label[for="home-league-filter-super-lig"],
+#home-league-filter-avrupa:checked ~ .home-league-filter__list label[for="home-league-filter-avrupa"] {
+  border-color: rgba(11, 143, 90, 0.264);
+  color: var(--green);
+  background: rgba(11, 143, 90, 0.055);
+}
+
+#home-league-filter-super-lig:focus-visible ~ .home-league-filter__list label[for="home-league-filter-super-lig"],
+#home-league-filter-avrupa:focus-visible ~ .home-league-filter__list label[for="home-league-filter-avrupa"],
+#home-league-filter-all:focus-visible ~ .home-league-filter__list label[for="home-league-filter-all"] {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+#home-league-filter-super-lig:checked ~ #today-matches-grid .fixture-card:not([data-relevance-group="super-lig"]),
+#home-league-filter-avrupa:checked ~ #today-matches-grid .fixture-card:not([data-relevance-group="avrupa"]) {
+  display: none;
+}
+
+/* Süzülmüş görünümde "Daha Fazla Göster" butonu anlamsız kalır — kalan
+   maçların filtreye uyup uymadığını vaat edemez. Yalnızca "Tümü" seçiliyken
+   basılı kalır. */
+#home-league-filter-super-lig:checked ~ #today-matches-grid [data-match-more],
+#home-league-filter-super-lig:checked ~ #today-matches-grid .match-more-row,
+#home-league-filter-avrupa:checked ~ #today-matches-grid [data-match-more],
+#home-league-filter-avrupa:checked ~ #today-matches-grid .match-more-row {
+  display: none;
+}
+
 /* SATIR SIĞMADIĞINDA SARSIN.
    Bu şerit iki bloktan oluşuyor: tarih gezinmesi (~513px) ve durum
    süzgeçleri (~300px). 16px boşlukla toplam ~829px; sarma kuralı olmadığı

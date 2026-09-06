@@ -125,12 +125,17 @@ export function fixtureRow(name, score, otherScore) {
  *                   iç-link düğmeleri (ör. "Analiz — Puan Durumu — Takım
  *                   Formu"); yalnızca çağıran bir şey verirse basılır —
  *                   varsayılan davranış (mevcut tüm sayfalar) değişmez.
+ *   relevanceGroup  "super-lig" | "avrupa" — yalnızca ana sayfa önizlemesi
+ *                   verir (bkz. prerender-core-pages.mjs#homeRelevanceGroup);
+ *                   `#home-league-filter-*` saf-CSS süzgecinin okuduğu
+ *                   `data-relevance-group` işareti. Boşsa öznitelik hiç
+ *                   yazılmaz — diğer tüm sayfalar bundan etkilenmez.
  *   locale
  */
 export function fixtureCard(options) {
   const locale = normalizeLocale(options.locale);
   const leagueLabel = options.league || t("card.leagueFallback", locale);
-  return `<article class="fixture-card${options.live ? " is-live" : ""}" data-card="fixture"${options.id ? ` data-match="${escapeHtml(options.id)}"` : ""}>
+  return `<article class="fixture-card${options.live ? " is-live" : ""}" data-card="fixture"${options.id ? ` data-match="${escapeHtml(options.id)}"` : ""}${options.relevanceGroup ? ` data-relevance-group="${escapeHtml(options.relevanceGroup)}"` : ""}>
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(leagueLabel)}${escapeHtml(leagueLabel)}</span><span class="fixture-card-state ${options.stateClass || ""}">${escapeHtml(options.stateLabel || "")}</span></div>
     <div class="fixture-card-rows">${fixtureRow(options.homeTeam, options.homeScore, options.awayScore)}${fixtureRow(options.awayTeam, options.awayScore, options.homeScore)}</div>
     ${options.formHtml ? `<div class="fixture-card-meta">${options.formHtml}</div>` : ""}

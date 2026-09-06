@@ -21,7 +21,7 @@
     <meta name="twitter:title" content="İddaa Sonuçları: Doğrulanmış Maç Sonuçları | FutbolRadar" />
     <meta name="twitter:description" content="İddaa sonucu aramalarında aradığınız doğrulanmış futbol maç sonuçları; bahis kuponu veya oran içermez." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <link rel="stylesheet" href="./page.css?v=92c376df" />
+    <link rel="stylesheet" href="./page.css?v=6d122cbf" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -52,10 +52,6 @@
   <!-- core-page-schema:start -->
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/iddaa-sonuclari.html","url":"https://www.futbolradar.com/iddaa-sonuclari.html","name":"İddaa Sonuçları: Doğrulanmış Maç Sonuçları | FutbolRadar","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"},"inLanguage":"tr-TR","description":"İddaa sonucu aramalarında aradığınız doğrulanmış futbol maç sonuçları burada. Bahis kuponu, oran veya tahmin yok; yalnızca resmî kaynaklı, doğrulanmış skorlar."},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://www.futbolradar.com/"},{"@type":"ListItem","position":2,"name":"Maç Merkezi","item":"https://www.futbolradar.com/mac-merkezi.html"},{"@type":"ListItem","position":3,"name":"İddaa Sonuçları: Doğrulanmış Maç Sonuçları","item":"https://www.futbolradar.com/iddaa-sonuclari.html"}]}]}</script>
 <!-- core-page-schema:end -->
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
 <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -66,7 +62,11 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <!-- favicon:end -->
-  </head>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+</head>
   <body class="subpage ad-search-page results-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
@@ -138,10 +138,15 @@
         </div>
         <div class="grid" data-api-section="live-score" data-api-target="live-score" data-static-fallback="true">
           <!-- prerender:live-score:start -->
-<section class="live-score-daily" aria-label="Bugünün maç sonuçları">
-      <div class="live-score-daily-head"><strong>Şu anda oynanan maç yok. Bugünün sonuçları:</strong></div>
-      <div class="live-compact-board"><div class="league-match-grid"><a class="live-compact-card is-final" data-card="live-match" data-match="corum-fk-eyupspor-2026-09-06" href="./mac/corum-fk-eyupspor-6-eylul-2026"><span class="live-compact-status is-final">MS</span><span class="live-compact-team is-home">Çorum FK</span><b class="live-compact-score">3 - 0</b><span class="live-compact-team is-away">Eyüpspor</span></a><a class="live-compact-card is-final" data-card="live-match" data-match="kasimpasa-amed-sportif-faaliyetler-2026-09-06" href="./mac/kasimpasa-amed-sportif-faaliyetler-6-eylul-2026"><span class="live-compact-status is-final">MS</span><span class="live-compact-team is-home">Kasımpaşa</span><b class="live-compact-score">2 - 2</b><span class="live-compact-team is-away">Amed Sportif Faaliyetler</span></a><a class="live-compact-card is-final" data-card="live-match" data-match="kocaelispor-samsunspor-2026-09-06" href="./mac/kocaelispor-samsunspor-6-eylul-2026"><span class="live-compact-status is-final">MS</span><span class="live-compact-team is-home">Kocaelispor</span><b class="live-compact-score">1 - 0</b><span class="live-compact-team is-away">Samsunspor</span></a><a class="live-compact-card is-final" data-card="live-match" data-match="trabzonspor-genclerbirligi-2026-09-06" href="./mac/trabzonspor-genclerbirligi-6-eylul-2026"><span class="live-compact-status is-final">MS</span><span class="live-compact-team is-home">Trabzonspor</span><b class="live-compact-score">5 - 0</b><span class="live-compact-team is-away">Gençlerbirliği</span></a></div></div>
-    </section>
+<article class="data-empty" data-card="empty-state">
+    <strong>Şu anda canlı maç yok</strong>
+    <span>Canlı maç başladığında skor, tempo ve maç içi sinyaller bu alanda görünecek.</span>
+    <div class="match-empty-actions">
+      <a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>
+      <a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>
+      <span class="tag soft">Canlı akış bekleniyor</span>
+    </div>
+  </article>
 <!-- prerender:live-score:end -->
         </div>
       </section>
@@ -297,66 +302,66 @@
         </div>
         <div class="grid" data-api-section="today-matches" data-api-target="matches-page" data-static-fallback="true">
           <!-- prerender:matches-page:start -->
-<section class="league-match-group league-block" data-league-group="Süper Lig"><div class="league-block-head"><span class="league-block-title">Süper Lig</span><b class="league-block-count">4 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="trabzonspor-genclerbirligi-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state is-final">MS</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Trabzonspor</span><span class="fixture-row-score">5</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Gençlerbirliği</span><span class="fixture-row-score">0</span></div></div>
-    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%44 · %78</b></div></div>
-    <a class="fixture-card-action" href="./mac/trabzonspor-genclerbirligi-6-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card" data-card="fixture" data-match="kocaelispor-samsunspor-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state is-final">MS</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kocaelispor</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">S</span><span class="fixture-row-name">Samsunspor</span><span class="fixture-row-score">0</span></div></div>
+<section class="league-match-group league-block" data-league-group="Süper Lig"><div class="league-block-head"><span class="league-block-title">Süper Lig</span><b class="league-block-count">2 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="caykur-rizespor-alanyaspor-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ÇR</span><span class="fixture-row-name">Çaykur Rizespor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Alanyaspor</span><span class="fixture-row-score">–</span></div></div>
     <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%67 · %44</b></div></div>
-    <a class="fixture-card-action" href="./mac/kocaelispor-samsunspor-6-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card" data-card="fixture" data-match="corum-fk-eyupspor-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state is-final">MS</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">ÇF</span><span class="fixture-row-name">Çorum FK</span><span class="fixture-row-score">3</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">E</span><span class="fixture-row-name">Eyüpspor</span><span class="fixture-row-score">0</span></div></div>
-    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%33 · %25</b></div></div>
-    <a class="fixture-card-action" href="./mac/corum-fk-eyupspor-6-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card" data-card="fixture" data-match="kasimpasa-amed-sportif-faaliyetler-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state is-final">MS</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kasımpaşa</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AS</span><span class="fixture-row-name">Amed Sportif Faaliyetler</span><span class="fixture-row-score">2</span></div></div>
-    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%50 · %58</b></div></div>
-    <a class="fixture-card-action" href="./mac/kasimpasa-amed-sportif-faaliyetler-6-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
-  </article></div></section><section class="league-match-group league-block" data-league-group="Serie A"><div class="league-block-head"><span class="league-block-title">Serie A</span><b class="league-block-count">1 maç</b></div><div class="league-match-grid"><article class="fixture-card is-live" data-card="fixture" data-match="juventus-ac-milan-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">J</span><span class="fixture-row-name">Juventus</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AM</span><span class="fixture-row-name">AC Milan</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/caykur-rizespor-alanyaspor-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="goztepe-gaziantep-fk-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Göztepe</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">GF</span><span class="fixture-row-name">Gaziantep FK</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%11 · %44</b></div></div>
+    <a class="fixture-card-action" href="./mac/goztepe-gaziantep-fk-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article></div></section><section class="league-match-group league-block" data-league-group="Trendyol 1. Lig"><div class="league-block-head"><span class="league-block-title">Trendyol 1. Lig</span><b class="league-block-count">4 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="esenler-erokspor-kayserispor-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">1L</i>1. Lig</span><span class="fixture-card-state ">17:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EE</span><span class="fixture-row-name">Esenler Erokspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kayserispor</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac/juventus-ac-milan-6-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
-  </article></div></section><section class="league-match-group league-block" data-league-group="Ligue 1"><div class="league-block-head"><span class="league-block-title">Ligue 1</span><b class="league-block-count">1 maç</b></div><div class="league-match-grid"><article class="fixture-card is-live" data-card="fixture" data-match="marseille-paris-fc-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">L1</i>Ligue 1</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">M</span><span class="fixture-row-name">Marseille</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PF</span><span class="fixture-row-name">Paris FC</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/esenler-erokspor-kayserispor-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="istanbulspor-igdir-fk-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">1L</i>1. Lig</span><span class="fixture-card-state ">17:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">İ</span><span class="fixture-row-name">İstanbulspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IF</span><span class="fixture-row-name">Iğdır FK</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac/marseille-paris-fc-6-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
-  </article></div></section><section class="league-match-group league-block" data-league-group="Premier League"><div class="league-block-head"><span class="league-block-title">Premier League</span><b class="league-block-count">6 maç</b></div><div class="league-match-grid"><article class="fixture-card is-live" data-card="fixture" data-match="zabbar-st-patrick-hamrun-spartans-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ZS</span><span class="fixture-row-name">Zabbar St. Patrick</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">HS</span><span class="fixture-row-name">Hamrun Spartans</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/istanbulspor-igdir-fk-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="manisa-f-k-bursaspor-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">1L</i>1. Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MF</span><span class="fixture-row-name">Manisa F.K.</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Bursaspor</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1582266&amp;date=2026-09-06" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="al-shabab-kazma-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AS</span><span class="fixture-row-name">Al Shabab</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kazma</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/manisa-f-k-bursaspor-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="mardin-1969-bodrum-fk-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">1L</i>1. Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">M1</span><span class="fixture-row-name">Mardin 1969</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BF</span><span class="fixture-row-name">Bodrum FK</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1622646&amp;date=2026-09-06" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="baltika-lokomotiv-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Baltika</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">L</span><span class="fixture-row-name">Lokomotiv</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/mardin-1969-bodrum-fk-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article></div></section><section class="league-match-group league-block" data-league-group="Serie A"><div class="league-block-head"><span class="league-block-title">Serie A</span><b class="league-block-count">2 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="udinese-lazio-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">21:45</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">U</span><span class="fixture-row-name">Udinese</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">L</span><span class="fixture-row-name">Lazio</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1561379&amp;date=2026-09-06" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="sliema-wanderers-birkirkara-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SW</span><span class="fixture-row-name">Sliema Wanderers</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Birkirkara</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/udinese-lazio-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="cagliari-lecce-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">19:30</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">C</span><span class="fixture-row-name">Cagliari</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">L</span><span class="fixture-row-name">Lecce</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1582264&amp;date=2026-09-06" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="al-salmiyah-al-sahel-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AS</span><span class="fixture-row-name">Al Salmiyah</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AS</span><span class="fixture-row-name">Al Sahel</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/cagliari-lecce-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article></div></section><section class="league-match-group league-block" data-league-group="La Liga"><div class="league-block-head"><span class="league-block-title">La Liga</span><b class="league-block-count">2 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="elche-real-sociedad-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LL</i>La Liga</span><span class="fixture-card-state ">22:30</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">E</span><span class="fixture-row-name">Elche</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RS</span><span class="fixture-row-name">Real Sociedad</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1632240&amp;date=2026-09-06" data-match-click>Maç ayrıntısını aç</a>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="dynamo-spartak-moscow-2026-09-06">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">D</span><span class="fixture-row-name">Dynamo</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SM</span><span class="fixture-row-name">Spartak Moscow</span><span class="fixture-row-score">–</span></div></div>
+    <a class="fixture-card-action" href="./mac/elche-real-sociedad-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="getafe-celta-vigo-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LL</i>La Liga</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Getafe</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CV</span><span class="fixture-row-name">Celta Vigo</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1561381&amp;date=2026-09-06" data-match-click>Maç ayrıntısını aç</a>
+    <a class="fixture-card-action" href="./mac/getafe-celta-vigo-7-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+  </article></div></section><section class="league-match-group league-block" data-league-group="Brazil Série A"><div class="league-block-head"><span class="league-block-title">Brazil Série A</span><b class="league-block-count">1 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="botafogo-palmeiras-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">00:30</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Botafogo</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">P</span><span class="fixture-row-name">Palmeiras</span><span class="fixture-row-score">–</span></div></div>
+    
+    <a class="fixture-card-action" href="./mac-detay.html?id=1492360&amp;date=2026-09-07" data-match-click>Maç ayrıntısını aç</a>
+  </article></div></section><section class="league-match-group league-block" data-league-group="Argentina Primera División"><div class="league-block-head"><span class="league-block-title">Argentina Primera División</span><b class="league-block-count">1 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="river-plate-independ-rivadavia-2026-09-07">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span class="fixture-card-state ">01:15</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RP</span><span class="fixture-row-name">River Plate</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IR</span><span class="fixture-row-name">Independ. Rivadavia</span><span class="fixture-row-score">–</span></div></div>
+    
+    <a class="fixture-card-action" href="./mac-detay.html?id=1493117&amp;date=2026-09-07" data-match-click>Maç ayrıntısını aç</a>
   </article></div></section>
 <!-- prerender:matches-page:end -->
         </div>
