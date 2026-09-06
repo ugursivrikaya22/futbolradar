@@ -170,8 +170,8 @@ for (const route of ROUTES) {
           check(`${kind}: ${side} dosyası var`, false, "dosya yok");
           continue;
         }
-        const hasEn = html.includes(`<link rel="alternate" hreflang="en" href="${absoluteUrl(pair.en)}" />`);
-        const hasTr = html.includes(`<link rel="alternate" hreflang="tr-TR" href="${absoluteUrl(pair.tr)}" />`);
+        const hasEn = html.includes(`<link rel="alternate" hreflang="en" href="${pair.enUrl || absoluteUrl(pair.en)}" />`);
+        const hasTr = html.includes(`<link rel="alternate" hreflang="tr-TR" href="${pair.trUrl || absoluteUrl(pair.tr)}" />`);
         check(`${kind}: ${side} karşılıklı hreflang`, hasEn && hasTr, `en=${hasEn} tr=${hasTr}`);
       }
     }
@@ -218,7 +218,13 @@ for (const route of ROUTES) {
   const broken = enNav.filter((item) => !read(item.href)).map((item) => item.href);
   check("İngilizce menüde kırık bağlantı yok", !broken.length, broken.join(", "));
 
-  const enPaths = new Set(ROUTES.map((route) => route.en));
+  // Çekirdek rotalar + dinamik haritada TR karşılığı olan İngilizce hub
+  // sayfaları (ör. `en/matches.html` ↔ `mac-takvimi.html`): ikisi de gerçek
+  // İngilizce hedeftir ve karşılıklı hreflang taşır.
+  const enPaths = new Set([
+    ...ROUTES.map((route) => route.en),
+    ...dynamicRoutePairs("match-seo-hub").map((row) => row.en)
+  ]);
   const unmarked = enNav
     .filter((item) => !enPaths.has(item.href) && !item.trOnly)
     .map((item) => item.href);

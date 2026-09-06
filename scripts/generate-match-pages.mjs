@@ -33,6 +33,7 @@ const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureServi
 const { sameClub } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
+const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
 const {
   confidenceLabel,
   formatFreshnessDate,
@@ -47,6 +48,9 @@ const superLigStandings = (leagueStandings["super-lig"] && Array.isArray(leagueS
   ? leagueStandings["super-lig"]
   : { table: [], updatedAt: null };
 const outDir = path.join(root, "mac");
+/** Bu üreticinin dosya deseni: <ev>-<dep>-<sezon>-r<NN>.html */
+const ROUND_PAGE_FILE_RE = /-\d{4}-\d{4}-r\d{2}\.html$/;
+const ROUND_PAGE_LOC_RE = /<loc>[^<]*\/mac\/[^<]*-\d{4}-\d{4}-r\d{2}\.html<\/loc>/;
 const publicOutDir = path.join(root, "public", "mac");
 
 /**
@@ -184,6 +188,16 @@ function relatedComparison(match) {
   return `<a class="match-related-card" href="../oyuncu-karsilastir.html?players=${escapeHtml(candidate.left.id)},${escapeHtml(candidate.right.id)}"><span>Aynı rol kıyası</span><strong>${escapeHtml(candidate.left.name)} vs ${escapeHtml(candidate.right.name)}</strong><p>Maç öncesi benzer rol profillerini yan yana oku.</p></a>`;
 }
 
+/**
+ * Kalıcı maç sayfası bağlantısı: aynı maçın "ne zaman / canlı skor / sonuç"
+ * yüzeyi tarih slug'lı sayfada yaşıyor. Sicilde sayfa yoksa kart basılmaz.
+ */
+function liveCenterCard(match) {
+  const seoSlug = match.kickoff ? slugForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }) : null;
+  if (!seoSlug) return "";
+  return `<a class="match-related-card" href="../${escapeHtml(trPagePath(seoSlug).replace(/\.html$/, ""))}"><span>Canlı maç merkezi</span><strong>Ne zaman, hangi kanalda, canlı skor</strong><p>Maç saati, yayın, muhtemel 11'ler ve maç sonucu aynı kalıcı sayfada.</p></a>`;
+}
+
 /** "14 Ağustos 2026 Cuma" — TSİ. */
 function shortDateLabel(value) {
   const parsed = new Date(value);
@@ -250,9 +264,15 @@ function pageHtml(match) {
   // tıklatır.
   const kickoffDay = match.kickoff ? shortDateLabel(match.kickoff) : "";
   const kickoffClock = match.kickoff ? clockLabel(match.kickoff) : "";
-  const title = match.kickoff
+  // KALICI MAÇ SAYFASI VARSA "ne zaman / saat kaçta" niyeti ORAYA aittir:
+  // aynı sorgu için iki sayfa yarıştırmak ikisini de zayıflatır. Bu sayfa o
+  // durumda maç önü ANALİZİ olarak konumlanır (radar, form, kadro).
+  const permanentSlug = match.kickoff ? slugForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }) : null;
+  const title = match.kickoff && !permanentSlug
     ? `${match.homeTeam} - ${match.awayTeam} Maçı Ne Zaman, Saat Kaçta? ${kickoffDay} ${kickoffClock} | FutbolRadar`
-    : `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi | FutbolRadar`;
+    : match.kickoff
+      ? `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi: Radar, Form ve Kadro (${kickoffDay}) | FutbolRadar`
+      : `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi | FutbolRadar`;
   // Stat adına Türkçe ek EKLENMEZ: doğru ek sesli uyumuna ve son sessize
   // göre değişiyor ("Rams Park'ta", "Tüpraş Stadyumu'nda") ve stat adları
   // veriden geliyor. Tek bir ek kalıbı yazmak kaçınılmaz olarak yanlış
@@ -336,7 +356,7 @@ function pageHtml(match) {
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>
-      <section class="match-related-grid" aria-label="İlgili radar ekranları">${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
+      <section class="match-related-grid" aria-label="İlgili radar ekranları">${liveCenterCard(match)}${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
@@ -359,8 +379,10 @@ function updateSitemap(matches) {
   }
 
   const current = fs.readFileSync(sitemapPath, "utf8");
+  // YALNIZCA kendi (hafta numaralı) girdileri değiştirilir: aynı dizinde
+  // yaşayan kalıcı maç SEO sayfaları (tarih slug'lı, uzantısız) korunur.
   const retained = (current.match(URL_ENTRY_RE) || [])
-    .filter((entry) => !entry.includes(`${domain}/mac/`));
+    .filter((entry) => !ROUND_PAGE_LOC_RE.test(entry));
   // Kök etiket scripts/lib/sitemap.mjs'de: bu adım site haritasını baştan
   // yazdığı için ad alanları burada da bildirilmek zorunda; sabit bir dize
   // yazılsaydı iki dilli girdilerin `xhtml:` öneki tanımsız kalırdı.
@@ -376,7 +398,8 @@ const confirmedFixtures = flattenFixtures();
 const expectedFiles = new Set(confirmedFixtures.map((match) => `${pageSlug(match)}.html`));
 for (const directory of [outDir, publicOutDir]) {
   for (const file of fs.readdirSync(directory)) {
-    if (file.endsWith(".html") && !expectedFiles.has(file)) {
+    // Aynı dizindeki kalıcı maç SEO sayfalarına (tarih slug'lı) dokunulmaz.
+    if (ROUND_PAGE_FILE_RE.test(file) && !expectedFiles.has(file)) {
       fs.unlinkSync(path.join(directory, file));
     }
   }

@@ -199,7 +199,7 @@ function matchItems(now) {
       items.push({
         label: "Sonuç",
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
+        href: match.matchPage || match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",
         priority: 1 + rank / 10

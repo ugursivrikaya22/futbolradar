@@ -1911,8 +1911,10 @@
   }
 
   function matchDetailHref(match) {
-    if (match && match.analysisPage) {
-      return "./" + String(match.analysisPage).replace(/^\.\//, "");
+    // Kalıcı maç sayfası (services/matchSeoPages.js `matchPage`) editoryal
+    // analiz sayfasından önce gelir; ikisi de yoksa dinamik maç detayı.
+    if (match && (match.matchPage || match.analysisPage)) {
+      return "./" + String(match.matchPage || match.analysisPage).replace(/^\.\//, "");
     }
 
     var params = new URLSearchParams();

@@ -128,7 +128,7 @@ function hrefFor(match, reports) {
   const reportPath = report && (text(report.reportUrl) || text(report.seo && report.seo.path));
   if (reportPath) return `./${reportPath.replace(/^\.?\//, "")}`;
 
-  const page = text(match && match.analysisPage);
+  const page = text(match && match.matchPage) || text(match && match.analysisPage);
   if (page) return `./${page.replace(/^\.?\//, "")}`;
 
   if (isLiveStatus(match)) {
