@@ -807,6 +807,49 @@ function buildTurningPoints(match) {
   };
 }
 
+// ── 4b. Goller ve olaylar (tam liste, ağırlıksız) ───────────────────────────
+/**
+ * Maç raporu sayfasının "Goller / olaylar" bölümü.
+ *
+ * buildTurningPoints'ten FARKLI: o, omurga için ağırlıklı en fazla beş anı
+ * seçer ("kırılma anları"). Bu, sağlayıcının bildirdiği TÜM olayları dakika
+ * sırasıyla döker — kürasyon yok, seçim yok. "Maç sonu" kapanış anonsu
+ * skor başlığında zaten var, burada tekrarlanmaz.
+ */
+function buildMatchEvents(match) {
+  const events = (match.events || []).filter((event) =>
+    event && (event.type || event.detail) && !isType(event, "maç sonu", "match ended", "full time"));
+
+  if (!events.length) {
+    return {
+      status: "unavailable",
+      reason: `${match.homeTeam} - ${match.awayTeam} maçının olay akışı sağlayıcı tarafından paylaşılmadı.`
+    };
+  }
+
+  // Uzatma dakikası ("45+2") sıralamada tam dakikadan sonra, bir sonraki
+  // tam dakikadan önce gelmeli; bu yüzden "+" kısmı ondalık gibi işlenir.
+  const sortKey = (minute) => {
+    if (minute === null || minute === undefined) return Number.POSITIVE_INFINITY;
+    const [base, extra] = String(minute).split("+");
+    return Number(base) + (extra ? Number(extra) / 100 : 0);
+  };
+
+  const rows = events
+    .map((event) => ({
+      sortKey: sortKey(minuteOf(event)),
+      minute: minuteOf(event),
+      team: eventTeamName(event),
+      type: eventLabel(event),
+      isGoal: isType(event, "gol") && !isType(event, "iptal"),
+      detail: eventDetailText(event)
+    }))
+    .sort((left, right) => left.sortKey - right.sortKey)
+    .map(({ sortKey: _sortKey, ...row }) => ({ ...row, minute: row.minute === null ? "-" : `${row.minute}'` }));
+
+  return { status: "ready", events: rows };
+}
+
 // ── 5a. Devre analizleri, teknik kararlar ve nihai değerlendirme ────────────
 
 /** Olayın hangi devreye ait olduğu. 45+2 birinci, 46 ikinci devre. */
@@ -1390,7 +1433,7 @@ function buildSeo(match, summary) {
       .filter(Boolean);
     if (goals.length) parts.push(`goller: ${[...new Set(goals)].join(", ")}`);
     if ((match.statistics || []).length) parts.push("xG, şut ve pas istatistikleri");
-    parts.push("kırılma anları ve sonraki maç");
+    parts.push("goller, olaylar ve sonraki maç");
 
     description = `${parts.join(", ")}.`;
   }
@@ -1462,6 +1505,7 @@ module.exports = {
   buildSignals,
   buildTacticalRead,
   buildTurningPoints,
+  buildMatchEvents,
   buildAiRating,
   buildNextMatchOutlook,
   buildSeo,

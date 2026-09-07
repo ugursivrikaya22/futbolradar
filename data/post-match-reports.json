@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-07T04:26:02.049Z",
+  "updatedAt": "2026-09-07T10:11:35.865Z",
   "matchCount": 1080,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Atletico Tucuman",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 18
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -65,24 +65,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 18,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "bb86ff7786712e6d",
-      "fingerprint": "bb86ff7786712e6d",
+      "analysisSourceHash": "bbe1f37c51c76a83",
+      "fingerprint": "bbe1f37c51c76a83",
       "analysisGeneratedAt": "2026-09-07T04:26:01.980Z",
-      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
-      "generatedAt": "2026-09-07T04:26:01.980Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -94,7 +99,7 @@
       "reportUrl": "./mac-raporu/racing-club-atletico-tucuman-2026-09-07.html",
       "digest": {
         "headline": "Atletico Tucuman, Racing Club'u 2-1 yendi",
-        "paragraph": "Atletico Tucuman, Liga Profesional Argentina karşılaşmasında Racing Club'u 2-1 mağlup etti. Golleri 14. dakikada Leandro Díaz (Atletico Tucuman), 24. dakikada Lautaro Godoy (Atletico Tucuman), 71. dakikada Leonel Pérez (Racing Club), 90+3. dakikada Ramiro Ruiz Rodriguez (Atletico Tucuman) kaydetti.",
+        "paragraph": "Atletico Tucuman, Liga Profesional Argentina karşılaşmasında Racing Club'u 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Atletico Tucuman",
           "loser": "Racing Club",
@@ -107,115 +112,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 3
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "11'",
-              "team": "Atletico Tucuman",
-              "type": "Penaltı",
-              "detail": "Leonel Di Plácido",
-              "pivotal": true
-            },
-            {
-              "minute": "14'",
-              "team": "Atletico Tucuman",
-              "type": "Kaçan penaltı",
-              "detail": "Leandro Díaz",
-              "pivotal": true
-            },
-            {
-              "minute": "24'",
-              "team": "Atletico Tucuman",
-              "type": "Gol",
-              "detail": "Lautaro Godoy",
-              "pivotal": true
-            },
-            {
-              "minute": "71'",
-              "team": "Racing Club",
-              "type": "Gol",
-              "detail": "Leonel Pérez",
-              "pivotal": true
-            },
-            {
-              "minute": "90+3'",
-              "team": "Atletico Tucuman",
-              "type": "Gol",
-              "detail": "Ramiro Ruiz Rodriguez",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Ramiro Ruiz Rodriguez), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 0,
-            "away": 1
-          },
-          "moments": [
-            {
-              "minute": "81'",
-              "team": "Atletico Tucuman",
-              "type": "Oyuncu değişikliği",
-              "detail": "Leandro Díaz",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Racing Club",
-              "type": "Oyuncu değişikliği",
-              "detail": "Lautaro Diaz",
-              "decisive": false
-            },
-            {
-              "minute": "86'",
-              "team": "Atletico Tucuman",
-              "type": "Oyuncu değişikliği",
-              "detail": "Iván Tesuri",
-              "decisive": false
-            },
-            {
-              "minute": "86'",
-              "team": "Atletico Tucuman",
-              "type": "Oyuncu değişikliği",
-              "detail": "Franco Nicola",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Ramiro Ruiz Rodriguez",
-              "team": "Atletico Tucuman",
-              "contribution": "90+3' gol · 90+4' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Lautaro Godoy",
-              "team": "Atletico Tucuman",
-              "contribution": "24' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Leandro Díaz",
-              "team": "Atletico Tucuman",
-              "contribution": "14' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Leonel Pérez",
-              "team": "Racing Club",
-              "contribution": "71' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -226,34 +138,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
-            "14' Atletico Tucuman — Leandro Díaz: kaçan penaltı",
-            "24' Atletico Tucuman — Lautaro Godoy: gol",
-            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
-            "71' Racing Club — Leonel Pérez: gol",
-            "90+3' Atletico Tucuman — Ramiro Ruiz Rodriguez: gol",
-            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Racing Club maça 4-3-3 dizilişiyle başladı.",
-            "Atletico Tucuman maça 4-1-4-1 dizilişiyle başladı.",
-            "31' Racing Club değişikliği (Substitution 1). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "31' Racing Club değişikliği (Substitution 2). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Racing Club değişikliği (Substitution 3). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "81' Atletico Tucuman değişikliği (Substitution 1). Değişiklikten sonra Atletico Tucuman adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Atletico Tucuman maça 4-1-4-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -265,7 +163,7 @@
               "formation": "4-1-4-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -278,8 +176,7 @@
             "Racing Club daha çok şut denedi (19-12)."
           ],
           "improvements": [
-            "Racing Club şut isabetinde geride kaldı (%21); bitiricilik geliştirilmesi gereken alan.",
-            "Racing Club son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Racing Club şut isabetinde geride kaldı (%21); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Atletico Tucuman sahadan 1 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -367,21 +264,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2926,7 +2817,7 @@
       "season": null,
       "homeTeam": "SK Beveren",
       "awayTeam": "OH Leuven",
-      "venue": "Freethiel Stadion",
+      "venue": "Freethielstadion",
       "score": {
         "home": 3,
         "away": 0
@@ -2998,23 +2889,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "77bbc46225bd4843",
-      "fingerprint": "77bbc46225bd4843",
+      "analysisSourceHash": "9036af5d92de8836",
+      "fingerprint": "9036af5d92de8836",
       "analysisGeneratedAt": "2026-09-06T23:49:39.592Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "SK Beveren 3-0 OH Leuven maç raporu: Jupiler Pro League istatistikleri | FutbolRadar",
-        "description": "SK Beveren, Freethiel Stadion'da oynanan Jupiler Pro League karşılaşmasında OH Leuven'i 3-0 mağlup etti.",
+        "description": "SK Beveren, Freethielstadion'da oynanan Jupiler Pro League karşılaşmasında OH Leuven'i 3-0 mağlup etti.",
         "path": "mac-raporu/sk-beveren-oh-leuven-2026-09-06.html",
         "competition": "Jupiler Pro League"
       },
       "reportUrl": "./mac-raporu/sk-beveren-oh-leuven-2026-09-06.html",
       "digest": {
         "headline": "SK Beveren, OH Leuven'i 3-0 yendi",
-        "paragraph": "SK Beveren, Freethiel Stadion'da oynanan Jupiler Pro League karşılaşmasında OH Leuven'i 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "SK Beveren, Freethielstadion'da oynanan Jupiler Pro League karşılaşmasında OH Leuven'i 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "SK Beveren",
           "loser": "OH Leuven",
@@ -7024,7 +6915,7 @@
       "season": null,
       "homeTeam": "ADO Den Haag",
       "awayTeam": "Fortuna Sittard",
-      "venue": "Bingoal Stadion",
+      "venue": "Bingoal Stadium",
       "score": {
         "home": 2,
         "away": 3
@@ -7096,23 +6987,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a8e2a4b0c9d5db55",
-      "fingerprint": "a8e2a4b0c9d5db55",
+      "analysisSourceHash": "db15c8adda661dfd",
+      "fingerprint": "db15c8adda661dfd",
       "analysisGeneratedAt": "2026-09-06T16:59:00.076Z",
-      "analysisUpdatedAt": "2026-09-06T16:59:00.076Z",
-      "generatedAt": "2026-09-06T16:59:00.076Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "ADO Den Haag 2-3 Fortuna Sittard maç raporu: Eredivisie istatistikleri | FutbolRadar",
-        "description": "Fortuna Sittard, Bingoal Stadion'da oynanan Eredivisie karşılaşmasında ADO Den Haag'ı 3-2 mağlup etti.",
+        "description": "Fortuna Sittard, Bingoal Stadium'da oynanan Eredivisie karşılaşmasında ADO Den Haag'ı 3-2 mağlup etti.",
         "path": "mac-raporu/ado-den-haag-fortuna-sittard-2026-09-06.html",
         "competition": "Eredivisie"
       },
       "reportUrl": "./mac-raporu/ado-den-haag-fortuna-sittard-2026-09-06.html",
       "digest": {
         "headline": "Fortuna Sittard, ADO Den Haag'ı 3-2 yendi",
-        "paragraph": "Fortuna Sittard, Bingoal Stadion'da oynanan Eredivisie karşılaşmasında ADO Den Haag'ı 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Fortuna Sittard, Bingoal Stadium'da oynanan Eredivisie karşılaşmasında ADO Den Haag'ı 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Fortuna Sittard",
           "loser": "ADO Den Haag",
@@ -8755,7 +8646,7 @@
       "season": null,
       "homeTeam": "Kortrijk",
       "awayTeam": "Zulte Waregem",
-      "venue": "Guldensporen Stadion",
+      "venue": "Guldensporenstadion",
       "score": {
         "home": 0,
         "away": 2
@@ -8827,23 +8718,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "086986f63dbdc525",
-      "fingerprint": "086986f63dbdc525",
+      "analysisSourceHash": "ecec0d2d2602874f",
+      "fingerprint": "ecec0d2d2602874f",
       "analysisGeneratedAt": "2026-09-06T16:06:33.170Z",
-      "analysisUpdatedAt": "2026-09-06T16:59:00.076Z",
-      "generatedAt": "2026-09-06T16:59:00.076Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Kortrijk 0-2 Zulte Waregem maç raporu: Jupiler Pro League istatistikleri | FutbolRadar",
-        "description": "Zulte Waregem, Guldensporen Stadion'da oynanan Jupiler Pro League karşılaşmasında Kortrijk'i 2-0 mağlup etti.",
+        "description": "Zulte Waregem, Guldensporenstadion'da oynanan Jupiler Pro League karşılaşmasında Kortrijk'i 2-0 mağlup etti.",
         "path": "mac-raporu/kortrijk-zulte-waregem-2026-09-06.html",
         "competition": "Jupiler Pro League"
       },
       "reportUrl": "./mac-raporu/kortrijk-zulte-waregem-2026-09-06.html",
       "digest": {
         "headline": "Zulte Waregem, Kortrijk'i 2-0 yendi",
-        "paragraph": "Zulte Waregem, Guldensporen Stadion'da oynanan Jupiler Pro League karşılaşmasında Kortrijk'i 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "Zulte Waregem, Guldensporenstadion'da oynanan Jupiler Pro League karşılaşmasında Kortrijk'i 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Zulte Waregem",
           "loser": "Kortrijk",
@@ -12472,7 +12363,7 @@
       "season": null,
       "homeTeam": "Telstar",
       "awayTeam": "Cambuur",
-      "venue": "Sportpark Schoonenberg",
+      "venue": "BUKO Stadion",
       "score": {
         "home": 2,
         "away": 2
@@ -12540,23 +12431,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a1b794add0445f2f",
-      "fingerprint": "a1b794add0445f2f",
+      "analysisSourceHash": "0db04aa3ff35c65b",
+      "fingerprint": "0db04aa3ff35c65b",
       "analysisGeneratedAt": "2026-09-06T16:06:33.170Z",
-      "analysisUpdatedAt": "2026-09-06T19:01:23.987Z",
-      "generatedAt": "2026-09-06T19:01:23.987Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Telstar 2-2 Cambuur maç raporu: Eredivisie istatistikleri | FutbolRadar",
-        "description": "Sportpark Schoonenberg'de oynanan Eredivisie maçında Telstar ile Cambuur birbirini geçemedi: 2-2.",
+        "description": "BUKO Stadion'da oynanan Eredivisie maçında Telstar ile Cambuur birbirini geçemedi: 2-2.",
         "path": "mac-raporu/telstar-cambuur-2026-09-06.html",
         "competition": "Eredivisie"
       },
       "reportUrl": "./mac-raporu/telstar-cambuur-2026-09-06.html",
       "digest": {
         "headline": "Telstar ile Cambuur 2-2 berabere kaldı",
-        "paragraph": "Sportpark Schoonenberg'de oynanan Eredivisie maçında Telstar ile Cambuur birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "BUKO Stadion'da oynanan Eredivisie maçında Telstar ile Cambuur birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -12662,7 +12553,7 @@
       "season": null,
       "homeTeam": "Cercle Brugge",
       "awayTeam": "Gent",
-      "venue": "Jan Breydel Stadion",
+      "venue": "Jan Breydel Stadium",
       "score": {
         "home": 0,
         "away": 3
@@ -12722,23 +12613,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b56e9020fe4818f8",
-      "fingerprint": "b56e9020fe4818f8",
+      "analysisSourceHash": "733fe41ce2157627",
+      "fingerprint": "733fe41ce2157627",
       "analysisGeneratedAt": "2026-09-06T16:06:33.170Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Cercle Brugge 0-3 Gent maç raporu: Jupiler Pro League istatistikleri | FutbolRadar",
-        "description": "Gent, Jan Breydel Stadion'da oynanan Jupiler Pro League karşılaşmasında Cercle Brugge'yi 3-0 mağlup etti.",
+        "description": "Gent, Jan Breydel Stadium'da oynanan Jupiler Pro League karşılaşmasında Cercle Brugge'yi 3-0 mağlup etti.",
         "path": "mac-raporu/cercle-brugge-gent-2026-09-06.html",
         "competition": "Jupiler Pro League"
       },
       "reportUrl": "./mac-raporu/cercle-brugge-gent-2026-09-06.html",
       "digest": {
         "headline": "Gent, Cercle Brugge'yi 3-0 yendi",
-        "paragraph": "Gent, Jan Breydel Stadion'da oynanan Jupiler Pro League karşılaşmasında Cercle Brugge'yi 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Gent, Jan Breydel Stadium'da oynanan Jupiler Pro League karşılaşmasında Cercle Brugge'yi 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Gent",
           "loser": "Cercle Brugge",
@@ -12932,7 +12823,7 @@
       "season": null,
       "homeTeam": "Birmingham",
       "awayTeam": "Wolves",
-      "venue": null,
+      "venue": "St. Andrew's @ Knighthead Park",
       "score": {
         "home": 2,
         "away": 2
@@ -13004,23 +12895,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "cb5534acbb57896d",
-      "fingerprint": "cb5534acbb57896d",
+      "analysisSourceHash": "28803a3c3baa56cb",
+      "fingerprint": "28803a3c3baa56cb",
       "analysisGeneratedAt": "2026-09-06T16:06:33.170Z",
-      "analysisUpdatedAt": "2026-09-06T16:59:00.076Z",
-      "generatedAt": "2026-09-06T16:59:00.076Z",
+      "analysisUpdatedAt": "2026-09-07T10:11:35.791Z",
+      "generatedAt": "2026-09-07T10:11:35.791Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Birmingham 2-2 Wolves maç raporu: Championship istatistikleri | FutbolRadar",
-        "description": "Championship maçında Birmingham ile Wolves birbirini geçemedi: 2-2.",
+        "description": "Birmingham 2-2 Wolves maç raporu, goller, olaylar ve sonraki maç.",
         "path": "mac-raporu/birmingham-wolves-2026-09-06.html",
         "competition": "Championship"
       },
       "reportUrl": "./mac-raporu/birmingham-wolves-2026-09-06.html",
       "digest": {
         "headline": "Birmingham ile Wolves 2-2 berabere kaldı",
-        "paragraph": "Championship maçında Birmingham ile Wolves birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi henüz doğrulanmadı.",
+        "paragraph": "St. Andrew's @ Knighthead Park'ta oynanan Championship maçında Birmingham ile Wolves birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
