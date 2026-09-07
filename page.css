@@ -21701,3 +21701,129 @@ a.motm-week__card:focus-visible {
   .msp-faq { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .msp-badge { width: 56px; height: 56px; }
 }
+
+/* ============================================================================
+   ŞAMPİYONLAR LİGİ VİTRİNİ (ana sayfa) — bkz. haber/sampiyonlar-ligi-basliyor-*
+   ========================================================================== */
+.cl-spotlight { padding-top: var(--sp-8); padding-bottom: var(--sp-6); }
+.cl-spotlight-hero {
+  position: relative;
+  overflow: hidden;
+  padding: var(--sp-8) var(--sp-6);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line-strong);
+  background:
+    radial-gradient(120% 160% at 0% 0%, rgba(11, 143, 90, 0.16), transparent 60%),
+    linear-gradient(135deg, var(--surface-raised), var(--surface));
+  box-shadow: var(--shadow-card);
+}
+.cl-spotlight-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--green);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.cl-spotlight-hero h2 { margin: var(--sp-3) 0 var(--sp-2); font-size: var(--fs-2xl); line-height: 1.15; }
+.cl-spotlight-hero p { margin: 0; max-width: 62ch; color: var(--text-soft); font-size: var(--fs-md); }
+.cl-spotlight-hero-actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-5); }
+
+.cl-spotlight-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+  margin-top: var(--sp-6);
+}
+@media (min-width: 640px) {
+  .cl-spotlight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1080px) {
+  .cl-spotlight-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+.cl-match-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: var(--shadow-card);
+}
+.cl-match-card--priority { border-color: var(--line-strong); background: var(--green-tint); }
+.cl-match-priority-tag {
+  position: absolute;
+  top: -10px;
+  left: var(--sp-4);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--green-deep);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+}
+.cl-match-card-teams { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); margin-top: var(--sp-2); }
+.cl-match-team { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; min-width: 0; font-size: var(--fs-sm); font-weight: 700; text-align: center; }
+.cl-match-mono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--surface-tint);
+  border: 1px solid var(--line);
+  color: var(--green-deep);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.cl-match-vs { flex: none; color: var(--muted); font-size: var(--fs-xs); font-weight: 700; text-transform: uppercase; }
+.cl-match-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: var(--fs-xs); color: var(--muted); }
+.cl-match-competition { font-weight: 700; color: var(--text-soft); }
+.cl-match-datetime { font-variant-numeric: tabular-nums; }
+.cl-match-countdown {
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  background: var(--live);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.72rem;
+}
+.cl-match-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--sp-2); border-top: 1px dashed var(--line); }
+.cl-match-links a {
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+  color: var(--text);
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.cl-match-links a:hover, .cl-match-links a:focus-visible { border-color: var(--line-strong); color: var(--green-deep); }
+
+.cl-spotlight-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-4);
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+  color: var(--text);
+  text-decoration: none;
+}
+.cl-spotlight-secondary:hover, .cl-spotlight-secondary:focus-visible { border-style: solid; }
+.cl-spotlight-secondary-label { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.cl-spotlight-secondary-teams { font-weight: 800; font-size: var(--fs-md); }
+.cl-spotlight-secondary-time { color: var(--text-soft); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
