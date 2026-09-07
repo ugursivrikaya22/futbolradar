@@ -77,6 +77,28 @@ console.log("postprocess-chain");
     /(?:npm run postprocess|node scripts\/postprocess\.mjs)/,
     "build, postprocess'i çağırmalı"
   );
+
+  // ÜÇÜNCÜ TÜKETİCİ: npm'in `postbuild` yaşam döngüsü kancası.
+  //
+  // Gerçek olay: `postbuild`, `build` TAMAMLANDIKTAN SONRA npm tarafından
+  // OTOMATİK çalıştırılır (build script'in kendi zincirinde elle
+  // çağrılmaz) ve kendi sayfa üreticilerini (generate-evergreen-seo-pages,
+  // generate-league-standings-pages, generate-en-league-standings-pages)
+  // barındırır. Bu üreticiler `siteHeader`/`siteFooter`'ı doğrudan
+  // çağırır ama bandı, favicon'u, GA4'ü, hreflang'ı, şemayı hiç eklemez —
+  // onlar yalnızca `postprocess.mjs` geçtiğinde sayfaya girer. `postbuild`
+  // eskiden zincirin yalnızca son adımını (`inject-asset-version`) elle
+  // çağırıyordu; üreticiler `build`'in kendi `postprocess.mjs` çağrısından
+  // SONRA çalıştığı için ürettikleri sayfalar (4 takım profili, tüm lig
+  // puan durumu sayfaları, TR/EN) bandı, analitiği ve şemayı hiç görmeden
+  // yayına çıkıyordu — tam da bu dosyanın önlediği "unutulan ikinci liste"
+  // hatasının üçüncü bir örneği.
+  const postbuild = pkg.scripts.postbuild || "";
+  assert.match(
+    postbuild,
+    /node scripts\/postprocess\.mjs$/,
+    `postbuild, kendi üreticilerinden SONRA tam postprocess zincirini çağırmalı, tek bir enjektörü elle değil (mevcut: ${postbuild})`
+  );
 }
 
 // ── 4. Saatlik kuyruk zinciri TÜRETMELİ ────────────────────────────────────
