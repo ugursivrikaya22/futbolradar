@@ -1,18 +1,34 @@
 /**
  * ANA SAYFA HERO KARUSELİ — MAÇ SIRASI
  *
- * Hero'daki büyük kart yalnızca doğrulanmış CANLI maçları döndürür. Hangi
- * maçın hangi sırada geleceği tek bir yerde, burada belirlenir; kürasyonlu
- * liste, sağlayıcı takvimi veya statik yedek içerik bu kapıyı ezemez.
+ * Hero'daki büyük kart hangi maçı hangi sırada göstereceğine tek bir yerde,
+ * burada karar verilir; kürasyonlu liste, sağlayıcı takvimi veya statik
+ * yedek içerik bu kapıyı ezemez.
  *
- * KADEME (tier) sırası — ilk kart daima kademe 0'ın en iyisidir:
+ * HAVUZ İKİ AŞAMALI:
  *
- *   0. Canlı Türk takımı maçı        → ilk karta sabitlenir
- *   2. Büyük kulüplerin canlı maçı   → Real Madrid, Bayern ve benzerleri
- *   3. Diğer canlı maçlar
+ *   1. Gerçekten CANLI bir maç varsa (hangi ligden olursa olsun) havuz
+ *      yalnızca canlı maçlardan kurulur. Kademe (tier) sırası, ilk kart
+ *      daima kademe 0'ın en iyisidir:
+ *        0. Canlı Türk takımı maçı        → ilk karta sabitlenir
+ *        2. Büyük kulüplerin canlı maçı   → Real Madrid, Bayern ve benzerleri
+ *        3. Diğer canlı maçlar
+ *      Gerçekten oynanan bir maç her zaman önde kalır; hiçbir şey (bir Türk
+ *      takımı maçı bile) onu havuzdan silmez.
  *
- * Canlı maç yoksa seçim boş döner ve arayüz canlı skor boş durumunu
- * gösterir. Başlamamış veya bitmiş bir maç artık büyük kartı dolduramaz.
+ *   2. CANLI maç YOKSA — TRENDYOL SÜPER LİG GÜVENCESİ devreye girer.
+ *      Büyük kart eskiden bu durumda ya boş kalıyor ya da bugünün Süper
+ *      Lig maçı canlı olana kadar hiç görünmüyordu. Artık bugünün
+ *      DOĞRULANMIŞ Türk takımı maçı (varsa) kutuyu doldurur — ama yalnızca
+ *      iki durumda: kickoff henüz gelmemişse ("bugün X saatinde") ya da
+ *      sağlayıcı maçı FINISHED/AWARDED işaretlemişse ("X-Y bitti"). Saatin
+ *      geçip sağlayıcının henüz "canlı" ya da "bitti" demediği ara durum
+ *      ("in-progress" bandı, saatten TAHMİN edilir) bilerek dışarıda
+ *      bırakılır: o tahmin, canlı maçlar için önlenen "bayat canlı"
+ *      hatasının bir başka biçimi olurdu.
+ *
+ * Ne canlı bir maç ne de bugünün doğrulanmış bir Türk takımı maçı varsa
+ * seçim boş döner ve arayüz canlı skor boş durumunu gösterir.
  */
 
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
@@ -202,6 +218,29 @@ function reasonFor(match, nowMs) {
 }
 
 /**
+ * Bugünün Türk takımı maçı, canlı olmasa da DOĞRULANMIŞ bir durumdaysa
+ * havuza girer: kickoff henüz gelmemiş ("upcoming" — saat kesin gelecek
+ * zamanda) ya da sağlayıcı maçı FINISHED/AWARDED olarak işaretlemiş
+ * ("played" — sonuç kesin). "in-progress" bandı bilerek DIŞARIDA
+ * bırakılır: o bant saatten tahmin edilir, sağlayıcı onayı taşımaz — tam
+ * da bu dosyanın canlı maçlar için önlediği "bayat canlı" hatasının bir
+ * başka biçimi olurdu. Gerçekten oynanan bir maç, sağlayıcı onayladığı an
+ * zaten `isLiveMatch` üzerinden canlı havuza girer.
+ */
+function isFallbackTurkishMatch(match, nowMs, today) {
+  if (!isTurkishMatch(match) || isLiveMatch(match, nowMs) || matchDateValue(match) !== today) {
+    return false;
+  }
+
+  const band = bandOf(match, nowMs);
+  if (band === "upcoming") {
+    return true;
+  }
+
+  return band === "played" && (isFinishedMatch(match) || isAwardedStatus(match));
+}
+
+/**
  * Karuselde dönecek maçları sırasıyla verir. İlk kayıt hero'nun açılışta
  * gösterdiği karttır.
  *
@@ -216,14 +255,21 @@ function selectFeaturedMatches(matches, options) {
   const settings = options || {};
   const now = settings.now instanceof Date ? settings.now : new Date();
   const nowMs = now.getTime();
+  const today = typeof settings.today === "string" && settings.today ? settings.today : istanbulToday(now);
   const limit = Number.isFinite(settings.limit) ? Math.max(1, settings.limit) : MAX_FEATURED_SLIDES;
   const list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
-  // Büyük kart bir canlı skor yüzeyidir: yalnızca okunabilir skorlu,
+  // Büyük kart öncelikle bir canlı skor yüzeyidir: okunabilir skorlu,
   // sağlayıcı tarafından canlı işaretli ve bayatlık penceresini aşmamış
   // maçlar havuza girer. Tarih filtresi kullanılmaz; gece yarısını aşan
   // gerçek bir canlı maç yine görünür.
-  const pool = list.filter((match) => isLiveMatch(match, nowMs));
+  const livePool = list.filter((match) => isLiveMatch(match, nowMs));
+
+  // TRENDYOL SÜPER LİG GÜVENCESİ. Canlı maç YOKSA (hangi ligden olursa
+  // olsun — gerçekten oynanan bir maç her zaman önde kalır, bir Türk
+  // takımı maçı bile onu ezmez) bugünün doğrulanmış Türk takımı maçı
+  // kutuyu doldurur. Bkz. isFallbackTurkishMatch.
+  const pool = livePool.length ? livePool : list.filter((match) => isFallbackTurkishMatch(match, nowMs, today));
   const turkishCount = pool.filter(isTurkishMatch).length;
 
   const ordered = pool.slice().sort((left, right) => {

@@ -97,22 +97,30 @@ const foreignLive = {
   kickoff: "2026-08-14T22:00:00+03:00", status: "LIVE", live: true, source: "api-football"
 };
 
-assert.deepEqual(
-  selectFeaturedMatches([foreignLive, lifecycle[0].record], { now: new Date(lifecycle[0].now), today: "2026-08-14" }),
-  [],
-  "başlamamış maç canlı hero havuzuna girmemeli"
+// `foreignLive` "LIVE" iddia eder ama skoru yok (isLiveMatch'in skor kapısı
+// onu eler), yani bu anda gerçekten canlı hiçbir maç yok. Trendyol Süper Lig
+// güvencesi devreye girer: açılış maçı henüz başlamadı ama BUGÜN, dolayısıyla
+// kesin kalkış saatiyle büyük kartı doldurur — boş kalmaz.
+const beforeKickoffSelection = selectFeaturedMatches(
+  [foreignLive, lifecycle[0].record], { now: new Date(lifecycle[0].now), today: "2026-08-14" }
 );
+assert.equal(beforeKickoffSelection.length, 1, "canlı yokken bugünün henüz başlamamış Türk maçı tek kart olmalı");
+assert.equal(beforeKickoffSelection[0].match.homeTeam, HOME, "kart açılış maçı olmalı");
+assert.equal(beforeKickoffSelection[0].reason, "turkish-upcoming", "henüz başlamamış maçın sebebi turkish-upcoming olmalı");
 
 for (const phase of lifecycle.slice(1, 4)) {
   const [first] = selectFeaturedMatches([foreignLive, phase.record], { now: new Date(phase.now), today: "2026-08-14" });
   assert.equal(first.match.homeTeam, HOME, `${phase.label}: hero ilk kartı Türk maçı olmalı`);
   assert.ok(first.reason.startsWith("turkish-"), `${phase.label}: sebep turkish- ile başlamalı (gelen ${first.reason})`);
 }
-assert.deepEqual(
-  selectFeaturedMatches([foreignLive, lifecycle[4].record], { now: new Date(lifecycle[4].now), today: "2026-08-14" }),
-  [],
-  "biten maç canlı hero havuzuna girmemeli"
+// Aynı gerekçeyle: canlı yokken, bugün sağlayıcı tarafından FINISHED
+// işaretlenen açılış maçı sonucuyla büyük kartta kalır.
+const finishedSelection = selectFeaturedMatches(
+  [foreignLive, lifecycle[4].record], { now: new Date(lifecycle[4].now), today: "2026-08-14" }
 );
+assert.equal(finishedSelection.length, 1, "canlı yokken bugün biten Türk maçı tek kart olmalı");
+assert.equal(finishedSelection[0].match.homeTeam, HOME, "kart biten açılış maçı olmalı");
+assert.equal(finishedSelection[0].reason, "turkish-played", "biten maçın sebebi turkish-played olmalı");
 // Canlıyken kademe 0: yabancı canlı maç önüne geçemez.
 const liveSelection = selectFeaturedMatches([foreignLive, lifecycle[1].record], { now: new Date(lifecycle[1].now), today: "2026-08-14" });
 assert.equal(liveSelection[0].tier, 0, "canlı Türk maçı kademe 0 olmalı");
