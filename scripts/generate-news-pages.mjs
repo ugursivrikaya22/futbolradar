@@ -104,8 +104,7 @@ function publishableArticles() {
 
 function jsonLd(article) {
   const sources = articleSources(article);
-  return {
-    "@context": "https://schema.org",
+  const newsArticle = {
     "@type": "NewsArticle",
     headline: article.title,
     description: article.spot || article.summary || "",
@@ -123,6 +122,15 @@ function jsonLd(article) {
     keywords: Array.isArray(article.tags) ? article.tags.join(", ") : undefined,
     citation: sources.length ? sources.map((source) => source.url) : undefined
   };
+  const breadcrumb = {
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: domain },
+      { "@type": "ListItem", position: 2, name: "Haberler", item: `${domain}/haberler` },
+      { "@type": "ListItem", position: 3, name: article.title, item: articleUrl(article) }
+    ]
+  };
+  return { "@context": "https://schema.org", "@graph": [newsArticle, breadcrumb] };
 }
 
 function pageHtml(article) {
@@ -160,7 +168,7 @@ function pageHtml(article) {
     ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`
     : "";
   const internalLinksHtml = internalLinks.length
-    ? `<section class="article-sources" aria-labelledby="article-internal-links-title"><h2 id="article-internal-links-title">Ilgili baglantilar</h2><ul>${internalLinks.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`).join("")}</ul></section>`
+    ? `<section class="article-sources" aria-labelledby="article-internal-links-title"><h2 id="article-internal-links-title">İlgili bağlantılar</h2><ul>${internalLinks.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`).join("")}</ul></section>`
     : "";
 
   return `<!doctype html>
