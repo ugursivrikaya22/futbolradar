@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-06T23:51:59.415Z",
+  "updatedAt": "2026-09-07T04:26:29.349Z",
   "items": [
     {
       "id": "auto-news-cb15eb7c167a321c2672",
@@ -63,26 +63,6 @@
       }
     },
     {
-      "id": "auto-news-e61867ca1de416b18f78",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Amed Sportif Faaliyetler 0-3 Fenerbahçe arsaVev",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-06T16:31:09.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxNcER5NWZhdGl1OFhOQXI1VGdwajlyZ0xEbzl2RUJGaEFGN21oRWllQ0t0blVoT2tMc0s3cjFkZGgxazVFbWpDWkF0aldFZ2RCS0s4dXlOUjJ1Q1M1VmxaRm8zM3hnN3pjNlk3aWtXRTdaaUVTZ0pVdmp2S0N6bzdxMWlYbkJxZHppa253N2QtZnRHYm80WUswdllKZ0NpZzc0eHBWQTN3?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-c9f9a9672f5bac2d4172",
       "category": "official",
       "confidence": "confirmed",
@@ -99,6 +79,26 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-13a1d65f54d5526427f4",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "FUTBOL",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-06T15:11:05.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMibkFVX3lxTFBTdTQtTW9xTU5JLUxYU211a29nMUxZcWhzaVNLT3JELU1xaXZDSDMwbzU1SHV4d3FnNklzWmNwVW1abUpYLUk4R013OU1iLXBwOUM4YlI2UlE5V2dRLVZTcUlIdGc0VUFQdlpLN3V3?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
         "status": "OFFICIAL"
       }
     },
@@ -165,6 +165,26 @@
       }
     },
     {
+      "id": "auto-news-f724ec527cb5b128516d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Teknik Direktörümüz İsmail Kartal, Beşiktaş maçını değerlendirdi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-05T20:05:29.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxORFJSU0JtVnNSTHFoRHV6NElLMFZ4UVkyQldWVzVHMTk1T1JwUHNlSFJOV0tuMkNCZ3dsZVBYWnVIX3NRak5qU21fbzdnQmMyMFBkTEVJdVFhbGhra2VHczVDRmxtSmdsVWpMcjhjLXdLTDRaY25CY0twRVBVRnFFVFhNdTdwRzdJMGs0ckZ2cHNRbzZVQ0dQcXE0MEVXNzNZYWZyNVoxSGpmVkE2U1RwQXFFdw?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-9bfb38188669fb3b3fa0",
       "category": "official",
       "confidence": "confirmed",
@@ -173,7 +193,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-09-05T15:01:36.000Z",
       "source": {
-        "name": "bjk.com.tr",
+        "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1vQXRnZk1Sa0VqcVRFWWhfTTdSWEpfakZIUDZ4RTVnM1pPallfaXBHQ3AyVlRNTHg0SllJRVdoclVlMERoOE0xbTN2TDgtSzYtNnUwNFNSdmxNRVluY21FUmE4aVljQU5fVU9XcE9TQnZleVhrTFRBN3lPQQ?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -215,26 +235,6 @@
       "source": {
         "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNcFZydFllaVg4cGtrNE5XbE5MazcxcnI2c01fd0d4TE9ZZndEMmxKazdET1RkSTZEUGFYWG1XZzhkNDNSUkQ2alVnYjVPYlJKWldtRkVsSG1IZzZyRnVRTG9EMFZPOG9ZSW42QUI4bTJHaWpYc2NobXdZNEhyMkpwVUVkYm55LVJidEcyUWxIM2NLYXBEaHViVVIzblVyMms?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-de0c6e98c51a2c79684c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Sporting maçı medya programı belli oldu",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-05T11:09:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxPanJkeVdhV2QzZTBybU9fS2Jsb28wRm9GUDZHRXQ1OERYcVhEd1lldUVQWHZWcTM0MjF6WjVMWGJBV3BaN0RZSDJYTW1Pb1V4UTltSFN0ZnBlMFVVeEVaSUZmeG1fM0xmVzdqSU5IbkVObmhTSmdSM2hvUmNDU0FJRVUtQW1GbGFQNlIzRXVpU1FFYmpaZGN3VXdlR1JmbkQ0S2E5ajln?oc=5",
         "publisher": "galatasaray.org"
       },
       "automation": {
