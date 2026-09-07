@@ -1,9 +1,778 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-06T23:49:39.733Z",
-  "matchCount": 1077,
+  "updatedAt": "2026-09-07T04:26:02.049Z",
+  "matchCount": 1080,
   "records": [
+    {
+      "matchId": "racing-club-atletico-tucuman-2026-09-07",
+      "fixtureId": "1493116",
+      "provider": "api-football",
+      "slug": "racing-club-atletico-tucuman-2026-09-07",
+      "kickoff": "2026-09-07T03:30:00+03:00",
+      "kickoffUtc": "2026-09-07T00:30:00.000Z",
+      "kickoffLocal": "2026-09-07T03:30",
+      "date": "2026-09-07",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga Profesional Argentina",
+      "competition": "Liga Profesional Argentina",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Racing Club",
+      "awayTeam": "Atletico Tucuman",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Atletico Tucuman",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 18
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 46
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 18,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "bb86ff7786712e6d",
+      "fingerprint": "bb86ff7786712e6d",
+      "analysisGeneratedAt": "2026-09-07T04:26:01.980Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Racing Club 1-2 Atletico Tucuman maç raporu: Liga Profesional Argentina istatistikleri | FutbolRadar",
+        "description": "Atletico Tucuman, Liga Profesional Argentina karşılaşmasında Racing Club'u 2-1 mağlup etti.",
+        "path": "mac-raporu/racing-club-atletico-tucuman-2026-09-07.html",
+        "competition": "Liga Profesional Argentina"
+      },
+      "reportUrl": "./mac-raporu/racing-club-atletico-tucuman-2026-09-07.html",
+      "digest": {
+        "headline": "Atletico Tucuman, Racing Club'u 2-1 yendi",
+        "paragraph": "Atletico Tucuman, Liga Profesional Argentina karşılaşmasında Racing Club'u 2-1 mağlup etti. Golleri 14. dakikada Leandro Díaz (Atletico Tucuman), 24. dakikada Lautaro Godoy (Atletico Tucuman), 71. dakikada Leonel Pérez (Racing Club), 90+3. dakikada Ramiro Ruiz Rodriguez (Atletico Tucuman) kaydetti.",
+        "result": {
+          "winner": "Atletico Tucuman",
+          "loser": "Racing Club",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 3
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "11'",
+              "team": "Atletico Tucuman",
+              "type": "Penaltı",
+              "detail": "Leonel Di Plácido",
+              "pivotal": true
+            },
+            {
+              "minute": "14'",
+              "team": "Atletico Tucuman",
+              "type": "Kaçan penaltı",
+              "detail": "Leandro Díaz",
+              "pivotal": true
+            },
+            {
+              "minute": "24'",
+              "team": "Atletico Tucuman",
+              "type": "Gol",
+              "detail": "Lautaro Godoy",
+              "pivotal": true
+            },
+            {
+              "minute": "71'",
+              "team": "Racing Club",
+              "type": "Gol",
+              "detail": "Leonel Pérez",
+              "pivotal": true
+            },
+            {
+              "minute": "90+3'",
+              "team": "Atletico Tucuman",
+              "type": "Gol",
+              "detail": "Ramiro Ruiz Rodriguez",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Ramiro Ruiz Rodriguez), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "81'",
+              "team": "Atletico Tucuman",
+              "type": "Oyuncu değişikliği",
+              "detail": "Leandro Díaz",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Racing Club",
+              "type": "Oyuncu değişikliği",
+              "detail": "Lautaro Diaz",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "Atletico Tucuman",
+              "type": "Oyuncu değişikliği",
+              "detail": "Iván Tesuri",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "Atletico Tucuman",
+              "type": "Oyuncu değişikliği",
+              "detail": "Franco Nicola",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Ramiro Ruiz Rodriguez",
+              "team": "Atletico Tucuman",
+              "contribution": "90+3' gol · 90+4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Lautaro Godoy",
+              "team": "Atletico Tucuman",
+              "contribution": "24' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Leandro Díaz",
+              "team": "Atletico Tucuman",
+              "contribution": "14' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Leonel Pérez",
+              "team": "Racing Club",
+              "contribution": "71' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Racing Club sahaya 4-3-3 dizilişiyle çıktı.",
+            "Atletico Tucuman sahaya 4-1-4-1 dizilişiyle çıktı.",
+            "Racing Club topu elinde tutarken Atletico Tucuman derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
+            "14' Atletico Tucuman — Leandro Díaz: kaçan penaltı",
+            "24' Atletico Tucuman — Lautaro Godoy: gol",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
+            "71' Racing Club — Leonel Pérez: gol",
+            "90+3' Atletico Tucuman — Ramiro Ruiz Rodriguez: gol",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Racing Club maça 4-3-3 dizilişiyle başladı.",
+            "Atletico Tucuman maça 4-1-4-1 dizilişiyle başladı.",
+            "31' Racing Club değişikliği (Substitution 1). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "31' Racing Club değişikliği (Substitution 2). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Racing Club değişikliği (Substitution 3). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "81' Atletico Tucuman değişikliği (Substitution 1). Değişiklikten sonra Atletico Tucuman adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Racing Club",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Atletico Tucuman",
+              "formation": "4-1-4-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Atletico Tucuman, Racing Club'u 1-2 yendi.",
+            "İsabetli şutta da öndeydi (6-4); sonuç üretilen pozisyonla uyumlu."
+          ],
+          "strengths": [
+            "Racing Club topa daha çok sahip oldu (%74).",
+            "Racing Club daha çok şut denedi (19-12)."
+          ],
+          "improvements": [
+            "Racing Club şut isabetinde geride kaldı (%21); bitiricilik geliştirilmesi gereken alan.",
+            "Racing Club son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Atletico Tucuman sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Racing Club",
+            "score": 64
+          },
+          "away": {
+            "team": "Atletico Tucuman",
+            "score": 66
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Racing Club %21.1, Atletico Tucuman %50."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Racing Club 36.3, Atletico Tucuman 19.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "corinthians-chapecoense-sc-2026-09-07",
+      "fixtureId": "1492362",
+      "provider": "api-football",
+      "slug": "corinthians-chapecoense-sc-2026-09-07",
+      "kickoff": "2026-09-07T01:30:00+03:00",
+      "kickoffUtc": "2026-09-06T22:30:00.000Z",
+      "kickoffLocal": "2026-09-07T01:30",
+      "date": "2026-09-07",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Serie A",
+      "competition": "Serie A",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Corinthians",
+      "awayTeam": "Chapecoense-sc",
+      "venue": "Neo Quimica Arena",
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Chapecoense-sc",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "5ab7c2377f6b25f8",
+      "fingerprint": "5ab7c2377f6b25f8",
+      "analysisGeneratedAt": "2026-09-07T04:26:01.980Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Corinthians 1-2 Chapecoense-sc maç raporu: Serie A istatistikleri | FutbolRadar",
+        "description": "Neo Quimica Arena'da oynanan Serie A maçını Chapecoense-sc 2-1 kazandı; Corinthians sahadan puansız ayrıldı.",
+        "path": "mac-raporu/corinthians-chapecoense-sc-2026-09-07.html",
+        "competition": "Serie A"
+      },
+      "reportUrl": "./mac-raporu/corinthians-chapecoense-sc-2026-09-07.html",
+      "digest": {
+        "headline": "Chapecoense-sc, Corinthians'ı 2-1 yendi",
+        "paragraph": "Neo Quimica Arena'da oynanan Serie A maçını Chapecoense-sc 2-1 kazandı; Corinthians sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Chapecoense-sc",
+          "loser": "Corinthians",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Chapecoense-sc, Corinthians'ı 1-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Chapecoense-sc sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "river-plate-independ-rivadavia-2026-09-07",
+      "fixtureId": "1493117",
+      "provider": "api-football",
+      "slug": "river-plate-independ-rivadavia-2026-09-07",
+      "kickoff": "2026-09-07T01:15:00+03:00",
+      "kickoffUtc": "2026-09-06T22:15:00.000Z",
+      "kickoffLocal": "2026-09-07T01:15",
+      "date": "2026-09-07",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga Profesional Argentina",
+      "competition": "Liga Profesional Argentina",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "River Plate",
+      "awayTeam": "Independ. Rivadavia",
+      "venue": "Estadio Monumental",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "River Plate",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "53b6d0d544d928d8",
+      "fingerprint": "53b6d0d544d928d8",
+      "analysisGeneratedAt": "2026-09-07T04:26:01.980Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "River Plate 3-1 Independ. Rivadavia maç raporu: Liga Profesional Argentina istatistikleri | FutbolRadar",
+        "description": "River Plate, Estadio Monumental'da oynanan Liga Profesional Argentina karşılaşmasında Independ.",
+        "path": "mac-raporu/river-plate-independ-rivadavia-2026-09-07.html",
+        "competition": "Liga Profesional Argentina"
+      },
+      "reportUrl": "./mac-raporu/river-plate-independ-rivadavia-2026-09-07.html",
+      "digest": {
+        "headline": "River Plate, Independ. Rivadavia'yı 3-1 yendi",
+        "paragraph": "River Plate, Estadio Monumental'da oynanan Liga Profesional Argentina karşılaşmasında Independ. Rivadavia'yı 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "River Plate",
+          "loser": "Independ. Rivadavia",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "River Plate, Independ. Rivadavia'yı 3-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "River Plate sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "botafogo-palmeiras-2026-09-07",
       "fixtureId": "1492360",
@@ -4247,10 +5016,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -4258,9 +5027,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 19
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -4280,24 +5049,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 19,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 49
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "0943e8622ebf2933",
-      "fingerprint": "0943e8622ebf2933",
+      "analysisSourceHash": "93c1ec5b5ad8d199",
+      "fingerprint": "93c1ec5b5ad8d199",
       "analysisGeneratedAt": "2026-09-06T19:01:23.987Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4309,7 +5083,7 @@
       "reportUrl": "./mac-raporu/bologna-sassuolo-2026-09-06.html",
       "digest": {
         "headline": "Bologna ile Sassuolo 2-2 berabere kaldı",
-        "paragraph": "Bologna ile Sassuolo, Serie A karşılaşmasında 2-2 berabere kaldı. Golleri 19. dakikada Josh Doig (Sassuolo), 50. dakikada Roberto Piccoli (Bologna), 56. dakikada Vasilije Adzic (Sassuolo), 90+1. dakikada Artem Dovbyk (Bologna) kaydetti.",
+        "paragraph": "Bologna ile Sassuolo, Serie A karşılaşmasında 2-2 berabere kaldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -4322,115 +5096,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 3
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "90+4'",
-              "team": "Bologna",
-              "type": "Kırmızı kart",
-              "detail": "Domenico Tedesco",
-              "pivotal": true
-            },
-            {
-              "minute": "19'",
-              "team": "Sassuolo",
-              "type": "Gol",
-              "detail": "Josh Doig",
-              "pivotal": true
-            },
-            {
-              "minute": "50'",
-              "team": "Bologna",
-              "type": "Gol",
-              "detail": "Roberto Piccoli",
-              "pivotal": true
-            },
-            {
-              "minute": "56'",
-              "team": "Sassuolo",
-              "type": "Gol",
-              "detail": "Vasilije Adzic",
-              "pivotal": true
-            },
-            {
-              "minute": "90+1'",
-              "team": "Bologna",
-              "type": "Gol",
-              "detail": "Artem Dovbyk",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Artem Dovbyk), 1 kırmızı kart bu bölümde görüldü.",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "80'",
-              "team": "Sassuolo",
-              "type": "Oyuncu değişikliği",
-              "detail": "Nemanja Matić",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "Sassuolo",
-              "type": "Oyuncu değişikliği",
-              "detail": "Josh Doig",
-              "decisive": false
-            },
-            {
-              "minute": "86'",
-              "team": "Bologna",
-              "type": "Oyuncu değişikliği",
-              "detail": "Federico Bernardeschi",
-              "decisive": false
-            },
-            {
-              "minute": "90+1'",
-              "team": "Bologna",
-              "type": "Gol",
-              "detail": "Artem Dovbyk",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Josh Doig",
-              "team": "Sassuolo",
-              "contribution": "19' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Vasilije Adzic",
-              "team": "Sassuolo",
-              "contribution": "56' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Artem Dovbyk",
-              "team": "Bologna",
-              "contribution": "90+1' gol · 90+1' sarı kart",
-              "impact": "orta"
-            },
-            {
-              "name": "Roberto Piccoli",
-              "team": "Bologna",
-              "contribution": "50' gol · 53' sarı kart",
-              "impact": "orta"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -4441,34 +5122,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
-            "19' Sassuolo — Josh Doig: gol",
-            "İlk yarı içinde 4 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
-            "50' Bologna — Roberto Piccoli: gol",
-            "56' Sassuolo — Vasilije Adzic: gol",
-            "90+1' Bologna — Artem Dovbyk: gol",
-            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Bologna maça 4-2-3-1 dizilişiyle başladı.",
-            "Sassuolo maça 4-3-3 dizilişiyle başladı.",
-            "38' Sassuolo değişikliği (Substitution 1). Değişiklikten sonra Sassuolo adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Bologna değişikliği (Substitution 1). Değişiklikten sonra Bologna adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Bologna değişikliği (Substitution 2). Değişiklikten sonra Bologna adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Bologna değişikliği (Substitution 3). Değişiklikten sonra Bologna adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Sassuolo maça 4-3-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -4480,7 +5147,7 @@
               "formation": "4-3-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -4492,8 +5159,7 @@
             "Bologna daha çok şut denedi (21-15)."
           ],
           "improvements": [
-            "Bologna şut isabetinde geride kaldı (%24); bitiricilik geliştirilmesi gereken alan.",
-            "Kırmızı kart maçın seyrini etkiledi (90+4' Bologna)."
+            "Bologna şut isabetinde geride kaldı (%24); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
           "basis": "statistics+events"
@@ -4581,21 +5247,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -4627,10 +5287,10 @@
       "winner": "Elazığspor",
       "turkish": true,
       "turkishTeam": "Elazığspor & Sebat Gençlikspor",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -4638,9 +5298,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 4
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -4660,15 +5320,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 4,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -4686,23 +5350,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "1c8a837d213b834d",
-      "fingerprint": "1c8a837d213b834d",
+      "analysisSourceHash": "f212cb4b59ed0036",
+      "fingerprint": "f212cb4b59ed0036",
       "analysisGeneratedAt": "2026-09-06T19:01:23.987Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Elazığspor 3-1 Sebat Gençlikspor maç raporu: 2. Lig istatistikleri | FutbolRadar",
-        "description": "Elazığspor 3-1 Sebat Gençlikspor maç raporu, goller: K. Ruzgar, H. Ozcan, kırılma anları ve sonraki maç.",
+        "description": "Elazığspor 3-1 Sebat Gençlikspor maç raporu, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/elazigspor-sebat-genclikspor-2026-09-06.html",
         "competition": "2. Lig"
       },
       "reportUrl": "./mac-raporu/elazigspor-sebat-genclikspor-2026-09-06.html",
       "digest": {
         "headline": "Elazığspor, Sebat Gençlikspor'u 3-1 yendi",
-        "paragraph": "Elazığspor, Elazig Ataturk Stadyumu'nda oynanan 2. Lig karşılaşmasında Sebat Gençlikspor'u 3-1 mağlup etti. Golleri 21. dakikada K. Ruzgar (Elazığspor), 27. dakikada K. Ruzgar (Elazığspor), 51. dakikada H. Ozcan (Sebat Gençlikspor), 88. dakikada K. Ruzgar (Elazığspor) kaydetti.",
+        "paragraph": "Elazığspor, Elazig Ataturk Stadyumu'nda oynanan 2. Lig karşılaşmasında Sebat Gençlikspor'u 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Elazığspor",
           "loser": "Sebat Gençlikspor",
@@ -4718,94 +5382,33 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "21'",
-              "team": "Elazığspor",
-              "type": "Gol",
-              "detail": "K. Ruzgar",
-              "pivotal": true
-            },
-            {
-              "minute": "27'",
-              "team": "Elazığspor",
-              "type": "Gol",
-              "detail": "K. Ruzgar",
-              "pivotal": true
-            },
-            {
-              "minute": "51'",
-              "team": "Sebat Gençlikspor",
-              "type": "Gol",
-              "detail": "H. Ozcan",
-              "pivotal": true
-            },
-            {
-              "minute": "88'",
-              "team": "Elazığspor",
-              "type": "Penaltı",
-              "detail": "K. Ruzgar",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (K. Ruzgar).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "88'",
-              "team": "Elazığspor",
-              "type": "Penaltı",
-              "detail": "K. Ruzgar",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "K. Ruzgar",
-              "team": "Elazığspor",
-              "contribution": "21' gol · 27' gol · 88' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "H. Ozcan",
-              "team": "Sebat Gençlikspor",
-              "contribution": "51' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
-            "21' Elazığspor — K. Ruzgar: gol",
-            "27' Elazığspor — K. Ruzgar: gol"
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
-            "51' Sebat Gençlikspor — H. Ozcan: gol",
-            "88' Elazığspor — K. Ruzgar: penaltı"
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "unavailable",
@@ -4819,9 +5422,7 @@
             "Elazığspor, Sebat Gençlikspor'u 3-1 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Sebat Gençlikspor son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
-          ],
+          "improvements": [],
           "closing": "Elazığspor sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -4845,16 +5446,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 57,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -5080,10 +5675,10 @@
       "winner": "İnegöl Kafkas Gençlik",
       "turkish": true,
       "turkishTeam": "Menemen FK",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -5091,9 +5686,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 4
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -5113,15 +5708,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 4,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -5139,23 +5738,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "5d6f9282f34b317a",
-      "fingerprint": "5d6f9282f34b317a",
+      "analysisSourceHash": "b654d4b52b6cd790",
+      "fingerprint": "b654d4b52b6cd790",
       "analysisGeneratedAt": "2026-09-06T19:01:23.987Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Menemen FK 1-3 İnegöl Kafkas Gençlik maç raporu: 2. Lig istatistikleri | FutbolRadar",
-        "description": "Menemen FK 1-3 İnegöl Kafkas Gençlik maç raporu, goller: D. Inci, E. Poyraz, M. Pehlivan, kırılma anları ve sonraki maç.",
+        "description": "Menemen FK 1-3 İnegöl Kafkas Gençlik maç raporu, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/menemen-fk-inegol-kafkas-genclik-2026-09-06.html",
         "competition": "2. Lig"
       },
       "reportUrl": "./mac-raporu/menemen-fk-inegol-kafkas-genclik-2026-09-06.html",
       "digest": {
         "headline": "İnegöl Kafkas Gençlik, Menemen FK'i 3-1 yendi",
-        "paragraph": "İnegöl Kafkas Gençlik, 2. Lig karşılaşmasında Menemen FK'i 3-1 mağlup etti. Golleri 18. dakikada D. Inci (İnegöl Kafkas Gençlik), 32. dakikada E. Poyraz (Menemen FK), 34. dakikada D. Inci (İnegöl Kafkas Gençlik), 49. dakikada M. Pehlivan (İnegöl Kafkas Gençlik) kaydetti.",
+        "paragraph": "İnegöl Kafkas Gençlik, 2. Lig karşılaşmasında Menemen FK'i 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "İnegöl Kafkas Gençlik",
           "loser": "Menemen FK",
@@ -5171,92 +5770,33 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "18'",
-              "team": "İnegöl Kafkas Gençlik",
-              "type": "Gol",
-              "detail": "D. Inci",
-              "pivotal": true
-            },
-            {
-              "minute": "32'",
-              "team": "Menemen FK",
-              "type": "Gol",
-              "detail": "E. Poyraz",
-              "pivotal": true
-            },
-            {
-              "minute": "34'",
-              "team": "İnegöl Kafkas Gençlik",
-              "type": "Gol",
-              "detail": "D. Inci",
-              "pivotal": true
-            },
-            {
-              "minute": "49'",
-              "team": "İnegöl Kafkas Gençlik",
-              "type": "Kendi kalesine gol",
-              "detail": "M. Pehlivan",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
+          "verdict": null,
+          "goals": null,
           "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "D. Inci",
-              "team": "İnegöl Kafkas Gençlik",
-              "contribution": "18' gol · 34' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "E. Poyraz",
-              "team": "Menemen FK",
-              "contribution": "32' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "M. Pehlivan",
-              "team": "İnegöl Kafkas Gençlik",
-              "contribution": "49' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "18' İnegöl Kafkas Gençlik — D. Inci: gol",
-            "32' Menemen FK — E. Poyraz: gol",
-            "34' İnegöl Kafkas Gençlik — D. Inci: gol"
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "49' İnegöl Kafkas Gençlik — M. Pehlivan: kendi kalesine gol"
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "unavailable",
@@ -5294,16 +5834,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 57,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -5335,10 +5869,10 @@
       "winner": "Şanlıurfaspor",
       "turkish": true,
       "turkishTeam": "Şanlıurfaspor & Ankaraspor",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -5346,9 +5880,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 1
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -5368,15 +5902,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 1,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -5394,23 +5932,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7312764dfda5333a",
-      "fingerprint": "7312764dfda5333a",
+      "analysisSourceHash": "ca46cb0cdace4684",
+      "fingerprint": "ca46cb0cdace4684",
       "analysisGeneratedAt": "2026-09-06T19:01:23.987Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Şanlıurfaspor 1-0 Ankaraspor maç raporu: 2. Lig istatistikleri | FutbolRadar",
-        "description": "Şanlıurfaspor 1-0 Ankaraspor maç raporu, goller: S. Kurumus, kırılma anları ve sonraki maç.",
+        "description": "Şanlıurfaspor 1-0 Ankaraspor maç raporu, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/sanliurfaspor-ankaraspor-2026-09-06.html",
         "competition": "2. Lig"
       },
       "reportUrl": "./mac-raporu/sanliurfaspor-ankaraspor-2026-09-06.html",
       "digest": {
         "headline": "Şanlıurfaspor, Ankaraspor'u 1-0 yendi",
-        "paragraph": "Şanlıurfaspor, 2. Lig karşılaşmasında Ankaraspor'u 1-0 mağlup etti. Tek golü 85. dakikada S. Kurumus (Şanlıurfaspor) kaydetti.",
+        "paragraph": "Şanlıurfaspor, 2. Lig karşılaşmasında Ankaraspor'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Şanlıurfaspor",
           "loser": "Ankaraspor",
@@ -5426,45 +5964,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "85'",
-              "team": "Şanlıurfaspor",
-              "type": "Gol",
-              "detail": "S. Kurumus",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (S. Kurumus), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "85'",
-              "team": "Şanlıurfaspor",
-              "type": "Gol",
-              "detail": "S. Kurumus",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "S. Kurumus",
-              "team": "Şanlıurfaspor",
-              "contribution": "85' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
@@ -5476,12 +5988,9 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "85' Şanlıurfaspor — S. Kurumus: gol"
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "unavailable",
@@ -5495,9 +6004,7 @@
             "Şanlıurfaspor, Ankaraspor'u 1-0 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Ankaraspor son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
-          ],
+          "improvements": [],
           "closing": "Şanlıurfaspor sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -5521,14 +6028,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 43,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -5560,10 +6063,10 @@
       "winner": "Ankara Demirspor",
       "turkish": true,
       "turkishTeam": "Ankaragücü & Ankara Demirspor",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -5571,9 +6074,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 1
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -5593,15 +6096,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 1,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -5619,23 +6126,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "19bb08918d0cd6b5",
-      "fingerprint": "19bb08918d0cd6b5",
+      "analysisSourceHash": "cd4a9ba38ca28c87",
+      "fingerprint": "cd4a9ba38ca28c87",
       "analysisGeneratedAt": "2026-09-06T19:01:23.987Z",
-      "analysisUpdatedAt": "2026-09-06T23:49:39.592Z",
-      "generatedAt": "2026-09-06T23:49:39.592Z",
+      "analysisUpdatedAt": "2026-09-07T04:26:01.980Z",
+      "generatedAt": "2026-09-07T04:26:01.980Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Ankaragücü 0-1 Ankara Demirspor maç raporu: 2. Lig istatistikleri | FutbolRadar",
-        "description": "Ankaragücü 0-1 Ankara Demirspor maç raporu, goller: S. Akyildiz, kırılma anları ve sonraki maç.",
+        "description": "Ankaragücü 0-1 Ankara Demirspor maç raporu, kırılma anları ve sonraki maç.",
         "path": "mac-raporu/ankaragucu-ankara-demirspor-2026-09-06.html",
         "competition": "2. Lig"
       },
       "reportUrl": "./mac-raporu/ankaragucu-ankara-demirspor-2026-09-06.html",
       "digest": {
         "headline": "Ankara Demirspor, Ankaragücü'yü 1-0 yendi",
-        "paragraph": "Eryaman Stadium'da oynanan 2. Lig maçını Ankara Demirspor 1-0 kazandı; Ankaragücü sahadan puansız ayrıldı. Tek golü 90+3. dakikada S. Akyildiz (Ankara Demirspor) kaydetti.",
+        "paragraph": "Eryaman Stadium'da oynanan 2. Lig maçını Ankara Demirspor 1-0 kazandı; Ankaragücü sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Ankara Demirspor",
           "loser": "Ankaragücü",
@@ -5648,48 +6155,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "90+3'",
-              "team": "Ankara Demirspor",
-              "type": "Gol",
-              "detail": "S. Akyildiz",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (S. Akyildiz), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 0,
-            "away": 1
-          },
-          "moments": [
-            {
-              "minute": "90+3'",
-              "team": "Ankara Demirspor",
-              "type": "Gol",
-              "detail": "S. Akyildiz",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "S. Akyildiz",
-              "team": "Ankara Demirspor",
-              "contribution": "90+3' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
@@ -5701,12 +6182,9 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "90+3' Ankara Demirspor — S. Akyildiz: gol"
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "unavailable",
@@ -5720,9 +6198,7 @@
             "Ankara Demirspor, Ankaragücü'yü 0-1 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Ankaragücü son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
-          ],
+          "improvements": [],
           "closing": "Ankara Demirspor sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -5746,14 +6222,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 43,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
