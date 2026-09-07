@@ -277,6 +277,24 @@ check("hub ve ay sayfaları var ve her indekslenebilir maça bağlantı veriyor 
   }
 });
 
+check("hub: 'Yaklaşan maçlar' bitmiş/sonuç bekleyen maç göstermiyor, 'Son sonuçlar' henüz oynanmamış maç göstermiyor", () => {
+  const hub = read("mac-takvimi.html");
+  const between = (html, startMarker, endMarker) => {
+    const start = html.indexOf(startMarker);
+    if (start === -1) return "";
+    const end = html.indexOf(endMarker, start);
+    return html.slice(start, end === -1 ? html.length : end);
+  };
+  // Aynı gün bitmiş bir maç, saat ilerledikçe "post"/"pending" durumuna geçer;
+  // yalnızca gün aralığına bakan bir süzgeç bunu "Yaklaşan maçlar" başlığı
+  // altında final skoruyla bırakır. Durum sınıfı (`is-post`/`is-pending`)
+  // satıra basıldığı için bölüm bazında doğrulanabilir.
+  const upcomingSection = between(hub, "Yaklaşan maçlar", "Son sonuçlar");
+  assert.ok(!/is-post"|is-pending"/.test(upcomingSection), "'Yaklaşan maçlar' bölümünde bitmiş/sonuç bekleyen bir maç satırı var");
+  const recentSection = between(hub, "Son sonuçlar", "Aylara göre maç arşivi");
+  assert.ok(!/is-pre"/.test(recentSection), "'Son sonuçlar' bölümünde henüz oynanmamış bir maç satırı var");
+});
+
 check("vercel.json: temiz adres rewrite'ları var", () => {
   const vercel = JSON.parse(read("vercel.json"));
   for (const source of ["/mac/:slug", "/en/match/:slug", "/mac-takvimi", "/mac-takvimi/:slug", "/en/matches", "/en/matches/:slug"]) {
