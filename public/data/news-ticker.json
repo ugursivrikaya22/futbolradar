@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-07T10:12:02.238Z",
+  "updatedAt": "2026-09-07T15:09:01.529Z",
   "items": [
     {
       "id": "auto-news-4cc320dba0c6e0844e94",
@@ -265,24 +265,32 @@
       }
     },
     {
-      "id": "auto-news-a9b14ac6806eef087708",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Gençlerbirliği maçı hazırlıklarımız sürüyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-04T13:48:57.000Z",
+      "id": "news-fenerbahce-rodrigo-becao-eba6a16f",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Fenerbahçe ile Rodrigo Becao arasında yolların ayrıldığı aktarıldı.",
+      "timestamp": "2026-09-07T14:02:45.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOalJJckJOQlYwLWhfY0hBdFpDakI1NkZNQVNFMDRQUnpreTdreGdMSUJMal91OXU0MHFLN1J2VUtBT1ZQNDJ1SnpReE9IaWZkZUdSNFBXajk3TklwUFU0UmhjVDlFNGRnMnJzV1JkdGxSeWhFSFVQWWRzdjZrdWtIdnIyaTNxcDZLemVnR2sxZ2xSNmk5aXg0?oc=5",
-        "publisher": "trabzonspor.org.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-rodrigo-becao-eba6a16f"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
+      "team": "Fenerbahçe",
+      "important": true
+    },
+    {
+      "id": "news-besiktas-alexander-nubel-81a89d98",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Sporx'in haberine göre Beşiktaş'ın Alexander Nübel görüşmelerini sürdürdüğü öne sürüldü.",
+      "timestamp": "2026-09-07T12:24:00.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-alexander-nubel-81a89d98"
+      },
+      "team": "Beşiktaş",
+      "important": true
     },
     {
       "id": "auto-news-5236e92296f6081290b8",
@@ -395,20 +403,6 @@
       "important": true
     },
     {
-      "id": "news-fenerbahce-caglar-soyuncu-3c750fd3",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Fenerbahçe ile Çağlar Söyüncü arasında yolların ayrıldığı aktarıldı.",
-      "timestamp": "2026-09-04T15:51:00.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-caglar-soyuncu-3c750fd3"
-      },
-      "team": "Fenerbahçe",
-      "important": true
-    },
-    {
       "id": "news-besiktas-samsunspor-serdal-adali-b66661d9",
       "origin": "news.json",
       "category": "club-agenda",
@@ -440,26 +434,6 @@
         "feed": "hurriyet-spor",
         "priority": 7,
         "status": "REPORTED"
-      }
-    },
-    {
-      "id": "auto-news-d362f8c6ca4e754d9ff6",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "2026-2027 Sezonu Yerel Amatör Ligler Statüsü Yayınlandı",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-04T13:34:08.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE45NldodGdrOXhuVm9aWFB2T0JYQ1VTN09yeGliQVRkcUVVNmE5NFBNRlh6MExuX2htV2U1TkxnSzdGT2EzUDBaUEdiYTVoaUwxOHZMbHd1N1RhSUdVTTdSZ3BJcTV2LVk?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
       }
     }
   ]
