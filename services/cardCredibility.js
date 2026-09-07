@@ -238,9 +238,31 @@ function ratingIsVerified(player) {
  * İşaret yoksa sıfır ile "hiç ölçülmedi" ayırt edilemez; güvenli yön
  * gizlemektir. Kadro senkronu istatistik uç noktasını çağırmıyor, bu yüzden
  * senkronlanan kayıtlarda bu işaret oluşmuyor.
+ *
+ * İKİNCİ PARAMETRE — `field` — ALAN BAZLI doğrulama içindir.
+ *
+ * `statsVerifiedAt`/`statsSource` bugüne kadar KAYIT DÜZEYİNDE, hepsi-ya da-
+ * hiçbiri bir bayraktı: bir oyuncunun yalnızca gol/asist sayıları elle
+ * doğrulanınca (statsSource bunu açıkça yazsa bile) bayrak KAYDIN
+ * TAMAMINI — şut, xG, pas isabeti, kilit pas, ikili mücadele... — açıyordu.
+ * Sonuç: doğrulanmamış bu alanlar sağlayıcı/kadro-senkron kalıntısı
+ * (genelde 0) olarak "doğrulanmış gerçek sıfır" gibi yayımlandı (Victor
+ * Osimhen: 6 gol yanında 0 şut, %0 pas isabeti — hiçbiri ölçülmemişti).
+ *
+ * `statsVerifiedFields` (dizi) varsa, doğrulama artık O DİZİDEKİ alanlarla
+ * sınırlıdır; dizide OLMAYAN bir alan için `field` verilirse `false` döner.
+ * Dizi yoksa (mevcut kayıtların neredeyse tamamı) davranış AYNI kalır:
+ * kayıt düzeyinde tek karar, `field` parametresi yok sayılır — geriye dönük
+ * uyumluluk kasıtlıdır, yalnızca kısmi doğrulama taşıyan kayıtlar (bunu
+ * açıkça beyan edenler) daha dar bir kapıdan geçer.
  */
-function statsAreVerified(player) {
+function statsAreVerified(player, field) {
   if (!player) return false;
+
+  if (Array.isArray(player.statsVerifiedFields)) {
+    if (!field) return player.statsVerifiedFields.length > 0;
+    return player.statsVerifiedFields.includes(field);
+  }
 
   // Açık köken işareti varsa yeter.
   if (player.statsVerifiedAt || player.statsSource || player.statsFetchedAt) return true;
@@ -263,8 +285,8 @@ function statsAreVerified(player) {
 function restrictedFieldIsPublishable(player, key) {
   if (PROVIDER_SUPPLIED_FIELDS.has(key)) return true;
   if (RATING_FIELDS.has(key)) return ratingIsVerified(player);
-  if (COUNTING_STAT_FIELDS.has(key)) return statsAreVerified(player);
-  if (MARKET_VALUE_FIELDS.has(key)) return statsAreVerified(player);
+  if (COUNTING_STAT_FIELDS.has(key)) return statsAreVerified(player, key);
+  if (MARKET_VALUE_FIELDS.has(key)) return statsAreVerified(player, key);
   return false;
 }
 

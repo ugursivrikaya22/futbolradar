@@ -7,7 +7,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
-const { publicPlayerView, statsAreVerified } = require("../services/cardCredibility.js");
+const { publicPlayerView, statsAreVerified, ratingIsVerified } = require("../services/cardCredibility.js");
 const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
 const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
 const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
@@ -342,7 +342,17 @@ function pageHtml(player) {
   const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
-  const overall = view.verified ? (player.overallRating || player.aiRating || player.rating || "-") : null;
+  //
+  // "Overall" ile aşağıdaki "Oyuncu Skoru" FARKLI ölçütlerdir: bu bir radar
+  // modeli tahmini, diğeri maç verisine dayalı, kapsam yetersizse hiç
+  // basılmayan bir skor. `ratingStatus` "estimated" olduğunda ikisi aynı
+  // sayı sanılmasın diye "(tahmini)" eklenir — Osimhen'de "Overall 36
+  // (tahmini)" yanında "Oyuncu Skoru: Hesaplanamadı" görmek, aynı oyuncu
+  // için iki çelişkili KESİN sayı görmekten farklıdır.
+  const overallIsEstimate = view.verified && !ratingIsVerified(player);
+  const overall = view.verified
+    ? (player.overallRating || player.aiRating || player.rating || "-") + (overallIsEstimate ? " (tahmini)" : "")
+    : null;
 
   return `<!doctype html>
 <html lang="tr">

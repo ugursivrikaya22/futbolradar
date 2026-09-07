@@ -125,6 +125,36 @@ function checkAbnormalValues(players) {
     if (Number.isFinite(age) && (age < 14 || age > 46)) {
       issues.push(abnormalIssue(player, `yaş gerçek dışı görünüyor: ${age}.`));
     }
+
+    // GOL VAR AMA ONU DOĞURAN ŞUT/xG YOK. Bu ÖLÇÜLMÜŞ bir çelişki: bir gol
+    // en az bir şuttur, dolayısıyla `shots === 0` gerçek bir sıfır değil,
+    // bu alanın sağlayıcıdan/manuel düzeltmeden hiç gelmediğinin işaretidir
+    // (bkz. Victor Osimhen: 6 gol, 0 şut — yalnızca gol/asist elle
+    // doğrulanmış, ileri istatistikler kadro-senkron varsayılanında
+    // kalmıştı). `statsAreVerified` BİLEREK kullanılmaz: amaç ölçülmemiş
+    // veriyi gizlemek değil, ölçülmüş ama saçma olanı yakalamaktır.
+    //
+    // DİKKAT: `Number(null)` sessizce `0`dır — `player.shots ?? stats.shots`
+    // ikisi de `null`ken bunu doğrudan `Number()`e vermek "eksik" ile
+    // "sıfır"ı yeniden karıştırırdı. Alan önce GERÇEKTEN VAR MI diye
+    // sınanır, sayıya öyle çevrilir.
+    const rawShots = player.shots ?? player.stats?.shots;
+    const shotsPresent = rawShots !== null && rawShots !== undefined && rawShots !== "";
+    if (Number.isFinite(goals) && goals > 0 && shotsPresent && Number(rawShots) === 0) {
+      issues.push(abnormalIssue(player, `${goals} gol var ama şut sayısı 0 — şut verisi muhtemelen hiç toplanmadı, gerçek sıfır değil.`));
+    }
+
+    const rawXg = player.xg ?? player.stats?.xg;
+    const xgPresent = rawXg !== null && rawXg !== undefined && rawXg !== "";
+    if (Number.isFinite(goals) && goals > 0 && xgPresent && Number(rawXg) === 0) {
+      issues.push(abnormalIssue(player, `${goals} gol var ama xG 0 — xG verisi muhtemelen hiç toplanmadı, gerçek sıfır değil.`));
+    }
+
+    const rawPassAccuracy = player.passAccuracy ?? player.stats?.passAccuracy;
+    const passAccuracyPresent = rawPassAccuracy !== null && rawPassAccuracy !== undefined && rawPassAccuracy !== "";
+    if (Number.isFinite(appearances) && appearances > 0 && passAccuracyPresent && Number(rawPassAccuracy) === 0) {
+      issues.push(abnormalIssue(player, `${appearances} maça çıkmış ama pas isabeti %0 — pas verisi muhtemelen hiç toplanmadı, gerçek sıfır değil.`));
+    }
   }
 
   return issues;

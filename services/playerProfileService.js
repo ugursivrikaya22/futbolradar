@@ -121,10 +121,33 @@ function publishablePlayer(player, view) {
     });
   }
 
-  if (!view.verified || !statsAreVerified(player)) {
-    COUNTING_FIELDS.forEach((key) => {
+  // Alan bazlı: `statsVerifiedFields` taşıyan bir kayıtta yalnızca o dizide
+  // olmayan alanlar düşer (bkz. cardCredibility.statsAreVerified). Böyle bir
+  // dizi yoksa `statsAreVerified(player, key)` her `key` için AYNI kayıt
+  // düzeyi kararını döner, yani davranış eskisiyle birebir aynı kalır.
+  //
+  // `stats` iç içe nesnesi ayrı ele alınır: dıştaki düz alanlar (goals,
+  // shots, xg, ...) tek tek süzülse de `player.stats.shots` aynı sıfırı
+  // taşımaya devam ederse süzgeç anlamsızlaşır.
+  COUNTING_FIELDS.forEach((key) => {
+    if (key === "stats") return;
+    if (!view.verified || !statsAreVerified(player, key)) {
       delete published[key];
-    });
+    }
+  });
+
+  if (published.stats && typeof published.stats === "object") {
+    if (!view.verified) {
+      delete published.stats;
+    } else {
+      const publishableStats = { ...published.stats };
+      Object.keys(publishableStats).forEach((key) => {
+        if (!statsAreVerified(player, key)) {
+          delete publishableStats[key];
+        }
+      });
+      published.stats = publishableStats;
+    }
   }
 
   if (!view.verified || !ratingIsVerified(player)) {

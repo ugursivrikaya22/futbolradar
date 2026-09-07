@@ -141,6 +141,7 @@ function fixtureTeamLogoHtml(name) {
 
 const players = getPlayers(rawPlayers);
 const fixtureFreshness = normalizeFreshness(fixtures.freshness || freshnessData.records.fixtures);
+const matchesFreshness = normalizeFreshness(freshnessData.records.matches);
 const teamFreshness = normalizeFreshness(freshnessData.records.teamRadar);
 const playerFreshness = normalizeFreshness(freshnessData.records.players);
 const seasonUpdated = formatFreshnessDate(fixtureFreshness.verifiedAt || fixtureFreshness.fetchedAt);
@@ -640,14 +641,23 @@ function staticFeaturedFixture() {
         : "Başlama saati";
     const dateLabel = istanbulDay(match.kickoff) === today ? "Bugün" : longDateLabel(match.kickoff);
 
-    return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}">
+    // Bağlantı kuralı istemci ve diğer statik kartlarla AYNI
+    // (matchDetailPath, services/matchProgram.js): eskiden hero'daki HER
+    // slayt `./canli-skor.html`e gidiyordu — altı kart, tek genel hedef,
+    // maça özel tarama yolu yok. JS yüklenince buton zaten maç ayrıntısına
+    // dönüyordu, yani statik hâl istemciyle çelişiyordu.
+    //
+    // `data-kickoff` scripts/test-hero-freshness.mjs tarafından denetlenir:
+    // ana sayfada kalan bir kart, maçın gerçek başlama saatinden GRACE_HOURS
+    // fazla eskiyse derleme kırılır.
+    return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
       <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(match.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
         ${side(match.awayTeam)}
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="${escapeHtml(matchDetailPath(match))}">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
     </div>`;
   };
 
@@ -1831,6 +1841,38 @@ function replaceStaticSlot(html, target, content) {
   return html.replace(expression, `${markerStart}\n${content}\n${markerEnd}`);
 }
 
+/**
+ * ANA SAYFA "SON GÜNCELLEME" ŞERİDİ GERÇEK VERİ ZAMANINI TAŞIR.
+ *
+ * Önceden sabit bir yer tutucu basılıyordu ("İçerikler periyodik olarak
+ * yenilenir") — hiçbir zaman gerçek bir saat taşımadı. Bu, DERLEME anını
+ * (sayfa ne zaman üretildi) veri güncelleme anıyla (skor ne zaman
+ * doğrulandı) karıştırma riski taşır; ikisi FARKLI şeylerdir. Artık
+ * data/freshness.json'daki gerçek maç verisi doğrulama damgası basılıyor.
+ * İstemci (app.js#updateUpdatedAtLabel) JS yüklenince AYNI alanı AYNI
+ * kuralla tazeler — ilk boya ile hidratasyon arasında anlam farkı olmaz.
+ *
+ * Veri kesintisinde (kayıt `validUntil`i geçmiş) saat SİLİNMEZ — son
+ * doğrulanmış zaman görünmeye devam eder, yanına "geçici olarak
+ * güncellenemiyor" notu eklenir. Fonksiyon regex'i mevcut durumdan
+ * (temiz/bayat) BAĞIMSIZ eşler, yani derleme kaç kez tekrarlanırsa
+ * tekrarlansın aynı sonucu üretir.
+ */
+function sourceStripFreshnessDiv(freshness) {
+  const stale = Boolean(freshness && (freshness.status === "stale" || freshness.isExpired));
+  const stamp = formatFreshnessDate(freshness && (freshness.verifiedAt || freshness.fetchedAt));
+  const notice = stale
+    ? '<small data-stale-notice class="source-strip-stale">Canlı veri geçici olarak güncellenemiyor.</small>'
+    : "";
+  return `<div data-stale="${stale ? "true" : "false"}"><span>Son güncelleme</span><b>${escapeHtml(stamp)}</b>${notice}</div>`;
+}
+
+function updateSourceStripFreshness(html, freshness) {
+  const expression = /<div(?:\s+data-stale="(?:true|false)")?><span>Son güncelleme<\/span><b>[\s\S]*?<\/b>(?:\s*<small[^>]*data-stale-notice[^>]*>[\s\S]*?<\/small>)?<\/div>/;
+  if (!expression.test(html)) return html;
+  return html.replace(expression, sourceStripFreshnessDiv(freshness));
+}
+
 function writePage(file, slots, freshness, staticSlots = {}) {
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) {
@@ -1846,6 +1888,10 @@ function writePage(file, slots, freshness, staticSlots = {}) {
     html = replaceStaticSlot(html, target, content);
   });
   html = updateMetaLabels(html, freshness);
+  // Yalnızca `.source-strip` "Son güncelleme" satırı taşıyan sayfalarda
+  // etkili olur (bkz. yukarıdaki docblock) — MAÇ verisi tazeliği, `freshness`
+  // parametresinden bağımsız olarak her zaman matchesFreshness'tan gelir.
+  html = updateSourceStripFreshness(html, matchesFreshness);
   html = updateRobotsDirective(html, file);
   writeGeneratedFile(sourcePath, html);
   writeGeneratedFile(path.join(root, "public", file), html);

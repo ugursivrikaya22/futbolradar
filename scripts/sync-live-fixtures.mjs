@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { findCompetition, findCompetitionByProviderId, normalizeKey } = require("../services/competitionCatalog.js");
 const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
+const { sameClub, fixtureTeamNames } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
 const CALENDAR_PATH = path.join(root, "data", "fixture-calendar.json");
@@ -65,8 +66,33 @@ function dateOnly(match) {
   return istanbulDay((match && (match.kickoff || match.date)) || "");
 }
 
+let fixtureNameCache = null;
+
+/**
+ * Sağlayıcı "Rizespor" der, TFF fikstürü "Çaykur Rizespor" — aynı kulüp
+ * (services/matchSeoPages.js#canonicalTeamName ile AYNI kural, aynı kaynak
+ * liste: data/super-lig-fixtures.json). Kimlik bu adla kurulmazsa
+ * API-Football'un ham yazımı takvime İKİNCİ bir satır olarak eklenir:
+ * "Rizespor - Alanyaspor" doğrulanmış "Çaykur Rizespor - Alanyaspor"
+ * kaydından ayrı kalır ve aynı maç sitede iki kart/iki bağlantı olarak
+ * yayına çıkar. Süper Lig dışı takımlarda liste eşleşmez, ad DEĞİŞMEDEN
+ * döner.
+ */
+function canonicalTeamName(name) {
+  const value = String(name || "").trim();
+  if (!value) return "";
+  if (!fixtureNameCache) fixtureNameCache = fixtureTeamNames();
+  const exact = fixtureNameCache.find((candidate) => normalizeKey(candidate) === normalizeKey(value));
+  if (exact) return exact;
+  const similar = fixtureNameCache.find((candidate) => sameClub(candidate, value));
+  return similar || value;
+}
+
 function fixtureIdentity(match) {
-  const teams = [normalizeKey(match && match.homeTeam), normalizeKey(match && match.awayTeam)].sort();
+  const teams = [
+    normalizeKey(canonicalTeamName(match && match.homeTeam)),
+    normalizeKey(canonicalTeamName(match && match.awayTeam))
+  ].sort();
   return `${teams[0]}|${teams[1]}|${dateOnly(match)}`;
 }
 
@@ -103,7 +129,7 @@ function stripVolatile(value) {
 }
 
 function naturalId(match) {
-  return `${normalizeKey(match.homeTeam)}-${normalizeKey(match.awayTeam)}-${dateOnly(match)}`;
+  return `${normalizeKey(canonicalTeamName(match.homeTeam))}-${normalizeKey(canonicalTeamName(match.awayTeam))}-${dateOnly(match)}`;
 }
 
 function compactDetail(detail) {
@@ -128,6 +154,8 @@ function normalizedIncoming(match, detail) {
     ...match,
     ...compactDetail(detail),
     id: naturalId(match),
+    homeTeam: canonicalTeamName(match.homeTeam),
+    awayTeam: canonicalTeamName(match.awayTeam),
     providerId,
     providerIds: { apiFootball: providerId },
     competitionId: competition ? competition.id : normalizeKey(match.league),
@@ -147,6 +175,77 @@ function mergeScore(existingScore, incomingScore) {
       incoming[key] === null || incoming[key] === undefined ? previous[key] ?? null : incoming[key]
     ])
   );
+}
+
+const CALENDAR_STATE_RANK = { SCHEDULED: 0, TIMED: 0, POSTPONED: 0, CANCELLED: 0, UNKNOWN: 0, LIVE: 1, HALFTIME: 1, INTERRUPTED: 1, FINISHED: 2, AWARDED: 2 };
+
+function calendarStateRank(status) {
+  return CALENDAR_STATE_RANK[canonicalStatus(status)] ?? 0;
+}
+
+function readableScore(score) {
+  return Boolean(score) && score.home !== null && score.home !== undefined && score.away !== null && score.away !== undefined;
+}
+
+/**
+ * TAKVİMDE ZATEN İKİ SATIRA BÖLÜNMÜŞ AYNI MAÇI TEK SATIRDA TOPLAR.
+ *
+ * `fixtureIdentity`/`naturalId` artık kanonik adla kuruluyor, yani BUNDAN
+ * SONRA yazılacak satırlar bir daha ikizlenmez. Ama bu onarım öncesinde
+ * "Rizespor" ham yazımıyla zaten yazılmış bir satır olabilir — o satır
+ * diskte kalıp her çalıştırmada sessizce yeniden yaşamaya devam eder,
+ * çünkü `mergeCalendarMatches` var olan satırları asla SİLMEZ, yalnızca
+ * eşleşeni günceller. Bu geçiş, güncelleme her çalıştığında takvimi tarar
+ * ve aynı gün + aynı kulüp çifti (canonicalTeamName/sameClub ile) birden
+ * çok satırda görünüyorsa onları birleştirir: daha ileri durumdaki
+ * (CANLI/BİTEN, SCHEDULED'dan önde) kayıt taban alınır, sağlayıcı
+ * kimlikleri ve okunabilir skor iki taraftan da birleştirilir.
+ */
+export function dedupeCalendarMatches(list) {
+  const kept = [];
+  let merges = 0;
+
+  for (const match of Array.isArray(list) ? list : []) {
+    const date = dateOnly(match);
+    let matchIndex = -1;
+    for (let index = 0; index < kept.length; index += 1) {
+      const candidate = kept[index];
+      if (dateOnly(candidate) !== date) continue;
+      const straight = sameClub(candidate.homeTeam, match.homeTeam) && sameClub(candidate.awayTeam, match.awayTeam);
+      const swapped = sameClub(candidate.homeTeam, match.awayTeam) && sameClub(candidate.awayTeam, match.homeTeam);
+      if (straight || swapped) { matchIndex = index; break; }
+    }
+
+    if (matchIndex === -1) {
+      kept.push(match);
+      continue;
+    }
+
+    merges += 1;
+    const existing = kept[matchIndex];
+    const existingLeads = calendarStateRank(existing.status) >= calendarStateRank(match.status);
+    const primary = existingLeads ? existing : match;
+    const secondary = existingLeads ? match : existing;
+    // Sade `{...secondary, ...primary}` ileri durumdaki kaydın BOŞ
+    // alanlarının (ör. sağlayıcı saha vermediyse `venue: null`) diğer
+    // kaydın DOLU alanının üzerine yazmasına yol açıyordu — "canlı" kayıt
+    // kazanınca doğrulanmış stat adı sessizce kayboluyordu. `id` de aynı
+    // nedenle `existing`e (takvimde zaten duran, başka yerlerden referans
+    // alınmış olabilecek kayıt) sabitlenir; hangi tarafın "ileride" olduğu
+    // kimliği DEĞİŞTİRMEZ.
+    kept[matchIndex] = {
+      ...secondary,
+      ...primary,
+      id: existing.id || match.id,
+      homeTeam: canonicalTeamName(primary.homeTeam),
+      awayTeam: canonicalTeamName(primary.awayTeam),
+      venue: primary.venue || secondary.venue || null,
+      score: readableScore(primary.score) ? primary.score : (readableScore(secondary.score) ? secondary.score : primary.score),
+      providerIds: { ...(secondary.providerIds || {}), ...(primary.providerIds || {}) }
+    };
+  }
+
+  return { matches: kept, merges };
 }
 
 export function mergeCalendarMatches(existingMatches, incomingMatches) {
@@ -209,8 +308,9 @@ export function mergeCalendarMatches(existingMatches, incomingMatches) {
     updated += 1;
   }
 
-  output.sort((left, right) => String(left.kickoff || "").localeCompare(String(right.kickoff || "")));
-  return { matches: output, added, updated, unchanged };
+  const repaired = dedupeCalendarMatches(output);
+  repaired.matches.sort((left, right) => String(left.kickoff || "").localeCompare(String(right.kickoff || "")));
+  return { matches: repaired.matches, added, updated, unchanged, deduped: repaired.merges };
 }
 
 function priorityScore(match) {
@@ -301,6 +401,7 @@ export async function synchronizeLiveFixtures(options = {}) {
       added: merged.added,
       updated: merged.updated,
       unchanged: merged.unchanged,
+      deduped: merged.deduped,
       errors: [...fetched.errors, ...detailErrors]
     }
   };
@@ -313,13 +414,13 @@ async function main() {
   }
 
   const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode });
-  const changed = summary.added > 0 || summary.updated > 0;
+  const changed = summary.added > 0 || summary.updated > 0 || summary.deduped > 0;
   if (args.apply && changed) {
     atomicWrite(CALENDAR_PATH, output);
     if (fs.existsSync(path.dirname(PUBLIC_CALENDAR_PATH))) atomicWrite(PUBLIC_CALENDAR_PATH, output);
   }
 
-  console.log(`[live-fixtures] checked=${summary.checked} details=${summary.detailsChecked} added=${summary.added} updated=${summary.updated} unchanged=${summary.unchanged} errors=${summary.errors.length}`);
+  console.log(`[live-fixtures] checked=${summary.checked} details=${summary.detailsChecked} added=${summary.added} updated=${summary.updated} unchanged=${summary.unchanged} deduped=${summary.deduped} errors=${summary.errors.length}`);
   if (!changed) console.log("[live-fixtures] No changed fixture data; existing calendar was left byte-for-byte unchanged.");
   else if (!args.apply) console.log("[live-fixtures] Dry run; use --apply to persist changes.");
   console.log(`FUTBOLRADAR_STEP_SUMMARY ${JSON.stringify(summary)}`);

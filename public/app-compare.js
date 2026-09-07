@@ -285,15 +285,40 @@
     return [pair[0], pair[1], matchDateValue(match)].join("|");
   }
 
+  // AYNI MAÇ, FARKLI YAZILMIŞ TAKIM ADI ("Rizespor" / "Çaykur Rizespor",
+  // "Gençlerbirliği" / "Gençlerbirliği S.K.").
+  //
+  // Yukarıdaki anahtar ham metin eşitliğine bakıyor; sunucu tarafı bu
+  // eşleşmeyi services/providers/mockProvider.js#curatedMatches içinde
+  // sameClub ile zaten yapıyordu ama istemci yapmıyordu. Statik yedek
+  // kaynaklar (data/matches.json + data/fixture-calendar.json, bkz.
+  // loadStaticMatchSources) ham JSON'ı doğrudan okuduğu için, takvimde iki
+  // farklı yazımla iki satır varsa ikisi de bu birleşmeden hayatta kalıp
+  // aynı maç sitede iki kart olarak çıkıyordu — biri skorlu/canlı, diğeri
+  // "canlı veri doğrulanamadı" etiketiyle. Anahtar tutmazsa aynı günün
+  // kayıtları arasında kulüp eşleştirmesiyle (sameClubName) aranır; kural
+  // services/superLigTeams.js#sameClub ile AYNI.
   function mergeMatchCollections(providerMatches, curatedMatches) {
     var seen = Object.create(null);
-    return [].concat(providerMatches || [], curatedMatches || []).filter(function (match) {
+    var kept = [];
+    [].concat(providerMatches || [], curatedMatches || []).forEach(function (match) {
       var identity = matchIdentityKey(match);
       var key = identity === "||" ? String(match && match.id || "").toLocaleLowerCase("tr-TR") : identity;
-      if (!key || seen[key]) return false;
+      if (!key || seen[key]) return;
+
+      var date = matchDateValue(match);
+      for (var index = 0; index < kept.length; index += 1) {
+        var candidate = kept[index];
+        if (matchDateValue(candidate) !== date) continue;
+        var straight = sameClubName(candidate.homeTeam, match.homeTeam) && sameClubName(candidate.awayTeam, match.awayTeam);
+        var swapped = sameClubName(candidate.homeTeam, match.awayTeam) && sameClubName(candidate.awayTeam, match.homeTeam);
+        if (straight || swapped) { seen[key] = true; return; }
+      }
+
       seen[key] = true;
-      return true;
+      kept.push(match);
     });
+    return kept;
   }
 
   // Statik yedek yol: API tamamen ulaşılamazsa bile bugünün maçları
@@ -1016,6 +1041,25 @@
   function presentStatNumber(value) {
     var presented = presentStat(value);
     return presented === null ? null : Number(presented);
+  }
+
+  /**
+   * İKİ HAM İSTATİSTİKTEN AĞIRLIKLI TAHMİNİ SKOR — ikisi de VARSA.
+   *
+   * `Number(player.xg) * 12 + Number(player.goals) * 6` gibi bir ifade,
+   * `xg` alanı eksik (null) olduğunda `Number(null)` sessizce 0 olduğu için
+   * "hiç ölçülmedi"yi "gerçekten 0"a çevirir — tam olarak bu görevin
+   * düzelttiği hata (bkz. Victor Osimhen: 6 gol, ölçülmemiş xG). Girdilerden
+   * biri eksikse tahmin de EKSİK sayılır (null); var olan tek terimle
+   * yeniden ölçeklenmiş, yanıltıcı bir kısmi sayı üretilmez.
+   */
+  function weightedIfPresent(termA, weightA, termB, weightB) {
+    var a = presentStatNumber(termA);
+    var b = presentStatNumber(termB);
+    if (a === null || b === null) {
+      return null;
+    }
+    return a * weightA + b * weightB;
   }
 
   function calculateAgeFromBirthDate(birthDate) {
@@ -2970,7 +3014,8 @@
       : "";
 
     return (
-      '<div class="featured-fixture' + (meta.live ? " is-live" : "") + '"' + reasonAttrs + ">" +
+      '<div class="featured-fixture' + (meta.live ? " is-live" : "") + '"' + reasonAttrs +
+      ' data-kickoff="' + escapeHtml(match.kickoff || "") + '">' +
       '<div class="featured-fixture-head">' +
       '<span class="featured-fixture-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
       "<span>" + escapeHtml(match.venue || formatMatchDate(todayInIstanbul())) + "</span>" +
@@ -3712,7 +3757,14 @@
 
   function renderFeaturedMatch(matches) {
     var list = Array.isArray(matches) ? matches.slice() : [];
-    var liveCount = list.filter(isLiveMatch).length;
+    // Sayaç, "Bugünün Maçları" panosuyla (matchCenterMetricsHtml) AYNI
+    // hükmü kullanır: yalnızca isLiveMatch sayılsaydı, sağlayıcı bir maçı
+    // saatlerce güncellemeyi bıraktığında (bkz. matchLiveVerdict'in bayat
+    // canlı koruması) ana sayfa "Canlı: 1" derken diğer sayfa 0 gösterir —
+    // aynı veri anında iki farklı sayı, tutarsız bir sayaç.
+    var liveCount = list.filter(function (match) {
+      return matchLiveVerdict(match).live;
+    }).length;
     var finishedCount = list.filter(function (match) {
       return ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
@@ -4620,6 +4672,41 @@
   // listesiyle birleştirilir; maç akıştan düşünce nihai durum bir kez tam
   // listeden doğrulanır.
 
+  // YALNIZCA FUTBOLRADAR'IN TAKİP ETTİĞİ KAPSAMA YENİ KAYIT EKLENİR.
+  //
+  // `?live=all` sağlayıcının O AN canlı olan HER maçını (dünyanın her
+  // yerinden, her ligden) döndürür — bilerek: "şu an canlı"nın tek bir
+  // takvim günü yoktur, bu yüzden sunucu tarafı bu sorguda gün/lig
+  // süzgeci uygulamaz. Paket süzülmeden istemci önbelleğine eklenirse,
+  // bir sekme ne kadar uzun süre açık kalır/ne kadar sık yoklarsa kapsam
+  // dışı maçlarla o kadar şişer — hiç küçülmez, çünkü aşağıdaki birleşme
+  // yalnızca EKLER, hiçbir zaman ÇIKARMAZ. Sonuç: aynı anda açılan iki
+  // sayfa (ya da aynı sayfanın farklı yoklama geçmişine sahip iki
+  // yüklemesi) FARKLI büyüklükte bir havuzdan sayım yapar; "aynı toplam,
+  // farklı canlı sayısı" değil, gerçekte FARKLI toplamlar.
+  //
+  // Zaten TAKİP EDİLEN bir maçın durumu/skoru bu süzgeçten ETKİLENMEZ —
+  // aşağıdaki `existing !== undefined` dalı koşulsuz ilerler. Süzgeç
+  // yalnızca YENİ bir kayıt eklemenin koşulu: bugünün (TSİ) FutbolRadar
+  // kapsamındaki bir yarışması olmalı — ya Türk takımı maçı ya da `base`de
+  // (düzgün kapsamlı `/api/matches` yanıtından gelen) bugün için zaten
+  // bilinen bir yarışma kimliği.
+  function isLiveMatchInFutbolRadarScope(match, base) {
+    if (matchDateValue(match) !== todayInIstanbul()) {
+      return false;
+    }
+    if (isTurkishMatch(match)) {
+      return true;
+    }
+    var competitionId = match && match.competitionId;
+    if (!competitionId) {
+      return false;
+    }
+    return base.some(function (existing) {
+      return existing && existing.competitionId === competitionId;
+    });
+  }
+
   function mergeLiveIntoMatches(baseMatches, liveMatches) {
     var base = Array.isArray(baseMatches) ? baseMatches.slice() : [];
     if (!Array.isArray(liveMatches) || !liveMatches.length) {
@@ -4635,6 +4722,9 @@
       var key = matchIdentityKey(liveMatch);
       var existing = indexByKey[key];
       if (existing === undefined) {
+        if (!isLiveMatchInFutbolRadarScope(liveMatch, base)) {
+          return;
+        }
         base.push(liveMatch);
         indexByKey[key] = base.length - 1;
         return;
@@ -5778,11 +5868,11 @@
       add("Yükselişte");
     }
 
-    if (playerScore(player, "threatScore", Number(player.xg) * 12 + Number(player.goals) * 6) >= 80) {
+    if (playerScore(player, "threatScore", weightedIfPresent(player.xg, 12, player.goals, 6)) >= 80) {
       add("Gol Tehdidi");
     }
 
-    if (playerScore(player, "creativityScore", Number(player.xa) * 18 + Number(player.keyPasses) * 3) >= 80) {
+    if (playerScore(player, "creativityScore", weightedIfPresent(player.xa, 18, player.keyPasses, 3)) >= 80) {
       add("Yaratıcı");
     }
 
