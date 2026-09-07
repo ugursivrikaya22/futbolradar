@@ -14720,7 +14720,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-07T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:39.646Z",
+    "generatedAt": "2026-09-07T20:33:13.987Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -15062,16 +15062,16 @@
       "dataStatus": "sufficient",
       "warnings": [],
       "leaguePosition": {
-        "rank": 12,
-        "points": 4,
-        "played": 3,
-        "goalDifference": 0,
+        "rank": 7,
+        "points": 7,
+        "played": 4,
+        "goalDifference": 1,
         "season": "2026/27",
         "status": "live"
       },
       "momentum": {
-        "score": 47,
-        "trend": "up",
+        "score": 53,
+        "trend": "stable",
         "goalSignal": "Dusuk",
         "risk": "Dusuk",
         "status": "available"
@@ -15282,15 +15282,15 @@
             "profileUrl": "./oyuncular/sahin-dik.html"
           },
           {
-            "id": "maestro-alanyaspor",
-            "name": "Maestro",
+            "id": "g-makouta-alanyaspor",
+            "name": "G. Makouta",
             "position": "Midfielder",
             "slot": "WING",
             "assignedGroup": "winger",
             "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
-            "profileUrl": "./oyuncular/maestro-alanyaspor.html"
+            "profileUrl": "./oyuncular/g-makouta-alanyaspor.html"
           },
           {
             "id": "a-usluoglu-alanyaspor",
@@ -15307,9 +15307,16 @@
         "availability": {
           "fixtureId": "caykur-rizespor-alanyaspor-2026-09-07",
           "totalKnownPlayers": 33,
-          "unavailableCount": 0,
-          "unavailable": [],
-          "knownAvailabilityCoverage": 0,
+          "unavailableCount": 1,
+          "unavailable": [
+            {
+              "playerId": "maestro-alanyaspor",
+              "name": "Maestro",
+              "status": "injured",
+              "note": "Inactive"
+            }
+          ],
+          "knownAvailabilityCoverage": 3,
           "rows": [
             {
               "playerId": "mahmut-can-kara-alanyaspor",
@@ -15386,8 +15393,8 @@
             {
               "playerId": "maestro-alanyaspor",
               "name": "Maestro",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Inactive"
             },
             {
               "playerId": "g-makouta-alanyaspor",
@@ -15541,7 +15548,7 @@
         "benchStrength": {
           "score": 23,
           "confidence": 100,
-          "sampleSize": 22,
+          "sampleSize": 21,
           "players": [
             "Ü. Akdağ",
             "F. Aksoy",
@@ -15550,7 +15557,6 @@
             "F. Hadërgjonaj",
             "E. Keskin",
             "Nuno Lima",
-            "G. Makouta",
             "O. Ben Ali",
             "M. Elia",
             "Hwang Ui-Jo",
@@ -15599,7 +15605,7 @@
       },
       "availability": {
         "home": 100,
-        "away": 100
+        "away": 85
       },
       "confidence": 67,
       "advantages": [
@@ -15616,10 +15622,10 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "balanced"
+          "advantage": "home"
         }
       ],
-      "summary": "Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok."
+      "summary": "Ev sahibi mevcut verilerde Form ve Kadro devamlılığı alanlarında bir adım önde görünüyor."
     },
     "keyDuels": [
       {
@@ -15673,18 +15679,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:39.646Z",
+      "generatedAt": "2026-09-07T20:33:13.987Z",
       "asOf": "2026-09-07T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 67,
       "teamStrength": {
         "home": 64,
-        "away": 41
+        "away": 43
       },
       "probabilities": {
-        "homeWin": 56,
-        "draw": 28,
-        "awayWin": 16
+        "homeWin": 54,
+        "draw": 29,
+        "awayWin": 17
       },
       "prediction": {
         "primary": "home",
@@ -15696,14 +15702,14 @@
         "label": "low"
       },
       "upsetRisk": {
-        "score": 51,
+        "score": 53,
         "label": "medium"
       },
       "matchBalance": {
-        "score": 54,
+        "score": 58,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %56, beraberlik için %28, deplasman için %16 ihtimal hesaplıyor. Takım güç puanları 64/100 - 41/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 67/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %54, beraberlik için %29, deplasman için %17 ihtimal hesaplıyor. Takım güç puanları 64/100 - 43/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 67/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -15712,10 +15718,10 @@
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
       "recentFormCoverage": 80,
-      "teamAnalysisCoverage": 17.5,
+      "teamAnalysisCoverage": 25,
       "probableLineupCoverage": 59,
       "officialLineupCoverage": 0,
-      "overallCoverage": 61,
+      "overallCoverage": 62,
       "confidenceLevel": "medium",
       "missingComponents": [
         "Ev sahibi kadro kapsamı yetersiz",
@@ -15736,9 +15742,9 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-09-07T17:00:00.000Z",
-    "status": "scheduled",
+    "status": "finished",
     "generatedAt": "2026-09-07T16:27:39.789Z",
-    "preMatchFrozenAt": null,
+    "preMatchFrozenAt": "2026-09-07T20:33:14.159Z",
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Göztepe",
@@ -17136,7 +17142,9 @@
         "label": "slight-away"
       },
       "summary": "Model, ev sahibi için %32, beraberlik için %34, deplasman için %34 ihtimal hesaplıyor. Takım güç puanları 41/100 - 46/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 70/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
-      "warnings": []
+      "warnings": [],
+      "frozenAt": "2026-09-07T20:33:14.159Z",
+      "frozenKickoff": "2026-09-07T17:00:00.000Z"
     },
     "coverage": {
       "homeSquadCoverage": 100,
@@ -17155,7 +17163,8 @@
     },
     "dataConfidence": 70,
     "analysisStatus": "complete",
-    "warnings": []
+    "warnings": [],
+    "updatedAt": "2026-09-07T20:33:14.159Z"
   },
   {
     "fixtureId": "besiktas-erzurumspor-fk-2026-09-11",
@@ -17167,7 +17176,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-11T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:39.900Z",
+    "generatedAt": "2026-09-07T20:33:14.292Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -18804,7 +18813,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:39.900Z",
+      "generatedAt": "2026-09-07T20:33:14.292Z",
       "asOf": "2026-09-11T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
@@ -18866,7 +18875,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:40.003Z",
+    "generatedAt": "2026-09-07T20:33:14.405Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -20531,7 +20540,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:40.003Z",
+      "generatedAt": "2026-09-07T20:33:14.404Z",
       "asOf": "2026-09-12T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
@@ -20593,7 +20602,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:40.099Z",
+    "generatedAt": "2026-09-07T20:33:14.510Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -21614,7 +21623,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:40.099Z",
+      "generatedAt": "2026-09-07T20:33:14.510Z",
       "asOf": "2026-09-12T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 74,
@@ -21678,7 +21687,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:40.216Z",
+    "generatedAt": "2026-09-07T20:33:14.637Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -23412,7 +23421,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:40.216Z",
+      "generatedAt": "2026-09-07T20:33:14.637Z",
       "asOf": "2026-09-12T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -23474,7 +23483,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-13T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:40.317Z",
+    "generatedAt": "2026-09-07T20:33:14.749Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -23793,7 +23802,7 @@
       "dataStatus": "sufficient",
       "warnings": [],
       "leaguePosition": {
-        "rank": 8,
+        "rank": 10,
         "points": 6,
         "played": 4,
         "goalDifference": 1,
@@ -24460,7 +24469,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:40.317Z",
+      "generatedAt": "2026-09-07T20:33:14.749Z",
       "asOf": "2026-09-13T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 61,
@@ -24524,7 +24533,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-13T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:40.409Z",
+    "generatedAt": "2026-09-07T20:33:14.851Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -24795,7 +24804,7 @@
       "dataStatus": "sufficient",
       "warnings": [],
       "leaguePosition": {
-        "rank": 10,
+        "rank": 12,
         "points": 4,
         "played": 4,
         "goalDifference": 0,
@@ -25316,7 +25325,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:40.409Z",
+      "generatedAt": "2026-09-07T20:33:14.851Z",
       "asOf": "2026-09-13T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 46,
@@ -25383,7 +25392,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-13T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-07T16:27:40.511Z",
+    "generatedAt": "2026-09-07T20:33:14.964Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -27005,7 +27014,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-07T16:27:40.511Z",
+      "generatedAt": "2026-09-07T20:33:14.964Z",
       "asOf": "2026-09-13T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 75,

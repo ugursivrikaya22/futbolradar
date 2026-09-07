@@ -2,6 +2,24 @@
   "_comment": "MAÇ SONU AÇIKLAMALARI — küratörlü ve kaynaklı. Kural: services/managerQuotes.js. Zorunlu alanlar: matchId, speaker, team, quote, at, source.{name,url}. `role` boş bırakılırsa teknik direktör varsayılır; doluysa tanınan bir değer olmalı (manager/player ya da teknik direktör/futbolcu) — tanınmayan rol kaydı reddettirir, yuvarlanmaz. Alıntı metni OLDUĞU GİBİ girilir; kısaltmak anlamı değiştirebilir ve kısaltılmış alıntı hâlâ tırnak içinde görünür. Kayıt yoksa ilgili yüzey 'Kaynaklardan bekleniyor' der — uydurma alıntı ASLA üretilmez. Buraya bir alıntı girmeden önce kaynak sayfa AÇILIP metin harfi harfine karşılaştırılır: okunamayan (bot korumasına takılan) bir sayfa doğrulanmış sayılmaz, o alıntı girilmez.",
   "quotes": [
     {
+      "matchId": "rizespor-alanyaspor-2026-09-07",
+      "speaker": "Joao Pereira",
+      "role": "manager",
+      "team": "Alanyaspor",
+      "quote": "Rize çok fazla pozisyon üretemedi",
+      "at": "2026-09-07T20:00:08.000Z",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/joao-pereira-rize-cok-fazla-pozisyon-uretemedi-43299412"
+      },
+      "automation": {
+        "harvestedAt": "2026-09-07T20:33:00.820Z",
+        "feed": "hurriyet-spor",
+        "rosterName": "João Pereira",
+        "verifiedInBody": true
+      }
+    },
+    {
       "matchId": "besiktas-corum-fk-2026-08-31",
       "speaker": "Rıdvan Yılmaz",
       "role": "player",
@@ -131,6 +149,30 @@
       "source": {
         "name": "Ajansspor",
         "url": "https://ajansspor.com/haber/alanyaspor-besiktas-macinda-trossard-bana-net-bir-tokat-atildi-733275"
+      }
+    },
+    {
+      "matchId": "galatasaray-monza-2026-07-24",
+      "speaker": "Okan Buruk",
+      "role": "manager",
+      "team": "Galatasaray",
+      "quote": "Gençlerin çoğunlukta olduğu bir maç oynadık. Bir hazırlık dönemi geçiriyoruz.",
+      "at": "2026-07-24T23:30:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/okan-buruk-bircok-oyuncu-bizimle-beraber-olmayacak-43250990"
+      }
+    },
+    {
+      "matchId": "galatasaray-monza-2026-07-24",
+      "speaker": "Okan Buruk",
+      "role": "manager",
+      "team": "Galatasaray",
+      "quote": "Birçok oyuncu bizimle beraber olmayacak.",
+      "at": "2026-07-24T23:30:00+03:00",
+      "source": {
+        "name": "Hürriyet",
+        "url": "https://www.hurriyet.com.tr/sporarena/okan-buruk-bircok-oyuncu-bizimle-beraber-olmayacak-43250990"
       }
     }
   ]
