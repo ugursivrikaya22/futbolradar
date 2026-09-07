@@ -17,6 +17,7 @@ const { handleMatchLineup } = require("../server/matchLineupRoute");
 const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
 const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
+const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -364,6 +365,12 @@ module.exports = async function handler(req, res) {
 
   if (routeName(req) === "live-score-stream") {
     return handleLiveScoreStream(req, res);
+  }
+
+  // Push abonelik uç noktası: POST/DELETE yazma taşır, alttaki genel kapı
+  // yalnızca okuma yöntemlerine (GET/HEAD) izin veriyor.
+  if (routeName(req) === "push-subscribe") {
+    return handlePushSubscription(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

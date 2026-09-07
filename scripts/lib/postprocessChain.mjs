@@ -46,6 +46,13 @@ export const POSTPROCESS_CHAIN = [
   // Favicon bildirimi kök-mutlak ve tek biçimli olmalı: 16 üretici kendi
   // göreli satırını basıyor, bu adım onları söküp tek bloğu koyuyor.
   { id: "favicon", script: "inject-favicon.mjs", args: [], timeoutMinutes: 8 },
+  // Service worker kaydı + "ana ekrana ekle" bandı + favori takım/push
+  // widget'ı: tek betik (`pwa.js`), tüm sayfalarda. VAPID genel anahtarı
+  // burada `<meta>` olarak gömülür — bu yüzden asset-version'dan ÖNCE
+  // çalışmalı ki damga adımı yeni eklenen `<script>` etiketini de görsün
+  // (pwa.js bu listede damgalanan varlıklar arasında değil, ama sıra yine
+  // de "önce içerik, sonra damga" kuralını bozmasın diye korunuyor).
+  { id: "pwa", script: "inject-pwa.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
   // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;
   // bağlantı önden ısıtılmazsa ilk arma DNS + TLS el sıkışmasını bekliyor.

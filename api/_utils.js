@@ -51,7 +51,10 @@ const CACHE_POLICIES = Object.freeze({
   // aynı maçı açan bin okuyucu tek sağlayıcı isteğine düşer.
   "match-lineup": { maxAge: 45, stale: 120 },
   // Maç bitti ve iki kadro da onaylandı: yanıt bir daha değişmez.
-  "match-lineup-final": { maxAge: 1800, stale: 7200 }
+  "match-lineup-final": { maxAge: 1800, stale: 7200 },
+  // Push abonelik uç noktası kişiye özel yazma işlemi taşır (GET yanıtı
+  // bile VAPID durumunu her istekte taze yansıtmalı); önbelleğe alınmaz.
+  "push-subscription": { noStore: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
 const QUERY_PARAM_MAX_COUNT = 24;

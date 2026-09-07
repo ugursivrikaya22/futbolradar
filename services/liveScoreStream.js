@@ -92,6 +92,44 @@ function matchSnapshot(match, serverReceivedAt) {
   };
 }
 
+/**
+ * Ardışık iki anlık görüntü arasında gol ve maç başı olaylarını bulur.
+ *
+ * SOĞUK BAŞLANGIÇTA SESSİZ KALIR — `everPolled` false iken hiç olay
+ * üretilmez. Sebep: bu hub tek bir sıcak sunucusuz örnekte yaşıyor;
+ * örnek her uyandığında `previousMatchesById` boştur. O anda canlı olan
+ * her maçı "az önce başladı" saymak, zaten 60. dakikada olan bir maç için
+ * favori takım abonelerine yanlış "maç başladı" bildirimi gönderirdi.
+ * Gol karşılaştırması `prev` yokluğunda zaten atlanıyor (skор artışı
+ * ancak önceki skor bilinirse ölçülebilir), yalnızca kickoff için ayrı
+ * bir bekçi gerekiyordu.
+ */
+function detectMatchEvents(previousById, matches, everPolled) {
+  const events = [];
+  for (const match of matches) {
+    const prev = previousById.get(match.id);
+
+    if (everPolled && !(prev && prev.live) && match.live) {
+      events.push({ type: "kickoff", match });
+    }
+
+    if (prev) {
+      const prevHome = Number.isFinite(prev.score && prev.score.home) ? prev.score.home : null;
+      const prevAway = Number.isFinite(prev.score && prev.score.away) ? prev.score.away : null;
+      const nextHome = Number.isFinite(match.score && match.score.home) ? match.score.home : null;
+      const nextAway = Number.isFinite(match.score && match.score.away) ? match.score.away : null;
+
+      if (prevHome !== null && nextHome !== null && nextHome > prevHome) {
+        events.push({ type: "goal", side: "home", match });
+      }
+      if (prevAway !== null && nextAway !== null && nextAway > prevAway) {
+        events.push({ type: "goal", side: "away", match });
+      }
+    }
+  }
+  return events;
+}
+
 function snapshotSignature(matches) {
   return JSON.stringify((Array.isArray(matches) ? matches : []).map((match) => [
     match.id,
@@ -133,6 +171,12 @@ class LiveScoreHub {
     this.lastSignature = null;
     this.lastPacket = null;
     this.hasLiveMatches = false;
+    // Gol/maç başı bildirimi kancası — bkz. `detectMatchEvents`. Varsayılan
+    // yok: testler ve `subscribe()`in kendisi bunu tetiklemesin, yalnızca
+    // üretim tekil örneği (`getLiveScoreHub`) `services/pushNotifier.js`i bağlar.
+    this.onMatchEvents = typeof options.onMatchEvents === "function" ? options.onMatchEvents : null;
+    this.previousMatchesById = new Map();
+    this.everPolled = false;
   }
 
   subscribe(listener) {
@@ -189,7 +233,16 @@ class LiveScoreHub {
         if (signature !== this.lastSignature) {
           this.lastSignature = signature;
           this.emit(packet);
+
+          if (this.onMatchEvents) {
+            const events = detectMatchEvents(this.previousMatchesById, matches, this.everPolled);
+            if (events.length) {
+              try { this.onMatchEvents(events); } catch (error) { /* bildirim hatası akışı kesmez */ }
+            }
+          }
         }
+        this.previousMatchesById = new Map(matches.map((match) => [match.id, match]));
+        this.everPolled = true;
         return packet;
       })
       .catch((error) => {
@@ -222,12 +275,23 @@ class LiveScoreHub {
     this.timer = null;
     this.lastPacket = null;
     this.lastSignature = null;
+    // Son aboneyi de kaybettiğimiz an durum sıfırlanır: bir sonraki
+    // `poll()` bilinmeyen bir boşluktan sonra başlıyor, önceki anlık
+    // görüntüyle karşılaştırmak yanlış bir maç başı/gol olayı üretebilir.
+    this.previousMatchesById = new Map();
+    this.everPolled = false;
   }
 }
 
 function getLiveScoreHub() {
   const key = "__futbolRadarLiveScoreHub";
-  if (!globalThis[key]) globalThis[key] = new LiveScoreHub();
+  if (!globalThis[key]) {
+    // Döngüsel require'dan kaçınmak için gecikmeli yüklenir: pushNotifier
+    // bu dosyayı değil `getLiveScoreHub`ı hiç import etmiyor, ama ileride
+    // etseydi bu satır modül yükleme sırasına bağlı kalmazdı.
+    const { notifyMatchEvents } = require("./pushNotifier");
+    globalThis[key] = new LiveScoreHub({ onMatchEvents: notifyMatchEvents });
+  }
   return globalThis[key];
 }
 
@@ -238,6 +302,7 @@ module.exports = {
   NO_LIVE_CADENCE_MS,
   LiveScoreHub,
   PROVIDER_CADENCE_MS,
+  detectMatchEvents,
   estimatedEventTime,
   eventSnapshot,
   getLiveScoreHub,
