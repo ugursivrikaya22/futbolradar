@@ -122,14 +122,14 @@ function testPlayerOutsideLeagueExcludedFromTrend() {
 }
 
 function testSourceMetadataIsCarried() {
-  const meta = credibility.sourceMetadata(verified);
+  const meta = credibility.sourceMetadata(verified, { now });
   for (const key of ["source_name", "source_url", "last_verified_at", "provider_id", "data_confidence"]) {
     assert.ok(key in meta, `künye ${key} alanını taşımalı`);
   }
   assert.equal(meta.provider_id, "276");
   assert.equal(meta.data_confidence, "high");
 
-  assert.equal(credibility.sourceMetadata({ ...verified, providerId: "mock-x" }).data_confidence, "none");
+  assert.equal(credibility.sourceMetadata({ ...verified, providerId: "mock-x" }, { now }).data_confidence, "none");
 }
 
 function testHomepageRendersNoMisleadingCards() {

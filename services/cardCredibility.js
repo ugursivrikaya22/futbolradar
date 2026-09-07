@@ -147,13 +147,13 @@ function evaluateTrendPlayerCard(player, options = {}) {
  * Kartın arkasındaki iç kaynak künyesi. Sayfaya basılmaz; denetim, günlük
  * ve yapılandırılmış veri için taşınır.
  */
-function sourceMetadata(record) {
+function sourceMetadata(record, options = {}) {
   return {
     source_name: (record && (record.providerName || record.sourceName)) || null,
     source_url: (record && record.sourceUrl) || null,
     last_verified_at: (record && (record.lastVerifiedAt || record.lastSyncedAt)) || null,
     provider_id: providerIdOf(record) || null,
-    data_confidence: evaluatePlayerCard(record).confidence
+    data_confidence: evaluatePlayerCard(record, options).confidence
   };
 }
 

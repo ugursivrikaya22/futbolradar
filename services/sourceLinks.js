@@ -106,7 +106,18 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "reuters.com",
     "espn.com",
     "aljazeera.com",
-    "vanguardngr.com"
+    "vanguardngr.com",
+    // Şampiyonlar Ligi açılış haftası kapsamında (2026-09) eklendi: dünya
+    // futbolu gündemi için birincil/köklü uluslararası yayın organları.
+    "cnn.com",
+    "npr.org",
+    "goal.com",
+    "skysports.com",
+    "si.com",
+    "nbcnews.com",
+    "nbcsports.com",
+    "sports.yahoo.com",
+    "corrieredellosport.it"
   ]),
 
   // BİRİNCİL KAYIT PLATFORMU — diğer gruplardan farkı bilinçli.
