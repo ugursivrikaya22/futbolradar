@@ -911,8 +911,15 @@ function hubPages(entries, hrefForEntry) {
     const text = STR[locale];
     const hubPath = locale === "en" ? HUB_EN : HUB_TR;
     const hubUrl = `${DOMAIN}/${hubPath.replace(/\.html$/, "")}`;
-    const upcoming = window(today, dayShift(10));
-    const recent = window(dayShift(-7), dayShift(-1));
+    // Bugün oynanan bir maç saat ilerledikçe "post"/"pending" durumuna
+    // geçebilir; gün aralığına göre filtrelemek tek başına yeterli değil —
+    // aksi hâlde tamamlanmış bir maç, final skoruyla birlikte "Yaklaşan
+    // maçlar" başlığı altında görünür. Durum burada da süzülür: Yaklaşan
+    // listesi yalnızca henüz oynanmamış/oynanan (pre/live) maçları, Son
+    // sonuçlar listesi yalnızca sonuçlanmış/sonuç bekleyen (post/pending)
+    // maçları alır — ikisi ayrık kalır.
+    const upcoming = window(today, dayShift(10)).filter((entry) => !["post", "pending"].includes(pageStateOf(entry, NOW)));
+    const recent = window(dayShift(-7), today).filter((entry) => ["post", "pending"].includes(pageStateOf(entry, NOW)));
     const monthLinks = `<nav class="msp-months" aria-label="${escapeHtml(locale === "en" ? "Months" : "Aylar")}">${months.map((key) => `<a href="${escapeHtml(`${base}${locale === "en" ? MONTH_DIR_EN : MONTH_DIR_TR}/${key}`)}">${escapeHtml(monthLabel(key, locale))}</a>`).join("")}</nav>`;
     const body = `
       <section class="msp-section"><h2 class="msp-section-title">${escapeHtml(locale === "en" ? "Upcoming matches" : "Yaklaşan maçlar")}</h2>${upcoming.length ? groupedListHtml(upcoming, locale, hrefFromHub) : `<article class="card data-empty"><strong>${escapeHtml(locale === "en" ? "No verified fixture in the next ten days yet." : "Önümüzdeki on gün için doğrulanmış maç henüz yok.")}</strong></article>`}</section>
