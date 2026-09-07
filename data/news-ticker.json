@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-07T07:24:34.673Z",
+  "updatedAt": "2026-09-07T10:12:02.238Z",
   "items": [
+    {
+      "id": "auto-news-4cc320dba0c6e0844e94",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Dereağzı Lefter Küçükandonyadis Olimpiyat Akademisi Projesi’nde ilk adım atıldı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-07T09:56:22.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOZURNYjN1M2VXVEswa2huRFJHYktWUElmVkszbW1zM2lweXY5dFVwbUtpdGxIRVI0OGNEMnNZNnRjdnRRTWdzT3czdzJQYXNPTlNCLUVqZnZJcGVXTzViT1BhTjNKWlpXM2ZULV9Rb3YyUHg2NEpIUUlkLVU4UXdQZGRfZDNieXEyXzg1WXZscWhQa0VEakpmMUlPRklHM0U2TUZfVllaS1FvNFJheVQyb203M0NGeW5LVm82WmNQUjkzRmhzOUtZ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-cb15eb7c167a321c2672",
       "category": "official",
@@ -33,26 +53,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5TcG1BVlJoSkdodV9uQ25YRzVfUXhjMFRQYlJOUVpuSHZacl90Z2JaYkVNZFR0N0N4akRqeDJUTnRoNWRvUmlKOGNNdFF6Ny1RdUFQUUxVYVkzTmV5V3V5eEVfSTR3eHRUNHZUNkx6MW0yZElzRTJpR0wtQVI?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-262c87726a355c8f7f96",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Olimpia Milano 79-81 Fenerbahçe Tarfin",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-06T17:37:16.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQREY2T1lzYldHdnFzdFNjeS1PZDFEUjRKenZoemc0YWpWQlJ5UWZsLWJjZFZSeUhVMlVpNGU0TUhpZmVvNUM4eGNxVzFmYVlwZHU3T01qSHBTUjNCbWdKeHRqZHZyd3Fka1VCS3BYM3BSTndpZUhuQm5LZzRqbmh0TFhmYjlyTklsRXFiZUFreXU2VGxGUzJNaVVpSFVpdw?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -285,6 +285,46 @@
       }
     },
     {
+      "id": "auto-news-5236e92296f6081290b8",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Beşiktaş'ın Nicolas Raskin inadı sürüyor! Devre arasında...",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-07T08:35:11.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/09/07/besiktasin-nicolas-raskin-inadi-suruyor-devre-arasinda",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-4c296b01cc07f247d6af",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Okan Buruk'tan flaş karar! İşte Galatasaray'ın Sporting CP maçı muhtemel 11'i",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-07T07:13:22.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/galatasaray/2026/09/07/okan-buruktan-flas-karar-iste-galatasarayin-sporting-cp-maci-muhtemel-11i",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
       "id": "news-galatasaray-rafael-leao-d6970aed",
       "origin": "news.json",
       "category": "club-agenda",
@@ -420,46 +460,6 @@
         "feed": "super-lig",
         "priority": 5,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-0102809c1af47c31df56",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "2026/27 Women's Champions League league phase draw: Contenders learn opponents",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-09-04T11:28:44.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxPYnhzVjV4bkxrR0hCUExaR1BLdmxZNXBjSWJTVzNkdEVxZHJKTnBvRDA3M1VPMzlfeHZhQm5BOVJrZGlXc2Q5VjhKSDZWNC1xOUdIa2x2bU1wVkRDQ3hoQjNWZkI0Wm5waU1xZDY3WmdhRko2ajFMb2tFYVRfZG4zeENtTm5Qbm1kM01PN2FwWnVIN0NBMmFVc1BQZ1ZhcE14ZGtTTUo3V0JFNGFrUTd1WDFjanlBazdpLUdSQ3N6UkxRNnNOOU9ObzBLZ20zM2xlWngxWklQQ0tKLTQ?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ad368c036ddb28027303",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "İşte Süper Lig'in yaş raporu",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-06T12:10:00.000Z",
-      "source": {
-        "name": "trt-spor",
-        "url": "https://www.trtspor.com.tr/haber/futbol/iste-super-ligin-yas-raporu-32980444",
-        "publisher": "trtspor.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trt-spor",
-        "priority": 6,
-        "status": "REPORTED"
       }
     }
   ]
