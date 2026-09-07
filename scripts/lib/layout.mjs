@@ -222,16 +222,28 @@ export function siteHeader(options = {}) {
     </header>`;
 }
 
+/** Kompakt bantta gösterilecek en fazla öğe. */
+export const COMPACT_TICKER_MAX_ITEMS = 3;
+
 /**
  * Üst çubuğun altındaki kayan son dakika bandı. Sonsuz döngü için içerik iki
  * kez basılır ve şerit %50 kaydırılır; bu sayede JavaScript olmadan da (CSS
  * animasyonu) kesintisiz akar. `:hover`/`:focus-within` durumunda durur.
  * Öğeler gerçek bağlantıdır - dekoratif değil, tıklanabilir.
+ *
+ * `options.compact`: iç sayfalar (maç raporu, oyuncu, takım, transfer, köşe
+ * vb.) tam 8 öğelik akışın birebir kopyasını taşımaz — aynı haberin onlarca
+ * sayfada tekrarı hem yanıltıcı hem de gereksiz ağırlık. Kompakt modda bant
+ * tek satıra döner, kaymaz (`marquee` yok) ve en fazla
+ * `COMPACT_TICKER_MAX_ITEMS` öğe basar. Tam akış yalnızca ana sayfa ve
+ * haberler.html'de kalır (bkz. scripts/apply-shared-layout.mjs).
  */
 export function newsTicker(options = {}) {
   const base = normalizeBase(options.base);
   const locale = normalizeLocale(options.locale);
-  const items = Array.isArray(options.items) ? options.items.filter(Boolean) : [];
+  const compact = Boolean(options.compact);
+  const allItems = Array.isArray(options.items) ? options.items.filter(Boolean) : [];
+  const items = compact ? allItems.slice(0, COMPACT_TICKER_MAX_ITEMS) : allItems;
   // Rozet çağırandan gelir: "Son Dakika" bir zaman iddiasıdır ve yalnızca
   // gerçekten taze içerik varsa yazılır. Taze içerik yoksa bant kaldırılmaz,
   // rozet nötr "Gündem" olur — okuyucu gerçek ama eski başlık görür.
@@ -289,19 +301,37 @@ export function newsTicker(options = {}) {
   };
 
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
+  const badgeMarkup = `<span class="news-ticker-badge${badge === liveBadge ? " is-live" : ""}">${badge === liveBadge ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>`;
+  const allLink = `<a class="news-ticker-all" href="${allHref}">${escapeHtml(t("ticker.all", locale))}</a>`;
+
+  if (compact) {
+    // Sabit tek satır: kayan ikinci kopya yok, `animation` da yok — bu
+    // sayede aynı sekiz öğelik akış iç sayfada tekrar basılmıyor.
+    return `<div class="news-ticker news-ticker-compact" data-shared-layout="ticker" data-ticker-source="ticker-feed" data-ticker-mode="compact" aria-label="${escapeHtml(t("ticker.aria", locale))}">
+      <div class="container-wide news-ticker-inner">
+        ${badgeMarkup}
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track">
+            <div class="news-ticker-group">${track}</div>
+          </div>
+        </div>
+        ${allLink}
+      </div>
+    </div>`;
+  }
 
   const duration = Math.max(36, items.length * 10);
 
   return `<div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="${escapeHtml(t("ticker.aria", locale))}">
       <div class="container-wide news-ticker-inner">
-        <span class="news-ticker-badge${badge === liveBadge ? " is-live" : ""}">${badge === liveBadge ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>
+        ${badgeMarkup}
         <div class="news-ticker-viewport">
           <div class="news-ticker-track" style="--ticker-duration:${duration}s">
             <div class="news-ticker-group">${track}</div>
             <div class="news-ticker-group" aria-hidden="true">${track}</div>
           </div>
         </div>
-        <a class="news-ticker-all" href="${allHref}">${escapeHtml(t("ticker.all", locale))}</a>
+        ${allLink}
       </div>
     </div>`;
 }

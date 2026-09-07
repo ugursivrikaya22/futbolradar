@@ -3298,19 +3298,47 @@
     };
   }
 
+  /**
+   * Bugünün Türk takımı maçı, canlı olmasa da DOĞRULANMIŞ bir durumdaysa
+   * havuza girer: kickoff henüz gelmemiş ("upcoming") ya da sağlayıcı
+   * maçı FINISHED/AWARDED işaretlemiş ("played"). Saatten TAHMİN edilen
+   * "in-progress" bandı bilerek dışarıda bırakılır — services/
+   * featuredMatchSelector.js ile aynı kural, aynı gerekçe.
+   */
+  function featuredIsFallbackTurkishMatch(match, nowMs, today) {
+    if (!isTurkishMatch(match) || featuredIsLiveMatch(match, nowMs) || matchDateValue(match) !== today) {
+      return false;
+    }
+
+    var band = featuredBandOf(match, nowMs);
+    if (band === "upcoming") {
+      return true;
+    }
+
+    return band === "played" && isFinishedMatch(match);
+  }
+
   /** Karuselde dönecek maçlar, gösterim sırasıyla. */
   function selectFeaturedMatchEntries(matches, options) {
     var settings = options || {};
     var now = settings.now instanceof Date ? settings.now : new Date();
     var nowMs = now.getTime();
+    var today = typeof settings.today === "string" && settings.today ? settings.today : todayInIstanbul();
     var limit = settings.limit > 0 ? settings.limit : FEATURED_MAX_SLIDES;
     var list = (Array.isArray(matches) ? matches : []).filter(Boolean);
 
-    // Büyük kart yalnızca doğrulanmış canlı maçları gösterir. Başlamamış,
-    // bitmiş, skorsuz veya bayat bir kayıt karuseli dolduramaz. Gece
-    // yarısını aşan gerçek bir canlı maç tarih filtresi olmadığı için kalır.
-    var pool = list.filter(function (match) {
+    // Büyük kart öncelikle doğrulanmış canlı maçları gösterir. Başlamamış,
+    // bitmiş, skorsuz veya bayat bir kayıt canlı olarak karuseli dolduramaz.
+    // Gece yarısını aşan gerçek bir canlı maç tarih filtresi olmadığı için
+    // kalır.
+    var livePool = list.filter(function (match) {
       return featuredIsLiveMatch(match, nowMs);
+    });
+
+    // TRENDYOL SÜPER LİG GÜVENCESİ. Canlı maç YOKSA (hangi ligden olursa
+    // olsun) bugünün doğrulanmış Türk takımı maçı kutuyu doldurur.
+    var pool = livePool.length ? livePool : list.filter(function (match) {
+      return featuredIsFallbackTurkishMatch(match, nowMs, today);
     });
     var turkishCount = pool.filter(isTurkishMatch).length;
 

@@ -11926,6 +11926,36 @@ body .container {
   color: var(--green);
 }
 
+/* İç sayfalardaki kompakt bant: kaymaz, tek satır, en fazla 3 öğe. Aynı
+   sekiz öğelik tam akışın kopyası değil — bkz. scripts/lib/layout.mjs. */
+.news-ticker-compact .news-ticker-viewport {
+  mask-image: none;
+  -webkit-mask-image: none;
+}
+
+.news-ticker-compact .news-ticker-track {
+  animation: none;
+  width: 100%;
+  min-width: 0;
+}
+
+.news-ticker-compact .news-ticker-group {
+  flex-wrap: nowrap;
+  min-width: 0;
+  padding-right: 0;
+}
+
+.news-ticker-compact .news-ticker-item {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.news-ticker-compact .news-ticker-item > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Homepage-only live scores strip: independent from the Son Dakika ticker. */
 .live-scores-ticker {
   position: relative;

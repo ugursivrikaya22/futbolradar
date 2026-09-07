@@ -111,10 +111,14 @@ const besiktas = { id: "fc-midtjylland-besiktas", kickoff: "2026-07-30T20:00:00+
 const foreignFriendly = { id: "aek-osijek", kickoff: "2026-07-30T17:00:00+03:00", homeTeam: "AEK Athens", awayTeam: "Osijek", league: "Hazırlık Maçı", status: "SCHEDULED" };
 const foreignLive = { id: "rennes-venezia", kickoff: "2026-07-30T18:45:00+03:00", homeTeam: "Rennes", awayTeam: "Venezia", league: "Hazırlık Maçı", status: "LIVE", score: { home: 0, away: 0 } };
 
-// Sağlayıcı canlı demiyorsa büyük kart maç uydurmaz.
+// Sağlayıcı canlı demiyorsa büyük kart CANLILIK uydurmaz — ama bugünün
+// henüz başlamamış Türk takımı maçını (Trendyol Süper Lig güvencesi)
+// dürüst durumuyla gösterir. trabzonspor (18:30) ve basaksehir (19:00)
+// kalkışı geçmiş, sağlayıcı onayı yok → "in-progress" tahmini olurdu ve
+// dışarıda kalır; besiktas (20:00) henüz başlamadı → doğrulanmış "upcoming".
 const staleStatuses = selectFeaturedMatch([foreignFriendly, besiktas, basaksehir, trabzonspor], { now, today });
-assert.equal(staleStatuses.match, null, "Doğrulanmış canlı maç yoksa hero boş kalmalı");
-assert.equal(staleStatuses.reason, "empty", "Boş seçim açıkça işaretlenmeli");
+assert.equal(staleStatuses.match.id, "fc-midtjylland-besiktas", "Canlı yokken bugünün henüz başlamamış Türk maçı kutuyu doldurmalı");
+assert.equal(staleStatuses.reason, "turkish-upcoming", "Doğrulanmamış 'oynanıyor' tahmini değil, dürüst 'başlayacak' sebebi olmalı");
 
 // Canlı olmayan Türk maçı, doğrulanmış canlı yabancı maçı ezemez.
 const withForeignLive = selectFeaturedMatch([foreignLive, foreignFriendly, trabzonspor, besiktas], { now, today });
@@ -128,14 +132,18 @@ const withTurkishLive = selectFeaturedMatch(
 assert.equal(withTurkishLive.match.id, "fc-midtjylland-besiktas", "Canlı Türk maçı en üste sabitlenmeli");
 assert.equal(withTurkishLive.reason, "turkish-live", "Canlı Türk maçının sebebi turkish-live olmalı");
 
-// Canlı yoksa yaklaşan maç büyük kartı doldurmaz.
+// Canlı yoksa, bugünün en yakın Türk maçı (henüz başlamadıysa saatiyle)
+// büyük kartı doldurur — hepsi henüz başlamamış olduğu için en erken
+// kalkışlı (trabzonspor, 18:30) öne çıkar.
 const beforeKickoff = selectFeaturedMatch(
   [foreignFriendly, besiktas, basaksehir, trabzonspor],
   { now: new Date(Date.parse("2026-07-30T12:00:00+03:00")), today }
 );
-assert.equal(beforeKickoff.match, null, "Başlamamış maç büyük kartta görünmemeli");
+assert.equal(beforeKickoff.match.id, "trabzonspor-al-sadd", "Canlı yokken bugünün en erken Türk maçı büyük kartı doldurmalı");
+assert.equal(beforeKickoff.reason, "turkish-upcoming", "Henüz başlamamış maçın sebebi turkish-upcoming olmalı");
 
-// Biten maç büyük kartta kalmaz.
+// Canlı yoksa, bugün SAĞLAYICI TARAFINDAN onaylanmış biten bir Türk maçı
+// (en son oynanan) büyük kartta sonucuyla kalır — "canlı" diye uydurulmaz.
 const allFinished = selectFeaturedMatch(
   [
     { ...foreignFriendly, status: "SCHEDULED", kickoff: "2026-07-30T23:30:00+03:00" },
@@ -144,13 +152,36 @@ const allFinished = selectFeaturedMatch(
   ],
   { now: new Date(Date.parse("2026-07-30T22:30:00+03:00")), today }
 );
-assert.equal(allFinished.match, null, "Biten maç büyük kartta görünmemeli");
+assert.equal(allFinished.match.id, "fc-midtjylland-besiktas", "Canlı yokken en son biten Türk maçı büyük kartta kalmalı");
+assert.equal(allFinished.reason, "turkish-played", "Biten maçın sebebi turkish-played olmalı");
 
 // Türk takımı maçı yoksa kural devreye girmez; normal sıralama uygulanır.
 const noTurkish = selectFeaturedMatch([foreignFriendly, foreignLive], { now, today });
 assert.equal(noTurkish.match.id, "rennes-venezia", "Türk maçı yokken canlı maç öne çıkar");
 assert.equal(noTurkish.reason, "live", "Sebep Türk maçı olmadığını göstermeli");
 assert.equal(noTurkish.turkish, false, "Yabancı maç Türk işaretlenmemeli");
+
+// Ne canlı maç ne bugünün Türk maçı varsa kutu boş kalır — hâlâ uydurma yok.
+const nothingToShow = selectFeaturedMatch([foreignFriendly], { now, today });
+assert.equal(nothingToShow.match, null, "Ne canlı ne Türk maçı varken hero boş kalmalı");
+assert.equal(nothingToShow.reason, "empty", "Boş seçim açıkça işaretlenmeli");
+
+// Ertelenen/iptal edilen bugünün Türk maçı, canlı yokken bile kutuyu
+// doldurmamalı: nihai bir sonucu ve kesin bir kalkış saati yok.
+const postponedTurkish = selectFeaturedMatch(
+  [{ ...trabzonspor, status: "POSTPONED" }, foreignFriendly],
+  { now, today }
+);
+assert.equal(postponedTurkish.match, null, "Ertelenen Türk maçı büyük kartı doldurmamalı");
+
+// Gerçekten canlı bir yabancı maç varsa, bugün henüz başlamamış bir Türk
+// maçı bile onu deviremez — "canlı" her zaman "yakında başlayacak"tan önde.
+const liveForeignBeatsUpcomingTurkish = selectFeaturedMatch(
+  [foreignLive, besiktas],
+  { now, today }
+);
+assert.equal(liveForeignBeatsUpcomingTurkish.match.id, "rennes-venezia",
+  "Gerçek canlı maç, henüz başlamamış Türk maçının önünde kalmalı");
 
 // Gece yarısını aşan canlı maç TSİ'de "dün" görünse de hero'ya girer — ama
 // yalnızca gerçekten yakın zamanda kalkmışsa. "23:00'te başladı" + "00:45'te
