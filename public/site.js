@@ -3656,3 +3656,163 @@
     setupStandingsTabs();
   }
 })();
+
+/**
+ * PWA "ANA EKRANA EKLE" BANDI
+ * ----------------------------------------------------------------------------
+ * Android/Chrome `beforeinstallprompt` olayını yakalar; "Ekle" düğmesi
+ * tarayıcının kendi kurulum istemini açar. iOS Safari bu olayı hiç
+ * göndermez (native kurulum API'si yok), o yüzden orada "Ekle" üç adımlı
+ * elle-ekleme talimatını açar. Zaten ana ekrana eklenmişse (standalone
+ * modda çalışıyorsa) bant hiç kurulmaz.
+ *
+ * Bant OTURUM BAŞINA yalnızca bir kez görünür: gösterildiği an
+ * sessionStorage'a işlenir — "Sonra" da aynı bayrağı basar, ikisi de aynı
+ * sonucu verir: sekme kapanana kadar bir daha çıkmaz.
+ */
+(function () {
+  var SESSION_KEY = "futbolradar-pwa-banner-seen";
+  var SHOW_DELAY_MS = 1500;
+
+  var BRAND_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg>';
+  var SHARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m8 7 4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>';
+  var PLUS_SQUARE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
+  var CHECK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
+
+  function isStandaloneDisplay() {
+    try {
+      if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) return true;
+    } catch (error) {
+      /* eski tarayıcı, sorun değil */
+    }
+    return window.navigator.standalone === true;
+  }
+
+  function isIos() {
+    return /iphone|ipad|ipod/i.test(window.navigator.userAgent || "");
+  }
+
+  function seenThisSession() {
+    try {
+      return window.sessionStorage.getItem(SESSION_KEY) === "1";
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function markSeenThisSession() {
+    try {
+      window.sessionStorage.setItem(SESSION_KEY, "1");
+    } catch (error) {
+      /* gizlilik modu vb. — bant bu sekmede yeniden görünebilir, kırılmaz */
+    }
+  }
+
+  function buildBanner(ios) {
+    var banner = document.createElement("div");
+    banner.className = "pwa-banner";
+    banner.hidden = true;
+    banner.setAttribute("role", "dialog");
+    banner.setAttribute("aria-label", "Ana ekrana ekle");
+
+    var iosSteps = ios
+      ? '<div class="pwa-banner__ios-steps" data-pwa-ios-steps hidden>' +
+          '<ol class="pwa-ios-steps">' +
+            '<li><span class="pwa-ios-steps__icon">' + SHARE_ICON + '</span><span>Safari\'de paylaş simgesine dokun</span></li>' +
+            '<li><span class="pwa-ios-steps__icon">' + PLUS_SQUARE_ICON + '</span><span>\'Ana Ekrana Ekle\'yi seç</span></li>' +
+            '<li><span class="pwa-ios-steps__icon">' + CHECK_ICON + '</span><span>\'Ekle\' de</span></li>' +
+          '</ol>' +
+        '</div>'
+      : "";
+
+    banner.innerHTML =
+      '<div class="pwa-banner__card">' +
+        '<button type="button" class="pwa-banner__close" data-pwa-close aria-label="Kapat">&times;</button>' +
+        '<div class="pwa-banner__row">' +
+          '<span class="pwa-banner__icon">' + BRAND_ICON + '</span>' +
+          '<p class="pwa-banner__text">Futbolradar\'ı ana ekrana ekle — gol bildirimlerini kaçırma.</p>' +
+        '</div>' +
+        '<div class="pwa-banner__actions">' +
+          '<button type="button" class="pwa-banner__btn pwa-banner__btn--primary" data-pwa-add>Ekle</button>' +
+          '<button type="button" class="pwa-banner__btn pwa-banner__btn--ghost" data-pwa-later>Sonra</button>' +
+        '</div>' +
+        iosSteps +
+      '</div>';
+
+    document.body.appendChild(banner);
+    return banner;
+  }
+
+  function setupPwaInstallBanner() {
+    if (isStandaloneDisplay() || seenThisSession()) return;
+
+    var ios = isIos();
+    var deferredPrompt = null;
+    var banner = null;
+    var timer = null;
+
+    function hide() {
+      if (!banner) return;
+      banner.classList.remove("is-visible");
+      banner.hidden = true;
+    }
+
+    function dismiss() {
+      markSeenThisSession();
+      hide();
+    }
+
+    function show() {
+      if (banner || seenThisSession()) return;
+      banner = buildBanner(ios);
+      markSeenThisSession();
+
+      banner.querySelector("[data-pwa-close]").addEventListener("click", dismiss);
+      banner.querySelector("[data-pwa-later]").addEventListener("click", dismiss);
+      banner.querySelector("[data-pwa-add]").addEventListener("click", function () {
+        if (ios) {
+          var steps = banner.querySelector("[data-pwa-ios-steps]");
+          if (steps) steps.hidden = false;
+          return;
+        }
+        if (!deferredPrompt) {
+          dismiss();
+          return;
+        }
+        var prompt = deferredPrompt;
+        deferredPrompt = null;
+        prompt.prompt();
+        prompt.userChoice.then(hide, hide);
+      });
+
+      banner.hidden = false;
+      // Sınıf bir sonraki karede eklenir ki CSS geçişi (opacity/transform) tetiklensin.
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(function () { banner.classList.add("is-visible"); });
+      });
+    }
+
+    if (ios) {
+      timer = window.setTimeout(show, SHOW_DELAY_MS);
+    } else {
+      window.addEventListener("beforeinstallprompt", function (event) {
+        event.preventDefault();
+        deferredPrompt = event;
+        window.clearTimeout(timer);
+        timer = window.setTimeout(show, SHOW_DELAY_MS);
+      });
+    }
+
+    window.addEventListener("appinstalled", function () {
+      window.clearTimeout(timer);
+      markSeenThisSession();
+      hide();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", setupPwaInstallBanner);
+  } else {
+    setupPwaInstallBanner();
+  }
+})();
