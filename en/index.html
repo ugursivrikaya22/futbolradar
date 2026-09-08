@@ -27,19 +27,6 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
     <link rel="stylesheet" href="../page.css?v=9a14e4a0" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.futbolradar.com/en","url":"https://www.futbolradar.com/en","name":"FutbolRadar | Turkish Süper Lig Live Scores, Standings and Analysis","description":"Live scores, fixtures, standings and verified transfer news from the Turkish Süper Lig, plus Turkish clubs in European competitions.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"}]}]}</script>
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -58,11 +45,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-</head>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  </head>
   <body class="home-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
@@ -129,99 +129,11 @@
             </div>
           </div>
           <div class="hero-featured" id="featured-radar-match" aria-label="Today's match centre summary">
-            <div class="featured-carousel" data-featured-carousel data-featured-interval="10000" data-featured-count="6" aria-roledescription="carousel" aria-label="Featured matches">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="barracas-central-argentinos-jrs-2026-09-08" role="group" aria-roledescription="slide" aria-label="1 / 6"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span>Today · Claudio Fabian Tapia</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">BC</span>
-        <strong>Barracas Central</strong>
-      </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 73&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">AJ</span>
-        <strong>Argentinos JRS</strong>
-      </div>
-      </div>
+            <div class="featured-fixture">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">Live score board</span><span>Checking the schedule</span></div>
+      <div class="home-match-command-empty"><strong>The match schedule is loading.</strong><span>Today's verified fixtures will be listed here.</span></div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="carabobo-fc-estudiantes-de-merida-fc-2026-09-08" role="group" aria-roledescription="slide" aria-label="2 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-0" aria-hidden="true">PD</i>Primera División</span><span>Today · Estadio Misael Delgado</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">CF</span>
-        <strong>Carabobo FC</strong>
-      </div>
-        <div class="featured-fixture-score"><b>1 - 0</b><span>Live 70&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">ED</span>
-        <strong>Estudiantes de Merida FC</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="plaza-colonia-uruguay-montevideo-2026-09-08" role="group" aria-roledescription="slide" aria-label="3 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-0" aria-hidden="true">SD</i>Segunda División</span><span>Today · Parque Cincuentenario Juan Prandi</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">PC</span>
-        <strong>Plaza Colonia</strong>
-      </div>
-        <div class="featured-fixture-score"><b>1 - 0</b><span>Live 72&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">UM</span>
-        <strong>Uruguay Montevideo</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="3" data-featured-match="deportes-limache-cobresal-2026-09-08" role="group" aria-roledescription="slide" aria-label="4 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-0" aria-hidden="true">PD</i>Primera División</span><span>Today · Estadio Gustavo Ocaranza</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">DL</span>
-        <strong>Deportes Limache</strong>
-      </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 30&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">C</span>
-        <strong>Cobresal</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="4" data-featured-match="excursionistas-ituzaingo-2026-09-08" role="group" aria-roledescription="slide" aria-label="5 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">PB</i>Primera B Metropolitana</span><span>Today · Excursionistas Stadium</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">E</span>
-        <strong>Excursionistas</strong>
-      </div>
-        <div class="featured-fixture-score"><b>0 - 1</b><span>Live 30&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">I</span>
-        <strong>Ituzaingó</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="5" data-featured-match="llaneros-deportes-tolima-2026-09-08" role="group" aria-roledescription="slide" aria-label="6 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">PA</i>Primera A</span><span>Today · Estadio Bello Horizonte</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">L</span>
-        <strong>Llaneros</strong>
-      </div>
-        <div class="featured-fixture-score"><b>1 - 1</b><span>Live 30&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">DT</span>
-        <strong>Deportes Tolima</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div></div>
-      <div class="featured-carousel-nav">
-      <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Previous match"><span aria-hidden="true">&lsaquo;</span></button>
-      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Barracas Central - Argentinos JRS"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Carabobo FC - Estudiantes de Merida FC"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Plaza Colonia - Uruguay Montevideo"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="3" role="tab" aria-selected="false" aria-label="Deportes Limache - Cobresal"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="4" role="tab" aria-selected="false" aria-label="Excursionistas - Ituzaingó"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="5" role="tab" aria-selected="false" aria-label="Llaneros - Deportes Tolima"><span aria-hidden="true"></span></button></div>
-      <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Next match"><span aria-hidden="true">&rsaquo;</span></button>
-      <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
-    </div>
-    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>14</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>23</b></a></div>
+    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>14</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>3</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>3</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>23</b></a></div>
           </div>
         </section>
       <section class="container section standings-tabs-section" id="en-standings-tabs" aria-labelledby="en-standings-tabs-title">
@@ -338,12 +250,6 @@
     <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
   </article>
 <article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">E</i>Eredivisie</span><span class="fixture-card-state ">Suspended</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">U</span><span class="fixture-row-name">Utrecht</span><span class="fixture-row-score">1</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">GA</span><span class="fixture-row-name">GO Ahead Eagles</span><span class="fixture-row-score">3</span></div></div>
-    
-    <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">PD</i>Primera División</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">DL</span><span class="fixture-row-name">Deportes Limache</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">C</span><span class="fixture-row-name">Cobresal</span><span class="fixture-row-score">0</span></div></div>
     
@@ -368,32 +274,20 @@
     <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
   </article>
 <article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">Live</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">V</span><span class="fixture-row-name">Vitoria</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Gremio</span><span class="fixture-row-score">0</span></div></div>
-    
-    <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span class="fixture-card-state ">Live</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BC</span><span class="fixture-row-name">Barracas Central</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AJ</span><span class="fixture-row-name">Argentinos JRS</span><span class="fixture-row-score">0</span></div></div>
-    
-    <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">PD</i>Primera División</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">CF</span><span class="fixture-row-name">Carabobo FC</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ED</span><span class="fixture-row-name">Estudiantes de Merida FC</span><span class="fixture-row-score">0</span></div></div>
     
     <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
   </article>
-<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+<article class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">SD</i>Segunda División</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">PC</span><span class="fixture-row-name">Plaza Colonia</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UM</span><span class="fixture-row-name">Uruguay Montevideo</span><span class="fixture-row-score">0</span></div></div>
     
     <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span class="fixture-card-state ">03:15</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">US</span><span class="fixture-row-name">Union Santa Fe</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IC</span><span class="fixture-row-name">Instituto Cordoba</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">E</i>Eredivisie</span><span class="fixture-card-state ">15:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">U</span><span class="fixture-row-name">Utrecht</span><span class="fixture-row-score">1</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">GA</span><span class="fixture-row-name">GO Ahead Eagles</span><span class="fixture-row-score">3</span></div></div>
     
     <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
   </article>
@@ -436,6 +330,24 @@
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">C</i>Championship</span><span class="fixture-card-state ">22:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Bolton</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">WH</span><span class="fixture-row-name">West Ham</span><span class="fixture-row-score">–</span></div></div>
+    
+    <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span class="fixture-card-state is-final">FT</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">US</span><span class="fixture-row-name">Union Santa Fe</span><span class="fixture-row-score">3</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IC</span><span class="fixture-row-name">Instituto Cordoba</span><span class="fixture-row-score">2</span></div></div>
+    
+    <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state is-final">FT</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">V</span><span class="fixture-row-name">Vitoria</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Gremio</span><span class="fixture-row-score">0</span></div></div>
+    
+    <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span class="fixture-card-state is-final">FT</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BC</span><span class="fixture-row-name">Barracas Central</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AJ</span><span class="fixture-row-name">Argentinos JRS</span><span class="fixture-row-score">0</span></div></div>
     
     <a class="fixture-card-action" href="./live-football-scores.html">Open match details</a>
   </article>
