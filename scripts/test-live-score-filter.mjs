@@ -278,7 +278,7 @@ const CASES = [
   }
 }
 
-// ── 10. Ana sayfa "Canlı" sayacı panoyla aynı hükmü kullanmalı ─────────────
+// ── 10. "Bugünün Maçları" sayacı panoyla aynı hükmü kullanmalı ─────────────
 {
   const metrics = appSource.match(/function matchCenterMetricsHtml\([\s\S]*?\n  \}/);
   assert.ok(metrics, "matchCenterMetricsHtml bulunmalı");
@@ -286,4 +286,46 @@ const CASES = [
     "sayaç doğrulanmamış canlıyı saymamalı — pano reddederken sayaç sayarsa sayfa çelişir");
 }
 
-console.log("live-score-filter OK (10 bölüm)");
+// ── 11. ANA SAYFA hero sayacı da AYNI hükmü kullanmalı ─────────────────────
+//
+// Canlıda yakalanan gerçek hata: 10. bölüm yalnızca "Bugünün Maçları"
+// panosunun sayacını (matchCenterMetricsHtml) sınıyordu — GERÇEK ana sayfa
+// sayacı renderFeaturedMatch'tir ve o, doğrulanmamış (bayat) canlıyı da
+// sayan çıplak isLiveMatch'i kullanıyordu. Sonuç: aynı veri anında, aynı
+// toplam maç sayısıyla, ana sayfa "Canlı: 105" derken "Bugünün Maçları"
+// "Canlı: 52" diyordu — sağlayıcı saatlerdir güncellemediği maçları ilki
+// hâlâ canlı sayıyor, ikincisi (bayat-canlı korumasıyla) reddediyordu.
+{
+  const hero = appSource.match(/function renderFeaturedMatch\([\s\S]*?\n  \}/);
+  assert.ok(hero, "renderFeaturedMatch bulunmalı");
+  assert.match(hero[0], /matchLiveVerdict\(match\)\.live/,
+    "ana sayfa hero sayacı da doğrulanmamış canlıyı saymamalı — panoyla AYNI tanım kullanılmalı");
+  assert.ok(!/var liveCount = list\.filter\(isLiveMatch\)/.test(hero[0]),
+    "ana sayfa sayacı çıplak isLiveMatch'e geri dönmemeli (bayat canlıyı süzmez)");
+}
+
+// ── 12. CANLI YOKLAMA PAKETİ KAPSAM DIŞI MAÇLARLA ÖNBELLEĞİ ŞİŞİRMEMELİ ────
+//
+// `?live=all` sunucu tarafında BİLEREK gün/lig süzülmeden döner (canlının
+// tek bir takvim günü yoktur). Bu paket süzülmeden istemci önbelleğine
+// eklenirse — ve birleşme yalnızca EKLER, hiç ÇIKARMAZ — bir sekme ne kadar
+// uzun açık kalırsa/ne kadar sık yoklarsa kapsam dışı (dünyanın herhangi
+// bir yerinden) maçlarla o kadar şişer. İki sayfa/iki sekme farklı
+// büyüklükte bir havuzdan sayar: "aynı toplam, farklı canlı sayısı" değil,
+// GERÇEKTE FARKLI toplamlar. Süzgeç yalnızca YENİ kayıt eklemeyi kısıtlar;
+// zaten bilinen bir maçın durumu/skoru kapsam dışıysa bile ilerler.
+{
+  const merge = appSource.match(/function mergeLiveIntoMatches\([\s\S]*?\n  \}/);
+  assert.ok(merge, "mergeLiveIntoMatches bulunmalı");
+  assert.match(merge[0], /isLiveMatchInFutbolRadarScope\(liveMatch, base\)/,
+    "yeni bir canlı kayıt eklenmeden önce FutbolRadar kapsamı denetlenmeli");
+
+  const scopeGuard = appSource.match(/function isLiveMatchInFutbolRadarScope\([\s\S]*?\n  \}/);
+  assert.ok(scopeGuard, "isLiveMatchInFutbolRadarScope bulunmalı");
+  assert.match(scopeGuard[0], /todayInIstanbul\(\)/,
+    "kapsam denetimi Europe/Istanbul 'bugün' sınırını kullanmalı");
+  assert.match(scopeGuard[0], /isTurkishMatch\(match\)/,
+    "Türk takımı maçı kapsamdan asla düşmemeli");
+}
+
+console.log("live-score-filter OK (12 bölüm)");

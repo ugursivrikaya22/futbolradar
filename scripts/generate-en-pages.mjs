@@ -73,6 +73,18 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 const { curatedMatches: programMatches } = require("../services/providers/mockProvider.js");
 const { enPathForMatch: seoEnPathForMatch, loadRegistry: loadSeoRegistry } = require("../services/matchSeoPages.js");
 const seoRegistryPages = loadSeoRegistry().pages;
+
+// Maça özel kalıcı İngilizce sayfa — Türkçe tarafla AYNI sicil ve AYNI
+// uzantısız kural (bkz. services/matchSeoPages.js#trPageUrl: adres
+// UZANTISIZDIR, vercel.json'daki /en/match/:slug yeniden yazımı dosyaya
+// çözer). Sicilde yoksa (düşük öncelikli/hazırlık maçı) tek elde bulunan
+// hedef genel canlı skor sayfasıdır — artık bu yalnızca gerçek bir
+// istisna, HER kartın kaderi değil.
+function enMatchHref(match) {
+  const enPath = seoEnPathForMatch(match, seoRegistryPages);
+  return enPath ? `../${enPath}` : "./live-football-scores.html";
+}
+
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
@@ -260,7 +272,7 @@ function finishedMatches(limit) {
 function fixtureCard(match) {
   const state = canonicalStatus(match.status);
   const verdict = liveVerdict(match);
-  const live = Boolean(verdict && verdict.isLive);
+  const live = Boolean(verdict && verdict.live);
   const hasScore = match.score && match.score.home !== null && match.score.home !== undefined &&
     match.score.away !== null && match.score.away !== undefined;
   const stateLabel = live
@@ -282,7 +294,7 @@ function fixtureCard(match) {
     homeScore: hasScore ? Number(match.score.home) : null,
     awayScore: hasScore ? Number(match.score.away) : null,
     formHtml: "",
-    actionHref: "./live-football-scores.html",
+    actionHref: enMatchHref(match),
     withMatchClick: false
   });
 }
@@ -624,7 +636,7 @@ function featuredCarousel() {
   const todayList = pool.filter((match) => istanbulDay(match.kickoff || match.date) === TODAY);
   const liveCount = todayList.filter((match) => {
     const verdict = liveVerdict(match);
-    return Boolean(verdict && verdict.isLive);
+    return Boolean(verdict && verdict.live);
   }).length;
   const finishedCount = todayList.filter((match) => canonicalStatus(match.status) === "FINISHED").length;
   const upcomingCount = todayList.filter((match) => canonicalStatus(match.status) === "SCHEDULED").length;
@@ -670,14 +682,14 @@ function featuredCarousel() {
     const competition = competitionLabel(match.league, LOCALE);
     const reasonLabel = FEATURED_REASON_EN[entry.reason] || entry.reason;
 
-    return `<div class="featured-fixture${state === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(reasonLabel)}">
+    return `<div class="featured-fixture${state === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
       <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMark(competition)}${escapeHtml(competition)}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Venue to be confirmed"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(match.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
         ${side(match.awayTeam)}
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="${escapeHtml(enMatchHref(match))}">Match analysis</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
     </div>`;
   };
 
@@ -1238,7 +1250,7 @@ function liveScoresPage() {
   const scored = filterScoredMatches(todaysMatches);
   const live = scored.filter((match) => {
     const verdict = liveVerdict(match);
-    return verdict && verdict.isLive;
+    return verdict && verdict.live;
   });
   const finished = scored.filter((match) => canonicalStatus(match.status) === "FINISHED");
 

@@ -17,6 +17,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { createRequire } from "node:module";
+import { mergeCalendarMatches, dedupeCalendarMatches } from "./sync-live-fixtures.mjs";
 
 const require = createRequire(import.meta.url);
 const { curatedMatches, resolveProviderVenue } = require("../services/providers/mockProvider.js");
@@ -223,4 +224,164 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
     "matchLineupRoute ham takvimde doğrudan arama yapmamalı");
 }
 
-console.log("fixture-dedupe OK (5 bölüm)");
+// ── 6. CANLI FİKSTÜR SENKRONU HAM YAZIMLA İKİNCİ SATIR AÇMAZ ──────────────
+//
+// Canlıda yakalanan gerçek hata: sync-live-fixtures.mjs API-Football'un ham
+// "Rizespor" yazımını hiç kanonikleştirmeden kimlik anahtarına sokuyordu,
+// bu yüzden takvimde zaten "Çaykur Rizespor" kaydı varken sonraki
+// senkronlar onu tanımıyor ve HER ÇALIŞTIRMADA yeni bir "Rizespor" satırı
+// yazma riski taşıyordu.
+{
+  const existingCanonical = {
+    id: "caykur-rizespor-alanyaspor-2026-09-07",
+    providerIds: { theSportsDb: "2527756" },
+    homeTeam: "Çaykur Rizespor",
+    awayTeam: "Alanyaspor",
+    kickoff: "2026-09-07T20:00:00+03:00",
+    venue: "Çaykur Didi Stadyumu",
+    status: "SCHEDULED",
+    score: { home: null, away: null },
+    source: "thesportsdb"
+  };
+
+  const incomingRaw = {
+    providerId: "1584401",
+    league: "Süper Lig",
+    homeTeam: "Rizespor",
+    awayTeam: "Alanyaspor",
+    kickoff: "2026-09-07T20:00:00+03:00",
+    status: "LIVE",
+    score: { home: 1, away: 0 }
+  };
+
+  const result = mergeCalendarMatches([existingCanonical], [{ match: incomingRaw, detail: null }]);
+  assert.equal(result.matches.length, 1,
+    "ham yazımlı sağlayıcı kaydı, zaten var olan kanonik kayda BİRLEŞMELİ, ikinci satır açmamalı");
+  assert.equal(result.added, 0, "bu maç zaten takvimde; 'added' artmamalı");
+  assert.equal(result.updated, 1, "canlı skor/durum var olan kanonik kayda işlenmeli");
+  assert.equal(result.matches[0].homeTeam, "Çaykur Rizespor", "görünen ad kanonik kalmalı");
+  assert.equal(result.matches[0].score.home, 1, "canlı skor kaybolmamalı");
+  assert.equal(result.matches[0].score.away, 0, "canlı skor kaybolmamalı");
+  assert.equal(result.matches[0].providerIds.theSportsDb, "2527756");
+  assert.equal(result.matches[0].providerIds.apiFootball, "1584401");
+
+  // Aynı iki takım, FARKLI gün: bu bir postponement/başka fikstür olabilir,
+  // yanlışlıkla aynı kayda BİRLEŞMEMELİ.
+  const otherDay = mergeCalendarMatches([existingCanonical], [{
+    match: { ...incomingRaw, kickoff: "2026-11-01T20:00:00+03:00" }, detail: null
+  }]);
+  assert.equal(otherDay.matches.length, 2, "farklı güne ait aynı takım çifti ayrı kayıt olarak kalmalı");
+
+  console.log("  ok  sync-live-fixtures ham takım adını kanonikleştirip tekilleştiriyor");
+}
+
+// ── 7. DİSKTE ZATEN YAZILMIŞ İKİZ SATIRLAR ONARILIYOR ─────────────────────
+//
+// 6. bölüm YENİ gelen kaydı korur; bu bölüm sözleşmenin diğer yarısını
+// sınar: takvimde önceden (bu düzeltmeden önce) iki ayrı yazımla yazılmış
+// satırlar varsa, güncelleme bir daha hiç çalışmasa bile takvim kendi
+// başına onarılabilmeli — data/fixture-calendar.json'daki gerçek onarım da
+// bu işlevle yapıldı.
+{
+  const twin = [
+    { id: "caykur-rizespor-alanyaspor-2026-09-07", providerIds: { theSportsDb: "2527756" }, homeTeam: "Çaykur Rizespor", awayTeam: "Alanyaspor", kickoff: "2026-09-07T20:00:00+03:00", venue: "Çaykur Didi Stadyumu", status: "SCHEDULED", score: { home: null, away: null }, source: "thesportsdb" },
+    { id: "rizespor-alanyaspor-2026-09-07", providerIds: { apiFootball: "1584401" }, homeTeam: "Rizespor", awayTeam: "Alanyaspor", kickoff: "2026-09-07T20:00:00+03:00", venue: null, status: "LIVE", score: { home: 1, away: 0 }, source: "api-football" }
+  ];
+
+  const repaired = dedupeCalendarMatches(twin);
+  assert.equal(repaired.matches.length, 1, "diskte zaten var olan ikiz satırlar tek satıra inmeli");
+  assert.equal(repaired.merges, 1);
+  assert.equal(repaired.matches[0].homeTeam, "Çaykur Rizespor");
+  assert.deepEqual(repaired.matches[0].score, { home: 1, away: 0 }, "onarım ilerlemiş durumun skorunu kaybetmemeli");
+  assert.equal(repaired.matches[0].venue, "Çaykur Didi Stadyumu", "doğrulanmış saha onarımda kaybolmamalı");
+  assert.equal(repaired.matches[0].providerIds.theSportsDb, "2527756");
+  assert.equal(repaired.matches[0].providerIds.apiFootball, "1584401");
+
+  // Bugünkü gerçek data/fixture-calendar.json dosyasında artık bu ikiz
+  // KALMAMALI — düzeltme yalnızca fonksiyonu değil, veriyi de onardı.
+  const calendarPath = new URL("../data/fixture-calendar.json", import.meta.url);
+  const calendar = JSON.parse(fs.readFileSync(calendarPath, "utf8"));
+  const rizesporRows = calendar.matches.filter((match) =>
+    sameClub(match.homeTeam, "Çaykur Rizespor") && sameClub(match.awayTeam, "Alanyaspor"));
+  assert.equal(rizesporRows.length, 1,
+    `data/fixture-calendar.json Çaykur Rizespor - Alanyaspor için tek kayıt taşımalı, ${rizesporRows.length} bulundu`);
+
+  console.log("  ok  diskteki hazır ikiz satırlar dedupeCalendarMatches ile tek satıra iniyor");
+}
+
+// ── 8. İSTEMCİ BİRLEŞTİRMESİ DE AYNI KURALI UYGULAR ───────────────────────
+//
+// app.js#mergeMatchCollections sunucudan bağımsız, tarayıcıda çalışan ayrı
+// bir uygulama (bkz. app.js#loadStaticMatchSources): sunucu tarafı doğru
+// birleştirse bile istemci ham JSON'ı (data/matches.json +
+// data/fixture-calendar.json) doğrudan okuyup KENDİ birleştirmesini
+// yapıyor. Bu blok o birleştirmeyi app.js'ten ayıklayıp gerçek hata
+// senaryosuyla (canlı sonuç sağlayıcıdan geldi, statik yedek hâlâ iki
+// yazımı taşıyor) çalıştırır.
+{
+  const appSource = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+
+  function extractFunctionAt(source, startIndex) {
+    let depth = 0;
+    let seenOpen = false;
+    let index = startIndex;
+    for (; index < source.length; index += 1) {
+      if (source[index] === "{") { depth += 1; seenOpen = true; }
+      else if (source[index] === "}") { depth -= 1; if (seenOpen && depth === 0) { index += 1; break; } }
+    }
+    return source.slice(startIndex, index);
+  }
+
+  function extractFunction(source, name, occurrence = 1) {
+    let index = -1;
+    let from = 0;
+    for (let count = 0; count < occurrence; count += 1) {
+      index = source.indexOf(`function ${name}(`, from);
+      if (index === -1) throw new Error(`app.js: ${name} (occurrence ${occurrence}) bulunamadı`);
+      from = index + name.length + 10;
+    }
+    return extractFunctionAt(source, index);
+  }
+
+  // `normalizeSearchText` app.js'te İKİ KEZ tanımlanır; ikincisi
+  // çalışma anında birinciyi GÖLGELER (aynı IIFE kapsamında son
+  // fonksiyon bildirimi kazanır). Gerçek tarayıcı davranışıyla eşleşmesi
+  // için ikisi de, aynı sırayla, dahil edilir.
+  const body = [
+    extractFunction(appSource, "normalizeSearchText", 1),
+    extractFunction(appSource, "normalizeSearchText", 2),
+    extractFunction(appSource, "istanbulDayOf"),
+    extractFunction(appSource, "matchDateValue"),
+    extractFunction(appSource, "sameClubName"),
+    extractFunction(appSource, "matchIdentityKey"),
+    extractFunction(appSource, "mergeMatchCollections")
+  ].join("\n\n") + "\nreturn { mergeMatchCollections: mergeMatchCollections };";
+
+  const client = new Function(body)();
+
+  const providerMatches = [
+    { id: "caykur-rizespor-alanyaspor-2026-09-07", homeTeam: "Çaykur Rizespor", awayTeam: "Alanyaspor", kickoff: "2026-09-07T20:00:00+03:00", status: "LIVE", score: { home: 1, away: 0 } }
+  ];
+  const staticFallback = [
+    { id: "caykur-rizespor-alanyaspor-2026-09-07", homeTeam: "Çaykur Rizespor", awayTeam: "Alanyaspor", kickoff: "2026-09-07T20:00:00+03:00", status: "SCHEDULED", score: null },
+    { id: "rizespor-alanyaspor-2026-09-07", homeTeam: "Rizespor", awayTeam: "Alanyaspor", kickoff: "2026-09-07T20:00:00+03:00", status: "SCHEDULED", score: null }
+  ];
+
+  const merged = client.mergeMatchCollections(providerMatches, staticFallback);
+  assert.equal(merged.length, 1,
+    "istemci birleştirmesi de aynı maçı iki farklı yazımla iki kart olarak göstermemeli");
+  assert.equal(merged[0].homeTeam, "Çaykur Rizespor");
+  assert.deepEqual(merged[0].score, { home: 1, away: 0 });
+
+  // Kontrollü eşleşme: aynı gün oynanan FARKLI bir maç yanlışlıkla
+  // birleşmemeli (yalnızca benzer isim yeterli değil).
+  const distinct = client.mergeMatchCollections([
+    { homeTeam: "Galatasaray", awayTeam: "Fenerbahçe", kickoff: "2026-09-07T20:00:00+03:00" },
+    { homeTeam: "Beşiktaş", awayTeam: "Trabzonspor", kickoff: "2026-09-07T20:00:00+03:00" }
+  ], []);
+  assert.equal(distinct.length, 2, "farklı maçlar yalnızca aynı gün oynandığı için birleşmemeli");
+
+  console.log("  ok  app.js istemci birleştirmesi de kulüp adı takma eşleşmesini uyguluyor");
+}
+
+console.log("fixture-dedupe OK (8 bölüm)");
