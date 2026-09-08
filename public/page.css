@@ -12814,6 +12814,24 @@ a.column-author:focus-visible {
   padding-bottom: var(--sp-5);
 }
 
+/* Ana sayfadan #çapa ile doğrudan gelinen paragraflar (Muhtemel 11, Hangi
+   Kanalda? vb.): sabit üst çubuğun altında kaybolmasınlar diye kaydırma
+   payı, "düz metne düştüm" hissi vermesinler diye kart + başlık alırlar. */
+.column-anchor-card {
+  scroll-margin-top: 92px;
+  border-left: 3px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.column-anchor-card h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-lg);
+}
+
+.column-anchor-card p {
+  margin: 0;
+}
+
 /* ----------------------------------------------------------------------------
    MAÇ SONU RAPORU — BEŞ BÖLÜMLÜK OMURGA
    Mobilde tek sütun, geniş ekranda iki. `auto-fit` + `minmax` kullanılıyor ki
