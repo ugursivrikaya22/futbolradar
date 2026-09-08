@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-08T04:27:15.105Z",
+  "updatedAt": "2026-09-08T06:41:55.005Z",
   "items": [
     {
       "id": "auto-news-50a586592de89b4ab281",
@@ -207,23 +207,25 @@
       }
     },
     {
-      "id": "auto-news-9bfb38188669fb3b3fa0",
+      "id": "auto-news-efe426731ad7752edcc1",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
       "text": "Fenerbahçe:1 Beşiktaş:2 (U-19)",
       "team": "Beşiktaş",
-      "timestamp": "2026-09-05T15:01:36.000Z",
+      "timestamp": "2026-09-05T15:13:30.000Z",
       "source": {
         "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1vQXRnZk1Sa0VqcVRFWWhfTTdSWEpfakZIUDZ4RTVnM1pPallfaXBHQ3AyVlRNTHg0SllJRVdoclVlMERoOE0xbTN2TDgtSzYtNnUwNFNSdmxNRVluY21FUmE4aVljQU5fVU9XcE9TQnZleVhrTFRBN3lPQQ?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1ZVjFFXzRucFppWmJuS0pYeVE4U2dYenBqbVF0bnBhV0N0UVhneXRBT0lGX1lfTExMTlpOTE9IRGtuVGItNjZ5TkZyMklWWWw1aWpkS0tldldPdUE?oc=5",
         "publisher": "bjk.com.tr"
       },
       "automation": {
         "source": "rss",
         "feed": "besiktas",
         "priority": 3,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-05T15:01:36.000Z"
       }
     },
     {
@@ -277,6 +279,46 @@
       "important": true
     },
     {
+      "id": "auto-news-4c296b01cc07f247d6af",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Okan Buruk'tan flaş karar! İşte Galatasaray'ın Sporting CP maçı muhtemel 11'i",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-07T21:20:50.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/galatasaray/2026/09/07/okan-buruktan-flas-karar-iste-galatasarayin-sporting-cp-maci-muhtemel-11i",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-5236e92296f6081290b8",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Beşiktaş'ın Nicolas Raskin inadı sürüyor! Devre arasında...",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-07T21:20:41.000Z",
+      "source": {
+        "name": "fotomac",
+        "url": "https://www.fotomac.com.tr/besiktas/2026/09/07/besiktasin-nicolas-raskin-inadi-suruyor-devre-arasinda",
+        "publisher": "fotomac.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fotomac",
+        "priority": 8,
+        "status": "REPORTED"
+      }
+    },
+    {
       "id": "news-fenerbahce-rodrigo-becao-eba6a16f",
       "origin": "news.json",
       "category": "club-agenda",
@@ -320,46 +362,6 @@
       "automation": {
         "source": "rss",
         "feed": "sabah-spor",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
-      "id": "auto-news-5236e92296f6081290b8",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Beşiktaş'ın Nicolas Raskin inadı sürüyor! Devre arasında...",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-07T08:35:11.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/besiktas/2026/09/07/besiktasin-nicolas-raskin-inadi-suruyor-devre-arasinda",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
-      "id": "auto-news-4c296b01cc07f247d6af",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Okan Buruk'tan flaş karar! İşte Galatasaray'ın Sporting CP maçı muhtemel 11'i",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-07T07:13:22.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/galatasaray/2026/09/07/okan-buruktan-flas-karar-iste-galatasarayin-sporting-cp-maci-muhtemel-11i",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
         "priority": 8,
         "status": "REPORTED"
       }

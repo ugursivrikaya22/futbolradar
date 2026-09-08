@@ -16,6 +16,19 @@
     <meta property="og:description" content="La Liga güncel fikstür, maç sonuçları ve puan durumu. Doğrulanmış veriler FutbolRadar&#39;da." />
     <link rel="stylesheet" href="../page.css?v=9a14e4a0" />
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsOrganization","name":"La Liga","sport":"Football","url":"https://www.futbolradar.com/lig/la-liga.html"}</script>
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -34,24 +47,11 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-  </head>
+</head>
   <body class="subpage league-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
@@ -175,7 +175,7 @@
       <td><strong>8</strong></td>
     </tr><tr>
       <td>6</td>
-      <td>Atletico Madrid</td>
+      <td>Sevilla</td>
       <td>4</td>
       <td>2</td>
       <td>1</td>
@@ -184,7 +184,7 @@
       <td><strong>7</strong></td>
     </tr><tr>
       <td>7</td>
-      <td>Sevilla</td>
+      <td>Atletico Madrid</td>
       <td>4</td>
       <td>2</td>
       <td>1</td>
@@ -202,6 +202,15 @@
       <td><strong>7</strong></td>
     </tr><tr>
       <td>9</td>
+      <td>Real Sociedad</td>
+      <td>5</td>
+      <td>2</td>
+      <td>1</td>
+      <td>2</td>
+      <td>-2</td>
+      <td><strong>7</strong></td>
+    </tr><tr>
+      <td>10</td>
       <td>Athletic Club</td>
       <td>4</td>
       <td>2</td>
@@ -210,7 +219,7 @@
       <td>1</td>
       <td><strong>6</strong></td>
     </tr><tr>
-      <td>10</td>
+      <td>11</td>
       <td>Levante</td>
       <td>4</td>
       <td>1</td>
@@ -219,7 +228,7 @@
       <td>0</td>
       <td><strong>5</strong></td>
     </tr><tr>
-      <td>11</td>
+      <td>12</td>
       <td>Espanyol</td>
       <td>4</td>
       <td>1</td>
@@ -228,7 +237,7 @@
       <td>1</td>
       <td><strong>4</strong></td>
     </tr><tr>
-      <td>12</td>
+      <td>13</td>
       <td>Racing Santander</td>
       <td>4</td>
       <td>1</td>
@@ -237,17 +246,8 @@
       <td>-1</td>
       <td><strong>4</strong></td>
     </tr><tr>
-      <td>13</td>
-      <td>Rayo Vallecano</td>
-      <td>4</td>
-      <td>1</td>
-      <td>1</td>
-      <td>2</td>
-      <td>-3</td>
-      <td><strong>4</strong></td>
-    </tr><tr>
       <td>14</td>
-      <td>Real Sociedad</td>
+      <td>Rayo Vallecano</td>
       <td>4</td>
       <td>1</td>
       <td>1</td>
@@ -257,29 +257,29 @@
     </tr><tr>
       <td>15</td>
       <td>Getafe</td>
-      <td>3</td>
+      <td>4</td>
       <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>-3</td>
+      <td><strong>4</strong></td>
+    </tr><tr>
+      <td>16</td>
+      <td>Celta Vigo</td>
+      <td>5</td>
       <td>0</td>
+      <td>3</td>
       <td>2</td>
       <td>-3</td>
       <td><strong>3</strong></td>
     </tr><tr>
-      <td>16</td>
+      <td>17</td>
       <td>Villarreal</td>
       <td>4</td>
       <td>0</td>
       <td>2</td>
       <td>2</td>
       <td>-2</td>
-      <td><strong>2</strong></td>
-    </tr><tr>
-      <td>17</td>
-      <td>Celta Vigo</td>
-      <td>4</td>
-      <td>0</td>
-      <td>2</td>
-      <td>2</td>
-      <td>-3</td>
       <td><strong>2</strong></td>
     </tr><tr>
       <td>18</td>
@@ -293,11 +293,11 @@
     </tr><tr>
       <td>19</td>
       <td>Elche</td>
-      <td>3</td>
+      <td>4</td>
       <td>0</td>
       <td>1</td>
-      <td>2</td>
-      <td>-6</td>
+      <td>3</td>
+      <td>-7</td>
       <td><strong>1</strong></td>
     </tr><tr>
       <td>20</td>
