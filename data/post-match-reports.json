@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-08T04:26:46.336Z",
+  "updatedAt": "2026-09-08T09:36:20.888Z",
   "matchCount": 1094,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Union Santa Fe",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 23
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -65,24 +65,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 23,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ea1618a856dfee4d",
-      "fingerprint": "ea1618a856dfee4d",
+      "analysisSourceHash": "62e1ea4699a664c8",
+      "fingerprint": "62e1ea4699a664c8",
       "analysisGeneratedAt": "2026-09-08T04:26:46.211Z",
-      "analysisUpdatedAt": "2026-09-08T04:26:46.211Z",
-      "generatedAt": "2026-09-08T04:26:46.211Z",
+      "analysisUpdatedAt": "2026-09-08T09:36:20.854Z",
+      "generatedAt": "2026-09-08T09:36:20.854Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -94,7 +99,7 @@
       "reportUrl": "./mac-raporu/union-santa-fe-instituto-cordoba-2026-09-08.html",
       "digest": {
         "headline": "Union Santa Fe, Instituto Cordoba'yı 3-2 yendi",
-        "paragraph": "Union Santa Fe, Estadio 15 de Abril'de oynanan Liga Profesional Argentina karşılaşmasında Instituto Cordoba'yı 3-2 mağlup etti. Golleri 13. dakikada Leonel Mosevich (Instituto Cordoba), 25. dakikada Brahian Cuello (Union Santa Fe), 48. dakikada Cristian Tarragona (Union Santa Fe), 74. dakikada Misael Aguirre (Union Santa Fe), 87. dakikada Hernán De La Fuente (Instituto Cordoba) kaydetti.",
+        "paragraph": "Union Santa Fe, Estadio 15 de Abril'de oynanan Liga Profesional Argentina karşılaşmasında Instituto Cordoba'yı 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Union Santa Fe",
           "loser": "Instituto Cordoba",
@@ -107,115 +112,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 4
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "90'",
-              "team": "Union Santa Fe",
-              "type": "Kırmızı kart",
-              "detail": "Cristian Tarragona",
-              "pivotal": true
-            },
-            {
-              "minute": "90+6'",
-              "team": "Instituto Cordoba",
-              "type": "Kırmızı kart",
-              "detail": "Matías Gallardo",
-              "pivotal": true
-            },
-            {
-              "minute": "13'",
-              "team": "Instituto Cordoba",
-              "type": "Gol",
-              "detail": "Leonel Mosevich",
-              "pivotal": true
-            },
-            {
-              "minute": "25'",
-              "team": "Union Santa Fe",
-              "type": "Gol",
-              "detail": "Brahian Cuello",
-              "pivotal": true
-            },
-            {
-              "minute": "48'",
-              "team": "Union Santa Fe",
-              "type": "Gol",
-              "detail": "Cristian Tarragona",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Hernán De La Fuente), 2 kırmızı kart bu bölümde görüldü, sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 0,
-            "away": 1
-          },
-          "moments": [
-            {
-              "minute": "83'",
-              "team": "Instituto Cordoba",
-              "type": "Sarı kart",
-              "detail": "Alex Luna",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Instituto Cordoba",
-              "type": "Gol",
-              "detail": "Hernán De La Fuente",
-              "decisive": true
-            },
-            {
-              "minute": "89'",
-              "team": "Union Santa Fe",
-              "type": "VAR incelemesi",
-              "detail": "Cristian Tarragona",
-              "decisive": false
-            },
-            {
-              "minute": "90'",
-              "team": "Union Santa Fe",
-              "type": "Kırmızı kart",
-              "detail": "Cristian Tarragona",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Brahian Cuello",
-              "team": "Union Santa Fe",
-              "contribution": "25' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Hernán De La Fuente",
-              "team": "Instituto Cordoba",
-              "contribution": "87' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Leonel Mosevich",
-              "team": "Instituto Cordoba",
-              "contribution": "13' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Misael Aguirre",
-              "team": "Union Santa Fe",
-              "contribution": "74' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -225,34 +137,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
-            "13' Instituto Cordoba — Leonel Mosevich: gol",
-            "25' Union Santa Fe — Brahian Cuello: gol"
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
-            "48' Union Santa Fe — Cristian Tarragona: gol",
-            "74' Union Santa Fe — Misael Aguirre: gol",
-            "87' Instituto Cordoba — Hernán De La Fuente: gol",
-            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Union Santa Fe maça 4-4-2 dizilişiyle başladı.",
-            "Instituto Cordoba maça 3-4-3 dizilişiyle başladı.",
-            "58' Instituto Cordoba değişikliği (Substitution 1). Değişiklikten sonra Instituto Cordoba adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "58' Instituto Cordoba değişikliği (Substitution 2). Değişiklikten sonra Instituto Cordoba adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "62' Union Santa Fe değişikliği (Substitution 1). Değişiklikten sonra Union Santa Fe adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "70' Union Santa Fe değişikliği (Substitution 2). Değişiklikten sonra Union Santa Fe adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Instituto Cordoba maça 3-4-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -264,7 +162,7 @@
               "formation": "3-4-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -277,8 +175,7 @@
             "Instituto Cordoba daha çok şut denedi (9-11)."
           ],
           "improvements": [
-            "Instituto Cordoba şut isabetinde geride kaldı (%18); bitiricilik geliştirilmesi gereken alan.",
-            "Kırmızı kart maçın seyrini etkiledi (90' Union Santa Fe, 90+6' Instituto Cordoba)."
+            "Instituto Cordoba şut isabetinde geride kaldı (%18); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Union Santa Fe sahadan 1 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -366,20 +263,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
