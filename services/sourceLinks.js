@@ -48,6 +48,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "bjk.com.tr",
     "trabzonspor.org.tr",
     "genclerbirligi.org.tr",
+    "antalyaspor.com.tr",
     "ibfk.com.tr",
     "konyaspor.org.tr",
     "caykurrizespor.org.tr",
@@ -86,6 +87,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "sabah.com.tr",
     "aspor.com.tr",
     "trtspor.com.tr",
+    // TRT 1: Şampiyonlar Ligi'nde Türk temsilcilerinin maçlarını şifresiz
+    // yayınlayan resmî TRT kanalı; trtspor.com.tr ile aynı yayıncı kurum.
+    "trt1.com.tr",
     "aa.com.tr",
     "ntvspor.net",
     "ntv.com.tr",
