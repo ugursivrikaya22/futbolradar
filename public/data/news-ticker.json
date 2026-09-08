@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-08T19:20:45.430Z",
+  "updatedAt": "2026-09-08T20:45:29.124Z",
   "items": [
     {
       "id": "auto-news-2af6d591569de8de8f2e",
@@ -229,46 +229,6 @@
       }
     },
     {
-      "id": "auto-news-29ab6d74fb435a56cd7e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Rıdvan Yılmaz: “Harika oynadık” - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-05T20:06:20.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9oeDYwVEhiVUpQUHd5Rk9sbDB1NzlZOThpSnlJeGR0Z0wzYVQ2LWMxaVRSa0xrWFZSMDNXREtkdjN4ai1CVGNweGttTzMzZ1lwZVBJWjJ2Rkh5T3c?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-5228842d1cd00f76e291",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Dusan Vlahovic: “Kazandığımız için sevinçliyiz”",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-05T19:51:55.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9rU3UzcFBGaUVacFYwNU84cTlWRC1qa21TNVIycHBjX0JJX2RKVFlCV3EzZmtqVy15Q1BkUGpaSGI0a3A4b3oxTk5xdFhKODR3WC0td2QxbHBIWk0?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "news-fenerbahce-roma-maci-ne-zaman-saat-kacta-hangi-kanalda",
       "origin": "news.json",
       "category": "fixture",
@@ -288,15 +248,14 @@
       "origin": "news.json",
       "category": "fixture",
       "confidence": "confirmed",
-      "text": "Şampiyonlar Ligi bugün 6 maçla başlıyor: Real Madrid-Inter, Porto-Manchester City ve dört maç daha 19.45 ve 22.00'de tabii Spor'da.",
+      "text": "Şampiyonlar Ligi lig aşaması başlıyor: Galatasaray 9 Eylül'de Sporting CP deplasmanında, Fenerbahçe 10 Eylül'de Roma'yı ağırlıyor.",
       "timestamp": "2026-09-07T16:00:00+03:00",
       "source": {
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/haber/sampiyonlar-ligi-basliyor-galatasaray-sahneye-cikiyor"
       },
       "team": "Galatasaray",
-      "expiresAt": "2026-09-08T23:59:59+03:00",
-      "updatedAt": "2026-09-08T09:30:00+03:00",
+      "expiresAt": "2026-09-10T23:59:59+03:00",
       "important": true
     },
     {
@@ -315,17 +274,31 @@
       "important": true
     },
     {
-      "id": "news-fenerbahce-ridvan-yilmaz-f6106b03",
+      "id": "news-galatasaray-rafael-leao-dcb4a651",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Rafael Leao'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-08T20:13:03.363Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-rafael-leao-dcb4a651"
+      },
+      "team": "Galatasaray",
+      "important": true
+    },
+    {
+      "id": "news-galatasaray-okan-buruk-ddc98def",
       "origin": "news.json",
       "category": "club-agenda",
       "confidence": "reported",
-      "text": "Sporx'in haberine göre Fenerbahçe cephesinde kadroya ilişkin bir gelişme yaşandığı bildirildi.",
-      "timestamp": "2026-09-08T14:10:12.000Z",
+      "text": "Sporx'in haberine göre Galatasaray cephesinde kadroya ilişkin bir gelişme yaşandığı bildirildi.",
+      "timestamp": "2026-09-08T20:13:03.363Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-ridvan-yilmaz-f6106b03"
+        "url": "https://www.futbolradar.com/haber/galatasaray-okan-buruk-ddc98def"
       },
-      "team": "Fenerbahçe",
+      "team": "Galatasaray",
       "important": true
     },
     {
@@ -374,20 +347,6 @@
         "url": "https://www.futbolradar.com/haber/besiktas-alexander-nubel-81a89d98"
       },
       "team": "Beşiktaş",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-rafael-leao-d6970aed",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Galatasaray çevresinde Rafael Leao'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-06T22:17:28.459Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-rafael-leao-d6970aed"
-      },
-      "team": "Galatasaray",
       "important": true
     },
     {
@@ -535,21 +494,6 @@
       },
       "team": "Galatasaray",
       "expiresAt": "2026-09-09T22:00:00+03:00"
-    },
-    {
-      "id": "news-antalyaspor-antalyaspor-bulent-korkmaz-a9a5582b",
-      "origin": "news.json",
-      "category": "team-news",
-      "confidence": "confirmed",
-      "text": "Antalyaspor, teknik direktör Bülent Korkmaz ile karşılıklı anlaşarak yollarını ayırdı.",
-      "timestamp": "2026-09-07T19:54:22.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/antalyaspor-antalyaspor-bulent-korkmaz-a9a5582b"
-      },
-      "team": "Antalyaspor",
-      "expiresAt": "2026-09-10T23:59:59+03:00",
-      "updatedAt": "2026-09-08T09:00:00+03:00"
     }
   ]
 }
