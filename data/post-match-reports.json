@@ -1,9 +1,380 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-08T09:36:20.888Z",
-  "matchCount": 1094,
+  "updatedAt": "2026-09-08T14:26:45.453Z",
+  "matchCount": 1095,
   "records": [
+    {
+      "matchId": "utrecht-go-ahead-eagles-2026-09-05",
+      "fixtureId": "1552155",
+      "provider": "api-football",
+      "slug": "utrecht-go-ahead-eagles-2026-09-08",
+      "kickoff": "2026-09-08T15:00:00+03:00",
+      "kickoffUtc": "2026-09-08T12:00:00.000Z",
+      "kickoffLocal": "2026-09-08T15:00",
+      "date": "2026-09-08",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Eredivisie",
+      "competition": "Eredivisie",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Utrecht",
+      "awayTeam": "GO Ahead Eagles",
+      "venue": "Stadion Galgenwaard",
+      "score": {
+        "home": 3,
+        "away": 3
+      },
+      "finalScore": "3-3",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 14
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 43
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 14,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 43
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "3085979604b79e40",
+      "fingerprint": "3085979604b79e40",
+      "analysisGeneratedAt": "2026-09-08T14:26:45.407Z",
+      "analysisUpdatedAt": "2026-09-08T14:26:45.407Z",
+      "generatedAt": "2026-09-08T14:26:45.407Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Utrecht 3-3 GO Ahead Eagles maç raporu: Eredivisie istatistikleri | FutbolRadar",
+        "description": "Stadion Galgenwaard'da oynanan Eredivisie maçında Utrecht ile GO Ahead Eagles birbirini geçemedi: 3-3.",
+        "path": "mac-raporu/utrecht-go-ahead-eagles-2026-09-08.html",
+        "competition": "Eredivisie"
+      },
+      "reportUrl": "./mac-raporu/utrecht-go-ahead-eagles-2026-09-08.html",
+      "digest": {
+        "headline": "Utrecht ile GO Ahead Eagles 3-3 berabere kaldı",
+        "paragraph": "Stadion Galgenwaard'da oynanan Eredivisie maçında Utrecht ile GO Ahead Eagles birbirini geçemedi: 3-3. Golleri 18. dakikada Mathis Suray (GO Ahead Eagles), 49. dakikada Søren Tengstedt (GO Ahead Eagles), 58. dakikada Victor Kaj Edvardsen (GO Ahead Eagles), 63. dakikada Dani De Wit (Utrecht), 77. dakikada Matisse Didden (Utrecht), 90. dakikada Artem Stepanov (Utrecht) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "18'",
+              "team": "GO Ahead Eagles",
+              "type": "Gol",
+              "detail": "Mathis Suray",
+              "pivotal": true
+            },
+            {
+              "minute": "49'",
+              "team": "GO Ahead Eagles",
+              "type": "Gol",
+              "detail": "Søren Tengstedt",
+              "pivotal": true
+            },
+            {
+              "minute": "58'",
+              "team": "GO Ahead Eagles",
+              "type": "Gol",
+              "detail": "Victor Kaj Edvardsen",
+              "pivotal": true
+            },
+            {
+              "minute": "63'",
+              "team": "Utrecht",
+              "type": "Gol",
+              "detail": "Dani De Wit",
+              "pivotal": true
+            },
+            {
+              "minute": "90'",
+              "team": "Utrecht",
+              "type": "Penaltı",
+              "detail": "Artem Stepanov",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 2 gol kaydedildi, (Matisse Didden, Artem Stepanov).",
+          "goals": {
+            "home": 2,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Utrecht",
+              "type": "Gol",
+              "detail": "Matisse Didden",
+              "decisive": true
+            },
+            {
+              "minute": "85'",
+              "team": "GO Ahead Eagles",
+              "type": "Oyuncu değişikliği",
+              "detail": "Stefán Ingi Sigurdarson",
+              "decisive": false
+            },
+            {
+              "minute": "90'",
+              "team": "Utrecht",
+              "type": "Penaltı",
+              "detail": "Artem Stepanov",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Dani De Wit",
+              "team": "Utrecht",
+              "contribution": "63' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Mathis Suray",
+              "team": "GO Ahead Eagles",
+              "contribution": "18' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Matisse Didden",
+              "team": "Utrecht",
+              "contribution": "77' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Søren Tengstedt",
+              "team": "GO Ahead Eagles",
+              "contribution": "49' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Utrecht sahaya 3-4-3 dizilişiyle çıktı.",
+            "GO Ahead Eagles sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "18' GO Ahead Eagles — Mathis Suray: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "49' GO Ahead Eagles — Søren Tengstedt: gol",
+            "58' GO Ahead Eagles — Victor Kaj Edvardsen: gol",
+            "63' Utrecht — Dani De Wit: gol",
+            "77' Utrecht — Matisse Didden: gol",
+            "90' Utrecht — Artem Stepanov: penaltı"
+          ],
+          "goals": 5
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Utrecht maça 3-4-3 dizilişiyle başladı.",
+            "GO Ahead Eagles maça 4-2-3-1 dizilişiyle başladı.",
+            "45' Utrecht değişikliği (Substitution 1). Değişiklikten sonra Utrecht adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "61' Utrecht değişikliği (Substitution 2). Değişiklikten sonra Utrecht adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "61' Utrecht değişikliği (Substitution 3). Değişiklikten sonra Utrecht adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "61' Utrecht değişikliği (Substitution 4). Değişiklikten sonra Utrecht adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Utrecht",
+              "formation": "3-4-3"
+            },
+            {
+              "team": "GO Ahead Eagles",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 3-3 berabere bitti."
+          ],
+          "strengths": [
+            "GO Ahead Eagles topa daha çok sahip oldu (%59).",
+            "Utrecht daha çok şut denedi (19-13)."
+          ],
+          "improvements": [
+            "Utrecht şut isabetinde geride kaldı (%32); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "3-3 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Utrecht",
+            "score": 70
+          },
+          "away": {
+            "team": "GO Ahead Eagles",
+            "score": 72
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Utrecht %31.6, GO Ahead Eagles %53.8."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Utrecht 23.8, GO Ahead Eagles 32.4 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
     {
       "matchId": "union-santa-fe-instituto-cordoba-2026-09-08",
       "fixtureId": "1493120",
@@ -681,7 +1052,7 @@
       "season": null,
       "homeTeam": "Elche",
       "awayTeam": "Real Sociedad",
-      "venue": null,
+      "venue": "Estadio Martínez Valero",
       "score": {
         "home": 2,
         "away": 3
@@ -753,23 +1124,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "475dab172720f46e",
-      "fingerprint": "475dab172720f46e",
+      "analysisSourceHash": "8a17964fda63015b",
+      "fingerprint": "8a17964fda63015b",
       "analysisGeneratedAt": "2026-09-07T23:31:01.903Z",
-      "analysisUpdatedAt": "2026-09-07T23:31:01.903Z",
-      "generatedAt": "2026-09-07T23:31:01.903Z",
+      "analysisUpdatedAt": "2026-09-08T14:26:45.407Z",
+      "generatedAt": "2026-09-08T14:26:45.407Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Elche 2-3 Real Sociedad maç raporu: La Liga istatistikleri | FutbolRadar",
-        "description": "Real Sociedad, La Liga karşılaşmasında Elche'yi 3-2 mağlup etti.",
+        "description": "Real Sociedad, Estadio Martínez Valero'da oynanan La Liga karşılaşmasında Elche'yi 3-2 mağlup etti.",
         "path": "mac-raporu/elche-real-sociedad-2026-09-07.html",
         "competition": "La Liga"
       },
       "reportUrl": "./mac-raporu/elche-real-sociedad-2026-09-07.html",
       "digest": {
         "headline": "Real Sociedad, Elche'yi 3-2 yendi",
-        "paragraph": "Real Sociedad, La Liga karşılaşmasında Elche'yi 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Real Sociedad, Estadio Martínez Valero'da oynanan La Liga karşılaşmasında Elche'yi 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Real Sociedad",
           "loser": "Elche",
@@ -1144,7 +1515,7 @@
       "season": null,
       "homeTeam": "Udinese",
       "awayTeam": "Lazio",
-      "venue": "Bluenergy Stadium - Stadio Friuli",
+      "venue": "Bluenergy Stadium",
       "score": {
         "home": 1,
         "away": 2
@@ -1204,23 +1575,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "33f9758e8c285540",
-      "fingerprint": "33f9758e8c285540",
+      "analysisSourceHash": "d1a74d5440ef1b02",
+      "fingerprint": "d1a74d5440ef1b02",
       "analysisGeneratedAt": "2026-09-07T23:31:01.903Z",
-      "analysisUpdatedAt": "2026-09-07T23:31:01.903Z",
-      "generatedAt": "2026-09-07T23:31:01.903Z",
+      "analysisUpdatedAt": "2026-09-08T14:26:45.407Z",
+      "generatedAt": "2026-09-08T14:26:45.407Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Udinese 1-2 Lazio maç raporu: Serie A istatistikleri | FutbolRadar",
-        "description": "Lazio, Bluenergy Stadium - Stadio Friuli'de oynanan Serie A karşılaşmasında Udinese'yi 2-1 mağlup etti.",
+        "description": "Lazio, Bluenergy Stadium'da oynanan Serie A karşılaşmasında Udinese'yi 2-1 mağlup etti.",
         "path": "mac-raporu/udinese-lazio-2026-09-07.html",
         "competition": "Serie A"
       },
       "reportUrl": "./mac-raporu/udinese-lazio-2026-09-07.html",
       "digest": {
         "headline": "Lazio, Udinese'yi 2-1 yendi",
-        "paragraph": "Lazio, Bluenergy Stadium - Stadio Friuli'de oynanan Serie A karşılaşmasında Udinese'yi 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Lazio, Bluenergy Stadium'da oynanan Serie A karşılaşmasında Udinese'yi 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Lazio",
           "loser": "Udinese",
@@ -1991,7 +2362,7 @@
       "season": null,
       "homeTeam": "Getafe",
       "awayTeam": "Celta Vigo",
-      "venue": "Coliseum",
+      "venue": "Coliseum Alfonso Pérez",
       "score": {
         "home": 1,
         "away": 1
@@ -2055,23 +2426,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "546ed0f9b9efcf1e",
-      "fingerprint": "546ed0f9b9efcf1e",
+      "analysisSourceHash": "3436bf660eb93805",
+      "fingerprint": "3436bf660eb93805",
       "analysisGeneratedAt": "2026-09-07T20:33:15.861Z",
-      "analysisUpdatedAt": "2026-09-08T04:26:46.211Z",
-      "generatedAt": "2026-09-08T04:26:46.211Z",
+      "analysisUpdatedAt": "2026-09-08T14:26:45.407Z",
+      "generatedAt": "2026-09-08T14:26:45.407Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Getafe 1-1 Celta Vigo maç raporu: La Liga istatistikleri | FutbolRadar",
-        "description": "Coliseum'da oynanan La Liga maçında Getafe ile Celta Vigo birbirini geçemedi: 1-1.",
+        "description": "Coliseum Alfonso Pérez'de oynanan La Liga maçında Getafe ile Celta Vigo birbirini geçemedi: 1-1.",
         "path": "mac-raporu/getafe-celta-vigo-2026-09-07.html",
         "competition": "La Liga"
       },
       "reportUrl": "./mac-raporu/getafe-celta-vigo-2026-09-07.html",
       "digest": {
         "headline": "Getafe ile Celta Vigo 1-1 berabere kaldı",
-        "paragraph": "Coliseum'da oynanan La Liga maçında Getafe ile Celta Vigo birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Coliseum Alfonso Pérez'de oynanan La Liga maçında Getafe ile Celta Vigo birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
