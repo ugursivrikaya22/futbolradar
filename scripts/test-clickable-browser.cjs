@@ -35,7 +35,7 @@ async function until(check, message, timeout = 5000) {
       // images must not hold an otherwise completed click until window.load.
       const click = async locator => touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       async function swipeRail(rail, direction) {
-        await rail.scrollIntoViewIfNeeded();
+        await rail.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
         const box = await rail.boundingBox();
         const left = Math.max(24, box.x + 24);
         const right = Math.min(viewport.width - 24, box.x + box.width - 24);
@@ -247,6 +247,11 @@ async function until(check, message, timeout = 5000) {
             await click(slider.locator('[data-slider-prev]'));
             await until(() => rail.evaluate(e => e.scrollLeft < 3), 'Slider previous did not return');
           }
+          const trendLink = page.locator('#home-trend-teams .trend-card a').first();
+          assert.ok(await trendLink.count(), 'Trending team profile link missing');
+          const trendTarget = new URL(await trendLink.getAttribute('href'), page.url());
+          assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : trendTarget.pathname === '/takim-detay.html', 'Trending team must open its profile');
+          await navigate(trendLink);
           const card = page.locator('.fixture-card').first();
           const target = await card.locator('a').first().getAttribute('href');
           const before = page.url();

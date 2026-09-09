@@ -998,7 +998,7 @@ function trendTeamsSection() {
     attack: team.attack,
     defense: team.defense,
     formScore: team.formScore,
-    actionHref: "./teams.html"
+    actionHref: "./team/" + teamSlug(team.name) + ".html"
   })).join("\n");
   return `<section class="container section section-trend-teams" id="trend-takimlar" aria-labelledby="trend-teams-title" data-slider>
           ${sliderSectionHead({

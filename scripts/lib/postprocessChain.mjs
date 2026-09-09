@@ -55,8 +55,7 @@ export const POSTPROCESS_CHAIN = [
   // widget'ı: tek betik (`pwa.js`), tüm sayfalarda. VAPID genel anahtarı
   // burada `<meta>` olarak gömülür — bu yüzden asset-version'dan ÖNCE
   // çalışmalı ki damga adımı yeni eklenen `<script>` etiketini de görsün
-  // (pwa.js bu listede damgalanan varlıklar arasında değil, ama sıra yine
-  // de "önce içerik, sonra damga" kuralını bozmasın diye korunuyor).
+  // pwa.js içerik damgası alır; bu yüzden önce sayfaya bağlanmalıdır.
   { id: "pwa", script: "inject-pwa.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
   // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;
