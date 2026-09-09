@@ -50,6 +50,21 @@ for (const match of predicted.matches) {
       `${id}: kickoff fikstürle uyuşmuyor (${match.kickoff} vs ${fixture.kickoff})`
     );
   }
+
+  // providerId zorunlu: canlı /api/matches yanıtındaki maç kayıtları `id`
+  // alanında SLUG DEĞİL, sağlayıcının HAM SAYISAL kimliğini taşıyor (bkz.
+  // app.js findPredictedLineupForMatch). matchId'ye göre indekslenen bir
+  // arama bu yüzden liste kartlarında hiçbir zaman eşleşmiyordu — sessizce.
+  // providerId, kartların da bu kaydı bulabilmesi için ikinci bir anahtar.
+  assert.ok(/^\d+$/.test(String(match.providerId || "")), `${id}: providerId sayısal ve zorunlu`);
+  if (fixture) {
+    const fixtureProviderId = fixture.providerIds && fixture.providerIds.apiFootball;
+    assert.equal(
+      String(match.providerId),
+      String(fixtureProviderId),
+      `${id}: providerId fikstürle uyuşmuyor (${match.providerId} vs ${fixtureProviderId})`
+    );
+  }
 }
 
 // ── 2. HER TARAFTA TAM 11 OYUNCU, TEK KALECİ ───────────────────────────────
