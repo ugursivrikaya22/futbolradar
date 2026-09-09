@@ -357,8 +357,18 @@
           var matches = payload && Array.isArray(payload.matches) ? payload.matches : [];
           predictedLineupsIndex = Object.create(null);
           matches.forEach(function (entry) {
-            if (entry && entry.matchId) {
+            if (!entry) return;
+            // İKİ ANAHTARLA DA İNDEKSLENİR. `matchId` fikstür takvimi
+            // slug'ı (mac-detay.html/statik SEO sayfaları bunu kullanır);
+            // canlı /api/matches yanıtındaki kart nesneleri ise `id`
+            // alanında sağlayıcının HAM SAYISAL kimliğini taşıyor
+            // (bkz. findPredictedLineupForMatch) — yalnızca matchId'ye
+            // göre aramak liste kartlarında sessizce hiç eşleşmiyordu.
+            if (entry.matchId) {
               predictedLineupsIndex[entry.matchId] = entry;
+            }
+            if (entry.providerId) {
+              predictedLineupsIndex[String(entry.providerId)] = entry;
             }
           });
           predictedLineupsMeta = { sources: (payload && payload.sources) || {}, asOf: (payload && payload.asOf) || null };
@@ -379,6 +389,25 @@
 
   function findPredictedLineup(matchId) {
     return (matchId && predictedLineupsIndex[matchId]) || null;
+  }
+
+  /**
+   * Maç nesnesinin kimlik alanı, kaynağa göre değişiyor: statik SEO
+   * sayfaları ve /api/match-detail slug (`barcelona-feyenoord-2026-09-09`)
+   * kullanırken, canlı /api/matches yanıtındaki kart nesneleri `id`
+   * alanında sağlayıcının ham sayısal kimliğini taşıyor (`providerId` de
+   * aynı değeri tekrarlıyor). Aday alanlar sırayla denenir; ilk eşleşen
+   * kayıt döner.
+   */
+  function findPredictedLineupForMatch(match) {
+    if (!match) {
+      return null;
+    }
+    return findPredictedLineup(match.id) ||
+      findPredictedLineup(match.fixtureId) ||
+      findPredictedLineup(match.providerId) ||
+      findPredictedLineup(match.naturalId) ||
+      null;
   }
 
   function loadData(name) {
@@ -2420,7 +2449,7 @@
    * rozeti atlar — kritik bir yol değil.
    */
   function predictedLineupChipHtml(match) {
-    if (!match || isFinishedMatch(match) || !findPredictedLineup(match.id)) {
+    if (!match || isFinishedMatch(match) || !findPredictedLineupForMatch(match)) {
       return "";
     }
     return '<div class="fixture-card-chips"><a class="fixture-chip is-lineup" href="' +
@@ -7215,7 +7244,7 @@
       return "";
     }
 
-    var record = findPredictedLineup(detail.id);
+    var record = findPredictedLineupForMatch(detail);
     if (!record) {
       return "";
     }
