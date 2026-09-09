@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-08T21:51:07.116Z",
+  "updatedAt": "2026-09-09T00:06:47.989Z",
   "matchCount": 1108,
   "records": [
     {
@@ -95,11 +95,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d6e3eb74bf5072a9",
-      "fingerprint": "d6e3eb74bf5072a9",
+      "analysisSourceHash": "bd8a12c32921aa71",
+      "fingerprint": "bd8a12c32921aa71",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
+      "generatedAt": "2026-09-09T00:06:47.878Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -289,11 +289,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7a0a32dbb2698d02",
-      "fingerprint": "7a0a32dbb2698d02",
+      "analysisSourceHash": "efeef0bfe3ed7dfa",
+      "fingerprint": "efeef0bfe3ed7dfa",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
+      "generatedAt": "2026-09-09T00:06:47.878Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1360,10 +1360,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 50,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1376,14 +1376,14 @@
           "count": 10
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": true,
@@ -1394,32 +1394,23 @@
       "apiKeyPresent": true,
       "availability": {
         "events": 10,
-        "statistics": 0,
-        "lineups": 0,
+        "statistics": 15,
+        "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "926f706c62204162",
-      "fingerprint": "926f706c62204162",
+      "analysisSourceHash": "0241a077a886456b",
+      "fingerprint": "0241a077a886456b",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
+      "generatedAt": "2026-09-09T00:06:47.878Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1520,8 +1511,12 @@
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Cardiff sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Stoke City sahaya 3-5-2 dizilişiyle çıktı.",
+            "Cardiff topu elinde tutarken Stoke City derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -1543,13 +1538,23 @@
         "coaching": {
           "status": "ready",
           "notes": [
+            "Cardiff maça 4-2-3-1 dizilişiyle başladı.",
+            "Stoke City maça 3-5-2 dizilişiyle başladı.",
             "59' Stoke City değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "59' Stoke City değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
             "69' Stoke City değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "69' Stoke City değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "82' Cardiff değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "69' Stoke City değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Cardiff",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Stoke City",
+              "formation": "3-5-2"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
@@ -1557,23 +1562,91 @@
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Cardiff topa daha çok sahip oldu (%71).",
+            "Cardiff daha çok şut denedi (27-12)."
+          ],
+          "improvements": [
+            "Cardiff şut isabetinde geride kaldı (%26); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Cardiff",
+            "score": 80
+          },
+          "away": {
+            "team": "Stoke City",
+            "score": 54
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Cardiff %25.9, Stoke City %33.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Cardiff 20.8, Stoke City 19.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1584,16 +1657,20 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1627,7 +1704,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 70,
+      "coveragePercent": 80,
       "dataSources": {
         "score": {
           "present": true,
@@ -1650,9 +1727,9 @@
           "count": 0
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
@@ -1660,30 +1737,26 @@
         "events": 14,
         "statistics": 15,
         "lineups": 0,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "lineups",
           "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "45b9a4fe70d5bce2",
-      "fingerprint": "45b9a4fe70d5bce2",
+      "analysisSourceHash": "d1f136637f32e923",
+      "fingerprint": "d1f136637f32e923",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
+      "generatedAt": "2026-09-09T00:06:47.878Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1901,7 +1974,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Southampton 27.9, Swansea 49.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Southampton 28, Swansea 49.6 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -3131,11 +3204,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "47101f2073059b17",
-      "fingerprint": "47101f2073059b17",
+      "analysisSourceHash": "f830e35ced263c9b",
+      "fingerprint": "f830e35ced263c9b",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
+      "generatedAt": "2026-09-09T00:06:47.878Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3301,8 +3374,8 @@
             "İsabetli şutta da öndeydi (4-3); sonuç üretilen pozisyonla uyumlu."
           ],
           "strengths": [
-            "AEK Athens FC topa daha çok sahip oldu (%57).",
-            "AEK Athens FC daha çok şut denedi (18-10)."
+            "Lask Linz topa daha çok sahip oldu (%51).",
+            "AEK Athens FC daha çok şut denedi (18-11)."
           ],
           "improvements": [
             "AEK Athens FC şut isabetinde geride kaldı (%22); bitiricilik geliştirilmesi gereken alan."
@@ -3313,11 +3386,11 @@
         "aiRating": {
           "home": {
             "team": "AEK Athens FC",
-            "score": 73
+            "score": 72
           },
           "away": {
             "team": "Lask Linz",
-            "score": 45
+            "score": 48
           },
           "confidence": 60
         },
@@ -3326,7 +3399,7 @@
             "id": "hucum",
             "title": "Hücum analizi",
             "readings": [
-              "Şut isabeti AEK Athens FC %22.2, Lask Linz %30."
+              "Şut isabeti AEK Athens FC %22.2, Lask Linz %27.3."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -3346,7 +3419,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için AEK Athens FC 22.1, Lask Linz 41.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için AEK Athens FC 22.5, Lask Linz 38.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
