@@ -216,6 +216,8 @@ async function until(check, message, timeout = 5000) {
           assert.equal(new URL(page.url()).pathname, new URL(target, before).pathname);
         });
         await test(locale + ' news and column cards', async () => {
+          await open(home);
+          await navigate(page.locator('.news-ticker-all').first());
           await open(en ? 'en/news.html' : 'haberler.html');
           const news = page.locator('main a[href*="/haber/"], main a[href*="haber/"]').first();
           assert.ok(await news.count(), 'No news article route');

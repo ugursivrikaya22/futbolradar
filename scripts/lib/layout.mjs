@@ -252,7 +252,7 @@ export function newsTicker(options = {}) {
     : t("ticker.agenda", locale);
   // "Tümü" bağlantısının hedefi dile göre değişir: İngilizce tarafta Türkçe
   // haber sayfasına göndermek dil karışması olurdu.
-  const allHref = locale === "en" ? `${base}en/index.html` : `${base}haberler.html`;
+  const allHref = locale === "en" ? `${base}en/news.html` : `${base}haberler.html`;
   const liveBadge = t("ticker.breaking", locale);
 
   if (!items.length) {
