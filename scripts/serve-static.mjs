@@ -4,6 +4,10 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+// Preview exercises real handlers against the repository's persisted data.
+// Build-time browser checks must not consume the live provider's quota.
+const { API_KEY_ENV_NAMES, APIFOOTBALL_API_KEY_ENV_NAMES } = require('../api/_utils');
+for (const key of [...API_KEY_ENV_NAMES, ...APIFOOTBALL_API_KEY_ENV_NAMES]) delete process.env[key];
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);
