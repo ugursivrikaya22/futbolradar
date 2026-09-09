@@ -76,6 +76,17 @@ function fixtureOnlyTeam(name) {
  */
 const MIN_CONTAINMENT_LENGTH = 4;
 
+/**
+ * Bir kulübün alt yapı/yedek takımını işaret eden ek sözcükler. "Sporting
+ * CP" ⊂ "Sporting CP U19" da kelime sınırında içerilir — ama bu iki takım
+ * AYNI KULÜP değil, aynı kulübün iki farklı takımıdır: aynı gün, aynı
+ * rakibe karşı ayrı maçlar oynayabilirler (UEFA Youth League, ilk takımın
+ * Şampiyonlar Ligi maçıyla aynı hafta oynanır). Fark yalnızca yazım değilse
+ * (Rizespor/Çaykur Rizespor gibi) içerme kuralı iki gerçek maçı bir
+ * karşılaşmaya birleştirir ve ilk takımın canlı skoru kaybolur.
+ */
+const AGE_GROUP_OR_RESERVE_SUFFIX = /(^|\s)(u1[3-9]|u2[0-3]|akademi|academy|youth|genc(ler)?|yedek|reserves?|b|ii)(\s|$)/;
+
 function sameClub(left, right) {
   const a = normalizeText(left);
   const b = normalizeText(right);
@@ -86,7 +97,12 @@ function sameClub(left, right) {
   if (shorter.length < MIN_CONTAINMENT_LENGTH) return false;
   // Kelime sınırı: "amed" ⊂ "amed sportif faaliyetler" eşleşir,
   // rastgele bir alt dize eşleşmez.
-  return new RegExp(`(^|\\s)${shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|$)`).test(longer);
+  const escapedShorter = shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const containment = new RegExp(`(^|\\s)${escapedShorter}(\\s|$)`);
+  if (!containment.test(longer)) return false;
+
+  const remainder = ` ${longer.replace(containment, " ").trim()} `;
+  return !AGE_GROUP_OR_RESERVE_SUFFIX.test(remainder);
 }
 
 /**

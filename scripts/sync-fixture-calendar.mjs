@@ -26,6 +26,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
 const { canonicalStatus } = require("../services/matchStatus.js");
+const { sameClub } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
 const OUTPUT_PATH = path.join(root, "data", "fixture-calendar.json");
@@ -340,29 +341,65 @@ function identityOf(match) {
   return [slug(match && match.homeTeam), slug(match && match.awayTeam), String(match && match.kickoff || "").slice(0, 10)].join("|");
 }
 
+/**
+ * AYNI KULÜBÜN ALT TAKIMI, AYNI MAÇ DEĞİLDİR.
+ *
+ * bySportsDbId eşleşmesi isim kontrolü yapmadan sağlayıcı kimliğine güveniyordu.
+ * UEFA Youth League haftası tam da bu yüzden bozuldu: TheSportsDB'nin ilk takım
+ * karşılaşması ("Sporting CP" - "Galatasaray") için döndürdüğü etkinlik kimliği,
+ * aynı gün oynanan U19 karşılaşmasının (api-football kaynaklı, "Sporting CP U19")
+ * satırına daha önce yanlışlıkla iliştirilmişti. Kimlik eşleşse de takım adları
+ * uyuşmuyorsa bu iki farklı gerçek maçtır — ilk takımın canlı skoru, alt yapı
+ * maçının satırının üzerine YAZILMAMALI, ayrı bir satır olarak eklenmeli.
+ */
+function sameFixtureTeams(left, right) {
+  return sameClub(left && left.homeTeam, right && right.homeTeam) &&
+    sameClub(left && left.awayTeam, right && right.awayTeam);
+}
+
 function mergeIntoCalendar(previousMatches, incoming) {
   const output = (Array.isArray(previousMatches) ? previousMatches : []).map((row) => ({ ...row }));
   const byIdentity = new Map();
   const bySportsDbId = new Map();
+  const usedIds = new Set();
   output.forEach((row, index) => {
     byIdentity.set(identityOf(row), index);
     const id = (row.providerIds && row.providerIds.theSportsDb) || (ownsRow(row) ? row.providerId : null);
     if (id) bySportsDbId.set(String(id), index);
+    if (row.id) usedIds.add(String(row.id));
   });
 
   let added = 0;
   let updated = 0;
 
   for (const row of incoming) {
-    const index = (row.providerId && bySportsDbId.has(String(row.providerId)))
+    const bySportsDbIdIndex = row.providerId && bySportsDbId.has(String(row.providerId))
       ? bySportsDbId.get(String(row.providerId))
+      : undefined;
+    const index = bySportsDbIdIndex !== undefined && sameFixtureTeams(output[bySportsDbIdIndex], row)
+      ? bySportsDbIdIndex
       : byIdentity.get(identityOf(row));
 
     if (index === undefined) {
-      output.push(row);
+      // Aynı kulübün alt takımı aynı gün, aynı rakibe karşı oynayınca
+      // (bkz. sameFixtureTeams) iki farklı gerçek maç aynı `id` gövdesini
+      // üretebilir — biri gerçek takım adını taşımayan eski bir kayıttan
+      // kalma olabilir. Kimlik dosya genelinde EŞSİZ olmak zorunda: aksi
+      // halde maç detayı, site haritası ve arama dizini ikisinden birine
+      // rastgele bağlanır. Çakışma varsa yeni satır ayırt edici bir ek alır,
+      // mevcut kayıt hiç dokunulmadan kalır.
+      let uniqueId = row.id;
+      let suffix = 2;
+      while (usedIds.has(uniqueId)) {
+        uniqueId = `${row.id}-${suffix}`;
+        suffix += 1;
+      }
+      const finalRow = uniqueId === row.id ? row : { ...row, id: uniqueId };
+      usedIds.add(uniqueId);
+      output.push(finalRow);
       const at = output.length - 1;
-      byIdentity.set(identityOf(row), at);
-      if (row.providerId) bySportsDbId.set(String(row.providerId), at);
+      byIdentity.set(identityOf(finalRow), at);
+      if (finalRow.providerId) bySportsDbId.set(String(finalRow.providerId), at);
       added += 1;
       continue;
     }
@@ -383,7 +420,11 @@ function mergeIntoCalendar(previousMatches, incoming) {
         source: row.providerId ? "api-football+thesportsdb" : existing.source,
         sourceUrls: Array.from(new Set([...(existing.sourceUrls || []), ...(row.sourceUrls || [])]))
       }
-      : { ...existing, ...row };
+      // Sağlayıcı kimlikleri burada da BİRLEŞTİRİLİR, ezilmez: `row`
+      // TheSportsDB'nin kendi alanlarını taşır ama api-football kimliği
+      // (varsa) `existing`de zaten doğrulanmıştır — düz obje yayılımı o
+      // alanı sessizce silerdi.
+      : { ...existing, ...row, providerIds: { ...(existing.providerIds || {}), ...(row.providerIds || {}) } };
 
     if (JSON.stringify(existing) === JSON.stringify(merged)) continue;
     output[index] = merged;
