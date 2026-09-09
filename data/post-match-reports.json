@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-09T07:25:11.896Z",
+  "updatedAt": "2026-09-09T09:39:28.209Z",
   "matchCount": 1109,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Vanuatu United",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 30,
       "dataSources": {
         "score": {
           "present": true,
@@ -53,9 +53,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 1
         },
         "players": {
           "present": false,
@@ -67,10 +67,10 @@
       "availability": {
         "events": 0,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 1,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
@@ -83,10 +83,6 @@
           "label": "Maç istatistikleri"
         },
         {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
           "field": "players",
           "label": "Oyuncu istatistikleri"
         }
@@ -95,11 +91,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "263a4278cad44238",
-      "fingerprint": "263a4278cad44238",
+      "analysisSourceHash": "30dcd954c2b449aa",
+      "fingerprint": "30dcd954c2b449aa",
       "analysisGeneratedAt": "2026-09-09T07:25:11.862Z",
-      "analysisUpdatedAt": "2026-09-09T07:25:11.862Z",
-      "generatedAt": "2026-09-09T07:25:11.862Z",
+      "analysisUpdatedAt": "2026-09-09T09:39:28.180Z",
+      "generatedAt": "2026-09-09T09:39:28.180Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
