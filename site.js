@@ -728,6 +728,9 @@
 
         var matches = index
           .map(function (entry) {
+            if (searchLocale === "en" && entry.enHref) {
+              entry = Object.assign({}, entry, { href: entry.enHref, locale: "en", badge: "EN" });
+            }
             return { entry: entry, score: scoreEntry(entry, needle, searchLocale) };
           })
           .filter(function (row) {

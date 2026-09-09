@@ -18,7 +18,7 @@ import { STANDINGS_LEAGUES, TR_TAB_ORDER, EN_TAB_ORDER } from "./lib/standingsCa
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
-const { mergeSuperLigTeams } = require("../services/superLigTeams.js");
+const { mergeSuperLigTeams, slug: teamSlug } = require("../services/superLigTeams.js");
 const { publishedColumns } = require("../services/columnService.js");
 const { ROUTES: I18N_ROUTES, routeMeta } = require("../services/i18n.js");
 
@@ -55,9 +55,8 @@ function asArray(payload, ...keys) {
  * aranamaz kalması demekti — nitekim rota sayısı 6'dan 17'ye çıktığında
  * kopya bir anda eskimişti.
  *
- * Üretilen İngilizce alt sayfalar (maç/oyuncu/takım detayları) dizine
- * girmez: dosyayı birkaç katına çıkarırlardı ve o sayfalara zaten Türkçe
- * karşılıklarından hreflang ile ulaşılıyor.
+ * Takım ve oyuncu kayıtları ikinci kez çoğaltılmaz. Var olan İngilizce
+ * profilleri aynı kayıttaki kısa `enHref` alanıyla arama diline bağlanır.
  */
 const EN_PAGES = I18N_ROUTES.map((route) => {
   const meta = routeMeta(route.key, "en");
@@ -93,6 +92,10 @@ function push(entry) {
   }
   seen.add(entry.href);
   items.push(entry);
+}
+
+function existingHref(href) {
+  return fs.existsSync(path.join(root, href)) ? href : undefined;
 }
 
 for (const link of [...NAV_PRIMARY, ...NAV_SECONDARY]) {
@@ -195,6 +198,7 @@ for (const team of mergeSuperLigTeams(curatedTeams)) {
     type: "team",
     badge: "TKM",
     href: `takim-detay.html?team=${encodeURIComponent(team.name)}`,
+    enHref: existingHref(`en/team/${teamSlug(team.name)}.html`),
     title: team.name,
     subtitle: team.league || "Takım profili"
   });
@@ -228,6 +232,7 @@ for (const player of asArray(readJson("players.json"), "players")) {
     type: "player",
     badge: "OYN",
     href,
+    enHref: existingHref(`en/player/${player.id}.html`),
     title: player.name,
     subtitle: [club, position].filter(Boolean).join(" · ") || "Oyuncu profili"
   });

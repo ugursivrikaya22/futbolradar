@@ -121,6 +121,7 @@ async function until(check, message, timeout = 5000) {
           await until(() => input.evaluate(e => document.activeElement === e), 'Search input was not focused');
           await input.fill('Galatasaray');
           await page.locator('.site-search-option').first().waitFor().catch(async e => { throw new Error('First search: ' + e.message + ' ' + JSON.stringify(await input.evaluate(e => ({ value: e.value, active: document.activeElement === e, panel: e.form.querySelector('.site-search-panel').outerHTML.slice(0, 800), nav: document.querySelector('.nav').className })))); });
+          if (en) assert.ok(new URL(await page.locator('.site-search-option').first().getAttribute('href'), page.url()).pathname.startsWith('/en/'), 'English profile search must preserve language');
           await navigate(page.locator('.site-search-option').first());
           await click(opener);
           await input.fill('Mauro');
@@ -154,12 +155,14 @@ async function until(check, message, timeout = 5000) {
         });
         await test(locale + ' team cards open profiles', async () => {
           await open(en ? 'en/teams.html' : 'takimlar.html');
+          if (!en) await page.locator('[data-api-target="teams-page"][data-state="ready"]').waitFor();
           const cards = page.locator('.team-card, .trend-card');
           assert.ok(await cards.count(), 'No team cards');
           await navigate(cards.first().locator('a').first());
         });
         await test(locale + ' player cards open profiles', async () => {
           await open(en ? 'en/player-radar.html' : 'oyuncu-radari.html');
+          if (!en) await page.locator('[data-api-target="players-page"][data-state="ready"]').waitFor();
           await navigate(page.locator('.player-card a[href*="player/"], .player-detail-card a[href*="oyuncular/"], .player-card a[href*="oyuncular/"]').first());
         });
         await test(locale + ' primary navigation routes and footer', async () => {
@@ -184,6 +187,7 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' featured carousel, pause and card', async () => {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
+          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
           const root = page.locator('[data-featured-carousel]');
           assert.ok(await root.count(), 'Featured carousel missing');
           const pause = root.locator('[data-featured-pause]');
@@ -348,6 +352,7 @@ async function until(check, message, timeout = 5000) {
         });
         await open('oyuncu-radari.html');
         const share = page.locator('[data-share-player]').first();
+        await page.locator('[data-api-target="players-page"][data-state="ready"]').waitFor();
         await share.waitFor();
         const id = await share.getAttribute('data-share-player');
         await click(share);
