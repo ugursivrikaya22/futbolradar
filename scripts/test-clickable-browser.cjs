@@ -420,7 +420,7 @@ async function until(check, message, timeout = 5000) {
         await page.locator('[data-share-fallback]').waitFor();
         assert.ok((await page.locator('[data-share-fallback] textarea').inputValue()).includes(id));
         await page.keyboard.press('Escape');
-        assert.equal(await page.locator('[data-share-fallback]').count(), 0);
+        await page.locator('[data-share-fallback]').waitFor({ state: 'detached' });
       });
       await context.close();
     }

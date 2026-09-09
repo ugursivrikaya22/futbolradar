@@ -10,6 +10,7 @@ for (const args of [
   ['scripts/qa.mjs'],
   ['scripts/test-match-date-performance.mjs'],
   ['scripts/test-match-seo-pages.mjs'],
+  ['scripts/test-match-analysis-optional.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']

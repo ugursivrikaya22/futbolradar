@@ -12385,7 +12385,7 @@
       return Promise.resolve(null);
     }
 
-    var url = API_ROOT + "match-analysis?fixtureId=" + encodeURIComponent(fixtureId);
+    var url = API_ROOT + "match-analysis?fixtureId=" + encodeURIComponent(fixtureId) + "&optional=1";
     return fetch(url, { cache: "no-cache" })
       .then(function (response) {
         return response.json().catch(function () { return null; });
