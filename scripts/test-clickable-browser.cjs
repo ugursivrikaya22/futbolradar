@@ -348,11 +348,21 @@ async function until(check, message, timeout = 5000) {
           }
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'Horizontal page overflow');
         });
-        await test(locale + ' live score card opens match details', async () => {
+        await test(locale + ' live score cards or empty-state route', async () => {
           await open(en ? 'en/live-football-scores.html' : 'canli-skor.html');
-          const link = page.locator('.live-scores-ticker__group:not([aria-hidden="true"]) a, .fixture-card a').first();
-          assert.ok(await link.count(), 'No score card in the persisted feed');
-          await navigate(link);
+          if (!en) {
+            await page.locator('[data-api-target="live-score"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached' });
+          }
+          const link = page.locator('main a.live-compact-card[href], main .fixture-card a[href]').first();
+          if (await link.count()) {
+            await navigate(link);
+          } else {
+            // A real feed can have no live matches. Confirm its explicit empty
+            // state and exercise the route offered there, not a stale ticker.
+            const status = page.locator(en ? '[aria-labelledby="en-live-title"]' : '[data-api-target="live-score"]');
+            assert.match(await status.innerText(), en ? /Update pending|No live matches/i : /Şu anda canlı maç yok/);
+            await navigate(page.locator(en ? 'main a[href="./todays-matches.html"]' : '[data-api-target="live-score"] a[href="./bugunun-maclari.html"]').first());
+          }
         });
         await test(locale + ' scorer, assist and statistics links', async () => {
           await open(en ? 'en/stats-hub.html' : 'istatistik-merkezi.html');
