@@ -90,8 +90,7 @@ async function until(check, message, timeout = 5000) {
         const target = new URL(expected, before);
         console.log('NAV', viewport.width, expected);
         await click(locator);
-        await until(() => page.url() !== before, 'Click did not navigate: ' + expected, 10000);
-        await page.waitForLoadState('domcontentloaded');
+        await page.waitForURL(url => url.href !== before, { waitUntil: 'domcontentloaded' });
         assert.equal(new URL(page.url()).pathname.replace(/\.html$/, ''), target.pathname.replace(/\.html$/, ''), 'Wrong destination');
         await page.locator('main').waitFor();
         assert.ok((await page.locator('h1').first().innerText()).trim(), 'Empty destination');
@@ -266,6 +265,7 @@ async function until(check, message, timeout = 5000) {
           const tickerAll = page.locator('.news-ticker-all').first();
           await navigate(await tickerAll.isVisible() ? tickerAll : page.locator('main a.section-link[href$="' + (en ? 'news.html' : 'haberler.html') + '"]').first());
           await open(en ? 'en/news.html' : 'haberler.html');
+          if (!en) await page.locator('[data-api-target="news-page"][data-state="ready"]').waitFor();
           const news = page.locator('main a[href*="/haber/"], main a[href*="haber/"]').first();
           assert.ok(await news.count(), 'No news article route');
           await navigate(news);
