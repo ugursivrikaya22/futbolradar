@@ -15753,6 +15753,134 @@ table {
 
 .fixture-chip.is-ht { color: var(--muted); }
 
+a.fixture-chip.is-lineup {
+  text-decoration: none;
+  cursor: pointer;
+  border-color: rgba(13, 148, 136, 0.27);
+  color: var(--cyan);
+}
+
+a.fixture-chip.is-lineup:hover,
+a.fixture-chip.is-lineup:focus-visible {
+  border-color: var(--cyan);
+  background: rgba(13, 148, 136, 0.08);
+}
+
+a.fixture-chip.is-lineup i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+}
+
+/* --- Muhtemel 11 (maç detayı) --- */
+.predicted-lineup-disclaimer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.predicted-lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  min-width: 0;
+}
+
+.predicted-lineup-side {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.predicted-lineup-side .match-special__pitch {
+  min-height: 320px;
+  padding: clamp(14px, 3vw, 24px) clamp(6px, 2vw, 16px);
+  gap: clamp(10px, 2.4vw, 18px);
+}
+
+.predicted-lineup-player {
+  position: relative;
+}
+
+.predicted-lineup-flag-mark {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--warn);
+  color: #fff;
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.predicted-lineup-note {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface-raised);
+  color: var(--text-soft);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.predicted-lineup-flags .card-kicker {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.predicted-lineup-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.predicted-lineup-sources a {
+  color: var(--green);
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .predicted-lineup-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .predicted-lineup-side .match-special__pitch {
+    min-height: 280px;
+    padding-inline: 4px;
+    gap: 10px;
+  }
+
+  .predicted-lineup-side .match-special__pitch-row {
+    gap: 4px;
+  }
+
+  .predicted-lineup-side .match-special__pitch-player {
+    min-height: 36px;
+    padding-inline: 3px;
+    font-size: clamp(0.6rem, 2.7vw, 0.76rem);
+  }
+}
+
 /* --- dar ekran --- */
 @media (max-width: 640px) {
   .md-shell { padding: var(--sp-4); gap: var(--sp-5); }
