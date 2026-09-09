@@ -37,9 +37,21 @@ async function until(check, message, timeout = 5000) {
       const click = async locator => {
         // Finish scrolling before pointer input. Smooth document scrolling can
         // otherwise oscillate between the fixed header and bottom navigation.
-        await locator.evaluate(element => new Promise(resolve => {
+        await locator.evaluate(element => new Promise((resolve, reject) => {
           element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
+          const started = performance.now();
+          let stableSince = started;
+          let previous;
+          function measure() {
+            const now = performance.now();
+            const rect = element.getBoundingClientRect();
+            const current = [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
+            if (current !== previous) { previous = current; stableSince = now; }
+            if (now - stableSince >= 150) return resolve();
+            if (now - started > 5000) return reject(new Error('Click target did not settle'));
+            requestAnimationFrame(measure);
+          }
+          requestAnimationFrame(measure);
         }));
         return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       };
@@ -129,6 +141,13 @@ async function until(check, message, timeout = 5000) {
         await page.goBack({ waitUntil: 'domcontentloaded' });
         await until(() => page.url() === before, 'Back navigation failed', 10000);
         await page.locator('footer').waitFor({ state: 'attached' });
+        // Restored HTML arrives before its API panels finish. Let the page
+        // become usable before scrolling to the next target; otherwise late
+        // content can move a footer link between pointer-down and pointer-up.
+        if (!new URL(before).pathname.startsWith('/en/') && await page.locator('[data-api-target="today-matches"]').count()) {
+          await page.locator('[data-api-target="today-matches"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached' });
+        }
+        await until(async () => await page.locator('main [data-api-target][data-state="loading"]:visible').count() === 0, 'Back navigation content is still loading', 15000);
       }
       for (const locale of ['tr', 'en']) {
         const home = locale === 'tr' ? 'index.html' : 'en/index.html';
