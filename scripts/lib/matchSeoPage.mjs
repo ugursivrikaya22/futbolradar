@@ -96,6 +96,10 @@ export const STR = {
     officialLineups: "İlk 11'ler",
     lineupNote: "Muhtemel 11, doğrulanmış kadro ve uygunluk verisinden üretilen bir tahmindir; resmî 11 açıklandığında bu bölüm otomatik güncellenir.",
     lineupPending: "Kadrolar açıklandığında burada yayımlanır. Muhtemel 11 tahmini doğrulanmış kadro verisi olmadan yazılmaz.",
+    predictedBadge: "Muhtemel — Resmî Değil",
+    predictedLineupNote: "Bu kadrolar spor basınından derlenmiştir; resmî ilk 11 açıklandığında bu bölümün yerini otomatik olarak resmî kadro alır.",
+    predictedFlags: "Şüpheli / izlenmesi gereken",
+    predictedSources: "Kaynaklar",
     bench: "Yedekler",
     formation: "Diziliş",
     coach: "Teknik direktör",
@@ -197,6 +201,10 @@ export const STR = {
     officialLineups: "Starting line-ups",
     lineupNote: "The probable XI is a prediction built from verified squad and availability data; it updates automatically once the official line-up is announced.",
     lineupPending: "Line-ups will be published here once announced. No probable XI is written without verified squad data.",
+    predictedBadge: "Probable — Not Official",
+    predictedLineupNote: "These line-ups are compiled from sports media reports; this section is replaced automatically once the official starting XI is announced.",
+    predictedFlags: "Doubtful / to watch",
+    predictedSources: "Sources",
     bench: "Substitutes",
     formation: "Formation",
     coach: "Head coach",
@@ -455,6 +463,77 @@ export function playerLinkHtml(name, playerIndex, base, locale) {
   return `<a href="${escapeHtml(href)}">${escapeHtml(name)}</a>`;
 }
 
+/**
+ * MUHTEMEL 11 SAHA ÇİZİMİ (editoryal, kaynak gösterilmiş) — app.js'teki
+ * predictedLineupPitchHtml ile AYNI kural: `rows[0]` kaleci, sonraki hatlar
+ * hücuma doğru ilerliyor; her hattın İÇİ takımın kendi bakışına göre
+ * SAĞDAN SOLA verilmiş. Ekranda hat sırası ve her hattın içi TERS ÇEVRİLİR
+ * ki forvet üstte/kaleci altta dursun ve sağ/sol takımın kendi görüşüyle
+ * eşleşsin — iki takım da bağımsız kendi kutusunda "yukarı hücum ediyormuş
+ * gibi" çizildiği için bu tek kural her iki tarafta da aynı şekilde uygulanır.
+ */
+function predictedPitchHtml(side) {
+  const rows = Array.isArray(side && side.rows) ? side.rows : [];
+  const flags = Array.isArray(side && side.flags) ? side.flags : [];
+  const displayRows = rows.slice().reverse();
+
+  const rowsHtml = displayRows.map((row) => {
+    const screenOrder = (row || []).slice().reverse();
+    const players = screenOrder.map((name) => {
+      const flagged = flags.includes(name);
+      return `<span class="match-special__pitch-player predicted-lineup-player${flagged ? " is-flagged" : ""}">${escapeHtml(name)}${flagged ? '<i class="predicted-lineup-flag-mark" aria-hidden="true">!</i>' : ""}</span>`;
+    }).join("");
+    return `<div class="match-special__pitch-row is-${Math.max(1, Math.min(4, screenOrder.length))}">${players}</div>`;
+  }).join("");
+
+  return `<div class="match-special__pitch predicted-lineup-pitch" role="group" aria-label="${escapeHtml(`${(side && side.name) || ""} ${(side && side.formation) || ""}`)}">${rowsHtml}</div>`;
+}
+
+function predictedFlagsHtml(side, text) {
+  const flags = Array.isArray(side && side.flags) ? side.flags : [];
+  if (!flags.length) return "";
+  return `<div class="predicted-lineup-flags"><span class="card-kicker">${escapeHtml(text.predictedFlags)}</span><ul class="lineup-missing-list">${flags.map((name) => `<li><span>${escapeHtml(name)}</span></li>`).join("")}</ul></div>`;
+}
+
+function predictedSideHtml(teamName, side, badge, text) {
+  if (!side || !Array.isArray(side.rows) || !side.rows.length) return "";
+  return `<article class="card predicted-lineup-side"><header class="msp-lineup-head"><h3>${escapeHtml(teamName)}${side.formation ? ` · ${escapeHtml(side.formation)}` : ""}</h3>${badge}</header>${predictedPitchHtml(side)}${side.note ? `<p class="predicted-lineup-note">${escapeHtml(side.note)}</p>` : ""}${predictedFlagsHtml(side, text)}</article>`;
+}
+
+/**
+ * Kaynak gösterilmiş editoryal Muhtemel 11 (data/predicted-lineups.json).
+ * Resmî kadro (yukarıdaki `official` dalı) ve site içi istatistik modeli
+ * (`analysis.probableLineups`) HER ZAMAN önceliklidir — bu katman yalnızca
+ * ikisi de yokken denenir. `null` dönmek "bu maç için editoryal kaynak yok"
+ * demektir; çağıran istatistik-modeli boş dönmüş gibi devam eder.
+ */
+function predictedLineupSectionHtml(ctx, text) {
+  const predicted = ctx.predictedLineup;
+  if (!predicted) return null;
+
+  const badge = `<span class="msp-tag is-probable">${escapeHtml(text.predictedBadge)}</span>`;
+  const homeHtml = predictedSideHtml(ctx.homeTeam, predicted.home, badge, text);
+  const awayHtml = predictedSideHtml(ctx.awayTeam, predicted.away, badge, text);
+  if (!homeHtml && !awayHtml) return null;
+
+  const sourceKeys = [...new Set([
+    ...((predicted.home && predicted.home.sourceKeys) || []),
+    ...((predicted.away && predicted.away.sourceKeys) || [])
+  ])];
+  const sourcesMap = ctx.predictedLineupSources || {};
+  const sourceWord = ctx.locale === "en" ? "Source" : "Kaynak";
+  const links = sourceKeys.map((key, index) => {
+    const url = sourcesMap[key];
+    return url ? `<a href="${escapeHtml(url)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(sourceWord)} ${index + 1}</a>` : "";
+  }).filter(Boolean).join(" ");
+  const asOf = ctx.predictedLineupAsOf ? `${shortDate(ctx.predictedLineupAsOf, ctx.locale)} ${clock(ctx.predictedLineupAsOf)}` : "";
+  const footer = links
+    ? `<p class="predicted-lineup-sources"><span>${escapeHtml(text.predictedSources)}:</span> ${links}${asOf ? ` · ${escapeHtml(text.lastUpdated)}: ${escapeHtml(asOf)}` : ""}</p>`
+    : "";
+
+  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
+}
+
 export function lineupsSectionHtml(detail, analysis, ctx) {
   const { locale, base, playerIndex, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
@@ -493,7 +572,13 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
     return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
   }
 
-  if (ctx.state === "post" || ctx.state === "pending") return "";
+  // Site içi istatistik modelinin (yukarıdaki `probable`) verisi yoksa,
+  // kaynak gösterilmiş editoryal Muhtemel 11'e (data/predicted-lineups.json)
+  // bakılır — ikisi de yoksa çağıran zaten "post"/"pending" durumunda
+  // yukarıda dönmüştü, buraya yalnızca "pre" gelir.
+  const predictedSection = predictedLineupSectionHtml(ctx, text);
+  if (predictedSection) return predictedSection;
+
   return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article></section>`;
 }
 
