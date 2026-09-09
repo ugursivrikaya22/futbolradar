@@ -393,8 +393,18 @@
           var matches = payload && Array.isArray(payload.matches) ? payload.matches : [];
           predictedLineupsIndex = Object.create(null);
           matches.forEach(function (entry) {
-            if (entry && entry.matchId) {
+            if (!entry) return;
+            // İKİ ANAHTARLA DA İNDEKSLENİR. `matchId` fikstür takvimi
+            // slug'ı (mac-detay.html/statik SEO sayfaları bunu kullanır);
+            // canlı /api/matches yanıtındaki kart nesneleri ise `id`
+            // alanında sağlayıcının HAM SAYISAL kimliğini taşıyor
+            // (bkz. findPredictedLineupForMatch) — yalnızca matchId'ye
+            // göre aramak liste kartlarında sessizce hiç eşleşmiyordu.
+            if (entry.matchId) {
               predictedLineupsIndex[entry.matchId] = entry;
+            }
+            if (entry.providerId) {
+              predictedLineupsIndex[String(entry.providerId)] = entry;
             }
           });
           predictedLineupsMeta = { sources: (payload && payload.sources) || {}, asOf: (payload && payload.asOf) || null };
@@ -415,6 +425,25 @@
 
   function findPredictedLineup(matchId) {
     return (matchId && predictedLineupsIndex[matchId]) || null;
+  }
+
+  /**
+   * Maç nesnesinin kimlik alanı, kaynağa göre değişiyor: statik SEO
+   * sayfaları ve /api/match-detail slug (`barcelona-feyenoord-2026-09-09`)
+   * kullanırken, canlı /api/matches yanıtındaki kart nesneleri `id`
+   * alanında sağlayıcının ham sayısal kimliğini taşıyor (`providerId` de
+   * aynı değeri tekrarlıyor). Aday alanlar sırayla denenir; ilk eşleşen
+   * kayıt döner.
+   */
+  function findPredictedLineupForMatch(match) {
+    if (!match) {
+      return null;
+    }
+    return findPredictedLineup(match.id) ||
+      findPredictedLineup(match.fixtureId) ||
+      findPredictedLineup(match.providerId) ||
+      findPredictedLineup(match.naturalId) ||
+      null;
   }
 
   function loadData(name) {
@@ -2921,11 +2950,45 @@
    * rozeti atlar — kritik bir yol değil.
    */
   function predictedLineupChipHtml(match) {
-    if (!match || isFinishedMatch(match) || !findPredictedLineup(match.id)) {
+    if (!match || isFinishedMatch(match) || !findPredictedLineupForMatch(match)) {
       return "";
     }
     return '<div class="fixture-card-chips"><a class="fixture-chip is-lineup" href="' +
       escapeHtml(matchDetailHref(match)) + '"><i aria-hidden="true"></i>Muhtemel 11</a></div>';
+  }
+
+  /**
+   * Yayın kanalı satırı — SSR (scripts/lib/matchCards.mjs#broadcastCardHtml)
+   * ile birebir aynı kural: kanal bilinmiyorsa hiçbir şey basılmaz. Bu
+   * eşleşme kasıtlı; aksi hâlde JS yüklendiğinde kart hidrasyonda satır
+   * kaybedip yerinden oynardı.
+   */
+  var BIG_TWO_CLUB_NAMES = ["Galatasaray", "Fenerbahçe"];
+
+  function involvesBigTwoClub(match) {
+    if (!match) return false;
+    for (var index = 0; index < BIG_TWO_CLUB_NAMES.length; index += 1) {
+      if (sameClubName(BIG_TWO_CLUB_NAMES[index], match.homeTeam) || sameClubName(BIG_TWO_CLUB_NAMES[index], match.awayTeam)) return true;
+    }
+    return false;
+  }
+
+  function fixtureBroadcastChannel(match) {
+    var broadcast = match && match.broadcast;
+    if (!broadcast) return "";
+    if (typeof broadcast === "string") return broadcast.trim();
+    if (typeof broadcast === "object") return String(broadcast.turkey || broadcast.tr || "").trim();
+    return "";
+  }
+
+  function fixtureBroadcastHtml(match) {
+    var channel = fixtureBroadcastChannel(match);
+    if (!channel) return "";
+    var broadcast = match && match.broadcast;
+    var freeToAir = Boolean(broadcast && typeof broadcast === "object" && broadcast.freeToAir === true);
+    var freeTag = freeToAir ? '<span class="fixture-card-free-tag">Şifresiz</span>' : "";
+    return '<div class="fixture-card-broadcast"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın: <b>' +
+      escapeHtml(channel) + "</b></span>" + freeTag + "</div>";
   }
 
   function renderFixtureCard(match) {
@@ -2935,6 +2998,7 @@
 
     return (
       '<article class="fixture-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
+      (involvesBigTwoClub(match) ? " is-milli" : "") +
       '" data-card="fixture" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="fixture-card-top">' +
       '<span class="fixture-card-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
@@ -2945,6 +3009,7 @@
       "</div>" +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
+      fixtureBroadcastHtml(match) +
       (metrics ? '<div class="fixture-card-meta">' + metrics + "</div>" : "") +
       '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
       "</article>"
@@ -11009,7 +11074,7 @@
       return "";
     }
 
-    var record = findPredictedLineup(detail.id);
+    var record = findPredictedLineupForMatch(detail);
     if (!record) {
       return "";
     }
