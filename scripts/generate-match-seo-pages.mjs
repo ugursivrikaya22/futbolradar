@@ -127,6 +127,22 @@ const players = getPlayers(readJson("data/players.json", []));
 const reportStore = readJson("data/post-match-reports.json", { records: [] });
 const reports = Array.isArray(reportStore) ? reportStore : (reportStore.records || reportStore.reports || []);
 const internationalTeams = readJson("data/international-teams.json", []);
+const predictedLineupsStore = readJson("data/predicted-lineups.json", { matches: [], sources: {}, asOf: null });
+const predictedLineupsById = new Map(
+  (Array.isArray(predictedLineupsStore.matches) ? predictedLineupsStore.matches : [])
+    .filter((row) => row && row.matchId)
+    .map((row) => [row.matchId, row])
+);
+
+/**
+ * Editoryal "Muhtemel 11" — matchId, data/fixture-calendar.json'daki GERÇEK
+ * fikstür kimliğidir (kaynak dosyanın kendi editoryal id'si değil), bu
+ * yüzden `detail.naturalId` (fromCalendar.id) ile doğrudan eşleşir; ayrı bir
+ * bulanık takım-adı eşleştirmesi gerekmez.
+ */
+function predictedLineupFor(naturalId) {
+  return (naturalId && predictedLineupsById.get(naturalId)) || null;
+}
 
 /* ------------------------------------------------------------------ */
 /* 1. ADAY KAYITLAR                                                     */
@@ -683,6 +699,9 @@ function pageHtml(entry, locale, options) {
     playerIndex,
     homeTeam: entry.homeTeam,
     awayTeam: entry.awayTeam,
+    predictedLineup: predictedLineupFor(detail.naturalId),
+    predictedLineupSources: predictedLineupsStore.sources || {},
+    predictedLineupAsOf: predictedLineupsStore.asOf || null,
     homeHref: home.page,
     awayHref: away.page,
     homeAbsolute: toAbsolute(home.page),
