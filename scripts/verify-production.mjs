@@ -1,11 +1,14 @@
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
+import path from 'node:path';
 const require = createRequire(import.meta.url);
+const compilerManifest = require.resolve('typescript/package.json');
+const compiler = path.resolve(path.dirname(compilerManifest), require(compilerManifest).bin.tsc);
 const env = { ...process.env };
 for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT']) delete env[key];
 for (const args of [
   ['scripts/qa.mjs'],
-  [require.resolve('typescript/bin/tsc'), '--noEmit'],
+  [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']
 ]) {
