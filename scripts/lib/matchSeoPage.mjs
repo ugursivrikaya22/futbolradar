@@ -659,7 +659,7 @@ export function whenSectionHtml(entry, ctx) {
   return `<section class="msp-section msp-faq" id="ne-zaman" aria-label="${escapeHtml(text.date)}">
       <article class="card msp-qa"><h2>${escapeHtml(text.whenTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.whenBodyPast(homeTeam, awayTeam, day, competition) : text.whenBody(homeTeam, awayTeam, day, competition))}</p></article>
       <article class="card msp-qa"><h2>${escapeHtml(text.timeTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.timeBodyPast(homeTeam, awayTeam, hour) : text.timeBody(homeTeam, awayTeam, hour))}</p></article>
-      <article class="card msp-qa"><h2>${escapeHtml(text.channelTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(channel ? text.channelBody(homeTeam, awayTeam, channel) : text.channelUnknown(homeTeam, awayTeam))}</p></article>
+      <article class="card msp-qa" id="hangi-kanalda"><h2>${escapeHtml(text.channelTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(channel ? text.channelBody(homeTeam, awayTeam, channel) : text.channelUnknown(homeTeam, awayTeam))}</p></article>
     </section>`;
 }
 
