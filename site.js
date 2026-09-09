@@ -1248,9 +1248,9 @@
 
   // Card surfaces share the existing primary link; controls and secondary
   // links keep their own actions. No nested anchors or click-catching overlays.
-  var cardSelector = '.fixture-card, .cl-match-card, .column-card, .news-card, .team-card, .player-card, .player-detail-card, .league-card, .trend-card';
+  var cardSelector = '.fixture-card, .cl-match-card, .column-card, .news-card, .team-card, [data-card="team"], .player-card, .player-detail-card, .league-card, .trend-card';
   function primaryCardLink(card) {
-    return card.querySelector('.fixture-card-action, h2 a[href], h3 a[href], .detail-link[href], .cl-match-card__actions a[href]') || card.querySelector('a[href]');
+    return card.querySelector('.team-card-actions a[href]') || card.querySelector('.fixture-card-action, h2 a[href], h3 a[href], .detail-link[href], .cl-match-card__actions a[href]') || card.querySelector('a[href]');
   }
   function setupCards() {
     document.querySelectorAll(cardSelector).forEach(function (card) {

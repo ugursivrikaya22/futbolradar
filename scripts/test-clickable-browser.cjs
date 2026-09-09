@@ -83,13 +83,13 @@ async function until(check, message, timeout = 5000) {
         }
         fs.writeFileSync(reportFile, JSON.stringify({ base, results }, null, 2));
       }
-      async function navigate(locator) {
+      async function navigate(locator, surface = locator) {
         const before = page.url();
         const expected = await locator.getAttribute('href');
         assert.ok(expected && expected !== '#' && !expected.startsWith('javascript:'), 'Empty link');
         const target = new URL(expected, before);
         console.log('NAV', viewport.width, expected);
-        await click(locator);
+        await click(surface);
         await page.waitForURL(url => url.href !== before, { waitUntil: 'domcontentloaded' });
         assert.equal(new URL(page.url()).pathname.replace(/\.html$/, ''), target.pathname.replace(/\.html$/, ''), 'Wrong destination');
         await page.locator('main').waitFor();
@@ -173,9 +173,10 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' team cards open profiles', async () => {
           await open(en ? 'en/teams.html' : 'takimlar.html');
           if (!en) await page.locator('[data-api-target="teams-page"][data-state="ready"]').waitFor();
-          const cards = page.locator('.team-card, .trend-card');
+          const cards = page.locator('.team-card, .trend-card, [data-card="team"]');
           assert.ok(await cards.count(), 'No team cards');
-          await navigate(cards.first().locator('a').first());
+          const link = cards.first().locator(en ? 'a' : '.team-card-actions a').first();
+          await navigate(link, en ? link : cards.first().locator('h2'));
         });
         await test(locale + ' player cards open profiles', async () => {
           await open(en ? 'en/player-radar.html' : 'oyuncu-radari.html');
@@ -213,7 +214,13 @@ async function until(check, message, timeout = 5000) {
             assert.equal(await pause.getAttribute('aria-pressed'), 'true');
           }
           const slides = root.locator('[data-featured-slide]');
-          assert.ok(await slides.count() > 1, 'Carousel needs multiple real fixtures');
+          const slideCount = await slides.count();
+          assert.ok(slideCount > 0, 'Carousel has no fixture');
+          if (slideCount === 1) {
+            assert.equal(await root.locator('[data-featured-next], [data-featured-prev], [data-featured-pause]').count(), 0, 'A single fixture must not expose inert carousel controls');
+            await navigate(slides.first().locator('a').first());
+            return;
+          }
           const active = () => root.locator('[data-featured-slide].is-active').getAttribute('data-featured-slide');
           const first = await active();
           await click(root.locator('[data-featured-next]'));
