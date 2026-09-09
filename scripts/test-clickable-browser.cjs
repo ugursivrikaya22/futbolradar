@@ -106,7 +106,8 @@ async function until(check, message, timeout = 5000) {
           await until(async () => (await page.locator('html').getAttribute('lang')) === (en ? 'tr' : 'en'), 'Language did not change');
           await click(page.locator('[data-lang-switch]'));
           await until(async () => (await page.locator('html').getAttribute('lang')) === locale, 'Return language did not change');
-          await page.screenshot({ path: `outputs/clickable/${viewport.width}-${locale}-home.png`, timeout: 10000 });
+          await page.screenshot({ path: `outputs/clickable/${viewport.width}-${locale}-home.png`, timeout: 10000, animations: 'disabled' })
+            .catch(error => console.log('SCREENSHOT', viewport.width, locale, error.message.split('\n')[0]));
         });
         await test(locale + ' search open, clear, result and keyboard', async () => {
           await open(home);
@@ -357,7 +358,8 @@ async function until(check, message, timeout = 5000) {
       });
       await context.close();
     }
-    await Promise.all([0, 1].map(async () => {
+    const workers = process.platform === 'win32' ? [0] : [0, 1];
+    await Promise.all(workers.map(async () => {
       while (queue.length) await runViewport(queue.shift());
     }));
   } finally { await browser.close(); }

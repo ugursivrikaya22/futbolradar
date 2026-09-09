@@ -16,6 +16,34 @@ const port = Number(process.env.PORT || 4173);
 const isApiWorker = process.argv.includes('--api-worker');
 let apiPort;
 let apiProcess;
+const apiCache = new Map();
+const apiPending = new Map();
+function readApi(request) {
+  const key = request.method + ' ' + request.url;
+  const cached = apiCache.get(key);
+  if (cached && cached.expires > Date.now()) return Promise.resolve(cached);
+  apiCache.delete(key);
+  if (apiPending.has(key)) return apiPending.get(key);
+  const pending = new Promise((resolve, reject) => {
+    const proxy = http.request({ hostname: '127.0.0.1', port: apiPort, path: request.url, method: request.method, headers: request.headers, agent: false }, upstream => {
+      const chunks = [];
+      upstream.on('data', chunk => chunks.push(chunk));
+      upstream.on('error', reject);
+      upstream.on('end', () => {
+        const policy = upstream.headers['vercel-cdn-cache-control'] || upstream.headers['cdn-cache-control'] || '';
+        const seconds = /(?:^|,)\s*s-maxage=(\d+)/.exec(policy);
+        const ttl = !/no-store|private/.test(policy) && seconds ? Number(seconds[1]) * 1000 : 0;
+        const result = { status: upstream.statusCode, headers: upstream.headers, body: Buffer.concat(chunks), expires: Date.now() + ttl };
+        if (result.status === 200 && ttl > 0) apiCache.set(key, result);
+        resolve(result);
+      });
+    });
+    proxy.on('error', reject);
+    proxy.end();
+  }).finally(() => apiPending.delete(key));
+  apiPending.set(key, pending);
+  return pending;
+}
 const contentTypes = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
@@ -37,18 +65,18 @@ const server = http.createServer((request, response) => {
     // Production serves static assets from the CDN independently of API work.
     // Keep preview navigation equally independent of provider CPU/IO work.
     if (!isApiWorker) {
-      const proxy = http.request({ hostname: '127.0.0.1', port: apiPort, path: request.url, method: request.method, headers: request.headers, agent: false }, upstream => {
-        response.writeHead(upstream.statusCode, upstream.headers);
-        upstream.pipe(response);
-      });
-      proxy.on('error', error => {
+      // Reproduce the handlers' real CDN cache policy, including no-store.
+      // Concurrent identical reads share work even when a browser navigates away.
+      readApi(request).then(result => {
+        if (response.destroyed) return;
+        response.writeHead(result.status, result.headers);
+        response.end(result.body);
+      }).catch(error => {
         if (response.destroyed) return;
         console.error(`[preview API] ${request.url}: ${error.message}`);
         if (!response.headersSent) response.writeHead(502, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify({ ok: false, error: { code: 'PREVIEW_API_ERROR', message: error.message } }));
       });
-      response.on('close', () => { if (!response.writableFinished) proxy.destroy(); });
-      proxy.end();
       return;
     }
     const name = pathname.slice(5);
