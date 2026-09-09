@@ -76,11 +76,25 @@ function fixtureOnlyTeam(name) {
  */
 const MIN_CONTAINMENT_LENGTH = 4;
 
+// Bir kulübün A takımı adı, kendi alt yaş/gençlik ya da yedek takımının
+// adını KELİME SINIRINDA içerir ("Sporting CP" ⊂ "Sporting CP U19"), ama
+// aynı gün oynanan A takım ve U19 maçları FARKLI fikstürlerdir. Bu içerme
+// eşleşmesi düzeltilmezse iki ayrı maç tek kayıtta birleşiyor ve U19
+// maçının canlı skoru/durumu A takımının kendi maçının üzerine yazıyordu.
+// Yaş grubu/yedek takım eki yalnızca BİR taraftaysa iki ad aynı kulüp
+// SAYILMAZ.
+const YOUTH_OR_RESERVE_SUFFIX = /\b(u1[0-9]|u2[0-3]|genç(lik)?|youth|yedek|reserves?)\b/;
+
+function hasYouthOrReserveSuffix(value) {
+  return YOUTH_OR_RESERVE_SUFFIX.test(value);
+}
+
 function sameClub(left, right) {
   const a = normalizeText(left);
   const b = normalizeText(right);
   if (!a || !b) return false;
   if (a === b) return true;
+  if (hasYouthOrReserveSuffix(a) !== hasYouthOrReserveSuffix(b)) return false;
 
   const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a];
   if (shorter.length < MIN_CONTAINMENT_LENGTH) return false;
