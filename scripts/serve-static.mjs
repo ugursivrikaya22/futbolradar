@@ -37,15 +37,17 @@ const server = http.createServer((request, response) => {
     // Production serves static assets from the CDN independently of API work.
     // Keep preview navigation equally independent of provider CPU/IO work.
     if (!isApiWorker) {
-      const proxy = http.request({ hostname: '127.0.0.1', port: apiPort, path: request.url, method: request.method, headers: request.headers }, upstream => {
+      const proxy = http.request({ hostname: '127.0.0.1', port: apiPort, path: request.url, method: request.method, headers: request.headers, agent: false }, upstream => {
         response.writeHead(upstream.statusCode, upstream.headers);
         upstream.pipe(response);
       });
       proxy.on('error', error => {
+        if (response.destroyed) return;
+        console.error(`[preview API] ${request.url}: ${error.message}`);
         if (!response.headersSent) response.writeHead(502, { 'Content-Type': 'application/json' });
         response.end(JSON.stringify({ ok: false, error: { code: 'PREVIEW_API_ERROR', message: error.message } }));
       });
-      response.on('close', () => proxy.destroy());
+      response.on('close', () => { if (!response.writableFinished) proxy.destroy(); });
       proxy.end();
       return;
     }

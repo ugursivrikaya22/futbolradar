@@ -17,9 +17,10 @@ async function until(check, message, timeout = 5000) {
 (async () => {
   fs.mkdirSync('outputs/clickable', { recursive: true });
   if (!process.env.AUDIT_BASE_URL) {
+    fs.writeFileSync('outputs/clickable/preview-server.log', '');
     server = spawn(process.execPath, ['scripts/serve-static.mjs'], { env: { ...process.env, PORT: '4187' }, stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true });
     server.stdout.resume();
-    server.stderr.resume();
+    server.stderr.on('data', chunk => fs.appendFileSync('outputs/clickable/preview-server.log', chunk));
     await until(async () => { try { return (await fetch(base + '/index.html')).ok; } catch { return false; } }, 'Preview failed to start', 30000);
   }
   const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : process.platform === 'win32' ? { channel: 'msedge' } : {}) });
@@ -30,7 +31,9 @@ async function until(check, message, timeout = 5000) {
       const context = await browser.newContext({ viewport, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce', serviceWorkers: 'block' });
       let page;
       let consoleErrors = [];
-      const click = async locator => touch ? locator.tap() : locator.click();
+      // Destination/content assertions below own navigation waiting; third-party
+      // images must not hold an otherwise completed click until window.load.
+      const click = async locator => touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       async function open(file) {
         const response = await page.goto(new URL(file, base + '/').href, { waitUntil: 'domcontentloaded' });
         assert.ok(response.ok(), file + ' HTTP ' + response.status());
@@ -46,12 +49,13 @@ async function until(check, message, timeout = 5000) {
         page.setDefaultTimeout(15000);
         page.setDefaultNavigationTimeout(30000);
         consoleErrors = [];
+        const startedAt = Date.now();
         page.on('pageerror', e => consoleErrors.push({ kind: 'runtime', message: e.message, url: page.url() }));
         page.on('console', m => { if (m.type() === 'error') consoleErrors.push({ kind: 'console', message: m.text(), url: m.location().url }); });
         try {
           await run();
           assert.deepEqual(consoleErrors, [], 'Browser errors');
-          results.push({ viewport, name, passed: true });
+          results.push({ viewport, name, passed: true, durationMs: Date.now() - startedAt });
           console.log('PASS', viewport.width, name);
         } catch (e) {
           const screenshot = path.join('outputs', 'clickable', `${viewport.width}-${results.length}.png`);
@@ -66,6 +70,7 @@ async function until(check, message, timeout = 5000) {
         const expected = await locator.getAttribute('href');
         assert.ok(expected && expected !== '#' && !expected.startsWith('javascript:'), 'Empty link');
         const target = new URL(expected, before);
+        console.log('NAV', viewport.width, expected);
         await click(locator);
         await until(() => page.url() !== before, 'Click did not navigate: ' + expected, 10000);
         await page.waitForLoadState('domcontentloaded');
