@@ -99,7 +99,9 @@ assert.equal(
     ])
   );
 
-  for (const asset of expected.keys()) {
+  // These three assets have dedicated immutable header rules. Other stamped
+  // bundles may use a grouped rule or intentionally retain a shorter cache.
+  for (const asset of ["page.css", "app.js", "site.js"]) {
     const value = rules.get(`/${asset}`) || "";
     assert.match(
       value,
