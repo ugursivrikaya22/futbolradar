@@ -18,6 +18,25 @@ let apiPort;
 let apiProcess;
 const apiCache = new Map();
 const apiPending = new Map();
+function streamApi(request, response) {
+  const proxy = http.request({ hostname: '127.0.0.1', port: apiPort, path: request.url, method: request.method, headers: request.headers, agent: false }, upstream => {
+    if (response.destroyed) { upstream.destroy(); return; }
+    response.writeHead(upstream.statusCode, upstream.headers);
+    response.flushHeaders();
+    upstream.on('error', error => response.destroy(error));
+    upstream.pipe(response);
+    response.once('close', () => upstream.destroy());
+  });
+  proxy.on('error', error => {
+    if (response.destroyed) return;
+    console.error(`[preview API] ${request.url}: ${error.message}`);
+    if (response.headersSent) { response.destroy(error); return; }
+    response.writeHead(502, { 'Content-Type': 'application/json' });
+    response.end(JSON.stringify({ ok: false, error: { code: 'PREVIEW_API_ERROR', message: error.message } }));
+  });
+  response.once('close', () => proxy.destroy());
+  request.pipe(proxy);
+}
 function readApi(request) {
   const key = request.method + ' ' + request.url;
   const cached = apiCache.get(key);
@@ -54,10 +73,12 @@ const contentTypes = {
 
 const server = http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
-  // Exercise the real read-only API handlers in preview and browser tests.
+  // Exercise real API reads and local render telemetry in browser tests.
   // Voting, subscriptions and administrative writes stay out of preview.
   if (pathname.startsWith("/api/")) {
-    if (request.method !== "GET" && request.method !== "HEAD") {
+    const isLiveStream = pathname === "/api/live-score-stream";
+    const isLocalTelemetry = isLiveStream && request.method === "POST";
+    if (request.method !== "GET" && request.method !== "HEAD" && !isLocalTelemetry) {
       response.writeHead(405, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ ok: false, error: { code: "PREVIEW_READ_ONLY" } }));
       return;
@@ -65,6 +86,9 @@ const server = http.createServer((request, response) => {
     // Production serves static assets from the CDN independently of API work.
     // Keep preview navigation equally independent of provider CPU/IO work.
     if (!isApiWorker) {
+      // SSE must deliver packets immediately and release its subscription on
+      // navigation. Telemetry must retain its body and real handler validation.
+      if (isLiveStream) { streamApi(request, response); return; }
       // Reproduce the handlers' real CDN cache policy, including no-store.
       // Concurrent identical reads share work even when a browser navigates away.
       readApi(request).then(result => {
