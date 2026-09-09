@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "_comment": "Editoryal 'Muhtemel 11' kadroları — spor basınından derlenmiş, RESMÎ DEĞİL. matchId alanı data/fixture-calendar.json içindeki gerçek fikstür kimliğidir (kaynak dosyanın kendi 'id' alanı editoryal bir kısaltmaydı, provider/fikstür kimliği değildi — bu yüzden burada matchId olarak KULLANILMADI, editorialId olarak saklandı). rows: kaleciden hücuma sıralı diziler; her dizinin İÇİ takımın KENDİ bakış açısına göre SAĞDAN SOLA sıralanmıştır (rows[0] = kaleci, tek oyuncu). Ekranda soldan-sağa çizerken bu dizi TERS ÇEVRİLİR (bkz. app.js predictedLineupRow*). Oyuncu/forma numarası/foto uydurulmaz; yalnızca kaynakta adı geçen oyuncular kullanılır.",
+  "competition": "UEFA Champions League",
+  "season": "2026/27",
+  "timezone": "Europe/Istanbul",
+  "lineupStatus": "predicted",
+  "asOf": "2026-09-09T10:15:00+03:00",
+  "rowOrderNote": "rows: kaleciden hücuma sıralı; her hat, takımın KENDİ bakış açısına göre sağdan sola sıralı.",
+  "sources": {
+    "barca": "https://www.sportsmole.co.uk/football/barcelona/champions-league/preview/barcelona-vs-feyenoord-prediction-team-news-lineups_604669.html",
+    "barcaAlt": "https://www.sportsgambler.com/betting-tips/football/barcelona-vs-feyenoord-prediction-lineups-odds-2026-09-09/",
+    "stuttgart": "https://www.sportsmole.co.uk/football/stuttgart/champions-league/preview/stuttgart-vs-viking-fk-prediction-team-news-lineups_604675.html",
+    "stuttgartNews": "https://bulinews.com/vfb-stuttgart-viking-preview-team-news-predicted-lineups",
+    "sporting": "https://www.sporx.com/sporting-lizbon-galatasaray-muhtemel-11-ler-SXHBQ1175315SXQ",
+    "liverpool": "https://www.si.com/soccer/liverpool-predicted-lineup-vs-atletico-madrid-9-9-26",
+    "atleti": "https://www.sportsmole.co.uk/football/liverpool/champions-league/preview/liverpool-vs-atletico-prediction-team-news-lineups_604617.html",
+    "liverpoolNews": "https://www.liverpoolfc.com/news/liverpool-v-atletico-madrid-team-news-0",
+    "gakpo": "https://www.thisisanfield.com/2026/09/cody-gakpo-absent-joe-gomez-liverpool-training-atletico/",
+    "psg": "https://www.sportsmole.co.uk/football/psg/champions-league/preview/psg-vs-slovan-bratislava-prediction-team-news-lineups_604668.html",
+    "slovanSquad": "https://www.uefa.com/uefachampionsleague/clubs/52797--s-bratislava/squad/",
+    "napoli": "https://www.sportsmole.co.uk/football/arsenal/champions-league/preview/napoli-vs-arsenal-prediction-team-news-lineups_604638.html",
+    "fener": "https://www.aksam.com.tr/trend/fenerbahce-roma-mac-kadrosu-ve-muhtemel-ilk-11ler-belli-oldu/haber-1696552",
+    "fenerNews": "https://ajansspor.com/haber/asensio-fenerbahce-roma-macinda-oynayacak-mi-belli-oldu-734413",
+    "fenerAlt": "https://www.sporx.com/fenerbahce-roma-maci-kadrolar-6106331",
+    "psv": "https://www.sportsmole.co.uk/football/psv-eindhoven/champions-league/preview/psv-vs-shakhtar-prediction-team-news-lineups_604703.html",
+    "shakhtar": "https://www.sportsgambler.com/betting-tips/football/psv-vs-shakhtar-donetsk-prediction-lineups-odds-2026-09-10/",
+    "bayern": "https://www.sportsmole.co.uk/football/bayern-munich/champions-league/preview/bayern-vs-bodoglimt-prediction-team-news-lineups_604749.html",
+    "united": "https://www.fotmob.com/matches/manchester-united-vs-sabah-fk/5wn180eq",
+    "unitedAlt": "https://www.sportsmole.co.uk/football/man-utd/champions-league/preview/man-utd-vs-sabah-prediction-team-news-lineups_604712.html",
+    "como": "https://www.sportsmole.co.uk/football/como/champions-league/preview/como-vs-rb-leipzig-prediction-team-news-lineups_604680.html",
+    "leipzig": "https://www.sportsgambler.com/betting-tips/football/como-vs-rb-leipzig-prediction-lineups-odds-2026-09-10/",
+    "leipzigNews": "https://bulinews.com/como-leipzig-preview-team-news-predicted-lineups",
+    "slavia": "https://www.sportsgambler.com/betting-tips/football/slavia-prague-vs-lens-prediction-lineups-odds-2026-09-10/",
+    "slaviaNews": "https://www.sportsmole.co.uk/football/slavia-prague/champions-league/preview/slavia-prague-vs-lens-prediction-team-news-lineups_604704.html"
+  },
+  "matches": [
+    {
+      "matchId": "barcelona-feyenoord-2026-09-09",
+      "editorialId": "barcelona-feyenoord",
+      "kickoff": "2026-09-09T19:45:00+03:00",
+      "home": {
+        "name": "Barcelona",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Joan García"],
+          ["Jules Koundé", "Pau Cubarsí", "Andreas Christensen", "Xavi Espart"],
+          ["Rodri", "Pedri"],
+          ["Lamine Yamal", "Fermín López", "Anthony Gordon"],
+          ["Raphinha"]
+        ],
+        "note": "Eric García cezalı; Frenkie de Jong ve Roony Bardghji eksik. Christensen'in yerinde Gerard Martín de bir seçenek.",
+        "flags": [],
+        "sourceKeys": ["barca", "barcaAlt"]
+      },
+      "away": {
+        "name": "Feyenoord",
+        "formation": "4-3-3",
+        "rows": [
+          ["Tjark Ernst"],
+          ["Givairo Read", "Jerry St. Juste", "Tsuyoshi Watanabe", "Mika Mármol"],
+          ["Charles Vanhoutte", "Gjivai Zechiël", "Oussama Targhalline"],
+          ["Luciano Valente", "Nacho Ferri", "Gaoussou Diarra"]
+        ],
+        "note": "Beelen, Nieuwkoop, Smal, Moder ve Bos eksik. Valente ile Diarra'nın kanat yerleşimi tahminlere göre değişiyor.",
+        "flags": [],
+        "sourceKeys": ["barca", "barcaAlt"]
+      }
+    },
+    {
+      "matchId": "vfb-stuttgart-viking-2026-09-09",
+      "editorialId": "stuttgart-viking",
+      "kickoff": "2026-09-09T19:45:00+03:00",
+      "home": {
+        "name": "Stuttgart",
+        "formation": "3-4-2-1",
+        "rows": [
+          ["Fabian Bredlow"],
+          ["Finn Jeltsch", "Jeff Chabot", "Maximilian Mittelstädt"],
+          ["Josha Vagnoman", "Grischa Prömel", "Angelo Stiller", "Chris Führich"],
+          ["Deniz Undav", "Bilal El Khannouss"],
+          ["Dženan Pejčinović"]
+        ],
+        "note": "Seimen ve Zagadou dahil birkaç eksik var. Undav için Aşil hassasiyeti bildirildi; ilk 11 tahmininde yer alsa da durumu izlenmeli.",
+        "flags": ["Deniz Undav"],
+        "sourceKeys": ["stuttgart", "stuttgartNews"]
+      },
+      "away": {
+        "name": "Viking",
+        "formation": "4-3-3",
+        "rows": [
+          ["Arild Østbø"],
+          ["Henrik Heggheim", "Gianni Stensness", "Jesper Daland", "Herman Haugen"],
+          ["Tobias Moi", "Joe Bell", "Kristoffer Askildsen"],
+          ["Zlatko Tripić", "Peter Christiansen", "Amin Ćošić"]
+        ],
+        "note": "Berisha, Roseth, Bærtelsen, Falchener ve D'Agostino eksik. Bell merkezde; Christiansen ileri uçta.",
+        "flags": [],
+        "sourceKeys": ["stuttgart", "stuttgartNews"]
+      }
+    },
+    {
+      "matchId": "sporting-cp-galatasaray-2026-09-09",
+      "editorialId": "sporting-galatasaray",
+      "kickoff": "2026-09-09T22:00:00+03:00",
+      "home": {
+        "name": "Sporting CP",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Rui Silva"],
+          ["Iván Fresneda", "Zeno Debast", "Gonçalo Inácio", "Maxi Araújo"],
+          ["Issa Doumbia", "Sergi Altimira"],
+          ["Geny Catamo", "Rodrigo Zalazar", "Flávio Gonçalves"],
+          ["Luis Suárez"]
+        ],
+        "note": "Zalazar, Suárez'in arkasında; Catamo ve Flávio Gonçalves kanatlarda. Yerleşim, yayımlanan 11'in mevkilere göre yorumudur.",
+        "flags": [],
+        "sourceKeys": ["sporting"]
+      },
+      "away": {
+        "name": "Galatasaray",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Uğurcan Çakır"],
+          ["Roland Sallai", "Davinson Sánchez", "Abdülkerim Bardakcı", "Ismail Jakobs"],
+          ["Lucas Torreira", "Gabriel Sara"],
+          ["Yunus Akgün", "Aleksey Batrakov", "Leroy Sané"],
+          ["Barış Alper Yılmaz"]
+        ],
+        "note": "Osimhen, Lemina ve Singo eksik. Bu tahminde Barış Alper santrfor, Sallai sağ bek; Leão sonradan oyuna girebilecek seçeneklerden.",
+        "flags": [],
+        "sourceKeys": ["sporting"]
+      }
+    },
+    {
+      "matchId": "liverpool-atletico-madrid-2026-09-09",
+      "editorialId": "liverpool-atletico",
+      "kickoff": "2026-09-09T22:00:00+03:00",
+      "home": {
+        "name": "Liverpool",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Alisson"],
+          ["Ronald Araújo", "Jérémy Jacquet", "Virgil van Dijk", "Milos Kerkez"],
+          ["Dominik Szoboszlai", "Alexis Mac Allister"],
+          ["Cody Gakpo", "Florian Wirtz", "Bradley Barcola"],
+          ["Alexander Isak"]
+        ],
+        "note": "SI, Gakpo'yu sağda ve Barcola'yı solda bekliyor. Gakpo son idmanda yoktu; Muñoz alternatif. Mac Allister/Gravenberch tercihi de değişebilir.",
+        "flags": ["Cody Gakpo"],
+        "sourceKeys": ["liverpool", "gakpo", "liverpoolNews", "atleti"]
+      },
+      "away": {
+        "name": "Atletico Madrid",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Jan Oblak"],
+          ["Marcos Llorente", "Marc Pubill", "Cristian Romero", "Alejandro Grimaldo"],
+          ["Koke", "Morten Hjulmand"],
+          ["Giuliano Simeone", "Álex Baena", "Ademola Lookman"],
+          ["Jonathan David"]
+        ],
+        "note": "Sørloth sakat, Arnau Ortiz cezalı. Simeone, Álvarez'in ilk 11'e hazır olmadığını söyledi; David tahmini bununla uyumlu.",
+        "flags": [],
+        "sourceKeys": ["atleti", "liverpoolNews"]
+      }
+    },
+    {
+      "matchId": "paris-saint-germain-slovan-bratislava-2026-09-09",
+      "editorialId": "psg-slovan",
+      "kickoff": "2026-09-09T22:00:00+03:00",
+      "home": {
+        "name": "PSG",
+        "formation": "4-3-3",
+        "rows": [
+          ["Matvey Safonov"],
+          ["Achraf Hakimi", "Marquinhos", "Willian Pacho", "Nuno Mendes"],
+          ["João Neves", "Vitinha", "Fabián Ruiz"],
+          ["Désiré Doué", "Ousmane Dembélé", "Khvicha Kvaratskhelia"]
+        ],
+        "note": "Nuno Mendes'in dönüşü bekleniyor. Hücum tahmini Doué–Dembélé–Kvaratskhelia; yeni transferler rotasyon seçenekleri.",
+        "flags": [],
+        "sourceKeys": ["psg"]
+      },
+      "away": {
+        "name": "Slovan Bratislava",
+        "formation": "4-3-3",
+        "rows": [
+          ["Dominik Takáč"],
+          ["César Blackman", "Kenan Bajrić", "Svetozar Marković", "Sandro Cruz"],
+          ["Rahim Ibrahim", "Peter Pokorný", "Cristian Martínez"],
+          ["Tigran Barseghyan", "Andraž Šporar", "Suleiman Camara"]
+        ],
+        "note": "Šporar'ın santrfor alternatifi Roman Čerepkai. Barseghyan ve Suleiman Camara kanatlarda; oyuncu adları UEFA kadrosuyla eşleştirildi.",
+        "flags": [],
+        "sourceKeys": ["psg", "slovanSquad"]
+      }
+    },
+    {
+      "matchId": "napoli-arsenal-2026-09-09",
+      "editorialId": "napoli-arsenal",
+      "kickoff": "2026-09-09T22:00:00+03:00",
+      "home": {
+        "name": "Napoli",
+        "formation": "4-3-3",
+        "rows": [
+          ["Alex Meret"],
+          ["Giovanni Di Lorenzo", "Rafa Marín", "Amir Rrahmani", "Leonardo Spinazzola"],
+          ["Kevin De Bruyne", "Stanislav Lobotka", "Billy Gilmour"],
+          ["Matteo Politano", "Rasmus Højlund", "Alisson Santos"]
+        ],
+        "note": "McTominay, Anguissa ve Buongiorno eksik; Neres şüpheli. Bu nedenle Gilmour ve Politano'lu tahmin esas alındı.",
+        "flags": [],
+        "sourceKeys": ["napoli"]
+      },
+      "away": {
+        "name": "Arsenal",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["David Raya"],
+          ["Ben White", "Ezri Konsa", "Gabriel Magalhães", "Piero Hincapié"],
+          ["Martín Zubimendi", "Declan Rice"],
+          ["Bukayo Saka", "Martin Ødegaard", "Christos Tzolis"],
+          ["Kai Havertz"]
+        ],
+        "note": "Saliba ve Mosquera eksik; Timber'in durumu sınırlı. Sol bek, ikinci merkez orta saha ve santrfor seçimlerinde rotasyon mümkün.",
+        "flags": [],
+        "sourceKeys": ["napoli"]
+      }
+    },
+    {
+      "matchId": "fenerbahce-roma-2026-09-10",
+      "editorialId": "fenerbahce-roma",
+      "kickoff": "2026-09-10T19:45:00+03:00",
+      "home": {
+        "name": "Fenerbahçe",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Ederson"],
+          ["Nélson Semedo", "Milan Škriniar", "Nathan Aké", "Archie Brown"],
+          ["N'Golo Kanté", "İsmail Yüksek"],
+          ["Oğuz Aydın", "Mason Greenwood", "Kerem Aktürkoğlu"],
+          ["Vedat Muriqi"]
+        ],
+        "note": "Asensio'nun oynaması beklenmiyor; sağ bekte Mert Müldür alternatifi var. Greenwood'un 10 numara yerleşimi, bu 11'e ilişkin taktik yorumdur.",
+        "flags": [],
+        "sourceKeys": ["fener", "fenerNews", "fenerAlt"]
+      },
+      "away": {
+        "name": "Roma",
+        "formation": "3-4-2-1",
+        "rows": [
+          ["Mile Svilar"],
+          ["Gianluca Mancini", "Evan Ndicka", "Mario Hermoso"],
+          ["Nahuel Molina", "Bryan Cristante", "Manu Koné", "Wesley"],
+          ["Matías Soulé", "Paulo Dybala"],
+          ["Donyell Malen"]
+        ],
+        "note": "Molina ve Wesley kanat bekleri; Soulé–Dybala, Malen'in arkasında. Rodrigo Mora, bazı tahminlerde Soulé'nin yerine yazılıyor.",
+        "flags": [],
+        "sourceKeys": ["fener", "fenerAlt"]
+      }
+    },
+    {
+      "matchId": "psv-eindhoven-shakhtar-donetsk-2026-09-10",
+      "editorialId": "psv-shakhtar",
+      "kickoff": "2026-09-10T19:45:00+03:00",
+      "home": {
+        "name": "PSV",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Matěj Kovář"],
+          ["Sergiño Dest", "Lutsharel Geertruida", "Armando Obispo", "Filip Kostić"],
+          ["Kodai Sano", "Noah Fernandez"],
+          ["Ivan Perišić", "Guus Til", "Ruben van Bommel"],
+          ["Ricardo Pepi"]
+        ],
+        "note": "Mauro Júnior cezalı; Schouten ve Pléa dahil eksikler var. Pepi ileri uçta, Til onun arkasında bekleniyor.",
+        "flags": [],
+        "sourceKeys": ["psv"]
+      },
+      "away": {
+        "name": "Shakhtar Donetsk",
+        "formation": "4-1-4-1",
+        "rows": [
+          ["Dmytro Riznyk"],
+          ["Vinícius Tobias", "Valeriy Bondar", "Mykola Matviyenko", "Pedro Henrique"],
+          ["Yehor Nazaryna"],
+          ["Alisson Santana", "Oleh Ocheretko", "Marlon Gomes", "Newerton"],
+          ["Kauã Elias"]
+        ],
+        "note": "Nazaryna savunma önünde. Aynı oyuncularla 4-3-3 de mümkün; Sports Mole sağ bekte Karavaev'i öngörüyor. Pedrinho ve Marlon Santos eksik.",
+        "flags": [],
+        "sourceKeys": ["shakhtar", "psv"]
+      }
+    },
+    {
+      "matchId": "bayern-munchen-bodo-glimt-2026-09-10",
+      "editorialId": "bayern-bodo",
+      "kickoff": "2026-09-10T22:00:00+03:00",
+      "home": {
+        "name": "Bayern München",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Manuel Neuer"],
+          ["Konrad Laimer", "Kim Min-jae", "Dayot Upamecano", "Alphonso Davies"],
+          ["Joshua Kimmich", "Aleksandar Pavlović"],
+          ["Michael Olise", "Jamal Musiala", "Luis Díaz"],
+          ["Harry Kane"]
+        ],
+        "note": "Gnabry ve Buchmann eksik. Musiala'nın Kane arkasında başlaması; Olise ve Díaz'ın kanatları paylaşması bekleniyor.",
+        "flags": [],
+        "sourceKeys": ["bayern"]
+      },
+      "away": {
+        "name": "Bodo/Glimt",
+        "formation": "4-3-3",
+        "rows": [
+          ["Nikita Haikin"],
+          ["Fredrik Sjøvold", "Villads Nielsen", "Odin Bjørtuft", "Fredrik Bjørkan"],
+          ["Sondre Auklend", "Patrick Berg", "Sondre Brunstad Fet"],
+          ["Ole Blomberg", "Andreas Helmersen", "Jens Petter Hauge"]
+        ],
+        "note": "Gundersen, Evjen ve Riisnæs eksik. Hauge yeniden antrenmana çıktı; son durumuna göre kanat tercihi değişebilir.",
+        "flags": ["Jens Petter Hauge"],
+        "sourceKeys": ["bayern"]
+      }
+    },
+    {
+      "matchId": "manchester-united-sabah-fa-2026-09-10",
+      "editorialId": "united-sabah",
+      "kickoff": "2026-09-10T22:00:00+03:00",
+      "home": {
+        "name": "Manchester United",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Senne Lammens"],
+          ["Diogo Dalot", "Leny Yoro", "Lisandro Martínez", "Luke Shaw"],
+          ["Kobbie Mainoo", "Youri Tielemans"],
+          ["Bryan Mbeumo", "Bruno Fernandes", "Patrick Dorgu"],
+          ["Benjamin Šeško"]
+        ],
+        "note": "FotMob tahmini esas alındı. Sports Mole; Shaw, Tielemans ve Dorgu yerine Mazraoui, Andrey Santos ve Cunha'yı bekliyor.",
+        "flags": [],
+        "sourceKeys": ["united", "unitedAlt"]
+      },
+      "away": {
+        "name": "Sabah FA",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Stas Pokatilov"],
+          ["Akim Zedadka", "Steve Solvet", "Rəhman Daşdəmirov", "Tymoteusz Puchacz"],
+          ["Umarali Rakhmonaliev", "Ivan Lepinjica"],
+          ["Veljko Simić", "Aleksey Isaev", "Christian Nwachukwu"],
+          ["Joy-Lance Mickels"]
+        ],
+        "note": "FotMob'da Nwachukwu ilk 11'de; Sports Mole, Kaheem Parris'i öne çıkarıyor. Mickels santrfor olarak yerleştirildi. (Kaynakta kulüp adı 'Sabah FK' geçiyor; sitenin fikstür kaydıyla eşleşsin diye burada 'Sabah FA' kullanıldı — aynı kulüp.)",
+        "flags": [],
+        "sourceKeys": ["united", "unitedAlt"]
+      }
+    },
+    {
+      "matchId": "como-rb-leipzig-2026-09-10",
+      "editorialId": "como-leipzig",
+      "kickoff": "2026-09-10T22:00:00+03:00",
+      "home": {
+        "name": "Como",
+        "formation": "4-2-3-1",
+        "rows": [
+          ["Jean Butez"],
+          ["Yan Couto", "Trevoh Chalobah", "Jacobo Ramón", "Álex Valle"],
+          ["Máximo Perrone", "Lucas Da Cunha"],
+          ["Assane Diao", "Nico Paz", "Martin Baturina"],
+          ["Tasos Douvikas"]
+        ],
+        "note": "Douvikas, Moise Kean'e göre ilk 11 için önde tutuluyor. Jayden Addai eksik; Paz hücumun merkezinde.",
+        "flags": [],
+        "sourceKeys": ["como"]
+      },
+      "away": {
+        "name": "RB Leipzig",
+        "formation": "4-3-3",
+        "rows": [
+          ["Maarten Vandevoordt"],
+          ["Ridle Baku", "Willi Orbán", "Maxime Estève", "David Raum"],
+          ["Neil El Aynaoui", "Nicolas Seiwald", "Ezechiel Banzuzi"],
+          ["Tidiam Gomis", "Christopher Nkunku", "Antonio Nusa"]
+        ],
+        "note": "Lukeba'nın durumu şüpheli olduğu için Estève'li tahmin seçildi. Gomis/Bakayoko tercihi değişebilir; Baumgartner ve Reitz eksik.",
+        "flags": [],
+        "sourceKeys": ["leipzig", "leipzigNews", "como"]
+      }
+    },
+    {
+      "matchId": "slavia-praha-lens-2026-09-10",
+      "editorialId": "slavia-lens",
+      "kickoff": "2026-09-10T22:00:00+03:00",
+      "home": {
+        "name": "Slavia Praha",
+        "formation": "3-4-2-1",
+        "rows": [
+          ["Jakub Markovič"],
+          ["Mikuláš Konečný", "Tomáš Vlček", "Štěpán Chaloupek"],
+          ["Samuel Isife", "Wiktor Nowak", "Michal Sadílek", "David Jurásek"],
+          ["Danijel Šturm", "Emmanuel Ayaosi"],
+          ["Tomáš Chorý"]
+        ],
+        "note": "Provod ve Holeš eksik; Zima'nın durumu şüpheli. Chorý'nin yerine Mojmír Chytil'in başlaması da öngörülüyor.",
+        "flags": [],
+        "sourceKeys": ["slavia", "slaviaNews"]
+      },
+      "away": {
+        "name": "Lens",
+        "formation": "3-4-2-1",
+        "rows": [
+          ["Robin Risser"],
+          ["Kyllian Antonio", "Jean-Clair Todibo", "Ganiou"],
+          ["Ruben Aguilar", "Andrija Bulatović", "Mickaël Cuisance", "Michał Skóraś"],
+          ["Florian Thauvin", "Franjo Ivanović"],
+          ["Odsonne Édouard"]
+        ],
+        "note": "Titraoui ve Udol şüpheli. Haidara, Thorgan Hazard ve Sima da ilk 11 adayları; bu maçta kaynaklar arasında belirgin tercih farkı var.",
+        "flags": [],
+        "sourceKeys": ["slavia", "slaviaNews"]
+      }
+    }
+  ]
+}

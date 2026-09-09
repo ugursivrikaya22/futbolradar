@@ -374,6 +374,49 @@
     });
   }
 
+  /**
+   * MUHTEMEL 11 — spor basınından derlenmiş, kaynak gösterilmiş editoryal
+   * tahmin (data/predicted-lineups.json). RESMÎ DEĞİL: sağlayıcıdan gelen
+   * onaylı kadro (matchDetail.lineups) her zaman önceliklidir, bkz.
+   * mdPredictedLineupsHtml. Dosya küçük olduğu için istekleri
+   * loadStaticMatchSources gibi doğrudan /data altından okunur, ayrı bir
+   * API uç noktası açılmaz.
+   */
+  var predictedLineupsPromise = null;
+  var predictedLineupsIndex = Object.create(null); // eager doldurulur; kart rozeti senkron okur
+  var predictedLineupsMeta = { sources: {}, asOf: null };
+  function loadPredictedLineups() {
+    if (!predictedLineupsPromise) {
+      predictedLineupsPromise = fetchJson(DATA_ROOT + "predicted-lineups.json")
+        .then(function (result) {
+          var payload = result.data;
+          var matches = payload && Array.isArray(payload.matches) ? payload.matches : [];
+          predictedLineupsIndex = Object.create(null);
+          matches.forEach(function (entry) {
+            if (entry && entry.matchId) {
+              predictedLineupsIndex[entry.matchId] = entry;
+            }
+          });
+          predictedLineupsMeta = { sources: (payload && payload.sources) || {}, asOf: (payload && payload.asOf) || null };
+          return predictedLineupsMeta;
+        })
+        .catch(function () {
+          return predictedLineupsMeta;
+        });
+    }
+    return predictedLineupsPromise;
+  }
+  // Erkenden başlat: kart rozetleri liste render edilene kadar çoğunlukla
+  // hazır olur (bkz. predictedLineupsIndex). Başarısız olursa rozet
+  // yalnızca hiç görünmez — kritik bir yol değil.
+  if (window.location.protocol !== "file:") {
+    loadPredictedLineups();
+  }
+
+  function findPredictedLineup(matchId) {
+    return (matchId && predictedLineupsIndex[matchId]) || null;
+  }
+
   function loadData(name) {
     var config = RESOURCE_CONFIG[name] || { fallback: name, reportSource: false };
 
@@ -2867,10 +2910,28 @@
     return chips.length ? '<div class="fixture-card-chips">' + chips.join("") + "</div>" : "";
   }
 
+  /**
+   * KART ÜZERİNDEN "MUHTEMEL 11"E ULAŞIM.
+   *
+   * Yalnızca gerçekten veri varken görünür (bkz. app.js:11676 civarındaki
+   * "her kartta aynı boş rozet" uyarısı — burada kural aynı: bilgi taşımayan
+   * durum kartta hiç yer kaplamaz). `predictedLineupsIndex` sayfa açılışında
+   * erkenden başlatılır (loadPredictedLineups); liste kartları genelde ondan
+   * SONRA render edilir, ama yarışı garanti etmek yerine kart yalnızca
+   * rozeti atlar — kritik bir yol değil.
+   */
+  function predictedLineupChipHtml(match) {
+    if (!match || isFinishedMatch(match) || !findPredictedLineup(match.id)) {
+      return "";
+    }
+    return '<div class="fixture-card-chips"><a class="fixture-chip is-lineup" href="' +
+      escapeHtml(matchDetailHref(match)) + '"><i aria-hidden="true"></i>Muhtemel 11</a></div>';
+  }
+
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
     var metrics = fixtureFormHtml(match) + fixtureProbabilityHtml(match);
-    var chips = fixtureLiveChipsHtml(match);
+    var chips = fixtureLiveChipsHtml(match) + predictedLineupChipHtml(match);
 
     return (
       '<article class="fixture-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
@@ -10832,6 +10893,145 @@
     }).join("");
   }
 
+  /**
+   * MUHTEMEL 11 SAHA ÇİZİMİ — TEK TAKIM, KENDİ BAŞINA TUTARLI.
+   *
+   * Veri sözleşmesi (data/predicted-lineups.json): `rows[0]` kaleci, sonraki
+   * hatlar hücuma doğru ilerliyor; her hattın İÇİ takımın KENDİ bakış
+   * açısına göre SAĞDAN SOLA sıralı. Ekranda iki kural birden uygulanır:
+   *
+   *   1. Hat sırası TERS ÇEVRİLİR: en ileri hat DOM'da ÜSTTE, kaleci EN
+   *      ALTTA basılır (bkz. mac-dosyasi üretecindeki .match-special__pitch
+   *      örnekleri — forvet üstte, kaleci altta).
+   *   2. Her hattın İÇİ de TERS ÇEVRİLİR: takım "yukarı" hücum ediyormuş
+   *      gibi çizildiği için kendi sağı ekranın sağına denk düşer; kaynak
+   *      verisi sağdan sola verildiğinden ekran solundan-sağına yazmak için
+   *      diziyi ters çevirmek gerekir.
+   *
+   * İki takım da AYNI kuralla, birbirinden bağımsız iki saha kutusunda
+   * çizilir (mac ortasında "yüz yüze" tek saha değil) — bu, iki takımın
+   * sağ/sol mevkilerini birbirine göre ayna görüntüsü çizme riskini baştan
+   * ortadan kaldırır.
+   */
+  function predictedLineupPitchHtml(side, teamName) {
+    var rows = Array.isArray(side && side.rows) ? side.rows : [];
+    var flags = Array.isArray(side && side.flags) ? side.flags : [];
+    var displayRows = rows.slice().reverse();
+
+    var rowsHtml = displayRows.map(function (row) {
+      var screenOrder = (row || []).slice().reverse();
+      var players = screenOrder.map(function (name) {
+        var flagged = flags.indexOf(name) !== -1;
+        return '<span class="match-special__pitch-player predicted-lineup-player' + (flagged ? " is-flagged" : "") + '">' +
+          escapeHtml(name) +
+          (flagged ? '<i class="predicted-lineup-flag-mark" title="Şüpheli / izlenmesi gereken" aria-hidden="true">!</i>' : "") +
+          "</span>";
+      }).join("");
+      return '<div class="match-special__pitch-row is-' + Math.max(1, Math.min(4, screenOrder.length)) + '">' + players + "</div>";
+    }).join("");
+
+    return '<div class="match-special__pitch predicted-lineup-pitch" role="group" aria-label="' +
+      escapeHtml(displayValue(teamName || (side && side.name)) + " " + displayValue(side && side.formation)) + '">' +
+      rowsHtml + "</div>";
+  }
+
+  function predictedLineupFlagsHtml(side) {
+    var flags = Array.isArray(side && side.flags) ? side.flags : [];
+    if (!flags.length) {
+      return "";
+    }
+    return '<div class="predicted-lineup-flags"><span class="card-kicker">Şüpheli / izlenmesi gereken</span>' +
+      '<ul class="lineup-missing-list">' + flags.map(function (name) {
+        return "<li><span>" + escapeHtml(name) + "</span></li>";
+      }).join("") + "</ul></div>";
+  }
+
+  function predictedLineupSideHtml(side, teamName) {
+    if (!side || !Array.isArray(side.rows) || !side.rows.length) {
+      return "";
+    }
+    return (
+      '<article class="match-intelligence-card predicted-lineup-side">' +
+      '<div class="lineup-summary-head">' +
+      "<h3>" + escapeHtml(teamName || side.name) + (side.formation ? " · " + escapeHtml(side.formation) : "") + "</h3>" +
+      '<span class="lineup-status-badge" data-status="probable">Muhtemel</span>' +
+      "</div>" +
+      predictedLineupPitchHtml(side, teamName) +
+      (side.note ? '<p class="predicted-lineup-note">' + escapeHtml(side.note) + "</p>" : "") +
+      predictedLineupFlagsHtml(side) +
+      "</article>"
+    );
+  }
+
+  function predictedLineupSourceLinksHtml(record) {
+    var sourcesMap = predictedLineupsMeta.sources || {};
+    var keys = [];
+    [record.home, record.away].forEach(function (side) {
+      (Array.isArray(side && side.sourceKeys) ? side.sourceKeys : []).forEach(function (key) {
+        if (keys.indexOf(key) === -1) {
+          keys.push(key);
+        }
+      });
+    });
+
+    var links = keys.map(function (key, index) {
+      var url = sourcesMap[key];
+      return url ? '<a href="' + escapeHtml(url) + '" target="_blank" rel="nofollow noopener noreferrer">Kaynak ' + (index + 1) + "</a>" : "";
+    }).filter(Boolean).join("");
+
+    if (!links) {
+      return "";
+    }
+
+    return (
+      '<footer class="predicted-lineup-sources">' +
+      "<span>Kaynaklar:</span>" + links +
+      (predictedLineupsMeta.asOf ? "<span>Güncelleme: " + escapeHtml(formatUpdatedAt(predictedLineupsMeta.asOf)) + "</span>" : "") +
+      "</footer>"
+    );
+  }
+
+  /**
+   * MUHTEMEL 11 BÖLÜMÜ — YALNIZCA RESMÎ KADRO YOKKEN VE MAÇ BİTMEMİŞKEN.
+   *
+   * Öncelik kuralı burada uygulanır: `detail.lineups` doluysa (sağlayıcıdan
+   * gelen resmî/onaylı kadro — bkz. mdLineupsHtml) bu bölüm hiç basılmaz.
+   * Maç saatinin gelmiş olması tahmini kadroyu resmî yapmaz; bu yüzden
+   * ikinci koşul maçın bitip bitmediğine bakar, saatin geçip geçmediğine
+   * değil — resmî kadro gelmeden biten bir maçta da tahmini kadroyu
+   * göstermeye devam etmenin bir anlamı kalmaz.
+   */
+  function mdPredictedLineupsHtml(detail) {
+    if (Array.isArray(detail.lineups) && detail.lineups.length) {
+      return "";
+    }
+    if (isFinishedMatch(detail)) {
+      return "";
+    }
+
+    var record = findPredictedLineup(detail.id);
+    if (!record) {
+      return "";
+    }
+
+    var home = predictedLineupSideHtml(record.home, detail.homeTeam);
+    var away = predictedLineupSideHtml(record.away, detail.awayTeam);
+    if (!home && !away) {
+      return "";
+    }
+
+    return mdSection(
+      "predicted-lineups",
+      "Muhtemel 11",
+      "Kaynak gösterilmiş tahmin — resmî ilk 11 değil",
+      '<p class="predicted-lineup-disclaimer"><span class="tag soft">Muhtemel 11 — Resmî Değil</span> ' +
+      "Bu kadrolar spor basınından derlenmiştir; resmî ilk 11 sağlayıcıdan geldiğinde bu bölümün yerini otomatik olarak " +
+      '"Kadrolar ve diziliş" alır.</p>' +
+      '<div class="predicted-lineup-grid">' + home + away + "</div>" +
+      predictedLineupSourceLinksHtml(record)
+    );
+  }
+
   function mdLineupsHtml(detail) {
     var lineups = detail.lineups || [];
     var coaches = detail.coaches || {};
@@ -11529,6 +11729,7 @@
       (detail.summary ? '<p class="md-lead">' + escapeHtml(detail.summary) + "</p>" : "") +
       mdTimelineHtml(detail) +
       mdLineupsHtml(detail) +
+      mdPredictedLineupsHtml(detail) +
       mdStatisticsHtml(detail) +
       mdAnalysisHtml(detail) +
       mdPostMatchHtml(detail) +
@@ -11572,7 +11773,8 @@
       // düşer, sonsuz "yükleniyor" görmez.
       withDeadline(Promise.all([
         loadData("matchDetail"),
-        loadData("postMatchReports").catch(function () { return null; })
+        loadData("postMatchReports").catch(function () { return null; }),
+        loadPredictedLineups()
       ]), PROVIDER_LOAD_DEADLINE_MS).then(function (results) {
         var data = results[0];
         postMatchRecords(results[1]).forEach(function (record) {
