@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-09T00:06:47.989Z",
+  "updatedAt": "2026-09-09T04:30:37.112Z",
   "matchCount": 1108,
   "records": [
     {
@@ -1005,7 +1005,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coveragePercent": 50,
       "dataSources": {
         "score": {
           "present": true,
@@ -1013,9 +1013,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 13
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -1035,15 +1035,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 13,
+        "events": 0,
         "statistics": 15,
         "lineups": 0,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "lineups",
           "label": "Kadrolar"
@@ -1053,11 +1057,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "cbe8b39c5434c6fe",
-      "fingerprint": "cbe8b39c5434c6fe",
+      "analysisSourceHash": "ccd68f77d70e5bc3",
+      "fingerprint": "ccd68f77d70e5bc3",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1069,7 +1073,7 @@
       "reportUrl": "./mac-raporu/blackburn-sheffield-utd-2026-09-08.html",
       "digest": {
         "headline": "Sheffield Utd, Blackburn'u 2-1 yendi",
-        "paragraph": "Ewood Park'ta oynanan Championship maçını Sheffield Utd 2-1 kazandı; Blackburn sahadan puansız ayrıldı. Golleri 20. dakikada Kristi Montgomery (Blackburn), 35. dakikada Thomas Cannon (Sheffield Utd), 44. dakikada Sydie Peck (Sheffield Utd) kaydetti.",
+        "paragraph": "Ewood Park'ta oynanan Championship maçını Sheffield Utd 2-1 kazandı; Blackburn sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Sheffield Utd",
           "loser": "Blackburn",
@@ -1085,98 +1089,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "20'",
-              "team": "Blackburn",
-              "type": "Gol",
-              "detail": "Kristi Montgomery",
-              "pivotal": true
-            },
-            {
-              "minute": "35'",
-              "team": "Sheffield Utd",
-              "type": "Gol",
-              "detail": "Thomas Cannon",
-              "pivotal": true
-            },
-            {
-              "minute": "44'",
-              "team": "Sheffield Utd",
-              "type": "Gol",
-              "detail": "Sydie Peck",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Sheffield Utd",
-              "type": "Sarı kart",
-              "detail": "Japhet Tanganga",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Blackburn",
-              "type": "Oyuncu değişikliği",
-              "detail": "Todd Cantwell",
-              "decisive": false
-            },
-            {
-              "minute": "83'",
-              "team": "Blackburn",
-              "type": "Oyuncu değişikliği",
-              "detail": "Sam Morsy",
-              "decisive": false
-            },
-            {
-              "minute": "83'",
-              "team": "Sheffield Utd",
-              "type": "Oyuncu değişikliği",
-              "detail": "Ben Brereton",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Sydie Peck",
-              "team": "Sheffield Utd",
-              "contribution": "44' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Thomas Cannon",
-              "team": "Sheffield Utd",
-              "contribution": "35' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Kristi Montgomery",
-              "team": "Blackburn",
-              "contribution": "20' gol · 59' sarı kart",
-              "impact": "orta"
-            },
-            {
-              "name": "Japhet Tanganga",
-              "team": "Sheffield Utd",
-              "contribution": "76' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -1185,36 +1110,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "20' Blackburn — Kristi Montgomery: gol",
-            "35' Sheffield Utd — Thomas Cannon: gol",
-            "44' Sheffield Utd — Sydie Peck: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
-            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "45' Sheffield Utd değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "58' Sheffield Utd değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "58' Sheffield Utd değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Sheffield Utd değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "82' Blackburn değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "83' Blackburn değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
@@ -1315,20 +1224,13 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
-        "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -1360,10 +1262,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -1371,9 +1273,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 10
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -1393,24 +1295,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 10,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "0241a077a886456b",
-      "fingerprint": "0241a077a886456b",
+      "analysisSourceHash": "3d4212ea2c62285f",
+      "fingerprint": "3d4212ea2c62285f",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
-      "generatedAt": "2026-09-09T00:06:47.878Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1422,7 +1329,7 @@
       "reportUrl": "./mac-raporu/cardiff-stoke-city-2026-09-08.html",
       "digest": {
         "headline": "Cardiff ile Stoke City 1-1 berabere kaldı",
-        "paragraph": "Cardiff ile Stoke City, Cardiff City Stadium'da oynanan Championship karşılaşmasında 1-1 berabere kaldı. Golleri 22. dakikada Ben Johnson (Stoke City), 63. dakikada Joel Colwill (Cardiff) kaydetti.",
+        "paragraph": "Cardiff ile Stoke City, Cardiff City Stadium'da oynanan Championship karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -1438,77 +1345,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "22'",
-              "team": "Stoke City",
-              "type": "Gol",
-              "detail": "Ben Johnson",
-              "pivotal": true
-            },
-            {
-              "minute": "63'",
-              "team": "Cardiff",
-              "type": "Gol",
-              "detail": "Joel Colwill",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 2 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "81'",
-              "team": "Stoke City",
-              "type": "Sarı kart",
-              "detail": "Luke Graham",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Cardiff",
-              "type": "Oyuncu değişikliği",
-              "detail": "Christopher Willock",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Ben Johnson",
-              "team": "Stoke City",
-              "contribution": "22' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Joel Colwill",
-              "team": "Cardiff",
-              "contribution": "63' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Ben Wilmot",
-              "team": "Stoke City",
-              "contribution": "27' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Luke Graham",
-              "team": "Stoke City",
-              "contribution": "81' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -1519,31 +1368,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "22' Stoke City — Ben Johnson: gol"
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
-            "63' Cardiff — Joel Colwill: gol",
-            "İkinci yarı içinde 5 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Cardiff maça 4-2-3-1 dizilişiyle başladı.",
-            "Stoke City maça 3-5-2 dizilişiyle başladı.",
-            "59' Stoke City değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "59' Stoke City değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "69' Stoke City değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "69' Stoke City değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Stoke City maça 3-5-2 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1555,7 +1393,7 @@
               "formation": "3-5-2"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1655,21 +1493,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -1704,7 +1536,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coveragePercent": 50,
       "dataSources": {
         "score": {
           "present": true,
@@ -1712,9 +1544,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 14
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -1734,15 +1566,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 14,
+        "events": 0,
         "statistics": 15,
         "lineups": 0,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "lineups",
           "label": "Kadrolar"
@@ -1752,11 +1588,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d1f136637f32e923",
-      "fingerprint": "d1f136637f32e923",
+      "analysisSourceHash": "24214c5387e5d15d",
+      "fingerprint": "24214c5387e5d15d",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
-      "generatedAt": "2026-09-09T00:06:47.878Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1768,7 +1604,7 @@
       "reportUrl": "./mac-raporu/southampton-swansea-2026-09-08.html",
       "digest": {
         "headline": "Southampton, Swansea'yı 3-1 yendi",
-        "paragraph": "Championship maçını Southampton 3-1 kazandı; Swansea sahadan puansız ayrıldı. Golleri 9. dakikada Finn Azaz (Southampton), 33. dakikada Cyle Larin (Southampton), 52. dakikada Zan Vipotnik (Swansea), 78. dakikada Léo Scienza (Southampton) kaydetti.",
+        "paragraph": "Championship maçını Southampton 3-1 kazandı; Swansea sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Southampton",
           "loser": "Swansea",
@@ -1781,145 +1617,42 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "9'",
-              "team": "Southampton",
-              "type": "Gol",
-              "detail": "Finn Azaz",
-              "pivotal": true
-            },
-            {
-              "minute": "33'",
-              "team": "Southampton",
-              "type": "Gol",
-              "detail": "Cyle Larin",
-              "pivotal": true
-            },
-            {
-              "minute": "52'",
-              "team": "Swansea",
-              "type": "Penaltı",
-              "detail": "Zan Vipotnik",
-              "pivotal": true
-            },
-            {
-              "minute": "78'",
-              "team": "Southampton",
-              "type": "Gol",
-              "detail": "Léo Scienza",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Léo Scienza).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Southampton",
-              "type": "Oyuncu değişikliği",
-              "detail": "Tom Fellows",
-              "decisive": false
-            },
-            {
-              "minute": "78'",
-              "team": "Swansea",
-              "type": "Oyuncu değişikliği",
-              "detail": "Moussa Kounfolo Yeo",
-              "decisive": false
-            },
-            {
-              "minute": "78'",
-              "team": "Southampton",
-              "type": "Gol",
-              "detail": "Léo Scienza",
-              "decisive": true
-            },
-            {
-              "minute": "85'",
-              "team": "Southampton",
-              "type": "Oyuncu değişikliği",
-              "detail": "Cyle Larin",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Cyle Larin",
-              "team": "Southampton",
-              "contribution": "33' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Finn Azaz",
-              "team": "Southampton",
-              "contribution": "9' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Léo Scienza",
-              "team": "Southampton",
-              "contribution": "78' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Zan Vipotnik",
-              "team": "Swansea",
-              "contribution": "52' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "9' Southampton — Finn Azaz: gol",
-            "33' Southampton — Cyle Larin: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
-            "52' Swansea — Zan Vipotnik: penaltı",
-            "78' Southampton — Léo Scienza: gol",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "45' Swansea değişikliği (Substitution 1). Değişiklikten sonra Swansea adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "63' Swansea değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "63' Swansea değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "70' Swansea değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "76' Southampton değişikliği (Substitution 1). Değişiklikten sonra Southampton adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "78' Swansea değişikliği (Substitution 5). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
@@ -1932,8 +1665,7 @@
             "Southampton daha çok şut denedi (16-10)."
           ],
           "improvements": [
-            "Swansea şut isabetinde geride kaldı (%20); bitiricilik geliştirilmesi gereken alan.",
-            "Swansea son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Swansea şut isabetinde geride kaldı (%20); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Southampton sahadan 2 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -2021,20 +1753,13 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
-        "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2066,10 +1791,10 @@
       "winner": "Watford",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2077,9 +1802,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 15
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2099,24 +1824,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 15,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 39
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ff589bf1882481eb",
-      "fingerprint": "ff589bf1882481eb",
+      "analysisSourceHash": "b78459ce8f3e7f5c",
+      "fingerprint": "b78459ce8f3e7f5c",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2128,7 +1858,7 @@
       "reportUrl": "./mac-raporu/watford-preston-2026-09-08.html",
       "digest": {
         "headline": "Watford, Preston'u 2-1 yendi",
-        "paragraph": "Vicarage Road'da oynanan Championship maçını Watford 2-1 kazandı; Preston sahadan puansız ayrıldı. Golleri 5. dakikada Callum Lang (Preston), 69. dakikada Edo Kayembe (Watford), 76. dakikada Mamadou Doumbia (Watford) kaydetti.",
+        "paragraph": "Vicarage Road'da oynanan Championship maçını Watford 2-1 kazandı; Preston sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Watford",
           "loser": "Preston",
@@ -2144,98 +1874,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "5'",
-              "team": "Preston",
-              "type": "Gol",
-              "detail": "Callum Lang",
-              "pivotal": true
-            },
-            {
-              "minute": "69'",
-              "team": "Watford",
-              "type": "Gol",
-              "detail": "Edo Kayembe",
-              "pivotal": true
-            },
-            {
-              "minute": "76'",
-              "team": "Watford",
-              "type": "Gol",
-              "detail": "Mamadou Doumbia",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Mamadou Doumbia), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "Preston",
-              "type": "Oyuncu değişikliği",
-              "detail": "Callum Lang",
-              "decisive": false
-            },
-            {
-              "minute": "75'",
-              "team": "Preston",
-              "type": "Oyuncu değişikliği",
-              "detail": "Leo Leroy",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Watford",
-              "type": "Gol",
-              "detail": "Mamadou Doumbia",
-              "decisive": true
-            },
-            {
-              "minute": "82'",
-              "team": "Preston",
-              "type": "Oyuncu değişikliği",
-              "detail": "Alfie Devine",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Callum Lang",
-              "team": "Preston",
-              "contribution": "5' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Edo Kayembe",
-              "team": "Watford",
-              "contribution": "69' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Mamadou Doumbia",
-              "team": "Watford",
-              "contribution": "76' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Andrija Vukčević",
-              "team": "Preston",
-              "contribution": "62' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -2246,33 +1897,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "5' Preston — Callum Lang: gol",
-            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
-            "69' Watford — Edo Kayembe: gol",
-            "76' Watford — Mamadou Doumbia: gol",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Watford maça 4-2-3-1 dizilişiyle başladı.",
-            "Preston maça 5-3-2 dizilişiyle başladı.",
-            "45' Watford değişikliği (Substitution 1). Değişiklikten sonra Watford adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Watford değişikliği (Substitution 2). Değişiklikten sonra Watford adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Watford değişikliği (Substitution 3). Değişiklikten sonra Watford adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "61' Watford değişikliği (Substitution 4). Değişiklikten sonra Watford adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Preston maça 5-3-2 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2284,7 +1922,7 @@
               "formation": "5-3-2"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2297,8 +1935,7 @@
             "Preston daha çok şut denedi (15-18)."
           ],
           "improvements": [
-            "Preston şut isabetinde geride kaldı (%33); bitiricilik geliştirilmesi gereken alan.",
-            "Preston son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Preston şut isabetinde geride kaldı (%33); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Watford sahadan 1 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -2386,21 +2023,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2432,10 +2063,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2443,9 +2074,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 15
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2465,24 +2096,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 15,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "197899c158620593",
-      "fingerprint": "197899c158620593",
+      "analysisSourceHash": "3ecc2519176469d0",
+      "fingerprint": "3ecc2519176469d0",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2494,7 +2130,7 @@
       "reportUrl": "./mac-raporu/wrexham-burnley-2026-09-08.html",
       "digest": {
         "headline": "Wrexham ile Burnley 1-1 berabere kaldı",
-        "paragraph": "Wrexham ile Burnley, Racecourse Ground'da oynanan Championship karşılaşmasında 1-1 berabere kaldı. Golleri 26. dakikada Zeki Amdouni (Burnley), 55. dakikada Jacques Ekomié (Wrexham) kaydetti.",
+        "paragraph": "Wrexham ile Burnley, Racecourse Ground'da oynanan Championship karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -2510,91 +2146,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "26'",
-              "team": "Burnley",
-              "type": "Gol",
-              "detail": "Zeki Amdouni",
-              "pivotal": true
-            },
-            {
-              "minute": "55'",
-              "team": "Wrexham",
-              "type": "Gol",
-              "detail": "Jacques Ekomié",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "78'",
-              "team": "Burnley",
-              "type": "Oyuncu değişikliği",
-              "detail": "Max Alleyne",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "Wrexham",
-              "type": "Sarı kart",
-              "detail": "Dominic Hyam",
-              "decisive": false
-            },
-            {
-              "minute": "85'",
-              "team": "Wrexham",
-              "type": "Oyuncu değişikliği",
-              "detail": "Jacques Ekomié",
-              "decisive": false
-            },
-            {
-              "minute": "86'",
-              "team": "Burnley",
-              "type": "Sarı kart",
-              "detail": "Lucas Pires Silva",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Jacques Ekomié",
-              "team": "Wrexham",
-              "contribution": "55' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Zeki Amdouni",
-              "team": "Burnley",
-              "contribution": "26' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Aaron Ramsey",
-              "team": "Burnley",
-              "contribution": "65' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Dominic Hyam",
-              "team": "Wrexham",
-              "contribution": "84' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -2604,32 +2168,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
-            "26' Burnley — Zeki Amdouni: gol",
-            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (10 olay).",
-            "55' Wrexham — Jacques Ekomié: gol",
-            "İkinci yarı içinde 5 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Wrexham maça 3-4-2-1 dizilişiyle başladı.",
-            "Burnley maça 4-2-3-1 dizilişiyle başladı.",
-            "30' Wrexham değişikliği (Substitution 1). Değişiklikten sonra Wrexham adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Wrexham değişikliği (Substitution 2). Değişiklikten sonra Wrexham adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Wrexham değişikliği (Substitution 3). Değişiklikten sonra Wrexham adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "61' Wrexham değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Burnley maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2641,7 +2193,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2741,20 +2293,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2786,10 +2332,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2797,9 +2343,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 18
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2819,24 +2365,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 18,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 43
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7a4558ff22920ed7",
-      "fingerprint": "7a4558ff22920ed7",
+      "analysisSourceHash": "af0a4b7253c654b2",
+      "fingerprint": "af0a4b7253c654b2",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2848,7 +2399,7 @@
       "reportUrl": "./mac-raporu/nec-nijmegen-excelsior-2026-09-08.html",
       "digest": {
         "headline": "NEC Nijmegen ile Excelsior 2-2 berabere kaldı",
-        "paragraph": "Stadion de Goffert'te oynanan Eredivisie maçında NEC Nijmegen ile Excelsior birbirini geçemedi: 2-2. Golleri 10. dakikada Adam Tahaui (NEC Nijmegen), 43. dakikada David Garden (Excelsior), 73. dakikada Valentin Sulzbacher (Excelsior), 90+2. dakikada Noe Lebreton (NEC Nijmegen) kaydetti.",
+        "paragraph": "Stadion de Goffert'te oynanan Eredivisie maçında NEC Nijmegen ile Excelsior birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -2861,108 +2412,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "10'",
-              "team": "NEC Nijmegen",
-              "type": "Gol",
-              "detail": "Adam Tahaui",
-              "pivotal": true
-            },
-            {
-              "minute": "43'",
-              "team": "Excelsior",
-              "type": "Gol",
-              "detail": "David Garden",
-              "pivotal": true
-            },
-            {
-              "minute": "73'",
-              "team": "Excelsior",
-              "type": "Gol",
-              "detail": "Valentin Sulzbacher",
-              "pivotal": true
-            },
-            {
-              "minute": "90+2'",
-              "team": "NEC Nijmegen",
-              "type": "Gol",
-              "detail": "Noe Lebreton",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Noe Lebreton).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "81'",
-              "team": "Excelsior",
-              "type": "Oyuncu değişikliği",
-              "detail": "Ilano Silva Timas",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "NEC Nijmegen",
-              "type": "Oyuncu değişikliği",
-              "detail": "Substitution 5",
-              "decisive": false
-            },
-            {
-              "minute": "90+2'",
-              "team": "NEC Nijmegen",
-              "type": "Gol",
-              "detail": "Noe Lebreton",
-              "decisive": true
-            },
-            {
-              "minute": "90+5'",
-              "team": "Excelsior",
-              "type": "Sarı kart",
-              "detail": "Valentin Sulzbacher",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Adam Tahaui",
-              "team": "NEC Nijmegen",
-              "contribution": "10' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "David Garden",
-              "team": "Excelsior",
-              "contribution": "43' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Noe Lebreton",
-              "team": "NEC Nijmegen",
-              "contribution": "90+2' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Valentin Sulzbacher",
-              "team": "Excelsior",
-              "contribution": "73' gol · 90+5' sarı kart",
-              "impact": "orta"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -2973,34 +2438,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
-            "10' NEC Nijmegen — Adam Tahaui: gol",
-            "43' Excelsior — David Garden: gol",
-            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
-            "73' Excelsior — Valentin Sulzbacher: gol",
-            "90+2' NEC Nijmegen — Noe Lebreton: gol",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "NEC Nijmegen maça 3-4-2-1 dizilişiyle başladı.",
-            "Excelsior maça 3-4-3 dizilişiyle başladı.",
-            "45' NEC Nijmegen değişikliği (Substitution 1). Değişiklikten sonra NEC Nijmegen adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' NEC Nijmegen değişikliği (Substitution 2). Değişiklikten sonra NEC Nijmegen adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Excelsior değişikliği (Substitution 1). Değişiklikten sonra Excelsior adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "63' NEC Nijmegen değişikliği (Substitution 3). Değişiklikten sonra NEC Nijmegen adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Excelsior maça 3-4-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -3012,7 +2463,7 @@
               "formation": "3-4-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3112,21 +2563,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -3158,10 +2603,10 @@
       "winner": "AEK Athens FC",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -3169,9 +2614,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 12
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -3191,24 +2636,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 12,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 43
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "f830e35ced263c9b",
-      "fingerprint": "f830e35ced263c9b",
+      "analysisSourceHash": "7090f96a576b192f",
+      "fingerprint": "7090f96a576b192f",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-09T00:06:47.878Z",
-      "generatedAt": "2026-09-09T00:06:47.878Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3220,7 +2670,7 @@
       "reportUrl": "./mac-raporu/aek-athens-fc-lask-linz-2026-09-08.html",
       "digest": {
         "headline": "AEK Athens FC, Lask Linz'i 1-0 yendi",
-        "paragraph": "Allwyn Arena'da oynanan UEFA Champions League maçını AEK Athens FC 1-0 kazandı; Lask Linz sahadan puansız ayrıldı. Tek golü 21. dakikada Răzvan Marin (AEK Athens FC) kaydetti.",
+        "paragraph": "Allwyn Arena'da oynanan UEFA Champions League maçını AEK Athens FC 1-0 kazandı; Lask Linz sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "AEK Athens FC",
           "loser": "Lask Linz",
@@ -3233,94 +2683,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "21'",
-              "team": "AEK Athens FC",
-              "type": "Gol",
-              "detail": "Răzvan Marin",
-              "pivotal": true
-            },
-            {
-              "minute": "65'",
-              "team": "AEK Athens FC",
-              "type": "Gol",
-              "detail": "Luka Jovic",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "80'",
-              "team": "Lask Linz",
-              "type": "Sarı kart",
-              "detail": "Andres Andrade",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "AEK Athens FC",
-              "type": "Oyuncu değişikliği",
-              "detail": "Luka Jovic",
-              "decisive": false
-            },
-            {
-              "minute": "90+1'",
-              "team": "AEK Athens FC",
-              "type": "Oyuncu değişikliği",
-              "detail": "Aboubakary Koita",
-              "decisive": false
-            },
-            {
-              "minute": "90+1'",
-              "team": "AEK Athens FC",
-              "type": "Oyuncu değişikliği",
-              "detail": "Lovro Majer",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Răzvan Marin",
-              "team": "AEK Athens FC",
-              "contribution": "21' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Luka Jovic",
-              "team": "AEK Athens FC",
-              "contribution": "40' sarı kart · 65' gol",
-              "impact": "orta"
-            },
-            {
-              "name": "Andres Andrade",
-              "team": "Lask Linz",
-              "contribution": "80' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "M. Nikolić",
-              "team": "AEK Athens FC",
-              "contribution": "11' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -3330,30 +2708,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "21' AEK Athens FC — Răzvan Marin: gol"
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
-            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "AEK Athens FC maça 4-4-2 dizilişiyle başladı.",
-            "Lask Linz maça 3-1-4-2 dizilişiyle başladı.",
-            "65' Lask Linz değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "65' Lask Linz değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "74' Lask Linz değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "82' AEK Athens FC değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Lask Linz maça 3-1-4-2 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -3365,7 +2733,7 @@
               "formation": "3-1-4-2"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3466,20 +2834,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -3511,10 +2873,10 @@
       "winner": "Aston Villa",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -3522,9 +2884,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 21
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -3544,24 +2906,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 21,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 44
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "679d9c5949093e91",
-      "fingerprint": "679d9c5949093e91",
+      "analysisSourceHash": "c6bb875534190776",
+      "fingerprint": "c6bb875534190776",
       "analysisGeneratedAt": "2026-09-08T21:51:06.994Z",
-      "analysisUpdatedAt": "2026-09-08T21:51:06.994Z",
-      "generatedAt": "2026-09-08T21:51:06.994Z",
+      "analysisUpdatedAt": "2026-09-09T04:30:37.059Z",
+      "generatedAt": "2026-09-09T04:30:37.059Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3573,7 +2940,7 @@
       "reportUrl": "./mac-raporu/club-brugge-kv-aston-villa-2026-09-08.html",
       "digest": {
         "headline": "Aston Villa, Club Brugge KV'i 3-2 yendi",
-        "paragraph": "Aston Villa, Jan Breydel Stadion'da oynanan UEFA Champions League karşılaşmasında Club Brugge KV'i 3-2 mağlup etti. Golleri 11. dakikada John McGinn (Aston Villa), 19. dakikada Hugo Vetlesen (Club Brugge KV), 22. dakikada Emiliano Buendía (Aston Villa), 43. dakikada Nicolas Jackson (Aston Villa), 61. dakikada Nicolo Tresoldi (Club Brugge KV) kaydetti.",
+        "paragraph": "Aston Villa, Jan Breydel Stadion'da oynanan UEFA Champions League karşılaşmasında Club Brugge KV'i 3-2 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Aston Villa",
           "loser": "Club Brugge KV",
@@ -3589,112 +2956,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "11'",
-              "team": "Aston Villa",
-              "type": "Gol",
-              "detail": "John McGinn",
-              "pivotal": true
-            },
-            {
-              "minute": "19'",
-              "team": "Club Brugge KV",
-              "type": "Gol",
-              "detail": "Hugo Vetlesen",
-              "pivotal": true
-            },
-            {
-              "minute": "22'",
-              "team": "Aston Villa",
-              "type": "Gol",
-              "detail": "Emiliano Buendía",
-              "pivotal": true
-            },
-            {
-              "minute": "60'",
-              "team": "Club Brugge KV",
-              "type": "Penaltı",
-              "detail": "Joaquin Seys",
-              "pivotal": true
-            },
-            {
-              "minute": "61'",
-              "team": "Club Brugge KV",
-              "type": "Penaltı",
-              "detail": "Nicolo Tresoldi",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 8 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "77'",
-              "team": "Club Brugge KV",
-              "type": "Oyuncu değişikliği",
-              "detail": "Hugo Vetlesen",
-              "decisive": false
-            },
-            {
-              "minute": "77'",
-              "team": "Club Brugge KV",
-              "type": "Oyuncu değişikliği",
-              "detail": "Hans Vanaken",
-              "decisive": false
-            },
-            {
-              "minute": "78'",
-              "team": "Aston Villa",
-              "type": "Sarı kart",
-              "detail": "John McGinn",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Aston Villa",
-              "type": "Oyuncu değişikliği",
-              "detail": "Nicolas Jackson",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Emiliano Buendía",
-              "team": "Aston Villa",
-              "contribution": "22' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Hugo Vetlesen",
-              "team": "Club Brugge KV",
-              "contribution": "19' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Nicolas Jackson",
-              "team": "Aston Villa",
-              "contribution": "43' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Nicolo Tresoldi",
-              "team": "Club Brugge KV",
-              "contribution": "61' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -3705,35 +2979,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
-            "11' Aston Villa — John McGinn: gol",
-            "19' Club Brugge KV — Hugo Vetlesen: gol",
-            "22' Aston Villa — Emiliano Buendía: gol",
-            "43' Aston Villa — Nicolas Jackson: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 4
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
-            "61' Club Brugge KV — Nicolo Tresoldi: penaltı",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Club Brugge KV maça 4-2-3-1 dizilişiyle başladı.",
-            "Aston Villa maça 4-2-3-1 dizilişiyle başladı.",
-            "45' Club Brugge KV değişikliği (Substitution 1). Değişiklikten sonra Club Brugge KV adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "68' Aston Villa değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "68' Aston Villa değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "68' Aston Villa değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Aston Villa maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -3745,7 +3004,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3846,21 +3105,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
