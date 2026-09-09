@@ -34,6 +34,24 @@ async function until(check, message, timeout = 5000) {
       // Destination/content assertions below own navigation waiting; third-party
       // images must not hold an otherwise completed click until window.load.
       const click = async locator => touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
+      async function swipeRail(rail, direction) {
+        await rail.scrollIntoViewIfNeeded();
+        const box = await rail.boundingBox();
+        const left = Math.max(24, box.x + 24);
+        const right = Math.min(viewport.width - 24, box.x + box.width - 24);
+        const y = Math.max(130, Math.min(viewport.height - 100, box.y + box.height / 2));
+        const start = direction > 0 ? right : left;
+        const end = direction > 0 ? left : right;
+        const input = await context.newCDPSession(page);
+        try {
+          await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: start, y }] });
+          for (let step = 1; step <= 12; step++) {
+            await input.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: start + (end - start) * step / 12, y }] });
+            await delay(25);
+          }
+          await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        } finally { await input.detach(); }
+      }
       async function open(file) {
         const response = await page.goto(new URL(file, base + '/').href, { waitUntil: 'domcontentloaded' });
         assert.ok(response.ok(), file + ' HTTP ' + response.status());
@@ -217,6 +235,13 @@ async function until(check, message, timeout = 5000) {
             if (!await next.count()) continue;
             const overflows = await rail.evaluate(e => e.scrollWidth > e.clientWidth + 3);
             if (!overflows) { assert.equal(await next.isDisabled(), true); continue; }
+            if (touch && !await next.isVisible()) {
+              await swipeRail(rail, 1);
+              await until(() => rail.evaluate(e => e.scrollLeft > 0), 'Touch swipe did not scroll the rail');
+              await swipeRail(rail, -1);
+              await until(() => rail.evaluate(e => e.scrollLeft < 3), 'Reverse swipe did not return the rail');
+              continue;
+            }
             await click(next);
             await until(() => rail.evaluate(e => e.scrollLeft > 0), 'Slider next did not scroll');
             await click(slider.locator('[data-slider-prev]'));
@@ -233,7 +258,8 @@ async function until(check, message, timeout = 5000) {
         });
         await test(locale + ' news and column cards', async () => {
           await open(home);
-          await navigate(page.locator('.news-ticker-all').first());
+          const tickerAll = page.locator('.news-ticker-all').first();
+          await navigate(await tickerAll.isVisible() ? tickerAll : page.locator('main a.section-link[href$="' + (en ? 'news.html' : 'haberler.html') + '"]').first());
           await open(en ? 'en/news.html' : 'haberler.html');
           const news = page.locator('main a[href*="/haber/"], main a[href*="haber/"]').first();
           assert.ok(await news.count(), 'No news article route');

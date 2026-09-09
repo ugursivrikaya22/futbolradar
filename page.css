@@ -14731,6 +14731,22 @@ table {
   .slider-nav {
     display: none;
   }
+
+  /* Keep the enlarged touch targets inside the viewport. The dots occupy
+     their own row so the pause/arrow buttons cannot be pushed off-screen. */
+  .featured-carousel-nav {
+    flex-wrap: wrap;
+  }
+  .featured-carousel-dots {
+    flex: 0 0 100%;
+    order: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .featured-carousel-arrow {
+    flex: 0 0 44px;
+  }
 }
 
 /* --- Hero'daki öne çıkan maç kabı -------------------------------------------
