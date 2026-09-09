@@ -4027,6 +4027,7 @@
   // Reuse ICU's formatter across match sorting/filtering and live refreshes.
   // Constructing it for every comparison can block the browser for seconds.
   var istanbulDayFormatter = null;
+  var istanbulDayCache = new Map();
   function istanbulDayOf(value) {
     var raw = String(value || "");
     if (!raw) {
@@ -4042,6 +4043,9 @@
       return raw.slice(0, 10);
     }
 
+    var timestamp = parsed.getTime();
+    if (istanbulDayCache.has(timestamp)) return istanbulDayCache.get(timestamp);
+
     if (!istanbulDayFormatter) {
       istanbulDayFormatter = new Intl.DateTimeFormat("en-CA", {
         timeZone: "Europe/Istanbul",
@@ -4050,7 +4054,10 @@
         day: "2-digit"
       });
     }
-    return istanbulDayFormatter.format(parsed);
+    var day = istanbulDayFormatter.format(parsed);
+    if (istanbulDayCache.size >= 4096) istanbulDayCache.clear();
+    istanbulDayCache.set(timestamp, day);
+    return day;
   }
 
   var DAILY_HEADLINE_LIMIT = 3;
