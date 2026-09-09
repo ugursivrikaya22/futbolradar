@@ -471,7 +471,8 @@ function enforceRateLimit(req, res, options) {
   const windowMs = Math.max(1000, Number(options && options.windowMs) || 60000);
   const limit = Math.max(1, Math.min(1000, Number(options && options.limit) || 120));
   const pathname = new URL(req.url || "/api", "http://localhost").pathname;
-  const key = `${pathname}:${getClientIp(req)}`;
+  const bucket = options && options.bucket ? String(options.bucket) : "";
+  const key = `${pathname}:${getClientIp(req)}${bucket ? ":" + bucket : ""}`;
   const current = rateLimitStore.get(key);
   const entry = !current || current.resetAt <= now ? { count: 0, resetAt: now + windowMs } : current;
   entry.count += 1;

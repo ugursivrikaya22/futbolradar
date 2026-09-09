@@ -116,7 +116,11 @@ async function handleLiveScoreStream(req, res) {
     res.setHeader("Allow", "GET, HEAD, POST, OPTIONS");
     return sendError(res, 405, "Yontem desteklenmiyor.", "METHOD_NOT_ALLOWED", "live-score-stream");
   }
-  if (enforceRateLimit(req, res, { limit: method === "POST" ? 120 : 30, windowMs: 60000 })) return undefined;
+  if (enforceRateLimit(req, res, {
+    limit: method === "POST" ? 120 : 30,
+    windowMs: 60000,
+    bucket: method === "POST" ? "render-timing" : "stream-connections"
+  })) return undefined;
   return method === "POST" ? recordClientTiming(req, res) : openStream(req, res);
 }
 

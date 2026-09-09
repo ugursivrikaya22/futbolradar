@@ -8,6 +8,7 @@ const base = process.env.AUDIT_BASE_URL || 'http://127.0.0.1:4187';
 const results = [];
 const reportFile = process.env.AUDIT_REPORT || 'outputs/clickable/results.json';
 let server;
+let scenarioNumber = 0;
 const delay = ms => new Promise(r => setTimeout(r, ms));
 async function until(check, message, timeout = 5000) {
   const end = Date.now() + timeout;
@@ -80,6 +81,12 @@ async function until(check, message, timeout = 5000) {
         // Each flow owns a page; back navigation is still exercised within it.
         // Closing it releases decoded images and timers from previous flows.
         if (page) await page.close();
+        // Each independent scenario represents a separate preview client.
+        // Keep actual per-client rate limits active; never send synthetic
+        // forwarding headers to a deployed host.
+        if (['127.0.0.1', 'localhost', '[::1]'].includes(new URL(base).hostname)) {
+          await context.setExtraHTTPHeaders({ 'x-forwarded-for': '192.0.2.' + (++scenarioNumber) });
+        }
         page = await context.newPage();
         page.setDefaultTimeout(15000);
         page.setDefaultNavigationTimeout(30000);
@@ -261,8 +268,13 @@ async function until(check, message, timeout = 5000) {
             if (touch && !await next.isVisible()) {
               await swipeRail(rail, 1);
               await until(() => rail.evaluate(e => e.scrollLeft > 0), 'Touch swipe did not scroll the rail: ' + await rail.getAttribute('id'));
+              const forwardPosition = await rail.evaluate(e => e.scrollLeft);
               await swipeRail(rail, -1);
-              await until(() => rail.evaluate(e => e.scrollLeft < 3), 'Reverse swipe did not return the rail: ' + await rail.getAttribute('id'));
+              const reversePosition = await rail.evaluate(e => e.scrollLeft);
+              // Native momentum can advance different numbers of cards on
+              // successive gestures. Verify direction, not identical distance.
+              assert.ok(reversePosition < forwardPosition - 1, 'Reverse swipe did not move back: ' + await rail.getAttribute('id') + ' ' + forwardPosition + ' -> ' + reversePosition);
+              console.log('SWIPE', viewport.width, await rail.getAttribute('id'), 0, forwardPosition, reversePosition);
               continue;
             }
             await click(next);
@@ -275,8 +287,11 @@ async function until(check, message, timeout = 5000) {
           const trendTarget = new URL(await trendLink.getAttribute('href'), page.url());
           assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : trendTarget.pathname === '/takim-detay.html', 'Trending team must open its profile');
           await navigate(trendLink);
-          const card = page.locator('.fixture-card').first();
-          const target = await card.locator('a').first().getAttribute('href');
+          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor();
+          const firstCard = page.locator('.fixture-card').first();
+          const matchId = await firstCard.getAttribute('data-match');
+          const card = matchId ? page.locator('.fixture-card[data-match=' + JSON.stringify(matchId) + ']').first() : firstCard;
+          const target = await card.locator('.fixture-card-action, a').first().getAttribute('href');
           const before = page.url();
           // On touch layouts the card's native stretched link covers its rows.
           // Click the complete card surface, which includes that valid target.

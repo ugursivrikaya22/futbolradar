@@ -12,6 +12,7 @@ for (const args of [
   ['scripts/test-match-seo-pages.mjs'],
   ['scripts/test-match-analysis-optional.mjs'],
   ['scripts/test-preview-stream.mjs'],
+  ['scripts/test-live-score-rate-limit.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']
