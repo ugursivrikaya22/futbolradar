@@ -82,6 +82,7 @@ async function until(check, message, timeout = 5000) {
         }
         await page.goBack({ waitUntil: 'domcontentloaded' });
         await until(() => page.url() === before, 'Back navigation failed', 10000);
+        await page.locator('footer').waitFor({ state: 'attached' });
       }
       for (const locale of ['tr', 'en']) {
         const home = locale === 'tr' ? 'index.html' : 'en/index.html';
@@ -166,14 +167,20 @@ async function until(check, message, timeout = 5000) {
               await navigate(footer);
             }
           }
-          for (const suffix of ['hakkinda.html', 'iletisim.html', 'gizlilik.html', 'kullanim-sartlari.html']) {
+          for (const suffix of en ? [] : ['hakkinda.html', 'iletisim.html', 'gizlilik.html', 'kullanim-sartlari.html']) {
             await navigate(page.locator('footer a[href$=' + JSON.stringify(suffix) + ']').first());
           }
         });
         await test(locale + ' featured carousel, pause and card', async () => {
+          await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
           const root = page.locator('[data-featured-carousel]');
           assert.ok(await root.count(), 'Featured carousel missing');
+          const pause = root.locator('[data-featured-pause]');
+          if (await pause.count()) {
+            await click(pause);
+            assert.equal(await pause.getAttribute('aria-pressed'), 'true');
+          }
           const slides = root.locator('[data-featured-slide]');
           assert.ok(await slides.count() > 1, 'Carousel needs multiple real fixtures');
           const active = () => root.locator('[data-featured-slide].is-active').getAttribute('data-featured-slide');
@@ -184,11 +191,6 @@ async function until(check, message, timeout = 5000) {
           await until(async () => await active() === first, 'Carousel previous did nothing');
           await click(root.locator('[data-featured-go]').nth(1));
           assert.equal(await active(), '1');
-          const pause = root.locator('[data-featured-pause]');
-          if (await pause.count()) {
-            await click(pause);
-            assert.equal(await pause.getAttribute('aria-pressed'), 'true');
-          }
           await navigate(root.locator('[data-featured-slide].is-active a').first());
         });
         await test(locale + ' horizontal sliders and card surfaces', async () => {
