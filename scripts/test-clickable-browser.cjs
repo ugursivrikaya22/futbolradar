@@ -33,7 +33,15 @@ async function until(check, message, timeout = 5000) {
       let consoleErrors = [];
       // Destination/content assertions below own navigation waiting; third-party
       // images must not hold an otherwise completed click until window.load.
-      const click = async locator => touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
+      const click = async locator => {
+        // Finish scrolling before pointer input. Smooth document scrolling can
+        // otherwise oscillate between the fixed header and bottom navigation.
+        await locator.evaluate(element => new Promise(resolve => {
+          element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+          requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }));
+        return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
+      };
       async function swipeRail(rail, direction) {
         await rail.evaluate(element => new Promise(resolve => {
           element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
