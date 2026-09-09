@@ -9,6 +9,7 @@ for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT'
 for (const args of [
   ['scripts/qa.mjs'],
   ['scripts/test-match-date-performance.mjs'],
+  ['scripts/test-match-seo-pages.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']

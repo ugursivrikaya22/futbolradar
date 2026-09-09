@@ -35,13 +35,17 @@ async function until(check, message, timeout = 5000) {
       // images must not hold an otherwise completed click until window.load.
       const click = async locator => touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       async function swipeRail(rail, direction) {
-        await rail.evaluate(element => element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' }));
+        await rail.evaluate(element => new Promise(resolve => {
+          element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+          requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }));
         const box = await rail.boundingBox();
         const left = Math.max(24, box.x + 24);
         const right = Math.min(viewport.width - 24, box.x + box.width - 24);
         const y = Math.max(130, Math.min(viewport.height - 100, box.y + box.height / 2));
         const start = direction > 0 ? right : left;
         const end = direction > 0 ? left : right;
+        assert.ok(await rail.evaluate((element, point) => element.contains(document.elementFromPoint(point.x, point.y)), { x: start, y }), 'Swipe target is covered: ' + await rail.getAttribute('id'));
         const input = await context.newCDPSession(page);
         try {
           await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: start, y }] });
@@ -243,9 +247,9 @@ async function until(check, message, timeout = 5000) {
             if (!overflows) { assert.equal(await next.isDisabled(), true); continue; }
             if (touch && !await next.isVisible()) {
               await swipeRail(rail, 1);
-              await until(() => rail.evaluate(e => e.scrollLeft > 0), 'Touch swipe did not scroll the rail');
+              await until(() => rail.evaluate(e => e.scrollLeft > 0), 'Touch swipe did not scroll the rail: ' + await rail.getAttribute('id'));
               await swipeRail(rail, -1);
-              await until(() => rail.evaluate(e => e.scrollLeft < 3), 'Reverse swipe did not return the rail');
+              await until(() => rail.evaluate(e => e.scrollLeft < 3), 'Reverse swipe did not return the rail: ' + await rail.getAttribute('id'));
               continue;
             }
             await click(next);
