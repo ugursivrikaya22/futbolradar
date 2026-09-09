@@ -48,13 +48,15 @@ try {
   const invalid = await post('/api/live-score-stream', {});
   assert.equal(invalid.status, 400, 'real telemetry validation must remain active');
   assert.match(JSON.stringify(await invalid.json()), /LIVE_TIMING_REQUIRED/);
+  const preflight = await fetch(base + '/api/live-score-stream', { method: 'OPTIONS', signal: AbortSignal.timeout(10000) });
+  assert.equal(preflight.status, 204, 'live stream preflight must be proxied to real handler');
   const blocked = await post('/api/motm-vote', {});
   assert.equal(blocked.status, 405);
   assert.equal((await blocked.json()).error.code, 'PREVIEW_READ_ONLY');
   const home = await fetch(base + '/', { signal: AbortSignal.timeout(10000) });
   assert.equal(home.status, 200, 'preview remains available after stream cancellation');
   await home.arrayBuffer();
-  console.log('preview-stream OK: immediate SSE, cancellation, real telemetry validation, write protection');
+  console.log('preview-stream OK: immediate SSE, cancellation, real telemetry validation, preflight passthrough, write protection');
 } finally {
   if (child.exitCode === null) {
     const exited = once(child, 'exit');

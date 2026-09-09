@@ -77,8 +77,9 @@ const server = http.createServer((request, response) => {
   // Voting, subscriptions and administrative writes stay out of preview.
   if (pathname.startsWith("/api/")) {
     const isLiveStream = pathname === "/api/live-score-stream";
-    const isLocalTelemetry = isLiveStream && request.method === "POST";
-    if (request.method !== "GET" && request.method !== "HEAD" && !isLocalTelemetry) {
+    const isLiveStreamWrite = isLiveStream && request.method === "POST";
+    const isLiveStreamPreflight = isLiveStream && request.method === "OPTIONS";
+    if (request.method !== "GET" && request.method !== "HEAD" && !isLiveStreamWrite && !isLiveStreamPreflight) {
       response.writeHead(405, { "Content-Type": "application/json" });
       response.end(JSON.stringify({ ok: false, error: { code: "PREVIEW_READ_ONLY" } }));
       return;
