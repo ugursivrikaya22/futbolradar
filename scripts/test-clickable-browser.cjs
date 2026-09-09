@@ -46,6 +46,10 @@ async function until(check, message, timeout = 5000) {
         const start = direction > 0 ? right : left;
         const end = direction > 0 ? left : right;
         assert.ok(await rail.evaluate((element, point) => element.contains(document.elementFromPoint(point.x, point.y)), { x: start, y }), 'Swipe target is covered: ' + await rail.getAttribute('id'));
+        await rail.evaluate(element => {
+          element.__auditScrollEnded = false;
+          element.addEventListener('scrollend', () => { element.__auditScrollEnded = true; }, { once: true });
+        });
         const input = await context.newCDPSession(page);
         try {
           await input.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: start, y }] });
@@ -54,6 +58,7 @@ async function until(check, message, timeout = 5000) {
             await delay(25);
           }
           await input.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+          await until(() => rail.evaluate(element => element.__auditScrollEnded), 'Touch scroll did not finish: ' + await rail.getAttribute('id'));
         } finally { await input.detach(); }
       }
       async function open(file) {

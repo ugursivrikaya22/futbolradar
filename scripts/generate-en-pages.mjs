@@ -1110,7 +1110,7 @@ function newsSection() {
   }).join("");
 
   return `<section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title">
-          ${sectionHead("Verified football agenda", "news-title", "Match, fixture and transfer flow", "Short updates selected from official club and competition statements.", `${BASE}haberler.html`, "All updates")}
+          ${sectionHead("Verified football agenda", "news-title", "Match, fixture and transfer flow", "Short updates selected from official club and competition statements.", "./news.html", "All updates")}
           <div class="news-grid">${cards}</div>
         </section>`;
 }
