@@ -98,6 +98,25 @@ function broadcastChannel(match) {
   return "";
 }
 
+/**
+ * Şifresiz mi? YALNIZCA kayıt açıkça işaretlediyse `true` döner — kanal adı
+ * "TRT" içeriyor diye tahmin edilmez (bkz. `broadcastChannel`in "uydurma
+ * yok" kuralı). `match.broadcast.freeToAir` doğrulanmış kaynaktan
+ * (TRT/tabii duyurusu) elle işaretlenen tek alan.
+ */
+function isFreeToAir(match) {
+  const broadcast = match && match.broadcast;
+  return Boolean(broadcast && typeof broadcast === "object" && broadcast.freeToAir === true);
+}
+
+/** Galatasaray ya da Fenerbahçe sahada mı — görsel vurgu kuralı. */
+const BIG_TWO_CLUBS = Object.freeze(["Galatasaray", "Fenerbahçe"]);
+
+function involvesBigTwo(match) {
+  if (!match || typeof match !== "object") return false;
+  return BIG_TWO_CLUBS.some((club) => sameClub(club, match.homeTeam) || sameClub(club, match.awayTeam));
+}
+
 /** Turnuvanın kanonik görünen adı; katalogda yoksa kayıttaki ham ad. */
 function competitionDisplayName(match) {
   const id = resolveCompetitionId(match);
@@ -108,8 +127,11 @@ function competitionDisplayName(match) {
 module.exports = {
   PRIORITY_CLUBS,
   PRIORITY_COMPETITION_IDS,
+  BIG_TWO_CLUBS,
   broadcastChannel,
   competitionDisplayName,
+  involvesBigTwo,
+  isFreeToAir,
   isPriorityMatch,
   selectBroadcastMatches
 };

@@ -2456,6 +2456,40 @@
       escapeHtml(matchDetailHref(match)) + '"><i aria-hidden="true"></i>Muhtemel 11</a></div>';
   }
 
+  /**
+   * Yayın kanalı satırı — SSR (scripts/lib/matchCards.mjs#broadcastCardHtml)
+   * ile birebir aynı kural: kanal bilinmiyorsa hiçbir şey basılmaz. Bu
+   * eşleşme kasıtlı; aksi hâlde JS yüklendiğinde kart hidrasyonda satır
+   * kaybedip yerinden oynardı.
+   */
+  var BIG_TWO_CLUB_NAMES = ["Galatasaray", "Fenerbahçe"];
+
+  function involvesBigTwoClub(match) {
+    if (!match) return false;
+    for (var index = 0; index < BIG_TWO_CLUB_NAMES.length; index += 1) {
+      if (sameClubName(BIG_TWO_CLUB_NAMES[index], match.homeTeam) || sameClubName(BIG_TWO_CLUB_NAMES[index], match.awayTeam)) return true;
+    }
+    return false;
+  }
+
+  function fixtureBroadcastChannel(match) {
+    var broadcast = match && match.broadcast;
+    if (!broadcast) return "";
+    if (typeof broadcast === "string") return broadcast.trim();
+    if (typeof broadcast === "object") return String(broadcast.turkey || broadcast.tr || "").trim();
+    return "";
+  }
+
+  function fixtureBroadcastHtml(match) {
+    var channel = fixtureBroadcastChannel(match);
+    if (!channel) return "";
+    var broadcast = match && match.broadcast;
+    var freeToAir = Boolean(broadcast && typeof broadcast === "object" && broadcast.freeToAir === true);
+    var freeTag = freeToAir ? '<span class="fixture-card-free-tag">Şifresiz</span>' : "";
+    return '<div class="fixture-card-broadcast"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın: <b>' +
+      escapeHtml(channel) + "</b></span>" + freeTag + "</div>";
+  }
+
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
     var metrics = fixtureFormHtml(match) + fixtureProbabilityHtml(match);
@@ -2463,6 +2497,7 @@
 
     return (
       '<article class="fixture-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
+      (involvesBigTwoClub(match) ? " is-milli" : "") +
       '" data-card="fixture" data-match="' + escapeHtml(match.id) + '">' +
       '<div class="fixture-card-top">' +
       '<span class="fixture-card-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
@@ -2473,6 +2508,7 @@
       "</div>" +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
+      fixtureBroadcastHtml(match) +
       (metrics ? '<div class="fixture-card-meta">' + metrics + "</div>" : "") +
       '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
       "</article>"

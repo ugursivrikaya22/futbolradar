@@ -23,6 +23,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import {
   fixtureCard as sharedFixtureCard,
+  broadcastCardHtml,
   fixtureTeamInitials,
   formDotsHtml,
   leagueMarkHtml,
@@ -39,6 +40,7 @@ import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
+const { broadcastChannel, involvesBigTwo, isFreeToAir } = require("../services/broadcastSchedule.js");
 const {
   DOMAIN,
   ROUTES,
@@ -283,6 +285,7 @@ function fixtureCard(match) {
         ? label("card.fullTimeShort")
         : statusLabelFor(state, LOCALE);
 
+  const channel = broadcastChannel(match);
   return sharedFixtureCard({
     locale: LOCALE,
     league: competitionLabel(match.league, LOCALE),
@@ -295,7 +298,9 @@ function fixtureCard(match) {
     awayScore: hasScore ? Number(match.score.away) : null,
     formHtml: "",
     actionHref: enMatchHref(match),
-    withMatchClick: false
+    withMatchClick: false,
+    highlight: involvesBigTwo(match),
+    broadcastHtml: broadcastCardHtml(channel, { locale: LOCALE, freeToAir: isFreeToAir(match) })
   });
 }
 

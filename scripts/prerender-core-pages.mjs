@@ -6,6 +6,7 @@ import { transferTickerBlock } from "./lib/transferTicker.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
+  broadcastCardHtml,
   fixtureRow as sharedFixtureRow,
   leagueMatchGroup as sharedLeagueMatchGroup,
   trendCard as sharedTrendCard,
@@ -46,6 +47,7 @@ const { selectRecentTickerRecords } = require("../services/transferRadarTicker.j
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
+const { broadcastChannel, involvesBigTwo, isFreeToAir } = require("../services/broadcastSchedule.js");
 // "Bugünün Maçları" yüzeyinin kuralı — sıra, lig blokları, bağlantı, SSS.
 const {
   groupMatchesByLeague,
@@ -533,6 +535,7 @@ function staticFixtureCard(match, meta) {
     ? ""
     : `<div class="fixture-metric"><span>Form (son 5)</span><b>${homeForm === null ? "–" : `%${homeForm}`} · ${awayForm === null ? "–" : `%${awayForm}`}</b></div>`;
 
+  const channel = broadcastChannel(match);
   return sharedFixtureCard({
     locale: "tr",
     id: match.id,
@@ -551,6 +554,8 @@ function staticFixtureCard(match, meta) {
     // maç ayrıntısına dönüyordu, yani statik hâl istemciyle çelişiyordu.
     actionHref: matchDetailPath(match),
     withMatchClick: true,
+    highlight: involvesBigTwo(match),
+    broadcastHtml: broadcastCardHtml(channel, { locale: "tr", freeToAir: isFreeToAir(match) }),
     quickLinksHtml: quickLinksHtml || ""
   });
 }

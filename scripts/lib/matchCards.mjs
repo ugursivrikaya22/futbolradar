@@ -130,13 +130,28 @@ export function fixtureRow(name, score, otherScore) {
 export function fixtureCard(options) {
   const locale = normalizeLocale(options.locale);
   const leagueLabel = options.league || t("card.leagueFallback", locale);
-  return `<article class="fixture-card${options.live ? " is-live" : ""}" data-card="fixture"${options.id ? ` data-match="${escapeHtml(options.id)}"` : ""}>
+  return `<article class="fixture-card${options.live ? " is-live" : ""}${options.highlight ? " is-milli" : ""}" data-card="fixture"${options.id ? ` data-match="${escapeHtml(options.id)}"` : ""}>
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(leagueLabel)}${escapeHtml(leagueLabel)}</span><span class="fixture-card-state ${options.stateClass || ""}">${escapeHtml(options.stateLabel || "")}</span></div>
     <div class="fixture-card-rows">${fixtureRow(options.homeTeam, options.homeScore, options.awayScore)}${fixtureRow(options.awayTeam, options.awayScore, options.homeScore)}</div>
+    ${options.broadcastHtml || ""}
     ${options.formHtml ? `<div class="fixture-card-meta">${options.formHtml}</div>` : ""}
     <a class="fixture-card-action" href="${escapeHtml(options.actionHref)}"${options.withMatchClick ? " data-match-click" : ""}>${escapeHtml(t("card.openMatchDetail", locale))}</a>${options.quickLinksHtml ? `
     <div class="fixture-card-quicklinks">${options.quickLinksHtml}</div>` : ""}
   </article>`;
+}
+
+/**
+ * Yayın kanalı satırı — YALNIZCA kanal biliniyorsa. `bugunun-maclari-hangi-
+ * kanalda` sayfasının aksine bu bileşen SİTE ÇAPINDA binlerce karta
+ * eklenir; kanal bilinmeyen maçlarda "henüz açıklanmadı" YAZILMAZ, satır
+ * hiç basılmaz — aksi hâlde her lig sayfası aynı boş notla dolardı.
+ */
+export function broadcastCardHtml(channel, options = {}) {
+  if (!channel) return "";
+  const locale = normalizeLocale(options.locale);
+  const label = t("card.broadcastLabel", locale);
+  const freeTag = options.freeToAir ? `<span class="fixture-card-free-tag">${escapeHtml(t("card.freeToAir", locale))}</span>` : "";
+  return `<div class="fixture-card-broadcast"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>${escapeHtml(label)} <b>${escapeHtml(channel)}</b></span>${freeTag}</div>`;
 }
 
 /**

@@ -14071,6 +14071,22 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   margin-inline-start: 4px;
 }
 
+.fixture-card-free-tag {
+  margin-inline-start: auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(176, 116, 16, 0.14);
+  color: var(--warn);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.fixture-card.is-milli {
+  border-color: var(--line-strong);
+  background: var(--green-tint);
+}
+
 .broadcast-schedule-grid {
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
@@ -21762,6 +21778,7 @@ a.motm-week__card:focus-visible {
 .msp-lineup-bench, .msp-squad-group { margin: 10px 0 0; color: var(--text-soft); font-size: var(--fs-sm); line-height: 1.6; }
 .msp-lineup-bench span, .msp-squad-group span { color: var(--muted); font-weight: 800; }
 .msp-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--green-tint); color: var(--green-deep); font-size: 0.72rem; font-weight: 800; }
+.msp-free-tag { display: inline-block; margin-inline-start: 6px; padding: 2px 8px; border-radius: 999px; background: rgba(176, 116, 16, 0.14); color: var(--warn); font-size: 0.72rem; font-weight: 800; white-space: nowrap; }
 .msp-tag.is-official { background: var(--green); color: #fff; }
 .msp-tag.is-suspended { background: rgba(200, 30, 45, 0.12); color: var(--live); }
 .msp-tag.is-doubtful { background: rgba(176, 116, 16, 0.14); color: var(--warn); }
@@ -21917,6 +21934,7 @@ a.motm-week__card:focus-visible {
 .cl-match-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: var(--fs-xs); color: var(--muted); }
 .cl-match-competition { font-weight: 700; color: var(--text-soft); }
 .cl-match-datetime { font-variant-numeric: tabular-nums; }
+.cl-match-broadcast { font-weight: 700; color: var(--text-soft); }
 .cl-match-countdown {
   padding: 2px 9px;
   border-radius: var(--radius-pill);
