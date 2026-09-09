@@ -78,7 +78,7 @@
       ".fr-pwa-steps{margin:6px 0 0;padding-left:18px}" +
       ".fr-pwa-note{color:#9fb0c0;font-size:12px;margin:8px 0 0}" +
       ".fr-pwa-fab{position:fixed;right:16px;bottom:16px;z-index:9998;width:52px;height:52px;border-radius:50%;" +
-      "background:#0b8f5a;color:#fff;border:0;font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,.3);cursor:pointer}" +
+      "clip-path:circle(50%);background:#0b8f5a;color:#fff;border:0;font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,.3);cursor:pointer}" +
       ".fr-pwa-panel{position:fixed;right:16px;bottom:78px;z-index:9998;background:#101b26;color:#fff;border-radius:14px;" +
       "padding:16px;width:min(260px,calc(100vw - 32px));box-shadow:0 12px 32px rgba(0,0,0,.4);font:14px/1.4 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}" +
       ".fr-pwa-panel select{width:100%;padding:8px;border-radius:8px;margin:8px 0;background:#1a2732;color:#fff;border:1px solid #2c3e4f}" +
