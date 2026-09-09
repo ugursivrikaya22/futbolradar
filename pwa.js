@@ -83,7 +83,9 @@
       "padding:16px;width:min(260px,calc(100vw - 32px));box-shadow:0 12px 32px rgba(0,0,0,.4);font:14px/1.4 -apple-system,BlinkMacSystemFont,\"Segoe UI\",sans-serif}" +
       ".fr-pwa-panel select{width:100%;padding:8px;border-radius:8px;margin:8px 0;background:#1a2732;color:#fff;border:1px solid #2c3e4f}" +
       ".fr-pwa-panel button{width:100%;border:0;border-radius:8px;padding:9px;background:#0b8f5a;color:#fff;font-weight:600;cursor:pointer}" +
-      ".fr-pwa-panel .fr-pwa-unsubscribe{background:transparent;color:#e57373;margin-top:6px}";
+      ".fr-pwa-panel .fr-pwa-unsubscribe{background:transparent;color:#e57373;margin-top:6px}" +
+      ".fr-pwa-fab,.fr-pwa-panel{z-index:65}.fr-pwa-panel{max-height:calc(100dvh - 170px);overflow:auto}" +
+      "@media(max-width:900px){.fr-pwa-fab{bottom:calc(76px + env(safe-area-inset-bottom))}.fr-pwa-panel{bottom:calc(136px + env(safe-area-inset-bottom))}.fr-pwa-toast{bottom:calc(76px + env(safe-area-inset-bottom))}}";
     document.head.appendChild(style);
   }
 
@@ -331,26 +333,54 @@
   }
 
   function setupFavoriteTeamWidget() {
+    injectStyles();
+    var en = document.documentElement.lang.indexOf("en") === 0;
     var fab = document.createElement("button");
     fab.type = "button";
     fab.className = "fr-pwa-fab";
-    fab.setAttribute("aria-label", "Favori takım ve bildirimler");
+    fab.setAttribute("aria-label", en ? "Favourite team and notifications" : "Favori takım ve bildirimler");
+    fab.setAttribute("aria-expanded", "false");
+    fab.setAttribute("aria-controls", "fr-favourite-panel");
     fab.textContent = "🔔";
     document.body.appendChild(fab);
 
     var openPanel = null;
+    function closePanel(restoreFocus) {
+      if (openPanel) openPanel.remove();
+      openPanel = null;
+      fab.setAttribute("aria-expanded", "false");
+      if (restoreFocus) fab.focus();
+    }
     fab.addEventListener("click", function () {
       if (openPanel) {
-        openPanel.remove();
-        openPanel = null;
+        closePanel(true);
         return;
       }
+      var pending = document.createElement("div");
+      pending.className = "fr-pwa-panel";
+      pending.id = "fr-favourite-panel";
+      pending.setAttribute("role", "status");
+      pending.textContent = en ? "Loading teams…" : "Takımlar yükleniyor…";
+      openPanel = pending;
+      document.body.appendChild(pending);
+      fab.setAttribute("aria-expanded", "true");
       loadTeams().then(function (teams) {
-        if (!teams.length) return;
+        if (openPanel !== pending) return;
+        if (!Array.isArray(teams) || !teams.length) {
+          pending.textContent = en ? "Teams could not be loaded. Close and try again." : "Takımlar yüklenemedi. Kapatıp yeniden deneyin.";
+          return;
+        }
         openPanel = buildFavoritePanel(teams);
-        document.body.appendChild(openPanel);
+        openPanel.id = "fr-favourite-panel";
+        openPanel.setAttribute("role", "region");
+        openPanel.setAttribute("aria-label", fab.getAttribute("aria-label"));
+        pending.replaceWith(openPanel);
+        openPanel.querySelector("select").setAttribute("aria-label", en ? "Favourite team" : "Favori takım");
+        openPanel.querySelector("select").focus();
       });
     });
+    document.addEventListener("keydown", function (event) { if (event.key === "Escape" && openPanel) closePanel(true); });
+    document.addEventListener("click", function (event) { if (openPanel && !fab.contains(event.target) && !openPanel.contains(event.target)) closePanel(false); });
 
     var existingFavorite = readLocal(LS_FAVORITE_TEAM);
     if (existingFavorite) notifyServiceWorkerOfFavoriteTeam(existingFavorite);

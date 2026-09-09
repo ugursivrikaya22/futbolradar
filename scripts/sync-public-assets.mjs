@@ -23,6 +23,8 @@ for (const file of [
   "app.js",
   "player-profile.js",
   "site.js",
+  "match-detail-en.js",
+  "pwa.js",
   "analytics.js",
   "performance-loader.js",
   "site.webmanifest",

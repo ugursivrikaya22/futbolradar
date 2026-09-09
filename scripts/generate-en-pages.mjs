@@ -82,12 +82,14 @@ const seoRegistryPages = loadSeoRegistry().pages;
 // istisna, HER kartın kaderi değil.
 function enMatchHref(match) {
   const enPath = seoEnPathForMatch(match, seoRegistryPages);
-  return enPath ? `../${enPath}` : "./live-football-scores.html";
+  if (enPath) return `../${enPath}`;
+  const id = match.id || match.fixtureId;
+  return id ? `./match-detail.html?id=${encodeURIComponent(id)}${match.kickoff ? `&date=${encodeURIComponent(String(match.kickoff).slice(0, 10))}` : ""}` : "./todays-matches.html";
 }
 
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
-const { fixtureTeamNames } = require("../services/superLigTeams.js");
+const { fixtureTeamNames, slug: teamSlug } = require("../services/superLigTeams.js");
 // "Başlangıçta kaç kart görünür?" sayısı TEK yerde durur; Türkçe ön derleme,
 // istemci ve bu üretici aynı sabiti okur (bkz. services/matchListWindow.js).
 const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
@@ -1035,8 +1037,8 @@ function transferWatchSection() {
       toTeam: clubLabelEn(featured.toTeam),
       typeLabel: transferTypeEn(featured.type) || label("transfer.fallbackType")
     },
-    allHref: null,
-    rows: rows.slice(1, 5).map((row) => ({ ...row, toTeam: clubLabelEn(row.toTeam), href: "./index.html" }))
+    allHref: "./transfer-radar.html",
+    rows: rows.slice(1, 5).map((row) => ({ ...row, toTeam: clubLabelEn(row.toTeam), href: "./transfer-radar.html?team=" + encodeURIComponent(row.toTeam || "") }))
   });
   return `<section class="container section home-transfer-watch" aria-labelledby="transfer-title">
           ${sectionHead("Transfer Radar", "transfer-title", "Confirmed transfers", "Only moves verified through official club sources.", null, "")}
@@ -1324,7 +1326,7 @@ ${sectionLinks()}`;
 
 function teamsPage() {
   const cards = standings.map((team) => `<article class="team-card">
-            <header><div><h3>${escapeHtml(team.name || "")}</h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">${escapeHtml(team.points ?? 0)}</strong></header>
+            <header><div><h3><a href="./team/${escapeHtml(teamSlug(team.name))}.html">${escapeHtml(team.name || "")}</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">${escapeHtml(team.points ?? 0)}</strong></header>
             ${formDots(team)}
             <div class="metric-grid compact"><span>Position <b>${escapeHtml(team.rank ?? "–")}</b></span><span>Played <b>${escapeHtml(team.played ?? 0)}</b></span></div>
           </article>`).join("");
@@ -1488,6 +1490,7 @@ function verifiedPlayerCards() {
     const view = publicPlayerView(player);
     const fields = view.fields || {};
     return {
+      id: player.id,
       name: fields.name || fields.fullName || "",
       team: fields.currentTeam || fields.team || "",
       position: fields.position || "",
@@ -1512,7 +1515,7 @@ function playerRadarPage() {
     .sort((left, right) => Number(right.rating || 0) - Number(left.rating || 0))
     .slice(0, 40)
     .map((player) => `<article class="player-card">
-            <header><div><h3>${escapeHtml(player.name)}</h3>
+            <header><div><h3><a href="./player/${escapeHtml(player.id)}.html">${escapeHtml(player.name)}</a></h3>
             <span>${escapeHtml([player.team, player.position].filter(Boolean).join(" · ") || "Player profile")}</span></div>
             <strong class="momentum-number">${escapeHtml(statCell(player.rating))}</strong></header>
             <div class="metric-grid compact">
@@ -1626,7 +1629,7 @@ function momentumPage() {
     .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0));
 
   const cards = rows.map((team) => `<article class="team-card">
-            <header><div><h3>${escapeHtml(team.name || "")}</h3><span>Trendyol Süper Lig</span></div>
+            <header><div><h3><a href="./team/${escapeHtml(teamSlug(team.name))}.html">${escapeHtml(team.name || "")}</a></h3><span>Trendyol Süper Lig</span></div>
             <strong class="momentum-number">${escapeHtml(team.momentum ?? "–")}</strong></header>
             ${formDots(team)}
             <div class="metric-grid compact">
@@ -1661,7 +1664,7 @@ function transferRadarPage() {
     .filter((row) => row.playerName && row.toTeam)
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
 
-  const table = rows.map((row) => `<tr>
+  const table = rows.map((row) => `<tr data-transfer-team="${escapeHtml(row.toTeam)}" data-transfer-from="${escapeHtml(row.fromTeam)}">
               <th scope="row">${escapeHtml(row.playerName || "")}</th>
               <td>${escapeHtml(clubLabelEn(row.fromTeam) || "—")}</td>
               <td>${escapeHtml(clubLabelEn(row.toTeam) || "—")}</td>
@@ -1671,6 +1674,8 @@ function transferRadarPage() {
 
   const body = `      <section class="data-panel" aria-labelledby="en-transfers-title">
         <h2 class="panel-title" id="en-transfers-title">Confirmed transfers</h2>
+        <form data-en-transfer-filter><label>Club <select name="team" aria-label="Filter transfers by club"><option value="">All clubs</option>${[...new Set(rows.flatMap(row => [row.toTeam, row.fromTeam]).filter(Boolean))].sort().map(team => `<option value="${escapeHtml(team)}">${escapeHtml(clubLabelEn(team))}</option>`).join("")}</select></label><button type="reset">Clear filter</button></form>
+        <p data-transfer-filter-status role="status"></p>
         ${table
           ? `<div class="standings-table-wrap"><table class="en-table">
           <thead><tr><th scope="col">Player</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Date</th></tr></thead>
@@ -1919,6 +1924,15 @@ function pollsPage() {
   });
 }
 
+function matchDetailPage() {
+  return pageShell({
+    routeKey: "matchDetail", trPath: "mac-detay.html", enPath: "en/match-detail.html",
+    heroKicker: "Match centre", heroTitle: "Match details", heroLead: "Score, events, line-ups and match statistics.",
+    body: '<section class="data-panel" data-en-match-detail aria-live="polite"><p>Loading match details…</p></section><script src="../match-detail-en.js" defer></script>',
+    schema: schemaFor("matchDetail", "en/match-detail.html", "WebPage")
+  });
+}
+
 const PAGE_BUILDERS = {
   home: homePage,
   todaysMatches: todaysMatchesPage,
@@ -1929,6 +1943,7 @@ const PAGE_BUILDERS = {
   results: resultsPage,
   fixtures: fixturesPage,
   matchCentre: matchCentrePage,
+  matchDetail: matchDetailPage,
   playerRadar: playerRadarPage,
   topScorers: topScorersPage,
   topAssists: topAssistsPage,

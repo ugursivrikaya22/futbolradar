@@ -418,15 +418,7 @@ function hourlyBuildSteps(diff) {
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
     nodeStep("render-news-pages", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
-    // EN canlı skor/puan durumu/sonuçlar sayfaları (`en/live-scores.html`,
-    // `en/standings.html`, `en/results.html`, `en/todays-matches.html`,
-    // `en/match-centre.html`, `en/momentum.html`) aynı data/*.json'dan
-    // üretiliyor ama önceden yalnızca günlük tam derlemede yenileniyordu:
-    // TR tarafı saat başı tazelenirken EN tarafı bir sonraki tam derlemeye
-    // kadar (~24 saate kadar) eski skor/durum gösteriyordu. Buradaki adım
-    // TR ile aynı kaynaktan aynı anda üretildiği için ikisi arasında ek
-    // sağlayıcı isteği veya senkron gecikmesi yok.
-    nodeStep("render-en-pages", "generate-en-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    // English pages are generated from the final match registry by POSTPROCESS_CHAIN.
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     // Kalıcı maç SEO sayfaları: her saat yeni skor/durumla yeniden üretilir,

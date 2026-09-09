@@ -17,7 +17,7 @@ duplicate projects `futbolradar-5l9r` or `futbolradar-ana-sayfas-n-ba-tan`.
 - Framework Preset: Other
 - Build Command: `npm run build`
 - Output Directory: `.`
-- Install Command: leave empty
+- Install Command: `npm ci --include=dev && node scripts/install-browser.mjs`
 - Ignored Build Step: leave empty in the dashboard; `vercel.json` forces builds to continue
 - Production Branch: `main`
 - Git deployments: enabled
@@ -30,7 +30,7 @@ that can block a deployment before it starts:
   "buildCommand": "npm run build",
   "framework": null,
   "ignoreCommand": "node scripts/vercel-continue-build.mjs",
-  "installCommand": "",
+  "installCommand": "npm ci --include=dev && node scripts/install-browser.mjs",
   "outputDirectory": ".",
   "git": {
     "deploymentEnabled": {

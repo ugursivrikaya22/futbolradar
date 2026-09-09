@@ -7,6 +7,7 @@ import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
 import { dedupeKey } from "./run-scheduled-update.mjs";
+import { POSTPROCESS_CHAIN } from "./lib/postprocessChain.mjs";
 
 const root = process.cwd();
 
@@ -154,7 +155,8 @@ assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\
 // EN core pages (live scores, standings, results, today's matches) must
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
-assert.match(orchestrator, /nodeStep\("render-en-pages", "generate-en-pages\.mjs"/);
+assert.ok(POSTPROCESS_CHAIN.some(step => step.script === "generate-en-pages.mjs"));
+assert.match(orchestrator, /for \(const step of POSTPROCESS_CHAIN\)/);
 const duplicateGuard = orchestrator.match(/if \(duplicate && !args\.force\) \{([\s\S]*?)\r?\n  \}\r?\n\r?\n  const before/)?.[1];
 assert.ok(duplicateGuard, "duplicate guard block must remain detectable");
 assert.doesNotMatch(duplicateGuard, /writeStatus\(/, "fallback no-op must not replace the published last-success status");

@@ -52,6 +52,8 @@ const {
 } = require("../services/i18n.js");
 const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/matchStatus.js");
 const { slug: teamSlug, sameClub } = require("../services/superLigTeams.js");
+const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
+const matchPages = loadRegistry().pages;
 const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 
@@ -208,7 +210,9 @@ function nextMatchHtml(match, team) {
     homeScore: null,
     awayScore: null,
     formHtml: "",
-    actionHref: "../live-football-scores.html",
+    actionHref: enPathForMatch(match, matchPages)
+      ? "../../" + enPathForMatch(match, matchPages)
+      : "../match-detail.html?id=" + encodeURIComponent(match.id || match.fixtureId || match.providerId || "") + "&date=" + encodeURIComponent(String(match.kickoff || "").slice(0, 10)),
     withMatchClick: false
   });
 }
@@ -268,12 +272,12 @@ function pageHtml(team, slugValue) {
             sourceUrl: leader.sourceUrl,
             typeLabel: `${incoming ? "In" : "Out"} · ${transferTypeEn(leader.type) || label("transfer.fallbackType")}`
           },
-          allHref: null,
+          allHref: "../transfer-radar.html",
           rows: teamMoves.slice(1).map((row) => ({
             ...row,
             fromTeam: transferTeamEn(row.fromTeam),
             toTeam: transferTeamEn(row.toTeam),
-            href: "../teams.html"
+            href: "../transfer-radar.html?team=" + encodeURIComponent(row.toTeam || "")
           }))
         })}</div>
       </section>`;

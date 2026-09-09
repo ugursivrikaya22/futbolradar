@@ -44,7 +44,8 @@ const FAMILIES = [
   { prefix: "oyuncular/", bundle: "app-lite.js" },
   { prefix: "mac/", bundle: "app-lite.js" },
   { prefix: "en/player/", bundle: "app-lite.js" },
-  { prefix: "en/match/", bundle: "app-lite.js" }
+  { prefix: "en/match/", bundle: "app-lite.js" },
+  { prefix: "en/", bundle: "app-lite.js" }
 ];
 
 function walk(dir, files = []) {

@@ -324,9 +324,8 @@ export function transferWatchShell(options) {
     ? `<a class="detail-link home-transfer-source-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(t("transfer.openDetail", locale))}</a>`
     : "";
 
-  const coverHref = options.allHref
-    ? `${options.allHref}${options.allHref.includes("?") ? "&" : "?"}team=${encodeURIComponent(leader.toTeam || "")}`
-    : "#";
+  const allHref = options.allHref || (locale === "en" ? "/en/transfer-radar.html" : "/transfer-radari.html");
+  const coverHref = `${allHref}${allHref.includes("?") ? "&" : "?"}team=${encodeURIComponent(leader.toTeam || "")}`;
 
   return `<article class="home-transfer-feature home-transfer-feature-big" data-card="home-transfer-watch" data-transfer-status="${escapeHtml(statusClass)}">` +
     `<div class="transfer-badge-row">` +

@@ -3,7 +3,7 @@
   "framework": null,
   "buildCommand": "npm run build",
   "ignoreCommand": "node scripts/vercel-continue-build.mjs",
-  "installCommand": "",
+  "installCommand": "npm ci --include=dev && node scripts/install-browser.mjs",
   "outputDirectory": ".",
   "git": {
     "deploymentEnabled": {
@@ -319,6 +319,10 @@
     {
       "source": "/en/match-centre",
       "destination": "/en/match-centre.html"
+    },
+    {
+      "source": "/en/match-detail",
+      "destination": "/en/match-detail.html"
     },
     {
       "source": "/en/player-radar",

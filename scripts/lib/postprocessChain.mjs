@@ -38,6 +38,10 @@
 
 /** Zincir; `scripts/` altına göreli betik adı + argümanlar. */
 export const POSTPROCESS_CHAIN = [
+  // Resolve English links after match registries and Turkish pages exist.
+  // Scheduled postprocessing must refresh these links as well as full builds.
+  { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
+  { id: "en-pages", script: "generate-en-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
   // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
