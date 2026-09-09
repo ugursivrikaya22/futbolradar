@@ -19,7 +19,7 @@ const { canonicalStatus, finishType, istanbulDay } = require("../../services/mat
 const { sameClub } = require("../../services/superLigTeams.js");
 const { publicPlayerView } = require("../../services/cardCredibility.js");
 const { slug: playerSlug } = require("../../services/playerService.js");
-const { broadcastChannel } = require("../../services/broadcastSchedule.js");
+const { broadcastChannel, isFreeToAir } = require("../../services/broadcastSchedule.js");
 const { competitionLabel } = require("../../services/i18n.js");
 
 export function escapeHtml(value) {
@@ -92,6 +92,7 @@ export const STR = {
     channelTitle: (h, a) => `${h} - ${a} maçı hangi kanalda?`,
     channelBody: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanacak.`,
     channelUnknown: (h, a) => `${h} - ${a} maçının yayın kanalı henüz açıklanmadı. Kanal bilgisi doğrulanmış bir kaynaktan alındığında bu bölüm otomatik güncellenir; tahmini kanal yazılmaz.`,
+    freeToAirTag: "Şifresiz",
     lineups: "Muhtemel 11'ler",
     officialLineups: "İlk 11'ler",
     lineupNote: "Muhtemel 11, doğrulanmış kadro ve uygunluk verisinden üretilen bir tahmindir; resmî 11 açıklandığında bu bölüm otomatik güncellenir.",
@@ -179,7 +180,7 @@ export const STR = {
     time: "Kick-off",
     competition: "Competition",
     venue: "Venue",
-    channel: "TV channel",
+    channel: "Broadcast in Turkey",
     referee: "Referee",
     status: "Status",
     round: "Matchweek",
@@ -193,6 +194,7 @@ export const STR = {
     channelTitle: (h, a) => `Where to watch ${h} vs ${a}?`,
     channelBody: (h, a, channel) => `${h} vs ${a} is broadcast live on ${channel} in Türkiye.`,
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
+    freeToAirTag: "Free-to-air",
     lineups: "Probable line-ups",
     officialLineups: "Starting line-ups",
     lineupNote: "The probable XI is a prediction built from verified squad and availability data; it updates automatically once the official line-up is announced.",
@@ -655,11 +657,12 @@ export function whenSectionHtml(entry, ctx) {
   const hour = clock(entry.kickoff);
   const past = state === "post" || state === "pending" || state === "live";
   const channel = broadcastChannel(entry);
+  const freeTag = channel && isFreeToAir(entry) ? ` <span class="msp-free-tag">${escapeHtml(text.freeToAirTag)}</span>` : "";
   const competition = competitionName ? competitionLabel(competitionName, locale) : "";
   return `<section class="msp-section msp-faq" id="ne-zaman" aria-label="${escapeHtml(text.date)}">
       <article class="card msp-qa"><h2>${escapeHtml(text.whenTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.whenBodyPast(homeTeam, awayTeam, day, competition) : text.whenBody(homeTeam, awayTeam, day, competition))}</p></article>
       <article class="card msp-qa"><h2>${escapeHtml(text.timeTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.timeBodyPast(homeTeam, awayTeam, hour) : text.timeBody(homeTeam, awayTeam, hour))}</p></article>
-      <article class="card msp-qa" id="hangi-kanalda"><h2>${escapeHtml(text.channelTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(channel ? text.channelBody(homeTeam, awayTeam, channel) : text.channelUnknown(homeTeam, awayTeam))}</p></article>
+      <article class="card msp-qa" id="hangi-kanalda"><h2>${escapeHtml(text.channelTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(channel ? text.channelBody(homeTeam, awayTeam, channel) : text.channelUnknown(homeTeam, awayTeam))}${freeTag}</p></article>
     </section>`;
 }
 
@@ -758,7 +761,7 @@ export function heroHtml(entry, ctx) {
           <div><dt>${escapeHtml(text.time)}</dt><dd>${escapeHtml(clock(entry.kickoff))} ${escapeHtml(text.tsi)}</dd></div>
           ${competitionName ? `<div><dt>${escapeHtml(text.competition)}</dt><dd>${escapeHtml(competitionLabel(competitionName, locale))}</dd></div>` : ""}
           <div><dt>${escapeHtml(text.venue)}</dt><dd>${escapeHtml(entry.venue || text.notAnnounced)}</dd></div>
-          <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}</dd></div>
+          <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}${channel && isFreeToAir(entry) ? ` <span class="msp-free-tag">${escapeHtml(text.freeToAirTag)}</span>` : ""}</dd></div>
           <div><dt>${escapeHtml(text.referee)}</dt><dd>${escapeHtml(entry.referee || text.notAnnounced)}</dd></div>
         </dl>
       </section>`;

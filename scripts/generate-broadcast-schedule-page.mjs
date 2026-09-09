@@ -32,6 +32,8 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 const {
   broadcastChannel,
   competitionDisplayName,
+  involvesBigTwo,
+  isFreeToAir,
   selectBroadcastMatches
 } = require("../services/broadcastSchedule.js");
 const {
@@ -153,9 +155,10 @@ function scoreRow(name, score, otherScore) {
     `</div>`;
 }
 
-function broadcastRowHtml(channel) {
+function broadcastRowHtml(channel, freeToAir) {
+  const freeTag = freeToAir ? `<span class="fixture-card-free-tag">Şifresiz</span>` : "";
   return channel
-    ? `<div class="fixture-card-broadcast"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın: <b>${escapeHtml(channel)}</b></span></div>`
+    ? `<div class="fixture-card-broadcast"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın: <b>${escapeHtml(channel)}</b></span>${freeTag}</div>`
     : `<div class="fixture-card-broadcast is-unknown"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın kanalı henüz açıklanmadı</span></div>`;
 }
 
@@ -163,6 +166,7 @@ function matchCardHtml(match) {
   const state = stateFor(match);
   const league = competitionDisplayName(match);
   const channel = broadcastChannel(match);
+  const highlight = involvesBigTwo(match);
   const home = text(match.homeTeam);
   const away = text(match.awayTeam);
   const homeScore = state.showScore && match.score ? match.score.home : null;
@@ -172,11 +176,11 @@ function matchCardHtml(match) {
     ? `<span class="fixture-card-live-minute"><i class="live-pulse" aria-hidden="true"></i>${escapeHtml(state.minuteLabel)}</span>`
     : "";
 
-  return `<article class="fixture-card${state.stateClass ? ` ${state.stateClass}` : ""}" data-card="fixture" data-match="${escapeHtml(match.id || "")}">
+  return `<article class="fixture-card${state.stateClass ? ` ${state.stateClass}` : ""}${highlight ? " is-milli" : ""}" data-card="fixture" data-match="${escapeHtml(match.id || "")}">
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(league)}${escapeHtml(league)}</span><span class="fixture-card-state ${escapeHtml(state.stateClass)}">${escapeHtml(state.stateLabel)}${minuteHtml}</span></div>
     <div class="fixture-card-time">${escapeHtml(kickoffTimeLabel(match) || "Saat bekleniyor")} TSİ</div>
     <div class="fixture-card-rows">${scoreRow(home, homeScore, awayScore)}${scoreRow(away, awayScore, homeScore)}</div>
-    ${broadcastRowHtml(channel)}
+    ${broadcastRowHtml(channel, isFreeToAir(match))}
     <a class="fixture-card-action" href="${escapeHtml(href)}" data-match-click>Maç ayrıntısını aç</a>
   </article>`;
 }

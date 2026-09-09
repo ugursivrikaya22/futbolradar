@@ -22,7 +22,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
-import { fixtureCard as sharedFixtureCard } from "./lib/matchCards.mjs";
+import { fixtureCard as sharedFixtureCard, broadcastCardHtml } from "./lib/matchCards.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 
@@ -33,6 +33,7 @@ const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 const { competitions } = require("../services/competitionCatalog.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { matchDetailPath } = require("../services/matchProgram.js");
+const { broadcastChannel, involvesBigTwo, isFreeToAir } = require("../services/broadcastSchedule.js");
 const { istanbulDay } = require("../services/matchStatus.js");
 
 const DOMAIN = "https://www.futbolradar.com";
@@ -95,6 +96,7 @@ function isVerifiedFinalMatch(match) {
 function leaguePageCard(match) {
   const status = String(match.status || "SCHEDULED").toUpperCase();
   const finalScore = isVerifiedFinalMatch(match) ? `${match.score.home}-${match.score.away}` : null;
+  const channel = broadcastChannel(match);
   return sharedFixtureCard({
     id: match.id,
     league: match.league,
@@ -106,6 +108,8 @@ function leaguePageCard(match) {
     awayScore: finalScore ? match.score.away : null,
     actionHref: `../${matchDetailPath(match).replace(/^\.\//, "")}`,
     withMatchClick: true,
+    highlight: involvesBigTwo(match),
+    broadcastHtml: broadcastCardHtml(channel, { locale: "tr", freeToAir: isFreeToAir(match) }),
     locale: "tr"
   });
 }
