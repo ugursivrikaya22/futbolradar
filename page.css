@@ -14570,7 +14570,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
     padding: 10px;
     background: var(--glass-strong);
     box-shadow: var(--shadow-lg);
-    max-height: calc(100dvh - 150px - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100dvh - 210px - env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     overscroll-behavior: contain;
     scroll-padding-block: 12px;
@@ -14593,6 +14593,14 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   .topbar-premium .nav-links-secondary {
     border-top: 1px solid rgba(14, 26, 22, 0.081);
     padding-top: 6px;
+  }
+
+  /* Legacy navbar rules placed every link group in row 2 and the CTA in
+     column 2. Reset that placement inside the single-column drawer. */
+  .topbar-premium .nav-menu > .nav-links,
+  .topbar-premium .nav-menu > .cta {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .topbar-premium .nav-links a {

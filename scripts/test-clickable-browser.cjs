@@ -225,7 +225,9 @@ async function until(check, message, timeout = 5000) {
           const card = page.locator('.fixture-card').first();
           const target = await card.locator('a').first().getAttribute('href');
           const before = page.url();
-          await click(card.locator('.fixture-card-rows'));
+          // On touch layouts the card's native stretched link covers its rows.
+          // Click the complete card surface, which includes that valid target.
+          await click(card);
           await until(() => page.url() !== before, 'Whole match card is inert');
           assert.equal(new URL(page.url()).pathname, new URL(target, before).pathname);
         });
