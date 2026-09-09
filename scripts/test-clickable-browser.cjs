@@ -102,9 +102,13 @@ async function until(check, message, timeout = 5000) {
           await click(page.locator('[data-theme-toggle]'));
           await until(async () => (await page.locator('html').getAttribute('data-theme')) !== old, 'Theme button is inert');
           if (viewport.width < 1366) await click(page.locator('.nav-toggle'));
+          let languageTarget = new URL(await page.locator('[data-lang-switch]').getAttribute('href'), page.url());
           await click(page.locator('[data-lang-switch]'));
+          await page.waitForURL(url => url.pathname === languageTarget.pathname, { waitUntil: 'domcontentloaded' });
           await until(async () => (await page.locator('html').getAttribute('lang')) === (en ? 'tr' : 'en'), 'Language did not change');
+          languageTarget = new URL(await page.locator('[data-lang-switch]').getAttribute('href'), page.url());
           await click(page.locator('[data-lang-switch]'));
+          await page.waitForURL(url => url.pathname === languageTarget.pathname, { waitUntil: 'domcontentloaded' });
           await until(async () => (await page.locator('html').getAttribute('lang')) === locale, 'Return language did not change');
           await page.screenshot({ path: `outputs/clickable/${viewport.width}-${locale}-home.png`, timeout: 10000, animations: 'disabled' })
             .catch(error => console.log('SCREENSHOT', viewport.width, locale, error.message.split('\n')[0]));

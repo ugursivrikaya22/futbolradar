@@ -8,6 +8,7 @@ const env = { ...process.env };
 for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT']) delete env[key];
 for (const args of [
   ['scripts/qa.mjs'],
+  ['scripts/test-match-date-performance.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']

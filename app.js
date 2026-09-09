@@ -4024,6 +4024,9 @@
   // Servis tarafındaki eşi: services/matchStatus.js -> istanbulDay().
   // Bu blokta durmasının sebebi, test-home-signals'ın istemci ile servisi
   // aynı girdilerle karşılaştırırken bu yardımcıyı da kapsaması.
+  // Reuse ICU's formatter across match sorting/filtering and live refreshes.
+  // Constructing it for every comparison can block the browser for seconds.
+  var istanbulDayFormatter = null;
   function istanbulDayOf(value) {
     var raw = String(value || "");
     if (!raw) {
@@ -4039,12 +4042,15 @@
       return raw.slice(0, 10);
     }
 
-    return new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Europe/Istanbul",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).format(parsed);
+    if (!istanbulDayFormatter) {
+      istanbulDayFormatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Istanbul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      });
+    }
+    return istanbulDayFormatter.format(parsed);
   }
 
   var DAILY_HEADLINE_LIMIT = 3;
