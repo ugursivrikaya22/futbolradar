@@ -282,20 +282,19 @@ async function until(check, message, timeout = 5000) {
             assert.equal(heroHiddenByLayout, true, 'Featured carousel hidden for an unexpected reason');
             const focusVisible = await heroContainer.evaluate(node => {
               const heroSection = node.closest('section.hero');
-              let focus = null;
-              for (let candidate = heroSection ? heroSection.previousElementSibling : null; candidate; candidate = candidate.previousElementSibling) {
-                if (candidate.matches && candidate.matches('section.match-focus')) {
-                  focus = candidate;
-                  break;
-                }
-              }
-              if (!focus) return false;
-              if (!heroSection || !heroSection.parentElement || focus.parentElement !== heroSection.parentElement) return false;
+              if (!heroSection || !heroSection.parentElement) return false;
               if (!heroSection.parentElement.classList || !heroSection.parentElement.classList.contains('home-main')) return false;
-              const style = getComputedStyle(focus);
-              const rect = focus.getBoundingClientRect();
-              if (focus.hidden || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || rect.width === 0 || rect.height === 0) return false;
-              return Boolean(focus.querySelector('[data-focus-board], [data-focus-title]'));
+              for (let candidate = heroSection ? heroSection.previousElementSibling : null; candidate; candidate = candidate.previousElementSibling) {
+                if (!(candidate.matches && candidate.matches('section.match-focus'))) continue;
+                if (candidate.parentElement !== heroSection.parentElement) continue;
+                const style = getComputedStyle(candidate);
+                const rect = candidate.getBoundingClientRect();
+                const visible = !candidate.hidden && style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) !== 0 && rect.width > 0 && rect.height > 0;
+                if (!visible) continue;
+                if (!candidate.querySelector('[data-focus-board], [data-focus-title]')) continue;
+                return true;
+              }
+              return false;
             });
             assert.ok(focusVisible, 'Featured module missing');
             return;
