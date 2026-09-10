@@ -261,12 +261,19 @@ async function until(check, message, timeout = 5000) {
           assert.ok(await heroContainer.count(), 'Featured hero container missing');
           const heroVisible = await heroContainer.isVisible().catch(() => false);
           if (!en && await heroFeatured.count() && heroVisible) {
-            await page.locator('#featured-radar-match[data-state="ready"]:visible, #featured-radar-match[data-state="fallback"]:visible').waitFor();
+            await page.locator('#featured-radar-match[data-state="ready"], #featured-radar-match[data-state="fallback"]').first().waitFor({ state: 'visible' });
           }
-          const root = page.locator('[data-featured-carousel]:visible').first();
-          if (!await root.count()) {
+          const root = page.locator('[data-featured-carousel]').first();
+          if (!await root.isVisible().catch(() => false)) {
             assert.equal(heroVisible, false, 'Featured carousel missing while hero module is visible');
-            assert.ok(await page.locator('section.match-focus:visible [data-focus-board], section.match-focus:visible [data-focus-title]').count(), 'Featured module missing');
+            const focusVisible = await page.locator('section.match-focus [data-focus-board], section.match-focus [data-focus-title]').evaluateAll(nodes =>
+              nodes.some(node => {
+                const style = getComputedStyle(node);
+                const rect = node.getBoundingClientRect();
+                return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+              })
+            );
+            assert.ok(focusVisible, 'Featured module missing');
             return;
           }
           const pause = root.locator('[data-featured-pause]');
