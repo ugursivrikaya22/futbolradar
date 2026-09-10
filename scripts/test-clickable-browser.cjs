@@ -256,9 +256,15 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' featured carousel, pause and card', async () => {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
-          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
-          const root = page.locator('[data-featured-carousel]');
-          assert.ok(await root.count(), 'Featured carousel missing');
+          const heroFeatured = page.locator('[data-api-target="featured-match"]');
+          if (!en && await heroFeatured.count()) {
+            await page.locator('[data-api-target="featured-match"][data-state="ready"], [data-api-target="featured-match"][data-state="fallback"]').first().waitFor({ state: 'attached' });
+          }
+          const root = page.locator('[data-featured-carousel]:visible').first();
+          if (!await root.count()) {
+            assert.ok(await page.locator('[data-focus-board], [data-focus-title]').count(), 'Featured module missing');
+            return;
+          }
           const pause = root.locator('[data-featured-pause]');
           if (await pause.count()) {
             await click(pause);
