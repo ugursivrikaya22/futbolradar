@@ -7,6 +7,7 @@ const compiler = path.resolve(path.dirname(compilerManifest), require(compilerMa
 const env = { ...process.env };
 for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT']) delete env[key];
 for (const args of [
+  ['scripts/test-match-focus.mjs'],
   ['scripts/qa.mjs'],
   ['scripts/test-match-date-performance.mjs'],
   ['scripts/test-match-seo-pages.mjs'],
