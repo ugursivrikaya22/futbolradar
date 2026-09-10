@@ -70,7 +70,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
+
+      # Full updates invoke npm run build, including the production gate.
+      # Keep its compiler and browser available just as in interaction-checks.
+      - name: Install build and validation dependencies
+        run: npm ci --include=dev
+
+      - name: Install validation browser
+        run: npx --no-install playwright install --with-deps chromium
 
       - name: Resolve update type
         id: update_type
