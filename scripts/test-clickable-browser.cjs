@@ -257,10 +257,10 @@ async function until(check, message, timeout = 5000) {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
           const heroFeatured = page.locator('[data-api-target="featured-match"]');
-          if (!en && await heroFeatured.count()) {
-            await page.locator('[data-api-target="featured-match"][data-state="ready"], [data-api-target="featured-match"][data-state="fallback"]').first().waitFor({ state: 'attached' });
-          }
           const heroContainer = page.locator('#featured-radar-match').first();
+          if (!en && await heroFeatured.count() && await heroContainer.isVisible().catch(() => false)) {
+            await page.locator('#featured-radar-match[data-state="ready"], #featured-radar-match[data-state="fallback"]').waitFor();
+          }
           const root = page.locator('[data-featured-carousel]:visible').first();
           if (!await root.count()) {
             assert.equal(await heroContainer.isVisible().catch(() => false), false, 'Featured carousel missing while hero module is visible');
