@@ -4,6 +4,17 @@
   target.classList.add('card');
   var query = new URLSearchParams(location.search);
   var id = query.get('id') || query.get('fixtureId');
+  var pending = false;
+  var hasContent = false;
+  var pollTimer;
+  var lastSignature;
+  var controls = document.createElement('div');
+  controls.className = 'data-panel';
+  controls.setAttribute('data-detail-controls', '');
+  controls.innerHTML = '<button type="button" class="filter-chip" data-detail-reload>Refresh match details</button><p role="status" aria-live="polite"></p>';
+  target.insertAdjacentElement('afterend', controls);
+  var reloadButton = controls.querySelector('button');
+  var message = controls.querySelector('[role="status"]');
   function escape(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; });
   }
@@ -28,18 +39,38 @@
   }
   function empty() {
     target.innerHTML = '<p>Match details are not available yet.</p><a class="detail-link" href="./todays-matches.html">View today’s matches</a>';
+    target.dataset.state = 'empty';
   }
-  if (!id) { empty(); return; }
+  if (!id) { empty(); controls.hidden = true; return; }
   var url = '/api/match-detail?id=' + encodeURIComponent(id);
   if (query.get('date')) url += '&date=' + encodeURIComponent(query.get('date'));
+  function load(background) {
+  if (pending) return;
+  pending = true;
+  clearTimeout(pollTimer);
+  reloadButton.disabled = true;
+  target.setAttribute('aria-busy', 'true');
+  if (!hasContent) target.dataset.state = 'loading';
+  if (!background) message.textContent = 'Loading match details…';
   var controller = new AbortController();
   var timer = setTimeout(function () { controller.abort(); }, 10000);
   fetch(url, { signal: controller.signal }).then(function (response) {
     if (!response.ok) throw new Error('Match request failed');
     return response.json();
   }).then(function (payload) {
+    if (payload && payload.error) throw new Error('Match data unavailable');
     var match = payload && Array.isArray(payload.data) && payload.data[0];
-    if (!match) { empty(); return; }
+    if (!match) { if (!hasContent) empty(); message.textContent = hasContent ? 'No new match data is available. Showing the last loaded details.' : 'No match record is available yet.'; return; }
+    reloadButton.textContent = 'Refresh match details';
+    message.textContent = 'Match details updated.';
+    target.dataset.state = 'ready';
+    hasContent = true;
+    var signature = JSON.stringify(match);
+    if (signature === lastSignature) return;
+    lastSignature = signature;
+    var previousTab = target.querySelector('[role="tab"][aria-selected="true"]');
+    var selectedId = previousTab && previousTab.id;
+    var focusedId = target.contains(document.activeElement) && document.activeElement.id;
     var title = match.homeTeam + ' – ' + match.awayTeam;
     document.querySelector('h1').textContent = title;
     document.title = title + ' | FutbolRadar';
@@ -61,14 +92,38 @@
       '<a class="detail-link" href="./todays-matches.html">View today’s matches</a>';
     target.querySelector('[role="tablist"]').insertAdjacentHTML('beforeend', '<button class="standings-tabs__label" type="button" role="tab" aria-selected="false" aria-controls="en-match-lineups" id="en-match-lineups-tab" tabindex="-1">Line-ups</button>');
     target.insertAdjacentHTML('beforeend', '<section role="tabpanel" id="en-match-lineups" aria-labelledby="en-match-lineups-tab" hidden>' + (lineupHtml ? '<div class="md-lineup-grid">' + lineupHtml + '</div>' : '<p>Confirmed line-ups are not available yet.</p>') + '</section>');
+    var broadcast = typeof match.broadcast === 'string' ? match.broadcast : match.broadcast && (match.broadcast.turkey || match.broadcast.tr);
+    var sources = (Array.isArray(match.sourceUrls) ? match.sourceUrls : []).filter(function (source) { return /^https?:\/\//i.test(String(source)); });
+    target.insertAdjacentHTML('beforeend', '<p><strong>Broadcast (Türkiye):</strong> ' + escape(broadcast || 'No confirmed channel information is available.') + '</p>' +
+      '<footer class="md-source"><span>Source: ' + escape(match.sourceName || payload.source || 'Match data provider') + '</span>' +
+      sources.slice(0, 3).map(function (source, index) { return '<a href="' + escape(source) + '" target="_blank" rel="nofollow noopener noreferrer">Source record ' + (index + 1) + '</a>'; }).join(' ') +
+      (/^https?:\/\//i.test(match.broadcastSourceUrl || '') ? '<a href="' + escape(match.broadcastSourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Broadcaster schedule</a>' : '') + '</footer>');
     var tabs = Array.from(target.querySelectorAll('[role="tab"]'));
     function select(index) {
       tabs.forEach(function (tab, i) { var active = i === index; tab.setAttribute('aria-selected', String(active)); tab.classList.toggle('is-active', active); tab.tabIndex = active ? 0 : -1; document.getElementById(tab.getAttribute('aria-controls')).hidden = !active; });
     }
-    select(0);
+    select(Math.max(0, tabs.findIndex(function (tab) { return tab.id === selectedId; })));
+    if (focusedId) { var focused = document.getElementById(focusedId); if (focused) focused.focus({ preventScroll: true }); }
     tabs.forEach(function (tab, i) {
       tab.addEventListener('click', function () { select(i); });
       tab.addEventListener('keydown', function (e) { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].indexOf(e.key) < 0) return; e.preventDefault(); var n = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowLeft' ? -1 : 1) + tabs.length) % tabs.length; select(n); tabs[n].focus(); });
     });
-  }).catch(empty).finally(function () { clearTimeout(timer); });
+  }).catch(function () {
+    target.dataset.state = hasContent ? 'stale' : 'unavailable';
+    if (!hasContent) target.innerHTML = '<p>Match details could not be loaded. Check your connection and try again.</p>';
+    message.textContent = hasContent ? 'Refresh failed. Showing the last loaded details; you can retry.' : 'Connection failed. You can retry.';
+    reloadButton.textContent = 'Retry loading match details';
+  }).finally(function () {
+    clearTimeout(timer);
+    pending = false;
+    reloadButton.disabled = false;
+    target.setAttribute('aria-busy', 'false');
+    pollTimer = setTimeout(function () { if (!document.hidden) load(true); }, 15000);
+  });
+  }
+  reloadButton.addEventListener('click', function () { load(false); });
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) load(true); });
+  window.addEventListener('online', function () { load(true); });
+  window.addEventListener('pagehide', function () { clearTimeout(pollTimer); });
+  load(false);
 })();

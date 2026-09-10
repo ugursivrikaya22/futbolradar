@@ -14,6 +14,8 @@ for (const args of [
   ['scripts/test-preview-stream.mjs'],
   ['scripts/test-live-score-rate-limit.mjs'],
   ['scripts/test-en-match-detail-client.mjs'],
+  ['scripts/test-broadcast-verifications.mjs'],
+  ['scripts/test-source-links.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']

@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+const { applyVerifiedBroadcast, broadcastChannel } = require('../services/broadcastSchedule.js');
+const source = { providerId:'1635659', kickoff:'2026-09-10T19:45:00+03:00', broadcast:{turkey:'TRT 1, TRT Spor ve tabii'} };
+const verified = applyVerifiedBroadcast(source);
+assert.equal(verified.broadcast.turkey, 'TRT 1');
+assert.equal(verified.broadcastSourceUrl, 'https://www.trt1.com.tr/yayin-akisi');
+assert.equal(source.broadcast.turkey, 'TRT 1, TRT Spor ve tabii', 'Do not mutate provider/cache records');
+assert.equal(broadcastChannel(source), verified.broadcast.turkey, 'Schedule and API must agree');
+assert.equal(broadcastChannel({...source,kickoff:'2026-09-11T19:45:00+03:00'}),source.broadcast.turkey,'Do not leak a date-specific correction');
+assert.equal(broadcastChannel({kickoff:'2026-09-10T19:45:00+03:00'}),'','Never invent a channel');
+console.log('Broadcast verification OK: dated source, shared output, no mutation or inferred channel');

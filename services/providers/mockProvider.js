@@ -32,6 +32,7 @@ function teamLogoByName(name) {
 }
 
 function normalizeMatch(match) {
+  match = require("../broadcastSchedule.js").applyVerifiedBroadcast(match);
   const homeMomentum = Number(match.homeMomentum || match.homeForm || 0);
   const awayMomentum = Number(match.awayMomentum || match.awayForm || 0);
 

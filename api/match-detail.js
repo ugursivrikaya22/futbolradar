@@ -40,6 +40,7 @@ module.exports = async function handler(req, res) {
     source = mockProvider.source;
   }
 
+  if (detail) detail = require("../services/broadcastSchedule.js").applyVerifiedBroadcast(detail);
   const data = detail ? [detail] : [];
 
   if (!validateOrSend(res, data, validateMatchDetail)) {
