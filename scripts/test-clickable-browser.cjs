@@ -261,7 +261,7 @@ async function until(check, message, timeout = 5000) {
           assert.ok(await heroContainer.count(), 'Featured hero container missing');
           const heroVisible = await heroContainer.isVisible().catch(() => false);
           if (!en && await heroFeatured.count() && heroVisible) {
-            await page.locator('#featured-radar-match[data-state="ready"], #featured-radar-match[data-state="fallback"]').first().waitFor({ state: 'visible' });
+            await until(async () => ['ready', 'fallback'].includes(await heroFeatured.first().getAttribute('data-state')), 'Featured hero state did not become ready/fallback', 15000);
           }
           const root = page.locator('[data-featured-carousel]').first();
           if (!await root.isVisible().catch(() => false)) {
