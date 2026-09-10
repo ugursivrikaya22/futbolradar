@@ -256,9 +256,18 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' featured carousel, pause and card', async () => {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
-          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
           const root = page.locator('[data-featured-carousel]');
           assert.ok(await root.count(), 'Featured carousel missing');
+          // A promo like the Fenerbahce-Roma match focus hides this legacy
+          // widget outright (see match-focus.css: `.match-focus-home
+          // #hero-canli-skor{display:none}`) in favour of its own full-width
+          // hero. That's a deliberate, CSS-only state visible as soon as the
+          // page paints -- there is nothing to click, not a broken carousel.
+          if (!(await root.isVisible())) {
+            console.log('SKIP', viewport.width, locale + ' featured carousel: hidden by a homepage promo');
+            return;
+          }
+          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
           const pause = root.locator('[data-featured-pause]');
           if (await pause.count()) {
             await click(pause);

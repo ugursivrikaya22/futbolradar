@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { createFreshnessTracker } from './lib/sitemapFreshness.mjs';
+import { URL_ENTRY_RE, wrapUrlset } from './lib/sitemap.mjs';
 const require = createRequire(import.meta.url);
 const F = require('../match-focus.js');
 const root = process.cwd(), domain = 'https://www.futbolradar.com';
@@ -60,6 +62,8 @@ function body(locale) {
 function configTag(page) { return `<script type="application/json" id="match-focus-config">${JSON.stringify({ match, probable: cfg.probable, page }).replace(/</g, '\\u003c')}</script>`; }
 function assets() { return '<link rel="stylesheet" href="/match-focus.css" /><script src="/match-focus.js" defer></script>'; }
 const finalized = F.state(match, now) === 'finished';
+const freshness = createFreshnessTracker(root);
+const focusPages = [];
 for (const locale of ['tr', 'en']) {
   const en = locale === 'en', url = F.ROUTES[locale], file = `${url.slice(1)}.html`, base = en ? '../' : './';
   const title = finalized ? F.resultTitle(en) + ' – FutbolRadar' : F.TITLES[locale];
@@ -68,9 +72,34 @@ for (const locale of ['tr', 'en']) {
     : (en ? 'Fenerbahce vs Roma: 10 September, 19:45 (UTC+3), TRT 1 / tabii in Türkiye. Live score, match minute, predicted lineups, goals and match report.' : 'Fenerbahçe Roma maçı 10 Eylül saat 19:45’te TRT 1 / tabii’de. Canlı skor, maç dakikası, muhtemel 11, eksikler, analiz, goller ve maç sonucu FutbolRadar’da.');
   const schema = { '@context': 'https://schema.org', '@type': 'SportsEvent', '@id': domain + url + '#event', name: finalized ? F.resultTitle(en) : 'Fenerbahçe – Roma', description, url: domain + url, startDate: F.KICKOFF, eventStatus: 'https://schema.org/EventScheduled', eventAttendanceMode: 'https://schema.org/OfflineEventAttendance', sport: 'Football', location: { '@type': 'StadiumOrArena', name: 'Chobani Stadyumu Fenerbahçe Şükrü Saracoğlu Spor Kompleksi', address: { '@type': 'PostalAddress', addressLocality: 'Kadıköy, İstanbul', addressCountry: 'TR' } }, homeTeam: { '@type': 'SportsTeam', name: 'Fenerbahçe' }, awayTeam: { '@type': 'SportsTeam', name: 'AS Roma' }, organizer: { '@type': 'Organization', name: 'UEFA', url: 'https://www.uefa.com' } };
   if (F.state(match, now) === 'postponed') schema.eventStatus = 'https://schema.org/EventPostponed';
-  const html = `<!doctype html>\n<html lang="${locale}"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${e(title)}</title><meta name="description" content="${e(description)}" /><meta name="robots" content="index,follow,max-image-preview:large" /><link rel="canonical" href="${domain}${url}" /><link rel="alternate" hreflang="tr-TR" href="${domain}${F.ROUTES.tr}" /><link rel="alternate" hreflang="en" href="${domain}${F.ROUTES.en}" /><link rel="alternate" hreflang="x-default" href="${domain}${F.ROUTES.tr}" /><meta property="og:type" content="website" /><meta property="og:locale" content="${en ? 'en_GB' : 'tr_TR'}" /><meta property="og:site_name" content="FutbolRadar" /><meta property="og:title" content="${e(title)}" /><meta property="og:description" content="${e(description)}" /><meta property="og:url" content="${domain}${url}" /><meta property="og:image" content="${domain}/assets/og-image.svg" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${e(title)}" /><meta name="twitter:description" content="${e(description)}" /><link rel="stylesheet" href="/page.css" />${assets()}<script id="focus-schema" type="application/ld+json">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script></head><body class="subpage">${siteHeader({ base, locale, altHref: F.ROUTES[en ? "tr" : "en"].slice(1) })}${focus ? ticker(locale) : ''}<main>${body(locale)}</main>${siteFooter({ base, locale })}${configTag(true)}<script src="/site.js" defer></script><script src="/app-lite.js" defer></script></body></html>\n`;
+  const html = `<!doctype html>\n<html lang="${locale}"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>${e(title)}</title><meta name="description" content="${e(description)}" /><meta name="robots" content="index,follow" /><link rel="canonical" href="${domain}${url}" /><link rel="alternate" hreflang="tr-TR" href="${domain}${F.ROUTES.tr}" /><link rel="alternate" hreflang="en" href="${domain}${F.ROUTES.en}" /><link rel="alternate" hreflang="x-default" href="${domain}${F.ROUTES.tr}" /><meta property="og:type" content="website" /><meta property="og:locale" content="${en ? 'en_GB' : 'tr_TR'}" /><meta property="og:site_name" content="FutbolRadar" /><meta property="og:title" content="${e(title)}" /><meta property="og:description" content="${e(description)}" /><meta property="og:url" content="${domain}${url}" /><meta property="og:image" content="${domain}/assets/og-image.svg" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content="${e(title)}" /><meta name="twitter:description" content="${e(description)}" /><link rel="stylesheet" href="/page.css" />${assets()}<script id="focus-schema" type="application/ld+json">${JSON.stringify(schema).replace(/</g, '\\u003c')}</script></head><body class="subpage">${siteHeader({ base, locale, altHref: F.ROUTES[en ? "tr" : "en"].slice(1) })}${focus ? ticker(locale) : ''}<main>${body(locale)}</main>${siteFooter({ base, locale })}${configTag(true)}<script src="/site.js" defer></script><script src="/app-lite.js" defer></script></body></html>\n`;
   const markedHtml = html.replace(/(<link rel="alternate" hreflang="tr-TR"[\s\S]*?)(<meta property="og:type")/, '<!-- hreflang:start -->$1<!-- hreflang:end -->$2');
   write(file, markedHtml); write('public/' + file, markedHtml);
+  focusPages.push({ file, loc: domain + url, html: markedHtml });
+}
+
+// The two permanent pages were originally appended to sitemap.xml as
+// unindented one-line entries with no <lastmod>, so URL_ENTRY_RE (which
+// expects the two-space-indented block every other generator writes) never
+// matched them and they went stale forever. Rewrite them in the same shape,
+// with a real content-derived lastmod, alongside everyone else's entries.
+{
+  const sitemapPath = path.join(root, 'sitemap.xml');
+  if (fs.existsSync(sitemapPath)) {
+    const current = fs.readFileSync(sitemapPath, 'utf8');
+    const ownLocs = new Set(focusPages.map(p => p.loc));
+    const retained = (current.match(URL_ENTRY_RE) || []).filter(entry => !ownLocs.has((entry.match(/<loc>([^<]+)<\/loc>/) || [])[1]));
+    const entries = focusPages.map(p => {
+      const lastmod = freshness.lastmodFor(p.file, p.html);
+      return `  <url>\n    <loc>${p.loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.9</priority>\n  </url>`;
+    });
+    const content = wrapUrlset(retained.concat(entries));
+    if (content !== current) {
+      write('sitemap.xml', content);
+      write('public/sitemap.xml', content);
+    }
+    freshness.save();
+  }
 }
 
 // The home generator runs earlier in the shared postprocess chain. These
