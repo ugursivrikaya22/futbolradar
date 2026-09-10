@@ -263,7 +263,7 @@ async function until(check, message, timeout = 5000) {
           if (!en && hasFeaturedApiTarget && heroVisible) {
             await until(async () => (await heroContainer.getAttribute('data-state')) === 'ready', 'Featured hero state did not become ready', 15000);
           }
-          const root = page.locator('[data-featured-carousel]').first();
+          const root = heroContainer.locator('[data-featured-carousel]').first();
           if (!await root.isVisible().catch(() => false)) {
             assert.equal(heroVisible, false, 'Featured carousel missing while hero module is visible');
             const heroHiddenByLayout = await heroContainer.evaluate(node => {
