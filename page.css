@@ -21968,6 +21968,9 @@ a.motm-week__card:focus-visible {
 .cl-spotlight-secondary-teams { font-weight: 800; font-size: var(--fs-md); }
 .cl-spotlight-secondary-time { color: var(--text-soft); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
 /* Shared interaction affordances; decorative cards are not clickable. */
+[data-en-match-detail] [role="tablist"] { margin-top: 16px; }
+[data-en-match-detail] [role="tab"] { min-width: 44px; min-height: 44px; }
+[data-en-match-detail] [role="tab"]:focus-visible { outline-offset: -3px; }
 .player-pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 24px auto; }
 .player-pagination[hidden] { display: none; }
 .player-pagination button { min-width: 72px; min-height: 44px; }

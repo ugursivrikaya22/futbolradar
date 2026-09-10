@@ -1,6 +1,7 @@
 (function () {
   var target = document.querySelector('[data-en-match-detail]');
   if (!target) return;
+  target.classList.add('card');
   var query = new URLSearchParams(location.search);
   var id = query.get('id') || query.get('fixtureId');
   function escape(value) {
@@ -54,16 +55,17 @@
       return '<article class="md-lineup"><h3>' + escape(team) + '</h3><p>' + escape(group.formation || '') + '</p>' + players(group.players) + (substitutes && substitutes.length ? '<h4>Substitutes</h4>' + players(substitutes) : '') + '</article>';
     }).join('');
     target.innerHTML = '<div class="match-scoreboard"><h2>' + escape(title) + '</h2><strong class="big-value">' + escape(score) + '</strong><p>' + escape(status) + (match.minute ? ' · ' + escape(match.minute) + '′' : '') + '</p><p>' + escape(match.competition || match.league || '') + '</p></div>' +
-      '<div class="tabs" role="tablist" aria-label="Match information"><button type="button" role="tab" aria-selected="true" aria-controls="en-match-events" id="en-match-events-tab">Events</button><button type="button" role="tab" aria-selected="false" aria-controls="en-match-stats" id="en-match-stats-tab" tabindex="-1">Statistics</button></div>' +
+      '<div class="standings-tabs__list" role="tablist" aria-label="Match information"><button class="standings-tabs__label filter-chip" type="button" role="tab" aria-selected="true" aria-controls="en-match-events" id="en-match-events-tab">Events</button><button class="standings-tabs__label filter-chip" type="button" role="tab" aria-selected="false" aria-controls="en-match-stats" id="en-match-stats-tab" tabindex="-1">Statistics</button></div>' +
       '<section role="tabpanel" id="en-match-events" aria-labelledby="en-match-events-tab">' + (events.length ? '<ul>' + events.map(function (e) { return '<li>' + escape(typeof e.time === 'string' ? e.time : (e.minute || e.time && e.time.elapsed || '') + '′') + ' ' + escape(e.playerName || e.player && e.player.name || e.value || '') + ' · ' + escape(e.type || e.detail || '') + '</li>'; }).join('') + '</ul>' : '<p>No confirmed match events are available yet.</p>') + '</section>' +
       '<section role="tabpanel" id="en-match-stats" aria-labelledby="en-match-stats-tab" hidden>' + (stats.length ? '<ul>' + stats.map(statisticHtml).join('') + '</ul>' : '<p>Match statistics are not available yet.</p>') + '</section>' +
       '<a class="detail-link" href="./todays-matches.html">View today’s matches</a>';
-    target.querySelector('[role="tablist"]').insertAdjacentHTML('beforeend', '<button type="button" role="tab" aria-selected="false" aria-controls="en-match-lineups" id="en-match-lineups-tab" tabindex="-1">Line-ups</button>');
+    target.querySelector('[role="tablist"]').insertAdjacentHTML('beforeend', '<button class="standings-tabs__label filter-chip" type="button" role="tab" aria-selected="false" aria-controls="en-match-lineups" id="en-match-lineups-tab" tabindex="-1">Line-ups</button>');
     target.insertAdjacentHTML('beforeend', '<section role="tabpanel" id="en-match-lineups" aria-labelledby="en-match-lineups-tab" hidden>' + (lineupHtml ? '<div class="md-lineup-grid">' + lineupHtml + '</div>' : '<p>Confirmed line-ups are not available yet.</p>') + '</section>');
     var tabs = Array.from(target.querySelectorAll('[role="tab"]'));
     function select(index) {
-      tabs.forEach(function (tab, i) { var active = i === index; tab.setAttribute('aria-selected', String(active)); tab.tabIndex = active ? 0 : -1; document.getElementById(tab.getAttribute('aria-controls')).hidden = !active; });
+      tabs.forEach(function (tab, i) { var active = i === index; tab.setAttribute('aria-selected', String(active)); tab.classList.toggle('is-active', active); tab.tabIndex = active ? 0 : -1; document.getElementById(tab.getAttribute('aria-controls')).hidden = !active; });
     }
+    select(0);
     tabs.forEach(function (tab, i) {
       tab.addEventListener('click', function () { select(i); });
       tab.addEventListener('keydown', function (e) { if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].indexOf(e.key) < 0) return; e.preventDefault(); var n = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 : (i + (e.key === 'ArrowLeft' ? -1 : 1) + tabs.length) % tabs.length; select(n); tabs[n].focus(); });
