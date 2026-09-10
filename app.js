@@ -10460,17 +10460,19 @@
         teams = teams || [];
         if (!teams.length) {
           setUnavailable(target, PROVIDER_NO_DATA_MESSAGE, retry);
+          target.insertAdjacentHTML("beforeend", '<a class="detail-link" href="./takimlar.html">Takım listesine dön</a>');
           return;
         }
 
         var query = new URLSearchParams(window.location.search);
         var wanted = normalizeSearchText(query.get("team") || query.get("teamId") || query.get("id"));
-        var team = teams.find(function (item) {
+        var team = wanted && teams.find(function (item) {
           return normalizeSearchText(item.name) === wanted || normalizeSearchText(item.id) === wanted || normalizeSearchText(item.providerId) === wanted;
-        }) || teams[0];
+        });
 
         if (!team) {
-          setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok.");
+          setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok. Takım listesinden bir takım seçebilirsiniz.");
+          target.insertAdjacentHTML("beforeend", '<a class="detail-link" href="./takimlar.html">Takım listesine dön</a>');
           return;
         }
 

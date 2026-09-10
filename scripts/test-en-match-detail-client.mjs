@@ -20,11 +20,14 @@ const styles = fs.readFileSync(new URL('../page.css', import.meta.url), 'utf8');
 const browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
 try {
   const page = await browser.newPage({ viewport: { width: 360, height: 800 } });
+  await page.clock.install();
+  let fail = false;
+  let requests = 0;
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
   await page.route('**/*', route => {
     const pathname = new URL(route.request().url()).pathname;
-    if (pathname === '/api/match-detail') return route.fulfill({ json: fixture });
+    if (pathname === '/api/match-detail') { requests++; return fail ? route.abort('failed') : route.fulfill({ json: fixture }); }
     if (pathname === '/match-detail-en.js') return route.fulfill({ contentType: 'application/javascript; charset=utf-8', body: client });
     if (pathname === '/page.css') return route.fulfill({ contentType: 'text/css; charset=utf-8', body: styles });
     return route.fulfill({ contentType: 'text/html; charset=utf-8', body: '<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="/page.css"><h1>Match details</h1><main data-en-match-detail></main><script src="/match-detail-en.js"></script>' });
@@ -43,6 +46,38 @@ try {
   const lineups = await page.locator('#en-match-lineups').innerText();
   for (const player of ['Home starter', 'Home reserve', 'Away starter', 'Away reserve']) assert.ok(lineups.includes(player), player);
   assert.equal(await page.locator('#en-match-lineups h4').count(), 2);
+  await page.locator('#en-match-stats-tab').click();
+  fixture.data[0].score.home = 2;
+  fixture.data[0].statistics[0].home = 77;
+  await page.clock.fastForward(15000);
+  await page.waitForFunction(() => document.querySelector('.big-value').textContent === '2 – 0');
+  assert.equal(await page.locator('#en-match-stats-tab').getAttribute('aria-selected'), 'true');
+  assert.equal(await page.locator('#en-match-stats-tab').evaluate(node => node === document.activeElement), true);
+  assert.match(await page.locator('#en-match-stats').innerText(), /Possession: 77%/);
+  const before = requests;
+  fail = true;
+  await page.locator('[data-detail-reload]').click();
+  await page.locator('[data-en-match-detail][data-state="stale"]').waitFor();
+  assert.equal(await page.locator('.big-value').innerText(), '2 – 0', 'Keep confirmed content during a failed refresh');
+  assert.match(await page.locator('[data-detail-controls] [role="status"]').innerText(), /Refresh failed/);
+  fail = false;
+  await page.locator('[data-detail-reload]').press('Enter');
+  await page.locator('[data-en-match-detail][data-state="ready"]').waitFor();
+  assert.ok(requests >= before + 2, 'Retry must make a fresh request');
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({width,height:900});
+    await page.locator('#en-match-events-tab').click();
+    await page.locator('#en-match-events-tab').press('ArrowRight');
+    assert.equal(await page.locator('#en-match-stats').isVisible(), true);
+  }
+  fail = true;
+  await page.reload();
+  await page.locator('[data-en-match-detail][data-state="unavailable"]').waitFor();
+  assert.match(await page.locator('[data-en-match-detail]').innerText(), /could not be loaded/);
+  fail = false;
+  await page.locator('[data-detail-reload]').click();
+  await page.locator('#en-match-stats-tab').waitFor();
+  assert.equal(await page.locator('[data-en-match-detail]').getAttribute('aria-busy'), 'false');
   assert.deepEqual(errors, []);
-  console.log('English match detail contract OK: labels, units, zero/missing values, starters, substitutes and 44px tabs');
+  console.log('English match detail contract OK: content, 44px tabs, polling, preserved selection/focus, stale data, network failure and keyboard retry');
 } finally { await browser.close(); }

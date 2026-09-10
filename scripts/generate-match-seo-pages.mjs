@@ -166,6 +166,7 @@ function scoreOf(record) {
 }
 
 function toCandidate(record, source) {
+  record = require("../services/broadcastSchedule.js").applyVerifiedBroadcast(record);
   const eligibility = evaluateEligibility(record);
   if (!eligibility.eligible) return null;
   const homeTeam = canonicalTeamName(record.homeTeam);

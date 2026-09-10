@@ -15,6 +15,21 @@
 const { resolveCompetitionId, findCompetition } = require("./competitionCatalog.js");
 const { sameClub } = require("./superLigTeams.js");
 const { istanbulDay, kickoffMs } = require("./matchStatus.js");
+const broadcastVerifications = require("../data/broadcast-verifications.json");
+
+function verifiedBroadcast(match) {
+  if (!match) return null;
+  const ids = [match.id, match.fixtureId, match.providerId, match.providerIds && match.providerIds.apiFootball].map(String);
+  return broadcastVerifications.find(record => istanbulDay(match.kickoff) === record.date &&
+    (ids.includes(record.providerId) || (sameClub(match.homeTeam, record.homeTeam) && sameClub(match.awayTeam, record.awayTeam)))) || null;
+}
+
+function applyVerifiedBroadcast(match) {
+  const record = verifiedBroadcast(match);
+  if (!record) return match;
+  return { ...match, broadcast: { ...(typeof match.broadcast === "object" ? match.broadcast : {}), turkey: record.turkey },
+    broadcastSourceUrl: record.sourceUrl, broadcastVerifiedAt: record.verifiedAt };
+}
 
 /** Öncelikli turnuva kimlikleri — data/competitions.json'daki `id` alanı. */
 const PRIORITY_COMPETITION_IDS = Object.freeze([
@@ -91,6 +106,8 @@ function selectBroadcastMatches(matches, options = {}) {
  * öncelikli; yoksa boş dize döner ve sayfa bunu uydurmaz.
  */
 function broadcastChannel(match) {
+  const verified = verifiedBroadcast(match);
+  if (verified) return verified.turkey;
   const broadcast = match && match.broadcast;
   if (!broadcast) return "";
   if (typeof broadcast === "string") return text(broadcast);
@@ -106,6 +123,8 @@ function competitionDisplayName(match) {
 }
 
 module.exports = {
+  applyVerifiedBroadcast,
+  verifiedBroadcast,
   PRIORITY_CLUBS,
   PRIORITY_COMPETITION_IDS,
   broadcastChannel,

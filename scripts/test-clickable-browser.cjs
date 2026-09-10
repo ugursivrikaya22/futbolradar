@@ -130,6 +130,14 @@ async function until(check, message, timeout = 5000) {
         assert.equal(new URL(page.url()).pathname.replace(/\.html$/, ''), target.pathname.replace(/\.html$/, ''), 'Wrong destination');
         await page.locator('main').waitFor();
         assert.ok((await page.locator('h1').first().innerText()).trim(), 'Empty destination');
+        if (target.pathname.endsWith('/takim-detay.html')) {
+          await page.locator('[data-api-target="team-detail"][data-state="ready"] [data-card="team-detail"]').waitFor();
+          const requested = target.searchParams.get('team');
+          if (requested) assert.ok((await page.locator('.td-hero').innerText()).includes(requested), 'Wrong team detail content');
+        }
+        if (/\/(oyuncular|en\/player)\//.test(target.pathname)) {
+          assert.ok((await page.locator('main').innerText()).length > 200, 'Player profile has no substantive content');
+        }
         if (target.hash) await page.locator('[id=' + JSON.stringify(decodeURIComponent(target.hash.slice(1))) + ']').waitFor();
         if (target.pathname.includes('en/match-detail')) {
           await page.locator('#en-match-stats-tab').waitFor();
@@ -399,6 +407,13 @@ async function until(check, message, timeout = 5000) {
         await click(page.locator('[data-en-transfer-filter] button[type="reset"]'));
         assert.equal(await select.inputValue(), '');
         assert.ok(await rows.count() >= count);
+      });
+      await test('unknown team has an honest state and a working return route', async () => {
+        await open('takim-detay.html?team=__audit_missing_team__');
+        const panel = page.locator('[data-api-target="team-detail"]');
+        await until(async () => ['empty','unavailable'].includes(await panel.getAttribute('data-state')), 'Unknown team did not reach a terminal state', 20000);
+        assert.equal(await panel.locator('[data-card="team-detail"]').count(), 0, 'Unknown ID must never render the first team');
+        await navigate(panel.locator('a[href="./takimlar.html"]'));
       });
       await test('fixture previous/next and club filter', async () => {
         await open('super-lig-fikstur.html');

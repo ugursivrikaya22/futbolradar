@@ -177,6 +177,7 @@ function matchCardHtml(match) {
     <div class="fixture-card-time">${escapeHtml(kickoffTimeLabel(match) || "Saat bekleniyor")} TSİ</div>
     <div class="fixture-card-rows">${scoreRow(home, homeScore, awayScore)}${scoreRow(away, awayScore, homeScore)}</div>
     ${broadcastRowHtml(channel)}
+    ${match.broadcastSourceUrl ? `<a class="detail-link" href="${escapeHtml(match.broadcastSourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">Yayıncı programını doğrula</a>` : ""}
     <a class="fixture-card-action" href="${escapeHtml(href)}" data-match-click>Maç ayrıntısını aç</a>
   </article>`;
 }
