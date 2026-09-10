@@ -256,12 +256,12 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' featured carousel, pause and card', async () => {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
-          const heroFeatured = page.locator('[data-api-target="featured-match"]');
           const heroContainer = page.locator('#featured-radar-match').first();
           assert.ok(await heroContainer.count(), 'Featured hero container missing');
           const heroVisible = await heroContainer.isVisible().catch(() => false);
-          if (!en && await heroFeatured.count() && heroVisible) {
-            await until(async () => (await heroFeatured.first().getAttribute('data-state')) === 'ready', 'Featured hero state did not become ready', 15000);
+          const hasFeaturedApiTarget = await heroContainer.evaluate(node => node.getAttribute('data-api-target') === 'featured-match');
+          if (!en && hasFeaturedApiTarget && heroVisible) {
+            await until(async () => (await heroContainer.getAttribute('data-state')) === 'ready', 'Featured hero state did not become ready', 15000);
           }
           const root = page.locator('[data-featured-carousel]').first();
           if (!await root.isVisible().catch(() => false)) {
@@ -275,8 +275,9 @@ async function until(check, message, timeout = 5000) {
             });
             assert.equal(heroHiddenByLayout, true, 'Featured carousel hidden for an unexpected reason');
             const focusVisible = await heroContainer.evaluate(node => {
-              const main = node.closest('main');
-              const focus = main ? main.querySelector('section.match-focus') : null;
+              const heroSection = node.closest('section.hero');
+              const candidate = heroSection && heroSection.previousElementSibling;
+              const focus = candidate && candidate.matches && candidate.matches('section.match-focus') ? candidate : null;
               if (!focus) return false;
               const style = getComputedStyle(focus);
               const rect = focus.getBoundingClientRect();
