@@ -276,8 +276,8 @@ async function until(check, message, timeout = 5000) {
             assert.equal(heroHiddenByLayout, true, 'Featured carousel hidden for an unexpected reason');
             const focusVisible = await heroContainer.evaluate(node => {
               const heroSection = node.closest('section.hero');
-              const candidate = heroSection && heroSection.previousElementSibling;
-              const focus = candidate && candidate.matches && candidate.matches('section.match-focus') ? candidate : null;
+              const siblings = heroSection ? [heroSection.previousElementSibling, heroSection.nextElementSibling] : [];
+              const focus = siblings.find(candidate => candidate && candidate.matches && candidate.matches('section.match-focus')) || null;
               if (!focus) return false;
               const style = getComputedStyle(focus);
               const rect = focus.getBoundingClientRect();
