@@ -262,7 +262,7 @@ async function until(check, message, timeout = 5000) {
           }
           const root = page.locator('[data-featured-carousel]:visible').first();
           if (!await root.count()) {
-            assert.ok(await page.locator('[data-focus-board], [data-focus-title]').count(), 'Featured module missing');
+            assert.ok(await page.locator('section.match-focus:visible [data-focus-board], section.match-focus:visible [data-focus-title]').count(), 'Featured module missing');
             return;
           }
           const pause = root.locator('[data-featured-pause]');
