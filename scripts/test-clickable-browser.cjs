@@ -263,7 +263,7 @@ async function until(check, message, timeout = 5000) {
           const heroVisible = await heroContainer.isVisible().catch(() => false);
           if (locale === 'tr') {
             assert.ok(await heroFeatured.count(), 'Featured hero target missing');
-            await until(async () => (await heroFeatured.getAttribute('data-state')) === 'ready', 'Featured hero state did not become ready', 15000);
+            await heroContainer.locator('[data-api-target="featured-match"][data-state="ready"]').first().waitFor({ state: 'attached' });
           }
           const root = heroContainer.locator('[data-featured-carousel]').first();
           if (!await root.isVisible().catch(() => false)) {
