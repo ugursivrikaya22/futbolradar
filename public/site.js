@@ -451,7 +451,7 @@
 
     // Mobilde arama kutusu çekmecenin içinde yaşıyor; büyüteç düğmesi çekmeceyi
     // açıp doğrudan girdiye odaklanır, böylece arama tek dokunuş uzakta kalır.
-    var searchToggle = nav.querySelector(".nav-search-toggle");
+    var searchToggle = nav.querySelector(".nav-search-toggle-mobile");
     if (searchToggle) {
       searchToggle.addEventListener("click", function () {
         nav.classList.add("is-open");
@@ -473,7 +473,15 @@
     });
 
     document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" && nav.classList.contains("is-open")) {
+        closeNav(nav, toggle);
+        toggle.focus();
+      }
+    });
+
+    document.addEventListener("click", function (event) {
+      if (!desktopQuery.matches && nav.classList.contains("is-open") &&
+          !nav.contains(event.target) && !event.target.closest("[data-bottom-nav-menu]")) {
         closeNav(nav, toggle);
       }
     });
@@ -643,18 +651,24 @@
 
     var results = [];
     var activeIndex = -1;
+    var searchVersion = 0;
 
     function hidePanel() {
+      searchVersion += 1;
       panel.hidden = true;
       panel.innerHTML = "";
       input.setAttribute("aria-expanded", "false");
       activeIndex = -1;
       results = [];
+      input.removeAttribute("aria-activedescendant");
     }
 
     function highlight() {
       panel.querySelectorAll(".site-search-option").forEach(function (node, index) {
         node.classList.toggle("is-active", index === activeIndex);
+        node.id = (panel.id || "site-search-results") + "-" + index;
+        node.setAttribute("aria-selected", index === activeIndex ? "true" : "false");
+        if (index === activeIndex) input.setAttribute("aria-activedescendant", node.id);
       });
     }
 
@@ -705,14 +719,18 @@
       }
 
       var needle = foldTurkish(raw);
+      var version = ++searchVersion;
 
       loadSearchIndex(base).then(function (index) {
-        if (input.value.trim() !== raw) {
+        if (input.value.trim() !== raw || version !== searchVersion) {
           return;
         }
 
         var matches = index
           .map(function (entry) {
+            if (searchLocale === "en" && entry.enHref) {
+              entry = Object.assign({}, entry, { href: entry.enHref, locale: "en", badge: "EN" });
+            }
             return { entry: entry, score: scoreEntry(entry, needle, searchLocale) };
           })
           .filter(function (row) {
@@ -734,6 +752,10 @@
     input.addEventListener("focus", search);
 
     input.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        hidePanel();
+        return;
+      }
       if (panel.hidden || !results.length) {
         return;
       }
@@ -753,6 +775,7 @@
         hidePanel();
       }
     });
+    form.addEventListener("futbolradar:search-close", hidePanel);
 
     if (clear) {
       clear.addEventListener("click", function () {
@@ -816,6 +839,11 @@
 
       rail.addEventListener("scroll", sync, { passive: true });
       window.addEventListener("resize", sync);
+      new MutationObserver(sync).observe(rail, { childList: true, subtree: true });
+      if (window.ResizeObserver) {
+        var observer = new ResizeObserver(sync);
+        observer.observe(rail);
+      }
       sync();
     });
   }
@@ -1075,8 +1103,8 @@
       if (focused || !form.classList.contains("is-expanded") && desktopQuery.matches) {
         return;
       }
-      focused = true;
       input.focus();
+      focused = document.activeElement === input;
       if (typeof input.select === "function") {
         input.select();
       }
@@ -1094,6 +1122,7 @@
   function closeDesktopSearch() {
     document.querySelectorAll(".site-search.is-expanded").forEach(function (form) {
       form.classList.remove("is-expanded");
+      form.dispatchEvent(new Event("futbolradar:search-close"));
       var panel = form.querySelector(".site-search-panel");
       if (panel) {
         panel.hidden = true;
@@ -1165,6 +1194,15 @@
     closeDesktopSearch();
   });
   markCurrentPage();
+  // Keep fixture identity and filters when changing language on paired hubs.
+  document.querySelectorAll('[data-lang-switch]').forEach(function (link) {
+    if (!location.search) return;
+    var url = new URL(link.href);
+    new URLSearchParams(location.search).forEach(function (value, key) {
+      if (['id', 'fixtureId', 'date', 'team', 'teamId', 'status', 'league', 'week', 'search', 'page'].indexOf(key) >= 0) url.searchParams.set(key, value);
+    });
+    link.href = url.pathname + url.search + url.hash;
+  });
   setupStickyHeader();
   setupSliders();
   setupFeaturedCarousel();
@@ -1173,6 +1211,91 @@
 
   // app.js istemci tarafında şerit bastığında yeniden bağlanır.
   document.addEventListener("futbolradar:rendered", setupSliders);
+
+  // Radio-backed visual tabs retain their no-JS behavior, with a roving
+  // keyboard focus target and the same selection path for pointer and keys.
+  document.querySelectorAll('[role="tablist"]').forEach(function (list) {
+    var labels = Array.from(list.querySelectorAll('label[role="tab"][for]'));
+    if (!labels.length) return;
+    function syncTabs() {
+      labels.forEach(function (label) {
+        var radio = document.getElementById(label.htmlFor);
+        if (!radio) return;
+        radio.tabIndex = -1;
+        label.tabIndex = radio.checked ? 0 : -1;
+        label.setAttribute("aria-selected", radio.checked ? "true" : "false");
+      });
+    }
+    labels.forEach(function (label, index) {
+      var radio = document.getElementById(label.htmlFor);
+      if (!radio) return;
+      radio.addEventListener("change", syncTabs);
+      label.addEventListener("keydown", function (event) {
+        var next = index;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") next = (index + 1) % labels.length;
+        else if (event.key === "ArrowLeft" || event.key === "ArrowUp") next = (index + labels.length - 1) % labels.length;
+        else if (event.key === "Home") next = 0;
+        else if (event.key === "End") next = labels.length - 1;
+        else if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        document.getElementById(labels[next].htmlFor).click();
+        labels[next].focus({ preventScroll: true });
+        labels[next].scrollIntoView({ block: "nearest", inline: "nearest" });
+      });
+    });
+    syncTabs();
+  });
+
+  // Card surfaces share the existing primary link; controls and secondary
+  // links keep their own actions. No nested anchors or click-catching overlays.
+  var cardSelector = '.fixture-card, .cl-match-card, .column-card, .news-card, .team-card, [data-card="team"], .player-card, .player-detail-card, .league-card, .trend-card';
+  function primaryCardLink(card) {
+    return card.querySelector('.team-card-actions a[href]') || card.querySelector('.fixture-card-action, h2 a[href], h3 a[href], .detail-link[href], .cl-match-card__actions a[href]') || card.querySelector('a[href]');
+  }
+  function setupCards() {
+    document.querySelectorAll(cardSelector).forEach(function (card) {
+      if (card.tagName !== 'A' && primaryCardLink(card)) card.classList.add('interactive-card');
+    });
+  }
+  document.addEventListener('click', function (event) {
+    if (event.defaultPrevented || event.target.closest('a,button,input,select,textarea,label,summary,[role="button"]')) return;
+    var card = event.target.closest(cardSelector);
+    if (!card || card.tagName === 'A' || String(window.getSelection()).trim()) return;
+    var link = primaryCardLink(card);
+    if (!link) return;
+    if (event.ctrlKey || event.metaKey || event.shiftKey) window.open(link.href, '_blank', 'noopener');
+    else link.click();
+  });
+  setupCards();
+  var transferFilter = document.querySelector('[data-en-transfer-filter]');
+  if (transferFilter) {
+    var clubSelect = transferFilter.querySelector('select');
+    clubSelect.value = new URLSearchParams(location.search).get('team') || '';
+    function filterTransfers() {
+      var count = 0;
+      document.querySelectorAll('[data-transfer-team]').forEach(function (row) {
+        row.hidden = Boolean(clubSelect.value && row.dataset.transferTeam !== clubSelect.value && row.dataset.transferFrom !== clubSelect.value);
+        if (!row.hidden) count++;
+      });
+      document.querySelector('[data-transfer-filter-status]').textContent = count ? count + ' transfers' : 'No confirmed transfers for this club.';
+      var url = new URL(location.href);
+      if (clubSelect.value) url.searchParams.set('team', clubSelect.value); else url.searchParams.delete('team');
+      history.replaceState(null, '', url.pathname + url.search);
+    }
+    transferFilter.addEventListener('submit', function (event) { event.preventDefault(); filterTransfers(); });
+    clubSelect.addEventListener('change', filterTransfers);
+    transferFilter.addEventListener('reset', function () { setTimeout(filterTransfers, 0); });
+    filterTransfers();
+  }
+  document.addEventListener('futbolradar:rendered', setupCards);
+  var main = document.querySelector('main');
+  if (main) {
+    var cardUpdate;
+    new MutationObserver(function () {
+      if (cardUpdate) return;
+      cardUpdate = window.requestAnimationFrame(function () { cardUpdate = null; setupCards(); });
+    }).observe(main, { childList: true, subtree: true });
+  }
 })();
 
 /**

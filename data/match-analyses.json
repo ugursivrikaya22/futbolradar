@@ -14479,7 +14479,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-11T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.229Z",
+    "generatedAt": "2026-09-10T04:32:22.791Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -15059,7 +15059,7 @@
           "totalKnownPlayers": 60,
           "unavailableCount": 0,
           "unavailable": [],
-          "knownAvailabilityCoverage": 3,
+          "knownAvailabilityCoverage": 2,
           "rows": [
             {
               "playerId": "semih-kilicsoy",
@@ -15304,8 +15304,8 @@
             {
               "playerId": "j-olaitan-besiktas",
               "name": "J. Olaitan",
-              "status": "doubtful",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "s-ozcan-besiktas",
@@ -16116,12 +16116,12 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.228Z",
+      "generatedAt": "2026-09-10T04:32:22.791Z",
       "asOf": "2026-09-11T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
       "teamStrength": {
-        "home": 61,
+        "home": 60,
         "away": 41
       },
       "probabilities": {
@@ -16143,10 +16143,10 @@
         "label": "medium"
       },
       "matchBalance": {
-        "score": 60,
+        "score": 62,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %57, beraberlik için %29, deplasman için %14 ihtimal hesaplıyor. Takım güç puanları 61/100 - 41/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %57, beraberlik için %29, deplasman için %14 ihtimal hesaplıyor. Takım güç puanları 60/100 - 41/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -16178,7 +16178,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.392Z",
+    "generatedAt": "2026-09-10T04:32:22.961Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -17852,7 +17852,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.392Z",
+      "generatedAt": "2026-09-10T04:32:22.961Z",
       "asOf": "2026-09-12T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
@@ -17914,7 +17914,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.494Z",
+    "generatedAt": "2026-09-10T04:32:23.069Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -18098,15 +18098,27 @@
       "teamName": "Çaykur Rizespor",
       "recentForm": {
         "sampleSize": 5,
-        "points": 13,
-        "wins": 4,
+        "points": 10,
+        "wins": 3,
         "draws": 1,
-        "losses": 0,
-        "goalsFor": 8,
+        "losses": 1,
+        "goalsFor": 5,
         "goalsAgainst": 3,
-        "goalDifference": 5,
-        "weightedScore": 91,
+        "goalDifference": 2,
+        "weightedScore": 65,
         "results": [
+          {
+            "matchId": "caykur-rizespor-alanyaspor-2026-09-07",
+            "kickoff": "2026-09-07T20:00:00+03:00",
+            "opponent": "Alanyaspor",
+            "venue": "home",
+            "goalsFor": 0,
+            "goalsAgainst": 1,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "gaziantep-fk-caykur-rizespor-2026-08-29",
             "kickoff": "2026-08-29T21:30:00+03:00",
@@ -18154,33 +18166,33 @@
             "competitionType": "friendly",
             "formWeight": 0.6,
             "isFriendly": true
-          },
-          {
-            "matchId": "osijek-caykur-rizespor-2026-07-25",
-            "kickoff": "2026-07-25T19:00:00+03:00",
-            "opponent": "Osijek",
-            "venue": "away",
-            "goalsFor": 3,
-            "goalsAgainst": 1,
-            "outcome": "W",
-            "competitionType": "friendly",
-            "formWeight": 0.6,
-            "isFriendly": true
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 2,
+        "sampleSize": 3,
         "points": 4,
         "wins": 1,
         "draws": 1,
-        "losses": 0,
+        "losses": 1,
         "goalsFor": 2,
-        "goalsAgainst": 1,
-        "goalDifference": 1,
-        "weightedScore": 68,
+        "goalsAgainst": 2,
+        "goalDifference": 0,
+        "weightedScore": 35,
         "results": [
+          {
+            "matchId": "caykur-rizespor-alanyaspor-2026-09-07",
+            "kickoff": "2026-09-07T20:00:00+03:00",
+            "opponent": "Alanyaspor",
+            "venue": "home",
+            "goalsFor": 0,
+            "goalsAgainst": 1,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "caykur-rizespor-pyramids-2026-08-08",
             "kickoff": "2026-08-08T20:00:00+03:00",
@@ -18206,7 +18218,7 @@
             "isFriendly": true
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "awayForm": {
         "sampleSize": 3,
@@ -18259,10 +18271,10 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 1.6,
+        "averageGoalsFor": 1,
         "direction": "stable",
         "sampleSize": 5,
-        "score": 64
+        "score": 40
       },
       "defensiveTrend": {
         "averageGoalsAgainst": 0.6,
@@ -18270,9 +18282,9 @@
         "sampleSize": 5,
         "score": 76
       },
-      "restDays": 14,
+      "restDays": 5,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -18833,7 +18845,7 @@
       },
       "form": {
         "home": 26,
-        "away": 91
+        "away": 65
       },
       "availability": {
         "home": 85,
@@ -18935,18 +18947,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.494Z",
+      "generatedAt": "2026-09-10T04:32:23.069Z",
       "asOf": "2026-09-12T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 74,
       "teamStrength": {
         "home": 40,
-        "away": 69
+        "away": 61
       },
       "probabilities": {
-        "homeWin": 16,
-        "draw": 26,
-        "awayWin": 58
+        "homeWin": 20,
+        "draw": 29,
+        "awayWin": 51
       },
       "prediction": {
         "primary": "away",
@@ -18954,18 +18966,18 @@
         "confidence": 74
       },
       "goalPotential": {
-        "score": 38,
+        "score": 33,
         "label": "low"
       },
       "upsetRisk": {
-        "score": 47,
+        "score": 54,
         "label": "medium"
       },
       "matchBalance": {
-        "score": 42,
+        "score": 58,
         "label": "strong-away"
       },
-      "summary": "Model, ev sahibi için %16, beraberlik için %26, deplasman için %58 ihtimal hesaplıyor. Takım güç puanları 40/100 - 69/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 74/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %20, beraberlik için %29, deplasman için %51 ihtimal hesaplıyor. Takım güç puanları 40/100 - 61/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 74/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -18999,7 +19011,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.602Z",
+    "generatedAt": "2026-09-10T04:32:23.183Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -20747,7 +20759,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.601Z",
+      "generatedAt": "2026-09-10T04:32:23.183Z",
       "asOf": "2026-09-12T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -20809,22 +20821,34 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-12T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.710Z",
+    "generatedAt": "2026-09-10T04:32:23.297Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Alanyaspor",
       "recentForm": {
-        "sampleSize": 3,
-        "points": 4,
-        "wins": 1,
+        "sampleSize": 4,
+        "points": 7,
+        "wins": 2,
         "draws": 1,
         "losses": 1,
-        "goalsFor": 3,
+        "goalsFor": 4,
         "goalsAgainst": 3,
-        "goalDifference": 0,
-        "weightedScore": 43,
+        "goalDifference": 1,
+        "weightedScore": 59,
         "results": [
+          {
+            "matchId": "caykur-rizespor-alanyaspor-2026-09-07",
+            "kickoff": "2026-09-07T20:00:00+03:00",
+            "opponent": "Çaykur Rizespor",
+            "venue": "away",
+            "goalsFor": 1,
+            "goalsAgainst": 0,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "eyupspor-alanyaspor-2026-08-30",
             "kickoff": "2026-08-30T19:00:00+03:00",
@@ -20891,16 +20915,28 @@
         "dataStatus": "limited"
       },
       "awayForm": {
-        "sampleSize": 2,
-        "points": 1,
-        "wins": 0,
+        "sampleSize": 3,
+        "points": 4,
+        "wins": 1,
         "draws": 1,
         "losses": 1,
-        "goalsFor": 2,
+        "goalsFor": 3,
         "goalsAgainst": 3,
-        "goalDifference": -1,
-        "weightedScore": 16,
+        "goalDifference": 0,
+        "weightedScore": 46,
         "results": [
+          {
+            "matchId": "caykur-rizespor-alanyaspor-2026-09-07",
+            "kickoff": "2026-09-07T20:00:00+03:00",
+            "opponent": "Çaykur Rizespor",
+            "venue": "away",
+            "goalsFor": 1,
+            "goalsAgainst": 0,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "eyupspor-alanyaspor-2026-08-30",
             "kickoff": "2026-08-30T19:00:00+03:00",
@@ -20926,27 +20962,27 @@
             "isFriendly": false
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "goalTrend": {
         "averageGoalsFor": 1,
-        "direction": "unknown",
-        "sampleSize": 3,
+        "direction": "stable",
+        "sampleSize": 4,
         "score": 40
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1,
-        "direction": "unknown",
-        "sampleSize": 3,
-        "score": 60
+        "averageGoalsAgainst": 0.75,
+        "direction": "stable",
+        "sampleSize": 4,
+        "score": 70
       },
-      "restDays": 13,
+      "restDays": 5,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
-      "confidence": 65,
+      "confidence": 80,
       "dataStatus": "sufficient",
       "warnings": [],
       "leaguePosition": {
@@ -21200,7 +21236,7 @@
         "knownStarterCount": 11,
         "requiredStarterCount": 11,
         "coverage": 100,
-        "confidence": 68,
+        "confidence": 75,
         "starters": [
           {
             "id": "m-bayram-alanyaspor",
@@ -22028,14 +22064,14 @@
         "away": 22
       },
       "form": {
-        "home": 43,
+        "home": 59,
         "away": 24
       },
       "availability": {
         "home": 85,
         "away": 10
       },
-      "confidence": 63,
+      "confidence": 68,
       "advantages": [
         {
           "key": "midfield",
@@ -22092,7 +22128,7 @@
         },
         "advantage": "balanced",
         "advantageScore": 48,
-        "confidence": 76,
+        "confidence": 79,
         "summary": "A. Usluoğlu ve Ege Yildirim arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
@@ -22116,7 +22152,7 @@
         },
         "advantage": "away",
         "advantageScore": 43,
-        "confidence": 61,
+        "confidence": 64,
         "summary": "N. Dismas, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
@@ -22140,7 +22176,7 @@
         },
         "advantage": "balanced",
         "advantageScore": 52,
-        "confidence": 76,
+        "confidence": 79,
         "summary": "E. Karatas ve Y. Sirin arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
@@ -22164,7 +22200,7 @@
         },
         "advantage": "balanced",
         "advantageScore": 50,
-        "confidence": 76,
+        "confidence": 79,
         "summary": "İ. Çelik ve T. Altıkardeş arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
@@ -22188,43 +22224,43 @@
         },
         "advantage": "balanced",
         "advantageScore": 50,
-        "confidence": 76,
+        "confidence": 79,
         "summary": "M. Bayram ve A. Özçimen arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       }
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.710Z",
+      "generatedAt": "2026-09-10T04:32:23.297Z",
       "asOf": "2026-09-12T17:00:00.000Z",
       "predictionStatus": "available",
-      "dataConfidence": 75,
+      "dataConfidence": 80,
       "teamStrength": {
-        "home": 47,
+        "home": 49,
         "away": 34
       },
       "probabilities": {
-        "homeWin": 50,
+        "homeWin": 53,
         "draw": 31,
-        "awayWin": 19
+        "awayWin": 16
       },
       "prediction": {
         "primary": "home",
         "label": "Ev sahibi net önde",
-        "confidence": 75
+        "confidence": 80
       },
       "goalPotential": {
-        "score": 74,
+        "score": 72,
         "label": "high"
       },
       "upsetRisk": {
-        "score": 55,
+        "score": 51,
         "label": "medium"
       },
       "matchBalance": {
-        "score": 74,
+        "score": 70,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %50, beraberlik için %31, deplasman için %19 ihtimal hesaplıyor. Takım güç puanları 47/100 - 34/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 75/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %53, beraberlik için %31, deplasman için %16 ihtimal hesaplıyor. Takım güç puanları 49/100 - 34/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -22232,17 +22268,17 @@
       "awaySquadCoverage": 100,
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
-      "recentFormCoverage": 80,
+      "recentFormCoverage": 90,
       "teamAnalysisCoverage": 50,
       "probableLineupCoverage": 100,
       "officialLineupCoverage": 0,
-      "overallCoverage": 85,
+      "overallCoverage": 86,
       "confidenceLevel": "high",
       "missingComponents": [
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 75,
+    "dataConfidence": 80,
     "analysisStatus": "complete",
     "warnings": []
   },
@@ -22256,7 +22292,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-13T14:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.826Z",
+    "generatedAt": "2026-09-10T04:32:23.418Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -23249,7 +23285,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.826Z",
+      "generatedAt": "2026-09-10T04:32:23.417Z",
       "asOf": "2026-09-13T14:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 61,
@@ -23313,7 +23349,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-13T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:12.921Z",
+    "generatedAt": "2026-09-10T04:32:23.517Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -24105,7 +24141,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:12.921Z",
+      "generatedAt": "2026-09-10T04:32:23.517Z",
       "asOf": "2026-09-13T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 46,
@@ -24172,7 +24208,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-13T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:13.027Z",
+    "generatedAt": "2026-09-10T04:32:23.630Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -25834,7 +25870,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:13.027Z",
+      "generatedAt": "2026-09-10T04:32:23.630Z",
       "asOf": "2026-09-13T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 75,
@@ -25896,7 +25932,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-14T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-10T00:08:13.195Z",
+    "generatedAt": "2026-09-10T04:32:23.734Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -27641,7 +27677,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-10T00:08:13.194Z",
+      "generatedAt": "2026-09-10T04:32:23.734Z",
       "asOf": "2026-09-14T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 81,

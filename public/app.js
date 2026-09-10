@@ -4024,6 +4024,10 @@
   // Servis tarafındaki eşi: services/matchStatus.js -> istanbulDay().
   // Bu blokta durmasının sebebi, test-home-signals'ın istemci ile servisi
   // aynı girdilerle karşılaştırırken bu yardımcıyı da kapsaması.
+  // Reuse ICU's formatter across match sorting/filtering and live refreshes.
+  // Constructing it for every comparison can block the browser for seconds.
+  var istanbulDayFormatter = null;
+  var istanbulDayCache = new Map();
   function istanbulDayOf(value) {
     var raw = String(value || "");
     if (!raw) {
@@ -4039,12 +4043,21 @@
       return raw.slice(0, 10);
     }
 
-    return new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Europe/Istanbul",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).format(parsed);
+    var timestamp = parsed.getTime();
+    if (istanbulDayCache.has(timestamp)) return istanbulDayCache.get(timestamp);
+
+    if (!istanbulDayFormatter) {
+      istanbulDayFormatter = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Europe/Istanbul",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+      });
+    }
+    var day = istanbulDayFormatter.format(parsed);
+    if (istanbulDayCache.size >= 4096) istanbulDayCache.clear();
+    istanbulDayCache.set(timestamp, day);
+    return day;
   }
 
   var DAILY_HEADLINE_LIMIT = 3;
@@ -6522,6 +6535,38 @@
     );
   }
 
+  function renderPaginatedPlayers(target, players, filterKey) {
+    var pageSize = 24;
+    var pages = Math.max(1, Math.ceil(players.length / pageSize));
+    if (target._playerFilterKey === undefined) target._playerPage = Number(new URLSearchParams(location.search).get("page")) || 1;
+    else if (target._playerFilterKey !== filterKey) target._playerPage = 1;
+    target._playerFilterKey = filterKey;
+    var nav = target._playerPagination;
+    if (!nav) {
+      nav = document.createElement("nav");
+      nav.className = "player-pagination";
+      nav.setAttribute("aria-label", "Oyuncu sayfaları");
+      nav.innerHTML = '<button type="button" class="detail-link" data-player-page-prev>Önceki</button><span role="status" aria-live="polite"></span><button type="button" class="detail-link" data-player-page-next>Sonraki</button>';
+      target.insertAdjacentElement("afterend", nav);
+      target._playerPagination = nav;
+    }
+    function draw() {
+      target._playerPage = Math.max(1, Math.min(pages, Math.floor(target._playerPage) || 1));
+      var start = (target._playerPage - 1) * pageSize;
+      setContent(target, players.slice(start, start + pageSize).map(renderPlayerPageCard).join(""));
+      nav.hidden = pages <= 1;
+      nav.querySelector("span").textContent = target._playerPage + " / " + pages + " · " + players.length + " oyuncu";
+      nav.querySelector("[data-player-page-prev]").disabled = target._playerPage === 1;
+      nav.querySelector("[data-player-page-next]").disabled = target._playerPage === pages;
+      var url = new URL(location.href);
+      if (target._playerPage > 1) url.searchParams.set("page", target._playerPage); else url.searchParams.delete("page");
+      history.replaceState(null, "", url.pathname + url.search + url.hash);
+    }
+    nav.querySelector("[data-player-page-prev]").onclick = function () { target._playerPage--; draw(); target.scrollIntoView({ block: "start", behavior: "instant" }); };
+    nav.querySelector("[data-player-page-next]").onclick = function () { target._playerPage++; draw(); target.scrollIntoView({ block: "start", behavior: "instant" }); };
+    draw();
+  }
+
   function renderPlayerPageCard(player) {
     var team = playerTeamDisplay(player);
     var rating = displayValue(player.overallRating || player.aiRating || player.rating);
@@ -8070,12 +8115,13 @@
           }
 
           if (!filtered.length) {
+            renderPaginatedPlayers(target, [], JSON.stringify(state));
             target.innerHTML = '<article class="data-empty player-empty-state" data-card="empty-state"><strong>Oyuncu bulunamadi</strong><span>Bu filtrelerle eslesen oyuncu bulunamadi. Filtreleri genisleterek tekrar deneyebilirsin.</span></article>';
             target.dataset.state = "empty";
             return;
           }
 
-          setContent(target, filtered.map(renderPlayerPageCard).join(""));
+          renderPaginatedPlayers(target, filtered, JSON.stringify(state));
         }
 
         chips.forEach(function (chip) {
@@ -8927,7 +8973,7 @@
         }
 
         updateLandingInsights(target, slug, config, filtered);
-        setContent(target, filtered.map(renderPlayerPageCard).join(""));
+        renderPaginatedPlayers(target, filtered, slug);
       })
       .catch(function () {
         target.innerHTML = staticFallback;
@@ -10414,17 +10460,19 @@
         teams = teams || [];
         if (!teams.length) {
           setUnavailable(target, PROVIDER_NO_DATA_MESSAGE, retry);
+          target.insertAdjacentHTML("beforeend", '<a class="detail-link" href="./takimlar.html">Takım listesine dön</a>');
           return;
         }
 
         var query = new URLSearchParams(window.location.search);
         var wanted = normalizeSearchText(query.get("team") || query.get("teamId") || query.get("id"));
-        var team = teams.find(function (item) {
+        var team = wanted && teams.find(function (item) {
           return normalizeSearchText(item.name) === wanted || normalizeSearchText(item.id) === wanted || normalizeSearchText(item.providerId) === wanted;
-        }) || teams[0];
+        });
 
         if (!team) {
-          setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok.");
+          setEmpty(target, "Takım bulunamadı", "Bu takım için gösterilecek kayıt yok. Takım listesinden bir takım seçebilirsiniz.");
+          target.insertAdjacentHTML("beforeend", '<a class="detail-link" href="./takimlar.html">Takım listesine dön</a>');
           return;
         }
 
@@ -13348,15 +13396,16 @@
 
   function syncThemeToggles() {
     var dark = activeTheme() === "dark";
+    var en = document.documentElement.lang.indexOf("en") === 0;
     var buttons = document.querySelectorAll("[data-theme-toggle]");
 
     for (var i = 0; i < buttons.length; i += 1) {
       var button = buttons[i];
       button.setAttribute("aria-pressed", dark ? "true" : "false");
-      button.setAttribute("aria-label", dark ? "Açık temaya geç" : "Koyu temaya geç");
+      button.setAttribute("aria-label", en ? (dark ? "Switch to light theme" : "Switch to dark theme") : (dark ? "Açık temaya geç" : "Koyu temaya geç"));
       var label = button.querySelector(".theme-toggle-label");
       if (label) {
-        label.textContent = dark ? "Açık Tema" : "Koyu Tema";
+        label.textContent = en ? (dark ? "Light Theme" : "Dark Theme") : (dark ? "Açık Tema" : "Koyu Tema");
       }
     }
 

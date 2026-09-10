@@ -282,7 +282,7 @@ h1 {
   border: 1px solid rgba(13, 148, 136, 0.09);
   border-radius: var(--radius);
   padding: 16px;
-  background: rgba(247, 250, 249, 0.78);
+  background: rgba(var(--surface-rgb), 0.78);
   box-shadow: var(--shadow);
   backdrop-filter: blur(18px);
 }
@@ -364,7 +364,7 @@ h1 {
   border: 1px solid rgba(11, 143, 90, 0.067);
   border-radius: var(--radius);
   padding: 14px 16px;
-  background: rgba(247, 250, 249, 0.72);
+  background: rgba(var(--surface-rgb), 0.72);
   box-shadow: var(--shadow);
 }
 
@@ -3369,12 +3369,12 @@ p {
         display: flex;
         flex-wrap: wrap;
         gap: 9px;
-        margin: -28px 0 18px;
+        margin: 0 0 18px;
       }
 
       .player-quick-links a {
         display: inline-flex;
-        min-height: 36px;
+        min-height: 44px;
         align-items: center;
         border: 1px solid rgba(11, 143, 90, 0.11);
         border-radius: 999px;
@@ -10112,10 +10112,6 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
   cursor: pointer;
 }
 
-.news-card .detail-link {
-  pointer-events: none;
-}
-
 @media (max-width: 640px) {
   .news-card {
     min-height: 0;
@@ -11546,7 +11542,7 @@ body .container {
   top: 0;
   z-index: 60;
   border-bottom: 1px solid var(--glass-border);
-  background: linear-gradient(180deg, rgba(246, 250, 248, 0.94), rgba(246, 250, 248, 0.78));
+  background: linear-gradient(180deg, rgba(var(--surface-rgb), 0.94), rgba(var(--surface-rgb), 0.78));
   backdrop-filter: blur(20px) saturate(140%);
   -webkit-backdrop-filter: blur(20px) saturate(140%);
   transition: box-shadow var(--dur) var(--ease), background var(--dur) var(--ease);
@@ -11843,7 +11839,7 @@ body .container {
   position: relative;
   z-index: 40;
   border-bottom: 1px solid rgba(11, 143, 90, 0.042);
-  background: linear-gradient(90deg, rgba(200, 30, 45, 0.06), rgba(246, 250, 248, 0.6) 22%, rgba(246, 250, 248, 0.6));
+  background: linear-gradient(90deg, rgba(200, 30, 45, 0.06), rgba(var(--surface-rgb), 0.6) 22%, rgba(var(--surface-rgb), 0.6));
 }
 
 .news-ticker-inner {
@@ -14200,6 +14196,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 .trend-card {
+  position: relative;
   display: grid;
   gap: 10px;
   border: 1px solid var(--glass-border);
@@ -14570,6 +14567,10 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
     padding: 10px;
     background: var(--glass-strong);
     box-shadow: var(--shadow-lg);
+    max-height: calc(100dvh - 210px - env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scroll-padding-block: 12px;
   }
 
   .topbar-premium .nav.is-open .nav-menu {
@@ -14589,6 +14590,14 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   .topbar-premium .nav-links-secondary {
     border-top: 1px solid rgba(14, 26, 22, 0.081);
     padding-top: 6px;
+  }
+
+  /* Legacy navbar rules placed every link group in row 2 and the CTA in
+     column 2. Reset that placement inside the single-column drawer. */
+  .topbar-premium .nav-menu > .nav-links,
+  .topbar-premium .nav-menu > .cta {
+    grid-column: 1;
+    grid-row: auto;
   }
 
   .topbar-premium .nav-links a {
@@ -14718,6 +14727,22 @@ table {
   /* Mobilde ok düğmeleri gereksiz: parmakla kaydırma zaten var. */
   .slider-nav {
     display: none;
+  }
+
+  /* Keep the enlarged touch targets inside the viewport. The dots occupy
+     their own row so the pause/arrow buttons cannot be pushed off-screen. */
+  .featured-carousel-nav {
+    flex-wrap: wrap;
+  }
+  .featured-carousel-dots {
+    flex: 0 0 100%;
+    order: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+  .featured-carousel-arrow {
+    flex: 0 0 44px;
   }
 }
 
@@ -20155,22 +20180,9 @@ a.motm-week__card:focus-visible {
   body { padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px)); }
 }
 
-/* ── MOBİL BAŞLIK: yalnızca logo | arama | dil ──────────────────────
-   Hamburger düğmesi alt navigasyondaki "Menü" ile AYNI çekmeceyi
-   açıyordu; iki düğme aynı işi yapınca üst çubuk gereksiz kalabalıktı.
-
-   Düğme KALDIRILMIYOR, yalnızca gizleniyor: alt çubuktaki "Menü" onun
-   tetikleyicisini çağırıyor (site.js) ve DOM'dan çıkarılırsa menü hiç
-   açılmaz. Eşik 900 px — alt navigasyonun göründüğü genişlikle AYNI.
-   901-1365 px arasında alt çubuk yok, orada hamburger tek erişim yolu
-   ve görünür kalmalı. */
+/* Mobil başlık: logo, arama, dil ve doğrudan erişilebilir menü. */
 @media (max-width: 900px) {
-  /* `!important` BURADA ZORUNLU, tercih değil: 1365 px bloğundaki
-     `.topbar-premium .nav-toggle` kuralı `display: inline-grid !important`
-     diyor. Önemli bildirim, kaynak sırasından da özgüllükten de üstün;
-     normal bir `display: none` sessizce kaybediyordu (ölçüldü: hesaplanan
-     değer `grid` kalıyordu). */
-  .nav .nav-toggle { display: none !important; }
+  .nav .nav-toggle { display: inline-grid !important; min-width: 44px; min-height: 44px; }
 
   /* Kalan iki düğme parmak hedefine çıkarıldı (40x40 ve 44x32'ydi). */
   .nav .nav-search-toggle-mobile,
@@ -21955,3 +21967,22 @@ a.motm-week__card:focus-visible {
 .cl-spotlight-secondary-label { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.03em; }
 .cl-spotlight-secondary-teams { font-weight: 800; font-size: var(--fs-md); }
 .cl-spotlight-secondary-time { color: var(--text-soft); font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+/* Shared interaction affordances; decorative cards are not clickable. */
+[data-en-match-detail] [role="tablist"] { margin-top: 16px; }
+[data-detail-controls] button { min-width: 44px; min-height: 44px; }
+[data-en-match-detail] [role="tab"] { flex: 0 0 auto; width: auto; min-width: 44px; min-height: 44px; }
+[data-en-match-detail] [role="tab"][aria-selected="true"] { color: var(--green); border-color: var(--green); background: rgba(11, 143, 90, 0.055); }
+[data-en-match-detail] [role="tab"]:focus-visible { outline-offset: -3px; }
+.player-pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 24px auto; }
+.player-pagination[hidden] { display: none; }
+.player-pagination button { min-width: 72px; min-height: 44px; }
+.player-pagination span { color: var(--muted); font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+[data-api-target="players-page"] { scroll-margin-top: 120px; }
+button:not(:disabled), summary, select, .interactive-card { cursor: pointer; }
+.interactive-card:hover { border-color: var(--green, #0b8f5a); }
+.interactive-card:active { filter: brightness(.97); }
+.interactive-card:focus-within { outline: 2px solid var(--green, #0b8f5a); outline-offset: 3px; }
+a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visible, [role="tab"]:focus-visible {
+  outline: 2px solid var(--green, #0b8f5a); outline-offset: 3px;
+}
