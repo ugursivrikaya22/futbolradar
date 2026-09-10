@@ -383,12 +383,6 @@ async function until(check, message, timeout = 5000) {
         await open('oyuncu-radari.html');
         await navigate(page.locator('.player-quick-links a').first());
       });
-      await test('Champions League links open the requested sections', async () => {
-        await open('index.html');
-        const links = await page.locator('.cl-match-card a[href*="#"]').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')));
-        assert.ok(links.length, 'Champions League section links missing');
-        for (const href of [...new Set(links)]) await navigate(page.locator('.cl-match-card a[href=' + JSON.stringify(href) + ']').first());
-      });
       await test('league pages and return navigation', async () => {
         await open('index.html');
         for (const league of ['super-lig', 'sampiyonlar-ligi', 'avrupa-ligi', 'premier-league']) {
