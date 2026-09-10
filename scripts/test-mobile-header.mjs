@@ -75,7 +75,7 @@ function check(name, condition, detail) {
 
 let browser;
 try {
-  browser = await playwright.chromium.launch();
+  browser = await playwright.chromium.launch(process.platform === "win32" ? { channel: "msedge" } : {});
 } catch (error) {
   console.log(`mobile-header: tarayıcı başlatılamadı, denetim ATLANDI (${String(error.message).slice(0, 120)}).`);
   process.exit(0);
@@ -148,20 +148,9 @@ for (const width of WIDTHS) {
         `brand=${Math.round(centre(measured.brand))} lang=${Math.round(centre(measured.langSwitch))}`);
     }
 
-    /**
-     * HAMBURGER BU GENİŞLİKLERDE GİZLİ OLMALI — ve bu bir gerileme değil,
-     * tasarım kararı: 900 px altında gezinme alt navigasyona taşındı
-     * (`.bottom-nav`, scripts/lib/layout.mjs) ve oradaki "Menü" düğmesi
-     * aynı çekmeceyi açıyor. İki düğme aynı işi yapınca üst çubuk gereksiz
-     * kalabalıklaşıyordu; üstte yalnızca logo, arama ve dil kaldı.
-     *
-     * Düğme DOM'da duruyor (alt çubuk onun tetikleyicisini çağırıyor), bu
-     * yüzden varlığı değil GÖRÜNÜRLÜĞÜ sınanıyor. Test 375/390/430 px'te
-     * koşuyor; üçü de eşiğin altında.
-     */
-    check(`${name}: hamburger gizli (gezinme alt çubukta)`,
-      !measured.toggle || measured.toggle.display === "none" || measured.toggle.width === 0,
-      measured.toggle ? `display=${measured.toggle.display} w=${Math.round(measured.toggle.width)}` : "düğme yok");
+    check(`${name}: hamburger görünür ve dokunulabilir`,
+      Boolean(measured.toggle) && measured.toggle.display !== "none" && measured.toggle.width >= 44 && measured.toggle.height >= 44,
+      measured.toggle ? JSON.stringify(measured.toggle) : "düğme yok");
 
     check(`${name}: kutu etiketi "${target.expectSwitch}"`, measured.langText === target.expectSwitch,
       String(measured.langText));

@@ -90,14 +90,16 @@ const BUNDLES = [
     file: "app-lite.js",
     // Yalnızca tema düğmesi. oyuncular/ ve mac/ sayfalarında app.js'in
     // aradığı başka hiçbir kanca yok.
-    roots: ["initThemeToggle"],
-    boot: ["initThemeToggle();"]
+    roots: ["initThemeToggle", "initPlayerSharing", "initShareBlocks"],
+    boot: ["initThemeToggle();", "initPlayerSharing();", "initShareBlocks();"]
   },
   {
     file: "app-compare.js",
-    roots: ["initThemeToggle", "initPlayerCompare", "initPlayerCompareTray"],
+    roots: ["initThemeToggle", "initPlayerCompare", "initPlayerCompareTray", "initPlayerSharing", "initShareBlocks"],
     boot: [
       "initThemeToggle();",
+      "initPlayerSharing();",
+      "initShareBlocks();",
       'initPlayerCompare(document.querySelector(\'[data-api-target="player-compare"]\'));'
     ]
   }

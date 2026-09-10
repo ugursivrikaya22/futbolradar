@@ -80,8 +80,10 @@ function scoreText(value) {
  * okuyucuya gidecek bir yer de vermek gerekir.
  */
 export function liveTickerItem(item, options = {}) {
-  const { duplicate = false, base = "./" } = options;
-  const href = item.href ? `${base}${String(item.href).replace(/^\.\//, "")}` : "";
+  const { duplicate = false, base = "./", locale = "tr" } = options;
+  const itemPath = String(item.href || "").replace(/^\.\//, "");
+  const localizedPath = locale === "en" ? itemPath.replace(/^mac-detay\.html(?=\?|$)/, "en/match-detail.html") : itemPath;
+  const href = item.href ? `${base}${localizedPath}` : "";
   const attributes = `${href ? ` href="${escapeHtml(href)}"` : ""}${duplicate ? ' tabindex="-1"' : ""}`;
   const tag = item.href ? "a" : "span";
   const aria = `${item.league} | ${item.homeTeam} ${scoreText(item.homeScore)} - ${scoreText(item.awayScore)} ${item.awayTeam} | ${item.minuteOrStatus}`;
@@ -119,8 +121,8 @@ export function liveTickerTrack(records, options = {}) {
   }
 
   const duration = Math.max(18, Math.min(45, items.length * 5)) / 1.2;
-  const primary = items.map((item) => liveTickerItem(item, { duplicate: false, base })).join("");
-  const duplicate = items.map((item) => liveTickerItem(item, { duplicate: true, base })).join("");
+  const primary = items.map((item) => liveTickerItem(item, { duplicate: false, base, locale })).join("");
+  const duplicate = items.map((item) => liveTickerItem(item, { duplicate: true, base, locale })).join("");
   return `<div class="live-scores-ticker__track" style="--live-ticker-duration:${duration}s" data-live-scores-track>
             <div class="live-scores-ticker__group">${primary}</div>
             <div class="live-scores-ticker__group" aria-hidden="true">${duplicate}</div>

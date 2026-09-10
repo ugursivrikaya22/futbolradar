@@ -280,7 +280,9 @@ async function handleMatchAnalysis(req, res, query) {
   });
 
   if (!record) {
-    return matchAnalysisResponse(res, 404, {
+    // Optional UI enrichment can legitimately be absent for a known fixture.
+    // Preserve the existing 404 contract for callers requesting a resource.
+    return matchAnalysisResponse(res, query.optional === "1" ? 200 : 404, {
       ok: false,
       source: "FutbolRadar Analysis",
       updatedAt: null,

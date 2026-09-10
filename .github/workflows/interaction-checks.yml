@@ -1,0 +1,33 @@
+name: Interaction checks
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: interactions-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      # postbuild gates success on lint, types, all routes and real clicks.
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: clickable-audit
+          path: |
+            outputs/clickable/
+            outputs/interaction-routes.json
+          retention-days: 14

@@ -8963,7 +8963,7 @@
       }
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(confirmCopy).catch(function () {});
+        navigator.clipboard.writeText(text).then(confirmCopy).catch(function () { showShareFallback(button, text); });
         return;
       }
 
@@ -8979,8 +8979,9 @@
       field.select();
       try {
         if (document.execCommand("copy")) confirmCopy();
+        else showShareFallback(button, text);
       } catch (error) {
-        // Kopyalanamadı; metin zaten ekranda görünüyor.
+        showShareFallback(button, text);
       }
       document.body.removeChild(field);
     });
@@ -8991,11 +8992,13 @@
       var urlButton = event.target.closest("[data-share-url]");
       if (urlButton) {
         var sharePath = urlButton.getAttribute("data-share-url") || window.location.pathname + window.location.search;
-        var shareUrl = new URL(sharePath, window.location.origin).toString();
+        var shareUrl = new URL(sharePath, window.location.href).toString();
         var shareTitle = urlButton.getAttribute("data-share-label") || document.title || "FutbolRadar";
 
         if (navigator.share) {
-          navigator.share({ title: shareTitle, url: shareUrl }).catch(function () {});
+          navigator.share({ title: shareTitle, url: shareUrl }).catch(function (error) {
+            if (error.name !== "AbortError") showShareFallback(urlButton, shareUrl);
+          });
         } else if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(shareUrl).then(function () {
             var previous = urlButton.textContent;
@@ -9003,8 +9006,8 @@
             window.setTimeout(function () {
               urlButton.textContent = previous;
             }, 1600);
-          }).catch(function () {});
-        }
+          }).catch(function () { showShareFallback(urlButton, shareUrl); });
+        } else showShareFallback(urlButton, shareUrl);
         return;
       }
 
@@ -9014,20 +9017,40 @@
       }
 
       var playerId = button.getAttribute("data-share-player");
-      var url = window.location.origin + window.location.pathname + "?player=" + encodeURIComponent(playerId);
+      var profilePath = document.documentElement.lang.indexOf("en") === 0
+        ? "/en/player/" + encodeURIComponent(playerId) + ".html"
+        : playerProfileHref(playerId);
+      var url = new URL(profilePath, window.location.href).toString();
       var title = "FutbolRadar oyuncu radar kartı";
 
       if (navigator.share) {
-        navigator.share({ title: title, url: url }).catch(function () {});
+        navigator.share({ title: title, url: url }).catch(function (error) {
+          if (error.name !== "AbortError") showShareFallback(button, url);
+        });
       } else if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(url).then(function () {
           button.textContent = "Link kopyalandı";
           window.setTimeout(function () {
             button.textContent = "Radar kartını paylaş";
           }, 1600);
-        }).catch(function () {});
-      }
+        }).catch(function () { showShareFallback(button, url); });
+      } else showShareFallback(button, url);
     });
+  }
+
+  function showShareFallback(button, text) {
+    var previous = document.querySelector("[data-share-fallback]");
+    if (previous) previous.remove();
+    var en = document.documentElement.lang.indexOf("en") === 0;
+    var dialog = document.createElement("dialog");
+    dialog.setAttribute("data-share-fallback", "");
+    dialog.setAttribute("aria-label", en ? "Copy link or text" : "Bağlantıyı veya metni kopyala");
+    dialog.innerHTML = '<p>' + (en ? "Select and copy the text below." : "Aşağıdaki metni seçip kopyalayabilirsiniz.") + '</p><textarea readonly aria-label="' + (en ? "Share text" : "Paylaşım metni") + '"></textarea><form method="dialog"><button type="submit">' + (en ? "Close" : "Kapat") + '</button></form>';
+    dialog.querySelector("textarea").value = text;
+    document.body.appendChild(dialog);
+    dialog.addEventListener("close", function () { dialog.remove(); button.focus(); });
+    dialog.showModal();
+    dialog.querySelector("textarea").select();
   }
 
   var COMPARE_STORAGE_KEY = "futbolradar.compare.players";
@@ -12316,7 +12339,7 @@
       return Promise.resolve(null);
     }
 
-    var url = API_ROOT + "match-analysis?fixtureId=" + encodeURIComponent(fixtureId);
+    var url = API_ROOT + "match-analysis?fixtureId=" + encodeURIComponent(fixtureId) + "&optional=1";
     return fetch(url, { cache: "no-cache" })
       .then(function (response) {
         return response.json().catch(function () { return null; });

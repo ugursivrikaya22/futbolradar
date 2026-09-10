@@ -42,7 +42,7 @@ const root = process.cwd();
  * tuzağa düşerler: "max-age=31536000, immutable" ile servis edilen bir
  * dosyada dönen ziyaretçi bir yıl boyunca eski sürüme kilitlenir.
  */
-const ASSETS = ["page.css", "app.js", "site.js", "app-lite.js", "app-compare.js", "player-profile.js"];
+const ASSETS = ["page.css", "app.js", "site.js", "app-lite.js", "app-compare.js", "player-profile.js", "match-detail-en.js", "pwa.js"];
 
 const SKIP_DIRS = new Set([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs"]);
 const VERIFICATION_FILE = "googlef881b0d7527a8fba.html";

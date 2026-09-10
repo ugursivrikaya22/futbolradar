@@ -123,7 +123,15 @@ check("E) kadro bilgisi yok → 'Kadrolar açıklandığında' notu, boş kutu d
     { team: "Beşiktaş", formation: "4-3-3", players: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"], substitutes: [] }
   ] }, null, baseCtx("tr"));
   assert.ok(official.includes("İlk 11") && official.includes("4-2-3-1") && (official.match(/<ol class="msp-lineup-list">/g) || []).length === 2);
-  assert.equal(lineupsSectionHtml({ lineups: [] }, null, { ...baseCtx("tr"), state: "post" }), "", "bitmiş maçta kadro yoksa bölüm hiç basılmaz");
+  assert.ok(official.includes('id="kadrolar"') && official.includes('id="muhtemel-11"'), "eski kadro bağlantıları resmî ilk 11 açıklandığında korunmalı");
+  for (const locale of ["tr", "en"]) {
+    for (const state of ["post", "pending"]) {
+      const unavailable = lineupsSectionHtml({ lineups: [] }, null, { ...baseCtx(locale), state });
+      assert.ok(unavailable.includes('id="muhtemel-11"'), "maç sonrası kadro hedefi kaybolmamalı");
+      assert.ok(!unavailable.includes("<ol") && !unavailable.includes("is-probable"), "veri yokken oyuncu veya tahmin yazılmamalı");
+      assert.ok(unavailable.includes(locale === "tr" ? "verisi mevcut değil" : "not available"), "veri eksikliği açıkça belirtilmeli");
+    }
+  }
 });
 
 check("olay normalizasyonu: sağlayıcı ve editoryal kayıtlar tek biçime iner", () => {

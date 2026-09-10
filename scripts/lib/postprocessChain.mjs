@@ -38,6 +38,11 @@
 
 /** Zincir; `scripts/` altına göreli betik adı + argümanlar. */
 export const POSTPROCESS_CHAIN = [
+  // Resolve English links after match registries and Turkish pages exist.
+  // Scheduled postprocessing must refresh these links as well as full builds.
+  { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
+  { id: "en-pages", script: "generate-en-pages.mjs", args: [], timeoutMinutes: 5 },
+  { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
   // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
@@ -50,8 +55,7 @@ export const POSTPROCESS_CHAIN = [
   // widget'ı: tek betik (`pwa.js`), tüm sayfalarda. VAPID genel anahtarı
   // burada `<meta>` olarak gömülür — bu yüzden asset-version'dan ÖNCE
   // çalışmalı ki damga adımı yeni eklenen `<script>` etiketini de görsün
-  // (pwa.js bu listede damgalanan varlıklar arasında değil, ama sıra yine
-  // de "önce içerik, sonra damga" kuralını bozmasın diye korunuyor).
+  // pwa.js içerik damgası alır; bu yüzden önce sayfaya bağlanmalıdır.
   { id: "pwa", script: "inject-pwa.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
   // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;

@@ -20,7 +20,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
-const ASSETS = ["page.css", "app.js", "site.js"];
+const ASSETS = ["page.css", "app.js", "site.js", "app-lite.js", "app-compare.js", "player-profile.js", "pwa.js", "match-detail-en.js"];
 const SKIP_DIRS = new Set([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs", "public"]);
 
 function walk(dir, files = []) {
@@ -99,7 +99,9 @@ assert.equal(
     ])
   );
 
-  for (const asset of expected.keys()) {
+  // These three assets have dedicated immutable header rules. Other stamped
+  // bundles may use a grouped rule or intentionally retain a shorter cache.
+  for (const asset of ["page.css", "app.js", "site.js"]) {
     const value = rules.get(`/${asset}`) || "";
     assert.match(
       value,

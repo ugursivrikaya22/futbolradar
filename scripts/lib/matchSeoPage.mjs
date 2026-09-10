@@ -94,6 +94,7 @@ export const STR = {
     channelUnknown: (h, a) => `${h} - ${a} maçının yayın kanalı henüz açıklanmadı. Kanal bilgisi doğrulanmış bir kaynaktan alındığında bu bölüm otomatik güncellenir; tahmini kanal yazılmaz.`,
     lineups: "Muhtemel 11'ler",
     officialLineups: "İlk 11'ler",
+    lineupUnavailable: "Bu maç için doğrulanmış ilk 11 verisi mevcut değil.",
     lineupNote: "Muhtemel 11, doğrulanmış kadro ve uygunluk verisinden üretilen bir tahmindir; resmî 11 açıklandığında bu bölüm otomatik güncellenir.",
     lineupPending: "Kadrolar açıklandığında burada yayımlanır. Muhtemel 11 tahmini doğrulanmış kadro verisi olmadan yazılmaz.",
     predictedBadge: "Muhtemel — Resmî Değil",
@@ -199,6 +200,7 @@ export const STR = {
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
     lineups: "Probable line-ups",
     officialLineups: "Starting line-ups",
+    lineupUnavailable: "Verified starting line-up data is not available for this match.",
     lineupNote: "The probable XI is a prediction built from verified squad and availability data; it updates automatically once the official line-up is announced.",
     lineupPending: "Line-ups will be published here once announced. No probable XI is written without verified squad data.",
     predictedBadge: "Probable — Not Official",
@@ -551,13 +553,17 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
     const away = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "away") || official[1];
     if (home && away && home !== away) {
       const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialLineups)}</span>`;
-      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.officialLineups)}</h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
+      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
     }
   }
 
   // Maç başladıktan sonra "muhtemel" 11 anlamsızdır: bitmiş ya da sonucu
   // bekleyen maçta yalnızca resmî kadro basılır, tahmin gösterilmez.
-  if (ctx.state === "post" || ctx.state === "pending") return "";
+  // Keep previously published lineup deep links useful after kickoff, even
+  // when the provider has not supplied official lineups. Never retain a prediction.
+  if (ctx.state === "post" || ctx.state === "pending") {
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.officialLineups)}</h2><p class="muted-copy">${escapeHtml(text.lineupUnavailable)}</p></section>`;
+  }
   const probable = analysis && analysis.probableLineups;
   const probableSide = (side) => {
     const lineup = probable && probable[side];

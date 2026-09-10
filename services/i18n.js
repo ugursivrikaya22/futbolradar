@@ -160,6 +160,7 @@ const ROUTES = Object.freeze([
     changefreq: "daily",
     priority: "0.8"
   },
+  { key: "matchDetail", tr: "mac-detay.html", en: "en/match-detail.html", changefreq: "daily", priority: "0.5" },
   {
     key: "playerRadar",
     tr: "oyuncu-radari.html",
@@ -329,6 +330,10 @@ const ROUTE_META = Object.freeze({
       title: "Turkish Football Match Centre | FutbolRadar",
       description: "Every match screen in one place: live scores, today's fixtures, verified results and match analysis for Turkish football."
     }
+  },
+  matchDetail: {
+    tr: { title: "Maç Detayı | FutbolRadar", description: "Maç skoru, kadrolar, olaylar ve istatistikler." },
+    en: { title: "Match Details | FutbolRadar", description: "Match score, line-ups, events and statistics from the live match centre." }
   },
   playerRadar: {
     tr: {
