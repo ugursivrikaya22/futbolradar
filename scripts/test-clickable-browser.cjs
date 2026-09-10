@@ -261,7 +261,8 @@ async function until(check, message, timeout = 5000) {
           const heroContainer = heroContainers.first();
           const heroFeatured = heroContainer.locator('[data-api-target="featured-match"]').first();
           const heroVisible = await heroContainer.isVisible().catch(() => false);
-          if (locale === 'tr') {
+          const requiresFeaturedReadyState = locale === 'tr';
+          if (requiresFeaturedReadyState) {
             assert.ok(await heroFeatured.count(), 'Featured hero target missing');
             await heroContainer.locator('[data-api-target="featured-match"][data-state="ready"]').first().waitFor({ state: heroVisible ? 'visible' : 'attached' });
           }
