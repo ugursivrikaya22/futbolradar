@@ -266,6 +266,13 @@ async function until(check, message, timeout = 5000) {
           const root = page.locator('[data-featured-carousel]').first();
           if (!await root.isVisible().catch(() => false)) {
             assert.equal(heroVisible, false, 'Featured carousel missing while hero module is visible');
+            const heroHiddenByLayout = await heroContainer.evaluate(node => {
+              const section = node.closest('section.hero');
+              if (!section) return false;
+              const style = getComputedStyle(section);
+              return section.hidden || style.display === 'none';
+            });
+            assert.equal(heroHiddenByLayout, true, 'Featured carousel hidden for an unexpected reason');
             const focusVisible = await page.locator('section.match-focus [data-focus-board], section.match-focus [data-focus-title]').evaluateAll(nodes =>
               nodes.some(node => {
                 const style = getComputedStyle(node);
