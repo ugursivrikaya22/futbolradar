@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-10T09:39:47.168Z",
+  "updatedAt": "2026-09-10T14:21:33.017Z",
   "matchCount": 1136,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Los Angeles FC",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 15
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -65,24 +65,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 15,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "50589fba473a9e40",
-      "fingerprint": "50589fba473a9e40",
+      "analysisSourceHash": "237dd7c39516af56",
+      "fingerprint": "237dd7c39516af56",
       "analysisGeneratedAt": "2026-09-10T09:39:47.097Z",
-      "analysisUpdatedAt": "2026-09-10T09:39:47.097Z",
-      "generatedAt": "2026-09-10T09:39:47.097Z",
+      "analysisUpdatedAt": "2026-09-10T14:21:32.941Z",
+      "generatedAt": "2026-09-10T14:21:32.941Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -94,7 +99,7 @@
       "reportUrl": "./mac-raporu/los-angeles-fc-new-york-red-bulls-2026-09-10.html",
       "digest": {
         "headline": "Los Angeles FC, New York Red Bulls'u 2-0 yendi",
-        "paragraph": "BMO Stadium'da oynanan Major League Soccer maçını Los Angeles FC 2-0 kazandı; New York Red Bulls sahadan puansız ayrıldı. Golleri 21. dakikada Jude Terry (Los Angeles FC), 90+6. dakikada Armindo Sieb (Los Angeles FC) kaydetti.",
+        "paragraph": "BMO Stadium'da oynanan Major League Soccer maçını Los Angeles FC 2-0 kazandı; New York Red Bulls sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Los Angeles FC",
           "loser": "New York Red Bulls",
@@ -107,94 +112,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "21'",
-              "team": "Los Angeles FC",
-              "type": "Gol",
-              "detail": "Jude Terry",
-              "pivotal": true
-            },
-            {
-              "minute": "90+6'",
-              "team": "Los Angeles FC",
-              "type": "Gol",
-              "detail": "Armindo Sieb",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Armindo Sieb).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "Los Angeles FC",
-              "type": "Oyuncu değişikliği",
-              "detail": "Kenny Nielsen",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Los Angeles FC",
-              "type": "Sarı kart",
-              "detail": "Ryan Raposo",
-              "decisive": false
-            },
-            {
-              "minute": "90'",
-              "team": "Los Angeles FC",
-              "type": "Oyuncu değişikliği",
-              "detail": "Denis Bouanga",
-              "decisive": false
-            },
-            {
-              "minute": "90+6'",
-              "team": "Los Angeles FC",
-              "type": "Gol",
-              "detail": "Armindo Sieb",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Armindo Sieb",
-              "team": "Los Angeles FC",
-              "contribution": "90+6' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Jude Terry",
-              "team": "Los Angeles FC",
-              "contribution": "21' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Dylan Nealis",
-              "team": "New York Red Bulls",
-              "contribution": "18' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Julian Bazan",
-              "team": "New York Red Bulls",
-              "contribution": "52' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -204,32 +137,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "21' Los Angeles FC — Jude Terry: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
-            "90+6' Los Angeles FC — Armindo Sieb: gol",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Los Angeles FC maça 4-3-3 dizilişiyle başladı.",
-            "New York Red Bulls maça 4-3-3 dizilişiyle başladı.",
-            "33' New York Red Bulls değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "56' New York Red Bulls değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "56' New York Red Bulls değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "56' New York Red Bulls değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "New York Red Bulls maça 4-3-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -241,7 +162,7 @@
               "formation": "4-3-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -254,8 +175,7 @@
             "Los Angeles FC daha çok şut denedi (15-8)."
           ],
           "improvements": [
-            "New York Red Bulls şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan.",
-            "New York Red Bulls son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "New York Red Bulls şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Los Angeles FC sahadan 2 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -343,20 +263,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -799,7 +713,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coveragePercent": 50,
       "dataSources": {
         "score": {
           "present": true,
@@ -807,9 +721,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 21
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -829,15 +743,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 21,
+        "events": 0,
         "statistics": 15,
         "lineups": 0,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "lineups",
           "label": "Kadrolar"
@@ -847,11 +765,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9ffcf2bb8b3a78b7",
-      "fingerprint": "9ffcf2bb8b3a78b7",
+      "analysisSourceHash": "ff05640671479426",
+      "fingerprint": "ff05640671479426",
       "analysisGeneratedAt": "2026-09-10T09:39:47.097Z",
-      "analysisUpdatedAt": "2026-09-10T09:39:47.097Z",
-      "generatedAt": "2026-09-10T09:39:47.097Z",
+      "analysisUpdatedAt": "2026-09-10T14:21:32.941Z",
+      "generatedAt": "2026-09-10T14:21:32.941Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -863,7 +781,7 @@
       "reportUrl": "./mac-raporu/portland-timbers-st-louis-city-2026-09-10.html",
       "digest": {
         "headline": "Portland Timbers ile St. Louis City 2-2 berabere kaldı",
-        "paragraph": "Providence Park'ta oynanan Major League Soccer maçında Portland Timbers ile St. Louis City birbirini geçemedi: 2-2. Golleri 1. dakikada Rafael Navarro Leal (St. Louis City), 32. dakikada Kristoffer Velde (Portland Timbers), 51. dakikada Rafael Navarro Leal (St. Louis City), 89. dakikada Kristoffer Velde (Portland Timbers) kaydetti.",
+        "paragraph": "Providence Park'ta oynanan Major League Soccer maçında Portland Timbers ile St. Louis City birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -879,142 +797,39 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "1'",
-              "team": "St. Louis City",
-              "type": "Gol",
-              "detail": "Rafael Navarro Leal",
-              "pivotal": true
-            },
-            {
-              "minute": "32'",
-              "team": "Portland Timbers",
-              "type": "Gol",
-              "detail": "Kristoffer Velde",
-              "pivotal": true
-            },
-            {
-              "minute": "51'",
-              "team": "St. Louis City",
-              "type": "Gol",
-              "detail": "Rafael Navarro Leal",
-              "pivotal": true
-            },
-            {
-              "minute": "89'",
-              "team": "Portland Timbers",
-              "type": "Gol",
-              "detail": "Kristoffer Velde",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Kristoffer Velde).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "80'",
-              "team": "St. Louis City",
-              "type": "Oyuncu değişikliği",
-              "detail": "Rafael Santos",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "St. Louis City",
-              "type": "Oyuncu değişikliği",
-              "detail": "Alexandru Măţan",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Portland Timbers",
-              "type": "Oyuncu değişikliği",
-              "detail": "Kamal Miller",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Portland Timbers",
-              "type": "Oyuncu değişikliği",
-              "detail": "Julio Joao Ortiz Landazuri",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Kristoffer Velde",
-              "team": "Portland Timbers",
-              "contribution": "32' gol · 89' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Rafael Navarro Leal",
-              "team": "St. Louis City",
-              "contribution": "1' gol · 51' gol · 67' sarı kart",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Dante Polvara",
-              "team": "St. Louis City",
-              "contribution": "31' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Eric Miller",
-              "team": "Portland Timbers",
-              "contribution": "58' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
-            "1' St. Louis City — Rafael Navarro Leal: gol",
-            "32' Portland Timbers — Kristoffer Velde: gol",
-            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
-            "51' St. Louis City — Rafael Navarro Leal: gol",
-            "89' Portland Timbers — Kristoffer Velde: gol",
-            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "18' Portland Timbers değişikliği (Substitution 1). Değişiklikten sonra Portland Timbers adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' St. Louis City değişikliği (Substitution 1). Değişiklikten sonra St. Louis City adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "65' St. Louis City değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "65' St. Louis City değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "65' Portland Timbers değişikliği (Substitution 2). Değişiklikten sonra Portland Timbers adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "65' Portland Timbers değişikliği (Substitution 3). Değişiklikten sonra Portland Timbers adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
@@ -1114,20 +929,13 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
-        "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -3517,7 +3325,7 @@
       "season": null,
       "homeTeam": "Sporting CP",
       "awayTeam": "Galatasaray",
-      "venue": null,
+      "venue": "Estádio José Alvalade",
       "score": {
         "home": 3,
         "away": 1
@@ -3577,23 +3385,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ad413efb702ce507",
-      "fingerprint": "ad413efb702ce507",
+      "analysisSourceHash": "2bbadf5911afec7c",
+      "fingerprint": "2bbadf5911afec7c",
       "analysisGeneratedAt": "2026-09-09T21:43:15.079Z",
-      "analysisUpdatedAt": "2026-09-10T04:32:24.708Z",
-      "generatedAt": "2026-09-10T04:32:24.708Z",
+      "analysisUpdatedAt": "2026-09-10T14:21:32.941Z",
+      "generatedAt": "2026-09-10T14:21:32.941Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Sporting CP 3-1 Galatasaray maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
-        "description": "Sporting CP, UEFA Champions League karşılaşmasında Galatasaray'ı 3-1 mağlup etti.",
+        "description": "Sporting CP, Estádio José Alvalade'de oynanan UEFA Champions League karşılaşmasında Galatasaray'ı 3-1 mağlup etti.",
         "path": "mac-raporu/sporting-cp-galatasaray-2026-09-09.html",
         "competition": "UEFA Champions League"
       },
       "reportUrl": "./mac-raporu/sporting-cp-galatasaray-2026-09-09.html",
       "digest": {
         "headline": "Sporting CP, Galatasaray'ı 3-1 yendi",
-        "paragraph": "Sporting CP, UEFA Champions League karşılaşmasında Galatasaray'ı 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Sporting CP, Estádio José Alvalade'de oynanan UEFA Champions League karşılaşmasında Galatasaray'ı 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Sporting CP",
           "loser": "Galatasaray",
@@ -5037,7 +4845,7 @@
       "season": null,
       "homeTeam": "Derby",
       "awayTeam": "West Brom",
-      "venue": "Pride Park",
+      "venue": "Pride Park Stadium",
       "score": {
         "home": 0,
         "away": 1
@@ -5101,23 +4909,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "970463ce51f74404",
-      "fingerprint": "970463ce51f74404",
+      "analysisSourceHash": "ffd1e3816cb33303",
+      "fingerprint": "ffd1e3816cb33303",
       "analysisGeneratedAt": "2026-09-09T21:43:15.079Z",
-      "analysisUpdatedAt": "2026-09-10T04:32:24.708Z",
-      "generatedAt": "2026-09-10T04:32:24.708Z",
+      "analysisUpdatedAt": "2026-09-10T14:21:32.941Z",
+      "generatedAt": "2026-09-10T14:21:32.941Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Derby 0-1 West Brom maç raporu: Championship istatistikleri | FutbolRadar",
-        "description": "West Brom, Pride Park'ta oynanan Championship karşılaşmasında Derby'yi 1-0 mağlup etti.",
+        "description": "West Brom, Pride Park Stadium'da oynanan Championship karşılaşmasında Derby'yi 1-0 mağlup etti.",
         "path": "mac-raporu/derby-west-brom-2026-09-09.html",
         "competition": "Championship"
       },
       "reportUrl": "./mac-raporu/derby-west-brom-2026-09-09.html",
       "digest": {
         "headline": "West Brom, Derby'yi 1-0 yendi",
-        "paragraph": "West Brom, Pride Park'ta oynanan Championship karşılaşmasında Derby'yi 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "West Brom, Pride Park Stadium'da oynanan Championship karşılaşmasında Derby'yi 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "West Brom",
           "loser": "Derby",
@@ -5839,7 +5647,7 @@
       "season": null,
       "homeTeam": "Barcelona",
       "awayTeam": "Feyenoord",
-      "venue": "Camp Nou",
+      "venue": "Spotify Camp Nou",
       "score": {
         "home": 5,
         "away": 1
@@ -5899,23 +5707,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "95e7e3d5d441ead2",
-      "fingerprint": "95e7e3d5d441ead2",
+      "analysisSourceHash": "6da4a95b4a74ff3d",
+      "fingerprint": "6da4a95b4a74ff3d",
       "analysisGeneratedAt": "2026-09-09T21:43:15.079Z",
-      "analysisUpdatedAt": "2026-09-10T00:08:14.675Z",
-      "generatedAt": "2026-09-10T00:08:14.675Z",
+      "analysisUpdatedAt": "2026-09-10T14:21:32.941Z",
+      "generatedAt": "2026-09-10T14:21:32.941Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Barcelona 5-1 Feyenoord maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
-        "description": "Barcelona, Camp Nou'da oynanan UEFA Champions League karşılaşmasında Feyenoord'u 5-1 mağlup etti.",
+        "description": "Barcelona, Spotify Camp Nou'da oynanan UEFA Champions League karşılaşmasında Feyenoord'u 5-1 mağlup etti.",
         "path": "mac-raporu/barcelona-feyenoord-2026-09-09.html",
         "competition": "UEFA Champions League"
       },
       "reportUrl": "./mac-raporu/barcelona-feyenoord-2026-09-09.html",
       "digest": {
         "headline": "Barcelona, Feyenoord'u 5-1 yendi",
-        "paragraph": "Barcelona, Camp Nou'da oynanan UEFA Champions League karşılaşmasında Feyenoord'u 5-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Barcelona, Spotify Camp Nou'da oynanan UEFA Champions League karşılaşmasında Feyenoord'u 5-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Barcelona",
           "loser": "Feyenoord",
@@ -6111,7 +5919,7 @@
       "season": null,
       "homeTeam": "VfB Stuttgart",
       "awayTeam": "Viking",
-      "venue": "MHPArena",
+      "venue": "MHP Arena",
       "score": {
         "home": 3,
         "away": 1
@@ -6171,23 +5979,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6d9be9bbbd65f2db",
-      "fingerprint": "6d9be9bbbd65f2db",
+      "analysisSourceHash": "c9fd54a74708fa6a",
+      "fingerprint": "c9fd54a74708fa6a",
       "analysisGeneratedAt": "2026-09-09T21:43:15.079Z",
-      "analysisUpdatedAt": "2026-09-10T04:32:24.708Z",
-      "generatedAt": "2026-09-10T04:32:24.708Z",
+      "analysisUpdatedAt": "2026-09-10T14:21:32.941Z",
+      "generatedAt": "2026-09-10T14:21:32.941Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "VfB Stuttgart 3-1 Viking maç raporu: UEFA Champions League istatistikleri | FutbolRadar",
-        "description": "MHPArena'da oynanan UEFA Champions League maçını VfB Stuttgart 3-1 kazandı; Viking sahadan puansız ayrıldı.",
+        "description": "MHP Arena'da oynanan UEFA Champions League maçını VfB Stuttgart 3-1 kazandı; Viking sahadan puansız ayrıldı.",
         "path": "mac-raporu/vfb-stuttgart-viking-2026-09-09.html",
         "competition": "UEFA Champions League"
       },
       "reportUrl": "./mac-raporu/vfb-stuttgart-viking-2026-09-09.html",
       "digest": {
         "headline": "VfB Stuttgart, Viking'i 3-1 yendi",
-        "paragraph": "MHPArena'da oynanan UEFA Champions League maçını VfB Stuttgart 3-1 kazandı; Viking sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "MHP Arena'da oynanan UEFA Champions League maçını VfB Stuttgart 3-1 kazandı; Viking sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "VfB Stuttgart",
           "loser": "Viking",
