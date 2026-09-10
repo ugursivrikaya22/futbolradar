@@ -22,6 +22,11 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
+  // The permanent match-day page must see kick-off and full time without
+  // serving the scheduled response from stale-while-revalidate CDN storage.
+  if (String(query.fixtureId || '') === '1635659' || query.id === 'fenerbahce-roma-2026-09-10') {
+    setCachePolicy(res, "match-detail-live");
+  }
   const provider = getProvider("match-detail");
   const localDetail = await mockProvider.getMatchDetail(query);
   let detail = localDetail;

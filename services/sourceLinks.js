@@ -87,6 +87,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "aspor.com.tr",
     "trtspor.com.tr",
     "trt1.com.tr", // The broadcaster's own dated programme, checked for match-specific TV information.
+    "tabii.com", // TRT's official streaming platform for the match broadcast.
     "aa.com.tr",
     "ntvspor.net",
     "ntv.com.tr",

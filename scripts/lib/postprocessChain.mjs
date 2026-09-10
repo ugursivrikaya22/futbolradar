@@ -42,12 +42,14 @@ export const POSTPROCESS_CHAIN = [
   // Scheduled postprocessing must refresh these links as well as full builds.
   { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "en-pages", script: "generate-en-pages.mjs", args: [], timeoutMinutes: 5 },
+  { id: "match-focus-pages", script: "generate-match-focus.mjs", args: [], timeoutMinutes: 5 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
   // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
   // kendiliğinden düşsün diye her derlemede yeniden değerlendirilir.
   { id: "match-special", script: "inject-match-special.mjs", args: [], timeoutMinutes: 5 },
+  { id: "match-focus-ticker", script: "inject-match-focus-ticker.mjs", args: [], timeoutMinutes: 5 },
   // Favicon bildirimi kök-mutlak ve tek biçimli olmalı: 16 üretici kendi
   // göreli satırını basıyor, bu adım onları söküp tek bloğu koyuyor.
   { id: "favicon", script: "inject-favicon.mjs", args: [], timeoutMinutes: 8 },
