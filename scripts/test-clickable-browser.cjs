@@ -258,12 +258,14 @@ async function until(check, message, timeout = 5000) {
           await open(home);
           const heroFeatured = page.locator('[data-api-target="featured-match"]');
           const heroContainer = page.locator('#featured-radar-match').first();
-          if (!en && await heroFeatured.count() && await heroContainer.isVisible().catch(() => false)) {
-            await page.locator('#featured-radar-match[data-state="ready"], #featured-radar-match[data-state="fallback"]').waitFor();
+          assert.ok(await heroContainer.count(), 'Featured hero container missing');
+          const heroVisible = await heroContainer.isVisible().catch(() => false);
+          if (!en && await heroFeatured.count() && heroVisible) {
+            await page.locator('#featured-radar-match:visible[data-state="ready"], #featured-radar-match:visible[data-state="fallback"]').waitFor();
           }
           const root = page.locator('[data-featured-carousel]:visible').first();
           if (!await root.count()) {
-            assert.equal(await heroContainer.isVisible().catch(() => false), false, 'Featured carousel missing while hero module is visible');
+            assert.equal(heroVisible, false, 'Featured carousel missing while hero module is visible');
             assert.ok(await page.locator('section.match-focus:visible [data-focus-board], section.match-focus:visible [data-focus-title]').count(), 'Featured module missing');
             return;
           }
