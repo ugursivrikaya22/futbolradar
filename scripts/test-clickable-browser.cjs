@@ -284,6 +284,8 @@ async function until(check, message, timeout = 5000) {
                 }
               }
               if (!focus) return false;
+              if (!heroSection || !heroSection.parentElement || focus.parentElement !== heroSection.parentElement) return false;
+              if (!heroSection.parentElement.classList || !heroSection.parentElement.classList.contains('home-main')) return false;
               const style = getComputedStyle(focus);
               const rect = focus.getBoundingClientRect();
               if (focus.hidden || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || rect.width === 0 || rect.height === 0) return false;
