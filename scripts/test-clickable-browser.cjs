@@ -274,14 +274,15 @@ async function until(check, message, timeout = 5000) {
               return section.hidden || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || rect.width === 0 || rect.height === 0;
             });
             assert.equal(heroHiddenByLayout, true, 'Featured carousel hidden for an unexpected reason');
-            const focusVisible = await page.locator('section.match-focus').evaluateAll(sections =>
-              sections.some(section => {
-                const style = getComputedStyle(section);
-                const rect = section.getBoundingClientRect();
-                if (section.hidden || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || rect.width === 0 || rect.height === 0) return false;
-                return Boolean(section.querySelector('[data-focus-board], [data-focus-title]'));
-              })
-            );
+            const focusVisible = await heroContainer.evaluate(node => {
+              const main = node.closest('main');
+              const focus = main ? main.querySelector('section.match-focus') : null;
+              if (!focus) return false;
+              const style = getComputedStyle(focus);
+              const rect = focus.getBoundingClientRect();
+              if (focus.hidden || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || rect.width === 0 || rect.height === 0) return false;
+              return Boolean(focus.querySelector('[data-focus-board], [data-focus-title]'));
+            });
             assert.ok(focusVisible, 'Featured module missing');
             return;
           }
