@@ -278,7 +278,7 @@ async function until(check, message, timeout = 5000) {
               nodes.some(node => {
                 const style = getComputedStyle(node);
                 const rect = node.getBoundingClientRect();
-                return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+                return !node.hidden && style.display !== 'none' && style.visibility !== 'hidden' && Number(style.opacity) !== 0 && rect.width > 0 && rect.height > 0;
               })
             );
             assert.ok(focusVisible, 'Featured module missing');
