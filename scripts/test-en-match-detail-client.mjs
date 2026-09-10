@@ -31,9 +31,10 @@ try {
   });
   await page.goto('http://detail.test/en/match-detail.html?id=contract');
   await page.locator('#en-match-stats-tab').click();
-  const targets = await page.locator('[role="tab"]').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height })));
+  const targets = await page.locator('[role="tab"]').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height, left: node.getBoundingClientRect().left, right: node.getBoundingClientRect().right })));
   assert.equal(targets.length, 3);
   assert.ok(targets.every(target => target.width >= 44 && target.height >= 44), JSON.stringify(targets));
+  assert.ok(targets.every(target => target.left >= 0 && target.right <= 361), 'All three tabs must fit on mobile: ' + JSON.stringify(targets));
   assert.equal(await page.locator('#en-match-stats-tab').getAttribute('aria-selected'), 'true');
   assert.ok(await page.locator('#en-match-stats-tab').evaluate(node => node.classList.contains('is-active')));
   const statistics = await page.locator('#en-match-stats').innerText();
