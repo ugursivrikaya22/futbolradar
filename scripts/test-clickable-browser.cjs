@@ -256,9 +256,10 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' featured carousel, pause and card', async () => {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
-          const heroContainer = page.locator('#featured-radar-match').first();
+          const heroContainers = page.locator('#featured-radar-match');
+          assert.ok(await heroContainers.count(), 'Featured hero container missing');
+          const heroContainer = heroContainers.first();
           const heroFeatured = heroContainer.locator('[data-api-target="featured-match"]').first();
-          assert.ok(await heroContainer.count(), 'Featured hero container missing');
           const heroVisible = await heroContainer.isVisible().catch(() => false);
           if (!en && heroVisible) {
             assert.ok(await heroFeatured.count(), 'Featured hero target missing');
