@@ -6,6 +6,25 @@
   function escape(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]; });
   }
+  // The API uses the canonical Turkish statistic names. Keep the English
+  // labels aligned with the existing canonical match-page renderer.
+  var statLabels = {
+    'topla oynama': 'Possession', 'toplam sut': 'Total shots', 'isabetli sut': 'Shots on target', 'isabetsiz sut': 'Shots off target', 'engellenen sut': 'Blocked shots',
+    'ceza sahasi icinden sut': 'Shots inside box', 'ceza sahasi disindan sut': 'Shots outside box', 'korner': 'Corners', 'ofsayt': 'Offsides', 'faul': 'Fouls',
+    'sari kart': 'Yellow cards', 'kirmizi kart': 'Red cards', 'toplam pas': 'Total passes', 'isabetli pas': 'Accurate passes', 'pas isabeti': 'Pass accuracy',
+    'kurtaris': 'Saves', 'gol beklentisi (xg)': 'Expected goals (xG)', 'onlenen gol': 'Goals prevented'
+  };
+  function statisticHtml(stat) {
+    var name = stat.label || stat.type || stat.name || '';
+    var key = String(name).toLocaleLowerCase('tr').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
+    var percent = stat.unit === '%' || key === 'topla oynama' || key === 'pas isabeti';
+    function value(number) {
+      if (number == null) return '—';
+      return escape(number) + (percent && !/%\s*$/.test(String(number)) ? '%' : '');
+    }
+    return '<li>' + escape(statLabels[key] || name) + ': ' + value(stat.home != null ? stat.home : stat.value) +
+      (Object.prototype.hasOwnProperty.call(stat, 'away') ? ' – ' + value(stat.away) : '') + '</li>';
+  }
   function empty() {
     target.innerHTML = '<p>Match details are not available yet.</p><a class="detail-link" href="./todays-matches.html">View today’s matches</a>';
   }
@@ -30,13 +49,14 @@
     var lineups = Array.isArray(match.lineups) ? match.lineups : [];
     var lineupHtml = lineups.map(function (group) {
       var team = typeof group.team === 'string' ? group.team : group.team && group.team.name;
+      var substitutes = Array.isArray(group.substitutes) ? group.substitutes : group.bench;
       function players(list) { return '<ol class="md-lineup-list">' + (list || []).map(function (p) { return '<li>' + escape(typeof p === 'string' ? p : p.name || p.player && p.player.name || '') + '</li>'; }).join('') + '</ol>'; }
-      return '<article class="md-lineup"><h3>' + escape(team) + '</h3><p>' + escape(group.formation || '') + '</p>' + players(group.players) + (group.bench && group.bench.length ? '<h4>Substitutes</h4>' + players(group.bench) : '') + '</article>';
+      return '<article class="md-lineup"><h3>' + escape(team) + '</h3><p>' + escape(group.formation || '') + '</p>' + players(group.players) + (substitutes && substitutes.length ? '<h4>Substitutes</h4>' + players(substitutes) : '') + '</article>';
     }).join('');
     target.innerHTML = '<div class="match-scoreboard"><h2>' + escape(title) + '</h2><strong class="big-value">' + escape(score) + '</strong><p>' + escape(status) + (match.minute ? ' · ' + escape(match.minute) + '′' : '') + '</p><p>' + escape(match.competition || match.league || '') + '</p></div>' +
       '<div class="tabs" role="tablist" aria-label="Match information"><button type="button" role="tab" aria-selected="true" aria-controls="en-match-events" id="en-match-events-tab">Events</button><button type="button" role="tab" aria-selected="false" aria-controls="en-match-stats" id="en-match-stats-tab" tabindex="-1">Statistics</button></div>' +
       '<section role="tabpanel" id="en-match-events" aria-labelledby="en-match-events-tab">' + (events.length ? '<ul>' + events.map(function (e) { return '<li>' + escape(typeof e.time === 'string' ? e.time : (e.minute || e.time && e.time.elapsed || '') + '′') + ' ' + escape(e.playerName || e.player && e.player.name || e.value || '') + ' · ' + escape(e.type || e.detail || '') + '</li>'; }).join('') + '</ul>' : '<p>No confirmed match events are available yet.</p>') + '</section>' +
-      '<section role="tabpanel" id="en-match-stats" aria-labelledby="en-match-stats-tab" hidden>' + (stats.length ? '<ul>' + stats.map(function (s) { return '<li>' + escape(s.label || s.type || s.name || '') + ': ' + escape(s.home != null ? s.home : s.value) + (s.away != null ? ' – ' + escape(s.away) : '') + '</li>'; }).join('') + '</ul>' : '<p>Match statistics are not available yet.</p>') + '</section>' +
+      '<section role="tabpanel" id="en-match-stats" aria-labelledby="en-match-stats-tab" hidden>' + (stats.length ? '<ul>' + stats.map(statisticHtml).join('') + '</ul>' : '<p>Match statistics are not available yet.</p>') + '</section>' +
       '<a class="detail-link" href="./todays-matches.html">View today’s matches</a>';
     target.querySelector('[role="tablist"]').insertAdjacentHTML('beforeend', '<button type="button" role="tab" aria-selected="false" aria-controls="en-match-lineups" id="en-match-lineups-tab" tabindex="-1">Line-ups</button>');
     target.insertAdjacentHTML('beforeend', '<section role="tabpanel" id="en-match-lineups" aria-labelledby="en-match-lineups-tab" hidden>' + (lineupHtml ? '<div class="md-lineup-grid">' + lineupHtml + '</div>' : '<p>Confirmed line-ups are not available yet.</p>') + '</section>');

@@ -13,6 +13,7 @@ for (const args of [
   ['scripts/test-match-analysis-optional.mjs'],
   ['scripts/test-preview-stream.mjs'],
   ['scripts/test-live-score-rate-limit.mjs'],
+  ['scripts/test-en-match-detail-client.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
   ['scripts/test-clickable-browser.cjs']
