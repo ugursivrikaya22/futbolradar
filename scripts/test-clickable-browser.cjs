@@ -270,7 +270,8 @@ async function until(check, message, timeout = 5000) {
               const section = node.closest('section.hero');
               if (!section) return false;
               const style = getComputedStyle(section);
-              return section.hidden || style.display === 'none';
+              const rect = section.getBoundingClientRect();
+              return section.hidden || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0 || rect.width === 0 || rect.height === 0;
             });
             assert.equal(heroHiddenByLayout, true, 'Featured carousel hidden for an unexpected reason');
             const focusVisible = await page.locator('section.match-focus [data-focus-board], section.match-focus [data-focus-title]').evaluateAll(nodes =>
