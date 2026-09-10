@@ -5058,6 +5058,7 @@
     function handleStreamSnapshot(message) {
       var packet;
       try { packet = JSON.parse(message.data); } catch (error) { return; }
+      document.dispatchEvent(new CustomEvent("futbolradar:score-snapshot", { detail: packet }));
       var live = Array.isArray(packet.matches) ? packet.matches : [];
       lastLiveUpdateMs = Date.parse(packet.timing && (packet.timing.api_response_time || packet.timing.apiResponseAt)) || Date.now();
       mergeAndPaint(live, !live.length && hasLiveMatchNow).then(function () {

@@ -1,7 +1,49 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-10T04:35:06.386Z",
+  "updatedAt": "2026-09-10T09:40:18.342Z",
   "items": [
+    {
+      "id": "auto-news-a201238e25cab9babcc0",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe Tarfin, basın mensuplarıyla bir araya geliyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-10T08:47:04.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNTWkxRTFacEdOTHRDRXNkSTJnSVo0NTY4X3g0amlnYnZTWmZDWFZjNzJCcnhMSUY0WGY0aUJrYmJJUHgzQzYtMTZHdGJEclFhWFFsZldHOHNCWkRyNEtWMTd3QWxIZWJGeTdrR2F5TmtjbmZ5WE1DOEhqT08xQ1pZSDFWaFNWQ1Y0eWZFRUxhTEpWbjBacFJmNUQwMF8zSmtNOEFQbFdDS0h2Z1VURlkzTzlDWjk?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-09T16:43:45.000Z"
+      }
+    },
+    {
+      "id": "auto-news-db006d66aff22133f09f",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Eski Yöneticimiz ve sporcumuz Ferhan Baras son yolculuğuna uğurlanıyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-10T08:27:04.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxNdThIY1lRNlZLWC1XZllaSFhqTmhIdkNxSm5OV3VKT2dIQ3lpaDNyVkRXbUlqbDFlT1NNLTdvQ0U2QU45M3lFSDlFb0M3dlhNU2MwMHMxdVRFX1lPWENELTdZNjlfMWtvTXJPMFB5eGY5U3ZJN2NVcnVvZWQwNU95VEhBY1Z1U2VwNlB3X0hUTnBseVNkQXpqUExEcEF3eW9KZDJTWEJZVFdSMmlEVXFpQXJTXzI2SlBVckktNU1KSnZqM2tlb0FsQw?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-4164b10b793c46164548",
       "category": "official",
@@ -25,6 +67,26 @@
       }
     },
     {
+      "id": "auto-news-924f3918d97b5eacaf1b",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Lucas Torreira'dan maç sonrası açıklamalar",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-09T21:29:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNSHBJcWx1Z2lJRzhHdjA0QWJCRVREd3RSM1RwMjh1aURpMkVzcHhmaWRyUEllY3U3eVBXR3VfM3g2QmprcDBCLWtfV2czSlM0azFaTG4zWldUQWNBRXZVVUxMU192MFBTeTZwRlMwLV9KQ3NMQVcyazU3eWRmQ094dFNYWl9EanhaZURTY3J4Y2JmVWE4S3MtbEppeUl1cHlQMDVNdHhpM1M?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-1997b773dee42244b2a3",
       "category": "official",
       "confidence": "confirmed",
@@ -42,7 +104,7 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL",
-        "mergedReports": 2,
+        "mergedReports": 3,
         "firstSeenAt": "2026-09-09T15:07:00.000Z"
       }
     },
@@ -63,9 +125,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-09T16:54:22.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -85,46 +145,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-3f0fb24db71737fe4ce2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "EuroLeague One Team Altın Ödülün sahibi Fenerbahçe Tarfin",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-09T16:43:45.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQME9fU2xWSXBHclVjZU04bU1ITkZyak5MVlRkcnRfX0pOLTNFZHJfcmhoTDltRmFOVlJ2YmlVbjFBVjIyRzJxTGlJTXplNTRJWkJudlRzUDVyVEJ2eExxMEJLTVpaa0VaQU1SaHlqbDdIZS0ybUVTZDRyX2FxM0h4Zi1Ta2xiUDZnamVDSWpUSHpPVVJQaGZ1aUVMNUpBUGxmVTJOdUhXd1pWaTYyanhXTS1oOXVyams?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-3a4bd5e3ef9bc434273e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Bilgilendirme",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-09T16:36:17.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE45dGRTUGhoQWtIS29CUHVyR2Joei1kTThkN2ZKNnExbUR1R2pwQVN3MzRac3liMWlwWV82TVhvNnlRZGg2b3dFUFFleTB6ZWtzSjItTV9DQmRSRnptWWFKRmZNM1ZZQlVYQ3NpbDBKUzdmRmM?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
@@ -159,7 +179,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-09-09T12:35:12.000Z",
       "source": {
-        "name": "bjk.com.tr",
+        "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9iZDBESUJ4ZHVGSWJfSVJNLU1RUDR1YTJsSEZFdlVJRWRmRTVKQUJQeGF0U1h4d1prY09UMGJpTmc5eVNKU2Y0VzNZNC1oS1gwYUQydXZ3bnU1b2M?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -181,7 +201,7 @@
       "team": "Beşiktaş",
       "timestamp": "2026-09-09T12:34:55.000Z",
       "source": {
-        "name": "bjk.com.tr",
+        "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE84U2tMellwbXdvLTR3NlVsWDlHZ25BSHl3X2o1d1I5SUNPNWdtR1hSMW5Db09sZTFpTDF3R3VqWHI2NkxNSjNkbTZpX21aTVhLbk5RdFVMWEpWYU0?oc=5",
         "publisher": "bjk.com.tr"
       },
@@ -203,26 +223,6 @@
       "source": {
         "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNMVFOU1hxY3dQYi02blpCRFEzaFhQempMMDZ2ZHVWbmpRNVlULUxmZmluRlRBcWY5a0x1WUFTTXoxYllCSTZ2M0RXOTNjVFZvcFZtT1FYSXNwT0JfbFJWTFdMWUk4M1h6NzdVWnRhQzE3a19xTzlFQlZIdVhzNWtOR3hB?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-141437e7141f8d062be9",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Rafael Leão: \"Kazanmak için oynayacağız\"",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-08T19:26:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQM1Z0WUMxNWpucmxjVkt4dGV2VU1Ca1Aya0U3NXZSU2dnU094RmZCQXlINDRpOXNrbHdvOTI3dnctQi1LeUthVS1qQVNIWWVGMlNiZ2U3TTJucDdyd1VwYXVUY3prMnYxRHhTY3NLSEJiUnlyRXJ1Qm55RThzRHlCRnc3MVlja1lmWDNqeUVJT2FUN045R1RqcEFvbW00VXlKUnp3?oc=5",
         "publisher": "galatasaray.org"
       },
       "automation": {
@@ -373,16 +373,16 @@
       "important": true
     },
     {
-      "id": "auto-news-7e779521d431893b717b",
+      "id": "auto-news-65239e7a5a1d1c7690cd",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Champions League Matchday 1: Key stats and what to look out for in every game",
+      "text": "2026/27 Champions League: All the league phase fixtures and results",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-10T03:59:37.000Z",
+      "timestamp": "2026-09-10T06:58:02.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxNTVlUUUVydHBENWJEZmlCaDVNY3h0bmZYMVltc01CQkxMc05tQ0tqUUl5NXpEdmZMN3o2a0tuWmkwQlFvZUlXZ3Fjc2VjRFhMcWNBdkR2LU1LZUpZTjZYUkgzSHdKV2pFQ2Rra29sOGpUbTctWnk1VkRPa0VTWXNLb3VOdmtkY1E3djRsbGFhWDA2YjBrRnJkdldGdzJYRzdkMEZNUVdkb29HeWJ1VjFHcV9rZWE4TVhKcDhMSTFZT29CM1Y3eVNoSVhTN1NfV0FhcGI3Rkk0aw?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPYU1sR0picE9CWEtsaUZDekZKVk1yd2dwVjZwbUxZVUNSUHhaVVRsbzk4RmtzdW10VWx3T0JRSHNTLXkyQjd3SmhUWDl5ZmMxR0ZhQWJic0VsSE5UeUcyQldrLUpjM1pacnJhbnFnU3ZfQk5QNVN5aXJvSVNhdlQtamlkdlpMcC0yU3R3aUhYU2lEQW1FOXYybVkzUTVOM0phcElwVVFDOUs3aVRnOEZ4cGtIVkpwc2NTaXlub3lkZ2VidURrcktzeDNIWkFhalpwTGphNGYxRQ?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -391,7 +391,7 @@
         "priority": 9,
         "status": "OFFICIAL",
         "mergedReports": 7,
-        "firstSeenAt": "2026-09-08T23:01:06.000Z"
+        "firstSeenAt": "2026-09-08T15:41:41.000Z"
       }
     },
     {
@@ -435,6 +435,26 @@
       }
     },
     {
+      "id": "auto-news-8a01c8bc43750b6cd48b",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Pau Cubarsí interview: Barcelona defender on his playing principles",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-09-09T09:52:04.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxQU05NT21NNXNnWWs1TllLN1FtM2o3ekYyOFNva3Z3cXN3Z1BWY01iUWQtSXB0TDFyTFBhZ1ExbWxKdWtyekZTd2RudGgwbC1yNFdoRWxPeXhQeHlCT0FBVGIzRDJKZUJZdVpyb01lZlZGQ21vZFpTQmxZal9uZXBmMlkwQnEzVEJtN2F4SVpZUkZSQy1DUzc4d2ZVamdMM2lYWmhxQWNEZVlaaFZBQVprRjFHZU9JYzQzalc3eThCR3NQemlzcVpjNHJtd3RDYzczSmNGeGFkWQ?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-b4405466197c7b88e816",
       "category": "official",
       "confidence": "confirmed",
@@ -451,26 +471,6 @@
         "source": "rss",
         "feed": "super-lig",
         "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-f7539d716182f9283204",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Nepal flood victims honoured ahead of UEFA matches",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-09-07T08:22:15.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxQVEJ4ZDRtYkhVX0c4dGFyYnhsaXFOOFIxcDAzeU8wVXcwZ0FEWnR5YUJaSVkwR0dhMUlUZklmbVdydEtRTllpdXliQm9uZ1d2allDaFlRNEdkR2RPdl9zVlhDRi1VbVJlY1A3VHdkSVJQVWVMbWdQR3BXbFE4OTliMGg1RnZGUkp1LXBQRGduV3ZkeWVORzUyeUo0RlU2V2kyQVNJMHMtWHVXRWpoS0tHX0oybDhFdGoxR3JTeTUzU3lzS2c?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
         "status": "OFFICIAL"
       }
     }
