@@ -257,11 +257,11 @@ async function until(check, message, timeout = 5000) {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
           const heroContainer = page.locator('#featured-radar-match').first();
+          const heroFeatured = heroContainer.locator('[data-api-target="featured-match"]').first();
           assert.ok(await heroContainer.count(), 'Featured hero container missing');
           const heroVisible = await heroContainer.isVisible().catch(() => false);
-          const hasFeaturedApiTarget = await heroContainer.evaluate(node => node.getAttribute('data-api-target') === 'featured-match');
-          if (!en && hasFeaturedApiTarget && heroVisible) {
-            await until(async () => (await heroContainer.getAttribute('data-state')) === 'ready', 'Featured hero state did not become ready', 15000);
+          if (!en && await heroFeatured.count() && heroVisible) {
+            await until(async () => (await heroFeatured.getAttribute('data-state')) === 'ready', 'Featured hero state did not become ready', 15000);
           }
           const root = heroContainer.locator('[data-featured-carousel]').first();
           if (!await root.isVisible().catch(() => false)) {
