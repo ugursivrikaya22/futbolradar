@@ -257,7 +257,21 @@ async function until(check, message, timeout = 5000) {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
           const root = page.locator('[data-featured-carousel]');
-          assert.ok(await root.count(), 'Featured carousel missing');
+          if (!(await root.count())) {
+            // No featurable fixture left (every match of the day has ended and
+            // nothing new qualifies yet): the hero deliberately falls back to
+            // the "Program kontrol ediliyor" card instead of inventing a
+            // fixture -- see staticFeaturedFixture() in
+            // scripts/prerender-core-pages.mjs. That state still owes the
+            // reader a way out, so its routes are clicked here rather than
+            // failing the whole production gate on an honest empty hero.
+            const fallback = page.locator('#featured-radar-match .featured-fixture').first();
+            assert.ok(await fallback.count(), 'Featured carousel missing and no fallback fixture card either');
+            const exits = fallback.locator('.featured-match-actions a');
+            assert.ok(await exits.count(), 'Empty featured hero offers no route out');
+            await navigate(exits.first());
+            return;
+          }
           // A promo like the Fenerbahce-Roma match focus hides this legacy
           // widget outright (see match-focus.css: `.match-focus-home
           // #hero-canli-skor{display:none}`) in favour of its own full-width

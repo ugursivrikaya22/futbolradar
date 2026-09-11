@@ -4474,11 +4474,17 @@
 
     if (!featured) {
       return (
+        '<div class="featured-carousel is-compact-mode" data-featured-carousel' +
+        ' data-featured-interval="' + FEATURED_ROTATION_MS + '"' +
+        ' data-featured-count="1" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">' +
+        '<div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active"' +
+        ' data-featured-slide="0" role="group" aria-roledescription="slayt" aria-label="1 / 1">' +
         '<div class="featured-fixture">' +
         '<div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>' +
         escapeHtml(formatMatchDate(todayInIstanbul())) + "</span></div>" +
         '<div class="home-match-command-empty"><strong>Şu anda doğrulanmış canlı maç yok.</strong><span>Bugünün programını ve sonuçlarını maç merkezinden kontrol edebilirsin.</span></div>' +
         '<div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>' +
+        "</div></div></div>" +
         "</div>" +
         quickStats
       );
@@ -5742,7 +5748,12 @@
         var estimatedEvent = events.slice().reverse().find(function (event) { return event.providerEventTimeEstimated; });
         var detail = {
           packetId: packet.id,
-          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean),
+          // The route stores the first 30 ids and drops any body over 4 KB
+          // outright (server/liveScoreStreamRoute.js). Sending every live
+          // match pushed the payload past that cap on busy evenings, so the
+          // telemetry POST came back 400 and every page logged a console
+          // error. Send only what is actually recorded.
+          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean).slice(0, 30),
           providerEventAt: actualEvent ? actualEvent.providerEventAt : null,
           providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
           serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,

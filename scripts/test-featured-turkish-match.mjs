@@ -360,6 +360,24 @@ const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
 const listMatch = appSource.match(/var TURKISH_TEAM_NAMES = \[([\s\S]*?)\];/);
 assert.ok(listMatch, "app.js içinde TURKISH_TEAM_NAMES listesi bulunmalı");
 
+const emptyFeaturedFallback = appSource.match(/if \(!featured\) \{\s*return \(\s*([\s\S]*?)\n\s*\);\s*\}/);
+assert.ok(emptyFeaturedFallback, "app.js içinde boş featured hero dönüşü bulunmalı");
+assert.match(
+  emptyFeaturedFallback[1],
+  /data-featured-carousel/,
+  "boş featured hero istemcide de karusel kapsayıcısını korumalı"
+);
+assert.match(
+  emptyFeaturedFallback[1],
+  /data-featured-slide="0"/,
+  "boş featured hero tek slayt olarak işaretlenmeli"
+);
+assert.match(
+  emptyFeaturedFallback[1],
+  /featured-match-actions/,
+  "boş featured hero çıkış bağlantılarını korumalı"
+);
+
 const clientNames = JSON.parse(`[${listMatch[1]}]`);
 const clientKeys = new Set(clientNames.map((name) => String(name)
   .normalize("NFD")
