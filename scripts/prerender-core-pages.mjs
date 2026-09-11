@@ -1674,7 +1674,15 @@ function matchQuotesTicker() {
 
   return matchQuotesTickerBlock(verdict, {
     awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",
-    href: (quote) => (quote.matchId ? `./mac-raporu/${quote.matchId}.html` : null)
+    // post-match-reports.json bir maçı FINISHED işaretleyebilir ama o maç
+    // özel bir kalıcı sayfa üzerinden yürüyorsa (bkz. match-focus) standart
+    // generate-post-match-pages.mjs hiç mac-raporu/{matchId}.html üretmez.
+    // Dosya gerçekten yoksa bağlantı kurulmaz; tickerItemHtml o durumda
+    // zaten doğrudan kaynağa (dış bağlantı) düşüyor — kırık iç bağlantı
+    // üretmek yerine.
+    href: (quote) => (quote.matchId && fs.existsSync(path.join(root, "mac-raporu", `${quote.matchId}.html`))
+      ? `./mac-raporu/${quote.matchId}.html`
+      : null)
   });
 }
 
