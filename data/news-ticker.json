@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-11T04:30:58.823Z",
+  "updatedAt": "2026-09-11T09:39:50.902Z",
   "items": [
     {
       "id": "auto-news-a6a16a93d565f3566526",
@@ -20,7 +20,7 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL",
-        "mergedReports": 2,
+        "mergedReports": 3,
         "firstSeenAt": "2026-09-09T13:27:26.000Z"
       }
     },
@@ -291,6 +291,28 @@
       }
     },
     {
+      "id": "auto-news-a08ea97c4e19127c0492",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe-Roma maçını yazdılar: Alkış, İsmail Kartal için! Hakkı galibiyetti",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-11T05:03:00.000Z",
+      "source": {
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahce-roma-macini-yazdilar-alkis-ismail-kartal-icin-hakki-galibiyetti-43303052",
+        "publisher": "hurriyet.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-10T21:50:38.000Z"
+      }
+    },
+    {
       "id": "news-fenerbahce-aziz-yildirim-ismail-b0e97c17",
       "origin": "news.json",
       "category": "club-agenda",
@@ -303,26 +325,6 @@
       },
       "team": "Fenerbahçe",
       "important": true
-    },
-    {
-      "id": "auto-news-4e41c6d3246904f99d76",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Fenerbahçe'de İsmail Kartal görevinden istifa etti!",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-10T21:50:38.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/fenerbahce/2026/09/10/fenerbahcede-ismail-kartal-gorevinden-istifa-etti",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
     },
     {
       "id": "news-besiktas-dusan-vlahovic-55310dec",
@@ -409,16 +411,16 @@
       "important": true
     },
     {
-      "id": "auto-news-345d56c1b38352dd833b",
+      "id": "auto-news-dc4f1953e34cf8d5291f",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Every 2026/27 UEFA Champions League Player of the Match",
+      "text": "Champions League starting line-ups: Matchday 1",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-11T04:10:10.000Z",
+      "timestamp": "2026-09-11T06:35:30.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNQzZ3U0pXaV82aVAxZEwxcmVKclphaHFQNEY1WXRwYnBnQjFKb19mWWtQa0c0WW9SRk9zXzlmdXUxZGFPbndQNTdoT0hNSW4wVUtkeTQycVVqNEF6enhLYlFscmlPeHpEaG96TWxmOUtTRDBITGRfOF9nWjZOQlpJd2ZLVjZLcmZmeklzLXJqSTlIMUNoVlprTzVudVA1ZTZQYmQ3dlVKRWtFbFB2TG9RSDhsOEJ2dnkzQkR5bHJSZEwwOUxiOWlZZEh1SWhSYVdvMThocXJB?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiyAFBVV95cUxOX2hFQUhxcjA3QTBqYTlIc0p2bS1YNmRzdlctbkl4dTAySWZnLXdxQ0QzRWJwNXRpS3RjY2JEbVVfYWJ3Ny1ONjhCVXI5alBtX1BkV0FqX21WY2plRlZZRnVfZndWM1RVUTk2bkJWM0lJRzJrUVRWSHF5WmF4TjNTdVlkNFJCZWU2eEtDM0M4SjlLd085ejBnS2RUTmZOVFNyZGJzNmZCbF9MQkdsdEdlWEdrU3RlMFcwRlBQN3lCREZrOU5URmNMYQ?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -427,7 +429,7 @@
         "priority": 9,
         "status": "OFFICIAL",
         "mergedReports": 6,
-        "firstSeenAt": "2026-09-08T15:41:41.000Z"
+        "firstSeenAt": "2026-09-09T20:46:48.000Z"
       }
     },
     {
