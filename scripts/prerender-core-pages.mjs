@@ -106,7 +106,7 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // Statik yedeğin takvim günü, istemcinin kullandığı kuralla AYNI olmalı
 // (app.js: istanbulDayOf). Ayrışırsa JavaScript açılana kadar farklı bir
 // gün listelenir ve sayfa gözün önünde değişir.
-const { istanbulDay } = require("../services/matchStatus.js");
+const { isDisplayableLive, istanbulDay } = require("../services/matchStatus.js");
 
 /**
  * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
@@ -520,7 +520,9 @@ const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
   const { headlineValue, status, finalScore, quickLinksHtml } = meta;
-  const isLive = status === "LIVE";
+  // Ham durum yerine ortak kapı: derlemede dondurulmuş "LIVE" kaydı
+  // statik karta "Canlı" rozetiyle basılmaz.
+  const isLive = status === "LIVE" && isDisplayableLive(match);
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
   const stateLabel = isFinal ? "MS" : isLive ? "Canlı" : (headlineValue || MATCH_STATUS_TR[status] || "Planlandı");
@@ -575,7 +577,11 @@ function staticFeaturedFixture() {
     .filter((match) => istanbulDay(match.kickoff) >= today)
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 
-  const liveCount = list.filter((match) => String(match.status || "").toUpperCase() === "LIVE").length;
+  // "Canlı" SAYACI HAM DURUMDAN SAYILAMAZ. Sağlayıcı bir maçı hiç
+  // "FINISHED"e çevirmezse ham sayım o maçı günlerce sayar; ana sayfa beş
+  // gün önce oynanmış maçlarla "Canlı 130" yazıyordu. Sayaç da panonun
+  // kullandığı kapıdan geçer.
+  const liveCount = list.filter((match) => isDisplayableLive(match)).length;
   const todayList = list.filter((match) => istanbulDay(match.kickoff) === today);
   const finishedCount = todayList.filter((match) => String(match.status || "").toUpperCase() === "FINISHED").length;
   const upcomingCount = todayList.length - finishedCount - liveCount;
@@ -633,13 +639,20 @@ function staticFeaturedFixture() {
   const card = (entry) => {
     const match = entry.match;
     const status = String(match.status || "SCHEDULED").toUpperCase();
+    // ROZET HAM DURUMDAN TÜRETİLEMEZ.
+    //
+    // Seçici (`selectFeaturedMatches`) tazelik kapısından geçiyordu ama bu
+    // satır kararı yeniden ham `status` üzerinden veriyordu: kapıdan düşmüş
+    // bir kayıt karta yine "Canlı 81'" diye basılıyordu. Derleme bir andır;
+    // o dakika HTML'e dondurulduğunda bir dakika sonra yalan söyler.
+    const live = isDisplayableLive(match);
     const hasScore = match.score && match.score.home !== null && match.score.home !== undefined
       && match.score.away !== null && match.score.away !== undefined;
     const headline = hasScore ? `${match.score.home} - ${match.score.away}` : (match.time || "—");
     // Skor/saat büyük alanda zaten yazıyor; rozet onu tekrar etmesin.
     const stateLabel = status === "FINISHED"
       ? "Maç sonucu"
-      : status === "LIVE"
+      : live
         ? `Canlı${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
         : "Başlama saati";
     const dateLabel = istanbulDay(match.kickoff) === today ? "Bugün" : longDateLabel(match.kickoff);
@@ -653,7 +666,7 @@ function staticFeaturedFixture() {
     // `data-kickoff` scripts/test-hero-freshness.mjs tarafından denetlenir:
     // ana sayfada kalan bir kart, maçın gerçek başlama saatinden GRACE_HOURS
     // fazla eskiyse derleme kırılır.
-    return `<div class="featured-fixture${status === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
+    return `<div class="featured-fixture${live ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(entry.reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
       <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMarkHtml(match.league)}${escapeHtml(match.league || "Maç programı")}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Saha bilgisi bekleniyor"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(match.homeTeam)}
@@ -682,7 +695,10 @@ function staticFeaturedFixture() {
     ? "is-live-mode"
     : "is-compact-mode";
 
-  return `<div class="featured-carousel ${carouselMode}" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="${selections.length}" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+  // Derleme anı karuselin üstüne yazılır — bkz. scripts/lib/liveScoresTicker.mjs
+  // `renderedAt` notu. İstemci bu damgayı okuyup tazelik ömrünü aşmış statik
+  // "Canlı" rozetlerini API'ye hiç bağlanmadan söker.
+  return `<div class="featured-carousel ${carouselMode}" data-featured-carousel data-live-rendered-at="${escapeHtml(new Date().toISOString())}" data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="${selections.length}" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
       <div class="featured-carousel-viewport">${slides}</div>
       ${nav}
     </div>${quickStats}`;

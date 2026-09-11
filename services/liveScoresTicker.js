@@ -81,11 +81,19 @@ function statusOf(match) {
  * Maç ŞU AN oynanıyor mu?
  *
  * Skoru olsun ya da olmasın — dakika göstermek skor iddiası değildir; bu
- * yüzden `liveVerdict`in skorsuz canlıya verdiği `live-without-score`
- * reddi bantta kabul edilir. Başka hiçbir reddediş kabul edilmez: özellikle
- * `stale-live` (başlama saatinin üstünden LIVE_GRACE_MS geçmiş) buradan
- * geçemez — dosyada donmuş kalmış bir "LIVE" kaydı bandın tepesine
+ * yüzden skor kapısı bant için KAPATILIR. Başka hiçbir kapı kapatılmaz:
+ * özellikle `stale-live` (başlama saatinin üstünden LIVE_GRACE_MS geçmiş)
+ * buradan geçemez — dosyada donmuş kalmış bir "LIVE" kaydı bandın tepesine
  * çıkaran şey tam olarak oydu.
+ *
+ * SKOR KAPISI REDDİ ELEYEREK DEĞİL, KAPIYI KAPATARAK AŞILIR. Reddi
+ * `reason === "live-without-score"` diye kabul etmek, kapı sırası yüzünden
+ * fazlasını geçirir: skor kapısı doğrulanabilirlik kapısından ÖNCE çalışır,
+ * dolayısıyla ne başlama saati ne güncellenme damgası taşıyan bir kayıt —
+ * canlılığı hiçbir biçimde doğrulanamayan, süresi de hiç dolmayacak kayıt —
+ * o redde takılır ve "skorsuz canlı" sanılıp banda girerdi.
+ * `requireScore: false` ile skor kapısı hiç çalışmaz ve böyle bir kayıt
+ * doğru kapıda, `live-without-clock`ta düşer.
  *
  * `nowMs` yalnızca test içindir; verilmezse şu an okunur.
  */
@@ -95,8 +103,10 @@ function isCurrentlyLive(match, options = {}) {
   if (FINISHED_STATUSES.has(status) || OFF_STATUSES.has(status)) return false;
   if (match.live !== true && !LIVE_STATUSES.includes(status)) return false;
 
-  const verdict = liveVerdict(match, Number.isFinite(options.nowMs) ? { nowMs: options.nowMs } : undefined);
-  return verdict.live || verdict.reason === "live-without-score";
+  return liveVerdict(match, {
+    nowMs: Number.isFinite(options.nowMs) ? options.nowMs : undefined,
+    requireScore: false
+  }).live;
 }
 
 /** "67'", "HT", "ET" — dakika varsa dakika, yoksa kısa durum etiketi. */

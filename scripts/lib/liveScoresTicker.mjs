@@ -141,7 +141,20 @@ export function liveTickerTrack(records, options = {}) {
   const duration = Math.max(18, Math.min(45, items.length * 5)) / 1.2;
   const primary = items.map((item) => liveTickerItem(item, { duplicate: false, base, locale })).join("");
   const duplicate = items.map((item) => liveTickerItem(item, { duplicate: true, base, locale })).join("");
-  return `<div class="live-scores-ticker__track" style="--live-ticker-duration:${duration}s" data-live-scores-track>
+
+  // DERLEME ANI ŞERİDİN ÜSTÜNE YAZILIR.
+  //
+  // Ön derleme bir ANDIR: "89'" yazan statik bant bir dakika sonra yalan
+  // söyler, bir gün sonra beş gün önce oynanmış maçı canlı gösterir. Statik
+  // HTML kendi kendini düzeltemez çünkü içinde zaman yoktur. Bu damga o
+  // zamanı işaretlemesine izin verir: istemci (app.js neutralizeStaleLive)
+  // damgayı okur ve tazelik ömrünü aşmış bandı boş duruma çevirir —
+  // API'ye hiç bağlanmadan, ilk boyamadan önce.
+  const renderedAt = Number.isFinite(options.renderedAt)
+    ? new Date(options.renderedAt).toISOString()
+    : new Date().toISOString();
+
+  return `<div class="live-scores-ticker__track" style="--live-ticker-duration:${duration}s" data-live-scores-track data-live-rendered-at="${escapeHtml(renderedAt)}">
             <div class="live-scores-ticker__group">${primary}</div>
             <div class="live-scores-ticker__group" aria-hidden="true">${duplicate}</div>
           </div>`;

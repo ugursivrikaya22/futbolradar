@@ -351,8 +351,18 @@ assert.ok(blockMatch, "app.js içinde daily-headlines bloğu bulunmalı");
 // üretim davranışını birebir temsil etmek — daraltmak değil.
 const { isTurkishMatch: realIsTurkishMatch } = require("../services/turkishTeams.js");
 
+// BAYAT CANLI KAPISI TAKLİT EDİLMEZ, ÜRETİMDEKİ BLOK ENJEKTE EDİLİR.
+//
+// "Günün başlıkları" bloğu canlılığı artık ortak kapıya (LiveGuard) soruyor.
+// Kapıyı burada basitleştirilmiş bir taklitle değiştirmek, parite testini
+// üretimde çalışmayan bir kurala göre yeşile boyardı — tazelik kapılarının
+// tamamı (gün, saat, son güncellenme) denetim dışı kalırdı.
+const guardBlock = appSource.match(/\/\/ live-freshness-guard:start([\s\S]*?)\/\/ live-freshness-guard:end/);
+assert.ok(guardBlock, "app.js live-freshness-guard bloğunu taşımalı");
+
 const clientModule = new Function("isTurkishMatch", `
   "use strict";
+  ${guardBlock[1]}
   function isLiveMatch(match) {
     if (!match) return false;
     if (match.live === true) return true;

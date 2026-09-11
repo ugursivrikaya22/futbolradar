@@ -106,6 +106,21 @@ const UNPLAYED_STATES = new Set(["POSTPONED", "CANCELLED", "ABANDONED"]);
 const LIVE_GRACE_MS = 150 * 60 * 1000;
 
 /**
+ * CANLI VERİNİN TAZELİK ÖMRÜ.
+ *
+ * `LIVE_GRACE_MS` "maç ne kadar sürer?" sorusunu yanıtlar; bu eşik ise
+ * "elimdeki kayıt ne kadar önce güncellendi?" sorusunu. İkisi ayrı sorudur:
+ * 20:00'de başlayan bir maç 20:30'da hâlâ süre penceresindedir, ama o maçın
+ * kaydı en son 20:02'de güncellendiyse ekrandaki dakika ve skor donmuştur.
+ * Sağlayıcı akışı kesildiğinde, önbellek eski JSON'u servis ettiğinde ya da
+ * derleme anında dondurulmuş statik veri geri geldiğinde olan tam budur.
+ *
+ * Canlı bir maç dakikada bir güncellenir; on iki dakika hiç güncellenmemiş
+ * bir "canlı" kayıt canlı değildir, DONMUŞTUR.
+ */
+const LIVE_DATA_STALE_MS = 12 * 60 * 1000;
+
+/**
  * Sağlayıcı bir alanı döndürmediğinde arayüzde görünecek metin.
  *
  * "Veri bekleniyor" ile bilinçli olarak farklı: o metin "henüz gelmedi,
@@ -266,6 +281,66 @@ function kickoffMs(match) {
 }
 
 /**
+ * KAYDIN SON GÜNCELLENME ANI.
+ *
+ * Sağlayıcılar ve ara katmanlar bu damgayı altı ayrı adla taşıyor; hiçbiri
+ * garanti değil. Hepsi denenir, ilk OKUNABİLİR olan kazanır — okunamayan
+ * bir damga "damga yok" demektir, "şimdi güncellendi" demek değil.
+ *
+ * Damga yoksa `null` döner ve tazelik kapısı o kayıt için ÇALIŞMAZ; onun
+ * yerine başlama saati kapısı devreye girer. Damgayı uydurmak (ör. yokken
+ * `Date.now()` varsaymak) donmuş kaydı taze ilan etmek olurdu.
+ */
+function updatedAtMs(match) {
+  if (!match || typeof match !== "object") return null;
+
+  // SSE anlık görüntüsünde (services/liveScoreStream.js#matchSnapshot) üst
+  // düzeyde `updatedAt`/`fetchedAt` YOKTUR; sağlayıcının gerçek yaşı
+  // `timing.serverReceivedAt` içinde taşınır. Okumazsak canlı akıştan gelen
+  // her kayıt "damgasız" görünür ve tazelik kapısı o kayıtlar için hiç
+  // çalışmaz — tam da donmuş akışın yakalanması gereken yer.
+  const timing = (match.timing && typeof match.timing === "object") ? match.timing : {};
+
+  const candidates = [
+    match.updatedAt, match.updated_at,
+    match.lastUpdated, match.last_updated,
+    match.fetchedAt, match.fetched_at,
+    match.lastSyncedAt, match.last_synced_at,
+    timing.serverReceivedAt, timing.backend_receive_time
+  ];
+
+  // `timestamp` BİLEREK LİSTEDE YOK. API-Football'da `fixture.timestamp`
+  // kaydın güncellenme anı DEĞİL, BAŞLAMA saatidir (saniye cinsinden). Onu
+  // "son güncelleme" sanmak, başlama saatinin üstünden tazelik ömrü geçen
+  // HER maçı — yani gerçekten canlı olan her maçı — bayat ilan ederdi.
+
+  for (const candidate of candidates) {
+    if (candidate === null || candidate === undefined || candidate === "") continue;
+
+    // Saniye cinsinden UNIX damgası milisaniyeye çevrilir; milisaniye
+    // damgası olduğu gibi kalır. (Eşik 1e12: 2001'den sonraki her
+    // milisaniye damgası bunun üstünde, her saniye damgası altındadır.)
+    if (typeof candidate === "number" && Number.isFinite(candidate)) {
+      return candidate < 1e12 ? candidate * 1000 : candidate;
+    }
+
+    const raw = String(candidate).trim();
+    if (!raw) continue;
+
+    if (/^\d+$/.test(raw)) {
+      const numeric = Number(raw);
+      if (Number.isFinite(numeric)) return numeric < 1e12 ? numeric * 1000 : numeric;
+      continue;
+    }
+
+    const parsed = Date.parse(raw);
+    if (!Number.isNaN(parsed)) return parsed;
+  }
+
+  return null;
+}
+
+/**
  * TAKVİM GÜNÜ — TEK TANIM.
  *
  * "Bu maç hangi güne ait?" sorusu sitenin her yerinde ISO dizesinin ilk on
@@ -359,15 +434,73 @@ function liveVerdict(match, options) {
   const kickoff = kickoffMs(match);
 
   if (LIVE_STATES.has(state)) {
-    // Canlı işaretli ama sağlayıcı uzun süredir güncellemiyorsa bu maç
-    // muhtemelen bitmiştir ve sonucu gelmemiştir. Canlı gösterilmez.
+    // 0. KAYNAK KAPISI. Canlı API'ye ulaşılamadığında istemci statik yedek
+    //    JSON'a düşüyor (derleme anında dondurulmuş dosyalar). O dosyadaki
+    //    "LIVE" kaydı bir zaman iddiasıdır ve arkasında canlı bir kaynak
+    //    YOKTUR: sağlayıcı erişilemezken eski skoru canlı göstermek, yanlış
+    //    veri değil yanlış İDDİA olur. Yedekten gelen kayıt canlı olamaz.
+    if (match && match.__staticFallback === true) {
+      return { live: false, verdict: "unverified", reason: "static-fallback", stale: true, state };
+    }
+
+    const dataStaleMs = Number.isFinite(settings.dataStaleMs) ? settings.dataStaleMs : LIVE_DATA_STALE_MS;
+    const today = istanbulDay(new Date(nowMs).toISOString());
+    const day = matchDay(match);
+
+    // 1. GÜN KAPISI (Europe/Istanbul). Dünkü maç bugün canlı olamaz.
+    //
+    // Gün, ham ISO dizesi dilimlenerek değil `istanbulDay` ile bulunur;
+    // aksi hâlde TSİ 00:00-02:59 arası başlayan maçlar bir önceki güne
+    // yazılırdı. Gece yarısını geçerek oynanan maç bu kapıdan düşmez:
+    // takvim günü dün olsa da başlama saati süre penceresinin içindedir,
+    // karar aşağıdaki saat kapısına bırakılır.
+    if (day && today && day < today && (kickoff === null || nowMs - kickoff > graceMs)) {
+      return { live: false, verdict: "unverified", reason: "stale-day", stale: true, state, day, today };
+    }
+
+    // 2. BAŞLAMA SAATİ KAPISI. Canlı işaretli ama sağlayıcı uzun süredir
+    // güncellemiyorsa bu maç muhtemelen bitmiştir ve sonucu gelmemiştir.
     if (kickoff !== null && nowMs - kickoff > graceMs) {
       return { live: false, verdict: "unverified", reason: "stale-live", stale: true, state };
     }
-    // Skorsuz canlı iddiası yapılmaz; bkz. yukarıdaki SKOR KAPISI notu.
-    if (!hasReadableScore(match)) {
+
+    // 3. VERİ TAZELİĞİ KAPISI. Süre penceresinin İÇİNDE olmak yetmez:
+    //    kaydın kendisi de güncel olmalı. Donmuş bir kayıt (akış kesildi,
+    //    önbellek eski JSON'u servis ediyor, derleme anındaki anlık görüntü
+    //    geri geldi) doğru dakikayı değil, DONDUĞU dakikayı taşır.
+    const updatedAt = updatedAtMs(match);
+    if (updatedAt !== null && nowMs - updatedAt > dataStaleMs) {
+      return {
+        live: false,
+        verdict: "unverified",
+        reason: "stale-data",
+        stale: true,
+        state,
+        updatedAt,
+        ageMs: nowMs - updatedAt
+      };
+    }
+
+    // 4. SKOR KAPISI. Skorsuz canlı iddiası yapılmaz; bkz. yukarıdaki not.
+    //
+    // Skor bandı bu kapıyı BİLEREK kapatır (`requireScore: false`): bant
+    // skor değil DAKİKA iddia eder ve skoru "–" basar, ki bu bir skor
+    // iddiası değildir (bkz. services/liveScoresTicker.js). Kart basan
+    // yüzeyler için kapı açıktır — "Canlı" rozetinin yanında "– / –"
+    // duran bir kart, ikisinden biri doğru olmayan iki şey söyler.
+    const requireScore = settings.requireScore !== false;
+    if (requireScore && !hasReadableScore(match)) {
       return { live: false, verdict: "unverified", reason: "live-without-score", stale: true, state };
     }
+
+    // 5. DOĞRULANABİLİRLİK KAPISI. Başlama saati olmayan bir kayıtta
+    //    yukarıdaki saat kapılarının hiçbiri çalışamaz: böyle bir kayıt
+    //    SONSUZA DEK canlı kalırdı. Doğrulanamayan canlı iddiası
+    //    gösterilmez — bu, "kökten engelle" kuralının son halkası.
+    if (kickoff === null && updatedAt === null) {
+      return { live: false, verdict: "unverified", reason: "live-without-clock", stale: true, state };
+    }
+
     return { live: true, verdict: "live", reason: "provider-live", state };
   }
 
@@ -390,6 +523,41 @@ function liveVerdict(match, options) {
   };
 }
 
+/**
+ * TEK ORTAK KAPI — ANA SAYFA, /canli-skor VE MAÇ MERKEZİ AYNI BURAYI SORAR.
+ *
+ * "Bu maçı CANLI diye gösterebilir miyim?" sorusunun tek cevabı. Her yüzey
+ * (hero karuseli, Canlı Skorlar panosu, skor bandı, "Süper Lig'de Bugün",
+ * maç merkezi) kendi durum eşlemesini yazdığı için kapılar yüzeyden yüzeye
+ * ayrışıyordu: bant hiç saat kontrolü yapmıyor, pano yapıyordu. Ayrışma
+ * ekranda "bir yerde canlı, öbür yerde bitmiş" olarak görünüyordu.
+ */
+function isDisplayableLive(match, options) {
+  return liveVerdict(match, options).live === true;
+}
+
+/** Veri katmanı süzgeci: canlı gösterilemeyen maç dönen diziye HİÇ girmez. */
+function filterDisplayableLive(list, options) {
+  return (Array.isArray(list) ? list : []).filter((match) => isDisplayableLive(match, options));
+}
+
+/** Şu anın Europe/Istanbul takvim günü ("YYYY-MM-DD"). */
+function todayInIstanbul(nowMs) {
+  const stamp = Number.isFinite(nowMs) ? nowMs : Date.now();
+  return istanbulDay(new Date(stamp).toISOString());
+}
+
+/**
+ * Maç BUGÜNE mi ait? "Süper Lig'de Bugün" ve "Bugünün Maçları" alanlarının
+ * kapısı. Dünkü maç bu kapıdan geçemez — sağlayıcı ne derse desin.
+ */
+function isTodayInIstanbul(match, options) {
+  const settings = options || {};
+  const nowMs = Number.isFinite(settings.nowMs) ? settings.nowMs : Date.now();
+  const day = matchDay(match);
+  return Boolean(day) && day === todayInIstanbul(nowMs);
+}
+
 /** Arayüzün doğrudan basabileceği durum metni. */
 function displayStatusLabel(match, options) {
   const verdict = liveVerdict(match, options);
@@ -404,6 +572,7 @@ function displayStatusLabel(match, options) {
 module.exports = {
   ANALYZABLE_STATES,
   FINISH_LABELS,
+  LIVE_DATA_STALE_MS,
   LIVE_GRACE_MS,
   LIVE_STATES,
   PLAYED_STATES,
@@ -414,6 +583,11 @@ module.exports = {
   UNVERIFIED_LIVE_LABEL,
   canonicalStatus,
   displayStatusLabel,
+  filterDisplayableLive,
+  isDisplayableLive,
+  isTodayInIstanbul,
+  todayInIstanbul,
+  updatedAtMs,
   finishLabel,
   finishType,
   isAnalyzableMatch,

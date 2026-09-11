@@ -425,7 +425,7 @@
           : fetchJson(fallbackUrl).then(function (result) { return result.data; });
 
         return source.then(function (data) {
-          return filterFallbackData(name, data);
+          return markStaticFallback(filterFallbackData(name, data));
         });
       };
 
@@ -633,6 +633,32 @@
       .trim();
     return (COMPETITION_ALIASES[selectedLeague] || [selectedLeague.replace(/-/g, " ")]).some(function (alias) {
       return normalizedLeague === alias || normalizedLeague.indexOf(alias) !== -1;
+    });
+  }
+
+  /**
+   * STATİK YEDEK KAYITLARI İŞARETLENİR.
+   *
+   * `/data/*.json` derleme anında dondurulmuş dosyalardır. İçlerinde
+   * kalmış bir "LIVE" durumu, sağlayıcıya ulaşılamadığı için okunan bu
+   * dosyalarda CANLILIK KANITI DEĞİLDİR — o kaydın arkasında canlı bir
+   * kaynak yoktur. İşaret `LiveGuard`ın kaynak kapısını açar: bu kayıtlar
+   * ekranda canlı iddiasıyla çizilmez, skor ve dakika donmuş hâliyle
+   * "canlı" diye sunulmaz.
+   *
+   * İşaret yalnızca canlılık iddiasını düşürür; maç listede kalır, saati,
+   * takımları ve varsa doğrulanmış sonucu görünmeye devam eder.
+   */
+  function markStaticFallback(data) {
+    if (!Array.isArray(data)) return data;
+    return data.map(function (match) {
+      if (!match || typeof match !== "object") return match;
+      var copy = {};
+      for (var key in match) {
+        if (Object.prototype.hasOwnProperty.call(match, key)) copy[key] = match[key];
+      }
+      copy.__staticFallback = true;
+      return copy;
     });
   }
 
@@ -1724,7 +1750,11 @@
   }
 
   function liveMinuteLabel(match) {
-    if (!isLiveMatch(match)) {
+    // Ekranda "81'" yazan etiket BURASI. Ham `isLiveMatch` yalnızca duruma
+    // ve skora bakar; donmuş bir kayıt bu kapıdan geçip kendi dondurulmuş
+    // dakikasını basıyordu. Dakika bir ZAMAN iddiasıdır: doğrulanmamış
+    // canlılıkta dakika da yazılmaz.
+    if (!LiveGuard.isLive(match)) {
       return "";
     }
 
@@ -2027,7 +2057,12 @@
   }
 
   function notifyNewMatchEvents(match) {
-    if (!match || !isLiveMatch(match)) {
+    // İzin isteme kapısı ortak kapıya taşınmıştı ama BİLDİRİMİN KENDİSİ
+    // hâlâ ham kontrolü kullanıyordu: donmuş ya da statik yedekten gelen
+    // bir kayıt, üzerindeki eski olaylarla telefonda "GOL!" bildirimi
+    // doğurabilirdi. Bildirim, kartlardan daha yüksek sesli bir canlılık
+    // iddiasıdır; aynı kapıdan geçer.
+    if (!match || !LiveGuard.isLive(match)) {
       return;
     }
     var events = Array.isArray(match.events) ? match.events : [];
@@ -2062,7 +2097,7 @@
     if (!matchNotifySupported() || !Array.isArray(matches) || !matches.length) {
       return;
     }
-    if (matches.some(isLiveMatch)) {
+    if (matches.some(function (match) { return LiveGuard.isLive(match); })) {
       ensureMatchNotifyPermission();
     }
     if (Notification.permission !== "granted") {
@@ -2132,7 +2167,10 @@
     return matches.filter(function (match) {
       var status = String(match.status || match.providerStatus || "").toUpperCase();
       if (filter === "live") {
-        return isLiveMatch(match);
+        // "Canlı" süzgeci ana sayfadaki panoyla AYNI kapıdan geçer: aksi
+        // hâlde /canli-skor sayfasının "Canlı" sekmesi, ana sayfanın
+        // reddettiği bayat kayıtları listeliyordu.
+        return LiveGuard.isLive(match);
       }
       if (filter === "finished") {
         return ["FINISHED", "FT", "AET", "PEN"].includes(status);
@@ -2197,40 +2235,298 @@
   }
 
   var UNVERIFIED_LIVE_LABEL = "Canlı veri doğrulanamadı";
-  // Başlama saati geçmiş bir maçın doğrulanmış sinyal olmadan "oynanıyor"
-  // sayılabileceği en uzun süre (uzatma ve devre araları dahil).
-  var LIVE_GRACE_MS = 150 * 60 * 1000;
+  var LiveGuard = (function () {
+    var STATUS_VOCABULARY = {
+      TBD: "SCHEDULED", NS: "SCHEDULED", SCHEDULED: "SCHEDULED", TIMED: "SCHEDULED", NOT_STARTED: "SCHEDULED",
+      "1H": "LIVE", "2H": "LIVE", ET: "LIVE", P: "LIVE", LIVE: "LIVE", IN_PLAY: "LIVE",
+      HT: "HALFTIME", BT: "HALFTIME", HALFTIME: "HALFTIME", PAUSED: "HALFTIME",
+      SUSP: "INTERRUPTED", SUSPENDED: "INTERRUPTED", INT: "INTERRUPTED", INTERRUPTED: "INTERRUPTED",
+      FT: "FINISHED", AET: "FINISHED", PEN: "FINISHED", FINISHED: "FINISHED", FULL_TIME: "FINISHED",
+      AFTER_EXTRA_TIME: "FINISHED", PENALTIES: "FINISHED", "MATCH FINISHED": "FINISHED",
+      AWD: "AWARDED", AWARDED: "AWARDED", WO: "AWARDED", WALKOVER: "AWARDED",
+      PST: "POSTPONED", POSTPONED: "POSTPONED", CANC: "CANCELLED", CANCELLED: "CANCELLED",
+      ABD: "ABANDONED", ABANDONED: "ABANDONED"
+    };
+
+    var LIVE_STATES = ["LIVE", "HALFTIME", "INTERRUPTED"];
+    var PLAYED_STATES = ["FINISHED"];
+    var UNPLAYED_STATES = ["POSTPONED", "CANCELLED", "ABANDONED"];
+    var STATE_RANK = {
+      UNKNOWN: 0, SCHEDULED: 1, LIVE: 2, HALFTIME: 2, INTERRUPTED: 2,
+      POSTPONED: 3, CANCELLED: 3, ABANDONED: 3, AWARDED: 4, FINISHED: 4
+    };
+
+    // Eşikler sunucudakiyle AYNI olmak zorunda (services/matchStatus.js).
+    var GRACE_MS = 150 * 60 * 1000;
+    var DATA_STALE_MS = 12 * 60 * 1000;
+
+    var dayFormatter = null;
+
+    function normalizeStatusToken(value) {
+      return String(value || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
+    }
+
+    function canonicalStatus(value) {
+      var token = normalizeStatusToken(value);
+      if (!token) return "UNKNOWN";
+      return STATUS_VOCABULARY[token] || STATUS_VOCABULARY[token.replace(/_/g, " ")] || "UNKNOWN";
+    }
+
+    function statusesOf(match) {
+      if (!match) return [];
+      return [match.status, match.providerStatus, match.matchStatus]
+        .map(normalizeStatusToken)
+        .filter(Boolean);
+    }
+
+    function matchState(match) {
+      var states = statusesOf(match).map(canonicalStatus).filter(function (state) {
+        return state !== "UNKNOWN";
+      });
+
+      if (!states.length) {
+        return match && match.live === true ? "LIVE" : "UNKNOWN";
+      }
+
+      return states.reduce(function (best, state) {
+        return STATE_RANK[state] > STATE_RANK[best] ? state : best;
+      }, states[0]);
+    }
+
+    function kickoffMs(match) {
+      var raw = String((match && (match.kickoff || match.date || match.utcDate)) || "");
+      if (!raw) return null;
+      var hasTime = raw.indexOf("T") !== -1 || raw.indexOf(":") !== -1;
+      var parsed = Date.parse(hasTime ? raw : raw.slice(0, 10) + "T00:00:00+03:00");
+      return isNaN(parsed) ? null : parsed;
+    }
+
+    /** Takvim günü Europe/Istanbul'a çevrilerek bulunur, dize dilimlenerek değil. */
+    function istanbulDay(value) {
+      var raw = String(value || "").trim();
+      if (!raw) return "";
+      if (raw.indexOf("T") === -1) return raw.slice(0, 10);
+      var parsed = new Date(raw);
+      if (isNaN(parsed.getTime())) return raw.slice(0, 10);
+      if (!dayFormatter) {
+        dayFormatter = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"
+        });
+      }
+      return dayFormatter.format(parsed);
+    }
+
+    function matchDay(match) {
+      return istanbulDay(match && (match.kickoff || match.date || match.utcDate));
+    }
+
+    // `Number(null)` SIFIRDIR; doğrudan Number()'a güvenmek eksik skoru 0-0
+    // sanmak olurdu. Sıfır geçerli bir skordur, eksik olan null/undefined'dır.
+    function isScoreValue(value) {
+      if (typeof value === "number") return isFinite(value);
+      if (typeof value === "string" && value.trim() !== "") return isFinite(Number(value));
+      return false;
+    }
+
+    function guardHasReadableScore(match) {
+      var score = match && match.score;
+      if (!score || typeof score !== "object") return false;
+      return isScoreValue(score.home) && isScoreValue(score.away);
+    }
+
+    /**
+     * Kaydın son güncellenme anı. Damga yoksa `null` — "şimdi güncellendi"
+     * DEĞİL. Damgayı uydurmak donmuş kaydı taze ilan etmek olurdu.
+     */
+    function updatedAtMs(match) {
+      if (!match || typeof match !== "object") return null;
+
+      // SSE anlık görüntüsünde üst düzeyde damga YOKTUR; sağlayıcının
+      // gerçek yaşı `timing.serverReceivedAt` içinde gelir
+      // (services/liveScoreStream.js#matchSnapshot).
+      var timing = (match.timing && typeof match.timing === "object") ? match.timing : {};
+
+      var candidates = [
+        match.updatedAt, match.updated_at,
+        match.lastUpdated, match.last_updated,
+        match.fetchedAt, match.fetched_at,
+        match.lastSyncedAt, match.last_synced_at,
+        timing.serverReceivedAt, timing.backend_receive_time
+      ];
+
+      // `timestamp` BİLEREK LİSTEDE YOK: API-Football'da o alan başlama
+      // saatidir, güncellenme anı değil. Güncelleme sanmak gerçekten canlı
+      // olan her maçı bayat ilan ederdi.
+
+      for (var i = 0; i < candidates.length; i += 1) {
+        var candidate = candidates[i];
+        if (candidate === null || candidate === undefined || candidate === "") continue;
+
+        // Saniye cinsinden UNIX damgası milisaniyeye çevrilir.
+        if (typeof candidate === "number" && isFinite(candidate)) {
+          return candidate < 1e12 ? candidate * 1000 : candidate;
+        }
+
+        var raw = String(candidate).trim();
+        if (!raw) continue;
+
+        if (/^\d+$/.test(raw)) {
+          var numeric = Number(raw);
+          if (isFinite(numeric)) return numeric < 1e12 ? numeric * 1000 : numeric;
+          continue;
+        }
+
+        var parsed = Date.parse(raw);
+        if (!isNaN(parsed)) return parsed;
+      }
+
+      return null;
+    }
+
+    function todayInIstanbul(nowMs) {
+      var stamp = isFinite(nowMs) ? nowMs : Date.now();
+      return istanbulDay(new Date(stamp).toISOString());
+    }
+
+    function liveVerdict(match, options) {
+      var settings = options || {};
+      var nowMs = isFinite(settings.nowMs) ? settings.nowMs : Date.now();
+      var graceMs = isFinite(settings.graceMs) ? settings.graceMs : GRACE_MS;
+      var state = matchState(match);
+
+      if (PLAYED_STATES.indexOf(state) !== -1 || state === "AWARDED") {
+        return { live: false, verdict: "not-live", reason: "finished", state: state };
+      }
+
+      if (UNPLAYED_STATES.indexOf(state) !== -1) {
+        return { live: false, verdict: "not-live", reason: "unplayed", state: state };
+      }
+
+      var kickoff = kickoffMs(match);
+
+      if (LIVE_STATES.indexOf(state) !== -1) {
+        // 0. KAYNAK KAPISI. Canlı API'ye ulaşılamadığında istemci statik
+        //    yedek JSON'a düşer (derleme anında dondurulmuş dosyalar).
+        //    Oradan gelen "LIVE" kaydının arkasında canlı bir kaynak YOKTUR;
+        //    eski skoru canlı göstermek yanlış veri değil, yanlış İDDİA.
+        if (match && match.__staticFallback === true) {
+          return { live: false, verdict: "unverified", reason: "static-fallback", stale: true, state: state };
+        }
+
+        var dataStaleMs = isFinite(settings.dataStaleMs) ? settings.dataStaleMs : DATA_STALE_MS;
+        var today = todayInIstanbul(nowMs);
+        var day = matchDay(match);
+
+        // 1. GÜN KAPISI. Gece yarısını geçen maç buradan düşmez: takvim günü
+        //    dün olsa da başlama saati süre penceresinin içindedir.
+        if (day && today && day < today && (kickoff === null || nowMs - kickoff > graceMs)) {
+          return { live: false, verdict: "unverified", reason: "stale-day", stale: true, state: state, day: day, today: today };
+        }
+
+        // 2. BAŞLAMA SAATİ KAPISI.
+        if (kickoff !== null && nowMs - kickoff > graceMs) {
+          return { live: false, verdict: "unverified", reason: "stale-live", stale: true, state: state };
+        }
+
+        // 3. VERİ TAZELİĞİ KAPISI.
+        var updatedAt = updatedAtMs(match);
+        if (updatedAt !== null && nowMs - updatedAt > dataStaleMs) {
+          return {
+            live: false, verdict: "unverified", reason: "stale-data", stale: true,
+            state: state, updatedAt: updatedAt, ageMs: nowMs - updatedAt
+          };
+        }
+
+        // 4. SKOR KAPISI. Skor bandı bu kapıyı bilerek kapatır
+        //    (`requireScore: false`): bant skor değil DAKİKA iddia eder.
+        var requireScore = settings.requireScore !== false;
+        if (requireScore && !guardHasReadableScore(match)) {
+          return { live: false, verdict: "unverified", reason: "live-without-score", stale: true, state: state };
+        }
+
+        // 5. DOĞRULANABİLİRLİK KAPISI.
+        if (kickoff === null && updatedAt === null) {
+          return { live: false, verdict: "unverified", reason: "live-without-clock", stale: true, state: state };
+        }
+
+        return { live: true, verdict: "live", reason: "provider-live", state: state };
+      }
+
+      if (kickoff === null) {
+        return { live: false, verdict: "not-live", reason: "no-kickoff", state: state };
+      }
+
+      if (kickoff > nowMs) {
+        return { live: false, verdict: "not-live", reason: "not-started", state: state };
+      }
+
+      return {
+        live: false,
+        verdict: "unverified",
+        reason: nowMs - kickoff > graceMs ? "kickoff-long-passed" : "kickoff-passed-no-signal",
+        stale: nowMs - kickoff <= graceMs,
+        state: state
+      };
+    }
+
+    function isDisplayableLive(match, options) {
+      return liveVerdict(match, options).live === true;
+    }
+
+    /** Veri katmanı süzgeci: canlı gösterilemeyen maç dönen diziye HİÇ girmez. */
+    function filterDisplayableLive(list, options) {
+      return (Array.isArray(list) ? list : []).filter(function (match) {
+        return isDisplayableLive(match, options);
+      });
+    }
+
+    /** Maç BUGÜNE mi ait? "Süper Lig'de Bugün" ve günün listelerinin kapısı. */
+    function isTodayInIstanbul(match, options) {
+      var settings = options || {};
+      var nowMs = isFinite(settings.nowMs) ? settings.nowMs : Date.now();
+      var day = matchDay(match);
+      return Boolean(day) && day === todayInIstanbul(nowMs);
+    }
+
+    return {
+      GRACE_MS: GRACE_MS,
+      DATA_STALE_MS: DATA_STALE_MS,
+      verdict: liveVerdict,
+      isLive: isDisplayableLive,
+      filterLive: filterDisplayableLive,
+      isToday: isTodayInIstanbul,
+      today: todayInIstanbul,
+      day: matchDay,
+      state: matchState,
+      updatedAtMs: updatedAtMs
+    };
+  })();
+  // live-freshness-guard:end
+
+  var LIVE_GRACE_MS = LiveGuard.GRACE_MS;
 
   /**
-   * BAYAT CANLI KORUMASI — kural services/matchStatus.js ile aynı.
+   * BAYAT/DONMUŞ CANLI KORUMASI — kural yukarıdaki ortak kapıda.
    *
-   * Başlama saati geçmiş ama sağlayıcıdan canlı sinyali gelmeyen maç canlı
-   * GÖSTERİLMEZ. Eskiden bu maç yalnızca başlama saatini yazıyordu ve
-   * okuyucu maçın henüz başlamadığını sanıyordu; şimdi durumun
-   * doğrulanamadığı açıkça yazılıyor. Skor ya da dakika uydurulmaz.
+   * Bu fonksiyon kendi saat penceresini uyguluyordu ve yalnızca başlama
+   * saatine bakıyordu: kaydın son güncellenme damgasını hiç sormuyordu.
+   * Sağlayıcı akışı kesildiğinde ya da önbellek eski JSON'u servis
+   * ettiğinde DONMUŞ bir kayıt (skoru ve dakikası sabit) süre penceresinin
+   * içinde kaldığı sürece "canlı" gösteriliyordu. Karar artık tek kapıda:
+   * gün, saat, tazelik ve skor orada birlikte denetlenir.
+   *
+   * Dönen biçim çağıranlarla uyumlu kalır: `{ live, unverified, stale }`.
    */
   function matchLiveVerdict(match, nowMs) {
     var now = Number.isFinite(nowMs) ? nowMs : Date.now();
-    var kickoff = featuredKickoffTime(match).value;
+    var verdict = LiveGuard.verdict(match, { nowMs: now });
 
-    if (isFinishedMatch(match) || isUnplayedMatch(match)) {
-      return { live: false, unverified: false };
-    }
-
-    if (isLiveMatch(match)) {
-      // Canlı işaretli ama uzun süredir güncellenmemiş: maç muhtemelen
-      // bitmiş ve sonucu gelmemiştir.
-      if (isFinite(kickoff) && now - kickoff > LIVE_GRACE_MS) {
-        return { live: false, unverified: true, stale: true };
-      }
-      return { live: true, unverified: false };
-    }
-
-    if (!isFinite(kickoff) || kickoff > now) {
-      return { live: false, unverified: false };
-    }
-
-    return { live: false, unverified: true, stale: false };
+    return {
+      live: verdict.live === true,
+      unverified: verdict.verdict === "unverified",
+      stale: verdict.stale === true,
+      reason: verdict.reason
+    };
   }
 
   function fixtureStatusMeta(match) {
@@ -3623,6 +3919,11 @@
     if (reportPath) return "./" + reportPath.replace(/^\.?\//, "");
     var page = headlineText(match && match.analysisPage);
     if (page) return "./" + page.replace(/^\.?\//, "");
+    // Burada CANLILIK İDDİA EDİLMİYOR, yalnızca başlığın hangi sayfaya
+    // gideceği seçiliyor; bu yüzden tazelik kapısı değil ham durum yeterli
+    // ve services/dailyHeadlines.js ile parite bunu gerektiriyor (o taraf da
+    // ham durumu kullanır; ayrışırsa aynı başlık iki yerde iki ayrı yere
+    // bağlanır).
     if (isLiveMatch(match)) return "./canli-skor.html";
     return "./bugunun-maclari.html";
   }
@@ -3746,22 +4047,8 @@
    * kalır — tam olarak eski maçın güncelmiş gibi gösterilmesi hatası.
    * Burada da yalnızca YAŞ denetlenir; skor kapısı `isLiveMatch` içinde var.
    */
-  var DAILY_HEADLINE_LIVE_GRACE_MS = 150 * 60 * 1000;
-
-  function dailyHeadlineKickoffMs(match) {
-    var raw = headlineText(match && (match.kickoff || match.date || match.utcDate));
-    if (!raw || (raw.indexOf("T") === -1 && raw.indexOf(":") === -1)) {
-      return NaN;
-    }
-    var parsed = Date.parse(raw);
-    return Number.isNaN(parsed) ? NaN : parsed;
-  }
-
   function isFreshLiveMatch(match, nowMs) {
-    if (!isLiveMatch(match)) return false;
-    var kickoff = dailyHeadlineKickoffMs(match);
-    if (!isFinite(kickoff) || !isFinite(nowMs)) return true;
-    return nowMs - kickoff <= DAILY_HEADLINE_LIVE_GRACE_MS;
+    return LiveGuard.isLive(match, { nowMs: nowMs });
   }
 
   /**
@@ -4299,7 +4586,9 @@
     var rows = sorted.map(function (match) {
       var home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
       var away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
-      var live = isLiveMatch(match);
+      // "Süper Lig'de Bugün" şeridi ham `isLiveMatch` kullanıyordu: dünkü
+      // maç bu şeritte "Canlı 81'" olarak kalabiliyordu. Ortak kapı.
+      var live = LiveGuard.isLive(match);
       var finished = !live && isFinishedMatch(match);
       var score = (live || finished) && match.score
         ? escapeHtml(displayValue(match.score.home)) + " - " + escapeHtml(displayValue(match.score.away))
@@ -4894,6 +5183,24 @@
         events: Array.isArray(liveMatch.events) && liveMatch.events.length
           ? liveMatch.events
           : base[existing].events,
+        // Kayıt artık CANLI uç noktadan tazelendi: statik yedek işareti
+        // düşer, yoksa gerçekten canlı bir maç kaynak kapısında takılırdı.
+        __staticFallback: false,
+        // DAMGA UYDURULMAZ.
+        //
+        // Burada `|| new Date().toISOString()` vardı: sağlayıcı damgası
+        // yoksa paket "şu an güncellendi" diye damgalanıyordu. SSE anlık
+        // görüntüsünde üst düzey `updatedAt` HİÇ gelmez (gerçek yaş
+        // `timing.serverReceivedAt` içindedir), yani bu yedek pratikte HER
+        // canlı pakette çalışıyor ve donmuş bir akışı sonsuza dek taze
+        // ilan ediyordu — tazelik kapısını tam da kapatması gereken yerde
+        // etkisiz bırakarak. Gerçek damga taşınır; yoksa damga YOKTUR ve
+        // karar başlama saati kapısına kalır.
+        updatedAt: liveMatch.updatedAt
+          || liveMatch.updated_at
+          || (liveMatch.timing && (liveMatch.timing.serverReceivedAt || liveMatch.timing.backend_receive_time))
+          || base[existing].updatedAt
+          || null,
         live: liveMatch.live
       });
     });
@@ -4994,7 +5301,9 @@
       var nextMatches = Array.isArray(matches) ? matches : [];
       var changedGoals = goalChangeIds(lastKnownMatches, nextMatches);
       lastKnownMatches = nextMatches;
-      hasLiveMatchNow = lastKnownMatches.some(function (match) { return isLiveMatch(match); });
+      // Donmuş bir "LIVE" kaydı ham kontrolden geçtiği için hızlı yoklamayı
+      // SONSUZA DEK açık tutuyordu: kimse izlemezken saniyede bir istek.
+      hasLiveMatchNow = lastKnownMatches.some(function (match) { return LiveGuard.isLive(match); });
       notifyLiveMatchEvents(lastKnownMatches);
 
       activeBindings.forEach(function (binding) {
@@ -7647,7 +7956,9 @@
       return { key: "halftime", label: "Devre arası analizi", note: "İlk yarı verisiyle güncellendi" };
     }
 
-    if (isLiveMatch(detail)) {
+    // "Canlı analiz" okuyucuya "şu anda oynanıyor" diyor; doğrulanmamış
+    // canlılıkta bu iddia yapılmaz.
+    if (LiveGuard.isLive(detail)) {
       return { key: "live", label: "Canlı analiz", note: "Yeni olaylar geldikçe yenilenir" };
     }
 
@@ -8297,7 +8608,11 @@
     }
 
     function normalizeRecord(match) {
-      if (!isLiveMatch(match)) return null;
+      // Bant SAAT KONTROLÜ YAPMIYORDU: ham `isLiveMatch` yalnızca duruma ve
+      // skora bakar. Sağlayıcı bir maçı hiç "FINISHED"e çevirmezse o maç
+      // günlerce bantta "89'" yazarak kayıyordu. Ortak kapı gün, saat,
+      // tazelik ve skoru birlikte denetler.
+      if (!LiveGuard.isLive(match, { requireScore: false })) return null;
       var homeTeam = getTeamName(matchTeam(match, "home"));
       var awayTeam = getTeamName(matchTeam(match, "away"));
       if (!homeTeam || !awayTeam) return null;

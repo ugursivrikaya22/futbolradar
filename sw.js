@@ -24,7 +24,15 @@
  * karşılanıyor.
  */
 
-const SW_VERSION = "v1";
+// SÜRÜM BUMP'I ESKİ ÖNBELLEĞİ DÜŞÜRÜR.
+//
+// `activate` kancası KNOWN_CACHES dışındaki tüm `fr-*` önbelleklerini siler.
+// v1'de kalmış `fr-api-v1` anlık görüntüsü, ağ erişilemezken servis edilen ve
+// içinde DONMUŞ "LIVE" kayıtları taşıyan eski JSON'dur: bayat canlı maç
+// gösteriminin kaynaklarından biri. v2'ye geçiş, düzeltmeyi alan her
+// ziyaretçide o anlık görüntüyü bir kez temizler. Favori takım yolları
+// (`fr-meta-*`) kaybolur ama pwa.js her açılışta yeniden gönderir.
+const SW_VERSION = "v2";
 const HTML_CACHE = `fr-pages-${SW_VERSION}`;
 const ASSET_CACHE = `fr-assets-${SW_VERSION}`;
 const API_CACHE = `fr-api-${SW_VERSION}`;
