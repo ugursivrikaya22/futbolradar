@@ -91,8 +91,11 @@ function failures() {
   SCAN_DIRS.forEach((dir) => walk(path.join(root, dir)));
 
   const importRe = new RegExp(
-    // const NAME = require(".../providers/FILE.js")
-    "(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*require\\(\\s*[\"']([^\"']*providers/([A-Za-z0-9_.-]+\\.js))[\"']\\s*\\)" +
+    // const NAME = require(".../providers/FILE.js") — the negative lookahead excludes
+    // const NAME = require("...").someMethod(), where NAME is bound to that call's
+    // RESULT (e.g. an array), not to the provider module; without it, a legitimate
+    // Array method on NAME (like .push) is misreported as an unknown provider method.
+    "(?:const|let|var)\\s+([A-Za-z_$][\\w$]*)\\s*=\\s*require\\(\\s*[\"']([^\"']*providers/([A-Za-z0-9_.-]+\\.js))[\"']\\s*\\)(?!\\s*\\.)" +
     "|" +
     // import NAME from ".../providers/FILE.js"
     "import\\s+([A-Za-z_$][\\w$]*)\\s+from\\s*[\"']([^\"']*providers/([A-Za-z0-9_.-]+\\.js))[\"']",
