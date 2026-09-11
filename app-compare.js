@@ -1828,8 +1828,23 @@
    *
    * Kart KAYBOLMAZ — yalnızca canlı sayılmaz; durum etiketi "Canlı veri
    * doğrulanamadı" olur (services/matchStatus.js: UNVERIFIED_LIVE_LABEL).
+   *
+   * ÜÇÜNCÜ KAPI: SAAT. Sağlayıcı bir maçı hiç
+   * FINISHED'e çevirmediğinde kayıt "LIVE, 89'" olarak donuyor. Sunucu
+   * tarafında aynı koruma services/matchStatus.js#liveVerdict'te zaten
+   * vardı, ama istemci yalnızca duruma bakıyordu: statik yedekten ya da
+   * API'den gelen donmuş bir kayıt tarayıcıda yeniden "canlı" oluyor,
+   * `selectTodayMatchCards` onu listenin en üstüne taşıyordu. Kapı burada
+   * olunca BÜTÜN çağıranlar (kart sıralaması, canlı skor alanı, bildirim
+   * hattı) aynı kuralı miras alıyor.
+   *
+   * Saat okunamıyorsa kayıt bu kapıdan geçer — gün UYDURULMAZ; eksik
+   * başlama saati "bayat" kanıtı değildir.
+   *
+   * Üç kapı BİRLİKTE: sağlayıcı canlı diyecek, skoru okunabilecek VE
+   * başlama saatinin üstünden bayat-canlı payından fazlası geçmemiş olacak.
    */
-  function isLiveMatch(match) {
+  function isLiveMatch(match, nowMs) {
     if (!match) {
       return false;
     }
@@ -1838,7 +1853,17 @@
     var claimsLive = match.live === true ||
       ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
 
-    return claimsLive && hasReadableScore(match);
+    if (!claimsLive || !hasReadableScore(match)) {
+      return false;
+    }
+
+    var kickoff = featuredKickoffTime(match);
+    var now = Number.isFinite(nowMs) ? nowMs : Date.now();
+    if (kickoff.hasTime && isFinite(kickoff.value) && now - kickoff.value > LIVE_GRACE_MS) {
+      return false;
+    }
+
+    return true;
   }
 
   // ── Canlı maç bildirimleri: gol / kırmızı kart / sarı kart ────────────────
@@ -3912,11 +3937,17 @@
 
     if (!featured) {
       return (
+        '<div class="featured-carousel is-compact-mode" data-featured-carousel' +
+        ' data-featured-interval="' + FEATURED_ROTATION_MS + '"' +
+        ' data-featured-count="1" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">' +
+        '<div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active"' +
+        ' data-featured-slide="0" role="group" aria-roledescription="slayt" aria-label="1 / 1">' +
         '<div class="featured-fixture">' +
         '<div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>' +
         escapeHtml(formatMatchDate(todayInIstanbul())) + "</span></div>" +
         '<div class="home-match-command-empty"><strong>Şu anda doğrulanmış canlı maç yok.</strong><span>Bugünün programını ve sonuçlarını maç merkezinden kontrol edebilirsin.</span></div>' +
         '<div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>' +
+        "</div></div></div>" +
         "</div>" +
         quickStats
       );
@@ -4360,9 +4391,17 @@
     // ve skoru henüz gelmemiş olsa bile listenin üstünde durmalı. Bu yüzden
     // burada skor kapısı YOK; kural services/matchRelevance.js `stateOf` ile
     // aynı kalıyor, iki taraf aynı sırayı üretiyor.
+    // Canlı iddiası ZAMANA TABİ: sağlayıcıda donup kalmış bir "LIVE"
+    // kaydı, başlama saatinin üstünden aşağıdaki pencereden fazlası
+    // geçtiyse "live" bandına giremez — aşağıdaki zaman tabanlı bantlara
+    // devredilir ve orada "finished" olur. Kural sunucu tarafında
+    // services/matchRelevance.js#stateOf ile aynı.
     if (match.live === true ||
       ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status)) {
-      return "live";
+      var liveStart = Date.parse(match.kickoff || match.kickoffUtc || match.date || "");
+      if (!isFinite(liveStart) || !isFinite(nowMs) || nowMs - liveStart <= 150 * 60 * 1000) {
+        return "live";
+      }
     }
     if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"].includes(status)) return "finished";
     // Ertelenen/iptal edilen maç zaman çizgisinden çıkar; aşağıdaki
@@ -5027,7 +5066,12 @@
         var estimatedEvent = events.slice().reverse().find(function (event) { return event.providerEventTimeEstimated; });
         var detail = {
           packetId: packet.id,
-          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean),
+          // The route stores the first 30 ids and drops any body over 4 KB
+          // outright (server/liveScoreStreamRoute.js). Sending every live
+          // match pushed the payload past that cap on busy evenings, so the
+          // telemetry POST came back 400 and every page logged a console
+          // error. Send only what is actually recorded.
+          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean).slice(0, 30),
           providerEventAt: actualEvent ? actualEvent.providerEventAt : null,
           providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
           serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,

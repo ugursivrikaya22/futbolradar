@@ -22,8 +22,30 @@
 
 const REQUIRED_FIELDS = ["matchId", "speaker", "team", "quote"];
 
-/** Bir alıntı bu kadar süre sonra da geçerlidir: söylendiği an sabittir. */
+/**
+ * Bir alıntı bu kadar süre sonra da geçerlidir: söylendiği an sabittir.
+ *
+ * Bu, alıntının KENDİ doğruluğu hakkında. Maç sayfasında alıntı ne kadar
+ * eski olursa olsun durur — o maçın kaydıdır ve yaşı onu yanlış yapmaz.
+ * Bir YÜZEYİN güncellik iddiası ayrı bir sorudur; bkz. `latestQuotes`
+ * içindeki `maxAgeHours`.
+ */
 const QUOTE_HAS_NO_EXPIRY = true;
+
+/**
+ * "SON MAÇLARDA KİM NE DEDİ" YÜZEYİNİN PENCERESİ.
+ *
+ * Alıntının kendisi bayatlamaz ama "son tamamlanan maçlar" başlığı bir
+ * ZAMAN iddiasıdır. Ana sayfadaki şerit pencere olmadan çalışıyordu ve
+ * sonucu görünürdü: 11 Eylül akşamı bant, dün oynanan maçın açıklamasının
+ * yanında 30-31 Ağustos'tan — on bir gün önceki maçlardan — alıntılar
+ * taşıyordu. İkisi aynı şeritte yan yana durunca okuyucu hangisinin dünkü
+ * maçtan olduğunu ayırt edemiyordu.
+ *
+ * Yedi gün: lig haftası aralığı. Bu pencerede konuşulmamışsa şerit
+ * "kaynaklardan bekleniyor" der — eskisini doldurmaz.
+ */
+const RECENT_QUOTE_WINDOW_HOURS = 24 * 7;
 
 /**
  * TANINAN ROLLER.
@@ -193,8 +215,12 @@ function quotesForMatch(matchId, store) {
  * önemli: çağıran hangi maçların gerçekten bittiğini biliyor, bu modül
  * bilmiyor. Süzgeç verilmezse depodaki her geçerli alıntı aday olur.
  *
+ * `maxAgeHours` verilirse o pencereden eski alıntı ADAY OLMAZ. Maç sayfası
+ * bunu vermez (alıntının süresi dolmaz, bkz. QUOTE_HAS_NO_EXPIRY); "son
+ * maçlar" diyen yüzeyler verir, çünkü orada yaş iddianın parçasıdır.
+ *
  * @param {Object|Array} store `data/manager-quotes.json` içeriği.
- * @param {{limit?: number, matchIds?: Iterable<string>}} [options]
+ * @param {{limit?: number, matchIds?: Iterable<string>, maxAgeHours?: number, nowMs?: number}} [options]
  * @returns {{status: "ready"|"unavailable", quotes: Array, reason?: string}}
  */
 function latestQuotes(store, options = {}) {
@@ -204,12 +230,21 @@ function latestQuotes(store, options = {}) {
 
   const allowed = options.matchIds ? new Set(options.matchIds) : null;
   const limit = Number.isFinite(options.limit) ? Math.max(0, options.limit) : 6;
+  const nowMs = Number.isFinite(options.nowMs) ? options.nowMs : Date.now();
+  const oldestMs = Number.isFinite(options.maxAgeHours) ? nowMs - options.maxAgeHours * 3600000 : null;
 
   const quotes = [];
   for (const entry of raw) {
     const matchId = text(entry && entry.matchId);
     if (allowed && !allowed.has(matchId)) continue;
     if (!validateQuote(entry).valid) continue;
+    if (oldestMs !== null) {
+      // Zaman damgası okunamayan kayıt pencereli yüzeye giremez: yaşı
+      // bilinmeyen bir alıntıyı "son maçtan" diye göstermek, bilmediğini
+      // iddia etmektir.
+      const at = Date.parse(text(entry.at));
+      if (!Number.isFinite(at) || at < oldestMs) continue;
+    }
 
     const { role } = resolveRole(entry.role);
     quotes.push({
@@ -240,6 +275,7 @@ function latestQuotes(store, options = {}) {
 
 module.exports = {
   QUOTE_HAS_NO_EXPIRY,
+  RECENT_QUOTE_WINDOW_HOURS,
   REQUIRED_FIELDS,
   ROLE_LABELS,
   DEFAULT_ROLE,

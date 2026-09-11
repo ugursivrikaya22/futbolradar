@@ -11,6 +11,27 @@
  * kümesi hariç kullanır: devre arası (HT) "canlı" sayılır (maç sürüyor,
  * yalnızca duraklamış), ama bitmiş/ertelenmiş asla sayılmaz.
  *
+ * DURUM TEK BAŞINA YETMEZ — SAAT DE SORULUR.
+ *
+ * Bant uzun süre yalnızca `status` alanına baktı ve bu sessizce yanlıştı:
+ * sağlayıcı bir maçı hiç FINISHED'e çevirmezse kayıt takvimde sonsuza dek
+ * "LIVE, 89'" olarak kalıyor. data/fixture-calendar.json bu zombi
+ * kayıtlarla dolmuştu (6 günde 792 kayıt, 647'si 24 saatten eski) ve her
+ * derleme onları ana sayfanın tepesine yeniden basıyordu: 11 Eylül akşamı
+ * yayındaki bant 6 Eylül'de oynanmış on altı maçı "canlı" rozetiyle,
+ * yanıp sönen nabızla ve akan dakikayla gösteriyordu.
+ *
+ * "Canlı" bir ZAMAN iddiasıdır; zamana bakmadan doğrulanamaz. Karar artık
+ * services/matchStatus.js#liveVerdict'e devredildi — sitenin bu soruya tek
+ * cevabı orası ve "bayat canlı" koruması (başlama saatinin üstünden
+ * LIVE_GRACE_MS geçmişse canlı DEĞİL) zaten orada tanımlı.
+ *
+ * TEK SAPMA — SKOR. `liveVerdict` skorsuz canlı iddiasını reddeder, çünkü
+ * kart "Canlı" deyip "– / –" gösteremez. Bant bunu gösterebilir: dakika
+ * göstermek skor iddiası değildir (bkz. aşağıdaki `isCurrentlyLive` notu).
+ * Bu yüzden yalnızca `live-without-score` gerekçesi bantta kabul edilir;
+ * `stale-live` dahil diğer tüm reddedişler bandı da bağlar.
+ *
  * Lig adı fixture.league.id üzerinden doğrulanmış katalog adına çözülür
  * (services/competitionCatalog.js, Faz B'nin kök hata düzeltmesiyle aynı
  * kural) — ham sağlayıcı metni değil.
@@ -29,6 +50,7 @@ const { LIVE_STATUSES, isScoreNumber } = (() => {
 })();
 const { resolveCompetitionId, findCompetition } = require("./competitionCatalog");
 const { matchDetailPath } = require("./matchProgram");
+const { LIVE_GRACE_MS, kickoffMs, liveVerdict } = require("./matchStatus");
 
 /** Bantta en fazla kaç maç? Kayan bir şerit liste değildir. */
 const MAX_ITEMS = 16;
@@ -55,13 +77,26 @@ function statusOf(match) {
   return String((match && (match.status || match.providerStatus)) || "").toUpperCase();
 }
 
-/** Maç şu an oynanıyor mu? Skoru olsun ya da olmasın — dakika göstermek skor iddiası değildir. */
-function isCurrentlyLive(match) {
+/**
+ * Maç ŞU AN oynanıyor mu?
+ *
+ * Skoru olsun ya da olmasın — dakika göstermek skor iddiası değildir; bu
+ * yüzden `liveVerdict`in skorsuz canlıya verdiği `live-without-score`
+ * reddi bantta kabul edilir. Başka hiçbir reddediş kabul edilmez: özellikle
+ * `stale-live` (başlama saatinin üstünden LIVE_GRACE_MS geçmiş) buradan
+ * geçemez — dosyada donmuş kalmış bir "LIVE" kaydı bandın tepesine
+ * çıkaran şey tam olarak oydu.
+ *
+ * `nowMs` yalnızca test içindir; verilmezse şu an okunur.
+ */
+function isCurrentlyLive(match, options = {}) {
   if (!match || typeof match !== "object") return false;
   const status = statusOf(match);
   if (FINISHED_STATUSES.has(status) || OFF_STATUSES.has(status)) return false;
-  if (match.live === true) return true;
-  return LIVE_STATUSES.includes(status);
+  if (match.live !== true && !LIVE_STATUSES.includes(status)) return false;
+
+  const verdict = liveVerdict(match, Number.isFinite(options.nowMs) ? { nowMs: options.nowMs } : undefined);
+  return verdict.live || verdict.reason === "live-without-score";
 }
 
 /** "67'", "HT", "ET" — dakika varsa dakika, yoksa kısa durum etiketi. */
@@ -76,6 +111,28 @@ function minuteOrStatusLabel(match) {
   return SHORT_STATUS_LABELS[statusOf(match)] || "Canlı";
 }
 
+/**
+ * BANT ÖĞESİNİN SON KULLANMA ANI.
+ *
+ * Süzgeç derleme anında çalışıyor, bant ise okunduğu anda görülüyor ve
+ * ikisi aynı an değil. Türkçe tarafta app.js bandı canlı uçtan tazeliyor,
+ * ama İngilizce sayfalara app.js bilerek yüklenmiyor (yüklenseydi bandın
+ * bütün etiketleri Türkçe basılırdı) — orada bant YALNIZCA son derleme
+ * kadar tazeydi. Gece yarısından hemen sonra bakıldığında 21:15'te başlayıp
+ * çoktan bitmiş bir maç hâlâ "Live 12'" diyordu.
+ *
+ * Çözüm veriyi taşımak: her öğe kendi canlı payının bittiği anı yanında
+ * götürüyor, tarayıcı da o an geçtiğinde öğeyi düşürüyor. Kural yine tek
+ * yerden — `LIVE_GRACE_MS`, sunucudaki kapının kullandığı payın ta kendisi.
+ *
+ * Başlama saati okunamayan kayıtta damga YOK: sunucu kapısı da o kaydı
+ * saate bakmadan geçiriyor, istemci ondan fazlasını iddia etmemeli.
+ */
+function liveUntilOf(match) {
+  const kickoff = kickoffMs(match);
+  return kickoff === null ? null : new Date(kickoff + LIVE_GRACE_MS).toISOString();
+}
+
 /** Skor metni. Skor sayısal değilse "–" — uydurma yok. */
 function scoreValue(value) {
   return isScoreNumber(value) ? Number(value) : null;
@@ -87,12 +144,19 @@ function leagueLabelOf(match) {
   return (competition && competition.name) || String((match && match.league) || "").trim() || "Futbol";
 }
 
-/** Ham maç listesini banda çevirir. `now` yalnızca sıralama için, filtre zaten durumdan gelir. */
+/**
+ * Ham maç listesini banda çevirir.
+ *
+ * `nowMs` süzgecin kendisine girer (bayat canlı koruması); verilmezse şu an
+ * okunur. Derleme anı ile görüntüleme anı farklı olduğu için bant istemcide
+ * `/api/matches?status=live` ile tazelenir — o uç da AYNI kapıdan geçer.
+ */
 function selectLiveTickerRecords(matches, options = {}) {
   const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;
+  const nowMs = Number.isFinite(options.nowMs) ? options.nowMs : Date.now();
 
   return (Array.isArray(matches) ? matches : [])
-    .filter(isCurrentlyLive)
+    .filter((match) => isCurrentlyLive(match, { nowMs }))
     .map((match) => {
       const homeTeam = String((match && match.homeTeam) || "").trim();
       const awayTeam = String((match && match.awayTeam) || "").trim();
@@ -109,6 +173,7 @@ function selectLiveTickerRecords(matches, options = {}) {
         awayScore: scoreValue(score.away),
         minuteOrStatus: minuteOrStatusLabel(match),
         isHalftime: ["HT", "HALFTIME"].includes(statusOf(match)),
+        liveUntil: liveUntilOf(match),
         href: matchDetailPath(match)
       };
     })

@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-11T18:28:18.473Z",
+  "updatedAt": "2026-09-11T21:45:45.314Z",
   "items": [
+    {
+      "id": "auto-news-f4a8e9529d8491f4b8e8",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kaptanımız Eda Erdem tarihe geçti",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-11T18:54:00.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQXzZOZHBicEh4dVUwSzBmTmhXZ1JNd2Q3Mm16dzNmaGlyMVJCMjZxZTVHdG9yOXdra2pENzlwQWdGMVZIbUNXZnNleFZjQ0Q3Y3MzQkR5R2JhQzlLbU9YREJtZHEwRzlONGRhNk42VTdsRG83cmZITW9VNFJzVXAyV0MxdGVsaHFROW9MX2xiU0F0NEhpNHc?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-1c074ad8a660e580c01f",
       "category": "official",
@@ -22,26 +42,6 @@
         "status": "OFFICIAL",
         "mergedReports": 2,
         "firstSeenAt": "2026-09-10T20:42:45.000Z"
-      }
-    },
-    {
-      "id": "auto-news-4383ccad94ae967e5d52",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Tahkim Kurulu Kararları",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-11T17:08:46.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE91amFvUGxoY0FCVWxKSXo1azlNVmNGTWd3aWd4a1JJRm0zNFM3dWZBdXhLaGY1VWIyNlU5aFV5dlZnUzFqZEw0blRBMS1lcm1tekZMcV9JNURIWEt2b0NxcldibnNWRDVFTm5UVEhSUGJiUnFPSE0tR3B3YWZVZw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
       }
     },
     {
@@ -306,8 +306,8 @@
         "feed": "aa-spor",
         "priority": 6,
         "status": "CONFIRMED",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-11T17:37:00.000Z"
+        "mergedReports": 3,
+        "firstSeenAt": "2026-09-11T17:36:59.000Z"
       }
     },
     {
@@ -395,20 +395,6 @@
       "important": true
     },
     {
-      "id": "news-trabzonspor-fabinho-fatih-tekke-1e6531a4",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Trabzonspor çevresinde Fabinho Fatih Tekke'ye dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-06T20:28:38.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/trabzonspor-fabinho-fatih-tekke-1e6531a4"
-      },
-      "team": "Trabzonspor",
-      "important": true
-    },
-    {
       "id": "auto-news-cc3a63d5868838232e8d",
       "category": "official",
       "confidence": "confirmed",
@@ -427,7 +413,7 @@
         "priority": 9,
         "status": "OFFICIAL",
         "mergedReports": 4,
-        "firstSeenAt": "2026-09-10T07:00:00.000Z"
+        "firstSeenAt": "2026-09-09T20:44:20.000Z"
       }
     },
     {
@@ -459,7 +445,7 @@
       "section": "news",
       "text": "Bayern München reaction: Michael Olise on win against Bodø/Glimt",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-10T23:47:51.000Z",
+      "timestamp": "2026-09-10T22:46:44.000Z",
       "source": {
         "name": "UEFA.com",
         "url": "https://news.google.com/rss/articles/CBMi2wFBVV95cUxQZG84Q25DZUROT3d1NTB6VW93dmQ3S1JjMWFZeTl2MFpIMmxZQlVIX0R2SFlEOTRxRHB5T015VFl0Y0M4aGtNM2QzR3p5YzRCU2VGZkczVEZ4N3NaYkY1aDRvUXZKbGRTb2tBczJJMkdyNHF3M1NUbXBOZkhEZzNKVk5YZmpZRzlNYXFnaUlHQU1LUDdYNkcxMGlTT28tNFE1WFFlX3l5VXdoRmo3NWphN2MwdngtQmxOQzBBNE8zX1R5YVU3dEZiRWNZOE1RYm5ld1hoaTctYWFXWW8?oc=5",
