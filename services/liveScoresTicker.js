@@ -27,6 +27,7 @@ const { LIVE_STATUSES, isScoreNumber } = (() => {
     }
   };
 })();
+const { liveVerdict } = require("./matchStatus");
 const { resolveCompetitionId, findCompetition } = require("./competitionCatalog");
 const { matchDetailPath } = require("./matchProgram");
 
@@ -55,13 +56,27 @@ function statusOf(match) {
   return String((match && (match.status || match.providerStatus)) || "").toUpperCase();
 }
 
-/** Maç şu an oynanıyor mu? Skoru olsun ya da olmasın — dakika göstermek skor iddiası değildir. */
-function isCurrentlyLive(match) {
+/**
+ * Maç şu an oynanıyor mu?
+ *
+ * BANTTA SAAT KONTROLÜ YOKTU. Durum dizesi "LIVE" olduğu sürece kayıt banda
+ * giriyordu; sağlayıcı bir maçı hiç "FINISHED"e çevirmezse o maç GÜNLERCE
+ * bantta "89'" yazarak kayıyordu. Ana sayfada beş gün önce oynanmış maçların
+ * bandı tam olarak buydu.
+ *
+ * Tazelik kararı artık bandın kendi kuralı değil: `services/matchStatus.js`
+ * `liveVerdict` — ana sayfa, /canli-skor ve maç merkeziyle AYNI kapı. Gün,
+ * başlama saati, kaydın son güncellenme damgası ve skor orada denetlenir.
+ */
+function isCurrentlyLive(match, nowMs) {
   if (!match || typeof match !== "object") return false;
   const status = statusOf(match);
   if (FINISHED_STATUSES.has(status) || OFF_STATUSES.has(status)) return false;
-  if (match.live === true) return true;
-  return LIVE_STATUSES.includes(status);
+  if (!(match.live === true || LIVE_STATUSES.includes(status))) return false;
+  // `requireScore: false`: bant skoru "–" basabilir, çünkü dakika
+  // göstermek skor iddiası değildir (dosya başlığındaki kurala bağlı).
+  // Tazelik kapıları — gün, başlama saati, son güncellenme — geçerli.
+  return liveVerdict(match, { nowMs, requireScore: false }).live;
 }
 
 /** "67'", "HT", "ET" — dakika varsa dakika, yoksa kısa durum etiketi. */
@@ -87,12 +102,19 @@ function leagueLabelOf(match) {
   return (competition && competition.name) || String((match && match.league) || "").trim() || "Futbol";
 }
 
-/** Ham maç listesini banda çevirir. `now` yalnızca sıralama için, filtre zaten durumdan gelir. */
+/**
+ * Ham maç listesini banda çevirir.
+ *
+ * `now` artık yalnızca sıralama için değil: tazelik kapısı da bu ana göre
+ * çalışır (bkz. `isCurrentlyLive`). Testler sabit bir an geçirebilsin diye
+ * seçenek olarak duruyor; verilmezse sunucu zamanı kullanılır.
+ */
 function selectLiveTickerRecords(matches, options = {}) {
   const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;
+  const nowMs = Number.isFinite(options.nowMs) ? options.nowMs : (Number.isFinite(options.now) ? options.now : Date.now());
 
   return (Array.isArray(matches) ? matches : [])
-    .filter(isCurrentlyLive)
+    .filter((match) => isCurrentlyLive(match, nowMs))
     .map((match) => {
       const homeTeam = String((match && match.homeTeam) || "").trim();
       const awayTeam = String((match && match.awayTeam) || "").trim();

@@ -7,6 +7,193 @@
   var DESKTOP_MIN_WIDTH = 1366;
   var desktopQuery = window.matchMedia("(min-width: " + DESKTOP_MIN_WIDTH + "px)");
 
+
+  // live-freshness-dom-guard:start
+  //
+  // ÖN DERLENMİŞ "CANLI" İDDİASININ SON KAPISI.
+  //
+  // Ana sayfa, /canli-skor ve maç merkezi bölümlerinin bir kısmı derleme
+  // anında statik HTML'e basılır. Derleme BİR ANDIR: "Canlı 81'" yazan bir
+  // kart HTML'e dondurulduğu anda doğrudur, bir saat sonra yanlıştır, ertesi
+  // gün geçmiş bir maçı canlı gösterir. Statik HTML kendi kendini
+  // düzeltemez çünkü içinde zaman yoktur — Fenerbahçe - Roma maçının
+  // bitiminden sonra ana sayfada "81' CANLI" olarak asılı kalması tam olarak
+  // buydu. Aynı şey CDN/Vercel önbelleğinden dönen eski bir sayfa ya da
+  // sağlayıcı erişilemezken servis edilen yedek JSON için de geçerli.
+  //
+  // Bu geçiş, sayfadaki HER ön derlenmiş canlı iddiasını SUNUCU/istemci
+  // saatine göre yeniden değerlendirir ve ömrü dolmuşsa söker. API'ye hiç
+  // bağlanmadan, ilk boyamadan önce çalışır; canlı veriyi yeniden çizen
+  // istemci kodu (app.js) yüklenmese, gecikse ya da başarısız olsa bile
+  // ekranda bayat bir "CANLI" rozeti kalmaz.
+  //
+  // BURASI YALNIZCA SÖKER, HİÇ ÜRETMEZ: skor ya da dakika uydurmaz,
+  // yalnızca doğrulanamayan canlılık iddiasını geri çeker.
+  //
+  // Eşikler app.js'teki `LiveGuard` ve services/matchStatus.js ile AYNI
+  // olmak zorunda; scripts/test-live-freshness-guard.mjs üçünü karşılaştırır.
+  var LIVE_DOM_GRACE_MS = 150 * 60 * 1000;
+  var LIVE_DOM_DATA_STALE_MS = 12 * 60 * 1000;
+  var LIVE_UNAVAILABLE_TR = "Canlı veri geçici olarak kullanılamıyor";
+  var LIVE_UNAVAILABLE_EN = "Live data temporarily unavailable";
+
+  function liveDomIsEnglish() {
+    return String(document.documentElement.getAttribute("lang") || "").toLowerCase().indexOf("en") === 0;
+  }
+
+  function liveDomParseMs(value) {
+    var raw = String(value || "").trim();
+    if (!raw) return null;
+    var hasTime = raw.indexOf("T") !== -1 || raw.indexOf(":") !== -1;
+    var parsed = Date.parse(hasTime ? raw : raw.slice(0, 10) + "T00:00:00+03:00");
+    return isNaN(parsed) ? null : parsed;
+  }
+
+  /** Rozetin içinden canlılık işaretlerini söker; metni nötr hâle getirir. */
+  function stripLiveMarkers(element, replacementText) {
+    if (!element) return;
+    element.classList.remove("is-live");
+    element.removeAttribute("data-match-live");
+
+    Array.prototype.forEach.call(element.querySelectorAll(".is-live"), function (node) {
+      node.classList.remove("is-live");
+    });
+    // Yanıp sönen canlı noktası "şu anda oynanıyor" diyen görsel iddiadır.
+    Array.prototype.forEach.call(element.querySelectorAll(".live-pulse"), function (node) {
+      if (node.parentNode) node.parentNode.removeChild(node);
+    });
+    // Donmuş dakika ("81'") kaldırılır: doğru dakika bilinmiyor, uydurulmaz.
+    Array.prototype.forEach.call(
+      element.querySelectorAll(".superlig-strip-minute, .live-scores-ticker__minute"),
+      function (node) { if (node.parentNode) node.parentNode.removeChild(node); }
+    );
+
+    if (replacementText) {
+      var label = element.querySelector(".featured-fixture-score span, .fixture-card-state");
+      if (label) label.textContent = replacementText;
+    }
+  }
+
+  /**
+   * Ön derlenmiş canlı iddialarını tazeliğe göre süzer.
+   *
+   * İki bağımsız ölçüt, ikisi de sunucu/istemci saatine karşı:
+   *
+   *   1. `data-kickoff` — kartın kendi başlama saati. Maç süresi + payı
+   *      aşılmışsa kart canlı olamaz (dünkü maç hiçbir koşulda canlı değil).
+   *   2. `data-live-rendered-at` — bloğun derlenme anı. Tazelik ömrü
+   *      dolmuşsa bloktaki TÜM canlı iddiaları geri çekilir; blok hangi
+   *      maçları taşıdığını bilmek zorunda değildir.
+   */
+  function neutralizeStaleLive() {
+    var now = Date.now();
+    var english = liveDomIsEnglish();
+    var unavailable = english ? LIVE_UNAVAILABLE_EN : LIVE_UNAVAILABLE_TR;
+
+    // 1. Kendi başlama saatini taşıyan kartlar.
+    Array.prototype.forEach.call(document.querySelectorAll("[data-kickoff]"), function (card) {
+      var kickoff = liveDomParseMs(card.getAttribute("data-kickoff"));
+      var claimsLive = card.classList.contains("is-live") ||
+        Boolean(card.querySelector(".is-live, .live-pulse"));
+      if (!claimsLive) return;
+      // Başlama saati okunamayan bir kart canlılığını DOĞRULAYAMAZ; süresi
+      // dolmuş kart da öyle. İkisi de iddiayı kaybeder.
+      if (kickoff === null || now - kickoff > LIVE_DOM_GRACE_MS) {
+        stripLiveMarkers(card, unavailable);
+        card.setAttribute("data-live-stale", "true");
+      }
+    });
+
+    // 2. Derleme damgası taşıyan bloklar.
+    Array.prototype.forEach.call(document.querySelectorAll("[data-live-rendered-at]"), function (block) {
+      var renderedAt = liveDomParseMs(block.getAttribute("data-live-rendered-at"));
+      if (renderedAt !== null && now - renderedAt <= LIVE_DOM_DATA_STALE_MS) return;
+
+      block.setAttribute("data-live-stale", "true");
+
+      // Skor bandı: bayat şerit boş duruma çevrilir, öğeler silinir.
+      if (block.hasAttribute("data-live-scores-track")) {
+        block.classList.add("is-static");
+        block.innerHTML = '<div class="live-scores-ticker__group"><span class="live-scores-ticker__empty"></span></div>';
+        var empty = block.querySelector(".live-scores-ticker__empty");
+        if (empty) empty.textContent = english ? "No live matches at the moment." : "Şu anda canlı maç yok.";
+        var shell = block.closest ? block.closest(".live-scores-ticker") : null;
+        if (shell) shell.setAttribute("data-empty", "");
+        return;
+      }
+
+      // Diğer bloklar (hero karuseli, "Süper Lig'de Bugün" şeridi, kart
+      // ızgaraları): yalnızca canlılık iddiası geri çekilir, içerik kalır.
+      Array.prototype.forEach.call(block.querySelectorAll(".is-live"), function (node) {
+        stripLiveMarkers(node, unavailable);
+      });
+      stripLiveMarkers(block, "");
+    });
+  }
+
+  /**
+   * GÜN DEĞİŞİMİ — ESKİ CANLI DURUM TAMAMEN TEMİZLENİR.
+   *
+   * Sekme açık bırakıldığında (telefonda gecelik, masaüstünde sürekli) sayfa
+   * yenilenmez; ekrandaki "bugün" dünün günüdür ve dünün canlı kartları
+   * ekranda kalır. Europe/Istanbul takvim günü değiştiği anda ön derlenmiş
+   * canlı durum yeniden değerlendirilir ve sayfa bir kez tazelenir.
+   */
+  function istanbulDayNow() {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"
+    }).format(new Date());
+  }
+
+  function watchLiveFreshness() {
+    neutralizeStaleLive();
+
+    var currentDay = istanbulDayNow();
+
+    // Dakikada bir yeniden değerlendirme: sayfa açık dururken de kart
+    // kendiliğinden düşsün. Sayfa gizliyken beklemenin anlamı yok.
+    window.setInterval(function () {
+      if (document.hidden) return;
+      neutralizeStaleLive();
+
+      var day = istanbulDayNow();
+      if (day === currentDay) return;
+
+      // GÜN DEĞİŞTİ. Ön derlenmiş her canlı iddiası artık düne aittir.
+      currentDay = day;
+      Array.prototype.forEach.call(document.querySelectorAll("[data-live-rendered-at]"), function (block) {
+        block.setAttribute("data-live-rendered-at", "");
+      });
+      neutralizeStaleLive();
+      try {
+        // Önbellekteki dünün anlık görüntüsü de düşsün: sayfa gün
+        // değişiminde bir kez ağdan tazelenir.
+        if (window.caches && typeof window.caches.delete === "function") {
+          window.caches.keys().then(function (keys) {
+            keys.filter(function (key) { return key.indexOf("fr-api-") === 0; })
+              .forEach(function (key) { window.caches.delete(key); });
+          });
+        }
+      } catch (error) {
+        // Önbellek API'si kapalı olabilir; tazelik kararı DOM tarafında
+        // zaten verildi.
+      }
+    }, 60000);
+
+    // Sekmeye geri dönüldüğünde (uyandırma, arka plandan öne alma) karar
+    // hemen yenilenir: aradan geçen süre saatlerce olabilir.
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) neutralizeStaleLive();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", watchLiveFreshness);
+  } else {
+    watchLiveFreshness();
+  }
+  // live-freshness-dom-guard:end
+
   function closeNav(nav, toggle) {
     nav.classList.remove("is-open");
     toggle.setAttribute("aria-expanded", "false");

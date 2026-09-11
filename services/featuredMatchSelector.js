@@ -33,7 +33,7 @@
 
 const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 const { isMajorClubMatch, majorClubSideOf } = require("./majorClubs");
-const { hasReadableScore, isAwardedStatus, isUnplayedStatus } = require("./matchStatus");
+const { hasReadableScore, isAwardedStatus, isDisplayableLive, isUnplayedStatus } = require("./matchStatus");
 const { liveMatchPriority } = require("./liveMatchPriority");
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]);
@@ -133,13 +133,15 @@ function isLiveMatch(match, nowMs) {
     return false;
   }
 
-  const kickoff = kickoffTime(match);
-  if (kickoff.hasTime && Number.isFinite(kickoff.value) && Number.isFinite(nowMs)
-    && nowMs - kickoff.value > IN_PROGRESS_WINDOW_MS) {
-    return false;
-  }
-
-  return true;
+  // TAZELİK KARARI ARTIK BURADA VERİLMİYOR.
+  //
+  // Bu fonksiyon kendi saat penceresini uyguluyordu; bant (liveScoresTicker)
+  // hiç uygulamıyor, istemci üçüncü bir kopya taşıyordu. Üç kopya üç ayrı
+  // cevap veriyordu ve ekranda "hero'da canlı, bantta canlı, panoda yok"
+  // gibi çelişkiler çıkıyordu. Karar tek kapıya taşındı:
+  // services/matchStatus.js#liveVerdict — gün (Europe/Istanbul), başlama
+  // saati, kaydın son güncellenme damgası ve skor orada denetlenir.
+  return isDisplayableLive(match, { nowMs, graceMs: IN_PROGRESS_WINDOW_MS });
 }
 
 function isFinishedMatch(match) {

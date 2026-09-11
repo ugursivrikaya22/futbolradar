@@ -673,6 +673,11 @@ function featuredCarousel() {
   const card = (entry) => {
     const match = entry.match;
     const state = canonicalStatus(match.status);
+    // TÜRKÇE ANA SAYFAYLA AYNI KAPI (services/matchStatus.js#liveVerdict).
+    // Rozet ham `status` üzerinden türetiliyordu: tazelik kapısından düşmüş
+    // bir kayıt İngilizce ana sayfaya "Live 61'" diye basılıyordu. İki dilin
+    // canlılık kararı ayrışamaz.
+    const live = Boolean(liveVerdict(match).live);
     const hasScore = match.score && match.score.home !== null && match.score.home !== undefined &&
       match.score.away !== null && match.score.away !== undefined;
     const headline = hasScore
@@ -680,14 +685,14 @@ function featuredCarousel() {
       : (formatTime(match.kickoff, LOCALE) || match.time || "—");
     const stateLabel = state === "FINISHED"
       ? label("card.fullTimeShort")
-      : state === "LIVE"
+      : live
         ? `${label("status.LIVE")}${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
         : label("common.kickoff");
     const dateLabel = istanbulDay(match.kickoff || match.date) === TODAY ? "Today" : formatDate(match.kickoff, LOCALE);
     const competition = competitionLabel(match.league, LOCALE);
     const reasonLabel = FEATURED_REASON_EN[entry.reason] || entry.reason;
 
-    return `<div class="featured-fixture${state === "LIVE" ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
+    return `<div class="featured-fixture${live ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
       <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMark(competition)}${escapeHtml(competition)}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Venue to be confirmed"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(match.homeTeam)}
@@ -710,7 +715,9 @@ function featuredCarousel() {
       <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
     </div>`;
 
-  return `<div class="featured-carousel" data-featured-carousel data-featured-interval="10000" data-featured-count="${selections.length}" aria-roledescription="carousel" aria-label="Featured matches">
+  // Türkçe ana sayfayla aynı damga: statik "Live" rozeti derleme anını
+  // taşır ve istemci ömrü dolmuş rozeti söker.
+  return `<div class="featured-carousel" data-featured-carousel data-live-rendered-at="${escapeHtml(new Date().toISOString())}" data-featured-interval="10000" data-featured-count="${selections.length}" aria-roledescription="carousel" aria-label="Featured matches">
       <div class="featured-carousel-viewport">${slides}</div>
       ${nav}
     </div>${stats}`;

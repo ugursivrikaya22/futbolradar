@@ -18,7 +18,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { normalizeLocale, t } = require("../../services/i18n.js");
-const { canonicalStatus, LIVE_STATES, PLAYED_STATES } = require("../../services/matchStatus.js");
+const { canonicalStatus, isDisplayableLive, LIVE_STATES, PLAYED_STATES } = require("../../services/matchStatus.js");
 const { sameClub } = require("../../services/superLigTeams.js");
 
 /**
@@ -420,7 +420,11 @@ function teamLogoOrInitials(entry, name) {
  */
 function superLigMatchState(match, locale) {
   const canonical = canonicalStatus(match && match.status);
-  const isLive = LIVE_STATES.has(canonical);
+  // "Süper Lig'de Bugün" şeridi canlılığı yalnızca duruma bakarak
+  // belirliyordu: sağlayıcı bir maçı hiç "FINISHED"e çevirmezse şerit o
+  // maçı günlerce "69'" diye gösteriyordu. Ortak kapı (gün + saat +
+  // tazelik + skor) — services/matchStatus.js#liveVerdict.
+  const isLive = LIVE_STATES.has(canonical) && isDisplayableLive(match);
   const isFinal = PLAYED_STATES.has(canonical) && match && match.score &&
     Number.isFinite(Number(match.score.home)) && Number.isFinite(Number(match.score.away));
   const minute = isLive && match && Number.isFinite(Number(match.minute)) ? `${Number(match.minute)}'` : "";
@@ -506,6 +510,10 @@ export function superLigTodayStripHtml(matches, teams, locale, options = {}) {
   // data-static-fallback) index.html'de elle yazılı duruyor, tıpkı
   // .home-transfer-watch-shell gibi. Bu fonksiyon o kabın İÇİNİ, hem
   // ön-render hem istemci hidrasyonu için AYNI şekilde doldurur.
+  // Derleme anı şeridin üstüne yazılır: statik HTML kendi kendini
+  // düzeltemez çünkü içinde zaman yoktur. İstemci (site.js
+  // neutralizeStaleLive) damgayı okur ve ömrü dolmuş "Canlı" rozetlerini
+  // API'ye hiç bağlanmadan söker.
   return `<span class="superlig-strip-kicker">${escapeHtml(t("superlig.strip.kicker", loc))}</span>` +
-    `<div class="superlig-strip-rail">${rows}</div>`;
+    `<div class="superlig-strip-rail" data-live-rendered-at="${escapeHtml(new Date().toISOString())}">${rows}</div>`;
 }
