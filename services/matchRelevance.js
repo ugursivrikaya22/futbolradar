@@ -127,7 +127,16 @@ function kickoffMs(match) {
 function stateOf(match, nowMs) {
   if (!match) return "unknown";
   const status = text(match.status || match.providerStatus).toUpperCase();
-  if (match.live === true || LIVE_STATUSES.has(status)) return "live";
+  // CANLI İDDİASI DA ZAMANA TABİ. Sağlayıcı bir maçı hiç FINISHED'e
+  // çevirmediğinde kayıt takvimde "LIVE" olarak donuyor; durum tek başına
+  // okunduğunda o kayıt "live" bandının en yüksek bonusunu alıp GÜNLERCE
+  // listenin tepesinde kalıyordu. Başlama saatinin üstünden
+  // IN_PROGRESS_WINDOW_MS geçmişse canlı iddiası düşer ve kayıt aşağıdaki
+  // zaman tabanlı bantlara devredilir — orada "finished" olur.
+  if (match.live === true || LIVE_STATUSES.has(status)) {
+    const liveStart = kickoffMs(match);
+    if (!liveStart || !Number.isFinite(nowMs) || nowMs - liveStart <= IN_PROGRESS_WINDOW_MS) return "live";
+  }
   if (FINISHED_STATUSES.has(status)) return "finished";
   // ERTELENEN VE İPTAL EDİLEN MAÇ ZAMAN ÇİZGİSİNDEN ÇIKAR. Bu kontrol
   // olmadan saati geçmiş bir iptal maçı aşağıdaki "oynanıyor" bandına düşüp

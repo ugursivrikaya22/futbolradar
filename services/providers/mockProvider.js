@@ -11,7 +11,7 @@ const analyses = require("../../data/analyses.json");
 const { normalizeText } = require("../../api/_utils");
 const { findCompetition, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
-const { isFinishedStatus, isAwardedStatus } = require("../matchStatus.js");
+const { isFinishedStatus, isAwardedStatus, liveVerdict } = require("../matchStatus.js");
 
 // Bu sağlayıcı artık yalnızca örnek veri sunmuyor: elle doğrulanmış
 // editoryal maç kayıtlarını ve sağlayıcıdan senkronlanan fikstür takvimini
@@ -608,8 +608,18 @@ async function getMatches(query) {
   // "live" sorgusunun sözleşmesi kaynaktan bağımsız aynı olmalı: yalnızca
   // oynanmakta olan maçlar. Kürasyonlu yedeğe düşüldüğünde günün tamamı
   // dönerse istemci bunları canlı güncelleme sanıp hepsini yeniden yazar.
+  //
+  // DURUM YETMEZ, SAAT DE SORULUR. Takvim yedeği, sağlayıcının hiç
+  // FINISHED'e çevirmediği kayıtları "LIVE" olarak saklıyor; yalnızca
+  // duruma bakan bu süzgeç onları canlı sayıp istemciye veriyordu. Ana
+  // sayfa bandı bu uçtan tazelendiği için, derleme anında temizlenen bayat
+  // maçlar saniyeler sonra geri geliyordu. Karar artık tek yerde:
+  // services/matchStatus.js#liveVerdict — başlama saatinin üstünden
+  // LIVE_GRACE_MS geçmiş "canlı" kayıt doğrulanmamış sayılır.
   if (query && query.live) {
-    return data.filter((match) => LIVE_STATUSES.has(String(match.status || "").toUpperCase()));
+    const nowMs = Date.now();
+    return data.filter((match) => LIVE_STATUSES.has(String(match.status || "").toUpperCase()) &&
+      liveVerdict(match, { nowMs }).verdict !== "unverified");
   }
 
   return data;

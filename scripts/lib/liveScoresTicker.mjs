@@ -84,7 +84,11 @@ export function liveTickerItem(item, options = {}) {
   const itemPath = String(item.href || "").replace(/^\.\//, "");
   const localizedPath = locale === "en" ? itemPath.replace(/^mac-detay\.html(?=\?|$)/, "en/match-detail.html") : itemPath;
   const href = item.href ? `${base}${localizedPath}` : "";
-  const attributes = `${href ? ` href="${escapeHtml(href)}"` : ""}${duplicate ? ' tabindex="-1"' : ""}`;
+  // Öğe kendi canlı payının bittiği anı yanında taşır; site.js o an geçince
+  // öğeyi düşürür. Damga yoksa (başlama saati okunamayan kayıt) öğe
+  // düşürülmez — sunucu kapısı da o kaydı saate bakmadan geçiriyor.
+  const liveUntil = item.liveUntil ? ` data-live-until="${escapeHtml(item.liveUntil)}"` : "";
+  const attributes = `${href ? ` href="${escapeHtml(href)}"` : ""}${duplicate ? ' tabindex="-1"' : ""}${liveUntil}`;
   const tag = item.href ? "a" : "span";
   const aria = `${item.league} | ${item.homeTeam} ${scoreText(item.homeScore)} - ${scoreText(item.awayScore)} ${item.awayTeam} | ${item.minuteOrStatus}`;
   return `<${tag} class="live-scores-ticker__item"${attributes} aria-label="${escapeHtml(aria)}">` +
@@ -109,15 +113,29 @@ export function liveTickerItem(item, options = {}) {
  * Süre öğe başına 5sn, 18-45sn arasında — transfer bandının 9sn/34-80sn'ine
  * göre belirgin biçimde daha hızlı. Tamamı /1.2 ile bölünür (%20 daha hızlı
  * kaydırma — süre kısaldıkça hız aynı oranda artar).
+ *
+ * Boş şeridin işaretlemesi `data-live-scores-empty` taşır: site.js son öğe
+ * de süresi dolup düştüğünde şeridi TAM OLARAK bu hâle getirir. İki yol
+ * (derlemede boş / tarayıcıda boşalmış) aynı DOM'a çıkmalı, yoksa bandın
+ * boş hâli nereden geldiğine göre farklı görünürdü.
  */
+/**
+ * Boş şerit — hem derlemede canlı maç yokken hem de tarayıcıda son öğe
+ * süresi dolup düştüğünde basılan TEK biçim. `data-live-scores-empty`
+ * site.js'in aynı işaretlemeyi yeniden üretebilmesi için burada.
+ */
+export function emptyTrack(locale) {
+  return `<div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">${stringsFor(locale).empty}</span></div>
+          </div>`;
+}
+
 export function liveTickerTrack(records, options = {}) {
   const { locale, base } = options;
   const items = Array.isArray(records) ? records.filter(Boolean) : [];
 
   if (!items.length) {
-    return `<div class="live-scores-ticker__track is-static" data-live-scores-track>
-            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">${stringsFor(locale).empty}</span></div>
-          </div>`;
+    return emptyTrack(locale);
   }
 
   const duration = Math.max(18, Math.min(45, items.length * 5)) / 1.2;
@@ -150,7 +168,10 @@ export function liveTickerBlock(records, options = {}) {
     ? ' data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?status=live" data-source="loading"'
     : ' data-source="static"';
 
-  return `<div class="live-scores-ticker"${items.length ? "" : " data-empty"} data-component="LiveScoresTicker"${liveAttributes} role="region" aria-label="${escapeHtml(text.region)}">
+  // Boş metin bandın üzerinde: site.js son öğeyi düşürdüğünde doğru dildeki
+  // cümleyi yazabilmeli ve hangi dilde olduğunu DOM'dan okumalı — sözlüğün
+  // ikinci bir kopyası istemciye inmemeli.
+  return `<div class="live-scores-ticker"${items.length ? "" : " data-empty"} data-component="LiveScoresTicker"${liveAttributes} data-live-empty-text="${escapeHtml(text.empty)}" role="region" aria-label="${escapeHtml(text.region)}">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>${escapeHtml(text.label)}</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">

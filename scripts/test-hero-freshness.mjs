@@ -84,6 +84,56 @@ assert.equal(
 );
 console.log(`  ok  ${HOME_PAGES.length} ana sayfada bayat maç kartı yok (${scanned} başlama saati denetlendi)`);
 
+// ── Canlı skorlar bandı: "CANLI" diyen her kayıt BUGÜNDEN olmalı ───────
+//
+// NEDEN VAR: 11 Eylül 2026 akşamı yayındaki ana sayfanın en üstündeki bant,
+// 6 Eylül'de oynanmış on altı maçı — Gladiator-Manfredonia 89', Oviedo-Burgos
+// 90' — yanıp sönen canlı nabzıyla gösteriyordu. Kayıtlar sahteydi değil,
+// DONMUŞTU: sağlayıcı o maçları hiç FINISHED'e çevirmeyince
+// data/fixture-calendar.json onları "LIVE" olarak sakladı ve yalnızca
+// `status` alanına bakan bant her derlemede aynı on altı maçı yeniden bastı.
+//
+// Kapı artık servis katmanında (services/liveScoresTicker.js →
+// services/matchStatus.js#liveVerdict). Bu denetim ÜRETİLEN ÇIKTIYA bakıyor:
+// kural bir gün yeniden delinirse, hata bu dosyalarda yayına çıkmadan önce
+// burada görünür. Bandın her öğesi kendi maç gününü bağlantısında taşıyor
+// (`?id=…&date=YYYY-MM-DD`), dolayısıyla iddia dışarıdan okunabilir.
+
+{
+  const istanbulToday = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date(now));
+  // Dün 23:00'te başlayan maç bu gece 00:30'da hâlâ oynanıyor olabilir;
+  // bandın takvim günü bu yüzden dünü de kapsar. İKİ günden eskisi kapsamaz.
+  const yesterday = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" })
+    .format(new Date(now - 24 * 3600000));
+  const allowedDays = new Set([istanbulToday, yesterday]);
+
+  const staleLive = [];
+  let liveItems = 0;
+
+  for (const page of HOME_PAGES) {
+    const file = path.join(root, page);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+
+    // Bant TR'de ön derleme işaretleri arasında, EN'de üreticinin kendi
+    // çıktısında duruyor; iki yüzey de AYNI sınıfı basıyor (işaretleme
+    // scripts/lib/liveScoresTicker.mjs'te tek yerde). Denetim bu yüzden
+    // işarete değil sınıfa bakıyor — kural iki dilde de aynı.
+    for (const [, day] of html.matchAll(/live-scores-ticker__item"[^>]*href="[^"]*?date=(\d{4}-\d{2}-\d{2})/g)) {
+      liveItems += 1;
+      if (!allowedDays.has(day)) staleLive.push(`${page}: ${day} tarihli maç "canlı" olarak basılmış`);
+    }
+  }
+
+  assert.equal(
+    staleLive.length,
+    0,
+    "Canlı skorlar bandında bayat maç var — bant yalnızca ŞU AN oynanan maçları taşır:\n  " +
+    [...new Set(staleLive)].join("\n  ")
+  );
+  console.log(`  ok  canlı skorlar bandında bayat maç yok (${liveItems} canlı öğe denetlendi)`);
+}
+
 // ── İstemci canlılığı saatten türetemez ────────────────────────────────
 //
 // `Date.now() >= kickoff` deyip karta "canlı" demek, sağlayıcı maçı canlı
@@ -103,4 +153,4 @@ for (const script of ["app.js", "site.js"]) {
 }
 console.log("  ok  istemci kodu canlılığı saatten türetmiyor");
 
-console.log("hero-freshness OK (2 bölüm)");
+console.log("hero-freshness OK (3 bölüm)");
