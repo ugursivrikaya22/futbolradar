@@ -935,6 +935,13 @@
     var ratingStatus = String(player.ratingStatus || "").toLowerCase();
     if (ratingStatus === "stale") return false;
 
+    // services/cardCredibility.js MAX_VERIFICATION_AGE_DAYS ile aynı eşik.
+    // Sunucu 45 günden eski doğrulamalı kaydı yayımdan kaldırır; istemci bu
+    // yaş kontrolünü atlarsa ön render'ın elediği bayat kart JS yüklendiğinde
+    // geri gelir (bkz. playerStatsAreVerified üstündeki not).
+    var verifiedStamp = Date.parse(player.lastVerifiedAt || player.lastSyncedAt || "");
+    if (!isNaN(verifiedStamp) && (Date.now() - verifiedStamp) / 86400000 > 45) return false;
+
     return true;
   }
 
