@@ -615,10 +615,13 @@ function staticFeaturedFixture() {
   }, escapeHtml);
 
   if (!featured) {
-    return `<div class="featured-fixture">
+    return `<div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="1" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" role="group" aria-roledescription="slayt" aria-label="1 / 1">
+      <div class="featured-fixture">
       <div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>Program kontrol ediliyor</span></div>
       <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div></div></div>
     </div>${quickStats}`;
   }
 
