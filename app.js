@@ -5748,7 +5748,12 @@
         var estimatedEvent = events.slice().reverse().find(function (event) { return event.providerEventTimeEstimated; });
         var detail = {
           packetId: packet.id,
-          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean),
+          // The route stores the first 30 ids and drops any body over 4 KB
+          // outright (server/liveScoreStreamRoute.js). Sending every live
+          // match pushed the payload past that cap on busy evenings, so the
+          // telemetry POST came back 400 and every page logged a console
+          // error. Send only what is actually recorded.
+          matchIds: (packet.matches || []).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean).slice(0, 30),
           providerEventAt: actualEvent ? actualEvent.providerEventAt : null,
           providerEventTimeEstimated: estimatedEvent ? estimatedEvent.providerEventTimeEstimated : null,
           serverReceivedAt: packet.timing && packet.timing.serverReceivedAt,
