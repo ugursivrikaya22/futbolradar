@@ -1665,16 +1665,25 @@ function matchQuotesTicker() {
   // bağlanıyor, dolayısıyla bir alıntının görünmesi için o maçın raporunun
   // gerçekten var olması gerekiyor. Fikstür listesi bunu garanti etmez ve
   // ilk denemede kırık bağlantı üretirdi.
-  const finishedIds = postMatchReportRecords()
-    .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()))
-    .map((record) => String(record.matchId || ""))
-    .filter(Boolean);
+  const finishedRecords = postMatchReportRecords()
+    .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()));
+  const finishedIds = finishedRecords.map((record) => String(record.matchId || "")).filter(Boolean);
+
+  // Rapor dosya adı matchId'den TÜRETİLEMEZ: slug deplasman takımının tam
+  // adını kullanabilir (ör. matchId "fenerbahce-roma-...", rapor dosyası
+  // "fenerbahce-as-roma-...") ve bu ikisi birbirinden sapabilir. Gerçek
+  // adres kayıttaki reportUrl'den okunmalı, varsayılmamalı.
+  const reportUrlByMatchId = new Map(
+    finishedRecords
+      .filter((record) => record.matchId && record.reportUrl)
+      .map((record) => [String(record.matchId), String(record.reportUrl)])
+  );
 
   const verdict = latestQuotes(managerQuoteStore, { limit: 6, matchIds: finishedIds });
 
   return matchQuotesTickerBlock(verdict, {
     awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",
-    href: (quote) => (quote.matchId ? `./mac-raporu/${quote.matchId}.html` : null)
+    href: (quote) => (quote.matchId ? reportUrlByMatchId.get(String(quote.matchId)) || null : null)
   });
 }
 
