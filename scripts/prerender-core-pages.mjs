@@ -41,7 +41,7 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
-const { latestQuotes } = require("../services/managerQuotes.js");
+const { latestQuotes, RECENT_QUOTE_WINDOW_HOURS } = require("../services/managerQuotes.js");
 const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
@@ -1681,7 +1681,17 @@ function matchQuotesTicker() {
       .filter(([matchId, url]) => matchId && url)
   );
 
-  const verdict = latestQuotes(managerQuoteStore, { limit: 6, matchIds: finishedIds });
+  // PENCERE: şerit "son tamamlanan maçlar" diyor, dolayısıyla yaş iddianın
+  // parçası. Penceresizken bant, dün oynanan maçın açıklamasının yanında on
+  // bir gün önceki maçlardan alıntılar taşıyordu; ikisi yan yana durunca
+  // hangisinin dünkü maçtan olduğu okunamıyordu. Alıntının KENDİSİ
+  // bayatlamaz (maç sayfasında kalıcı olarak durur) — bayatlayan, bu
+  // şeridin güncellik iddiası.
+  const verdict = latestQuotes(managerQuoteStore, {
+    limit: 6,
+    matchIds: finishedIds,
+    maxAgeHours: RECENT_QUOTE_WINDOW_HOURS
+  });
 
   return matchQuotesTickerBlock(verdict, {
     awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",

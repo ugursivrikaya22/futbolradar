@@ -66,6 +66,40 @@ function match(fields) {
   assert.deepEqual(selected.map((item) => item.id), ["ok"], "eksik taraflı kayıt boşluğu doldurulmadan atlanmalı");
 }
 
+// ── 2b. BAYAT CANLI: durum "LIVE" olsa da saat geçmişse banda giremez ──────
+//
+// NEDEN VAR: sağlayıcı bir maçı hiç FINISHED'e çevirmediğinde kayıt
+// data/fixture-calendar.json içinde sonsuza dek "LIVE, 89'" olarak kalıyor.
+// Bant yalnızca `status` alanına baktığı sürece bu kayıtları her derlemede
+// yeniden basıyordu: 11 Eylül 2026 akşamı yayındaki ana sayfa, 6 Eylül'de
+// oynanmış on altı maçı yanıp sönen canlı nabzıyla ve akan dakikayla
+// gösteriyordu. "Canlı" bir ZAMAN iddiasıdır; zamana bakmadan yapılamaz.
+
+{
+  const NOW = Date.parse("2026-09-11T21:00:00+03:00");
+  const live = match({ id: "simdi", kickoff: "2026-09-11T20:30:00+03:00", minute: 28 });
+  const zombie = match({ id: "zombi", kickoff: "2026-09-06T17:00:00+03:00", minute: 89 });
+  const justOver = match({ id: "pencere-disi", kickoff: "2026-09-11T18:15:00+03:00", minute: 89 });
+
+  assert.equal(isCurrentlyLive(live, { nowMs: NOW }), true, "şu an oynanan maç canlı sayılmalı");
+  assert.equal(isCurrentlyLive(zombie, { nowMs: NOW }), false, "beş gün önce başlamış 'LIVE' kaydı canlı sayılmamalı");
+  assert.equal(isCurrentlyLive(justOver, { nowMs: NOW }), false, "canlı payı dolmuş kayıt canlı sayılmamalı");
+
+  assert.deepEqual(
+    selectLiveTickerRecords([zombie, live, justOver], { nowMs: NOW }).map((item) => item.id),
+    ["simdi"],
+    "banda yalnızca saati doğrulanan canlı maç girmeli"
+  );
+
+  // Skorsuz canlı iddiası bantta HÂLÂ kabul edilir — dakika göstermek skor
+  // iddiası değildir. Bu, `liveVerdict`ten bilerek sapılan tek nokta;
+  // sapmanın bayat kaydı içeri almadığı burada sabitleniyor.
+  const scoreless = match({ id: "skorsuz", kickoff: "2026-09-11T20:30:00+03:00", score: null });
+  const scorelessZombie = match({ id: "skorsuz-zombi", kickoff: "2026-09-06T17:00:00+03:00", score: null });
+  assert.equal(isCurrentlyLive(scoreless, { nowMs: NOW }), true, "skorsuz canlı kayıt bantta gösterilebilir");
+  assert.equal(isCurrentlyLive(scorelessZombie, { nowMs: NOW }), false, "skorsuz olması bayat kaydı kurtarmaz");
+}
+
 // ── 3. Dakika/durum etiketi ──────────────────────────────────────────────
 
 {
