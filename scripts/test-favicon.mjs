@@ -178,7 +178,13 @@ function pngSize(file) {
 // için burada da rasterlenmiş sürüm gösteriliyor.
 {
   const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
-  const logos = [...html.matchAll(/"logo":"([^"]+)"/g)].map((row) => row[1]);
+  // Yalnızca ld+json BLOKLARI taranır: sayfada ayrıca ham sağlayıcı API
+  // yanıtları (maç tahmini vb.) gömülü ve onlarda da "logo" anahtarı var
+  // (örn. bir liginin sağlayıcı armasi) — bu kural yalnızca Google'ın
+  // okuduğu Organization şemasına ait, üçüncü taraf lig logosuna değil.
+  const ldJsonBlocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
+    .map((row) => row[1]);
+  const logos = ldJsonBlocks.flatMap((block) => [...block.matchAll(/"logo":"([^"]+)"/g)].map((row) => row[1]));
   assert.ok(logos.length > 0, "index.html: Organization logosu yok");
   for (const logo of logos) {
     assert.ok(!logo.endsWith(".svg"), `Organization logosu SVG olmamalı: ${logo}`);
