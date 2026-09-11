@@ -106,7 +106,7 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // Statik yedeğin takvim günü, istemcinin kullandığı kuralla AYNI olmalı
 // (app.js: istanbulDayOf). Ayrışırsa JavaScript açılana kadar farklı bir
 // gün listelenir ve sayfa gözün önünde değişir.
-const { istanbulDay } = require("../services/matchStatus.js");
+const { istanbulDay, liveVerdict } = require("../services/matchStatus.js");
 
 /**
  * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
@@ -520,7 +520,11 @@ const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
   const { headlineValue, status, finalScore, quickLinksHtml } = meta;
-  const isLive = status === "LIVE";
+  // Ham status alanına güvenilmez: sağlayıcı "LIVE" derken saatlerdir
+  // güncellemiyor olabilir (bkz. services/matchStatus.js#liveVerdict — app.js
+  // istemci tarafında aynı kapıyı kullanıyor). Bu kapı olmadan statik
+  // ön-render, artık canlı olmayan bir maçı "Canlı" basardı.
+  const isLive = status === "LIVE" && liveVerdict(match).live;
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
   const stateLabel = isFinal ? "MS" : isLive ? "Canlı" : (headlineValue || MATCH_STATUS_TR[status] || "Planlandı");
@@ -2099,7 +2103,7 @@ const matchProgramFaqEntries = matchProgramFaq(matchProgramPage.dayMatches, {
 
 writePage("bugunun-maclari.html", {
   "matches-page": matchProgramPage.html || emptyMatchState("today")
-}, fixtureFreshness, {
+}, matchesFreshness, {
   "today-faq": faqSectionHtml(
     matchProgramFaqEntries,
     matchProgramDateLabel ? `${matchProgramDateLabel} maçları hakkında sık sorulanlar` : "Sık sorulanlar"
@@ -2120,7 +2124,7 @@ writePage("canli-skor.html", {
   // Canlı maç yokken de günün sonuçları görünsün: sayfa eskiden yalnızca
   // "canlı maç yok" diyordu ve o günün oynanmış maçları hiç listelenmiyordu.
   "live-score": liveScoreProgramState()
-}, fixtureFreshness, {
+}, matchesFreshness, {
   "live-schema": matchListSchemaBlock(calendarProgramMatches(MATCH_LIST_INITIAL), "Canlı ve günün maçları")
 });
 

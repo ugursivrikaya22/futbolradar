@@ -343,13 +343,26 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
     return extractFunctionAt(source, index);
   }
 
+  function extractLines(source, startMarker, endMarker) {
+    const start = source.indexOf(startMarker);
+    if (start === -1) throw new Error(`app.js: "${startMarker}" bulunamadı`);
+    const end = source.indexOf(endMarker, start);
+    if (end === -1) throw new Error(`app.js: "${endMarker}" bulunamadı`);
+    return source.slice(start, end + endMarker.length);
+  }
+
   // `normalizeSearchText` app.js'te İKİ KEZ tanımlanır; ikincisi
   // çalışma anında birinciyi GÖLGELER (aynı IIFE kapsamında son
   // fonksiyon bildirimi kazanır). Gerçek tarayıcı davranışıyla eşleşmesi
   // için ikisi de, aynı sırayla, dahil edilir.
+  //
+  // `istanbulDayOf` kendi gövdesinin DIŞINDA tanımlı iki kapanış değişkenine
+  // (istanbulDayFormatter, istanbulDayCache) bağımlı — extractFunction yalnızca
+  // fonksiyon gövdesini alır, bu iki `var`ı da açıkça dahil etmek gerekiyor.
   const body = [
     extractFunction(appSource, "normalizeSearchText", 1),
     extractFunction(appSource, "normalizeSearchText", 2),
+    extractLines(appSource, "var istanbulDayFormatter = null;", "var istanbulDayCache = new Map();"),
     extractFunction(appSource, "istanbulDayOf"),
     extractFunction(appSource, "matchDateValue"),
     extractFunction(appSource, "sameClubName"),
