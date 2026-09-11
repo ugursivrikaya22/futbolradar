@@ -129,6 +129,13 @@ function buildArchive({ sources, previous, now }) {
       for (const field of ["events", "substitutions", "lineups", "statistics", "players"]) if (!match[field].length && candidate[field].length) match[field] = candidate[field];
       for (const field of ["venue", "referee", "coaches", "lastVerifiedAt"]) if (!match[field] && candidate[field]) match[field] = candidate[field];
     }
+    // Yalnızca "report" kaynağının reportPage'i gerçekten üretilmiş rapor dosyasından
+    // gelir. Diğer kaynaklarda takım adı farklı slug'landığında (örn. "Roma" vs "AS
+    // Roma") normalized() tahmini yanlış bir yol üretebilir; bu tahmin dolu olduğu için
+    // yukarıdaki boş-alan doldurma turu onu asla düzeltmez, o yüzden gerçek rapor kaydı
+    // varsa açıkça ona geçilir.
+    const reportCandidate = candidates.find((item) => item.source === "report" && item.reportPage);
+    if (reportCandidate) match.reportPage = reportCandidate.reportPage;
     // Elle yazılmış yorum geçmiş arşivde zaten `match` altında saklanmış
     // olabilir. Kaynak penceresinden düşen bir maçta bu yorumun kaybolması,
     // arşivin kalıcılık sözleşmesini bozar.
