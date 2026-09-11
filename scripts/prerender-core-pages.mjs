@@ -615,10 +615,13 @@ function staticFeaturedFixture() {
   }, escapeHtml);
 
   if (!featured) {
-    return `<div class="featured-fixture">
+    return `<div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="${ROTATION_INTERVAL_MS}" data-featured-count="1" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" role="group" aria-roledescription="slayt" aria-label="1 / 1">
+      <div class="featured-fixture">
       <div class="featured-fixture-head"><span class="featured-fixture-league">Canlı skor panosu</span><span>Program kontrol ediliyor</span></div>
       <div class="home-match-command-empty"><strong>Maç programı yükleniyor.</strong><span>Bugünün doğrulanmış karşılaşmaları burada listelenecek.</span></div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./canli-skor.html">Canlı skor</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div></div></div>
     </div>${quickStats}`;
   }
 
@@ -1665,25 +1668,24 @@ function matchQuotesTicker() {
   // bağlanıyor, dolayısıyla bir alıntının görünmesi için o maçın raporunun
   // gerçekten var olması gerekiyor. Fikstür listesi bunu garanti etmez ve
   // ilk denemede kırık bağlantı üretirdi.
-  const finishedRecords = postMatchReportRecords()
+  const finishedReports = postMatchReportRecords()
     .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()));
-  const finishedIds = finishedRecords.map((record) => String(record.matchId || "")).filter(Boolean);
-
-  // Rapor dosya adı matchId'den TÜRETİLEMEZ: slug deplasman takımının tam
-  // adını kullanabilir (ör. matchId "fenerbahce-roma-...", rapor dosyası
-  // "fenerbahce-as-roma-...") ve bu ikisi birbirinden sapabilir. Gerçek
-  // adres kayıttaki reportUrl'den okunmalı, varsayılmamalı.
+  const finishedIds = finishedReports.map((record) => String(record.matchId || "")).filter(Boolean);
+  // Rapor dosyasının GERÇEK adı matchId'den tahmin edilemez: takım adı rapor
+  // slug'ında kısa isimden farklı yazıldığında (örn. "Roma" vs "AS Roma")
+  // `mac-raporu/${matchId}.html` kırık bağlantı üretir. Kaydın kendi
+  // reportUrl/seo.path alanı doğru dosya adını taşıyor, ona bakılır.
   const reportUrlByMatchId = new Map(
-    finishedRecords
-      .filter((record) => record.matchId && record.reportUrl)
-      .map((record) => [String(record.matchId), String(record.reportUrl)])
+    finishedReports
+      .map((record) => [String(record.matchId || ""), String(record.reportUrl || (record.seo && record.seo.path) || "")])
+      .filter(([matchId, url]) => matchId && url)
   );
 
   const verdict = latestQuotes(managerQuoteStore, { limit: 6, matchIds: finishedIds });
 
   return matchQuotesTickerBlock(verdict, {
     awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",
-    href: (quote) => (quote.matchId ? reportUrlByMatchId.get(String(quote.matchId)) || null : null)
+    href: (quote) => reportUrlByMatchId.get(quote.matchId) || null
   });
 }
 

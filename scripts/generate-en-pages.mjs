@@ -655,10 +655,13 @@ function featuredCarousel() {
   });
 
   if (!selections.length) {
-    return `<div class="featured-fixture">
+    return `<div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="10000" data-featured-count="1" aria-roledescription="carousel" aria-label="Featured matches">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" role="group" aria-roledescription="slide" aria-label="1 / 1">
+      <div class="featured-fixture">
       <div class="featured-fixture-head"><span class="featured-fixture-league">Live score board</span><span>Checking the schedule</span></div>
       <div class="home-match-command-empty"><strong>The match schedule is loading.</strong><span>Today's verified fixtures will be listed here.</span></div>
       <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">${escapeHtml(t("nav.liveScores", LOCALE))}</a><a class="button secondary" href="./todays-matches.html">${escapeHtml(t("nav.todayMatches", LOCALE))}</a></div>
+    </div></div></div>
     </div>${stats}`;
   }
 
