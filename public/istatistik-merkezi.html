@@ -39,6 +39,10 @@
     })();
   </script>
     <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -57,11 +61,7 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
-<!-- hreflang:start -->
+  <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/istatistik-merkezi.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/stats-hub.html" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/istatistik-merkezi.html" />
@@ -109,13 +109,12 @@
         <a class="news-ticker-all" href="./haberler.html">Tümü</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" role="region" aria-label="Canlı Skorlar">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="Şu anda canlı maç yok." role="region" aria-label="Canlı Skorlar">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Canlı Skorlar</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track" style="--live-ticker-duration:15s" data-live-scores-track>
-            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="./mac-detay.html?id=1555055&amp;date=2026-09-11" aria-label="Challenge League | Étoile Carouge 0 - 0 FC Winterthur | 12&#039;"><span class="live-scores-ticker__league">Challenge League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Étoile Carouge</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">FC Winterthur</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>12&#039;</span></a><a class="live-scores-ticker__item" href="./mac-detay.html?id=1558010&amp;date=2026-09-11" aria-label="1. SNL | Brinje-Grosuplje 0 - 0 Nafta | 11&#039;"><span class="live-scores-ticker__league">1. SNL</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Brinje-Grosuplje</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Nafta</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>11&#039;</span></a></div>
-            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="./mac-detay.html?id=1555055&amp;date=2026-09-11" tabindex="-1" aria-label="Challenge League | Étoile Carouge 0 - 0 FC Winterthur | 12&#039;"><span class="live-scores-ticker__league">Challenge League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Étoile Carouge</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">FC Winterthur</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>12&#039;</span></a><a class="live-scores-ticker__item" href="./mac-detay.html?id=1558010&amp;date=2026-09-11" tabindex="-1" aria-label="1. SNL | Brinje-Grosuplje 0 - 0 Nafta | 11&#039;"><span class="live-scores-ticker__league">1. SNL</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Brinje-Grosuplje</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Nafta</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>11&#039;</span></a></div>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">Şu anda canlı maç yok.</span></div>
           </div>
         </div>
       </div>
@@ -219,7 +218,7 @@
       </nav>
     </footer>
     </div>
-    <script src="./site.js?v=e5854ca8" defer></script>
+    <script src="./site.js?v=2e9dc163" defer></script>
     <script src="./app.js?v=bda1a415" defer></script>
   </body>
 </html>

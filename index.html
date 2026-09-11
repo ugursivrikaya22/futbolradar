@@ -127,14 +127,13 @@
 
 
 
-    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?status=live" data-source="loading" role="region" aria-label="Canlı Skorlar">
+    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?status=live" data-source="loading" data-live-empty-text="Şu anda canlı maç yok." role="region" aria-label="Canlı Skorlar">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Canlı Skorlar</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
           <!-- prerender:live-scores-ticker:start -->
-<div class="live-scores-ticker__track" style="--live-ticker-duration:15s" data-live-scores-track>
-            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="./mac-detay.html?id=1555055&amp;date=2026-09-11" aria-label="Challenge League | Étoile Carouge 0 - 0 FC Winterthur | 12&#039;"><span class="live-scores-ticker__league">Challenge League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Étoile Carouge</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">FC Winterthur</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>12&#039;</span></a><a class="live-scores-ticker__item" href="./mac-detay.html?id=1558010&amp;date=2026-09-11" aria-label="1. SNL | Brinje-Grosuplje 0 - 0 Nafta | 11&#039;"><span class="live-scores-ticker__league">1. SNL</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Brinje-Grosuplje</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Nafta</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>11&#039;</span></a></div>
-            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="./mac-detay.html?id=1555055&amp;date=2026-09-11" tabindex="-1" aria-label="Challenge League | Étoile Carouge 0 - 0 FC Winterthur | 12&#039;"><span class="live-scores-ticker__league">Challenge League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Étoile Carouge</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">FC Winterthur</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>12&#039;</span></a><a class="live-scores-ticker__item" href="./mac-detay.html?id=1558010&amp;date=2026-09-11" tabindex="-1" aria-label="1. SNL | Brinje-Grosuplje 0 - 0 Nafta | 11&#039;"><span class="live-scores-ticker__league">1. SNL</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Brinje-Grosuplje</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Nafta</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>11&#039;</span></a></div>
+<div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">Şu anda canlı maç yok.</span></div>
           </div>
 <!-- prerender:live-scores-ticker:end -->
         </div>
@@ -178,43 +177,71 @@
           </div>
           <div class="hero-featured" id="featured-radar-match" data-api-section="featured-match" data-api-target="featured-match" data-static-fallback="true" aria-label="Bugünün maç merkezi özeti">
             <!-- prerender:featured-match:start -->
-<div class="featured-carousel is-live-mode" data-featured-carousel data-featured-interval="10000" data-featured-count="2" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="brinje-grosuplje-nafta-2026-09-11" role="group" aria-roledescription="slayt" aria-label="1 / 2"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Canlı maç" data-kickoff="2026-09-11T21:15:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">1S</i>1. SNL</span><span>Bugün · Nogometni park Brinje</span></div>
+<div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="10000" data-featured-count="4" aria-roledescription="karusel" aria-label="Öne çıkan maçlar">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="eyupspor-caykur-rizespor-2026-09-12" role="group" aria-roledescription="slayt" aria-label="1 / 4"><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Bugünün en yakın Türk takımı maçı" data-kickoff="2026-09-12T17:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span>Bugün · Recep Tayyip Erdoğan Stadyumu</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">B</span>
-        <strong>Brinje-Grosuplje</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">E</span>
+        <strong>Eyüpspor</strong>
       </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Canlı 11&#039;</span></div>
+        <div class="featured-fixture-score"><b>17:00</b><span>Başlama saati</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">N</span>
-        <strong>Nafta</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">ÇR</span>
+        <strong>Çaykur Rizespor</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./mac-detay.html?id=1558010&amp;date=2026-09-11">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="etoile-carouge-fc-winterthur-2026-09-11" role="group" aria-roledescription="slayt" aria-label="2 / 2" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Canlı maç" data-kickoff="2026-09-11T21:15:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">CL</i>Challenge League</span><span>Bugün · Stade de la Fontenette</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./mac/eyupspor-caykur-rizespor-12-eylul-2026">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="samsunspor-corum-fk-2026-09-12" role="group" aria-roledescription="slayt" aria-label="2 / 4" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Bugünün en yakın Türk takımı maçı" data-kickoff="2026-09-12T17:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span>Bugün · Samsun 19 Mayıs Stadyumu</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">ÉC</span>
-        <strong>Étoile Carouge</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">S</span>
+        <strong>Samsunspor</strong>
       </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Canlı 12&#039;</span></div>
+        <div class="featured-fixture-score"><b>17:00</b><span>Başlama saati</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">FW</span>
-        <strong>FC Winterthur</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">ÇF</span>
+        <strong>Çorum FK</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./mac-detay.html?id=1555055&amp;date=2026-09-11">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./mac/samsunspor-corum-fk-12-eylul-2026">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="alanyaspor-goztepe-2026-09-12" role="group" aria-roledescription="slayt" aria-label="3 / 4" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Bugünün en yakın Türk takımı maçı" data-kickoff="2026-09-12T20:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span>Bugün · Gain Park Stadyumu</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">A</span>
+        <strong>Alanyaspor</strong>
+      </div>
+        <div class="featured-fixture-score"><b>20:00</b><span>Başlama saati</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">G</span>
+        <strong>Göztepe</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./mac/alanyaspor-goztepe-12-eylul-2026">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="3" data-featured-match="konyaspor-trabzonspor-2026-09-12" role="group" aria-roledescription="slayt" aria-label="4 / 4" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Bugünün en yakın Türk takımı maçı" data-kickoff="2026-09-12T20:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span>Bugün · Konya Büyükşehir Belediye Stadyumu</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">K</span>
+        <strong>Konyaspor</strong>
+      </div>
+        <div class="featured-fixture-score"><b>20:00</b><span>Başlama saati</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">T</span>
+        <strong>Trabzonspor</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./mac/konyaspor-trabzonspor-12-eylul-2026">Analizi İncele</a><a class="button secondary" href="./bugunun-maclari.html">Maç programı</a></div>
     </div></div></div>
       <div class="featured-carousel-nav">
       <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Önceki maç"><span aria-hidden="true">‹</span></button>
-      <div class="featured-carousel-dots" role="tablist" aria-label="Öne çıkan maçlar"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Brinje-Grosuplje - Nafta"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Étoile Carouge - FC Winterthur"><span aria-hidden="true"></span></button></div>
+      <div class="featured-carousel-dots" role="tablist" aria-label="Öne çıkan maçlar"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Eyüpspor - Çaykur Rizespor"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Samsunspor - Çorum FK"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Alanyaspor - Göztepe"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="3" role="tab" aria-selected="false" aria-label="Konyaspor - Trabzonspor"><span aria-hidden="true"></span></button></div>
       <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Sonraki maç"><span aria-hidden="true">›</span></button>
       <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Otomatik geçişi durdur"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
     </div>
-    </div><div class="quick-stats" aria-label="Bugünün maç özeti"><a class="quick-stat is-live" href="./canli-skor.html"><span>Canlı</span><b class="live-number">130</b></a><a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>22</b></a><a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>152</b></a></div>
+    </div><div class="quick-stats" aria-label="Bugünün maç özeti"><a class="quick-stat" href="./bugunun-maclari.html?status=upcoming"><span>Başlayacak</span><b>5</b></a><a class="quick-stat" href="./bugunun-maclari.html"><span>Toplam</span><b>5</b></a></div>
 <!-- prerender:featured-match:end -->
           </div>
         </section>
@@ -442,29 +469,29 @@
           <div class="section-head"><div class="section-title"><span class="section-kicker">Günün özeti</span><h2 id="gunun-basliklari-title">Bugün öne çıkan üç başlık</h2><p>Sıra ilgiye göre: sahadaki maç, biten maçın analizi, sonra bugünün programı. Doğrulanmamış hiçbir satır buraya girmez.</p></div><a class="section-link" href="./analizler.html">Tüm analizler</a></div>
           <div class="daily-headlines" data-api-target="daily-headlines" data-static-fallback="true">
             <!-- prerender:daily-headlines:start -->
-<a class="daily-headline" href="./mac/rennes-marseille-11-eylul-2026" data-headline-rank="1" data-headline-match="rennes-marseille-2026-09-11" data-headline-state="upcoming">
+<a class="daily-headline" href="./mac/konyaspor-trabzonspor-12-eylul-2026" data-headline-rank="1" data-headline-match="konyaspor-trabzonspor-2026-09-12" data-headline-state="upcoming">
       <span class="daily-headline-index" aria-hidden="true">1</span>
       <span class="daily-headline-body">
         <span class="daily-headline-kicker">Bugün</span>
-        <strong class="daily-headline-title">Rennes – Marseille</strong>
+        <strong class="daily-headline-title">Konyaspor – Trabzonspor</strong>
         
-        <span class="daily-headline-hook">21:45 TSİ · Ligue 1 · Roazhon Park</span>
+        <span class="daily-headline-hook">20:00 TSİ · Süper Lig · Konya Büyükşehir Belediye Stadyumu</span>
       </span>
-    </a><a class="daily-headline" href="./mac/sevilla-valencia-11-eylul-2026" data-headline-rank="2" data-headline-match="sevilla-valencia-2026-09-11" data-headline-state="upcoming">
+    </a><a class="daily-headline" href="./mac/samsunspor-corum-fk-12-eylul-2026" data-headline-rank="2" data-headline-match="samsunspor-corum-fk-2026-09-12" data-headline-state="upcoming">
       <span class="daily-headline-index" aria-hidden="true">2</span>
       <span class="daily-headline-body">
         <span class="daily-headline-kicker">Bugün</span>
-        <strong class="daily-headline-title">Sevilla – Valencia</strong>
+        <strong class="daily-headline-title">Samsunspor – Çorum FK</strong>
         
-        <span class="daily-headline-hook">22:00 TSİ · La Liga</span>
+        <span class="daily-headline-hook">17:00 TSİ · Süper Lig · Samsun 19 Mayıs Stadyumu</span>
       </span>
-    </a><a class="daily-headline" href="./mac/union-berlin-fc-schalke-04-11-eylul-2026" data-headline-rank="3" data-headline-match="union-berlin-fc-schalke-04-2026-09-11" data-headline-state="upcoming">
+    </a><a class="daily-headline" href="./mac/eyupspor-caykur-rizespor-12-eylul-2026" data-headline-rank="3" data-headline-match="eyupspor-caykur-rizespor-2026-09-12" data-headline-state="upcoming">
       <span class="daily-headline-index" aria-hidden="true">3</span>
       <span class="daily-headline-body">
         <span class="daily-headline-kicker">Bugün</span>
-        <strong class="daily-headline-title">Union Berlin – FC Schalke 04</strong>
+        <strong class="daily-headline-title">Eyüpspor – Çaykur Rizespor</strong>
         
-        <span class="daily-headline-hook">21:30 TSİ · Bundesliga</span>
+        <span class="daily-headline-hook">17:00 TSİ · Süper Lig · Recep Tayyip Erdoğan Stadyumu</span>
       </span>
     </a>
 <!-- prerender:daily-headlines:end -->
@@ -485,83 +512,65 @@
           </nav>
           <div class="superlig-strip" data-api-target="today-superlig-matches" data-static-fallback="true" data-empty-hide aria-label="Süper Lig'de bugünün maçları">
             <!-- prerender:today-superlig-matches:start -->
-<span class="superlig-strip-kicker">Süper Lig&#039;de Bugün</span><div class="superlig-strip-rail"><a class="superlig-strip-row is-live" data-card="superlig-strip" data-match="besiktas-erzurumspor-fk-2026-09-11" href="./mac/besiktas-erzurumspor-fk-11-eylul-2026"><span class="superlig-strip-team"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/549.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">B</span><b>Beşiktaş</b></span><span class="superlig-strip-score is-live"><i class="live-pulse" aria-hidden="true"></i>2 - 0 <small class="superlig-strip-minute">69&#039;</small></span><span class="superlig-strip-team is-away"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/1009.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">EF</span><b>Erzurumspor FK</b></span></a></div>
+<span class="superlig-strip-kicker">Süper Lig&#039;de Bugün</span><div class="superlig-strip-rail"><a class="superlig-strip-row" data-card="superlig-strip" data-match="konyaspor-trabzonspor-2026-09-12" href="./mac/konyaspor-trabzonspor-12-eylul-2026"><span class="superlig-strip-team"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/607.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">K</span><b>Konyaspor</b></span><span class="superlig-strip-score">20:00</span><span class="superlig-strip-team is-away"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/998.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">T</span><b>Trabzonspor</b></span></a><a class="superlig-strip-row" data-card="superlig-strip" data-match="samsunspor-corum-fk-2026-09-12" href="./mac/samsunspor-corum-fk-12-eylul-2026"><span class="superlig-strip-team"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/3603.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">S</span><b>Samsunspor</b></span><span class="superlig-strip-score">17:00</span><span class="superlig-strip-team is-away"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/6343.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">ÇF</span><b>Çorum FK</b></span></a><a class="superlig-strip-row" data-card="superlig-strip" data-match="eyupspor-caykur-rizespor-2026-09-12" href="./mac/eyupspor-caykur-rizespor-12-eylul-2026"><span class="superlig-strip-team"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/3588.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">E</span><b>Eyüpspor</b></span><span class="superlig-strip-score">17:00</span><span class="superlig-strip-team is-away"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/1007.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">R</span><b>Rizespor</b></span></a><a class="superlig-strip-row" data-card="superlig-strip" data-match="alanyaspor-goztepe-2026-09-12" href="./mac/alanyaspor-goztepe-12-eylul-2026"><span class="superlig-strip-team"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/996.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">A</span><b>Alanyaspor</b></span><span class="superlig-strip-score">20:00</span><span class="superlig-strip-team is-away"><img class="superlig-strip-logo" src="https://media.api-sports.io/football/teams/994.png" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">G</span><b>Göztepe</b></span></a></div>
 <!-- prerender:today-superlig-matches:end -->
           </div>
           <div class="matches-grid" id="today-matches-grid" data-api-target="today-matches" data-static-fallback="true">
             <!-- prerender:today-matches:start -->
-<article class="fixture-card is-live" data-card="fixture" data-match="aurora-municipal-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">LN</i>Liga Nacional</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Aurora</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">M</span><span class="fixture-row-name">Municipal</span><span class="fixture-row-score">–</span></div></div>
+<article class="fixture-card" data-card="fixture" data-match="defensa-y-justicia-gimnasia-m-2026-09-12">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LP</i>Liga Profesional Argentina</span><span class="fixture-card-state ">01:15</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">DY</span><span class="fixture-row-name">Defensa Y Justicia</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">GM</span><span class="fixture-row-name">Gimnasia M.</span><span class="fixture-row-score">–</span></div></div>
     
-    <a class="fixture-card-action" href="./mac-detay.html?id=1559631&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1559631&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Aurora">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="h-h-export-diriangen-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">PD</i>Primera Division</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">HE</span><span class="fixture-row-name">H&amp;H Export</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">D</span><span class="fixture-row-name">Diriangén</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1638738&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1638738&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=H%26H%20Export">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="u-n-a-m-pumas-leon-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LM</i>Liga MX</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">U-</span><span class="fixture-row-name">U.N.A.M. - Pumas</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">L</span><span class="fixture-row-name">Leon</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1550955&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1550955&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=U.N.A.M.%20-%20Pumas">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="firpo-cd-olimpia-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">CC</i>CONCACAF Central American Cup</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Firpo</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CO</span><span class="fixture-row-name">CD Olimpia</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1636687&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1636687&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Firpo">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="garudayaksa-persik-kediri-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">L1</i>Liga 1</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Garudayaksa</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PK</span><span class="fixture-row-name">Persik Kediri</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1622763&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1622763&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Garudayaksa">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="bong-a-hue-dong-thap-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">V2</i>V.League 2</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BĐ</span><span class="fixture-row-name">Bóng đá Huế</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">DT</span><span class="fixture-row-name">Dong Thap</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1626782&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1626782&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=B%C3%B3ng%20%C4%91%C3%A1%20Hu%E1%BA%BF">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="slovan-liberec-ii-pardubice-ii-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">3L</i>3. liga - CFL B</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SL</span><span class="fixture-row-name">Slovan Liberec II</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PI</span><span class="fixture-row-name">Pardubice II</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1562751&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1562751&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Slovan%20Liberec%20II">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="zbrojovka-brno-u19-banik-ostrava-u19-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">1L</i>1. Liga U19</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ZB</span><span class="fixture-row-name">Zbrojovka Brno U19</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BO</span><span class="fixture-row-name">Baník Ostrava U19</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1565090&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1565090&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Zbrojovka%20Brno%20U19">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="prospect-united-parramatta-eagles-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">NS</i>New South Wales NPL 2</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PU</span><span class="fixture-row-name">Prospect United</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PE</span><span class="fixture-row-name">Parramatta Eagles</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1637824&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1637824&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Prospect%20United">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="essendon-royals-sc-keilor-park-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">VP</i>Victoria Premier League 2</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ER</span><span class="fixture-row-name">Essendon Royals SC</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">KP</span><span class="fixture-row-name">Keilor Park</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1636756&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1636756&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Essendon%20Royals%20SC">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="melbourne-victory-ii-eltham-redbacks-fc-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">VN</i>Victoria NPL 2</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MV</span><span class="fixture-row-name">Melbourne Victory II</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ER</span><span class="fixture-row-name">Eltham Redbacks FC</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1637269&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1637269&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Melbourne%20Victory%20II">Takım Formu</a></div>
-  </article><article class="fixture-card is-live" data-card="fixture" data-match="northcote-city-bulleen-lions-2026-09-11">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">VN</i>Victoria NPL 2</span><span class="fixture-card-state is-live">Canlı</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">NC</span><span class="fixture-row-name">Northcote City</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BL</span><span class="fixture-row-name">Bulleen Lions</span><span class="fixture-row-score">–</span></div></div>
-    
-    <a class="fixture-card-action" href="./mac-detay.html?id=1637270&amp;date=2026-09-11" data-match-click>Maç ayrıntısını aç</a>
-    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1637270&amp;date=2026-09-11">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Northcote%20City">Takım Formu</a></div>
+    <a class="fixture-card-action" href="./mac-detay.html?id=1493126&amp;date=2026-09-12" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac-detay.html?id=1493126&amp;date=2026-09-12">Analiz</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Defensa%20Y%20Justicia">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="samsunspor-corum-fk-2026-09-12">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">17:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">S</span><span class="fixture-row-name">Samsunspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ÇF</span><span class="fixture-row-name">Çorum FK</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%33 · %33</b></div></div>
+    <a class="fixture-card-action" href="./mac/samsunspor-corum-fk-12-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/samsunspor-corum-fk-12-eylul-2026">Analiz</a><a href="./super-lig-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Samsunspor">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="eyupspor-caykur-rizespor-2026-09-12">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">17:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">E</span><span class="fixture-row-name">Eyüpspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ÇR</span><span class="fixture-row-name">Çaykur Rizespor</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%25 · %50</b></div></div>
+    <a class="fixture-card-action" href="./mac/eyupspor-caykur-rizespor-12-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/eyupspor-caykur-rizespor-12-eylul-2026">Analiz</a><a href="./super-lig-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Ey%C3%BCpspor">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="konyaspor-trabzonspor-2026-09-12">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Konyaspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Trabzonspor</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%0 · %58</b></div></div>
+    <a class="fixture-card-action" href="./mac/konyaspor-trabzonspor-12-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/konyaspor-trabzonspor-12-eylul-2026">Analiz</a><a href="./trabzonspor-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Trabzonspor">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="alanyaspor-goztepe-2026-09-12">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Alanyaspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Göztepe</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%58 · %8</b></div></div>
+    <a class="fixture-card-action" href="./mac/alanyaspor-goztepe-12-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/alanyaspor-goztepe-12-eylul-2026">Analiz</a><a href="./super-lig-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Alanyaspor">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="genclerbirligi-kasimpasa-2026-09-13">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">17:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Gençlerbirliği</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kasımpaşa</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%58 · %50</b></div></div>
+    <a class="fixture-card-action" href="./mac/genclerbirligi-kasimpasa-13-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/genclerbirligi-kasimpasa-13-eylul-2026">Analiz</a><a href="./super-lig-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Gen%C3%A7lerbirli%C4%9Fi">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="amed-sportif-faaliyetler-basaksehir-2026-09-13">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AS</span><span class="fixture-row-name">Amed Sportif Faaliyetler</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Başakşehir</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%58 · %33</b></div></div>
+    <a class="fixture-card-action" href="./mac/amed-sportif-faaliyetler-basaksehir-13-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/amed-sportif-faaliyetler-basaksehir-13-eylul-2026">Analiz</a><a href="./super-lig-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Amed%20Sportif%20Faaliyetler">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="galatasaray-kocaelispor-2026-09-13">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Galatasaray</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kocaelispor</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%83 · %75</b></div></div>
+    <a class="fixture-card-action" href="./mac/galatasaray-kocaelispor-13-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/galatasaray-kocaelispor-13-eylul-2026">Analiz</a><a href="./galatasaray-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Galatasaray">Takım Formu</a></div>
+  </article><article class="fixture-card" data-card="fixture" data-match="gaziantep-fk-fenerbahce-2026-09-14">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">GF</span><span class="fixture-row-name">Gaziantep FK</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Fenerbahçe</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%58 · %50</b></div></div>
+    <a class="fixture-card-action" href="./mac/gaziantep-fk-fenerbahce-14-eylul-2026" data-match-click>Maç ayrıntısını aç</a>
+    <div class="fixture-card-quicklinks"><a href="./mac/gaziantep-fk-fenerbahce-14-eylul-2026">Analiz</a><a href="./fenerbahce-puan-durumu.html">Puan Durumu</a><a href="./takim-detay.html?team=Fenerbah%C3%A7e">Takım Formu</a></div>
   </article>
 <!-- prerender:today-matches:end -->
           </div>
@@ -862,7 +871,7 @@
       </nav>
     </footer>
     </div>
-    <script src="./site.js?v=e5854ca8" defer></script>
+    <script src="./site.js?v=2e9dc163" defer></script>
     <script src="./app.js?v=bda1a415" defer></script>
   </body>
 </html>

@@ -3773,9 +3773,92 @@
     sync();
   }
 
+  // live-scores-expiry:start
+  /**
+   * CANLI SKOR BANDI, OKUNDUĞU ANDA DA DOĞRU OLMALI.
+   *
+   * Bandın hangi maçı taşıyacağı DERLEME anında seçiliyor
+   * (services/liveScoresTicker.js → services/matchStatus.js#liveVerdict).
+   * Ama sayfa derlendiği an okunmuyor. Türkçe ana sayfada app.js bandı
+   * canlı uçtan tazeliyor; İngilizce sayfalara app.js BİLEREK yüklenmiyor
+   * (yüklenseydi bandın bütün etiketleri Türkçe basılırdı), dolayısıyla
+   * orada bant yalnızca son derleme kadar tazeydi. Gece yarısından hemen
+   * sonra bakıldığında 21:15'te başlayıp çoktan bitmiş bir maç hâlâ
+   * "Live 12'" diyordu — sunucu kapısı doğru çalışırken bile.
+   *
+   * Burada YENİ BİR İDDİA ÜRETİLMİYOR: her öğe sunucuda damgalanmış kendi
+   * son kullanma anını (`data-live-until` = başlama + canlı payı) taşıyor
+   * ve bu kod yalnızca o an geçmiş öğeyi DÜŞÜRÜYOR. Skor, dakika ya da
+   * durum uydurulmuyor; ağ isteği yok. Damgasız öğeye dokunulmuyor —
+   * başlama saati okunamayan kayıt sunucu kapısından da saate bakılmadan
+   * geçiyor, istemci ondan fazlasını iddia etmemeli.
+   *
+   * Son öğe de düştüğünde şerit, derlemede canlı maç yokken basılanın
+   * AYNISI oluyor (scripts/lib/liveScoresTicker.mjs → emptyTrack) ve
+   * sarmalayıcıya `data-empty` yazılıyor: page.css bandı orada gizliyor.
+   * Boşluğun derlemede mi tarayıcıda mı oluştuğu okuyucuya görünmemeli.
+   *
+   * app.js'in çizdiği öğelerde bu damga yok; o taraf kendi kapısını
+   * uyguluyor ve bu kod onun işine karışmıyor.
+   */
+  function pruneExpiredLiveScores() {
+    var now = Date.now();
+
+    Array.prototype.forEach.call(document.querySelectorAll(".live-scores-ticker"), function (band) {
+      var stamped = band.querySelectorAll(".live-scores-ticker__item[data-live-until]");
+      if (!stamped.length) return;
+
+      var removed = 0;
+      Array.prototype.forEach.call(stamped, function (item) {
+        var until = Date.parse(item.getAttribute("data-live-until"));
+        // Okunamayan damga bir kanıt değildir: öğeye dokunma.
+        if (!isFinite(until) || now <= until) return;
+        item.parentNode.removeChild(item);
+        removed += 1;
+      });
+
+      if (!removed) return;
+      if (band.querySelector(".live-scores-ticker__item")) return;
+
+      // Bant boşaldı: derlemedeki boş şeridin aynısını kur.
+      var viewport = band.querySelector(".live-scores-ticker__viewport");
+      if (!viewport) return;
+      var text = band.getAttribute("data-live-empty-text") || "";
+      var track = document.createElement("div");
+      track.className = "live-scores-ticker__track is-static";
+      track.setAttribute("data-live-scores-track", "");
+      track.setAttribute("data-live-scores-empty", "");
+      var group = document.createElement("div");
+      group.className = "live-scores-ticker__group";
+      var message = document.createElement("span");
+      message.className = "live-scores-ticker__empty";
+      message.textContent = text;
+      group.appendChild(message);
+      track.appendChild(group);
+      viewport.innerHTML = "";
+      viewport.appendChild(track);
+      band.setAttribute("data-empty", "");
+    });
+  }
+
+  function setupLiveScoresExpiry() {
+    pruneExpiredLiveScores();
+    // Sayfa açık kaldıkça pay dolmaya devam eder; dakikada bir yeterli —
+    // bandın taşıdığı en küçük birim zaten dakika.
+    window.setInterval(pruneExpiredLiveScores, 60000);
+    // Sekme arkaplandayken zamanlayıcı kısılıyor; geri dönüldüğünde bant
+    // beklemeden doğrulanmalı.
+    document.addEventListener("visibilitychange", function () {
+      if (!document.hidden) pruneExpiredLiveScores();
+    });
+  }
+  // live-scores-expiry:end
+
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", setupStandingsTabs);
+    document.addEventListener("DOMContentLoaded", setupLiveScoresExpiry);
   } else {
     setupStandingsTabs();
+    setupLiveScoresExpiry();
   }
 })();

@@ -50,7 +50,7 @@ const { LIVE_STATUSES, isScoreNumber } = (() => {
 })();
 const { resolveCompetitionId, findCompetition } = require("./competitionCatalog");
 const { matchDetailPath } = require("./matchProgram");
-const { liveVerdict } = require("./matchStatus");
+const { LIVE_GRACE_MS, kickoffMs, liveVerdict } = require("./matchStatus");
 
 /** Bantta en fazla kaç maç? Kayan bir şerit liste değildir. */
 const MAX_ITEMS = 16;
@@ -111,6 +111,28 @@ function minuteOrStatusLabel(match) {
   return SHORT_STATUS_LABELS[statusOf(match)] || "Canlı";
 }
 
+/**
+ * BANT ÖĞESİNİN SON KULLANMA ANI.
+ *
+ * Süzgeç derleme anında çalışıyor, bant ise okunduğu anda görülüyor ve
+ * ikisi aynı an değil. Türkçe tarafta app.js bandı canlı uçtan tazeliyor,
+ * ama İngilizce sayfalara app.js bilerek yüklenmiyor (yüklenseydi bandın
+ * bütün etiketleri Türkçe basılırdı) — orada bant YALNIZCA son derleme
+ * kadar tazeydi. Gece yarısından hemen sonra bakıldığında 21:15'te başlayıp
+ * çoktan bitmiş bir maç hâlâ "Live 12'" diyordu.
+ *
+ * Çözüm veriyi taşımak: her öğe kendi canlı payının bittiği anı yanında
+ * götürüyor, tarayıcı da o an geçtiğinde öğeyi düşürüyor. Kural yine tek
+ * yerden — `LIVE_GRACE_MS`, sunucudaki kapının kullandığı payın ta kendisi.
+ *
+ * Başlama saati okunamayan kayıtta damga YOK: sunucu kapısı da o kaydı
+ * saate bakmadan geçiriyor, istemci ondan fazlasını iddia etmemeli.
+ */
+function liveUntilOf(match) {
+  const kickoff = kickoffMs(match);
+  return kickoff === null ? null : new Date(kickoff + LIVE_GRACE_MS).toISOString();
+}
+
 /** Skor metni. Skor sayısal değilse "–" — uydurma yok. */
 function scoreValue(value) {
   return isScoreNumber(value) ? Number(value) : null;
@@ -151,6 +173,7 @@ function selectLiveTickerRecords(matches, options = {}) {
         awayScore: scoreValue(score.away),
         minuteOrStatus: minuteOrStatusLabel(match),
         isHalftime: ["HT", "HALFTIME"].includes(statusOf(match)),
+        liveUntil: liveUntilOf(match),
         href: matchDetailPath(match)
       };
     })
