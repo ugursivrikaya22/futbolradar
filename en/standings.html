@@ -104,11 +104,11 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" role="region" aria-label="Live Scores">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track is-static" data-live-scores-track>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
             <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
           </div>
         </div>
@@ -132,6 +132,17 @@
           <thead><tr><th scope="col">#</th><th scope="col">Team</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">GF</th><th scope="col">GA</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead>
           <tbody><tr>
               <td>1</td>
+              <th scope="row">Beşiktaş</th>
+              <td>5</td>
+              <td>4</td>
+              <td>0</td>
+              <td>1</td>
+              <td>12</td>
+              <td>4</td>
+              <td>8</td>
+              <td><b>12</b></td>
+            </tr><tr>
+              <td>2</td>
               <th scope="row">Galatasaray</th>
               <td>4</td>
               <td>3</td>
@@ -141,17 +152,6 @@
               <td>6</td>
               <td>6</td>
               <td><b>10</b></td>
-            </tr><tr>
-              <td>2</td>
-              <th scope="row">Beşiktaş</th>
-              <td>4</td>
-              <td>3</td>
-              <td>0</td>
-              <td>1</td>
-              <td>9</td>
-              <td>4</td>
-              <td>5</td>
-              <td><b>9</b></td>
             </tr><tr>
               <td>3</td>
               <th scope="row">Kocaelispor</th>
@@ -287,13 +287,13 @@
             </tr><tr>
               <td>15</td>
               <th scope="row">Erzurumspor FK</th>
-              <td>4</td>
+              <td>5</td>
               <td>1</td>
               <td>1</td>
+              <td>3</td>
               <td>2</td>
-              <td>2</td>
-              <td>8</td>
-              <td>-6</td>
+              <td>11</td>
+              <td>-9</td>
               <td><b>4</b></td>
             </tr><tr>
               <td>16</td>
@@ -391,7 +391,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js?v=7f1c9f3c" defer></script>
+    <script src="../site.js?v=a872c6de" defer></script>
     <script src="../app-lite.js?v=c07a6642" defer></script>
   </body>
 </html>

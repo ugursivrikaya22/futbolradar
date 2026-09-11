@@ -66,11 +66,11 @@ function selectLiveTickerRecordsNow(rows, options = {}) {
   const selected = selectLiveTickerRecordsNow(rows).map((item) => item.id);
   assert.deepEqual(selected.sort(), ["live-1h", "live-ht"].sort(), "yalnızca oynanan maçlar banda girmeli");
 
-  assert.equal(isCurrentlyLive(match({ status: "SCHEDULED" }), NOW), false, "başlamamış maç canlı sayılmamalı");
-  assert.equal(isCurrentlyLive(match({ status: "FINISHED" }), NOW), false, "bitmiş maç canlı sayılmamalı");
-  assert.equal(isCurrentlyLive(match({ status: "POSTPONED" }), NOW), false, "ertelenen maç canlı sayılmamalı");
-  assert.equal(isCurrentlyLive(match({ status: "HT" }), NOW), true, "devre arası hâlâ canlı sayılmalı (maç sürüyor)");
-  assert.equal(isCurrentlyLive(match({ status: "LIVE" }), NOW), true, "canlı maç canlı sayılmalı");
+  assert.equal(isCurrentlyLive(match({ status: "SCHEDULED" }), { nowMs: NOW }), false, "başlamamış maç canlı sayılmamalı");
+  assert.equal(isCurrentlyLive(match({ status: "FINISHED" }), { nowMs: NOW }), false, "bitmiş maç canlı sayılmamalı");
+  assert.equal(isCurrentlyLive(match({ status: "POSTPONED" }), { nowMs: NOW }), false, "ertelenen maç canlı sayılmamalı");
+  assert.equal(isCurrentlyLive(match({ status: "HT" }), { nowMs: NOW }), true, "devre arası hâlâ canlı sayılmalı (maç sürüyor)");
+  assert.equal(isCurrentlyLive(match({ status: "LIVE" }), { nowMs: NOW }), true, "canlı maç canlı sayılmalı");
 }
 
 // ── 1b. BAYAT/DONMUŞ "CANLI" KAYIT BANDA KALAMAZ ───────────────────────────
@@ -112,14 +112,14 @@ function selectLiveTickerRecordsNow(rows, options = {}) {
   // maçı 00:40'ta ekrandan silerdi — maç daha ilk yarısındayken.
   const gece = match({ id: "gece", kickoff: "2026-09-11T23:50:00+03:00" });
   assert.equal(
-    isCurrentlyLive(gece, Date.parse("2026-09-12T00:40:00+03:00")),
+    isCurrentlyLive(gece, { nowMs: Date.parse("2026-09-12T00:40:00+03:00") }),
     true,
     "gece yarısını geçen maç gün kapısından düşmemeli"
   );
 
   // Aynı maç, süre penceresi aşıldığında düşer.
   assert.equal(
-    isCurrentlyLive(gece, Date.parse("2026-09-12T03:30:00+03:00")),
+    isCurrentlyLive(gece, { nowMs: Date.parse("2026-09-12T03:30:00+03:00") }),
     false,
     "süre penceresi aşılınca gece maçı da düşmeli"
   );
@@ -135,6 +135,139 @@ function selectLiveTickerRecordsNow(rows, options = {}) {
   ];
   const selected = selectLiveTickerRecordsNow(rows);
   assert.deepEqual(selected.map((item) => item.id), ["ok"], "eksik taraflı kayıt boşluğu doldurulmadan atlanmalı");
+}
+
+// ── 2b. BAYAT CANLI: durum "LIVE" olsa da saat geçmişse banda giremez ──────
+//
+// NEDEN VAR: sağlayıcı bir maçı hiç FINISHED'e çevirmediğinde kayıt
+// data/fixture-calendar.json içinde sonsuza dek "LIVE, 89'" olarak kalıyor.
+// Bant yalnızca `status` alanına baktığı sürece bu kayıtları her derlemede
+// yeniden basıyordu: 11 Eylül 2026 akşamı yayındaki ana sayfa, 6 Eylül'de
+// oynanmış on altı maçı yanıp sönen canlı nabzıyla ve akan dakikayla
+// gösteriyordu. "Canlı" bir ZAMAN iddiasıdır; zamana bakmadan yapılamaz.
+
+{
+  const NOW = Date.parse("2026-09-11T21:00:00+03:00");
+  const live = match({ id: "simdi", kickoff: "2026-09-11T20:30:00+03:00", minute: 28 });
+  const zombie = match({ id: "zombi", kickoff: "2026-09-06T17:00:00+03:00", minute: 89 });
+  const justOver = match({ id: "pencere-disi", kickoff: "2026-09-11T18:15:00+03:00", minute: 89 });
+
+  assert.equal(isCurrentlyLive(live, { nowMs: NOW }), true, "şu an oynanan maç canlı sayılmalı");
+  assert.equal(isCurrentlyLive(zombie, { nowMs: NOW }), false, "beş gün önce başlamış 'LIVE' kaydı canlı sayılmamalı");
+  assert.equal(isCurrentlyLive(justOver, { nowMs: NOW }), false, "canlı payı dolmuş kayıt canlı sayılmamalı");
+
+  assert.deepEqual(
+    selectLiveTickerRecords([zombie, live, justOver], { nowMs: NOW }).map((item) => item.id),
+    ["simdi"],
+    "banda yalnızca saati doğrulanan canlı maç girmeli"
+  );
+
+  // Skorsuz canlı iddiası bantta HÂLÂ kabul edilir — dakika göstermek skor
+  // iddiası değildir. Bu, `liveVerdict`ten bilerek sapılan tek nokta;
+  // sapmanın bayat kaydı içeri almadığı burada sabitleniyor.
+  const scoreless = match({ id: "skorsuz", kickoff: "2026-09-11T20:30:00+03:00", score: null });
+  const scorelessZombie = match({ id: "skorsuz-zombi", kickoff: "2026-09-06T17:00:00+03:00", score: null });
+  assert.equal(isCurrentlyLive(scoreless, { nowMs: NOW }), true, "skorsuz canlı kayıt bantta gösterilebilir");
+  assert.equal(isCurrentlyLive(scorelessZombie, { nowMs: NOW }), false, "skorsuz olması bayat kaydı kurtarmaz");
+}
+
+// ── 2c. Öğe kendi son kullanma anını taşır (istemci bunu okuyup düşürür) ──
+//
+// NEDEN VAR: süzgeç DERLEME anında çalışıyor, bant OKUNDUĞU anda görülüyor.
+// Türkçe ana sayfada app.js bandı canlı uçtan tazeliyor; İngilizce sayfalara
+// app.js bilerek yüklenmiyor (yüklenseydi etiketler Türkçe basılırdı), yani
+// orada bant yalnızca son derleme kadar tazeydi — gece yarısından sonra
+// bakıldığında 21:15'te başlayıp bitmiş bir maç hâlâ "Live 12'" diyordu.
+// Damga bu boşluğu kapatıyor: istemci yeni iddia üretmiyor, yalnızca payı
+// dolmuş öğeyi düşürüyor.
+
+{
+  const NOW = Date.parse("2026-09-11T21:00:00+03:00");
+  const [item] = selectLiveTickerRecords(
+    [match({ kickoff: "2026-09-11T20:30:00+03:00" })],
+    { nowMs: NOW }
+  );
+  // Pay `services/matchStatus.js#LIVE_GRACE_MS` — sunucudaki kapının
+  // kullandığı payın ta kendisi; ikinci bir sabit tanımlanmıyor.
+  const { LIVE_GRACE_MS } = require("../services/matchStatus.js");
+  assert.equal(
+    Date.parse(item.liveUntil),
+    Date.parse("2026-09-11T20:30:00+03:00") + LIVE_GRACE_MS,
+    "damga başlama saati + canlı payı olmalı"
+  );
+
+  // DAMGALANAMAYAN KAYIT ARTIK BANDA HİÇ GİRMİYOR.
+  //
+  // Önceki kural onu içeri alıp damgasız bırakıyordu; bu satırın kendi
+  // gerekçesi de "istemci de ona dokunmaz" diyordu. Sorun tam oradaydı:
+  // damgası olmayan öğeyi istemci düşüremez, dolayısıyla ne başlama saati
+  // ne güncellenme damgası taşıyan bir "LIVE" kaydı bantta ÖLÜMSÜZ olurdu —
+  // süresi hiç dolmayan, doğrulanması da mümkün olmayan bir canlı iddiası.
+  // Kapı (services/matchStatus.js#liveVerdict, "live-without-clock") böyle
+  // bir kaydı en baştan reddediyor: damgalanamayan iddia yapılmıyor.
+  //
+  // Zamanı BAŞKA bir alandan doğrulanabilen kayıt etkilenmez; aşağıdaki
+  // ikinci durum onu koruyor.
+  const stamped = selectLiveTickerRecords([match({ kickoff: null, date: null })], { nowMs: NOW });
+  assert.deepEqual(stamped, [], "ne saati ne güncellenme damgası olan kayıt banda hiç girmemeli");
+
+  const [byUpdatedAt] = selectLiveTickerRecords(
+    [match({ kickoff: null, date: null, updatedAt: new Date(NOW - 60 * 1000).toISOString() })],
+    { nowMs: NOW }
+  );
+  assert.ok(byUpdatedAt, "güncellenme damgası olan kayıt saatsiz de olsa banda girebilmeli");
+  assert.equal(byUpdatedAt.liveUntil, null, "başlama saati okunamayan kayıt damgalanmaz");
+}
+
+// ── 2d. İşaretleme ve istemci: damga basılır, süresi dolan öğe düşer ───────
+
+{
+  const { liveTickerItem, liveTickerTrack, emptyTrack } = await import("./lib/liveScoresTicker.mjs");
+
+  const stamped = liveTickerItem(
+    { league: "Süper Lig", homeTeam: "A", awayTeam: "B", homeScore: 0, awayScore: 0, minuteOrStatus: "12'", href: "mac-detay.html?id=1", liveUntil: "2026-09-11T20:15:00.000Z" },
+    {}
+  );
+  assert.match(stamped, /data-live-until="2026-09-11T20:15:00\.000Z"/, "öğe son kullanma anını taşımalı");
+
+  const unstamped = liveTickerItem(
+    { league: "Süper Lig", homeTeam: "A", awayTeam: "B", homeScore: 0, awayScore: 0, minuteOrStatus: "12'", href: "mac-detay.html?id=1", liveUntil: null },
+    {}
+  );
+  assert.ok(!unstamped.includes("data-live-until"), "damgasız kayıt damga taşımamalı");
+
+  // Derlemede boş şerit ile istemcinin kurduğu boş şerit AYNI işaretleme
+  // olmalı; okuyucu boşluğun nereden geldiğini görmemeli.
+  assert.match(emptyTrack("en"), /data-live-scores-empty/, "boş şerit istemcinin tanıyacağı işareti taşımalı");
+  assert.match(emptyTrack("en"), /No live matches at the moment\./, "boş şerit dilin metnini taşımalı");
+  assert.equal(liveTickerTrack([], { locale: "en" }), emptyTrack("en"), "derlemedeki boş şerit tek kaynaktan gelmeli");
+
+  // İstemci kodu site.js'te ve app.js'e bağlı DEĞİL: İngilizce sayfaların
+  // yüklediği tek betik o. Blok işaretli, çünkü kural buradan okunuyor.
+  const siteSource = fs.readFileSync(path.join(root, "site.js"), "utf8");
+  const clientBlock = siteSource.match(/\/\/ live-scores-expiry:start([\s\S]*?)\/\/ live-scores-expiry:end/);
+  assert.ok(clientBlock, "site.js canlı bant süre denetimini taşımalı — İngilizce sayfalarda app.js yok");
+  assert.ok(
+    clientBlock[1].includes("data-live-until"),
+    "istemci öğeyi kendi damgasından düşürmeli, kendi zaman kuralını yazmamalı"
+  );
+  assert.ok(
+    !/fetch\(|XMLHttpRequest/.test(clientBlock[1]),
+    "süre denetimi ağ isteği yapmamalı: yeni veri değil, mevcut iddianın süresi denetleniyor"
+  );
+
+  // İngilizce ana sayfa bandı, boşaldığında doğru cümleyi yazabilmeli.
+  for (const page of ["index.html", "en/index.html"]) {
+    const file = path.join(root, page);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+    if (!html.includes('data-component="LiveScoresTicker"')) continue;
+    assert.match(
+      html,
+      /class="live-scores-ticker"[^>]*data-live-empty-text="/,
+      `${page}: bant boşaldığında yazılacak metni taşımalı`
+    );
+  }
 }
 
 // ── 3. Dakika/durum etiketi ──────────────────────────────────────────────

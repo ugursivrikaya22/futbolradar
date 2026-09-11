@@ -1854,8 +1854,23 @@
    *
    * Kart KAYBOLMAZ — yalnızca canlı sayılmaz; durum etiketi "Canlı veri
    * doğrulanamadı" olur (services/matchStatus.js: UNVERIFIED_LIVE_LABEL).
+   *
+   * ÜÇÜNCÜ KAPI: SAAT. Sağlayıcı bir maçı hiç
+   * FINISHED'e çevirmediğinde kayıt "LIVE, 89'" olarak donuyor. Sunucu
+   * tarafında aynı koruma services/matchStatus.js#liveVerdict'te zaten
+   * vardı, ama istemci yalnızca duruma bakıyordu: statik yedekten ya da
+   * API'den gelen donmuş bir kayıt tarayıcıda yeniden "canlı" oluyor,
+   * `selectTodayMatchCards` onu listenin en üstüne taşıyordu. Kapı burada
+   * olunca BÜTÜN çağıranlar (kart sıralaması, canlı skor alanı, bildirim
+   * hattı) aynı kuralı miras alıyor.
+   *
+   * Saat okunamıyorsa kayıt bu kapıdan geçer — gün UYDURULMAZ; eksik
+   * başlama saati "bayat" kanıtı değildir.
+   *
+   * Üç kapı BİRLİKTE: sağlayıcı canlı diyecek, skoru okunabilecek VE
+   * başlama saatinin üstünden bayat-canlı payından fazlası geçmemiş olacak.
    */
-  function isLiveMatch(match) {
+  function isLiveMatch(match, nowMs) {
     if (!match) {
       return false;
     }
@@ -1864,7 +1879,17 @@
     var claimsLive = match.live === true ||
       ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
 
-    return claimsLive && hasReadableScore(match);
+    if (!claimsLive || !hasReadableScore(match)) {
+      return false;
+    }
+
+    var kickoff = featuredKickoffTime(match);
+    var now = Number.isFinite(nowMs) ? nowMs : Date.now();
+    if (kickoff.hasTime && isFinite(kickoff.value) && now - kickoff.value > LIVE_GRACE_MS) {
+      return false;
+    }
+
+    return true;
   }
 
   // ── Canlı maç bildirimleri: gol / kırmızı kart / sarı kart ────────────────
@@ -2463,6 +2488,20 @@
   })();
   // live-freshness-guard:end
 
+  var LIVE_GRACE_MS = LiveGuard.GRACE_MS;
+
+  /**
+   * BAYAT/DONMUŞ CANLI KORUMASI — kural yukarıdaki ortak kapıda.
+   *
+   * Bu fonksiyon kendi saat penceresini uyguluyordu ve yalnızca başlama
+   * saatine bakıyordu: kaydın son güncellenme damgasını hiç sormuyordu.
+   * Sağlayıcı akışı kesildiğinde ya da önbellek eski JSON'u servis
+   * ettiğinde DONMUŞ bir kayıt (skoru ve dakikası sabit) süre penceresinin
+   * içinde kaldığı sürece "canlı" gösteriliyordu. Karar artık tek kapıda:
+   * gün, saat, tazelik ve skor orada birlikte denetlenir.
+   *
+   * Dönen biçim çağıranlarla uyumlu kalır: `{ live, unverified, stale }`.
+   */
   function matchLiveVerdict(match, nowMs) {
     var now = Number.isFinite(nowMs) ? nowMs : Date.now();
     var verdict = LiveGuard.verdict(match, { nowMs: now });
@@ -4626,9 +4665,17 @@
     // ve skoru henüz gelmemiş olsa bile listenin üstünde durmalı. Bu yüzden
     // burada skor kapısı YOK; kural services/matchRelevance.js `stateOf` ile
     // aynı kalıyor, iki taraf aynı sırayı üretiyor.
+    // Canlı iddiası ZAMANA TABİ: sağlayıcıda donup kalmış bir "LIVE"
+    // kaydı, başlama saatinin üstünden aşağıdaki pencereden fazlası
+    // geçtiyse "live" bandına giremez — aşağıdaki zaman tabanlı bantlara
+    // devredilir ve orada "finished" olur. Kural sunucu tarafında
+    // services/matchRelevance.js#stateOf ile aynı.
     if (match.live === true ||
       ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status)) {
-      return "live";
+      var liveStart = Date.parse(match.kickoff || match.kickoffUtc || match.date || "");
+      if (!isFinite(liveStart) || !isFinite(nowMs) || nowMs - liveStart <= 150 * 60 * 1000) {
+        return "live";
+      }
     }
     if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "WO"].includes(status)) return "finished";
     // Ertelenen/iptal edilen maç zaman çizgisinden çıkar; aşağıdaki

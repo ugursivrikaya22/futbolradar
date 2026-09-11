@@ -245,8 +245,19 @@ const CASES = [
 {
   // Skor bandı (ana sayfa + /canli-skor + maç merkezi başlıkları).
   assert.match(tickerSource, /require\("\.\/matchStatus"\)/, "bant ortak kapıyı içeri almalı");
-  assert.match(tickerSource, /liveVerdict\(match, \{ nowMs, requireScore: false \}\)\.live/,
-    "bant canlılık kararını ortak kapıya sormalı");
+  // Çağrının BİÇİMİNE değil SÖZLEŞMESİNE bakılır: bant kararı ortak kapıya
+  // sorar ve skor kapısını kapatır (dakika göstermek skor iddiası değildir).
+  // Biçime bağlanan bir kontrol, satır sarması değişince kırmızıya dönüyordu.
+  assert.match(tickerSource, /liveVerdict\(match,[\s\S]{0,200}?requireScore:\s*false[\s\S]{0,40}?\)\.live/,
+    "bant canlılık kararını ortak kapıya requireScore:false ile sormalı");
+  // Reddi `reason` ile elemek yetmez: skor kapısı doğrulanabilirlik
+  // kapısından önce çalıştığı için saatsiz kayıt "live-without-score"a
+  // takılıp banda sızardı. Davranış burada doğrudan sınanır.
+  assert.equal(
+    require(path.join(root, "services", "liveScoresTicker.js")).isCurrentlyLive({ status: "LIVE" }),
+    false,
+    "ne saati ne güncellenme damgası olan kayıt banda giremez"
+  );
 
   // Ön derleme: hero rozeti ve "Canlı" sayacı ham durumdan türetilemez.
   assert.match(prerenderSource, /isDisplayableLive/, "ön derleme ortak kapıyı kullanmalı");

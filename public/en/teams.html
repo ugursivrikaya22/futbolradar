@@ -104,11 +104,11 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" role="region" aria-label="Live Scores">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track is-static" data-live-scores-track>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
             <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
           </div>
         </div>
@@ -127,12 +127,12 @@
       </section>
       <section class="grid two" aria-label="Süper Lig clubs">
 <article class="team-card">
+            <header><div><h3><a href="./team/besiktas.html">Beşiktaş</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">12</strong></header>
+            <span class="form-dots"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></span>
+            <div class="metric-grid compact"><span>Position <b>1</b></span><span>Played <b>5</b></span></div>
+          </article><article class="team-card">
             <header><div><h3><a href="./team/galatasaray.html">Galatasaray</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">10</strong></header>
             <span class="form-dots"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot draw">D</span></span>
-            <div class="metric-grid compact"><span>Position <b>1</b></span><span>Played <b>4</b></span></div>
-          </article><article class="team-card">
-            <header><div><h3><a href="./team/besiktas.html">Beşiktaş</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">9</strong></header>
-            <span class="form-dots"><span class="form-dot win">W</span><span class="form-dot win">W</span><span class="form-dot loss">L</span><span class="form-dot win">W</span></span>
             <div class="metric-grid compact"><span>Position <b>2</b></span><span>Played <b>4</b></span></div>
           </article><article class="team-card">
             <header><div><h3><a href="./team/kocaelispor.html">Kocaelispor</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">9</strong></header>
@@ -184,8 +184,8 @@
             <div class="metric-grid compact"><span>Position <b>14</b></span><span>Played <b>4</b></span></div>
           </article><article class="team-card">
             <header><div><h3><a href="./team/erzurumspor-fk.html">Erzurumspor FK</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">4</strong></header>
-            <span class="form-dots"><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot loss">L</span></span>
-            <div class="metric-grid compact"><span>Position <b>15</b></span><span>Played <b>4</b></span></div>
+            <span class="form-dots"><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot draw">D</span><span class="form-dot loss">L</span><span class="form-dot loss">L</span></span>
+            <div class="metric-grid compact"><span>Position <b>15</b></span><span>Played <b>5</b></span></div>
           </article><article class="team-card">
             <header><div><h3><a href="./team/eyupspor.html">Eyüpspor</a></h3><span>Trendyol Süper Lig</span></div><strong class="momentum-number">3</strong></header>
             <span class="form-dots"><span class="form-dot loss">L</span><span class="form-dot win">W</span><span class="form-dot loss">L</span><span class="form-dot loss">L</span></span>
@@ -260,7 +260,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js?v=7f1c9f3c" defer></script>
+    <script src="../site.js?v=a872c6de" defer></script>
     <script src="../app-lite.js?v=c07a6642" defer></script>
   </body>
 </html>

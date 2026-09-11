@@ -104,11 +104,11 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" role="region" aria-label="Live Scores">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track is-static" data-live-scores-track>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
             <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
           </div>
         </div>
@@ -128,6 +128,12 @@
       <section class="data-panel" aria-labelledby="en-results-title">
         <h2 class="panel-title" id="en-results-title">Verified results</h2>
         <div class="matches-grid"><article class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state is-final">FT</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Beşiktaş</span><span class="fixture-row-score">3</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EF</span><span class="fixture-row-name">Erzurumspor FK</span><span class="fixture-row-score">0</span></div></div>
+    
+    <a class="fixture-card-action" href="../en/match/besiktas-erzurumspor-fk-september-11-2026">Open match details</a>
+  </article>
+<article class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">UC</i>UEFA Champions League</span><span class="fixture-card-state is-final">FT</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Fenerbahçe</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AR</span><span class="fixture-row-name">AS Roma</span><span class="fixture-row-score">1</span></div></div>
     
@@ -192,12 +198,6 @@
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">GZ</span><span class="fixture-row-name">Górnik Zabrze</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Fenerbahçe</span><span class="fixture-row-score">1</span></div></div>
     
     <a class="fixture-card-action" href="../en/match/gornik-zabrze-fenerbahce-july-29-2026">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Göztepe</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">R</span><span class="fixture-row-name">Rudeš</span><span class="fixture-row-score">1</span></div></div>
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=goztepe-rudes-2026-07-26&amp;date=2026-07-26">Open match details</a>
   </article></div>
         <p class="muted-copy">Only matches with a provider-confirmed final score appear here. Turkish-language match reports live on the Turkish site; English write-ups are not machine-translated.</p>
       </section>
@@ -261,7 +261,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js?v=7f1c9f3c" defer></script>
+    <script src="../site.js?v=a872c6de" defer></script>
     <script src="../app-lite.js?v=c07a6642" defer></script>
   </body>
 </html>
