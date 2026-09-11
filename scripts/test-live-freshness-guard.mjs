@@ -102,6 +102,20 @@ const CASES = [
     { status: "LIVE", kickoff: minutesAgo(60), score: { home: 1, away: 0 },
       timestamp: Math.floor((NOW - 60 * 60 * 1000) / 1000) }, true],
 
+  // ── SSE ANLIK GÖRÜNTÜSÜ: gerçek yaş `timing.serverReceivedAt` içinde ────
+  // Canlı akış paketinde üst düzey `updatedAt`/`fetchedAt` YOKTUR
+  // (services/liveScoreStream.js#matchSnapshot). Okunmazsa akıştan gelen
+  // her kayıt damgasız görünür ve tazelik kapısı hiç çalışmaz.
+  ["SSE paketi donmuş (timing.serverReceivedAt eski)",
+    { status: "LIVE", kickoff: minutesAgo(60), score: { home: 1, away: 0 },
+      timing: { serverReceivedAt: minutesAgo(40) } }, false],
+  ["SSE paketi taze",
+    { status: "LIVE", kickoff: minutesAgo(60), score: { home: 1, away: 0 },
+      timing: { serverReceivedAt: minutesAgo(1) } }, true],
+  ["SSE backend_receive_time da okunur",
+    { status: "LIVE", kickoff: minutesAgo(60), score: { home: 1, away: 0 },
+      timing: { backend_receive_time: minutesAgo(45) } }, false],
+
   // ── KAYNAK KAPISI ───────────────────────────────────────────────────────
   ["statik yedekten gelen canlı kayıt (API başarısız)",
     { status: "LIVE", kickoff: minutesAgo(30), score: { home: 1, away: 0 }, __staticFallback: true }, false],
@@ -291,6 +305,30 @@ const CASES = [
   );
   assert.match(appSource, /if \(!LiveGuard\.isLive\(match, \{ requireScore: false \}\)\) return null;/,
     "istemci bandı ortak kapıdan geçmeli");
+
+  // CANLILIK İDDİASI YAPAN İSTEMCİ NOKTALARI ORTAK KAPIDAN GEÇER.
+  //
+  // Ham `isLiveMatch` yalnızca durum+skora bakar; gün, tazelik ve statik
+  // yedek kapılarını atlar. Aşağıdakilerin her biri okuyucuya "şu anda
+  // oynanıyor" diyen bir iddiadır ve donmuş kayıtla tetiklenebiliyordu.
+  assert.match(appSource, /function liveMinuteLabel\(match\) \{[\s\S]{0,600}?if \(!LiveGuard\.isLive\(match\)\)/,
+    "donmuş dakika etiketi ortak kapıdan geçmeli");
+  assert.match(appSource, /function notifyNewMatchEvents\(match\) \{[\s\S]{0,600}?if \(!match \|\| !LiveGuard\.isLive\(match\)\)/,
+    "bildirim ortak kapıdan geçmeli — donmuş kayıt \"GOL!\" bildirimi doğurmamalı");
+  assert.match(appSource, /if \(LiveGuard\.isLive\(detail\)\) \{\s*\n\s*return \{ key: "live", label: "Canlı analiz"/,
+    '"Canlı analiz" rozeti ortak kapıdan geçmeli');
+  assert.match(appSource, /hasLiveMatchNow = lastKnownMatches\.some\(function \(match\) \{ return LiveGuard\.isLive\(match\); \}\);/,
+    "hızlı yoklama kadansı ortak kapıdan geçmeli");
+
+  // DAMGA UYDURULMAZ. `|| new Date().toISOString()` yedeği, SSE paketinde
+  // üst düzey damga hiç gelmediği için HER canlı pakette çalışıyor ve
+  // donmuş akışı sonsuza dek taze ilan ediyordu.
+  assert.ok(
+    !/updatedAt: liveMatch\.updatedAt \|\| liveMatch\.updated_at \|\| new Date\(\)\.toISOString\(\)/.test(appSource),
+    "canlı birleştirme kendi zaman damgasını uydurmamalı"
+  );
+  assert.match(appSource, /liveMatch\.timing && \(liveMatch\.timing\.serverReceivedAt/,
+    "canlı birleştirme SSE'nin gerçek damgasını taşımalı");
 
   // Ana sayfa canlı panosu.
   const section = appSource.match(/function renderLiveScoreSection\(matches\) \{[\s\S]*?\n  \}/);

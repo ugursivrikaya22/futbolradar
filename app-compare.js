@@ -1750,7 +1750,11 @@
   }
 
   function liveMinuteLabel(match) {
-    if (!isLiveMatch(match)) {
+    // Ekranda "81'" yazan etiket BURASI. Ham `isLiveMatch` yalnızca duruma
+    // ve skora bakar; donmuş bir kayıt bu kapıdan geçip kendi dondurulmuş
+    // dakikasını basıyordu. Dakika bir ZAMAN iddiasıdır: doğrulanmamış
+    // canlılıkta dakika da yazılmaz.
+    if (!LiveGuard.isLive(match)) {
       return "";
     }
 
@@ -2053,7 +2057,12 @@
   }
 
   function notifyNewMatchEvents(match) {
-    if (!match || !isLiveMatch(match)) {
+    // İzin isteme kapısı ortak kapıya taşınmıştı ama BİLDİRİMİN KENDİSİ
+    // hâlâ ham kontrolü kullanıyordu: donmuş ya da statik yedekten gelen
+    // bir kayıt, üzerindeki eski olaylarla telefonda "GOL!" bildirimi
+    // doğurabilirdi. Bildirim, kartlardan daha yüksek sesli bir canlılık
+    // iddiasıdır; aynı kapıdan geçer.
+    if (!match || !LiveGuard.isLive(match)) {
       return;
     }
     var events = Array.isArray(match.events) ? match.events : [];
@@ -2332,11 +2341,17 @@
     function updatedAtMs(match) {
       if (!match || typeof match !== "object") return null;
 
+      // SSE anlık görüntüsünde üst düzeyde damga YOKTUR; sağlayıcının
+      // gerçek yaşı `timing.serverReceivedAt` içinde gelir
+      // (services/liveScoreStream.js#matchSnapshot).
+      var timing = (match.timing && typeof match.timing === "object") ? match.timing : {};
+
       var candidates = [
         match.updatedAt, match.updated_at,
         match.lastUpdated, match.last_updated,
         match.fetchedAt, match.fetched_at,
-        match.lastSyncedAt, match.last_synced_at
+        match.lastSyncedAt, match.last_synced_at,
+        timing.serverReceivedAt, timing.backend_receive_time
       ];
 
       // `timestamp` BİLEREK LİSTEDE YOK: API-Football'da o alan başlama
@@ -5171,10 +5186,21 @@
         // Kayıt artık CANLI uç noktadan tazelendi: statik yedek işareti
         // düşer, yoksa gerçekten canlı bir maç kaynak kapısında takılırdı.
         __staticFallback: false,
-        // `updatedAt` tazelik kapısının (LiveGuard) okuduğu damgadır.
-        // Sağlayıcı damga vermiyorsa paketin GELDİĞİ an yazılır: bu kayıt
-        // şu anda canlı uçtan okundu ve bunu kanıtlayabilir olmalı.
-        updatedAt: liveMatch.updatedAt || liveMatch.updated_at || new Date().toISOString(),
+        // DAMGA UYDURULMAZ.
+        //
+        // Burada `|| new Date().toISOString()` vardı: sağlayıcı damgası
+        // yoksa paket "şu an güncellendi" diye damgalanıyordu. SSE anlık
+        // görüntüsünde üst düzey `updatedAt` HİÇ gelmez (gerçek yaş
+        // `timing.serverReceivedAt` içindedir), yani bu yedek pratikte HER
+        // canlı pakette çalışıyor ve donmuş bir akışı sonsuza dek taze
+        // ilan ediyordu — tazelik kapısını tam da kapatması gereken yerde
+        // etkisiz bırakarak. Gerçek damga taşınır; yoksa damga YOKTUR ve
+        // karar başlama saati kapısına kalır.
+        updatedAt: liveMatch.updatedAt
+          || liveMatch.updated_at
+          || (liveMatch.timing && (liveMatch.timing.serverReceivedAt || liveMatch.timing.backend_receive_time))
+          || base[existing].updatedAt
+          || null,
         live: liveMatch.live
       });
     });
@@ -5275,7 +5301,9 @@
       var nextMatches = Array.isArray(matches) ? matches : [];
       var changedGoals = goalChangeIds(lastKnownMatches, nextMatches);
       lastKnownMatches = nextMatches;
-      hasLiveMatchNow = lastKnownMatches.some(function (match) { return isLiveMatch(match); });
+      // Donmuş bir "LIVE" kaydı ham kontrolden geçtiği için hızlı yoklamayı
+      // SONSUZA DEK açık tutuyordu: kimse izlemezken saniyede bir istek.
+      hasLiveMatchNow = lastKnownMatches.some(function (match) { return LiveGuard.isLive(match); });
       notifyLiveMatchEvents(lastKnownMatches);
 
       activeBindings.forEach(function (binding) {
@@ -7928,7 +7956,9 @@
       return { key: "halftime", label: "Devre arası analizi", note: "İlk yarı verisiyle güncellendi" };
     }
 
-    if (isLiveMatch(detail)) {
+    // "Canlı analiz" okuyucuya "şu anda oynanıyor" diyor; doğrulanmamış
+    // canlılıkta bu iddia yapılmaz.
+    if (LiveGuard.isLive(detail)) {
       return { key: "live", label: "Canlı analiz", note: "Yeni olaylar geldikçe yenilenir" };
     }
 

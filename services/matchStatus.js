@@ -294,11 +294,19 @@ function kickoffMs(match) {
 function updatedAtMs(match) {
   if (!match || typeof match !== "object") return null;
 
+  // SSE anlık görüntüsünde (services/liveScoreStream.js#matchSnapshot) üst
+  // düzeyde `updatedAt`/`fetchedAt` YOKTUR; sağlayıcının gerçek yaşı
+  // `timing.serverReceivedAt` içinde taşınır. Okumazsak canlı akıştan gelen
+  // her kayıt "damgasız" görünür ve tazelik kapısı o kayıtlar için hiç
+  // çalışmaz — tam da donmuş akışın yakalanması gereken yer.
+  const timing = (match.timing && typeof match.timing === "object") ? match.timing : {};
+
   const candidates = [
     match.updatedAt, match.updated_at,
     match.lastUpdated, match.last_updated,
     match.fetchedAt, match.fetched_at,
-    match.lastSyncedAt, match.last_synced_at
+    match.lastSyncedAt, match.last_synced_at,
+    timing.serverReceivedAt, timing.backend_receive_time
   ];
 
   // `timestamp` BİLEREK LİSTEDE YOK. API-Football'da `fixture.timestamp`
