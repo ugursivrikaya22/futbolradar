@@ -178,7 +178,7 @@ function reportHrefFor(reports, match) {
   const records = reportRecords(reports);
 
   const byId = records.find((record) => text(record && record.matchId) === matchId);
-  if (byId) return `/mac-raporu/${encodeURIComponent(text(byId.matchId))}.html`;
+  if (byId) return reportUrlFrom(byId);
 
   const day = dayOf(match && match.kickoff);
   if (!day) return "";
@@ -186,7 +186,20 @@ function reportHrefFor(reports, match) {
     dayOf(record && (record.kickoff || record.kickoffUtc || record.date)) === day &&
     teamsMatch(record && record.homeTeam, match && match.homeTeam) &&
     teamsMatch(record && record.awayTeam, match && match.awayTeam));
-  return byTeams ? `/mac-raporu/${encodeURIComponent(text(byTeams.matchId))}.html` : "";
+  return byTeams ? reportUrlFrom(byTeams) : "";
+}
+
+/**
+ * Rapor dosyasının gerçek adı record.reportUrl/seo.path alanında taşınır
+ * (üreten script: generate-post-match-reports.mjs). Takım adı rapor
+ * slug'ında matchId'den farklı yazıldığında ("Roma" vs "AS Roma" gibi)
+ * matchId'den tahmin kırık bağlantı üretir; bu yüzden gerçek değer öncelikli,
+ * yalnızca eksik/eski kayıtta matchId'ye tahmine düşülür.
+ */
+function reportUrlFrom(record) {
+  const explicit = text(record && (record.reportUrl || (record.seo && record.seo.path)));
+  if (explicit) return explicit.startsWith("/") ? explicit : `/${explicit.replace(/^\.\//, "")}`;
+  return `/mac-raporu/${encodeURIComponent(text(record && record.matchId))}.html`;
 }
 
 /** "Beşiktaş 1-0 Hradec Králové" — skor eksikse skorsuz etiket. */

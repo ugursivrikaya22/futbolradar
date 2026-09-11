@@ -197,7 +197,25 @@ function testCategoryPagesExposeNoRestrictedFields() {
     const html = fs.readFileSync(full, "utf8");
     assert.ok(!/player-rating-badge/.test(html), `${file}: puan rozeti basılmamalı`);
     assert.ok(!/Piyasa\s*<b>[^<]*\d/.test(html), `${file}: piyasa değeri basılmamalı`);
-    assert.ok(!/Maç dakikası\s*<b>\s*\d/.test(html), `${file}: dakika basılmamalı`);
+
+    // Dakika basılması KENDİSİ yasak değil — kural "yalnızca doğrulanamayan
+    // alanlar düşer" (dosya başı). Kadro senkronunun varsayılan sıfırları
+    // basılmasın diye bu test başta "hiç basılmasın" diye yazıldı, çünkü o an
+    // hiçbir kayıtta gerçek doğrulama yoktu. Artık bazı oyuncular
+    // statsVerifiedFields ile gerçekten doğrulanmış dakika taşıyor (örn.
+    // E. Shomurodov, 4 Eylül 2026 manuel doğrulama); bu satır artık basılan
+    // her rakamı kapıdan geçen (publicPlayerView) değerle karşılaştırıyor —
+    // basılıysa doğrulanmışla birebir eşleşmeli, uydurma/varsayılan olamaz.
+    for (const articleMatch of html.matchAll(/<article class="card player-detail-card" data-card="player" data-player="([^"]+)"[\s\S]*?<\/article>/g)) {
+      const [block, playerId] = articleMatch;
+      const minutesMatch = block.match(/Maç dakikası\s*<b>\s*(\d+)\s*<\/b>/);
+      if (!minutesMatch) continue;
+      const record = players.find((p) => p.id === playerId);
+      const gatedFields = record && credibility.publicPlayerView(record).fields;
+      const allowed = gatedFields ? (gatedFields.minutesPlayed ?? gatedFields.minutes) : undefined;
+      assert.equal(String(minutesMatch[1]), String(allowed),
+        `${file}/${playerId}: basılan dakika (${minutesMatch[1]}) kapıdan geçen doğrulanmış değerle eşleşmeli`);
+    }
   }
 }
 

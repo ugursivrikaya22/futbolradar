@@ -106,7 +106,7 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // Statik yedeğin takvim günü, istemcinin kullandığı kuralla AYNI olmalı
 // (app.js: istanbulDayOf). Ayrışırsa JavaScript açılana kadar farklı bir
 // gün listelenir ve sayfa gözün önünde değişir.
-const { istanbulDay } = require("../services/matchStatus.js");
+const { istanbulDay, liveVerdict } = require("../services/matchStatus.js");
 
 /**
  * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
@@ -520,7 +520,11 @@ const staticFixtureRow = sharedFixtureRow;
 
 function staticFixtureCard(match, meta) {
   const { headlineValue, status, finalScore, quickLinksHtml } = meta;
-  const isLive = status === "LIVE";
+  // Ham status alanına güvenilmez: sağlayıcı "LIVE" derken saatlerdir
+  // güncellemiyor olabilir (bkz. services/matchStatus.js#liveVerdict — app.js
+  // istemci tarafında aynı kapıyı kullanıyor). Bu kapı olmadan statik
+  // ön-render, artık canlı olmayan bir maçı "Canlı" basardı.
+  const isLive = status === "LIVE" && liveVerdict(match).live;
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
   const stateLabel = isFinal ? "MS" : isLive ? "Canlı" : (headlineValue || MATCH_STATUS_TR[status] || "Planlandı");
@@ -1665,16 +1669,24 @@ function matchQuotesTicker() {
   // bağlanıyor, dolayısıyla bir alıntının görünmesi için o maçın raporunun
   // gerçekten var olması gerekiyor. Fikstür listesi bunu garanti etmez ve
   // ilk denemede kırık bağlantı üretirdi.
-  const finishedIds = postMatchReportRecords()
-    .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()))
-    .map((record) => String(record.matchId || ""))
-    .filter(Boolean);
+  const finishedReports = postMatchReportRecords()
+    .filter((record) => ["FINISHED", "FT", "AET", "PEN"].includes(String(record && record.status || "").toUpperCase()));
+  const finishedIds = finishedReports.map((record) => String(record.matchId || "")).filter(Boolean);
+  // Rapor dosyasının GERÇEK adı matchId'den tahmin edilemez: takım adı rapor
+  // slug'ında kısa isimden farklı yazıldığında (örn. "Roma" vs "AS Roma")
+  // `mac-raporu/${matchId}.html` kırık bağlantı üretir. Kaydın kendi
+  // reportUrl/seo.path alanı doğru dosya adını taşıyor, ona bakılır.
+  const reportUrlByMatchId = new Map(
+    finishedReports
+      .map((record) => [String(record.matchId || ""), String(record.reportUrl || (record.seo && record.seo.path) || "")])
+      .filter(([matchId, url]) => matchId && url)
+  );
 
   const verdict = latestQuotes(managerQuoteStore, { limit: 6, matchIds: finishedIds });
 
   return matchQuotesTickerBlock(verdict, {
     awaitingNote: "Son tamamlanan maçlar için doğrulanmış bir teknik direktör ya da futbolcu açıklaması henüz yayımlanmadı.",
-    href: (quote) => (quote.matchId ? `./mac-raporu/${quote.matchId}.html` : null)
+    href: (quote) => reportUrlByMatchId.get(quote.matchId) || null
   });
 }
 
@@ -2091,7 +2103,7 @@ const matchProgramFaqEntries = matchProgramFaq(matchProgramPage.dayMatches, {
 
 writePage("bugunun-maclari.html", {
   "matches-page": matchProgramPage.html || emptyMatchState("today")
-}, fixtureFreshness, {
+}, matchesFreshness, {
   "today-faq": faqSectionHtml(
     matchProgramFaqEntries,
     matchProgramDateLabel ? `${matchProgramDateLabel} maçları hakkında sık sorulanlar` : "Sık sorulanlar"
@@ -2112,7 +2124,7 @@ writePage("canli-skor.html", {
   // Canlı maç yokken de günün sonuçları görünsün: sayfa eskiden yalnızca
   // "canlı maç yok" diyordu ve o günün oynanmış maçları hiç listelenmiyordu.
   "live-score": liveScoreProgramState()
-}, fixtureFreshness, {
+}, matchesFreshness, {
   "live-schema": matchListSchemaBlock(calendarProgramMatches(MATCH_LIST_INITIAL), "Canlı ve günün maçları")
 });
 

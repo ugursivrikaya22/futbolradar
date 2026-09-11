@@ -122,7 +122,11 @@ function archiveMatch(match) {
     coaches: match.coaches && (match.coaches.home || match.coaches.away)
       ? { home: text(match.coaches.home) || null, away: text(match.coaches.away) || null }
       : null,
-    reportPage: `mac-raporu/${text(match.id)}.html`,
+    // match.reportPage, doluysa, üretilmiş rapor dosyasının gerçek adını taşır
+    // (services/historicalMatchArchive.js). Takım adı farklı slug'landığında
+    // (örn. "Roma" vs "AS Roma") id'den yeniden tahmin etmek kırık bağlantı
+    // üretir; bu yüzden yalnızca gerçek değer yoksa tahmine düşülür.
+    reportPage: text(match.reportPage) || `mac-raporu/${text(match.id)}.html`,
     sourceUrls: Array.isArray(match.sourceUrls) ? match.sourceUrls.slice() : [],
     lastVerifiedAt: text(match.lastVerifiedAt) || text(match.fetchedAt) || null,
     coverageLevel: text(match.archiveCoverageLevel) || "LIMITED",
