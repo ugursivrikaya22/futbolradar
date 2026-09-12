@@ -92,11 +92,50 @@ function canonicalMatches(actual, relativePath) {
   return variants.has(actual);
 }
 
+/**
+ * Çapraz canonical verebilen kopya aileleri.
+ *
+ * `mac/<takimlar>-<gun>-<ay>-<yil>.html` bu listede YOK: kanonik ailenin
+ * kendisi, canonical'ı kendini göstermek zorunda.
+ */
+const MATCH_DUPLICATE_RES = [
+  /^mac-raporu\/[^/]+\.html$/,
+  /^mac\/[a-z0-9-]+-\d{4}-\d{4}-r\d{2}\.html$/,
+  /^[a-z0-9-]+-mac-analizi\.html$/
+];
+
+const isMatchDuplicate = (relativePath) => {
+  const normalized = relativePath.split(path.sep).join("/");
+  return MATCH_DUPLICATE_RES.some((expression) => expression.test(normalized));
+};
+
 const files = walk(root);
 assert.ok(files.length > 1000, `üretilen ağaç taranmalı; bulunan dosya: ${files.length}`);
 
 const sitemapPath = path.join(root, "sitemap.xml");
 const sitemap = fs.existsSync(sitemapPath) ? fs.readFileSync(sitemapPath, "utf8") : "";
+
+/**
+ * Geçerli çapraz canonical hedefleri: diskte karşılığı olan ve canonical'ı
+ * kendini gösteren tarih slug'lı `/mac/` sayfaları. Uzantılı ve uzantısız
+ * yazım da kabul — barındırma ikisini de aynı sayfaya çözüyor.
+ */
+const canonicalTargets = new Set();
+{
+  const macDir = path.join(root, "mac");
+  const entries = fs.existsSync(macDir) ? fs.readdirSync(macDir) : [];
+  for (const name of entries) {
+    if (!name.endsWith(".html") || !/-\d{1,2}-[a-zçğıöşü]+-\d{4}\.html$/.test(name)) continue;
+    const html = fs.readFileSync(path.join(macDir, name), "utf8");
+    const own = pick(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
+    if (!canonicalMatches(own, `mac/${name}`)) continue;
+    canonicalTargets.add(`${DOMAIN}/mac/${name}`);
+    canonicalTargets.add(`${DOMAIN}/mac/${name.replace(/\.html$/, "")}`);
+  }
+}
+
+/** Çapraz canonical'a bağlanmış kopyalar — rapor için sayılır. */
+const crossCanonical = [];
 
 const titles = new Map();
 const descriptions = new Map();
@@ -139,11 +178,33 @@ for (const file of files) {
   // gösterebilir — hatta göstermelidir: `oyuncular/edina-dzeko.html` yanlış
   // yazımlı bir takma addır, noindex'tir, sitemap'te yoktur ve doğru profile
   // işaret eder. Bu hata değil, doğru davranıştır.
+  //
+  // TEK İSTİSNA: aynı maçın kopya adresleri. Bir karşılaşma üç yerde
+  // yayınlanıyor — tarih slug'lı `/mac/...` sayfası, sezon+tur numaralı
+  // `/mac/...-rNN.html` fikstür sayfası ve `/mac-raporu/...` maç sonu
+  // raporu (artı kök dizindeki eski `-mac-analizi` deseni). Üçü de aynı
+  // sorguyu hedefliyordu; üçü de indekslenebilir kaldığı sürece Google
+  // bunu kanibalizasyon okuyup üçünü birden geriye itiyor.
+  //
+  // Doğru sinyal `noindex` DEĞİL: noindex kopyayı indeksten düşürür ama
+  // biriktirdiği otoriteyi hiçbir yere aktarmaz. Otoriteyi tek adrese
+  // toplayan şey, indekslenebilir kalan kopyanın çapraz canonical'ıdır.
+  // Bu yüzden kopya `index,follow` kalır ve canonical'ı hedefi gösterir;
+  // `scripts/unify-match-canonicals.mjs` bunu üretimden sonra tek geçişte
+  // yazar.
+  //
+  // Kural gevşetilmiyor, DARALTILIYOR: çapraz canonical yalnızca gerçekten
+  // var olan ve KENDİ adresini gösteren bir `/mac/` sayfasına verilebilir.
+  // Hedefi olmayan ya da hedefi de başka yeri gösteren bir zincir yine hata.
   const canonical = pick(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
   if (indexable) {
     if (!canonical) problems.missingCanonical.push(relative);
     else if (!canonicalMatches(canonical, relative)) {
-      problems.canonicalMismatch.push(`${relative}: ${canonical}`);
+      if (isMatchDuplicate(relative) && canonicalTargets.has(canonical)) {
+        crossCanonical.push(`${relative} → ${canonical}`);
+      } else {
+        problems.canonicalMismatch.push(`${relative}: ${canonical}`);
+      }
     }
   }
 
@@ -245,6 +306,7 @@ const summarize = (list, limit = 5) =>
   list.slice(0, limit).join("; ") + (list.length > limit ? ` …(+${list.length - limit})` : "");
 
 console.log(`SEO bütünlüğü: ${files.length} sayfa tarandı, ${titles.size} benzersiz başlık.`);
+console.log(`SEO bütünlüğü: ${crossCanonical.length} maç kopyası tek kanonik /mac/ adresine bağlı.`);
 
 // ── Denetimler ─────────────────────────────────────────────────────────────
 

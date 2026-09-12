@@ -16,6 +16,32 @@ const { resolveCompetitionId, findCompetition } = require("./competitionCatalog.
 const { sameClub } = require("./superLigTeams.js");
 const { istanbulDay, kickoffMs } = require("./matchStatus.js");
 const broadcastVerifications = require("../data/broadcast-verifications.json");
+const { trSlugFor } = require("./matchSeoPages.js");
+
+/**
+ * ELLE YÖNETİLEN YAYIN EŞLEMESİ — `data/yayin-kanallari.json`.
+ *
+ * Sağlayıcı (`strTVStation`) maçların ezici çoğunluğunda kanal vermiyor.
+ * Sonuç, başlığı "…Hangi Kanalda?" diyen bir sayfanın gövdesinde "Henüz
+ * açıklanmadı" yazması oluyordu: okuyucu aramadan o vaatle geliyor,
+ * cevabı bulamayınca geri dönüyor. Hem dönüşüm hem sıralama kaybı.
+ *
+ * Dosyanın iki bölümü var:
+ *
+ *   maclar      — maç slug'ı → kanal listesi. Tek bir karşılaşma için
+ *                 kesin bilgi. Sağlayıcıyı da doğrulanmış kaydı da EZER;
+ *                 editörün son sözü burasıdır.
+ *   varsayilan  — turnuva adı → kanal listesi. Lig yayın hakkından gelen
+ *                 genel bilgi. EN SON denenir ve sayfada kaynağı
+ *                 saklanmaz: "Lig yayın hakkına göre; kanal değişikliği
+ *                 olabilir" notuyla birlikte gösterilir.
+ *
+ * Ayrım önemli: "tahmin yazmıyoruz" ilkesi korunuyor. Lig varsayılanı bir
+ * tahmin değil, yayın hakkı sözleşmesinden gelen bir olgu — ama o maça
+ * özel doğrulanmış bir bilgi de değil. Okuyucu ikisini ayırt edebilsin
+ * diye kaynak sayfada açıkça yazıyor.
+ */
+const yayinKanallari = require("../data/yayin-kanallari.json");
 
 function verifiedBroadcast(match) {
   if (!match) return null;
@@ -105,14 +131,88 @@ function selectBroadcastMatches(matches, options = {}) {
  * (bkz. data/matches.json). Türkiye'deki okuyucu için Türkiye kanalı
  * öncelikli; yoksa boş dize döner ve sayfa bunu uydurmaz.
  */
-function broadcastChannel(match) {
-  const verified = verifiedBroadcast(match);
-  if (verified) return verified.turkey;
+/** Kanal alanı tek ad ya da liste olabilir; ikisi de temiz diziye iner. */
+function channelList(value) {
+  if (Array.isArray(value)) return value.map(text).filter(Boolean);
+  const single = text(value);
+  return single ? [single] : [];
+}
+
+/** Sağlayıcının bildirdiği kanal — yoksa boş dize. */
+function providerChannel(match) {
   const broadcast = match && match.broadcast;
   if (!broadcast) return "";
   if (typeof broadcast === "string") return text(broadcast);
   if (typeof broadcast === "object") return text(broadcast.turkey) || text(broadcast.tr) || "";
   return "";
+}
+
+/** Maçın `data/yayin-kanallari.json#maclar` anahtarı — çıkaramazsa boş. */
+function broadcastSlug(match) {
+  if (!match || !match.homeTeam || !match.awayTeam || !match.kickoff) return "";
+  try {
+    return trSlugFor(match.homeTeam, match.awayTeam, match.kickoff) || "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * KANAL ÇÖZÜMLEME — sırası ve KAYNAĞI birlikte döner.
+ *
+ *   1. maclar        elle girilmiş maça özel kayıt
+ *   2. verified      `data/broadcast-verifications.json` (kaynak bağlantılı)
+ *   3. provider      sağlayıcının bildirdiği kanal
+ *   4. varsayilan    lig yayın hakkı — sayfada NOTLA gösterilir
+ *   5. ""            hiçbiri yoksa: "Henüz açıklanmadı"
+ *
+ * `source` alanı çağıranın nereden geldiğini bilmesi için var. Lig
+ * varsayılanını maça özel bilgiymiş gibi basmak, tam da kaçındığımız şeyi
+ * yapmak olurdu: okuyucuya kesinmiş gibi bir kanal göstermek.
+ */
+function resolveBroadcastWith(match, mapping) {
+  const table = mapping || {};
+  const slug = broadcastSlug(match);
+  if (slug) {
+    const channels = channelList((table.maclar || {})[slug]);
+    if (channels.length) return { channels, channel: channels.join(", "), source: "match" };
+  }
+
+  const verified = verifiedBroadcast(match);
+  const verifiedChannels = verified ? channelList(verified.turkey) : [];
+  if (verifiedChannels.length) {
+    return { channels: verifiedChannels, channel: verifiedChannels.join(", "), source: "verified" };
+  }
+
+  const provider = providerChannel(match);
+  if (provider) return { channels: [provider], channel: provider, source: "provider" };
+
+  const defaults = table.varsayilan || {};
+  for (const name of [competitionDisplayName(match), text(match && match.league)]) {
+    if (!name) continue;
+    const channels = channelList(defaults[name]);
+    if (channels.length) return { channels, channel: channels.join(", "), source: "league" };
+  }
+
+  return { channels: [], channel: "", source: "" };
+}
+
+/** Depodaki eşlemeyle çözümleme. Saf sürüm `resolveBroadcastWith`. */
+function resolveBroadcast(match) {
+  return resolveBroadcastWith(match, yayinKanallari);
+}
+
+/**
+ * Kesin kanal — lig varsayılanı DAHİL DEĞİL.
+ *
+ * Bu yüzeyler (ör. "bugünün maçları hangi kanalda" sayfası, sağlayıcı
+ * katmanı) kaynağı gösterecek bir yere sahip değil; notsuz bir lig
+ * varsayılanı orada tahmin gibi okunur. Notu taşıyabilen yüzeyler
+ * `resolveBroadcast` çağırır.
+ */
+function broadcastChannel(match) {
+  const resolved = resolveBroadcast(match);
+  return resolved.source === "league" ? "" : resolved.channel;
 }
 
 /** Turnuvanın kanonik görünen adı; katalogda yoksa kayıttaki ham ad. */
@@ -128,6 +228,8 @@ module.exports = {
   PRIORITY_CLUBS,
   PRIORITY_COMPETITION_IDS,
   broadcastChannel,
+  resolveBroadcast,
+  resolveBroadcastWith,
   competitionDisplayName,
   isPriorityMatch,
   selectBroadcastMatches

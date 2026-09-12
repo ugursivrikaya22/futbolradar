@@ -316,7 +316,11 @@ function pageHtml(report, match) {
         name: `${match.homeTeam} - ${match.awayTeam}`,
         url,
         startDate: match.kickoff,
-        eventStatus: "https://schema.org/EventCompleted",
+        // `EventStatusType` "EventCompleted" diye bir değer TANIMIYOR
+        // (yalnızca Scheduled/Cancelled/Postponed/Rescheduled/MovedOnline).
+        // Geçersiz değer Google tarafından atılıyordu. Oynanmış maç
+        // "planlandığı gibi gerçekleşti" demek: EventScheduled.
+        eventStatus: "https://schema.org/EventScheduled",
         sport: "Football",
         location: { "@type": "StadiumOrArena", name: match.venue || "Bilinmiyor", address: match.city || "" },
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
@@ -324,11 +328,17 @@ function pageHtml(report, match) {
         description: summary.status === "ready" ? summary.paragraph : match.summary || ""
       },
       {
-        "@type": "Article",
+        "@type": "NewsArticle",
         headline: seo.title,
         description: seo.description,
         datePublished: match.lastVerifiedAt || match.kickoff,
         dateModified: match.lastVerifiedAt || match.kickoff,
+        // Yazar KURUM. Rapor bir kişi tarafından yazılmıyor; maçın
+        // doğrulanmış verisinden FutbolRadar'ın üretim hattı üretiyor ve
+        // sayfada bir imza satırı YOK. Uydurma bir kişi adı yazmak hem
+        // yanlış olur hem de sayfada görünmeyen bir bilgi bildirmek olur;
+        // kurum adı ise sayfanın başlığında ve altlığında görünüyor.
+        author: { "@type": "Organization", name: "FutbolRadar", url: domain },
         mainEntityOfPage: url,
         publisher: { "@type": "Organization", name: "FutbolRadar", url: domain }
       },
