@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-12T11:43:43.980Z",
+  "updatedAt": "2026-09-12T14:01:52.788Z",
   "items": [
     {
       "id": "auto-news-e15d34b3395292b4ba9d",
@@ -9,7 +9,7 @@
       "section": "news",
       "text": "İmza Töreni Bilgilendirme | Tarfin ile Sponsorluk İş Birliğimize İmza Atıyoruz",
       "team": "Fenerbahçe",
-      "timestamp": "2026-09-12T08:03:45.000Z",
+      "timestamp": "2026-09-12T08:08:53.000Z",
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxPODVULVRPZUV6VjY3bGNRYm1jcGFDa2NRekhRaGI2eDlmWm1wd0RZWVhTNHY3YkYwdDcwTFVDTUhlNEIyUkNnRWs3MWFqRVhnQktta0lzLVRrTVN2Q3lHZkV0VzY3OS04TzY1TWg2T3RUeWxYWk15dEhXZkVKVnZ6V2lsVmoxdmNiSlhFVHhmS0lwSUlLWUJBNGlLdlRJZFZkbWdicGhjV2gtYUo1U1dlWXozWXBuWFpoUnRnOUVwcVF4Wjg?oc=5",
@@ -19,9 +19,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-10T20:42:45.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -105,6 +103,26 @@
       }
     },
     {
+      "id": "auto-news-5357774e59875c369dd8",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Erzurumspor FK Yönetimine Dostluk Yemeği - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-11T17:04:07.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPR2k0cm12ZTA2XzVsTzBSUFc4VU1NeGNORVBRd1Z2aC1ROEwwaXQ0czY5NkNDclRMaTNpTC1JVURaejFMazBDeDVVZDJMNjFyRC1UWjlhd05sSnJZTTJEV2lJZlA4ZnNkTTBJWEhpYi0tcERqQ0NSZkZlWU13dU9wdTlVZ0hyTHNrYmJn?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-b3458d5c93e4f7adbfa6",
       "category": "official",
       "confidence": "confirmed",
@@ -177,26 +195,6 @@
       "source": {
         "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE82OE80bXVqM1lYSGJ1QnR0dzNIODlWZUdJUzdWRFZPczVnblpXNnZ6ZU1SXzNPME5id0U0NUpBYVBWYjg3WnJqVDROT2RtVjhmR01pRXFHQWx3TXM?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-79d0b10c0138dd533bec",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kulübümüzden Açıklama - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-10T19:45:39.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBGTEtlc3FtaHhYWUFwbldEa1JnT2l0QnBzczJVcDdpRDJSRzJHb1NhczlSRTk5MEFoU212RnJFVndVTm5ibnhJMnVfclpqczZlVmFRdUtmekxmdkE?oc=5",
         "publisher": "bjk.com.tr"
       },
       "automation": {
@@ -343,6 +341,40 @@
       "important": true
     },
     {
+      "id": "news-trabzonspor-pep-guardiola-6ed911ff",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in aktardığına göre Trabzonspor cephesi, Pep Guardiola iddiaları yalanladı.",
+      "timestamp": "2026-09-12T12:08:54.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-pep-guardiola-6ed911ff"
+      },
+      "team": "Trabzonspor",
+      "important": true
+    },
+    {
+      "id": "auto-news-7d57daad7c8615515f46",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe, teknik direktör İsmail Kartal'ın görevinin başında olduğunu açıkladı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-11T17:41:59.000Z",
+      "source": {
+        "name": "aa-spor",
+        "url": "https://www.aa.com.tr/tr/spor/fenerbahce-teknik-direktor-ismail-kartalin-gorevinin-basinda-oldugunu-acikladi/4054690",
+        "publisher": "aa.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "aa-spor",
+        "priority": 6,
+        "status": "CONFIRMED"
+      }
+    },
+    {
       "id": "news-besiktas-fabio-miretti-3ac21c65",
       "origin": "news.json",
       "category": "club-agenda",
@@ -413,20 +445,6 @@
       "important": true
     },
     {
-      "id": "news-besiktas-alexander-nubel-81a89d98",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Beşiktaş'ın Alexander Nübel görüşmelerini sürdürdüğü öne sürüldü.",
-      "timestamp": "2026-09-07T12:24:00.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/besiktas-alexander-nubel-81a89d98"
-      },
-      "team": "Beşiktaş",
-      "important": true
-    },
-    {
       "id": "news-lazio-milan-serie-a-12-eylul-2026",
       "origin": "news.json",
       "category": "fixture",
@@ -471,7 +489,7 @@
         "priority": 9,
         "status": "OFFICIAL",
         "mergedReports": 3,
-        "firstSeenAt": "2026-09-10T23:03:45.000Z"
+        "firstSeenAt": "2026-09-09T23:01:55.000Z"
       }
     },
     {
@@ -513,9 +531,7 @@
         "source": "rss",
         "feed": "uefa",
         "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-09T12:21:44.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
