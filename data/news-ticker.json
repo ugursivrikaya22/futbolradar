@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-12T09:17:27.620Z",
+  "updatedAt": "2026-09-12T11:43:43.980Z",
   "items": [
     {
       "id": "auto-news-e15d34b3395292b4ba9d",
@@ -287,26 +287,60 @@
       }
     },
     {
-      "id": "auto-news-7d57daad7c8615515f46",
+      "id": "news-galatasaray-kocaelispor-oncesi-leao-osimhen-12-eylul-2026",
+      "origin": "news.json",
       "category": "club-agenda",
       "confidence": "reported",
-      "section": "news",
-      "text": "Fenerbahçe, teknik direktör İsmail Kartal'ın görevinin başında olduğunu açıkladı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-11T17:41:59.000Z",
+      "text": "Galatasaray'da Leao'nun Kocaelispor maçında ilk 11'de başlayacağı öne sürüldü.",
+      "timestamp": "2026-09-12T13:30:00+03:00",
       "source": {
-        "name": "aa-spor",
-        "url": "https://www.aa.com.tr/tr/spor/fenerbahce-teknik-direktor-ismail-kartalin-gorevinin-basinda-oldugunu-acikladi/4054690",
-        "publisher": "aa.com.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-kocaelispor-oncesi-leao-osimhen-12-eylul-2026"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "aa-spor",
-        "priority": 6,
-        "status": "CONFIRMED",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-11T17:37:00.000Z"
-      }
+      "team": "Galatasaray",
+      "important": true
+    },
+    {
+      "id": "news-besiktas-erzurumspor-galibiyeti-mac-fazlasiyla-zirve-12-eylul-2026",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Basına göre Beşiktaş, Erzurumspor FK galibiyetiyle maç fazlasıyla Süper Lig'de zirvede.",
+      "timestamp": "2026-09-12T13:05:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-erzurumspor-galibiyeti-mac-fazlasiyla-zirve-12-eylul-2026"
+      },
+      "team": "Beşiktaş",
+      "important": true
+    },
+    {
+      "id": "news-fenerbahce-ismail-kartal-istifa-sonrasi-gorevde-12-eylul-2026",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Anadolu Ajansı'na göre istifasını açıklayan İsmail Kartal, Fenerbahçe'de görevinin başında kaldı.",
+      "timestamp": "2026-09-12T12:40:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-ismail-kartal-istifa-sonrasi-gorevde-12-eylul-2026"
+      },
+      "team": "Fenerbahçe",
+      "important": true
+    },
+    {
+      "id": "news-trabzonspor-teknik-direktor-arayisi-valverde-12-eylul-2026",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Basına göre Trabzonspor'un teknik direktör listesinde Ernesto Valverde ilk sırada.",
+      "timestamp": "2026-09-12T12:10:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-teknik-direktor-arayisi-valverde-12-eylul-2026"
+      },
+      "team": "Trabzonspor",
+      "important": true
     },
     {
       "id": "news-besiktas-fabio-miretti-3ac21c65",
@@ -393,6 +427,32 @@
       "important": true
     },
     {
+      "id": "news-lazio-milan-serie-a-12-eylul-2026",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Serie A'da Lazio ile Milan 19.00'da Olimpico'da karşılaşıyor.",
+      "timestamp": "2026-09-12T10:50:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/lazio-milan-serie-a-12-eylul-2026"
+      },
+      "team": "Milan"
+    },
+    {
+      "id": "news-real-madrid-rayo-vallecano-la-liga-5-hafta-12-eylul-2026",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "La Liga'da Real Madrid, 22.00'de Bernabeu'da Rayo Vallecano'yu ağırlıyor.",
+      "timestamp": "2026-09-12T10:20:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/real-madrid-rayo-vallecano-la-liga-5-hafta-12-eylul-2026"
+      },
+      "team": "Real Madrid"
+    },
+    {
       "id": "auto-news-cc3a63d5868838232e8d",
       "category": "official",
       "confidence": "confirmed",
@@ -457,6 +517,47 @@
         "mergedReports": 2,
         "firstSeenAt": "2026-09-09T12:21:44.000Z"
       }
+    },
+    {
+      "id": "news-sampiyonlar-ligi-2026-27-ilk-hafta-ozeti",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Şampiyonlar Ligi'nde ilk hafta tamamlandı: Bayern 5-0, Manchester United 4-0 kazandı.",
+      "timestamp": "2026-09-12T09:45:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/sampiyonlar-ligi-2026-27-ilk-hafta-ozeti"
+      },
+      "team": "Avrupa Futbolu",
+      "important": true
+    },
+    {
+      "id": "news-super-lig-5-hafta-12-eylul-2026-mac-programi",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Süper Lig'de 5. hafta cumartesi dört maçla sürüyor; Konyaspor-Trabzonspor 20.00'de.",
+      "timestamp": "2026-09-12T11:30:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/super-lig-5-hafta-12-eylul-2026-mac-programi"
+      },
+      "team": "Süper Lig",
+      "important": true
+    },
+    {
+      "id": "news-premier-lig-12-eylul-2026-cumartesi-programi",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Premier Lig'de cumartesi yedi maç var; Sunderland-Arsenal 22.00'de.",
+      "timestamp": "2026-09-12T11:00:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/premier-lig-12-eylul-2026-cumartesi-programi"
+      },
+      "team": "Avrupa Futbolu"
     }
   ]
 }
