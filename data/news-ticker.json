@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-12T04:35:28.452Z",
+  "updatedAt": "2026-09-12T07:15:11.121Z",
   "items": [
     {
       "id": "auto-news-ee7b110954d0b11ac0ff",
@@ -125,6 +125,26 @@
       }
     },
     {
+      "id": "auto-news-d2080e21b457faea3e0b",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Galatasaray Spor Kulübü'nden bildirilmiştir",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-11T06:59:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMikgFBVV95cUxQcHFtOXVzSUpLOFQxcXhRVFEzWDBGUlRYRDlOZVRiZWJZOTl4NzhJUHBubENPRUg2ZGl4VEpYVzlqai1kektPVVI5RXBQeXdxZWktNEUzaTIwRWFWTEhrVm9hTzJfUjV1ZmI1U0tFWkZCb0YwZ1Z6WUtTYnpHZWlhNUJtcUIzVkM1UHJGX085YnBLUQ?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-a6a16a93d565f3566526",
       "category": "official",
       "confidence": "confirmed",
@@ -241,26 +261,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-9349418b00a71e722257",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "FUTBOL",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-10T08:55:38.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE16amRzczEzSGdWM0d3QUNzejF1YTk5NFdGSjh3RjU1NWRLbGlUbW9MbEFXSGh1RE1ybk9EcUQ1Nld2aldFLTJiY1pEa1k1Zll6Tmd2eWFBbV93c0JOX19mbF8tU0ZmTmZVSWlz?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
         "status": "OFFICIAL"
       }
     },
@@ -408,7 +408,7 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 4,
+        "mergedReports": 3,
         "firstSeenAt": "2026-09-09T23:45:49.000Z"
       }
     },
