@@ -126,7 +126,20 @@ function jsonLd(article) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: domain },
-      { "@type": "ListItem", position: 2, name: "Haberler", item: `${domain}/haberler` },
+      // BASAMAK, LİSTE SAYFASININ CANONICAL'INA GİTMEK ZORUNDA.
+      //
+      // Burada uzantısız `/haberler` yazılıydı ve o adres canlıda 404
+      // veriyordu: `vercel.json` `cleanUrls: false` ile çalışıyor ve
+      // uzantısız her rota AYRI AYRI rewrite ister. `/haber/:slug` için
+      // böyle bir kayıt var, `/haberler` için yok — bu yüzden her haber
+      // sayfası arama motorlarına var olmayan bir üst basamak bildiriyordu.
+      //
+      // İki çıkış yolu vardı ve rewrite eklemek yanlış olanı: aynı listeyi
+      // ikinci bir URL'den de servis etmek, canonical'ı `/haberler.html`
+      // olan sayfa için yinelenen içerik üretirdi. Doğrusu basamağı
+      // sayfanın KENDİ canonical'ına hizalamak — site haritası ve üst menü
+      // de zaten oraya bakıyor.
+      { "@type": "ListItem", position: 2, name: "Haberler", item: `${domain}/haberler.html` },
       { "@type": "ListItem", position: 3, name: article.title, item: articleUrl(article) }
     ]
   };
