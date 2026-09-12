@@ -1,0 +1,76 @@
+# YAYIN KANALI TARAMASI — HER GÜN, MAÇ GÜNÜNÜ BEKLEMEDEN.
+#
+# NEDEN VAR. Yayın kanalı bilgisi siteye maç günü, çoğu zaman maç
+# başladıktan sonra düşüyordu. Okuyucunun sorusu ise bir gün önce
+# soruluyor: "yarın maç kaçta, hangi kanalda". Bu iş akışı yarının
+# öncelikli maçlarını her sabah tarar ve kanalı yayıncıların KENDİ
+# akışlarından doğrular.
+#
+# NEDEN GÜN İÇİNDE TEKRAR KOŞAR. Yayın akışı sabah kesinleşmiş olmuyor:
+# kanal ataması ve maç saati gün içinde değişebiliyor. Tek bir sabah
+# koşusu, öğleden sonra değişen bir kanalı ertesi güne kadar yanlış
+# bırakırdı. Çıktı dosyası her koşuda sıfırdan yazıldığı için değişiklik
+# kendiliğinden düzelir; ayrıca betik değişeni günlüğe yazar.
+#
+# NEDEN DÜŞMESİ SORUN DEĞİL. Betik ağ hatasında bile 0 ile çıkar ve
+# çıktıyı olduğu gibi bırakır; sayfalar son bilinen doğrulamayı ya da
+# "Yayın bilgisi bekleniyor" satırını gösterir. Yani taramanın kırılması
+# yanlış kanal değil, görünür bir eksik üretir.
+name: broadcast-schedule
+
+on:
+  schedule:
+    # 05:00 Europe/Istanbul (UTC+3) — ilk kontrol, gün başlamadan.
+    # Dakika 0 yerine 6: GitHub saat başını en yoğun kuyruk penceresi
+    # olarak belgeliyor ve :00'a sabitlenmiş işler saatlerce gecikebiliyor
+    # (aynı gerekçe match-analysis.yml içinde de yazılı).
+    - cron: "6 2 * * *"
+    # Gün içi değişiklik kontrolleri: 11:00, 15:00, 19:00 TSİ.
+    - cron: "6 8,12,16 * * *"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Kaç gün ileri taransın (varsayılan 2 = bugün + yarın)"
+        required: false
+        default: "2"
+
+permissions:
+  contents: write
+
+concurrency:
+  # Gün içi koşu sabah koşusuna yetişirse ikisi aynı dosyayı yazmasın.
+  group: broadcast-schedule
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Bağımlılıklar
+        run: npm ci --no-audit --no-fund
+
+      - name: Yayın akışlarını tara
+        run: |
+          node scripts/scan-broadcast-schedule.mjs --apply --days=${{ github.event.inputs.days || '2' }}
+
+      - name: Sayfaları yeniden üret
+        run: |
+          node scripts/generate-broadcast-schedule-page.mjs
+          node scripts/prerender-core-pages.mjs
+          node scripts/generate-en-pages.mjs
+
+      - name: Denetimler
+        run: |
+          node scripts/test-broadcast-schedule.mjs
+          node scripts/test-broadcast-verifications.mjs
+          node scripts/test-source-links.mjs
+
+      - name: Değişikliği gönder
+        run: |
+          node scripts/ci-commit-push.mjs "ci(broadcast): günlük yayın kanalı taraması"

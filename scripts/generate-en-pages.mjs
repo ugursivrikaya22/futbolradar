@@ -39,6 +39,7 @@ import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
+const { cardBroadcastLabel } = require("../services/broadcastSchedule.js");
 const {
   DOMAIN,
   ROUTES,
@@ -297,6 +298,7 @@ function fixtureCard(match) {
     awayScore: hasScore ? Number(match.score.away) : null,
     formHtml: "",
     actionHref: enMatchHref(match),
+    broadcast: cardBroadcastLabel(match, LOCALE),
     withMatchClick: false
   });
 }

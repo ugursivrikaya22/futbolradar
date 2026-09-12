@@ -14060,6 +14060,33 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   flex: 0 0 auto;
 }
 
+/*
+ * YAYIN SATIRI MOBİLDE TEK SATIR KALIR.
+ *
+ * Kart dar ekranda zaten uzun: iki takım adı, saat, durum rozeti. Yayın
+ * bilgisi ikinci satıra taştığında kart bir satır daha uzuyor ve ekrana
+ * sığan maç sayısı düşüyordu. Bilgi tek satırda okunmalı; sığmayan uzun
+ * kanal listesi ("TRT 1 / tabii / S Sport") kesilir, tamamı yine kartın
+ * kendi sayfasında ve title'da durur.
+ *
+ * `min-width: 0` şart: flex çocuğu varsayılan olarak içeriğinden daha dar
+ * olamaz, o yüzden ellipsis olmadan taşardı.
+ */
+.fixture-card-broadcast > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .fixture-card-broadcast {
+    gap: 5px;
+    padding-top: 5px;
+    font-size: var(--fs-xs, 0.78rem);
+  }
+}
+
 .fixture-card-live-minute {
   display: inline-flex;
   align-items: center;
@@ -21754,10 +21781,6 @@ a.motm-week__card:focus-visible {
 .msp-facts div { min-width: 0; }
 .msp-facts dt { color: var(--muted); font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; }
 .msp-facts dd { margin: 2px 0 0; overflow-wrap: anywhere; font-weight: 700; font-size: var(--fs-sm); }
-/* Lig yayın hakkından gelen kanalın yanındaki uyarı: kanalın kendisinden
-   görsel olarak ayrışmalı, yoksa okuyucu ikisini aynı kesinlikte okur. */
-.msp-channel-note { display: block; margin-top: 2px; color: var(--muted); font-weight: 600; font-size: var(--fs-xs); }
-.msp-qa .msp-channel-note { margin-top: 6px; }
 .msp-section { margin-top: 26px; }
 .msp-section-title { margin: 0 0 12px; font-size: var(--fs-lg); letter-spacing: -0.01em; }
 .msp-subtitle { margin: 16px 0 8px; font-size: var(--fs-md); }

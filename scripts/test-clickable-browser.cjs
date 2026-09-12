@@ -341,7 +341,8 @@ async function until(check, message, timeout = 5000) {
           const firstCard = page.locator('.fixture-card').first();
           const matchId = await firstCard.getAttribute('data-match');
           const card = matchId ? page.locator('.fixture-card[data-match=' + JSON.stringify(matchId) + ']').first() : firstCard;
-          const target = await card.locator('.fixture-card-action, a').first().getAttribute('href');
+          const primaryAction = card.locator('.fixture-card-action').first();
+          const target = await (await primaryAction.count() ? primaryAction : card.locator('a').first()).getAttribute('href');
           const before = page.url();
           // On touch layouts the card's native stretched link covers its rows.
           // Click the complete card surface, which includes that valid target.

@@ -270,9 +270,118 @@ function targetExists(resolved) {
   return candidates.some((candidate) => existing.has(candidate.replace(/\/+/g, "/")));
 }
 
+// ── BREADCRUMB HEDEFİ ÜRETİMDE GERÇEKTEN AÇILMALI ────────────────────────
+//
+// Yukarıdaki `targetExists` bilerek gevşek: uzantısız bir adresi, karşılığı
+// olan `.html` diskte durduğu sürece geçerli sayar. Bu, GÖVDEDEKİ <a> için
+// doğru bir varsayım değildi ama zararsızdı; JSON-LD basamağı için ise
+// sessiz bir kör nokta oldu.
+//
+// Somut hata: haber sayfalarının BreadcrumbList'i ikinci basamak olarak
+// `/haberler` bildiriyordu. Dosya `haberler.html` olarak diskte duruyordu,
+// bu yüzden hiçbir denetim ötmedi — ama `vercel.json` `cleanUrls: false`
+// ile çalışıyor ve uzantısız her rota AYRI bir rewrite ister. `/haberler`
+// için böyle bir kayıt yoktu; yayına çıkan 297 haber sayfasının hepsi
+// Google'a 404 veren bir üst basamak bildirdi.
+//
+// Buradaki denetim bu yüzden diske değil ÜRETİM YÖNLENDİRME KURALLARINA
+// bakar: adres ya birebir dosya olmalı, ya bir rewrite/redirect ile
+// eşleşmeli, ya da `cleanUrls` açıksa uzantısız hâli çözülebilmeli.
+const vercelConfigPath = path.join(root, "vercel.json");
+const vercelConfig = fs.existsSync(vercelConfigPath)
+  ? JSON.parse(fs.readFileSync(vercelConfigPath, "utf8"))
+  : {};
+const cleanUrls = vercelConfig.cleanUrls === true;
+
+/**
+ * `/haber/:slug` gibi bir kaynak kalıbını, parametreleri YAKALAYAN bir
+ * düzenli ifadeye çevirir.
+ *
+ * Yakalama şart: hedef `/haber/:slug.html` biçiminde, yani parametre ile
+ * uzantı AYNI parçada duruyor. Parçayı düz metin olarak değiştirmeye
+ * kalkışmak (`:slug.html` tamamen parametre sanılır) uzantıyı düşürüyor ve
+ * var olan sayfayı "açılmıyor" diye raporluyordu.
+ */
+function routePattern(source) {
+  const params = [];
+  const escaped = String(source || "")
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/:([A-Za-z0-9_]+)(\\\*)?/g, (_, name, star) => {
+      params.push(name);
+      return star ? "(.+)" : "([^/]+)";
+    });
+  return { regex: new RegExp(`^${escaped}$`), params };
+}
+
+// KOŞULLU KURAL, ADRESİN AÇILDIĞINI KANITLAMAZ.
+//
+// `vercel.json` içinde apex ve .com.tr alan adlarını www'ye taşıyan üç
+// `/:path*` yönlendirmesi var. Kalıp olarak bunlar HER yolu eşleştirir;
+// koşulsuz sayıldıklarında denetim "her adres açılıyor" der ve hiçbir şey
+// yakalamaz — ilk yazımda tam olarak bu oldu, test yeşil yandı. Oysa üçü de
+// `has: { type: "host" }` taşıyor: yalnızca BAŞKA bir konakta çalışırlar,
+// kanonik www adresinde bir şey servis etmezler. Bu yüzden koşul taşıyan
+// her kural burada yok sayılır.
+const routeRules = [...(vercelConfig.rewrites || []), ...(vercelConfig.redirects || [])]
+  .filter((rule) => rule && rule.source && !rule.has && !rule.missing)
+  .map((rule) => ({ ...routePattern(rule.source), destination: String(rule.destination || "") }));
+
+/** Kuralın hedefi diskte gerçekten var mı? Parametreler yakalanan değerle doldurulur. */
+function ruleResolves(rule, urlPath) {
+  const match = rule.regex.exec(urlPath);
+  if (!match || !rule.destination) return false;
+  // Başka bir konağa giden hedefin varlığını bu depo doğrulayamaz; kabul edilir.
+  if (/^https?:\/\//i.test(rule.destination)) return true;
+
+  const values = new Map(rule.params.map((name, index) => [name, match[index + 1] || ""]));
+  const resolved = rule.destination
+    .replace(/^\//, "")
+    .replace(/:([A-Za-z0-9_]+)\*?/g, (whole, name) => (values.has(name) ? values.get(name) : whole));
+  return existing.has(resolved) || existing.has(path.posix.join(resolved, "index.html"));
+}
+
+/** Bu adres üretimde bir yanıt döndürür mü? */
+function routableInProduction(urlPath) {
+  const clean = urlPath.split("#")[0].split("?")[0];
+  if (!clean || clean === "/") return true;
+
+  const relative = clean.replace(/^\//, "");
+  if (existing.has(relative)) return true;
+  if (existing.has(path.posix.join(relative, "index.html"))) return true;
+  // `cleanUrls` açıkken uzantısız adres kendiliğinden `.html`e çözülür;
+  // kapalıyken çözülmez ve bu ayrım tam olarak denetlenen şeydir.
+  if (cleanUrls && existing.has(`${relative}.html`)) return true;
+
+  return routeRules.some((rule) => ruleResolves(rule, clean));
+}
+
+const unroutableBreadcrumbs = [];
+
 for (const file of files) {
   const relative = path.relative(root, file).split(path.sep).join("/");
   const html = fs.readFileSync(file, "utf8");
+
+  for (const block of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/gi)) {
+    let payload;
+    try {
+      payload = JSON.parse(block[1]);
+    } catch {
+      continue; // Ayrıştırılamayan JSON-LD zaten yukarıda raporlanıyor.
+    }
+    const nodes = Array.isArray(payload["@graph"]) ? payload["@graph"] : [payload];
+    for (const node of nodes) {
+      if (!node || node["@type"] !== "BreadcrumbList") continue;
+      for (const step of node.itemListElement || []) {
+        const item = typeof step?.item === "string" ? step.item : "";
+        if (!item.startsWith(DOMAIN)) continue;
+        const urlPath = item.slice(DOMAIN.length) || "/";
+        if (!routableInProduction(urlPath)) {
+          unroutableBreadcrumbs.push(`${relative} → ${item}`);
+        }
+      }
+    }
+  }
+
   for (const match of html.matchAll(/<a[^>]+href="([^"]+)"/gi)) {
     const resolved = resolveHref(match[1], relative);
     if (!resolved) continue;
@@ -348,4 +457,15 @@ assert.equal(
   `sitemap'te olup hiçbir yerden bağlanmayan sayfa: ${summarize(orphans)}`
 );
 
-console.log("SEO bütünlüğü testleri geçti (başlık, açıklama, canonical, H1, robots, JSON-LD, sitemap tutarlılığı, iç bağlantılar, orphan sayfa).");
+// BREADCRUMB, VAR OLMAYAN BİR ÜST BASAMAK BİLDİREMEZ.
+//
+// `/haberler` yayında 404 verirken 297 haber sayfası onu üst basamak
+// gösteriyordu. Hedefin diskte bir `.html` karşılığı olması yetmez;
+// `vercel.json` o adresi gerçekten servis ediyor olmalı.
+assert.equal(
+  unroutableBreadcrumbs.length,
+  0,
+  `breadcrumb basamağı üretimde açılmıyor: ${summarize(unroutableBreadcrumbs)}`
+);
+
+console.log("SEO bütünlüğü testleri geçti (başlık, açıklama, canonical, H1, robots, JSON-LD, sitemap tutarlılığı, iç bağlantılar, orphan sayfa, breadcrumb yönlendirmesi).");
