@@ -121,12 +121,23 @@ export function fixtureRow(name, score, otherScore) {
 export function broadcastLineHtml(label) {
   if (!label || !label.text) return "";
   const pending = label.state !== "verified";
-  const body = escapeHtml(label.text);
-  const inner = label.sourceUrl && !pending
-    ? `<a href="${escapeHtml(label.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${body}</a>`
-    : body;
-  return `<div class="fixture-card-broadcast${pending ? " is-unknown" : ""}" data-broadcast="${pending ? "pending" : "verified"}">` +
-    `<span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>${inner}</span></div>`;
+  // KARTIN TEK BAĞLANTISI MAÇ BAĞLANTISIDIR.
+  //
+  // Yayın satırı ilk yazıldığında kanal adı yayıncının akışına bağlanıyordu.
+  // İki sorun çıkardı. Görünen: kartta artık iki hedef vardı ve yayıncı
+  // bağlantısı işaretlemede maç bağlantısından ÖNCE geliyordu, yani "kartın
+  // bağlantısı" diye okunan ilk <a> maç yerine yayıncıya gidiyordu
+  // (test-clickable-browser bunu "en horizontal sliders and card surfaces"
+  // vakasında yakaladı: beklenen maç adresi yerine /yayin-akisi okundu).
+  // Görünmeyen: kart bir maça açılan tek bir yüzeydir; içine ikinci ve dış
+  // bir hedef koymak, kartın ne yaptığını belirsizleştirir.
+  //
+  // Kaynak kaybolmuyor: doğrulamanın nereden geldiği `data-broadcast-source`
+  // olarak işaretlemede duruyor ve okuyucuya gösterilen künye bağlantısı
+  // maç ayrıntısı ile "hangi kanalda" sayfalarında zaten var.
+  const source = label.sourceUrl && !pending ? ` data-broadcast-source="${escapeHtml(label.sourceUrl)}"` : "";
+  return `<div class="fixture-card-broadcast${pending ? " is-unknown" : ""}" data-broadcast="${pending ? "pending" : "verified"}"${source}>` +
+    `<span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>${escapeHtml(label.text)}</span></div>`;
 }
 
 /**
