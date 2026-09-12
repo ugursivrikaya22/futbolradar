@@ -34,6 +34,7 @@ function writeGeneratedFile(file, contents) {
 }
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+const { cardBroadcastLabel } = require("../services/broadcastSchedule.js");
 // Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
 // alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
 const { publishableNews, newsHref, isExternalHref } = require("../services/newsFeed.js");
@@ -552,6 +553,9 @@ function staticFixtureCard(match, meta) {
     // başına hiçbir tarama yolu yok. JavaScript yüklendiğinde bağlantı zaten
     // maç ayrıntısına dönüyordu, yani statik hâl istemciyle çelişiyordu.
     actionHref: matchDetailPath(match),
+    // Yayın satırı: doğrulandıysa kanal, doğrulanmadıysa "bekleniyor".
+    // Oynanmış maçta hiç çizilmez (services/broadcastSchedule.js).
+    broadcast: cardBroadcastLabel(match, "tr"),
     withMatchClick: true,
     quickLinksHtml: quickLinksHtml || ""
   });
@@ -1969,7 +1973,10 @@ writePage("index.html", {
   // satır unutulup kaybolmuştu (bkz. test-seo-integrity.mjs: sitemap'te
   // olup hiçbir yerden bağlanmayan sayfa uyarısı). Artık her derlemede
   // BURADAN yazılıyor, bir daha elle taşınmaya bağlı kalmıyor.
-  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda.html">Bugünkü maçlar hangi kanalda?</a>'
+  // İki bağlantı birden: okuyucu bugünü de yarını da buradan açar. Yarın
+  // sayfası yalnızca sitemap'te dursaydı hiçbir yerden bağlanmayan bir
+  // sayfa olurdu (test-seo-integrity bunu "orphan" diye kırmızı yakar).
+  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda.html">Bugünkü maçlar hangi kanalda?</a><a class="section-link" href="./yarinki-maclar-hangi-kanalda.html">Yarın hangi maçlar hangi kanalda?</a>'
 });
 
 writePage("analizler.html", {
