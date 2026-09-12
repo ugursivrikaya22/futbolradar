@@ -88,6 +88,11 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "trtspor.com.tr",
     "trt1.com.tr", // The broadcaster's own dated programme, checked for match-specific TV information.
     "tabii.com", // TRT's official streaming platform for the match broadcast.
+    // Exxen: yayın hakkı sahibi platform. Yayın akışı taraması (bkz.
+    // services/broadcastRights.js) kanal adını buradan doğruladığında
+    // künye bu adrese bağlanır; listede olmaması o kaynağı gösterilemez
+    // kılıyordu.
+    "exxen.com",
     "aa.com.tr",
     "ntvspor.net",
     "ntv.com.tr",

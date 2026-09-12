@@ -14060,6 +14060,33 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   flex: 0 0 auto;
 }
 
+/*
+ * YAYIN SATIRI MOBİLDE TEK SATIR KALIR.
+ *
+ * Kart dar ekranda zaten uzun: iki takım adı, saat, durum rozeti. Yayın
+ * bilgisi ikinci satıra taştığında kart bir satır daha uzuyor ve ekrana
+ * sığan maç sayısı düşüyordu. Bilgi tek satırda okunmalı; sığmayan uzun
+ * kanal listesi ("TRT 1 / tabii / S Sport") kesilir, tamamı yine kartın
+ * kendi sayfasında ve title'da durur.
+ *
+ * `min-width: 0` şart: flex çocuğu varsayılan olarak içeriğinden daha dar
+ * olamaz, o yüzden ellipsis olmadan taşardı.
+ */
+.fixture-card-broadcast > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .fixture-card-broadcast {
+    gap: 5px;
+    padding-top: 5px;
+    font-size: var(--fs-xs, 0.78rem);
+  }
+}
+
 .fixture-card-live-minute {
   display: inline-flex;
   align-items: center;

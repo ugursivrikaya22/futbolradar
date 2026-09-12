@@ -104,6 +104,43 @@ export function fixtureRow(name, score, otherScore) {
 }
 
 /**
+ * KARTIN YAYIN SATIRI — takım adlarının ve saatin hemen altında, tek satır.
+ *
+ * İki durum vardır ve `services/broadcastSchedule.js#broadcastLabel` hangisi
+ * olduğunu söyler: kanal doğrulandıysa adı, doğrulanmadıysa "Yayın bilgisi
+ * bekleniyor". Bileşen burada KARAR VERMEZ — kanal adı uydurmak ya da
+ * "bilinmiyorsa satırı hiç çizmemek" gibi bir seçim yapmaz; ikisi de
+ * okuyucuya yalan söylerdi (biri yanlış kanal, diğeri "bu maç yayınlanmıyor"
+ * izlenimi).
+ *
+ * Etiket verilmediğinde satır çizilmez: yayın bilgisinin anlamlı olmadığı
+ * kart türleri (biten maç, arşiv) çağırandan `broadcast` almaz.
+ *
+ * @param {{state:string,text:string,sourceUrl?:string}} [label]
+ */
+export function broadcastLineHtml(label) {
+  if (!label || !label.text) return "";
+  const pending = label.state !== "verified";
+  // KARTIN TEK BAĞLANTISI MAÇ BAĞLANTISIDIR.
+  //
+  // Yayın satırı ilk yazıldığında kanal adı yayıncının akışına bağlanıyordu.
+  // İki sorun çıkardı. Görünen: kartta artık iki hedef vardı ve yayıncı
+  // bağlantısı işaretlemede maç bağlantısından ÖNCE geliyordu, yani "kartın
+  // bağlantısı" diye okunan ilk <a> maç yerine yayıncıya gidiyordu
+  // (test-clickable-browser bunu "en horizontal sliders and card surfaces"
+  // vakasında yakaladı: beklenen maç adresi yerine /yayin-akisi okundu).
+  // Görünmeyen: kart bir maça açılan tek bir yüzeydir; içine ikinci ve dış
+  // bir hedef koymak, kartın ne yaptığını belirsizleştirir.
+  //
+  // Kaynak kaybolmuyor: doğrulamanın nereden geldiği `data-broadcast-source`
+  // olarak işaretlemede duruyor ve okuyucuya gösterilen künye bağlantısı
+  // maç ayrıntısı ile "hangi kanalda" sayfalarında zaten var.
+  const source = label.sourceUrl && !pending ? ` data-broadcast-source="${escapeHtml(label.sourceUrl)}"` : "";
+  return `<div class="fixture-card-broadcast${pending ? " is-unknown" : ""}" data-broadcast="${pending ? "pending" : "verified"}"${source}>` +
+    `<span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>${escapeHtml(label.text)}</span></div>`;
+}
+
+/**
  * Maç kartı.
  *
  * Durum ETİKETİ çağırandan gelir: Türkçe taraf kendi durum sözlüğünü ve
@@ -120,6 +157,8 @@ export function fixtureRow(name, score, otherScore) {
  *   homeTeam/awayTeam, homeScore/awayScore (null = skor yok)
  *   formHtml     hazır form bloğu (yalnızca Türkçe tarafta dolu)
  *   actionHref   kart altındaki bağlantının hedefi
+ *   broadcast    yayın etiketi ({state,text,sourceUrl}); verilmezse satır
+ *                çizilmez — bkz. broadcastLineHtml
  *   withMatchClick  data-match-click özniteliği (analytics; Türkçe taraf)
  *   quickLinksHtml  kart altına, eylem bağlantısının ALTINA eklenen ek
  *                   iç-link düğmeleri (ör. "Analiz — Puan Durumu — Takım
@@ -133,6 +172,7 @@ export function fixtureCard(options) {
   return `<article class="fixture-card${options.live ? " is-live" : ""}" data-card="fixture"${options.id ? ` data-match="${escapeHtml(options.id)}"` : ""}>
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(leagueLabel)}${escapeHtml(leagueLabel)}</span><span class="fixture-card-state ${options.stateClass || ""}">${escapeHtml(options.stateLabel || "")}</span></div>
     <div class="fixture-card-rows">${fixtureRow(options.homeTeam, options.homeScore, options.awayScore)}${fixtureRow(options.awayTeam, options.awayScore, options.homeScore)}</div>
+    ${broadcastLineHtml(options.broadcast)}
     ${options.formHtml ? `<div class="fixture-card-meta">${options.formHtml}</div>` : ""}
     <a class="fixture-card-action" href="${escapeHtml(options.actionHref)}"${options.withMatchClick ? " data-match-click" : ""}>${escapeHtml(t("card.openMatchDetail", locale))}</a>${options.quickLinksHtml ? `
     <div class="fixture-card-quicklinks">${options.quickLinksHtml}</div>` : ""}
