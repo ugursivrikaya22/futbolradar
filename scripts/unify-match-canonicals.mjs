@@ -53,8 +53,6 @@ const root = process.cwd();
 const DOMAIN = "https://www.futbolradar.com";
 const CHECK_ONLY = process.argv.includes("--check");
 
-/** Kanonik aile: tarih slug'lı maç sayfası. */
-const DATE_SLUG_RE = /-\d{1,2}-[a-zçğıöşü]+-\d{4}\.html$/;
 /** Kopya aile 1: sezon + tur numaralı fikstür sayfası. */
 const ROUND_SLUG_RE = /-\d{4}-\d{4}-r\d{2}\.html$/;
 /** Kopya aile 2: kök dizindeki eski `<takimlar>-mac-analizi.html` deseni. */
@@ -123,11 +121,45 @@ const relative = (file) => path.relative(root, file).split(path.sep).join("/");
 //
 // Yalnızca kök `mac/` taranır. `public/` bir AYNA: aynı maçı ikinci kez
 // hedef diye kaydetmek kimliği çakıştırır, kaynağı belirsizleştirir.
+//
+// Tablo: sayfadan HESAPLANAN slug → sayfanın GERÇEK dosya adı. İkisi aynı
+// değil ve hedef adres gerçek dosya adından yazılmak ZORUNDA:
+//
+//   * Sicil (`data/match-seo-pages.json`) slug'ı kayıt AÇILIRKEN bir kez
+//     üretiyor (`newEntry`); sonraki koşularda `mergeCandidate` `kickoff`u
+//     günceller ama slug'a DOKUNMAZ — adres kalıcı olsun diye. Maç
+//     ertelenirse dosya `mac/<eski-slug>.html` kalır, sayfanın JSON-LD
+//     `startDate`i ise yeni tarihe kayar.
+//   * Aynı slug'a ikinci maç düşerse sicil yarışma eki veriyor
+//     (`<slug>-<competitionId>`); bu ek hesaplanan slug'da hiç yok.
+//
+// Hedefi hesaplanan slug'dan kurmak, tam da bu iki durumda kopyalara VAR
+// OLMAYAN bir adresi kanonik diye yazardı — kanonik etiketin gidebileceği
+// en kötü yer 404'tür: sayfa indeksten düşer, otorite de hiçbir yere
+// gitmez. Gerçek dosya adı okunuyor.
 const targets = new Map();
+const ambiguousTargets = new Set();
 for (const file of walkHtml(path.join(root, "mac"))) {
-  if (!DATE_SLUG_RE.test(path.basename(file))) continue;
+  const base = path.basename(file);
+  // Süzgeç "tarih slug'ına benziyor mu" DEĞİL "tur sayfası mı": yarışma
+  // eki almış hedef sayfa tarih kalıbına uymaz, ama hedeftir.
+  if (ROUND_SLUG_RE.test(base)) continue;
   const slug = slugOf(fs.readFileSync(file, "utf8"));
-  if (slug) targets.set(slug, `mac/${slug}.html`);
+  if (!slug) continue;
+  const pageSlug = base.replace(/\.html$/, "");
+  const known = targets.get(slug);
+  // İki ayrı dosya aynı kimliğe indirgeniyorsa hangisinin hedef olduğu
+  // BELİRSİZ. Tahmin etmek kopyayı yanlış maça bağlayabilir; kimlik
+  // tablodan düşer, kopyaları hedefsiz sayılıp dokunulmadan kalır.
+  if (known !== undefined && known !== pageSlug) {
+    ambiguousTargets.add(slug);
+    continue;
+  }
+  targets.set(slug, pageSlug);
+}
+for (const slug of ambiguousTargets) targets.delete(slug);
+if (ambiguousTargets.size > 0) {
+  console.log(`[mac-canonical] belirsiz kimlik (hedef sayılmadı): ${[...ambiguousTargets].join(", ")}`);
 }
 
 // ── 2. KOPYALARIN EŞLEŞTİRİLMESİ ──────────────────────────────────────────
@@ -149,7 +181,7 @@ for (const dirName of ["mac-raporu", "mac"]) {
       (isReport ? orphans.reports : orphans.rounds).push(relative(file));
       continue;
     }
-    duplicates.set(relative(file), slug);
+    duplicates.set(relative(file), target);
   }
 }
 
@@ -166,8 +198,8 @@ for (const entry of fs.readdirSync(root, { withFileTypes: true })) {
     orphans.legacy.push(entry.name);
     continue;
   }
-  duplicates.set(entry.name, slug);
-  legacyRedirects.push({ source: `/${entry.name}`, destination: `/mac/${slug}`, permanent: true });
+  duplicates.set(entry.name, target);
+  legacyRedirects.push({ source: `/${entry.name}`, destination: `/mac/${target}`, permanent: true });
 }
 
 // ── 3. ADRES DEĞİŞTİRME TABLOSU ───────────────────────────────────────────
@@ -225,7 +257,12 @@ const HREF_RE = /href="((?:\.{1,2}\/)*|\/)((?:mac-raporu|mac)\/[a-z0-9-]+|[a-z0-
 const HREFLANG_TAG_RE = /<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/g;
 const HREFLANG_MASK = "\u0000hreflang\u0000";
 
-function rewrite(html, selfRelative) {
+function rewrite(html, selfPath) {
+  // `public/` bir AYNA: `public/mac/x.html` ile `mac/x.html` aynı sayfa.
+  // Karşılaştırma ham yolla yapılınca koruma yalnızca kökte çalışıyor,
+  // aynadaki kopya kendine bağlanıyordu — aynı sayfanın iki çıktısı iki
+  // ayrı şey söylüyordu.
+  const selfRelative = selfPath.replace(/^public\//, "");
   const preserved = [];
   let next = html.replace(HREFLANG_TAG_RE, (tag) => {
     preserved.push(tag);
@@ -305,22 +342,24 @@ console.log(`[mac-canonical] güncellenen dosya: ${changed.length}`);
 console.log(`[mac-canonical] site haritasından çıkarılan adres: ${prunedCount}`);
 
 if (!CHECK_ONLY) {
+  // Rapor dosyası SÜRÜM TAKİPLİ. İçine her koşuda taze bir zaman damgası
+  // yazmak, hiçbir sayfa değişmemiş olsa bile dosyayı kirletir: zamanlanmış
+  // tam koşu `git add` edip commit'ler, o commit yeni bir dağıtımı
+  // tetikler. Saatte bir, içeriksiz. Rapor artık yalnızca ÖLÇÜM taşıyor;
+  // "ne zaman üretildi" sorusunun cevabı zaten commit'in kendi tarihi.
   const reportPath = path.join(root, "data", "match-canonical-report.json");
-  fs.writeFileSync(
-    reportPath,
-    `${JSON.stringify(
-      {
-        generatedAt: new Date().toISOString(),
-        targets: targets.size,
-        unified: { reports: reportDuplicates.length, rounds: roundDuplicates.length },
-        legacyRedirects,
-        withoutTarget: orphans
-      },
-      null,
-      2
-    )}\n`,
-    "utf8"
-  );
+  const report = `${JSON.stringify(
+    {
+      targets: targets.size,
+      unified: { reports: reportDuplicates.length, rounds: roundDuplicates.length },
+      legacyRedirects,
+      withoutTarget: orphans
+    },
+    null,
+    2
+  )}\n`;
+  const previous = fs.existsSync(reportPath) ? fs.readFileSync(reportPath, "utf8") : null;
+  if (previous !== report) fs.writeFileSync(reportPath, report, "utf8");
 }
 
 if (CHECK_ONLY && (changed.length > 0 || prunedCount > 0)) {

@@ -4498,11 +4498,18 @@
   }
 
   function headlineHrefFor(match, reports) {
+    // SIRA services/dailyHeadlines.js#hrefFor ile AYNI olmak zorunda:
+    // önce maçın kalıcı (kanonik) sayfası, sonra rapor, en sonda eski
+    // analiz yolu. Bu taraf ayrıca `matchPage`i hiç okumuyordu — sunucu
+    // okuyor, istemci okumuyordu; aynı manşet iki yerde iki ayrı adrese
+    // gidiyordu.
+    var page = headlineText(match && match.matchPage);
+    if (page) return "./" + page.replace(/^\.?\//, "");
     var report = headlineReportFor(match, reports);
     var reportPath = report && (headlineText(report.reportUrl) || headlineText(report.seo && report.seo.path));
     if (reportPath) return "./" + reportPath.replace(/^\.?\//, "");
-    var page = headlineText(match && match.analysisPage);
-    if (page) return "./" + page.replace(/^\.?\//, "");
+    var legacy = headlineText(match && match.analysisPage);
+    if (legacy) return "./" + legacy.replace(/^\.?\//, "");
     // Burada CANLILIK İDDİA EDİLMİYOR, yalnızca başlığın hangi sayfaya
     // gideceği seçiliyor; bu yüzden tazelik kapısı değil ham durum yeterli
     // ve services/dailyHeadlines.js ile parite bunu gerektiriyor (o taraf da

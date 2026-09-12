@@ -575,8 +575,14 @@ function pageTitles(entry, state, locale, disambiguate) {
   // taşımalı, yoksa okuyucu tıklamadan önce cevabı göremiyor. Kanal
   // açıklamanın BAŞINA yakın duruyor: `normalize-meta` 160 karakterden
   // sonrasını kesiyor, kuyruğa yazılan kanal parçacıkta görünmezdi.
-  const { resolveBroadcast } = require("../services/broadcastSchedule.js");
-  const channel = state === "pre" ? resolveBroadcast(entry).channel : "";
+  // `broadcastChannel()` KASITLI olarak lig varsayılanını taşımıyor;
+  // burada kullanılan da odur. Lig varsayılanı sayfada "Lig yayın hakkına
+  // göre; kanal değişikliği olabilir." notuyla birlikte görünüyor — ama
+  // meta açıklaması SERP'te tek başına, notsuz duruyor. Oraya varsayılanı
+  // yazmak doğrulanmamış bir kanalı doğrulanmış gibi göstermek olurdu;
+  // "tahmini kanal yazılmaz" ilkesi tam da bunu yasaklıyor.
+  const { broadcastChannel } = require("../services/broadcastSchedule.js");
+  const channel = state === "pre" ? broadcastChannel(entry) : "";
   let title;
   let description;
   let h1;

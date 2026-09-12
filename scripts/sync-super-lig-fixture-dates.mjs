@@ -187,7 +187,21 @@ function main() {
     console.log(`  atlandı (belirsiz): ${item}`);
   }
 
-  if (!updates.length) return;
+  // TAZELİK DAMGASI "DEĞİŞİKLİK VAR MI"YA DEĞİL, "DOĞRULAMA OLDU MU"YA
+  // BAĞLI. Eskiden `updates.length === 0` burada erken dönüyordu; oysa
+  // kararlı durumda NORMAL sonuç tam olarak budur — tarihler sağlayıcıyla
+  // zaten uyuşuyor, yazılacak bir şey yok. O yol damgaya hiç uğramadığı
+  // için kayıt yalnızca bir tarih DEĞİŞTİĞİNDE tazeleniyordu; yani asıl
+  // düzeltmenin hedeflediği durumda (başarılı ama değişiklik üretmeyen
+  // günlük koşu) damga yine bayat kalıyordu.
+  //
+  // Ölçüt: sağlayıcı karşılığı bulunup karşılaştırılan maç sayısı. Hiçbir
+  // maç eşleşmediyse ortada doğrulama YOK — damga ilerlemez.
+  const verified = updates.length + unchanged;
+  if (!verified) {
+    console.log("Sağlayıcı takvimiyle eşleşen maç yok; tazelik damgası ilerletilmedi.");
+    return;
+  }
 
   if (!APPLY) {
     console.log("Kuru koşu — --apply ile yazın.");

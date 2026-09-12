@@ -92,6 +92,7 @@ export const STR = {
     channelTitle: (h, a) => `${h} - ${a} maçı hangi kanalda?`,
     channelBody: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanacak.`,
     channelBodyPast: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlandı.`,
+    channelBodyLive: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanıyor.`,
     channelUnknown: (h, a) => `${h} - ${a} maçının yayın kanalı henüz açıklanmadı. Kanal bilgisi doğrulanmış bir kaynaktan alındığında bu bölüm otomatik güncellenir; tahmini kanal yazılmaz.`,
     // Lig yayın hakkından gelen kanal, o maça özel doğrulanmış bilgiyle
     // aynı şey değil. Not ikisini ayırıyor: okuyucu neye baktığını bilsin.
@@ -202,6 +203,7 @@ export const STR = {
     channelTitle: (h, a) => `Where to watch ${h} vs ${a}?`,
     channelBody: (h, a, channel) => `${h} vs ${a} is broadcast live on ${channel} in Türkiye.`,
     channelBodyPast: (h, a, channel) => `${h} vs ${a} was broadcast live on ${channel} in Türkiye.`,
+    channelBodyLive: (h, a, channel) => `${h} vs ${a} is being broadcast live on ${channel} in Türkiye.`,
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
     channelLeagueNote: "Based on the league's broadcast rights; the channel may change.",
     lineups: "Probable line-ups",
@@ -767,8 +769,18 @@ export function faqEntries(entry, ctx) {
   const competition = competitionName ? competitionLabel(competitionName, locale) : "";
   // Oynanmış maçta "yayınlanacak" demek sayfayı da şemayı da yanlış
   // yapıyordu; zaman kipi maçın durumunu izler.
+  //
+  // Kanal cümlesi `past` bayrağını KULLANMAZ: o bayrak `live`i de geçmiş
+  // sayıyor ve oynanmakta olan maç için "yayınlandı" çıkıyordu — maç
+  // ekranda sürerken sayfa bitmiş gibi konuşuyordu. Üç kip ayrı:
+  // sürüyor / oynandı / oynanacak.
+  const channelBody = state === "live"
+    ? text.channelBodyLive
+    : past
+      ? text.channelBodyPast
+      : text.channelBody;
   const channelAnswer = broadcast.channel
-    ? (past ? text.channelBodyPast : text.channelBody)(homeTeam, awayTeam, broadcast.channel)
+    ? channelBody(homeTeam, awayTeam, broadcast.channel)
     : text.channelUnknown(homeTeam, awayTeam);
 
   return [
