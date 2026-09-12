@@ -19,7 +19,7 @@ const { canonicalStatus, finishType, istanbulDay } = require("../../services/mat
 const { sameClub } = require("../../services/superLigTeams.js");
 const { publicPlayerView } = require("../../services/cardCredibility.js");
 const { slug: playerSlug } = require("../../services/playerService.js");
-const { resolveBroadcast } = require("../../services/broadcastSchedule.js");
+const { broadcastChannel } = require("../../services/broadcastSchedule.js");
 const { competitionLabel } = require("../../services/i18n.js");
 
 export function escapeHtml(value) {
@@ -96,7 +96,6 @@ export const STR = {
     channelUnknown: (h, a) => `${h} - ${a} maçının yayın kanalı henüz açıklanmadı. Kanal bilgisi doğrulanmış bir kaynaktan alındığında bu bölüm otomatik güncellenir; tahmini kanal yazılmaz.`,
     // Lig yayın hakkından gelen kanal, o maça özel doğrulanmış bilgiyle
     // aynı şey değil. Not ikisini ayırıyor: okuyucu neye baktığını bilsin.
-    channelLeagueNote: "Lig yayın hakkına göre; kanal değişikliği olabilir.",
     lineups: "Muhtemel 11'ler",
     officialLineups: "İlk 11'ler",
     lineupUnavailable: "Bu maç için doğrulanmış ilk 11 verisi mevcut değil.",
@@ -205,7 +204,6 @@ export const STR = {
     channelBodyPast: (h, a, channel) => `${h} vs ${a} was broadcast live on ${channel} in Türkiye.`,
     channelBodyLive: (h, a, channel) => `${h} vs ${a} is being broadcast live on ${channel} in Türkiye.`,
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
-    channelLeagueNote: "Based on the league's broadcast rights; the channel may change.",
     lineups: "Probable line-ups",
     officialLineups: "Starting line-ups",
     lineupUnavailable: "Verified starting line-up data is not available for this match.",
@@ -765,7 +763,13 @@ export function faqEntries(entry, ctx) {
   const day = longDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
   const past = state === "post" || state === "pending" || state === "live";
-  const broadcast = resolveBroadcast(entry);
+  // Kanal `services/broadcastSchedule.js` zincirinden geliyor: elle
+  // doğrulama → yayıncının kendi akışının taraması → sağlayıcı alanı.
+  // Lig varsayılanı BİLEREK yok; `services/broadcastRights.js` haritası
+  // yalnızca hangi akışın taranacağını söylüyor ve ekrana yazılmıyor,
+  // çünkü "Süper Lig beIN'de" cümlesi maç düzeyinde eksik: hangi beIN
+  // kanalı olduğunu söylemiyor. Bilinmiyorsa cevap "henüz açıklanmadı".
+  const channel = broadcastChannel(entry);
   const competition = competitionName ? competitionLabel(competitionName, locale) : "";
   // Oynanmış maçta "yayınlanacak" demek sayfayı da şemayı da yanlış
   // yapıyordu; zaman kipi maçın durumunu izler.
@@ -779,8 +783,8 @@ export function faqEntries(entry, ctx) {
     : past
       ? text.channelBodyPast
       : text.channelBody;
-  const channelAnswer = broadcast.channel
-    ? channelBody(homeTeam, awayTeam, broadcast.channel)
+  const channelAnswer = channel
+    ? channelBody(homeTeam, awayTeam, channel)
     : text.channelUnknown(homeTeam, awayTeam);
 
   return [
@@ -798,8 +802,7 @@ export function faqEntries(entry, ctx) {
     {
       id: "hangi-kanalda",
       question: text.channelTitle(homeTeam, awayTeam),
-      answer: channelAnswer,
-      note: broadcast.source === "league" ? text.channelLeagueNote : ""
+      answer: channelAnswer
     }
   ];
 }
@@ -807,7 +810,7 @@ export function faqEntries(entry, ctx) {
 export function whenSectionHtml(entry, ctx) {
   const text = STR[ctx.locale];
   const cards = faqEntries(entry, ctx)
-    .map((item) => `<article class="card msp-qa"${item.id === "hangi-kanalda" ? ' id="hangi-kanalda"' : ""}><h2>${escapeHtml(item.question)}</h2><p>${escapeHtml(item.answer)}</p>${item.note ? `<p class="msp-channel-note">${escapeHtml(item.note)}</p>` : ""}</article>`)
+    .map((item) => `<article class="card msp-qa"${item.id === "hangi-kanalda" ? ' id="hangi-kanalda"' : ""}><h2>${escapeHtml(item.question)}</h2><p>${escapeHtml(item.answer)}</p></article>`)
     .join("\n      ");
   return `<section class="msp-section msp-faq" id="ne-zaman" aria-label="${escapeHtml(text.date)}">
       ${cards}
@@ -890,8 +893,7 @@ export function heroHtml(entry, ctx) {
   const halftime = state === "post" && entry.score && scoreValue(entry.score.halftimeHome) !== null && scoreValue(entry.score.halftimeAway) !== null
     ? `<span class="msp-ht" data-msp-halftime>${escapeHtml(text.halftime)}: ${escapeHtml(entry.score.halftimeHome)}-${escapeHtml(entry.score.halftimeAway)}</span>`
     : `<span class="msp-ht" data-msp-halftime hidden></span>`;
-  const broadcast = resolveBroadcast(entry);
-  const channel = broadcast.channel;
+  const channel = broadcastChannel(entry);
   const kickoffIso = istanbulIso(entry.kickoff);
 
   return `<section class="msp-hero is-${escapeHtml(state)}" data-msp-hero data-msp-state="${escapeHtml(state)}" aria-label="${escapeHtml(`${homeTeam} - ${awayTeam}`)}">
@@ -910,7 +912,7 @@ export function heroHtml(entry, ctx) {
           <div><dt>${escapeHtml(text.time)}</dt><dd>${escapeHtml(clock(entry.kickoff))} ${escapeHtml(text.tsi)}</dd></div>
           ${competitionName ? `<div><dt>${escapeHtml(text.competition)}</dt><dd>${escapeHtml(competitionLabel(competitionName, locale))}</dd></div>` : ""}
           <div><dt>${escapeHtml(text.venue)}</dt><dd>${escapeHtml(entry.venue || text.notAnnounced)}</dd></div>
-          <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}${broadcast.source === "league" ? `<small class="msp-channel-note">${escapeHtml(text.channelLeagueNote)}</small>` : ""}</dd></div>
+          <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.referee)}</dt><dd>${escapeHtml(entry.referee || text.notAnnounced)}</dd></div>
         </dl>
       </section>`;
