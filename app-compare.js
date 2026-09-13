@@ -7032,7 +7032,7 @@
       var requestedIds = String(query.get("players") || "").split(",").filter(Boolean);
       var hasPlayersQuery = Boolean(query.get("players"));
       if (!requestedIds.length) {
-        requestedIds = [query.get("p1"), query.get("p2"), query.get("p3")].filter(Boolean);
+        requestedIds = [query.get("p1") || query.get("player"), query.get("p2"), query.get("p3")].filter(Boolean);
       }
       if (!requestedIds.length && seedIds.length) {
         requestedIds = seedIds;

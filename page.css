@@ -22220,3 +22220,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .p360-links > span { color: var(--muted); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.03em; }
 .p360-links a { display: inline-flex; min-height: 36px; align-items: center; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: var(--fs-sm); text-decoration: none; color: inherit; }
 .p360-links a:hover, .p360-links a:focus-visible { border-color: var(--green); }
+
+@media (max-width: 900px) {
+  .p360-peer { min-height: 44px; align-content: center; }
+  .topbar-premium .brand { min-width: 44px; min-height: 44px; }
+}

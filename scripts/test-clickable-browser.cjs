@@ -464,7 +464,9 @@ async function until(check, message, timeout = 5000) {
         await open('index.html');
         await navigate(page.locator('.news-ticker-group:not([aria-hidden="true"]) .news-ticker-item:not([target="_blank"])').first());
         await open('haberler.html');
-        await navigate(page.locator('header .brand').first());
+        const logo = page.locator('header .brand').first();
+        if (touch) { const box = await logo.boundingBox(); assert.ok(box.width >= 44 && box.height >= 44, 'Logo touch target is too small'); }
+        await navigate(logo);
         if (viewport.width < 1366) {
           await click(page.locator('.nav-toggle'));
           const menu = page.locator('.nav-menu');
@@ -513,6 +515,19 @@ async function until(check, message, timeout = 5000) {
           await status.evaluate((e, text) => { e.textContent = text; }, original[1]);
         }
         await navigate(summary);
+      });
+      await test('player profile comparison preserves the selected player', async () => {
+        await open('oyuncular/mauro-icardi.html');
+        const compare = page.locator('.p360-compare-button');
+        await click(compare);
+        await page.waitForURL(url => url.pathname.endsWith('/oyuncu-karsilastir.html'), { waitUntil: 'domcontentloaded' });
+        const first = page.locator('[data-compare-player]').first();
+        await until(async () => /Icardi/i.test(await first.locator('option:checked').innerText()), 'Profile comparison lost the selected player', 15000);
+        await page.locator('[data-api-target="player-compare"][data-state="ready"]').waitFor();
+        await page.goBack({ waitUntil: 'domcontentloaded' });
+        const peer = page.locator('.p360-peer').first();
+        if (touch) assert.ok((await peer.boundingBox()).height >= 44, 'Player comparison link has a small touch target');
+        await navigate(peer);
       });
       await test('player quick links remain above the hero', async () => {
         await open('oyuncu-radari.html');
