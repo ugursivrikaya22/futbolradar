@@ -67,4 +67,9 @@ assert.equal(vm.runInContext("mergeLiveIntoMatches(base, incoming)", context)[0]
 context.input = [fixture, { ...fixture, kickoff: "2026-09-12T20:59:00Z" }];
 assert.equal(vm.runInContext('filterFallbackData("matches", input)', context).length, 1, "today uses Istanbul midnight");
 assert.match(fs.readFileSync(new URL("../api/matches.js", import.meta.url), "utf8"), /isUsable: Array.isArray/);
+context.filterScoredMatches = matches => matches;
+vm.runInContext(extract("renderLiveScoreSection"), context);
+const emptyLive = vm.runInContext("renderLiveScoreSection([])", context);
+assert.match(emptyLive, /Şu anda canlı maç yok/, "empty live data keeps its explicit state");
+assert.match(emptyLive, /href="\.\/bugunun-maclari\.html"/, "clearing old live cards keeps the existing match-program route");
 console.log("Data consistency regressions passed: cache age, outage, identity, score correction, late packet, Istanbul date, authoritative empty response.");

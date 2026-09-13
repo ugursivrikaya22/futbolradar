@@ -5800,9 +5800,14 @@
     });
 
     if (!finished.length) {
-      // Skorlu maç yoksa bölüm boş döner; statik yedek (o da skorsuz kart
-      // basmaz) ya da boş durum mesajı görünür. Skorsuz kart basmak yok.
-      return "";
+      // Keep the existing empty-state navigation when fresh data clears
+      // the old score cards, including on the initial render.
+      return '<article class="data-empty" data-card="empty-state">' +
+        '<strong>Şu anda canlı maç yok</strong>' +
+        '<span>Canlı maç başladığında skor, tempo ve maç içi sinyaller bu alanda görünecek.</span>' +
+        '<div class="match-empty-actions"><a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>' +
+        '<a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>' +
+        '<span class="tag soft">Canlı akış bekleniyor</span></div></article>';
     }
 
     return (
@@ -6093,7 +6098,7 @@
         // bölüm başlığıyla birlikte kapanmalı.
         applyEmptyHide(target, Boolean(html));
 
-        setContent(target, html || (binding.selector === "live-score" ? matchEmptyStateHtml("Şu anda doğrulanmış canlı maç yok", "Günün maç programını inceleyebilirsin.") : ""));
+        setContent(target, html || "");
       });
       updateLiveAges();
       flashGoals(changedGoals);
