@@ -66,7 +66,7 @@ async function main() {
       if (table.length) {
         results[competition.id] = {
           league: competition.name,
-          updatedAt: new Date().toISOString(),
+          updatedAt: table.map(row => row.fetchedAt).filter(Boolean).sort().at(-1) || null,
           table
         };
         line(`  ✓ ${competition.id.padEnd(24)} ${table.length} takım`);

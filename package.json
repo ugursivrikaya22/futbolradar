@@ -89,7 +89,8 @@
     "broadcast:scan": "node scripts/scan-broadcast-schedule.mjs --apply",
     "test:player-360": "node scripts/test-player-360.mjs",
     "generate:player-slugs": "node scripts/generate-player-url-slugs.mjs",
-    "check:player-slugs": "node scripts/generate-player-url-slugs.mjs --check"
+    "check:player-slugs": "node scripts/generate-player-url-slugs.mjs --check",
+    "test:data-consistency": "node scripts/test-data-consistency.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

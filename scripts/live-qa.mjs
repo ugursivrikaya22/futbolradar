@@ -62,8 +62,8 @@ const rewritePages = [
 ];
 const endpoints = ["/api/matches", "/api/standings", "/api/teams", "/api/players", "/api/momentum", "/api/signals", "/api/analyses", "/api/health"];
 const apiCacheHeaders = {
-  "/api/matches": "public, s-maxage=60, stale-while-revalidate=180",
-  "/api/standings": "public, s-maxage=300, stale-while-revalidate=900",
+  "/api/matches": "no-store",
+  "/api/standings": "no-store",
   "/api/teams": "public, s-maxage=1800, stale-while-revalidate=7200",
   "/api/players": "public, s-maxage=3600, stale-while-revalidate=21600",
   "/api/momentum": "public, s-maxage=300, stale-while-revalidate=900",
@@ -317,7 +317,7 @@ async function checkApi() {
     expect(payload && payload.source, `${endpoint}: missing source`);
     expect(payload && Object.prototype.hasOwnProperty.call(payload, "updatedAt"), `${endpoint}: missing updatedAt`);
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
-    const expectedBrowserCache = endpoint === "/api/health" ? "no-store" : "public, max-age=0";
+    const expectedBrowserCache = ["/api/health", "/api/matches", "/api/standings"].includes(endpoint) ? "no-store" : "public, max-age=0";
     expect(response.headers.get("cache-control") === expectedBrowserCache, `${endpoint}: browser cache header mismatch`);
     expect(
       response.headers.get("cdn-cache-control") === apiCacheHeaders[endpoint],

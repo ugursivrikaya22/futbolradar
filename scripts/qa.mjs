@@ -929,8 +929,8 @@ async function callEndpoint(name, url = `/api/${name}`) {
 
 async function checkApi() {
   const cacheHeaders = {
-    matches: "public, s-maxage=60, stale-while-revalidate=180",
-    standings: "public, s-maxage=300, stale-while-revalidate=900",
+    matches: "no-store",
+    standings: "no-store",
     teams: "public, s-maxage=1800, stale-while-revalidate=7200",
     players: "public, s-maxage=3600, stale-while-revalidate=21600",
     "player-detail": "public, s-maxage=3600, stale-while-revalidate=21600",
@@ -956,7 +956,7 @@ async function checkApi() {
       expect(!Number.isNaN(Date.parse(payload.updatedAt)), `${endpoint}: invalid updatedAt`);
     }
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
-    const expectedBrowserCache = endpoint === "health" ? "no-store" : "public, max-age=0";
+    const expectedBrowserCache = ["health", "matches", "standings"].includes(endpoint) ? "no-store" : "public, max-age=0";
     expect(response.headers["cache-control"] === expectedBrowserCache, `${endpoint}: browser cache header mismatch`);
     expect(
       response.headers["cdn-cache-control"] === cacheHeaders[endpoint],

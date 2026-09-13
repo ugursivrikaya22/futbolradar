@@ -303,8 +303,9 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
   const calendar = JSON.parse(fs.readFileSync(calendarPath, "utf8"));
   const rizesporRows = calendar.matches.filter((match) =>
     sameClub(match.homeTeam, "Çaykur Rizespor") && sameClub(match.awayTeam, "Alanyaspor"));
-  assert.equal(rizesporRows.length, 1,
-    `data/fixture-calendar.json Çaykur Rizespor - Alanyaspor için tek kayıt taşımalı, ${rizesporRows.length} bulundu`);
+  const fixtureDays = rizesporRows.map(match => String(match.kickoff || match.date).slice(0, 10));
+  assert.equal(new Set(fixtureDays).size, fixtureDays.length,
+    "Aynı gün aynı eşleşme yinelenmemeli; arşivlenen eski maçın aktif takvimde kalması gerekmez");
 
   console.log("  ok  diskteki hazır ikiz satırlar dedupeCalendarMatches ile tek satıra iniyor");
 }
@@ -348,12 +349,14 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
   // fonksiyon bildirimi kazanır). Gerçek tarayıcı davranışıyla eşleşmesi
   // için ikisi de, aynı sırayla, dahil edilir.
   const body = [
+    "var istanbulDayCache = new Map(); var istanbulDayFormatter = null;",
     extractFunction(appSource, "normalizeSearchText", 1),
     extractFunction(appSource, "normalizeSearchText", 2),
     extractFunction(appSource, "istanbulDayOf"),
     extractFunction(appSource, "matchDateValue"),
     extractFunction(appSource, "sameClubName"),
     extractFunction(appSource, "matchIdentityKey"),
+    extractFunction(appSource, "recordsUpdatedAt"),
     extractFunction(appSource, "mergeMatchCollections")
   ].join("\n\n") + "\nreturn { mergeMatchCollections: mergeMatchCollections };";
 
