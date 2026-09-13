@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test:team-hubs": "node scripts/test-team-traffic-hubs.mjs",
     "test:match-focus": "node scripts/test-match-focus.mjs",
     "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/postprocess.mjs && node scripts/verify-production.mjs",
     "typecheck": "tsc --noEmit",

@@ -27,12 +27,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
-import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
+import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
-const { istanbulDay } = require("../services/matchStatus.js");
+const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
+const { applyVerifiedBroadcast } = require("../services/broadcastSchedule.js");
+const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 const { normalizeKey } = require("../services/competitionCatalog.js");
 const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
@@ -49,11 +51,19 @@ const TEAMS = [
   { slug: "trabzonspor", name: "Trabzonspor", radar: "trabzonspor-oyuncu-radari.html", form: "trabzonspor-form-durumu.html" }
 ];
 
-const calendar = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8")).matches || [];
+const calendarStore = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8"));
+const calendar = (calendarStore.matches || []).map((match) => applyVerifiedBroadcast(match));
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const reportStore = JSON.parse(fs.readFileSync(path.join(root, "data", "post-match-reports.json"), "utf8"));
 const reports = Array.isArray(reportStore) ? reportStore : (reportStore.reports || reportStore.records || []);
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
+const standingsStore = JSON.parse(fs.readFileSync(path.join(root, "data", "league-standings.json"), "utf8"));
+const standings = standingsStore["super-lig"] || { table: [] };
+const squads = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-squads.json"), "utf8"));
+const managers = JSON.parse(fs.readFileSync(path.join(root, "data", "managers.json"), "utf8"));
+const leaders = JSON.parse(fs.readFileSync(path.join(root, "data", "league-leaders.json"), "utf8"));
+const playerStore = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const newsStore = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -82,6 +92,20 @@ function clockLabel(value) {
   return new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }).format(parsed);
 }
 
+function timestampLabel(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul"
+  }).format(parsed) + " TSİ";
+}
+
+function latestTimestamp(values) {
+  return values
+    .filter((value) => Number.isFinite(Date.parse(value || "")))
+    .sort((left, right) => Date.parse(right) - Date.parse(left))[0] || null;
+}
+
 function opponentOf(match, team) {
   return sameClub(match.homeTeam, team.name) ? match.awayTeam : match.homeTeam;
 }
@@ -101,8 +125,52 @@ function upcomingMatches(team, today) {
   return calendar
     .filter((match) => isTeamMatch(match, team))
     .filter((match) => match.kickoff && istanbulDay(match.kickoff) >= today)
+    .filter((match) => !["FINISHED", "AWARDED", "CANCELLED", "POSTPONED", "ABANDONED"].includes(canonicalStatus(match.status || match.providerStatus)))
     .filter((match) => !["POSTPONED", "CANCELLED", "ABANDONED"].includes(String(match.status || "").toUpperCase()))
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
+}
+
+function todayMatch(team, today) {
+  return calendar
+    .filter((match) => isTeamMatch(match, team) && match.kickoff && istanbulDay(match.kickoff) === today)
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))[0] || null;
+}
+
+function lastCompletedMatch(team) {
+  const fromCalendar = calendar
+    .filter((match) => isTeamMatch(match, team) && canonicalStatus(match.status || match.providerStatus) === "FINISHED" && hasFinalScore(match))
+    .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))[0];
+  if (fromCalendar) return fromCalendar;
+  return recentReports(team)[0] || null;
+}
+
+function standingFor(team) {
+  return (standings.table || []).find((row) => sameClub(row.team || row.name, team.name)) || null;
+}
+
+function squadFor(team) {
+  const row = squads.find((item) => sameClub(item.teamName, team.name));
+  return row && row.status === "complete" && Array.isArray(row.players) ? row : null;
+}
+
+function managerFor(team) {
+  const row = (managers.managers || []).find((item) => sameClub(item.team, team.name) && item.confidence === "confirmed") || null;
+  if (!row) return null;
+  const managerKey = String(row.manager || "").split(/\s+/).at(-1);
+  const invalidated = (Array.isArray(newsStore) ? newsStore : []).some((article) =>
+    article && article.status === "verified" && sameClub(article.team, team.name) &&
+    Date.parse(article.publishedAt || "") > Date.parse(managers.updatedAt || "") &&
+    String(article.title || "").includes(managerKey) && /yollar(?:ı)? ayrıldı/i.test(String(article.title || "")));
+  return invalidated ? null : row;
+}
+
+function leadersFor(team, key) {
+  return (leaders[key] || []).filter((row) => sameClub(row.team, team.name)).slice(0, 5);
+}
+
+function playerHref(row) {
+  const player = playerStore.find((item) => String(item.providerId || "") === String(row.providerId || "") && sameClub(item.currentTeam || item.team, row.team));
+  return player && player.id ? `./oyuncular/${encodeURIComponent(player.id)}.html` : null;
 }
 
 /**
@@ -162,7 +230,7 @@ function seasonFixtures(team) {
 
 function teamTransfers(team) {
   return transfers
-    .filter((row) => sameClub(row.toTeam, team.name) || sameClub(row.fromTeam, team.name))
+    .filter((row) => row.status === "confirmed" && row.sourceUrl && (sameClub(row.toTeam, team.name) || sameClub(row.fromTeam, team.name)))
     .sort((left, right) => String(right.date).localeCompare(String(left.date)))
     .slice(0, 4);
 }
@@ -177,14 +245,15 @@ function matchPageHref(match) {
   return fixtureId ? `./mac-detay.html?fixtureId=${encodeURIComponent(fixtureId)}` : "./mac-merkezi.html";
 }
 
-function nextMatchCard(match, team) {
+function nextMatchCard(match, team, today) {
   if (!match) {
     return `<article class="data-empty" data-card="empty-state"><strong>Takvimde doğrulanmış sıradaki maç yok</strong><span>Kulüp ya da organizasyon gün ve saat açıkladığında bu alan otomatik güncellenir. Tahmini tarih yazılmaz.</span></article>`;
   }
 
   const home = sameClub(match.homeTeam, team.name);
-  return `<article class="glass-card team-next-match" data-card="next-match">
-    <div class="team-next-match-head"><span class="tag green">Sıradaki maç</span><span>${escapeHtml(match.league || "Maç programı")}</span></div>
+  const isToday = istanbulDay(match.kickoff) === today;
+  return `<article class="glass-card team-next-match${isToday ? " is-today" : ""}" data-card="${isToday ? "today-match" : "next-match"}">
+    <div class="team-next-match-head"><span class="tag green">${isToday ? "Bugünkü maç" : "Sıradaki maç"}</span><span>${escapeHtml(match.league || "Maç programı")}</span></div>
     <h3>${escapeHtml(match.homeTeam)} <span aria-hidden="true">–</span> ${escapeHtml(match.awayTeam)}</h3>
     <dl class="team-next-match-facts">
       <div><dt>Tarih</dt><dd><time datetime="${escapeHtml(match.kickoff)}">${escapeHtml(longDate(match.kickoff))}</time></dd></div>
@@ -194,6 +263,32 @@ function nextMatchCard(match, team) {
       ${match.broadcast && match.broadcast.turkey ? `<div><dt>Yayın</dt><dd>${escapeHtml(match.broadcast.turkey)}</dd></div>` : ""}
     </dl>
     <a class="detail-link" href="${escapeHtml(matchPageHref(match))}">Maç ayrıntısı</a>
+  </article>`;
+}
+
+function currentMatchCard(match, team) {
+  if (!match) return "";
+  const status = canonicalStatus(match.status || match.providerStatus);
+  const live = ["LIVE", "HALFTIME", "INTERRUPTED"].includes(status);
+  const finished = status === "FINISHED" && hasFinalScore(match);
+  const score = (live || finished) && hasFinalScore(match) ? `${match.score.home} - ${match.score.away}` : null;
+  const statusLabel = live
+    ? `${score || "Canlı"}${Number.isFinite(Number(match.minute)) ? ` · ${Number(match.minute)}. dakika` : ""}`
+    : finished ? `Maç sonucu ${score}` : `Saat ${clockLabel(match.kickoff)} TSİ`;
+  const channel = match.broadcast && match.broadcast.turkey ? match.broadcast.turkey : "Yayın bilgisi henüz açıklanmadı";
+  return `<article class="team-today-callout" data-card="today-match-highlight">
+    <div><span class="eyebrow">${escapeHtml(team.name)} maçı bugün</span><h2>${escapeHtml(match.homeTeam)} – ${escapeHtml(match.awayTeam)}</h2><p><strong>${escapeHtml(statusLabel)}</strong> · ${escapeHtml(channel)}</p></div>
+    <a class="button primary" href="${escapeHtml(matchPageHref(match))}">Maç merkezine git</a>
+  </article>`;
+}
+
+function lastMatchCard(match) {
+  if (!match) return `<article class="data-empty compact"><strong>Doğrulanmış son maç yok</strong><span>Sonuç sağlayıcıdan doğrulandığında burada gösterilir.</span></article>`;
+  const score = hasFinalScore(match) ? `${match.score.home} - ${match.score.away}` : "";
+  return `<article class="glass-card team-last-match" data-card="last-match">
+    <span class="card-kicker">Son maç</span><h3>${escapeHtml(match.homeTeam)} <b>${escapeHtml(score)}</b> ${escapeHtml(match.awayTeam)}</h3>
+    <p><time datetime="${escapeHtml(match.kickoff || "")}">${escapeHtml(longDate(match.kickoff))}</time>${match.league ? ` · ${escapeHtml(match.league)}` : ""}</p>
+    <a class="detail-link" href="${escapeHtml(matchPageHref(match))}">Maç sonucu ve analiz</a>
   </article>`;
 }
 
@@ -247,7 +342,55 @@ function seasonRows(rows, team) {
 
 function transferRows(rows) {
   if (!rows.length) return "";
-  return `<ul class="trend-mini-stats team-match-transfer-list">${rows.map((row) => `<li><span>${escapeHtml(row.date)}</span><strong>${escapeHtml(row.playerName)}</strong><span>${escapeHtml(row.fromTeam)} → ${escapeHtml(row.toTeam)}</span><span class="tag green">${escapeHtml(row.type || "Transfer")}</span></li>`).join("")}</ul>`;
+  return `<ul class="trend-mini-stats team-match-transfer-list">${rows.map((row) => `<li><span>${escapeHtml(row.date)}</span><strong>${escapeHtml(row.playerName)}</strong><span>${escapeHtml(row.fromTeam)} → ${escapeHtml(row.toTeam)}</span><span class="tag green">${escapeHtml(row.type || "Transfer")}</span><a href="${escapeHtml(row.sourceUrl)}" target="_blank" rel="${SOURCE_LINK_REL}">Resmî kaynak</a></li>`).join("")}</ul>`;
+}
+
+function standingCard(row, season) {
+  if (!row) return "";
+  const form = (row.form || []).slice(-5);
+  const labels = { W: "G", D: "B", L: "M" };
+  const classes = { W: "win", D: "draw", L: "loss" };
+  return `<article class="glass-card team-standing-card" data-card="team-standing" data-source="league-standings">
+    <div class="team-standing-rank"><span>Süper Lig sırası</span><strong>${escapeHtml(row.rank)}.</strong><small>${escapeHtml(season)}</small></div>
+    <dl class="team-record" aria-label="${escapeHtml(row.team || row.name)} lig bilançosu">
+      <div><dt>O</dt><dd>${escapeHtml(row.played)}</dd></div><div><dt>G</dt><dd>${escapeHtml(row.won)}</dd></div><div><dt>B</dt><dd>${escapeHtml(row.drawn)}</dd></div><div><dt>M</dt><dd>${escapeHtml(row.lost)}</dd></div><div><dt>P</dt><dd>${escapeHtml(row.points)}</dd></div>
+    </dl>
+    <div class="team-form"><span>Son ${form.length} lig maçı</span><div class="form-dots" aria-label="Son maç formu">${form.map((value) => `<span class="${classes[value] || ""}" title="${labels[value] || value}">${labels[value] || value}</span>`).join("")}</div></div>
+    <a class="detail-link" href="./${escapeHtml(String(row.team || row.name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}-puan-durumu.html">Tam puan durumunu aç</a>
+  </article>`;
+}
+
+function squadSection(team, squad, manager) {
+  if (!squad) return "";
+  const positionNames = { Goalkeeper: "Kaleci", Defender: "Defans", Midfielder: "Orta saha", Attacker: "Forvet" };
+  const groups = new Map();
+  for (const player of squad.players) {
+    const label = positionNames[player.position] || player.position || "Kadro";
+    if (!groups.has(label)) groups.set(label, []);
+    groups.get(label).push(player);
+  }
+  const managerHtml = manager
+    ? `<article class="glass-card team-manager" data-card="manager"><span class="card-kicker">Teknik direktör</span><h3>${escapeHtml(manager.manager)}</h3><p>${escapeHtml(manager.note || "")}</p><a href="${escapeHtml(manager.source.url)}" target="_blank" rel="${SOURCE_LINK_REL}">Kaynak: ${escapeHtml(manager.source.name)}</a></article>`
+    : `<article class="glass-card team-manager" data-card="manager"><span class="card-kicker">Teknik direktör</span><h3>Güncel kayıt doğrulanıyor</h3><p>Eski teknik direktör bilgisi yayımlanmadı. Yeni görevlendirme kaynakla doğrulandığında bu alan otomatik güncellenir.</p></article>`;
+  const playersHtml = [...groups.entries()].map(([position, players]) => `<div class="team-squad-group"><h3>${escapeHtml(position)}</h3><ul>${players.map((player) => {
+    const row = { providerId: player.providerId, team: team.name };
+    const href = playerHref(row);
+    const name = href ? `<a href="${escapeHtml(href)}">${escapeHtml(player.name)}</a>` : escapeHtml(player.name);
+    return `<li>${name}${player.age ? `<span>${escapeHtml(player.age)} yaş</span>` : ""}</li>`;
+  }).join("")}</ul></div>`).join("");
+  return `${managerHtml}<div class="team-squad-grid" data-card="current-squad" data-source="api-football-squad">${playersHtml}</div>`;
+}
+
+function leaderCards(team) {
+  const render = (rows, stat) => rows.length ? `<ol class="team-leader-list">${rows.map((row) => {
+    const href = playerHref(row);
+    const name = href ? `<a href="${escapeHtml(href)}">${escapeHtml(row.name)}</a>` : escapeHtml(row.name);
+    return `<li><span>${escapeHtml(row.rank)}.</span><strong>${name}</strong><b>${escapeHtml(row[stat])}</b></li>`;
+  }).join("")}</ol>` : `<p class="muted">Sağlayıcının ilk 20 listesinde bu takım için doğrulanmış oyuncu yok.</p>`;
+  return `<div class="team-leaders-grid" data-source="api-football-leaders">
+    <article class="glass-card"><span class="card-kicker">Takımın en golcüleri</span><h3>${escapeHtml(team.name)} gol liderleri</h3>${render(leadersFor(team, "topScorers"), "goals")}<a class="detail-link" href="./gol-kralligi.html">Süper Lig gol krallığı</a></article>
+    <article class="glass-card"><span class="card-kicker">Takımın asist liderleri</span><h3>${escapeHtml(team.name)} asist liderleri</h3>${render(leadersFor(team, "topAssists"), "assists")}<a class="detail-link" href="./asist-kralligi.html">Süper Lig asist krallığı</a></article>
+  </div>`;
 }
 
 function section(title, note, body, kicker) {
@@ -258,7 +401,16 @@ function section(title, note, body, kicker) {
   </section>`;
 }
 
-function schemaFor(team, url, description, scheduled) {
+function schemaFor(team, url, description, scheduled, squad, manager, news) {
+  const sportsTeam = {
+    "@type": "SportsTeam",
+    "@id": `${url}#team`,
+    name: team.name,
+    sport: "Football",
+    memberOf: { "@type": "SportsOrganization", name: "Trendyol Süper Lig" }
+  };
+  if (manager) sportsTeam.coach = { "@type": "Person", name: manager.manager };
+  if (squad) sportsTeam.athlete = squad.players.map((player) => ({ "@type": "Person", name: player.name }));
   const graph = [
     {
       "@type": "CollectionPage",
@@ -268,8 +420,10 @@ function schemaFor(team, url, description, scheduled) {
       description,
       isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${DOMAIN}/` },
       inLanguage: "tr-TR",
-      about: { "@type": "SportsTeam", name: team.name, sport: "Football" }
+      about: { "@id": `${url}#team` },
+      mainEntity: { "@id": `${url}#team` }
     },
+    sportsTeam,
     {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -303,14 +457,37 @@ function schemaFor(team, url, description, scheduled) {
     });
   }
 
+  if (news.length) {
+    graph.push({
+      "@type": "ItemList",
+      name: `${team.name} haberleri`,
+      numberOfItems: news.length,
+      itemListElement: news.map((article, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "NewsArticle",
+          headline: article.title,
+          datePublished: article.publishedAt,
+          url: `${DOMAIN}/haber/${newsSlug(article.slug || article.id || article.title)}`
+        }
+      }))
+    });
+  }
+
   return { "@context": "https://schema.org", "@graph": graph };
 }
 
 function relatedLinks(team) {
   const links = [
+    { href: "./bugunun-maclari.html", kicker: "Bugün", title: "Bugünün maçları", text: "Günün doğrulanmış maç programı ve yayın bilgileri." },
     { href: "./super-lig-fikstur.html", kicker: "Lig", title: "Süper Lig fikstürü", text: "Tüm haftaların eşleşmelerini ve açıklanan saatleri gör." },
     { href: "./canli-skor.html", kicker: "Canlı", title: "Canlı skor", text: "Oynanan maçların dakikası ve skoru." },
     { href: "./puan-durumu.html", kicker: "Tablo", title: "Puan durumu", text: "Süper Lig sıralaması ve averaj." },
+    { href: "./gol-kralligi.html", kicker: "Gol", title: "Süper Lig gol krallığı", text: "Güncel gol sıralaması ve oyuncu profilleri." },
+    { href: "./asist-kralligi.html", kicker: "Asist", title: "Süper Lig asist krallığı", text: "Güncel asist sıralaması ve oyuncu profilleri." },
+    { href: "./haberler.html", kicker: "Haber", title: `${team.name} haberleri`, text: "Doğrulanmış son takım haberleri." },
+    { href: "./analizler.html", kicker: "Analiz", title: "Maç analizleri", text: `${team.name} ile ilgili veri odaklı maç okumaları.` },
     // `generate-team-standings-pages.mjs` bu 4 takım için AYNI slug'ı kullanır
     // (`${slug}-puan-durumu.html`); TEAMS burada da yalnızca büyük 4'ü taşır.
     { href: `./${team.slug}-puan-durumu.html`, kicker: "Puan durumu", title: `${team.name} puan durumu`, text: `${team.name} Süper Lig'de kaçıncı sırada, tam tabloda vurgulu.` }
@@ -326,6 +503,12 @@ function buildPage(team, today) {
   const results = recentReports(team);
   const season = seasonFixtures(team);
   const moves = teamTransfers(team);
+  const todayGame = todayMatch(team, today);
+  const lastGame = lastCompletedMatch(team);
+  const standing = standingFor(team);
+  const squad = squadFor(team);
+  const manager = managerFor(team);
+  const teamNews = readVerifiedTeamNews(root, team.name, 3);
 
   // İnce içerik koruması: elde anlamlı satır yoksa sayfa üretilmez.
   const contentRows = upcoming.length + results.length + season.length;
@@ -337,13 +520,22 @@ function buildPage(team, today) {
   const url = `${DOMAIN}/${file}`;
   const next = upcoming[0] || null;
   const scheduled = upcoming.filter((match) => match.kickoff);
+  const seasonLabel = String(fixtures.season || "").replace(/^(\d{4})-\d{2}(\d{2})$/, "$1/$2");
+  const updatedAt = latestTimestamp([
+    calendarStore.fetchedAt,
+    fixtures.lastVerifiedAt,
+    standings.updatedAt,
+    squad && squad.syncedAt,
+    leaders.generatedAt,
+    managers.updatedAt
+  ]);
 
   const nextSentence = next
     ? `${team.name}'ın sıradaki maçı ${longDate(next.kickoff)} günü saat ${clockLabel(next.kickoff)} TSİ'de ${opponentOf(next, team)} karşısında.`
     : `${team.name} için takvimde gün ve saati doğrulanmış bir sonraki maç henüz yok.`;
 
-  const title = `${team.name} Maçları | Fikstür, Maç Programı ve Sonuçlar | FutbolRadar`;
-  const description = `${team.name} maç programı: sıradaki maç, yaklaşan karşılaşmalar, Süper Lig fikstürü ve yayımlanmış maç raporları. Saatler Türkiye saatiyle.`;
+  const title = `${team.name} Maçları, Puan Durumu ve Fikstür ${seasonLabel} | FutbolRadar`;
+  const description = `${team.name} maçı bugün var mı? Sıradaki maçın saati ve yayın kanalı, ${team.name} puan durumu, fikstürü, kadrosu ve güncel takım haberleri.`;
 
   const html = `<!doctype html>
 <html lang="tr">
@@ -365,7 +557,7 @@ function buildPage(team, today) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${DOMAIN}/assets/og-image.svg" />
-    <script type="application/ld+json">${JSON.stringify(schemaFor(team, url, description, scheduled))}</script>
+    <script type="application/ld+json">${JSON.stringify(schemaFor(team, url, description, scheduled, squad, manager, teamNews))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
@@ -376,26 +568,32 @@ function buildPage(team, today) {
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./takimlar.html">Takımlar</a><span>/</span><span>${escapeHtml(team.name)} Maçları</span></nav>
       <section class="trend-hero">
         <div>
-          <span class="eyebrow">Maç programı · ${escapeHtml(fixtures.season || "")}</span>
-          <h1>${escapeHtml(team.name)} Maçları</h1>
+          <span class="eyebrow">${escapeHtml(team.name)} · ${escapeHtml(seasonLabel)} sezonu</span>
+          <h1>${escapeHtml(team.name)} Maçları, Puan Durumu ve Fikstür</h1>
           <p>${escapeHtml(nextSentence)}</p>
-          <p class="muted">Tüm tarih ve saatler Türkiye saatiyle (Europe/Istanbul) gösterilir. Gün ve saati açıklanmamış karşılaşmalar tahmin edilmez.</p>
+          <p class="muted">${escapeHtml(team.name)} maçı saat kaçta ve hangi kanalda sorularının yanıtı, fikstür, kadro ve lig verileri aynı doğrulanmış kaynaklardan otomatik güncellenir.</p>
         </div>
-        ${nextMatchCard(next, team)}
+        ${nextMatchCard(next, team, today)}
       </section>
+      ${currentMatchCard(todayGame, team)}
+      ${section(`${team.name} puan durumu ve son form`, `${seasonLabel} Süper Lig sıralaması; puan durumu sayfasıyla aynı sağlayıcı tablosundan.`, `<div class="team-overview-grid">${standingCard(standing, seasonLabel)}${lastMatchCard(lastGame)}</div>`, "Güncel durum")}
       ${section("Yaklaşan maçlar", "Gün ve saati doğrulanmış karşılaşmalar, en yakın tarih önde.", upcomingRows(upcoming, team), "Takvim")}
-      ${section("Son maçlar", "Yalnızca maç sonu raporu üretilmiş karşılaşmalar listelenir.", resultRows(results, team), "Sonuçlar")}
+      ${section("İlgili maç analizleri", "Yalnızca doğrulanmış sonuçtan üretilmiş maç raporları ve analizler listelenir.", resultRows(results, team), "Analiz")}
       ${section(`${team.name} Süper Lig fikstürü`, `${fixtures.season || ""} sezonu eşleşmeleri. Tarihi atanmamış haftalar için gün uydurulmaz.`, seasonRows(season, team), "Sezon")}
+      ${section(`${team.name} gol ve asist liderleri`, "Süper Lig sağlayıcısının güncel gol ve asist listelerinde yer alan takım oyuncuları.", leaderCards(team), "Oyuncu performansı")}
+      ${section(`${team.name} güncel kadrosu`, squad ? `${seasonLabel} sezonu sağlayıcı kadrosu; son senkron ${timestampLabel(squad.syncedAt)}.` : "", squadSection(team, squad, manager), "Kadro ve teknik ekip")}
       ${section("Son transfer hareketleri", "Yalnızca resmî açıklamayla doğrulanmış kayıtlar.", transferRows(moves), "Kadro")}
-      ${renderTeamNewsSection(readVerifiedTeamNews(root, team.name, 3), { team: team.name, base: "./" })}
+      ${renderTeamNewsSection(teamNews, { team: team.name, base: "./" })}
       ${section("İlgili ekranlar", "Aynı veriyi lig, kadro ve form açısından derinleştir.", relatedLinks(team), "İç bağlantılar")}
+      ${updatedAt ? `<p class="team-data-freshness" data-source-updated-at="${escapeHtml(updatedAt)}">Son veri güncellemesi: <time datetime="${escapeHtml(updatedAt)}">${escapeHtml(timestampLabel(updatedAt))}</time></p>` : ""}
     </main>
     ${siteFooter({ base: "./" })}
     <script src="./site.js" defer></script>
   </body>
 </html>`;
 
-  return { file, html, stats: { upcoming: upcoming.length, results: results.length, season: season.length, scheduled: scheduled.length } };
+  const cleanHtml = html.replace(/^[ \t]+$/gm, "");
+  return { file, html: cleanHtml, stats: { upcoming: upcoming.length, results: results.length, season: season.length, scheduled: scheduled.length } };
 }
 
 /**

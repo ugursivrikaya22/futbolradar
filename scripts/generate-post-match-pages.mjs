@@ -31,6 +31,7 @@ const { quotesForMatch } = require("../services/managerQuotes.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { t } = require("../services/i18n.js");
+const { teamHubHref } = require("../services/teamHubLinks.js");
 
 /**
  * Yer tutucu metinler TEK KAYNAKTAN gelir (locales/tr.json → `fallback.*`).
@@ -406,6 +407,8 @@ function pageHtml(report, match) {
       ${nextMatchSectionHtml(report)}
 
       <section class="post-match-next-grid">
+        ${teamHubHref(match.homeTeam, depth) ? `<a href="${escapeHtml(teamHubHref(match.homeTeam, depth))}"><span>Takım merkezi</span><strong>${escapeHtml(match.homeTeam)}</strong><p>Maçlar, puan durumu, kadro ve takım gündemi.</p></a>` : ""}
+        ${teamHubHref(match.awayTeam, depth) ? `<a href="${escapeHtml(teamHubHref(match.awayTeam, depth))}"><span>Takım merkezi</span><strong>${escapeHtml(match.awayTeam)}</strong><p>Maçlar, puan durumu, kadro ve takım gündemi.</p></a>` : ""}
         <a href="${depth}mac-merkezi.html"><span>Maç merkezi</span><strong>Tüm maç raporları</strong><p>Tamamlanan karşılaşmaların veri odaklı okumalarına geç.</p></a>
         <a href="${depth}oyuncu-radari.html"><span>Oyuncu analizi</span><strong>${escapeHtml(match.homeTeam)} Oyuncu Radarı</strong><p>Kadro içindeki form ve rol sinyallerini incele.</p></a>
         <a href="${depth}bugunun-maclari.html"><span>Program</span><strong>Bugünkü maçlar</strong><p>Günün doğrulanmış karşılaşmalarını aç.</p></a>

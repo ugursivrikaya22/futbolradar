@@ -7,6 +7,7 @@ const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLi
 // da aynı listeden besleniyor, böylece "kart var ama sayfa yok" durumu
 // (canlıda 404 veren iki bağlantı) yapısal olarak imkânsız.
 const { publishableNews } = createRequire(import.meta.url)("../services/newsFeed.js");
+const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 
 const root = process.cwd();
@@ -74,6 +75,8 @@ function articleInternalLinks(article) {
 }
 
 function teamPage(article) {
+  const hub = teamHubFile(article.team);
+  if (hub) return hub;
   const pages = {
     "Fenerbahçe": "fenerbahce-form-durumu.html",
     "Galatasaray": "galatasaray-form-durumu.html",
