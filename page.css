@@ -2174,7 +2174,7 @@ p {
       }
 
       /* ----------------------------------------------------------------
-         SÜPER LİG BUGÜN ŞERİDİ — kompakt, yatay, yalnızca Süper Lig.
+         SÜPER LİG BUGÜN — genel programla aynı boy maç kartları.
 
          Genel "bugünün maçları" ızgarasının ÜSTÜNDE, ondan bağımsız bir
          kap: boşsa `data-empty-hide` onu tamamen gizler (bkz. app.js),
@@ -2277,6 +2277,16 @@ p {
         text-transform: uppercase;
       }
 
+      /* Aynı `.matches-grid` ve `.fixture-card` bileşenleri kullanıldığı
+         için Süper Lig grubu aşağıdaki genel programla birebir aynı kart
+         ölçüsünü taşır. DOM'da önce geldiğinden her genişlikte ilk gruptur. */
+      .superlig-today-grid {
+        width: 100%;
+        margin: 0;
+      }
+
+      /* Eski satır görünümü, paylaşılan yardımcı geri dönüş üreticisi için
+         korunur; ana sayfa artık aşağıdaki sınıfları kullanmaz. */
       .superlig-strip-rail {
         display: flex;
         gap: 8px;

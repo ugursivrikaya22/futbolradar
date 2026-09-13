@@ -4589,21 +4589,20 @@
     return SUPER_LIG_PRIORITY_NAMES.length;
   }
 
-  function superLigTeamLogoHtml(entry, name) {
-    if (entry && entry.logo) {
-      return '<img class="superlig-strip-logo" src="' + escapeHtml(entry.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
-        '<span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">' + escapeHtml(teamInitials(name)) + '</span>';
-    }
-    return '<span class="superlig-strip-logo-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + '</span>';
+  function isTodaySuperLigMatch(match, teamList, today) {
+    if (!match || istanbulDayOf(match.kickoff || match.date || match.utcDate) !== today) return false;
+    // Bir Avrupa kupası maçında yalnızca tek taraf Süper Lig takımıdır.
+    // İki tarafın da güncel lig listesinde bulunması, bu alanın gerçekten
+    // Süper Lig programı olarak kalmasını sağlar.
+    return Boolean(findSuperLigTeam(teamList, match.homeTeam) && findSuperLigTeam(teamList, match.awayTeam));
   }
 
-  function renderTodaySuperLigStrip(matches, teams) {
+  function selectTodaySuperLigMatches(matches, teams) {
     var teamList = superLigTeamLogoList(teams);
     var today = todayInIstanbul();
 
     var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      if (!match || istanbulDayOf(match.kickoff || match.date || match.utcDate) !== today) return false;
-      return Boolean(findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam));
+      return isTodaySuperLigMatch(match, teamList, today);
     });
 
     // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
@@ -4619,38 +4618,26 @@
       return true;
     });
 
-    if (!todays.length) {
-      return "";
-    }
-
-    var sorted = todays.slice().sort(function (left, right) {
+    return todays.slice().sort(function (left, right) {
       var leftRank = Math.min(superLigPriorityRank(left.homeTeam), superLigPriorityRank(left.awayTeam));
       var rightRank = Math.min(superLigPriorityRank(right.homeTeam), superLigPriorityRank(right.awayTeam));
       if (leftRank !== rightRank) return leftRank - rightRank;
       return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
     });
+  }
 
-    var rows = sorted.map(function (match) {
-      var home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
-      var away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
-      // "Süper Lig'de Bugün" şeridi ham `isLiveMatch` kullanıyordu: dünkü
-      // maç bu şeritte "Canlı 81'" olarak kalabiliyordu. Ortak kapı.
-      var live = LiveGuard.isLive(match);
-      var finished = !live && isFinishedMatch(match);
-      var score = (live || finished) && match.score
-        ? escapeHtml(displayValue(match.score.home)) + " - " + escapeHtml(displayValue(match.score.away))
-        : escapeHtml(finished ? "MS" : (live ? "Canlı" : (match.time || "Planlandı")));
-      var minuteLabel = live ? liveMinuteLabel(match) : "";
-      var minuteHtml = minuteLabel ? ' <small class="superlig-strip-minute">' + escapeHtml(minuteLabel) + '</small>' : "";
+  function renderTodaySuperLigStrip(matches, teams) {
+    var sorted = selectTodaySuperLigMatches(matches, teams);
 
-      return '<a class="superlig-strip-row' + (live ? " is-live" : "") + '" data-card="superlig-strip" data-match="' + escapeHtml(match.id || "") + '" href="' + escapeHtml(matchDetailHref(match)) + '">' +
-        '<span class="superlig-strip-team">' + superLigTeamLogoHtml(home, home.name) + '<b>' + escapeHtml(home.name) + '</b></span>' +
-        '<span class="superlig-strip-score' + (live ? " is-live" : "") + '">' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + score + minuteHtml + '</span>' +
-        '<span class="superlig-strip-team is-away">' + superLigTeamLogoHtml(away, away.name) + '<b>' + escapeHtml(away.name) + '</b></span>' +
-        '</a>';
-    }).join("");
+    if (!sorted.length) {
+      return "";
+    }
 
-    return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
+    // Genel programdaki kart bileşeninin aynısı: boyut, içerik ve hızlı
+    // bağlantılar iki grup arasında ayrışmaz.
+    var cards = sorted.map(renderHomeFixtureCard).join("");
+
+    return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="matches-grid superlig-today-grid">' + cards + '</div>';
   }
 
   // today-match-card-selection:start
@@ -4683,12 +4670,17 @@
   }
   // today-match-card-selection:end
 
-  function renderTodayMatchesPreview(matches) {
+  function renderTodayMatchesPreview(matches, teams) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
     }
 
-    var ordered = selectTodayMatchCards(matches);
+    var teamList = superLigTeamLogoList(teams || []);
+    var today = todayInIstanbul();
+    var remaining = matches.filter(function (match) {
+      return !isTodaySuperLigMatch(match, teamList, today);
+    });
+    var ordered = selectTodayMatchCards(remaining);
     if (!ordered.length) return "";
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki

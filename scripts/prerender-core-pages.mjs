@@ -370,15 +370,22 @@ function programFixtureCard(match, today, options = {}) {
   return staticFixtureCard(match, { headlineValue, isToday, status, finalScore, quickLinksHtml });
 }
 
-function calendarProgramMatches(limit) {
+function isSuperLigProgramMatch(match) {
+  return Boolean(match && teamByName(match.homeTeam) && teamByName(match.awayTeam));
+}
+
+function calendarProgramMatches(limit, options = {}) {
   return programMatchPool()
+    .filter((match) => !options.excludeSuperLig || !isSuperLigProgramMatch(match))
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
 }
 
 function calendarProgramCards(limit) {
   const today = istanbulToday();
-  const upcoming = calendarProgramMatches(limit);
+  // Süper Lig maçları hemen üstte aynı boy kartlarla ayrı ve öncelikli
+  // çizilir; genel listede ikinci kez gösterilmez.
+  const upcoming = calendarProgramMatches(limit, { excludeSuperLig: true });
 
   if (!upcoming.length) {
     return "";
@@ -1052,7 +1059,10 @@ function leagueDirectoryHtml() {
 function todaySuperLigStrip() {
   const today = istanbulToday();
   const todays = currentMatches().filter((match) => istanbulDay(match.kickoff) === today);
-  return superLigTodayStripHtml(todays, teams, "tr", { hrefFor: matchDetailPath });
+  return superLigTodayStripHtml(todays, teams, "tr", {
+    hrefFor: matchDetailPath,
+    cardFor: (match) => programFixtureCard(match, today, { quickLinks: true })
+  });
 }
 
 function matchProgramState(variant) {
