@@ -13534,6 +13534,10 @@
       if (target.dataset.matchesDay !== todayInIstanbul()) {
         target.innerHTML = "";
         target.dataset.staticFallback = "false";
+        if (target.dataset.apiTarget === "matches-page") {
+          var summary = document.querySelector('[aria-labelledby="today-faq-title"]');
+          if (summary) summary.hidden = true;
+        }
       }
     });
     LiveScoresTicker.init();

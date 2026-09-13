@@ -278,9 +278,8 @@ function programMatchPool() {
   // collapses the same fixture listed with the sides swapped. Reading the raw
   // calendar here rendered those duplicates into the static fallback, so the
   // homepage showed each neutral-venue friendly twice.
-  return curatedMatches()
-    .filter((match) => istanbulDay(match.kickoff) >= today)
-    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match));
+  return currentMatches()
+    .filter((match) => istanbulDay(match.kickoff) === today);
 }
 
 /**
@@ -406,11 +405,8 @@ function matchProgramPageCards() {
   // haftanın Süper Lig maçları bugünün Konferans Ligi maçlarının üstüne
   // çıktı — "Bugünün Maçları" sayfasında bugün oynanmayan maçlar.
   //
-  // Bugün maç yoksa liste maç OLAN ilk güne kayar: boş sayfa göstermek
-  // yerine hangi günü gösterdiğimizi söyleriz (SSS metinleri o günün adını
-  // taşır, "bugün" demez).
-  const days = [...new Set(pool.map((match) => istanbulDay(match.kickoff)))].sort();
-  const day = days.includes(today) ? today : days[0];
+  // An empty day remains empty; another day's fixtures are never today.
+  const day = today;
 
   // Günün TAMAMI ile PENCERE ayrı iki liste. Kartlar pencereden basılır
   // (istemcinin ilk görünümüyle aynı sayı), ama günü ANLATAN metin — kaç maç

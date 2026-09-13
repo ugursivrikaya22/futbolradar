@@ -72,4 +72,14 @@ vm.runInContext(extract("renderLiveScoreSection"), context);
 const emptyLive = vm.runInContext("renderLiveScoreSection([])", context);
 assert.match(emptyLive, /Şu anda canlı maç yok/, "empty live data keeps its explicit state");
 assert.match(emptyLive, /href="\.\/bugunun-maclari\.html"/, "clearing old live cards keeps the existing match-program route");
+const prerender = fs.readFileSync(new URL("../scripts/prerender-core-pages.mjs", import.meta.url), "utf8");
+const pool = prerender.match(/function programMatchPool\(\) \{[\s\S]*?\n\}/)[0];
+const poolContext = vm.createContext({
+  istanbulToday: () => "2026-09-13", istanbulDay: value => value.slice(0, 10),
+  currentMatches: () => [{ kickoff: "2026-09-12" }, { kickoff: "2026-09-13", status: "FINISHED" }, { kickoff: "2026-09-14" }]
+});
+vm.runInContext(pool, poolContext);
+const todayPool = vm.runInContext("programMatchPool()", poolContext);
+assert.equal(todayPool.length, 1, "static cards and summary use only the selected calendar day");
+assert.equal(todayPool[0].status, "FINISHED", "today's completed fixtures remain in the same daily count as the API");
 console.log("Data consistency regressions passed: cache age, outage, identity, score correction, late packet, Istanbul date, authoritative empty response.");
