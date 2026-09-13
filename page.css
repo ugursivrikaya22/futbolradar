@@ -22073,7 +22073,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 
 /* The open navigation stays above floating notification controls. */
 @media (max-width: 1365px) {
-  .topbar-premium:has(.nav.is-open) { z-index: 80; }
+  .topbar-premium:has(.nav.is-open) { z-index: 10000; }
 }
 
 /* Mobile summaries keep full team names, scores and independent tap targets. */

@@ -483,6 +483,27 @@ async function until(check, message, timeout = 5000) {
         }
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
       });
+      if (touch) await test('mobile summary follows main card and opens match detail', async () => {
+        await open('index.html');
+        const featured = page.locator('[data-featured-turkish="true"]').first();
+        const summary = page.locator('.now-football__row').first();
+        await summary.waitFor();
+        await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
+        const score = featured.locator('.featured-fixture-score b');
+        const status = featured.locator('.featured-fixture-score span');
+        const original = [await score.innerText(), await status.innerText()];
+        // Controlled DOM update verifies that the summary observes the same
+        // source card; these values are never written to an API or data file.
+        try {
+          await score.evaluate(e => { e.textContent = '2 - 1'; });
+          await status.evaluate(e => { e.textContent = "67'"; });
+          await until(async () => (await summary.locator('.now-football__meta').innerText()) === "2 - 1 · 67'", 'Summary score/minute did not follow the main card');
+        } finally {
+          await score.evaluate((e, text) => { e.textContent = text; }, original[0]);
+          await status.evaluate((e, text) => { e.textContent = text; }, original[1]);
+        }
+        await navigate(summary);
+      });
       await test('player quick links remain above the hero', async () => {
         await open('oyuncu-radari.html');
         await navigate(page.locator('.player-quick-links a').first());
