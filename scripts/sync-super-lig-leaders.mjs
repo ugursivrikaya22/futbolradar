@@ -157,6 +157,7 @@ export async function buildLeagueLeaders(options = {}) {
     league: { id: String(resolution.leagueId), name: "Süper Lig" },
     season: config.season || null,
     generatedAt: (options.now || new Date()).toISOString(),
+    updatedAt: [...scorers, ...assists].map(row => row.fetchedAt).filter(Boolean).sort().at(-1) || null,
     source: "api-football:/players/topscorers,/players/topassists",
     topScorers: scorersResult.rows,
     topAssists: assistsResult.rows,

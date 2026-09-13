@@ -354,14 +354,21 @@ function getProviderRateLimit() {
  * istek tek çağrıya iner) ve hatada bayat servis bu yüzden hiç devreye
  * girmiyordu; her çağrı doğrudan ağa çıkıyor ve kotayı harcıyordu.
  */
+const payloadFetchedAt = new WeakMap();
+
 async function providerFetch(path, params) {
   const resource = cacheResourceFor(path, params);
+  const fetchFresh = async () => {
+    const payload = await providerFetchUncached(path, params);
+    if (payload && typeof payload === "object") payloadFetchedAt.set(payload, new Date().toISOString());
+    return payload;
+  };
 
   if (!resource) {
-    return providerFetchUncached(path, params);
+    return fetchFresh();
   }
 
-  const result = await fetchWithCache(resource, { path, ...params }, () => providerFetchUncached(path, params));
+  const result = await fetchWithCache(resource, { path, ...params }, fetchFresh);
 
   if (result.cache === "hit" || result.cache === "coalesced") {
     requestCounter.cacheHits += 1;
@@ -601,8 +608,8 @@ function numberOrNull(value) {
   return Number.isFinite(number) ? number : null;
 }
 
-function stampProviderData(records, resource, staleAfterMs) {
-  const fetchedAt = new Date().toISOString();
+function stampProviderData(records, resource, staleAfterMs, payload) {
+  const fetchedAt = payloadFetchedAt.get(payload) || new Date().toISOString();
   const staleAfter = new Date(Date.parse(fetchedAt) + staleAfterMs).toISOString();
   return records.map((record) => ({
     ...record,
@@ -1130,6 +1137,7 @@ async function getFixtures(query) {
   const payload = await providerFetch("/fixtures", {
     id: fixtureId,
     date,
+    timezone: "Europe/Istanbul",
     live: liveValue || undefined
   });
   const matches = responseItems(payload).map(normalizeFixture);
@@ -1142,11 +1150,19 @@ async function getFixtures(query) {
     && !liveValue
     ? supportedMatches.filter((match) => competitionMatchesFixture(match, competition))
     : supportedMatches;
-  return stampProviderData(filteredMatches, "matches", 5 * 60 * 1000);
+  return stampProviderData(filteredMatches, "matches", liveValue ? 90 * 1000 : 5 * 60 * 1000, payload);
 }
 
 async function getMatches(query) {
-  return getFixtures(query);
+  const matches = await getFixtures(query);
+  if (query && (query.live || query.id || query.fixtureId || (query.date && query.date !== todayInIstanbul()))) return matches;
+  // The list and SSE stream read the same cached live provider response.
+  const live = await getFixtures({ live: true }).catch(() => []);
+  const byId = new Map(live.map(match => [match.providerId, match]));
+  return matches.map(match => {
+    const current = byId.get(match.providerId);
+    return current && !(match.status === "FINISHED" && Date.parse(match.fetchedAt) > Date.parse(current.fetchedAt)) ? current : match;
+  });
 }
 
 /**
@@ -1161,7 +1177,7 @@ async function getSeasonFixtures(query) {
   const season = resolveSeason(query && query.season);
   const payload = await providerFetch("/fixtures", { league, season });
   const matches = responseItems(payload).map(normalizeFixture);
-  return stampProviderData(matches, "season-fixtures", 60 * 60 * 1000);
+  return stampProviderData(matches, "season-fixtures", 60 * 60 * 1000, payload);
 }
 
 async function getStandings(query) {
@@ -1170,7 +1186,7 @@ async function getStandings(query) {
   const payload = await providerFetch("/standings", { league, season });
   const leaguePayload = responseItems(payload)[0] && responseItems(payload)[0].league || {};
   const table = Array.isArray(leaguePayload.standings) ? leaguePayload.standings[0] || [] : [];
-  return stampProviderData(table.map((row) => normalizeStandingRow(row, leaguePayload.name)), "standings", 60 * 60 * 1000);
+  return stampProviderData(table.map((row) => ({ ...normalizeStandingRow(row, leaguePayload.name), season, leagueId: String(league) })), "standings", 60 * 60 * 1000, payload);
 }
 
 /**
@@ -1378,13 +1394,13 @@ async function getPlayerTransfers(query) {
 async function getTopScorers(query) {
   const league = ensureLeagueForData(query);
   const payload = await providerFetch("/players/topscorers", { league, season: resolveSeason(query && query.season) });
-  return stampProviderData(responseItems(payload).map(normalizeLeagueLeaderEntry), "players", 6 * 60 * 60 * 1000);
+  return stampProviderData(responseItems(payload).map(normalizeLeagueLeaderEntry), "players", 6 * 60 * 60 * 1000, payload);
 }
 
 async function getTopAssists(query) {
   const league = ensureLeagueForData(query);
   const payload = await providerFetch("/players/topassists", { league, season: resolveSeason(query && query.season) });
-  return stampProviderData(responseItems(payload).map(normalizeLeagueLeaderEntry), "players", 6 * 60 * 60 * 1000);
+  return stampProviderData(responseItems(payload).map(normalizeLeagueLeaderEntry), "players", 6 * 60 * 60 * 1000, payload);
 }
 
 async function getInjuries(query) {
@@ -1465,6 +1481,7 @@ async function getFixturesByDate(query) {
 
   const payload = await providerFetch("/fixtures", compactParams({
     date,
+    timezone: "Europe/Istanbul",
     league: query.league || undefined,
     season: query.season || undefined
   }));

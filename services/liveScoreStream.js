@@ -71,6 +71,8 @@ function matchSnapshot(match, serverReceivedAt) {
     competitionId: (match && match.competitionId) || null,
     providerLeagueId: (match && match.providerLeagueId) || null,
     kickoff: (match && match.kickoff) || null,
+    fetchedAt: isoOrNull(match && match.fetchedAt),
+    staleAfter: isoOrNull(match && match.staleAfter),
     status: (match && match.status) || null,
     providerStatus: (match && match.providerStatus) || null,
     minute: match && (match.minute ?? match.elapsed) != null ? Number(match.minute ?? match.elapsed) : null,

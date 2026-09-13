@@ -86,7 +86,8 @@
     "generate:en": "node scripts/generate-en-pages.mjs && node scripts/generate-en-team-pages.mjs && node scripts/generate-en-match-pages.mjs && node scripts/generate-en-player-pages.mjs",
     "test:news-lifecycle": "node scripts/test-news-lifecycle.mjs",
     "test:broadcast-schedule": "node scripts/test-broadcast-schedule.mjs",
-    "broadcast:scan": "node scripts/scan-broadcast-schedule.mjs --apply"
+    "broadcast:scan": "node scripts/scan-broadcast-schedule.mjs --apply",
+    "test:data-consistency": "node scripts/test-data-consistency.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

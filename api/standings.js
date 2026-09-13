@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
     // for the default competition on its own.
     query: { ...query, league: query.league || "super-lig" },
     run: (provider, providerQuery) => provider.getStandings(
-      provider.name === "mock" ? query : providerQuery
+      provider.name === "mock" ? { ...query, league: query.league || "super-lig" } : providerQuery
     )
   });
 

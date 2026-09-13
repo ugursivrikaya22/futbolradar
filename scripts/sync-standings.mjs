@@ -47,7 +47,7 @@ function standingFields(row, previous, nowIso, season) {
   if (providerForm.length) next.form = providerForm;
 
   const changed = Object.entries(next).some(([key, value]) => JSON.stringify(previous[key]) !== JSON.stringify(value));
-  return changed ? { ...next, lastStandingsSyncedAt: nowIso } : null;
+  return changed ? { ...next, lastStandingsSyncedAt: row.fetchedAt || nowIso } : null;
 }
 
 export function mergeStandings(teams, standings, options = {}) {

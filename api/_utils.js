@@ -23,7 +23,7 @@ const CACHE_POLICIES = Object.freeze({
   // canlı gecikme) — önbelleklenmiş bir "her şey yolunda" yanıtı, gerçek
   // bir kesintiyi saatlerce gizleyebilir.
   "daily-health-check": { noStore: true },
-  standings: { maxAge: 300, stale: 900 },
+  standings: { noStore: true },
   teams: { maxAge: 1800, stale: 7200 },
   players: { maxAge: 3600, stale: 21600 },
   squad: { maxAge: 300, stale: 900 },
@@ -172,6 +172,7 @@ function resolveUpdatedAt(data, updatedAt) {
     "verifiedAt",
     "fetchedAt",
     "lastSyncedAt",
+    "lastStandingsSyncedAt",
     "transferUpdatedAt",
     "lastUpdatedAt",
     "lastUpdated",

@@ -76,6 +76,9 @@ function normalizeMatchDetail(match) {
 
 function normalizeStanding(team) {
   return {
+    fetchedAt: team.lastStandingsSyncedAt || null,
+    season: team.standingsSeason || null,
+    providerId: team.providerId || null,
     id: team.id || slug(team.name || team.team),
     rank: team.rank,
     team: team.team || team.name,
@@ -436,7 +439,10 @@ function curatedMatches() {
     // taşınır - arayüz isterse "sağlayıcı kaydı" etiketiyle gösterebilir.
     const providerVenue = resolveProviderVenue(existing.venue, calendarMatch.venue);
     const advances = matchStateRank(calendarMatch.status) > matchStateRank(existing.status);
-    const canAdvance = advances && !isVerifiedFinalRecord(existing);
+    const existingTime = Date.parse(existing.fetchedAt || existing.updatedAt || existing.lastVerifiedAt || "");
+    const incomingTime = Date.parse(calendarMatch.fetchedAt || calendarMatch.updatedAt || "");
+    const newer = Number.isFinite(incomingTime) && (!Number.isFinite(existingTime) || incomingTime > existingTime);
+    const canAdvance = (advances || newer) && !isVerifiedFinalRecord(existing);
 
     // SAĞLAYICI KİMLİKLERİ HER ZAMAN BİRLEŞİR.
     //
@@ -459,6 +465,12 @@ function curatedMatches() {
       ...(canAdvance
         ? {
           status: calendarMatch.status,
+          providerStatus: calendarMatch.providerStatus,
+          minute: calendarMatch.minute,
+          elapsed: calendarMatch.elapsed,
+          live: calendarMatch.live,
+          fetchedAt: calendarMatch.fetchedAt,
+          staleAfter: calendarMatch.staleAfter,
           score: hasFinalScore(calendarMatch) ? { ...existing.score, ...calendarMatch.score } : existing.score,
           liveStateSource: calendarMatch.source || "provider"
         }
@@ -601,7 +613,9 @@ function transferRecordKey(transfer) {
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFTIME", "PAUSED"]);
 
 async function getMatches(query) {
-  const normalized = curatedMatches().map(normalizeMatch);
+  const records = curatedMatches();
+  const currentDay = !query || !query.date || query.date === todayInTimeZone("Europe/Istanbul");
+  const normalized = (currentDay ? require("./apiFootballProvider").filterSupportedCompetitions(records) : records).map(normalizeMatch);
   const byDate = byMatchDate(normalized, query && query.date);
   const data = byLeague(byDate, query && query.league);
 
@@ -641,7 +655,12 @@ async function getMatchDetail(query) {
 }
 
 async function getStandings(query) {
-  const data = byLeague(teams.map(normalizeStanding), query && query.league);
+  const requested = String(query && (query.requestedCompetition || query.league) || "super-lig");
+  if (!["super-lig", "Süper Lig", "203"].includes(requested)) {
+    const snapshot = require("../../data/league-standings.json")[requested];
+    return snapshot && Array.isArray(snapshot.table) ? snapshot.table.map(row => ({ ...row, team: row.team || row.name, fetchedAt: row.fetchedAt || snapshot.updatedAt, season: snapshot.season })) : [];
+  }
+  const data = teams.filter(team => team.isCurrentSuperLigTeam).map(normalizeStanding);
   return data.sort((a, b) => Number(a.rank || 0) - Number(b.rank || 0));
 }
 

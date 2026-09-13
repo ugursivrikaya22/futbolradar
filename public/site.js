@@ -4049,3 +4049,11 @@
     setupLiveScoresExpiry();
   }
 })();
+
+// Refresh football tables from their shared data endpoints.
+(function () {
+  if (document.documentElement.lang !== "tr" || !document.querySelector(".standings-tabs__panel, .evergreen-table, [data-api-target=standings]")) return;
+  var script = document.createElement("script");
+  script.src = "/data-refresh.js?v=20260913";
+  document.head.appendChild(script);
+}());

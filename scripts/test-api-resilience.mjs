@@ -52,7 +52,7 @@ async function testHeadRequestSupport() {
     headers: { "x-forwarded-for": "203.0.113.61" }
   }, head);
   assert.equal(head.statusCode, 200);
-  assert.equal(head.headers["cdn-cache-control"], "public, s-maxage=60, stale-while-revalidate=180");
+  assert.equal(head.headers["cdn-cache-control"], "no-store");
 
   const post = fakeResponse();
   await matchesHandler({
