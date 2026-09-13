@@ -86,6 +86,7 @@ const {
 } = require("../services/matchSeoPages.js");
 const { canonicalStatus, istanbulDay, kickoffMs } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
+const { teamHubHref } = require("../services/teamHubLinks.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { calculateMatchRadar } = require("../services/matchRadarService.js");
 const { getPlayers } = require("../services/playerService.js");
@@ -540,7 +541,7 @@ function teamLinks(teamName, locale, base) {
   }
   if (BIG_FOUR.includes(slug)) {
     return {
-      page: `${base}takimlar/${slug}`,
+      page: teamHubHref(teamName, base),
       fixtures: `${base}${slug}-maclari.html`,
       standings: `${base}${slug}-puan-durumu.html`
     };
