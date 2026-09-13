@@ -321,7 +321,7 @@ function transferHeroHtml(player, transfer, age) {
             <article><span>Eski kulüp</span><b>${escapeHtml(transfer.fromTeam)}</b></article>
             <article><span>Transfer tarihi</span><b>${escapeHtml(formatTransferDateTr(transfer.date))}</b></article>
             <article><span>Transfer bedeli</span><b>${escapeHtml(transferFeeLabel(transfer))}</b></article>
-            <article><span>Mevki</span><b>${escapeHtml(model.identity.position || "Mevki bekleniyor")}</b></article>
+            <article><span>Mevki</span><b>${escapeHtml(player.position || "Mevki bekleniyor")}</b></article>
             <article><span>Yaş</span><b>${escapeHtml(age)}</b></article>
           </div>
           ${statsBlock}
@@ -464,7 +464,7 @@ function pageHtml(player) {
             ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(model.identity.position)} · ${escapeHtml(age)}</span>`
             // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
             // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
-            : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
+            : `<span class="hero-meta">${escapeHtml(model.identity.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}
         </div>
       </section>
       ${recentTransfer ? transferHeroHtml(player, recentTransfer, age) : ""}
