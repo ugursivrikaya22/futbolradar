@@ -85,11 +85,17 @@
 
   function matchHasVerifiedFinalScore(match) {
     if (!match || !isFinishedMatch(match)) return true;
-    var score = match.score || {};
-    return Number.isFinite(Number(score.home)) &&
-      Number.isFinite(Number(score.away)) &&
-      String(match.dataStatus || "").toLowerCase() === "verified" &&
-      String(match.publishState || "").toLowerCase() === "complete";
+    if (!hasReadableScore(match)) return false;
+    var dataStatus = String(match.dataStatus || "").toLowerCase();
+    if (dataStatus === "verified" && String(match.publishState || "").toLowerCase() === "complete") return true;
+    // A final score from the live provider has no editorial publishState.
+    // Requiring that field hid valid API results on the daily match cards.
+    var page = String(window.location.pathname || "/").replace(/\/$/, "").split("/").pop().replace(/\.html$/, "");
+    var currentMatchPage = ["", "index", "bugunun-maclari", "canli-skor"].includes(page);
+    return (currentMatchPage || !isInformationalLanding()) && match.__staticFallback !== true &&
+      dataStatus === "provider" && String(match.providerName || match.source || "").toLowerCase() === "api-football" &&
+      Boolean(match.providerId) && Number.isFinite(Date.parse(match.fetchedAt || "")) &&
+      ["FT", "AET", "PEN"].includes(String(match.providerStatus || "").toUpperCase());
   }
 
   function escapeHtml(value) {

@@ -38,6 +38,11 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:4193';
       }
       pages.push(page);
     }
+    matches = matches.map(match => ({ ...match, status: 'FINISHED', providerStatus: 'FT', live: false, minute: 90, elapsed: 90 }));
+    const finalPage = await context.newPage();
+    await finalPage.goto(base + '/bugunun-maclari.html', { waitUntil: 'domcontentloaded' });
+    await finalPage.waitForSelector('[data-api-target="matches-page"] [data-match="98765"].is-final', { timeout: 25000 });
+    assert.match(await finalPage.locator('[data-api-target="matches-page"] [data-match="98765"]').textContent(), /Galatasaray2.*Kocaelispor1/, 'provider final result remains visible on the daily card');
     matches = [];
     const empty = await context.newPage();
     await empty.goto(base + '/bugunun-maclari.html', { waitUntil: 'domcontentloaded' });
