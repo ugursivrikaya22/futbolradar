@@ -3,9 +3,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const viewports = [{ width: 1440, height: 900 }, { width: 1366, height: 768 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 360, height: 800 }];
+const viewports = [1440, 1366, 768, 430, 414, 390, 375, 360, 320].map(width => ({ width, height: width === 768 ? 1024 : 900 }));
 const base = process.env.AUDIT_BASE_URL || 'http://127.0.0.1:4187';
 const results = [];
+const retryCases = process.env.AUDIT_RETRY_REPORT ? JSON.parse(fs.readFileSync(process.env.AUDIT_RETRY_REPORT, "utf8")).results.filter(result => !result.passed) : null;
 const reportFile = process.env.AUDIT_REPORT || 'outputs/clickable/results.json';
 let server;
 let scenarioNumber = 0;
@@ -24,9 +25,9 @@ async function until(check, message, timeout = 5000) {
     server.stderr.on('data', chunk => fs.appendFileSync('outputs/clickable/preview-server.log', chunk));
     await until(async () => { try { return (await fetch(base + '/index.html')).ok; } catch { return false; } }, 'Preview failed to start', 30000);
   }
-  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : process.platform === 'win32' ? { channel: 'msedge' } : {}) });
+  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : process.platform === 'win32' ? { channel: 'msedge' } : {}) });
   try {
-    const queue = viewports.filter(v => !process.env.AUDIT_WIDTH || v.width === +process.env.AUDIT_WIDTH);
+    const queue = viewports.filter(v => !process.env.AUDIT_WIDTH || process.env.AUDIT_WIDTH.split(',').map(Number).includes(v.width));
     async function runViewport(viewport) {
       const touch = viewport.width <= 768;
       const context = await browser.newContext({ viewport, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce', serviceWorkers: 'block' });
@@ -87,9 +88,11 @@ async function until(check, message, timeout = 5000) {
         assert.ok(response.ok(), file + ' HTTP ' + response.status());
         await page.locator('main').waitFor();
         assert.ok((await page.locator('h1').first().innerText()).trim(), file + ': empty page');
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), file + ': horizontal page overflow');
       }
       async function test(name, run) {
         if (process.env.AUDIT_CASE && !name.includes(process.env.AUDIT_CASE)) return;
+        if (retryCases && !retryCases.some(result => result.viewport.width === viewport.width && result.name === name)) return;
         // Each flow owns a page; back navigation is still exercised within it.
         // Closing it releases decoded images and timers from previous flows.
         if (page) await page.close();
@@ -131,6 +134,7 @@ async function until(check, message, timeout = 5000) {
         await page.locator('main').waitFor();
         assert.ok((await page.locator('h1').first().innerText()).trim(), 'Empty destination');
         if (target.pathname.endsWith('/takim-detay.html')) {
+          await page.locator('[data-api-target="team-detail"]').scrollIntoViewIfNeeded();
           await page.locator('[data-api-target="team-detail"][data-state="ready"] [data-card="team-detail"]').waitFor();
           const requested = target.searchParams.get('team');
           if (requested) assert.ok((await page.locator('.td-hero').innerText()).includes(requested), 'Wrong team detail content');
@@ -403,6 +407,65 @@ async function until(check, message, timeout = 5000) {
           }
         });
       }
+      await test('mobile parity: visible actions and outside menu close', async () => {
+        await open('index.html');
+        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor();
+        for (const selector of ['.news-ticker-all', '.fixture-card-action', '.fixture-card-quicklinks a']) {
+          const target = page.locator(selector).first();
+          assert.ok(await target.isVisible(), selector + ' hidden');
+          if (touch) assert.ok((await target.boundingBox()).height >= 44, selector + ' small touch target');
+          await navigate(target);
+        }
+        if (viewport.width < 1366) {
+          await click(page.locator('.nav-toggle'));
+          assert.equal(await page.locator('.nav-toggle').getAttribute('aria-expanded'), 'true');
+          await page.touchscreen.tap(viewport.width - 5, viewport.height - 100);
+          await until(async () => await page.locator('.nav-toggle').getAttribute('aria-expanded') === 'false', 'Outside tap did not close menu');
+        }
+      });
+      await test('team hubs and broadcast pages retain mobile content', async () => {
+        for (const file of ['galatasaray-maclari.html', 'fenerbahce-maclari.html', 'besiktas-maclari.html', 'trabzonspor-maclari.html', 'bugunun-maclari-hangi-kanalda.html']) {
+          await open(file);
+          const links = page.locator('main a[href]').filter({ visible: true });
+          assert.ok(await links.count(), file + ' has no links');
+          await navigate(links.first());
+        }
+      });
+      await test('match analysis tabs and restored table columns', async () => {
+        const analyses = JSON.parse(fs.readFileSync('data/match-analyses.json', 'utf8'));
+        const record = analyses.find(item => item.fixtureId && item.homeContext && item.awayContext && item.prediction);
+        assert.ok(record, 'No persisted match analysis to exercise');
+        await open('mac-detay.html?id=' + encodeURIComponent(record.fixtureId));
+        await page.locator('[data-api-target="match-analysis"]').scrollIntoViewIfNeeded();
+        const tabs = page.locator('.match-analysis-tab');
+        await tabs.first().waitFor();
+        for (let i = 0; i < await tabs.count(); i++) {
+          const tab = tabs.nth(i);
+          await click(tab);
+          assert.equal(await tab.getAttribute('aria-selected'), 'true');
+          assert.ok(await page.locator('#' + await tab.getAttribute('aria-controls')).isVisible());
+        }
+        await open('momentum.html');
+        const cells = page.locator('.table-row.header > *');
+        assert.equal(await cells.count(), 6);
+        for (let i = 0; i < 6; i++) assert.ok(await cells.nth(i).isVisible(), 'Hidden momentum column ' + i);
+      });
+      await test('ticker links, logo and menu stacking', async () => {
+        await open('index.html');
+        await navigate(page.locator('.news-ticker-group:not([aria-hidden="true"]) .news-ticker-item:not([target="_blank"])').first());
+        await open('haberler.html');
+        await navigate(page.locator('header .brand').first());
+        if (viewport.width < 1366) {
+          await click(page.locator('.nav-toggle'));
+          const menu = page.locator('.nav-menu');
+          await menu.evaluate(e => { e.scrollTop = e.scrollHeight; });
+          const last = menu.locator('a').last();
+          await last.scrollIntoViewIfNeeded();
+          assert.ok(await last.evaluate(e => { const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }), 'Menu item covered by floating content');
+          await click(page.locator('.nav-toggle'));
+          assert.equal(await page.locator('.nav-toggle').getAttribute('aria-expanded'), 'false');
+        }
+      });
       await test('player quick links remain above the hero', async () => {
         await open('oyuncu-radari.html');
         await navigate(page.locator('.player-quick-links a').first());
@@ -501,7 +564,7 @@ async function until(check, message, timeout = 5000) {
       });
       await context.close();
     }
-    const workers = process.platform === 'win32' ? [0] : [0, 1];
+    const workers = Array.from({ length: Number(process.env.AUDIT_WORKERS || (process.platform === 'win32' ? 1 : 2)) }, (_, i) => i);
     await Promise.all(workers.map(async () => {
       while (queue.length) await runViewport(queue.shift());
     }));

@@ -668,7 +668,7 @@
 
     document.addEventListener("click", function (event) {
       if (!desktopQuery.matches && nav.classList.contains("is-open") &&
-          !nav.contains(event.target) && !event.target.closest("[data-bottom-nav-menu]")) {
+          !menu.contains(event.target) && !event.target.closest(".nav-toggle, .nav-search-toggle-mobile, .site-search, .brand, .theme-toggle, [data-lang-switch], [data-bottom-nav-menu]")) {
         closeNav(nav, toggle);
       }
     });

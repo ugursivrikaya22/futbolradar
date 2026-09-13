@@ -1037,16 +1037,13 @@ h1 {
   }
 
   .table-row {
-    grid-template-columns: 30px minmax(0, 1fr) 42px 42px;
-    gap: 8px;
-    padding-inline: 12px;
-    font-size: 0.82rem;
+    grid-template-columns: 20px minmax(50px, 1.3fr) repeat(4, minmax(0, 1fr));
+    gap: 4px;
+    padding-inline: 8px;
+    font-size: 0.7rem;
   }
 
-  .table-row span:nth-child(5),
-.table-row span:nth-child(6) {
-    display: none;
-  }
+  .table-row > * { min-width: 0; overflow-wrap: anywhere; }
 
   .source-strip {
     grid-template-columns: 1fr;
@@ -13992,14 +13989,8 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   }
 }
 
-/* ----------------------------------------------------------------------------
-   MAÇ KARTI İÇ LİNK SİSTEMİ — ana sayfanın "Bugünün Maçları" önizlemesinde
-   `.fixture-card-action`ın ALTINA eklenen üç küçük düğme (Analiz / Puan
-   Durumu / Takım Formu). Mevcut tek büyük eylem bağlantısı ve onun mobildeki
-   tam-kart dokunma alanı değişmeden kalır; bu satır yalnızca kartı biraz
-   uzatan, kendi yüksekliği sabit bir ek sıradır (düzen kayması yok, kart
-   ilk çizimde zaten bu haliyle basılır).
-   -------------------------------------------------------------------------- */
+/* Secondary match actions remain separate native links. Card surface taps
+   are handled by site.js without covering these controls. */
 .fixture-card-quicklinks {
   display: flex;
   gap: 6px;
@@ -14658,9 +14649,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 @media (max-width: 760px) {
-  .news-ticker-all {
-    display: none;
-  }
+  .news-ticker-all { display: inline-flex; align-items: center; min-height: 44px; grid-column: 1 / -1; justify-self: end; }
 
   .news-ticker-inner {
     grid-template-columns: auto minmax(0, 1fr);
@@ -14761,10 +14750,8 @@ table {
 }
 
 @media (max-width: 760px) {
-  /* Mobilde ok düğmeleri gereksiz: parmakla kaydırma zaten var. */
-  .slider-nav {
-    display: none;
-  }
+  .section-head-actions { flex-wrap: wrap; max-width: 100%; }
+  .slider-nav { display: flex; }
 
   /* Keep the enlarged touch targets inside the viewport. The dots occupy
      their own row so the pause/arrow buttons cannot be pushed off-screen. */
@@ -15943,7 +15930,7 @@ a.fixture-chip.is-lineup i {
 
   .md-side-name { font-size: var(--fs-sm); }
 
-  .md-side-role { display: none; }
+  .md-side-role { overflow-wrap: anywhere; }
 
   .md-ev {
     grid-template-columns: 40px 28px 1fr;
@@ -17561,9 +17548,7 @@ body,
     overflow: hidden;
   }
 
-  .ad-search-page .fixture-card-meta {
-    display: none;
-  }
+  .ad-search-page .fixture-card-meta { display: grid; }
 
   .results-trust-strip,
 .results-grid {
@@ -18432,8 +18417,7 @@ body,
   .motm-poll { margin: 16px 0; padding: 16px 14px 18px; border-radius: 14px; }
   .motm-poll__options { grid-template-columns: 1fr; gap: 6px; }
   .motm-poll__label { padding: 9px 10px; font-size: 0.84rem; }
-  /* Dar ekranda takım adı düşer; oyuncu adı ve rolü kalır. */
-  .motm-poll__team { display: none; }
+  .motm-poll__team { overflow-wrap: anywhere; }
   .motm-poll__submit { width: 100%; }
 }
 
@@ -18910,9 +18894,10 @@ body,
     align-items: center;
   }
   .poll-sticky-link { display: flex; align-items: center; gap: 10px; flex: 1 1 auto; padding-right: 0; }
-  .poll-sticky-kicker { display: none; }
+  .poll-sticky-kicker { display: block; flex-basis: 100%; }
   .poll-sticky-question { flex: 1 1 auto; margin: 0; font-size: 0.8rem; }
-  .poll-sticky-total { display: none; }
+  .poll-sticky-total { display: block; }
+  .poll-sticky-link { flex-wrap: wrap; }
   .poll-sticky-cta-label { margin: 0; flex: none; }
 }
 
@@ -19309,7 +19294,7 @@ a.motm-week__card:focus-visible {
   /* Dar ekranda sayı bloğu alta iner; fotoğraf ve ad öndedir. */
   .motm-week__score { grid-column: 1 / -1; grid-template-columns: auto auto 1fr; align-items: center; justify-items: start; gap: 8px; min-width: 0; }
   .motm-week__bar { width: 100%; justify-self: stretch; }
-  .motm-week__cta { display: none; }
+  .motm-week__cta { grid-column: 1 / -1; min-height: 44px; display: flex; align-items: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -20443,59 +20428,16 @@ a.motm-week__card:focus-visible {
    çok daha geniş biçimde veriyor, şerit tekrar olurdu. */
 @media (min-width: 901px) { .now-football { display: none; } }
 
-/* ── MOBİLDE KOMPAKT MAÇ KARTI ──────────────────────────────────────
-   Ölçüm: kart 213 px, telefon ekranına 3 maç sığıyordu. En büyük kalem
-   "Maç ayrıntısını aç" bağlantısının kapladığı tam genişlikte 44 px'lik
-   satırdı.
-
-   Bağlantı SİLİNMİYOR — kartın tamamına yayılıyor. Böylece hem o satır
-   geri kazanılıyor hem de dokunma hedefi 44 px'in çok üstüne çıkıyor:
-   artık kartın her yeri tıklanabilir. Metin DOM'da ve erişilebilirlik
-   ağacında kalıyor (bağlantının erişilebilir adı o), yalnızca görsel
-   olarak gizleniyor; `display: none` olsaydı ad da giderdi. */
+/* Mobile keeps visible actions; site.js handles taps on card surfaces. */
 @media (max-width: 900px) {
-  .fixture-card {
-    position: relative;
-    gap: 6px;
-    padding: 10px 12px;
-  }
-
-  .fixture-card-action {
-    position: absolute;
-    inset: 0;
-    min-height: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    background: none;
-    color: transparent;
-    font-size: 0;
-  }
-
-  /* Dokunulduğu görülsün: kartın tamamı bir düğme gibi davranıyor. */
+  .fixture-card { position: relative; gap: 8px; padding: 10px 12px; }
+  .fixture-card-action { min-height: 44px; }
+  .news-ticker-all { display: inline-flex; align-items: center; min-height: 44px; }
+  .slider-nav button { min-height: 44px; min-width: 44px; }
   .fixture-card:active { background: var(--green-soft, rgba(11, 143, 90, .08)); }
-
-  /* Skor ve ad satırı sıkışmasın ama boşluk da yemesin. */
-  .fixture-card-rows { gap: 4px; }
-  .fixture-row-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-  /* MAÇ KARTI İÇ LİNK SİSTEMİ — `.fixture-card-action` bu genişlikte
-     görünmez, kartın tamamını kaplayan tek bir bağlantıya dönüşüyor
-     (yukarıda). z-index verilmemiş o katmanın ÜSTÜNDE kalmazsa üç düğme de
-     görünmez kart bağlantısının altında kalır ve dokunulamaz olur; bu
-     yüzden kendi konumlanmış katmanına çıkarılıyor. Üç küçük düğme kartı
-     büyütmesin diye kompakt tutulur, yine de dokunma hedefi 28px'in altına
-     inmez. */
-  .fixture-card-quicklinks {
-    position: relative;
-    z-index: 1;
-  }
-
-  .fixture-card-quicklinks a {
-    min-height: 30px;
-    font-size: 0.68rem;
-    padding: 0 4px;
-  }
+  .fixture-card-rows { gap: 6px; }
+  .fixture-row-name { white-space: normal; overflow-wrap: anywhere; }
+  .fixture-card-quicklinks a { min-height: 44px; padding: 4px; }
 }
 
 /* Rozet satırı boşsa hiç çizilmez: içi boş bir kutu, kart yüksekliğini
@@ -21144,35 +21086,9 @@ a.motm-week__card:focus-visible {
 .leaders-see-all:hover,
 .leaders-see-all:focus-visible { text-decoration: underline; }
 
-/* ── MAÇ MERKEZİ CTA: MOBİLDE KOMPAKT ───────────────────────────────
-   Ölçüm: iki tanıtım kartı mobilde 2.142 px — sayfanın en büyük bloğu.
-   Bunun 1.064 px'i "Dosyadan bölümler" listesiydi: dosyanın alt
-   sayfalarına giden ikincil bir gezinme.
-
-   Telefonda bu liste gereksiz: kartın kendi CTA'sı zaten aynı dosyayı
-   açıyor ve bölümler orada, tam genişlikte duruyor. Mobilde kalan şey
-   brifingin istediği çekirdek — başlık, iki takım, saat ve "aç"
-   çağrısı. İçerik SİLİNMİYOR, yalnızca dar ekranda katlanıyor;
-   masaüstünde kart olduğu gibi. */
+/* Match dossier navigation and summaries remain available on touch screens. */
 @media (max-width: 900px) {
-  .match-special-promo__body { display: none; }
-
-  .match-special-promo__lead {
-    display: -webkit-box;
-    overflow: hidden;
-    /* Spot metin iki satırla sınırlı: kart yüksekliği metne göre
-       şişmesin. */
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  /* Çağrı bağlantısı parmak hedefi olacak kadar büyük. */
-  .match-special-promo__cta {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    font-weight: 900;
-  }
+  .match-special-promo__cta { display: inline-flex; align-items: center; min-height: 44px; font-weight: 900; }
 }
 
 /* ── MOBİL: KART VE PARMAK HEDEFİ SIKILAŞTIRMA ──────────────────────
@@ -22153,4 +22069,9 @@ button:not(:disabled), summary, select, .interactive-card { cursor: pointer; }
 .interactive-card:focus-within { outline: 2px solid var(--green, #0b8f5a); outline-offset: 3px; }
 a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visible, [role="tab"]:focus-visible {
   outline: 2px solid var(--green, #0b8f5a); outline-offset: 3px;
+}
+
+/* The open navigation stays above floating notification controls. */
+@media (max-width: 1365px) {
+  .topbar-premium:has(.nav.is-open) { z-index: 80; }
 }
