@@ -687,8 +687,8 @@
       return true;
     }
 
-    if (match && match.competitionId === selectedLeague) {
-      return true;
+    if (match && match.competitionId) {
+      return match.competitionId === selectedLeague;
     }
 
     var normalizedLeague = normalizeSearchText(match && (match.league || match.competition))
@@ -5886,15 +5886,18 @@
   // Zaten TAKİP EDİLEN bir maçın durumu/skoru bu süzgeçten ETKİLENMEZ —
   // aşağıdaki `existing !== undefined` dalı koşulsuz ilerler. Süzgeç
   // yalnızca YENİ bir kayıt eklemenin koşulu: bugünün (TSİ) FutbolRadar
-  // kapsamındaki bir yarışması olmalı — ya Türk takımı maçı ya da `base`de
-  // (düzgün kapsamlı `/api/matches` yanıtından gelen) bugün için zaten
-  // bilinen bir yarışma kimliği.
+  // kapsamındaki bir yarışması olmalı. Takım veya lig adı tek başına
+  // yeterli değildir: örneğin Kazakistan'ın Altay takımı Türk kulübüyle,
+  // aynı adlı Serie A ligleri de birbirleriyle karışmamalı.
   function isLiveMatchInFutbolRadarScope(match, base) {
     if (matchDateValue(match) !== todayInIstanbul()) {
       return false;
     }
-    if (isTurkishMatch(match)) {
-      return true;
+    if (match && match.providerLeagueId != null) {
+      return base.some(function (existing) {
+        return existing && existing.providerLeagueId != null &&
+          String(existing.providerLeagueId) === String(match.providerLeagueId);
+      });
     }
     var competitionId = match && match.competitionId;
     if (!competitionId) {

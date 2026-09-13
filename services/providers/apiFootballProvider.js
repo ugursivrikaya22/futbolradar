@@ -9,7 +9,7 @@ const {
   normalizeText,
   withTimeout
 } = require("../../api/_utils");
-const { competitions, matchesCompetition } = require("../competitionCatalog");
+const { competitions, matchesCompetition, findCompetitionByProviderId } = require("../competitionCatalog");
 const { canonicalStatus } = require("../matchStatus");
 const { fetchWithCache } = require("../providerCache");
 // Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
@@ -651,6 +651,7 @@ function roundNumber(league) {
 function normalizeFixture(item) {
   const fixture = item.fixture || {};
   const league = item.league || {};
+  const competition = findCompetitionByProviderId(league.id);
   const teams = item.teams || {};
   const goals = item.goals || {};
   const kickoff = toIstanbulOffsetIso(fixture.date);
@@ -660,7 +661,8 @@ function normalizeFixture(item) {
   return {
     id: String(fixture.id || `${teamName(homeTeam)}-${teamName(awayTeam)}-${kickoff}`),
     providerId: fixture.id ? String(fixture.id) : "",
-    league: league.name || "",
+    league: competition ? competition.name : league.name || "",
+    competitionId: competition ? competition.id : null,
     // Sağlayıcının SAYISAL lig kimliği. Aşağı akıştaki her eşleşme
     // (filterSupportedCompetitions, groupMatchesByLeague, competitionId
     // çözümü) önce bunu dener — ad hiçbir zaman tek başına karar vermez.

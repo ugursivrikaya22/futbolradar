@@ -31,7 +31,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Canlı skor isteği taze olmalı; günlük liste daha uzun önbelleklenebilir.
+  // Günlük liste ve canlı skor aynı güncel kaynak yanıtlarını kullanır.
   setCachePolicy(res, "matches-live");
   if (enforceRateLimit(req, res)) return;
 

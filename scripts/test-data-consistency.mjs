@@ -57,9 +57,9 @@ const context = vm.createContext({
   URLSearchParams, Date, window: { location: { search: "" } },
   todayInIstanbul: () => "2026-09-13", matchDateValue: m => new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(m.kickoff)),
   matchCompetitionMatches: () => true, matchIdentityKey: m => [m.homeTeam, m.awayTeam, m.kickoff].join("|"),
-  isLiveMatchInFutbolRadarScope: () => true, hasReadableScore: m => m.score && m.score.home != null && m.score.away != null
+  hasReadableScore: m => m.score && m.score.home != null && m.score.away != null
 });
-vm.runInContext(["recordsUpdatedAt", "filterFallbackData", "mergeLiveIntoMatches"].map(extract).join("\n"), context);
+vm.runInContext(["recordsUpdatedAt", "filterFallbackData", "isLiveMatchInFutbolRadarScope", "mergeLiveIntoMatches"].map(extract).join("\n"), context);
 const fixture = { id: "slug", providerId: "98765", kickoff: "2026-09-12T21:15:00Z", homeTeam: "Old name", awayTeam: "Away", status: "LIVE", minute: 30, score: { home: 1, away: 0 }, fetchedAt: "2026-09-13T12:00:00Z" };
 const changed = { ...fixture, id: "98765", homeTeam: "New name", minute: 0, score: { home: 0, away: 0 }, fetchedAt: "2026-09-13T12:01:00Z" };
 context.base = [fixture]; context.incoming = [changed];
@@ -69,6 +69,22 @@ assert.equal(merged[0].minute, 0, "zero minute and score corrections must not be
 assert.equal(merged[0].score.home, 0);
 context.base = merged; context.incoming = [fixture];
 assert.equal(vm.runInContext("mergeLiveIntoMatches(base, incoming)", context)[0].minute, 0, "late packets cannot rewind a fixture");
+context.base = [{ ...fixture, providerLeagueId: "39", competitionId: "premier-league" }];
+context.incoming = [
+  { ...changed, id: "foreign-altay", providerId: "foreign-altay", providerLeagueId: "389", competitionId: "premier-league", awayTeam: "Altay" },
+  { ...changed, id: "outside-catalog", providerId: "outside-catalog", providerLeagueId: "554", homeTeam: "Karaköprü Belediyespor" }
+];
+assert.equal(vm.runInContext("mergeLiveIntoMatches(base, incoming)", context).length, 1, "live packets cannot add unrelated leagues by team name or an ambiguous league name");
+context.incoming = [{ ...changed, id: "same-league", providerId: "same-league", providerLeagueId: 39 }];
+assert.equal(vm.runInContext("mergeLiveIntoMatches(base, incoming)", context).length, 2, "new live fixtures in an existing provider league remain supported");
+const brazil = provider.normalizeFixture({ fixture: { id: 11 }, league: { id: 71, name: "Serie A" } });
+const italy = provider.normalizeFixture({ fixture: { id: 12 }, league: { id: 135, name: "Serie A" } });
+assert.notEqual(brazil.league, italy.league, "same-name leagues must render in different groups");
+assert.equal(brazil.competitionId, "brasileirao");
+assert.equal(italy.competitionId, "serie-a");
+vm.runInContext(extract("matchCompetitionMatches"), context);
+context.brazil = brazil;
+assert.equal(vm.runInContext('matchCompetitionMatches(brazil, "serie-a")', context), false, "Brazilian fixtures cannot enter the Italian league filter");
 context.input = [fixture, { ...fixture, kickoff: "2026-09-12T20:59:00Z" }];
 assert.equal(vm.runInContext('filterFallbackData("matches", input)', context).length, 1, "today uses Istanbul midnight");
 assert.match(fs.readFileSync(new URL("../api/matches.js", import.meta.url), "utf8"), /isUsable: Array.isArray/);
