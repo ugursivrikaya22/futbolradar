@@ -349,6 +349,7 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
   // fonksiyon bildirimi kazanır). Gerçek tarayıcı davranışıyla eşleşmesi
   // için ikisi de, aynı sırayla, dahil edilir.
   const body = [
+    "var istanbulDayCache = new Map(); var istanbulDayFormatter = null;",
     extractFunction(appSource, "normalizeSearchText", 1),
     extractFunction(appSource, "normalizeSearchText", 2),
     extractFunction(appSource, "istanbulDayOf"),

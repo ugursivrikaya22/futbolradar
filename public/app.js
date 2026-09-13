@@ -62,7 +62,7 @@
   };
   var RESOURCE_CONFIG = {
     matches: { api: "matches", fallback: "matches", reportSource: true, noStore: true },
-    standings: { api: "standings", fallback: "teams", reportSource: true },
+    standings: { api: "standings", fallback: "teams", reportSource: true, noStore: true },
     teams: { api: "teams", fallback: "teams", reportSource: true },
     players: { api: "players", fallback: "players", reportSource: true },
     transfers: { api: "transfers", fallback: "transfers", reportSource: false },
