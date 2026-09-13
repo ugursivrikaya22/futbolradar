@@ -5324,7 +5324,10 @@
       return "";
     }
 
-    var teamList = superLigTeamLogoList(teams || []);
+    // İlk çizimde takım listesi doğrudan gelir; sonraki canlı skor
+    // yoklamaları renderer'ı yalnızca maçlarla çağırır. O yenilemelerde
+    // önbelleği kullanmazsak Süper Lig maçları genel listeye geri düşer.
+    var teamList = superLigTeamLogoList(teams || latestSuperLigTeams || []);
     var today = todayInIstanbul();
     var remaining = matches.filter(function (match) {
       return !isTodaySuperLigMatch(match, teamList, today);
