@@ -18,6 +18,18 @@ import { STANDINGS_LEAGUES, TR_TAB_ORDER, EN_TAB_ORDER } from "./lib/standingsCa
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publicPlayerView } = require("../services/cardCredibility.js");
+/**
+ * Oyuncu adresleri tek çözücüden okunur. Kimlikten yol türetmek, oyuncu
+ * tam isimli adrese taşındığı anda var olmayan bir dosyaya işaret ediyor.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { mergeSuperLigTeams, slug: teamSlug } = require("../services/superLigTeams.js");
 const { publishedColumns } = require("../services/columnService.js");
 const { ROUTES: I18N_ROUTES, routeMeta } = require("../services/i18n.js");
@@ -219,7 +231,7 @@ for (const player of asArray(readJson("players.json"), "players")) {
   if (!player || !player.id || !player.name) {
     continue;
   }
-  const href = `oyuncular/${player.id}.html`;
+  const href = playerUrls.playerPagePath(player.id);
   // Arama sonucu altyazısı da bir KULÜP İDDİASIDIR. Denetimde burada
   // "Serbest oyuncu · Santrfor" ve "Schalke 04 · Santrfor" yazıyordu —
   // doğrulanmamış kayıtlar için sonuç listesinde beyan edilmiş kulüpler.
@@ -232,7 +244,7 @@ for (const player of asArray(readJson("players.json"), "players")) {
     type: "player",
     badge: "OYN",
     href,
-    enHref: existingHref(`en/player/${player.id}.html`),
+    enHref: existingHref(playerUrls.enPlayerPagePath(player.id)),
     title: player.name,
     subtitle: [club, position].filter(Boolean).join(" · ") || "Oyuncu profili"
   });

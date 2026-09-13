@@ -27,6 +27,8 @@ const require = createRequire(import.meta.url);
 const { DOMAIN, absoluteUrl, dynamicRoutePairs } = require("../services/i18n.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { getPlayers } = require("../services/playerService.js");
+const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 
 const root = process.cwd();
 const failures = [];
@@ -57,8 +59,15 @@ const playerPairs = dynamicRoutePairs("player");
   check("maç eşlemesi TR /mac/ ile aynı büyüklükte", matchPairs.length > 0, `${matchPairs.length}`);
   check("oyuncu eşlemesi yalnızca doğrulanmış kayıtları kapsıyor", playerPairs.length > 0, `${playerPairs.length}`);
 
-  const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
-  const verifiedCount = players.filter((player) => publicPlayerView(player).verified).length;
+  // KOPYA KAYIT İNGİLİZCE SAYFA ALMAZ.
+  //
+  // Aynı gerçek oyuncunun iki kaydı varsa adres kanonik kayda ait; kopya
+  // kayda ikinci bir İngilizce sayfa açmak aynı oyuncuyu iki URL'de
+  // yayımlamak olurdu. Bu yüzden beklenen sayı "doğrulanmış kayıt" değil,
+  // "doğrulanmış KANONİK kayıt".
+  const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+  const verifiedCount = players
+    .filter((player) => publicPlayerView(player).verified && !player.isDuplicate).length;
   check("oyuncu sayısı yayın kapısıyla birebir eşleşiyor", playerPairs.length === verifiedCount,
     `eşleme=${playerPairs.length} kapı=${verifiedCount}`);
 }
@@ -177,10 +186,23 @@ for (const pair of playerSample) {
 
 // --- 8. İnce içerik yasağı: doğrulanmamış oyuncuya EN sayfa açılmamış ------
 {
-  const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
-  const { slug: playerSlug } = require("../services/playerService.js");
-  const unverified = players.filter((player) => !publicPlayerView(player).verified).slice(0, 20);
-  const leaked = unverified.filter((player) => fs.existsSync(path.join(root, "en", "player", `${playerSlug(player.id)}.html`)));
+  // Dosya adı artık kimlik değil, adres slug'ı (tam adı bilinen oyuncuda
+  // "victor-osimhen"). Kimlikten dosya adı türeten bir kontrol, taşınan
+  // oyuncuları hiç denetlemez; slug ise kopya kaydın kanoniğine çözüldüğü
+  // için "doğrulanmamış kayıt kendi sayfasını almış mı" sorusunu doğru
+  // sorar — kanoniği doğrulanmışsa o sayfa ona aittir, sızıntı değildir.
+  const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+  const playerUrls = createPlayerUrlResolver((() => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
+    } catch {
+      return { entries: [], aliases: [] };
+    }
+  })());
+  const unverified = players
+    .filter((player) => !publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id)
+    .slice(0, 20);
+  const leaked = unverified.filter((player) => fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id))));
   check("doğrulanmamış oyuncular EN sayfası almamış", !leaked.length, leaked.map((player) => player.id).join(", "));
 }
 

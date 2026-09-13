@@ -36,6 +36,18 @@ const {
   squadHighlights,
   validateSpecial
 } = require("../services/matchSpecial.js");
+/**
+ * Oyuncu adresleri tek çözücüden. profil yolu veride dizge olarak saklandığı için
+ * kullanıldığı anda yeniden çözülür; test de aynı yolu denetler.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 
 /**
  * FİKSTÜR SATIRI TESTİN KENDİ ANLIK GÖRÜNTÜSÜNDEN GELİR.
@@ -428,8 +440,17 @@ console.log("match-special");
           `${entry.matchId} ${locale}: kadronun kaynağı sayfada görünmeli`);
         for (const player of probable.players) {
           assert.ok(html.includes(escapeForHtml(player.name)), `${locale}: ${player.name} görünmeli`);
-          const profile = player.profile[locale] || player.profile.tr;
-          assert.ok(fs.existsSync(path.join(root, profile)), `${locale}: ${player.name} profil hedefi yok (${profile})`);
+          // KURAL: bağlantı VARSA hedefi de olmalı. Her oyuncunun her dilde
+          // profili olmak ZORUNDA değil — İngilizce sayfa yalnızca yayın
+          // kapısından geçen kayıtlar için üretiliyor. Denetlenen şey,
+          // basılan bağlantının 404 vermemesi.
+          const profile = playerUrls.refreshPagePath(player.profile[locale] || player.profile.tr);
+          const linked = html.includes(`href="${escapeForHtml(profile)}"`)
+            || html.includes(`/${profile}"`);
+          if (linked) {
+            assert.ok(fs.existsSync(path.join(root, profile)),
+              `${locale}: ${player.name} bağlantısı var ama hedefi yok (${profile})`);
+          }
         }
         assert.match(html, /match-special__pitch-row is-4/, `${locale}: dörtlü savunma satırı yok`);
         assert.match(html, /match-special__probable-analysis/, `${locale}: taktik analiz yok`);
