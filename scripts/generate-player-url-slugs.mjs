@@ -11,7 +11,7 @@
  *   record           — kaydın kendi adı zaten tam ("Mauro Icardi")
  *   duplicate-record — aynı oyuncunun ikinci kaydından ("Victor Osimhen")
  *   derived          — maç olayı / haber etiketi / yapısal ad alanından
- *   record-fullname  — son çare, sağlayıcının yasal tam adı
+ *   record-fullname  — son çare, sağlayıcının yasal tam adı\n *   carried          — kanıt arşivden düştü, adres önceki tablodan taşındı
  *
  * `--check` ile çalıştırıldığında dosyayı YAZMAZ, yalnızca diskteki hâliyle
  * karşılaştırır ve fark varsa sıfırdan farklı çıkar — derleme, gözden
@@ -75,6 +75,26 @@ const fullNames = buildFullNameMap(players, sources);
 const slugs = buildSlugMap(players, fullNames);
 
 const canonical = players.filter((player) => !player.isDuplicate);
+
+/**
+ * BİR KEZ VERİLEN ADRES GERİ ALINMAZ.
+ *
+ * Tam ad, dönen veriden kurtarılıyor: adı taşıyan maç olayı ya da haber
+ * etiketi arşiv penceresinden çıkınca aynı oyuncu bir sonraki koşuda tam
+ * adsız kalıyor ve adresi tabloyu terk ediyordu. Yayımlanmış bir adresin
+ * kanıt döndü diye kaybolması, o sayfayı 404'e çevirir — üstelik
+ * yönlendirmesiz, çünkü artık nereye gideceğini bilen kayıt da yok.
+ *
+ * Bu yüzden kaydı hâlâ duran bir oyuncunun adresi, kanıt bugün okunamasa
+ * bile diskteki tablodan taşınır. Kaydın kendisi silindiyse adres de
+ * gider: o zaman ortada sayfası olacak bir oyuncu yoktur.
+ */
+const previous = readJson("data/player-url-slugs.json", { entries: [] });
+const canonicalIds = new Set(canonical.map((player) => player.id));
+const carried = ((previous && previous.entries) || [])
+  .filter((entry) => entry && entry.id && entry.slug)
+  .filter((entry) => canonicalIds.has(entry.id) && !slugs.has(entry.id));
+
 const entries = canonical
   .filter((player) => slugs.has(player.id))
   .map((player) => ({
@@ -84,7 +104,12 @@ const entries = canonical
     source: fullNames.get(player.id).source,
     slug: slugs.get(player.id)
   }))
+  .concat(carried.map((entry) => ({ ...entry, source: "carried" })))
   .sort((left, right) => left.slug.localeCompare(right.slug));
+
+for (const entry of carried) {
+  slugs.set(entry.id, entry.slug);
+}
 
 // Kopya kayıtlar kanonik kaydın adresine yönlendirilir; kendi adresleri yok.
 const aliases = players
