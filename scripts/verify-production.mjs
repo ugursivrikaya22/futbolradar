@@ -5,7 +5,7 @@ const require = createRequire(import.meta.url);
 const compilerManifest = require.resolve('typescript/package.json');
 const compiler = path.resolve(path.dirname(compilerManifest), require(compilerManifest).bin.tsc);
 const env = { ...process.env };
-for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT']) delete env[key];
+for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT', 'AUDIT_RETRY_REPORT']) delete env[key];
 for (const args of [
   ['scripts/test-match-focus.mjs'],
   ['scripts/qa.mjs'],
