@@ -3,7 +3,7 @@
   if (document.documentElement.lang !== "tr") return;
   var path = location.pathname.replace(/\.html$/, "").replace(/^\//, "");
   var league = path.replace(/-puan-durumu$/, "");
-  var leagueAliases = { "premier-lig": "premier-league", "1-lig": "tff-1-lig" };
+  var leagueAliases = { "premier-lig": "premier-league" };
   league = leagueAliases[league] || league;
   var table = /-puan-durumu$/.test(path) ? document.querySelector(".evergreen-table tbody") : null;
   var panels = Array.from(document.querySelectorAll('.standings-tabs__panel[id^="standings-panel-"]'));
