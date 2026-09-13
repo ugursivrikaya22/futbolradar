@@ -172,8 +172,8 @@ function normalizeMatchRecord(record) {
     stage: match.stage || null,
     homeTeam: String(home),
     awayTeam: String(away),
-    homeScore: Number.isFinite(Number(score.home)) ? Number(score.home) : null,
-    awayScore: Number.isFinite(Number(score.away)) ? Number(score.away) : null,
+    homeScore: score.home !== null && score.home !== undefined && score.home !== "" && Number.isFinite(Number(score.home)) ? Number(score.home) : null,
+    awayScore: score.away !== null && score.away !== undefined && score.away !== "" && Number.isFinite(Number(score.away)) ? Number(score.away) : null,
     status: match.status || null,
     lineups: Array.isArray(match.lineups) ? match.lineups : [],
     events: Array.isArray(match.events) ? match.events : []
@@ -310,16 +310,11 @@ function buildAppearance(match, player, key) {
   // KURAL 1: kanıt yoksa satır yok.
   if (!started && !touchedByEvent && !(onBench && subbedOnAt !== null)) return null;
 
-  // KURAL 2: dakika yalnızca iki uç da biliniyorsa.
-  //
-  // `subst` olayı taşıyan bir maçta ilk 11'deki oyuncu için çıkış olayı
-  // yoksa maçı tamamladığı okunabilir; hiç `subst` olayı olmayan maçta bu
-  // çıkarım yapılamaz (veri eksikliği ile 90 dakika ayırt edilemez).
-  const matchHasSubstData = match.events.some((event) => /^subst/i.test(String(event.type || "")));
+  // An event stream may be incomplete. Another player's substitution does
+  // not prove this player stayed on for 90 minutes or that the match lasted 90.
   let minutes = null;
   if (started && subbedOffAt !== null) minutes = subbedOffAt;
-  else if (started && matchHasSubstData) minutes = 90;
-  else if (subbedOnAt !== null) minutes = Math.max(0, 90 - subbedOnAt);
+  else if (subbedOnAt !== null && subbedOffAt !== null) minutes = Math.max(0, subbedOffAt - subbedOnAt);
 
   const goalsFor = side === "home" ? match.homeScore : match.awayScore;
   const goalsAgainst = side === "home" ? match.awayScore : match.homeScore;
@@ -340,7 +335,7 @@ function buildAppearance(match, player, key) {
       ? null
       : `${match.homeScore}-${match.awayScore}`,
     result,
-    started,
+    started: started ? true : subbedOnAt !== null ? false : null,
     subbedOnAt,
     subbedOffAt,
     minutes,

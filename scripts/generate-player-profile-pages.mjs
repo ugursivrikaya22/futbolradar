@@ -6,6 +6,7 @@ import {
   player360Description,
   player360Person,
   player360Title,
+  renderQuickFacts,
   renderPlayer360
 } from "./lib/player360.mjs";
 
@@ -94,7 +95,8 @@ const matchReportSlugs = generatedSlugs("mac-raporu");
 const newsSlugs = generatedSlugs("haber");
 
 const newsItems = publishableNews(readJson("data/news.json", []));
-const matchRecords = readJson("data/matches.json", []);
+const calendarStore = readJson("data/fixture-calendar.json", { matches: [] });
+const matchRecords = readJson("data/matches.json", []).concat(calendarStore.matches || []);
 const archiveRecords = readJson("data/historical-match-archive.json", { records: [] }).records || [];
 const squadStatuses = readJson("data/squad-statuses.json", { teams: [] });
 
@@ -231,7 +233,7 @@ function profileAvatarHtml(player) {
   }
 
   return `<img class="player-avatar profile-avatar" src="${escapeHtml(photo.url)}" alt="${escapeHtml(alt)}" ` +
-    `width="96" height="96" loading="lazy" decoding="async">`;
+    `width="96" height="96" loading="eager" decoding="async" fetchpriority="high">`;
 }
 
 function playerDescription(player, view) {
@@ -364,6 +366,8 @@ function pageHtml(player) {
     transfers: confirmedTransfers,
     news: newsItems,
     matches: matchRecords,
+    calendar: calendarStore.matches,
+    calendarUpdatedAt: calendarStore.fetchedAt,
     archive: archiveRecords,
     squadStatuses,
     displayName: playerUrls.playerDisplayName(player),
@@ -379,25 +383,10 @@ function pageHtml(player) {
     : "Kulüp bilgisi doğrulanmadı";
   const seoTeam = view.verified ? playerSeoTeamLabel(player) : "Oyuncu Profili";
   const age = player.computedAge || player.age || "Yaş yakında";
-  // BAŞLIK. Varsayılan artık "Futbolcu 360" kalıbı: arama, oyuncu adının
-  // yanında "istatistik", "gol", "haber" ve "son durum" kelimeleriyle
-  // geliyor ve sayfa bunların dördünü de gerçekten taşıyor.
-  //
-  // TEK İSTİSNA, aktif tescil penceresinde kesinleşmiş bir transfer:
-  // o hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor ve
-  // kulüp adını taşıyan başlık o niyetin birebir karşılığı. İstisna dar
-  // tutuluyor (46 kayıt), çünkü genel kalıp daha geniş bir niyeti kapsıyor.
-  const title = recentTransfer
-    ? `${player.name} ${recentTransfer.toTeam} Transferi ve İstatistikleri | FutbolRadar`
-    : player360Title(model, { locale: "tr" });
-  const description = recentTransfer
-    ? transferHeroDescription(player, recentTransfer)
-    : player360Description(model, { locale: "tr" });
-  const lead = recentTransfer
-    ? description
-    : view.verified
-      ? (playerNeedsTransferReview(player) ? description : player.summary || description)
-      : description;
+  // Every profile uses the same season-aware SEO contract, including transfers.
+  const title = player360Title(model, { locale: "tr" });
+  const description = player360Description(model, { locale: "tr" });
+  const lead = description;
   const canonical = playerUrls.playerCanonicalUrl(player.id);
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
@@ -477,6 +466,7 @@ function pageHtml(player) {
           <div>
             <span class="eyebrow">${escapeHtml(recentTransfer ? `Yeni Transfer · ${recentTransfer.toTeam}` : view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
             <h1>${escapeHtml(model.identity.name)}</h1>
+            ${renderQuickFacts(model, "tr")}
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
           ${view.verified

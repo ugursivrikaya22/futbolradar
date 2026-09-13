@@ -349,6 +349,8 @@ function fullMaintenanceSteps(providerReady) {
     nodeStep("international-opponents", "sync-international-opponents.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000, skip: noProvider }),
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
+    ...["galatasaray", "fenerbahce", "besiktas", "trabzonspor"].map(team =>
+      nodeStep("daily-player-" + team, "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--team=" + team, "--stale-days=1", "--request-budget=8", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 5 * 60 * 1000, skip: noProvider })),
     nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--incomplete-profiles", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
     nodeStep("weekly-photo-validation", "validate-player-photos.mjs", ["--apply", "--concurrency=3", "--stale-days=14"], { kind: "source", source: "player-photo-hosts", timeoutMs: 12 * 60 * 1000, skip: !monday ? "Photo refresh runs in the Monday full update only." : false })
   ];
@@ -401,19 +403,8 @@ function validationSteps() {
 function hourlyBuildSteps(diff) {
   const steps = [];
   if (diff.playersUpdated) {
-    steps.push(nodeStep("render-player-pages", "generate-player-profile-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }));
-    // Oyuncu profili tek başına YAYINA HAZIR DEĞİL: tam derleme bu üretimden
-    // sonra karşılaştırma sayfalarını (profilin bağlandığı
-    // karsilastirma/<a>-vs-<b>.html) ve SEO ön-render gövdesini
-    // (`data-prerendered="1"`) ayrıca yazar. Saatlik hat yalnızca ilk adımı
-    // koşturduğu için kadro senkronuyla gelen her yeni oyuncu, bağlantısı
-    // kırık ve gövdesi boş bir profil olarak çıkıyor ve QA (haklı olarak)
-    // koşuyu reddediyordu — 2026-09 başında saatlik güncelleme bu yüzden
-    // günlerce commit'lenemedi. Üç adım da yalnızca oyuncu verisi
-    // değiştiğinde koşar; karşılaştırma üretimi ~45 sn, ön-render ~7 sn.
+    // New players may require new comparison targets before profiles link to them.
     steps.push(nodeStep("render-player-comparisons", "generate-player-comparison-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }));
-    steps.push(nodeStep("render-en-player-pages", "generate-en-player-pages.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }));
-    steps.push(nodeStep("prerender-player-content", "prerender-player-content.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   }
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
@@ -429,6 +420,10 @@ function hourlyBuildSteps(diff) {
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-broadcast-schedule", "generate-broadcast-schedule-page.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
     nodeStep("render-league-pages", "generate-league-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    // Match/news/calendar changes must reach profiles even if players.json is unchanged.
+    nodeStep("render-player-pages", "generate-player-profile-pages.mjs", [], { kind: "build", required: true, timeoutMs: 10 * 60 * 1000 }),
+    nodeStep("render-en-player-pages", "generate-en-player-pages.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
+    nodeStep("prerender-player-content", "prerender-player-content.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
   );
 

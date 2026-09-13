@@ -49,7 +49,7 @@ function normalize(html) {
     (m, open, value, close) => open + clampDescription(value) + close
   );
 
-  out = out.replace(/<title>([^<]{69,})<\/title>/, (m, value) => {
+  if (!html.includes('data-p360-section="quick"')) out = out.replace(/<title>([^<]{69,})<\/title>/, (m, value) => {
     if (value.endsWith(BRAND_SUFFIX)) {
       const bare = value.slice(0, -BRAND_SUFFIX.length);
       return `<title>${bare}</title>`;

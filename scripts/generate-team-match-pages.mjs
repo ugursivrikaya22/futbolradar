@@ -37,6 +37,8 @@ const { applyVerifiedBroadcast } = require("../services/broadcastSchedule.js");
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 const { normalizeKey } = require("../services/competitionCatalog.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+const playerUrls = createPlayerUrlResolver(JSON.parse(fs.readFileSync(path.join(root, "data/player-url-slugs.json"), "utf8")));
 const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
 
 const DOMAIN = "https://www.futbolradar.com";
@@ -170,7 +172,7 @@ function leadersFor(team, key) {
 
 function playerHref(row) {
   const player = playerStore.find((item) => String(item.providerId || "") === String(row.providerId || "") && sameClub(item.currentTeam || item.team, row.team));
-  return player && player.id ? `./oyuncular/${encodeURIComponent(player.id)}.html` : null;
+  return player && player.id ? playerUrls.playerHref(player) : null;
 }
 
 /**

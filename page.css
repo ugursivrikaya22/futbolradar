@@ -22225,3 +22225,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .p360-peer { min-height: 44px; align-content: center; }
   .topbar-premium .brand { min-width: 44px; min-height: 44px; }
 }
+
+/* Player profile summary and touch targets; shared data on every viewport. */
+.p360-quick { margin: 12px 0; padding: 12px; }
+.p360-quick .p360-stat-grid { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.p360-quick .p360-stat { min-width: 0; padding: 8px; }
+.p360-quick b { overflow-wrap: anywhere; font-size: 1rem; }
+.p360-stat h3 { font-size: 1rem; margin: 0 0 8px; }
+.p360-stat p { overflow-wrap: anywhere; }
+.p360 a { overflow-wrap: anywhere; }
+@media (max-width: 900px) { .p360 a { display: inline-flex; align-items: center; min-height: 44px; } .p360-quick a { min-height: 0; } }

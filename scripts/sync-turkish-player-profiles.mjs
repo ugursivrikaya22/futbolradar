@@ -26,6 +26,7 @@ const SQUADS_PATH = path.join(root, "data", "super-lig-squads.json");
 const REVIEW_PATH = path.join(root, "data", "player-sync-review-queue.json");
 const REPORT_PATH = path.join(root, "outputs", "player-profile-sync-report.json");
 const MIN_RATE_LIMIT_REMAINING = 20;
+const { refreshPlayerSeasonStats } = require("../services/playerSeasonRefresh.js");
 
 function parseArgs(argv) {
   const args = {
@@ -288,7 +289,8 @@ async function enrichFromProvider(working, snapshots, args) {
     if (transfers.length) {
       merged.transferUpdatedAt = new Date().toISOString();
     }
-    return merged;
+    const snapshot = snapshots.find(row => sameClub(row.teamName, player.currentTeam));
+    return provider && snapshot ? refreshPlayerSeasonStats(merged, provider, snapshot.season) : merged;
   });
 
   return {
