@@ -42,7 +42,7 @@ const root = process.cwd();
  * tuzağa düşerler: "max-age=31536000, immutable" ile servis edilen bir
  * dosyada dönen ziyaretçi bir yıl boyunca eski sürüme kilitlenir.
  */
-const ASSETS = ["page.css", "app.js", "site.js", "app-lite.js", "app-compare.js", "player-profile.js", "match-detail-en.js", "pwa.js", "match-focus.js", "match-focus.css"];
+const ASSETS = ["page.css", "app.js", "site.js", "app-lite.js", "app-compare.js", "player-profile.js", "match-detail-en.js", "pwa.js", "match-focus.js", "match-focus.css", "performance-loader.js"];
 
 const SKIP_DIRS = new Set([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs"]);
 const VERIFICATION_FILE = "googlef881b0d7527a8fba.html";
@@ -104,9 +104,10 @@ function stampReferences(html) {
  * etkileşimde/boşta dinamik yüklüyor. Yükleyicideki adres sürümsüz
  * kaldığında, /app.js "max-age=31536000, immutable" ile servis edildiği
  * için dönen ziyaretçi BİR YIL eski app.js'e kilitleniyordu — sayfalardaki
- * damga ne olursa olsun. Yükleyicinin kendisi max-age=0 ile servis
- * edildiğinden damgayı taşıyabilir: her derlemede buradaki adres güncel
- * app.js içeriğinin karmasıyla yeniden yazılır.
+ * damga ne olursa olsun. Her derlemede buradaki adres güncel app.js
+ * içeriğinin karmasıyla yeniden yazılır; ardından yükleyicinin HTML'deki
+ * adresi de sürümlenir. max-age=0 yanında stale-while-revalidate olması
+ * eski yükleyicinin yeniden kullanılmasına tek başına engel değildir.
  */
 function stampPerformanceLoader() {
   const loaderPath = path.join(root, "performance-loader.js");
@@ -131,6 +132,10 @@ function stampPerformanceLoader() {
 const files = walk(root);
 let updated = 0;
 const loaderStamped = stampPerformanceLoader();
+// Hash the loader after updating its application URL. A cached unversioned
+// loader can otherwise keep running the old data layer after a deployment.
+const loaderPath = path.join(root, "performance-loader.js");
+if (fs.existsSync(loaderPath)) stamps.set("performance-loader.js", contentStamp(loaderPath));
 
 for (const file of files) {
   const html = fs.readFileSync(file, "utf8");

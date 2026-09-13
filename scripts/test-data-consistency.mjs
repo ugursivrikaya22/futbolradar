@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import crypto from "node:crypto";
+import os from "node:os";
+import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const provider = require("../services/providers/apiFootballProvider.js");
@@ -82,4 +87,28 @@ vm.runInContext(pool, poolContext);
 const todayPool = vm.runInContext("programMatchPool()", poolContext);
 assert.equal(todayPool.length, 1, "static cards and summary use only the selected calendar day");
 assert.equal(todayPool[0].status, "FINISHED", "today's completed fixtures remain in the same daily count as the API");
+const assetFixture = fs.mkdtempSync(path.join(os.tmpdir(), "futbolradar-data-consistency-"));
+try {
+  const write = (name, contents) => fs.writeFileSync(path.join(assetFixture, name), contents);
+  const read = name => fs.readFileSync(path.join(assetFixture, name), "utf8");
+  const stamp = name => crypto.createHash("sha256").update(read(name)).digest("hex").slice(0, 8);
+  write("app.js", "window.dataVersion = 1;");
+  write("performance-loader.js", 'function load() { script.src = "/app.js?v=abcdef"; }');
+  write("index.html", '<script src="./performance-loader.js" defer></script>');
+  const run = () => execFileSync(process.execPath, [fileURLToPath(new URL("./inject-asset-version.mjs", import.meta.url))], { cwd: assetFixture, stdio: "pipe", windowsHide: true });
+  run();
+  const firstPage = read("index.html");
+  assert.ok(firstPage.includes("performance-loader.js?v=" + stamp("performance-loader.js")));
+  write("app.js", "window.dataVersion = 2;");
+  run();
+  assert.notEqual(read("index.html"), firstPage, "new data code must change the loader URL seen by returning visitors");
+  assert.ok(read("index.html").includes("performance-loader.js?v=" + stamp("performance-loader.js")));
+  assert.ok(read("performance-loader.js").includes("/app.js?v=" + stamp("app.js")));
+  const secondPage = read("index.html");
+  run();
+  assert.equal(read("index.html"), secondPage, "unchanged data code keeps a stable loader URL");
+} finally {
+  assert.equal(path.dirname(path.resolve(assetFixture)), path.resolve(os.tmpdir()));
+  fs.rmSync(assetFixture, { recursive: true, force: true });
+}
 console.log("Data consistency regressions passed: cache age, outage, identity, score correction, late packet, Istanbul date, authoritative empty response.");
