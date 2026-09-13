@@ -33,14 +33,21 @@
     var old = document.querySelector(".evergreen-freshness time");
     if (table && old && Number.isFinite(date.getTime())) { old.dateTime = date.toISOString(); old.textContent = element.textContent; }
   }
+  var requests = Object.create(null);
   function json(url) {
-    return fetch(url, { cache: "no-store", signal: AbortSignal.timeout(8000) }).then(function (r) {
+    var previous = requests[url];
+    if (previous && Date.now() - previous.startedAt < 60000) return previous.promise;
+    var promise = fetch(url, { cache: "no-store", signal: AbortSignal.timeout(8000) }).then(function (r) {
       if (!r.ok) throw new Error("data-unavailable");
       return r.json();
     }).then(function (payload) {
       if (payload.ok === false) throw new Error("data-unavailable");
       return payload;
     });
+    // Reusing a response never changes its source timestamp. Tab switches
+    // and visibility events share the same request within the polling period.
+    requests[url] = { startedAt: Date.now(), promise: promise };
+    return promise;
   }
   function standingCells(row) {
     return ["played", "won", "drawn", "lost", "goalsFor", "goalsAgainst", "goalDifference", "points"].map(function (key) { return "<td>" + number(row[key]) + "</td>"; }).join("");
@@ -101,15 +108,19 @@
       });
     });
   }
-  var pending = false;
   function refresh() {
-    if (pending || document.hidden) return;
-    pending = true;
-    var jobs = panels.map(function (panel) { return refreshStanding(panel.id.replace("standings-panel-", ""), panel); });
+    if (document.hidden) return;
+    var jobs = panels.filter(function (panel) {
+      var radio = document.getElementById(panel.id.replace("standings-panel-", "standings-tab-"));
+      return radio ? radio.checked : !panel.hidden;
+    }).map(function (panel) { return refreshStanding(panel.id.replace("standings-panel-", ""), panel); });
     if (table) jobs.push(refreshStanding(league));
     if (leadersTable || homeLeaders) jobs.push(refreshLeaders());
-    Promise.allSettled(jobs).finally(function () { pending = false; });
+    Promise.allSettled(jobs);
   }
+  document.querySelectorAll(".standings-tabs__radio").forEach(function (radio) {
+    radio.addEventListener("change", refresh);
+  });
   refresh();
   window.setInterval(refresh, 60000);
   document.addEventListener("visibilitychange", refresh);

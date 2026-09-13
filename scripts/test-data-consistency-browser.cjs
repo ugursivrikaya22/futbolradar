@@ -6,6 +6,10 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:4193';
   const browser = await chromium.launch({ headless: true, ...(process.platform === 'win32' ? { channel: 'msedge' } : {}) });
   try {
     const context = await browser.newContext();
+    const standingsRequests = [];
+    context.on('request', request => {
+      if (new URL(request.url()).pathname === '/api/standings') standingsRequests.push(request.url());
+    });
     await context.addInitScript(() => { window.EventSource = undefined; });
     await context.route('https://**/*', route => route.abort());
     const fetchedAt = new Date().toISOString();
@@ -22,6 +26,16 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:4193';
       const cards = await page.locator('[data-match="98765"]').allTextContents();
       assert.ok(cards.some(text => /23/.test(text) && (/2\s*[-–]\s*1/.test(text) || /Galatasaray2.*Kocaelispor1/.test(text))), file + ': score and minute must agree: ' + JSON.stringify(cards));
       assert.deepEqual(errors, [], file + ': no runtime errors');
+      if (file === 'index.html') {
+        await page.waitForSelector('#standings-panel-super-lig [data-resource-updated]', { state: 'attached' });
+        assert.equal(standingsRequests.length, 1, 'only the visible league should load on the homepage');
+        await page.locator('label[for="standings-tab-premier-league"]').click();
+        await page.waitForSelector('#standings-panel-premier-league [data-resource-updated]', { state: 'attached' });
+        assert.equal(new Set(standingsRequests).size, 2, 'switching leagues should load only that league: ' + JSON.stringify(standingsRequests));
+        const beforeReopen = standingsRequests.length;
+        await page.locator('label[for="standings-tab-super-lig"]').click();
+        assert.equal(standingsRequests.length, beforeReopen, 'reopening a league within the polling interval must reuse its response: ' + JSON.stringify(standingsRequests));
+      }
       pages.push(page);
     }
     matches = [];
