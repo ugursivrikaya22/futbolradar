@@ -138,7 +138,7 @@ async function readTable(page) {
     const cells = Array.from(row.querySelectorAll("td, th")).map((cell) => cell.textContent.trim());
     return {
       rank: Number(cells[0]),
-      name: cells[1].replace(/CANLI$/, "").trim(),
+      name: cells[1].replace(/(CANLI|LIVE)$/, "").trim(),
       played: Number(cells[2]),
       won: Number(cells[3]),
       drawn: Number(cells[4]),
@@ -175,19 +175,32 @@ function find(rows, name) {
     ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : {})
   });
 
+  /**
+   * Sürülecek yüzeyler. Türkçe sayfa iki genişlikte, İngilizce sayfa
+   * mobilde: dil seçimi genişlikten bağımsız, bu yüzden İngilizce tarafı
+   * her genişlikte tekrarlamak koşu süresini boşuna ikiye katlardı.
+   */
+  const TARGETS = [
+    { path: "/super-lig-puan-durumu.html", viewport: { width: 1280, height: 900 }, badge: "CANLI", lang: "tr" },
+    { path: "/super-lig-puan-durumu.html", viewport: { width: 390, height: 844 }, badge: "CANLI", lang: "tr" },
+    { path: "/en/super-lig-standings.html", viewport: { width: 390, height: 844 }, badge: "LIVE", lang: "en" }
+  ];
+
   try {
-    for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 }]) {
+    for (const target of TARGETS) {
+      const viewport = target.viewport;
       const context = await browser.newContext({ viewport, serviceWorkers: "block" });
       const page = await context.newPage();
       const consoleErrors = [];
       page.on("pageerror", (error) => consoleErrors.push(String(error)));
       page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
 
-      const label = `${viewport.width}px`;
+      const label = `${target.lang}/${viewport.width}px`;
       state.absorbed = false;
       state.matches = [];
 
-      await page.goto(`${base}/super-lig-puan-durumu.html`, { waitUntil: "domcontentloaded" });
+      await page.goto(`${base}${target.path}`, { waitUntil: "domcontentloaded" });
+      check(`${label} sayfanın dili ${target.lang}`, await page.evaluate(() => document.documentElement.lang) === target.lang);
 
       // 1) Resmî tablo: canlı maç yokken hiçbir satır canlı işaretli olmamalı.
       let rows = await waitFor(page, (list) => list.length === 3 && find(list, "Ev Sahibi FK"), `${label} resmî tablo çizilmeli`);
@@ -209,6 +222,8 @@ function find(rows, name) {
       check(`${label} 1-0: atılan/yenen gol ve averaj doğru`, home.goalsFor === 3 && home.goalsAgainst === 1 && home.goalDifference === 2);
       check(`${label} 1-0: rakip 3 puanda kalır ve geriler`, away.points === 3 && away.lost === 1 && away.rank === 3);
       check(`${label} 1-0: yalnızca maçtaki takımlar canlı işaretli`, home.badge && away.badge && !find(rows, "Üçüncü Takım").badge);
+      const badgeText = await page.$eval(".standings-live-badge", (node) => node.textContent.trim());
+      check(`${label} rozet metni "${target.badge}"`, badgeText === target.badge, badgeText);
 
       // 3) 1-1
       state.matches = [liveMatch(1, 1)];

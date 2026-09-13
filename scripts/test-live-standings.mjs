@@ -24,6 +24,7 @@ const root = process.cwd();
 
 const live = require("../services/liveStandings.js");
 const { checkStandings } = require("../services/standingsIntegrity.js");
+const catalogModule = await import("./lib/standingsCatalog.mjs");
 
 let passed = 0;
 function test(name, run) {
@@ -398,6 +399,52 @@ test("rozet stili ve canlı satır işareti page.css'te tanımlı", () => {
   const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
   assert.match(css, /\.standings-live-badge/);
   assert.match(css, /\[data-standings-live="true"\]/);
+});
+
+test("İngilizce adres haritası katalogla birebir aynı", async () => {
+  // Harita `data-refresh.js` içinde ELLE yazılı: istemcinin derleme
+  // verisine bağımlı olmaması için. Bedeli ayrışma riski; bu test o riski
+  // kapatıyor.
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  const block = /var EN_LEAGUE_BY_SLUG = \{([\s\S]*?)\};/.exec(source);
+  assert.ok(block, "EN_LEAGUE_BY_SLUG bulunmalı");
+
+  const mapped = new Map();
+  for (const [, slug, id] of block[1].matchAll(/"([a-z0-9-]+)":\s*"([a-z0-9-]+)"/g)) mapped.set(slug, id);
+
+  const catalog = catalogModule.STANDINGS_LEAGUES;
+  const expected = new Map(catalogModule.EN_TAB_ORDER.map((id) => [catalog[id].slugEn, id]));
+
+  assert.deepEqual([...mapped.entries()].sort(), [...expected.entries()].sort(),
+    "istemci haritası standingsCatalog.mjs ile aynı olmalı");
+});
+
+test("İngilizce puan durumu sayfaları canlı katmanı yükler", () => {
+  const catalog = catalogModule.STANDINGS_LEAGUES;
+  let checked = 0;
+  for (const id of catalogModule.EN_TAB_ORDER) {
+    const file = path.join(root, "en", `${catalog[id].slugEn}.html`);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+    assert.match(html, /<html lang="en"/, `${catalog[id].slugEn} İngilizce olmalı`);
+    assert.match(html, /site\.js/, `${catalog[id].slugEn} site.js yüklemeli`);
+    assert.match(html, /class="evergreen-table"/, `${catalog[id].slugEn} tablo taşımalı`);
+    checked += 1;
+  }
+  assert.ok(checked >= 5, `en puan durumu sayfası bulunmalı (bulunan: ${checked})`);
+});
+
+test("site.js İngilizce sayfalarda da canlı katmanı yükler", () => {
+  const source = fs.readFileSync(path.join(root, "site.js"), "utf8");
+  assert.match(source, /lang !== "tr" && lang !== "en"/, "iki dil de kabul edilmeli");
+});
+
+test("İngilizce yüzeyde metinler Türkçe kalmaz", () => {
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  assert.match(source, /badge: "LIVE"/, "rozet İngilizce karşılığını taşımalı");
+  assert.match(source, /Live matches are included provisionally/, "canlı notu çevrilmiş olmalı");
+  assert.doesNotMatch(source, /'Son güncelleme: <time/, "tarih damgası sabit Türkçe olmamalı");
+  assert.match(source, /!english && \(leadersTable \|\| homeLeaders\)/, "lider listeleri Türkçeye sınırlanmalı");
 });
 
 test("1. Lig puan durumu sayfası üretiliyor", () => {

@@ -4078,7 +4078,11 @@
 // varsayılan olarak async çalışır; `async = false` ikisini belge sırasına
 // bağlar.
 (function () {
-  if (document.documentElement.lang !== "tr" || !document.querySelector(".standings-tabs__panel, .evergreen-table, [data-api-target=standings]")) return;
+  // TÜRKÇE VE İNGİLİZCE. Canlı puan durumu katmanı iki dilde de çalışıyor;
+  // `data-refresh.js` dile göre metinlerini ve adres çözümünü kendisi
+  // seçiyor (bkz. oradaki TEXT ve EN_LEAGUE_BY_SLUG).
+  var lang = document.documentElement.lang;
+  if ((lang !== "tr" && lang !== "en") || !document.querySelector(".standings-tabs__panel, .evergreen-table, [data-api-target=standings]")) return;
   ["/live-standings-core.js?v=20260913", "/data-refresh.js?v=20260913"].forEach(function (src) {
     var script = document.createElement("script");
     script.src = src;

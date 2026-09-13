@@ -1,11 +1,71 @@
 (function () {
   "use strict";
-  if (document.documentElement.lang !== "tr") return;
+  var locale = document.documentElement.lang === "en" ? "en" : document.documentElement.lang === "tr" ? "tr" : null;
+  if (!locale) return;
+  var english = locale === "en";
+
+  /**
+   * DİLE BAĞLI METİNLER TEK YERDE.
+   *
+   * Tablo ve canlı katman iki dilde aynı; yalnızca okuyucuya görünen
+   * metinler ve tarih biçimi değişiyor. Bunları çizim kodunun içine
+   * dağıtmak, bir dilde düzeltilen bir ifadenin diğerinde eski kalması
+   * demekti.
+   */
+  var TEXT = english ? {
+    updated: "Last updated: ",
+    waiting: "Last updated: Awaiting update.",
+    liveNote: "Live matches are included provisionally.",
+    badge: "LIVE",
+    badgeTitle: "Includes a match in progress",
+    dateLocale: "en-GB",
+    timeZone: "Europe/Istanbul",
+    timeSuffix: " TRT"
+  } : {
+    updated: "Son güncelleme: ",
+    waiting: "Son güncelleme: Güncelleme bekleniyor.",
+    liveNote: "Canlı maçlar geçici olarak dahil edildi.",
+    badge: "CANLI",
+    badgeTitle: "Devam eden maç dahil",
+    dateLocale: "tr-TR",
+    timeZone: "Europe/Istanbul",
+    timeSuffix: " TSİ"
+  };
+
+  /**
+   * İNGİLİZCE SAYFA ADRESİ → KATALOG KİMLİĞİ.
+   *
+   * Kaynağı `scripts/lib/standingsCatalog.mjs`teki `slugEn` alanları.
+   * Elle yazılı olması, istemcinin derleme verisine bağımlı olmamasını
+   * sağlıyor; `scripts/test-live-standings.mjs` bu haritayı katalogla
+   * karşılaştırıyor, yani ayrışırsa test düşer.
+   */
+  var EN_LEAGUE_BY_SLUG = {
+    "premier-league-standings": "premier-league",
+    "champions-league-standings": "sampiyonlar-ligi",
+    "la-liga-standings": "la-liga",
+    "serie-a-standings": "serie-a",
+    "bundesliga-standings": "bundesliga",
+    "super-lig-standings": "super-lig",
+    "ligue-1-standings": "ligue-1",
+    "europa-league-standings": "avrupa-ligi",
+    "conference-league-standings": "konferans-ligi"
+  };
+
   var path = location.pathname.replace(/\.html$/, "").replace(/^\//, "");
-  var league = path.replace(/-puan-durumu$/, "");
-  var leagueAliases = { "premier-lig": "premier-league" };
-  league = leagueAliases[league] || league;
-  var table = /-puan-durumu$/.test(path) ? document.querySelector(".evergreen-table tbody") : null;
+  var league;
+  var isStandingsPage;
+  if (english) {
+    var enSlug = path.replace(/^en\//, "");
+    league = EN_LEAGUE_BY_SLUG[enSlug] || null;
+    isStandingsPage = Boolean(league);
+  } else {
+    league = path.replace(/-puan-durumu$/, "");
+    var leagueAliases = { "premier-lig": "premier-league" };
+    league = leagueAliases[league] || league;
+    isStandingsPage = /-puan-durumu$/.test(path);
+  }
+  var table = isStandingsPage ? document.querySelector(".evergreen-table tbody") : null;
   var panels = Array.from(document.querySelectorAll('.standings-tabs__panel[id^="standings-panel-"]'));
   // Takım sayfalarındaki ("/galatasaray-puan-durumu") kompakt tablo. Bu
   // yüzey bugüne kadar hiç tazelenmiyordu: derleme anındaki satırlarla
@@ -13,7 +73,8 @@
   var teamBody = document.querySelector('[data-api-target="standings"] .table-body');
   var leaderMetric = path === "gol-kralligi" ? "goals" : path === "asist-kralligi" ? "assists" : null;
   var leadersTable = leaderMetric ? document.querySelector(".evergreen-table tbody") : null;
-  var homeLeaders = document.querySelector('[data-api-target="leaders-scorers"], [data-api-target="leaders-assists"]');
+  // Lider listeleri bu turda yalnızca Türkçe (yukarıdaki nota bakınız).
+  var homeLeaders = english ? null : document.querySelector('[data-api-target="leaders-scorers"], [data-api-target="leaders-assists"]');
   if (leadersTable) table = null;
   if (!table && !panels.length && !teamBody && !leadersTable && !homeLeaders) return;
 
@@ -33,11 +94,11 @@
     }
     var date = new Date(value || "");
     var text = Number.isFinite(date.getTime())
-      ? 'Son güncelleme: <time datetime="' + html(date.toISOString()) + '">' + html(date.toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })) + " TSİ</time>"
-      : "Son güncelleme: Güncelleme bekleniyor.";
+      ? TEXT.updated + '<time datetime="' + html(date.toISOString()) + '">' + html(date.toLocaleString(TEXT.dateLocale, { timeZone: TEXT.timeZone })) + TEXT.timeSuffix + "</time>"
+      : TEXT.waiting;
     // CANLI MAÇ VARKEN TABLO RESMÎ DEĞİLDİR VE BUNU SÖYLER. Aksi hâlde
     // okuyucu, sürmekte olan maçın etkisini resmî sonuç sanar.
-    element.innerHTML = text + (live ? ' <span class="standings-live-note">Canlı maçlar geçici olarak dahil edildi.</span>' : "");
+    element.innerHTML = text + (live ? ' <span class="standings-live-note">' + html(TEXT.liveNote) + "</span>" : "");
     var old = document.querySelector(".evergreen-freshness time");
     if (table && old && Number.isFinite(date.getTime())) { old.dateTime = date.toISOString(); old.textContent = element.textContent; }
   }
@@ -130,7 +191,9 @@
     return row && row.live ? ' data-standings-live="true"' : "";
   }
   function liveBadge(row) {
-    return row && row.live ? '<span class="standings-live-badge" title="Devam eden maç dahil">CANLI</span>' : "";
+    return row && row.live
+      ? '<span class="standings-live-badge" title="' + html(TEXT.badgeTitle) + '">' + html(TEXT.badge) + "</span>"
+      : "";
   }
 
   // ————————————————————————————————————————————————————————————————
@@ -285,7 +348,10 @@
   function refresh() {
     if (document.hidden) return;
     var jobs = activeLeagueIds().map(refreshStanding);
-    if (leadersTable || homeLeaders) jobs.push(refreshLeaders());
+    // Lider listeleri (gol/asist) Türkçe etiketler basıyor; İngilizce
+    // yüzeyde çalıştırmak "Gol"/"Asist" yazmak demekti. Bu tur yalnızca
+    // puan durumunu iki dile açıyor.
+    if (!english && (leadersTable || homeLeaders)) jobs.push(refreshLeaders());
     Promise.allSettled(jobs);
   }
 
