@@ -575,7 +575,7 @@ export function player360Description(model, options = {}) {
     .filter(([key]) => stats.has(key)).map(([key, label]) => stats.get(key) + " " + label);
   return i.name + (facts ? " — " + facts : "") + ". " + model.season + (en ? " season" : " sezonu") +
     (counts.length ? ": " + counts.join(", ") : "") + ". " +
-    (en ? "Player profile, recent performances and news on FutbolRadar." : "Oyuncu bilgileri, son maç performansı ve haberleri FutbolRadar’da.");
+    (en ? "Player profile" + (model.matchLog?.available ? ", recent performances" : "") + " and news on FutbolRadar." : "Oyuncu bilgileri" + (model.matchLog?.available ? ", son maç performansı" : "") + " ve haberleri FutbolRadar’da.");
 }
 
 export function player360Title(model, options = {}) {

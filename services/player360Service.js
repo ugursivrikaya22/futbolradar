@@ -610,7 +610,7 @@ function buildPlayer360(input) {
   const identity = buildIdentity(player, view, options);
   const season = seasonLabel(input.season) || SEASON_LABEL;
   const next = nextTeamMatch(identity.team, input.calendar, input.now);
-  const dated = [player.statsVerifiedAt, player.profileUpdatedAt, player.lastVerifiedAt, input.calendarUpdatedAt]
+  const dated = [player.statsVerifiedAt, player.profileUpdatedAt, player.lastVerifiedAt]
     .filter(value => value && Number.isFinite(Date.parse(value)) && Date.parse(value) <= (input.now ?? Date.now()));
   const updatedAt = dated.sort((a,b) => Date.parse(b)-Date.parse(a))[0] || null;
 
