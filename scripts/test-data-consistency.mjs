@@ -82,6 +82,12 @@ const italy = provider.normalizeFixture({ fixture: { id: 12 }, league: { id: 135
 assert.notEqual(brazil.league, italy.league, "same-name leagues must render in different groups");
 assert.equal(brazil.competitionId, "brasileirao");
 assert.equal(italy.competitionId, "serie-a");
+const { matchProgramSummary } = require("../services/matchProgram.js");
+assert.equal(matchProgramSummary([
+  { league: "Serie A", providerLeagueId: "71" },
+  { league: "Serie A", providerLeagueId: "135" },
+  { league: "Italian Serie A", providerLeagueId: "135" }
+]).leagues.length, 2, "daily summary counts league identities, merging aliases without merging countries");
 vm.runInContext(extract("matchCompetitionMatches"), context);
 context.brazil = brazil;
 assert.equal(vm.runInContext('matchCompetitionMatches(brazil, "serie-a")', context), false, "Brazilian fixtures cannot enter the Italian league filter");

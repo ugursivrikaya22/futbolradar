@@ -133,26 +133,19 @@ function matchProgramSummary(matches) {
   const list = Array.isArray(matches) ? matches.filter((match) => match && typeof match === "object") : [];
   const summary = { total: list.length, live: 0, finished: 0, upcoming: 0, off: 0, leagues: [], firstKickoff: "", lastKickoff: "" };
 
-  const leagues = [];
-  const seenLeagues = new Set();
   const kickoffs = [];
 
   for (const match of list) {
     const state = stateOfMatch(match);
     summary[state] += 1;
 
-    const league = text(match.league);
-    if (league && !seenLeagues.has(league)) {
-      seenLeagues.add(league);
-      leagues.push(league);
-    }
-
     const time = text(match.time);
     if (time) kickoffs.push(time);
   }
 
   kickoffs.sort();
-  summary.leagues = leagues;
+  // Count the same provider-identified groups rendered by the match list.
+  summary.leagues = groupMatchesByLeague(list).map((group) => group.league).filter(Boolean);
   summary.firstKickoff = kickoffs[0] || "";
   summary.lastKickoff = kickoffs[kickoffs.length - 1] || "";
   return summary;
