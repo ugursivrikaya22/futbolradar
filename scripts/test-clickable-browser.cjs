@@ -135,7 +135,7 @@ async function until(check, message, timeout = 5000) {
           const requested = target.searchParams.get('team');
           if (requested) assert.ok((await page.locator('.td-hero').innerText()).includes(requested), 'Wrong team detail content');
         }
-        if (/\/(oyuncular|en\/player)\//.test(target.pathname)) {
+        if (/\/(oyuncular|futbolcu|en\/player)\//.test(target.pathname)) {
           assert.ok((await page.locator('main').innerText()).length > 200, 'Player profile has no substantive content');
         }
         if (target.hash) await page.locator('[id=' + JSON.stringify(decodeURIComponent(target.hash.slice(1))) + ']').waitFor();
@@ -232,7 +232,17 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' player cards open profiles', async () => {
           await open(en ? 'en/player-radar.html' : 'oyuncu-radari.html');
           if (!en) await page.locator('[data-api-target="players-page"][data-state="ready"]').waitFor();
-          await navigate(page.locator('.player-card a[href*="player/"], .player-detail-card a[href*="oyuncular/"], .player-card a[href*="oyuncular/"]').first());
+          // Profil adresi iki biçimde olabilir: tam adı bilinen oyuncu
+          // `futbolcu/<tam-ad>`, bilinmeyen `oyuncular/<id>`. Seçici ikisini
+          // de kapsar; bağlantının DOĞRUDAN kanonik adrese gitmesi
+          // (yönlendirmeden geçmemesi) `navigate` içinde denetleniyor.
+          await navigate(page.locator([
+            '.player-card a[href*="player/"]',
+            '.player-detail-card a[href*="oyuncular/"]',
+            '.player-card a[href*="oyuncular/"]',
+            '.player-detail-card a[href*="futbolcu/"]',
+            '.player-card a[href*="futbolcu/"]'
+          ].join(', ')).first());
         });
         await test(locale + ' primary navigation routes and footer', async () => {
           await open(home);
@@ -491,11 +501,26 @@ async function until(check, message, timeout = 5000) {
         const id = await share.getAttribute('data-share-player');
         await click(share);
         await until(() => page.evaluate(() => Boolean(window.__copiedText)), 'Share button did nothing');
-        assert.equal(new URL(await page.evaluate(() => window.__copiedText)).pathname, '/oyuncular/' + encodeURIComponent(id) + '.html');
+        // PAYLAŞILAN ADRES KANONİK OLMALI — sabit bir yol DEĞİL.
+        //
+        // Beklenti "/oyuncular/<id>.html" diye sabitti; oyuncu tam isimli
+        // adrese taşınınca doğru davranış (kanonik adresi paylaşmak) hatalı
+        // sayıldı. Kilitlenen şey: kopyalanan adres, o oyuncunun sayfasının
+        // canonical etiketiyle BİREBİR aynı olmalı.
+        const sharedPath = new URL(await page.evaluate(() => window.__copiedText)).pathname;
+        const profileHref = await page.evaluate((playerId) => {
+          const link = document.querySelector('[data-player="' + playerId + '"] a[href*="futbolcu/"], [data-player="' + playerId + '"] a[href*="oyuncular/"]');
+          return link ? link.getAttribute('href') : null;
+        }, id);
+        assert.ok(profileHref, 'Player card has no profile link to compare the share URL against');
+        const canonicalPath = new URL(profileHref, page.url()).pathname.replace(/\.html$/, '');
+        assert.equal(sharedPath.replace(/\.html$/, ''), canonicalPath);
         await page.evaluate(() => { window.__denyCopy = true; });
         await click(share);
         await page.locator('[data-share-fallback]').waitFor();
-        assert.ok((await page.locator('[data-share-fallback] textarea').inputValue()).includes(id));
+        // Yedek kutudaki adres de aynı sayfayı göstermeli; kimliğin kendisi
+        // adreste geçmeyebilir (tam isimli slug'da geçmiyor).
+        assert.ok((await page.locator('[data-share-fallback] textarea').inputValue()).includes(canonicalPath));
         await page.keyboard.press('Escape');
         await page.locator('[data-share-fallback]').waitFor({ state: 'detached' });
       });
