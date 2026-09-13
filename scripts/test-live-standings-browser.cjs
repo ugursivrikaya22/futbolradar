@@ -276,12 +276,35 @@ function find(rows, name) {
     }
   } finally {
     await browser.close();
-    for (const res of clients) res.end();
-    await new Promise((resolve) => server.close(resolve));
+    // AÇIK SSE BAĞLANTISI DERLEMEYİ ASMASIN.
+    //
+    // `server.close()` yalnızca yeni bağlantıyı durdurur ve açık olanların
+    // kapanmasını BEKLER. Canlı skor akışı tanımı gereği açık kalan bir
+    // bağlantı: tarayıcı kapanırken bir soket geride kalırsa kapanış hiç
+    // çözülmez ve bu kapı, üretim derlemesini süresiz bekletir. Bağlantılar
+    // açıkça kesiliyor ve sunucu süreci canlı tutmayacak biçimde
+    // işaretleniyor.
+    for (const res of clients) { try { res.end(); } catch (error) { /* zaten kapandı */ } }
+    clients.clear();
+    if (typeof server.closeAllConnections === "function") server.closeAllConnections();
+    server.unref();
+    await new Promise((resolve) => server.close(() => resolve()));
   }
 
   console.log(`\nCanlı puan durumu tarayıcı testi geçti (${checks.length} kontrol)`);
+  // Geride kalan bir soket ya da tarayıcı süreci olay döngüsünü açık
+  // tutmasın: kapı sonucunu bildirdikten sonra kesin olarak biter.
+  process.exit(0);
 })().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+
+// SON ÇARE ZAMAN AŞIMI. Bir kapının kendisi derlemeyi asmamalı; bu testin
+// tamamı yerelde bir dakikanın altında koşuyor, dört dakika fazlasıyla
+// yeterli bir üst sınır.
+const HARD_TIMEOUT_MS = 4 * 60 * 1000;
+setTimeout(() => {
+  console.error(`[live-standings-browser] ${HARD_TIMEOUT_MS / 1000} saniyede tamamlanmadı; kapı durduruluyor.`);
+  process.exit(1);
+}, HARD_TIMEOUT_MS).unref();
