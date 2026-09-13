@@ -6,6 +6,17 @@
  * Bu betik üstte tek satırlık bir öneri gösterir ("View FutbolRadar in
  * English") ve tek tıkla AYNI içeriğin İngilizce karşılığına götürür.
  *
+ * KARARI BU BETİK VERMEZ. "Bant çıkacak mı" sorusu `<head>` içindeki senkron
+ * snippet'te, İLK BOYAMADAN ÖNCE cevaplanıyor ve `<html data-lang-suggest>`
+ * olarak işaretleniyor (bkz. scripts/lib/langSuggestBoot.mjs). Buradaki iş
+ * yalnızca işaretlenmiş sayfaya bandı ÇİZMEK.
+ *
+ * Neden bölünmüş: bant üstte, başlık çubuğu ise normal akışta. Kararı geç
+ * verip bandı akışın dışında çizmek başlığın üzerine biniyor ve mobilde
+ * hamburger düğmesini tıklanamaz yapıyordu; akışa sokmak ise sayfayı
+ * kaydırıyordu. Karar erken verilince CSS yeri önceden ayırıyor — ne
+ * bindirme kalıyor ne kayma.
+ *
  * ÜÇ ŞEY BİLEREK YAPILMIYOR:
  *
  *   1. ZORUNLU YÖNLENDİRME YOK. Ne IP'ye ne tarayıcı diline göre otomatik
@@ -16,18 +27,13 @@
  *   2. ARAMA MOTORU BOTLARI HİÇBİR ŞEKİLDE ETKİLENMEZ. Bant tamamen istemci
  *      tarafı ve HİÇ yönlendirme yapmadığı için Googlebot bir sayfayı hangi
  *      dilde isterse o dilde görür. Otomatik dil yönlendirmesi, Google'ın
- *      açıkça uyardığı tarama sorunlarının başlıca kaynağıdır: bot Türkçe
- *      sayfayı hiç göremeyip yalnızca İngilizce sürümü indeksleyebilirdi.
+ *      açıkça uyardığı tarama sorunlarının başlıca kaynağıdır.
  *
- *   3. SAYFA KAYMASI (CLS) ÜRETİLMEZ. Bant akışın DIŞINDA (`position: fixed`)
- *      çizilir; altındaki içerik bir piksel bile oynamaz. Yükleme sonrası
- *      araya giren akış-içi bir şerit, Core Web Vitals'ta doğrudan CLS
- *      cezasıdır.
+ *   3. SAYFA KAYMASI (CLS) ÜRETİLMEZ — yukarıdaki gerekçeyle.
  *
  * HEDEF ADRES UYDURULMAZ. Başlıktaki dil düğmesi (`a[data-lang-switch]`)
  * zaten AYNI içeriğin karşılığını taşıyor — derleme anında `counterpartPath`
- * ile çözülmüş gerçek bir adres. Bant onu okur; karşılığı olmayan sayfada
- * düğme de olmadığı için bant hiç çizilmez.
+ * ile çözülmüş gerçek bir adres. Bant onu okur.
  */
 (function () {
   "use strict";
@@ -37,17 +43,6 @@
   var COOKIE_DAYS = 365;
 
   /** Tercih iki yerde birden tutulur: localStorage kapalıysa çerez kalır. */
-  function readPreference() {
-    try {
-      var stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) return stored;
-    } catch (error) {
-      /* Gizli sekmede localStorage erişimi istisna atabilir. */
-    }
-    var match = document.cookie.match(/(?:^|;\s*)futbolradar_lang=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : "";
-  }
-
   function writePreference(value) {
     try {
       window.localStorage.setItem(STORAGE_KEY, value);
@@ -60,38 +55,28 @@
   }
 
   /**
-   * Tarayıcının TERCİH ETTİĞİ diller. `navigator.languages` sıralı bir
-   * listedir ve tek bir `navigator.language` değerinden dürüsttür: Türkiye
-   * dışında yaşayan çift dilli bir kullanıcının listesinde Türkçe de
-   * bulunabilir ve o kişiye İngilizce önerisi çıkarmak gereksizdir.
+   * Kullanıcı karar verince ayrılan yer de geri alınır: işaret kalkar, CSS
+   * gövdedeki üst boşluğu bırakır. Bu kayma KULLANICI EYLEMİYLE oluyor,
+   * yani ölçülen CLS'e girmez ve beklenen davranıştır.
    */
-  function prefersTurkish() {
-    var list = navigator.languages && navigator.languages.length
-      ? navigator.languages
-      : [navigator.language || ""];
-    for (var i = 0; i < list.length; i += 1) {
-      if (/^tr\b/i.test(String(list[i] || ""))) return true;
-    }
-    return false;
-  }
-
-  function switchLink() {
-    return document.querySelector("a.lang-switch[data-lang-switch]");
-  }
-
-  function dismiss(value) {
+  function settle(value) {
     writePreference(value);
-    var banner = document.querySelector("[data-lang-suggest]");
+    document.documentElement.removeAttribute("data-lang-suggest");
+    var banner = document.querySelector("[data-lang-suggest-banner]");
     if (banner && banner.parentNode) banner.parentNode.removeChild(banner);
   }
 
   function render(targetLocale, href, copy) {
     var banner = document.createElement("div");
     banner.className = "lang-suggest";
-    banner.setAttribute("data-lang-suggest", targetLocale);
+    banner.setAttribute("data-lang-suggest-banner", targetLocale);
     banner.setAttribute("role", "region");
     banner.setAttribute("aria-label", copy.aria);
     banner.lang = targetLocale;
+
+    var text = document.createElement("span");
+    text.className = "lang-suggest-text";
+    text.textContent = copy.text;
 
     var link = document.createElement("a");
     link.className = "lang-suggest-cta";
@@ -111,12 +96,8 @@
     close.textContent = "×";
     // Kapatmak da TERCİHTİR: kullanıcı mevcut dilde kalmayı seçti.
     close.addEventListener("click", function () {
-      dismiss(targetLocale === "en" ? "tr" : "en");
+      settle(targetLocale === "en" ? "tr" : "en");
     });
-
-    var text = document.createElement("span");
-    text.className = "lang-suggest-text";
-    text.textContent = copy.text;
 
     banner.appendChild(text);
     banner.appendChild(link);
@@ -125,21 +106,17 @@
   }
 
   function boot() {
-    var current = (document.documentElement.getAttribute("lang") || "tr").slice(0, 2).toLowerCase();
-    var target = current === "en" ? "tr" : "en";
+    var target = document.documentElement.getAttribute("data-lang-suggest");
+    if (target !== "en" && target !== "tr") return;
 
-    // Kullanıcı daha önce karar verdiyse bir daha sorulmaz — hangi yönde
-    // olduğu fark etmez. "Hatırlama" tam olarak budur.
-    if (readPreference()) return;
-
-    var turkish = prefersTurkish();
-    // Türkçe sayfada Türkçe konuşana, İngilizce sayfada İngilizce konuşana
-    // öneri çıkarmak gürültüdür.
-    if (current === "tr" && turkish) return;
-    if (current === "en" && !turkish) return;
-
-    var anchor = switchLink();
-    if (!anchor || anchor.getAttribute("data-lang-switch") !== target) return;
+    var anchor = document.querySelector("a.lang-switch[data-lang-switch]");
+    // Karşılığı olmayan sayfada gidilecek yer yok. Snippet böyle sayfalara
+    // hiç gömülmüyor; yine de işaret bir şekilde oradaysa ayrılan yeri geri
+    // vermek, boş bir şerit bırakmaktan doğrudur.
+    if (!anchor || anchor.getAttribute("data-lang-switch") !== target) {
+      document.documentElement.removeAttribute("data-lang-suggest");
+      return;
+    }
 
     var copy = target === "en"
       ? {

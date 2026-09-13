@@ -27,7 +27,7 @@
     <meta name="twitter:title" content="Champions League Fixtures, Results and Standings | FutbolRadar" />
     <meta name="twitter:description" content="UEFA Champions League fixtures, live scores, results and the current league phase table — every matchday, with kick-off times and verified final scores." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <link rel="stylesheet" href="../page.css?v=e847f6f8" />
+    <link rel="stylesheet" href="../page.css?v=8caa3a75" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/en/champions-league.html#page","url":"https://www.futbolradar.com/en/champions-league.html","name":"Champions League Fixtures, Results and Standings","description":"UEFA Champions League fixtures, live scores, results and the current league phase table — every matchday, with kick-off times and verified final scores.","inLanguage":"en","dateModified":"2026-09-12","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"},{"@type":"ListItem","position":2,"name":"Champions League","item":"https://www.futbolradar.com/en/champions-league.html"}]}]}</script>
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -59,6 +59,21 @@
       }
     })();
   </script>
+    <script data-futbolradar-lang-boot>(function(){try{
+var d=document.documentElement;
+var cur=(d.getAttribute("lang")||"tr").slice(0,2).toLowerCase();
+var target=cur==="en"?"tr":"en";
+var pref="";
+try{pref=window.localStorage.getItem("futbolradar-lang")||"";}catch(e){}
+if(!pref){var m=document.cookie.match(/(?:^|;\s*)futbolradar_lang=([^;]*)/);pref=m?decodeURIComponent(m[1]):"";}
+if(pref)return;
+var list=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];
+var tr=false;
+for(var i=0;i<list.length;i++){if(/^tr\b/i.test(String(list[i]||""))){tr=true;break;}}
+if(cur==="tr"&&tr)return;
+if(cur==="en"&&!tr)return;
+d.setAttribute("data-lang-suggest",target);
+}catch(e){}})();</script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />

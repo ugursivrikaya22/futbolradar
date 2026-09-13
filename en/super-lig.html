@@ -27,7 +27,7 @@
     <meta name="twitter:title" content="Turkish Super Lig Table, Fixtures and Results | FutbolRadar" />
     <meta name="twitter:description" content="Turkish Süper Lig table, fixtures, live scores and results — Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor and every Trendyol Süper Lig club in English." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <link rel="stylesheet" href="../page.css?v=e847f6f8" />
+    <link rel="stylesheet" href="../page.css?v=8caa3a75" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/en/super-lig.html#page","url":"https://www.futbolradar.com/en/super-lig.html","name":"Turkish Super Lig Table, Fixtures and Results","description":"Turkish Süper Lig table, fixtures, live scores and results — Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor and every Trendyol Süper Lig club in English.","inLanguage":"en","dateModified":"2026-09-12","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"},{"@type":"ListItem","position":2,"name":"Süper Lig","item":"https://www.futbolradar.com/en/super-lig.html"}]},{"@type":"SportsEvent","name":"Gaziantep FK v Fenerbahçe","startDate":"2026-09-14T20:00:00+03:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Gaziantep Stadyumu","address":"Türkiye"},"competitor":[{"@type":"SportsTeam","name":"Gaziantep FK"},{"@type":"SportsTeam","name":"Fenerbahçe"}]},{"@type":"SportsEvent","name":"Erzurumspor FK v Samsunspor","startDate":"2026-09-20T17:00:00+03:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","location":{"@type":"Place","name":"Kazım Karabekir Stadyumu","address":"Türkiye"},"competitor":[{"@type":"SportsTeam","name":"Erzurumspor FK"},{"@type":"SportsTeam","name":"Samsunspor"}]}]}</script>
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -59,6 +59,21 @@
       }
     })();
   </script>
+    <script data-futbolradar-lang-boot>(function(){try{
+var d=document.documentElement;
+var cur=(d.getAttribute("lang")||"tr").slice(0,2).toLowerCase();
+var target=cur==="en"?"tr":"en";
+var pref="";
+try{pref=window.localStorage.getItem("futbolradar-lang")||"";}catch(e){}
+if(!pref){var m=document.cookie.match(/(?:^|;\s*)futbolradar_lang=([^;]*)/);pref=m?decodeURIComponent(m[1]):"";}
+if(pref)return;
+var list=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];
+var tr=false;
+for(var i=0;i<list.length;i++){if(/^tr\b/i.test(String(list[i]||""))){tr=true;break;}}
+if(cur==="tr"&&tr)return;
+if(cur==="en"&&!tr)return;
+d.setAttribute("data-lang-suggest",target);
+}catch(e){}})();</script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />

@@ -22273,21 +22273,39 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 }
 
 /* ── DİL ÖNERİ BANDI ────────────────────────────────────────────────────────
-   AKIŞIN DIŞINDA çizilir (`position: fixed`): yükleme sonrası belirdiğinde
-   altındaki içerik bir piksel oynamaz, yani CLS üretmez. Bant yalnızca
-   `lang-suggest.js` onu gövdeye eklerse görünür; kullanıcı kapatınca DOM'dan
-   tamamen kaldırılır. */
+   YER ÖNCEDEN AYRILIR, ÜSTÜNE BİNİLMEZ.
+
+   Bant `position: fixed` ile üstte duruyor ama gövdeye AYNI yükseklikte bir
+   üst boşluk veriliyor; boşluk, `<head>` içindeki senkron snippet'in bastığı
+   `data-lang-suggest` işaretine bağlı, yani İLK BOYAMADAN ÖNCE uygulanıyor.
+
+   İkisi birden gerekli. Yalnızca `fixed` bırakıldığında bant başlık çubuğunun
+   üzerine biniyordu ve mobilde hamburger düğmesi tıklanamaz hâle geliyordu
+   (etkileşim kapısı `.nav-toggle` dokunuşunda zaman aşımına uğradı). Yalnızca
+   akışa sokmak ise sayfa kaymasıydı. Bu biçimde ne bindirme var ne kayma.
+
+   Yükseklik SABİT ve içerik ona uyduruluyor: ayrılan boşlukla bandın gerçek
+   yüksekliği ayrışırsa aradaki fark yine kayma olurdu. */
+:root { --lang-suggest-h: 44px; }
+
+html[data-lang-suggest] body { padding-top: var(--lang-suggest-h); }
+
 .lang-suggest {
   position: fixed; top: 0; left: 0; right: 0; z-index: 1200;
-  display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
-  padding: 8px 44px 8px 16px; font-size: var(--fs-sm, .9rem);
+  height: var(--lang-suggest-h);
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 0 44px 0 16px; font-size: var(--fs-sm, .9rem);
   background: var(--card, #0f172a); color: var(--text, #f8fafc);
   border-bottom: 1px solid var(--line, rgba(148,163,184,.3));
   box-shadow: 0 2px 12px rgba(0,0,0,.14);
 }
-.lang-suggest-text { opacity: .85; }
+/* Tek satır: sarmalama yüksekliği büyütüp ayrılan boşluğu aşardı. */
+.lang-suggest-text,
+.lang-suggest-cta { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lang-suggest-text { opacity: .85; min-width: 0; }
 .lang-suggest-cta {
-  display: inline-flex; align-items: center; min-height: 32px; padding: 4px 12px;
+  display: inline-flex; align-items: center; flex: 0 0 auto;
+  min-height: 32px; padding: 4px 12px;
   border-radius: 999px; font-weight: 600; text-decoration: none;
   background: var(--green, #16a34a); color: #fff;
 }
@@ -22300,13 +22318,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .lang-suggest-close:hover, .lang-suggest-close:focus-visible { opacity: 1; }
 
 @media (max-width: 640px) {
-  /* Mobilde metin ve düğme alt alta; dokunma hedefleri 44px'in altına düşmez. */
-  .lang-suggest { justify-content: flex-start; padding: 10px 44px 10px 14px; }
+  /* Mobilde bant biraz yüksek: dokunma hedefleri 44px'in altına düşmemeli.
+     Ayrılan boşluk da aynı değişkenden geldiği için kendiliğinden uyuyor. */
+  :root { --lang-suggest-h: 56px; }
+  .lang-suggest { justify-content: flex-start; padding-left: 14px; }
   .lang-suggest-cta { min-height: 44px; }
   .lang-suggest-close { width: 44px; height: 44px; }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .lang-suggest { animation: lang-suggest-in .18s ease-out; }
-  @keyframes lang-suggest-in { from { opacity: 0; transform: translateY(-100%); } to { opacity: 1; transform: none; } }
+  /* Uzun açıklama dar ekranda düğmeye yer bırakmıyor; düğme kalıyor. */
+  .lang-suggest-text { display: none; }
 }

@@ -18,6 +18,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { LANG_SUGGEST_BOOT } from "./lib/langSuggestBoot.mjs";
 
 const root = process.cwd();
 const source = fs.readFileSync(path.join(root, "lang-suggest.js"), "utf8");
@@ -84,17 +85,30 @@ function run({ htmlLang, languages, switchTarget, switchHref, stored = null, coo
       })()
     : null;
 
+  // `<html>` artık iki yönlü: snippet üzerine `data-lang-suggest` yazıyor,
+  // çizim betiği onu okuyor. Taklit bu yüzden gerçek bir öznitelik torbası.
+  const rootAttributes = { lang: htmlLang };
+  const documentElement = {
+    getAttribute: (key) => (Object.prototype.hasOwnProperty.call(rootAttributes, key) ? rootAttributes[key] : null),
+    setAttribute: (key, value) => {
+      rootAttributes[key] = String(value);
+    },
+    removeAttribute: (key) => {
+      delete rootAttributes[key];
+    }
+  };
+
   const documentStub = {
     readyState: "complete",
     cookie,
-    documentElement: { getAttribute: (key) => (key === "lang" ? htmlLang : null) },
+    documentElement,
     body,
     createElement: makeElement,
     addEventListener() {},
     querySelector(selector) {
       if (selector === "a.lang-switch[data-lang-switch]") return switchAnchor;
-      if (selector === "[data-lang-suggest]") {
-        return body.children.find((child) => child.getAttribute("data-lang-suggest")) || null;
+      if (selector === "[data-lang-suggest-banner]") {
+        return body.children.find((child) => child.getAttribute("data-lang-suggest-banner")) || null;
       }
       return null;
     }
@@ -134,10 +148,15 @@ function run({ htmlLang, languages, switchTarget, switchHref, stored = null, coo
   };
   context.globalThis = context;
   vm.createContext(context);
+  // SIRA GERÇEK SIRA: önce `<head>` snippet'i (karar), sonra ertelenmiş
+  // betik (çizim). Test yalnızca ikincisini koşsaydı, karar mantığındaki bir
+  // gerileme hiç yakalanmazdı.
+  vm.runInContext(LANG_SUGGEST_BOOT, context, { filename: "lang-suggest-boot.js" });
+  const reserved = documentElement.getAttribute("data-lang-suggest");
   vm.runInContext(source, context, { filename: "lang-suggest.js" });
 
-  const banner = body.children.find((child) => child.getAttribute("data-lang-suggest")) || null;
-  return { banner, body, storage, documentStub };
+  const banner = body.children.find((child) => child.getAttribute("data-lang-suggest-banner")) || null;
+  return { banner, body, storage, documentStub, documentElement, reserved };
 }
 
 console.log("lang-suggest");
@@ -150,7 +169,7 @@ check("Türkçe sayfa + İngilizce tarayıcı → İngilizce önerisi çıkar", 
     switchHref: "./en/galatasaray.html"
   });
   assert.ok(banner, "bant çizilmeliydi");
-  assert.equal(banner.getAttribute("data-lang-suggest"), "en");
+  assert.equal(banner.getAttribute("data-lang-suggest-banner"), "en");
   const cta = banner.children.find((child) => child.tagName === "A");
   assert.ok(cta, "çağrı bağlantısı yok");
   assert.equal(cta.textContent, "View FutbolRadar in English");
@@ -176,7 +195,7 @@ check("İngilizce sayfa + Türkçe tarayıcı → Türkçe önerisi çıkar", ()
     switchHref: "../galatasaray-maclari.html"
   });
   assert.ok(banner, "bant çizilmeliydi");
-  assert.equal(banner.getAttribute("data-lang-suggest"), "tr");
+  assert.equal(banner.getAttribute("data-lang-suggest-banner"), "tr");
 });
 
 check("İngilizce sayfa + İngilizce tarayıcı → öneri çıkmaz", () => {
@@ -273,11 +292,38 @@ check("hiçbir senaryoda yönlendirme yapılmaz", () => {
   }
 });
 
-/** Bant akış DIŞINDA çizilmeli (CLS üretmemeli) — stil sözleşmesi. */
-check("bant CLS üretmeyecek biçimde konumlanıyor (position: fixed)", () => {
+/**
+ * CLS VE BİNDİRME SÖZLEŞMESİ.
+ *
+ * Bandın kendisi akışın dışında (`fixed`) ama gövdede AYNI yükseklikte yer
+ * ayrılıyor. İkisinden biri eksik olursa ya sayfa kayar ya da bant başlık
+ * çubuğunun üzerine biner — ikincisi mobilde hamburger düğmesini
+ * tıklanamaz yapmıştı, depo kendi etkileşim kapısıyla yakaladı.
+ */
+check("bant fixed VE gövdede yeri ayrılmış (ne kayma ne bindirme)", () => {
   const css = fs.readFileSync(path.join(root, "page.css"), "utf8");
   const block = css.slice(css.indexOf(".lang-suggest {"));
   assert.ok(/^[\s\S]{0,400}position:\s*fixed/.test(block), ".lang-suggest position: fixed olmalı");
+  assert.ok(
+    /html\[data-lang-suggest\]\s*body\s*\{[^}]*padding-top:\s*var\(--lang-suggest-h\)/.test(css),
+    "gövdede bant yüksekliği kadar yer ayrılmalı"
+  );
+  assert.ok(
+    /\.lang-suggest\s*\{[^}]*height:\s*var\(--lang-suggest-h\)/.test(css),
+    "bandın yüksekliği ayrılan boşlukla aynı değişkenden gelmeli"
+  );
+});
+
+/** Karar İLK BOYAMADAN ÖNCE verilmeli: snippet `<head>`e senkron gömülüyor. */
+check("karar snippet'i sayfaya senkron gömülüyor", () => {
+  const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const head = html.slice(0, html.indexOf("</head>"));
+  assert.ok(head.includes("data-futbolradar-lang-boot"), "snippet <head> içinde değil");
+  assert.doesNotMatch(
+    head.match(/<script [^>]*data-futbolradar-lang-boot[^>]*>/)[0],
+    /\b(defer|async)\b/,
+    "karar snippet'i ertelenemez — ilk boyamadan önce çalışmalı"
+  );
 });
 
 if (failures) {

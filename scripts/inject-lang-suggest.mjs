@@ -19,11 +19,15 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { LANG_SUGGEST_BOOT, LANG_SUGGEST_MARKER } from "./lib/langSuggestBoot.mjs";
 
 const root = process.cwd();
 const CHECK_ONLY = process.argv.includes("--check");
 const MARKER = "data-futbolradar-lang-suggest";
 const BLOCK_RE = /[\t ]*<script [^>]*data-futbolradar-lang-suggest[^>]*><\/script>\n?/g;
+// Senkron karar snippet'i: `<head>` içinde, İLK BOYAMADAN ÖNCE.
+const BOOT_RE = /[\t ]*<script [^>]*data-futbolradar-lang-boot[^>]*>[\s\S]*?<\/script>\n?/g;
+const BOOT_TAG = `  <script ${LANG_SUGGEST_MARKER}>${LANG_SUGGEST_BOOT}</script>`;
 
 // Google mülkiyet doğrulama dosyasına hiçbir etiket enjekte edilmez.
 const SKIP_FILES = new Set(["googlef881b0d7527a8fba.html"]);
@@ -52,10 +56,12 @@ const problems = [];
 
 for (const file of walk(root)) {
   const original = fs.readFileSync(file, "utf8");
-  const stripped = original.replace(BLOCK_RE, "");
+  const stripped = original.replace(BLOCK_RE, "").replace(BOOT_RE, "");
 
-  // Dil düğmesi yoksa bandın hedefi de yok — betik hiç bağlanmaz.
-  if (!stripped.includes("data-lang-switch") || !/<\/body>/i.test(stripped)) {
+  // Dil düğmesi yoksa bandın hedefi de yok — ne snippet ne betik bağlanır.
+  // Bu kapı aynı zamanda "yer ayırdım ama bant çıkmadı" durumunu imkânsız
+  // kılıyor: snippet yalnızca karşılığı OLAN sayfalara giriyor.
+  if (!stripped.includes("data-lang-switch") || !/<\/body>/i.test(stripped) || !/<\/head>/i.test(stripped)) {
     if (stripped !== original && !CHECK_ONLY) {
       fs.writeFileSync(file, stripped, "utf8");
       updated += 1;
@@ -66,7 +72,9 @@ for (const file of walk(root)) {
   }
 
   const tag = `  <script ${MARKER} src="${baseFor(file)}lang-suggest.js" defer></script>`;
-  const next = stripped.replace(/<\/body>/i, `${tag}\n  </body>`);
+  const next = stripped
+    .replace(/<\/head>/i, `${BOOT_TAG}\n  </head>`)
+    .replace(/<\/body>/i, `${tag}\n  </body>`);
 
   if (next === original) {
     skipped += 1;
