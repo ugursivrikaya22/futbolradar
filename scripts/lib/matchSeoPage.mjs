@@ -198,6 +198,10 @@ export const STR = {
     varEvent: "VAR",
     lastUpdated: "Son güncelleme",
     liveNote: "Skor ve olaylar sağlayıcıdan otomatik yenilenir.",
+    radarPulseTitle: "Maçın Anlık Baskı Dengesi",
+    radarPulseSubtitle: "Radar Nabzı, maçın son bölümündeki hücum ve baskı verilerinden hesaplanır.",
+    radarPulsePending: "Radar Nabzı maç başladığında burada açılır.",
+    radarPulseStale: "Canlı istatistik verisi geçici olarak güncellenemiyor.",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -304,6 +308,10 @@ export const STR = {
     varEvent: "VAR",
     lastUpdated: "Last updated",
     liveNote: "Score and events refresh automatically from the provider.",
+    radarPulseTitle: "Live Pressure",
+    radarPulseSubtitle: "Live Match Pulse is calculated from attacking and pressure data in the closing stage of the match.",
+    radarPulsePending: "Live Match Pulse opens here once the match kicks off.",
+    radarPulseStale: "Live statistics cannot be updated at the moment.",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -803,6 +811,30 @@ export function eventsSectionHtml(events, ctx) {
     return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(text.goalsTitle, goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
   }
   return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${events.length ? eventsListHtml(events, text) : `<p class="muted-copy" data-msp-events-note>${escapeHtml(text.eventsPending)}</p>`}</div></section>`;
+}
+
+/**
+ * RADAR NABZI BÖLÜMÜNÜN KABUĞU.
+ *
+ * Sunucu tarafında yalnızca BAŞLIK ve BOŞ GÖVDE basılır; sayılar istemciye
+ * `/api/match-detail` yanıtıyla gelir (bkz. radar-pulse.js). Sebebi basit:
+ * Radar Nabzı "şu anki baskı"dır ve derleme anında üretilen bir sayı,
+ * sayfanın yayına girdiği andan itibaren yanlıştır.
+ *
+ * Kabuk `hidden` doğar. Veri gelene kadar sayfada YER KAPLAMAZ — bu hem
+ * düzen kaymasını (CLS) hem de "yükleniyor" diye duran boş bir kutuyu
+ * önler. İstemci yalnızca çizecek gerçek veri bulduğunda `hidden`ı kaldırır.
+ */
+export function radarPulseSectionHtml(ctx) {
+  const { locale } = ctx;
+  const text = STR[locale];
+  const anchor = locale === "en" ? "live-pulse" : "radar-nabzi";
+  return `<section class="msp-section rp-section" id="${anchor}" data-radar-pulse hidden aria-labelledby="rp-title">` +
+    `<h2 id="rp-title" class="msp-section-title">${escapeHtml(text.radarPulseTitle)}</h2>` +
+    `<p class="rp-subtitle muted-copy">${escapeHtml(text.radarPulseSubtitle)}</p>` +
+    `<div class="rp-body" data-radar-pulse-body></div>` +
+    `<p class="rp-stale" data-radar-pulse-stale hidden>${escapeHtml(text.radarPulseStale)}</p>` +
+    `</section>`;
 }
 
 export function statsSectionHtml(statistics, ctx) {

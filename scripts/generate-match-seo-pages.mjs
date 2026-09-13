@@ -51,6 +51,7 @@ import {
   longDate,
   nextMatchesSectionHtml,
   normalizeEvents,
+  radarPulseSectionHtml,
   relatedLinksHtml,
   scorersSectionHtml,
   shortDate,
@@ -745,6 +746,7 @@ function pageHtml(entry, locale, options) {
   } else if (state === "live") {
     sections = [
       `<section class="msp-section msp-live-note"><p class="muted-copy">${escapeHtml(text.liveNote)}</p></section>`,
+      radarPulseSectionHtml(ctx),
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
@@ -766,6 +768,7 @@ function pageHtml(entry, locale, options) {
       scorersSectionHtml(players, ctx),
       analysisSectionHtml(radar, detail.prediction, ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
+      radarPulseSectionHtml(ctx),
       eventsSectionHtml([], ctx),
       statsSectionHtml([], ctx)
     ];
@@ -836,6 +839,7 @@ function pageHtml(entry, locale, options) {
     </main>
     ${siteFooter({ base, locale })}
     <script src="${base}site.js" defer></script>
+    <script src="${base}radar-pulse.js" defer></script>
     <script src="${base}match-center.js" defer></script>
   </body>
 </html>

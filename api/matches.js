@@ -69,7 +69,12 @@ module.exports = async function handler(req, res) {
   // kulüp listeleri tarayıcıya inmeden istemci de sunucu da aynı sırayı
   // üretebilsin diye puan kaydın kendisine yazılıyor. Hiçbir maç elenmez;
   // yalnızca ne kadar öne çıkacağı belirlenir.
-  const data = withMatchPages(withRelevance(rawData));
+  // `locale=en` istendiğinde İngilizce maç sayfası yolu da damgalanır
+  // (ana sayfa Radar Nabzı kartı İngilizce yüzeyde İngilizce sayfaya
+  // bağlanabilsin diye). Türkçe istek bu ek tabloyu hiç yüklemez.
+  const data = withMatchPages(withRelevance(rawData), undefined, {
+    includeEn: String(query.locale || "").toLowerCase() === "en"
+  });
 
   // BAYATLIK YANITTA BİLDİRİLİR.
   //

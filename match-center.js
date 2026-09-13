@@ -196,7 +196,14 @@
     // SKOR KAPISI: skoru olmayan canlı iddiası çizilmez.
     if (status === "scheduled" || !hasScore) return;
 
-    var signature = [status, score.home, score.away, detail.minute, (detail.events || []).length, (detail.statistics || []).length].join("|");
+    // RADAR NABZI imzaya dahil: skor ve olay sayısı değişmese de baskı
+    // dengesi değişebilir (şut, korner, xG). Dahil edilmezse blok bir gol
+    // atılana kadar donardı.
+    var pulse = detail && detail.radarPulse;
+    var pulseSignature = pulse && pulse.pulse
+      ? [pulse.pulse.home, pulse.pulse.away, pulse.window ? pulse.window.toMinute : "", (pulse.momentum && pulse.momentum.segments || []).length].join(",")
+      : "";
+    var signature = [status, score.home, score.away, detail.minute, (detail.events || []).length, (detail.statistics || []).length, pulseSignature].join("|");
     var changed = signature !== lastSignature;
     lastSignature = signature;
     if (!changed) return;
@@ -232,7 +239,45 @@
     var stats = statsHtml(detail.statistics);
     if (statsBody && stats) statsBody.innerHTML = stats;
 
+    renderPulse(detail, status);
+
     if (status === "finished") finished = true;
+  }
+
+  /**
+   * RADAR NABZI BLOĞU.
+   *
+   * Ayrı bir yoklama YOK: bu fonksiyon yukarıdaki döngünün zaten aldığı
+   * yanıtla çağrılır. `radar-pulse.js` yüklenmediyse (ya da çizim patlarsa)
+   * sayfa bu betik hiç eklenmemiş gibi çalışmaya devam eder — mevcut maç
+   * sayfası Radar Nabzı'na bağımlı değildir.
+   */
+  function renderPulse(detail, status) {
+    var section = document.querySelector("[data-radar-pulse]");
+    if (!section) return;
+    var api = window.FutbolRadarPulse;
+    if (!api || typeof api.render !== "function") return;
+    try {
+      var live = status === "live" || status === "halftime";
+      var shown = api.render(section, detail, {
+        locale: locale,
+        names: { home: homeName, away: awayName },
+        // Olay bölümünün kimliği her iki dilde de "olaylar" (bkz.
+        // scripts/lib/matchSeoPage.mjs#eventsSectionHtml); dile göre
+        // türetilen bir çapa var olmayan bir yere bağlanırdı.
+        allEventsHref: "#olaylar",
+        live: live
+      });
+      if (shown && typeof api.trackOnce === "function") {
+        api.trackOnce("radar_pulse_view", {
+          match_slug: root.getAttribute("data-msp-slug") || "",
+          locale: locale,
+          page_path: location.pathname
+        });
+      }
+    } catch (error) {
+      section.setAttribute("hidden", "");
+    }
   }
 
   function schedule(delay) {
@@ -246,7 +291,11 @@
     if (document.hidden) { schedule(LIVE_POLL_MS); return; }
     var now = Date.now();
     if (now < kickoffMs - 5 * 60 * 1000) { schedule(Math.min(kickoffMs - 5 * 60 * 1000 - now, PRE_POLL_MS)); return; }
-    fetch("/api/match-detail?" + query, { cache: "no-store" })
+    // DİL SUNUCUYA SÖYLENİR. "Son 10 dakika" yorumu sunucuda, şablondan
+    // üretiliyor (services/radarPulseBuilder.js); istek dili taşımazsa
+    // sunucu Türkçe varsayar ve İNGİLİZCE sayfada Türkçe bir cümle çıkar.
+    // Sayfa dilini yalnızca bu istemci biliyor, bu yüzden burada ekleniyor.
+    fetch("/api/match-detail?" + query + "&locale=" + encodeURIComponent(locale), { cache: "no-store" })
       .then(function (response) { if (!response.ok) throw new Error("http " + response.status); return response.json(); })
       .then(function (payload) {
         var rows = payload && Array.isArray(payload.data) ? payload.data : payload && payload.data ? [payload.data] : [];
@@ -264,6 +313,40 @@
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden && !timer && !finished) schedule(1000);
   });
+
+  // ZAMAN ÇİZELGESİ ETKİLEŞİMİ. Blok her güncellemede yeniden basıldığı
+  // için dinleyici tek tek satırlara değil, KAPSAYICIYA bağlanır; yeniden
+  // basılan içerik dinleyiciyi düşürmez.
+  document.addEventListener("click", function (event) {
+    var api = window.FutbolRadarPulse;
+    if (!api || typeof api.track !== "function") return;
+    var target = event.target && event.target.closest
+      ? event.target.closest("[data-rp-timeline] li, [data-rp-timeline-all], .rp-marker")
+      : null;
+    if (!target) return;
+    api.track("timeline_interaction", {
+      match_slug: root.getAttribute("data-msp-slug") || "",
+      locale: locale,
+      element: target.hasAttribute("data-rp-timeline-all") ? "all-events"
+        : target.classList.contains("rp-marker") ? "momentum-marker" : "timeline-item"
+    });
+  }, { passive: true });
+
+  // CANLI MAÇ AÇILIŞI. Sayfa yüklendiğinde maç oynanıyorsa (ya da başlamış
+  // sayılacak kadar yakınsa) bir kez gönderilir; başlamamış maç sayfasının
+  // açılışı canlı maç açılışı değildir.
+  (function () {
+    var api = window.FutbolRadarPulse;
+    if (!api || typeof api.trackOnce !== "function") return;
+    var now = Date.now();
+    if (state === "live" || (now >= kickoffMs && now - kickoffMs < GRACE_MS)) {
+      api.trackOnce("live_match_open", {
+        match_slug: root.getAttribute("data-msp-slug") || "",
+        locale: locale,
+        page_path: location.pathname
+      });
+    }
+  })();
 
   var untilKickoff = kickoffMs - Date.now();
   if (untilKickoff > 60 * 60 * 1000) {

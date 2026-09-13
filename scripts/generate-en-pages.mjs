@@ -1202,6 +1202,26 @@ function officialLineupAlertsSection() {
     .join("");
 }
 
+/**
+ * LIVE MATCH PULSE — ANA SAYFA KARTININ KABUĞU (İNGİLİZCE YÜZEY).
+ *
+ * Türkçe ana sayfada aynı kabuk `index.html` içinde elle duruyor, çünkü o
+ * dosya bir KAYNAK; İngilizce ana sayfa ise tamamen burada üretiliyor, bu
+ * yüzden kabuk da burada basılıyor.
+ *
+ * İçi boş ve `hidden` doğar: "canlı maç var" iddiası derleme anında
+ * doğrulanamaz. `radar-home-card.js` gerçekten oynanan bir maç bulduğunda
+ * doldurup açar, maç bitince yeniden kapatır — canlı maç yokken ana
+ * sayfada boşluk kalmaz.
+ */
+function radarHomeCardShell() {
+  return `<section class="container rp-home" data-radar-home-card data-radar-locale="en" hidden aria-label="Live Match Pulse">
+        <div data-radar-home-body></div>
+      </section>
+      <script src="${BASE}radar-pulse.js" defer></script>
+      <script src="${BASE}radar-home-card.js" defer></script>`;
+}
+
 function homePage() {
   // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
   //   hero → puan durumları (9 sekme) → köşe yazıları → günün başlıkları →
@@ -1213,7 +1233,8 @@ function homePage() {
   // Puan tablosu artık arşivin ardındaki tek-lig özeti DEĞİL: canlı skorun
   // hemen altında, 9 yarışmalı sekmeli widget (`standingsTabsSection`) —
   // TR ana sayfasıyla (prerender-core-pages.mjs) aynı konum kuralı.
-  const body = `      ${heroSection()}
+  const body = `      ${radarHomeCardShell()}
+      ${heroSection()}
       ${standingsTabsSection()}
       ${officialLineupAlertsSection()}
       ${columnsSection()}

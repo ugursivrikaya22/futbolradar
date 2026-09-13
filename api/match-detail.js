@@ -1,6 +1,9 @@
 const { getProvider, mockProvider } = require("../services/providers");
 const { quotesForMatch } = require("../services/managerQuotes");
 const managerQuoteStore = require("../data/manager-quotes.json");
+const { isRadarPulseEnabled } = require("../services/featureFlags");
+const { buildRadarPulse } = require("../services/radarPulseBuilder");
+const { recordSample } = require("../services/livePulseStore");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -60,6 +63,48 @@ module.exports = async function handler(req, res) {
   // denetliyor, bizim eklediğimiz alan o sözleşmenin parçası değil.
   if (detail) {
     detail.quotes = quotesForMatch(detail.id, managerQuoteStore);
+  }
+
+  // RADAR NABZI — SAĞLAYICIYA FAZLADAN İSTEK ATMADAN.
+  //
+  // Nabız, ZATEN alınmış olan bu yanıttan hesaplanır: ek uç nokta yok, ek
+  // sağlayıcı çağrısı yok, istemci için ek istek yok. Ayrı bir
+  // `/api/radar-pulse` yazmak, aynı maçı izleyen her okuyucu için ikinci bir
+  // tur demek olurdu — istenen tam tersiydi.
+  //
+  // "Son 10 dakika" farkı için anlık görüntü BURADA kaydedilir; sağlayıcı
+  // kümülatif toplam döndürdüğü için pencere ancak iki zaman noktasının
+  // farkından doğabilir (bkz. services/livePulseStore.js).
+  // YALNIZCA OYNANAN MAÇ. Radar Nabzı "şu anki baskı"dır; bitmiş bir maçta
+  // gösterilecek bir "şu an" yok. Bitmiş maçta hesaplamak yalnızca boşa iş
+  // değil, ZARARLI olurdu: anlık görüntü deposu sınırlı (60 maç) ve arşiv
+  // sayfaları en çok trafiği alan sayfalar — her arşiv görüntülemesi bir
+  // kayıt açsaydı, gerçekten CANLI olan maçların görüntüleri depodan
+  // düşerdi ve "son 10 dakika" penceresi tam ihtiyaç duyulan anda kaybolurdu.
+  const liveNow = ["LIVE", "HALFTIME", "HT", "1H", "2H", "ET", "BT", "P", "IN_PLAY", "PAUSED", "INT", "SUSP"]
+    .includes(String((detail && (detail.providerStatus || detail.status)) || "").toUpperCase());
+
+  if (detail && liveNow && isRadarPulseEnabled()) {
+    try {
+      const fixtureKey = detail.fixtureId || detail.providerId || detail.id || query.fixtureId || query.id;
+      const samples = recordSample(fixtureKey, {
+        minute: detail.minute,
+        statistics: detail.statistics,
+        score: detail.score
+      });
+      const pulse = buildRadarPulse({
+        detail,
+        samples,
+        locale: String(query.locale || "").toLowerCase() === "en" ? "en" : "tr"
+      });
+      // Nabız hesaplanamadıysa (ölçülmüş faktör yok) alan yine taşınır ama
+      // içi boştur: istemci "veri yok" ile "özellik kapalı"yı ayırt etsin.
+      detail.radarPulse = pulse;
+    } catch (error) {
+      // Nabız YARDIMCI bir katman. Hesabı patlarsa maç detayı yine döner;
+      // eksik olan bölüm gizlenir, sayfa çalışmaya devam eder.
+      detail.radarPulse = null;
+    }
   }
 
   // Maç CANLIYSA önbellek politikası no-store'a geçer — bitmiş/başlamamış

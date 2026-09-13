@@ -28,6 +28,8 @@ for (const file of [
   "pwa.js",
   "analytics.js",
   "performance-loader.js",
+  "radar-pulse.js",
+  "radar-home-card.js",
   "site.webmanifest",
   "404.html",
   "index.html",
