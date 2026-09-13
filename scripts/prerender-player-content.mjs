@@ -112,9 +112,17 @@ function transferCard(transfer) {
 function profileShell(player) {
   const view = publicPlayerView(player);
   const profile = buildPlayerProfile({ player, players, transfers, credibility: view });
-  const html = playerProfileView.renderProfileHtml(profile, { hrefPrefix: "./", rootPrefix: "../" });
+  // Sayfa üstünde "Futbolcu 360" yığını var: kimlik, sezon, son maçlar,
+  // form, kariyer ve transfer bölümleri orada, kapıdan geçmiş ve daha dolu
+  // hâlleriyle basılıyor. Kartta ikinci kez basılmazlar; aynı anahtar
+  // iskelete gömülür ki tarayıcı tazelemesi de aynı kararı uygulasın.
+  const html = playerProfileView.renderProfileHtml(profile, {
+    hrefPrefix: "./",
+    rootPrefix: "../",
+    omit: playerProfileView.P360_SUPERSEDED
+  });
 
-  return `<section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}" data-prerendered="1">${html}</section>`;
+  return `<section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}" data-prerendered="1" data-p360="1">${html}</section>`;
 }
 
 /**

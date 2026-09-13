@@ -14,6 +14,26 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/futbolcu/:slug",
+      "destination": "/oyuncular/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/futbolcu/:slug.html",
+      "destination": "/oyuncular/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/karsilastir/:slug",
+      "destination": "/karsilastirma/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/karsilastir/:slug.html",
+      "destination": "/karsilastirma/:slug",
+      "permanent": true
+    },
+    {
       "source": "/fenerbahce-roma-maci.html",
       "destination": "/fenerbahce-roma-maci",
       "permanent": true
@@ -410,7 +430,10 @@
       "source": "/bugunun-maclari-hangi-kanalda",
       "destination": "/bugunun-maclari-hangi-kanalda.html"
     },
-    { "source": "/yarinki-maclar-hangi-kanalda", "destination": "/yarinki-maclar-hangi-kanalda.html" },
+    {
+      "source": "/yarinki-maclar-hangi-kanalda",
+      "destination": "/yarinki-maclar-hangi-kanalda.html"
+    },
     {
       "source": "/canli-skor",
       "destination": "/canli-skor.html"

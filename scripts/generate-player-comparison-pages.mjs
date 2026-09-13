@@ -12,6 +12,18 @@ const { publicPlayerView, sourceMetadata } = require("../services/cardCredibilit
 const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
 const { playerPer90Stats } = require("../services/statNormalization.js");
 const { formatFreshnessDate } = require("../services/freshnessService.js");
+// Eş seçimi ve puanlama TEK kaynaktan (services/playerComparisonPairs.js):
+// profil sayfası, Futbolcu 360 kıyas bölümü ve bu üretici aynı listeyi
+// görmek zorunda, yoksa bağlantılar üretilmemiş sayfalara gider.
+const {
+  comparePeerScore,
+  comparisonSlug,
+  playerCurrentTeam,
+  playerPositionGroup,
+  playerRating,
+  profileCompareCandidates,
+  uniqueCompareCandidates
+} = require("../services/playerComparisonPairs.js");
 const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
 const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
@@ -44,10 +56,6 @@ function stripTags(value) {
   return String(value ?? "").replace(/<[^>]*>/g, "").trim();
 }
 
-function playerCurrentTeam(player) {
-  return player.currentTeam || player.team || "Takım bilgisi yakında";
-}
-
 function playerNeedsTransferReview(player) {
   return ["transfer_needs_monitoring", "manual-review"].includes(String(player.dataStatus || ""));
 }
@@ -57,78 +65,8 @@ function playerTeamDisplay(player) {
   return playerNeedsTransferReview(player) ? `${team} (takipte)` : team;
 }
 
-function playerRating(player) {
-  return Number(player.overallRating || player.aiRating || player.rating || 0);
-}
-
 function playerMarket(player) {
   return player.marketValue || formatMarketValueEur(player.marketValueEur) || "Piyasa değeri yakında";
-}
-
-function playerPositionGroup(player) {
-  const source = `${player.positionGroup || ""} ${player.position || ""}`.toLocaleLowerCase("tr-TR");
-
-  if (source.includes("kaleci") || source.includes("goal")) return "kaleci";
-  if (source.includes("def") || source.includes("stoper") || source.includes("bek") || source.includes("savun")) return "defans";
-  if (source.includes("orta") || source.includes("mid")) return "orta saha";
-  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet") || source.includes("santrfor") || source.includes("striker")) return "forvet";
-  return "diger";
-}
-
-function comparisonSlug(leftId, rightId) {
-  return [leftId, rightId].sort().join("-vs-");
-}
-
-function comparePeerScore(primary, candidate) {
-  if (!primary || !candidate || primary.id === candidate.id) return -1;
-  // Aynı gerçek oyuncunun iki kaydı (mock + sağlayıcı senkronu) birbiriyle
-  // "karşılaştırılmaz" — bu, oyuncunun kendisiyle kıyaslanması demektir.
-  if (sameCanonicalPlayer(primary, candidate)) return -1;
-
-  const sameRole = playerPositionGroup(primary) === playerPositionGroup(candidate) ? 44 : 0;
-  const sameLeague = primary.league && candidate.league && primary.league === candidate.league ? 16 : 0;
-  const differentTeam = playerCurrentTeam(primary) !== playerCurrentTeam(candidate) ? 10 : 0;
-  const ratingCloseness = Math.max(0, 26 - Math.abs(playerRating(primary) - playerRating(candidate)));
-  const marketDelta = Math.abs(Number(primary.marketValueEur || 0) - Number(candidate.marketValueEur || 0)) / 1000000;
-  const marketCloseness = Math.max(0, 12 - marketDelta / 3);
-
-  return sameRole + sameLeague + differentTeam + ratingCloseness + marketCloseness;
-}
-
-function uniqueCompareCandidates(list) {
-  const used = new Set();
-  return list.filter((item) => {
-    if (!item || !item.player || used.has(item.player.id)) return false;
-    used.add(item.player.id);
-    return true;
-  });
-}
-
-function profileCompareCandidates(player) {
-  const candidates = players.filter((candidate) => candidate.id !== player.id && !sameCanonicalPlayer(player, candidate));
-  const bestPeer = candidates.slice().sort((a, b) => comparePeerScore(player, b) - comparePeerScore(player, a))[0];
-  const sameRole = candidates
-    .filter((candidate) => playerPositionGroup(candidate) === playerPositionGroup(player))
-    .sort((a, b) => playerRating(b) - playerRating(a))[0];
-  const closeRating = candidates
-    .slice()
-    .sort((a, b) => Math.abs(playerRating(player) - playerRating(a)) - Math.abs(playerRating(player) - playerRating(b)))[0];
-  const transferRead = candidates
-    .filter((candidate) => Array.isArray(candidate.transferHistory) && candidate.transferHistory.length)
-    .sort((a, b) => Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0))[0];
-
-  const baseLinks = uniqueCompareCandidates([
-    { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
-    { label: "Aynı rol kıyası", player: sameRole, note: `${playerPositionGroup(player)} profili` },
-    { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
-    { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
-  ]);
-  const fallbackLinks = candidates
-    .slice()
-    .sort((a, b) => playerRating(b) - playerRating(a))
-    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafiği ve kıyas akışı" }));
-
-  return uniqueCompareCandidates(baseLinks.concat(fallbackLinks)).slice(0, 4);
 }
 
 function addPair(map, left, right, context) {
@@ -174,7 +112,7 @@ function buildPairs() {
   }
 
   for (const player of players) {
-    for (const item of profileCompareCandidates(player)) {
+    for (const item of profileCompareCandidates(player, players)) {
       addPair(map, player, item.player, item.note || item.label);
     }
   }

@@ -626,6 +626,36 @@
    * kart yazılır; hangi alanların beklendiği "Veri Güveni" bölümünde zaten
    * ayrıntılı duruyor.
    */
+  /**
+   * FUTBOLCU 360 İLE ÇAKIŞAN BÖLÜMLER.
+   *
+   * Oyuncu sayfası artık üstünde, sunucuda basılmış bir "Futbolcu 360"
+   * yığını taşıyor (scripts/lib/player360.mjs): kimlik kartı, sezon
+   * istatistikleri, son maçlar, form, kariyer ve transfer haberleri.
+   * Aynı başlıkları bu kartta İKİNCİ KEZ basmak sayfayı uzatır, okuyucuyu
+   * "hangisi güncel?" sorusuyla baş başa bırakır ve aynı konuda iki H2
+   * üreterek arama sonucunda sayfanın ne hakkında olduğunu bulanıklaştırır.
+   *
+   * Bu yüzden bölümler ANAHTARLA atlanabilir. Karar tek yerde verilir ve
+   * iskelete `data-p360` olarak gömülür; tarayıcı tazelemesi de aynı
+   * anahtarı okur, yoksa hidrasyon az önce eledi ğimiz bölümleri geri
+   * boyardı.
+   *
+   * ELENEN BÖLÜM VERİ KAYBI DEĞİL: 360 yığınındaki karşılığı AYNI kapıdan
+   * (services/cardCredibility.js) geçiyor ve son maçlar ile form için
+   * DAHA DOLU — kart bu ikisini "hazır değil" diye basıyordu.
+   */
+  var P360_SUPERSEDED = ["hero", "identity", "season", "recent", "form", "history", "rumor"];
+
+  function omitSet(options) {
+    var omit = (options && options.omit) || [];
+    var set = {};
+    for (var index = 0; index < omit.length; index += 1) {
+      set[omit[index]] = true;
+    }
+    return set;
+  }
+
   function measurementSectionsHtml(profile, options) {
     var hasAny = profile.score.available ||
       profile.season.available ||
@@ -643,41 +673,45 @@
         ), "player-measurement-section");
     }
 
+    var omitted = omitSet(options);
+
     return [
-      scoreSection,
-      formSection,
-      analysisSection,
-      seasonSection,
-      recentSection,
-      function (item) { return scoutingList("Güçlü Yönler", item.strengths, "Pozisyon referansına göre öne çıkanlar"); },
-      function (item) { return scoutingList("Geliştirmesi Gereken Yönler", item.weaknesses, "Pozisyon referansının altında kalanlar"); }
-    ].map(function (renderer) {
-      return renderer(profile, options);
+      { key: "score", render: scoreSection },
+      { key: "form", render: formSection },
+      { key: "analysis", render: analysisSection },
+      { key: "season", render: seasonSection },
+      { key: "recent", render: recentSection },
+      { key: "strengths", render: function (item) { return scoutingList("Güçlü Yönler", item.strengths, "Pozisyon referansına göre öne çıkanlar"); } },
+      { key: "weaknesses", render: function (item) { return scoutingList("Geliştirmesi Gereken Yönler", item.weaknesses, "Pozisyon referansının altında kalanlar"); } }
+    ].map(function (entry) {
+      return omitted[entry.key] ? "" : entry.render(profile, options);
     }).join("");
   }
 
   var SECTION_RENDERERS = [
-    heroSection,
-    credibilitySection,
-    identitySection,
-    measurementSectionsHtml,
-    function (profile, options) { return peerSection("Benzer Oyuncular", "Rol, yaş ve piyasa değeri yakınlığı", profile.similarPlayers, options.hrefPrefix); },
-    function (profile, options) { return peerSection("Aynı Mevkide Öne Çıkan Alternatifler", "Farklı kulüplerden karşılaştırma", profile.alternatives, options.hrefPrefix); },
-    rumorSection,
-    historySection,
-    dataSection
+    { key: "hero", render: heroSection },
+    { key: "credibility", render: credibilitySection },
+    { key: "identity", render: identitySection },
+    { key: "measurements", render: measurementSectionsHtml },
+    { key: "similar", render: function (profile, options) { return peerSection("Benzer Oyuncular", "Rol, yaş ve piyasa değeri yakınlığı", profile.similarPlayers, options.hrefPrefix); } },
+    { key: "alternatives", render: function (profile, options) { return peerSection("Aynı Mevkide Öne Çıkan Alternatifler", "Farklı kulüplerden karşılaştırma", profile.alternatives, options.hrefPrefix); } },
+    { key: "rumor", render: rumorSection },
+    { key: "history", render: historySection },
+    { key: "data", render: dataSection }
   ];
 
   // Doğrulanmamış kayıtta çizilen bölümler. Ölçüme dayanan her bölüm dışarıda
   // kalır: hepsi aynı boş durumu tekrar eden sekiz kart basmak yerine tek bir
   // gerekçe kartı gösterilir.
   var UNVERIFIED_SECTIONS = [heroSection, credibilitySection, identitySection];
+  var UNVERIFIED_SECTION_KEYS = ["hero", "credibility", "identity"];
 
   /**
    * Profil verisinden tam HTML üretir.
    *
    * @param {object} profile buildPlayerProfile çıktısı
-   * @param {object} [options] hrefPrefix: benzer oyuncu linklerinin kök yolu
+   * @param {object} [options] hrefPrefix: benzer oyuncu linklerinin kök yolu;
+   *   omit: basılmayacak bölüm anahtarları (bkz. P360_SUPERSEDED)
    */
   function renderProfileHtml(profile, options) {
     if (!profile || !profile.id) {
@@ -687,21 +721,26 @@
     var settings = options || {};
     var hrefPrefix = settings.hrefPrefix || "./";
     var verified = !profile.credibility || profile.credibility.verified !== false;
+    var omitted = omitSet(settings);
     var renderers = verified
       ? SECTION_RENDERERS
-      : UNVERIFIED_SECTIONS.concat([
+      : UNVERIFIED_SECTIONS.map(function (render, index) {
+        return { key: UNVERIFIED_SECTION_KEYS[index] || "unverified-" + index, render: render };
+      }).concat([
         // Benzer oyuncu ve alternatif listeleri bu oyuncu hakkında bir iddia
         // taşımaz; başka profillere giden bağlantılardır ve doğrulanmamış
         // kayıtta da yararlıdır.
-        function (item, opts) { return peerSection("Benzer Oyuncular", "Rol, yaş ve mevki yakınlığı", item.similarPlayers, opts.hrefPrefix); },
-        function (item, opts) { return peerSection("Aynı Mevkide Öne Çıkan Alternatifler", "Farklı kulüplerden karşılaştırma", item.alternatives, opts.hrefPrefix); },
-        dataSection
+        { key: "similar", render: function (item, opts) { return peerSection("Benzer Oyuncular", "Rol, yaş ve mevki yakınlığı", item.similarPlayers, opts.hrefPrefix); } },
+        { key: "alternatives", render: function (item, opts) { return peerSection("Aynı Mevkide Öne Çıkan Alternatifler", "Farklı kulüplerden karşılaştırma", item.alternatives, opts.hrefPrefix); } },
+        { key: "data", render: dataSection }
       ]);
 
     return (
       '<article class="player-profile-card player-profile-pro" data-card="player-detail" data-player="' + escapeHtml(profile.id) + '" data-player-verified="' + (verified ? "true" : "false") + '">' +
-      renderers.map(function (renderer) {
-        return renderer(profile, { hrefPrefix: hrefPrefix });
+      renderers.map(function (entry) {
+        // `omit` alt bölümlere de geçer: ölçüm bloğu kendi listesini aynı
+        // anahtar kümesiyle süzer.
+        return omitted[entry.key] ? "" : entry.render(profile, { hrefPrefix: hrefPrefix, omit: settings.omit });
       }).join("") +
       '<div class="player-actions">' +
       '<a class="detail-link" href="' + escapeHtml(settings.rootPrefix || "../") + "oyuncu-karsilastir.html?p1=" + encodeURIComponent(profile.id) + '">Karşılaştır</a>' +
@@ -805,6 +844,11 @@
       new URLSearchParams(window.location.search).get("id") ||
       new URLSearchParams(window.location.search).get("player");
     var hasPrerendered = target.getAttribute("data-prerendered") === "1";
+    // Sayfa "Futbolcu 360" yığını taşıyorsa çakışan bölümler tarayıcıda da
+    // basılmaz. Karar ön renderde verilip iskelete gömülür; istemci onu
+    // OKUR, yeniden hesaplamaz — aksi hâlde tazeleme, az önce elediğimiz
+    // ikinci kopyaları geri boyardı.
+    var omit = target.getAttribute("data-p360") === "1" ? P360_SUPERSEDED : [];
 
     target.dataset.state = "loading";
 
@@ -813,7 +857,11 @@
         throw new Error("empty profile");
       }
 
-      target.innerHTML = renderProfileHtml(profile, prefixes);
+      target.innerHTML = renderProfileHtml(profile, {
+        hrefPrefix: prefixes.hrefPrefix,
+        rootPrefix: prefixes.rootPrefix,
+        omit: omit
+      });
       target.dataset.state = "ready";
 
       if (target.hasAttribute("data-player-meta")) {
@@ -860,6 +908,7 @@
     emptyBlock: emptyBlock,
     mount: mount,
     renderProfileHtml: renderProfileHtml,
+    P360_SUPERSEDED: P360_SUPERSEDED,
     SECTION_RENDERERS: SECTION_RENDERERS
   };
 });

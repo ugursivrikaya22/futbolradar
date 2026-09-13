@@ -387,7 +387,13 @@ function checkJson() {
     );
     for (const redirect of redirectRules) {
       const destination = redirect.destination || "";
-      if (!destination.startsWith("/") || destination.includes(":path*")) {
+      // PARAMETRELİ HEDEF TEK BİR DOSYAYA KARŞILIK GELMEZ.
+      //
+      // Kontrol yalnızca `:path*` kalıbını atlıyordu; `/oyuncular/:slug`
+      // gibi tek parçalı bir parametre "oyuncular/:slug.html" diye aranıp
+      // "hedef yok" hatası veriyordu. Kural parametrenin BİÇİMİ değil,
+      // varlığı: iki nokta taşıyan her hedef bir kalıptır.
+      if (!destination.startsWith("/") || destination.includes(":")) {
         continue;
       }
 
@@ -499,9 +505,15 @@ function checkSeoAndLinks() {
       expect(html.includes('data-api-target="player-detail"'), `${page}: missing player profile hydration target`);
       expect(html.includes('data-prerendered="1"'), `${page}: player profile must be prerendered for SEO`);
       // Doğrulanmamış kayıtta ölçüm bölümleri BASILMAZ; beklenen tek şey
-      // gerekçe kartı. Doğrulanmış kayıtta kimlik ızgarası her zaman çizilir.
+      // gerekçe kartı. Her profilde ise "Futbolcu 360" kimlik kartı çizilir.
+      //
+      // Kontrol artık bir BAŞLIK METNİ aramıyor: eskiden "Kimlik ve Kulüp"
+      // dizgesi aranıyordu ve o başlık 360 yığınına taşınınca (aynı bilgi,
+      // yeni başlık) kontrol sayfa gerçekte doluyken "gövde yok" diyordu.
+      // Bölüm işaretçisi başlık metninden bağımsız ve yeniden adlandırmaya
+      // dayanıklı.
       expect(
-        html.includes("Doğrulanmış veri bekleniyor") || html.includes("Kimlik ve Kulüp"),
+        html.includes("Doğrulanmış veri bekleniyor") || html.includes('data-p360-section="identity"'),
         `${page}: player profile body missing`
       );
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
