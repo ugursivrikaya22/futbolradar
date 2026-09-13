@@ -385,12 +385,33 @@ ${body}
  *
  * "Takım detayı" TR tarafında `takim-detay.html?team=…` — tek bir
  * istemci-hidrasyonlu ekran, 18 takımın ayrı statik sayfası değil. Ayrı
- * statik bir Türkçe sayfa yalnızca dört öncelikli kulüp için var:
- * `<slug>-maclari.html` (Phase 1'de üretildi). O DÖRT kulüpte hreflang ve
- * dil kutusu bu sayfaya bağlanır; kalan 14 kulüpte karşılığı olmayan bir
+ * statik Türkçe sayfa yalnızca dört öncelikli kulüp için var; o DÖRT kulüpte
+ * hreflang ve dil kutusu ona bağlanır. Kalan 14 kulüpte karşılığı olmayan bir
  * sayfa UYDURULMAZ — dil kutusu güvenli yedeğe (/en/) düşer.
+ *
+ * KARŞILIK `<slug>-maclari.html` DEĞİL, `<slug>-form-durumu.html`.
+ *
+ * Eşleme önce `-maclari` sayfasına bağlıydı. Ama o sayfanın konusu fikstür ve
+ * sonuçlar; bu üreticinin ürettiği sayfanın konusu ise kulüp künyesi (kadro,
+ * form, sezon kaydı). `generate-en-club-hubs.mjs` ile birlikte `-maclari`nin
+ * gerçek İngilizce karşılığı artık var: `/en/<slug>.html` — fikstür ve sonuç
+ * sayfası.
+ *
+ * Bir Türkçe sayfanın YALNIZCA BİR İngilizce karşılığı olabilir: eşleme
+ * `tr → en` yönünde tek girişli bir haritadır (services/i18n.js). İki üretici
+ * aynı Türkçe sayfayı sahiplenirse ikincisi birincisini EZER ve hreflang çifti
+ * tek yönlü kalır — Google'ın alternate ilişkisini tamamen yok saydığı durum.
+ * Bu yüzden konu eşleşmesi daha doğru olan bölüşüm seçildi:
+ *
+ *   <slug>-maclari.html      ↔  /en/<slug>.html            (fikstür/sonuç)
+ *   <slug>-form-durumu.html  ↔  /en/team/<slug>.html       (künye/form)
  */
 const STATIC_TR_TEAM_PAGE = new Set(["galatasaray", "fenerbahce", "besiktas", "trabzonspor"]);
+
+/** Bu üreticinin sahiplendiği Türkçe sayfa; konu olarak künye/form eşi. */
+function trCounterpartFor(slugValue) {
+  return `${slugValue}-form-durumu.html`;
+}
 
 const currentTeams = teams.filter((team) => team.isCurrentSuperLigTeam !== false);
 fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -408,8 +429,9 @@ for (const team of currentTeams) {
     fs.writeFileSync(target, html, "utf8");
     written += 1;
   }
-  if (STATIC_TR_TEAM_PAGE.has(slugValue) && fs.existsSync(path.join(root, `${slugValue}-maclari.html`))) {
-    pairs.push({ tr: `${slugValue}-maclari.html`, en: enPath });
+  const trCounterpart = trCounterpartFor(slugValue);
+  if (STATIC_TR_TEAM_PAGE.has(slugValue) && fs.existsSync(path.join(root, trCounterpart))) {
+    pairs.push({ tr: trCounterpart, en: enPath });
   }
   sitemapEntries.push(`  <url>\n    <loc>${absoluteUrl(enPath)}</loc>\n    <lastmod>${String(team.lastStandingsSyncedAt || team.lastProviderSeenAt || "").slice(0, 10)}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.75</priority>\n  </url>`);
 }

@@ -26,6 +26,7 @@ for (const file of [
   "site.js",
   "match-detail-en.js",
   "pwa.js",
+  "lang-suggest.js",
   "analytics.js",
   "performance-loader.js",
   "site.webmanifest",

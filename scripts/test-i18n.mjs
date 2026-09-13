@@ -246,7 +246,26 @@ for (const route of ROUTES) {
       const pattern = new RegExp(`href="[^"]*${item.href.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*hreflang="tr"`);
       check(`en/index.html: ${item.href} bağlantısı hreflang="tr" taşıyor`, pattern.test(enHome));
     }
-    check("en/index.html: Türkçe hedefler (TR) etiketi taşıyor", enHome.includes("(TR)</a>"));
+    // "(TR)" ETİKETİ KOŞULLU ARANIR.
+    //
+    // Bu satır eskiden koşulsuzdu: İngilizce ana sayfada MUTLAKA bir
+    // "(TR)</a>" bulunmasını istiyordu. O dönem geçiyordu, ama yanlış bir
+    // sebeple — üst çubuktaki "Match Centre" düğmesi, İngilizce karşılığı
+    // (en/match-centre.html) çoktan üretilmiş olmasına rağmen hâlâ Türkçe
+    // sayfaya bağlanıyordu. Yani test, düzeltilmesi gereken bir arızayı
+    // ZORUNLU kılıyordu: düğme doğrulandığı anda test kırılıyordu.
+    //
+    // İddia asıl niyetine döndürüldü: BİR bağlantı veri katmanında `trOnly`
+    // diye işaretliyse, bu işaret işaretlemede de görünmek zorunda. Hiç
+    // `trOnly` bağlantı yoksa aranacak bir etiket de yoktur — ve bu, menünün
+    // tamamının İngilizce karşılığa kavuşmuş olması demektir, yani istenen
+    // durum.
+    const trOnlyItems = enNav.filter((entry) => entry.trOnly);
+    if (trOnlyItems.length) {
+      check("en/index.html: Türkçe hedefler (TR) etiketi taşıyor", enHome.includes("(TR)</a>"));
+    } else {
+      check("en/index.html: işaretsiz Türkçe hedef yok (menünün tamamı İngilizce)", !enHome.includes("(TR)</a>"));
+    }
   }
 }
 
