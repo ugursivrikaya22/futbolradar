@@ -206,6 +206,7 @@ function pageHtml(player) {
     archive: archiveRecords,
     squadStatuses,
     basePrefix: BASE,
+    locale: LOCALE,
     routes: EN_ROUTES,
     displayName: playerUrls.playerDisplayName(player),
     comparisonSlugFor: slugForPair

@@ -321,7 +321,7 @@ function transferHeroHtml(player, transfer, age) {
             <article><span>Eski kulüp</span><b>${escapeHtml(transfer.fromTeam)}</b></article>
             <article><span>Transfer tarihi</span><b>${escapeHtml(formatTransferDateTr(transfer.date))}</b></article>
             <article><span>Transfer bedeli</span><b>${escapeHtml(transferFeeLabel(transfer))}</b></article>
-            <article><span>Mevki</span><b>${escapeHtml(player.position || "Mevki bekleniyor")}</b></article>
+            <article><span>Mevki</span><b>${escapeHtml(model.identity.position || "Mevki bekleniyor")}</b></article>
             <article><span>Yaş</span><b>${escapeHtml(age)}</b></article>
           </div>
           ${statsBlock}
@@ -388,18 +388,9 @@ function pageHtml(player) {
   const description = player360Description(model, { locale: "tr" });
   const lead = description;
   const canonical = playerUrls.playerCanonicalUrl(player.id);
-  // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
-  // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
-  //
-  // "Overall" ile aşağıdaki "Oyuncu Skoru" FARKLI ölçütlerdir: bu bir radar
-  // modeli tahmini, diğeri maç verisine dayalı, kapsam yetersizse hiç
-  // basılmayan bir skor. `ratingStatus` "estimated" olduğunda ikisi aynı
-  // sayı sanılmasın diye "(tahmini)" eklenir — Osimhen'de "Overall 36
-  // (tahmini)" yanında "Oyuncu Skoru: Hesaplanamadı" görmek, aynı oyuncu
-  // için iki çelişkili KESİN sayı görmekten farklıdır.
-  const overallIsEstimate = view.verified && !ratingIsVerified(player);
-  const overall = view.verified
-    ? (player.overallRating || player.aiRating || player.rating || "-") + (overallIsEstimate ? " (tahmini)" : "")
+  // A pending or estimated rating is not a verified player statistic.
+  const overall = view.verified && ratingIsVerified(player)
+    ? (player.overallRating ?? player.aiRating ?? player.rating ?? null)
     : null;
 
   return `<!doctype html>
@@ -469,8 +460,8 @@ function pageHtml(player) {
             ${renderQuickFacts(model, "tr")}
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
-          ${view.verified
-            ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(player.position)} · ${escapeHtml(age)}</span>`
+          ${overall !== null
+            ? `<span class="hero-meta">Overall ${escapeHtml(overall)} · ${escapeHtml(model.identity.position)} · ${escapeHtml(age)}</span>`
             // Doğrulanmamış kayıtta puan gösterilmez. Yaş ve mevki bağımsız
             // olarak güvenli bilgiler: kulüpten ve sezondan bağımsızlar.
             : `<span class="hero-meta">${escapeHtml(player.position || "Mevki bekleniyor")} · ${escapeHtml(age)}</span>`}

@@ -498,7 +498,7 @@ function buildIdentity(player, view, options) {
     // okunduğunda doğrulanmamış kayıtların forma numarası yayına
     // giriyordu; `number` kısıtlı alan listesinde, `shirtNumber` değil.
     shirtNumber: fields.number ?? (view.verified ? (player.shirtNumber ?? null) : null),
-    position: player.position || null,
+    position: options.locale === "en" ? player.position || null : ({Attacker:"Forvet",Midfielder:"Orta saha",Defender:"Defans",Goalkeeper:"Kaleci"}[player.position] || player.position || null),
     secondaryPosition: player.secondaryPosition || null,
     nationality: player.nationality || null,
     birthDate: player.birthDate || null,
@@ -594,6 +594,7 @@ function buildPlayer360(input) {
   if (!player) throw new TypeError("buildPlayer360: player gerekli");
 
   const options = {
+    locale: input.locale === "en" ? "en" : "tr",
     basePrefix: (input && input.basePrefix) || "../",
     routes: { ...DEFAULT_ROUTES, ...((input && input.routes) || {}) }
   };
