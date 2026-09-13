@@ -27,6 +27,7 @@ import {
   player360Description,
   player360Person,
   player360Title,
+  renderQuickFacts,
   renderPlayer360
 } from "./lib/player360.mjs";
 
@@ -101,7 +102,8 @@ function enPlayerSlug(player) {
 
 const newsSlugs = generatedSlugs("haber");
 const newsItems = publishableNews(readJson("data/news.json", []));
-const matchRecords = readJson("data/matches.json", []);
+const calendarStore = readJson("data/fixture-calendar.json", { matches: [] });
+const matchRecords = readJson("data/matches.json", []).concat(calendarStore.matches || []);
 const archiveRecords = readJson("data/historical-match-archive.json", { records: [] }).records || [];
 const squadStatuses = readJson("data/squad-statuses.json", { teams: [] });
 const confirmedTransfers = readJson("data/transfers.json", [])
@@ -131,7 +133,12 @@ const EN_ROUTES = {
   topAssists: "en/top-assists.html",
   transferRadar: "en/transfer-radar.html",
   matchCentre: "en/match-centre.html",
-  playerRadar: "en/player-radar.html"
+  playerRadar: "en/player-radar.html",
+  today: "en/todays-matches.html",
+  live: "en/live-football-scores.html",
+  fixturesHref: () => "en/fixtures.html",
+  standingsHref: () => "en/super-lig-standings.html",
+  matchHref: (match) => `en/match-detail.html?fixtureId=${encodeURIComponent(match.providerId || match.id)}`
 };
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const players = annotateDuplicates(getPlayers(rawPlayers));
@@ -194,9 +201,12 @@ function pageHtml(player) {
     transfers: confirmedTransfers,
     news: newsItems,
     matches: matchRecords,
+    calendar: calendarStore.matches,
+    calendarUpdatedAt: calendarStore.fetchedAt,
     archive: archiveRecords,
     squadStatuses,
     basePrefix: BASE,
+    locale: LOCALE,
     routes: EN_ROUTES,
     displayName: playerUrls.playerDisplayName(player),
     comparisonSlugFor: slugForPair
@@ -270,6 +280,7 @@ function pageHtml(player) {
             <div>
               <span class="eyebrow">${teamHtml}${number !== null ? ` · #${escapeHtml(number)}` : ""}</span>
               <h1>${escapeHtml(model.identity.name)}</h1>
+            ${renderQuickFacts(model, LOCALE)}
               <p class="lead">${escapeHtml(position || "Position not yet confirmed")}</p>
             </div>
           </div>

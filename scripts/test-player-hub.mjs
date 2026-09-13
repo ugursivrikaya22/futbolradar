@@ -1,0 +1,61 @@
+import assert from 'node:assert/strict';
+import { createRequire } from 'node:module';
+import { player360Title, player360Description, renderQuickFacts } from './lib/player360.mjs';
+const require = createRequire(import.meta.url);
+const { seasonLabel, nextTeamMatch } = require('../services/playerHubContext');
+const { refreshPlayerSeasonStats } = require('../services/playerSeasonRefresh');
+const { createPlayerMentionLinker } = require('../services/playerMentionLinks');
+const { buildPlayer360 } = require('../services/player360Service');
+const { buildPlayerMatchLog, normalizeMatchRecord } = require('../services/playerMatchLogService');
+
+assert.equal(seasonLabel('2026-2027'), '2026/27');
+assert.equal(seasonLabel('2027'), '2027/28');
+const model = {identity:{name:'Test Futbolcu',team:'Galatasaray',position:'Forvet',age:25},season:'2027/28',seasonStats:{core:[{key:'goals',value:3}]}};
+assert.match(player360Title(model), /2027\/28 \| FutbolRadar$/);
+assert.match(player360Description(model), /3 gol/);
+assert.doesNotMatch(player360Description(model), /0 asist/);
+assert.doesNotMatch(renderQuickFacts(model), />0</);
+
+const now = Date.parse('2026-09-13T12:00:00Z');
+const fixture = {id:'test',providerId:'123',homeTeam:'Galatasaray',awayTeam:'Fenerbahçe',status:'SCHEDULED',kickoff:'2026-09-14T12:00:00Z'};
+assert.equal(nextTeamMatch('Galatasaray',[{...fixture,kickoff:'2026-09-12T12:00:00Z'},{...fixture,status:'PST'},fixture],now),fixture);
+assert.equal(nextTeamMatch('Beşiktaş',[fixture],now),null);
+assert.equal(nextTeamMatch('Galatasaray',[{...fixture,needsReview:true}],now),null);
+
+const local = {providerId:'123',currentTeam:'Galatasaray',goals:1,statsVerifiedAt:'2026-01-01T00:00:00Z',rating:88};
+const provider = {providerId:'123',currentTeam:'Galatasaray',fetchedAt:'2026-09-01T00:00:00Z',stats:{goals:3,assists:null,appearances:4,minutes:300,rating:7.2}};
+const refreshed = refreshPlayerSeasonStats(local,provider,2026);
+assert.equal(refreshed.goals,3);
+assert.equal(refreshed.assists,null);
+assert.equal(refreshed.rating,88);
+assert.deepEqual(refreshed.statsVerifiedFields.sort(),['appearances','goals','minutes','minutesPlayed']);
+assert.equal(refreshPlayerSeasonStats(local,{...provider,providerId:'987'},2026),local);
+assert.equal(refreshPlayerSeasonStats(local,{...provider,currentTeam:'Fenerbahçe'},2026),local);
+assert.equal(refreshPlayerSeasonStats(local,{...provider,fetchedAt:'2025-01-01'},2026),local);
+assert.equal(refreshPlayerSeasonStats(local,{...provider,stats:{}},2026),local);
+
+const table={entries:[{id:'p1',slug:'test-futbolcu',fullName:'Test Futbolcu'}],aliases:[{id:'p2',canonicalId:'p1'}]};
+const link=createPlayerMentionLinker([{id:'p1',name:'Test Futbolcu'},{id:'p2',name:'Test Futbolcu'}],table);
+const html='<script type="application/ld+json">{"name":"Test Futbolcu"}</script><main><h1>Test Futbolcu</h1><p>Test Futbolcu attı. Test Futbolcu.</p><p><a href="/already">Test Futbolcu</a></p></main>';
+const linked=link(html);
+assert.equal((linked.match(/data-player-mention="auto"/g)||[]).length,1);
+assert.match(linked,/<a href="\/already">Test Futbolcu<\/a>/);
+assert.match(linked,/<h1>Test Futbolcu<\/h1>/);
+assert.equal(link(linked),linked);
+assert.match(linked,/"name":"Test Futbolcu"/);
+assert.ok(linked.includes('href="/futbolcu/test-futbolcu.html"'));
+const ambiguous=createPlayerMentionLinker([{id:'a',name:'Test Futbolcu'},{id:'b',name:'Test Futbolcu'}],{entries:[]});
+assert.equal(ambiguous(html),html);
+assert.equal(link('<main><p>Test Futbolcular</p></main>'),'<main><p>Test Futbolcular</p></main>');
+
+const minimal={id:'test',name:'Test Futbolcu',providerId:'mock',statsSeason:'2025/26',stats:{goals:5}};
+const empty=buildPlayer360({player:minimal,players:[],season:'2026/27'});
+assert.equal(empty.seasonStats.available,false);
+assert.equal(empty.nextMatch,null);
+assert.equal(normalizeMatchRecord({homeTeam:'A',awayTeam:'B',score:{home:null,away:null}}).homeScore,null);
+const eventMatch = {id:'e',homeTeam:'Galatasaray',awayTeam:'Fenerbahçe',status:'FINISHED',kickoff:'2026-09-01T18:00:00Z',score:{home:1,away:0},events:[{type:'Goal',time:"12'",team:{name:'Galatasaray'},value:'Test Futbolcu'}]};
+const appearance=buildPlayerMatchLog({name:'Test Futbolcu',currentTeam:'Galatasaray'},{matches:[eventMatch]}).appearances[0];
+assert.equal(appearance.goals,1);
+assert.equal(appearance.started,null);
+assert.equal(appearance.minutes,null);
+console.log('Player hub: SEO, missing data, fixtures, safe refresh and editorial linking passed.');

@@ -70,6 +70,34 @@ function emptyNote(message) {
   return `<p class="p360-empty" data-card="empty-state">${escapeHtml(message)}</p>`;
 }
 
+// Shared top summary: only measured figures, never zero-filled placeholders.
+export function renderQuickFacts(model, locale = "tr") {
+  const i = model.identity, en = locale === "en";
+  const stats = new Map(model.seasonStats.core.map(row => [row.key, row.value]));
+  const facts = [[en ? "Club" : "Takım", i.team, i.teamHref], [en ? "Position" : "Mevki", i.position], [en ? "Age" : "Yaş", i.age],
+    [en ? "Matches" : "Maç", stats.get("appearances")], [en ? "Goals" : "Gol", stats.get("goals")], [en ? "Assists" : "Asist", stats.get("assists")]];
+  const rows = facts.filter(([, value]) => value !== undefined && value !== null && value !== "").map(([label,value,href]) =>
+    '<div class="p360-stat"><span>'+escapeHtml(label)+'</span><b>'+(href ? '<a href="'+escapeHtml(href)+'">'+escapeHtml(value)+'</a>' : escapeHtml(value))+'</b></div>').join("");
+  return '<section class="p360 p360-quick" aria-label="'+(en ? 'Player at a glance' : 'Oyuncuya hızlı bakış')+'" data-p360-section="quick"><div class="p360-stat-grid">'+rows+'</div>'+
+    (model.updatedAt ? '<p class="p360-source">'+(en ? 'Source updated: ' : 'Kaynak güncellemesi: ')+'<time datetime="'+escapeHtml(model.updatedAt)+'">'+escapeHtml(formatDate(model.updatedAt,locale))+'</time></p>' : '')+'</section>';
+}
+
+function renderMatchHighlights(model, locale) {
+  const en = locale === "en";
+  const entries = [[en ? "Latest recorded match" : "Son kayıtlı maç", model.matchLog.rows[0]],
+    [en ? "Latest recorded goal" : "Son kayıtlı gol", model.matchLog.lastGoal],
+    [en ? "Latest recorded assist" : "Son kayıtlı asist", model.matchLog.lastAssist]];
+  const cards = entries.filter(([,row])=>row).map(([label,row]) => {
+    const details = [formatDate(row.kickoff,locale),row.opponent,row.scoreLine,row.minutes !== null ? row.minutes + (en ? ' minutes' : ' dakika') : null,
+      row.goals > 0 ? row.goals + (en ? ' goals' : ' gol') : null,row.assists > 0 ? row.assists + (en ? ' assists' : ' asist') : null].filter(Boolean).join(' · ');
+    return '<article class="p360-stat"><h3>'+escapeHtml(label)+'</h3><p>'+escapeHtml(details)+'</p>'+(row.reportHref ? '<a href="'+escapeHtml(row.reportHref)+'">'+(en ? 'Match analysis' : 'Maç analizi')+'</a>' : '')+'</article>';
+  });
+  if(model.nextMatch){ const m=model.nextMatch; const time=new Intl.DateTimeFormat(en ? 'en-GB':'tr-TR',{hour:'2-digit',minute:'2-digit',timeZone:'Europe/Istanbul'}).format(new Date(m.kickoff));
+    cards.push('<article class="p360-stat" data-p360-next-kickoff="'+escapeHtml(m.kickoff)+'"><h3>'+(en ? 'Next team match':'Takımının sıradaki maçı')+'</h3><p>'+escapeHtml(m.homeTeam+' – '+m.awayTeam)+'</p><p>'+escapeHtml(formatDate(m.kickoff,locale)+' · '+time+' TSİ')+'</p><a href="'+escapeHtml(m.href)+'">'+(en ? 'Match details':'Maç detayları')+'</a></article>');
+  }
+  return cards.length ? '<section class="p360" data-p360-section="highlights"><h2>'+escapeHtml(model.identity.name)+(en ? ' match updates':' maç gündemi')+'</h2><div class="p360-peer-grid">'+cards.join('')+'</div></section>' : '';
+}
+
 // ── Kimlik kartı ────────────────────────────────────────────────────────────
 
 /**
@@ -143,7 +171,7 @@ function renderSeason(model, locale) {
         <div class="p360-stat-grid">${stats.positional.map((row) => statCard(row.key, row.value, locale, row.suffix)).join("")}</div>`
     : "";
   const source = stats.source
-    ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, stats.source))}</p>`
+    ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, stats.source))}${stats.verifiedAt ? " · " + escapeHtml(formatDate(stats.verifiedAt, locale)) : ""}</p>`
     : "";
 
   return `<section class="p360" aria-labelledby="p360-season-title" data-p360-section="season">
@@ -181,9 +209,9 @@ function renderMatches(model, locale) {
     const opponent = row.reportHref
       ? `<a href="${escapeHtml(row.reportHref)}">${escapeHtml(row.opponent)}</a>`
       : escapeHtml(row.opponent);
-    const role = row.started
+    const role = row.started === true
       ? text("player360.matches.started", locale)
-      : text("player360.matches.substitute", locale);
+      : row.started === false ? text("player360.matches.substitute", locale) : "";
     const minutes = row.minutes === null ? "" : `${row.minutes}'`;
     const resultClass = row.result ? ` p360-result-${row.result}` : "";
 
@@ -514,6 +542,7 @@ export function renderPlayer360(model, options = {}) {
   return [
     renderIdentity(model, locale),
     renderSeason(model, locale),
+    renderMatchHighlights(model, locale),
     renderMatches(model, locale),
     renderForm(model, locale),
     renderAvailability(model, locale),
@@ -538,72 +567,21 @@ export function renderPlayer360(model, options = {}) {
  * açıklamasında da geçerli — denetimde en kalıcı yanlışlar oradan sızmıştı.
  */
 export function player360Description(model, options = {}) {
-  const locale = options.locale === "en" ? "en" : "tr";
-  const name = model.identity.name;
-  const parts = [];
-
-  const position = model.identity.position;
-  if (model.identity.team) {
-    parts.push(locale === "en"
-      ? `${name} plays for ${model.identity.team}${position ? ` as a ${position}` : ""}`
-      : `${name}, ${model.identity.team} formasıyla oynuyor${position ? `, mevki ${position}` : ""}`);
-  } else {
-    parts.push(locale === "en"
-      ? `${name} player profile${position ? `, ${position}` : ""}`
-      : `${name} oyuncu profili${position ? `, mevki ${position}` : ""}`);
-  }
-
-  const stats = new Map(model.seasonStats.core.map((row) => [row.key, row.value]));
-  if (stats.has("goals") || stats.has("assists")) {
-    const goals = stats.get("goals");
-    const assists = stats.get("assists");
-    const matches = stats.get("appearances");
-    parts.push(locale === "en"
-      ? `${model.season} season: ${matches !== undefined ? `${matches} apps, ` : ""}${goals ?? 0} goals, ${assists ?? 0} assists`
-      : `${model.season} sezonu: ${matches !== undefined ? `${matches} maç, ` : ""}${goals ?? 0} gol, ${assists ?? 0} asist`);
-  }
-
-  if (model.matchLog.available) {
-    parts.push(locale === "en"
-      ? `recent matches with minutes, goals and cards`
-      : `son maçları, dakikaları ve kartları`);
-  }
-
-  if (model.availability.available) {
-    const status = t(`player360.availability.${model.availability.status}`, locale);
-    parts.push(locale === "en" ? `current status: ${status}` : `güncel durum: ${status}`);
-  }
-
-  if (model.news.general.length || model.news.transfer.length) {
-    parts.push(locale === "en" ? "transfer and news updates" : "transfer ve haber güncellemeleri");
-  }
-
-  if (model.career.available && model.career.stints.length > 1) {
-    const clubs = model.career.stints.slice(0, 3).map((stint) => stint.club).join(", ");
-    parts.push(locale === "en" ? `career clubs: ${clubs}` : `kariyer kulüpleri: ${clubs}`);
-  }
-
-  // HİÇBİR BÖLÜMÜ OLMAYAN KAYIT. Açıklama, sayfada ne olmadığını ve NEDEN
-  // olmadığını söyler. "A. Ablak oyuncu profili." gibi üç kelimelik bir
-  // açıklama arama sonucunda hiçbir soruyu yanıtlamıyor; boş vaat vermeden
-  // de sayfanın ne olduğunu anlatmak mümkün.
-  if (parts.length === 1) {
-    parts.push(locale === "en"
-      ? "club, season statistics and market data are published once they match a verified provider record — estimates are never shown"
-      : "kulüp, sezon istatistikleri ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır; tahmini değer gösterilmez");
-  }
-
-  const tail = locale === "en" ? "on FutbolRadar." : "FutbolRadar'da.";
-  return `${parts.join(", ")} — ${tail}`;
+  const en = options.locale === "en";
+  const i = model.identity;
+  const stats = new Map(model.seasonStats.core.map(row => [row.key, row.value]));
+  const facts = [i.team, i.position].filter(Boolean).join(", ");
+  const counts = [["appearances", en ? "matches" : "maç"], ["goals", en ? "goals" : "gol"], ["assists", en ? "assists" : "asist"]]
+    .filter(([key]) => stats.has(key)).map(([key, label]) => stats.get(key) + " " + label);
+  return i.name + (facts ? " — " + facts : "") + ". " + model.season + (en ? " season" : " sezonu") +
+    (counts.length ? ": " + counts.join(", ") : "") + ". " +
+    (en ? "Player profile" + (model.matchLog?.available ? ", recent performances" : "") + " and news on FutbolRadar." : "Oyuncu bilgileri" + (model.matchLog?.available ? ", son maç performansı" : "") + " ve haberleri FutbolRadar’da.");
 }
 
-/** SEO başlığı. */
 export function player360Title(model, options = {}) {
-  const locale = options.locale === "en" ? "en" : "tr";
-  const name = model.identity.name;
-  return locale === "en"
-    ? `${name} Stats, Goals, News and Current Status | FutbolRadar`
-    : `${name} İstatistikleri, Golleri, Haberleri ve Son Durumu | FutbolRadar`;
+  return options.locale === "en"
+    ? model.identity.name + " Stats, Goals and Latest News " + model.season + " | FutbolRadar"
+    : model.identity.name + " İstatistikleri, Golleri ve Son Haberleri " + model.season + " | FutbolRadar";
 }
 
 /**

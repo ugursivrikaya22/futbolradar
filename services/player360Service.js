@@ -28,7 +28,9 @@ const { buildPlayerMatchLog, nameKey, namesMatch, normalizeName } = require("./p
 const { bestTrustTierOf, TRUST_TIER } = require("./sourceTrust.js");
 const { createComparisonSlugResolver, profileCompareCandidates } = require("./playerComparisonPairs.js");
 
-const SEASON_LABEL = "2026/27";
+const { seasonLabel, nextTeamMatch } = require("./playerHubContext");
+const { teamHubFile } = require("./teamHubLinks");
+const SEASON_LABEL = seasonLabel(require("../data/super-lig-fixtures.json").season);
 
 /**
  * ROTALAR DIŞARIDAN VERİLİR.
@@ -44,7 +46,7 @@ const SEASON_LABEL = "2026/27";
 const DEFAULT_ROUTES = Object.freeze({
   teamHref: (teamName) => {
     const slug = TEAM_PAGE_SLUGS[String(teamName || "").toLocaleLowerCase("tr-TR").trim()];
-    return slug ? `takimlar/${slug}.html` : (teamName ? `takimlar.html?team=${encodeURIComponent(teamName)}` : null);
+    return slug ? teamHubFile(teamName) : (teamName ? `takimlar.html?team=${encodeURIComponent(teamName)}` : null);
   },
   matchReportHref: (matchId) => (matchId ? `mac-raporu/${matchId}.html` : null),
   newsHref: (slug) => (slug ? `haber/${slug}.html` : null),
@@ -54,7 +56,12 @@ const DEFAULT_ROUTES = Object.freeze({
   topAssists: "asist-kralligi.html",
   transferRadar: "transfer-radari.html",
   matchCentre: "mac-merkezi.html",
-  playerRadar: "oyuncu-radari.html"
+  playerRadar: "oyuncu-radari.html",
+  today: "bugunun-maclari.html",
+  live: "canli-skor.html",
+  fixturesHref: (team) => teamHubFile(team) || "mac-takvimi.html",
+  standingsHref: (team) => teamPageSlug(team) ? `${teamPageSlug(team)}-puan-durumu.html` : "puan-durumu.html",
+  matchHref: (match) => `mac-detay.html?fixtureId=${encodeURIComponent(match.providerId || match.id)}`
 });
 
 /** Takım sayfası üretilmiş kulüpler — iç linkler yalnızca var olan sayfaya. */
@@ -162,9 +169,10 @@ const POSITION_METRICS = Object.freeze({
   ]
 });
 
-function buildSeasonStats(player, view) {
+function buildSeasonStats(player, view, season = SEASON_LABEL) {
   const fields = view.fields || {};
   const core = [];
+  if (player.statsSeason && seasonLabel(player.statsSeason) !== season) return {available:false,season,family:positionFamily(player),core:[],positional:[],source:null,verifiedAt:null};
 
   const push = (key, value, extra = {}) => {
     if (value === null || value === undefined || value === "") return;
@@ -196,7 +204,7 @@ function buildSeasonStats(player, view) {
 
   return {
     available: core.length > 0,
-    season: SEASON_LABEL,
+    season,
     family,
     core,
     positional,
@@ -490,7 +498,7 @@ function buildIdentity(player, view, options) {
     // okunduğunda doğrulanmamış kayıtların forma numarası yayına
     // giriyordu; `number` kısıtlı alan listesinde, `shirtNumber` değil.
     shirtNumber: fields.number ?? (view.verified ? (player.shirtNumber ?? null) : null),
-    position: player.position || null,
+    position: options.locale === "en" ? player.position || null : ({Attacker:"Forvet",Midfielder:"Orta saha",Defender:"Defans",Goalkeeper:"Kaleci"}[player.position] || player.position || null),
     secondaryPosition: player.secondaryPosition || null,
     nationality: player.nationality || null,
     birthDate: player.birthDate || null,
@@ -561,7 +569,7 @@ function buildCompare(player, players, options) {
 function buildInternalLinks(identity, options) {
   const links = [];
   if (identity.teamHref) links.push({ key: "teamSquad", href: identity.teamHref, label: identity.team });
-  for (const key of ["topScorers", "topAssists", "transferRadar", "matchCentre", "playerRadar"]) {
+  for (const key of ["topScorers", "topAssists", "transferRadar", "matchCentre", "playerRadar", "today", "live"]) {
     const href = withBase(options.basePrefix, options.routes[key]);
     if (href) links.push({ key, href });
   }
@@ -586,39 +594,49 @@ function buildPlayer360(input) {
   if (!player) throw new TypeError("buildPlayer360: player gerekli");
 
   const options = {
+    locale: input.locale === "en" ? "en" : "tr",
     basePrefix: (input && input.basePrefix) || "../",
     routes: { ...DEFAULT_ROUTES, ...((input && input.routes) || {}) }
   };
   const view = input.credibility || publicPlayerView(player);
 
   const matchLog = buildPlayerMatchLog(player, {
-    matches: input.matches,
+    matches: (input.matches || []).filter(row => Date.parse(row.kickoff || row.date) <= (input.now ?? Date.now())),
     archive: input.archive,
-    limit: 10
+    limit: Infinity
   });
 
   options.displayName = (input && input.displayName) || null;
   options.comparisonSlugFor = (input && input.comparisonSlugFor) || null;
   const identity = buildIdentity(player, view, options);
+  const season = seasonLabel(input.season) || SEASON_LABEL;
+  const next = nextTeamMatch(identity.team, input.calendar, input.now);
+  const dated = [player.statsVerifiedAt, player.profileUpdatedAt, player.lastVerifiedAt]
+    .filter(value => value && Number.isFinite(Date.parse(value)) && Date.parse(value) <= (input.now ?? Date.now()));
+  const updatedAt = dated.sort((a,b) => Date.parse(b)-Date.parse(a))[0] || null;
 
   return {
     id: player.id,
-    season: SEASON_LABEL,
+    season,
     verified: view.verified,
     identity,
-    seasonStats: buildSeasonStats(player, view),
+    seasonStats: buildSeasonStats(player, view, season),
+    updatedAt,
+    nextMatch: next ? {...next, href: withBase(options.basePrefix, options.routes.matchHref(next))} : null,
     matchLog: {
+      lastGoal: (() => { const row=matchLog.appearances.find(item=>item.goals>0); return row ? {...row,reportHref:withBase(options.basePrefix,options.routes.matchReportHref(row.matchId))} : null; })(),
+      lastAssist: (() => { const row=matchLog.appearances.find(item=>item.assists>0); return row ? {...row,reportHref:withBase(options.basePrefix,options.routes.matchReportHref(row.matchId))} : null; })(),
       available: matchLog.appearances.length > 0,
       // Satırın maç raporu adresi BURADA çözülür: görünüm katmanı rota
       // bilmez, yalnızca gelen href'i basar (ya da yoksa basmaz).
-      rows: matchLog.appearances.map((row) => ({
+      rows: matchLog.appearances.slice(0, 5).map((row) => ({
         ...row,
         reportHref: withBase(options.basePrefix, options.routes.matchReportHref(row.matchId))
       })),
       totals: matchLog.totals,
       scanned: matchLog.evidence.matchesScanned
     },
-    formSeries: buildFormSeries(matchLog.appearances),
+    formSeries: buildFormSeries(matchLog.appearances.slice(0, 5)),
     availability: buildAvailability(player, input.squadStatuses),
     career: buildCareer(player),
     honours: buildHonours(player),

@@ -91,6 +91,21 @@ const canonical = players.filter((player) => !player.isDuplicate);
  */
 const previous = readJson("data/player-url-slugs.json", { entries: [] });
 const canonicalIds = new Set(canonical.map((player) => player.id));
+// Published addresses survive transfers, name corrections and new namesakes.
+const reserved = new Map();
+for (const entry of previous.entries || []) {
+  if (!canonicalIds.has(entry.id) || !entry.slug) continue;
+  reserved.set(entry.slug, entry.id);
+  slugs.set(entry.id, entry.slug);
+  if (!fullNames.has(entry.id)) fullNames.set(entry.id, {fullName:entry.fullName, source:entry.source});
+}
+for (const [id, candidate] of slugs) {
+  if (reserved.has(candidate) && reserved.get(candidate) !== id) {
+    let suffix = 0, next;
+    do { next = candidate + '-' + id + (suffix ? '-' + suffix : ''); suffix++; } while(reserved.has(next));
+    slugs.set(id, next); reserved.set(next,id);
+  } else reserved.set(candidate,id);
+}
 const carried = ((previous && previous.entries) || [])
   .filter((entry) => entry && entry.id && entry.slug)
   .filter((entry) => canonicalIds.has(entry.id) && !slugs.has(entry.id));
