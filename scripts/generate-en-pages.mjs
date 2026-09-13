@@ -882,8 +882,9 @@ function dailyHeadlinesSection() {
  */
 function todaySection() {
   const list = todaysMatches;
-  const body = list.length
-    ? list.map((match, index) => {
+  const remaining = list.filter((match) => !isSuperLig(match));
+  const body = remaining.length
+    ? remaining.map((match, index) => {
       const card = fixtureCard(match);
       // Fazlalık kartın damgası app.js'teki `markMatchOverflow` ile aynı:
       // aynı öznitelik, aynı `hidden`, aynı kapsam kuralı.
@@ -893,7 +894,7 @@ function todaySection() {
     }).join("\n")
     : `<p class="muted-copy">${escapeHtml(label("common.noMatchesToday"))}</p>`;
 
-  const hiddenCount = Math.max(0, list.length - MATCH_LIST_INITIAL);
+  const hiddenCount = Math.max(0, remaining.length - MATCH_LIST_INITIAL);
   // Ölü düğme yok: gizlenecek kart yoksa düğme hiç çizilmez.
   const moreRow = hiddenCount
     ? `<div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false">` +
@@ -907,10 +908,13 @@ function todaySection() {
   // ayrıntı sayfası yok (aşağıdaki genel ızgara da aynı nedenle her
   // karta `./live-football-scores.html`e bağlanıyor); şerit de aynı kuralı izler.
   // Kalıcı EN maç sayfası varsa şerit satırı oraya gider; yoksa canlı skor.
-  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: (match) => {
-    const enPath = seoEnPathForMatch(match, seoRegistryPages);
-    return enPath ? `../${enPath}` : "./live-football-scores.html";
-  } });
+  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, {
+    hrefFor: (match) => {
+      const enPath = seoEnPathForMatch(match, seoRegistryPages);
+      return enPath ? `../${enPath}` : "./live-football-scores.html";
+    },
+    cardFor: fixtureCard
+  });
 
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}

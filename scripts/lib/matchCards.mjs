@@ -514,9 +514,10 @@ export function superLigTodayStripHtml(matches, teams, locale, options = {}) {
   const loc = normalizeLocale(locale);
   const teamList = superLigTeamLogoMap(teams);
   const hrefFor = typeof options.hrefFor === "function" ? options.hrefFor : () => "#";
+  const cardFor = typeof options.cardFor === "function" ? options.cardFor : null;
 
   const scoped = (Array.isArray(matches) ? matches : []).filter((match) =>
-    match && (findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam)));
+    match && findSuperLigTeam(teamList, match.homeTeam) && findSuperLigTeam(teamList, match.awayTeam));
 
   // AYNI KARŞILAŞMA takvim kaynağında birden fazla kayıtla (farklı
   // kimlik/yazımla) görünebiliyor — bu bileşene özgü bir sorun değil,
@@ -544,7 +545,12 @@ export function superLigTodayStripHtml(matches, teams, locale, options = {}) {
     return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
   });
 
-  const rows = sorted.map((match) => superLigMatchRowHtml(match, teamList, loc, hrefFor)).join("");
+  // Ana sayfa, genel programla aynı fixture-card üreticisini verir. Geriye
+  // dönük satır üreticisi yalnızca bu yardımcı başka bir yerde doğrudan
+  // çağrılırsa kullanılmaya devam eder.
+  const rows = sorted.map((match) => cardFor
+    ? cardFor(match)
+    : superLigMatchRowHtml(match, teamList, loc, hrefFor)).join("");
 
   // YALNIZCA İÇ İÇERİK döner — dıştaki kararlı kap (data-api-target,
   // data-static-fallback) index.html'de elle yazılı duruyor, tıpkı
@@ -555,5 +561,5 @@ export function superLigTodayStripHtml(matches, teams, locale, options = {}) {
   // neutralizeStaleLive) damgayı okur ve ömrü dolmuş "Canlı" rozetlerini
   // API'ye hiç bağlanmadan söker.
   return `<span class="superlig-strip-kicker">${escapeHtml(t("superlig.strip.kicker", loc))}</span>` +
-    `<div class="superlig-strip-rail" data-live-rendered-at="${escapeHtml(new Date().toISOString())}">${rows}</div>`;
+    `<div class="${cardFor ? "matches-grid superlig-today-grid" : "superlig-strip-rail"}" data-live-rendered-at="${escapeHtml(new Date().toISOString())}">${rows}</div>`;
 }
