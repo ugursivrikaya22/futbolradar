@@ -2,17 +2,102 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import {
+  player360Description,
+  player360Person,
+  player360Title,
+  renderPlayer360
+} from "./lib/player360.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { getPlayers } = require("../services/playerService.js");
+const { buildPlayer360 } = require("../services/player360Service.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { publicPlayerView, statsAreVerified, ratingIsVerified } = require("../services/cardCredibility.js");
-const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
+const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
+// Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
+// de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
+const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
 const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
 const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
   .filter((transfer) => transfer.status === "confirmed");
 const transferWindows = (JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-window.json"), "utf8")).windows || []);
+
+
+/**
+ * FUTBOLCU 360 GİRDİLERİ.
+ *
+ * Dosyalar bir kez okunur, 806 profilin hepsinde yeniden kullanılır: her
+ * oyuncu için 1.158 arşiv kaydını diskten tekrar okumak, derlemeyi
+ * gereksiz yere dakikalar uzatırdı.
+ *
+ * Eksik dosya derlemeyi DÜŞÜRMEZ — ilgili bölüm o koşuda sessizce boş kalır.
+ * Oyuncu sayfası, yardımcı bir veri dosyasının yokluğunda 500 vermemeli.
+ */
+function readJson(relativePath, fallback) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, relativePath), "utf8"));
+  } catch (error) {
+    console.warn(`[futbolradar:player360] ${relativePath} okunamadı (${error.code || error.message}); bölüm boş kalacak`);
+    return fallback;
+  }
+}
+
+const { publishableNews } = require("../services/newsFeed.js");
+
+/**
+ * BAĞLANTI ANCAK SAYFASI VARSA BASILIR.
+ *
+ * Maç raporu ve haber sayfaları kendi uygunluk kurallarına göre üretiliyor:
+ * her bitmiş maç rapor almıyor, her haber kaydı sayfa almıyor. Bu kuralları
+ * burada yeniden yazmak (ve zamanla ayrışmalarına izin vermek) yerine
+ * ÜRETİLMİŞ ÇIKTININ KENDİSİ okunuyor — derleme doğrulaması bu yüzden
+ * yüzlerce "missing local target" bildiriyordu.
+ *
+ * Yeni eklenen bir rapor ya da haber, bir sonraki derlemede bağlanır:
+ * geç bağlanan bir link, kırık bir linkten iyidir.
+ */
+function generatedSlugs(directory) {
+  try {
+    return new Set(fs.readdirSync(path.join(root, directory))
+      .filter((name) => name.endsWith(".html"))
+      .map((name) => name.slice(0, -5)));
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * ADRES ÇÖZÜCÜ. Tam adı bilinen oyuncu `/futbolcu/<tam-ad>` adresine
+ * taşındı; bilinmeyen eski adresinde kaldı. Tablo üretilmiş bir dosyada
+ * (data/player-url-slugs.json) — çalışma zamanında hesaplanmıyor ki adres
+ * bir koşudan diğerine sessizce değişmesin.
+ */
+const playerUrls = createPlayerUrlResolver(readJson("data/player-url-slugs.json", { entries: [], aliases: [] }));
+
+/**
+ * KIYAS HAVUZU KANONİK KAYITLARLA SINIRLI.
+ *
+ * Kıyas sayfalarını üreten script (generate-player-comparison-pages.mjs)
+ * kopya kayıtları havuza almıyor; buradaki bağlantılar tam listeden
+ * üretilseydi, üretilmemiş binlerce kıyas sayfasına bağlanırdı. İki taraf
+ * AYNI havuzu görmek zorunda — kıyas eşi seçiminin tek kaynak olmasının
+ * sebebi de bu.
+ */
+const comparablePlayers = players.filter((player) => !player.isDuplicate);
+/** Kıyas adresi, sayfaları üreten scriptle AYNI kaynaktan. */
+const slugForPair = createComparisonSlugResolver(players);
+
+const matchReportSlugs = generatedSlugs("mac-raporu");
+const newsSlugs = generatedSlugs("haber");
+
+const newsItems = publishableNews(readJson("data/news.json", []));
+const matchRecords = readJson("data/matches.json", []);
+const archiveRecords = readJson("data/historical-match-archive.json", { records: [] }).records || [];
+const squadStatuses = readJson("data/squad-statuses.json", { teams: [] });
+
 const outDir = path.join(root, "oyuncular");
 const publicOutDir = path.join(root, "public", "oyuncular");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -166,96 +251,37 @@ function playerDescription(player, view) {
   return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi${ratingPhrase}${potentialPhrase} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
-function playerCurrentTeam(player) {
-  return player.currentTeam || player.team || "Takim bilgisi yakinda";
-}
-
-function playerRating(player) {
-  return Number(player.overallRating || player.aiRating || player.rating || 0);
-}
-
-function playerPositionGroup(player) {
-  const source = `${player.positionGroup || ""} ${player.position || ""}`.toLocaleLowerCase("tr-TR");
-
-  if (source.includes("kaleci") || source.includes("goal")) return "kaleci";
-  if (source.includes("def") || source.includes("stoper") || source.includes("bek") || source.includes("savun")) return "defans";
-  if (source.includes("orta") || source.includes("mid")) return "orta saha";
-  if (source.includes("wing") || source.includes("kanat") || source.includes("forvet") || source.includes("santrfor") || source.includes("striker")) return "forvet";
-  return "diger";
-}
-
-function comparisonSlug(leftId, rightId) {
-  return [leftId, rightId].sort().join("-vs-");
-}
-
-function comparePeerScore(primary, candidate) {
-  if (!primary || !candidate || primary.id === candidate.id) return -1;
-  // Aynı gerçek oyuncunun iki kaydı birbiriyle "karşılaştırılmaz" — bkz.
-  // generate-player-comparison-pages.mjs'deki aynı karar.
-  if (sameCanonicalPlayer(primary, candidate)) return -1;
-
-  const sameRole = playerPositionGroup(primary) === playerPositionGroup(candidate) ? 44 : 0;
-  const sameLeague = primary.league && candidate.league && primary.league === candidate.league ? 16 : 0;
-  const differentTeam = playerCurrentTeam(primary) !== playerCurrentTeam(candidate) ? 10 : 0;
-  const ratingCloseness = Math.max(0, 26 - Math.abs(playerRating(primary) - playerRating(candidate)));
-  const marketDelta = Math.abs(Number(primary.marketValueEur || 0) - Number(candidate.marketValueEur || 0)) / 1000000;
-  const marketCloseness = Math.max(0, 12 - marketDelta / 3);
-
-  return sameRole + sameLeague + differentTeam + ratingCloseness + marketCloseness;
-}
-
-function uniqueCompareCandidates(list) {
-  const used = new Set();
-  return list.filter((item) => {
-    if (!item || !item.player || used.has(item.player.id)) return false;
-    used.add(item.player.id);
-    return true;
-  });
-}
-
 function staticCompareLinks(player) {
-  const candidates = players.filter((candidate) => candidate.id !== player.id && !sameCanonicalPlayer(player, candidate));
-  const bestPeer = candidates.slice().sort((a, b) => comparePeerScore(player, b) - comparePeerScore(player, a))[0];
-  const sameRole = candidates
-    .filter((candidate) => playerPositionGroup(candidate) === playerPositionGroup(player))
-    .sort((a, b) => playerRating(b) - playerRating(a))[0];
-  const closeRating = candidates
-    .slice()
-    .sort((a, b) => Math.abs(playerRating(player) - playerRating(a)) - Math.abs(playerRating(player) - playerRating(b)))[0];
-  const transferRead = candidates
-    .filter((candidate) => Array.isArray(candidate.transferHistory) && candidate.transferHistory.length)
-    .sort((a, b) => Number(b.marketValueEur || 0) - Number(a.marketValueEur || 0))[0];
-
-  const baseLinks = uniqueCompareCandidates([
-    { label: "Akilli eslesme", player: bestPeer, note: "Rol, rating ve piyasa yakinligi" },
-    { label: "Aynı rol kıyası", player: sameRole, note: `${playerPositionGroup(player)} profili` },
-    { label: "Rating sinavi", player: closeRating, note: "Overall farkini oku" },
-    { label: "Transfer okuma", player: transferRead, note: "Güncel takım ve piyasa değeri" }
-  ]);
-  const fallbackLinks = candidates
-    .slice()
-    .sort((a, b) => playerRating(b) - playerRating(a))
-    .map((candidate) => ({ label: "Radar alternatifi", player: candidate, note: "Profil trafiği ve kıyas akışı" }));
-  const links = uniqueCompareCandidates(baseLinks.concat(fallbackLinks)).slice(0, 4);
-
-  return links.map((item) => {
-    const href = `../karsilastirma/${comparisonSlug(player.id, item.player.id)}.html`;
+  return profileCompareCandidates(player, comparablePlayers).map((item) => {
+    const href = `../karsilastirma/${slugForPair(player, item.player)}.html`;
     return `<a class="static-profile-link-card" href="${escapeHtml(href)}"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(player.name)} vs ${escapeHtml(item.player.name)}</strong><em>${escapeHtml(item.note)}</em></a>`;
   }).join("\n        ");
 }
 
+/**
+ * Sayfa artık iki ayrı dizinde yayımlanıyor (`futbolcu/` ve `oyuncular/`),
+ * bu yüzden bağlantılar "./" ile kurulamaz: kategori sayfaları
+ * `oyuncular/` altında ve `futbolcu/` içinden "./forvetler.html" diye
+ * çağrılınca kırılıyordu. Yollar köke göre yazılıp `../` ile
+ * mutlaklaştırılır; oyuncu bağlantıları da tek çözücüden geçer.
+ */
 function relatedLinks(currentId) {
   const links = [
-    ["Forvetler", "./forvetler.html"],
-    ["Kaleciler", "./kaleciler.html"],
-    ["Defanslar", "./defanslar.html"],
-    ["Orta sahalar", "./orta-sahalar.html"],
-    ["Genç yetenekler", "./genc-yetenekler.html"],
-    ["En iyi oyuncular", "./en-iyi-oyuncular.html"]
+    ["Forvetler", "../oyuncular/forvetler.html"],
+    ["Kaleciler", "../oyuncular/kaleciler.html"],
+    ["Defanslar", "../oyuncular/defanslar.html"],
+    ["Orta sahalar", "../oyuncular/orta-sahalar.html"],
+    ["Genç yetenekler", "../oyuncular/genc-yetenekler.html"],
+    ["En iyi oyuncular", "../oyuncular/en-iyi-oyuncular.html"]
   ];
 
+  const peers = players
+    .filter((player) => player.id !== currentId && playerUrls.resolveId(player.id) === player.id)
+    .slice(0, 3)
+    .map((player) => [playerUrls.playerDisplayName(player), playerUrls.playerHref(player, "../")]);
+
   return links
-    .concat(players.filter((player) => player.id !== currentId).slice(0, 3).map((player) => [player.name, `./${player.id}.html`]))
+    .concat(peers)
     .map(([label, href]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`)
     .join("\n        ");
 }
@@ -323,23 +349,56 @@ function pageHtml(player) {
   // test-player-surface-enforcement.mjs, makine okunur kulüp iddiasının
   // tek yetkili karardan (`view.verified`) geçmesini zorunlu kılıyor.
   const recentTransfer = latestRecentTransferFor(player);
+  // Futbolcu 360 modeli TEK yerde kurulur: aynı nesne hem görünür
+  // bölümleri, hem meta açıklamasını, hem de schema.org düğümünü besler.
+  // Üçünün ayrı hesaplanması, sayfada olmayan bir şeyi meta açıklamasının
+  // vaat etmesine yol açıyordu.
+  const model = buildPlayer360({
+    player,
+    players: comparablePlayers,
+    credibility: view,
+    // YALNIZCA kesinleşmiş kayıtlar. Söylenti transferler bu listeden
+    // GEÇMEZ; iddia düzeyindeki gelişmeler haber akışından, kendi güven
+    // rozetleriyle gelir. İki ayrı güvenilirlik rejimini tek listede
+    // karıştırmak, rozetin anlamını yok eder.
+    transfers: confirmedTransfers,
+    news: newsItems,
+    matches: matchRecords,
+    archive: archiveRecords,
+    squadStatuses,
+    displayName: playerUrls.playerDisplayName(player),
+    comparisonSlugFor: slugForPair,
+    basePrefix: "../",
+    routes: {
+      matchReportHref: (matchId) => (matchId && matchReportSlugs.has(matchId) ? `mac-raporu/${matchId}.html` : null),
+      newsHref: (slug) => (slug && newsSlugs.has(slug) ? `haber/${slug}.html` : null)
+    }
+  });
   const team = view.verified
     ? (player.currentTeam || player.team || "Takım bilgisi yakında")
     : "Kulüp bilgisi doğrulanmadı";
   const seoTeam = view.verified ? playerSeoTeamLabel(player) : "Oyuncu Profili";
   const age = player.computedAge || player.age || "Yaş yakında";
+  // BAŞLIK. Varsayılan artık "Futbolcu 360" kalıbı: arama, oyuncu adının
+  // yanında "istatistik", "gol", "haber" ve "son durum" kelimeleriyle
+  // geliyor ve sayfa bunların dördünü de gerçekten taşıyor.
+  //
+  // TEK İSTİSNA, aktif tescil penceresinde kesinleşmiş bir transfer:
+  // o hafta arama "Osimhen Galatasaray transferi" biçiminde geliyor ve
+  // kulüp adını taşıyan başlık o niyetin birebir karşılığı. İstisna dar
+  // tutuluyor (46 kayıt), çünkü genel kalıp daha geniş bir niyeti kapsıyor.
   const title = recentTransfer
     ? `${player.name} ${recentTransfer.toTeam} Transferi ve İstatistikleri | FutbolRadar`
-    : view.verified
-      ? `${player.name} Oyuncu Profili | ${seoTeam} | FutbolRadar`
-      : `${player.name} Oyuncu Profili | FutbolRadar`;
-  const description = recentTransfer ? transferHeroDescription(player, recentTransfer) : playerDescription(player, view);
+    : player360Title(model, { locale: "tr" });
+  const description = recentTransfer
+    ? transferHeroDescription(player, recentTransfer)
+    : player360Description(model, { locale: "tr" });
   const lead = recentTransfer
     ? description
     : view.verified
       ? (playerNeedsTransferReview(player) ? description : player.summary || description)
       : description;
-  const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
+  const canonical = playerUrls.playerCanonicalUrl(player.id);
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
@@ -381,23 +440,12 @@ function pageHtml(player) {
       ${JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
-          {
-            "@type": "Person",
-            name: player.name,
-            nationality: player.nationality,
-            height: player.height,
-            // memberOf YALNIZCA doğrulanmış kayıtta. Doğrulanmamış bir
-            // kulüp iddiasını schema.org ile beyan etmek, onu makine
-            // okunur bir olguya dönüştürür — görünür metinden daha kalıcı
-            // bir yanlış. Denetimde Dzeko "Schalke 04" olarak böyle
-            // beyan ediliyordu.
-            ...(view.verified ? {
-              memberOf: { "@type": "SportsTeam", name: team, sport: "Football" }
-            } : {}),
-            jobTitle: player.position,
-            url: canonical,
-            description: stripTags(description)
-          },
+          // Person düğümü, görünür bölümlerle AYNI modelden kurulur
+          // (scripts/lib/player360.mjs). memberOf hâlâ yalnızca
+          // doğrulanmış kayıtta basılır: doğrulanmamış bir kulüp iddiasını
+          // schema.org ile beyan etmek, onu makine okunur bir olguya
+          // dönüştürür — görünür metinden daha kalıcı bir yanlış.
+          player360Person(model, canonical, stripTags(description)),
           {
             "@type": "BreadcrumbList",
             itemListElement: [
@@ -421,14 +469,14 @@ function pageHtml(player) {
         <span>/</span>
         <a href="../oyuncu-radari.html">Oyuncu Radarı</a>
         <span>/</span>
-        <span>${escapeHtml(player.name)}</span>
+        <span>${escapeHtml(model.identity.name)}</span>
       </nav>
       <section class="hero">
         <div class="hero-row">
           ${profileAvatarHtml(player)}
           <div>
             <span class="eyebrow">${escapeHtml(recentTransfer ? `Yeni Transfer · ${recentTransfer.toTeam}` : view.verified ? playerTeamEyebrow(player) : "Oyuncu profili")}</span>
-            <h1>${escapeHtml(player.name)}</h1>
+            <h1>${escapeHtml(model.identity.name)}</h1>
             <p class="lead">${escapeHtml(lead)}</p>
           </div>
           ${view.verified
@@ -439,6 +487,7 @@ function pageHtml(player) {
         </div>
       </section>
       ${recentTransfer ? transferHeroHtml(player, recentTransfer, age) : ""}
+      ${renderPlayer360(model, { locale: "tr" })}
       ${view.verified ? "" : `<section class="player-unverified-note" aria-label="Veri durumu">
         <article class="data-empty" data-card="empty-state" data-player-verified="false">
           <strong>${recentTransfer ? "Performans verisi bekleniyor" : "Doğrulanmış veri bekleniyor"}</strong>
@@ -448,7 +497,7 @@ function pageHtml(player) {
           eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini ya da eski değer gösterilmiyor.`}</span>
         </article>
       </section>`}
-      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}">
+      <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}" data-p360="1">
         <article class="data-empty" data-card="empty-state">
           <strong>${escapeHtml(player.name)}</strong>
           <span>${escapeHtml(view.verified ? "Oyuncu performans kartı yükleniyor." : "Doğrulanmış veri geldiğinde performans kartı burada yayımlanacak.")}</span>
@@ -474,8 +523,23 @@ function pageHtml(player) {
 `;
 }
 
-function aliasHtml(player, alias) {
-  const canonical = `https://www.futbolradar.com/oyuncular/${player.id}.html`;
+/**
+ * YÖNLENDİRME SAYFASI.
+ *
+ * İki yerde gerekiyor ve ikisi de aynı şey: bu adres artık kanonik değil.
+ *   • Eski takma adlar (`player.aliases`).
+ *   • Tam isimli adrese TAŞINAN oyuncunun eski `/oyuncular/<id>.html` yolu.
+ *
+ * Asıl yönlendirme sunucu tarafında, kalıcı (301) olarak yapılıyor
+ * (vercel.json). Buradaki dosya, doğrudan dosyaya erişen ya da
+ * yönlendirmeyi izlemeyen istemciler için ikinci savunma hattı: canonical
+ * yeni adresi gösterir, sayfa `noindex` işaretlidir ve içerik KOPYALANMAZ.
+ *
+ * @param {string} targetPath site köküne göre hedef ("futbolcu/victor-osimhen.html")
+ * @param {string} relativeHref yönlendirme sayfasından hedefe giden yol
+ */
+function redirectHtml(player, targetPath, relativeHref) {
+  const canonical = `https://www.futbolradar.com/${targetPath}`;
   const title = `${player.name} Oyuncu Profili | FutbolRadar`;
   const description = `${player.name} oyuncu profili FutbolRadar kanonik sayfasına yönlendirilir.`;
 
@@ -488,7 +552,7 @@ function aliasHtml(player, alias) {
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
     <meta name="robots" content="noindex,follow" />
-    <meta http-equiv="refresh" content="0; url=./${escapeHtml(player.id)}.html" />
+    <meta http-equiv="refresh" content="0; url=${escapeHtml(relativeHref)}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -506,7 +570,7 @@ function aliasHtml(player, alias) {
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../page.css" />
-    <script>window.location.replace("./${escapeHtml(player.id)}.html");</script>
+    <script>window.location.replace("${escapeHtml(relativeHref)}");</script>
   </head>
   <body class="subpage">
     <main class="container">
@@ -516,7 +580,7 @@ function aliasHtml(player, alias) {
             <span class="eyebrow">Oyuncu profili taşındı</span>
             <h1>${escapeHtml(player.name)}</h1>
             <p class="lead">Bu adres güncellendi. FutbolRadar kanonik oyuncu profiline yönlendiriliyorsun.</p>
-            <a class="button primary" href="./${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
+            <a class="button primary" href="${escapeHtml(relativeHref)}">Oyuncu profilini aç</a>
           </div>
         </div>
       </section>
@@ -529,16 +593,64 @@ function aliasHtml(player, alias) {
 fs.mkdirSync(outDir, { recursive: true });
 fs.mkdirSync(publicOutDir, { recursive: true });
 
-for (const player of players) {
-  const html = pageHtml(player);
-  writeGeneratedFile(path.join(outDir, `${player.id}.html`), html);
-  writeGeneratedFile(path.join(publicOutDir, `${player.id}.html`), html);
+const canonicalDir = path.join(root, "futbolcu");
+const publicCanonicalDir = path.join(root, "public", "futbolcu");
+fs.mkdirSync(canonicalDir, { recursive: true });
+fs.mkdirSync(publicCanonicalDir, { recursive: true });
 
-  for (const alias of player.aliases || []) {
-    const html = aliasHtml(player, alias);
-    writeGeneratedFile(path.join(outDir, `${alias}.html`), html);
-    writeGeneratedFile(path.join(publicOutDir, `${alias}.html`), html);
+/** Aynı içeriği hem kökte hem `public/` aynasında yazar. */
+function writeBoth(relativePath, html) {
+  for (const base of [root, path.join(root, "public")]) {
+    const target = path.join(base, relativePath);
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    writeGeneratedFile(target, html);
   }
 }
 
-console.log(`Generated ${players.length} player profile pages`);
+let movedPages = 0;
+let legacyPages = 0;
+let redirectPages = 0;
+
+for (const player of players) {
+  // KOPYA KAYIT SAYFA ÜRETMEZ, YÖNLENDİRİR.
+  //
+  // Aynı gerçek oyuncunun iki kaydı vardı ve ikisi de tam sayfa basıyordu:
+  // "victor-osimhen" ile "v-osimhen-galatasaray" aynı kişi için iki ayrı
+  // indekslenebilir URL demekti. Adres kanonik kaydındır; kopya kayıt artık
+  // ona yönlendirilir.
+  const canonicalId = playerUrls.resolveId(player.id);
+  if (canonicalId !== player.id) {
+    const targetPath = playerUrls.playerPagePath(player.id);
+    const html = redirectHtml(player, targetPath, `../${targetPath}`);
+    writeBoth(path.join("oyuncular", `${player.id}.html`), html);
+    redirectPages += 1;
+    continue;
+  }
+
+  const pagePath = playerUrls.playerPagePath(player.id);
+  const html = pageHtml(player);
+  writeBoth(pagePath, html);
+
+  if (playerUrls.hasCanonicalSlug(player.id)) {
+    movedPages += 1;
+    // Eski adres korunur ama kanonik değildir: yeni adrese yönlendirir.
+    // Dosyanın var olmaya devam etmesi, bilgi mimarisini bozmamak için
+    // (scripts/test-player-surface-enforcement.mjs bunu zorunlu kılıyor)
+    // ve doğrudan dosya adresine gelen istemciler için.
+    writeBoth(
+      path.join("oyuncular", `${player.id}.html`),
+      redirectHtml(player, pagePath, `../${pagePath}`)
+    );
+  } else {
+    legacyPages += 1;
+  }
+
+  for (const alias of player.aliases || []) {
+    const html = redirectHtml(player, pagePath, `../${pagePath}`);
+    writeBoth(path.join("oyuncular", `${alias}.html`), html);
+    redirectPages += 1;
+  }
+}
+
+console.log(`Generated ${players.length} player profile pages ` +
+  `(${movedPages} tam isimli adreste, ${legacyPages} eski adreste, ${redirectPages} yönlendirme).`);

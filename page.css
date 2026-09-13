@@ -22154,3 +22154,130 @@ button:not(:disabled), summary, select, .interactive-card { cursor: pointer; }
 a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visible, [role="tab"]:focus-visible {
   outline: 2px solid var(--green, #0b8f5a); outline-offset: 3px;
 }
+
+/* ── FUTBOLCU 360 ────────────────────────────────────────────────────────────
+   Oyuncu profilinin bölüm sistemi. MOBİL ÖNCE yazıldı: taban düzen tek
+   sütun, geniş ekran kuralları yalnızca min-width sorgularıyla eklenir.
+
+   Tek bir grafik kütüphanesi yok; form grafiği satır içi SVG olarak gelir,
+   bu yüzden burada yalnızca renklendirilir. İstatistik ızgarası
+   `auto-fit/minmax` ile çalışır: sütun sayısı sabitlenmediği için 320px
+   telefondan geniş masaüstüne kadar ara kırılım noktası gerekmiyor.
+
+   Tablolar kendi `overflow-x` kapsayıcısında durur — sayfa gövdesi hiçbir
+   genişlikte yatay kaymaz. */
+
+.p360 {
+  margin: var(--sp-5, 20px) 0;
+  padding: var(--sp-4, 16px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius, 14px);
+  background: var(--surface);
+}
+
+.p360-head { margin-bottom: var(--sp-3, 12px); }
+.p360-head h2 { margin: 0; font-size: var(--fs-lg); line-height: 1.25; }
+.p360-head p { margin: 4px 0 0; color: var(--muted); font-size: var(--fs-sm); }
+.p360-subhead { margin: var(--sp-4, 16px) 0 var(--sp-2, 8px); font-size: var(--fs-base); color: var(--text-soft); }
+
+.p360-empty {
+  margin: 0;
+  padding: var(--sp-3, 12px);
+  border-radius: 10px;
+  background: var(--surface-sunken);
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+
+.p360-source { margin: var(--sp-3, 12px) 0 0; color: var(--muted); font-size: var(--fs-xs); }
+
+/* Kimlik kartı. `dt/dd` çifti satır içinde kalır; uzun değerler sarar. */
+.p360-id-grid { display: grid; gap: 1px; margin: 0; background: var(--line); border-radius: 10px; overflow: hidden; }
+.p360-id-row { display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; padding: 9px 12px; background: var(--surface); }
+.p360-id-row dt { margin: 0; color: var(--muted); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.03em; }
+.p360-id-row dd { margin: 0; font-weight: 700; font-size: var(--fs-sm); text-align: right; }
+.p360-club-logo { display: block; margin-bottom: var(--sp-2, 8px); object-fit: contain; }
+
+@media (min-width: 700px) {
+  .p360-id-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* İstatistik ızgarası. */
+.p360-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: var(--sp-2, 8px); }
+.p360-stat-grid-compact { grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); margin-top: var(--sp-3, 12px); }
+.p360-stat {
+  display: flex; flex-direction: column; gap: 2px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-sunken);
+}
+.p360-stat span { color: var(--muted); font-size: var(--fs-xs); }
+.p360-stat b { font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
+
+/* Tablolar. Kapsayıcı kaydırılır, sayfa değil. */
+.p360-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--line); border-radius: 10px; }
+.p360-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.p360-table caption { padding: 10px 12px 0; color: var(--muted); font-size: var(--fs-xs); text-align: left; caption-side: bottom; }
+.p360-table th, .p360-table td { padding: 8px 12px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+.p360-table thead th { color: var(--muted); font-size: var(--fs-xs); font-weight: 800; text-transform: uppercase; letter-spacing: 0.02em; }
+.p360-table th[scope="row"], .p360-table thead th:first-child, .p360-table td:nth-child(2), .p360-table td:nth-child(3) { text-align: left; }
+.p360-table tbody tr:last-child th, .p360-table tbody tr:last-child td { border-bottom: 0; }
+.p360-score { font-weight: 800; }
+.p360-result-win { color: var(--green); }
+.p360-result-loss { color: var(--live); }
+.p360-result-draw { color: var(--muted); }
+
+/* Kart göstergeleri — renk TEK ayırt edici değil: sayı yanına yazılır ve
+   sütun başlığı "Kart" der, böylece renk körlüğünde de okunur. */
+.p360-card { display: inline-block; width: 8px; height: 11px; border-radius: 2px; vertical-align: -1px; }
+.p360-card-yellow { background: #e0a800; }
+.p360-card-red { background: var(--live); }
+
+/* Form grafiği. */
+/* Grafik, sütun sayısı kadar yer kaplar — az maçta tuvali germez. */
+.p360-chart { display: block; width: 100%; max-width: 360px; height: 96px; }
+.p360-chart text { font-size: 9px; fill: var(--muted); }
+.p360-bar rect { fill: var(--muted); }
+.p360-bar-win rect { fill: var(--green); }
+.p360-bar-loss rect { fill: var(--live); }
+.p360-bar-draw rect { fill: var(--cyan); }
+
+/* Durum rozeti. */
+.p360-status { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; padding: 12px 14px; border-radius: 10px; background: var(--surface-sunken); border-left: 4px solid var(--muted); }
+.p360-status strong { font-size: var(--fs-md); }
+.p360-status span { color: var(--text-soft); font-size: var(--fs-sm); }
+.p360-status-available { border-left-color: var(--green); }
+.p360-status-doubtful { border-left-color: var(--warn); }
+.p360-status-injured { border-left-color: var(--live); }
+.p360-status-suspended { border-left-color: var(--live); }
+.p360-status-unknown { border-left-color: var(--muted); }
+
+/* Haber/transfer akışı. */
+.p360-feed { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-2, 8px); }
+.p360-feed-item { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-sunken); }
+.p360-feed-item > div { display: grid; gap: 2px; min-width: 0; flex: 1 1 200px; }
+.p360-feed-item strong { font-size: var(--fs-sm); line-height: 1.35; }
+.p360-feed-item span { color: var(--muted); font-size: var(--fs-xs); }
+.p360-feed-item a { color: inherit; }
+
+/* Kaynak güven kademesi. Etiket METİN taşır — renk tek başına anlam
+   taşımaz, "Resmî" ile "İddia" arasındaki fark okunarak anlaşılır. */
+.p360-trust { align-self: flex-start; flex: 0 0 auto; padding: 3px 8px; border-radius: 999px; font-size: var(--fs-xs); font-weight: 800; white-space: nowrap; }
+.p360-trust-official { background: var(--green-tint); color: var(--green-deep); }
+.p360-trust-strongSource { background: rgba(13, 148, 136, 0.12); color: var(--cyan); }
+.p360-trust-claim { background: rgba(176, 116, 16, 0.12); color: var(--warn); }
+
+/* Karşılaştırma. */
+.p360-compare-button { display: inline-flex; min-height: 44px; align-items: center; margin-bottom: var(--sp-3, 12px); }
+.p360-peer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-2, 8px); }
+.p360-peer { display: grid; gap: 2px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-sunken); color: inherit; text-decoration: none; }
+.p360-peer:hover, .p360-peer:focus-visible { border-color: var(--green); }
+.p360-peer strong { font-size: var(--fs-sm); }
+.p360-peer span { color: var(--muted); font-size: var(--fs-xs); }
+
+/* İç linkler. */
+.p360-links { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.p360-links > span { color: var(--muted); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.03em; }
+.p360-links a { display: inline-flex; min-height: 36px; align-items: center; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; font-size: var(--fs-sm); text-decoration: none; color: inherit; }
+.p360-links a:hover, .p360-links a:focus-visible { border-color: var(--green); }
