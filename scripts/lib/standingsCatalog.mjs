@@ -23,6 +23,16 @@ export const STANDINGS_LEAGUES = Object.freeze({
     slugTr: "super-lig-puan-durumu",
     slugEn: "super-lig-standings"
   },
+  "1-lig": {
+    id: "1-lig",
+    dataSource: "league-standings",
+    nameTr: "1. Lig",
+    nameEn: "Turkish First League",
+    countryTr: "Türkiye",
+    countryEn: "Turkey",
+    slugTr: "1-lig-puan-durumu",
+    slugEn: "turkish-first-league-standings"
+  },
   "premier-league": {
     id: "premier-league",
     dataSource: "league-standings",
@@ -139,6 +149,16 @@ export const EN_TAB_ORDER = Object.freeze([
   "avrupa-ligi",
   "konferans-ligi"
 ]);
+
+/**
+ * TR SAYFA SIRASI — sekme sırasının üstüne 1. Lig'i ekler.
+ *
+ * 1. Lig'in kendi puan durumu SAYFASI var ama ANA SAYFA SEKMESİ yok: dokuz
+ * sekmelik widget zaten dolu ve onuncu sekme, yerli okuyucunun ilk
+ * aradığı ligleri aşağı itiyordu. Sayfa ile sekmeyi ayrı listelerde
+ * tutmak, birine eklemenin diğerini sessizce değiştirmesini engelliyor.
+ */
+export const TR_PAGE_ORDER = Object.freeze([...TR_TAB_ORDER, "1-lig"]);
 
 export function orderedLeagues(locale) {
   const order = locale === "en" ? EN_TAB_ORDER : TR_TAB_ORDER;

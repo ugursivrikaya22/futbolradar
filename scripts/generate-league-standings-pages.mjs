@@ -19,7 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { TR_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -28,7 +28,7 @@ const socialImage = `${siteUrl}/assets/og-image.svg`;
 const today = new Date().toISOString().slice(0, 10);
 
 // Süper Lig'in kendi sayfası zaten var (generate-evergreen-seo-pages.mjs).
-const TARGET_IDS = TR_TAB_ORDER.filter((id) => id !== "super-lig");
+const TARGET_IDS = TR_PAGE_ORDER.filter((id) => id !== "super-lig");
 
 function escapeHtml(value) {
   return String(value ?? "")

@@ -4070,9 +4070,19 @@
 })();
 
 // Refresh football tables from their shared data endpoints.
+//
+// İKİ DOSYA, SIRALI. `live-standings-core.js` canlı maçların tabloya
+// etkisini hesaplayan ortak aritmetiği taşıyor (kaynağı
+// services/liveStandings.js) ve `data-refresh.js` ondan önce çalışırsa
+// canlı katman sessizce devre dışı kalır. Dinamik olarak eklenen script
+// varsayılan olarak async çalışır; `async = false` ikisini belge sırasına
+// bağlar.
 (function () {
   if (document.documentElement.lang !== "tr" || !document.querySelector(".standings-tabs__panel, .evergreen-table, [data-api-target=standings]")) return;
-  var script = document.createElement("script");
-  script.src = "/data-refresh.js?v=20260913";
-  document.head.appendChild(script);
+  ["/live-standings-core.js?v=20260913", "/data-refresh.js?v=20260913"].forEach(function (src) {
+    var script = document.createElement("script");
+    script.src = src;
+    script.async = false;
+    document.head.appendChild(script);
+  });
 }());

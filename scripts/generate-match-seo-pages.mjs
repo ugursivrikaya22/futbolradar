@@ -556,9 +556,17 @@ function leagueLinks(entry, locale, base) {
   const catalog = STANDINGS_LEAGUES[entry.competitionId];
   const leaguePage = `lig/${entry.competitionId}.html`;
   if (locale === "en") {
-    return { standings: catalog ? `${base}en/${catalog.slugEn}.html` : null, league: null };
+    // KATALOGDA OLMAK, SAYFANIN ÜRETİLDİĞİ ANLAMINA GELMEZ. TR sayfası olup
+    // EN karşılığı olmayan yarışmalar var (1. Lig); katalog kaydına bakıp
+    // bağlantı basmak, olmayan bir sayfaya götürüyordu.
+    const enPage = catalog ? `en/${catalog.slugEn}.html` : null;
+    return { standings: enPage && fileExists(enPage) ? `${base}${enPage}` : null, league: null };
   }
-  return { standings: catalog ? `${base}${catalog.slugTr}` : null, league: fileExists(leaguePage) ? `${base}${leaguePage}` : null };
+  const trPage = catalog ? `${catalog.slugTr}.html` : null;
+  return {
+    standings: trPage && fileExists(trPage) ? `${base}${catalog.slugTr}` : null,
+    league: fileExists(leaguePage) ? `${base}${leaguePage}` : null
+  };
 }
 
 /* ------------------------------------------------------------------ */
