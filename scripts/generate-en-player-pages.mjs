@@ -40,11 +40,13 @@ const {
   t,
   writeDynamicRoutePairs
 } = require("../services/i18n.js");
-const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
+const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto } = require("../services/playerPhotoService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { slug: teamSlug } = require("../services/superLigTeams.js");
 const { buildPlayer360 } = require("../services/player360Service.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 
 const root = process.cwd();
 const LOCALE = "en";
@@ -79,6 +81,22 @@ function generatedSlugs(directory) {
   } catch {
     return new Set();
   }
+}
+
+/**
+ * İNGİLİZCE TARAF DA TAM İSİMLİ ADRESE GEÇİYOR.
+ *
+ * Türkçe sayfa `/futbolcu/victor-osimhen`e taşınırken İngilizcesi
+ * `/en/player/v-osimhen-galatasaray` kalsaydı iki sorun doğardı: hreflang
+ * çifti kırılır (TR tarafı artık o yolda değil) ve aynı oyuncu iki dilde
+ * iki ayrı adlandırma mantığı taşırdı. Slug ortak tablodan gelir.
+ */
+const playerUrls = createPlayerUrlResolver(readJson("data/player-url-slugs.json", { entries: [], aliases: [] }));
+
+/** Kopya kayıtlar İngilizce sayfa almaz: adres kanonik kayda ait. */
+function enPlayerSlug(player) {
+  const table = playerUrls.playerPagePath(player.id);
+  return table.replace(/^.*\//, "").replace(/\.html$/, "");
 }
 
 const newsSlugs = generatedSlugs("haber");
@@ -116,7 +134,16 @@ const EN_ROUTES = {
   playerRadar: "en/player-radar.html"
 };
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
-const players = getPlayers(rawPlayers);
+const players = annotateDuplicates(getPlayers(rawPlayers));
+
+/**
+ * Kıyas havuzu TR tarafıyla AYNI: yalnızca kanonik kayıtlar. Kıyas
+ * sayfalarını üreten script de bu havuzu kullanıyor; farklı havuzlar
+ * üretilmemiş sayfalara bağlantı demek.
+ */
+const comparablePlayers = players.filter((player) => !player.isDuplicate);
+/** Kıyas adresi TR tarafıyla aynı kaynaktan; çözücü TAM listeyle kurulur. */
+const slugForPair = require("../services/playerComparisonPairs.js").createComparisonSlugResolver(players);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -148,8 +175,11 @@ function avatarHtml(player) {
 function pageHtml(player) {
   const view = publicPlayerView(player);
   const fields = view.fields || {};
-  const slugValue = playerSlug(player.id);
-  const trPath = `oyuncular/${slugValue}.html`;
+  const slugValue = enPlayerSlug(player);
+  // Türkçe karşılık tek çözücüden: taşınan oyuncuda `futbolcu/<tam-ad>`,
+  // taşınmayanda `oyuncular/<id>`. Sabit "oyuncular/" yazmak, hreflang
+  // çiftinin bir ucunu yönlendirme sayfasına bağlıyordu.
+  const trPath = playerUrls.playerPagePath(player.id);
   const enPath = `en/player/${slugValue}.html`;
   const canonical = absoluteUrl(enPath);
   const team = fields.currentTeam || fields.team || null;
@@ -159,7 +189,7 @@ function pageHtml(player) {
   // fark rota haritası ve sözlük.
   const model = buildPlayer360({
     player,
-    players,
+    players: comparablePlayers,
     credibility: view,
     transfers: confirmedTransfers,
     news: newsItems,
@@ -167,7 +197,9 @@ function pageHtml(player) {
     archive: archiveRecords,
     squadStatuses,
     basePrefix: BASE,
-    routes: EN_ROUTES
+    routes: EN_ROUTES,
+    displayName: playerUrls.playerDisplayName(player),
+    comparisonSlugFor: slugForPair
   });
 
   const title = player360Title(model, { locale: LOCALE });
@@ -237,7 +269,7 @@ function pageHtml(player) {
             ${avatarHtml(player)}
             <div>
               <span class="eyebrow">${teamHtml}${number !== null ? ` · #${escapeHtml(number)}` : ""}</span>
-              <h1>${escapeHtml(player.name)}</h1>
+              <h1>${escapeHtml(model.identity.name)}</h1>
               <p class="lead">${escapeHtml(position || "Position not yet confirmed")}</p>
             </div>
           </div>
@@ -267,7 +299,9 @@ function pageHtml(player) {
   return { html, trPath, enPath, canonical };
 }
 
-const eligible = players.filter((player) => publicPlayerView(player).verified);
+// Kopya kayıt İngilizce sayfa üretmez — kanonik kaydınki zaten var.
+const eligible = players.filter((player) =>
+  publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id);
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;
@@ -287,6 +321,22 @@ for (const player of eligible) {
   sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <lastmod>${String(player.lastVerifiedAt || player.lastSyncedAt || "").slice(0, 10)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
 }
 
+/**
+ * ESKİ KOŞULARDAN KALAN SAYFALARI BUDA.
+ *
+ * Üretici bugüne kadar yalnızca YAZIYORDU, hiç silmiyordu: yayın kapısından
+ * düşen ya da adresi değişen oyuncunun eski dosyası dizinde kalıyor, site
+ * haritasına girmediği için sessizce "öksüz" bir sayfa olarak yaşıyordu.
+ * Dizin artık güncel veriyi birebir yansıtır.
+ */
+const expectedFiles = new Set(pairs.map((pair) => path.basename(pair.en)));
+let pruned = 0;
+for (const file of fs.readdirSync(OUT_DIR)) {
+  if (!file.endsWith(".html") || expectedFiles.has(file)) continue;
+  fs.rmSync(path.join(OUT_DIR, file));
+  pruned += 1;
+}
+
 const registered = writeDynamicRoutePairs("player", pairs);
 
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
@@ -299,3 +349,4 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
 console.log(`English player pages: ${written} written, ${eligible.length - written} unchanged (${eligible.length} verified players).`);
 console.log(`English player pages: ${skipped} unverified players skipped (no thin/unconfirmed EN profile).`);
 console.log(`English player pages: ${registered} TR↔EN pairs registered (dynamic route map).`);
+console.log(`English player pages: ${pruned} stale file(s) pruned.`);

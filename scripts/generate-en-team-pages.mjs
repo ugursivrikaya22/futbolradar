@@ -55,6 +55,18 @@ const { slug: teamSlug, sameClub } = require("../services/superLigTeams.js");
 const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
 const matchPages = loadRegistry().pages;
 const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
+/**
+ * Oyuncu adresleri tek çözücüden okunur. Kimlikten yol türetmek, oyuncu
+ * tam isimli adrese taşındığı anda var olmayan bir dosyaya işaret ediyor.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { publicPlayerView } = require("../services/cardCredibility.js");
 
 const root = process.cwd();
@@ -152,7 +164,13 @@ function squadRows(team) {
       position: squadPlayer.position || (canonical && canonical.position) || "",
       number: squadPlayer.number ?? (canonical && canonical.number) ?? null,
       age: squadPlayer.age ?? (canonical && canonical.age) ?? null,
-      href: canonical && view && view.verified ? `../player/${playerSlug(canonical.id)}.html` : null
+      // Doğrulanmış olmak YETMİYOR: İngilizce sayfa yalnızca kanonik
+      // kayıtlar için üretiliyor ve kopya kayıtlar eleniyor. Ölçüt,
+      // hedefin gerçekten üretilmiş olması.
+      href: canonical && view && view.verified
+        && fs.existsSync(path.join(process.cwd(), playerUrls.enPlayerPagePath(canonical.id)))
+        ? `../player/${playerUrls.slugFor(canonical.id)}.html`
+        : null
     };
   }).sort((left, right) => {
     const a = left.number === null || left.number === undefined ? 999 : Number(left.number);

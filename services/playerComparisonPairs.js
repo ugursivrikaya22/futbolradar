@@ -43,6 +43,59 @@ function comparisonSlug(leftId, rightId) {
   return [leftId, rightId].sort().join("-vs-");
 }
 
+/**
+ * EDİTORYAL KIYASLAR — YAYIMLANMIŞ ADRESLERİNİ KORUR.
+ *
+ * Bu çiftler elle seçildi ve adresleri ana sayfa, gol krallığı ve oyuncu
+ * radarı gibi sayfalardan bağlantılı. Kimlikler kopya kayıtlara ait
+ * (kadro senkronu öncesinden kalma); çift artık kanonik kayıtlarla
+ * kuruluyor ama ADRES değişmiyor — yayımlanmış bir URL'i yeniden yazmak
+ * o bağlantıları kırar.
+ */
+const EDITORIAL_PAIRS = Object.freeze([
+  ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
+  ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
+  ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
+  ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"],
+  ["edin-dzeko", "semih-kilicsoy", "Tecrübe ve genç hücum profili"]
+]);
+
+function canonicalIdOf(player) {
+  return (player && (player.canonicalId || player.id)) || "";
+}
+
+/** Kanonik çift anahtarı — hangi kayıtla gelindiğinden bağımsız. */
+function canonicalPairKey(left, right) {
+  return [canonicalIdOf(left), canonicalIdOf(right)].sort().join("::");
+}
+
+/**
+ * KIYAS ADRESİ TEK KAYNAKTAN.
+ *
+ * Üç yüzey de (kıyas sayfası üreticisi, profil sayfasındaki statik
+ * bağlantılar, Futbolcu 360 kıyas bölümü) aynı adresi hesaplamak zorunda.
+ * Editoryal istisnayı yalnızca üretici bilseydi, diğer ikisi türetilmiş
+ * slug'a bağlanır ve o sayfa hiç üretilmediği için 404 verirdi.
+ *
+ * @param {object[]} allPlayerRecords kopya kayıtlar DAHİL tam liste
+ */
+function createComparisonSlugResolver(allPlayerRecords) {
+  const byId = new Map((Array.isArray(allPlayerRecords) ? allPlayerRecords : []).map((row) => [row.id, row]));
+  const editorialSlugByPair = new Map();
+
+  for (const [leftId, rightId] of EDITORIAL_PAIRS) {
+    const left = byId.get(leftId);
+    const right = byId.get(rightId);
+    if (!left || !right) continue;
+    editorialSlugByPair.set(canonicalPairKey(left, right), comparisonSlug(leftId, rightId));
+  }
+
+  return function slugForPair(left, right) {
+    return editorialSlugByPair.get(canonicalPairKey(left, right))
+      || comparisonSlug(left.id, right.id);
+  };
+}
+
 function comparePeerScore(primary, candidate) {
   if (!primary || !candidate || primary.id === candidate.id) return -1;
   // Aynı gerçek oyuncunun iki kaydı (mock + sağlayıcı senkronu) birbiriyle
@@ -136,8 +189,11 @@ function computeCompareCandidates(player, players) {
 }
 
 module.exports = {
+  EDITORIAL_PAIRS,
+  canonicalPairKey,
   comparePeerScore,
   comparisonSlug,
+  createComparisonSlugResolver,
   playerCurrentTeam,
   playerPositionGroup,
   playerRating,

@@ -34,6 +34,19 @@ const {
   logRejected,
   selectMatchSpecial
 } = require("../services/matchSpecial.js");
+/**
+ * Oyuncu adresleri tek çözücüden. `data/match-specials.json` profil yolunu
+ * dizge olarak saklıyor; adres taşındığında o dizge bayatlıyor, bu yüzden
+ * yol kullanıldığı anda yeniden çözülür.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { formatDate, formatTime, formatWeekday, absoluteUrl, hreflangOf } = require("../services/i18n.js");
 const { normalizeFixtureCalendar } = require("../services/fixtureCalendar.js");
 
@@ -248,8 +261,17 @@ function lineupPanel(probable, locale, index) {
               if (!players.length) return "";
               return `<div class="match-special__pitch-row is-${players.length}">
               ${players.map((player) => {
-                const profile = player.profile && (player.profile[locale] || player.profile.tr);
-                return `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${profile}`)}">${escapeHtml(player.name)}</a>`;
+                // HEDEFİ OLMAYAN BAĞLANTI BASILMAZ. İngilizce profil yalnızca
+                // yayın kapısından geçen oyuncular için üretiliyor; geçmeyen
+                // oyuncuya bağlantı atmak 404 demekti. Bu satırlar bugüne
+                // kadar yalnızca eski koşulardan kalan kalıntı dosyalar
+                // sayesinde "çalışıyor" görünüyordu.
+                const stored = player.profile && (player.profile[locale] || player.profile.tr);
+                const profile = stored ? playerUrls.refreshPagePath(stored) : null;
+                const exists = profile && fs.existsSync(path.join(process.cwd(), profile));
+                return exists
+                  ? `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${profile}`)}">${escapeHtml(player.name)}</a>`
+                  : `<span class="match-special__pitch-player">${escapeHtml(player.name)}</span>`;
               }).join("\n              ")}
             </div>`;
             }).filter(Boolean).join("\n            ")}
@@ -526,6 +548,45 @@ function specialMatchDay(matchId) {
 const todayIstanbul = new Date().toLocaleDateString("en-CA", { timeZone: "Europe/Istanbul" });
 
 /** Önceki sayfa listesi: süresi dolmuş dosyaların kaydı buradan taşınır. */
+/**
+ * Yeniden üretilemeyen ("carried") sayfaların oyuncu bağlantılarını güncel
+ * adrese çeker. Hedef artık hiç üretilmiyorsa (ör. yayın kapısından düşmüş
+ * bir oyuncunun İngilizce sayfası) bağlantı çözülür, metin korunur —
+ * kırık bağlantı bırakmaktansa bağlantısız ad.
+ */
+function refreshCarriedPlayerLinks(entry) {
+  const files = [];
+  for (const locale of ["tr", "en"]) {
+    const localeEntry = (entry.locales && entry.locales[locale]) || null;
+    if (!localeEntry) continue;
+    if (localeEntry.hub) files.push(localeEntry.hub);
+    for (const module of localeEntry.modules || []) {
+      if (module && module.href) files.push(module.href);
+    }
+  }
+
+  const linkPattern = /<a\b([^>]*?)href="((?:\.\.\/)*)((?:en\/player|oyuncular|futbolcu)\/[a-z0-9-]+\.html)"([^>]*)>([\s\S]*?)<\/a>/g;
+
+  for (const relative of [...new Set(files)]) {
+    for (const base of [root, path.join(root, "public")]) {
+      const full = path.join(base, relative);
+      if (!fs.existsSync(full)) continue;
+
+      const html = fs.readFileSync(full, "utf8");
+      const next = html.replace(linkPattern, (match, before, prefix, target, after, label) => {
+        const resolved = playerUrls.refreshPagePath(target);
+        if (resolved === target) return match;
+        if (!fs.existsSync(path.join(root, resolved))) {
+          return `<span${before}${after}>${label}</span>`.replace(/\s+>/, ">");
+        }
+        return `<a${before}href="${prefix}${resolved}"${after}>${label}</a>`;
+      });
+
+      if (next !== html) fs.writeFileSync(full, next, "utf8");
+    }
+  }
+}
+
 const previousManifest = (() => {
   const manifestPath = path.join(root, "data", "match-special-pages.json");
   if (!fs.existsSync(manifestPath)) return [];
@@ -580,6 +641,13 @@ for (const record of records) {
     // Onun için önceki listedeki karşılığı olduğu gibi taşınır.
     const carried = previousManifest.find((entry) => entry && entry.matchId === record.matchId);
     if (carried) {
+      // TAŞINAN SAYFANIN BAĞLANTILARI TAZELENİR.
+      //
+      // Sayfa yeniden üretilemiyor ama diskte duruyor; içindeki oyuncu
+      // bağlantıları oyuncu adresi taşındığında bayatlıyor ve 404 veriyor.
+      // Sayfayı silmek bilgi mimarisini bozar, olduğu gibi bırakmak kırık
+      // link bırakır: üçüncü yol, yalnızca adresleri yerinde güncellemek.
+      refreshCarriedPlayerLinks(carried);
       manifest.push(carried);
       const tr = carried.locales && carried.locales.tr;
       const en = carried.locales && carried.locales.en;

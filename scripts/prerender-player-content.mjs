@@ -7,6 +7,22 @@ const require = createRequire(import.meta.url);
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { buildPlayerProfile } = require("../services/playerProfileService.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+
+/**
+ * Profil sayfası artık sabit bir dizinde değil: tam adı bilinen oyuncu
+ * `futbolcu/<tam-ad>.html`, bilinmeyen `oyuncular/<id>.html` konumunda.
+ * Ön render eski yola sabitlenince taşınan sayfalar ön render EDİLMİYORDU —
+ * yani tam da en çok aranan oyuncuların sayfası arama motoruna boş kabukla
+ * gidiyordu.
+ */
+const playerUrls = createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
 const playerProfileView = require("../player-profile.js");
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
@@ -34,7 +50,19 @@ function team(player) {
  * gerçek bir ölçüm sanılabilir. Kart kalır (bağlantı ve bilgi mimarisi
  * korunur), yalnızca doğrulanamayan alanlar düşer.
  */
-function playerCard(player, hrefPrefix = "./") {
+/**
+ * Kart bağlantısı artık kimlikten TÜRETİLMEZ.
+ *
+ * `hrefPrefix + player.id + ".html"` kalıbı, oyuncu tam isimli adrese
+ * taşındığı anda var olmayan bir dosyaya işaret ediyordu. Adres tek
+ * çözücüden gelir; `rootPrefix`, kartı basan sayfadan site köküne giden
+ * yoldur ("./" kök sayfalar, "../" alt dizinler).
+ */
+function playerCardHref(player, rootPrefix) {
+  return playerUrls.playerHref(player, rootPrefix);
+}
+
+function playerCard(player, rootPrefix = "../") {
   const view = publicPlayerView(player);
   const age = player.computedAge || player.age || "Bilinmiyor";
 
@@ -43,7 +71,7 @@ function playerCard(player, hrefPrefix = "./") {
     <div class="card-head"><div><span class="card-kicker">${escapeHtml(player.position || "Mevki bekleniyor")}</span><h2>${escapeHtml(player.name)}</h2></div></div>
     <div class="metric-grid compact"><span>Yaş <b>${escapeHtml(age)}</b></span></div>
     <p>Güncel kulüp, performans ve piyasa verileri doğrulanmış sağlayıcı kaydıyla eşleştiğinde yayımlanır.</p>
-    <a class="detail-link" href="${escapeHtml(hrefPrefix)}${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
+    <a class="detail-link" href="${escapeHtml(playerCardHref(player, rootPrefix))}">Oyuncu profilini aç</a>
   </article>`;
   }
 
@@ -75,7 +103,7 @@ function playerCard(player, hrefPrefix = "./") {
     <div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div>
     <div class="metric-grid compact">${metrics.join("")}</div>
     <p>${escapeHtml(player.summary || "Form, rol ve radar metriklerini oyuncu profilinde incele.")}</p>
-    <a class="detail-link" href="${escapeHtml(hrefPrefix)}${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
+    <a class="detail-link" href="${escapeHtml(playerCardHref(player, rootPrefix))}">Oyuncu profilini aç</a>
   </article>`;
 }
 
@@ -117,7 +145,9 @@ function profileShell(player) {
   // hâlleriyle basılıyor. Kartta ikinci kez basılmazlar; aynı anahtar
   // iskelete gömülür ki tarayıcı tazelemesi de aynı kararı uygulasın.
   const html = playerProfileView.renderProfileHtml(profile, {
-    hrefPrefix: "./",
+    // Eş adresleri artık veriden köke göre geliyor ("futbolcu/x.html"),
+    // bu yüzden önek dizin adı değil, köke çıkan yol.
+    hrefPrefix: "../",
     rootPrefix: "../",
     omit: playerProfileView.P360_SUPERSEDED
   });
@@ -209,14 +239,16 @@ function replaceFile(file, transform) {
 }
 
 for (const player of players) {
-  replaceFile(`oyuncular/${player.id}.html`, (html) => replaceProfileShell(html, player));
+  // Kopya kayıtların sayfası yok (kanoniğe yönlendiriyorlar).
+  if (playerUrls.resolveId(player.id) !== player.id) continue;
+  replaceFile(playerUrls.playerPagePath(player.id), (html) => replaceProfileShell(html, player));
 }
 
 for (const slug of ["forvetler", "kaleciler", "defanslar", "orta-sahalar", "genc-yetenekler", "en-iyi-oyuncular"]) {
   const filter = landingConfig(slug);
   const selected = players.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const content = selected.length
-    ? selected.map((player) => playerCard(player)).join("\n")
+    ? selected.map((player) => playerCard(player, "../")).join("\n")
     : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeni ve doğrulanmış oyuncu verileri geldikçe liste genişleyecek.</span></article>`;
   replaceFile(`oyuncular/${slug}.html`, (html) => html
     .replace(/<span class="hero-meta" data-landing-count>[^<]*<\/span>/, `<span class="hero-meta" data-landing-count>${selected.length} oyuncu</span>`)
@@ -236,7 +268,7 @@ for (const slug of [
   const selected = players.filter(filter).sort((a, b) => Number(rating(b)) - Number(rating(a)));
   const shouldIndex = selected.length >= 2;
   const content = selected.length
-    ? selected.map((player) => playerCard(player, "./oyuncular/")).join("\n")
+    ? selected.map((player) => playerCard(player, "./")).join("\n")
     : `<article class="data-empty"><strong>Bu listede oyuncu bulunamadi</strong><span>Yeterli oyuncu verisi olustugunda sayfa genisleyecek.</span></article>`;
 
   replaceFile(`${slug}.html`, (html) => {

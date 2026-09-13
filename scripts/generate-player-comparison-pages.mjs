@@ -18,13 +18,27 @@ const { formatFreshnessDate } = require("../services/freshnessService.js");
 const {
   comparePeerScore,
   comparisonSlug,
+  createComparisonSlugResolver,
+  EDITORIAL_PAIRS,
   playerCurrentTeam,
   playerPositionGroup,
   playerRating,
   profileCompareCandidates,
   uniqueCompareCandidates
 } = require("../services/playerComparisonPairs.js");
-const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+/**
+ * KIYAS YALNIZCA KANONİK KAYITLAR ARASINDA.
+ *
+ * Kopya kayıtların (aynı gerçek oyuncunun ikinci kaydı) artık profil
+ * sayfası yok — kanonik kayda yönlendiriyorlar. Onları kıyas havuzunda
+ * tutmak, hiçbir yerden bağlanmayan yüzlerce kıyas sayfası üretiyordu:
+ * sayfayı basan taraf (kopya kaydın profili) ortadan kalktığı için
+ * bağlantı da kalmadı, ama sayfa ve site haritası girdisi kaldı.
+ */
+const allPlayerRecords = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+const players = allPlayerRecords.filter((player) => !player.isDuplicate);
+/** Kıyas adresi tek kaynaktan; editoryal istisnalar dahil. */
+const slugForPair = createComparisonSlugResolver(allPlayerRecords);
 const outDir = path.join(root, "karsilastirma");
 const publicOutDir = path.join(root, "public", "karsilastirma");
 const domain = "https://www.futbolradar.com";
@@ -69,12 +83,37 @@ function playerMarket(player) {
   return player.marketValue || formatMarketValueEur(player.marketValueEur) || "Piyasa değeri yakında";
 }
 
-function addPair(map, left, right, context) {
+/**
+ * AYNI ÇİFT İKİ ADRESTE YAYIMLANMAZ.
+ *
+ * Editoryal çiftler yayımlanmış adreslerini koruyor (kopya kayıt
+ * kimliğiyle yazılmış slug'lar), ama kayıtları kanoniğe çözülüyor. Bu
+ * ikisi bir araya gelince aynı kıyas hem editoryal slug'da hem de kanonik
+ * kimliklerden türeyen slug'da üretiliyordu: iki URL, aynı başlık, aynı
+ * içerik. Çift, ADRESİYLE değil KİMLİĞİYLE tekilleştirilir; ilk gelen
+ * (editoryal) adresi kazanır.
+ */
+function canonicalPairKey(left, right) {
+  return [left.canonicalId || left.id, right.canonicalId || right.id].sort().join("::");
+}
+
+const seenPairKeys = new Map();
+
+function addPair(map, left, right, context, forcedSlug) {
   if (!left || !right || left.id === right.id || sameCanonicalPlayer(left, right)) {
     return;
   }
 
-  const slug = comparisonSlug(left.id, right.id);
+  const pairKey = canonicalPairKey(left, right);
+  const existingSlug = seenPairKeys.get(pairKey);
+  if (existingSlug) {
+    const existing = map.get(existingSlug);
+    if (existing && context && !existing.reasons.includes(context)) existing.reasons.push(context);
+    return;
+  }
+
+  const slug = forcedSlug || slugForPair(left, right);
+  seenPairKeys.set(pairKey, slug);
   if (!map.has(slug)) {
     const ordered = [left, right].sort((a, b) => a.id.localeCompare(b.id));
     map.set(slug, {
@@ -91,24 +130,26 @@ function addPair(map, left, right, context) {
   }
 }
 
-const EDITORIAL_PAIRS = [
-  ["mauro-icardi", "edin-dzeko", "Super Lig gol tehdidi"],
-  ["kerem-akturkoglu", "semih-kilicsoy", "Yükselen yerli hücum profili"],
-  ["ugurcan-cakir", "abdulkerim-bardakci", "Savunma güveni"],
-  ["sebastian-szymanski", "gedson-fernandes", "Orta saha etki kıyaslaması"]
-];
 const EDITORIAL_SLUGS = new Set(EDITORIAL_PAIRS.map(([leftId, rightId]) => comparisonSlug(leftId, rightId)));
 
 function buildPairs() {
   const map = new Map();
 
+  // EDİTORYAL ÇİFTLER KOPYA KAYIT KİMLİĞİYLE YAZILMIŞ.
+  //
+  // Havuz kanonik kayıtlarla sınırlandığında bu kimlikler havuzda
+  // bulunamıyor ve dört editoryal kıyas sayfası hiç üretilmiyordu — oysa
+  // onlara ana sayfa, gol krallığı ve oyuncu radarından bağlantı var.
+  // Kayıt kanoniğe çözülür; ADRES ise bildirilen slug'da KALIR, çünkü o
+  // adres zaten yayımlanmış ve bağlantılanmış durumda.
   for (const [leftId, rightId, reason] of EDITORIAL_PAIRS) {
-    addPair(
-      map,
-      players.find((player) => player.id === leftId),
-      players.find((player) => player.id === rightId),
-      reason
-    );
+    const resolve = (id) => {
+      const record = allPlayerRecords.find((player) => player.id === id);
+      if (!record) return null;
+      return players.find((player) => player.id === (record.canonicalId || record.id)) || null;
+    };
+
+    addPair(map, resolve(leftId), resolve(rightId), reason);
   }
 
   for (const player of players) {

@@ -35,6 +35,7 @@ const { buildPlayer360, buildAvailability, newsMentionsPlayer, positionFamily } 
 const { buildPlayerMatchLog, resolvePlayerByName, namesMatch, nameKey } = require("../services/playerMatchLogService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { getPlayers } = require("../services/playerService.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 
 const players = getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
 const tr = JSON.parse(fs.readFileSync(path.join(root, "locales", "tr.json"), "utf8"));
@@ -180,30 +181,59 @@ check("sayım istatistikleri yalnızca alan bazlı doğrulamayla açılır", () 
 
 // ── 3. Üretilmiş sayfa ──────────────────────────────────────────────────────
 
-const PROFILE_DIR = path.join(root, "oyuncular");
-const LANDING_PAGES = new Set(["forvetler.html", "kaleciler.html", "defanslar.html",
-  "orta-sahalar.html", "genc-yetenekler.html", "en-iyi-oyuncular.html", "index.html"]);
+/**
+ * PROFİL ARTIK TEK DİZİNDE DEĞİL.
+ *
+ * Tam adı bilinen oyuncu `futbolcu/<tam-ad>.html`, bilinmeyen
+ * `oyuncular/<id>.html` konumunda; eski konumda kalan dosya yönlendirme
+ * sayfası ve 360 yığını taşımaz. Test, dizin adını sabitlemek yerine adres
+ * çözücüden okur — böylece bir sonraki oyuncu taşındığında da doğru yere
+ * bakar.
+ */
+const playerUrls = createPlayerUrlResolver(readJson("data/player-url-slugs.json", { entries: [], aliases: [] }));
 
-function profileFiles() {
-  if (!fs.existsSync(PROFILE_DIR)) return [];
-  return fs.readdirSync(PROFILE_DIR)
-    .filter((name) => name.endsWith(".html") && !LANDING_PAGES.has(name));
+/** Sayfası olan kayıtlar: kopya kayıtlar kanoniğe yönlendirdiği için elenir. */
+const canonicalPlayers = players.filter((player) => playerUrls.resolveId(player.id) === player.id);
+const generated = canonicalPlayers
+  .map((player) => playerUrls.playerPagePath(player.id))
+  .filter((relativePath) => fs.existsSync(path.join(root, relativePath)));
+
+function readProfile(relativePath) {
+  return fs.readFileSync(path.join(root, relativePath), "utf8");
 }
 
-/** Alias yönlendirme sayfaları 360 yığını taşımaz; kanonik sayfalar taşır. */
-function canonicalProfiles() {
-  const ids = new Set(players.map((player) => player.id));
-  return profileFiles().filter((file) => ids.has(path.basename(file, ".html")));
+/**
+ * SAYFADA GÖRÜNEN AD, KAYITTAKİ AD DEĞİL.
+ *
+ * Adres tam ada taşınan oyuncuda başlık ve H1 da tam adı gösteriyor
+ * ("Talisca" → "Anderson Talisca"): adresi tam ada taşıyıp başlığı
+ * kısaltmalı bırakmak okuyucuya iki ayrı ad gösterirdi. Testin
+ * karşılaştırdığı ad da bu yüzden görünen addır.
+ */
+function displayNameOf(player) {
+  // Üreticiyle AYNI kaçış: "N'Golo Kanté" sayfada "N&#39;Golo Kanté" olarak
+  // duruyor; yalnızca `&` kaçıran bir karşılaştırma kesme işaretli her adı
+  // hatalı sayardı.
+  return String(playerUrls.playerDisplayName(player))
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-const generated = canonicalProfiles();
+function playerOfPage(relativePath) {
+  const id = path.basename(relativePath, ".html");
+  return canonicalPlayers.find((player) => playerUrls.playerPagePath(player.id) === relativePath)
+    || players.find((player) => player.id === id);
+}
 
 check("her kanonik profil 360 yığınını taşır", () => {
   assert.ok(generated.length >= 100, `yeterli profil üretilmemiş (${generated.length})`);
 
   let missing = 0;
   for (const file of generated) {
-    const html = fs.readFileSync(path.join(PROFILE_DIR, file), "utf8");
+    const html = readProfile(file);
     if (!html.includes('data-p360-section="identity"')) missing += 1;
   }
   assert.equal(missing, 0, `${missing} profilde 360 yığını yok`);
@@ -211,12 +241,12 @@ check("her kanonik profil 360 yığınını taşır", () => {
 
 check("H1 yalnızca oyuncunun adı", () => {
   for (const file of generated.slice(0, 120)) {
-    const html = fs.readFileSync(path.join(PROFILE_DIR, file), "utf8");
+    const html = readProfile(file);
     const headings = [...html.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/g)].map((match) => match[1].trim());
     assert.equal(headings.length, 1, `${file}: tam olarak bir H1 olmalı`);
 
-    const player = players.find((row) => row.id === path.basename(file, ".html"));
-    assert.equal(headings[0], player.name.replace(/&/g, "&amp;"), `${file}: H1 yalnızca ad olmalı`);
+    const player = playerOfPage(file);
+    assert.equal(headings[0], displayNameOf(player), `${file}: H1 yalnızca ad olmalı`);
   }
 });
 
@@ -224,8 +254,8 @@ check("H2 kalıbı ve tekilliği", () => {
   const required = ["season", "matches", "availability", "transfers", "career", "news"];
 
   for (const file of generated.slice(0, 120)) {
-    const html = fs.readFileSync(path.join(PROFILE_DIR, file), "utf8");
-    const player = players.find((row) => row.id === path.basename(file, ".html"));
+    const html = readProfile(file);
+    const player = playerOfPage(file);
 
     for (const key of required) {
       assert.ok(html.includes(`data-p360-section="${key}"`), `${file}: ${key} bölümü basılmalı`);
@@ -236,7 +266,7 @@ check("H2 kalıbı ve tekilliği", () => {
     // sayfada birebir karşılığı.
     const seasonHeading = /<h2 id="p360-season-title">([^<]*)<\/h2>/.exec(html);
     assert.ok(seasonHeading, `${file}: sezon başlığı okunamadı`);
-    assert.ok(seasonHeading[1].startsWith(player.name.replace(/&/g, "&amp;")),
+    assert.ok(seasonHeading[1].startsWith(displayNameOf(player)),
       `${file}: sezon başlığı oyuncu adıyla başlamalı (${seasonHeading[1]})`);
 
     // Aynı bölüm iki kez basılmaz: kart katmanı çakışanları atlar.
@@ -253,7 +283,7 @@ check("H2 kalıbı ve tekilliği", () => {
 check("başlık ve meta açıklaması sözleşmeye uyar", () => {
   let sixtyPlus = 0;
   for (const file of generated.slice(0, 120)) {
-    const html = fs.readFileSync(path.join(PROFILE_DIR, file), "utf8");
+    const html = readProfile(file);
 
     const title = /<title>([\s\S]*?)<\/title>/.exec(html);
     assert.ok(title, `${file}: başlık yok`);
@@ -272,8 +302,8 @@ check("başlık ve meta açıklaması sözleşmeye uyar", () => {
     // bu test, üreticinin standalone koşusunda da geçerli olan tarafı
     // tutar: ek keyfî düşmemiş olmalı.
     const titleText = title[1];
-    const player = players.find((row) => row.id === path.basename(file, ".html"));
-    assert.ok(titleText.startsWith(player.name.replace(/&/g, "&amp;")),
+    const player = playerOfPage(file);
+    assert.ok(titleText.startsWith(displayNameOf(player)),
       `${file}: başlık oyuncu adıyla başlamalı`);
     if (!titleText.endsWith("| FutbolRadar")) {
       assert.ok(`${titleText} | FutbolRadar`.length > 68,
@@ -387,10 +417,10 @@ check("profil sayfası yeni betik yüklemez, grafik satır içi SVG", () => {
   // değildir); örnek sayfa bu yüzden sabit değil, koşulu sağlayan ilk
   // profilden seçilir.
   const chartFile = generated.find((file) =>
-    fs.readFileSync(path.join(PROFILE_DIR, file), "utf8").includes('<svg class="p360-chart"'));
+    readProfile(file).includes('<svg class="p360-chart"'));
   assert.ok(chartFile, "en az bir profilde form grafiği çizilmeli");
 
-  const sample = fs.readFileSync(path.join(PROFILE_DIR, chartFile), "utf8");
+  const sample = readProfile(chartFile);
   assert.ok(sample.includes("<svg class=\"p360-chart\""), "form grafiği satır içi SVG olmalı");
   assert.ok(!/<script[^>]+src="[^"]*(chart|d3|plotly|recharts|highcharts)/i.test(sample),
     "grafik kütüphanesi yüklenmemeli");
@@ -427,7 +457,7 @@ check("maç raporundan oyuncu profiline bağlantı var", () => {
 });
 
 check("oyuncu sayfası takım, krallık ve maç sayfalarına bağlanır", () => {
-  const html = fs.readFileSync(path.join(PROFILE_DIR, "a-maxim-gaziantep-fk.html"), "utf8");
+  const html = readProfile(playerUrls.playerPagePath("a-maxim-gaziantep-fk"));
 
   assert.ok(html.includes("gol-kralligi.html"), "gol krallığına bağlanmalı");
   assert.ok(html.includes("asist-kralligi.html"), "asist krallığına bağlanmalı");
@@ -435,27 +465,73 @@ check("oyuncu sayfası takım, krallık ve maç sayfalarına bağlanır", () => 
   assert.ok(/karsilastirma\/[a-z0-9-]+-vs-[a-z0-9-]+\.html/.test(html), "kıyas sayfasına bağlanmalı");
 });
 
-check("temiz oyuncu ve kıyas adresleri kanonik sayfaya yönlendirilir", () => {
+/**
+ * ADRES GEÇİŞİ — YÖNLENDİRME SÖZLEŞMESİ.
+ *
+ * Kilitlenen dört şey:
+ *   1. `/futbolcu/<slug>` uzantısız çalışır (rewrite).
+ *   2. `.html` uzantılı hâli uzantısıza 301 — aynı sayfa iki adresten
+ *      yayımlanmaz.
+ *   3. Taşınan her oyuncunun ESKİ adresi yeni adrese 301 gider.
+ *   4. Yönlendirme TEK ATLAMADIR: hiçbir 301'in hedefi başka bir 301'in
+ *      kaynağı değildir. Zincir hem yavaş hem de her halkada değer
+ *      kaybettirir; kopya kayıtlar ve eski yazım hatası adresleri bu
+ *      yüzden doğrudan kanonik adrese bağlanır.
+ */
+check("taşınan adresler tek atlamada kanonik sayfaya gider", () => {
   const config = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
   const redirects = config.redirects || [];
+  const rewrites = config.rewrites || [];
 
-  const player = redirects.find((row) => row.source === "/futbolcu/:slug");
-  assert.ok(player, "/futbolcu/:slug yönlendirmesi tanımlı olmalı");
-  assert.equal(player.destination, "/oyuncular/:slug");
-  assert.equal(player.permanent, true, "kopya URL oluşmaması için kalıcı (301) olmalı");
+  const clean = rewrites.find((row) => row.source === "/futbolcu/:slug");
+  assert.ok(clean, "/futbolcu/:slug temiz adres kuralı tanımlı olmalı");
+  assert.equal(clean.destination, "/futbolcu/:slug.html");
+
+  const extension = redirects.find((row) => row.source === "/futbolcu/:slug.html");
+  assert.ok(extension, "uzantılı hâl uzantısıza yönlendirilmeli");
+  assert.equal(extension.destination, "/futbolcu/:slug");
+  assert.equal(extension.permanent, true);
 
   const compare = redirects.find((row) => row.source === "/karsilastir/:slug");
   assert.ok(compare, "/karsilastir/:slug yönlendirmesi tanımlı olmalı");
   assert.equal(compare.destination, "/karsilastirma/:slug");
   assert.equal(compare.permanent, true);
+
+  // Taşınan her oyuncu için eski adres 301 taşımalı.
+  const bySource = new Map(redirects.map((row) => [row.source, row]));
+  const moved = playerUrls.movedPaths();
+  assert.ok(moved.length > 0, "en az bir oyuncu taşınmış olmalı");
+
+  for (const entry of moved.slice(0, 80)) {
+    const rule = bySource.get(`/${entry.from}`);
+    assert.ok(rule, `${entry.from}: eski adres yönlendirilmeli`);
+    assert.equal(rule.permanent, true, `${entry.from}: yönlendirme kalıcı olmalı`);
+    assert.equal(rule.destination, `/futbolcu/${entry.slug}`, `${entry.from}: hedef kanonik adres olmalı`);
+  }
+
+  // ZİNCİR YOK: hiçbir yönlendirmenin hedefi başka bir yönlendirmenin
+  // kaynağı olmamalı (parametreli kalıplar hariç — tek bir yola karşılık
+  // gelmiyorlar).
+  for (const rule of redirects) {
+    const destination = String(rule.destination || "");
+    if (destination.includes(":")) continue;
+
+    const next = bySource.get(destination);
+    // `/x.html → /x` kuralının hedefi, kendi kaynağının uzantısız hâli;
+    // bu bir zincir değil, aynı kuralın iki ucu. Ayrıca uzantısız adres
+    // isteği Vercel'de önce yönlendirmelere bakar, eşleşme yoksa rewrite
+    // ile dosyaya düşer — `.html` kuralı o yolda hiç çalışmaz.
+    if (!next || next === rule) continue;
+    assert.fail(`${rule.source} → ${destination} → ${next.destination} zincirleme yönlendirme üretiyor`);
+  }
 });
 
 check("kanonik adres tektir ve kendini gösterir", () => {
   for (const file of generated.slice(0, 120)) {
-    const html = fs.readFileSync(path.join(PROFILE_DIR, file), "utf8");
+    const html = readProfile(file);
     const canonicals = [...html.matchAll(/<link rel="canonical" href="([^"]+)"/g)].map((match) => match[1]);
     assert.equal(canonicals.length, 1, `${file}: tam olarak bir canonical olmalı`);
-    assert.equal(canonicals[0], `https://www.futbolradar.com/oyuncular/${path.basename(file, ".html")}.html`,
+    assert.equal(canonicals[0], playerUrls.playerCanonicalUrl(playerOfPage(file).id),
       `${file}: canonical kendi adresini göstermeli`);
   }
 });

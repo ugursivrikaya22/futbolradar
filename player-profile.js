@@ -522,7 +522,16 @@
   }
 
   function peerCard(item, hrefPrefix) {
-    var href = hrefPrefix + encodeURIComponent(item.id) + ".html";
+    // ADRES KİMLİKTEN TÜRETİLMEZ.
+    //
+    // Oyuncu sayfaları iki dizine ayrıldı (`futbolcu/<tam-ad>` ve
+    // `oyuncular/<id>`), dolayısıyla "önek + kimlik + .html" kalıbı taşınan
+    // her oyuncu için var olmayan bir dosyaya işaret ediyor. Çözülmüş adres
+    // profil verisinin içinde geliyor (services/playerProfileService.js);
+    // eski kalıp yalnızca adres taşımayan kayıtlar için yedek.
+    var href = item.href
+      ? hrefPrefix + item.href
+      : hrefPrefix + encodeURIComponent(item.id) + ".html";
     var meta = [item.team, item.position].filter(Boolean).join(" · ");
 
     return (

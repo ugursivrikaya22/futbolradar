@@ -524,16 +524,20 @@ function generatedComparisonPages() {
 // Alias files are skipped: they are noindex redirects to the canonical
 // profile, and listing a redirect in a sitemap is a crawl error.
 function generatedPlayerPages() {
-  const dir = path.join(root, "oyuncular");
-  if (!fs.existsSync(dir)) {
-    return [];
-  }
+  // İKİ DİZİN. Tam adı bilinen oyuncu `futbolcu/<tam-ad>.html`, bilinmeyen
+  // eski `oyuncular/<id>.html` konumunda. Taşınan oyuncunun eski konumdaki
+  // dosyası `noindex` yönlendirmesi olduğu için aşağıdaki süzgeç onu
+  // kendiliğinden eliyor — site haritası yönlendirme listelemez.
+  return ["futbolcu", "oyuncular"].flatMap((dirName) => {
+    const dir = path.join(root, dirName);
+    if (!fs.existsSync(dir)) return [];
 
-  return fs.readdirSync(dir)
-    .filter((file) => file.endsWith(".html"))
-    .filter((file) => !/content="noindex/.test(fs.readFileSync(path.join(dir, file), "utf8")))
-    .sort()
-    .map((file) => `oyuncular/${file}`);
+    return fs.readdirSync(dir)
+      .filter((file) => file.endsWith(".html"))
+      .filter((file) => !/content="noindex/.test(fs.readFileSync(path.join(dir, file), "utf8")))
+      .sort()
+      .map((file) => `${dirName}/${file}`);
+  });
 }
 
 function publishedEditorialPages() {
@@ -620,11 +624,15 @@ function sitemapXml(files) {
   return `<?xml version="1.0" encoding="UTF-8"?>
 ${URLSET_OPEN}
 ${unique.map((file) => {
-  const loc = alternatesByFile.has(file) ? i18nUrl(file) : (file === "index.html" ? `${domain}/` : `${domain}/${file}`);
+  // TEMİZ ADRES SİTE HARİTASINDA DA TEMİZ. `futbolcu/` altındaki sayfanın
+  // kanonik hâli uzantısız; site haritasında `.html` listelemek, canonical
+  // ile çelişen ikinci bir adres bildirmek olurdu.
+  const canonicalFile = file.startsWith("futbolcu/") ? file.replace(/\.html$/, "") : file;
+  const loc = alternatesByFile.has(file) ? i18nUrl(file) : (file === "index.html" ? `${domain}/` : `${domain}/${canonicalFile}`);
   const priority = file === "index.html" ? "1.0"
     : LIVE_PAGES.has(file) ? "0.9"
     : file.includes("karsilastirma/") ? "0.65"
-    : file.includes("oyuncular/") ? "0.7" : "0.8";
+    : (file.includes("oyuncular/") || file.includes("futbolcu/")) ? "0.7" : "0.8";
   const alternates = alternatesByFile.get(file);
   return `  <url>
     <loc>${loc}</loc>

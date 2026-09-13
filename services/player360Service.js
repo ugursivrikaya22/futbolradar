@@ -26,7 +26,7 @@
 const { publicPlayerView, statsAreVerified } = require("./cardCredibility.js");
 const { buildPlayerMatchLog, nameKey, namesMatch, normalizeName } = require("./playerMatchLogService.js");
 const { bestTrustTierOf, TRUST_TIER } = require("./sourceTrust.js");
-const { comparisonSlug, profileCompareCandidates } = require("./playerComparisonPairs.js");
+const { createComparisonSlugResolver, profileCompareCandidates } = require("./playerComparisonPairs.js");
 
 const SEASON_LABEL = "2026/27";
 
@@ -468,9 +468,20 @@ function buildIdentity(player, view, options) {
     ? `${player.heightCm} cm`
     : (player.height ? (/\d\s*cm/i.test(String(player.height)) ? String(player.height) : `${player.height} cm`) : null);
 
+  // GÖRÜNEN AD. Adres tam ada taşındıysa sayfa da tam adı gösterir; iki
+  // yerde iki ayrı ad, aramadan gelen okuyucu için sayfanın yanlış kişiye
+  // ait olduğu izlenimi yaratır. Ad kaynaklıdır (bkz. playerSlugService),
+  // uydurulmuş değil.
+  const displayName = options.displayName || player.name;
+
   return {
-    name: player.name,
-    fullName: player.fullName && player.fullName !== player.name ? player.fullName : null,
+    name: displayName,
+    // Kayıttaki ad artık başlıktan farklıysa ("V. Osimhen" ↔ "Victor
+    // Osimhen") kimlik kartında ikinci kez basılmaz — aynı bilginin
+    // kısaltması yeni bir şey söylemiyor.
+    fullName: player.fullName && player.fullName !== displayName && player.fullName !== player.name
+      ? player.fullName
+      : null,
     team,
     teamLogo: player.currentTeamLogo || null,
     teamHref: team ? withBase(options.basePrefix, options.routes.teamHref(team)) : null,
@@ -521,12 +532,20 @@ function buildHonours(player) {
  * Tek kaynak: services/playerComparisonPairs.js.
  */
 function buildCompare(player, players, options) {
+  // Kıyas adresi, kıyas sayfalarını üreten scriptle AYNI kaynaktan gelir.
+  //
+  // ÇÖZÜCÜ TAM LİSTEYLE KURULMALI: editoryal çiftler kopya kayıt
+  // kimlikleriyle yazılı, kıyas havuzu ise yalnızca kanonik kayıtlardan
+  // oluşuyor. Havuzla kurulan bir çözücü o çiftleri tanıyamaz ve
+  // yayımlanmış adresin yerine türetilmiş bir slug basar — yani
+  // üretilmemiş bir sayfaya bağlanır.
+  const slugForPair = options.comparisonSlugFor || createComparisonSlugResolver(players);
   const peers = profileCompareCandidates(player, players)
     .map((item) => ({
       id: item.player.id,
       name: item.player.name,
       team: publicPlayerView(item.player).fields.currentTeam || null,
-      href: withBase(options.basePrefix, options.routes.comparisonHref(comparisonSlug(player.id, item.player.id)))
+      href: withBase(options.basePrefix, options.routes.comparisonHref(slugForPair(player, item.player)))
     }));
 
   return {
@@ -578,6 +597,8 @@ function buildPlayer360(input) {
     limit: 10
   });
 
+  options.displayName = (input && input.displayName) || null;
+  options.comparisonSlugFor = (input && input.comparisonSlugFor) || null;
   const identity = buildIdentity(player, view, options);
 
   return {
@@ -618,7 +639,6 @@ module.exports = {
   buildNews,
   buildPlayer360,
   buildSeasonStats,
-  comparisonSlug,
   newsMentionsPlayer,
   positionFamily,
   teamPageSlug,

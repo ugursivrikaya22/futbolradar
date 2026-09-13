@@ -42,6 +42,18 @@ const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureServi
 const { sameClub, slug: teamSlug } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
+/**
+ * Oyuncu adresleri tek çözücüden okunur. Kimlikten yol türetmek, oyuncu
+ * tam isimli adrese taşındığı anda var olmayan bir dosyaya işaret ediyor.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
 const seoRegistryPages = loadRegistry().pages;
@@ -123,7 +135,14 @@ function keyPlayersHtml(name) {
   }
   return `<ul class="match-key-player-list">${selected.map((player) => {
     const rating = player.overallRating || player.aiRating || player.rating || null;
-    return `<li><a href="../player/${escapeHtml(playerSlug(player.id))}.html">${escapeHtml(player.name)}</a>${rating ? `<span>Rating ${escapeHtml(rating)}</span>` : ""}</li>`;
+    // HEDEFİ OLMAYAN BAĞLANTI BASILMAZ: İngilizce profil yalnızca yayın
+    // kapısından geçen oyuncular için üretiliyor.
+    const profile = playerUrls.enPlayerPagePath(player.id);
+    const label = `${escapeHtml(player.name)}`;
+    const cell = fs.existsSync(path.join(root, profile))
+      ? `<a href="../player/${escapeHtml(playerUrls.slugFor(player.id))}.html">${label}</a>`
+      : label;
+    return `<li>${cell}${rating ? `<span>Rating ${escapeHtml(rating)}</span>` : ""}</li>`;
   }).join("")}</ul>`;
 }
 
