@@ -466,6 +466,23 @@ async function until(check, message, timeout = 5000) {
           assert.equal(await page.locator('.nav-toggle').getAttribute('aria-expanded'), 'false');
         }
       });
+      if (touch) await test('favourite team selection and full summary labels', async () => {
+        await open('index.html');
+        const pick = page.locator('.favourite-team__pick').first();
+        await pick.waitFor();
+        const name = await pick.locator('span').innerText();
+        await click(pick);
+        await until(async () => (await page.locator('.favourite-team__name').innerText()).includes(name), 'Favourite team selection is inert');
+        const change = page.locator('.favourite-team__change');
+        assert.ok((await change.boundingBox()).height >= 44);
+        await click(change);
+        await pick.waitFor();
+        for (const selector of ['.favourite-team__pick span', '.now-football__value']) {
+          const labels = page.locator(selector);
+          for (let i = 0; i < await labels.count(); i++) assert.ok(await labels.nth(i).evaluate(e => e.scrollWidth <= e.clientWidth + 1), selector + ' clips its text');
+        }
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      });
       await test('player quick links remain above the hero', async () => {
         await open('oyuncu-radari.html');
         await navigate(page.locator('.player-quick-links a').first());
