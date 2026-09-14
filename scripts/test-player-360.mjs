@@ -461,7 +461,30 @@ check("oyuncu sayfası takım, krallık ve maç sayfalarına bağlanır", () => 
 
   assert.ok(html.includes("gol-kralligi.html"), "gol krallığına bağlanmalı");
   assert.ok(html.includes("asist-kralligi.html"), "asist krallığına bağlanmalı");
-  assert.ok(html.includes("mac-raporu/goztepe-gaziantep-fk-2026-09-07.html"), "maç raporuna bağlanmalı");
+
+  /**
+   * MAÇ BAĞLANTISI ADRESİN BİÇİMİNE DEĞİL, HEDEFİN VARLIĞINA BAKAR.
+   *
+   * Ölçüt bir süre `mac-raporu/<kimlik>.html` dizesiydi. `unify-match-canonicals.mjs`
+   * (bkz. postprocessChain "match-canonicals") aynı karşılaşmanın kopya
+   * adreslerini bilinçli olarak TEK kanonik `/mac/<takimlar>-<gun>-<ay>-<yil>`
+   * adresine bağlıyor; oyuncu sayfasındaki rapor bağlantısı da o geçişte
+   * yeniden yazılıyor. Sabit dize, çalışan bir kanonikleştirmeyi "bağlantı
+   * yok" diye okuyordu.
+   *
+   * Korunmak istenen şey değişmedi: oyuncu sayfası o maça GERÇEKTEN
+   * bağlanmalı ve bağlandığı sayfa var olmalı. Ölçüt artık bu — hangi
+   * adres biçimi kanonik olursa olsun ayakta kalır.
+   */
+  const matchLinks = [...html.matchAll(/href="\.\.\/(mac|mac-raporu)\/([^"]+)"/g)]
+    .map((match) => ({ dir: match[1], slug: match[2].replace(/\.html$/, "") }));
+  const goztepe = matchLinks.find((link) => link.slug.includes("goztepe-gaziantep-fk"));
+  assert.ok(goztepe, "oynadığı maçın sayfasına bağlanmalı");
+  assert.ok(
+    fs.existsSync(path.join(root, goztepe.dir, `${goztepe.slug}.html`)),
+    `maç bağlantısının hedefi yok: ${goztepe.dir}/${goztepe.slug}.html`
+  );
+
   assert.ok(/karsilastirma\/[a-z0-9-]+-vs-[a-z0-9-]+\.html/.test(html), "kıyas sayfasına bağlanmalı");
 });
 
