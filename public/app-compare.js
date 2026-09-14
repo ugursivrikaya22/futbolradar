@@ -833,17 +833,47 @@
   function isPublishablePlayerCard(player) {
     if (!player) return false;
 
+    // AYNA OLMAK ZORUNDA: services/cardCredibility.js evaluatePlayerCard().
+    //
+    // Süzgeç iki yerde yaşıyor — statik ön render (servis) ve tarayıcı
+    // (burası). İstemci GEVŞEK olursa ön renderin elediği kart JavaScript
+    // yüklendiğinde geri gelir: okuyucu için düzeltilmiş görünen bir sayfa
+    // yeniden bozulur. İstemcide üç kural eksikti (ad, bozuk kodlama,
+    // TAZELİK) ve üçüncüsü gerçekten ısırıyordu: doğrulaması 45 günü geçmiş
+    // kayıtlar sunucuda eleniyor, tarayıcıda geri geliyordu.
+    //
+    // Bu fonksiyon KENDİ KENDİNE YETER — test-card-credibility.mjs onu
+    // gövdesinden kesip tek başına çalıştırıyor; dışarıdaki hiçbir sabite
+    // ya da yardımcıya dayanamaz.
+    var MAX_VERIFICATION_AGE_DAYS = 45;
+
+    if (!String(player.name || "").trim()) return false;
+    // Latin-1 olarak yanlış çözülmüş UTF-8 imzası (services/textEncodingRepair.js
+    // MOJIBAKE_MARKERS ile aynı desen). Bozuk ad EKSİK değil, YANLIŞ bilgidir.
+    if (/[\u00c2-\u00c5]/.test(String(player.name || ""))) return false;
+    if (String(player.name || "").indexOf("\ufffd") !== -1) return false;
+
     var providerId = String(player.providerId || player.provider_id || "").trim();
     if (!providerId || /^mock[-_]/i.test(providerId) || !/^\d+$/.test(providerId)) return false;
 
     if (!String(player.sourceUrl || "").trim()) return false;
-    if (!String(player.lastVerifiedAt || player.lastSyncedAt || "").trim()) return false;
+    var verifiedAt = String(player.lastVerifiedAt || player.lastSyncedAt || "").trim();
+    if (!verifiedAt) return false;
 
     var dataStatus = String(player.dataStatus || "").toLowerCase();
     if (dataStatus === "mock_needs_verification") return false;
 
     var ratingStatus = String(player.ratingStatus || "").toLowerCase();
     if (ratingStatus === "stale") return false;
+
+    // TAZELİK. Kart yüzeyleri "şu an" iddiası taşıyor; aylar önce
+    // doğrulanmış bir kayıt bunu karşılamıyor. Ayrıştırılamayan damga
+    // sunucuda olduğu gibi burada da kararı DEĞİŞTİRMEZ (kontrol atlanır).
+    var stamp = Date.parse(verifiedAt);
+    if (!isNaN(stamp)) {
+      var ageDays = (Date.now() - stamp) / 86400000;
+      if (ageDays > MAX_VERIFICATION_AGE_DAYS) return false;
+    }
 
     return true;
   }
@@ -875,15 +905,29 @@
     return status === "verified" || status === "current";
   }
 
-  /** Doğrulanmamışsa null döner — displayValue() bunu "-" olarak basar, asla 0 değil. */
+  /**
+   * Doğrulanmamışsa null döner — satır "Ölçüm yok" basar, asla 0 değil.
+   *
+   * `Number(null)` SIFIRDIR. Boş alan doğrudan Number()'a verilince kapıdan
+   * geçip ölçülmüş bir sıfıra dönüşüyordu: piyasa değeri hiç bilinmeyen iki
+   * oyuncu kıyas tablosunda "Piyasa EUR 0 | 0" olarak yan yana duruyordu —
+   * tam olarak bu modülün engellemek için yazıldığı iddia. Boşluk artık
+   * Number()'a HİÇ ulaşmıyor.
+   */
+  function isMissingValue(rawValue) {
+    return rawValue === null || rawValue === undefined || rawValue === "";
+  }
+
   function verifiedStatValue(player, rawValue) {
     if (!playerStatsAreVerified(player)) return null;
+    if (isMissingValue(rawValue)) return null;
     var value = Number(rawValue);
     return isFinite(value) ? value : null;
   }
 
   function verifiedRatingValue(player, rawValue) {
     if (!playerRatingIsVerified(player)) return null;
+    if (isMissingValue(rawValue)) return null;
     var value = Number(rawValue);
     return isFinite(value) ? value : null;
   }
@@ -1017,6 +1061,39 @@
   function profileStatHtml(label, value) {
     if (value === undefined || value === null || value === "") return "";
     return profileItemHtml(label, value);
+  }
+
+  /**
+   * ÖZELLİK PUANLARI BÖLÜMÜ (istemci profil kartı).
+   *
+   * Aynı sekiz satır statik HTML'de de basılıyor
+   * (services/playerRatingView.js); buradaki kopya, kart API yanıtıyla
+   * yeniden çizildiğinde bölümün kaybolmaması için. Hesaplanmamış kategori
+   * "Veri yetersiz" yazar — eski "Yakında" yer tutucusu gibi bir tarih
+   * vaat etmez, çünkü ölçüm gelmeden hesaplanacak bir şey yok.
+   */
+  function profileRatingScoresHtml(player) {
+    if (!playerHasRatingScores(player)) return "";
+
+    var order = ["overall", "form", "attack", "creativity", "defense", "discipline", "durability", "potential"];
+    var labels = {
+      overall: "Overall",
+      form: "Form",
+      attack: "Hücum",
+      creativity: "Yaratıcılık",
+      defense: player.ratingScores.scheme === "goalkeeper" ? "Kalecilik" : "Savunma",
+      discipline: "Disiplin",
+      durability: "Süreklilik",
+      potential: "Potansiyel"
+    };
+
+    var items = order.map(function (key) {
+      var cell = ratingScoreCategory(player, key);
+      if (!cell) return "";
+      return profileItemHtml(labels[key], cell.display);
+    });
+
+    return profileSectionHtml("Özellik Puanları", items);
   }
 
   function profileSectionHtml(title, items) {
@@ -3259,32 +3336,24 @@
   }
 
   /**
-   * Hero'nun bant kararı ham `isLiveMatch` yerine bu fonksiyonu kullanır:
-   * sağlayıcı bir maçı hiç "FINISHED"e çevirmezse (iki sağlayıcı aynı maçı
-   * ayrı kayıtla bildirip biri gecikince olduğu gibi) ham kontrol o maçı
-   * GÜNLERCE "canlı" sayardı. Kural `services/featuredMatchSelector.js`
-   * ile AYNI: yaş ve okunabilir skor birlikte denetlenir; büyük kart
-   * doğrulanmamış bir canlılık iddiasını göstermez.
+   * Hero'nun bant kararı ham `isLiveMatch` yerine bu fonksiyonu kullanır.
+   *
+   * TAZELİK KARARI BURADA VERİLMİYOR. Bu blok kendi yaş penceresini
+   * uyguluyordu: yalnızca başlama saatine bakıyor, kaydın son güncellenme
+   * damgasını hiç sormuyordu. Servis tarafı ortak kapıya taşınınca
+   * (services/featuredMatchSelector.js#isLiveMatch → matchStatus#liveVerdict)
+   * iki taraf ayrıştı ve ayrışma ekranda görünür bir hataya döndü: sunucu
+   * hero'ya bugünün Süper Lig maçını basıyor, JS yüklenince istemci aynı
+   * havuzda donmuş bir "canlı" kaydı taze sayıp kartı onunla değiştiriyordu.
+   * Okuyucu için bu, hero kartının açılıştan saniyeler sonra "atlaması".
+   *
+   * Karar LiveGuard'a (app.js#live-freshness-guard, sunucudaki
+   * services/matchStatus.js#liveVerdict'in birebir kopyası) bırakıldı:
+   * gün, başlama saati, son güncellenme damgası ve okunabilir skor orada
+   * denetlenir. Süre penceresi servisle AYNI eşikten geçirilir.
    */
   function featuredIsLiveMatch(match, nowMs) {
-    if (!match) {
-      return false;
-    }
-
-    var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
-    var claimsLive = match.live === true ||
-      ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].indexOf(status) !== -1;
-    if (!claimsLive || !hasReadableScore(match)) {
-      return false;
-    }
-
-    var kickoff = featuredKickoffTime(match);
-    if (kickoff.hasTime && isFinite(kickoff.value) && isFinite(nowMs)
-      && nowMs - kickoff.value > FEATURED_IN_PROGRESS_WINDOW_MS) {
-      return false;
-    }
-
-    return true;
+    return LiveGuard.isLive(match, { nowMs: nowMs, graceMs: FEATURED_IN_PROGRESS_WINDOW_MS });
   }
 
   function featuredBandOf(match, nowMs) {
@@ -6209,6 +6278,7 @@
         profileItemHtml("Transfer kaydi", playerHasTransferHistory(player) ? player.transferHistory.length + " kayit" : "Yakinda"),
         profileItemHtml("Rating durumu", statusLabel(player.ratingStatus, "rating"), "Yakinda")
       ]) +
+      profileRatingScoresHtml(player) +
       profileSectionHtml("Rating Modeli", [
         profileItemHtml("Overall", player.overallRating || player.aiRating || player.rating),
         profileItemHtml("Potansiyel", player.potentialRating),
@@ -6739,14 +6809,110 @@
 
   function comparePlayerSummaryHtml(player) {
     var market = playerStatsAreVerified(player) ? playerMarketValue(player) : null;
-    var rating = verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating);
+    // BAŞLIKTAKİ PUAN DA HESAPLANMIŞ BLOKTAN OKUNUR.
+    //
+    // Satırlar dolup kartın tepesindeki büyük rakamın "-" kalması, tablonun
+    // en çok bakılan yerinde tam olarak düzeltmeye çalıştığımız boşluğu
+    // bırakıyordu. Blok yoksa eski doğrulanmış değere düşülür; o da yoksa
+    // gerekçe yazılır — tire değil.
+    var computed = ratingScoreCategory(player, "overall");
+    var legacy = verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating);
+    var ratingText = computed && computed.value !== null
+      ? String(computed.value)
+      : legacy !== null && legacy !== undefined
+        ? String(legacy)
+        : RATING_INSUFFICIENT_LABEL;
+    var ratingClass = computed && computed.value !== null ? "rating" : (legacy !== null && legacy !== undefined ? "rating" : "rating is-empty");
+    // Yaş ve piyasa değeri ayrı ayrı bilinir: ölçülmeyen biri yüzünden
+    // diğerinin yerine tire basılmaz, satır o parçayı hiç taşımaz.
+    var meta = [];
+    var age = playerAge(player);
+    if (age !== null && age !== undefined && age !== "") meta.push("Yaş " + age);
+    if (market) meta.push(market);
 
     return (
       '<div class="compare-player">' +
       "<span>" + escapeHtml(playerTeamDisplay(player)) + " - " + escapeHtml(player.position) + "</span>" +
       "<h2>" + escapeHtml(player.name) + "</h2>" +
-      "<p>Yaş " + escapeHtml(displayValue(playerAge(player))) + " - " + escapeHtml(displayValue(market)) + "</p>" +
-      '<strong class="rating">' + escapeHtml(displayValue(rating)) + "</strong>" +
+      (meta.length ? "<p>" + escapeHtml(meta.join(" - ")) + "</p>" : "") +
+      '<strong class="' + ratingClass + '">' + escapeHtml(ratingText) + "</strong>" +
+      "</div>"
+    );
+  }
+
+  /**
+   * HESAPLANMIŞ ÖZELLİK PUANI — sunucudaki karar, istemcide TEKRARLANMAZ.
+   *
+   * `player.ratingScores` build adımında yazılıyor
+   * (scripts/compute-player-ratings.mjs) ve `/api/players` ile
+   * `/data/players.json` üzerinden aynen geliyor. İstemci burada yalnızca
+   * OKUYOR: kategori hesaplanmışsa sayıyı, hesaplanamamışsa "Veri
+   * yetersiz"i (kalecide hücum/yaratıcılık için "Mevki dışı") basıyor.
+   */
+  var RATING_INSUFFICIENT_LABEL = "Veri yetersiz";
+  var RATING_NOT_APPLICABLE_LABEL = "Mevki dışı";
+  /** Sayım istatistiği doğrulanmamış satırların etiketi. */
+  var RATING_UNMEASURED_LABEL = "Ölçüm yok";
+
+  function ratingScoreCategory(player, key) {
+    var scores = player && player.ratingScores;
+    if (!scores || !scores.categories) return null;
+    var category = scores.categories[key];
+    if (!category) return null;
+
+    var value = Number(category.value);
+    var status = String(category.status || "insufficient");
+    return {
+      status: status,
+      value: status === "computed" && isFinite(value) ? value : null,
+      display: status === "computed" && isFinite(value)
+        ? String(Math.round(value))
+        : status === "not-applicable" ? RATING_NOT_APPLICABLE_LABEL : RATING_INSUFFICIENT_LABEL
+    };
+  }
+
+  function playerHasRatingScores(player) {
+    return Boolean(player && player.ratingScores && player.ratingScores.categories);
+  }
+
+  /**
+   * Puan satırı: değer, yatay çubuk ve yüksek olanda yeşil vurgu.
+   *
+   * `legacyGetter` yalnızca hiçbir oyuncuda hesaplanmış blok yoksa devreye
+   * girer — eski davranış aynen korunur, yeni blok geldiğinde üstüne yazmaz.
+   */
+  function compareRatingRowHtml(label, key, players, legacyGetter) {
+    var hasScores = players.some(playerHasRatingScores);
+    if (!hasScores) return compareMultiRowHtml(label, players, legacyGetter);
+
+    var cells = players.map(function (player) {
+      return ratingScoreCategory(player, key) || { status: "insufficient", value: null, display: RATING_INSUFFICIENT_LABEL };
+    });
+    var known = cells.map(function (cell) { return cell.value; }).filter(function (value) { return value !== null; });
+    var best = known.length ? Math.max.apply(Math, known) : null;
+    var contested = known.length >= 2 && known.some(function (value) { return value !== known[0]; });
+    var rowLabel = label;
+    // Kaleci tablodaysa "Savunma" satırı onun sözcüğüyle adlandırılır.
+    if (key === "defense" && players.some(function (player) {
+      return player && player.ratingScores && player.ratingScores.scheme === "goalkeeper";
+    })) {
+      rowLabel = "Kalecilik";
+    }
+
+    return (
+      '<div class="compare-row compare-row-multi compare-row-rating">' +
+      "<span>" + escapeHtml(rowLabel) + "</span>" +
+      cells.map(function (cell, index) {
+        var leading = contested && cell.value !== null && cell.value === best;
+        var width = cell.value === null ? 0 : Math.max(2, Math.min(100, cell.value));
+        return (
+          '<b class="' + (leading ? "is-leading" : "") + (cell.value === null ? " is-empty" : "") + '"' +
+          ' aria-label="' + escapeHtml(players[index].name + ": " + (cell.value === null ? cell.display : cell.display + " / 100")) + '">' +
+          escapeHtml(cell.display) +
+          '<i class="compare-row-bar" aria-hidden="true"><i style="width:' + width + '%"></i></i>' +
+          "</b>"
+        );
+      }).join("") +
       "</div>"
     );
   }
@@ -6769,7 +6935,15 @@
       players.map(function (player, index) {
         var value = values[index];
         var leading = value !== null && best !== null && value === best;
-        return '<b class="' + (leading ? "is-leading" : "") + '">' + escapeHtml(displayValue(value)) + "</b>";
+        // ÇIPLAK TİRE YERİNE GEREKÇE. "-" okuyucuya iki ayrı şeyi aynı
+        // işaretle söylüyordu: "ölçüldü, sıfır çıktı" ve "hiç ölçülmedi".
+        // İkincisi bu satırların gerçek durumu; açıkça yazılıyor.
+        var text = value === null ? RATING_UNMEASURED_LABEL : String(value);
+        return (
+          '<b class="' + (leading ? "is-leading" : "") + (value === null ? " is-empty" : "") + '">' +
+          escapeHtml(text) +
+          "</b>"
+        );
       }).join("") +
       "</div>"
     );
@@ -6896,14 +7070,24 @@
       // puan gibi) ölçülmüş bir değermiş gibi okunur. Karar
       // playerStatsAreVerified()/playerRatingIsVerified() ile alınır — sunucudaki
       // services/cardCredibility.js kararının aynısı.
-      compareMultiRowHtml("Overall", selected, function (player) { return verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating); }) +
-      compareMultiRowHtml("Form", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "form")); }) +
-      compareMultiRowHtml("Hücum", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "attack")); }) +
-      compareMultiRowHtml("Yaratıcılık", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "creativity")); }) +
-      compareMultiRowHtml("Savunma", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "defense")); }) +
-      compareMultiRowHtml("Disiplin", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "discipline")); }) +
-      compareMultiRowHtml("Süreklilik", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "durability")); }) +
-      compareMultiRowHtml("Potansiyel", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "potential")); }) +
+      // HESAPLANMIŞ PUAN BLOĞU ÖNCE (bkz. services/playerRatingEngine.js).
+      //
+      // `verifiedRatingValue` yolu bu sekiz satırda her kayıtta null
+      // dönüyordu: kapı `ratingStatus`in "verified"/"current" olmasını
+      // arıyor, veri hattında o değeri üreten bir adım yok ve eski radar
+      // alanları ölçülmemiş sıfırlarla hesaplanmıştı. Sonuç: tablonun
+      // tamamı "-". Yeni blok kendi kanıtını taşıyor — yayımlanan her
+      // sayı ölçülmüş girdilerden geliyor, ölçüm yoksa satır "Veri
+      // yetersiz" yazıyor. Blok yoksa (eski önbellek, artefakt üretilmemiş)
+      // ESKİ YOL AYNEN çalışmaya devam eder.
+      compareRatingRowHtml("Overall", "overall", selected, function (player) { return verifiedRatingValue(player, player.overallRating || player.aiRating || player.rating); }) +
+      compareRatingRowHtml("Form", "form", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "form")); }) +
+      compareRatingRowHtml("Hücum", "attack", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "attack")); }) +
+      compareRatingRowHtml("Yaratıcılık", "creativity", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "creativity")); }) +
+      compareRatingRowHtml("Savunma", "defense", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "defense")); }) +
+      compareRatingRowHtml("Disiplin", "discipline", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "discipline")); }) +
+      compareRatingRowHtml("Süreklilik", "durability", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "durability")); }) +
+      compareRatingRowHtml("Potansiyel", "potential", selected, function (player) { return verifiedRatingValue(player, radarMetric(player, "potential")); }) +
       // Veri güveni bilinçli olarak süzülmez: oyuncunun performansını değil,
       // kaydın ne kadar iyi kaynaklandığını anlatıyor (bkz. cardCredibility.js).
       compareMultiRowHtml("Veri güveni", selected, function (player) { return radarMetric(player, "dataConfidence"); }) +

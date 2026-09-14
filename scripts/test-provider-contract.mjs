@@ -98,6 +98,26 @@ function failures() {
     "import\\s+([A-Za-z_$][\\w$]*)\\s+from\\s*[\"']([^\"']*providers/([A-Za-z0-9_.-]+\\.js))[\"']",
     "g"
   );
+
+  /**
+   * DEĞİŞKEN MODÜLÜ DEĞİL, ÇAĞRININ SONUCUNU TUTUYOR OLABİLİR.
+   *
+   *   const localMatches = require(".../mockProvider.js").allCuratedMatchesUnfiltered();
+   *
+   * Burada `localMatches` bir DİZİ; sağlayıcı nesnesi değil. Tarayıcı yine de
+   * adı sağlayıcıya bağlayınca, dizinin kendi metotları ("localMatches.push")
+   * sağlayıcıda aranıyor ve olmayan bir metot ihbar ediliyordu — üstelik
+   * o satırda GERÇEKTEN çağrılan üye ("allCuratedMatchesUnfiltered") hiç
+   * denetlenmiyordu; yanlış alarm, asıl denetimin yerini almıştı.
+   *
+   * Bu kalıp yakalandığında iki şey yapılır: değişken sağlayıcıya
+   * BAĞLANMAZ, ama zincirdeki üye adı doğrudan dışa aktarılanlarla
+   * karşılaştırılır. Denetim daralmaz, aksine bir kör noktası kapanır.
+   */
+  const chainedRe = new RegExp(
+    "require\\(\\s*[\"'][^\"']*providers/([A-Za-z0-9_.-]+\\.js)[\"']\\s*\\)\\s*\\.\\s*([A-Za-z_$][\\w$]*)",
+    "g"
+  );
   const destructureRe = new RegExp(
     "(?:const|let|var)\\s*\\{([^}]*)\\}\\s*=\\s*require\\(\\s*[\"'][^\"']*providers/([A-Za-z0-9_.-]+\\.js)[\"']\\s*\\)",
     "g"
@@ -111,6 +131,25 @@ function failures() {
     const body = strippedSource(source);
     scanned += 1;
 
+    // Zincirlenmiş kullanım: require(...).metot — üye burada denetlenir,
+    // değişken adı sağlayıcıya bağlanmaz.
+    const chainedBindings = new Set();
+    chainedRe.lastIndex = 0;
+    let chained;
+    while ((chained = chainedRe.exec(source))) {
+      const providerFile = chained[1];
+      const member = chained[2];
+      const exported = providerExports.get(providerFile);
+      if (!exported) continue;
+      const declared = source
+        .slice(0, chained.index)
+        .match(/(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*$/);
+      if (declared) chainedBindings.add(declared[1]);
+      if (!INTRINSIC_MEMBERS.has(member) && !exported.has(member)) {
+        problems.push(`${relative}: ${providerFile} içinde olmayan "${member}" çağrılıyor`);
+      }
+    }
+
     importRe.lastIndex = 0;
     let match;
     while ((match = importRe.exec(source))) {
@@ -118,6 +157,8 @@ function failures() {
       const providerFile = match[3] || match[6];
       const exported = providerExports.get(providerFile);
       if (!binding || !exported) continue;
+      // Sağlayıcının kendisini değil, bir çağrının sonucunu tutan ad.
+      if (chainedBindings.has(binding)) continue;
 
       const memberRe = new RegExp(`\\b${binding.replace(/\$/g, "\\$")}\\.([A-Za-z_$][\\w$]*)`, "g");
       const seen = new Set();

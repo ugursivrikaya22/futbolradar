@@ -54,58 +54,73 @@ function verificationAgeDays(record, now) {
 }
 
 /**
- * Bir oyuncu kartının yayımlanabilirliği.
+ * KİMLİK KAPISI — "bu kayıt hangi gerçek oyuncuya ait ve nereden geldi?"
  *
- * @returns {{publishable: boolean, reasons: string[], confidence: string}}
+ * `evaluatePlayerCard` bunun üstüne bir de TAZELİK arar ("son doğrulama 45
+ * günden eski olmasın"), çünkü trend bölümleri "şu an" iddiası taşıyor.
+ * Ama her türetilmiş değer o iddiayı taşımıyor: hesaplanmış özellik puanları
+ * (services/playerRatingEngine.js) kendi zaman damgasını ve dayandığı maç
+ * kayıtlarının tarihlerini birlikte yayımlıyor — tazeliği okuyucuya
+ * gizleyerek değil, GÖSTEREREK çözüyor.
+ *
+ * Bu yüzden iki kapı ayrıldı. Kimlik kapısı tavizsiz ve ortak: yer tutucu
+ * kimlikli, kaynaksız ya da adı bozuk bir kayıttan hiçbir sayı yayımlanmaz.
+ * Tazelik kapısı yalnızca "şu an" iddiası taşıyan yüzeylerde eklenir.
+ *
+ * @returns {{publishable: boolean, reasons: string[]}}
  */
-function evaluatePlayerCard(player, options = {}) {
-  const now = options.now instanceof Date ? options.now : new Date();
+function evaluatePlayerIdentity(player) {
   const reasons = [];
 
   if (!player || typeof player !== "object") {
-    return { publishable: false, reasons: ["kayıt yok"], confidence: "none" };
+    return { publishable: false, reasons: ["kayıt yok"] };
   }
 
   if (!String(player.name || "").trim()) reasons.push("isim yok");
 
-  // 0. Adın KENDİSİ bozuksa kart yayımlanmaz.
-  //
-  // Sağlayıcıdan bazı adlar UTF-8 baytları Latin-1 gibi çözülmüş hâlde
-  // geliyor ("Başkan" -> "BaÅkan"). Onarım önce senkron girişinde denenir
-  // (services/textEncodingRepair.js); bayt kaybı yüzünden onarılamayan kayıt
-  // burada elenir. Gerekçe: bozuk bir ad EKSİK bir alan değil, YANLIŞ bir
-  // bilgidir — okuyucuya yanlış isim gösterir ve kimlik/URL addan türediği
-  // için yanlış bir adresi site haritasına sokar.
-  //
-  // Kayıt veriden SİLİNMİYOR, yalnızca gizleniyor: sağlayıcı adı düzgün
-  // gönderdiği ilk senkronda kart kendiliğinden geri gelir.
-  if (hasMojibake(player.name) || String(player.name || "").includes("�")) {
+  if (hasMojibake(player.name) || String(player.name || "").includes("\uFFFD")) {
     reasons.push("ad kodlaması bozuk (onarılamadı)");
   }
 
-  // 1. Sağlayıcı kimliği: kaydın hangi gerçek oyuncuya karşılık geldiğini
-  //    gösteremiyorsak, üstündeki hiçbir sayı doğrulanabilir değildir.
   if (!hasRealProviderId(player)) {
     reasons.push(MOCK_ID_PATTERN.test(providerIdOf(player))
       ? "sağlayıcı kimliği yer tutucu (mock)"
       : "gerçek sağlayıcı kimliği yok");
   }
 
-  // 2. Kaynak: hangi kayıttan geldiği gösterilemeyen bir kart yayımlanmaz.
   if (!String(player.sourceUrl || "").trim()) reasons.push("kaynak bağlantısı yok");
   if (!String(player.lastVerifiedAt || player.lastSyncedAt || "").trim()) reasons.push("doğrulama zamanı yok");
 
-  // 3. Açıkça doğrulanmamış işaretlenmiş kayıtlar.
   if (REJECTED_DATA_STATUS.has(String(player.dataStatus || "").toLowerCase())) {
     reasons.push(`dataStatus "${player.dataStatus}"`);
   }
+
+  return { publishable: reasons.length === 0, reasons };
+}
+
+/**
+ * Bir oyuncu kartının yayımlanabilirliği.
+ *
+ * @returns {{publishable: boolean, reasons: string[], confidence: string}}
+ */
+function evaluatePlayerCard(player, options = {}) {
+  const now = options.now instanceof Date ? options.now : new Date();
+
+  // 1-3. Kimlik, kaynak ve açıkça doğrulanmamış işaretler TEK yerde
+  //      (evaluatePlayerIdentity) denetlenir; burada kopyalanmaz, yoksa iki
+  //      kural zamanla birbirinden ayrışır.
+  const identity = evaluatePlayerIdentity(player);
+  if (!player || typeof player !== "object") {
+    return { publishable: false, reasons: identity.reasons, confidence: "none" };
+  }
+  const reasons = identity.reasons.slice();
 
   // 4. Bayat derecelendirme: gösterilen puan güncelliğini yitirmiş.
   if (REJECTED_RATING_STATUS.has(String(player.ratingStatus || "").toLowerCase())) {
     reasons.push(`ratingStatus "${player.ratingStatus}"`);
   }
 
-  // 5. Tazelik.
+  // 5. Tazelik: trend ve kart yüzeyleri "şu an" iddiası taşıyor.
   const age = verificationAgeDays(player, now);
   if (age !== null && age > MAX_VERIFICATION_AGE_DAYS) {
     reasons.push(`son doğrulama ${Math.round(age)} gün önce`);
@@ -361,6 +376,7 @@ function logRemovedCards(scope, removed) {
 }
 
 module.exports = {
+  evaluatePlayerIdentity,
   restrictedFieldIsPublishable,
   ratingIsVerified,
   statsAreVerified,
