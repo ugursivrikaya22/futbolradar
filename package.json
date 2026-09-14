@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "test:team-hubs": "node scripts/test-team-traffic-hubs.mjs",
+    "generate:og-images": "node scripts/generate-og-images.mjs",
     "test:match-focus": "node scripts/test-match-focus.mjs",
     "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/postprocess.mjs && node scripts/verify-production.mjs",
     "typecheck": "tsc --noEmit",

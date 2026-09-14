@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { ROBOTS_META_RE, robotsMeta } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -275,7 +276,7 @@ for (const slug of [
     const withContent = html
       .replace(/<span data-landing-count>[^<]*<\/span>/, `<span data-landing-count>${selected.length} oyuncu</span>`)
       .replace(/<section class="grid" data-api-section="player-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${slug}">${content}</section>`);
-    return shouldIndex ? withContent : withContent.replace('content="index,follow"', 'content="noindex,follow"');
+    return shouldIndex ? withContent : withContent.replace(ROBOTS_META_RE, robotsMeta(false));
   });
   updateSitemapIndexability(`${slug}.html`, shouldIndex);
 }

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -39,7 +40,7 @@ for (const [relativePath, canonicalPath, schemaType] of pages) {
   for (const marker of ["og:title", "og:description", "og:image", "twitter:card", "twitter:title", "twitter:description", "twitter:image"]) {
     assert.ok(html.includes(marker), `${relativePath}: ${marker} eksik`);
   }
-  assert.ok(html.includes('name="robots" content="index,follow"'), `${relativePath}: indexlenebilir olmalı`);
+  assert.ok(html.includes(`name="robots" content="${ROBOTS_INDEX}"`), `${relativePath}: indexlenebilir olmalı`);
   assert.ok(html.includes('"@type":"BreadcrumbList"'), `${relativePath}: BreadcrumbList eksik`);
   assert.ok(html.includes(`"@type":"${schemaType}"`), `${relativePath}: ${schemaType} şeması eksik`);
   assert.ok(html.includes("evergreen-table") || html.includes("evergreen-card-grid"), `${relativePath}: statik içerik eksik`);

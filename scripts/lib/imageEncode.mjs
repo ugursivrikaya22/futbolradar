@@ -91,6 +91,101 @@ export function encodePng(rgba, width, height) {
 }
 
 /**
+ * SAYDAMLIĞI OLMAYAN BÜYÜK GÖRSEL İÇİN PNG — RGB + adaptif süzgeç.
+ *
+ * `encodePng` ile aynı işi yapmıyor ve onun yerine geçmiyor; ikisi FARKLI
+ * boyut rejimleri için. Yukarıdaki not ("daha akıllı süzgeçler dosyayı
+ * biraz küçültürdü ama bu ikonlar zaten birkaç kilobayt") 48×48 için
+ * doğru. Paylaşım görseli 1200×630 — 756.000 piksel, yani ikonun ~300
+ * katı — ve orada iki şey artık "biraz" değil:
+ *
+ *   • ALFA KANALI. Görsel baştan sona opak; her pikselde taşınan 0xFF
+ *     alfa baytı dosyanın dörtte birini boşuna şişiriyor. Renk tipi 2
+ *     (RGB) bu kanalı hiç yazmıyor.
+ *   • SÜZGEÇ. Görselin gövdesi yumuşak bir degrade. Süzgeç 0'da her
+ *     piksel mutlak değeriyle yazılır ve deflate tekrar bulamaz; satır
+ *     başına en iyi süzgeci seçmek komşu farkını sıfıra yaklaştırır.
+ *
+ * Ölçüldü: Chromium'un kendi çıktısı 290,9 KB, bu kodlayıcı 212,9 KB —
+ * %27 küçük ve PİKSEL PİKSEL AYNI (kayıpsız; niceleme ya da renk azaltma
+ * yok). 300 KB sınırının altında rahat bir pay bırakıyor.
+ *
+ * Süzgeç seçimi PNG belirtiminin önerdiği sezgiseldir: beş adayın her
+ * birinde satırın işaretli-bayt toplamı hesaplanır, en küçüğü seçilir.
+ *
+ * @param {Uint8Array} rgba Ham RGBA piksel (alfa yok sayılır).
+ */
+export function encodePngOpaque(rgba, width, height) {
+  if (rgba.length !== width * height * 4) {
+    throw new Error(`piksel sayısı uyuşmuyor: ${rgba.length} != ${width * height * 4}`);
+  }
+
+  const bpp = 3;
+  const stride = width * bpp;
+
+  // RGBA → RGB.
+  const rgb = Buffer.alloc(height * stride);
+  for (let i = 0, o = 0; i < rgba.length; i += 4, o += 3) {
+    rgb[o] = rgba[i];
+    rgb[o + 1] = rgba[i + 1];
+    rgb[o + 2] = rgba[i + 2];
+  }
+
+  const rows = Buffer.alloc(height * (stride + 1));
+  const candidates = Array.from({ length: 5 }, () => Buffer.alloc(stride));
+  const zero = Buffer.alloc(stride);
+
+  for (let y = 0; y < height; y += 1) {
+    const cur = rgb.subarray(y * stride, (y + 1) * stride);
+    const prev = y ? rgb.subarray((y - 1) * stride, y * stride) : zero;
+    const score = [0, 0, 0, 0, 0];
+
+    for (let x = 0; x < stride; x += 1) {
+      const left = x >= bpp ? cur[x - bpp] : 0;
+      const up = prev[x];
+      const upLeft = x >= bpp ? prev[x - bpp] : 0;
+      const value = cur[x];
+
+      // Paeth öngörücüsü.
+      const p = left + up - upLeft;
+      const pa = Math.abs(p - left);
+      const pb = Math.abs(p - up);
+      const pc = Math.abs(p - upLeft);
+      const paeth = pa <= pb && pa <= pc ? left : pb <= pc ? up : upLeft;
+
+      const filtered = [value, value - left, value - up, value - ((left + up) >> 1), value - paeth];
+      for (let k = 0; k < 5; k += 1) {
+        const byte = filtered[k] & 0xff;
+        candidates[k][x] = byte;
+        // İşaretli bayt olarak uzaklık: sıfıra yakın değer iyi öngörü demek.
+        score[k] += byte < 128 ? byte : 256 - byte;
+      }
+    }
+
+    let best = 0;
+    for (let k = 1; k < 5; k += 1) if (score[k] < score[best]) best = k;
+    rows[y * (stride + 1)] = best;
+    candidates[best].copy(rows, y * (stride + 1) + 1);
+  }
+
+  const ihdr = Buffer.alloc(13);
+  ihdr.writeUInt32BE(width, 0);
+  ihdr.writeUInt32BE(height, 4);
+  ihdr[8] = 8;   // bit derinliği
+  ihdr[9] = 2;   // renk tipi: RGB (alfa yok)
+  ihdr[10] = 0;  // sıkıştırma: deflate
+  ihdr[11] = 0;  // süzgeç yöntemi
+  ihdr[12] = 0;  // aralıksız
+
+  return Buffer.concat([
+    PNG_SIGNATURE,
+    pngChunk("IHDR", ihdr),
+    pngChunk("IDAT", zlib.deflateSync(rows, { level: 9, memLevel: 9 })),
+    pngChunk("IEND", Buffer.alloc(0))
+  ]);
+}
+
+/**
  * Tek bir ICO girdisinin BMP gövdesi.
  *
  * İki tuhaflığı var ve ikisi de biçimin kendisinden geliyor:
