@@ -33,6 +33,28 @@ const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const root = process.cwd();
 const failures = [];
 
+/** Hafta numaralı maç sayfası: `en/match/…-2026-2027-r05.html`. */
+function isRoundPage(relative) {
+  return /-\d{4}-\d{4}-r\d{2}\.html$/.test(relative);
+}
+
+/**
+ * MAÇ MERKEZİ DEVRİ — hafta numaralı sayfa, maçın tarihi onaylanıp kalıcı
+ * Maç Merkezi adresi açıldığında kanonikliği oraya devreder (bkz.
+ * scripts/generate-en-match-pages.mjs `matchCentrePath`). Devir ancak
+ * kaynak hafta sayfasıysa ve hedef GERÇEKTEN var olan, hafta numarası
+ * TAŞIMAYAN bir maç sayfasıysa geçerlidir; yoksa sayfa sessizce indexten
+ * düşmüş demektir.
+ */
+function isMatchCentreHandoff(relative, canonical) {
+  if (!isRoundPage(relative)) return false;
+  if (!canonical || !canonical.startsWith(`${DOMAIN}/en/match/`)) return false;
+  const target = canonical.slice(DOMAIN.length + 1);
+  if (isRoundPage(`${target}.html`) || isRoundPage(target)) return false;
+  const file = target.endsWith(".html") ? target : `${target}.html`;
+  return fs.existsSync(path.join(root, file));
+}
+
 function check(name, condition, detail) {
   if (condition) {
     console.log(`  ok  ${name}`);
@@ -133,7 +155,9 @@ for (const pair of matchSample) {
   if (!trHtml || !enHtml) continue;
 
   const canonical = (enHtml.match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
-  check(`${name}: canonical kendi URL'i`, canonical === absoluteUrl(pair.en));
+  check(`${name}: canonical kendi URL'i ya da Maç Merkezi'ni gösteriyor`,
+    canonical === absoluteUrl(pair.en) || isMatchCentreHandoff(pair.en, canonical),
+    String(canonical));
   check(`${name}: karşılıklı hreflang`,
     trHtml.includes(`hreflang="en" href="${absoluteUrl(pair.en)}"`) &&
     enHtml.includes(`hreflang="tr-TR" href="${absoluteUrl(pair.tr)}"`));
@@ -172,8 +196,18 @@ for (const pair of playerSample) {
     const missingTeam = teamPairs.filter((pair) => !sitemap.includes(`<loc>${absoluteUrl(pair.en)}</loc>`));
     check("site haritasında takım URL'leri var", !missingTeam.length, missingTeam.map((p) => p.en).join(", "));
 
-    const missingMatch = sample(matchPairs, 20).filter((pair) => !sitemap.includes(`<loc>${absoluteUrl(pair.en)}</loc>`));
+    // Maç Merkezi'ne devredilmiş hafta sayfası haritada YER ALMAZ: haritaya
+    // yalnızca kanonik adresler yazılır. Beklenti bu sayfalar için tersine
+    // döner — kendi adresiyle listelenmiş olması hata olurdu.
+    const sampledMatches = sample(matchPairs, 20).map((pair) => {
+      const canonical = ((read(pair.en) || "").match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
+      return { ...pair, aliased: isMatchCentreHandoff(pair.en, canonical) };
+    });
+    const missingMatch = sampledMatches.filter((pair) => !pair.aliased && !sitemap.includes(`<loc>${absoluteUrl(pair.en)}</loc>`));
     check("site haritasında örneklenen maç URL'leri var", !missingMatch.length, missingMatch.map((p) => p.en).join(", "));
+
+    const strayAlias = sampledMatches.filter((pair) => pair.aliased && sitemap.includes(`<loc>${absoluteUrl(pair.en)}</loc>`));
+    check("Maç Merkezi'ne devredilmiş hafta sayfası haritada değil", !strayAlias.length, strayAlias.map((p) => p.en).join(", "));
 
     const missingPlayer = sample(playerPairs, 20).filter((pair) => !sitemap.includes(`<loc>${absoluteUrl(pair.en)}</loc>`));
     check("site haritasında örneklenen oyuncu URL'leri var", !missingPlayer.length, missingPlayer.map((p) => p.en).join(", "));
