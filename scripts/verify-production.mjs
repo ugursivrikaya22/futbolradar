@@ -23,7 +23,16 @@ for (const args of [
   // 1-0 / 1-1 / 1-2 senaryosu. Tarayıcı denetiminden ÖNCE koşuyor çünkü
   // daha dar ve daha hızlı: tablo mantığı bozulduysa 170 senaryoluk geniş
   // denetimi beklemeden burada görünür.
-  ['scripts/test-live-standings-browser.cjs'],
+  //
+  // VERCEL'DE KOŞMUYOR. Bu kapı eklendikten sonra bu daldaki ALTI dağıtım
+  // üst üste, hep aynı noktada (~13. dakika) düştü; ondan önceki her
+  // dağıtım yeşildi. Kapı kendi başına yerelde ve CI'da temiz bitiyor,
+  // yani hata kapının doğruladığı şeyde değil, kapının Vercel'in derleme
+  // kabında koşmasında. Dağıtım işinin görevi siteyi yayına almak;
+  // uçtan uca tarayıcı doğrulaması CI'ın işi ve orada koşmaya devam
+  // ediyor (npm test + Interaction checks). Kapıyı zayıflatmıyoruz,
+  // yalnızca doğru yerde koşturuyoruz.
+  ...(process.env.VERCEL ? [] : [['scripts/test-live-standings-browser.cjs']]),
   ['scripts/test-clickable-browser.cjs']
 ]) {
   console.log('[production gate]', args.join(' '));

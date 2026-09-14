@@ -447,6 +447,16 @@ test("İngilizce yüzeyde metinler Türkçe kalmaz", () => {
   assert.match(source, /!english && \(leadersTable \|\| homeLeaders\)/, "lider listeleri Türkçeye sınırlanmalı");
 });
 
+test("tarayıcı kapısı üretim zincirinde, yalnızca Vercel'de atlanıyor", () => {
+  // Kapı CI'da koşmaya devam etmeli; Vercel istisnası dağıtımın kendi
+  // kabında koşmasını engelliyor, kapsamı daraltmıyor. İstisnanın sessizce
+  // genişlemesi (ör. her ortamda atlanması) bu testle engelleniyor.
+  const gate = fs.readFileSync(path.join(root, "scripts", "verify-production.mjs"), "utf8");
+  assert.match(gate, /test-live-standings-browser\.cjs/, "kapı zincirde olmalı");
+  assert.match(gate, /process\.env\.VERCEL \? \[\] :/, "atlama yalnızca VERCEL ortamına bağlı olmalı");
+  assert.doesNotMatch(gate, /\/\/\s*\['scripts\/test-live-standings-browser\.cjs'\]/, "kapı yorum satırına alınmamalı");
+});
+
 test("1. Lig puan durumu sayfası üretiliyor", () => {
   const catalog = fs.readFileSync(path.join(root, "scripts", "lib", "standingsCatalog.mjs"), "utf8");
   assert.match(catalog, /"1-lig":/, "katalogda kayıt olmalı");
