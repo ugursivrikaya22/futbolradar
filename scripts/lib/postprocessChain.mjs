@@ -42,6 +42,11 @@ export const POSTPROCESS_CHAIN = [
   // Scheduled postprocessing must refresh these links as well as full builds.
   { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "en-pages", script: "generate-en-pages.mjs", args: [], timeoutMinutes: 5 },
+  // İngilizce lig ve kulüp giriş sayfaları. ORTAK DÜZENDEN ÖNCE koşmalı:
+  // `apply-shared-layout` başlığı ve dil düğmesini bu sayfalara da yazacak,
+  // `inject-hreflang` ise bu adımın kaydettiği rota çiftlerini okuyacak.
+  { id: "en-league-hubs", script: "generate-en-league-hubs.mjs", args: [], timeoutMinutes: 5 },
+  { id: "en-club-hubs", script: "generate-en-club-hubs.mjs", args: [], timeoutMinutes: 5 },
   { id: "match-focus-pages", script: "generate-match-focus.mjs", args: [], timeoutMinutes: 5 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
@@ -60,6 +65,10 @@ export const POSTPROCESS_CHAIN = [
   // pwa.js içerik damgası alır; bu yüzden önce sayfaya bağlanmalıdır.
   { id: "pwa", script: "inject-pwa.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
+  // Dil öneri bandı: üstte "View FutbolRadar in English" önerisi. YÖNLENDİRME
+  // YAPMAZ (bkz. lang-suggest.js) — bot taraması etkilenmez. Damga adımından
+  // ÖNCE koşmalı ki eklediği <script> etiketi de sürümlensin.
+  { id: "lang-suggest", script: "inject-lang-suggest.mjs", args: [], timeoutMinutes: 8 },
   // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;
   // bağlantı önden ısıtılmazsa ilk arma DNS + TLS el sıkışmasını bekliyor.
   { id: "preconnect", script: "inject-preconnect.mjs", args: [], timeoutMinutes: 8 },
@@ -76,6 +85,12 @@ export const POSTPROCESS_CHAIN = [
   // sayfadaki adresi okuyup sürümlüyor, adres önce doğru olmalı.
   { id: "app-bundles", script: "build-app-bundles.mjs", args: [], timeoutMinutes: 5 },
   { id: "app-bundle-link", script: "inject-app-bundle.mjs", args: [], timeoutMinutes: 8 },
+  // Site haritası bölümleme: `sitemap.xml`e yazan HER üreticiden SONRA
+  // gelmeli — İngilizce kopya (`sitemap-en.xml`) ondan türetiliyor. Damga
+  // adımından önce duruyor çünkü zincirin son sözü damgada kalmak zorunda
+  // (bkz. test-postprocess-chain); bu adım yalnızca XML yazıyor, sayfalara
+  // hiç dokunmuyor, dolayısıyla damgaya girecek bir şey üretmiyor.
+  { id: "sitemap-index", script: "generate-sitemap-index.mjs", args: [], timeoutMinutes: 5 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
 

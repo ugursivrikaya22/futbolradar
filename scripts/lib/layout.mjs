@@ -16,7 +16,7 @@ const require = createRequire(import.meta.url);
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { PLAIN_EXTERNAL_REL, SOURCE_LINK_REL, isExternalUrl } = require("../../services/sourceLinks.js");
 // Sözlük, rota eşlemesi ve dil yardımcıları tek yerde: services/i18n.js.
-const { NAV_KEYS, normalizeLocale, t } = require("../../services/i18n.js");
+const { NAV_KEYS, ROUTES, normalizeLocale, t } = require("../../services/i18n.js");
 
 /**
  * Menü listeleri artık sözlükten TÜRETİLİYOR.
@@ -166,15 +166,23 @@ export function siteHeader(options = {}) {
   const secondary = secondaryItems.length
     ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base, locale, { showBadges: true })}</div>`
     : "";
-  // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE VAR.
+  // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE VAR — VE HEDEFİ ROTA EŞLEMESİNDEN GELİR.
   //
-  // Sayfanın İngilizce sürümü henüz üretilmiyor ve düğme bu yüzden İngilizce
-  // başlıkta hiç çizilmiyordu — ama sonuç, İngilizce okuyucunun sitenin en
-  // kapsamlı maç ekranına üst çubuktan hiç ulaşamaması oldu. Düğme artık
-  // İngilizce tarafta da var; hedefi Türkçe olduğu için menü bağlantılarıyla
-  // aynı biçimde işaretleniyor (`hreflang="tr"`, etikette "(TR)").
-  const ctaTrOnly = locale !== "tr";
-  const cta = `<a class="cta" href="${base}mac-merkezi.html"${ctaTrOnly ? ' hreflang="tr" lang="tr"' : ""}>` +
+  // Düğme bir dönem İngilizce başlıkta da Türkçe sayfaya bağlanıyordu
+  // (`mac-merkezi.html`, etikette "(TR)"), çünkü sayfanın İngilizce sürümü
+  // henüz üretilmiyordu. `en/match-centre.html` üretilmeye başlandıktan sonra
+  // bu satır güncellenmedi: İngilizce okuyucu, var olan İngilizce maç
+  // merkezi dururken üst çubuktan Türkçe sayfaya gönderilmeye devam etti.
+  //
+  // Hedef artık elle yazılmıyor, ROTA EŞLEMESİNDEN okunuyor. Böylece bir
+  // yüzeyin İngilizce karşılığı üretildiği anda düğme kendiliğinden ona
+  // bağlanır; ikinci kez aynı biçimde eskimesi mümkün değil. Karşılık
+  // gerçekten yoksa (`en` alanı boş) eski davranış korunur: Türkçe hedef,
+  // dil işaretiyle ve "(TR)" etiketiyle — sessizce başka dile götürmek yerine.
+  const matchCentreRoute = ROUTES.find((route) => route.key === "matchCentre");
+  const ctaHref = (matchCentreRoute && matchCentreRoute[locale]) || "mac-merkezi.html";
+  const ctaTrOnly = locale !== "tr" && !(matchCentreRoute && matchCentreRoute[locale]);
+  const cta = `<a class="cta" href="${base}${ctaHref}"${ctaTrOnly ? ' hreflang="tr" lang="tr"' : ""}>` +
     `${escapeHtml(t("nav.matchCentre", locale))}${ctaTrOnly ? " (TR)" : ""}</a>`;
 
   // ARAMA KUTUSU İKİ DİLDE DE VAR.

@@ -66,7 +66,7 @@
         ]
 }
     </script>
-    <link rel="stylesheet" href="../page.css?v=760f2e17" />
+    <link rel="stylesheet" href="../page.css?v=8caa3a75" />
     <script data-futbolradar-theme>
     (function () {
       try {
@@ -102,6 +102,21 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-lang-boot>(function(){try{
+var d=document.documentElement;
+var cur=(d.getAttribute("lang")||"tr").slice(0,2).toLowerCase();
+var target=cur==="en"?"tr":"en";
+var pref="";
+try{pref=window.localStorage.getItem("futbolradar-lang")||"";}catch(e){}
+if(!pref){var m=document.cookie.match(/(?:^|;\s*)futbolradar_lang=([^;]*)/);pref=m?decodeURIComponent(m[1]):"";}
+if(pref)return;
+var list=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];
+var tr=false;
+for(var i=0;i<list.length;i++){if(/^tr\b/i.test(String(list[i]||""))){tr=true;break;}}
+if(cur==="tr"&&tr)return;
+if(cur==="en"&&!tr)return;
+d.setAttribute("data-lang-suggest",target);
+}catch(e){}})();</script>
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/oyuncular/t-boke-goztepe.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/player/t-boke-goztepe.html" />
@@ -299,5 +314,6 @@
     <script src="../player-profile.js?v=1f3f6c68" defer></script>
     <script src="../site.js?v=91f7fbdd" defer></script>
     <script src="../app-lite.js?v=d6ebcc17" defer></script>
+    <script data-futbolradar-lang-suggest src="../lang-suggest.js" defer></script>
   </body>
 </html>

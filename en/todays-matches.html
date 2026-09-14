@@ -25,7 +25,7 @@
     <meta name="twitter:title" content="Football Matches Today | FutbolRadar" />
     <meta name="twitter:description" content="Today&#039;s football fixtures for the Turkish Süper Lig and European competitions — every football match played today, with kick-off times in Türkiye time." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <link rel="stylesheet" href="../page.css?v=760f2e17" />
+    <link rel="stylesheet" href="../page.css?v=8caa3a75" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/en/todays-matches.html","url":"https://www.futbolradar.com/en/todays-matches.html","name":"Football Matches Today | FutbolRadar","description":"Today's football fixtures for the Turkish Süper Lig and European competitions — every football match played today, with kick-off times in Türkiye time.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"},{"@type":"ListItem","position":2,"name":"Football Matches Today","item":"https://www.futbolradar.com/en/todays-matches.html"}]}]}</script>
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -57,6 +57,21 @@
       }
     })();
   </script>
+    <script data-futbolradar-lang-boot>(function(){try{
+var d=document.documentElement;
+var cur=(d.getAttribute("lang")||"tr").slice(0,2).toLowerCase();
+var target=cur==="en"?"tr":"en";
+var pref="";
+try{pref=window.localStorage.getItem("futbolradar-lang")||"";}catch(e){}
+if(!pref){var m=document.cookie.match(/(?:^|;\s*)futbolradar_lang=([^;]*)/);pref=m?decodeURIComponent(m[1]):"";}
+if(pref)return;
+var list=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""];
+var tr=false;
+for(var i=0;i<list.length;i++){if(/^tr\b/i.test(String(list[i]||""))){tr=true;break;}}
+if(cur==="tr"&&tr)return;
+if(cur==="en"&&!tr)return;
+d.setAttribute("data-lang-suggest",target);
+}catch(e){}})();</script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
@@ -76,7 +91,7 @@
           <div class="nav-menu" id="primary-menu">
             <div class="nav-links"><a href="../en/todays-matches.html">Today&#039;s Matches</a><a href="../en/live-football-scores.html">Live Scores</a><a href="../en/results.html">Results</a><a href="../en/fixtures.html">Süper Lig</a><a href="../en/analysis.html">Analysis</a><a href="../en/teams.html">Teams</a><a href="../en/columns.html">Columns</a><a href="../en/standings.html">Standings</a><a href="../en/archive.html">Archive</a></div>
             <div class="nav-links nav-links-secondary"><a href="../en/matches.html">Match Calendar</a><a href="../en/player-radar.html">Player Radar</a><a href="../en/stats-hub.html">Stats Hub</a><a href="../en/transfer-radar.html">Transfer Radar</a><a href="../en/momentum.html">Momentum</a><a href="../en/top-scorers.html">Top Scorers</a><a href="../en/news.html">News</a><a href="../en/polls.html">Polls <span class="nav-badge" data-nav-badge-until="2026-08-22T21:00:00+03:00">New</span></a></div>
-            <a class="cta" href="../mac-merkezi.html" hreflang="tr" lang="tr">Match Centre (TR)</a>
+            <a class="cta" href="../en/match-centre.html">Match Centre</a>
             <button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="Search teams and players" aria-expanded="false" title="Search teams and players"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Switch to dark theme">
               <svg class="theme-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>
@@ -130,7 +145,7 @@
         <div class="matches-grid"><article class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">GF</span><span class="fixture-row-name">Gaziantep FK</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Fenerbahçe</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.beinsports.com.tr/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: beIN Sports</span></div>
     
     <a class="fixture-card-action" href="../en/match/gaziantep-fk-fenerbahce-september-14-2026">Open match details</a>
   </article>
@@ -219,5 +234,6 @@
     
     <script src="../site.js?v=91f7fbdd" defer></script>
     <script src="../app-lite.js?v=d6ebcc17" defer></script>
+    <script data-futbolradar-lang-suggest src="../lang-suggest.js" defer></script>
   </body>
 </html>
