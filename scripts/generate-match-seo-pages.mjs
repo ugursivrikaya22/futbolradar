@@ -556,11 +556,12 @@ function teamLinks(teamName, locale, base) {
     // "Takım puan durumu" bağlantısı yalnızca takımın GERÇEKTEN oynadığı lige
     // gider. Burası eskiden hangi takım olursa olsun Süper Lig tablosuna
     // bağlıyordu: İngilizce tarafta bir La Liga kulübünün altında Süper Lig
-    // tablosu bağlantısı duruyordu.
+    // tablosu bağlantısı duruyordu. Adres main'deki #266 ile temiz adrese
+    // taşındı (uzantısız).
     return {
       page: `${base}${page}`,
       fixtures: `${base}${page}`,
-      standings: isSuperLig ? `${base}en/super-lig-standings.html` : null
+      standings: isSuperLig ? `${base}en/super-lig-standings` : null
     };
   }
   if (BIG_FOUR.includes(slug)) {
@@ -600,8 +601,10 @@ function leagueLinks(entry, locale, base) {
     // KATALOGDA OLMAK, SAYFANIN ÜRETİLDİĞİ ANLAMINA GELMEZ. TR sayfası olup
     // EN karşılığı olmayan yarışmalar var (1. Lig); katalog kaydına bakıp
     // bağlantı basmak, olmayan bir sayfaya götürüyordu.
+    // Varlık denetimi diskteki dosyaya, bağlantı ise kanonik (uzantısız)
+    // adrese bakar.
     const enPage = catalog ? `en/${catalog.slugEn}.html` : null;
-    return { standings: enPage && fileExists(enPage) ? `${base}${enPage}` : null, league: null, leaders };
+    return { standings: enPage && fileExists(enPage) ? `${base}en/${catalog.slugEn}` : null, league: null, leaders };
   }
   const trPage = catalog ? `${catalog.slugTr}.html` : null;
   return {
@@ -784,7 +787,7 @@ function pageHtml(entry, locale, options) {
   const toAbsolute = (href) => {
     if (!href) return null;
     const relativeHref = href.replace(/^(\.\.\/)+/, "").split("?")[0];
-    const extensionless = /^takimlar\//.test(relativeHref) || /-puan-durumu(\.html)?$/.test(relativeHref) || /^en\/[a-z0-9-]+-standings\.html$/.test(relativeHref);
+    const extensionless = /^takimlar\//.test(relativeHref) || /-puan-durumu(\.html)?$/.test(relativeHref) || /^en\/[a-z0-9-]+-standings(\.html)?$/.test(relativeHref);
     return `${DOMAIN}/${extensionless ? relativeHref.replace(/\.html$/, "") : relativeHref}`;
   };
 
