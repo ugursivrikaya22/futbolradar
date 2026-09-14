@@ -8883,6 +8883,107 @@
     return uniqueSorted(teams, "team");
   }
 
+  /**
+   * TRANSFER KARTINDA OYUNCU FOTOĞRAFI.
+   *
+   * Transfer kaydı yalnızca oyuncunun adını taşıyor; sağlayıcı kimliği ve
+   * fotoğraf adresi oyuncu kayıtlarında duruyor. Kimlik oradan ödünç alınır:
+   * eşleşme önce playerId ile, ad yalnızca yedek anahtar.
+   *
+   * Lisans kuralı DEĞİŞMİYOR: adres yine playerAvatarHtml'den geçiyor, yani
+   * beyaz listede olmayan host ya da yer tutucu kimlik fotoğraf üretmez —
+   * eşleşme yanlış olsa bile lisanssız görsel yayına çıkmaz, baş harfler
+   * gösterilir.
+   */
+  function transferPhotoNameKey(name) {
+    var parts = normalizeSearchText(name)
+      .replace(/[^a-z0-9 ]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .split(" ")
+      .filter(Boolean);
+    if (parts.length < 2) return "";
+    // Sağlayıcı kadro kayıtları adı "V. Osimhen" biçiminde tutuyor; transfer
+    // kaydında ise tam ad var. Ortak anahtar: ilk harf + soyad.
+    return parts[0].charAt(0) + "." + parts[parts.length - 1];
+  }
+
+  function buildTransferPhotoIndex(players) {
+    var index = { byId: {}, byTeam: {}, byName: {}, nameCounts: {} };
+    (Array.isArray(players) ? players : []).forEach(function (player) {
+      if (!player) return;
+      var identity = { photo: player.photo || null, providerId: player.providerId || player.playerId || null };
+      // Fotoğraf üretemeyecek kayıt indekse hiç girmiyor: girseydi doğru
+      // eşleşmenin önünü keser, kart boş yere baş harflere düşerdi.
+      if (!identity.photo && !/^\d+$/.test(String(identity.providerId || ""))) return;
+
+      if (player.id) index.byId[String(player.id)] = identity;
+
+      var nameKey = transferPhotoNameKey(player.name);
+      if (!nameKey) return;
+
+      var teamKey = nameKey + "@" + normalizeSearchText(player.currentTeam || player.team);
+      if (!index.byTeam[teamKey]) index.byTeam[teamKey] = identity;
+
+      index.nameCounts[nameKey] = (index.nameCounts[nameKey] || 0) + 1;
+      if (!index.byName[nameKey]) index.byName[nameKey] = identity;
+    });
+    return index;
+  }
+
+  function lookupTransferPhotoIdentity(record, index) {
+    if (!index || !record) return null;
+
+    var byId = index.byId[String(record.playerId || "")];
+    if (byId) return byId;
+
+    var nameKey = transferPhotoNameKey(record.playerName);
+    if (!nameKey) return null;
+
+    // Önce kulüple birlikte: aynı soyadı taşıyan iki oyuncuyu ayıran en
+    // güçlü ipucu, oyuncunun gittiği kulüp.
+    var byTeam = index.byTeam[nameKey + "@" + normalizeSearchText(record.toTeam)] ||
+      index.byTeam[nameKey + "@" + normalizeSearchText(record.fromTeam)];
+    if (byTeam) return byTeam;
+
+    // Kulüp eşleşmiyorsa (kulüp adı varyantı, yurt dışı kulüp, serbest
+    // oyuncu) yalnızca anahtar TEK bir oyuncuya işaret ediyorsa kabul
+    // edilir. Belirsiz eşleşme, başkasının fotoğrafını basmak demektir.
+    if (index.nameCounts[nameKey] === 1) return index.byName[nameKey];
+    return null;
+  }
+
+  function transferRecordIdentity(record, index) {
+    var found = lookupTransferPhotoIdentity(record, index);
+    return {
+      name: record && record.playerName,
+      currentTeam: record && record.toTeam,
+      photo: (found && found.photo) || (record && record.playerPhoto) || null,
+      providerId: (found && found.providerId) ||
+        (record && (record.providerId || record.playerProviderId)) || null
+    };
+  }
+
+  function transferRecordSearchText(record) {
+    return normalizeSearchText([
+      record && record.playerName,
+      record && record.fromTeam,
+      record && record.toTeam,
+      record && record.league,
+      record && record.position,
+      record && record.type
+    ].filter(Boolean).join(" "));
+  }
+
+  function transferRecordMatchesQuery(record, queryText) {
+    var normalized = normalizeSearchText(queryText).trim();
+    if (!normalized) return true;
+    var haystack = transferRecordSearchText(record);
+    return normalized.split(/\s+/).every(function (token) {
+      return haystack.indexOf(token) !== -1;
+    });
+  }
+
   function transferRecordFee(record) {
     if (record && record.fee) return record.fee;
     if (Number(record && record.feeEur) > 0) return playerMarketValue({ marketValueEur: record.feeEur });
@@ -8959,7 +9060,7 @@
     );
   }
 
-  function renderTransferFeedCard(record) {
+  function renderTransferFeedCard(record, photoIndex) {
     var sourceUrl = safeImageUrl(record && record.sourceUrl);
     var sourceAction = sourceUrl
       ? '<a class="detail-link" href="' + escapeHtml(sourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>'
@@ -8970,8 +9071,8 @@
       // playerAvatarHtml aynı lisans kuralına tabi: gerçek sağlayıcı kimliği
       // yoksa baş harfler gösterilir, uydurma görsel yüklenmez.
       '<header><div class="player-card-title">' +
-      playerAvatarHtml({ name: record.playerName, providerId: record.providerId || record.playerProviderId, currentTeam: record.toTeam },
-        null, record.playerName + ", " + (record.toTeam || "yeni kulüp") + " transferi") +
+      playerAvatarHtml(transferRecordIdentity(record, photoIndex),
+        null, (record.toTeam || "yeni kulüp") + " transferi") +
       '<div><span class="card-kicker">' + escapeHtml(record.league || "Lig bilgisi yakında") + ' · ' + escapeHtml(transferRecordStatusLabel(record.status)) + '</span><h2>' + escapeHtml(record.playerName) + '</h2></div></div><strong>' + escapeHtml(formatProfileDate(record.date) || record.season || "Yakında") + '</strong></header>' +
       '<div class="transfer-route transfer-route-large"><b>' + escapeHtml(record.fromTeam || "Önceki kulüp bilinmiyor") + '</b><em>→</em><b>' + escapeHtml(record.toTeam || "Yeni kulüp bilinmiyor") + '</b></div>' +
       '<div class="transfer-radar-meta">' +
@@ -9170,6 +9271,7 @@
     var directionSelect = document.querySelector("[data-transfer-direction-filter]");
     var statusSelect = document.querySelector("[data-transfer-status-filter]");
     var sortSelect = document.querySelector("[data-transfer-sort]");
+    var searchInput = document.querySelector("[data-transfer-search]");
     var summary = document.querySelector("[data-transfer-summary]");
     var query = new URLSearchParams(window.location.search);
     var defaultFilter = target.getAttribute("data-transfer-default-filter") || config.defaultFilter || "all";
@@ -9179,13 +9281,21 @@
       team: query.get("team") || "",
       direction: query.get("direction") || "",
       status: query.get("status") || "",
-      sort: query.get("sort") || defaultSort
+      sort: query.get("sort") || defaultSort,
+      q: query.get("q") || ""
     };
 
     target.dataset.state = "loading";
 
-    loadData("transfers")
-      .then(function (records) {
+    // Oyuncu kayıtları YALNIZCA fotoğraf kimliği için okunuyor; istek
+    // başarısız olursa liste yine çizilir, kartlar baş harflere düşer.
+    Promise.all([
+      loadData("transfers"),
+      loadData("players").catch(function () { return []; })
+    ])
+      .then(function (results) {
+        var records = results[0];
+        var photoIndex = buildTransferPhotoIndex(results[1]);
         // Sınır burada, tek noktada: filtreler, sıralama, özet ve sayaç
         // hepsi bu listeyi tükettiği için kural kendiliğinden hepsine yayılır.
         var base = filterTransferRadarWindow(records);
@@ -9196,6 +9306,7 @@
         if (directionSelect) directionSelect.value = state.direction;
         if (statusSelect) statusSelect.value = state.status;
         if (sortSelect) sortSelect.value = state.sort;
+        if (searchInput) searchInput.value = state.q;
 
         function syncButtons() {
           filterButtons.forEach(function (button) {
@@ -9207,7 +9318,7 @@
 
         function updateQuery() {
           var params = new URLSearchParams(window.location.search);
-          [["filter", state.filter === defaultFilter ? "" : state.filter], ["team", state.team], ["direction", state.direction], ["status", state.status], ["sort", state.sort === defaultSort ? "" : state.sort]].forEach(function (item) {
+          [["filter", state.filter === defaultFilter ? "" : state.filter], ["team", state.team], ["direction", state.direction], ["status", state.status], ["sort", state.sort === defaultSort ? "" : state.sort], ["q", state.q]].forEach(function (item) {
             if (item[1]) params.set(item[0], item[1]);
             else params.delete(item[0]);
           });
@@ -9220,6 +9331,7 @@
           state.direction = directionSelect ? directionSelect.value : state.direction;
           state.status = statusSelect ? statusSelect.value : state.status;
           state.sort = sortSelect ? sortSelect.value : state.sort;
+          state.q = searchInput ? searchInput.value : state.q;
 
           if (!state.team) state.direction = "";
           if (directionSelect) {
@@ -9234,7 +9346,8 @@
                   record.toTeam === state.team || record.fromTeam === state.team);
             return transferRecordMatches(record, state.filter) &&
               teamMatches &&
-              (!state.status || record.status === state.status);
+              (!state.status || record.status === state.status) &&
+              transferRecordMatchesQuery(record, state.q);
           });
 
           filtered = sortTransferRecords(filtered, state.sort || "updated");
@@ -9253,11 +9366,15 @@
           updateQuery();
 
           if (!filtered.length) {
-            setEmpty(target, "Transfer kaydi bulunamadi", "Bu filtre icin kayit yok. Filtreleri genislet.");
+            setEmpty(target, "Transfer kaydı bulunamadı", state.q
+              ? "\u201c" + state.q + "\u201d aramasıyla eşleşen kayıt yok. Aramayı kısalt ya da filtreleri genişlet."
+              : "Bu filtre için kayıt yok. Filtreleri genişlet.");
             return;
           }
 
-          setContent(target, filtered.map(renderTransferFeedCard).join(""));
+          setContent(target, filtered.map(function (record) {
+            return renderTransferFeedCard(record, photoIndex);
+          }).join(""));
         }
 
         filterButtons.forEach(function (button) {
@@ -9266,6 +9383,17 @@
             render();
           });
         });
+
+        if (searchInput) {
+          // Yazarken her tuşta yeniden çizmek uzun listede takılmaya yol
+          // açıyordu; 140 ms'lik gecikme yazmayı akıcı bırakıyor.
+          var searchTimer = null;
+          searchInput.addEventListener("input", function () {
+            if (searchTimer) window.clearTimeout(searchTimer);
+            searchTimer = window.setTimeout(render, 140);
+          });
+          searchInput.addEventListener("search", render);
+        }
 
         [teamSelect, directionSelect, statusSelect, sortSelect].forEach(function (select) {
           if (select) {

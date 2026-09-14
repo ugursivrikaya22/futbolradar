@@ -6044,12 +6044,54 @@ p {
         font-weight: 850;
       }
 
+      /* TRANSFER ARAÇ ÇUBUĞU — arama ve hızlı filtreler sayfanın üstünde sabit.
+         Liste uzun; okuyucu aşağı indiğinde arama kutusu ekrandan çıkıyordu.
+         Yapışkan olan yalnızca arama + çip satırı: açılır menüler ayrı bir
+         satırda kalıyor, böylece sabit blok küçük ekranda görüntünün yarısını
+         yemiyor. */
       .transfer-toolbar {
+        position: sticky;
+        top: var(--transfer-toolbar-top, 72px);
+        z-index: 6;
         display: grid;
-        grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr));
+        grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+        gap: 10px 14px;
+        align-items: end;
+        margin: 18px 0 10px;
+        padding: 12px;
+        border: 1px solid rgba(11, 143, 90, 0.09);
+        border-radius: 16px;
+        background: rgba(5, 18, 16, 0.94);
+        backdrop-filter: blur(16px);
+      }
+
+      .transfer-filter-row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
         align-items: end;
-        margin: 18px 0;
+        margin: 0 0 18px;
+      }
+
+      .transfer-search-group input[type="search"] {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid rgba(11, 143, 90, 0.16);
+        border-radius: 12px;
+        padding: 0 14px;
+        color: #e2ece7;
+        background: rgba(var(--surface-rgb), 0.06);
+        font: inherit;
+        font-size: 0.92rem;
+      }
+
+      .transfer-search-group input[type="search"]::placeholder {
+        color: rgba(226, 236, 231, 0.5);
+      }
+
+      .transfer-search-group input[type="search"]:focus-visible {
+        outline: 2px solid rgba(11, 143, 90, 0.55);
+        outline-offset: 1px;
       }
 
       .transfer-filter-chips {
@@ -6946,6 +6988,27 @@ p {
         }
 
         .transfer-toolbar {
+          grid-template-columns: minmax(0, 1fr);
+          --transfer-toolbar-top: 60px;
+        }
+
+        /* Dar ekranda çipler sarmak yerine yatay kayıyor: sabit blok tek
+           satırda kalıyor, ekranın yarısını kaplamıyor. */
+        .transfer-toolbar .transfer-filter-chips {
+          flex-wrap: nowrap;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+
+        .transfer-toolbar .transfer-filter-chips::-webkit-scrollbar {
+          display: none;
+        }
+
+        .transfer-toolbar .transfer-filter-chips button {
+          flex: 0 0 auto;
+        }
+
+        .transfer-filter-row {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
@@ -7288,6 +7351,7 @@ main.container {
 .transfer-summary-grid,
 .transfer-radar-summary,
 .transfer-toolbar,
+.transfer-filter-row,
 .transfer-radar-meta {
           grid-template-columns: 1fr;
         }

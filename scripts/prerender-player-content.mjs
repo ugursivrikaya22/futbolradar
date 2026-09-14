@@ -8,6 +8,7 @@ const { getPlayers, formatMarketValueEur } = require("../services/playerService.
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { buildPlayerProfile } = require("../services/playerProfileService.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 
 /**
  * Profil sayfası artık sabit bir dizinde değil: tam adı bilinen oyuncu
@@ -107,6 +108,91 @@ function playerCard(player, rootPrefix = "../") {
   </article>`;
 }
 
+/**
+ * TRANSFER KARTINDA FOTOĞRAF — ön render tarafı.
+ *
+ * Transfer kaydında görsel kimlik yok; oyuncu kaydından ödünç alınıyor
+ * (önce playerId, yedek olarak ad). Karar yine services/playerPhotoService
+ * kuralında: beyaz listede olmayan adres ya da yer tutucu kimlik fotoğraf
+ * üretmez, baş harfler basılır. İstemci tarafı (app.js) aynı sonucu
+ * ürettiği için JS yüklendiğinde kart değişmez.
+ */
+function normalizePhotoText(value) {
+  return String(value ?? "")
+    .toLocaleLowerCase("tr-TR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i")
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Sağlayıcı kadro kayıtları adı "V. Osimhen" biçiminde tutuyor, transfer
+ * kaydında ise tam ad var. Ortak anahtar: ilk harf + soyad.
+ */
+function photoNameKey(name) {
+  const parts = normalizePhotoText(name).split(" ").filter(Boolean);
+  if (parts.length < 2) return "";
+  return `${parts[0].charAt(0)}.${parts[parts.length - 1]}`;
+}
+
+const photoIndex = { byId: new Map(), byTeam: new Map(), byName: new Map(), nameCounts: new Map() };
+for (const player of players) {
+  const identity = { photo: player.photo || null, providerId: player.providerId || player.playerId || null };
+  // Fotoğraf üretemeyecek kayıt indekse girmiyor; girseydi doğru eşleşmenin
+  // önünü keser, kart boş yere baş harflere düşerdi.
+  if (!identity.photo && !/^\d+$/.test(String(identity.providerId || ""))) continue;
+  if (player.id) photoIndex.byId.set(String(player.id), identity);
+  const nameKey = photoNameKey(player.name);
+  if (!nameKey) continue;
+  const teamKey = `${nameKey}@${normalizePhotoText(player.currentTeam || player.team)}`;
+  if (!photoIndex.byTeam.has(teamKey)) photoIndex.byTeam.set(teamKey, identity);
+  photoIndex.nameCounts.set(nameKey, (photoIndex.nameCounts.get(nameKey) || 0) + 1);
+  if (!photoIndex.byName.has(nameKey)) photoIndex.byName.set(nameKey, identity);
+}
+
+function lookupTransferPhotoIdentity(transfer) {
+  const byId = photoIndex.byId.get(String(transfer.playerId || ""));
+  if (byId) return byId;
+
+  const nameKey = photoNameKey(transfer.playerName);
+  if (!nameKey) return null;
+
+  // Önce kulüple birlikte: aynı soyadı taşıyan iki oyuncuyu ayıran en güçlü
+  // ipucu, oyuncunun gittiği (ya da geldiği) kulüp.
+  const byTeam = photoIndex.byTeam.get(`${nameKey}@${normalizePhotoText(transfer.toTeam)}`) ||
+    photoIndex.byTeam.get(`${nameKey}@${normalizePhotoText(transfer.fromTeam)}`);
+  if (byTeam) return byTeam;
+
+  // Kulüp eşleşmiyorsa yalnızca anahtar TEK bir oyuncuya işaret ediyorsa
+  // kabul edilir; belirsiz eşleşme, başkasının fotoğrafını basmak demektir.
+  if (photoIndex.nameCounts.get(nameKey) === 1) return photoIndex.byName.get(nameKey) || null;
+  return null;
+}
+
+function transferPlayerIdentity(transfer) {
+  const found = lookupTransferPhotoIdentity(transfer);
+  return {
+    name: transfer.playerName,
+    currentTeam: transfer.toTeam,
+    photo: (found && found.photo) || null,
+    providerId: (found && found.providerId) || null
+  };
+}
+
+function transferAvatarHtml(transfer) {
+  const identity = transferPlayerIdentity(transfer);
+  const photo = resolvePlayerPhoto(identity);
+  const initials = escapeHtml(photo.initials);
+  if (photo.isPlaceholder) {
+    return `<span class="player-avatar is-placeholder">${initials}</span>`;
+  }
+  const alt = playerPhotoAlt(identity, `${transfer.toTeam || "yeni kulüp"} transferi`);
+  return `<span class="player-avatar"><img src="${escapeHtml(photo.url)}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async" width="96" height="96" data-initials="${initials}" onerror="this.parentNode.classList.add('is-placeholder');this.replaceWith(document.createTextNode(this.dataset.initials||''))" /></span>`;
+}
+
 function transferCard(transfer) {
   const fee = transfer.fee || (Number(transfer.feeEur) > 0 ? formatMarketValueEur(transfer.feeEur) : Number(transfer.feeEur) === 0 ? "Bedelsiz" : "Açıklanmadı");
   const date = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(`${transfer.date}T12:00:00Z`));
@@ -115,7 +201,7 @@ function transferCard(transfer) {
     : "";
 
   return `<article class="transfer-radar-card" data-card="transfer-record" data-transfer="${escapeHtml(transfer.id || transfer.playerId)}">
-    <header><div class="player-card-title"><div><span class="card-kicker">${escapeHtml(transfer.league || "Lig bilgisi yakında")} · Kesinleşti</span><h2>${escapeHtml(transfer.playerName)}</h2></div></div><strong>${escapeHtml(date)}</strong></header>
+    <header><div class="player-card-title">${transferAvatarHtml(transfer)}<div><span class="card-kicker">${escapeHtml(transfer.league || "Lig bilgisi yakında")} · Kesinleşti</span><h2>${escapeHtml(transfer.playerName)}</h2></div></div><strong>${escapeHtml(date)}</strong></header>
     <div class="transfer-route transfer-route-large"><b>${escapeHtml(transfer.fromTeam || "Önceki kulüp bilinmiyor")}</b><em>→</em><b>${escapeHtml(transfer.toTeam || "Yeni kulüp bilinmiyor")}</b></div>
     <div class="transfer-radar-meta"><article><span>Mevki</span><b>${escapeHtml(transfer.position || "Bilinmiyor")}</b></article><article><span>Transfer tipi</span><b>${escapeHtml(transfer.type || "Açıklanmadı")}</b></article><article><span>Bonservis</span><b>${escapeHtml(fee)}</b></article><article><span>Sezon</span><b>${escapeHtml(transfer.season || "Yakında")}</b></article></div>
     ${transfer.note ? `<p class="transfer-note">${escapeHtml(transfer.note)}</p>` : ""}

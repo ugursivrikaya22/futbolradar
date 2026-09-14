@@ -321,7 +321,11 @@ function landingControlsHtml(page) {
     return "";
   }
 
-  return `<section class="transfer-toolbar" aria-label="Transfer Radarı filtreleri">
+  return `<section class="transfer-toolbar" aria-label="Transfer Radarı arama ve hızlı filtreler">
+        <div class="filter-group transfer-search-group">
+          <label for="transfer-search">Ara</label>
+          <input type="search" id="transfer-search" data-transfer-search placeholder="Oyuncu, kulüp veya lig ara" autocomplete="off" spellcheck="false" />
+        </div>
         <div class="transfer-filter-chips" role="group" aria-label="Hızlı transfer filtreleri">
           <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tüm transferler</button>
           <button type="button" data-transfer-filter="son-hareket" aria-pressed="false">Son hareket</button>
@@ -329,6 +333,8 @@ function landingControlsHtml(page) {
           <button type="button" data-transfer-filter="riskli-transfer" aria-pressed="false">Riskli takip</button>
           <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yükselen değer</button>
         </div>
+      </section>
+      <section class="transfer-filter-row" aria-label="Transfer Radarı filtreleri">
         <div class="filter-group">
           <label for="transfer-team-filter">Takım</label>
           <select id="transfer-team-filter" data-transfer-team-filter></select>
