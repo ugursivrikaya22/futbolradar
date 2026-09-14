@@ -50,6 +50,7 @@ import {
   lineupsSectionHtml,
   longDate,
   nextMatchesSectionHtml,
+  matchFollowHtml,
   matchPollSectionHtml,
   normalizeEvents,
   radarPulseSectionHtml,
@@ -703,6 +704,9 @@ function pageHtml(entry, locale, options) {
     // Anket uç noktası hem Türkçe hem İngilizce slug'ı AYNI maça çözüyor,
     // böylece iki dildeki okuyucu tek bir sayımı paylaşıyor.
     pollSlug: slugValue,
+    // Maç takibi aboneliği sağlayıcı kimliğine yazılıyor; kimliği olmayan
+    // maçta takip düğmesi hiç basılmaz.
+    followFixtureId: (entry.providerIds && entry.providerIds.apiFootball) ? String(entry.providerIds.apiFootball) : "",
     playerIndex,
     homeTeam: entry.homeTeam,
     awayTeam: entry.awayTeam,
@@ -839,6 +843,7 @@ function pageHtml(entry, locale, options) {
     <main class="container msp" data-match-center data-msp-slug="${escapeHtml(slugValue)}" data-msp-locale="${locale}" data-msp-state="${escapeHtml(state)}" data-msp-kickoff="${escapeHtml(istanbulIso(entry.kickoff) || "")}" data-msp-query="${escapeHtml(detailQuery)}" data-msp-home="${escapeHtml(entry.homeTeam)}" data-msp-away="${escapeHtml(entry.awayTeam)}" data-msp-title-live="${escapeHtml(liveTitles.live)}" data-msp-title-post="${escapeHtml(liveTitles.post)}">
       <nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><a href="${base}${locale === "en" ? HUB_EN : HUB_TR}">${escapeHtml(text.allMatches)}</a><span>/</span>${breadcrumbCompetition}<span>${escapeHtml(entry.homeTeam)} ${locale === "en" ? "vs" : "-"} ${escapeHtml(entry.awayTeam)}</span></nav>
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
+      ${matchFollowHtml(ctx)}
       ${heroHtml(entry, ctx)}
       ${sections.filter(Boolean).join("\n      ")}
       ${relatedLinksHtml(related, locale)}

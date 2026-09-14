@@ -442,6 +442,71 @@ ok("istatistiksiz maçta pencere yoktur ama akış durur", () => {
 });
 
 /* ------------------------------------------------------------------ */
+/* 8b. ÖNE ÇIKAN OYUNCULAR — kendi derecemizi ÜRETMİYORUZ               */
+/* ------------------------------------------------------------------ */
+
+const ratedPlayers = [
+  { name: "Osimhen", team: "Galatasaray", providerRating: 8.3, ratingSource: "api-football", goals: 2, shots: 5, keyPasses: 1 },
+  { name: "Szymanski", team: "Fenerbahçe", providerRating: 7.8, ratingSource: "api-football", assists: 1, keyPasses: 4 },
+  { name: "Derecesiz", team: "X", goals: 3, shots: 9 }
+];
+
+ok("yalnızca sağlayıcı derecesi olan oyuncu listeye girer", () => {
+  const rows = builder.buildTopPlayers(ratedPlayers);
+  assert.equal(rows.length, 2, "derecesi olmayan oyuncu listelenmemeli");
+  assert.equal(rows.some((row) => row.name === "Derecesiz"), false,
+    "gol/şut sayısından derece TÜRETİLMEZ");
+  assert.equal(rows[0].name, "Osimhen", "derece sırasına göre");
+  assert.equal(rows[0].rating, 8.3);
+});
+
+ok("hiç derece yoksa liste boştur", () => {
+  assert.deepEqual(builder.buildTopPlayers([{ name: "A", goals: 3 }, { name: "B", shots: 7 }]), []);
+  assert.deepEqual(builder.buildTopPlayers([]), []);
+  assert.deepEqual(builder.buildTopPlayers(null), []);
+});
+
+ok("ölçülmeyen oyuncu alanı hiç oluşmaz", () => {
+  const [osimhen, szymanski] = builder.buildTopPlayers(ratedPlayers);
+  assert.equal("assists" in osimhen, false, "'0 asist' ile 'asist verisi yok' aynı şey değil");
+  assert.equal("goals" in szymanski, false);
+  assert.equal(szymanski.assists, 1);
+});
+
+ok("derece kaynağıyla birlikte taşınır", () => {
+  const [first] = builder.buildTopPlayers(ratedPlayers);
+  assert.equal(first.ratingSource, "api-football", "kimin ölçtüğü ekranda söylenebilmeli");
+});
+
+ok("oyuncu listesi çizimi derece yoksa hiç basılmaz", () => {
+  assert.equal(client.playersHtml([], "tr"), "");
+  assert.equal(client.playersHtml(null, "tr"), "");
+});
+
+ok("oyuncu kartı ölçüleri ve kaynak notunu basar", () => {
+  const html = client.playersHtml(builder.buildTopPlayers(ratedPlayers), "tr");
+  assert.match(html, /Osimhen/);
+  assert.match(html, /8\.3/);
+  assert.match(html, /2 gol/);
+  assert.match(html, /1 kilit pas/);
+  assert.match(html, /FutbolRadar oyuncu derecesi üretmez/,
+    "derecenin sağlayıcıya ait olduğu ekranda yazmalı");
+});
+
+ok("oyuncu kartı HTML kaçışı yapar", () => {
+  const html = client.playersHtml([{ name: "<script>x</script>", team: "<b>y</b>", rating: 7 }], "tr");
+  assert.equal(html.includes("<script>"), false);
+  assert.equal(html.includes("<b>y</b>"), false);
+});
+
+ok("İngilizce oyuncu kartı İngilizce", () => {
+  const html = client.playersHtml(builder.buildTopPlayers(ratedPlayers), "en");
+  assert.match(html, /Top performers/);
+  assert.match(html, /2 goals/);
+  assert.equal(html.includes("kilit pas"), false);
+});
+
+/* ------------------------------------------------------------------ */
 /* 9. İstemci çizimi                                                    */
 /* ------------------------------------------------------------------ */
 

@@ -22700,3 +22700,78 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .fan-share-button:hover { border-color: var(--green); background: var(--surface-tint); }
 .fan-share-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .fan-share-button.is-copy { border-style: dashed; }
+
+/* ---------- "Bu Maçı Takip Et" ---------- */
+/* Kap `hidden` doğar ve yalnızca push GERÇEKTEN mümkünse açılır; bildirim
+   gönderilemeyecek bir tarayıcıda düğme hiç görünmez. */
+.fan-follow-wrap[hidden] { display: none !important; }
+.fan-follow-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin: calc(var(--sp-2) * -1) 0 var(--sp-4);
+}
+.fan-follow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+.fan-follow:hover { border-color: var(--green); background: var(--surface-tint); }
+.fan-follow:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-follow.is-on { border-color: var(--green); background: var(--green-tint); color: var(--green-deep); }
+.fan-follow-off {
+  min-height: 44px;
+  padding-inline: var(--sp-2);
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--fs-xs);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.fan-follow-note { flex-basis: 100%; margin: 0; font-size: var(--fs-xs); }
+
+/* ---------- Öne çıkan oyuncular ---------- */
+/* Sağlayıcı derece vermiyorsa bu blok hiç basılmaz; boş durum yoktur. */
+.rp-players {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-players h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); font-weight: 700; }
+.rp-players-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.rp-player {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-block: var(--sp-2);
+  border-bottom: 1px solid var(--line);
+}
+.rp-player:last-child { border-bottom: 0; }
+.rp-player-star { font-size: 13px; line-height: 1; }
+.rp-player-body { min-width: 0; font-size: var(--fs-sm); }
+.rp-player-body small { color: var(--muted); }
+.rp-player-stats { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); margin-top: 2px; }
+.rp-player-stats span { font-size: var(--fs-xs); color: var(--muted); }
+.rp-player-rating {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+.rp-players-source { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }

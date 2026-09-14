@@ -29,6 +29,9 @@ const DEFAULT_TTLS = Object.freeze({
   "matches-live": 15 * 1000,
   matches: 60 * 1000,
   "match-detail": 30 * 1000,
+  // Oyuncu dereceleri skor kadar hızlı değişmiyor; uzun TTL canlı maçta
+  // ikinci bir sağlayıcı isteğinin maliyetini dakikada birin altına indirir.
+  "match-players": 180 * 1000,
   standings: 5 * 60 * 1000,
   "super-lig-fixtures": 30 * 60 * 1000,
   teams: 6 * 60 * 60 * 1000,

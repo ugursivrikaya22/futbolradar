@@ -36,6 +36,12 @@
       momentumFrom: "Momentum ölçümü {minute}. dakikada başladı; öncesi ölçülmedi.",
       timelineTitle: "Olay akışı",
       timelineAll: "Tüm olaylar",
+      playersTitle: "Öne çıkan oyuncular",
+      playersSource: "Dereceler sağlayıcı ölçümüdür (API-Football); FutbolRadar oyuncu derecesi üretmez.",
+      statGoals: "gol",
+      statAssists: "asist",
+      statShots: "şut",
+      statKeyPasses: "kilit pas",
       shots: "Şut",
       onTarget: "İsabetli şut",
       xg: "xG",
@@ -69,6 +75,12 @@
       momentumFrom: "Momentum tracking started at minute {minute}; earlier minutes were not measured.",
       timelineTitle: "Match Timeline",
       timelineAll: "All events",
+      playersTitle: "Top performers",
+      playersSource: "Ratings are the provider's own measurement (API-Football); FutbolRadar does not produce player ratings.",
+      statGoals: "goals",
+      statAssists: "assists",
+      statShots: "shots",
+      statKeyPasses: "key passes",
       shots: "Shots",
       onTarget: "Shots on target",
       xg: "xG",
@@ -369,6 +381,48 @@
   }
 
   /* ----------------------------------------------------------------- */
+  /* ÖNE ÇIKAN OYUNCULAR                                                 */
+  /* ----------------------------------------------------------------- */
+
+  var PLAYER_STAT_LABELS = [
+    { key: "goals", label: "statGoals" },
+    { key: "assists", label: "statAssists" },
+    { key: "shots", label: "statShots" },
+    { key: "keyPasses", label: "statKeyPasses" }
+  ];
+
+  /**
+   * Derecesi OLAN oyuncular. Liste boşsa bölüm hiç çizilmez — sağlayıcı
+   * derece vermiyorsa kendi derecemizi üretmiyoruz (bkz.
+   * services/radarPulseBuilder.js#buildTopPlayers).
+   */
+  function playersHtml(players, locale) {
+    var rows = Array.isArray(players) ? players : [];
+    if (!rows.length) return "";
+    var text = t(locale);
+
+    return '<div class="rp-players" data-rp-players>' +
+      "<h3>" + esc(text.playersTitle) + "</h3>" +
+      '<ol class="rp-players-list">' + rows.map(function (player) {
+        var stats = PLAYER_STAT_LABELS
+          .filter(function (entry) { return isNum(player[entry.key]); })
+          .map(function (entry) {
+            return "<span>" + esc(player[entry.key]) + " " + esc(text[entry.label]) + "</span>";
+          }).join("");
+        return '<li class="rp-player">' +
+          '<span class="rp-player-star" aria-hidden="true">⭐</span>' +
+          '<span class="rp-player-body">' +
+            "<b>" + esc(player.name) + "</b>" +
+            (player.team ? " <small>" + esc(player.team) + "</small>" : "") +
+            (stats ? '<span class="rp-player-stats">' + stats + "</span>" : "") +
+          "</span>" +
+          '<b class="rp-player-rating">' + esc(fmt(player.rating, 1)) + "</b>" +
+          "</li>";
+      }).join("") + "</ol>" +
+      '<p class="rp-players-source muted-copy">' + esc(text.playersSource) + "</p></div>";
+  }
+
+  /* ----------------------------------------------------------------- */
   /* OLAY ZAMAN ÇİZELGESİ (en yeni üstte)                                */
   /* ----------------------------------------------------------------- */
 
@@ -432,6 +486,7 @@
       gaugeHtml(pulse, names, locale),
       windowHtml(payload && payload.window, names, locale),
       momentumHtml(payload && payload.momentum, names, locale, payload && payload.minute),
+      playersHtml(payload && payload.topPlayers, locale),
       timelineHtml(payload && payload.timeline, locale, settings.allEventsHref)
     ].filter(Boolean);
     return parts.length ? parts.join("") : "";
@@ -500,6 +555,7 @@
     isStale: isStale,
     momentumHtml: momentumHtml,
     momentumPath: momentumPath,
+    playersHtml: playersHtml,
     render: render,
     timelineHtml: timelineHtml,
     track: track,

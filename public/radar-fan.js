@@ -33,7 +33,13 @@
       shareCopied: "Bağlantı kopyalandı",
       shareGoal: "GOOOL!",
       sharePulse: "Radar Nabzı",
-      shareMinute: "dk"
+      shareMinute: "dk",
+      follow: "Bu Maçı Takip Et",
+      following: "Takip ediliyor",
+      followOff: "Takibi bırak",
+      followDenied: "Bildirim izni verilmedi. Tarayıcı ayarlarından açabilirsin.",
+      followError: "Takip şu anda açılamadı.",
+      followTypes: "Maç başladı, gol, kırmızı kart, devre arası ve maç sonucu bildirimi alırsın."
     },
     en: {
       pollTitle: "Fan Poll",
@@ -48,7 +54,13 @@
       shareCopied: "Link copied",
       shareGoal: "GOAL!",
       sharePulse: "Live Match Pulse",
-      shareMinute: "min"
+      shareMinute: "min",
+      follow: "Follow This Match",
+      following: "Following",
+      followOff: "Unfollow",
+      followDenied: "Notification permission was not granted. You can enable it in browser settings.",
+      followError: "Follow could not be enabled right now.",
+      followTypes: "You will get kick-off, goal, red card, half time and full time alerts."
     }
   };
 
@@ -358,9 +370,148 @@
     });
   }
 
+  /* ----------------------------------------------------------------- */
+  /* BU MAÇI TAKİP ET (Web Push)                                         */
+  /* ----------------------------------------------------------------- */
+
+  var FOLLOW_STORE_PREFIX = "fr_follow_match_";
+
+  function vapidPublicKey() {
+    var meta = document.querySelector('meta[name="fr-vapid-public-key"]');
+    var value = meta ? String(meta.getAttribute("content") || "").trim() : "";
+    return value;
+  }
+
+  /** base64url → Uint8Array (PushManager applicationServerKey biçimi). */
+  function urlBase64ToUint8Array(base64) {
+    var padding = "=".repeat((4 - (base64.length % 4)) % 4);
+    var normalized = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
+    var raw = window.atob(normalized);
+    var output = new Uint8Array(raw.length);
+    for (var index = 0; index < raw.length; index += 1) output[index] = raw.charCodeAt(index);
+    return output;
+  }
+
+  function readLocal(key) {
+    try { return window.localStorage.getItem(key); } catch (error) { return null; }
+  }
+
+  function writeLocal(key, value) {
+    try {
+      if (value === null) window.localStorage.removeItem(key);
+      else window.localStorage.setItem(key, value);
+    } catch (error) { /* localStorage kapalıysa düğme yine çalışır, hatırlamaz */ }
+  }
+
+  /**
+   * Push gerçekten mümkün mü?
+   *
+   * VAPID anahtarı sayfaya basılmamışsa sunucu bildirim GÖNDEREMEZ. O
+   * durumda düğmeyi göstermek, okuyucuya bildirim izni verdirip sonra
+   * sessizce hiçbir şey göndermemek olurdu — izin istemenin en kötü biçimi.
+   */
+  function pushAvailable() {
+    return Boolean(
+      vapidPublicKey() &&
+      typeof navigator !== "undefined" &&
+      "serviceWorker" in navigator &&
+      typeof window !== "undefined" &&
+      "PushManager" in window &&
+      typeof Notification !== "undefined"
+    );
+  }
+
+  function bootFollow() {
+    var host = document.querySelector("[data-match-follow]");
+    if (!host || !window.fetch) return;
+    var fixtureId = host.getAttribute("data-match-follow-id") || "";
+    var slug = host.getAttribute("data-match-follow-slug") || "";
+    var locale = host.getAttribute("data-match-follow-locale") === "en" ? "en" : "tr";
+    var text = t(locale);
+    if (!fixtureId || !pushAvailable()) return;
+
+    var storeKey = FOLLOW_STORE_PREFIX + fixtureId;
+    var followKey = "match:" + fixtureId;
+
+    function paint(following, note) {
+      host.innerHTML = '<button type="button" class="fan-follow' + (following ? " is-on" : "") + '"' +
+        ' data-fan-follow aria-pressed="' + (following ? "true" : "false") + '">' +
+        '<span aria-hidden="true">🔔</span> ' + esc(following ? text.following : text.follow) + "</button>" +
+        (following ? '<button type="button" class="fan-follow-off" data-fan-unfollow>' + esc(text.followOff) + "</button>" : "") +
+        '<p class="fan-follow-note muted-copy">' + esc(note || text.followTypes) + "</p>";
+      host.removeAttribute("hidden");
+    }
+
+    function subscribe() {
+      // İZİN YALNIZCA AÇIK TIKLAMADAN SONRA İSTENİR. Sayfa açılışında
+      // izin istemek, okuyucunun neden sorulduğunu bilmediği bir kutu
+      // göstermektir; tarayıcılar da o kalıbı cezalandırıyor.
+      return Notification.requestPermission().then(function (permission) {
+        track("notification_permission", { match_slug: slug, locale: locale, permission: permission });
+        if (permission !== "granted") {
+          paint(false, text.followDenied);
+          return null;
+        }
+        return navigator.serviceWorker.ready.then(function (registration) {
+          return registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey())
+          });
+        }).then(function (subscription) {
+          return fetch("/api/push-subscribe", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ subscription: subscription.toJSON(), favoriteTeam: followKey })
+          });
+        }).then(function (response) {
+          if (!response.ok) throw new Error("subscribe-failed");
+          writeLocal(storeKey, "1");
+          paint(true);
+          track("notification_enabled", { match_slug: slug, locale: locale, scope: "match" });
+        });
+      }).catch(function () {
+        paint(false, text.followError);
+      });
+    }
+
+    function unsubscribe() {
+      return navigator.serviceWorker.ready
+        .then(function (registration) { return registration.pushManager.getSubscription(); })
+        .then(function (subscription) {
+          if (!subscription) return null;
+          return fetch("/api/push-subscribe", {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ endpoint: subscription.endpoint })
+          }).then(function () { return subscription.unsubscribe(); });
+        })
+        .then(function () { writeLocal(storeKey, null); paint(false); })
+        .catch(function () { paint(false, text.followError); });
+    }
+
+    host.addEventListener("click", function (event) {
+      var followButton = event.target.closest ? event.target.closest("[data-fan-follow]") : null;
+      if (followButton) {
+        event.preventDefault();
+        track("follow_match_click", { match_slug: slug, locale: locale });
+        if (readLocal(storeKey) === "1") return;
+        subscribe();
+        return;
+      }
+      var offButton = event.target.closest ? event.target.closest("[data-fan-unfollow]") : null;
+      if (offButton) {
+        event.preventDefault();
+        unsubscribe();
+      }
+    });
+
+    paint(readLocal(storeKey) === "1");
+  }
+
   function boot() {
     try { bootPoll(); } catch (error) { /* anket çökerse sayfa çalışmaya devam eder */ }
     try { bootShare(); } catch (error) { /* paylaşım çökerse sayfa çalışmaya devam eder */ }
+    try { bootFollow(); } catch (error) { /* takip çökerse sayfa çalışmaya devam eder */ }
   }
 
   return {
@@ -373,6 +524,7 @@
     shareHtml: shareHtml,
     shareTargets: shareTargets,
     shareText: shareText,
-    track: track
+    track: track,
+    urlBase64ToUint8Array: urlBase64ToUint8Array
   };
 });

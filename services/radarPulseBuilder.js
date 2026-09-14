@@ -223,6 +223,46 @@ function buildWindowComment(input) {
   });
 }
 
+/** Oyuncu kartında gösterilecek ölçüler — hepsi sağlayıcıdan gelir. */
+const PLAYER_STAT_KEYS = ["goals", "assists", "shots", "keyPasses"];
+
+/**
+ * MAÇIN ÖNE ÇIKAN OYUNCULARI — SAĞLAYICININ DERECESİYLE.
+ *
+ * KENDİ DERECEMİZİ ÜRETMİYORUZ. İstek açıktı: "Veri sağlayıcı oyuncu rating
+ * sağlamıyorsa kendi keyfi rating sistemimizi şimdilik oluşturma." Bu yüzden
+ * sıralama YALNIZCA `providerRating` taşıyan oyuncular arasında yapılır;
+ * derecesi olmayan oyuncu listeye hiç girmez ve gol/şut sayısından bir
+ * derece TÜRETİLMEZ.
+ *
+ * Derece kaynağıyla birlikte taşınır (`ratingSource`) — ekranda kimin
+ * ölçtüğü söylenebilsin diye.
+ */
+function buildTopPlayers(players, options) {
+  const limit = (options && Number.isFinite(options.limit)) ? options.limit : 5;
+  const rows = (Array.isArray(players) ? players : [])
+    .filter((player) => player && player.name && Number.isFinite(Number(player.providerRating)))
+    .map((player) => {
+      const row = {
+        name: player.name,
+        team: player.team || "",
+        rating: Number(player.providerRating),
+        ratingSource: player.ratingSource || null
+      };
+      // Ölçülmeyen alan HİÇ oluşturulmaz; "0 asist" ile "asist verisi yok"
+      // farklı şeylerdir ve çizim katmanı bu farkı okuyor.
+      for (const key of PLAYER_STAT_KEYS) {
+        const value = Number(player[key]);
+        if (Number.isFinite(value) && value > 0) row[key] = value;
+      }
+      return row;
+    })
+    .sort((left, right) => right.rating - left.rating || left.name.localeCompare(right.name, "tr"))
+    .slice(0, Math.max(0, limit));
+
+  return rows;
+}
+
 /**
  * UÇ NOKTANIN DÖNDÜRDÜĞÜ TEK NESNE.
  *
@@ -287,12 +327,16 @@ function buildRadarPulse(input) {
       : null,
     momentum,
     timeline: events,
+    // Derecesi olmayan maçta boş dizi döner ve yüzey bölümü hiç çizmez.
+    topPlayers: buildTopPlayers(detail.players),
     sampleCount: samples.length
   };
 }
 
 module.exports = {
   CLEAR_EDGE_METRICS,
+  PLAYER_STAT_KEYS,
+  buildTopPlayers,
   MOMENTUM_INTENSITY_FLOOR,
   buildMomentum,
   buildRadarPulse,

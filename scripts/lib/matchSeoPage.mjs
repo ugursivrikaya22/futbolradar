@@ -851,6 +851,26 @@ export function radarPulseSectionHtml(ctx) {
  * açmaz — oy kabul edemeyen bir anketi göstermek, çalışmayan bir düğme
  * sunmaktır.
  */
+/**
+ * "BU MAÇI TAKİP ET" KABUĞU — maç başlığının hemen altında.
+ *
+ * Sunucu yalnızca boş, `hidden` bir kap basar; düğmeyi `radar-fan.js` ancak
+ * push GERÇEKTEN mümkünse (VAPID anahtarı sayfada, servis çalışanı ve
+ * Notification API var) çizer. Düğmeyi koşulsuz basmak, bildirim
+ * gönderilemeyecek bir tarayıcıda okuyucudan izin istemek olurdu.
+ *
+ * Sağlayıcı maç kimliği olmayan maçta hiç basılmaz: takip aboneliği o
+ * kimliğe yazılıyor (bkz. server/pushSubscriptionRoute.js#isFollowKey).
+ */
+export function matchFollowHtml(ctx) {
+  const { locale, followFixtureId, pollSlug } = ctx;
+  if (!followFixtureId) return "";
+  return `<div class="fan-follow-wrap" data-match-follow hidden ` +
+    `data-match-follow-id="${escapeHtml(followFixtureId)}" ` +
+    `data-match-follow-slug="${escapeHtml(pollSlug || "")}" ` +
+    `data-match-follow-locale="${locale}"></div>`;
+}
+
 export function matchPollSectionHtml(ctx) {
   const { locale, pollSlug } = ctx;
   const text = STR[locale];

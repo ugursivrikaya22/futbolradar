@@ -185,7 +185,9 @@ function buildQuestions(entry, locale, now) {
       questions.push({
         id: String(raw.id),
         question: String(text.question),
-        closed: Number.isFinite(kickoffMs) && now > kickoffMs + WINNER_CLOSES_AFTER_MS,
+        // İkinci soru da kazanan sorusuyla aynı anda kapanır: maç bittikten
+        // sonra "bir sonraki golü kim atar" sorusunun cevabı da bellidir.
+        closed: winnerClosed,
         options
       });
     }

@@ -10,8 +10,10 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const route = require("../server/matchPollRoute.js");
+const pushRoute = require("../server/pushSubscriptionRoute.js");
+const notifier = require("../services/pushNotifier.js");
 const fan = require("../radar-fan.js");
-const { matchPollSectionHtml } = await import("./lib/matchSeoPage.mjs");
+const { matchFollowHtml, matchPollSectionHtml } = await import("./lib/matchSeoPage.mjs");
 
 let checks = 0;
 function ok(label, fn) {
@@ -308,6 +310,86 @@ ok("bayatlık tuzağı tekrarlanmadı: hata satırı display atayan sınıf taş
   const error = html.match(/<p class="([^"]*)" data-fan-poll-error hidden>/);
   assert.ok(error, "hata satırı bulunmalı");
   assert.equal(error[1].includes("data-empty"), false);
+});
+
+/* ------------------------------------------------------------------ */
+/* 7. BU MAÇI TAKİP ET — abonelik anahtarı                             */
+/* ------------------------------------------------------------------ */
+
+ok("takip anahtarı doğrulanır: uydurma maç kabul edilmez", () => {
+  const teams = require("../data/teams.json");
+  const teamId = String(teams[0].id);
+  const { loadRegistry } = require("../services/matchSeoPages.js");
+  const withId = loadRegistry().pages.find((page) => page && page.providerIds && page.providerIds.apiFootball);
+  assert.ok(withId, "sicilde sağlayıcı kimlikli bir maç bulunmalı");
+
+  assert.equal(pushRoute.isFollowKey(teamId), true, "takım takibi çalışmalı");
+  assert.equal(pushRoute.isFollowKey(`match:${withId.providerIds.apiFootball}`), true, "gerçek maç takibi çalışmalı");
+  // Doğrulanmayan anahtar, asla bildirim almayacak kayıtlarla depoyu
+  // doldurur ve okuyucuya izin verdirip sessizce hiçbir şey göndermemek olur.
+  assert.equal(pushRoute.isFollowKey("match:999999999"), false, "olmayan maç reddedilmeli");
+  assert.equal(pushRoute.isFollowKey("match:../../etc"), false, "enjeksiyon reddedilmeli");
+  assert.equal(pushRoute.isFollowKey("rastgele-metin"), false);
+  assert.equal(pushRoute.isFollowKey(""), false);
+});
+
+ok("takip düğmesi yalnızca sağlayıcı kimliği olan maçta basılır", () => {
+  assert.match(matchFollowHtml({ locale: "tr", followFixtureId: "1584408", pollSlug: entry.slug }),
+    /data-match-follow-id="1584408"/);
+  assert.equal(matchFollowHtml({ locale: "tr", followFixtureId: "" }), "",
+    "kimliksiz maçta takip aboneliği yazılamaz, düğme de basılmaz");
+});
+
+ok("takip kabuğu gizli doğar", () => {
+  const html = matchFollowHtml({ locale: "tr", followFixtureId: "1584408", pollSlug: entry.slug });
+  assert.match(html, /hidden/, "push mümkün değilse düğme hiç görünmemeli");
+});
+
+/* ------------------------------------------------------------------ */
+/* 8. Bildirim yükleri                                                 */
+/* ------------------------------------------------------------------ */
+
+const notifyMatch = {
+  id: "1",
+  providerId: "1575165",
+  homeTeam: "1. FC Köln",
+  awayTeam: "Werder Bremen",
+  kickoff: "2026-09-12T19:30:00+03:00",
+  minute: 67,
+  score: { home: 1, away: 1 }
+};
+
+ok("istenen bildirim türlerinin hepsi yük üretir", () => {
+  for (const type of ["kickoff", "goal", "halftime", "fulltime", "red-card"]) {
+    const payload = notifier.buildPayload({ type, side: "home", match: notifyMatch });
+    assert.ok(payload, `${type}: yük üretilmeli`);
+    assert.ok(payload.title && payload.body, `${type}: başlık ve gövde dolu olmalı`);
+    assert.ok(payload.tag, `${type}: etiket olmalı (aynı olay iki kez düşmesin)`);
+  }
+});
+
+ok("bildirim maçın KENDİ sayfasına gider", () => {
+  const payload = notifier.buildPayload({ type: "goal", side: "home", match: notifyMatch });
+  assert.match(payload.url, /^\/mac\//, "okuyucu maçı listede yeniden aramak zorunda kalmamalı");
+});
+
+ok("ikinci kırmızı kart birincinin bildirimini ezmez", () => {
+  const first = notifier.buildPayload({ type: "red-card", match: { ...notifyMatch, minute: 55 } });
+  const second = notifier.buildPayload({ type: "red-card", match: { ...notifyMatch, minute: 78 } });
+  assert.notEqual(first.tag, second.tag);
+});
+
+ok("bilinmeyen olay türü yük üretmez", () => {
+  assert.equal(notifier.buildPayload({ type: "corner", match: notifyMatch }), null);
+});
+
+ok("maç takibi öneki takım kimlikleriyle çakışmaz", () => {
+  const teams = require("../data/teams.json");
+  assert.equal(notifier.MATCH_FOLLOW_PREFIX, "match:");
+  for (const team of teams) {
+    assert.equal(String(team.id).startsWith(notifier.MATCH_FOLLOW_PREFIX), false,
+      `takım kimliği '${team.id}' maç önekiyle çakışmamalı`);
+  }
 });
 
 console.log(`Taraftar etkileşimi: ${checks} kontrol geçti.`);
