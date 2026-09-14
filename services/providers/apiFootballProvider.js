@@ -1068,6 +1068,11 @@ function normalizeLeagueLeaderEntry(item) {
     teamLogo: team.logo || null,
     teamProviderId: team.id ? String(team.id) : null,
     league: (lastBlock.league && lastBlock.league.name) || "",
+    // Lig ADI değil, lig KİMLİĞİ doğrulama ölçütüdür: "Premier League" adı
+    // birden çok ülkede var, kimlik çakışmaz. Krallık tablosu satırları bu
+    // alanla lig+sezon anahtarına bağlanır (services/competitionLeaders.js).
+    leagueId: (lastBlock.league && lastBlock.league.id) ? String(lastBlock.league.id) : null,
+    season: (lastBlock.league && lastBlock.league.season) ? String(lastBlock.league.season) : null,
     appearances: sumOrNull(blocks.map((block) => numberOrNull(block.games && (block.games.appearences ?? block.games.appearances)))) || 0,
     minutes: sumOrNull(blocks.map((block) => numberOrNull(block.games && block.games.minutes))) || 0,
     goals: sumOrNull(blocks.map((block) => numberOrNull(block.goals && block.goals.total))) || 0,

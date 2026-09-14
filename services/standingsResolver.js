@@ -25,22 +25,27 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { findCompetition, resolveCompetitionId } = require("./competitionCatalog.js");
+// Sezon kuralı BURADA İKİNCİ KEZ YAZILMAZ. services/competitionLeaders.js
+// aynı soruyu (bu maç hangi sezona ait?) gol/asist krallığı için zaten
+// yanıtlıyor ve takvim yılı sezonu kullanan ligleri (MLS, Brezilya,
+// Arjantin) de biliyor. İki ayrı kopya zamanla birbirinden ayrılır ve
+// "puan durumu sezonu ile krallık sezonu farklı" gibi sessiz bir çelişki
+// doğururdu; tek kaynak paylaşılıyor.
+const { seasonForKickoff } = require("./competitionLeaders.js");
 
 const ROOT = path.join(__dirname, "..");
 const STANDINGS_PATH = path.join(ROOT, "data", "league-standings.json");
 
 /**
- * Avrupa sezonu Temmuz'da başlar: 2026-08-31 → "2026", 2027-05-10 → "2026".
- * Sağlayıcı (API-Football) sezonu da bu yıl numarasıyla adlandırır, bu
- * yüzden karşılaştırma tek biçim üzerinden yapılır.
+ * Maçın sezonu, yarışmasına göre: Avrupa'da Temmuz'da başlar
+ * (2026-08-31 → "2026", 2027-05-10 → "2026"), takvim yılı kullanan
+ * liglerde yılın kendisidir. Kural competitionLeaders.js'te tanımlı;
+ * burada yalnızca dizgeye çevriliyor (sağlayıcı sezonu da bu yıl
+ * numarasıyla adlandırdığı için karşılaştırma tek biçim üzerinden yapılır).
  */
-function seasonYearForKickoff(kickoff) {
-  const time = Date.parse(kickoff || "");
-  if (!Number.isFinite(time)) return null;
-  const date = new Date(time);
-  const year = date.getUTCFullYear();
-  const month = date.getUTCMonth() + 1;
-  return String(month >= 7 ? year : year - 1);
+function seasonYearForKickoff(kickoff, competition) {
+  const season = seasonForKickoff(kickoff, competition || null);
+  return Number.isFinite(season) ? String(season) : null;
 }
 
 /** "2026" → "2026/27". Görsel etiket; karşılaştırmada kullanılmaz. */
@@ -117,7 +122,7 @@ function resolveStandingsForMatch(match, options = {}) {
   const store = options.store || loadStore();
   const competitionId = resolveCompetitionId(match || {}) || null;
   const competition = competitionId ? findCompetition(competitionId) : null;
-  const season = normalizeSeason(options.season) || seasonYearForKickoff(match && match.kickoff);
+  const season = normalizeSeason(options.season) || seasonYearForKickoff(match && match.kickoff, competition);
 
   const base = {
     status: "unavailable",

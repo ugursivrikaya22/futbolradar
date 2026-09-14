@@ -26,6 +26,7 @@ const {
   standingsCacheKey
 } = require("../services/standingsResolver.js");
 const { sameClub } = require("../services/superLigTeams.js");
+const { findCompetition } = require("../services/competitionCatalog.js");
 
 const standings = JSON.parse(fs.readFileSync(path.join(root, "data", "league-standings.json"), "utf8"));
 
@@ -110,6 +111,12 @@ function testSeasonBoundaryAndCacheKey() {
   assert.equal(seasonYearForKickoff("2026-08-31T20:00:00Z"), "2026", "Ağustos yeni sezondur");
   assert.equal(seasonYearForKickoff("2027-05-10T20:00:00Z"), "2026", "Mayıs hâlâ aynı sezondur");
   assert.equal(seasonYearForKickoff("2026-06-10T20:00:00Z"), "2025", "Haziran önceki sezondur");
+  // Takvim yılı sezonu kullanan ligler (MLS, Brezilya, Arjantin) Temmuz
+  // kuralına tabi DEĞİL: Mart 2026'daki bir MLS maçı 2025 sezonuna
+  // yazılsaydı tablo "sezon uyuşmuyor" diye boş kalırdı. Kural
+  // services/competitionLeaders.js ile paylaşılıyor, iki yüzey ayrışamaz.
+  assert.equal(seasonYearForKickoff("2026-03-10T20:00:00Z", findCompetition("mls")), "2026", "MLS takvim yılı sezonudur");
+  assert.equal(seasonYearForKickoff("2026-03-10T20:00:00Z", findCompetition("la-liga")), "2025", "Avrupa ligi aynı tarihte önceki sezondur");
   // Anahtar lig VE sezon taşımalı; global "standings" anahtarı bir ligin
   // tablosunu başka bir maç sayfasına taşırdı.
   assert.equal(standingsCacheKey("la-liga", "2026"), "standings:la-liga:2026");

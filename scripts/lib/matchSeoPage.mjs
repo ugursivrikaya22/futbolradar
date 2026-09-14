@@ -151,6 +151,14 @@ export const STR = {
     scorersPending: "Doğrulanmış gol istatistiği bulunan oyuncu kaydı yok.",
     goals: "gol",
     assists: "asist",
+    leaders: (league) => `${league} gol ve asist krallığı`,
+    leadersGeneric: "Gol ve asist krallığı",
+    leadersScorers: (league) => `${league} gol krallığı`,
+    leadersAssists: (league) => `${league} asist krallığı`,
+    leadersSeason: (season) => `${season}/${String(season + 1).slice(2)} sezonu`,
+    leadersPending: "Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.",
+    leadersNote: "Tablo yalnızca bu maçın oynandığı lig ve sezonun verisinden üretilir; başka turnuvaların golleri buraya eklenmez.",
+    leadersAll: "Tüm tabloyu gör",
     analysis: "FutbolRadar maç öncesi analizi",
     analysisPending: "Maç öncesi radar analizi maç haftası yaklaştığında doğrulanmış verilerle yayımlanır.",
     radarDisclaimer: "Radar puanı maç öncesi okuma içindir; kesin sonuç veya bahis önerisi değildir.",
@@ -258,6 +266,14 @@ export const STR = {
     scorersPending: "No player with verified goal statistics is on record.",
     goals: "goals",
     assists: "assists",
+    leaders: (league) => `${league} top scorers & assists`,
+    leadersGeneric: "Top scorers & assists",
+    leadersScorers: (league) => `${league} top scorers`,
+    leadersAssists: (league) => `${league} top assists`,
+    leadersSeason: (season) => `${season}/${String(season + 1).slice(2)} season`,
+    leadersPending: "Top scorer and assist data is not available for this competition yet.",
+    leadersNote: "The table is built only from this match's own competition and season; goals scored in other tournaments are never added here.",
+    leadersAll: "See the full table",
     analysis: "FutbolRadar pre-match analysis",
     analysisPending: "The pre-match radar analysis is published with verified data as matchweek approaches.",
     radarDisclaimer: "The radar score is a pre-match reading; it is not a certain outcome or betting advice.",
@@ -774,6 +790,57 @@ export function scorersSectionHtml(players, ctx) {
     ? `<article class="card msp-scorers"><h3>${escapeHtml(teamName)}</h3><ol>${rows.map((player) => `<li>${(() => { const href = playerPageHref(base, locale, player.id); return href ? `<a href="${escapeHtml(href)}">${escapeHtml(player.name)}</a>` : escapeHtml(player.name); })()}<span>${escapeHtml(player.goals)} ${escapeHtml(text.goals)}${Number(player.assists) > 0 ? ` · ${escapeHtml(player.assists)} ${escapeHtml(text.assists)}` : ""}</span></li>`).join("")}</ol></article>`
     : `<article class="card data-empty"><strong>${escapeHtml(teamName)}</strong><span>${escapeHtml(text.scorersPending)}</span></article>`;
   return `<section class="msp-section" id="golcüler" aria-labelledby="msp-scorers-title"><h2 id="msp-scorers-title" class="msp-section-title">${escapeHtml(text.scorers)}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div></section>`;
+}
+
+/**
+ * GOL/ASİST KRALLIĞI — YALNIZCA BU MAÇIN LİGİ VE SEZONU.
+ *
+ * Veri `services/competitionLeaders.js` üzerinden lig+sezon anahtarıyla
+ * (`topscorers:{leagueId}:{seasonId}` / `assists:{leagueId}:{seasonId}`)
+ * okunur. Anahtar yoksa TABLO BASILMAZ — Süper Lig'e ya da başka bir lige
+ * geri düşülmez; onun yerine dürüst bir "veri yok" satırı yazılır.
+ *
+ * Başlık, tablonun hangi lige ve sezona ait olduğunu HER ZAMAN yazar:
+ * başlığı değiştirip veriyi olduğu gibi bırakmak bu hatanın ta kendisiydi.
+ */
+export function leadersSectionHtml(leaders, ctx) {
+  const { locale, base } = ctx;
+  const text = STR[locale];
+  const data = leaders || { status: "unknown-league", topScorers: [], topAssists: [] };
+  const leagueName = data.leagueName ? competitionLabel(data.leagueName, locale) : "";
+  const title = leagueName ? text.leaders(leagueName) : text.leadersGeneric;
+  const seasonLabel = Number.isFinite(Number(data.season)) ? text.leadersSeason(Number(data.season)) : "";
+  const attributes = `${data.leagueId ? ` data-league-id="${escapeHtml(data.leagueId)}"` : ""}${data.season ? ` data-season="${escapeHtml(data.season)}"` : ""}${data.competitionId ? ` data-competition="${escapeHtml(data.competitionId)}"` : ""}`;
+  const open = `<section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title"${attributes}><h2 id="msp-leaders-title" class="msp-section-title">${escapeHtml(title)}${seasonLabel ? ` · ${escapeHtml(seasonLabel)}` : ""}</h2>`;
+
+  const rows = (list, metric, unit) => list.map((row) => {
+    const href = row.slug ? playerPageHref(base, locale, row.slug) : null;
+    const name = href
+      ? `<a href="${escapeHtml(href)}">${escapeHtml(row.name)}</a>`
+      : `<span>${escapeHtml(row.name)}</span>`;
+    return `<li><span class="msp-leader-rank">${escapeHtml(row.rank)}</span><span class="msp-leader-name">${name}${row.team ? `<small>${escapeHtml(row.team)}</small>` : ""}</span><b class="msp-leader-value">${escapeHtml(Number(row[metric] || 0))} <small>${escapeHtml(unit)}</small></b></li>`;
+  }).join("");
+
+  const card = (heading, list, metric, unit, href, full) => `<article class="card msp-leaders-card"><h3>${href ? `<a href="${escapeHtml(href)}">${escapeHtml(heading)}</a>` : escapeHtml(heading)}</h3><ol class="msp-leaders-list">${rows(list, metric, unit)}</ol>${full ? `<p class="msp-more"><a href="${escapeHtml(full)}">${escapeHtml(text.leadersAll)}</a></p>` : ""}</article>`;
+
+  const scorers = Array.isArray(data.topScorers) ? data.topScorers : [];
+  const assists = Array.isArray(data.topAssists) ? data.topAssists : [];
+  if (data.status !== "ok" || (!scorers.length && !assists.length)) {
+    return `${open}<article class="card data-empty"><strong>${escapeHtml(text.leadersPending)}</strong></article></section>`;
+  }
+
+  const scorersHeading = leagueName ? text.leadersScorers(leagueName) : text.scorers;
+  const assistsHeading = leagueName ? text.leadersAssists(leagueName) : text.assists;
+  // Başlık bağlantısı: varsa ligin kendi krallık sayfası, yoksa ligin sayfası.
+  // Hiçbiri yoksa başlık düz metin kalır — 404'e bağlantı verilmez.
+  const scorersHref = ctx.leadersScorersHref || ctx.leagueHref || null;
+  const assistsHref = ctx.leadersAssistsHref || ctx.leagueHref || null;
+  const cards = [
+    scorers.length ? card(scorersHeading, scorers, "goals", text.goals, scorersHref, ctx.leadersScorersHref || null) : "",
+    assists.length ? card(assistsHeading, assists, "assists", text.assists, assistsHref, ctx.leadersAssistsHref || null) : ""
+  ].filter(Boolean).join("");
+
+  return `${open}<div class="msp-two-col">${cards}</div><p class="muted-copy msp-leaders-note">${escapeHtml(text.leadersNote)}</p></section>`;
 }
 
 export function analysisSectionHtml(radar, prediction, ctx) {
