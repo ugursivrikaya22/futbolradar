@@ -67,6 +67,11 @@ function matchSnapshot(match, serverReceivedAt) {
     awayTeam: (match && match.awayTeam) || "",
     homeTeamLogo: (match && match.homeTeamLogo) || null,
     awayTeamLogo: (match && match.awayTeamLogo) || null,
+    // Canlı puan durumu maçı doğru takım satırına kimlikle bağlıyor
+    // (services/liveStandings.js). Ad eşleşmesi yedek yol; kimlik yoksa
+    // alan null kalır.
+    homeTeamId: (match && match.homeTeamId) ? String(match.homeTeamId) : null,
+    awayTeamId: (match && match.awayTeamId) ? String(match.awayTeamId) : null,
     league: (match && match.league) || "",
     competitionId: (match && match.competitionId) || null,
     providerLeagueId: (match && match.providerLeagueId) || null,

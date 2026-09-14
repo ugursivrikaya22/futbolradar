@@ -220,6 +220,32 @@ function testSuperLigTableOnlyOnSuperLigPages() {
   }
 }
 
+/**
+ * İSTEMCİ TARAFI TABLO İSTEYEN HER SAYFA LİGİNİ İLAN ETMELİ.
+ *
+ * app.js puan durumunu yalnızca lig bildirilmişse çeker (varsayılan yok).
+ * `data-standings-league` bir sayfadan düşerse istek hiç kurulmaz ve tablo
+ * sessizce statik anlık görüntüde donar — hata vermeden. Bu tam olarak bir
+ * birleştirmede başıma geldi (puan-durumu.html'de öznitelik kayboldu), o
+ * yüzden kural artık testle tutuluyor.
+ */
+function testClientStandingsSurfacesDeclareLeague() {
+  const files = fs.readdirSync(root).filter((name) => name.endsWith(".html"));
+  let checked = 0;
+  for (const file of files) {
+    const html = fs.readFileSync(path.join(root, file), "utf8");
+    const tag = html.match(/<[a-z]+[^>]*data-api-target="standings"[^>]*>/);
+    if (!tag) continue;
+    checked += 1;
+    assert.match(
+      tag[0],
+      /data-standings-league="[a-z0-9-]+"/,
+      `${file}: istemci puan durumu konteyneri ligini ilan etmiyor (app.js istek kurmaz, tablo statik kalır)`
+    );
+  }
+  assert.ok(checked >= 5, `beklenenden az istemci tablo yüzeyi denetlendi (${checked})`);
+}
+
 /** Süper Lig hafta sayfalarındaki mini tablo da ligini ilan etmeli. */
 function testRoundPagesDeclareTheirLeague() {
   const dir = path.join(root, "mac");
@@ -244,6 +270,7 @@ testSeasonBoundaryAndCacheKey();
 testEveryStandingsRecordDeclaresSeason();
 testGeneratedMatchPagesShowTheirOwnLeague();
 testSuperLigTableOnlyOnSuperLigPages();
+testClientStandingsSurfacesDeclareLeague();
 testRoundPagesDeclareTheirLeague();
 
 console.log("FutbolRadar maç puan durumu lig eşleştirme testleri geçti");

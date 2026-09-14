@@ -38,6 +38,10 @@
 
 /** Zincir; `scripts/` altına göreli betik adı + argümanlar. */
 export const POSTPROCESS_CHAIN = [
+  // Canlı puan durumu çekirdeğinin tarayıcı kopyası, kaynağından yeniden
+  // üretilir. EN BAŞTA: varlık damgası (`inject-asset-version`) bu dosyayı
+  // da damgalıyor, yani içerik damgadan önce kesinleşmiş olmalı.
+  { id: "live-standings-core", script: "build-live-standings-client.mjs", args: [], timeoutMinutes: 2 },
   // Resolve English links after match registries and Turkish pages exist.
   // Scheduled postprocessing must refresh these links as well as full builds.
   { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },

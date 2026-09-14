@@ -202,7 +202,7 @@ function buildPage(team, sorted, total) {
       <section class="data-panel team-standings-panel" id="team-standings-page" data-api-section="standings">
         <div class="panel-title"><h2>Süper Lig Tablosu</h2><span>${escapeHtml(team.name)} vurgulu</span></div>
         <div class="table-row header"><span>#</span><span>Takım</span><span>O</span><span>P</span><span>Av</span><span>Mom</span></div>
-        <div class="table-body" data-api-target="standings" data-standings-league="super-lig" data-highlight-team="${escapeHtml(team.id)}" data-static-fallback="true">
+        <div class="table-body" data-api-target="standings" data-highlight-team="${escapeHtml(team.id)}" data-standings-league="super-lig" data-static-fallback="true">
           <!-- prerender:standings:start -->
 ${rowsHtml}
 <!-- prerender:standings:end -->

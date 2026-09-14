@@ -22240,30 +22240,51 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .topbar-premium .brand { min-width: 44px; min-height: 44px; }
 }
 
-/* Maç Merkezi devir şeridi: hafta numaralı sayfa kalıcı maç adresine
-   devredildiğinde (bkz. scripts/generate-match-pages.mjs matchCentreSlug)
-   en üstte tek satırlık yönlendirme. Mobilde sarar, taşmaz. */
-.match-centre-handoff {
-  margin: 14px 0 0;
+/* ---------------------------------------------------------------------------
+ * CANLI PUAN DURUMU
+ *
+ * Devam eden maçın tabloya geçici etkisi işaretlenmezse, okuyucu geçici
+ * bir sırayı resmî sanır. İşaret iki yerde: etkilenen satırın yanında
+ * küçük bir "CANLI" rozeti ve tablonun altındaki tazelik satırında bir
+ * açıklama.
+ *
+ * Rozet satırı BÜYÜTMEZ: mobilde tablo hücreleri zaten dar ve rozet
+ * yüzünden satırın kaymaması için yazı boyu küçültülüp dikey hizası
+ * satırın kendi çizgisine bağlanıyor.
+ * ------------------------------------------------------------------------- */
+.standings-live-badge {
+  display: inline-block;
+  margin-inline-start: 6px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--live);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-.match-centre-handoff a {
-  display: block;
-  padding: 12px 14px;
-  min-height: 44px;
-  border: 1px solid rgba(11, 143, 90, 0.28);
-  border-radius: 12px;
-  background: rgba(11, 143, 90, 0.07);
-  color: var(--text);
+[data-standings-live="true"] {
+  background: rgba(200, 30, 45, 0.05);
+}
+
+.standings-live-note {
+  color: var(--live);
   font-weight: 600;
-  font-size: 0.92rem;
-  line-height: 1.35;
-  text-decoration: none;
-  overflow-wrap: anywhere;
 }
 
-.match-centre-handoff a:hover,
-.match-centre-handoff a:focus-visible {
-  background: rgba(11, 143, 90, 0.13);
-  border-color: rgba(11, 143, 90, 0.45);
+@media (prefers-reduced-motion: no-preference) {
+  .standings-live-badge { animation: standings-live-fade 2.4s ease-in-out infinite; }
+}
+
+@keyframes standings-live-fade {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.62; }
+}
+
+@media (max-width: 480px) {
+  .standings-live-badge { font-size: 8px; padding: 0 4px; margin-inline-start: 4px; }
 }
