@@ -15624,6 +15624,14 @@ table {
   color: var(--muted);
 }
 
+/* Kaynak notu: yüzdenin sağlayıcıdan mı, orandan mı, kendi modelimizden
+   mi geldiğini kartın kendisi söyler. */
+.md-prob-note {
+  margin: var(--sp-2) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
 .md-probability.is-empty p { color: var(--muted); }
 
 .md-ai-note {
@@ -21925,6 +21933,40 @@ a.motm-week__card:focus-visible {
 .msp-prediction-bar span:nth-child(2) { background: var(--muted); }
 .msp-prediction-bar span:nth-child(3) { background: var(--cyan); }
 .msp-prediction-legend { display: flex; justify-content: space-between; gap: 8px; margin: 6px 0 0; font-size: var(--fs-xs); color: var(--muted); }
+/* TAHMİN KARTI — kaynak başlıkta, ayrım renkte.
+   Kutu üç kaynaktan beslenebiliyor (sağlayıcı / piyasa / FutbolRadar
+   modeli) ve okuyucunun hangisine baktığını başlığı okumadan da ayırt
+   edebilmesi için üst şerit rengi kaynağa göre değişir. Satır düzeni
+   mobilde tek sütuna iner; yüzdeler tabular-nums ile hizalı kalır. */
+.msp-prediction { border-top: 3px solid var(--green); }
+.msp-prediction[data-prediction-source="market_probability"] { border-top-color: var(--cyan); }
+.msp-prediction[data-prediction-source="futbolradar_model"] { border-top-color: var(--warn, #b45309); }
+.msp-prediction h3 { display: flex; align-items: center; gap: 6px; }
+.msp-prediction-icon { font-size: 1rem; line-height: 1; }
+.msp-prediction-rows { margin: 8px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.msp-prediction-row { display: grid; grid-template-columns: minmax(0, 1fr) 46px; align-items: center; column-gap: 8px; row-gap: 4px; font-size: var(--fs-sm); }
+.msp-prediction-row.is-leading .msp-prediction-team, .msp-prediction-row.is-leading .msp-prediction-value { font-weight: 800; color: var(--green-deep); }
+.msp-prediction-team { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msp-prediction-value { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+.msp-prediction-track { grid-column: 1 / -1; display: block; height: 6px; border-radius: 999px; background: var(--surface-sunken); overflow: hidden; }
+.msp-prediction-track b { display: block; height: 100%; width: var(--w, 0%); background: var(--green); }
+.msp-prediction-row[data-outcome="draw"] .msp-prediction-track b { background: var(--muted); }
+.msp-prediction-row[data-outcome="away"] .msp-prediction-track b { background: var(--cyan); }
+.msp-prediction-note { margin: 8px 0 0; font-size: var(--fs-xs); color: var(--muted); }
+.msp-prediction-meta { margin: 10px 0 0; display: grid; gap: 6px; font-size: var(--fs-xs); }
+.msp-prediction-meta div { display: flex; justify-content: space-between; gap: 10px; }
+.msp-prediction-meta dt { color: var(--muted); }
+.msp-prediction-meta dd { margin: 0; text-align: right; font-weight: 700; }
+.msp-prediction-comparison { margin: 10px 0 0; font-size: var(--fs-xs); }
+.msp-prediction-comparison summary { cursor: pointer; color: var(--muted); font-weight: 700; }
+.msp-prediction-comparison table { width: 100%; margin-top: 6px; border-collapse: collapse; }
+.msp-prediction-comparison th, .msp-prediction-comparison td { padding: 4px 6px; text-align: right; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.msp-prediction-comparison th[scope="row"] { text-align: left; color: var(--muted); font-weight: 600; }
+@media (max-width: 480px) {
+  .msp-prediction-bar { height: 22px; font-size: 0.68rem; }
+  .msp-prediction-meta div { flex-direction: column; gap: 2px; }
+  .msp-prediction-meta dd { text-align: left; }
+}
 .msp-disclaimer { margin: 10px 0 0; font-size: var(--fs-xs); color: var(--muted); }
 .msp-events { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; }
 .msp-event { display: grid; grid-template-columns: 44px 24px minmax(0, 1fr); align-items: start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-sm); }

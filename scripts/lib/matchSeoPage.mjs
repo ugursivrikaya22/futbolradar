@@ -47,6 +47,7 @@ function playerPageHref(base, locale, id) {
   return fs.existsSync(path.join(process.cwd(), relative)) ? `${base}${relative}` : null;
 }
 const { broadcastChannel } = require("../../services/broadcastSchedule.js");
+const probabilityService = require("../../services/fixtureProbabilityService.js");
 const { competitionLabel } = require("../../services/i18n.js");
 
 export function escapeHtml(value) {
@@ -168,6 +169,26 @@ export const STR = {
     providerPrediction: "Sağlayıcı tahmini",
     winProb: "Kazanma olasılığı",
     draw: "Beraberlik",
+    predictionWinner: "Öne çıkan sonuç",
+    predictionAdvice: "Sağlayıcı önerisi",
+    predictionUnderOver: "Alt/Üst",
+    predictionGoals: "Beklenen gol",
+    predictionExpectedGoals: "Model beklenen gol",
+    predictionBothScore: "Karşılıklı gol",
+    predictionOver25: "2.5 üst",
+    predictionBookmakers: (count) => `${count} bahisçi oranının ortancası`,
+    predictionComparison: "Sağlayıcı karşılaştırması",
+    predictionSourceLabel: "Kaynak",
+    predictionComparisonLabels: {
+      form: "Form",
+      att: "Hücum",
+      def: "Savunma",
+      poisson_distribution: "Poisson dağılımı",
+      h2h: "İkili rekabet",
+      goals: "Goller",
+      total: "Toplam"
+    },
+    predictionDisclaimer: "Olasılıklar istatistiksel okumadır; kesin sonuç ya da bahis önerisi değildir.",
     liveScore: "Canlı skor",
     liveTitle: "Canlı maç anlatımı",
     liveEvents: "Maç olayları",
@@ -284,6 +305,26 @@ export const STR = {
     providerPrediction: "Provider prediction",
     winProb: "Win probability",
     draw: "Draw",
+    predictionWinner: "Most likely outcome",
+    predictionAdvice: "Provider advice",
+    predictionUnderOver: "Under/Over",
+    predictionGoals: "Expected goals",
+    predictionExpectedGoals: "Model expected goals",
+    predictionBothScore: "Both teams to score",
+    predictionOver25: "Over 2.5",
+    predictionBookmakers: (count) => `Median of ${count} bookmaker price${count === 1 ? "" : "s"}`,
+    predictionComparison: "Provider comparison",
+    predictionSourceLabel: "Source",
+    predictionComparisonLabels: {
+      form: "Form",
+      att: "Attack",
+      def: "Defence",
+      poisson_distribution: "Poisson distribution",
+      h2h: "Head-to-head",
+      goals: "Goals",
+      total: "Total"
+    },
+    predictionDisclaimer: "These probabilities are a statistical reading, not a certain outcome or betting advice.",
     liveScore: "Live score",
     liveTitle: "Live commentary",
     liveEvents: "Match events",
@@ -824,17 +865,132 @@ export function leadersSectionHtml(leaders, ctx) {
   return `${open}<div class="msp-two-col">${cards}</div><p class="muted-copy msp-leaders-note">${escapeHtml(text.leadersNote)}</p></section>`;
 }
 
-export function analysisSectionHtml(radar, prediction, ctx) {
+/**
+ * TAHMİN KARTI — BAŞLIK KAYNAĞI SÖYLER.
+ *
+ * Kart üç kaynaktan beslenebilir ve başlığı kaynağa göre değişir:
+ *   provider_prediction → 📊 Sağlayıcı Tahmini
+ *   market_probability  → 📊 Piyasa Olasılığı
+ *   futbolradar_model   → ⚡ FutbolRadar Tahmini
+ *
+ * Başlık `services/fixtureProbabilityService.js`ten okunur, burada elle
+ * yazılmaz: piyasa oranından türetilmiş bir yüzdenin "Sağlayıcı Tahmini"
+ * diye etiketlenmesi, verinin kendisinden daha büyük bir hata olurdu.
+ */
+export function predictionCardHtml(probability, ctx) {
+  const { locale, homeTeam, awayTeam } = ctx;
+  const text = STR[locale];
+  const record = normalizeProbabilityInput(probability);
+  if (!record) return "";
+
+  const display = probabilityService.displayFor(record.source, locale);
+  if (!display) return "";
+
+  const percent = (value) => (locale === "en" ? `${value}%` : `%${value}`);
+  const rows = [
+    { key: "home", label: homeTeam, value: record.probabilities.home },
+    { key: "draw", label: text.draw, value: record.probabilities.draw },
+    { key: "away", label: awayTeam, value: record.probabilities.away }
+  ];
+  const leading = probabilityService.leadingOutcome(record.probabilities);
+
+  const bar = `<div class="msp-prediction-bar" role="img" aria-label="${escapeHtml(rows.map((row) => `${row.label} ${percent(row.value)}`).join(" · "))}">${
+    rows.map((row) => `<span style="--w:${escapeHtml(row.value)}%">${escapeHtml(percent(row.value))}</span>`).join("")
+  }</div>`;
+
+  const rowList = `<ul class="msp-prediction-rows">${
+    rows.map((row) => `<li class="msp-prediction-row${row.key === leading ? " is-leading" : ""}" data-outcome="${escapeHtml(row.key)}"><span class="msp-prediction-team">${escapeHtml(row.label)}</span><b class="msp-prediction-value">${escapeHtml(percent(row.value))}</b><i class="msp-prediction-track" aria-hidden="true"><b style="--w:${escapeHtml(row.value)}%"></b></i></li>`).join("")
+  }</ul>`;
+
+  const metaRows = predictionMetaRows(record, ctx, percent);
+  const meta = metaRows.length
+    ? `<dl class="msp-prediction-meta">${metaRows.map((row) => `<div><dt>${escapeHtml(row.label)}</dt><dd>${escapeHtml(row.value)}</dd></div>`).join("")}</dl>`
+    : "";
+
+  const comparison = comparisonHtml(record, ctx);
+
+  return `<div class="card msp-prediction" data-prediction-source="${escapeHtml(record.source)}"><h3><span class="msp-prediction-icon" aria-hidden="true">${display.icon}</span> ${escapeHtml(display.title)}</h3>${bar}${rowList}<p class="msp-prediction-note">${escapeHtml(display.note)}</p>${meta}${comparison}</div>`;
+}
+
+/**
+ * Girdi ya çözülmüş kayıt ya da ham sağlayıcı yüküdür. Ham yük de
+ * kabul edilir ki depo henüz yazılmamışken (ilk derleme, yeni fikstür)
+ * takvimdeki mevcut `/predictions` verisi ekrandan düşmesin.
+ */
+function normalizeProbabilityInput(input) {
+  if (!input) return null;
+  if (input.probabilities && probabilityService.isDisplayable(input)) return input;
+  if (input.predictions && input.predictions.percent) {
+    const normalized = probabilityService.normalizeProviderPrediction(input);
+    return normalized && probabilityService.isDisplayable(normalized) ? normalized : null;
+  }
+  return null;
+}
+
+/** Kaynağa göre ek satırlar — YALNIZCA kayıtta gerçekten varsa basılır. */
+function predictionMetaRows(record, ctx, percent) {
+  const { locale, homeTeam, awayTeam } = ctx;
+  const text = STR[locale];
+  const rows = [];
+  const winner = record.predictedWinner;
+
+  if (winner && (winner.name || winner.side)) {
+    const name = winner.name || (winner.side === "home" ? homeTeam : winner.side === "away" ? awayTeam : text.draw);
+    rows.push({ label: text.predictionWinner, value: winner.comment ? `${name} · ${winner.comment}` : name });
+  }
+  if (record.advice) rows.push({ label: text.predictionAdvice, value: record.advice });
+  if (record.underOver) rows.push({ label: text.predictionUnderOver, value: record.underOver });
+  if (record.predictedGoals && (record.predictedGoals.home || record.predictedGoals.away) && record.source === probabilityService.SOURCES.PROVIDER) {
+    rows.push({
+      label: text.predictionGoals,
+      value: `${homeTeam} ${record.predictedGoals.home ?? "—"} · ${awayTeam} ${record.predictedGoals.away ?? "—"}`
+    });
+  }
+  if (record.expectedGoals && Number.isFinite(Number(record.expectedGoals.home))) {
+    rows.push({
+      label: text.predictionExpectedGoals,
+      value: `${homeTeam} ${record.expectedGoals.home} · ${awayTeam} ${record.expectedGoals.away}`
+    });
+  }
+  if (record.modelUnderOver && Number.isFinite(Number(record.modelUnderOver.over))) {
+    rows.push({ label: text.predictionOver25, value: percent(record.modelUnderOver.over) });
+  }
+  if (Number.isFinite(Number(record.bothTeamsScore))) {
+    rows.push({ label: text.predictionBothScore, value: percent(record.bothTeamsScore) });
+  }
+  if (record.marketConsensus && Number(record.marketConsensus.bookmakerCount) > 0) {
+    rows.push({
+      label: text.predictionSourceLabel,
+      value: text.predictionBookmakers(Number(record.marketConsensus.bookmakerCount))
+    });
+  }
+  return rows;
+}
+
+/** Sağlayıcının kendi karşılaştırma yüzdeleri (yalnızca sağlayıcı kaydında). */
+function comparisonHtml(record, ctx) {
+  const { locale, homeTeam, awayTeam } = ctx;
+  const text = STR[locale];
+  const comparison = record.comparison;
+  if (!comparison || record.source !== probabilityService.SOURCES.PROVIDER) return "";
+  const entries = Object.entries(comparison).filter(([, value]) => value && (value.home !== null || value.away !== null));
+  if (!entries.length) return "";
+  const percent = (value) => (value === null || value === undefined ? "—" : locale === "en" ? `${Math.round(value)}%` : `%${Math.round(value)}`);
+  return `<details class="msp-prediction-comparison"><summary>${escapeHtml(text.predictionComparison)}</summary><table><thead><tr><th scope="col"></th><th scope="col">${escapeHtml(homeTeam)}</th><th scope="col">${escapeHtml(awayTeam)}</th></tr></thead><tbody>${
+    entries.map(([key, value]) => `<tr><th scope="row">${escapeHtml(text.predictionComparisonLabels[key] || key)}</th><td>${escapeHtml(percent(value.home))}</td><td>${escapeHtml(percent(value.away))}</td></tr>`).join("")
+  }</tbody></table></details>`;
+}
+
+export function analysisSectionHtml(radar, probability, ctx) {
   const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
   const hasRadar = radar && (radar.home.score !== null || radar.away.score !== null);
-  const percent = prediction && prediction.predictions && prediction.predictions.percent;
-  const hasPrediction = percent && percent.home && percent.draw && percent.away;
-  if (!hasRadar && !hasPrediction) return "";
+  const predictionCard = predictionCardHtml(probability, ctx);
+  if (!hasRadar && !predictionCard) return "";
 
   const radarCard = (name, side) => `<article class="card msp-radar"><h3>${escapeHtml(name)}</h3><p class="msp-radar-score">${side.score === null ? escapeHtml(locale === "en" ? "Score pending" : "Veri bekleniyor") : `<b>${escapeHtml(side.score)}</b>/100`}</p>${locale === "tr" && Array.isArray(side.components) && side.components.filter((item) => item.value !== null).length ? `<ul class="msp-radar-components">${side.components.filter((item) => item.value !== null).map((item) => `<li><span>${escapeHtml(item.label)}</span><i style="--value:${escapeHtml(Math.round(item.value))}%"><b></b></i><em>${escapeHtml(Math.round(item.value))}</em></li>`).join("")}</ul>` : ""}${locale === "tr" && side.positives && side.positives.length ? `<p class="msp-radar-note"><span>Güçlü:</span> ${escapeHtml(side.positives.slice(0, 2).join(" · "))}</p>` : ""}${locale === "tr" && side.negatives && side.negatives.length ? `<p class="msp-radar-note"><span>Dikkat:</span> ${escapeHtml(side.negatives.slice(0, 2).join(" · "))}</p>` : ""}</article>`;
 
-  return `<section class="msp-section" id="analiz" aria-labelledby="msp-analysis-title"><h2 id="msp-analysis-title" class="msp-section-title">${escapeHtml(text.analysis)}</h2>${hasRadar ? `${locale === "tr" && radar.lead ? `<p class="msp-lead">${escapeHtml(radar.lead)}</p>` : ""}<div class="msp-two-col">${radarCard(homeTeam, radar.home)}${radarCard(awayTeam, radar.away)}</div>` : ""}${hasPrediction ? `<div class="card msp-prediction"><h3>${escapeHtml(text.providerPrediction)}</h3><div class="msp-prediction-bar" role="img" aria-label="${escapeHtml(`${homeTeam} ${percent.home} · ${text.draw} ${percent.draw} · ${awayTeam} ${percent.away}`)}"><span style="--w:${escapeHtml(percent.home)}">${escapeHtml(percent.home)}</span><span style="--w:${escapeHtml(percent.draw)}">${escapeHtml(percent.draw)}</span><span style="--w:${escapeHtml(percent.away)}">${escapeHtml(percent.away)}</span></div><p class="msp-prediction-legend"><span>${escapeHtml(homeTeam)}</span><span>${escapeHtml(text.draw)}</span><span>${escapeHtml(awayTeam)}</span></p></div>` : ""}<p class="msp-disclaimer">${escapeHtml(text.radarDisclaimer)}</p></section>`;
+  return `<section class="msp-section" id="analiz" aria-labelledby="msp-analysis-title"><h2 id="msp-analysis-title" class="msp-section-title">${escapeHtml(text.analysis)}</h2>${hasRadar ? `${locale === "tr" && radar.lead ? `<p class="msp-lead">${escapeHtml(radar.lead)}</p>` : ""}<div class="msp-two-col">${radarCard(homeTeam, radar.home)}${radarCard(awayTeam, radar.away)}</div>` : ""}${predictionCard}<p class="msp-disclaimer">${escapeHtml(hasRadar ? text.radarDisclaimer : text.predictionDisclaimer)}</p></section>`;
 }
 
 /* ------------------------------------------------------------------ */

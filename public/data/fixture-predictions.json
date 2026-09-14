@@ -1,0 +1,189 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-14T19:55:04.344Z",
+  "predictionCount": 2,
+  "predictions": [
+    {
+      "fixtureId": "besiktas-marseille-2026-09-17",
+      "providerFixtureId": null,
+      "competitionId": "avrupa-ligi",
+      "leagueId": null,
+      "season": null,
+      "kickoff": "2026-09-17T22:00:00+03:00",
+      "homeTeam": "Beşiktaş",
+      "awayTeam": "Marseille",
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "source": "futbolradar_model",
+      "homeProbability": 74,
+      "drawProbability": 16,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": null,
+        "name": "Beşiktaş",
+        "side": "home",
+        "comment": null
+      },
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": {
+        "home": "2.46",
+        "away": "0.58"
+      },
+      "comparison": null,
+      "confidence": 67,
+      "modelVersion": "futbolradar-probability-v1",
+      "expectedGoals": {
+        "home": 2.46,
+        "away": 0.58
+      },
+      "modelUnderOver": {
+        "line": 2.5,
+        "over": 58,
+        "under": 42
+      },
+      "bothTeamsScore": 40,
+      "marketConsensus": null,
+      "modelInputs": {
+        "baselineStatus": "blended",
+        "baselinePull": 0.16,
+        "baselineSampleSize": 25,
+        "home": {
+          "matches": 10,
+          "venueMatches": 7,
+          "attackStrength": 1.5,
+          "defenseStrength": 0.65,
+          "formDelta": 0,
+          "rank": null,
+          "pointsPerGame": 2.4,
+          "cleanSheetRate": 0.6,
+          "winRate": 0.8,
+          "absences": 3
+        },
+        "away": {
+          "matches": 6,
+          "venueMatches": 2,
+          "attackStrength": 0.74,
+          "defenseStrength": 1.02,
+          "formDelta": -0.4,
+          "rank": null,
+          "pointsPerGame": 1,
+          "cleanSheetRate": 0.17,
+          "winRate": 0.33,
+          "absences": null
+        },
+        "h2h": {
+          "sampleSize": 0,
+          "averageGoalDifference": null
+        },
+        "rankDelta": null
+      },
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "no-verified-provider-fixture-id"
+        },
+        {
+          "source": "market_probability",
+          "reason": "no-verified-provider-fixture-id"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-09-14T19:55:04.037Z",
+      "expiresAt": "2026-09-16T19:00:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "erzurumspor-fk-samsunspor-2026-09-20",
+      "providerFixtureId": null,
+      "competitionId": "super-lig",
+      "leagueId": null,
+      "season": null,
+      "kickoff": "2026-09-20T17:00:00+03:00",
+      "homeTeam": "Erzurumspor FK",
+      "awayTeam": "Samsunspor",
+      "homeTeamId": null,
+      "awayTeamId": null,
+      "source": "futbolradar_model",
+      "homeProbability": 35,
+      "drawProbability": 28,
+      "awayProbability": 37,
+      "predictedWinner": {
+        "id": null,
+        "name": "Samsunspor",
+        "side": "away",
+        "comment": null
+      },
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": {
+        "home": "1.04",
+        "away": "1.15"
+      },
+      "comparison": null,
+      "confidence": 51,
+      "modelVersion": "futbolradar-probability-v1",
+      "expectedGoals": {
+        "home": 1.04,
+        "away": 1.15
+      },
+      "modelUnderOver": {
+        "line": 2.5,
+        "over": 37,
+        "under": 63
+      },
+      "bothTeamsScore": 44,
+      "marketConsensus": null,
+      "modelInputs": {
+        "baselineStatus": "blended",
+        "baselinePull": 0.24,
+        "baselineSampleSize": 39,
+        "home": {
+          "matches": 5,
+          "venueMatches": 2,
+          "attackStrength": 0.65,
+          "defenseStrength": 1.32,
+          "formDelta": 0,
+          "rank": 15,
+          "pointsPerGame": 0.8,
+          "cleanSheetRate": 0.2,
+          "winRate": 0.2,
+          "absences": 1
+        },
+        "away": {
+          "matches": 7,
+          "venueMatches": 3,
+          "attackStrength": 0.75,
+          "defenseStrength": 1.05,
+          "formDelta": -0.2,
+          "rank": 13,
+          "pointsPerGame": 1,
+          "cleanSheetRate": 0.29,
+          "winRate": 0.14,
+          "absences": 10
+        },
+        "h2h": {
+          "sampleSize": 0,
+          "averageGoalDifference": null
+        },
+        "rankDelta": -0.12
+      },
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "no-verified-provider-fixture-id"
+        },
+        {
+          "source": "market_probability",
+          "reason": "no-verified-provider-fixture-id"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-09-14T19:55:04.037Z",
+      "expiresAt": "2026-09-17T14:00:00.000Z",
+      "refreshStage": "scheduled",
+      "frozen": false
+    }
+  ]
+}

@@ -36,6 +36,7 @@ import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { buildH2hEntries } from "./lib/matchAnalysisSections.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -123,6 +124,63 @@ const editorial = readJson("data/matches.json", []);
 const editorialMatches = Array.isArray(editorial) ? editorial : (editorial.matches || []);
 const archive = readJson("data/historical-match-archive.json", { records: [] });
 const archiveRecords = Array.isArray(archive.records) ? archive.records : [];
+
+/**
+ * TAHMİN KAYNAĞI — depo önce, sonra takvimdeki ham sağlayıcı yükü, en son
+ * FutbolRadar modeli.
+ *
+ * Derleme anında sağlayıcıya İSTEK ATILMAZ: `/predictions` ve `/odds`
+ * çağrıları zamanlanmış `sync-fixture-predictions.mjs` koşusuna aittir ve
+ * sonuçları `data/fixture-predictions.json` deposunda durur. Depoda kaydı
+ * olmayan fikstür (yeni eklenmiş maç, kota bitmiş koşu) yine de boş
+ * kalmaz: model burada, yerel doğrulanmış veriden hesaplanır.
+ */
+const probabilityStore = require("../services/fixturePredictionStore.js");
+const probabilityService = require("../services/fixtureProbabilityService.js");
+const probabilityContext = loadProbabilityContext(root);
+const probabilityIndex = probabilityStore.indexStore(probabilityStore.readStore(path.join(root, "data", "fixture-predictions.json")));
+const probabilitySourceCounts = { provider_prediction: 0, market_probability: 0, futbolradar_model: 0, none: 0 };
+const probabilityGaps = [];
+
+function probabilityFor(entry, detail, state) {
+  // Ertelenmiş maç da OYNANMAMIŞ maçtır: tahmin kartı kaldırılmaz.
+  // İptal edilmiş maçta tahmin anlamsızdır ve gösterilmez.
+  if (state !== "pre" && state !== "postponed") return null;
+  const providerFixtureId = entry.providerIds && entry.providerIds.apiFootball ? String(entry.providerIds.apiFootball) : null;
+  const stored = probabilityIndex.find(detail.naturalId || entry.id || null, providerFixtureId);
+  const fromStore = stored ? probabilityStore.toDisplayRecord(stored) : null;
+  if (fromStore && probabilityService.isDisplayable(fromStore)) {
+    probabilitySourceCounts[fromStore.source] = (probabilitySourceCounts[fromStore.source] || 0) + 1;
+    return fromStore;
+  }
+
+  const fromProvider = detail.prediction ? probabilityService.normalizeProviderPrediction(detail.prediction) : null;
+  if (fromProvider) {
+    probabilitySourceCounts.provider_prediction += 1;
+    return fromProvider;
+  }
+
+  const calendarRecord = detail.calendar || {};
+  const model = probabilityContext.engine.modelFor({
+    id: detail.naturalId || entry.id || null,
+    competitionId: entry.competitionId || calendarRecord.competitionId || null,
+    leagueId: calendarRecord.providerLeagueId || null,
+    kickoff: entry.kickoff,
+    homeTeam: entry.homeTeam,
+    awayTeam: entry.awayTeam,
+    homeTeamId: calendarRecord.homeTeamId || null,
+    awayTeamId: calendarRecord.awayTeamId || null
+  });
+  if (model.prediction) {
+    probabilitySourceCounts.futbolradar_model += 1;
+    return model.prediction;
+  }
+
+  probabilitySourceCounts.none += 1;
+  probabilityGaps.push({ id: detail.naturalId || entry.slug, reason: model.reason || "unknown" });
+  return null;
+}
+
 const analyses = readJson("data/match-analyses.json", []);
 const standings = readJson("data/league-standings.json", {});
 const squads = readJson("data/super-lig-squads.json", []);
@@ -745,7 +803,7 @@ function schemaFor(entry, state, locale, ctx, urls) {
 }
 
 function pageHtml(entry, locale, options) {
-  const { state, detail, analysis, report, disambiguate, hrefForMatch } = options;
+  const { state, detail, analysis, report, disambiguate, hrefForMatch, probability } = options;
   const base = locale === "en" ? "../../" : "../";
   const text = STR[locale];
   const titles = pageTitles(entry, state, locale, disambiguate);
@@ -849,7 +907,7 @@ function pageHtml(entry, locale, options) {
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),
       leadersSectionHtml(leaders, ctx),
-      analysisSectionHtml(radar, detail.prediction, ctx),
+      analysisSectionHtml(radar, probability, ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       eventsSectionHtml([], ctx),
       statsSectionHtml([], ctx)
@@ -1173,8 +1231,11 @@ for (const plan of plans) {
   const analysis = analysisFor(entry);
   const report = reportFor(entry);
   const disambiguate = titleCounts.get(plan.tr) > 1 || titleCounts.get(plan.en) > 1;
-  const trPage = pageHtml(entry, "tr", { state, detail, analysis, report, disambiguate, hrefForMatch: hrefForMatchFactory("tr", "../") });
-  const enPage = pageHtml(entry, "en", { state, detail, analysis, report, disambiguate, hrefForMatch: hrefForMatchFactory("en", "../../") });
+  // Tahmin fikstür başına BİR KEZ çözülür; iki dil aynı kaydı paylaşır.
+  // Ayrı ayrı çözülseydi TR ve EN sayfada farklı kaynak görünebilirdi.
+  const probability = probabilityFor(entry, detail, state);
+  const trPage = pageHtml(entry, "tr", { state, detail, analysis, report, disambiguate, probability, hrefForMatch: hrefForMatchFactory("tr", "../") });
+  const enPage = pageHtml(entry, "en", { state, detail, analysis, report, disambiguate, probability, hrefForMatch: hrefForMatchFactory("en", "../../") });
   for (const page of [trPage, enPage]) {
     if (writeIfChanged(page.relative, page.html)) written += 1; else unchanged += 1;
   }
@@ -1234,4 +1295,9 @@ if (!CHECK_ONLY) {
 console.log(`[match-seo-pages] sicil: ${registry.pages.length} maç (${added} yeni, ${updated} güncellendi); aday kayıt ${candidates.length}.`);
 console.log(`[match-seo-pages] durumlar: ${Object.entries(stateCounts).map(([key, value]) => `${key}=${value}`).join(" ")}`);
 console.log(`[match-seo-pages] sicil dışı ${pruned} eski sayfa silindi.`);
+console.log(`[match-seo-pages] tahmin kaynakları (maç öncesi): sağlayıcı=${probabilitySourceCounts.provider_prediction} piyasa=${probabilitySourceCounts.market_probability} model=${probabilitySourceCounts.futbolradar_model} üretilemedi=${probabilitySourceCounts.none}`);
+if (probabilityGaps.length) {
+  const reasons = probabilityGaps.reduce((acc, row) => { acc[row.reason] = (acc[row.reason] || 0) + 1; return acc; }, {});
+  console.log(`[match-seo-pages] tahmin üretilemeyen maçlar: ${Object.entries(reasons).map(([key, value]) => `${key}=${value}`).join(" ")}`);
+}
 console.log(`[match-seo-pages] sayfalar: ${written} yazıldı, ${unchanged} değişmedi (TR+EN maç sayfaları + ${hubs.length} hub/ay sayfası); site haritası ${sitemapEntries.length} girdi.`);

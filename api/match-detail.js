@@ -1,4 +1,6 @@
 const { getProvider, mockProvider } = require("../services/providers");
+const probabilityStore = require("../services/fixturePredictionStore.js");
+const probabilityService = require("../services/fixtureProbabilityService.js");
 const { quotesForMatch } = require("../services/managerQuotes");
 const managerQuoteStore = require("../data/manager-quotes.json");
 const {
@@ -12,6 +14,48 @@ const {
   validateOrSend,
   withTimeout
 } = require("./_utils");
+
+/** Depo bir kez okunur; işlev örneği boyunca bellekte kalır. */
+let probabilityIndex = null;
+function probabilityLookup() {
+  if (!probabilityIndex) {
+    const path = require("node:path");
+    const storePath = path.join(process.cwd(), "data", "fixture-predictions.json");
+    probabilityIndex = probabilityStore.indexStore(probabilityStore.readStore(storePath));
+  }
+  return probabilityIndex;
+}
+
+/**
+ * Maç detayına, üç kaynaklı zincirin çözdüğü olasılığı ekler.
+ *
+ * Depoda kayıt yoksa ve sağlayıcı yükü elde varsa (canlı/ bitmiş maçta
+ * çağıran taraf tahmin istemişse) o normalleştirilir. Hiçbiri yoksa alan
+ * `null` kalır — istemci boş kutu değil, dürüst bir "yayımlanmadı" notu
+ * çizer. UYDURMA YOK.
+ */
+function attachProbability(detail) {
+  const stored = probabilityLookup().find(detail.id, detail.fixtureId || detail.providerId);
+  const record = (stored && probabilityStore.toDisplayRecord(stored)) ||
+    probabilityService.normalizeProviderPrediction(detail.prediction);
+  if (!record || !probabilityService.isDisplayable(record)) {
+    detail.probability = null;
+    return;
+  }
+  const display = probabilityService.displayFor(record.source, "tr");
+  detail.probability = {
+    source: record.source,
+    title: display.title,
+    icon: display.icon,
+    note: display.note,
+    home: record.probabilities.home,
+    draw: record.probabilities.draw,
+    away: record.probabilities.away,
+    advice: record.advice || null,
+    predictedWinner: record.predictedWinner || null,
+    calculatedAt: record.calculatedAt || null
+  };
+}
 
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
@@ -28,13 +72,17 @@ module.exports = async function handler(req, res) {
     setCachePolicy(res, "match-detail-live");
   }
   const provider = getProvider("match-detail");
-  const localDetail = await mockProvider.getMatchDetail(query);
+  // SAYFA GÖRÜNTÜLEMESİ TAHMİN İSTEĞİ TETİKLEMEZ. `/predictions` çağrısı
+  // zamanlanmış koşuya ait; burada depo okunur (aşağıda `attachProbability`).
+  // Kota tek bir popüler maçın trafiğiyle tükenmemeli.
+  const detailQuery = { ...query, includePredictions: false };
+  const localDetail = await mockProvider.getMatchDetail(detailQuery);
   let detail = localDetail;
   let source = mockProvider.source;
 
   try {
     if (provider !== mockProvider && typeof provider.getMatchDetail === "function") {
-      const providerDetail = await withTimeout(provider.getMatchDetail(query), DEFAULT_TIMEOUT_MS);
+      const providerDetail = await withTimeout(provider.getMatchDetail(detailQuery), DEFAULT_TIMEOUT_MS);
       if (providerDetail) {
         detail = providerDetail;
         source = provider.source;
@@ -60,6 +108,7 @@ module.exports = async function handler(req, res) {
   // denetliyor, bizim eklediğimiz alan o sözleşmenin parçası değil.
   if (detail) {
     detail.quotes = quotesForMatch(detail.id, managerQuoteStore);
+    attachProbability(detail);
   }
 
   // Maç CANLIYSA önbellek politikası no-store'a geçer — bitmiş/başlamamış

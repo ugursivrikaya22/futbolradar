@@ -168,7 +168,7 @@ function normalizeFixture(match) {
     // kaydın kendisi api-football kaynaklıysa üst düzey providerId. Düz
     // providerId'ye körlemesine düşülMEZ — TheSportsDB'nin SAYISAL etkinlik
     // kimliği buradan sızıp resmî 11 ve canlı istatistik isteklerini yanlış
-    // maça yönlendiriyordu. Kimlik yoksa null kalır; sync-match-predictions
+    // maça yönlendiriyordu. Kimlik yoksa null kalır; sync-fixture-predictions
     // sezon fikstüründen çözünce sonraki üretimde dolar.
     providerId: (match.providerIds && match.providerIds.apiFootball) ||
       (match.source === "api-football" ? match.providerId : null) || null,

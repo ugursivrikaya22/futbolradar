@@ -17,6 +17,7 @@ import {
   analysisPendingNote,
   buildH2hEntries
 } from "./lib/matchAnalysisSections.mjs";
+import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -48,6 +49,43 @@ const archiveRecords = Array.isArray(matchArchive.records) ? matchArchive.record
 const superLigStandings = (leagueStandings["super-lig"] && Array.isArray(leagueStandings["super-lig"].table))
   ? leagueStandings["super-lig"]
   : { table: [], updatedAt: null };
+/**
+ * TAHMİN ZİNCİRİ — depo → takvimdeki ham sağlayıcı yükü → FutbolRadar
+ * modeli. Sağlayıcıya derleme anında istek atılmaz; `/predictions` ve
+ * `/odds` çağrıları `scripts/sync-fixture-predictions.mjs` koşusuna aittir.
+ */
+const probabilityStore = require("../services/fixturePredictionStore.js");
+const probabilityService = require("../services/fixtureProbabilityService.js");
+const probabilityIndex = probabilityStore.indexStore(
+  probabilityStore.readStore(path.join(root, "data", "fixture-predictions.json"))
+);
+const probabilityContext = loadProbabilityContext(root);
+
+function resolvedProbability(match, calendarRec) {
+  const providerFixtureId = calendarRec && calendarRec.providerIds && calendarRec.providerIds.apiFootball
+    ? String(calendarRec.providerIds.apiFootball)
+    : null;
+  const stored = probabilityIndex.find(calendarRec && calendarRec.id, providerFixtureId);
+  if (stored) {
+    const display = probabilityStore.toDisplayRecord(stored);
+    if (display) return display;
+  }
+  // Depoda kayıt yoksa takvimdeki ham sağlayıcı yükü normalleştirilir;
+  // o da yoksa model yerel veriden hesaplanır.
+  const fromProvider = probabilityService.normalizeProviderPrediction(calendarRec && calendarRec.prediction);
+  if (fromProvider) return fromProvider;
+  const model = probabilityContext.engine.modelFor({
+    id: calendarRec && calendarRec.id,
+    competitionId: (calendarRec && calendarRec.competitionId) || "super-lig",
+    kickoff: match.kickoff,
+    homeTeam: match.homeTeam,
+    awayTeam: match.awayTeam,
+    homeTeamId: calendarRec && calendarRec.homeTeamId,
+    awayTeamId: calendarRec && calendarRec.awayTeamId
+  });
+  return model.prediction || null;
+}
+
 const outDir = path.join(root, "mac");
 /** Bu üreticinin dosya deseni: <ev>-<dep>-<sezon>-r<NN>.html */
 const ROUND_PAGE_FILE_RE = /-\d{4}-\d{4}-r\d{2}\.html$/;
@@ -288,7 +326,7 @@ function pageHtml(match) {
     analysis ? lineupsSection(analysis, players, base) : "",
     analysis ? playerCardsSection(analysis, players, base) : "",
     analysis ? aiAnalysisSection(analysis, radar, match.homeTeam, match.awayTeam, base) : "",
-    analysis ? probabilitySection(analysis, calendarRec, match.homeTeam, match.awayTeam) : "",
+    analysis ? probabilitySection(analysis, calendarRec, match.homeTeam, match.awayTeam, resolvedProbability(match, calendarRec)) : "",
     analysis ? absencesSection(analysis, squadStatus, match.homeTeam, match.awayTeam) : "",
     analysis ? formSection(analysis, match.homeTeam, match.awayTeam) : "",
     !analysis ? analysisPendingNote() : "",

@@ -22,6 +22,11 @@
  * açıkça söyler.
  */
 
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const probabilityService = require("../../services/fixtureProbabilityService.js");
+
 const STATUS_LABELS = {
   injured: "Sakat",
   suspended: "Cezalı",
@@ -432,11 +437,33 @@ function parseProviderPercent(calendarRec) {
 }
 
 /**
+ * Zincirin çözdüğü dış kaynak satırı. Çözülmüş kayıt yoksa takvimdeki ham
+ * sağlayıcı yükü okunur — depo henüz yazılmamışken mevcut sağlayıcı
+ * tahmininin ekrandan düşmemesi için.
+ */
+function externalProbabilityRow(probability, calendarRec) {
+  const record = probability && probability.probabilities && probabilityService.isDisplayable(probability)
+    ? probability
+    : probabilityService.normalizeProviderPrediction(calendarRec && calendarRec.prediction);
+  if (!record || !probabilityService.isDisplayable(record)) return null;
+  const display = probabilityService.displayFor(record.source, "tr");
+  if (!display) return null;
+  return {
+    source: record.source,
+    icon: display.icon,
+    title: display.title,
+    home: record.probabilities.home,
+    draw: record.probabilities.draw,
+    away: record.probabilities.away
+  };
+}
+
+/**
  * 4) KAZANMA OLASILIĞI — site modelinin yüzdeleri + (varsa) sağlayıcının
  * kendi modeli, ikisi de açıkça etiketli. Skor tahmini bilinçli olarak YOK:
  * hiçbir doğrulanmış model skor çizgisi üretmiyor; uydurmak yasak.
  */
-export function probabilitySection(analysis, calendarRec, homeName, awayName) {
+export function probabilitySection(analysis, calendarRec, homeName, awayName, probability) {
   if (!analysis || !analysis.prediction) return "";
   const prediction = analysis.prediction;
   if (prediction.predictionStatus === "unavailable") {
@@ -472,9 +499,13 @@ export function probabilitySection(analysis, calendarRec, homeName, awayName) {
     ? '<span class="match-probability-chip is-warning">Düşük veri güveni — temkinli okuyun</span>'
     : "";
 
-  const provider = parseProviderPercent(calendarRec);
-  const providerRow = provider
-    ? `<div class="match-probability-provider"><span>API-Football modeli</span><div class="probability-bar-track is-thin" role="img" aria-label="API-Football: ev sahibi yüzde ${provider.home}, beraberlik yüzde ${provider.draw}, deplasman yüzde ${provider.away}"><span class="home-share" style="width:${provider.home}%"></span><span class="draw-share" style="width:${provider.draw}%"></span><span class="away-share" style="width:${provider.away}%"></span></div><b>%${provider.home} · %${provider.draw} · %${provider.away}</b></div>`
+  // İKİNCİ SATIR: site modelinin yanında, ZİNCİRİN çözdüğü kaynak.
+  // Başlık kaynağa göre değişir (Sağlayıcı Tahmini / Piyasa Olasılığı /
+  // FutbolRadar Tahmini); piyasa oranından türeyen bir yüzdenin
+  // "API-Football modeli" diye etiketlenmesi yanlış atıf olurdu.
+  const external = externalProbabilityRow(probability, calendarRec);
+  const providerRow = external
+    ? `<div class="match-probability-provider" data-prediction-source="${escapeHtml(external.source)}"><span>${escapeHtml(external.icon)} ${escapeHtml(external.title)}</span><div class="probability-bar-track is-thin" role="img" aria-label="${escapeHtml(`${external.title}: ${homeName} yüzde ${external.home}, beraberlik yüzde ${external.draw}, ${awayName} yüzde ${external.away}`)}"><span class="home-share" style="width:${external.home}%"></span><span class="draw-share" style="width:${external.draw}%"></span><span class="away-share" style="width:${external.away}%"></span></div><b>%${external.home} · %${external.draw} · %${external.away}</b></div>`
     : "";
 
   return `<section class="match-probability" aria-label="Kazanma olasılığı"><h2 class="match-section-title">Kazanma Olasılığı</h2>
