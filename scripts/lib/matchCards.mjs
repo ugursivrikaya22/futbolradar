@@ -22,6 +22,44 @@ const { canonicalStatus, isDisplayableLive, LIVE_STATES, PLAYED_STATES } = requi
 const { sameClub } = require("../../services/superLigTeams.js");
 
 /**
+ * SÜRESİ GEÇEN "RESMÎ İLK 11" UYARISININ EŞİĞİ — TEK YERDE.
+ *
+ * Eşik iki üreticide birden (prerender-core-pages.mjs ve
+ * generate-en-pages.mjs) ayrı ayrı yazılıydı; İngilizce tarafın notu bile
+ * gerekçe için Türkçe tarafa işaret ediyordu. İki kopya, eşiği bir tarafta
+ * değiştirmenin diğer tarafı SESSİZCE eski değerde bırakması demekti —
+ * kartın bir dilde durup öbüründe kalkması. Kural burada da aynı: değer
+ * BURADA, bir kez.
+ *
+ * Değer 3 saatten 2 saat 15 dakikaya çekildi. 3 saat, ilk 11 kartını maç
+ * bittikten sonra yaklaşık bir saat daha "SON DAKİKA" rozetiyle ana
+ * sayfada tutuyordu: 20:00'de başlayan Gaziantep FK-Fenerbahçe 21:55'te
+ * bitti, kart 23:00'e kadar kalacaktı. 2 saat 15 dakika, uzatmalar ve
+ * devre arası dahil normal bir maçı (90 + ~15 + uzatma) rahatça kapsar,
+ * ama bitişten sonra kartı saatlerce taşımaz.
+ *
+ * Bu YALNIZCA yedek sinyaldir. Asıl sinyal maçın veri katmanında
+ * doğrulanmış olarak bitmesidir (prerender'daki isVerifiedFinalMatch);
+ * o geldiği anda kart zaten eşik beklenmeden kalkar. Eşik, maç kaydı
+ * takvimde yoksa ya da sonuç henüz doğrulanmamışsa devreye girer.
+ */
+export const LINEUP_ALERT_STALE_MS = (2 * 60 + 15) * 60 * 1000;
+
+/**
+ * Uyarı, başlama saatinin üzerinden eşikten fazla geçtiği için artık
+ * basılmamalı mı? Zaman damgası okunamıyorsa kart BASILIR (kaynağı olan
+ * bir kaydı, yalnızca tarihi ayrıştıramadık diye düşürmeyiz).
+ *
+ * KAYIT SİLİNMEZ — geçmiş maç verisi korunur, yalnızca ekrana basılması
+ * durur.
+ */
+export function isLineupAlertStale(alert, now = Date.now()) {
+  const kickoffMs = Date.parse((alert && alert.kickoff) || "");
+  if (!Number.isFinite(kickoffMs)) return false;
+  return now - kickoffMs > LINEUP_ALERT_STALE_MS;
+}
+
+/**
  * RESMÎ İLK 11 UYARISI — kalıcı analiz altyapısına (tahmin/matchup/rakip
  * kıyası) hiç dokunmaz. `data/official-lineup-alerts.json`, kulübün
  * kendi açıklamasından ELLE girilmiş, kaynaklı bir kayıttır (bkz. o
