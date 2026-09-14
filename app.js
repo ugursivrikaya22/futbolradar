@@ -8917,7 +8917,9 @@
       // eşleşmenin önünü keser, kart boş yere baş harflere düşerdi.
       if (!identity.photo && !/^\d+$/.test(String(identity.providerId || ""))) return;
 
-      if (player.id) index.byId[String(player.id)] = identity;
+      [player.id, player.playerId, identity.providerId].forEach(function (key) {
+        if (key) index.byId[String(key)] = identity;
+      });
 
       var nameKey = transferPhotoNameKey(player.name);
       if (!nameKey) return;
