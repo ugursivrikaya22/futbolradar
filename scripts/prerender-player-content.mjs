@@ -144,7 +144,9 @@ for (const player of players) {
   // Fotoğraf üretemeyecek kayıt indekse girmiyor; girseydi doğru eşleşmenin
   // önünü keser, kart boş yere baş harflere düşerdi.
   if (!identity.photo && !/^\d+$/.test(String(identity.providerId || ""))) continue;
-  if (player.id) photoIndex.byId.set(String(player.id), identity);
+  for (const key of [player.id, player.playerId, identity.providerId]) {
+    if (key) photoIndex.byId.set(String(key), identity);
+  }
   const nameKey = photoNameKey(player.name);
   if (!nameKey) continue;
   const teamKey = `${nameKey}@${normalizePhotoText(player.currentTeam || player.team)}`;
