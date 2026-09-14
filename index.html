@@ -166,6 +166,16 @@
 
 
       <main class="home-main">
+      <!-- RADAR NABZI ANA SAYFA KARTI.
+           Kabuk boş ve `hidden` doğar; radar-home-card.js yalnızca gerçekten
+           canlı bir maç bulduğunda doldurup açar, maç bitince yeniden kapatır.
+           Sunucu tarafında basılmamasının sebebi: "canlı" iddiası derleme
+           anında doğrulanamaz ve yayına giren statik bir kart o andan
+           itibaren yanlış olurdu. -->
+      <section class="container rp-home" data-radar-home-card data-radar-locale="tr" hidden aria-label="Radar Nabzı">
+        <div data-radar-home-body></div>
+      </section>
+
         <section class="container hero" id="hero-canli-skor">
           <div>
             <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Canlı maç merkezi</span>
@@ -854,6 +864,8 @@
     </footer>
     </div>
     <script src="./site.js?v=5b1ce302" defer></script>
+    <script src="./radar-pulse.js?v=6c6809bb" defer></script>
+    <script src="./radar-home-card.js?v=4c890f95" defer></script>
     <script src="./app.js?v=6623b332" defer></script>
   </body>
 </html>
