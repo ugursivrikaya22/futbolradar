@@ -28,14 +28,22 @@ const { sameClub } = require("../../services/superLigTeams.js");
  * dosyanın başındaki not); burada yalnızca GÖRÜNTÜLENİR.
  *
  * "Doğrulanmadan yayınlanmaz" kuralı burada da geçerli: `startingXI`
- * yalnızca AD taşır (numara/mevki bilinmiyorsa uydurulmaz), kaynak adı
- * ve bağlantısı ZORUNLU — kaynağı gösterilemeyen bir kart basılmaz.
+ * kaydında AD zorunludur, forma numarası ise İSTEĞE BAĞLIDIR ve yalnızca
+ * resmî esame gibi numarayı da veren bir kaynaktan geldiyse taşınır
+ * (numara/mevki bilinmiyorsa uydurulmaz), kaynak adı ve bağlantısı
+ * ZORUNLU — kaynağı gösterilemeyen bir kart basılmaz.
  */
 export function officialLineupAlertHtml(alert, locale) {
   if (!alert || !Array.isArray(alert.startingXI) || !alert.startingXI.length || !alert.sourceUrl) return "";
   const loc = normalizeLocale(locale);
-  const players = alert.startingXI.map((player) =>
-    `<li class="lineup-alert-player">${escapeHtml(player.name)}</li>`).join("");
+  const players = alert.startingXI.map((player) => {
+    // Forma numarası YALNIZCA kayıtta varsa basılır (resmî esameden gelir);
+    // bilinmiyorsa sıra numarası gibi bir vekil değer uydurulmaz.
+    const number = Number.isFinite(Number(player.number)) && player.number !== null && player.number !== ""
+      ? `<b class="lineup-alert-number">${escapeHtml(player.number)}</b>`
+      : "";
+    return `<li class="lineup-alert-player">${number}<span>${escapeHtml(player.name)}</span></li>`;
+  }).join("");
 
   return `<div class="lineup-alert" data-card="official-lineup-alert" data-match="${escapeHtml(alert.matchId || "")}">` +
     `<div class="lineup-alert-head">` +
