@@ -13,10 +13,23 @@
  * gün ortaya çıkar — sayfa kapsamı yükselmesine rağmen noindex kalır ve
  * kimse fark etmez. Bu yüzden burada yalnızca sonuç değil, KAYIT ile
  * SAYFA arasındaki eşleşme denetleniyor.
+ *
+ * UZLAŞTIRMA: HEDEFİ OLAN KOPYA İNDEKSTEN ÇEKİLMEZ. Raporun maçının
+ * kalıcı bir `/mac/` sayfası varsa o rapor bir KOPYA'dır ve
+ * `unify-match-canonicals` onun canonical'ını o sayfaya çevirir. Aynı
+ * sayfaya `noindex` de basmak çelişkili sinyal olur: canonical
+ * "asıl adres şu" derken noindex "beni indeksleme" diyor, ve Google
+ * `noindex`i canonical hedefine taşıyabiliyor. Bu yüzden ince kural
+ * yalnızca HEDEFİ OLMAYAN rapora uygulanır; hedefi olan rapor
+ * `index,follow` kalır ve otoritesi canonical ile tek adrese toplanır.
  */
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+const { slugForMatch } = require("../services/matchSeoPages.js");
 
 const root = process.cwd();
 const DOMAIN = "https://www.futbolradar.com";
@@ -51,6 +64,8 @@ const indexableMissing = [];
 const mirrorMismatch = [];
 let thin = 0;
 let indexable = 0;
+let targeted = 0;
+const conflicting = [];
 
 for (const file of fs.readdirSync(dir)) {
   if (!file.endsWith(".html")) continue;
@@ -62,9 +77,19 @@ for (const file of fs.readdirSync(dir)) {
   // Kaydı olmayan sayfanın kapsamı BİLİNMİYOR; bilinmeyen kapsam ince sayılır.
   const coverage = record && Number.isFinite(record.coveragePercent) ? record.coveragePercent : 0;
   const isThin = coverage <= THRESHOLD;
+  // Maçın kalıcı `/mac/` sayfası varsa bu rapor bir kopyadır.
+  const hasTarget = Boolean(record && slugForMatch(record));
   const inSitemap = sitemap.includes(`<loc>${DOMAIN}/${relative}</loc>`);
 
-  if (isThin) {
+  if (hasTarget) {
+    // Hedefi olan kopya: `noindex` ALMAZ. Site haritasında olup olmadığı
+    // burada iddia EDİLMEZ — birleştirme adımı kopyayı haritadan
+    // çıkarıyor ve o da doğru davranış.
+    targeted += 1;
+    if (/noindex/i.test(robots)) {
+      conflicting.push(`${relative}: /mac/ hedefi var ama robots="${robots}"`);
+    }
+  } else if (isThin) {
     thin += 1;
     if (robots !== "noindex,follow") wrongDirective.push(`${relative}: kapsam %${coverage} ama robots="${robots}"`);
     if (inSitemap) thinInSitemap.push(`${relative} (kapsam %${coverage})`);
@@ -86,6 +111,11 @@ for (const file of fs.readdirSync(dir)) {
 }
 
 const show = (list) => list.slice(0, 5).join("\n    ") + (list.length > 5 ? `\n    … +${list.length - 5}` : "");
+// ÇELİŞKİLİ SİNYAL KAPISI: hedefi olan kopyada `noindex` olamaz. Bu iki
+// kural birbirini bozarsa önce burada patlar, canlıda değil.
+assert.equal(conflicting.length, 0,
+  `hedefi olan kopya noindex almış (canonical ile çelişiyor):\n    ${show(conflicting)}`);
+
 assert.equal(wrongDirective.length, 0, `robots yönergesi kapsamla uyuşmuyor:\n    ${show(wrongDirective)}`);
 assert.equal(thinInSitemap.length, 0,
   `ince sayfa site haritasında (çelişkili sinyal):\n    ${show(thinInSitemap)}`);
@@ -95,4 +125,4 @@ assert.equal(mirrorMismatch.length, 0, `public aynası farklı yönerge taşıyo
 
 assert.ok(thin + indexable > 0, "hiç rapor sayfası bulunamadı");
 
-console.log(`İnce kapsam kuralı (eşik %${THRESHOLD}): ${thin} ince (noindex,follow, site haritası dışı), ${indexable} indekslenebilir — ${thin + indexable} sayfa denetlendi, hepsi erişilebilir.`);
+console.log(`İnce kapsam kuralı (eşik %${THRESHOLD}): ${thin} ince (noindex,follow, site haritası dışı), ${indexable} indekslenebilir, ${targeted} hedefi olan kopya (noindex almaz) — ${thin + indexable + targeted} sayfa denetlendi, hepsi erişilebilir.`);

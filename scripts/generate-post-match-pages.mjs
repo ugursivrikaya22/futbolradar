@@ -72,11 +72,50 @@ function isThinCoverage(record) {
   return coveragePercentOf(record) <= THIN_COVERAGE_THRESHOLD;
 }
 
+/**
+ * Maçın KALICI `/mac/` sayfası var mı? Sicilden okunur
+ * (`data/match-seo-index.json`); uydurulmaz, bulunamazsa null döner.
+ */
+function hasPermanentMatchPage(record) {
+  return Boolean(record && slugForMatch(record));
+}
+
+/**
+ * NOINDEX'İN İNCE OLMAKTAN FARKI: HEDEFİ OLAN KOPYA İNDEKSTEN ÇEKİLMEZ.
+ *
+ * İki kural aynı sayfada buluşabiliyor ve birbirini bozuyor:
+ *
+ *   • Buradaki kapsam kuralı ince raporu `noindex,follow` yapıyor.
+ *   • `unify-match-canonicals` (postprocess) hedefi olan raporun
+ *     canonical'ını `/mac/...` adresine çeviriyor ve robots'a BAKMIYOR.
+ *     Zincirde bu adım bu üreticiden SONRA koşuyor.
+ *
+ * İkisi birden geçerse sayfa hem "beni indeksleme" hem "asıl adres şu"
+ * diyor. Çelişkili sinyal: canonical indekslenecek sayfayı gösterirken
+ * noindex onu iptal ediyor ve Google `noindex`i canonical hedefine
+ * taşıyabiliyor — yani kopyayı düşürürken KANONİK sayfayı da düşürebilir.
+ *
+ * Ayrım şu: `noindex` sayfayı düşürür ve biriktirdiği otoriteyi hiçbir
+ * yere aktarmaz; çapraz canonical otoriteyi tek adrese toplar. Hedefi
+ * OLAN kopya için ikincisi her zaman daha iyi. Dolayısıyla:
+ *
+ *   hedefi var  → `index,follow` kalır, canonical'ı postprocess çevirir
+ *   hedefi yok  → ince ise `noindex,follow` (o rapor o maçın tek adresi
+ *                 değil, tek KAYNAĞI; kanibalize ettiği bir şey yok)
+ *
+ * Ölçüm (bu koşuda): 1.232 ince rapor, bunların 305'inin `/mac/` hedefi
+ * var. O 305 sayfa artık indeksten çekilmiyor.
+ */
+function shouldNoindex(record) {
+  return isThinCoverage(record) && !hasPermanentMatchPage(record);
+}
+
 const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { buildMatchReport, buildMatchEvents } = require("../services/matchReportService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { quotesForMatch } = require("../services/managerQuotes.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
+const { slugForMatch } = require("../services/matchSeoPages.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { t } = require("../services/i18n.js");
 const { getPlayers } = require("../services/playerService.js");
@@ -645,7 +684,7 @@ function applyCoverageRuleToExistingPages() {
   for (const file of fs.readdirSync(dir)) {
     if (!file.endsWith(".html")) continue;
     const record = byFile.get(file);
-    const isThin = isThinCoverage(record);
+    const isThin = shouldNoindex(record);
     if (isThin) thin += 1; else indexable += 1;
     if (isThin) toRemove.push(`mac-raporu/${file}`);
     if (justWritten.has(file)) continue;
@@ -701,7 +740,7 @@ for (const match of finished) {
     store.set(value, match.id);
   }
 
-  const indexable = !isThinCoverage(stored);
+  const indexable = !shouldNoindex(stored);
   const html = pageHtml(report, match, indexable);
   for (const base of [root, path.join(root, "public")]) {
     const target = path.join(base, relative);
