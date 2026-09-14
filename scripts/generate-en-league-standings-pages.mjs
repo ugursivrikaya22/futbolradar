@@ -142,11 +142,16 @@ function competitionPage(entry) {
   const dataDate = (updatedAt || "").slice(0, 10) || today;
   const title = `${entry.nameEn} Standings | FutbolRadar`;
   const description = `${entry.nameEn} current standings: played, won, drawn, lost, goal difference and points for every club.`;
-  const canonicalPath = `/en/${entry.slugEn}.html`;
-  const trPath = `${entry.slugTr}.html`;
+  // TEMİZ ADRES. Sayfa diskte `.html` olarak duruyor; `vercel.json` rewrite'ı
+  // uzantısız adresi zaten karşılıyordu, ama kanonik `.html`yi gösterdiği için
+  // aynı tablo iki adresten indekslenebilir durumdaydı. Türkçe taraf uzantısız
+  // kanonik kullanıyor; iki dilin aynı kalıbı taşıması hreflang eşleşmesini de
+  // düzeltiyor.
+  const canonicalPath = `/en/${entry.slugEn}`;
+  const trPath = entry.slugTr;
   const breadcrumbs = [
     { name: "Home", href: "./", url: `${siteUrl}/en/index.html` },
-    { name: `${entry.nameEn} Standings`, href: `./${entry.slugEn}.html`, url: `${siteUrl}${canonicalPath}` }
+    { name: `${entry.nameEn} Standings`, href: `./${entry.slugEn}`, url: `${siteUrl}${canonicalPath}` }
   ];
   const content = hasData
     ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${tableHtml(rows, `${entry.nameEn} standings`)}</section>${relatedLinksHtml(entry)}`
@@ -178,8 +183,12 @@ function competitionPage(entry) {
 function updateSitemap(file, entries) {
   if (!fs.existsSync(file)) return;
   const xml = fs.readFileSync(file, "utf8");
-  const urls = new Map(entries.map((entry) => [`${siteUrl}/en/${entry.slugEn}.html`, entry]));
-  const existing = (xml.match(URL_ENTRY_RE) || []).filter((entryXml) => ![...urls.keys()].some((url) => entryXml.includes(`<loc>${url}</loc>`)));
+  const urls = new Map(entries.map((entry) => [`${siteUrl}/en/${entry.slugEn}`, entry]));
+  // Site haritası KANONİK adresi listeler. Eski `.html`li kayıtlar da
+  // düşürülüyor; bırakılsalardı harita kanonik olmayan adresleri gösterirdi.
+  const legacy = entries.map((entry) => `${siteUrl}/en/${entry.slugEn}.html`);
+  const stale = [...urls.keys(), ...legacy];
+  const existing = (xml.match(URL_ENTRY_RE) || []).filter((entryXml) => !stale.some((url) => entryXml.includes(`<loc>${url}</loc>`)));
   const fresh = [...urls.entries()].map(([url, entry]) => {
     const dataDate = (getStandings(entry).updatedAt || "").slice(0, 10) || today;
     return `  <url>\n    <loc>${url}</loc>\n    <lastmod>${dataDate}</lastmod>\n    <changefreq>hourly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
