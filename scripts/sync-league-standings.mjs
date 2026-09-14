@@ -27,6 +27,8 @@ const args = new Set(process.argv.slice(2));
 const wantApply = args.has("--apply");
 const asJson = args.has("--json");
 
+const { normalizeSeason } = require("../services/standingsResolver.js");
+
 const OUT_PATH = path.join(process.cwd(), "data", "league-standings.json");
 const PUBLIC_OUT_PATH = path.join(process.cwd(), "public", "data", "league-standings.json");
 
@@ -66,6 +68,11 @@ async function main() {
       if (table.length) {
         results[competition.id] = {
           league: competition.name,
+          // SEZON KAYDA GİRER: tablo bir maç sayfasında gösterilmeden önce
+          // maçın sezonuyla karşılaştırılır (services/standingsResolver.js).
+          // Sezonsuz kayıt, 2026/27 maçının altına 2025/26 tablosunun
+          // sessizce yerleşmesine izin verirdi.
+          season: normalizeSeason(competition.resolvedSeason) || null,
           updatedAt: table.map(row => row.fetchedAt).filter(Boolean).sort().at(-1) || null,
           table
         };

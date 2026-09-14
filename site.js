@@ -338,17 +338,34 @@
    * okuyor. Maç listesindeki gerekçenin aynısı: iki bölüm ayrı çağırsaydı
    * aynı yanıt iki kez inerdi.
    */
-  var standingsPromise = null;
+  var standingsPromises = Object.create(null);
 
-  function standingsOnce() {
-    if (standingsPromise) return standingsPromise;
-    standingsPromise = window.fetch("/api/standings", { headers: { Accept: "application/json" } })
+  /**
+   * ÖNBELLEK ANAHTARI LİG VE SEZON TAŞIR: `standings:{leagueId}:{seasonId}`.
+   *
+   * Burası eskiden TEK bir `standingsPromise` tutuyor ve `/api/standings`i
+   * ligsiz çağırıyordu; sunucu da ligsiz isteğe Süper Lig tablosu
+   * döndürüyordu. Bu betik her sayfada (maç sayfaları dahil) yüklendiği
+   * için, bir ligin tablosu global anahtar üzerinden başka bir sayfaya
+   * taşınabiliyordu. Artık lig zorunlu ve her lig/sezon kendi girdisinde.
+   */
+  function standingsCacheKey(league, season) {
+    return "standings:" + (league || "unknown") + ":" + (season || "unknown");
+  }
+
+  function standingsOnce(league, season) {
+    if (!league) return Promise.resolve(null);
+    var key = standingsCacheKey(league, season);
+    if (standingsPromises[key]) return standingsPromises[key];
+    var url = "/api/standings?league=" + encodeURIComponent(league) +
+      (season ? "&season=" + encodeURIComponent(season) : "");
+    standingsPromises[key] = window.fetch(url, { headers: { Accept: "application/json" } })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (payload) {
         return payload && Array.isArray(payload.data) ? payload.data : null;
       })
       .catch(function () { return null; });
-    return standingsPromise;
+    return standingsPromises[key];
   }
 
   /**
@@ -570,7 +587,10 @@
         }
       });
 
-      standingsOnce()
+      // "Favori Takımım" kartı Süper Lig kulüpleri için tutuluyor; tablo bu
+      // yüzden AÇIKÇA super-lig'den istenir — ligsiz bir istekten dönen
+      // varsayılan tablo değil.
+      standingsOnce("super-lig")
         .then(function (rows) {
           if (!rows) return;
           for (var i = 0; i < rows.length; i += 1) {

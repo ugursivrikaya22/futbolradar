@@ -127,7 +127,14 @@ const AMBIGUOUS_COMPETITION_NAMES = new Set([
   "Premier League",
   // "Serie A" da aynı sorunu taşıyor: İtalya (135) ile Brezilya (71) aynı
   // ada sahip, adla çözüm ikisini ayıramaz.
-  "Serie A"
+  "Serie A",
+  // "Bundesliga" Almanya (78) ve Avusturya (218) liglerinin ORTAK adı.
+  // Ad üzerinden çözüm ikisini ayıramadığı için Avusturya Bundesliga'sının
+  // maçları (Grazer AK, Austria Lustenau, Wolfsberger AC...) Alman
+  // Bundesliga'sı diye sicile giriyor, maç sayfası "Bundesliga" başlığı ve
+  // Alman Bundesliga puan durumu bağlantısıyla yayınlanıyordu. Almanya'nın
+  // gerçek maçları sağlayıcı lig kimliğiyle (78) zaten çözülüyor.
+  "Bundesliga"
 ].map(normalizeKey));
 
 /** Ad, ülkeyi ayırt etmeye yetmeyen türden mi? */
