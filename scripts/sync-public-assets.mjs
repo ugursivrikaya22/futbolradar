@@ -61,6 +61,7 @@ for (const file of [
   "momentum.json",
   "news.json",
   "players.json",
+  "player-ratings.json",
   "signals.json",
   "squad-statuses.json",
   "super-lig-fixtures.json",

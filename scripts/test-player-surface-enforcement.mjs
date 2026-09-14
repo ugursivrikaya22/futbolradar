@@ -27,6 +27,8 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const credibility = require("../services/cardCredibility.js");
+const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
+const { getPlayers } = require("../services/playerService.js");
 const players = require("../data/players.json");
 
 const root = process.cwd();
@@ -189,15 +191,45 @@ function testComparisonPagesExposeNoRatings() {
   }
 }
 
+/**
+ * KURAL "DAKİKA HİÇ BASILMASIN" DEĞİL: "DOĞRULANMAMIŞ DAKİKA BASILMASIN".
+ *
+ * Bu iki cümle yazıldığı gün aynı şeye denk düşüyordu — hiçbir kaydın ölçüm
+ * kanıtı yoktu, dolayısıyla hiçbir dakika yayımlanabilir değildi. Sonradan
+ * ALAN BAZLI doğrulama geldi (`statsVerifiedFields`, bkz.
+ * services/cardCredibility.js): 12 oyuncunun gol/asist/dakika değerleri
+ * elle, kaynak gösterilerek doğrulandı ve `publicPlayerView` onları HAKLI
+ * OLARAK yayımlıyor.
+ *
+ * Sabit kalıp o günden beri gerçek bir sızıntıyı değil, çalışan bir
+ * doğrulamayı işaret ediyordu. Denetim artık kartın KİMLİĞİNE bakıyor:
+ * sayfada dakika gösterilen her oyuncunun dakikası gerçekten doğrulanmış
+ * olmalı. Doğrulanmamış tek bir kayıt için basılan tek bir sayı testi yine
+ * kırar.
+ */
 function testCategoryPagesExposeNoRestrictedFields() {
+  const byId = new Map(players.map((player) => [player.id, player]));
+
   for (const file of ["forvetler.html", "kaleciler.html", "defanslar.html",
     "orta-sahalar.html", "genc-yetenekler.html", "en-iyi-oyuncular.html"]) {
     const full = path.join(root, "oyuncular", file);
     if (!fs.existsSync(full)) continue;
     const html = fs.readFileSync(full, "utf8");
     assert.ok(!/player-rating-badge/.test(html), `${file}: puan rozeti basılmamalı`);
-    assert.ok(!/Piyasa\s*<b>[^<]*\d/.test(html), `${file}: piyasa değeri basılmamalı`);
-    assert.ok(!/Maç dakikası\s*<b>\s*\d/.test(html), `${file}: dakika basılmamalı`);
+
+    for (const card of html.match(/<article class="card player-detail-card"[\s\S]*?<\/article>/g) || []) {
+      const id = (card.match(/data-player="([^"]+)"/) || [])[1];
+      const record = id ? byId.get(id) : null;
+
+      if (/Maç dakikası\s*<b>\s*\d/.test(card)) {
+        assert.ok(record && credibility.statsAreVerified(record, "minutesPlayed"),
+          `${file}: ${id || "?"} için doğrulanmamış dakika basılmış`);
+      }
+      if (/Piyasa\s*<b>[^<]*\d/.test(card)) {
+        assert.ok(record && credibility.statsAreVerified(record, "marketValueEur"),
+          `${file}: ${id || "?"} için doğrulanmamış piyasa değeri basılmış`);
+      }
+    }
   }
 }
 
@@ -211,9 +243,22 @@ function testSearchIndexCarriesNoClubClaim() {
   // korunmak istenen şeyin ta kendisi. Taban 110: altına düşmek gerileme.
   assert.ok(entries.length >= 110,
     `arama dizini taban kapsamın altına düştü (${entries.length} < 110)`);
-  assert.equal(entries.length, players.length,
-    `her oyuncu aranabilir kalmalı — URL yapısı korunuyor ` +
-    `(dizin: ${entries.length}, veri kümesi: ${players.length})`);
+
+  // KOPYA KAYITLARIN ARANACAK SAYFASI YOK.
+  //
+  // Ölçüt bir süre `players.length` ile birebir eşitlikti; o gün her kaydın
+  // kendi sayfası vardı. Sonradan kopya kayıt birleştirme geldi
+  // (services/duplicatePlayerService.js): aynı gerçek oyuncunun ikinci
+  // kaydı artık kanonik sayfaya YÖNLENDİRİYOR, kendi sayfası yok. Onları
+  // dizine koymak, aramadan yönlendirmeye giden ölü girdiler üretirdi.
+  //
+  // Korunmak istenen şey değişmedi: hiçbir oyuncu aranamaz hâle gelmesin.
+  // Ölçüt bu yüzden KANONİK kayıt sayısı — kopyası olanlar kanonik
+  // kimlikleriyle zaten dizinde.
+  const canonicalPlayers = annotateDuplicates(getPlayers(players)).filter((player) => !player.isDuplicate);
+  assert.equal(entries.length, canonicalPlayers.length,
+    `her kanonik oyuncu aranabilir kalmalı — URL yapısı korunuyor ` +
+    `(dizin: ${entries.length}, kanonik kayıt: ${canonicalPlayers.length})`);
 
   for (const entry of entries) {
     // href TAM eşleşmeli: "oyuncular/taylan-bulut-besiktas.html" içinde

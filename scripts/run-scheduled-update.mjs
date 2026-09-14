@@ -375,6 +375,18 @@ function transformSteps(type, hasChanges, providerReady) {
     nodeStep("refetch-finished", "refetch-finished-matches.mjs", ["--apply", "--limit=25", "--days=4"], { kind: "source", source: "api-football", timeoutMs: 10 * 60 * 1000, skip: providerReady ? false : "API-Football is unavailable." }),
     nodeStep("post-match-store", "generate-post-match-reports.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
+    // OYUNCU ÖZELLİK PUANLARI — maç/istatistik güncellemesinden HEMEN SONRA.
+    //
+    // Puanlar maç defterinden besleniyor (arşiv + fikstür takvimi); yeni bir
+    // maç işlendiğinde formun, sürekliliğin ve hücum oranlarının değişmesi
+    // gerekiyor. Adım burada koşarsa `players.json` değişir, snapshot farkı
+    // `playersUpdated` görür ve saatlik hat profil + karşılaştırma
+    // sayfalarını kendiliğinden yeniden basar.
+    //
+    // Zaman damgası yalnızca puan gerçekten değiştiğinde yenilenir, bu
+    // yüzden adım boş koşularda dosyayı kirletmez ve sahte bir
+    // "playersUpdated" üretmez.
+    nodeStep("player-ratings", "compute-player-ratings.mjs", [], { kind: "transform", timeoutMs: 6 * 60 * 1000 }),
     // SUPABASE ALIMI — SİTENİN BUİLD/DEPLOY'UNU HİÇBİR KOŞULDA ENGELLEMEZ.
     //
     // Bu adım `required` DEĞİL (varsayılan `false`) ve `criticalFailure`

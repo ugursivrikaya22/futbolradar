@@ -20,7 +20,17 @@ const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 // Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
 // de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
 const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
-const players = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+// ÖZELLİK PUANLARI PROFİLDE DE SUNUCUDA BASILIR — karşılaştırma sayfasıyla
+// aynı sekiz satır, aynı hesap, aynı şablon (services/playerRatingView.js).
+// İki yüzeyin farklı sayı göstermesi, iki ayrı hesabın en kolay yoludur.
+const { withStoredRatings } = require("../services/playerRatingService.js");
+const { playerRatingCardHtml, ratingAdditionalProperties, ratingUpdatedAt } = require("../services/playerRatingView.js");
+const { formatFreshnessDate } = require("../services/freshnessService.js");
+// `readJson` bir fonksiyon bildirimi olduğu için burada zaten çağrılabilir.
+const players = withStoredRatings(
+  annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")))),
+  readJson("data/player-ratings.json", { players: {} })
+);
 const confirmedTransfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"))
   .filter((transfer) => transfer.status === "confirmed");
 const transferWindows = (JSON.parse(fs.readFileSync(path.join(root, "data", "transfer-window.json"), "utf8")).windows || []);
@@ -337,6 +347,42 @@ function transferHeroDescription(player, transfer) {
     `Güncel kulüp, eski kulüp, mevki, yaş ve sezon istatistikleri FutbolRadar'da.`;
 }
 
+/**
+ * ÖZELLİK PUANLARI BÖLÜMÜ.
+ *
+ * Hiçbir kategorisi hesaplanamayan kayıtta bölüm HİÇ basılmaz: sekiz satır
+ * "Veri yetersiz" yazan bir tablo, okuyucuya bilgi değil gürültü verir.
+ * Profil sayfasının geri kalanı (kimlik, transfer, haber) etkilenmez.
+ */
+/** Person düğümüne hesaplanmış puanları ekler; düğümün geri kalanı aynen kalır. */
+function personWithRatings(person, player) {
+  const properties = ratingAdditionalProperties(player);
+  if (!properties.length) return person;
+  return {
+    ...person,
+    additionalProperty: (person.additionalProperty || []).concat(properties)
+  };
+}
+
+function ratingSectionHtml(player) {
+  const scores = player && player.ratingScores;
+  if (!scores || scores.status !== "computed") return "";
+
+  const stamp = ratingUpdatedAt(player);
+  const card = playerRatingCardHtml(player, {
+    updatedLabel: stamp ? formatFreshnessDate(stamp) : ""
+  });
+  if (!card) return "";
+
+  return `<section class="player-rating-section" aria-label="${escapeHtml(player.name)} özellik puanları">
+        <div class="profile-section-head">
+          <h2>${escapeHtml(player.name)} özellik puanları</h2>
+          <span>Overall, form, hücum, yaratıcılık, savunma, disiplin, süreklilik ve potansiyel</span>
+        </div>
+        ${card}
+      </section>`;
+}
+
 function pageHtml(player) {
   // TEK YETKİLİ KARAR. URL ve sayfa iskeleti korunur — 110 profilin bilgi
   // mimarisi bozulmaz. Değişen tek şey, doğrulanmamış kayıtta hangi
@@ -445,7 +491,10 @@ function pageHtml(player) {
           // doğrulanmış kayıtta basılır: doğrulanmamış bir kulüp iddiasını
           // schema.org ile beyan etmek, onu makine okunur bir olguya
           // dönüştürür — görünür metinden daha kalıcı bir yanlış.
-          player360Person(model, canonical, stripTags(description)),
+          // Hesaplanmış özellik puanları mevcut Person düğümünü BOZMADAN,
+          // `additionalProperty` olarak eklenir; hesaplanamayan kategori
+          // düğüme hiç girmez (bkz. services/playerRatingView.js).
+          personWithRatings(player360Person(model, canonical, stripTags(description)), player),
           {
             "@type": "BreadcrumbList",
             itemListElement: [
@@ -487,6 +536,7 @@ function pageHtml(player) {
         </div>
       </section>
       ${recentTransfer ? transferHeroHtml(player, recentTransfer, age) : ""}
+      ${ratingSectionHtml(player)}
       ${renderPlayer360(model, { locale: "tr" })}
       ${view.verified ? "" : `<section class="player-unverified-note" aria-label="Veri durumu">
         <article class="data-empty" data-card="empty-state" data-player-verified="false">
