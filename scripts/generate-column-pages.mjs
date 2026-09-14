@@ -286,10 +286,15 @@ export function columnPageHtml(column, locale = "tr") {
   // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "NewsArticle",
     additionalType: "https://schema.org/OpinionNewsArticle",
     headline: column.title,
     datePublished: column.date,
+    // Yazı yayımlandıktan sonra düzenlenmiyor ve depo bir düzenleme
+    // tarihi TUTMUYOR. Düzenlenmemiş bir yazının değişiklik tarihi
+    // yayım tarihidir; uydurulmuş bir "bugün" damgası tazelik sinyalini
+    // yalanlar.
+    dateModified: column.date,
     author: { "@type": "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",

@@ -99,6 +99,25 @@ function providerRows() {
   return rows.filter((row) => row && row.competitionId === "super-lig" && row.kickoff);
 }
 
+/**
+ * `+03:00` ofsetli ISO damgası — `scripts/refresh-freshness-ledger.mjs`
+ * ile AYNI biçim. Defterdeki kayıt ile dosyanın kendi `freshness` bloğu
+ * aynı alanı farklı yazsaydı hangisinin doğru olduğu belirsizleşirdi.
+ */
+function istanbulIso(value) {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Istanbul",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(parsed).map((part) => [part.type, part.value])
+  );
+  const hour = parts.hour === "24" ? "00" : parts.hour;
+  return `${parts.year}-${parts.month}-${parts.day}T${hour}:${parts.minute}:${parts.second}+03:00`;
+}
+
 function main() {
   const fixtures = readJson(FIXTURES_PATH, null);
   if (!fixtures || !Array.isArray(fixtures.rounds)) {
@@ -168,7 +187,21 @@ function main() {
     console.log(`  atlandı (belirsiz): ${item}`);
   }
 
-  if (!updates.length) return;
+  // TAZELİK DAMGASI "DEĞİŞİKLİK VAR MI"YA DEĞİL, "DOĞRULAMA OLDU MU"YA
+  // BAĞLI. Eskiden `updates.length === 0` burada erken dönüyordu; oysa
+  // kararlı durumda NORMAL sonuç tam olarak budur — tarihler sağlayıcıyla
+  // zaten uyuşuyor, yazılacak bir şey yok. O yol damgaya hiç uğramadığı
+  // için kayıt yalnızca bir tarih DEĞİŞTİĞİNDE tazeleniyordu; yani asıl
+  // düzeltmenin hedeflediği durumda (başarılı ama değişiklik üretmeyen
+  // günlük koşu) damga yine bayat kalıyordu.
+  //
+  // Ölçüt: sağlayıcı karşılığı bulunup karşılaştırılan maç sayısı. Hiçbir
+  // maç eşleşmediyse ortada doğrulama YOK — damga ilerlemez.
+  const verified = updates.length + unchanged;
+  if (!verified) {
+    console.log("Sağlayıcı takvimiyle eşleşen maç yok; tazelik damgası ilerletilmedi.");
+    return;
+  }
 
   if (!APPLY) {
     console.log("Kuru koşu — --apply ile yazın.");
@@ -203,12 +236,26 @@ function main() {
   const allConfirmed = fixtures.rounds.every((round) => (round.matches || []).every((match) => Boolean(match.kickoff)));
   fixtures.fixtureStatus = allConfirmed ? "confirmed" : "partially-confirmed";
   fixtures.lastVerifiedAt = nowIso;
+  // `validUntil` DA İLERLEMELİ. Eskiden yalnızca `fetchedAt`/`verifiedAt`
+  // yazılıyor, `validUntil` ise yayılan eski nesneden olduğu gibi
+  // taşınıyordu. Sonuç: senkron başarıyla koşsa bile geçerlilik tarihi
+  // 9 Eylül 2026'da donup kalıyor, `freshnessService` kaydı süresi dolmuş
+  // sayıyor ve arayüz TAZE veriyi "güncelleme gerekli" diye gösteriyordu —
+  // tam ters yönde yanıltıcı.
+  //
+  // Süre 24 saat: bu senkron yalnızca günlük tam koşuda çalışıyor
+  // (`run-scheduled-update.mjs` → `full`). Aynı sayı
+  // `refresh-freshness-ledger.mjs`'deki `VALIDITY_HOURS.fixtures` ile
+  // eşleşir; iki yerde iki farklı geçerlilik olmaz.
+  const validUntilIso = istanbulIso(new Date(Date.parse(nowIso) + 24 * 3600000).toISOString());
+
   fixtures.freshness = {
     ...(fixtures.freshness || {}),
     source: "TFF eşleşme listesi + doğrulanmış sağlayıcı takvimi",
     provider: "TFF + TheSportsDB",
     fetchedAt: nowIso,
     verifiedAt: nowIso,
+    ...(validUntilIso ? { validUntil: validUntilIso } : {}),
     status: "verified"
   };
 

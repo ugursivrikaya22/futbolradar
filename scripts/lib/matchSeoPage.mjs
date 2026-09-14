@@ -118,7 +118,11 @@ export const STR = {
     timeBodyPast: (h, a, hour) => `${h} - ${a} maçı Türkiye saatiyle ${hour}'da başladı.`,
     channelTitle: (h, a) => `${h} - ${a} maçı hangi kanalda?`,
     channelBody: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanacak.`,
+    channelBodyPast: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlandı.`,
+    channelBodyLive: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanıyor.`,
     channelUnknown: (h, a) => `${h} - ${a} maçının yayın kanalı henüz açıklanmadı. Kanal bilgisi doğrulanmış bir kaynaktan alındığında bu bölüm otomatik güncellenir; tahmini kanal yazılmaz.`,
+    // Lig yayın hakkından gelen kanal, o maça özel doğrulanmış bilgiyle
+    // aynı şey değil. Not ikisini ayırıyor: okuyucu neye baktığını bilsin.
     lineups: "Muhtemel 11'ler",
     officialLineups: "İlk 11'ler",
     lineupUnavailable: "Bu maç için doğrulanmış ilk 11 verisi mevcut değil.",
@@ -233,6 +237,8 @@ export const STR = {
     timeBodyPast: (h, a, hour) => `${h} vs ${a} kicked off at ${hour} Türkiye time (UTC+3).`,
     channelTitle: (h, a) => `Where to watch ${h} vs ${a}?`,
     channelBody: (h, a, channel) => `${h} vs ${a} is broadcast live on ${channel} in Türkiye.`,
+    channelBodyPast: (h, a, channel) => `${h} vs ${a} was broadcast live on ${channel} in Türkiye.`,
+    channelBodyLive: (h, a, channel) => `${h} vs ${a} is being broadcast live on ${channel} in Türkiye.`,
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
     lineups: "Probable line-ups",
     officialLineups: "Starting line-ups",
@@ -860,18 +866,75 @@ export function analysisSectionHtml(radar, prediction, ctx) {
 /* MAÇ ÖNCESİ SORU-CEVAP BÖLÜMLERİ                                      */
 /* ------------------------------------------------------------------ */
 
-export function whenSectionHtml(entry, ctx) {
+/**
+ * "Sık sorulanlar" bölümünün soru-cevapları — TEK KAYNAK.
+ *
+ * Hem sayfaya basılan HTML hem `FAQPage` şeması buradan üretiliyor.
+ * Ayrı ayrı yazılsalardı biri değiştiğinde diğeri sessizce geride
+ * kalırdı; sonucu da şema ihlali olurdu, çünkü `FAQPage` YALNIZCA
+ * sayfada görünen soru-cevabı bildirebilir. Aynı diziden türemeleri
+ * bu ihlali yapısal olarak imkânsız kılıyor.
+ *
+ * Kanal cevabına lig varsayılanı notu da ekleniyor: not sayfada okunan
+ * metnin parçası, dolayısıyla şemadaki cevabın da parçası.
+ */
+export function faqEntries(entry, ctx) {
   const { locale, homeTeam, awayTeam, competitionName, state } = ctx;
   const text = STR[locale];
   const day = longDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
   const past = state === "post" || state === "pending" || state === "live";
+  // Kanal `services/broadcastSchedule.js` zincirinden geliyor: elle
+  // doğrulama → yayıncının kendi akışının taraması → sağlayıcı alanı.
+  // Lig varsayılanı BİLEREK yok; `services/broadcastRights.js` haritası
+  // yalnızca hangi akışın taranacağını söylüyor ve ekrana yazılmıyor,
+  // çünkü "Süper Lig beIN'de" cümlesi maç düzeyinde eksik: hangi beIN
+  // kanalı olduğunu söylemiyor. Bilinmiyorsa cevap "henüz açıklanmadı".
   const channel = broadcastChannel(entry);
   const competition = competitionName ? competitionLabel(competitionName, locale) : "";
+  // Oynanmış maçta "yayınlanacak" demek sayfayı da şemayı da yanlış
+  // yapıyordu; zaman kipi maçın durumunu izler.
+  //
+  // Kanal cümlesi `past` bayrağını KULLANMAZ: o bayrak `live`i de geçmiş
+  // sayıyor ve oynanmakta olan maç için "yayınlandı" çıkıyordu — maç
+  // ekranda sürerken sayfa bitmiş gibi konuşuyordu. Üç kip ayrı:
+  // sürüyor / oynandı / oynanacak.
+  const channelBody = state === "live"
+    ? text.channelBodyLive
+    : past
+      ? text.channelBodyPast
+      : text.channelBody;
+  const channelAnswer = channel
+    ? channelBody(homeTeam, awayTeam, channel)
+    : text.channelUnknown(homeTeam, awayTeam);
+
+  return [
+    {
+      id: "ne-zaman",
+      question: text.whenTitle(homeTeam, awayTeam),
+      answer: past
+        ? text.whenBodyPast(homeTeam, awayTeam, day, competition)
+        : text.whenBody(homeTeam, awayTeam, day, competition)
+    },
+    {
+      question: text.timeTitle(homeTeam, awayTeam),
+      answer: past ? text.timeBodyPast(homeTeam, awayTeam, hour) : text.timeBody(homeTeam, awayTeam, hour)
+    },
+    {
+      id: "hangi-kanalda",
+      question: text.channelTitle(homeTeam, awayTeam),
+      answer: channelAnswer
+    }
+  ];
+}
+
+export function whenSectionHtml(entry, ctx) {
+  const text = STR[ctx.locale];
+  const cards = faqEntries(entry, ctx)
+    .map((item) => `<article class="card msp-qa"${item.id === "hangi-kanalda" ? ' id="hangi-kanalda"' : ""}><h2>${escapeHtml(item.question)}</h2><p>${escapeHtml(item.answer)}</p></article>`)
+    .join("\n      ");
   return `<section class="msp-section msp-faq" id="ne-zaman" aria-label="${escapeHtml(text.date)}">
-      <article class="card msp-qa"><h2>${escapeHtml(text.whenTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.whenBodyPast(homeTeam, awayTeam, day, competition) : text.whenBody(homeTeam, awayTeam, day, competition))}</p></article>
-      <article class="card msp-qa"><h2>${escapeHtml(text.timeTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.timeBodyPast(homeTeam, awayTeam, hour) : text.timeBody(homeTeam, awayTeam, hour))}</p></article>
-      <article class="card msp-qa" id="hangi-kanalda"><h2>${escapeHtml(text.channelTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(channel ? text.channelBody(homeTeam, awayTeam, channel) : text.channelUnknown(homeTeam, awayTeam))}</p></article>
+      ${cards}
     </section>`;
 }
 
