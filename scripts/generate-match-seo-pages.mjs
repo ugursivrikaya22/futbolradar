@@ -541,7 +541,7 @@ function teamLinks(teamName, locale, base) {
   const isSuperLig = Boolean(teams.find((team) => sameClub(team.name, teamName)));
   if (locale === "en") {
     const page = `en/team/${slug}.html`;
-    return fileExists(page) ? { page: `${base}${page}`, fixtures: `${base}${page}`, standings: `${base}en/super-lig-standings.html` } : { page: null, fixtures: null, standings: null };
+    return fileExists(page) ? { page: `${base}${page}`, fixtures: `${base}${page}`, standings: `${base}en/super-lig-standings` } : { page: null, fixtures: null, standings: null };
   }
   if (BIG_FOUR.includes(slug)) {
     return {
@@ -580,8 +580,10 @@ function leagueLinks(entry, locale, base) {
     // KATALOGDA OLMAK, SAYFANIN ÜRETİLDİĞİ ANLAMINA GELMEZ. TR sayfası olup
     // EN karşılığı olmayan yarışmalar var (1. Lig); katalog kaydına bakıp
     // bağlantı basmak, olmayan bir sayfaya götürüyordu.
+    // Varlık denetimi diskteki dosyaya, bağlantı ise kanonik (uzantısız)
+    // adrese bakar.
     const enPage = catalog ? `en/${catalog.slugEn}.html` : null;
-    return { standings: enPage && fileExists(enPage) ? `${base}${enPage}` : null, league: null, leaders };
+    return { standings: enPage && fileExists(enPage) ? `${base}en/${catalog.slugEn}` : null, league: null, leaders };
   }
   const trPage = catalog ? `${catalog.slugTr}.html` : null;
   return {
@@ -764,7 +766,7 @@ function pageHtml(entry, locale, options) {
   const toAbsolute = (href) => {
     if (!href) return null;
     const relativeHref = href.replace(/^(\.\.\/)+/, "").split("?")[0];
-    const extensionless = /^takimlar\//.test(relativeHref) || /-puan-durumu(\.html)?$/.test(relativeHref) || /^en\/[a-z0-9-]+-standings\.html$/.test(relativeHref);
+    const extensionless = /^takimlar\//.test(relativeHref) || /-puan-durumu(\.html)?$/.test(relativeHref) || /^en\/[a-z0-9-]+-standings(\.html)?$/.test(relativeHref);
     return `${DOMAIN}/${extensionless ? relativeHref.replace(/\.html$/, "") : relativeHref}`;
   };
 

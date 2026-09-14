@@ -561,4 +561,31 @@ test("takım puan durumu sayfaları temiz adreste yayımlanıyor", () => {
   }
 });
 
+test("İngilizce puan durumu sayfaları da temiz adreste", () => {
+  // Türkçe taraf uzantısız kanonik kullanıyor; İngilizce sayfalar `.html`
+  // kanonikle yayımlanıyordu, oysa temiz adres de açıktı — aynı tablo iki
+  // adresten indekslenebilirdi. hreflang çiftinin iki ucu da kanoniği
+  // göstermeli.
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  const catalog = catalogModule.STANDINGS_LEAGUES;
+  for (const id of catalogModule.EN_TAB_ORDER.map((key) => catalog[key].slugEn)) {
+    const clean = `/en/${id}`;
+    const file = path.join(root, "en", `${id}.html`);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://www\\.futbolradar\\.com${clean}"`), `${id}: kanonik uzantısız olmalı`);
+    assert.match(html, new RegExp(`hreflang="en" href="https://www\\.futbolradar\\.com${clean}"`), `${id}: hreflang kanoniği göstermeli`);
+    assert.ok(
+      vercel.rewrites.some((rule) => rule.source === clean && rule.destination === `${clean}.html`),
+      `${id}: temiz adres rewrite'ı olmalı`
+    );
+    assert.ok(sitemap.includes(`<loc>https://www.futbolradar.com${clean}</loc>`), `${id}: site haritası kanoniği listelemeli`);
+    assert.ok(!sitemap.includes(`<loc>https://www.futbolradar.com${clean}.html</loc>`), `${id}: eski .html adresi haritada kalmamalı`);
+  }
+  // Türkçe sayfanın İngilizceye verdiği hreflang de uzantısız olmalı.
+  const tr = fs.readFileSync(path.join(root, "premier-lig-puan-durumu.html"), "utf8");
+  assert.match(tr, /hreflang="en" href="https:\/\/www\.futbolradar\.com\/en\/premier-league-standings"/);
+});
+
 console.log(`\nCanlı puan durumu testleri geçti (${passed} senaryo)`);

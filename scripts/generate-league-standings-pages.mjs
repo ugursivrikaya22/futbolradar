@@ -179,7 +179,9 @@ function competitionPage(entry) {
     },
     content,
     dataDate,
-    enPath: `${entry.slugEn}.html`
+    // İngilizce karşılık da uzantısız kanonikte; hreflang çifti aynı adresi
+    // göstermeli, yoksa iki dil birbirinin kanonik olmayan adresine işaret eder.
+    enPath: entry.slugEn
   });
 }
 
