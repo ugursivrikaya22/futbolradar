@@ -80,7 +80,7 @@ const staticAssets = [
   "/analytics.js",
   "/performance-loader.js",
   "/site.webmanifest",
-  "/assets/og-image.svg"
+  "/assets/og-image.png"
 ];
 const secretMarkers = [
   "X-Auth-Token",
@@ -242,7 +242,7 @@ async function checkPages() {
     expect(Boolean(description), `${page}: missing description`);
     expect(canonical === expectedUrl(page), `${page}: canonical mismatch`);
     expect(ogUrl === expectedUrl(page), `${page}: og:url mismatch`);
-    expect(ogImage === `${baseUrl}/assets/og-image.svg`, `${page}: og:image mismatch`);
+    expect(ogImage === `${baseUrl}/assets/og-image.png`, `${page}: og:image mismatch`);
     expect(text.includes('name="twitter:card" content="summary_large_image"'), `${page}: missing twitter card`);
     expect(/<link\s+rel="manifest"\s+href="[^"]+"/i.test(text), `${page}: missing manifest link`);
     expect(!hasMojibake(text), `${page}: mojibake marker found`);

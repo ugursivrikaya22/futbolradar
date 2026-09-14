@@ -15,6 +15,7 @@ import {
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
+import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -1850,11 +1851,12 @@ const noindexShellPages = new Set([
 ]);
 
 function updateRobotsDirective(html, file) {
-  const directive = noindexShellPages.has(file) ? "noindex,follow" : "index,follow";
-  return html.replace(
-    /<meta\s+name="robots"\s+content="(?:index,follow|noindex,follow)"\s*\/>/i,
-    `<meta name="robots" content="${directive}" />`
-  );
+  const directive = noindexShellPages.has(file) ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX;
+  // Desen yönergenin İÇERİĞİNİ eşlemez. Eskiden iki sabit dizeyi sayıyordu;
+  // yönergeye Discover belirteçleri eklenince eşleşme düştü ve bu adım
+  // sessizce hiçbir şey yapmaz oldu — kabuk sayfaları `noindex` damgasını
+  // kaybederdi. Artık etiketin kendisi eşleniyor, içeriği ne olursa olsun.
+  return html.replace(ROBOTS_META_RE, `<meta name="robots" content="${directive}" />`);
 }
 
 /**
