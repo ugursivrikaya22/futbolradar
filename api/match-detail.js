@@ -19,11 +19,39 @@ const {
 let probabilityIndex = null;
 function probabilityLookup() {
   if (!probabilityIndex) {
-    const path = require("node:path");
-    const storePath = path.join(process.cwd(), "data", "fixture-predictions.json");
-    probabilityIndex = probabilityStore.indexStore(probabilityStore.readStore(storePath));
+    probabilityIndex = probabilityStore.indexStore(loadProbabilityStore());
   }
   return probabilityIndex;
+}
+
+/**
+ * Depoyu `require` ile okur — çalışma anında `fs` ile DEĞİL.
+ *
+ * Sunucusuz işlev paketine hangi dosyaların gireceğine derleyicinin statik
+ * izleyicisi karar veriyor: `require("../data/...json")` izleniyor,
+ * `fs.readFileSync(path.join(process.cwd(), ...))` izlenmiyor. İkincisiyle
+ * dosya pakete girmez, okuma sessizce boş depo döndürür ve tahmin
+ * ÜRETİMDE hiç görünmezdi — yerelde çalıştığı için de fark edilmezdi.
+ * Bu depodaki diğer API yolları (transfers, match-analyses, manager-quotes)
+ * aynı gerekçeyle `require` kullanıyor.
+ *
+ * `fs` yolu yalnızca yedek: depo dosyası henüz üretilmemişse (ilk kurulum)
+ * `require` patlar ve boş depoyla devam edilir — tahmin alanı `null` kalır,
+ * uydurma değer üretilmez.
+ */
+function loadProbabilityStore() {
+  try {
+    const store = require("../data/fixture-predictions.json");
+    if (store && Array.isArray(store.predictions)) return store;
+  } catch {
+    /* Dosya yoksa aşağıdaki yedek yol denenir. */
+  }
+  try {
+    const path = require("node:path");
+    return probabilityStore.readStore(path.join(process.cwd(), "data", "fixture-predictions.json"));
+  } catch {
+    return probabilityStore.emptyStore();
+  }
 }
 
 /**
