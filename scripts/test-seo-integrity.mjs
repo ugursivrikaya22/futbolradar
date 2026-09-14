@@ -100,6 +100,15 @@ const sitemap = fs.existsSync(sitemapPath) ? fs.readFileSync(sitemapPath, "utf8"
 
 const titles = new Map();
 const descriptions = new Map();
+
+/** Hafta numaralı maç sayfası: `mac/…-2026-2027-r05.html`, `en/match/…` aynısı. */
+function isRoundAliasPage(relative) {
+  return /^(mac|en[\\/]match)[\\/][a-z0-9-]+-\d{4}-\d{4}-r\d{2}\.html$/.test(relative.replace(/\\/g, "/"));
+}
+
+/** Maç Merkezi'ne devredilmiş hafta sayfaları; aşağıda ayrıca doğrulanır. */
+const matchCentreAliases = [];
+
 const problems = {
   missingTitle: [],
   missingDescription: [],
@@ -139,11 +148,24 @@ for (const file of files) {
   // gösterebilir — hatta göstermelidir: `oyuncular/edina-dzeko.html` yanlış
   // yazımlı bir takma addır, noindex'tir, sitemap'te yoktur ve doğru profile
   // işaret eder. Bu hata değil, doğru davranıştır.
+  //
+  // ÜÇÜNCÜ HÂL — MAÇ MERKEZİ DEVRİ. Hafta numaralı maç sayfası
+  // (`mac/<ev>-<dep>-2026-2027-r05.html`, aynısı `en/match/` altında) maçın
+  // tarihi henüz atanmamışken üretilir ve o aşamada KENDİ adresi kanoniktir.
+  // Tarih onaylanıp kalıcı Maç Merkezi adresi açılınca aynı maç iki sayfada
+  // anlatılır; hafta sayfası kanonikliği Maç Merkezi'ne devreder, site
+  // haritasından düşer ama SİLİNMEZ (dış bağlantılar kırılmasın).
+  //
+  // Burada noindex kullanılmaz: noindex sinyali düşürür, canonical ise
+  // birikmiş bağlantı değerini kanonik adrese TAŞIR. Devrin sessizce sayfayı
+  // indexten düşürmediğini garanti etmek için hedefin gerçekten var olduğu
+  // ve kendisinin indexlenebilir olduğu aşağıda ayrıca doğrulanır.
   const canonical = pick(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
   if (indexable) {
     if (!canonical) problems.missingCanonical.push(relative);
     else if (!canonicalMatches(canonical, relative)) {
-      problems.canonicalMismatch.push(`${relative}: ${canonical}`);
+      if (isRoundAliasPage(relative)) matchCentreAliases.push({ relative, canonical });
+      else problems.canonicalMismatch.push(`${relative}: ${canonical}`);
     }
   }
 
@@ -363,6 +385,35 @@ assert.equal(problems.invalidJsonLd.length, 0, `ayrıştırılamayan JSON-LD: ${
 assert.equal(problems.invalidRobots.length, 0, `geçersiz robots yönergesi: ${summarize(problems.invalidRobots)}`);
 assert.equal(problems.noindexInSitemap.length, 0, `noindex sayfa sitemap'te: ${summarize(problems.noindexInSitemap)}`);
 assert.equal(problems.canonicalMismatch.length, 0, `canonical kendi adresini göstermiyor: ${summarize(problems.canonicalMismatch)}`);
+
+// MAÇ MERKEZİ DEVRİ — istisna ancak şu üç koşulda geçerlidir; yoksa devir
+// sayfayı sessizce indexten düşürür ve bunu kimse fark etmez.
+const aliasProblems = [];
+for (const { relative, canonical } of matchCentreAliases) {
+  if (!canonical.startsWith(`${DOMAIN}/`)) {
+    aliasProblems.push(`${relative}: site dışı canonical → ${canonical}`);
+    continue;
+  }
+  const targetRelative = canonical.slice(DOMAIN.length + 1);
+  const targetFile = path.join(root, targetRelative.endsWith(".html") ? targetRelative : `${targetRelative}.html`);
+  // 1) Hedef GERÇEKTEN var olmalı — 404'e canonical verilmez.
+  if (!fs.existsSync(targetFile)) {
+    aliasProblems.push(`${relative}: kanonik hedef yok → ${targetRelative}`);
+    continue;
+  }
+  // 2) Hedefin kendisi indexlenebilir olmalı — noindex bir sayfaya devretmek
+  //    iki sayfayı birden indexten düşürür.
+  const targetHtml = fs.readFileSync(targetFile, "utf8");
+  if (/noindex/i.test(metaContent(targetHtml, "robots") || "")) {
+    aliasProblems.push(`${relative}: kanonik hedef noindex → ${targetRelative}`);
+    continue;
+  }
+  // 3) Takma ad site haritasında KENDİ adresiyle yer almamalı.
+  if (sitemap && sitemap.includes(`<loc>${expectedCanonical(relative)}</loc>`)) {
+    aliasProblems.push(`${relative}: takma ad site haritasında`);
+  }
+}
+assert.equal(aliasProblems.length, 0, `Maç Merkezi devri hatalı: ${summarize(aliasProblems)}`);
 assert.equal(problems.missingDescription.length, 0, `açıklaması olmayan sayfa: ${summarize(problems.missingDescription)}`);
 assert.equal(problems.missingH1.length, 0, `H1'i olmayan sayfa: ${summarize(problems.missingH1)}`);
 
