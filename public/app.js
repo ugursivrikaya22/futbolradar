@@ -996,17 +996,47 @@
   function isPublishablePlayerCard(player) {
     if (!player) return false;
 
+    // AYNA OLMAK ZORUNDA: services/cardCredibility.js evaluatePlayerCard().
+    //
+    // Süzgeç iki yerde yaşıyor — statik ön render (servis) ve tarayıcı
+    // (burası). İstemci GEVŞEK olursa ön renderin elediği kart JavaScript
+    // yüklendiğinde geri gelir: okuyucu için düzeltilmiş görünen bir sayfa
+    // yeniden bozulur. İstemcide üç kural eksikti (ad, bozuk kodlama,
+    // TAZELİK) ve üçüncüsü gerçekten ısırıyordu: doğrulaması 45 günü geçmiş
+    // kayıtlar sunucuda eleniyor, tarayıcıda geri geliyordu.
+    //
+    // Bu fonksiyon KENDİ KENDİNE YETER — test-card-credibility.mjs onu
+    // gövdesinden kesip tek başına çalıştırıyor; dışarıdaki hiçbir sabite
+    // ya da yardımcıya dayanamaz.
+    var MAX_VERIFICATION_AGE_DAYS = 45;
+
+    if (!String(player.name || "").trim()) return false;
+    // Latin-1 olarak yanlış çözülmüş UTF-8 imzası (services/textEncodingRepair.js
+    // MOJIBAKE_MARKERS ile aynı desen). Bozuk ad EKSİK değil, YANLIŞ bilgidir.
+    if (/[\u00c2-\u00c5]/.test(String(player.name || ""))) return false;
+    if (String(player.name || "").indexOf("\ufffd") !== -1) return false;
+
     var providerId = String(player.providerId || player.provider_id || "").trim();
     if (!providerId || /^mock[-_]/i.test(providerId) || !/^\d+$/.test(providerId)) return false;
 
     if (!String(player.sourceUrl || "").trim()) return false;
-    if (!String(player.lastVerifiedAt || player.lastSyncedAt || "").trim()) return false;
+    var verifiedAt = String(player.lastVerifiedAt || player.lastSyncedAt || "").trim();
+    if (!verifiedAt) return false;
 
     var dataStatus = String(player.dataStatus || "").toLowerCase();
     if (dataStatus === "mock_needs_verification") return false;
 
     var ratingStatus = String(player.ratingStatus || "").toLowerCase();
     if (ratingStatus === "stale") return false;
+
+    // TAZELİK. Kart yüzeyleri "şu an" iddiası taşıyor; aylar önce
+    // doğrulanmış bir kayıt bunu karşılamıyor. Ayrıştırılamayan damga
+    // sunucuda olduğu gibi burada da kararı DEĞİŞTİRMEZ (kontrol atlanır).
+    var stamp = Date.parse(verifiedAt);
+    if (!isNaN(stamp)) {
+      var ageDays = (Date.now() - stamp) / 86400000;
+      if (ageDays > MAX_VERIFICATION_AGE_DAYS) return false;
+    }
 
     return true;
   }

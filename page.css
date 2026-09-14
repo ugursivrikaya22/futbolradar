@@ -20436,7 +20436,21 @@ a.motm-week__card:focus-visible {
   .slider-nav button { min-height: 44px; min-width: 44px; }
   .fixture-card:active { background: var(--green-soft, rgba(11, 143, 90, .08)); }
   .fixture-card-rows { gap: 6px; }
-  .fixture-row-name { white-space: normal; overflow-wrap: anywhere; }
+  /* MOBİLDE AD SARAR, AMA KELİME İÇİNDEN KIRILMAZ.
+     `overflow-wrap: anywhere` min-content genişliğini TEK HARFE indiriyor;
+     `.fixture-row`ın `minmax(0, 1fr)` ad sütunu daraldığında takım adı
+     dikey, harf harf diziliyordu. Sarma yalnızca kelime sınırından olur;
+     satır yüksekliği iki satırla sınırlanır, taşan kısım kırpılır (taban
+     kuralda `overflow: hidden` zaten var). */
+  .fixture-row-name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
   .fixture-card-quicklinks a { min-height: 44px; padding: 4px; }
 }
 

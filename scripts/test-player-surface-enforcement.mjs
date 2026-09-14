@@ -30,6 +30,14 @@ const credibility = require("../services/cardCredibility.js");
 const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 const { getPlayers } = require("../services/playerService.js");
 const players = require("../data/players.json");
+/** Adres çözücü: dizini üreten scriptle AYNI kaynak (scripts/generate-search-index.mjs). */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
 
 const root = process.cwd();
 const now = new Date("2026-07-26T21:00:00+03:00");
@@ -260,23 +268,53 @@ function testSearchIndexCarriesNoClubClaim() {
     `her kanonik oyuncu aranabilir kalmalı — URL yapısı korunuyor ` +
     `(dizin: ${entries.length}, kanonik kayıt: ${canonicalPlayers.length})`);
 
-  for (const entry of entries) {
-    // href TAM eşleşmeli: "oyuncular/taylan-bulut-besiktas.html" içinde
-    // "taylan-bulut" alt dizesi de geçiyor ve includes() yanlış kaydı
-    // seçip doğrulanmış bir girdiyi doğrulanmamış sanıyordu.
-    const slugFromHref = entry.href.replace(/^.*\//, "").replace(/\.html$/, "");
-    const player = players.find((item) => item.id === slugFromHref);
-    if (!player) continue;
-    if (credibility.publicPlayerView(player).verified) continue;
+  /**
+   * GİRDİ, ADRESİNDEN KAYDA ÇÖZÜLÜR — SLUG'DAN DEĞİL.
+   *
+   * Eskiden adresin son parçası kayıt kimliği sayılıyordu. Oyuncular TAM
+   * İSİMLİ adrese taşındığından beri (services/playerUrl.js) bu doğru değil:
+   * `i-drapinski-samsunspor` kimlikli sağlayıcı kaydı
+   * `futbolcu/igor-drapinski.html` adresinde yayımlanıyor. Slug'dan arayan
+   * test, AYNI adresi paylaşan kürasyonlu kopyayı (`igor-drapinski`, mock
+   * kimlikli, doğrulanmamış) buluyor ve dizindeki doğrulanmış kulübü
+   * "doğrulanmamış iddia" sanıyordu.
+   *
+   * Doğru soru şu: bu adreste yayımlanan ve altyazıdaki kulübü GERÇEKTEN
+   * taşıyan DOĞRULANMIŞ bir kayıt var mı? Yoksa altyazı doğrulanmamış bir
+   * iddia taşıyor demektir — asıl yakalanmak istenen hata budur ve bu kurulum
+   * onu hâlâ yakalar (kopyası olmayan doğrulanmamış bir kaydın kulübü
+   * altyazıya girerse eşleşecek doğrulanmış kayıt bulunamaz).
+   */
+  const recordsByHref = new Map();
+  for (const item of players) {
+    const href = playerUrls.playerPagePath(item.id);
+    if (!href) continue;
+    if (!recordsByHref.has(href)) recordsByHref.set(href, []);
+    recordsByHref.get(href).push(item);
+  }
 
-    const club = player.currentTeam || player.team || "";
-    if (club) {
+  let clubClaimsChecked = 0;
+  for (const entry of entries) {
+    const candidates = recordsByHref.get(entry.href) || [];
+    if (!candidates.length) continue;
+
+    const claimedClubs = candidates
+      .map((item) => item.currentTeam || item.team || "")
+      .filter((club) => club && entry.subtitle.includes(club));
+    if (!claimedClubs.length) continue;
+
+    clubClaimsChecked += 1;
+    for (const club of new Set(claimedClubs)) {
+      const backing = candidates.find((item) =>
+        (item.currentTeam || item.team || "") === club && credibility.publicPlayerView(item).verified);
       assert.ok(
-        !entry.subtitle.includes(club),
+        backing,
         `${entry.title}: doğrulanmamış kulüp arama altyazısında olmamalı (${entry.subtitle})`
       );
     }
   }
+
+  assert.ok(clubClaimsChecked > 0, "hiçbir kulüp iddiası denetlenmedi — eşleme bozulmuş olabilir");
 }
 
 function testPlayerUrlsArePreserved() {
@@ -302,8 +340,21 @@ function testHydrationCannotRepaintBlockedData() {
   // İkinci savunma hattı: kayıt düzeyinde süzgeç.
   assert.ok(app.includes("isPublishablePlayerCard(player)"), "istemcide kayıt düzeyi süzgeç bulunmalı");
 
-  // Ön render kararı gerçekten gömüyor mu?
-  const sample = fs.readFileSync(path.join(root, "oyuncular", `${players[0].id}.html`), "utf8");
+  /**
+   * ÖRNEK SAYFA, KAYDIN KANONİK ADRESİNDEN OKUNUR.
+   *
+   * Eskiden `oyuncular/<kimlik>.html` varsayılıyordu. Oyuncular tam isimli
+   * adrese taşındığından beri (services/playerUrl.js) o yol çoğu kayıt için
+   * bir YÖNLENDİRME İSKELETİ: içeriği kasıtlı olarak kopyalamıyor, dolayısıyla
+   * profil iskeletini de taşımıyor. `players[0]` böyle bir kayda denk gelince
+   * test, çalışan bir ön renderi "karar gömülmemiş" diye reddediyordu.
+   */
+  const sampleRecord = players.find((player) => {
+    const href = playerUrls.playerPagePath(player.id);
+    return href && fs.existsSync(path.join(root, href));
+  });
+  assert.ok(sampleRecord, "kanonik adresinde yayımlanmış bir profil bulunmalı");
+  const sample = fs.readFileSync(path.join(root, playerUrls.playerPagePath(sampleRecord.id)), "utf8");
   assert.ok(/data-player-verified="(true|false)"/.test(sample), "ön render kararı iskelete gömmeli");
 }
 
@@ -313,17 +364,40 @@ function testThreePathsAgreeForAllRecords() {
   const body = app.slice(start, app.indexOf("function playerInitials"));
   const clientFilter = new Function(`return ${body.slice(0, body.lastIndexOf("}") + 1)}`)();
 
+  /**
+   * KOPYA KAYDIN KENDİ SAYFASI YOKTUR.
+   *
+   * Kopya kayıtlar kanonik kayda yönlendiriliyor ve AYNI adresi paylaşıyor
+   * (services/duplicatePlayerService.js). `futbolcu/mario-lemina.html`
+   * sayfası, doğrulanmış `m-lemina-galatasaray` kaydının sayfası; kürasyonlu
+   * kopya `mario-lemina` doğrulanmamış olduğu için test o sayfada
+   * `data-player-verified="false"` arıyor ve çalışan bir ön renderi
+   * reddediyordu.
+   *
+   * Karar bayrağı SAYFANIN SAHİBİNE aittir. Rozet yasağı ise herkes için
+   * geçerli kalır: hangi kayıttan gelirse gelsin, doğrulanmamış bir puan
+   * hiçbir sayfada basılmamalı.
+   */
+  const duplicateIds = new Set(
+    annotateDuplicates(getPlayers(players)).filter((item) => item.isDuplicate).map((item) => item.id)
+  );
+
   for (const player of players) {
     const service = credibility.evaluatePlayerCard(player).publishable;
     const client = clientFilter(player);
     assert.equal(client, service, `${player.name}: servis ve istemci aynı kararı vermeli`);
 
     // Statik çıktı: doğrulanmamışsa sayfada kısıtlı alan olmamalı.
-    const file = path.join(root, "oyuncular", `${player.id}.html`);
+    // Kaydın KANONİK adresi okunur; `oyuncular/<kimlik>.html` artık çoğu
+    // kayıt için yönlendirme iskeleti (bkz. yukarıdaki karar notu).
+    const href = playerUrls.playerPagePath(player.id);
+    const file = href ? path.join(root, href) : path.join(root, "oyuncular", `${player.id}.html`);
     if (!service && fs.existsSync(file)) {
       const html = fs.readFileSync(file, "utf8");
       assert.ok(!/player-rating-badge/.test(html), `${player.name}: statik çıktıda puan rozeti var`);
-      assert.ok(/data-player-verified="false"/.test(html), `${player.name}: statik çıktı kararı taşımalı`);
+      if (!duplicateIds.has(player.id)) {
+        assert.ok(/data-player-verified="false"/.test(html), `${player.name}: statik çıktı kararı taşımalı`);
+      }
     }
   }
 }
