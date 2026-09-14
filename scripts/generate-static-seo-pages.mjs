@@ -6,6 +6,7 @@ import { columnCard } from "./generate-column-pages.mjs";
 import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 import { URLSET_OPEN } from "./lib/sitemap.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -447,21 +448,21 @@ function pageHtml(page) {
     <title>${page.title}</title>
     <meta name="description" content="${page.description}" />
     <link rel="canonical" href="${url}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${page.title}" />
     <meta property="og:description" content="${page.description}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${page.title}" />
     <meta name="twitter:description" content="${page.description}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />

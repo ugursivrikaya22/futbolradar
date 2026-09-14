@@ -21,6 +21,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -37,7 +38,7 @@ const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
 const AUTHOR_DIR = path.join(root, "yazarlar");
 const DOMAIN = "https://www.futbolradar.com";
-const SHARE_IMAGE = `${DOMAIN}/assets/og-image.svg`;
+const SHARE_IMAGE = `${DOMAIN}/assets/og-image.png`;
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function escapeHtml(value) {
@@ -254,7 +255,23 @@ export function columnPageHtml(column, locale = "tr") {
   const pageDescription = column.metaDescription || column.excerpt || copy.byline(column.author, column.title);
   const standfirst = column.hideStandfirst ? "" : (column.spot || column.excerpt);
   const shareDescription = `${pageDescription} — futbolradar.com`;
-  const shareImage = column.featuredImage ? publicAssetUrl(column.featuredImage) : SHARE_IMAGE;
+  // PAYLAŞIM GÖRSELİ SAYFA İÇİ GÖRSELDEN AYRI.
+  //
+  // `featuredImage` iki yerde kullanılıyor ve ikisinin gereksinimi zıt:
+  //
+  //   • SAYFA İÇİNDE <img> — SVG burada daha iyi: her ekran yoğunluğunda
+  //     keskin ve 2,7 KB (PNG karşılığı ~160 KB).
+  //   • PAYLAŞIMDA og:image — SVG burada HİÇ çalışmıyor: X, Facebook,
+  //     WhatsApp ve Telegram önizleme üretirken SVG çözmez, bağlantı
+  //     görselsiz çıkar.
+  //
+  // Bu yüzden kapak SVG kalıyor, paylaşıma PNG eşi veriliyor. PNG'ler
+  // `scripts/generate-og-images.mjs` ile aynı SVG'den rasterlenip depoya
+  // işleniyor; `scripts/test-og-image.mjs` ikisinin de yerinde olduğunu
+  // ve 1200×630 bildirimine uyduğunu denetliyor.
+  const shareImage = column.featuredImage
+    ? publicAssetUrl(column.featuredImage.replace(/\.svg$/i, ".png"))
+    : SHARE_IMAGE;
   const badge = column.contentType || column.badge;
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
@@ -295,7 +312,7 @@ export function columnPageHtml(column, locale = "tr") {
     <title>${escapeHtml(pageTitle)}</title>
     <meta name="description" content="${escapeHtml(pageDescription)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta name="theme-color" content="#0b8f5a" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="${copy.ogLocale}" />
@@ -382,7 +399,7 @@ export function authorPageHtml(author) {
     <title>${escapeHtml(`${author.name} Yazıları | FutbolRadar`)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta name="theme-color" content="#0b8f5a" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="tr_TR" />
@@ -390,11 +407,11 @@ export function authorPageHtml(author) {
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(`${author.name} Yazıları`)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(`${author.name} Yazıları`)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${base}site.webmanifest" />
     <link rel="stylesheet" href="${base}page.css" />

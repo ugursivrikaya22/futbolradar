@@ -13,6 +13,25 @@
  *     varlığının (&...;) ortasına denk gelemez; son tam kelimeden sonra
  *     biter. og:description ve twitter:description da aynı kuraldan geçer.
  *
+ *   • ROBOTS YÖNERGESİ tam olarak "index,follow" ise uzun biçime çevrilir
+ *     (Discover + büyük önizleme). Yalnızca BU tam dizge eşleşir: `noindex`
+ *     sayfalara ve zaten uzun yönergeye dokunulmaz.
+ *
+ *   • PAYLAŞIM GÖRSELİ `assets/og-image.svg` ise PNG eşine çevrilir; X,
+ *     Facebook, WhatsApp ve Telegram SVG çözmüyor, bildirim geçerli olsa
+ *     bile önizleme görselsiz çıkıyor. `og:image:type` da ancak sayfada
+ *     SVG bildirimi kalmadığında `image/png` olur.
+ *
+ * SON İKİSİ NEDEN BURADA: bu depodaki sayfaların bir kısmını hiçbir
+ * üretici baştan yazmıyor — örneğin
+ * `generate-broadcast-schedule-page.mjs` mevcut HTML'i okuyup yalnızca
+ * başlık ve açıklama alanlarını yerinde yamalıyor. O sayfalarda `robots`
+ * ve `og:image` depodaki dosyadan geliyor. Şablonları düzeltmek onlara
+ * ulaşmıyor; HTML'i bir kez süpürmek ise SONRADAN eklenen sayfayı
+ * kapsamıyor (#248'in yayın sayfası tam bu yüzden eski yönergeyle doğdu).
+ * Zincirin sonundaki bu adım her koşuda tüm sayfalardan geçtiği için
+ * kural kendini onarır.
+ *
  *   • BAŞLIK 68'i aşarsa yalnızca " | FutbolRadar" markalama eki düşer —
  *     içerik kısmına DOKUNULMAZ. Ek düştükten sonra hâlâ uzunsa öyle
  *     bırakılır: başlığı körlemesine kırpmak anlamı bozar, uzun başlık
@@ -22,11 +41,13 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const DESC_MAX = 160;
 const TITLE_MAX = 68;
 const BRAND_SUFFIX = " | FutbolRadar";
+const SHARE_PNG = "assets/og-image.png";
 
 const SKIP_DIRS = new Set([".git", ".vercel", "node_modules", "scripts", "services", "server", "api", "docs", "lib", "components", "editorial", "locales", "data", "assets", "work", "outputs"]);
 
@@ -56,6 +77,35 @@ function normalize(html) {
     }
     return m;
   });
+
+  // Yalnızca TAM eşleşme: içeriği "index,follow" olan etiket. `noindex`
+  // damgalı istemci kabukları ve zaten uzun yönergeyi taşıyan sayfalar
+  // bu desene uymaz, dokunulmaz.
+  out = out.replace(
+    /(<meta name="robots" content=")index,follow("\s*\/?>)/g,
+    (m, open, close) => open + ROBOTS_INDEX + close
+  );
+
+  // Paylaşım bildirimi SVG göstermesin.
+  out = out.replace(
+    /(<meta (?:property="og:image"|name="twitter:image") content="[^"]*)assets\/og-image\.svg(")/g,
+    (m, open, close) => open + SHARE_PNG + close
+  );
+  // JSON-LD görselleri de SVG gösteremez (Google yapısal veri görsellerinde
+  // SVG kabul etmiyor); publisher logosu ve article görseli aynı PNG'ye döner.
+  out = out.replace(
+    /(<script type="application\/ld\+json">[\s\S]*?<\/script>)/g,
+    (block) => block.split("assets/og-image.svg").join(SHARE_PNG)
+  );
+
+  // Kap bildirimi ancak sayfada SVG paylaşım bildirimi KALMADIYSA
+  // düzeltilir; başka bir SVG görseli bildiren sayfada yanlış kap yazmayalım.
+  if (!/<meta (?:property="og:image"|name="twitter:image") content="[^"]*\.svg"/.test(out)) {
+    out = out.replace(
+      /(<meta property="og:image:type" content=")image\/svg\+xml(")/g,
+      (m, open, close) => open + "image/png" + close
+    );
+  }
 
   return out;
 }

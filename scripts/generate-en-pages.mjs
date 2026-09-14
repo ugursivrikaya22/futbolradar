@@ -36,6 +36,7 @@ import { transferTypeEn } from "./lib/enTicker.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -468,7 +469,7 @@ ${body}
     <link rel="alternate" hreflang="${hreflangOf("en")}" href="${escapeHtml(canonical)}" />
     <link rel="alternate" hreflang="${hreflangOf("tr")}" href="${escapeHtml(trUrl)}" />
     <link rel="alternate" hreflang="x-default" href="${escapeHtml(trUrl)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
     <meta property="og:locale:alternate" content="${ogLocale("tr")}" />
@@ -476,14 +477,14 @@ ${body}
     <meta property="og:title" content="${escapeHtml(meta.title)}" />
     <meta property="og:description" content="${escapeHtml(meta.description)}" />
     <meta property="og:url" content="${escapeHtml(canonical)}" />
-    <meta property="og:image" content="${DOMAIN}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(meta.title)}" />
     <meta name="twitter:description" content="${escapeHtml(meta.description)}" />
-    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
     <link rel="icon" href="${BASE}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${BASE}site.webmanifest" />
     <link rel="stylesheet" href="${BASE}page.css" />
