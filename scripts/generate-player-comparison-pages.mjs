@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -297,21 +298,21 @@ function pageHtml(pair) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",
@@ -451,21 +452,21 @@ function comparisonIndexHtml(pairs) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",

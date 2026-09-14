@@ -19,10 +19,58 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
+import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const domain = "https://www.futbolradar.com";
+
+/**
+ * İNCE SAYFA EŞİĞİ — bu yüzdenin ALTINDA VE EŞİTİNDE kalan rapor
+ * indekslenmez.
+ *
+ * Ölçülen değer `services/analysisCoverage.js#coveragePercent`: sağlayıcının
+ * GERÇEKTEN döndürdüğü alanların ağırlıklı toplamı (skor 10 + olaylar 30 +
+ * istatistik 30 + kadrolar 20 + oyuncular 10). Varsayım yapmaz; eksik alan
+ * sayılmaz. Kayıt `data/post-match-reports.json` içinde taşınıyor.
+ *
+ * %40 NEDEN SINIR: 10 yalnızca skor demek, 40 skor + kadrolar ya da skor +
+ * olaylar. Bu kümede gol dakikası, olay akışı ve takım istatistiği YOK —
+ * yani sayfada okunacak ölçülmüş bir şey yok. Bugün depodaki 1.154 kaydın
+ * 1.082'si tam olarak %10; hepsi yayımlanmış durumda.
+ *
+ * Tek tek bunlar zararsız: sayfa dürüst, eksik bölümü göstermiyor ve yalan
+ * söylemiyor. Toplamda zararlı: yüzlerce ölçülmemiş sayfa, Google'ın site
+ * geneli kalite değerlendirmesini aşağı çekiyor ve "Taranan, şu anda
+ * dizine eklenmemiş" kuyruğunu şişiriyor — o kuyruk da tarama bütçesini
+ * asıl indekslenmesini istediğimiz sayfalardan çalıyor.
+ *
+ * KURAL KALICI VE ÇİFT YÖNLÜ. Bu bir kerelik temizlik değil: eşik her
+ * koşuda yeniden uygulanır. Sağlayıcı eksik dökümü yayımlayıp kapsam
+ * %40'ın ÜSTÜNE çıktığında sayfa bir sonraki koşuda kendiliğinden
+ * `index,follow`a döner ve site haritasına geri girer. Ters yön de aynı:
+ * kapsam düşerse sayfa yine çıkar.
+ *
+ * NE YAPILMIYOR: sayfa silinmiyor, yönlendirilmiyor, gizlenmiyor. Okuyucu
+ * için erişilebilir kalıyor ve `follow` sayesinde iç bağlantıları
+ * taranmaya devam ediyor — yalnızca ARAMA SONUCUNDA görünmüyor.
+ */
+const THIN_COVERAGE_THRESHOLD = 40;
+
+/**
+ * Kaydın kapsam yüzdesi. Kayıt yoksa 0: kapsamı BİLİNMEYEN bir sayfa
+ * indekslenebilir sayılmaz. (Depoda karşılığı olmayan sayfalar, artık
+ * üretilmeyen eski koşulardan kalan dosyalardır.)
+ */
+function coveragePercentOf(record) {
+  const value = record && record.coveragePercent;
+  return Number.isFinite(value) ? value : 0;
+}
+
+/** Sayfa ince mi? Eşik DAHİL. */
+function isThinCoverage(record) {
+  return coveragePercentOf(record) <= THIN_COVERAGE_THRESHOLD;
+}
 
 const matches = JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8"));
 const { buildMatchReport, buildMatchEvents } = require("../services/matchReportService.js");
@@ -310,7 +358,7 @@ function nextMatchSectionHtml(report) {
       </section>`;
 }
 
-function pageHtml(report, match) {
+function pageHtml(report, match, indexable) {
   const { seo } = report;
   const url = `${domain}/${seo.path}`;
   const depth = seo.path.includes("/") ? "../" : "./";
@@ -381,21 +429,21 @@ function pageHtml(report, match) {
     <title>${escapeHtml(seo.title)}</title>
     <meta name="description" content="${escapeHtml(seo.description)}" />
     <link rel="canonical" href="${url}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${escapeHtml(seo.title)}" />
     <meta property="og:description" content="${escapeHtml(seo.description)}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(seo.title)}" />
     <meta name="twitter:description" content="${escapeHtml(seo.description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="${depth}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${depth}site.webmanifest" />
@@ -526,11 +574,22 @@ function addReportIndex(entries) {
  * olmadan duruyordu — tarayıcıya sayfa hakkında hiçbir zaman bilgisi
  * vermeyen bir kayıt. Girdi artık her koşuda yeniden kuruluyor.
  */
-function upsertSitemap(paths) {
+function sitemapEntryRe(loc) {
+  return new RegExp(`  <url>\\n    <loc>${loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</loc>[\\s\\S]*?  </url>\\n`);
+}
+
+function upsertSitemap(paths, removePaths = []) {
   const sitemapPath = path.join(root, "sitemap.xml");
   if (!fs.existsSync(sitemapPath)) return;
   let xml = fs.readFileSync(sitemapPath, "utf8");
   const freshness = createFreshnessTracker(root);
+
+  // ÖNCE SÖKME. İnce sayfa site haritasından çıkar; sayfa DURUR, yalnızca
+  // kaydı düşer. Aynı adres sonra kapsamı yükselip tekrar eklenebilsin
+  // diye sökme ile ekleme aynı geçişte, bu sırayla yapılıyor.
+  for (const relative of removePaths) {
+    xml = xml.replace(sitemapEntryRe(`${domain}/${relative}`), "");
+  }
 
   for (const relative of paths) {
     const loc = `${domain}/${relative}`;
@@ -539,13 +598,75 @@ function upsertSitemap(paths) {
     // yeniden yazarken yalnızca "  <url> ... \n  </url>" kalıbına uyan
     // girdileri koruyor, tek satırlık girdiler sessizce düşüyor.
     const entry = `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-    const existing = new RegExp(`  <url>\\n    <loc>${loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</loc>[\\s\\S]*?  </url>\\n`);
+    const existing = sitemapEntryRe(loc);
     xml = existing.test(xml) ? xml.replace(existing, `${entry}\n`) : xml.replace("</urlset>", `${entry}\n</urlset>`);
   }
 
   freshness.save();
   fs.writeFileSync(sitemapPath, xml, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), xml, "utf8");
+}
+
+/**
+ * KURALI DİSKTEKİ TÜM RAPOR SAYFALARINA UYGULA.
+ *
+ * Üretim döngüsü yalnızca `finished` havuzunu yazıyor (bugün 166 sayfa).
+ * `mac-raporu/` altında ise daha geniş havuzlu eski koşulardan kalan
+ * ~1.000 dosya daha var: yayında, indekslenebilir ve büyük çoğunluğu
+ * %10 kapsamlı. İnce sayfa probleminin ASIL kütlesi orada olduğu için
+ * kural yalnızca yeniden üretilenlere uygulanamaz.
+ *
+ * Eşleştirme dosya adı üzerinden: depo kaydı `seo.path` ile kendi
+ * adresini taşıyor. Depoda karşılığı OLMAYAN dosya da ince sayılır —
+ * kapsamı bilinmiyor demek, bilinmeyen kapsam indekslenmez.
+ *
+ * Yalnızca `<meta name="robots">` satırına dokunulur; sayfanın geri
+ * kalanı ve dosyanın kendisi olduğu gibi kalır.
+ */
+function applyCoverageRuleToExistingPages() {
+  const dir = path.join(root, "mac-raporu");
+  if (!fs.existsSync(dir)) return;
+
+  // Depo kaydını dosya adına göre indeksle.
+  const byFile = new Map();
+  for (const record of reportStore.values()) {
+    const relative = record && record.seo && record.seo.path;
+    if (relative) byFile.set(path.basename(relative), record);
+  }
+
+  // Bu koşuda zaten yazılanlara tekrar dokunma: onların yönergesi
+  // üretim döngüsünde, aynı kuralla basıldı.
+  const justWritten = new Set(generated.map((entry) => path.basename(entry.report.seo.path)));
+
+  const toRemove = [];
+  let thin = 0;
+  let indexable = 0;
+
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith(".html")) continue;
+    const record = byFile.get(file);
+    const isThin = isThinCoverage(record);
+    if (isThin) thin += 1; else indexable += 1;
+    if (isThin) toRemove.push(`mac-raporu/${file}`);
+    if (justWritten.has(file)) continue;
+
+    const directive = isThin ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX;
+    const replacement = `<meta name="robots" content="${directive}" />`;
+    for (const base of [root, path.join(root, "public")]) {
+      const target = path.join(base, "mac-raporu", file);
+      if (!fs.existsSync(target)) continue;
+      const html = fs.readFileSync(target, "utf8");
+      const next = html.replace(ROBOTS_META_RE, replacement);
+      if (next !== html) fs.writeFileSync(target, next, "utf8");
+    }
+  }
+
+  // Bu koşuda üretilenler yukarıda zaten ele alındı; buradaki sökme listesi
+  // yalnızca eski sayfaları kapsıyor.
+  const stale = toRemove.filter((relative) => !justWritten.has(path.basename(relative)));
+  if (stale.length) upsertSitemap([], stale);
+
+  console.log(`[post-match] kapsam kuralı (eşik %${THIN_COVERAGE_THRESHOLD}): ${thin} ince (noindex,follow), ${indexable} indekslenebilir`);
 }
 
 // ── Üretim ──────────────────────────────────────────────────────────────────
@@ -580,13 +701,14 @@ for (const match of finished) {
     store.set(value, match.id);
   }
 
-  const html = pageHtml(report, match);
+  const indexable = !isThinCoverage(stored);
+  const html = pageHtml(report, match, indexable);
   for (const base of [root, path.join(root, "public")]) {
     const target = path.join(base, relative);
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, html, "utf8");
   }
-  generated.push({ report, match });
+  generated.push({ report, match, indexable });
 }
 
 // Ana sayfa temizliği: bu iki işaretleyici arasında kalan eski "tamamlanmış
@@ -604,8 +726,25 @@ if (generated.length) {
   // Raporlar `mac-merkezi.html`de (addReportIndex, aşağıda) tam liste
   // olarak kalıyor.
   addReportIndex(generated);
-  upsertSitemap(generated.map((entry) => entry.report.seo.path));
+  // Site haritası indekslenebilirliği İZLER: ince sayfa eklenmez, daha önce
+  // eklenmişse SÖKÜLÜR. `noindex` bir sayfayı site haritasında bırakmak
+  // çelişkili bir sinyaldir — tarayıcıya "bunu al" deyip sayfada "alma"
+  // demek; scripts/test-seo-integrity.mjs bu çelişkiyi zaten hata sayıyor.
+  upsertSitemap(
+    generated.filter((entry) => entry.indexable).map((entry) => entry.report.seo.path),
+    generated.filter((entry) => !entry.indexable).map((entry) => entry.report.seo.path)
+  );
 }
+
+// ÜRETİLMEYEN ESKİ SAYFALAR DA KURALA TABİ.
+//
+// Bu koşu yalnızca `finished` havuzundaki maçların sayfasını yeniden yazar;
+// `mac-raporu/` altında ise daha geniş havuzlu eski koşulardan kalan
+// yüzlerce dosya duruyor. Onlar da yayında ve indekslenebilir — yani
+// problemin ASIL kütlesi orada. Kural yalnızca yeniden üretilenlere
+// uygulansaydı temizlik görünürde yapılır, etkisi olmazdı.
+applyCoverageRuleToExistingPages();
+
 
 const complete = generated.filter((entry) => entry.report.dataStatus === "complete").length;
 console.log(`Generated ${generated.length} match report page(s) (${complete} complete, ${generated.length - complete} partial)`);

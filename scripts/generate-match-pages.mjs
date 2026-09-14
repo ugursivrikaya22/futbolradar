@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 import {
   lineupsSection,
   playerCardsSection,
@@ -329,18 +330,18 @@ function pageHtml(match) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(schema)}</script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />

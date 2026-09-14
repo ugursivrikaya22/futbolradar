@@ -21,10 +21,11 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { TR_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
-const socialImage = `${siteUrl}/assets/og-image.svg`;
+const socialImage = `${siteUrl}/assets/og-image.png`;
 const today = new Date().toISOString().slice(0, 10);
 
 // Süper Lig'in kendi sayfası zaten var (generate-evergreen-seo-pages.mjs).
@@ -76,7 +77,7 @@ function pageDocument({ title, description, canonicalPath, h1, kicker, intro, br
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <link rel="canonical" href="${canonical}" />
     <link rel="alternate" hreflang="tr-TR" href="${canonical}" />
     <link rel="alternate" hreflang="en" href="${enUrl}" />
