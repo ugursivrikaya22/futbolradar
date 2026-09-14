@@ -590,6 +590,10 @@ function teamLogo(team) {
   return (team && team.logo) || "";
 }
 
+function teamId(team) {
+  return team && team.id !== undefined && team.id !== null ? String(team.id) : null;
+}
+
 function scoreValue(score) {
   return score === undefined || score === null ? null : score;
 }
@@ -677,6 +681,12 @@ function normalizeFixture(item) {
     time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam),
     awayTeam: teamName(awayTeam),
+    // SAĞLAYICI TAKIM KİMLİĞİ. Ad sağlayıcıdan sağlayıcıya ("Beşiktaş" /
+    // "Besiktas JK") değişiyor; canlı puan durumu maçı doğru satıra ancak
+    // kimlikle bağlayabiliyor (bkz. services/liveStandings.js#findRow).
+    // Kimlik yoksa alan null kalır — ad eşleşmesine düşülür, uydurulmaz.
+    homeTeamId: teamId(homeTeam),
+    awayTeamId: teamId(awayTeam),
     homeTeamLogo: teamLogo(homeTeam),
     awayTeamLogo: teamLogo(awayTeam),
     status: normalizeStatus(fixture.status || {}),
