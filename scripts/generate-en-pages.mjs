@@ -30,7 +30,8 @@ import {
   trendCard as sharedTrendCard,
   transferWatchShell,
   superLigTodayStripHtml,
-  officialLineupAlertHtml
+  officialLineupAlertHtml,
+  isLineupAlertStale
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
 import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
@@ -1212,19 +1213,16 @@ function pollPromoSection(href) {
  *
  * Kayıt hiçbir süre damgası taşımadan sonsuza kadar basılıyordu (aynı
  * kusur prerender-core-pages.mjs'de de vardı, gerekçesi orada). Süresi
- * geçen (kickoff üzerinden uzatmalar dahil 3 saatten fazla geçmiş) uyarı
- * KAYITTAN SİLİNMEZ, yalnızca bu sayfada basılmaz.
+ * geçen uyarı KAYITTAN SİLİNMEZ, yalnızca bu sayfada basılmaz.
+ *
+ * Eşik iki üreticide birden yazılıydı ve tek taraflı değiştirilebiliyordu;
+ * artık scripts/lib/matchCards.mjs'de ORTAK (gerekçesi de orada).
  */
-const LINEUP_ALERT_STALE_MS = 3 * 60 * 60 * 1000;
-
 function officialLineupAlertsSection() {
   const alerts = require("../data/official-lineup-alerts.json").records || [];
   const now = Date.now();
   return alerts
-    .filter((alert) => {
-      const kickoffMs = Date.parse(alert.kickoff || "");
-      return !Number.isFinite(kickoffMs) || now - kickoffMs <= LINEUP_ALERT_STALE_MS;
-    })
+    .filter((alert) => !isLineupAlertStale(alert, now))
     .map((alert) => officialLineupAlertHtml(alert, LOCALE))
     .join("");
 }
