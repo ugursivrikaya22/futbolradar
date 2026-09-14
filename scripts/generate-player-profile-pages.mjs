@@ -8,6 +8,7 @@ import {
   player360Title,
   renderPlayer360
 } from "./lib/player360.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -467,21 +468,21 @@ function pageHtml(player) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <script type="application/ld+json">
       ${JSON.stringify({
         "@context": "https://schema.org",
@@ -601,7 +602,7 @@ function redirectHtml(player, targetPath, relativeHref) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="noindex,follow" />
+    <meta name="robots" content="${ROBOTS_NOINDEX_FOLLOW}" />
     <meta http-equiv="refresh" content="0; url=${escapeHtml(relativeHref)}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="tr_TR" />
@@ -609,14 +610,14 @@ function redirectHtml(player, targetPath, relativeHref) {
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${canonical}" />
-    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="https://www.futbolradar.com/assets/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.svg" />
+    <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../page.css" />

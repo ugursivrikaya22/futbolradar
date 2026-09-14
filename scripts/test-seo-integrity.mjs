@@ -32,6 +32,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import { ROBOTS_ALLOWED, ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const DOMAIN = "https://www.futbolradar.com";
@@ -125,12 +126,12 @@ for (const file of files) {
   const relative = path.relative(root, file);
   const html = fs.readFileSync(file, "utf8");
 
-  const robots = metaContent(html, "robots") || "index,follow";
+  const robots = metaContent(html, "robots") || ROBOTS_INDEX;
   const indexable = !/noindex/i.test(robots);
 
   // `noindex,nofollow` da geçerli: iç araç sayfaları için bilinçli tercih.
   const robotsKey = robots.toLowerCase().replace(/\s+/g, "");
-  if (!["index,follow", "noindex,follow", "noindex,nofollow"].includes(robotsKey)) {
+  if (!ROBOTS_ALLOWED.includes(robotsKey)) {
     problems.invalidRobots.push(`${relative}: ${robots}`);
   }
 

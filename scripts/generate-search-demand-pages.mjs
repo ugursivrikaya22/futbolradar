@@ -19,6 +19,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -75,7 +76,7 @@ function jsonLd(page) {
       dateModified: page.updatedAt,
       mainEntityOfPage: url,
       author: { "@type": "Organization", name: "FutbolRadar" },
-      publisher: { "@type": "Organization", name: "FutbolRadar", logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.svg` } },
+      publisher: { "@type": "Organization", name: "FutbolRadar", logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.png` } },
       citation: (page.sources || []).map((source) => source.url)
     },
     {
@@ -222,18 +223,18 @@ function contentPageHtml(page) {
     <title>${escapeHtml(page.title)}</title>
     <meta name="description" content="${escapeHtml(page.description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(page.title)}" />
     <meta property="og:description" content="${escapeHtml(page.description)}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(page.title)}" />
     <meta name="twitter:description" content="${escapeHtml(page.description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(jsonLd(page))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />

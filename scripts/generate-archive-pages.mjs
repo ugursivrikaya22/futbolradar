@@ -25,6 +25,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { readJsonFile } from "./lib/readJsonFile.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -81,18 +82,18 @@ function pageHtml({ file, base, title, description, h1, lead, breadcrumb, schema
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${url}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${url}" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(graph.length > 1 ? graph : graph[0])}</script>
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${base}site.webmanifest" />

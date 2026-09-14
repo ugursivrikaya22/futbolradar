@@ -25,6 +25,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { fixtureCard as sharedFixtureCard } from "./lib/matchCards.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -179,7 +180,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta name="theme-color" content="#0b8f5a" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
