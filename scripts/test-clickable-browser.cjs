@@ -507,9 +507,16 @@ async function until(check, message, timeout = 5000) {
         // Controlled DOM update verifies that the summary observes the same
         // source card; these values are never written to an API or data file.
         try {
-          await score.evaluate(e => { e.textContent = '2 - 1'; });
-          await status.evaluate(e => { e.textContent = "67'"; });
-          await until(async () => (await summary.locator('.now-football__meta').innerText()) === "2 - 1 · 67'", 'Summary score/minute did not follow the main card');
+          // Canlı skor yenilemesi kartı yeniden çizdiğinde yazdığımız değeri
+          // siliyor; tek seferlik yazıp beklemek, gerçek maç oynanırken
+          // özetin kartı izleyip izlemediğini değil, yenilemenin araya girip
+          // girmediğini ölçüyordu. Değer her turda yeniden yazılıyor —
+          // iddia aynı: özet, kartta YAZAN skoru göstermeli.
+          await until(async () => {
+            await score.evaluate(e => { e.textContent = '2 - 1'; });
+            await status.evaluate(e => { e.textContent = "67'"; });
+            return (await summary.locator('.now-football__meta').innerText()) === "2 - 1 · 67'";
+          }, 'Summary score/minute did not follow the main card', 15000);
         } finally {
           await score.evaluate((e, text) => { e.textContent = text; }, original[0]);
           await status.evaluate((e, text) => { e.textContent = text; }, original[1]);

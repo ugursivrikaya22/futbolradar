@@ -13,7 +13,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
-import { STANDINGS_LEAGUES, TR_TAB_ORDER, EN_TAB_ORDER } from "./lib/standingsCatalog.mjs";
+import { STANDINGS_LEAGUES, TR_PAGE_ORDER, EN_TAB_ORDER } from "./lib/standingsCatalog.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -144,11 +144,13 @@ for (const competition of asArray(readJson("competitions.json"))) {
   });
 }
 
-// Puan durumu sayfaları (bkz. scripts/lib/standingsCatalog.mjs): dokuz TR
+// Puan durumu sayfaları (bkz. scripts/lib/standingsCatalog.mjs): on TR
 // sayfa + dokuz EN sayfa. Süper Lig TR sayfası önceden var olan
-// `super-lig-puan-durumu.html`, diğer sekizi generate-league-standings-
+// `super-lig-puan-durumu.html`, kalanını generate-league-standings-
 // pages.mjs üretir; EN'in tamamı generate-en-league-standings-pages.mjs'ten.
-for (const id of TR_TAB_ORDER) {
+// TR tarafı sekme sırasını değil SAYFA sırasını okur: 1. Lig'in sayfası
+// var, ana sayfa sekmesi yok.
+for (const id of TR_PAGE_ORDER) {
   const entry = STANDINGS_LEAGUES[id];
   const href = `${entry.slugTr}.html`;
   if (!fs.existsSync(path.join(root, href))) continue;

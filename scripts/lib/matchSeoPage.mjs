@@ -118,7 +118,11 @@ export const STR = {
     timeBodyPast: (h, a, hour) => `${h} - ${a} maçı Türkiye saatiyle ${hour}'da başladı.`,
     channelTitle: (h, a) => `${h} - ${a} maçı hangi kanalda?`,
     channelBody: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanacak.`,
+    channelBodyPast: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlandı.`,
+    channelBodyLive: (h, a, channel) => `${h} - ${a} maçı ${channel} ekranlarından canlı yayınlanıyor.`,
     channelUnknown: (h, a) => `${h} - ${a} maçının yayın kanalı henüz açıklanmadı. Kanal bilgisi doğrulanmış bir kaynaktan alındığında bu bölüm otomatik güncellenir; tahmini kanal yazılmaz.`,
+    // Lig yayın hakkından gelen kanal, o maça özel doğrulanmış bilgiyle
+    // aynı şey değil. Not ikisini ayırıyor: okuyucu neye baktığını bilsin.
     lineups: "Muhtemel 11'ler",
     officialLineups: "İlk 11'ler",
     lineupUnavailable: "Bu maç için doğrulanmış ilk 11 verisi mevcut değil.",
@@ -150,6 +154,14 @@ export const STR = {
     scorersPending: "Doğrulanmış gol istatistiği bulunan oyuncu kaydı yok.",
     goals: "gol",
     assists: "asist",
+    leaders: (league) => `${league} gol ve asist krallığı`,
+    leadersGeneric: "Gol ve asist krallığı",
+    leadersScorers: (league) => `${league} gol krallığı`,
+    leadersAssists: (league) => `${league} asist krallığı`,
+    leadersSeason: (season) => `${season}/${String(season + 1).slice(2)} sezonu`,
+    leadersPending: "Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.",
+    leadersNote: "Tablo yalnızca bu maçın oynandığı lig ve sezonun verisinden üretilir; başka turnuvaların golleri buraya eklenmez.",
+    leadersAll: "Tüm tabloyu gör",
     analysis: "FutbolRadar maç öncesi analizi",
     analysisPending: "Maç öncesi radar analizi maç haftası yaklaştığında doğrulanmış verilerle yayımlanır.",
     radarDisclaimer: "Radar puanı maç öncesi okuma içindir; kesin sonuç veya bahis önerisi değildir.",
@@ -229,6 +241,8 @@ export const STR = {
     timeBodyPast: (h, a, hour) => `${h} vs ${a} kicked off at ${hour} Türkiye time (UTC+3).`,
     channelTitle: (h, a) => `Where to watch ${h} vs ${a}?`,
     channelBody: (h, a, channel) => `${h} vs ${a} is broadcast live on ${channel} in Türkiye.`,
+    channelBodyPast: (h, a, channel) => `${h} vs ${a} was broadcast live on ${channel} in Türkiye.`,
+    channelBodyLive: (h, a, channel) => `${h} vs ${a} is being broadcast live on ${channel} in Türkiye.`,
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
     lineups: "Probable line-ups",
     officialLineups: "Starting line-ups",
@@ -261,6 +275,14 @@ export const STR = {
     scorersPending: "No player with verified goal statistics is on record.",
     goals: "goals",
     assists: "assists",
+    leaders: (league) => `${league} top scorers & assists`,
+    leadersGeneric: "Top scorers & assists",
+    leadersScorers: (league) => `${league} top scorers`,
+    leadersAssists: (league) => `${league} top assists`,
+    leadersSeason: (season) => `${season}/${String(season + 1).slice(2)} season`,
+    leadersPending: "Top scorer and assist data is not available for this competition yet.",
+    leadersNote: "The table is built only from this match's own competition and season; goals scored in other tournaments are never added here.",
+    leadersAll: "See the full table",
     analysis: "FutbolRadar pre-match analysis",
     analysisPending: "The pre-match radar analysis is published with verified data as matchweek approaches.",
     radarDisclaimer: "The radar score is a pre-match reading; it is not a certain outcome or betting advice.",
@@ -761,6 +783,57 @@ export function scorersSectionHtml(players, ctx) {
   return `<section class="msp-section" id="golcüler" aria-labelledby="msp-scorers-title"><h2 id="msp-scorers-title" class="msp-section-title">${escapeHtml(text.scorers)}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div></section>`;
 }
 
+/**
+ * GOL/ASİST KRALLIĞI — YALNIZCA BU MAÇIN LİGİ VE SEZONU.
+ *
+ * Veri `services/competitionLeaders.js` üzerinden lig+sezon anahtarıyla
+ * (`topscorers:{leagueId}:{seasonId}` / `assists:{leagueId}:{seasonId}`)
+ * okunur. Anahtar yoksa TABLO BASILMAZ — Süper Lig'e ya da başka bir lige
+ * geri düşülmez; onun yerine dürüst bir "veri yok" satırı yazılır.
+ *
+ * Başlık, tablonun hangi lige ve sezona ait olduğunu HER ZAMAN yazar:
+ * başlığı değiştirip veriyi olduğu gibi bırakmak bu hatanın ta kendisiydi.
+ */
+export function leadersSectionHtml(leaders, ctx) {
+  const { locale, base } = ctx;
+  const text = STR[locale];
+  const data = leaders || { status: "unknown-league", topScorers: [], topAssists: [] };
+  const leagueName = data.leagueName ? competitionLabel(data.leagueName, locale) : "";
+  const title = leagueName ? text.leaders(leagueName) : text.leadersGeneric;
+  const seasonLabel = Number.isFinite(Number(data.season)) ? text.leadersSeason(Number(data.season)) : "";
+  const attributes = `${data.leagueId ? ` data-league-id="${escapeHtml(data.leagueId)}"` : ""}${data.season ? ` data-season="${escapeHtml(data.season)}"` : ""}${data.competitionId ? ` data-competition="${escapeHtml(data.competitionId)}"` : ""}`;
+  const open = `<section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title"${attributes}><h2 id="msp-leaders-title" class="msp-section-title">${escapeHtml(title)}${seasonLabel ? ` · ${escapeHtml(seasonLabel)}` : ""}</h2>`;
+
+  const rows = (list, metric, unit) => list.map((row) => {
+    const href = row.slug ? playerPageHref(base, locale, row.slug) : null;
+    const name = href
+      ? `<a href="${escapeHtml(href)}">${escapeHtml(row.name)}</a>`
+      : `<span>${escapeHtml(row.name)}</span>`;
+    return `<li><span class="msp-leader-rank">${escapeHtml(row.rank)}</span><span class="msp-leader-name">${name}${row.team ? `<small>${escapeHtml(row.team)}</small>` : ""}</span><b class="msp-leader-value">${escapeHtml(Number(row[metric] || 0))} <small>${escapeHtml(unit)}</small></b></li>`;
+  }).join("");
+
+  const card = (heading, list, metric, unit, href, full) => `<article class="card msp-leaders-card"><h3>${href ? `<a href="${escapeHtml(href)}">${escapeHtml(heading)}</a>` : escapeHtml(heading)}</h3><ol class="msp-leaders-list">${rows(list, metric, unit)}</ol>${full ? `<p class="msp-more"><a href="${escapeHtml(full)}">${escapeHtml(text.leadersAll)}</a></p>` : ""}</article>`;
+
+  const scorers = Array.isArray(data.topScorers) ? data.topScorers : [];
+  const assists = Array.isArray(data.topAssists) ? data.topAssists : [];
+  if (data.status !== "ok" || (!scorers.length && !assists.length)) {
+    return `${open}<article class="card data-empty"><strong>${escapeHtml(text.leadersPending)}</strong></article></section>`;
+  }
+
+  const scorersHeading = leagueName ? text.leadersScorers(leagueName) : text.scorers;
+  const assistsHeading = leagueName ? text.leadersAssists(leagueName) : text.assists;
+  // Başlık bağlantısı: varsa ligin kendi krallık sayfası, yoksa ligin sayfası.
+  // Hiçbiri yoksa başlık düz metin kalır — 404'e bağlantı verilmez.
+  const scorersHref = ctx.leadersScorersHref || ctx.leagueHref || null;
+  const assistsHref = ctx.leadersAssistsHref || ctx.leagueHref || null;
+  const cards = [
+    scorers.length ? card(scorersHeading, scorers, "goals", text.goals, scorersHref, ctx.leadersScorersHref || null) : "",
+    assists.length ? card(assistsHeading, assists, "assists", text.assists, assistsHref, ctx.leadersAssistsHref || null) : ""
+  ].filter(Boolean).join("");
+
+  return `${open}<div class="msp-two-col">${cards}</div><p class="muted-copy msp-leaders-note">${escapeHtml(text.leadersNote)}</p></section>`;
+}
+
 export function analysisSectionHtml(radar, prediction, ctx) {
   const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
@@ -778,18 +851,75 @@ export function analysisSectionHtml(radar, prediction, ctx) {
 /* MAÇ ÖNCESİ SORU-CEVAP BÖLÜMLERİ                                      */
 /* ------------------------------------------------------------------ */
 
-export function whenSectionHtml(entry, ctx) {
+/**
+ * "Sık sorulanlar" bölümünün soru-cevapları — TEK KAYNAK.
+ *
+ * Hem sayfaya basılan HTML hem `FAQPage` şeması buradan üretiliyor.
+ * Ayrı ayrı yazılsalardı biri değiştiğinde diğeri sessizce geride
+ * kalırdı; sonucu da şema ihlali olurdu, çünkü `FAQPage` YALNIZCA
+ * sayfada görünen soru-cevabı bildirebilir. Aynı diziden türemeleri
+ * bu ihlali yapısal olarak imkânsız kılıyor.
+ *
+ * Kanal cevabına lig varsayılanı notu da ekleniyor: not sayfada okunan
+ * metnin parçası, dolayısıyla şemadaki cevabın da parçası.
+ */
+export function faqEntries(entry, ctx) {
   const { locale, homeTeam, awayTeam, competitionName, state } = ctx;
   const text = STR[locale];
   const day = longDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
   const past = state === "post" || state === "pending" || state === "live";
+  // Kanal `services/broadcastSchedule.js` zincirinden geliyor: elle
+  // doğrulama → yayıncının kendi akışının taraması → sağlayıcı alanı.
+  // Lig varsayılanı BİLEREK yok; `services/broadcastRights.js` haritası
+  // yalnızca hangi akışın taranacağını söylüyor ve ekrana yazılmıyor,
+  // çünkü "Süper Lig beIN'de" cümlesi maç düzeyinde eksik: hangi beIN
+  // kanalı olduğunu söylemiyor. Bilinmiyorsa cevap "henüz açıklanmadı".
   const channel = broadcastChannel(entry);
   const competition = competitionName ? competitionLabel(competitionName, locale) : "";
+  // Oynanmış maçta "yayınlanacak" demek sayfayı da şemayı da yanlış
+  // yapıyordu; zaman kipi maçın durumunu izler.
+  //
+  // Kanal cümlesi `past` bayrağını KULLANMAZ: o bayrak `live`i de geçmiş
+  // sayıyor ve oynanmakta olan maç için "yayınlandı" çıkıyordu — maç
+  // ekranda sürerken sayfa bitmiş gibi konuşuyordu. Üç kip ayrı:
+  // sürüyor / oynandı / oynanacak.
+  const channelBody = state === "live"
+    ? text.channelBodyLive
+    : past
+      ? text.channelBodyPast
+      : text.channelBody;
+  const channelAnswer = channel
+    ? channelBody(homeTeam, awayTeam, channel)
+    : text.channelUnknown(homeTeam, awayTeam);
+
+  return [
+    {
+      id: "ne-zaman",
+      question: text.whenTitle(homeTeam, awayTeam),
+      answer: past
+        ? text.whenBodyPast(homeTeam, awayTeam, day, competition)
+        : text.whenBody(homeTeam, awayTeam, day, competition)
+    },
+    {
+      question: text.timeTitle(homeTeam, awayTeam),
+      answer: past ? text.timeBodyPast(homeTeam, awayTeam, hour) : text.timeBody(homeTeam, awayTeam, hour)
+    },
+    {
+      id: "hangi-kanalda",
+      question: text.channelTitle(homeTeam, awayTeam),
+      answer: channelAnswer
+    }
+  ];
+}
+
+export function whenSectionHtml(entry, ctx) {
+  const text = STR[ctx.locale];
+  const cards = faqEntries(entry, ctx)
+    .map((item) => `<article class="card msp-qa"${item.id === "hangi-kanalda" ? ' id="hangi-kanalda"' : ""}><h2>${escapeHtml(item.question)}</h2><p>${escapeHtml(item.answer)}</p></article>`)
+    .join("\n      ");
   return `<section class="msp-section msp-faq" id="ne-zaman" aria-label="${escapeHtml(text.date)}">
-      <article class="card msp-qa"><h2>${escapeHtml(text.whenTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.whenBodyPast(homeTeam, awayTeam, day, competition) : text.whenBody(homeTeam, awayTeam, day, competition))}</p></article>
-      <article class="card msp-qa"><h2>${escapeHtml(text.timeTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(past ? text.timeBodyPast(homeTeam, awayTeam, hour) : text.timeBody(homeTeam, awayTeam, hour))}</p></article>
-      <article class="card msp-qa" id="hangi-kanalda"><h2>${escapeHtml(text.channelTitle(homeTeam, awayTeam))}</h2><p>${escapeHtml(channel ? text.channelBody(homeTeam, awayTeam, channel) : text.channelUnknown(homeTeam, awayTeam))}</p></article>
+      ${cards}
     </section>`;
 }
 

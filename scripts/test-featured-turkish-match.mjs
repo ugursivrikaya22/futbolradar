@@ -404,6 +404,16 @@ const blockMatch = appSource.match(
 );
 assert.ok(blockMatch, "app.js içinde featured-match-selection bloğu bulunmalı");
 
+// Canlılık kapısı TAKLİT EDİLMEZ. Hero'nun "bu maç canlı mı?" kararı
+// LiveGuard'a (app.js#live-freshness-guard) bağlı; burada basit bir taklit
+// kullanılsaydı test gerçek istemciyi değil taklidi ölçerdi — tazelik
+// kapısını taklit, servis ise gerçekten uyguladığı için ayrışma tam da
+// testin göremediği yerde kalırdı. Blok olduğu gibi alınır.
+const guardMatch = appSource.match(
+  /\/\/ live-freshness-guard:start([\s\S]*?)\/\/ live-freshness-guard:end/
+);
+assert.ok(guardMatch, "app.js içinde live-freshness-guard bloğu bulunmalı");
+
 const clientModule = new Function(`
   "use strict";
   var window = { console: { info: function () {} } };
@@ -419,21 +429,12 @@ const clientModule = new Function(`
     var value = match && (match.kickoff || match.date || match.utcDate);
     return value ? String(value).slice(0, 10) : "";
   }
-  function isLiveMatch(match) {
-    if (!match) return false;
-    if (match.live === true) return true;
-    var status = String(match.status || match.providerStatus || "").toUpperCase();
-    return ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status);
-  }
-  function hasReadableScore(match) {
-    var score = match && match.score;
-    return Boolean(score) && Number.isFinite(Number(score.home)) && Number.isFinite(Number(score.away));
-  }
   function todayInIstanbul() {
     return new Intl.DateTimeFormat("en-CA", {
       timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit"
     }).format(new Date());
   }
+  ${guardMatch[1]}
   ${blockMatch[1]}
   return {
     selectFeaturedMatchEntry: selectFeaturedMatchEntry,

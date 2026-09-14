@@ -5,6 +5,7 @@ const { findCompetition, providerLeagueValue } = require("../services/competitio
 const { assessFreshness } = require("../services/dataFreshness");
 const { annotateDuplicates } = require("../services/duplicatePlayerService");
 const { playerPer90Stats } = require("../services/statNormalization");
+const { withStoredRatings } = require("../services/playerRatingService");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -17,6 +18,31 @@ const {
   validatePlayers,
   withTimeout
 } = require("./_utils");
+
+/**
+ * HESAPLANMIŞ ÖZELLİK PUANLARI — BUILD ÜRÜNÜ, İSTEK ÜRÜNÜ DEĞİL.
+ *
+ * Puanlar maç defterinden (arşiv + fikstür takvimi, ~11 MB) ve puan
+ * durumundan besleniyor; bunları her istekte ayrıştırmak sunucusuz bir
+ * fonksiyonun soğuk başlangıcını gereksiz yere ağırlaştırır. Hesap build
+ * adımında bir kez yapılıp `data/player-ratings.json` dosyasına yazılıyor
+ * (scripts/compute-player-ratings.mjs); API ve statik sayfa AYNI dosyayı
+ * okuduğu için iki yüzey aynı sayıyı gösteriyor.
+ *
+ * Dosya yoksa uç nokta çalışmaya devam eder: puan bloğu boş kalır, tablo
+ * "Veri yetersiz" gösterir — 500 dönmez.
+ */
+let storedRatingsCache;
+function storedRatings() {
+  if (storedRatingsCache !== undefined) return storedRatingsCache;
+  try {
+    // eslint-disable-next-line global-require
+    storedRatingsCache = require("../data/player-ratings.json");
+  } catch (error) {
+    storedRatingsCache = { players: {} };
+  }
+  return storedRatingsCache;
+}
 
 function currentTeam(player) {
   return player.currentTeam || player.team || "";
@@ -195,7 +221,7 @@ module.exports = async function handler(req, res) {
   // services/statNormalization.js). canonicalId aynı gerçek oyuncuya işaret
   // eden farklı kayıtları birbirine bağlar; goalsPer90/assistsPer90 yalnızca
   // istatistik doğrulanmışsa dolar, aksi hâlde null kalır.
-  data = annotateDuplicates(data).map((player) => ({
+  data = withStoredRatings(annotateDuplicates(data), storedRatings()).map((player) => ({
     ...player,
     ...playerPer90Stats(player)
   }));

@@ -22,9 +22,22 @@ function per90(rawValue, minutesPlayed) {
   return Math.round((value / minutes) * 90 * 100) / 100;
 }
 
+/**
+ * BOŞ DEĞER Number()'A VERİLMEZ.
+ *
+ * `Number(null)` ve `Number("")` SIFIRDIR. Hiç ölçülmemiş bir alan (piyasa
+ * değeri genelde null) doğrudan Number()'a verilince "doğrulanmış sıfır"a
+ * dönüşüyor ve bu modülün bütün amacı — sıfırla yokluğu ayırmak — tersine
+ * çalışıyordu. Boşluk önce elenir.
+ */
+function isMissing(rawValue) {
+  return rawValue === null || rawValue === undefined || rawValue === "";
+}
+
 /** Sayım istatistiği yalnızca doğrulanmışsa döner; aksi hâlde null. */
 function verifiedCountingValue(player, rawValue) {
   if (!statsAreVerified(player)) return null;
+  if (isMissing(rawValue)) return null;
   const value = Number(rawValue);
   return Number.isFinite(value) ? value : null;
 }
@@ -32,6 +45,7 @@ function verifiedCountingValue(player, rawValue) {
 /** Derecelendirme/radar değeri yalnızca doğrulanmışsa döner; aksi hâlde null. */
 function verifiedRatingValue(player, rawValue) {
   if (!ratingIsVerified(player)) return null;
+  if (isMissing(rawValue)) return null;
   const value = Number(rawValue);
   return Number.isFinite(value) ? value : null;
 }

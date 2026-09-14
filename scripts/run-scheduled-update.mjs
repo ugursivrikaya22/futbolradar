@@ -33,6 +33,12 @@ const WATCHED_COLLECTIONS = {
   players: { file: "data/players.json", rows: (value) => Array.isArray(value) ? value : value.players || [], key: (row) => row.id || row.providerId || row.name },
   squadStatuses: { file: "data/squad-statuses.json", rows: (value) => value.teams || [], key: (row) => row.team || row.name },
   analyses: { file: "data/match-analyses.json", rows: (value) => Array.isArray(value) ? value : value.records || [], key: (row) => row.fixtureId || row.id },
+  competitionLeaders: {
+    file: "data/competition-leaders.json",
+    rows: (value) => Object.entries(value.cache || {}).flatMap(([key, entry]) =>
+      (Array.isArray(entry && entry.rows) ? entry.rows : []).map((row) => ({ ...row, key }))),
+    key: (row) => `${row.key}:${row.providerId || row.name}`
+  },
   leagueLeaders: {
     file: "data/league-leaders.json",
     rows: (value) => [
@@ -310,6 +316,12 @@ function sourceSteps(type, providerReady) {
     // Saatlik koşuda maç sonrası güncellenir, tam koşuda da tazelenir —
     // ayrı bir paralel workflow gerekmiyor.
     nodeStep("super-lig-leaders", "sync-super-lig-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
+    // ÇOK LİGLİ KRALLIK. Maç detay sayfaları liderlik tablosunu maçın KENDİ
+    // ligi + sezonu anahtarıyla okur (`topscorers:{leagueId}:{seasonId}`);
+    // bu adım o anahtarları doldurur. Tam koşuda yeter: lig krallığı gün
+    // içinde yalnızca maç oynanan liglerde değişir ve bir sonraki tam koşu
+    // tazeler — saatlik koşuda 20 lig × 2 uç nokta kotayı gereksiz yer.
+    ...(full ? [nodeStep("competition-leaders", "sync-competition-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
     // MAÇ SONU AÇIKLAMALARI. Maç sonrası saatlerde toplanır; saatlik koşuda
@@ -375,6 +387,18 @@ function transformSteps(type, hasChanges, providerReady) {
     nodeStep("refetch-finished", "refetch-finished-matches.mjs", ["--apply", "--limit=25", "--days=4"], { kind: "source", source: "api-football", timeoutMs: 10 * 60 * 1000, skip: providerReady ? false : "API-Football is unavailable." }),
     nodeStep("post-match-store", "generate-post-match-reports.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
+    // OYUNCU ÖZELLİK PUANLARI — maç/istatistik güncellemesinden HEMEN SONRA.
+    //
+    // Puanlar maç defterinden besleniyor (arşiv + fikstür takvimi); yeni bir
+    // maç işlendiğinde formun, sürekliliğin ve hücum oranlarının değişmesi
+    // gerekiyor. Adım burada koşarsa `players.json` değişir, snapshot farkı
+    // `playersUpdated` görür ve saatlik hat profil + karşılaştırma
+    // sayfalarını kendiliğinden yeniden basar.
+    //
+    // Zaman damgası yalnızca puan gerçekten değiştiğinde yenilenir, bu
+    // yüzden adım boş koşularda dosyayı kirletmez ve sahte bir
+    // "playersUpdated" üretmez.
+    nodeStep("player-ratings", "compute-player-ratings.mjs", [], { kind: "transform", timeoutMs: 6 * 60 * 1000 }),
     // SUPABASE ALIMI — SİTENİN BUİLD/DEPLOY'UNU HİÇBİR KOŞULDA ENGELLEMEZ.
     //
     // Bu adım `required` DEĞİL (varsayılan `false`) ve `criticalFailure`

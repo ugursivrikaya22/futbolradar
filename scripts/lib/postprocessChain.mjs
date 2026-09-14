@@ -38,6 +38,10 @@
 
 /** Zincir; `scripts/` altına göreli betik adı + argümanlar. */
 export const POSTPROCESS_CHAIN = [
+  // Canlı puan durumu çekirdeğinin tarayıcı kopyası, kaynağından yeniden
+  // üretilir. EN BAŞTA: varlık damgası (`inject-asset-version`) bu dosyayı
+  // da damgalıyor, yani içerik damgadan önce kesinleşmiş olmalı.
+  { id: "live-standings-core", script: "build-live-standings-client.mjs", args: [], timeoutMinutes: 2 },
   // Resolve English links after match registries and Turkish pages exist.
   // Scheduled postprocessing must refresh these links as well as full builds.
   { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
@@ -67,6 +71,14 @@ export const POSTPROCESS_CHAIN = [
   { id: "site-verification", script: "inject-site-verification.mjs", args: [], timeoutMinutes: 5 },
   { id: "core-page-schema", script: "inject-core-page-schema.mjs", args: [], timeoutMinutes: 5 },
   { id: "hreflang", script: "inject-hreflang.mjs", args: [], timeoutMinutes: 5 },
+  // Aynı maçın kopya adresleri (tur sayfası, maç raporu, kök dizindeki eski
+  // `-mac-analizi` deseni) tek kanonik `/mac/<slug>` adresine bağlanır.
+  // Zincirde olmak ZORUNDA: hedef sayfayı `generate-match-seo-pages.mjs`
+  // üretiyor ve kopyaları basan iki üretici de ondan ÖNCE koşuyor — kendi
+  // kanoniğini yazarken hedefin var olup olmadığını bilemiyorlar. Burada
+  // disk gerçeği bellidir. `inject-hreflang`den SONRA: hreflang bildirimleri
+  // bu geçişin dışında tutuluyor, önce yazılmış olmaları gerekiyor.
+  { id: "match-canonicals", script: "unify-match-canonicals.mjs", args: [], timeoutMinutes: 8 },
   { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
   // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
   // damga adımından ÖNCE koşmalı (içeriği değiştirir).

@@ -597,6 +597,10 @@ function teamLogo(team) {
   return (team && team.logo) || "";
 }
 
+function teamId(team) {
+  return team && team.id !== undefined && team.id !== null ? String(team.id) : null;
+}
+
 function scoreValue(score) {
   return score === undefined || score === null ? null : score;
 }
@@ -684,6 +688,12 @@ function normalizeFixture(item) {
     time: kickoff ? new Date(kickoff).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }) : "",
     homeTeam: teamName(homeTeam),
     awayTeam: teamName(awayTeam),
+    // SAĞLAYICI TAKIM KİMLİĞİ. Ad sağlayıcıdan sağlayıcıya ("Beşiktaş" /
+    // "Besiktas JK") değişiyor; canlı puan durumu maçı doğru satıra ancak
+    // kimlikle bağlayabiliyor (bkz. services/liveStandings.js#findRow).
+    // Kimlik yoksa alan null kalır — ad eşleşmesine düşülür, uydurulmaz.
+    homeTeamId: teamId(homeTeam),
+    awayTeamId: teamId(awayTeam),
     homeTeamLogo: teamLogo(homeTeam),
     awayTeamLogo: teamLogo(awayTeam),
     status: normalizeStatus(fixture.status || {}),
@@ -1075,6 +1085,11 @@ function normalizeLeagueLeaderEntry(item) {
     teamLogo: team.logo || null,
     teamProviderId: team.id ? String(team.id) : null,
     league: (lastBlock.league && lastBlock.league.name) || "",
+    // Lig ADI değil, lig KİMLİĞİ doğrulama ölçütüdür: "Premier League" adı
+    // birden çok ülkede var, kimlik çakışmaz. Krallık tablosu satırları bu
+    // alanla lig+sezon anahtarına bağlanır (services/competitionLeaders.js).
+    leagueId: (lastBlock.league && lastBlock.league.id) ? String(lastBlock.league.id) : null,
+    season: (lastBlock.league && lastBlock.league.season) ? String(lastBlock.league.season) : null,
     appearances: sumOrNull(blocks.map((block) => numberOrNull(block.games && (block.games.appearences ?? block.games.appearances)))) || 0,
     minutes: sumOrNull(blocks.map((block) => numberOrNull(block.games && block.games.minutes))) || 0,
     goals: sumOrNull(blocks.map((block) => numberOrNull(block.goals && block.goals.total))) || 0,

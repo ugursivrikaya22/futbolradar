@@ -11,7 +11,8 @@ import {
   trendCard as sharedTrendCard,
   transferWatchShell,
   superLigTodayStripHtml,
-  officialLineupAlertHtml
+  officialLineupAlertHtml,
+  isLineupAlertStale
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
@@ -331,7 +332,7 @@ function quickLinkTeamFor(match) {
  */
 function quickLinkStandingsHref(match) {
   const team = quickLinkTeamFor(match);
-  if (team) return `./${team.slug}-puan-durumu.html`;
+  if (team) return `./${team.slug}-puan-durumu`;
   return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
 }
 
@@ -1016,10 +1017,10 @@ function resultsLiveSection() {
  *   1. Maç gerçek veri katmanında DOĞRULANMIŞ olarak bitmiş mi
  *      (isVerifiedFinalMatch) — en güvenilir sinyal.
  *   2. Başlama saatinin üzerinden makul bir maç süresinden (uzatmalar dahil
- *      3 saat) fazla geçmiş mi — maç kaydı takvimde yoksa yedek sinyal.
+ *      2 saat 15 dakika) fazla geçmiş mi — maç kaydı takvimde yoksa ya da
+ *      sonuç henüz doğrulanmamışsa yedek sinyal. Eşiğin kendisi ve gerekçesi
+ *      scripts/lib/matchCards.mjs'de, İngilizce üreticiyle ORTAK.
  */
-const LINEUP_ALERT_STALE_MS = 3 * 60 * 60 * 1000;
-
 function officialLineupAlerts() {
   const alerts = require("../data/official-lineup-alerts.json").records || [];
   const finishedIds = new Set(
@@ -1030,8 +1031,7 @@ function officialLineupAlerts() {
   return alerts
     .filter((alert) => {
       if (finishedIds.has(String(alert.matchId || ""))) return false;
-      const kickoffMs = Date.parse(alert.kickoff || "");
-      if (Number.isFinite(kickoffMs) && now - kickoffMs > LINEUP_ALERT_STALE_MS) return false;
+      if (isLineupAlertStale(alert, now)) return false;
       return true;
     })
     .map((alert) => officialLineupAlertHtml(alert, "tr"))
