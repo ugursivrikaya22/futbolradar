@@ -895,7 +895,9 @@ async function testStandingsIntegrityIsWired() {
     envNames.forEach((name) => delete process.env[name]);
 
     const response = fakeResponse();
-    await standingsHandler({ method: "GET", url: "/api/standings", headers: {} }, response);
+    // Lig artık açıkça bildirilir; ligsiz istek bilerek reddediliyor
+    // (bkz. testStandingsRequiresExplicitLeague).
+    await standingsHandler({ method: "GET", url: "/api/standings?league=super-lig", headers: {} }, response);
 
     assert.equal(response.statusCode, 200);
     assert.equal(response.payload.ok, true);
@@ -913,6 +915,23 @@ async function testStandingsIntegrityIsWired() {
   }
 }
 
+/**
+ * LİG ZORUNLU — SÜPER LİG VARSAYILANI YOK.
+ *
+ * Uç nokta eskiden `league` gelmediğinde sessizce "super-lig" koyuyordu; bu,
+ * ligini bildirmeyen her yüzeye (maç sayfası widget'ları dahil) Türkiye
+ * Süper Lig tablosunu servis ediyordu. Yanlış ligin tablosunu göstermektense
+ * açık hata dönmek doğrudur.
+ */
+async function testStandingsRequiresExplicitLeague() {
+  const response = fakeResponse();
+  await standingsHandler({ method: "GET", url: "/api/standings", headers: {} }, response);
+  assert.equal(response.payload.ok, false, "ligsiz istek basarili sayilmamali");
+  assert.equal(response.payload.error.code, "MISSING_LEAGUE");
+  assert.equal(response.payload.data.length, 0, "ligsiz istekte tablo donmemeli");
+}
+
+await testStandingsRequiresExplicitLeague();
 await testStandingsIntegrityIsWired();
 
 console.log("FutbolRadar API resilience tests passed");
