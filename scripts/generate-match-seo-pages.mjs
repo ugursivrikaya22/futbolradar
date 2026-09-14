@@ -47,6 +47,7 @@ import {
   hasScore,
   heroHtml,
   istanbulIso,
+  leadersSectionHtml,
   lineupsSectionHtml,
   longDate,
   nextMatchesSectionHtml,
@@ -89,6 +90,7 @@ const { sameClub } = require("../services/superLigTeams.js");
 const { teamHubHref } = require("../services/teamHubLinks.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { calculateMatchRadar } = require("../services/matchRadarService.js");
+const { resolveMatchLeaders } = require("../services/competitionLeaders.js");
 const { getPlayers } = require("../services/playerService.js");
 const { normalizeText } = require("../api/_utils.js");
 const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.js");
@@ -552,13 +554,30 @@ function teamLinks(teamName, locale, base) {
   return { page: null, fixtures: null, standings: null };
 }
 
+/**
+ * LİGE ÖZEL KRALLIK SAYFALARI. `gol-kralligi.html` / `asist-kralligi.html`
+ * YALNIZCA Süper Lig tablosunu yayınlar; başka bir ligin maç sayfasından
+ * oraya bağlantı vermek, kullanıcıyı yanlış ligin tablosuna götürür. Bu
+ * yüzden bağlantı yarışma kimliğine bakarak verilir, hiçbir lige varsayılan
+ * olarak düşülmez.
+ */
+const LEADER_PAGES = {
+  "super-lig": { tr: { scorers: "gol-kralligi.html", assists: "asist-kralligi.html" } }
+};
+
 function leagueLinks(entry, locale, base) {
   const catalog = STANDINGS_LEAGUES[entry.competitionId];
   const leaguePage = `lig/${entry.competitionId}.html`;
+  const leaderPages = (LEADER_PAGES[entry.competitionId] || {})[locale] || null;
+  const leaderHref = (relative) => (relative && fileExists(relative) ? `${base}${relative}` : null);
+  const leaders = {
+    scorers: leaderPages ? leaderHref(leaderPages.scorers) : null,
+    assists: leaderPages ? leaderHref(leaderPages.assists) : null
+  };
   if (locale === "en") {
-    return { standings: catalog ? `${base}en/${catalog.slugEn}.html` : null, league: null };
+    return { standings: catalog ? `${base}en/${catalog.slugEn}.html` : null, league: null, leaders };
   }
-  return { standings: catalog ? `${base}${catalog.slugTr}` : null, league: fileExists(leaguePage) ? `${base}${leaguePage}` : null };
+  return { standings: catalog ? `${base}${catalog.slugTr}` : null, league: fileExists(leaguePage) ? `${base}${leaguePage}` : null, leaders };
 }
 
 /* ------------------------------------------------------------------ */
@@ -709,6 +728,9 @@ function pageHtml(entry, locale, options) {
     homeAbsolute: toAbsolute(home.page),
     awayAbsolute: toAbsolute(away.page),
     leagueAbsolute: toAbsolute(league.league || league.standings),
+    leagueHref: league.league || league.standings || null,
+    leadersScorersHref: league.leaders.scorers,
+    leadersAssistsHref: league.leaders.assists,
     homeLogo: logoFor(entry.homeTeam, entry.homeTeamLogo),
     awayLogo: logoFor(entry.awayTeam, entry.awayTeamLogo),
     competitionName,
@@ -727,6 +749,9 @@ function pageHtml(entry, locale, options) {
     away: nextFor(entry.awayTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) }))
   };
   const table = standingsFor(entry);
+  // Liderlik tablosu maçın KENDİ lig kimliği + sezonuyla çözülür; kayıtta
+  // kimlik yoksa bölüm "veri yok" der, başka bir ligin tablosunu basmaz.
+  const leaders = resolveMatchLeaders(entry);
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
 
   let sections = [];
@@ -738,6 +763,7 @@ function pageHtml(entry, locale, options) {
       lineupsSectionHtml(detail, analysis, ctx),
       summarySectionHtml(detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
+      leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),
       h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx)
@@ -749,6 +775,7 @@ function pageHtml(entry, locale, options) {
       statsSectionHtml(detail.statistics, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
+      leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx)
     ];
@@ -764,6 +791,7 @@ function pageHtml(entry, locale, options) {
       h2hSectionHtml(h2h, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),
+      leadersSectionHtml(leaders, ctx),
       analysisSectionHtml(radar, detail.prediction, ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       eventsSectionHtml([], ctx),
