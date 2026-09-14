@@ -319,6 +319,49 @@ check("eski hafta numaralı sayfalar kalıcı sayfaya bağlanıyor ve silinmiyor
   assert.ok(linkedRound.length > 0, "tarihi onaylı en az bir hafta sayfası kalıcı sayfaya bağlanmalı");
 });
 
+/**
+ * TEK MAÇ = TEK KANONİK ADRES.
+ *
+ * Hafta numaralı sayfa (tarih atanmadan önce üretilen takma ad) ile kalıcı
+ * Maç Merkezi sayfası aynı maçı anlatır. Maçın tarihi onaylanıp Maç Merkezi
+ * açıldığı anda hafta sayfası kanonikliği DEVRETMEK ZORUNDA: aksi hâlde aynı
+ * maç iki indekslenebilir adreste yarışır ve site haritası ikisini de bildirir.
+ */
+check("devredilmiş hafta sayfası kanoniği Maç Merkezi'ni gösterir ve haritadan düşer", () => {
+  const slugOf = (file) => file.replace(/\.html$/, "");
+  const sitemap = read("sitemap.xml");
+  let aliased = 0;
+
+  for (const [dir, prefix] of [["mac", "mac"], ["en/match", "en/match"]]) {
+    for (const file of fs.readdirSync(path.join(root, dir)).filter((name) => /-r\d{2}\.html$/.test(name))) {
+      const html = read(`${dir}/${file}`);
+      const canonical = (html.match(/rel="canonical" href="([^"]+)"/) || [])[1];
+      assert.ok(canonical, `${dir}/${file}: canonical yok`);
+
+      const selfUrl = `${seo.DOMAIN}/${prefix}/${slugOf(file)}.html`;
+      if (canonical === selfUrl) {
+        // Tarihi henüz atanmamış eşleşme: kendi adresi kanonik kalır.
+        assert.ok(sitemap.includes(`<loc>${selfUrl}</loc>`), `${dir}/${file}: kanonik sayfa haritada olmalı`);
+        continue;
+      }
+
+      aliased += 1;
+      // Takma ad: kanonik hedef GERÇEKTEN var olmalı (404'e canonical verilmez).
+      const target = canonical.replace(`${seo.DOMAIN}/`, "");
+      const targetFile = target.endsWith(".html") ? target : `${target}.html`;
+      assert.ok(fs.existsSync(path.join(root, targetFile)), `${dir}/${file}: kanonik hedef yok → ${targetFile}`);
+      // Takma ad site haritasında kendi adresiyle YER ALMAZ.
+      assert.ok(!sitemap.includes(`<loc>${selfUrl}</loc>`), `${dir}/${file}: takma ad haritadan düşmeli`);
+      // Aynı olay için ikinci bir SportsEvent düğümü bırakılmaz.
+      assert.ok(!html.includes("SportsEvent"), `${dir}/${file}: takma adda SportsEvent kalmamalı`);
+      // Kullanıcı da devri görmeli.
+      assert.ok(html.includes("match-centre-handoff"), `${dir}/${file}: devir şeridi yok`);
+    }
+  }
+
+  assert.ok(aliased > 0, "tarihi onaylı en az bir hafta sayfası Maç Merkezi'ne devredilmiş olmalı");
+});
+
 if (process.exitCode) {
   console.error("match-seo-pages: FAILED");
 } else {
