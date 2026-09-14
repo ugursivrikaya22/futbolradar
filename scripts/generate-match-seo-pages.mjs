@@ -547,7 +547,7 @@ function teamLinks(teamName, locale, base) {
     return {
       page: teamHubHref(teamName, base),
       fixtures: `${base}${slug}-maclari.html`,
-      standings: `${base}${slug}-puan-durumu.html`
+      standings: `${base}${slug}-puan-durumu`
     };
   }
   if (isSuperLig) {

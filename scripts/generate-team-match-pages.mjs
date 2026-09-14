@@ -357,7 +357,7 @@ function standingCard(row, season) {
       <div><dt>O</dt><dd>${escapeHtml(row.played)}</dd></div><div><dt>G</dt><dd>${escapeHtml(row.won)}</dd></div><div><dt>B</dt><dd>${escapeHtml(row.drawn)}</dd></div><div><dt>M</dt><dd>${escapeHtml(row.lost)}</dd></div><div><dt>P</dt><dd>${escapeHtml(row.points)}</dd></div>
     </dl>
     <div class="team-form"><span>Son ${form.length} lig maçı</span><div class="form-dots" aria-label="Son maç formu">${form.map((value) => `<span class="${classes[value] || ""}" title="${labels[value] || value}">${labels[value] || value}</span>`).join("")}</div></div>
-    <a class="detail-link" href="./${escapeHtml(String(row.team || row.name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}-puan-durumu.html">Tam puan durumunu aç</a>
+    <a class="detail-link" href="./${escapeHtml(String(row.team || row.name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}-puan-durumu">Tam puan durumunu aç</a>
   </article>`;
 }
 
@@ -491,7 +491,7 @@ function relatedLinks(team) {
     { href: "./analizler.html", kicker: "Analiz", title: "Maç analizleri", text: `${team.name} ile ilgili veri odaklı maç okumaları.` },
     // `generate-team-standings-pages.mjs` bu 4 takım için AYNI slug'ı kullanır
     // (`${slug}-puan-durumu.html`); TEAMS burada da yalnızca büyük 4'ü taşır.
-    { href: `./${team.slug}-puan-durumu.html`, kicker: "Puan durumu", title: `${team.name} puan durumu`, text: `${team.name} Süper Lig'de kaçıncı sırada, tam tabloda vurgulu.` }
+    { href: `./${team.slug}-puan-durumu`, kicker: "Puan durumu", title: `${team.name} puan durumu`, text: `${team.name} Süper Lig'de kaçıncı sırada, tam tabloda vurgulu.` }
   ];
   if (team.radar) links.push({ href: `./${team.radar}`, kicker: "Kadro", title: `${team.name} oyuncu radarı`, text: "Kadro, form ve rol sinyalleri." });
   if (team.form) links.push({ href: `./${team.form}`, kicker: "Form", title: `${team.name} form durumu`, text: "Son maçların form okuması." });

@@ -542,4 +542,23 @@ test("sekme geri gelince yerleşme yoklaması yeniden kurulur", () => {
   );
 });
 
+test("takım puan durumu sayfaları temiz adreste yayımlanıyor", () => {
+  // Lig/kupa sayfalarındaki kural takım sayfalarında da geçerli: kanonik
+  // uzantısız adres, rewrite onu karşılıyor ve site haritası kanoniği
+  // listeliyor. İkisi ayrışırsa aynı sayfa iki adresten indekslenir.
+  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  for (const slug of ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"]) {
+    const clean = `/${slug}-puan-durumu`;
+    const html = fs.readFileSync(path.join(root, `${slug}-puan-durumu.html`), "utf8");
+    assert.match(html, new RegExp(`<link rel="canonical" href="https://www\\.futbolradar\\.com${clean}"`), `${slug}: kanonik uzantısız olmalı`);
+    assert.ok(
+      vercel.rewrites.some((rule) => rule.source === clean && rule.destination === `${clean}.html`),
+      `${slug}: temiz adres rewrite'ı olmalı`
+    );
+    assert.ok(sitemap.includes(`<loc>https://www.futbolradar.com${clean}</loc>`), `${slug}: site haritası kanoniği listelemeli`);
+    assert.ok(!sitemap.includes(`<loc>https://www.futbolradar.com${clean}.html</loc>`), `${slug}: eski .html adresi haritada kalmamalı`);
+  }
+});
+
 console.log(`\nCanlı puan durumu testleri geçti (${passed} senaryo)`);
