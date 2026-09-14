@@ -34,6 +34,23 @@ function writeGeneratedFile(file, contents) {
 }
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+/**
+ * Oyuncu adresleri tek çözücüden okunur.
+ *
+ * Bu sayfalar (oyuncu radarı, lig liderleri, gol/asist krallığı) kimlikten
+ * yol türetiyordu. Oyuncu tam isimli adrese taşındığında bu bağlantılar
+ * ESKİ adrese gidiyor ve kullanıcıyı bir yönlendirmeden geçiriyordu —
+ * tarayıcı denetimi bunu "yanlış hedef" olarak yakaladı. Bağlantı doğrudan
+ * kanonik adrese gitmeli.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { cardBroadcastLabel } = require("../services/broadcastSchedule.js");
 // Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
 // alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
@@ -92,6 +109,8 @@ const { calculateMatchRadar, normalizeText } = require("../services/matchRadarSe
 const { confidenceLabel, formatFreshnessDate, freshnessLabel, normalizeFreshness } = require("../services/freshnessService.js");
 const { CONFIRMED_FIXTURE_STATUSES, getFixtureWeeks, normalizeMatchStatus } = require("../services/superLigFixtureService.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
+const { filterSupportedCompetitions } = require("../services/providers/apiFootballProvider.js");
+const currentMatches = () => filterSupportedCompetitions(curatedMatches());
 const {
   ROTATION_INTERVAL_MS,
   logFeaturedRotation,
@@ -142,7 +161,9 @@ function fixtureTeamLogoHtml(name) {
 
 const players = getPlayers(rawPlayers);
 const fixtureFreshness = normalizeFreshness(fixtures.freshness || freshnessData.records.fixtures);
-const matchesFreshness = normalizeFreshness(freshnessData.records.matches);
+const matchSourceTime = currentMatches().filter(match => istanbulDay(match.kickoff || match.date) === istanbulDay(new Date().toISOString()))
+  .map(match => match.fetchedAt || match.updatedAt || match.lastVerifiedAt).filter(value => Number.isFinite(Date.parse(value))).sort().at(-1) || null;
+const matchesFreshness = normalizeFreshness({ ...freshnessData.records.matches, verifiedAt: matchSourceTime, fetchedAt: matchSourceTime });
 const teamFreshness = normalizeFreshness(freshnessData.records.teamRadar);
 const playerFreshness = normalizeFreshness(freshnessData.records.players);
 const seasonUpdated = formatFreshnessDate(fixtureFreshness.verifiedAt || fixtureFreshness.fetchedAt);
@@ -274,9 +295,8 @@ function programMatchPool() {
   // collapses the same fixture listed with the sides swapped. Reading the raw
   // calendar here rendered those duplicates into the static fallback, so the
   // homepage showed each neutral-venue friendly twice.
-  return curatedMatches()
-    .filter((match) => istanbulDay(match.kickoff) >= today)
-    .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match));
+  return currentMatches()
+    .filter((match) => istanbulDay(match.kickoff) === today);
 }
 
 /**
@@ -350,15 +370,22 @@ function programFixtureCard(match, today, options = {}) {
   return staticFixtureCard(match, { headlineValue, isToday, status, finalScore, quickLinksHtml });
 }
 
-function calendarProgramMatches(limit) {
+function isSuperLigProgramMatch(match) {
+  return Boolean(match && teamByName(match.homeTeam) && teamByName(match.awayTeam));
+}
+
+function calendarProgramMatches(limit, options = {}) {
   return programMatchPool()
+    .filter((match) => !options.excludeSuperLig || !isSuperLigProgramMatch(match))
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
 }
 
 function calendarProgramCards(limit) {
   const today = istanbulToday();
-  const upcoming = calendarProgramMatches(limit);
+  // Süper Lig maçları hemen üstte aynı boy kartlarla ayrı ve öncelikli
+  // çizilir; genel listede ikinci kez gösterilmez.
+  const upcoming = calendarProgramMatches(limit, { excludeSuperLig: true });
 
   if (!upcoming.length) {
     return "";
@@ -402,11 +429,8 @@ function matchProgramPageCards() {
   // haftanın Süper Lig maçları bugünün Konferans Ligi maçlarının üstüne
   // çıktı — "Bugünün Maçları" sayfasında bugün oynanmayan maçlar.
   //
-  // Bugün maç yoksa liste maç OLAN ilk güne kayar: boş sayfa göstermek
-  // yerine hangi günü gösterdiğimizi söyleriz (SSS metinleri o günün adını
-  // taşır, "bugün" demez).
-  const days = [...new Set(pool.map((match) => istanbulDay(match.kickoff)))].sort();
-  const day = days.includes(today) ? today : days[0];
+  // An empty day remains empty; another day's fixtures are never today.
+  const day = today;
 
   // Günün TAMAMI ile PENCERE ayrı iki liste. Kartlar pencereden basılır
   // (istemcinin ilk görünümüyle aynı sayı), ama günü ANLATAN metin — kaç maç
@@ -576,7 +600,7 @@ function staticFixtureCard(match, meta) {
  */
 function staticFeaturedFixture() {
   const today = istanbulToday();
-  const all = curatedMatches();
+  const all = currentMatches();
   const list = all
     .filter((match) => istanbulDay(match.kickoff) >= today)
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
@@ -723,7 +747,7 @@ function dailyHeadlineCards() {
   const today = istanbulToday();
   // İlgi puanı burada damgalanır; API de aynı servisi kullanıyor, böylece
   // ön derlenmiş sıra ile JavaScript yüklendikten sonraki sıra aynı olur.
-  const headlines = buildDailyHeadlines(withRelevance(curatedMatches()), {
+  const headlines = buildDailyHeadlines(withRelevance(currentMatches()), {
     today,
     reports: postMatchStore()
   });
@@ -1034,8 +1058,11 @@ function leagueDirectoryHtml() {
 
 function todaySuperLigStrip() {
   const today = istanbulToday();
-  const todays = curatedMatches().filter((match) => istanbulDay(match.kickoff) === today);
-  return superLigTodayStripHtml(todays, teams, "tr", { hrefFor: matchDetailPath });
+  const todays = currentMatches().filter((match) => istanbulDay(match.kickoff) === today);
+  return superLigTodayStripHtml(todays, teams, "tr", {
+    hrefFor: matchDetailPath,
+    cardFor: (match) => programFixtureCard(match, today, { quickLinks: true })
+  });
 }
 
 function matchProgramState(variant) {
@@ -1063,7 +1090,7 @@ function matchProgramState(variant) {
  */
 function liveScoreProgramState() {
   const today = istanbulToday();
-  const scored = filterScoredMatches(curatedMatches())
+  const scored = filterScoredMatches(currentMatches())
     .filter((match) => istanbulDay(match.kickoff) === today)
     .filter((match) => String(match.status || "").toUpperCase() !== "FINISHED" || isVerifiedFinalMatch(match))
     .filter((match) => !["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"]
@@ -1347,14 +1374,14 @@ function homeLeaderLeagueRow(rank, row, metric, unit) {
   const team = escapeHtml(row.team || "");
   const value = escapeHtml(String(row[metric] ?? 0));
   const nameHtml = row.slug
-    ? `<a class="leaders-name" href="./oyuncular/${escapeHtml(row.slug)}.html"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></a>`
+    ? `<a class="leaders-name" href="./${escapeHtml(playerUrls.playerPagePath(row.slug))}"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></a>`
     : `<span class="leaders-name"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></span>`;
   return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span>${nameHtml}<span class="leaders-value">${value}<small>${escapeHtml(unit)}</small></span></li>`;
 }
 
 function homeLeaderFormRow(rank, player) {
   const kicker = [player.currentTeam || player.team, player.position].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
-  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./${escapeHtml(playerUrls.playerPagePath(player.id))}"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
 }
 
 function homeLeaderTeamRow(rank, row) {
@@ -1407,7 +1434,7 @@ function leagueLeaderLogoHtml(row) {
 
 function leagueLeaderNameHtml(row) {
   const name = escapeHtml(row.name || "");
-  return row.slug ? `<a href="./oyuncular/${escapeHtml(row.slug)}.html">${name}</a>` : `<span>${name}</span>`;
+  return row.slug ? `<a href="./${escapeHtml(playerUrls.playerPagePath(row.slug))}">${name}</a>` : `<span>${name}</span>`;
 }
 
 function leagueLeaderTableHtml(rows, metric, metricLabel) {
@@ -1470,7 +1497,7 @@ function simplePlayerCard(player) {
   }
   if (marketValue) metrics.push(`<span>Piyasa <b>${escapeHtml(marketValue)}</b></span>`);
 
-  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="./oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a></article>`;
+  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="./${escapeHtml(playerUrls.playerPagePath(player.id))}">Oyuncu profilini aç</a></article>`;
 }
 
 /**
@@ -1496,7 +1523,7 @@ function playerSignals(pool) {
     ["Gol tehdidi", by("threatScore"), "threatScore"],
     ["Yaratıcılık", by("creativityScore"), "creativityScore"]
   ];
-  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</p><a href="./oyuncular/${escapeHtml(player.id)}.html">Profili aç</a></article>`).join("");
+  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</p><a href="./${escapeHtml(playerUrls.playerPagePath(player.id))}">Profili aç</a></article>`).join("");
 }
 
 function analysisCards() {
@@ -1599,7 +1626,7 @@ function fixtureRounds() {
  * fonksiyondan çizilir. Burada kalan tek şey veriyi seçip şeridi istemek.
  */
 function liveScoresTrack() {
-  return liveTickerTrack(selectLiveTickerRecords(curatedMatches()), { locale: "tr" });
+  return liveTickerTrack(selectLiveTickerRecords(currentMatches()), { locale: "tr" });
 }
 
 /**
@@ -1811,7 +1838,7 @@ function updateMetaLabels(html, freshness) {
   // `[\s\S]*?` — damga artık iç içe `<time>` taşıyabildiği için eski
   // `[^<]*` deseni ikinci koşuda eşleşmiyordu ve damga donup kalırdı.
   return html
-    .replace(/<span class="hero-meta">(?:Son güncelleme|Son kontrol):[\s\S]*?<\/span>/g, `<span class="hero-meta">${stamp}</span>`)
+    .replace(/<span class="hero-meta"[^>]*>(?:Son güncelleme|Son kontrol):[\s\S]*?<\/span>/g, `<span class="hero-meta" data-matches-day="${istanbulDay(new Date().toISOString())}">${stamp}</span>`)
     .replace(/<span class="data-stamp">(?:Son güncelleme|Son kontrol):[\s\S]*?<\/span>/g, `<span class="data-stamp">${stamp}</span>`);
 }
 
@@ -1915,6 +1942,10 @@ function updateSourceStripFreshness(html, freshness) {
 }
 
 function writePage(file, slots, freshness, staticSlots = {}) {
+  const pagesArg = process.argv.find(arg => arg.startsWith("--pages="));
+  if (pagesArg && !pagesArg.slice(8).split(",").includes(file)) return;
+  if (["index.html", "bugunun-maclari.html", "canli-skor.html"].includes(file)) freshness = matchesFreshness;
+  if (["gol-kralligi.html", "asist-kralligi.html"].includes(file)) freshness = { fetchedAt: leagueLeaders.updatedAt || leagueLeaders.generatedAt };
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) {
     return;
@@ -1932,7 +1963,9 @@ function writePage(file, slots, freshness, staticSlots = {}) {
   // Yalnızca `.source-strip` "Son güncelleme" satırı taşıyan sayfalarda
   // etkili olur (bkz. yukarıdaki docblock) — MAÇ verisi tazeliği, `freshness`
   // parametresinden bağımsız olarak her zaman matchesFreshness'tan gelir.
-  html = updateSourceStripFreshness(html, matchesFreshness);
+  html = updateSourceStripFreshness(html, freshness);
+  html = html.replace(/(<[^>]+data-api-target="(?:featured-match|today-matches|today-superlig-matches|matches-page|live-score|daily-headlines)"[^>]*?)(?: data-matches-day="[^"]*")?>/g,
+    (tag) => tag.replace(/ data-matches-day="[^"]*"/g, "").replace(/>$/, ` data-matches-day="${istanbulDay(new Date().toISOString())}">`));
   html = updateRobotsDirective(html, file);
   writeGeneratedFile(sourcePath, html);
   writeGeneratedFile(path.join(root, "public", file), html);
@@ -2186,6 +2219,8 @@ writePage("super-lig-fikstur.html", {
 }, fixtureFreshness);
 
 for (const file of noindexShellPages) {
+  const pagesArg = process.argv.find(arg => arg.startsWith("--pages="));
+  if (pagesArg && !pagesArg.slice(8).split(",").includes(file)) continue;
   const sourcePath = path.join(root, file);
   if (!fs.existsSync(sourcePath)) continue;
   const html = updateRobotsDirective(fs.readFileSync(sourcePath, "utf8"), file);

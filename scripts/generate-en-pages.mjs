@@ -89,6 +89,18 @@ function enMatchHref(match) {
 }
 
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
+/**
+ * Oyuncu adresleri tek çözücüden okunur. Kimlikten yol türetmek, oyuncu
+ * tam isimli adrese taşındığı anda var olmayan bir dosyaya işaret ediyor.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames, slug: teamSlug } = require("../services/superLigTeams.js");
 // "Başlangıçta kaç kart görünür?" sayısı TEK yerde durur; Türkçe ön derleme,
@@ -882,8 +894,9 @@ function dailyHeadlinesSection() {
  */
 function todaySection() {
   const list = todaysMatches;
-  const body = list.length
-    ? list.map((match, index) => {
+  const remaining = list.filter((match) => !isSuperLig(match));
+  const body = remaining.length
+    ? remaining.map((match, index) => {
       const card = fixtureCard(match);
       // Fazlalık kartın damgası app.js'teki `markMatchOverflow` ile aynı:
       // aynı öznitelik, aynı `hidden`, aynı kapsam kuralı.
@@ -893,7 +906,7 @@ function todaySection() {
     }).join("\n")
     : `<p class="muted-copy">${escapeHtml(label("common.noMatchesToday"))}</p>`;
 
-  const hiddenCount = Math.max(0, list.length - MATCH_LIST_INITIAL);
+  const hiddenCount = Math.max(0, remaining.length - MATCH_LIST_INITIAL);
   // Ölü düğme yok: gizlenecek kart yoksa düğme hiç çizilmez.
   const moreRow = hiddenCount
     ? `<div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false">` +
@@ -907,10 +920,13 @@ function todaySection() {
   // ayrıntı sayfası yok (aşağıdaki genel ızgara da aynı nedenle her
   // karta `./live-football-scores.html`e bağlanıyor); şerit de aynı kuralı izler.
   // Kalıcı EN maç sayfası varsa şerit satırı oraya gider; yoksa canlı skor.
-  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, { hrefFor: (match) => {
-    const enPath = seoEnPathForMatch(match, seoRegistryPages);
-    return enPath ? `../${enPath}` : "./live-football-scores.html";
-  } });
+  const superLigStrip = superLigTodayStripHtml(list, teams, LOCALE, {
+    hrefFor: (match) => {
+      const enPath = seoEnPathForMatch(match, seoRegistryPages);
+      return enPath ? `../${enPath}` : "./live-football-scores.html";
+    },
+    cardFor: fixtureCard
+  });
 
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
@@ -963,7 +979,7 @@ function playerRadarSection() {
       const metrics = [`<span>Age <b>${escapeHtml(age || label("common.noData"))}</b></span>`];
       if (minutes !== undefined && minutes !== null) metrics.push(`<span>Minutes <b>${escapeHtml(minutes)}</b></span>`);
       if (market) metrics.push(`<span>Market value <b>${escapeHtml(market)}</b></span>`);
-      return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>Profile metrics and transfer history are on the player page.</p><a class="detail-link" href="./player/${escapeHtml(player.id)}.html">Open player profile</a></article>`;
+      return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>Profile metrics and transfer history are on the player page.</p><a class="detail-link" href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">Open player profile</a></article>`;
     }).join("")
     : `<article class="card data-empty" data-card="empty-state"><strong>Waiting for data</strong><span>Trend player cards are only built from verified current-season records with a provider identity. This area fills in automatically once the squad sync delivers that data.</span></article>`;
 
@@ -1527,7 +1543,7 @@ function playerRadarPage() {
     .sort((left, right) => Number(right.rating || 0) - Number(left.rating || 0))
     .slice(0, 40)
     .map((player) => `<article class="player-card">
-            <header><div><h3><a href="./player/${escapeHtml(player.id)}.html">${escapeHtml(player.name)}</a></h3>
+            <header><div><h3><a href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">${escapeHtml(player.name)}</a></h3>
             <span>${escapeHtml([player.team, player.position].filter(Boolean).join(" · ") || "Player profile")}</span></div>
             <strong class="momentum-number">${escapeHtml(statCell(player.rating))}</strong></header>
             <div class="metric-grid compact">
@@ -1564,7 +1580,13 @@ ${sectionLinks()}`;
  */
 function leagueLeaderCell(row) {
   const name = escapeHtml(row.name || "");
-  return row.slug ? `<a href="./player/${escapeHtml(row.slug)}.html">${name}</a>` : name;
+  // Bağlantı ancak İngilizce sayfa üretilmişse basılır; lider tablosunda
+  // adı geçen her oyuncunun İngilizce profili olmak zorunda değil.
+  if (!row.slug) return name;
+  const profile = playerUrls.enPlayerPagePath(row.slug);
+  return fs.existsSync(path.join(process.cwd(), profile))
+    ? `<a href="./player/${escapeHtml(playerUrls.slugFor(row.slug))}.html">${name}</a>`
+    : name;
 }
 
 function leagueLeaderRows(list, metric) {

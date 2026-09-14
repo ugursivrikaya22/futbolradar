@@ -100,7 +100,6 @@ function canonicalMatches(actual, relativePath) {
  */
 const MATCH_DUPLICATE_RES = [
   /^mac-raporu\/[^/]+\.html$/,
-  /^mac\/[a-z0-9-]+-\d{4}-\d{4}-r\d{2}\.html$/,
   /^[a-z0-9-]+-mac-analizi\.html$/
 ];
 
@@ -139,6 +138,15 @@ const crossCanonical = [];
 
 const titles = new Map();
 const descriptions = new Map();
+
+/** Hafta numaralı maç sayfası: `mac/…-2026-2027-r05.html`, `en/match/…` aynısı. */
+function isRoundAliasPage(relative) {
+  return /^(mac|en[\\/]match)[\\/][a-z0-9-]+-\d{4}-\d{4}-r\d{2}\.html$/.test(relative.replace(/\\/g, "/"));
+}
+
+/** Maç Merkezi'ne devredilmiş hafta sayfaları; aşağıda ayrıca doğrulanır. */
+const matchCentreAliases = [];
+
 const problems = {
   missingTitle: [],
   missingDescription: [],
@@ -179,19 +187,25 @@ for (const file of files) {
   // yazımlı bir takma addır, noindex'tir, sitemap'te yoktur ve doğru profile
   // işaret eder. Bu hata değil, doğru davranıştır.
   //
-  // TEK İSTİSNA: aynı maçın kopya adresleri. Bir karşılaşma üç yerde
-  // yayınlanıyor — tarih slug'lı `/mac/...` sayfası, sezon+tur numaralı
-  // `/mac/...-rNN.html` fikstür sayfası ve `/mac-raporu/...` maç sonu
-  // raporu (artı kök dizindeki eski `-mac-analizi` deseni). Üçü de aynı
-  // sorguyu hedefliyordu; üçü de indekslenebilir kaldığı sürece Google
-  // bunu kanibalizasyon okuyup üçünü birden geriye itiyor.
+  // İKİ İSTİSNA — ikisi de aynı maçın kopya adresleri, farklı aileler.
   //
-  // Doğru sinyal `noindex` DEĞİL: noindex kopyayı indeksten düşürür ama
-  // biriktirdiği otoriteyi hiçbir yere aktarmaz. Otoriteyi tek adrese
-  // toplayan şey, indekslenebilir kalan kopyanın çapraz canonical'ıdır.
-  // Bu yüzden kopya `index,follow` kalır ve canonical'ı hedefi gösterir;
-  // `scripts/unify-match-canonicals.mjs` bunu üretimden sonra tek geçişte
-  // yazar.
+  // (a) MAÇ MERKEZİ DEVRİ. Hafta numaralı maç sayfası
+  // (`mac/<ev>-<dep>-2026-2027-r05.html`, aynısı `en/match/` altında) maçın
+  // tarihi henüz atanmamışken üretilir ve o aşamada KENDİ adresi kanoniktir.
+  // Tarih onaylanıp kalıcı Maç Merkezi adresi açılınca aynı maç iki sayfada
+  // anlatılır; hafta sayfası kanonikliği Maç Merkezi'ne devreder, site
+  // haritasından düşer ama SİLİNMEZ (dış bağlantılar kırılmasın). Hedefin
+  // var olduğu, indekslenebilir olduğu ve takma adın haritadan düştüğü
+  // aşağıda ayrıca doğrulanır.
+  //
+  // (b) RAPOR VE ESKİ ANALİZ KOPYALARI. `mac-raporu/...` maç sonu raporu ve
+  // kök dizindeki eski `-mac-analizi` deseni de aynı sorguyu hedefliyordu;
+  // `scripts/unify-match-canonicals.mjs` bunları üretimden sonra tek geçişte
+  // tarih slug'lı `/mac/...` adresine bağlıyor.
+  //
+  // İkisinde de doğru sinyal `noindex` DEĞİL: noindex kopyayı indeksten
+  // düşürür ama biriktirdiği otoriteyi hiçbir yere aktarmaz. Otoriteyi tek
+  // adrese toplayan şey, indekslenebilir kalan kopyanın çapraz canonical'ıdır.
   //
   // Kural gevşetilmiyor, DARALTILIYOR: çapraz canonical yalnızca gerçekten
   // var olan ve KENDİ adresini gösteren bir `/mac/` sayfasına verilebilir.
@@ -200,7 +214,8 @@ for (const file of files) {
   if (indexable) {
     if (!canonical) problems.missingCanonical.push(relative);
     else if (!canonicalMatches(canonical, relative)) {
-      if (isMatchDuplicate(relative) && canonicalTargets.has(canonical)) {
+      if (isRoundAliasPage(relative)) matchCentreAliases.push({ relative, canonical });
+      else if (isMatchDuplicate(relative) && canonicalTargets.has(canonical)) {
         crossCanonical.push(`${relative} → ${canonical}`);
       } else {
         problems.canonicalMismatch.push(`${relative}: ${canonical}`);
@@ -425,6 +440,35 @@ assert.equal(problems.invalidJsonLd.length, 0, `ayrıştırılamayan JSON-LD: ${
 assert.equal(problems.invalidRobots.length, 0, `geçersiz robots yönergesi: ${summarize(problems.invalidRobots)}`);
 assert.equal(problems.noindexInSitemap.length, 0, `noindex sayfa sitemap'te: ${summarize(problems.noindexInSitemap)}`);
 assert.equal(problems.canonicalMismatch.length, 0, `canonical kendi adresini göstermiyor: ${summarize(problems.canonicalMismatch)}`);
+
+// MAÇ MERKEZİ DEVRİ — istisna ancak şu üç koşulda geçerlidir; yoksa devir
+// sayfayı sessizce indexten düşürür ve bunu kimse fark etmez.
+const aliasProblems = [];
+for (const { relative, canonical } of matchCentreAliases) {
+  if (!canonical.startsWith(`${DOMAIN}/`)) {
+    aliasProblems.push(`${relative}: site dışı canonical → ${canonical}`);
+    continue;
+  }
+  const targetRelative = canonical.slice(DOMAIN.length + 1);
+  const targetFile = path.join(root, targetRelative.endsWith(".html") ? targetRelative : `${targetRelative}.html`);
+  // 1) Hedef GERÇEKTEN var olmalı — 404'e canonical verilmez.
+  if (!fs.existsSync(targetFile)) {
+    aliasProblems.push(`${relative}: kanonik hedef yok → ${targetRelative}`);
+    continue;
+  }
+  // 2) Hedefin kendisi indexlenebilir olmalı — noindex bir sayfaya devretmek
+  //    iki sayfayı birden indexten düşürür.
+  const targetHtml = fs.readFileSync(targetFile, "utf8");
+  if (/noindex/i.test(metaContent(targetHtml, "robots") || "")) {
+    aliasProblems.push(`${relative}: kanonik hedef noindex → ${targetRelative}`);
+    continue;
+  }
+  // 3) Takma ad site haritasında KENDİ adresiyle yer almamalı.
+  if (sitemap && sitemap.includes(`<loc>${expectedCanonical(relative)}</loc>`)) {
+    aliasProblems.push(`${relative}: takma ad site haritasında`);
+  }
+}
+assert.equal(aliasProblems.length, 0, `Maç Merkezi devri hatalı: ${summarize(aliasProblems)}`);
 assert.equal(problems.missingDescription.length, 0, `açıklaması olmayan sayfa: ${summarize(problems.missingDescription)}`);
 assert.equal(problems.missingH1.length, 0, `H1'i olmayan sayfa: ${summarize(problems.missingH1)}`);
 

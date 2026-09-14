@@ -3,9 +3,10 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { spawn } = require('node:child_process');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const viewports = [{ width: 1440, height: 900 }, { width: 1366, height: 768 }, { width: 768, height: 1024 }, { width: 390, height: 844 }, { width: 360, height: 800 }];
+const viewports = [1440, 1366, 768, 430, 414, 390, 375, 360, 320].map(width => ({ width, height: width === 768 ? 1024 : 900 }));
 const base = process.env.AUDIT_BASE_URL || 'http://127.0.0.1:4187';
 const results = [];
+const retryCases = process.env.AUDIT_RETRY_REPORT ? JSON.parse(fs.readFileSync(process.env.AUDIT_RETRY_REPORT, "utf8")).results.filter(result => !result.passed) : null;
 const reportFile = process.env.AUDIT_REPORT || 'outputs/clickable/results.json';
 let server;
 let scenarioNumber = 0;
@@ -24,9 +25,9 @@ async function until(check, message, timeout = 5000) {
     server.stderr.on('data', chunk => fs.appendFileSync('outputs/clickable/preview-server.log', chunk));
     await until(async () => { try { return (await fetch(base + '/index.html')).ok; } catch { return false; } }, 'Preview failed to start', 30000);
   }
-  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : process.platform === 'win32' ? { channel: 'msedge' } : {}) });
+  const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE } : process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : process.platform === 'win32' ? { channel: 'msedge' } : {}) });
   try {
-    const queue = viewports.filter(v => !process.env.AUDIT_WIDTH || v.width === +process.env.AUDIT_WIDTH);
+    const queue = viewports.filter(v => !process.env.AUDIT_WIDTH || process.env.AUDIT_WIDTH.split(',').map(Number).includes(v.width));
     async function runViewport(viewport) {
       const touch = viewport.width <= 768;
       const context = await browser.newContext({ viewport, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce', serviceWorkers: 'block' });
@@ -87,9 +88,11 @@ async function until(check, message, timeout = 5000) {
         assert.ok(response.ok(), file + ' HTTP ' + response.status());
         await page.locator('main').waitFor();
         assert.ok((await page.locator('h1').first().innerText()).trim(), file + ': empty page');
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), file + ': horizontal page overflow');
       }
       async function test(name, run) {
         if (process.env.AUDIT_CASE && !name.includes(process.env.AUDIT_CASE)) return;
+        if (retryCases && !retryCases.some(result => result.viewport.width === viewport.width && result.name === name)) return;
         // Each flow owns a page; back navigation is still exercised within it.
         // Closing it releases decoded images and timers from previous flows.
         if (page) await page.close();
@@ -131,11 +134,12 @@ async function until(check, message, timeout = 5000) {
         await page.locator('main').waitFor();
         assert.ok((await page.locator('h1').first().innerText()).trim(), 'Empty destination');
         if (target.pathname.endsWith('/takim-detay.html')) {
+          await page.locator('[data-api-target="team-detail"]').scrollIntoViewIfNeeded();
           await page.locator('[data-api-target="team-detail"][data-state="ready"] [data-card="team-detail"]').waitFor();
           const requested = target.searchParams.get('team');
           if (requested) assert.ok((await page.locator('.td-hero').innerText()).includes(requested), 'Wrong team detail content');
         }
-        if (/\/(oyuncular|en\/player)\//.test(target.pathname)) {
+        if (/\/(oyuncular|futbolcu|en\/player)\//.test(target.pathname)) {
           assert.ok((await page.locator('main').innerText()).length > 200, 'Player profile has no substantive content');
         }
         if (target.hash) await page.locator('[id=' + JSON.stringify(decodeURIComponent(target.hash.slice(1))) + ']').waitFor();
@@ -232,7 +236,17 @@ async function until(check, message, timeout = 5000) {
         await test(locale + ' player cards open profiles', async () => {
           await open(en ? 'en/player-radar.html' : 'oyuncu-radari.html');
           if (!en) await page.locator('[data-api-target="players-page"][data-state="ready"]').waitFor();
-          await navigate(page.locator('.player-card a[href*="player/"], .player-detail-card a[href*="oyuncular/"], .player-card a[href*="oyuncular/"]').first());
+          // Profil adresi iki biçimde olabilir: tam adı bilinen oyuncu
+          // `futbolcu/<tam-ad>`, bilinmeyen `oyuncular/<id>`. Seçici ikisini
+          // de kapsar; bağlantının DOĞRUDAN kanonik adrese gitmesi
+          // (yönlendirmeden geçmemesi) `navigate` içinde denetleniyor.
+          await navigate(page.locator([
+            '.player-card a[href*="player/"]',
+            '.player-detail-card a[href*="oyuncular/"]',
+            '.player-card a[href*="oyuncular/"]',
+            '.player-detail-card a[href*="futbolcu/"]',
+            '.player-card a[href*="futbolcu/"]'
+          ].join(', ')).first());
         });
         await test(locale + ' primary navigation routes and footer', async () => {
           await open(home);
@@ -403,6 +417,118 @@ async function until(check, message, timeout = 5000) {
           }
         });
       }
+      await test('mobile parity: visible actions and outside menu close', async () => {
+        await open('index.html');
+        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor();
+        for (const selector of ['.news-ticker-all', '.fixture-card-action', '.fixture-card-quicklinks a']) {
+          const target = page.locator(selector).first();
+          assert.ok(await target.isVisible(), selector + ' hidden');
+          if (touch) assert.ok((await target.boundingBox()).height >= 44, selector + ' small touch target');
+          await navigate(target);
+        }
+        if (viewport.width < 1366) {
+          await click(page.locator('.nav-toggle'));
+          assert.equal(await page.locator('.nav-toggle').getAttribute('aria-expanded'), 'true');
+          await page.touchscreen.tap(viewport.width - 5, viewport.height - 100);
+          await until(async () => await page.locator('.nav-toggle').getAttribute('aria-expanded') === 'false', 'Outside tap did not close menu');
+        }
+      });
+      await test('team hubs and broadcast pages retain mobile content', async () => {
+        for (const file of ['galatasaray-maclari.html', 'fenerbahce-maclari.html', 'besiktas-maclari.html', 'trabzonspor-maclari.html', 'bugunun-maclari-hangi-kanalda.html']) {
+          await open(file);
+          const links = page.locator('main a[href]').filter({ visible: true });
+          assert.ok(await links.count(), file + ' has no links');
+          await navigate(links.first());
+        }
+      });
+      await test('match analysis tabs and restored table columns', async () => {
+        const analyses = JSON.parse(fs.readFileSync('data/match-analyses.json', 'utf8'));
+        const record = analyses.find(item => item.fixtureId && item.homeContext && item.awayContext && item.prediction);
+        assert.ok(record, 'No persisted match analysis to exercise');
+        await open('mac-detay.html?id=' + encodeURIComponent(record.fixtureId));
+        await page.locator('[data-api-target="match-analysis"]').scrollIntoViewIfNeeded();
+        const tabs = page.locator('.match-analysis-tab');
+        await tabs.first().waitFor();
+        for (let i = 0; i < await tabs.count(); i++) {
+          const tab = tabs.nth(i);
+          await click(tab);
+          assert.equal(await tab.getAttribute('aria-selected'), 'true');
+          assert.ok(await page.locator('#' + await tab.getAttribute('aria-controls')).isVisible());
+        }
+        await open('momentum.html');
+        const cells = page.locator('.table-row.header > *');
+        assert.equal(await cells.count(), 6);
+        for (let i = 0; i < 6; i++) assert.ok(await cells.nth(i).isVisible(), 'Hidden momentum column ' + i);
+      });
+      await test('ticker links, logo and menu stacking', async () => {
+        await open('index.html');
+        await navigate(page.locator('.news-ticker-group:not([aria-hidden="true"]) .news-ticker-item:not([target="_blank"])').first());
+        await open('haberler.html');
+        const logo = page.locator('header .brand').first();
+        if (touch) { const box = await logo.boundingBox(); assert.ok(box.width >= 44 && box.height >= 44, 'Logo touch target is too small'); }
+        await navigate(logo);
+        if (viewport.width < 1366) {
+          await click(page.locator('.nav-toggle'));
+          const menu = page.locator('.nav-menu');
+          await menu.evaluate(e => { e.scrollTop = e.scrollHeight; });
+          const last = menu.locator('a').last();
+          await last.scrollIntoViewIfNeeded();
+          assert.ok(await last.evaluate(e => { const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }), 'Menu item covered by floating content');
+          await click(page.locator('.nav-toggle'));
+          assert.equal(await page.locator('.nav-toggle').getAttribute('aria-expanded'), 'false');
+        }
+      });
+      if (touch) await test('favourite team selection and full summary labels', async () => {
+        await open('index.html');
+        const pick = page.locator('.favourite-team__pick').first();
+        await pick.waitFor();
+        const name = await pick.locator('span').innerText();
+        await click(pick);
+        await until(async () => (await page.locator('.favourite-team__name').innerText()).includes(name), 'Favourite team selection is inert');
+        const change = page.locator('.favourite-team__change');
+        assert.ok((await change.boundingBox()).height >= 44);
+        await click(change);
+        await pick.waitFor();
+        for (const selector of ['.favourite-team__pick span', '.now-football__value']) {
+          const labels = page.locator(selector);
+          for (let i = 0; i < await labels.count(); i++) assert.ok(await labels.nth(i).evaluate(e => e.scrollWidth <= e.clientWidth + 1), selector + ' clips its text');
+        }
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1));
+      });
+      if (touch) await test('mobile summary follows main card and opens match detail', async () => {
+        await open('index.html');
+        const featured = page.locator('[data-featured-turkish="true"]').first();
+        const summary = page.locator('.now-football__row').first();
+        await summary.waitFor();
+        await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
+        const score = featured.locator('.featured-fixture-score b');
+        const status = featured.locator('.featured-fixture-score span');
+        const original = [await score.innerText(), await status.innerText()];
+        // Controlled DOM update verifies that the summary observes the same
+        // source card; these values are never written to an API or data file.
+        try {
+          await score.evaluate(e => { e.textContent = '2 - 1'; });
+          await status.evaluate(e => { e.textContent = "67'"; });
+          await until(async () => (await summary.locator('.now-football__meta').innerText()) === "2 - 1 · 67'", 'Summary score/minute did not follow the main card');
+        } finally {
+          await score.evaluate((e, text) => { e.textContent = text; }, original[0]);
+          await status.evaluate((e, text) => { e.textContent = text; }, original[1]);
+        }
+        await navigate(summary);
+      });
+      await test('player profile comparison preserves the selected player', async () => {
+        await open('oyuncular/mauro-icardi.html');
+        const compare = page.locator('.p360-compare-button');
+        await click(compare);
+        await page.waitForURL(url => url.pathname.endsWith('/oyuncu-karsilastir.html'), { waitUntil: 'domcontentloaded' });
+        const first = page.locator('[data-compare-player]').first();
+        await until(async () => /Icardi/i.test(await first.locator('option:checked').innerText()), 'Profile comparison lost the selected player', 15000);
+        await page.locator('[data-api-target="player-compare"][data-state="ready"]').waitFor();
+        await page.goBack({ waitUntil: 'domcontentloaded' });
+        const peer = page.locator('.p360-peer').first();
+        if (touch) assert.ok((await peer.boundingBox()).height >= 44, 'Player comparison link has a small touch target');
+        await navigate(peer);
+      });
       await test('player quick links remain above the hero', async () => {
         await open('oyuncu-radari.html');
         await navigate(page.locator('.player-quick-links a').first());
@@ -491,17 +617,32 @@ async function until(check, message, timeout = 5000) {
         const id = await share.getAttribute('data-share-player');
         await click(share);
         await until(() => page.evaluate(() => Boolean(window.__copiedText)), 'Share button did nothing');
-        assert.equal(new URL(await page.evaluate(() => window.__copiedText)).pathname, '/oyuncular/' + encodeURIComponent(id) + '.html');
+        // PAYLAŞILAN ADRES KANONİK OLMALI — sabit bir yol DEĞİL.
+        //
+        // Beklenti "/oyuncular/<id>.html" diye sabitti; oyuncu tam isimli
+        // adrese taşınınca doğru davranış (kanonik adresi paylaşmak) hatalı
+        // sayıldı. Kilitlenen şey: kopyalanan adres, o oyuncunun sayfasının
+        // canonical etiketiyle BİREBİR aynı olmalı.
+        const sharedPath = new URL(await page.evaluate(() => window.__copiedText)).pathname;
+        const profileHref = await page.evaluate((playerId) => {
+          const link = document.querySelector('[data-player="' + playerId + '"] a[href*="futbolcu/"], [data-player="' + playerId + '"] a[href*="oyuncular/"]');
+          return link ? link.getAttribute('href') : null;
+        }, id);
+        assert.ok(profileHref, 'Player card has no profile link to compare the share URL against');
+        const canonicalPath = new URL(profileHref, page.url()).pathname.replace(/\.html$/, '');
+        assert.equal(sharedPath.replace(/\.html$/, ''), canonicalPath);
         await page.evaluate(() => { window.__denyCopy = true; });
         await click(share);
         await page.locator('[data-share-fallback]').waitFor();
-        assert.ok((await page.locator('[data-share-fallback] textarea').inputValue()).includes(id));
+        // Yedek kutudaki adres de aynı sayfayı göstermeli; kimliğin kendisi
+        // adreste geçmeyebilir (tam isimli slug'da geçmiyor).
+        assert.ok((await page.locator('[data-share-fallback] textarea').inputValue()).includes(canonicalPath));
         await page.keyboard.press('Escape');
         await page.locator('[data-share-fallback]').waitFor({ state: 'detached' });
       });
       await context.close();
     }
-    const workers = process.platform === 'win32' ? [0] : [0, 1];
+    const workers = Array.from({ length: Number(process.env.AUDIT_WORKERS || (process.platform === 'win32' ? 1 : 2)) }, (_, i) => i);
     await Promise.all(workers.map(async () => {
       while (queue.length) await runViewport(queue.shift());
     }));

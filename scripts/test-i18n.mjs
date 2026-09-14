@@ -21,6 +21,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const {
   DOMAIN,
   LOCALES,
@@ -251,7 +252,20 @@ for (const route of ROUTES) {
 
 // --- 7. Türkçe sayfalarda dil kutusu var mı --------------------------------
 {
-  const samples = ["index.html", "takimlar.html", "oyuncular/mauro-icardi.html", "404.html"];
+  // OYUNCU SAYFASI SABİT BİR YOLDA DEĞİL. Tam adı bilinen oyuncu
+  // `futbolcu/<tam-ad>.html`, bilinmeyen `oyuncular/<id>.html` konumunda;
+  // eski konumdaki dosya yönlendirme sayfası ve dil kutusu taşımaz.
+  // Örnek sayfa bu yüzden adres çözücüden okunur.
+  const playerUrls = createPlayerUrlResolver((() => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
+    } catch {
+      return { entries: [], aliases: [] };
+    }
+  })());
+  const deepPlayerPage = playerUrls.playerPagePath("mauro-icardi");
+
+  const samples = ["index.html", "takimlar.html", deepPlayerPage, "404.html"];
   for (const sample of samples) {
     const html = read(sample);
     if (!html) continue;
@@ -259,7 +273,7 @@ for (const route of ROUTES) {
   }
 
   // Karşılığı olmayan derin sayfa İngilizce ana sayfaya düşmeli, 404'e değil.
-  const deep = read("oyuncular/mauro-icardi.html");
+  const deep = read(deepPlayerPage);
   if (deep) {
     check("karşılığı olmayan sayfa /en/ girişine düşer",
       deep.includes('class="lang-switch" href="../en/index.html"'),

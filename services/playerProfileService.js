@@ -38,6 +38,43 @@ const {
   SAFE_FIELDS
 } = require("./cardCredibility");
 
+const { createPlayerUrlResolver } = require("./playerUrl");
+
+/**
+ * BENZER OYUNCU BAĞLANTILARI ADRESİ VERİDEN ALIR.
+ *
+ * Görünüm katmanı (player-profile.js) hem sunucuda hem tarayıcıda çalışıyor
+ * ve tarayıcıda adres tablosunu okuyamaz. Bu yüzden çözülmüş adres profil
+ * verisine gömülür: kart, kimlikten yol türetmek yerine gelen `href`i basar.
+ * Kimlikten türetme, oyuncu tam isimli adrese taşındığı anda 404 üretiyordu.
+ *
+ * Tablo bir kez okunur; yoksa adresler eski biçimde kalır (bozulmaz).
+ */
+let cachedResolver = null;
+function playerUrlResolver() {
+  if (cachedResolver) return cachedResolver;
+  let table = { entries: [], aliases: [] };
+  try {
+    table = require("../data/player-url-slugs.json");
+  } catch {
+    // Tablo henüz üretilmemiş: adresler eski biçimde kalır.
+  }
+  cachedResolver = createPlayerUrlResolver(table);
+  return cachedResolver;
+}
+
+/** Eş listesindeki her kayda site köküne göre adres ekler. */
+function withResolvedHrefs(block) {
+  if (!block || !Array.isArray(block.items)) return block;
+  const resolver = playerUrlResolver();
+  return {
+    ...block,
+    items: block.items.map((item) => (item && item.id
+      ? { ...item, href: resolver.playerPagePath(item.id) }
+      : item))
+  };
+}
+
 const PROFILE_VERSION = "futbolradar-player-profile-v1";
 const DEFAULT_RECENT_WINDOW = 5;
 const MAX_RECENT_WINDOW = 10;
@@ -478,8 +515,8 @@ function buildPlayerProfile(input) {
     analysis,
     strengths,
     weaknesses,
-    similarPlayers: buildSimilarPlayers(player, pool, settings.similarLimit || 4),
-    alternatives: buildAlternatives(player, pool, settings.alternativeLimit || 4),
+    similarPlayers: withResolvedHrefs(buildSimilarPlayers(player, pool, settings.similarLimit || 4)),
+    alternatives: withResolvedHrefs(buildAlternatives(player, pool, settings.alternativeLimit || 4)),
     rumors: buildTransferRumors(player, settings.transfers),
     transferHistory: Array.isArray(player.transferHistory) ? player.transferHistory : [],
     formerTeams: Array.isArray(player.formerTeams) ? player.formerTeams : [],

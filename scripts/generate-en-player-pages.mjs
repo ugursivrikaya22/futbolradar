@@ -23,6 +23,12 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { sectionHead } from "./lib/matchCards.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
+import {
+  player360Description,
+  player360Person,
+  player360Title,
+  renderPlayer360
+} from "./lib/player360.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -34,10 +40,13 @@ const {
   t,
   writeDynamicRoutePairs
 } = require("../services/i18n.js");
-const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
+const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto } = require("../services/playerPhotoService.js");
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { slug: teamSlug } = require("../services/superLigTeams.js");
+const { buildPlayer360 } = require("../services/player360Service.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
+const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
 
 const root = process.cwd();
 const LOCALE = "en";
@@ -45,8 +54,96 @@ const BASE = "../../";
 const OUT_DIR = path.join(root, "en", "player");
 
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
+
+/**
+ * FUTBOLCU 360 GİRDİLERİ — TR tarafıyla AYNI dosyalar.
+ *
+ * İki dil aynı kaynaktan beslenir; İngilizce sayfa için ikinci bir veri
+ * hattı kurulmaz. Eksik dosya derlemeyi düşürmez, ilgili bölüm boş kalır.
+ */
+function readJson(relativePath, fallback) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, relativePath), "utf8"));
+  } catch (error) {
+    console.warn(`[futbolradar:player360:en] ${relativePath} okunamadı (${error.code || error.message})`);
+    return fallback;
+  }
+}
+
+const { publishableNews } = require("../services/newsFeed.js");
+
+/** Yalnızca üretilmiş haber sayfalarına bağlanılır — bkz. TR üretici. */
+function generatedSlugs(directory) {
+  try {
+    return new Set(fs.readdirSync(path.join(root, directory))
+      .filter((name) => name.endsWith(".html"))
+      .map((name) => name.slice(0, -5)));
+  } catch {
+    return new Set();
+  }
+}
+
+/**
+ * İNGİLİZCE TARAF DA TAM İSİMLİ ADRESE GEÇİYOR.
+ *
+ * Türkçe sayfa `/futbolcu/victor-osimhen`e taşınırken İngilizcesi
+ * `/en/player/v-osimhen-galatasaray` kalsaydı iki sorun doğardı: hreflang
+ * çifti kırılır (TR tarafı artık o yolda değil) ve aynı oyuncu iki dilde
+ * iki ayrı adlandırma mantığı taşırdı. Slug ortak tablodan gelir.
+ */
+const playerUrls = createPlayerUrlResolver(readJson("data/player-url-slugs.json", { entries: [], aliases: [] }));
+
+/** Kopya kayıtlar İngilizce sayfa almaz: adres kanonik kayda ait. */
+function enPlayerSlug(player) {
+  const table = playerUrls.playerPagePath(player.id);
+  return table.replace(/^.*\//, "").replace(/\.html$/, "");
+}
+
+const newsSlugs = generatedSlugs("haber");
+const newsItems = publishableNews(readJson("data/news.json", []));
+const matchRecords = readJson("data/matches.json", []);
+const archiveRecords = readJson("data/historical-match-archive.json", { records: [] }).records || [];
+const squadStatuses = readJson("data/squad-statuses.json", { teams: [] });
+const confirmedTransfers = readJson("data/transfers.json", [])
+  .filter((transfer) => transfer && transfer.status === "confirmed");
+
+/**
+ * İNGİLİZCE ROTA HARİTASI.
+ *
+ * İngilizce sayfa İngilizce sayfalara bağlanır: `en/team/...`,
+ * `en/top-scorers.html`. İki istisna kasıtlı:
+ *
+ *   • Maç raporu — o rotanın İngilizce karşılığı bu kimlikle üretilmiyor,
+ *     bu yüzden `null`: satır bağlantısız kalır, kırık link üretilmez.
+ *   • Haber — haber metinleri yalnızca Türkçe yayımlanıyor. Bağlantı
+ *     Türkçe sayfaya gider; İngilizce bir kopya UYDURULMAZ.
+ */
+const EN_ROUTES = {
+  teamHref: (teamName) => {
+    const team = teams.find((row) => String(row.name || "").toLowerCase() === String(teamName || "").toLowerCase());
+    return team ? `en/team/${teamSlug(team.name)}.html` : null;
+  },
+  matchReportHref: () => null,
+  newsHref: (slug) => (slug && newsSlugs.has(slug) ? `haber/${slug}.html` : null),
+  comparisonHref: (slug) => `karsilastirma/${slug}.html`,
+  comparePickerHref: (playerId) => `oyuncu-karsilastir.html?player=${encodeURIComponent(playerId)}`,
+  topScorers: "en/top-scorers.html",
+  topAssists: "en/top-assists.html",
+  transferRadar: "en/transfer-radar.html",
+  matchCentre: "en/match-centre.html",
+  playerRadar: "en/player-radar.html"
+};
 const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
-const players = getPlayers(rawPlayers);
+const players = annotateDuplicates(getPlayers(rawPlayers));
+
+/**
+ * Kıyas havuzu TR tarafıyla AYNI: yalnızca kanonik kayıtlar. Kıyas
+ * sayfalarını üreten script de bu havuzu kullanıyor; farklı havuzlar
+ * üretilmemiş sayfalara bağlantı demek.
+ */
+const comparablePlayers = players.filter((player) => !player.isDuplicate);
+/** Kıyas adresi TR tarafıyla aynı kaynaktan; çözücü TAM listeyle kurulur. */
+const slugForPair = require("../services/playerComparisonPairs.js").createComparisonSlugResolver(players);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -75,46 +172,47 @@ function avatarHtml(player) {
   return `<img class="player-avatar profile-avatar" src="${escapeHtml(photo.url)}" alt="${escapeHtml(alt)}" width="96" height="96" loading="lazy" decoding="async">`;
 }
 
-function statRow(label_, value) {
-  if (value === null || value === undefined || value === "") return "";
-  return `<span>${escapeHtml(label_)} <b>${escapeHtml(value)}</b></span>`;
-}
-
 function pageHtml(player) {
   const view = publicPlayerView(player);
   const fields = view.fields || {};
-  const slugValue = playerSlug(player.id);
-  const trPath = `oyuncular/${slugValue}.html`;
+  const slugValue = enPlayerSlug(player);
+  // Türkçe karşılık tek çözücüden: taşınan oyuncuda `futbolcu/<tam-ad>`,
+  // taşınmayanda `oyuncular/<id>`. Sabit "oyuncular/" yazmak, hreflang
+  // çiftinin bir ucunu yönlendirme sayfasına bağlıyordu.
+  const trPath = playerUrls.playerPagePath(player.id);
   const enPath = `en/player/${slugValue}.html`;
   const canonical = absoluteUrl(enPath);
   const team = fields.currentTeam || fields.team || null;
   const position = player.position || "";
 
-  const title = `${player.name}${team ? ` (${team})` : ""} — Profile, Stats & Position | FutbolRadar`;
-  const description = `${player.name}${position ? `, ${position}` : ""}${team ? ` at ${team}` : ""}. Verified profile, season statistics and squad status on FutbolRadar.`;
+  // Futbolcu 360 modeli. Türkçe üreticiyle AYNI servis, aynı kapı; tek
+  // fark rota haritası ve sözlük.
+  const model = buildPlayer360({
+    player,
+    players: comparablePlayers,
+    credibility: view,
+    transfers: confirmedTransfers,
+    news: newsItems,
+    matches: matchRecords,
+    archive: archiveRecords,
+    squadStatuses,
+    basePrefix: BASE,
+    routes: EN_ROUTES,
+    displayName: playerUrls.playerDisplayName(player),
+    comparisonSlugFor: slugForPair
+  });
+
+  const title = player360Title(model, { locale: LOCALE });
+  const description = player360Description(model, { locale: LOCALE });
 
   const teamLinkHref = team ? teamHref(team) : null;
   const teamHtml = team
     ? (teamLinkHref ? `<a href="${escapeHtml(teamLinkHref)}">${escapeHtml(team)}</a>` : escapeHtml(team))
     : "Club not yet confirmed";
 
-  const bioStats = [
-    statRow("Position", position),
-    statRow("Nationality", player.nationality),
-    statRow("Age", player.computedAge ?? player.age),
-    statRow("Height", player.height),
-    statRow("Preferred foot", player.preferredFoot)
-  ].filter(Boolean).join("");
-
-  const seasonStats = [
-    statRow("Appearances", fields.appearances),
-    statRow("Minutes", fields.minutes ?? fields.minutesPlayed),
-    statRow("Goals", fields.goals),
-    statRow("Assists", fields.assists),
-    statRow("Yellow cards", fields.yellowCards),
-    statRow("Red cards", fields.redCards)
-  ].filter(Boolean).join("");
-
+  // Kimlik ve sezon blokları artık Futbolcu 360 modülünden geliyor; buradaki
+  // ikinci kopyaları kaldırıldı: aynı sayıyı iki yerde üretmek, birinin
+  // kapıyı atlamasıyla biten en sık hata.
   const rating = fields.overallRating || fields.aiRating || fields.rating || null;
   const marketValue = fields.marketValue || null;
   const number = fields.number ?? null;
@@ -122,15 +220,9 @@ function pageHtml(player) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "Person",
-        "@id": canonical,
-        name: player.name,
-        url: canonical,
-        ...(team ? { affiliation: { "@type": "SportsTeam", name: team } } : {}),
-        ...(position ? { jobTitle: position } : {}),
-        ...(player.nationality ? { nationality: player.nationality } : {})
-      },
+      // Görünür bölümlerle aynı modelden. `@id` korunur: İngilizce sayfa
+      // kendi kanonik adresiyle tanımlanır.
+      { ...player360Person(model, canonical, description), "@id": canonical },
       {
         "@type": "BreadcrumbList",
         itemListElement: [
@@ -177,26 +269,18 @@ function pageHtml(player) {
             ${avatarHtml(player)}
             <div>
               <span class="eyebrow">${teamHtml}${number !== null ? ` · #${escapeHtml(number)}` : ""}</span>
-              <h1>${escapeHtml(player.name)}</h1>
+              <h1>${escapeHtml(model.identity.name)}</h1>
               <p class="lead">${escapeHtml(position || "Position not yet confirmed")}</p>
             </div>
           </div>
           ${rating ? `<span class="hero-meta">Rating <b>${escapeHtml(rating)}</b></span>` : ""}
         </div>
       </section>
-      <section class="container section" aria-labelledby="en-player-bio-title">
-        ${sectionHead({ locale: LOCALE, kicker: "Profile", titleId: "en-player-bio-title", title: "Player information" })}
-        <div class="metric-grid">${bioStats || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
-      </section>
-      ${seasonStats ? `<section class="container section" aria-labelledby="en-player-stats-title">
-        ${sectionHead({ locale: LOCALE, kicker: "Statistics", titleId: "en-player-stats-title", title: "Current season" })}
-        <div class="metric-grid">${seasonStats}</div>
-      </section>` : ""}
+      ${renderPlayer360(model, { locale: LOCALE })}
       ${marketValue ? `<section class="container section" aria-label="Market value"><p class="muted-copy">Estimated market value: <b>${escapeHtml(marketValue)}</b></p></section>` : ""}
       <section class="container section" aria-label="Explore more">
         ${sectionHead({ locale: LOCALE, kicker: "FutbolRadar", titleId: "en-player-links-title", title: "Explore more" })}
         <div class="trend-link-grid">
-          ${teamLinkHref ? `<a href="${escapeHtml(teamLinkHref)}"><span>Club</span><strong>${escapeHtml(team)}</strong><p>Fixtures, results and full squad.</p></a>` : ""}
           <a href="../standings.html"><span>Table</span><strong>Süper Lig standings</strong><p>Current league position.</p></a>
           <a href="../teams.html"><span>Clubs</span><strong>All Süper Lig teams</strong><p>Every club with position and form.</p></a>
         </div>
@@ -215,7 +299,9 @@ function pageHtml(player) {
   return { html, trPath, enPath, canonical };
 }
 
-const eligible = players.filter((player) => publicPlayerView(player).verified);
+// Kopya kayıt İngilizce sayfa üretmez — kanonik kaydınki zaten var.
+const eligible = players.filter((player) =>
+  publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id);
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;
@@ -235,6 +321,22 @@ for (const player of eligible) {
   sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <lastmod>${String(player.lastVerifiedAt || player.lastSyncedAt || "").slice(0, 10)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
 }
 
+/**
+ * ESKİ KOŞULARDAN KALAN SAYFALARI BUDA.
+ *
+ * Üretici bugüne kadar yalnızca YAZIYORDU, hiç silmiyordu: yayın kapısından
+ * düşen ya da adresi değişen oyuncunun eski dosyası dizinde kalıyor, site
+ * haritasına girmediği için sessizce "öksüz" bir sayfa olarak yaşıyordu.
+ * Dizin artık güncel veriyi birebir yansıtır.
+ */
+const expectedFiles = new Set(pairs.map((pair) => path.basename(pair.en)));
+let pruned = 0;
+for (const file of fs.readdirSync(OUT_DIR)) {
+  if (!file.endsWith(".html") || expectedFiles.has(file)) continue;
+  fs.rmSync(path.join(OUT_DIR, file));
+  pruned += 1;
+}
+
 const registered = writeDynamicRoutePairs("player", pairs);
 
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
@@ -247,3 +349,4 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
 console.log(`English player pages: ${written} written, ${eligible.length - written} unchanged (${eligible.length} verified players).`);
 console.log(`English player pages: ${skipped} unverified players skipped (no thin/unconfirmed EN profile).`);
 console.log(`English player pages: ${registered} TR↔EN pairs registered (dynamic route map).`);
+console.log(`English player pages: ${pruned} stale file(s) pruned.`);

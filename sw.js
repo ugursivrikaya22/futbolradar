@@ -163,6 +163,10 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (TRACKED_API_PATHS.has(url.pathname)) {
+    if (request.cache === "no-store") {
+      event.respondWith(fetch(request));
+      return;
+    }
     event.respondWith((async () => {
       try {
         return await networkFirst(request, API_CACHE, 3000);

@@ -42,6 +42,18 @@ const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureServi
 const { sameClub, slug: teamSlug } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
+/**
+ * Oyuncu adresleri tek çözücüden okunur. Kimlikten yol türetmek, oyuncu
+ * tam isimli adrese taşındığı anda var olmayan bir dosyaya işaret ediyor.
+ */
+const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(process.cwd(), "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
 const seoRegistryPages = loadRegistry().pages;
@@ -123,7 +135,14 @@ function keyPlayersHtml(name) {
   }
   return `<ul class="match-key-player-list">${selected.map((player) => {
     const rating = player.overallRating || player.aiRating || player.rating || null;
-    return `<li><a href="../player/${escapeHtml(playerSlug(player.id))}.html">${escapeHtml(player.name)}</a>${rating ? `<span>Rating ${escapeHtml(rating)}</span>` : ""}</li>`;
+    // HEDEFİ OLMAYAN BAĞLANTI BASILMAZ: İngilizce profil yalnızca yayın
+    // kapısından geçen oyuncular için üretiliyor.
+    const profile = playerUrls.enPlayerPagePath(player.id);
+    const label = `${escapeHtml(player.name)}`;
+    const cell = fs.existsSync(path.join(root, profile))
+      ? `<a href="../player/${escapeHtml(playerUrls.slugFor(player.id))}.html">${label}</a>`
+      : label;
+    return `<li>${cell}${rating ? `<span>Rating ${escapeHtml(rating)}</span>` : ""}</li>`;
   }).join("")}</ul>`;
 }
 
@@ -154,11 +173,32 @@ function radarCardEn(name, radar) {
   </article>`;
 }
 
+/**
+ * MATCH CENTRE HAND-OFF — TR tarafının aynası (bkz. generate-match-pages.mjs
+ * `matchCentreSlug`). Hafta numaralı adres tarih atanmadan önce üretilir;
+ * maçın tarihi onaylanıp kalıcı Maç Merkezi adresi açılınca bu sayfa takma
+ * ada dönüşür: dosya yerinde kalır ama canonical, og:url ve SportsEvent
+ * kimliği Maç Merkezi'ni gösterir ve sayfa site haritasından düşer.
+ *
+ * Sicilde kayıt yoksa null döner — olmayan adrese canonical verilmez.
+ */
+function matchCentrePath(match) {
+  if (!match || !match.kickoff) return null;
+  return enPathForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }, seoRegistryPages) || null;
+}
+
 /** Permanent match page (kick-off, channel, live score, result) when registered. */
 function liveCentreCard(match) {
-  const enPath = match.kickoff ? enPathForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }, seoRegistryPages) : null;
+  const enPath = matchCentrePath(match);
   if (!enPath) return "";
   return `<a class="match-related-card" href="${BASE}${escapeHtml(enPath)}"><span>Match centre</span><strong>Kick-off, TV channel &amp; live score</strong><p>Kick-off time, broadcaster, line-ups and the result on one permanent page.</p></a>`;
+}
+
+/** Single-line hand-off strip at the top of an aliased page. */
+function centreHandoffBanner(match) {
+  const enPath = matchCentrePath(match);
+  if (!enPath) return "";
+  return `<p class="match-centre-handoff"><a href="${BASE}${escapeHtml(enPath)}">${escapeHtml(`${match.homeTeam} vs ${match.awayTeam}`)} match centre: kick-off, TV channel, live score and result →</a></p>`;
 }
 
 function shortDateLabel(value, locale) {
@@ -169,7 +209,10 @@ function pageHtml(match) {
   const slugValue = pageSlug(match);
   const trPath = `mac/${slugValue}.html`;
   const enPath = `en/match/${slugValue}.html`;
-  const canonical = absoluteUrl(enPath);
+  const selfUrl = absoluteUrl(enPath);
+  const centrePath = matchCentrePath(match);
+  const canonical = centrePath ? absoluteUrl(centrePath) : selfUrl;
+  const isCentreAlias = canonical !== selfUrl;
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
   const competition = competitionLabel(match.league, LOCALE);
 
@@ -198,7 +241,10 @@ function pageHtml(match) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      ...((match.kickoff || (finalResult && finalResult.kickoff)) ? [{
+      // Maç Merkezi'ne devredilmiş sayfada SportsEvent yazılmaz: olayın
+      // kimliği kanonik adreste yaşıyor ve canlı durumla orada güncelleniyor.
+      // İkinci düğüm aynı gerçek olayı iki adrese bağlardı.
+      ...((!isCentreAlias && (match.kickoff || (finalResult && finalResult.kickoff))) ? [{
         "@type": "SportsEvent",
         name: finalResult
           ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam}`
@@ -296,6 +342,7 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
     ${siteHeader({ base: BASE, locale: LOCALE, altHref: null })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${BASE}en/index.html">${escapeHtml(label("breadcrumb.home"))}</a><span>/</span><a href="${BASE}en/todays-matches.html">${escapeHtml(label("nav.todayMatches"))}</a><span>/</span><span>${escapeHtml(match.homeTeam)} vs ${escapeHtml(match.awayTeam)}</span></nav>
+      ${centreHandoffBanner(match)}
 ${body}
     </main>
     ${siteFooter({ base: BASE, locale: LOCALE })}
@@ -304,7 +351,7 @@ ${body}
 </html>
 `;
 
-  return { html, trPath, enPath, canonical, lastmod: String((match.freshness && (match.freshness.verifiedAt || match.freshness.fetchedAt)) || fixtures.lastVerifiedAt || "").slice(0, 10) };
+  return { html, trPath, enPath, canonical, selfUrl, isCentreAlias, lastmod: String((match.freshness && (match.freshness.verifiedAt || match.freshness.fetchedAt)) || fixtures.lastVerifiedAt || "").slice(0, 10) };
 }
 
 const matches = flattenFixtures();
@@ -322,7 +369,10 @@ for (const match of matches) {
     written += 1;
   }
   pairs.push({ tr: result.trPath, en: result.enPath });
-  sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <lastmod>${result.lastmod || fixtures.lastVerifiedAt || ""}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
+  // Takma ada dönüşmüş sayfa haritaya yazılmaz: kendi adresi kanonik değil,
+  // kanonik adresi ise zaten generate-match-seo-pages.mjs listeliyor.
+  if (result.isCentreAlias) continue;
+  sitemapEntries.push(`  <url>\n    <loc>${result.selfUrl}</loc>\n    <lastmod>${result.lastmod || fixtures.lastVerifiedAt || ""}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
 }
 
 const registered = writeDynamicRoutePairs("match", pairs);

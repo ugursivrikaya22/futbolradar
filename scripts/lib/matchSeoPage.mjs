@@ -11,6 +11,8 @@
  * veri kaynağı ve kural ikisinde de birebir aynıdır (TR'nin göstermediği
  * veriyi EN de göstermez).
  */
+import fs from "node:fs";
+import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -19,6 +21,31 @@ const { canonicalStatus, finishType, istanbulDay } = require("../../services/mat
 const { sameClub } = require("../../services/superLigTeams.js");
 const { publicPlayerView } = require("../../services/cardCredibility.js");
 const { slug: playerSlug } = require("../../services/playerService.js");
+
+/**
+ * Oyuncu adresleri tek çözücüden. Maç SEO sayfaları hem Türkçe hem
+ * İngilizce bağlantı basıyor ve ikisi de kimlikten türetiliyordu; oyuncu
+ * tam isimli adrese taşındığı anda iki dilde de kırık link oluyordu.
+ */
+const playerUrls = require("../../services/playerUrl.js").createPlayerUrlResolver((() => {
+  try {
+    return require("../../data/player-url-slugs.json");
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})());
+
+/**
+ * Maç sayfasından oyuncu sayfasına giden yol, dile göre.
+ *
+ * Hedef üretilmemişse `null` döner: İngilizce profil yalnızca yayın
+ * kapısından geçen oyuncular için var ve olmayan bir sayfaya bağlantı
+ * atmak 404 demek.
+ */
+function playerPageHref(base, locale, id) {
+  const relative = locale === "en" ? playerUrls.enPlayerPagePath(id) : playerUrls.playerPagePath(id);
+  return fs.existsSync(path.join(process.cwd(), relative)) ? `${base}${relative}` : null;
+}
 const { broadcastChannel } = require("../../services/broadcastSchedule.js");
 const { competitionLabel } = require("../../services/i18n.js");
 
@@ -467,8 +494,10 @@ export function statsTableHtml(statistics, locale, homeTeam, awayTeam) {
 export function playerLinkHtml(name, playerIndex, base, locale) {
   const record = playerIndex ? playerIndex.find(name) : null;
   if (!record) return escapeHtml(name);
-  const href = locale === "en" ? `${base}en/player/${playerSlug(record.id)}.html` : `${base}oyuncular/${escapeHtml(record.id)}.html`;
-  return `<a href="${escapeHtml(href)}">${escapeHtml(name)}</a>`;
+  const href = playerPageHref(base, locale, record.id);
+  return href
+    ? `<a href="${escapeHtml(href)}">${escapeHtml(name)}</a>`
+    : escapeHtml(name);
 }
 
 /**
@@ -723,7 +752,7 @@ export function scorersSectionHtml(players, ctx) {
   const away = pick(awayTeam);
   if (!home.length && !away.length) return "";
   const list = (rows, teamName) => rows.length
-    ? `<article class="card msp-scorers"><h3>${escapeHtml(teamName)}</h3><ol>${rows.map((player) => `<li><a href="${escapeHtml(locale === "en" ? `${base}en/player/${playerSlug(player.id)}.html` : `${base}oyuncular/${player.id}.html`)}">${escapeHtml(player.name)}</a><span>${escapeHtml(player.goals)} ${escapeHtml(text.goals)}${Number(player.assists) > 0 ? ` · ${escapeHtml(player.assists)} ${escapeHtml(text.assists)}` : ""}</span></li>`).join("")}</ol></article>`
+    ? `<article class="card msp-scorers"><h3>${escapeHtml(teamName)}</h3><ol>${rows.map((player) => `<li>${(() => { const href = playerPageHref(base, locale, player.id); return href ? `<a href="${escapeHtml(href)}">${escapeHtml(player.name)}</a>` : escapeHtml(player.name); })()}<span>${escapeHtml(player.goals)} ${escapeHtml(text.goals)}${Number(player.assists) > 0 ? ` · ${escapeHtml(player.assists)} ${escapeHtml(text.assists)}` : ""}</span></li>`).join("")}</ol></article>`
     : `<article class="card data-empty"><strong>${escapeHtml(teamName)}</strong><span>${escapeHtml(text.scorersPending)}</span></article>`;
   return `<section class="msp-section" id="golcüler" aria-labelledby="msp-scorers-title"><h2 id="msp-scorers-title" class="msp-section-title">${escapeHtml(text.scorers)}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div></section>`;
 }

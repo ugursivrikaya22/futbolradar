@@ -245,27 +245,43 @@
     strip.innerHTML = '<span class="now-football__title">' + escapeText(s.title) + "</span>";
     strip.appendChild(counts);
 
-    // ── Sayfada zaten duran iki bilgi ────────────────────────────────────
-    var featured = document.querySelector('[data-featured-turkish="true"]');
-    if (featured) {
-      var teams = featured.querySelectorAll(".featured-fixture-team strong");
-      var when = featured.querySelector(".featured-fixture-score b");
-      if (teams.length === 2 && when) {
-        strip.appendChild(nowRow(s.next,
+    // Reuse the visible match card and ticker, including later live updates.
+    var summarySignature = "";
+    function syncSummary() {
+      var featured = document.querySelector('[data-featured-turkish="true"]');
+      var teams = featured && featured.querySelectorAll(".featured-fixture-team strong");
+      var when = featured && featured.querySelector(".featured-fixture-score b");
+      var status = featured && featured.querySelector(".featured-fixture-score span");
+      var action = featured && featured.querySelector(".featured-match-actions a[href], a[href]");
+      var head = document.querySelector(".news-ticker-item");
+      var headline = head && (head.querySelector("span:not(.news-ticker-tag)") || head);
+      var rows = [];
+      if (teams && teams.length === 2 && when) {
+        rows.push([featured.getAttribute("data-featured-reason-label") || s.next,
           teams[0].textContent.trim() + " – " + teams[1].textContent.trim(),
-          when.textContent.trim()));
+          when.textContent.trim() + (status ? " · " + status.textContent.trim() : ""),
+          action && action.getAttribute("href")]);
       }
+      if (headline && headline.textContent.trim()) rows.push([s.headline, headline.textContent.trim(), "", head.getAttribute("href")]);
+      var signature = JSON.stringify(rows);
+      if (signature === summarySignature) return;
+      summarySignature = signature;
+      strip.querySelectorAll(".now-football__row").forEach(function (row) { row.remove(); });
+      rows.forEach(function (row) { strip.appendChild(nowRow.apply(null, row)); });
     }
-
-    var head = document.querySelector(".news-ticker-item");
-    if (head) {
-      // Şerit maddesi iki parçalı: rozet (`.news-ticker-tag`) + başlık.
-      // Maddenin tamamını okumak ikisini ayraçsız yapıştırıyordu
-      // ("Resmî açıklamaUğurcan Çakır'dan…"); yalnızca başlık alınır.
-      var headline = head.querySelector("span:not(.news-ticker-tag)");
-      var text = ((headline || head).textContent || "").trim();
-      if (text) strip.appendChild(nowRow(s.headline, text, "", head.getAttribute("href")));
+    syncSummary();
+    var summaryObserver = new MutationObserver(syncSummary);
+    function watchSummarySources() {
+      summaryObserver.disconnect();
+      var featured = document.querySelector('[data-featured-turkish="true"]');
+      var roots = [featured && (featured.closest("[data-api-target]") || featured.parentElement), document.querySelector(".news-ticker")];
+      roots.forEach(function (root) {
+        if (root) summaryObserver.observe(root, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["data-featured-reason-label"] });
+      });
+      syncSummary();
     }
+    watchSummarySources();
+    document.addEventListener("futbolradar:rendered", watchSummarySources);
 
     main.insertBefore(strip, main.firstChild);
 
@@ -274,14 +290,15 @@
       .then(function (list) {
         if (!list) return;
 
-        var todayKey = new Date().toDateString();
+        var dayFormat = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit" });
+        var todayKey = dayFormat.format(new Date());
         var live = 0;
         var today = 0;
         for (var i = 0; i < list.length; i += 1) {
           var m = list[i];
           if (m.live === true || m.status === "LIVE" || m.status === "HALFTIME") live += 1;
           var t = Date.parse(m.kickoff || "");
-          if (isFinite(t) && new Date(t).toDateString() === todayKey) today += 1;
+          if (isFinite(t) && dayFormat.format(new Date(t)) === todayKey) today += 1;
         }
 
         if (live) counts.appendChild(nowCount(live, s.live, true));
@@ -380,8 +397,10 @@
     row.className = "now-football__row";
     if (href) {
       row.setAttribute("href", href);
-      row.setAttribute("target", "_blank");
-      row.setAttribute("rel", "nofollow noopener noreferrer");
+      if (new URL(href, window.location.href).origin !== window.location.origin) {
+        row.setAttribute("target", "_blank");
+        row.setAttribute("rel", "nofollow noopener noreferrer");
+      }
     }
     row.innerHTML = '<span class="now-football__label">' + escapeText(label) + "</span>" +
       '<span class="now-football__value">' + escapeText(value) + "</span>" +
@@ -668,7 +687,7 @@
 
     document.addEventListener("click", function (event) {
       if (!desktopQuery.matches && nav.classList.contains("is-open") &&
-          !nav.contains(event.target) && !event.target.closest("[data-bottom-nav-menu]")) {
+          !menu.contains(event.target) && !event.target.closest(".nav-toggle, .nav-search-toggle-mobile, .site-search, .brand, .theme-toggle, [data-lang-switch], [data-bottom-nav-menu]")) {
         closeNav(nav, toggle);
       }
     });
@@ -4049,3 +4068,11 @@
     setupLiveScoresExpiry();
   }
 })();
+
+// Refresh football tables from their shared data endpoints.
+(function () {
+  if (document.documentElement.lang !== "tr" || !document.querySelector(".standings-tabs__panel, .evergreen-table, [data-api-target=standings]")) return;
+  var script = document.createElement("script");
+  script.src = "/data-refresh.js?v=20260913";
+  document.head.appendChild(script);
+}());

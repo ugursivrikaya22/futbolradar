@@ -23,6 +23,7 @@
   // oturur; sağlayıcı geç yayımlarsa sonraki yoklama tamamlar.
   var MATCH_FINAL_ANALYSIS_DELAY_MS = 30000;
   var cache = Object.create(null);
+  var resourceMeta = Object.create(null);
   var COMPETITION_ALIASES = {
     "super-lig": ["super lig", "trendyol super lig"],
     "premier-league": ["premier league", "english premier league"],
@@ -36,8 +37,8 @@
     "hazirlik-maci": ["hazirlik maci", "hazirlik maclari", "club friendlies", "friendlies", "friendly"]
   };
   var RESOURCE_CONFIG = {
-    matches: { api: "matches", fallback: "matches", reportSource: true },
-    standings: { api: "standings", fallback: "teams", reportSource: true },
+    matches: { api: "matches", fallback: "matches", reportSource: true, noStore: true },
+    standings: { api: "standings", fallback: "teams", reportSource: true, noStore: true },
     teams: { api: "teams", fallback: "teams", reportSource: true },
     players: { api: "players", fallback: "players", reportSource: true },
     transfers: { api: "transfers", fallback: "transfers", reportSource: false },
@@ -60,11 +61,17 @@
 
   function matchHasVerifiedFinalScore(match) {
     if (!match || !isFinishedMatch(match)) return true;
-    var score = match.score || {};
-    return Number.isFinite(Number(score.home)) &&
-      Number.isFinite(Number(score.away)) &&
-      String(match.dataStatus || "").toLowerCase() === "verified" &&
-      String(match.publishState || "").toLowerCase() === "complete";
+    if (!hasReadableScore(match)) return false;
+    var dataStatus = String(match.dataStatus || "").toLowerCase();
+    if (dataStatus === "verified" && String(match.publishState || "").toLowerCase() === "complete") return true;
+    // A final score from the live provider has no editorial publishState.
+    // Requiring that field hid valid API results on the daily match cards.
+    var page = String(window.location.pathname || "/").replace(/\/$/, "").split("/").pop().replace(/\.html$/, "");
+    var currentMatchPage = ["", "index", "bugunun-maclari", "canli-skor"].includes(page);
+    return (currentMatchPage || !isInformationalLanding()) && match.__staticFallback !== true &&
+      dataStatus === "provider" && String(match.providerName || match.source || "").toLowerCase() === "api-football" &&
+      Boolean(match.providerId) && Number.isFinite(Date.parse(match.fetchedAt || "")) &&
+      ["FT", "AET", "PEN"].includes(String(match.providerStatus || "").toUpperCase());
   }
 
   function escapeHtml(value) {
@@ -99,8 +106,32 @@
     return relativeRootPrefix() + String(path || "").replace(/^\.?\//, "");
   }
 
+  /**
+   * TAŞINAN OYUNCU ADRESLERİ — derleme anında gömülür.
+   *
+   * Tam adı bilinen oyuncu `/futbolcu/<tam-ad>` adresinde; kimlikten yol
+   * türeten istemci, kullanıcıyı gereksiz bir 301'den geçiriyordu (tarayıcı
+   * denetimi bunu "yanlış hedef" olarak yakaladı). Tablo bir JSON dosyası
+   * olarak okunamaz — bu kod tarayıcıda da çalışıyor — bu yüzden
+   * scripts/inject-player-slug-map.mjs aşağıdaki nesneyi derlemede
+   * dolduruyor. Taşınmamış oyuncular haritada YOK: onlar eski adreslerinde
+   * kalıyor ve yedek yol zaten doğru.
+   */
+  var PLAYER_SLUGS = /* futbolradar:player-slugs:start */ {"a-abdullahi-eyupspor":"ahmed-abdullahi","a-antunes-goztepe":"alexis-antunes","a-arous-kasimpasa":"adem-arous","a-bardakci-galatasaray":"abdulkerim-bardakci","a-batagov-trabzonspor":"arseniy-batagov","a-batrakov-galatasaray":"aleksey-batrakov","a-benedyczak-kasimpasa":"adrian-benedyczak","a-borza-corum-fk":"andrei-borza","a-bosluk-trabzonspor":"arif-bosluk","a-brown-fenerbahce":"archie-brown","a-cisse-amed":"alphadjo-cisse","a-demirbag-konyaspor":"adil-demirbag","a-diouf-fenerbahce":"amara-diouf","a-dursun-genclerbirligi-s-k":"abdurrahim-dursun","a-fayzullaev-basaksehir":"abbosbek-fayzullaev","a-gianniotis-kasimpasa":"andreas-gianniotis","a-karapo-kasimpasa":"ayberk-karapo","a-kol-kasimpasa":"ali-yavuz-kol","a-kurtulan-goztepe":"arda-kurtulan","a-kutucu-galatasaray":"ahmed-kutucu","a-kyziridis-corum-fk":"alexandros-kyziridis","a-makoumbou-samsunspor":"antoine-makoumbou","a-masuaku-konyaspor":"arthur-masuaku","a-maxim-gaziantep-fk":"alexandru-maxim","a-mocsi-rizespor":"attila-mocsi","a-mujde-kasimpasa":"atakan-mujde","a-nubel-besiktas":"alexander-nubel","a-o-kalin-gaziantep-fk":"ali-osman-kalin","a-onana-trabzonspor":"andre-onana","a-ozcimen-goztepe":"arda-ozcimen","a-sengul-corum-fk":"arda-sengul","a-simsir-trabzonspor":"aral-simsir","a-sowe-rizespor":"ali-sowe","a-sylla-gaziantep-fk":"abakar-sylla","a-t-dagbasi-kasimpasa":"ahmet-taha-dagbasi","a-traore-genclerbirligi-s-k":"adama-malouda-traore","a-usluoglu-alanyaspor":"arda-usluoglu","a-yanar-kasimpasa":"ali-emre-yanar","a-yanik-konyaspor":"ata-yanik","a-yasar-rizespor":"anil-yasar","a-yesilyurt-fenerbahce":"adem-yesilyurt","a-yildirim-trabzonspor":"ahmet-dogan-yildirim","a-yuzgec-galatasaray":"ada-yuzgec","abdoulaye-yoro-basaksehir":"abdoulaye-yoro","adedire-emmanuel-awokoya-mebude-rizespor":"adedire-emmanuel-awokoya-mebude","afonso-sousa":"afonso-sousa","alaettin-ekici-fenerbahce":"alaettin-ekici","alex-matos-goztepe":"alex-matos","alexandre-penetra-corum-fk":"alexandre-penetra","ali-badra-diabate":"ali-badra-diabate","allan-godoi-goztepe":"allan-godoi","andre-henrique-goztepe":"andre-henrique","arda-aslan-erk-genclerbirligi-s-k":"arda-aslan-erk","arda-ozturk":"arda-ozturk","arda-ozyar-kocaelispor":"arda-ozyar","b-bayazit-samsunspor":"bilal-bayazit","b-bouchouari-trabzonspor":"benjamin-bouchouari","b-boutobba-eyupspor":"bilal-boutobba","b-cetin-samsunspor":"bedirhan-cetin","b-elmaz-fenerbahce":"bartug-elmaz","b-gezek-alanyaspor":"baran-ali-gezek","b-gungordu-konyaspor":"bahadir-han-gungordu","b-kutlu-kocaelispor":"berkan-kutlu","b-ozcan-basaksehir":"berkay-ozcan","b-ozyurt-alanyaspor":"bedirhan-ozyurt","b-yildirim-basaksehir":"bertug-yildirim","b-yilmaz-galatasaray":"baris-alper-yilmaz","badra-diabbate-ali-samsunspor":"badra-diabbate-ali","batuhan-yavuz-alanyaspor":"batuhan-yavuz","bedri-kara-omer-eyupspor":"bedri-kara-omer","berat-lus-galatasaray":"berat-lus","berat-percin-amed":"berat-percin","berke-baran-eyupspor":"berke-baran","bilal-sari-genclerbirligi-s-k":"bilal-sari","bruno-viana-alanyaspor":"bruno-viana","burak-gultekin-kasimpasa":"burak-gultekin","c-awaziem-konyaspor":"chidozie-awaziem","c-guner-galatasaray":"can-armando-guner","c-holse-samsunspor":"carlo-holse","c-massanga-eyupspor":"chandrel-massanga","c-ndiaye-samsunspor":"cherif-ndiaye","c-nwaiwu-trabzonspor":"chibuike-nwaiwu","c-operi-basaksehir":"christopher-operi","c-ozkacar-trabzonspor":"cenk-ozkacar","c-raux-yao-eyupspor":"charles-andre-raux-yao","c-sertel-corum-fk":"cemali-sertel","c-soyuncu-fenerbahce":"caglar-soyuncu","c-under-fenerbahce":"cengiz-under","c-yuksel-samsunspor":"celil-yuksel","cemali-yagmur-eren-konyaspor":"cemali-yagmur-eren","cheick-diabate-samsunspor":"cheick-tidiane-diabate","christ-oulai":"christ-oulai","christ-sadia-eyupspor":"christ-sadia","claudio-winck-kasimpasa":"claudio-winck","coskun-tosun-mustafa-rizespor":"coskun-tosun-mustafa","d-agyei-kocaelispor":"daniel-agyei","d-alemdar-besiktas":"dogan-alemdar","d-camara-gaziantep-fk":"drissa-camara","d-dilmen-basaksehir":"deniz-dilmen","d-ertas-konyaspor":"deniz-ertas","d-goutas-genclerbirligi-s-k":"dimitris-goutas","d-gul-galatasaray":"deniz-gul","d-sanchez-galatasaray":"davinson-sanchez","d-selke-basaksehir":"davie-selke","d-sorescu-gaziantep-fk":"deian-sorescu","d-turuc-konyaspor":"deniz-turuc","d-varesanovic-genclerbirligi-s-k":"dal-varesanovic","d-vlahovic-besiktas":"dusan-vlahovic","da-mata-konyaspor":"da-mata","david-costa-eyupspor":"david-costa","deniz-aydogdu-eyupspor":"deniz-aydogdu","devrim-sahin-besiktas":"devrim-sahin","diabel-ndoye-eyupspor":"diabel-ndoye","dilhan-demir-amed":"dilhan-demir","diogo-goncalves-konyaspor":"diogo-goncalves","dominik-livakovic":"dominik-livakovic","dorgeles-nene":"dorgeles-nene","e-agbadou-besiktas":"emmanuel-agbadou","e-albak-samsunspor":"enes-albak","e-aydin-konyaspor":"enes-aydin","e-bars-konyaspor":"emir-bars","e-bekiroglu-goztepe":"efkan-bekiroglu","e-bilgin-besiktas":"emre-bilgin","e-bilim-kocaelispor":"ege-bilim","e-boz-kasimpasa":"emirhan-boz","e-bulut-rizespor":"emrecan-bulut","e-colley-konyaspor":"ebrima-colley","e-destan-konyaspor":"enis-destan","e-dogan-konyaspor":"ertugrul-dogan","e-e-buyuk-galatasaray":"enes-emre-buyuk","e-elmali-galatasaray":"eren-elmali","e-erenturk-genclerbirligi-s-k":"erhan-erenturk","e-jelert-galatasaray":"elias-jelert","e-keskin-alanyaspor":"enes-keskin","e-kilinc-samsunspor":"emre-kilinc","e-muci-trabzonspor":"ernest-muci","e-ortakaya-kocaelispor":"emir-ortakaya","e-poku-besiktas":"ernest-poku","e-shomurodov-basaksehir":"eldor-shomurodov","e-tavsan-samsunspor":"elayis-tavsan","e-topcu-besiktas":"emirhan-topcu","e-watt-samsunspor":"elliot-watt","ederson-santana-de-moraes":"ederson-santana-de-moraes","edin-dzeko":"edin-dzeko","edin-visca":"edin-visca","efe-berat-toruz-samsunspor":"efe-berat-toruz","efe-ustun-samsunspor":"efe-yigit-ustun","ege-ozturk-basaksehir":"ege-ozturk","ege-yildirim-goztepe":"ege-yildirim","egehan-sensoy-konyaspor":"egehan-sensoy","elson-mendes-kasimpasa":"elson-mendes","elysee-dalo-stann-kasimpasa":"elysee-dalo-stann","emin-bayram":"emin-bayram","emirhan-unal-genclerbirligi-s-k":"emirhan-unal","emirzat-baycu-genclerbirligi-s-k":"emirzat-baycu","emre-demir-alanyaspor":"emre-demir","enes-ilik-amed":"enes-ilik","enes-yigit-erzurumspor-fk":"enes-yigit","eren-aydogdu-eyupspor":"eren-aydogdu","eren-ozdemir-erzurumspor-fk":"eren-ozdemir","eric-konate-konyaspor":"eric-konate","ermin-mahmic-corum-fk":"ermin-mahmic","erol-colak-trabzonspor":"erol-can-colak","esat-narin-kocaelispor":"esat-narin","eyup-degirmenci-samsunspor":"eyup-degirmenci","f-aksoy-alanyaspor":"fatih-aksoy","f-aliti-alanyaspor":"fidan-aliti","f-aye-kocaelispor":"florian-aye","f-hadergjonaj-alanyaspor":"florent-hadergjonaj","f-kaya-samsunspor":"fatih-kaya","f-miretti-besiktas":"fabio-miretti","f-tongya-genclerbirligi-s-k":"franco-tongya","f-uduokhai-besiktas":"felix-uduokhai","f-uzum-genclerbirligi-s-k":"firatcan-uzum","fahri-kerem-ay-besiktas":"fahri-kerem-ay","fernando-andrade-erzurumspor-fk":"fernando-andrade","franculino-dju-trabzonspor":"franculino-dju","fredy-corum-fk":"alfredo-fredy","g-akkan-genclerbirligi-s-k":"gokhan-akkan","g-guarino-samsunspor":"gabriele-guarino","g-guvenc-galatasaray":"gunay-guvenc","g-makouta-alanyaspor":"gaius-makouta","g-sazdagi-corum-fk":"gokhan-sazdagi","g-yalcin-alanyaspor":"guven-yalcin","gabriel-sara":"gabriel-sara","gedson-fernandes":"gedson-fernandes","goktan-gurpuz":"goktan-gurpuz","guilherme-luiz-goztepe":"guilherme-luiz","guillaume-larcher-amed":"guillaume-larcher","h-akman-eyupspor":"hamza-akman","h-dervisoglu-gaziantep-fk":"halil-dervisoglu","h-moldovan-eyupspor":"horatiu-moldovan","h-smolcic-corum-fk":"hrvoje-smolcic","h-tan-samsunspor":"haluk-mustafa-tan","hamza-gureler-basaksehir":"hamza-gureler","haydar-karatas-kocaelispor":"haydar-karatas","hulusi-efe-ceylan-fenerbahce":"hulusi-efe-ceylan","hwang-ui-jo-alanyaspor":"hwang-ui-jo","hyeon-gyu-oh":"hyeon-gyu-oh","i-brnic-basaksehir":"ivan-brnic","i-celik-alanyaspor":"izzet-celik","i-drapinski-samsunspor":"igor-drapinski","i-fakili-besiktas":"ilhan-fakili","i-gundogan-galatasaray":"ilkay-gundogan","i-hagi-alanyaspor":"ianis-hagi","i-jakobs-galatasaray":"ismail-jakobs","i-kahveci-fenerbahce":"irfan-can-kahveci","i-kaya-alanyaspor":"ibrahim-kaya","i-olawoyin-rizespor":"ibrahim-olawoyin","i-yuksek-fenerbahce":"ismail-yuksek","ibrahim-kagan-alkis-gaziantep-fk":"ibrahim-kagan-alkis","ibrahim-sabra-goztepe":"ibrahim-sabra","ibrahima-bah-konyaspor":"ibrahima-bah","ilkan-sever-erzurumspor-fk":"ilkan-sever","irfan-can-egribayat":"irfan-can-egribayat","iustin-doicaru-rizespor":"iustin-doicaru","ivan-cedric-alanyaspor":"ivan-cedric","j-dompe-konyaspor":"jean-luc-dompe","j-el-yamiq-eyupspor":"jawad-el-yamiq","j-jessen-kasimpasa":"jakob-jessen","j-mendes-samsunspor":"joe-mendes","j-muleka-konyaspor":"jackson-muleka","j-oosterwolde-fenerbahce":"jayden-oosterwolde","j-opoku-basaksehir":"jerome-opoku","j-rak-sakyi-kasimpasa":"jesurun-rak-sakyi","jesus-ramirez":"jesus-ramirez","jo-jin-ho-konyaspor":"jo-jin-ho","k-ayhan-galatasaray":"kaan-ayhan","k-calhanoglu-gaziantep-fk":"kerim-calhanoglu","k-demirbay-kasimpasa":"kerem-demirbay","k-fakili-corum-fk":"kenan-fakili","k-gassama-gaziantep-fk":"karamba-gassama","k-karatas-galatasaray":"kazimcan-karatas","k-koz-owski-gaziantep-fk":"kacper-kozlowski","k-michalak-eyupspor":"konrad-michalak","k-mouanga-kasimpasa":"kevin-mouanga","k-ouattara-besiktas":"kassoum-ouattara","k-peprah-oppong-fenerbahce":"kojo-peprah-oppong","k-yilmaz-besiktas":"kartal-yilmaz","kadir-gumus-gaziantep-fk":"kadir-gumus","kamil-efe-uregen-fenerbahce":"kamil-efe-uregen","kazeem-olaigbe":"kazeem-olaigbe","kerem-akturkoglu":"kerem-akturkoglu","kerem-erener-erzurumspor-fk":"kerem-erener","kerim-yerlikaya-eyupspor":"kerim-yerlikaya","kevin-rodrigues-genclerbirligi-s-k":"kevin-rodrigues","kutlay-satli-berhan-eyupspor":"kutlay-satli-berhan","kuzey-sapaz-fenerbahce":"kuzey-sapaz","l-gugeshashvili-goztepe":"luka-gugeshashvili","l-mercan-fenerbahce":"levent-mercan","l-pintor-eyupspor":"lenny-pintor","l-sane-galatasaray":"leroy-sane","l-tomasson-samsunspor":"logi-tomasson","l-torreira-galatasaray":"lucas-torreira","l-trossard-besiktas":"leandro-trossard","l-ugochukwu-galatasaray":"lesley-ugochukwu","luis-perez-gaziantep-fk":"luis-perez","m-abena-gaziantep-fk":"myenty-abena","m-altunbas-eyupspor":"metehan-altunbas","m-baku-kocaelispor":"makana-baku","m-baltaci-genclerbirligi-s-k":"metehan-baltaci","m-bayo-samsunspor":"mohamed-bayo","m-bayram-alanyaspor":"mert-furkan-bayram","m-bektas-kasimpasa":"muhammed-emin-bektas","m-bokele-goztepe":"malcom-bokele","m-bostan-konyaspor":"melih-bostan","m-demir-eyupspor":"mete-demir","m-diakite-rizespor":"moussa-diakite","m-diomande-corum-fk":"mohammed-diomande","m-elia-alanyaspor":"meschak-elia","m-eskihellac-trabzonspor":"mustafa-eskihellac","m-greenwood-fenerbahce":"mason-greenwood","m-guendouzi-fenerbahce":"matteo-guendouzi","m-haidara-kocaelispor":"massadio-haidara","m-ibrahimoglu-konyaspor":"melih-ibrahimoglu","m-ilie-kasimpasa":"matei-ilie","m-jevtovic-konyaspor":"marko-jevtovic","m-kabasakal-trabzonspor":"melih-kabasakal","m-karbownik-basaksehir":"michal-karbownik","m-karlsbakk-corum-fk":"markus-karlsbakk","m-lemina-galatasaray":"mario-lemina","m-mimaroglu-trabzonspor":"metehan-mimaroglu","m-muldur-fenerbahce":"mert-muldur","m-pala-rizespor":"mithat-pala","m-rafferty-kasimpasa":"marcus-rafferty","m-rashica-besiktas":"milot-rashica","m-sagnan-rizespor":"modibo-sagnan","m-sengezer-basaksehir":"muhammed-sengezer","m-skriniar-fenerbahce":"milan-skriniar","mahamadou-susoho-sissoho-kocaelispor":"mahamadou-susoho-sissoho","mahmut-can-kara-alanyaspor":"mahmut-can-kara","marco-asensio":"marco-asensio","marcos-felipe-corum-fk":"marcos-felipe","marius-mouandilmadji":"marius-mouandilmadji","mauro-icardi":"mauro-icardi","mehmet-karsli-samsunspor":"mehmet-karsli","mert-hakan-yandas":"mert-hakan-yandas","michael-murillo":"michael-murillo","miguel-cardoso-erzurumspor-fk":"miguel-cardoso","miguel-crespo-basaksehir":"miguel-crespo","mohamed-fofana-konyaspor":"mohamed-fofana","mohamed-salah":"mohamed-salah","mostafa-mohamed-konyaspor":"mostafa-mohamed","muhammed-kucuk-kocaelispor":"muhammed-kucuk","n-ake-fenerbahce":"nathan-ake","n-kante-fenerbahce":"n-golo-kante","n-saviolo-trabzonspor":"noah-saviolo","nelson-semedo":"nelson-semedo","nuno-da-costa-basaksehir":"nuno-da-costa","nuno-lima-alanyaspor":"nuno-lima","o-aydin-fenerbahce":"oguz-aydin","o-ba-basaksehir":"ousseynou-ba","o-bayrak-goztepe":"ogun-bayrak","o-ben-ali-alanyaspor":"omar-ben-ali","o-bulut-basaksehir":"onur-bulut","o-cevikkan-trabzonspor":"onuralp-cevikkan","o-ergun-basaksehir":"onur-ergun","o-kocuk-samsunspor":"okan-kocuk","o-kokcu-besiktas":"orkun-kokcu","o-ozcicek-gaziantep-fk":"ogun-ozcicek","o-sahiner-basaksehir":"omer-ali-sahiner","o-tufan-trabzonspor":"ozan-tufan","o-ulgun-genclerbirligi-s-k":"ogulcan-ulgun","o-yokuslu-trabzonspor":"okay-yokuslu","oh-hyeon-gyu-besiktas":"oh-hyeon-gyu","omar-fayed-fenerbahce":"omar-fayed","omer-ahmet-ceyhan-eyupspor":"omer-ahmet-ceyhan","omer-ay-eyupspor":"omer-ay","omer-cobanoglu-konyaspor":"omer-cobanoglu","omer-faruk-ugurlu-eyupspor":"omer-faruk-ugurlu","omer-kara-erzurumspor-fk":"omer-kara","ousmane-diabate-genclerbirligi-s-k":"ousmane-diabate","p-martor-genclerbirligi-s-k":"prince-martor","p-onuachu-trabzonspor":"paul-onuachu","paolo-fernandes-alanyaspor":"paolo-fernandes","paulo-victor-alanyaspor":"paulo-victor","pedro-pereira-genclerbirligi-s-k":"pedro-pereira","q-laci-rizespor":"qazim-laci","r-akonnor-goztepe":"richard-akonnor","r-baniya-konyaspor":"rayyan-baniya","r-lukaku-fenerbahce":"romelu-lukaku","r-malinovskyi-trabzonspor":"ruslan-malinovskyi","r-sallai-galatasaray":"roland-sallai","r-yilmaz-besiktas":"ridvan-yilmaz","rafael-leao":"rafael-leao","recep-yalin-dilek-galatasaray":"recep-yalin-dilek","renato-nhaga-galatasaray":"renato-nhaga","ricardo-velho-genclerbirligi-s-k":"ricardo-velho","rodrigo-becao-fenerbahce":"rodrigo-becao","ruan-alanyaspor":"pablo-ruan","s-akaydin-trabzonspor":"samet-akaydin","s-armstrong-goztepe":"sinclair-armstrong","s-bakayoko-rizespor":"siaka-bakayoko","s-dik-alanyaspor":"sahin-dik","s-dursun-gaziantep-fk":"serdar-dursun","s-giordano-eyupspor":"simone-giordano","s-kilicsoy-besiktas":"semih-kilicsoy","s-koita-genclerbirligi-s-k":"sekou-koita","s-lopes-cabral-trabzonspor":"sidny-lopes-cabral","s-ozcan-besiktas":"salih-ozcan","s-saatci-corum-fk":"serdar-saatci","s-savic-trabzonspor":"stefan-savic","sabahattin-destici-gaziantep-fk":"sabahattin-destici","saikuba-jarju-samsunspor":"saikuba-jarju","salih-arici-kasimpasa":"salih-arici","salih-ucan":"salih-ucan","samed-onur":"samed-onur","samet-kalkan-mehmet-gaziantep-fk":"samet-kalkan-mehmet","sami-bircan-ahmet-besiktas":"sami-bircan-ahmet","sebastian-szymanski":"sebastian-szymanski","seyfi-kiskanc-genclerbirligi-s-k":"seyfi-kiskanc","seyfi-toprak-genclerbirligi-s-k":"seyfi-toprak","t-altikardes-goztepe":"taha-altikardes","t-antalyali-rizespor":"taylan-antalyali","t-cetin-fenerbahce":"tarik-cetin","t-diarra-kasimpasa":"thiemoko-diarra","t-gulliksen-kocaelispor":"tobias-gulliksen","t-jabol-folcarelli-trabzonspor":"tim-jabol-folcarelli","t-sahin-rizespor":"taha-sahin","t-stewart-gaziantep-fk":"trivante-stewart","t-ulvan-eyupspor":"talha-ulvan","tahsin-bulbul-samsunspor":"tahsin-bulbul","talha-akkaya-eyupspor":"talha-akkaya","talha-polat-kocaelispor":"talha-polat","talisca":"anderson-talisca","taylan-bulut-besiktas":"taylan-bulut","tayyip-talha-sanuc":"tayyip-talha-sanuc","thalisson-kelven-genclerbirligi-s-k":"thalisson-kelven","tiago-djalo":"tiago-djalo","tiago-gouveia-genclerbirligi-s-k":"tiago-gouveia","u-akdag-alanyaspor":"umit-akdag","u-cakir-galatasaray":"ugurcan-cakir","u-gunes-basaksehir":"umut-gunes","u-nayir-trabzonspor":"umut-nayir","u-yazgili-konyaspor":"ugurcan-yazgili","u-yildiz-kocaelispor":"ugur-kaan-yildiz","umut-erdem":"umut-erdem","v-babacan-basaksehir":"volkan-babacan","v-cerny-besiktas":"vaclav-cerny","v-gidado-gaziantep-fk":"victor-gidado","v-mihaila-rizespor":"valentin-mihaila","v-muriqi-fenerbahce":"vedat-muriqi","v-nelsson-galatasaray":"victor-nelsson","v-orakpo-genclerbirligi-s-k":"victor-orakpo","v-osimhen-galatasaray":"victor-osimhen","w-ndidi-besiktas":"wilfred-ndidi","w-singo-galatasaray":"wilfried-singo","wagner-pina":"wagner-pina","y-akgun-galatasaray":"yunus-akgun","y-andzouana-konyaspor":"yhoan-andzouana","y-aydar-genclerbirligi-s-k":"yigit-hamza-aydar","y-barasi-kasimpasa":"yusuf-barasi","y-cift-samsunspor":"yunus-emre-cift","y-kayan-samsunspor":"yalcin-kayan","y-moukoko-corum-fk":"youssoufa-moukoko","y-ozdemir-alanyaspor":"yusuf-ozdemir","y-ramadani-corum-fk":"ylber-ramadani","y-sari-basaksehir":"yusuf-sari","y-sen-fenerbahce":"yagiz-sen","yigit-demir-eyupspor":"yigit-demir","yigit-fidan-fenerbahce":"yigit-fidan","yigithan-cubukcu-trabzonspor":"yigithan-cubukcu","yusuf-nazar-gaziantep-fk":"yusuf-nazar","z-ariss-rizespor":"zakaria-ariss","z-gorgen-rizespor":"zafer-gorgen","z-jules-eyupspor":"zak-jules"} /* futbolradar:player-slugs:end */;
+
   function playerProfileHref(playerId) {
-    return siteHref("oyuncular/" + encodeURIComponent(playerId) + ".html");
+    var slug = PLAYER_SLUGS[playerId];
+    return slug
+      ? siteHref("futbolcu/" + encodeURIComponent(slug) + ".html")
+      : siteHref("oyuncular/" + encodeURIComponent(playerId) + ".html");
+  }
+
+  /** Kanonik mutlak adres — yapılandırılmış veri ve paylaşım için. */
+  function playerCanonicalUrl(playerId) {
+    var slug = PLAYER_SLUGS[playerId];
+    return slug
+      ? "https://www.futbolradar.com/futbolcu/" + encodeURIComponent(slug)
+      : "https://www.futbolradar.com/oyuncular/" + encodeURIComponent(playerId) + ".html";
   }
 
   function playerCompareHref(query) {
@@ -115,9 +146,10 @@
   function getApiUrl(config) {
     var url = API_ROOT + config.api;
 
-    if (config.api === "matches" || config.api === "match-detail" || config.api === "squad" || config.api === "teams" || config.api === "players") {
+    if (config.api === "matches" || config.api === "standings" || config.api === "match-detail" || config.api === "squad" || config.api === "teams" || config.api === "players") {
       var params = new URLSearchParams(window.location.search);
       var apiParams = new URLSearchParams();
+      if (config.api === "standings") apiParams.set("league", params.get("league") || "super-lig");
 
       if ((config.api === "matches" || config.api === "match-detail") && params.get("date")) {
         apiParams.set("date", params.get("date"));
@@ -231,10 +263,18 @@
    * Yanıt bayatsa etiket zamanı göstermeye devam eder (bilgi silinmez) ama
    * yanına tazelemenin durduğunu yazar. Okuyucu ne gördüğünü bilir.
    */
-  function updateUpdatedAtLabel(updatedAt, freshness, source) {
+  function updateUpdatedAtLabel(updatedAt, freshness, source, resource) {
     var label = formatUpdatedAt(updatedAt);
     var stale = Boolean(freshness && freshness.stale);
     var sourceLabel = String(source || "").trim();
+    if (resource === "matches") {
+      document.querySelectorAll(".hero-meta, .data-stamp").forEach(function (item) {
+        if (item.hasAttribute("data-resource-updated")) return;
+        if (!/Son (kontrol|güncelleme):/.test(item.textContent)) return;
+        item.innerHTML = label ? 'Son kontrol: <time datetime="' + escapeHtml(updatedAt) + '">' + escapeHtml(label) + '</time>' : 'Son kontrol: Güncelleme bekleniyor.';
+      });
+    }
+    if (resource && resource !== "matches" && document.querySelector('[data-api-target="matches-page"], [data-api-target="live-score"], [data-api-target="today-matches"]')) return;
 
     if (!label && !stale && !sourceLabel) {
       return;
@@ -301,7 +341,9 @@
   function mergeMatchCollections(providerMatches, curatedMatches) {
     var seen = Object.create(null);
     var kept = [];
-    [].concat(providerMatches || [], curatedMatches || []).forEach(function (match) {
+    [].concat(providerMatches || [], curatedMatches || []).sort(function (left, right) {
+      return (Date.parse(recordsUpdatedAt([right])) || 0) - (Date.parse(recordsUpdatedAt([left])) || 0);
+    }).forEach(function (match) {
       var identity = matchIdentityKey(match);
       var key = identity === "||" ? String(match && match.id || "").toLocaleLowerCase("tr-TR") : identity;
       if (!key || seen[key]) return;
@@ -425,29 +467,27 @@
           : fetchJson(fallbackUrl).then(function (result) { return result.data; });
 
         return source.then(function (data) {
-          return markStaticFallback(filterFallbackData(name, data));
+          var filtered = markStaticFallback(filterFallbackData(name, data));
+          if (name === "matches") updateUpdatedAtLabel(recordsUpdatedAt(filtered), { stale: true }, "Kayıtlı sağlayıcı verisi", name);
+          return filtered;
         });
       };
 
       if (config.api) {
         cache[name] = fetchJson(getApiUrl(config), { noStore: config.noStore })
           .then(function (result) {
+            resourceMeta[name] = result;
             if (config.reportSource) {
               // Tazelik değerlendirmesi sunucuda, verinin kendi zaman
               // damgalarından yapılıyor (services/dataFreshness.js).
-              updateUpdatedAtLabel(result.updatedAt, result.meta && result.meta.freshness, result.source);
+              updateUpdatedAtLabel(result.updatedAt, result.meta && result.meta.freshness, result.source, name);
             }
             if (name !== "matches") {
               return result.data;
             }
 
-            return fallback()
-              .then(function (curatedMatches) {
-                return mergeMatchCollections(result.data, curatedMatches);
-              })
-              .catch(function () {
-                return result.data;
-              });
+            // A successful provider response is authoritative, including an empty day.
+            return filterFallbackData("matches", result.data);
           })
           .catch(fallback);
       } else {
@@ -461,6 +501,13 @@
   function forceReload(name) {
     delete cache[name];
     return loadData(name);
+  }
+
+  function recordsUpdatedAt(records) {
+    return (Array.isArray(records) ? records : []).map(function (record) {
+      return record.fetchedAt || record.lastStandingsSyncedAt || record.updatedAt || record.lastVerifiedAt ||
+        (record.timing && record.timing.serverReceivedAt) || "";
+    }).filter(function (value) { return Number.isFinite(Date.parse(value)); }).sort().pop() || null;
   }
 
   function isDocumentHidden() {
@@ -624,8 +671,8 @@
       return true;
     }
 
-    if (match && match.competitionId === selectedLeague) {
-      return true;
+    if (match && match.competitionId) {
+      return match.competitionId === selectedLeague;
     }
 
     var normalizedLeague = normalizeSearchText(match && (match.league || match.competition))
@@ -4542,21 +4589,20 @@
     return SUPER_LIG_PRIORITY_NAMES.length;
   }
 
-  function superLigTeamLogoHtml(entry, name) {
-    if (entry && entry.logo) {
-      return '<img class="superlig-strip-logo" src="' + escapeHtml(entry.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
-        '<span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">' + escapeHtml(teamInitials(name)) + '</span>';
-    }
-    return '<span class="superlig-strip-logo-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + '</span>';
+  function isTodaySuperLigMatch(match, teamList, today) {
+    if (!match || istanbulDayOf(match.kickoff || match.date || match.utcDate) !== today) return false;
+    // Bir Avrupa kupası maçında yalnızca tek taraf Süper Lig takımıdır.
+    // İki tarafın da güncel lig listesinde bulunması, bu alanın gerçekten
+    // Süper Lig programı olarak kalmasını sağlar.
+    return Boolean(findSuperLigTeam(teamList, match.homeTeam) && findSuperLigTeam(teamList, match.awayTeam));
   }
 
-  function renderTodaySuperLigStrip(matches, teams) {
+  function selectTodaySuperLigMatches(matches, teams) {
     var teamList = superLigTeamLogoList(teams);
     var today = todayInIstanbul();
 
     var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      if (!match || istanbulDayOf(match.kickoff || match.date || match.utcDate) !== today) return false;
-      return Boolean(findSuperLigTeam(teamList, match.homeTeam) || findSuperLigTeam(teamList, match.awayTeam));
+      return isTodaySuperLigMatch(match, teamList, today);
     });
 
     // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
@@ -4572,38 +4618,26 @@
       return true;
     });
 
-    if (!todays.length) {
-      return "";
-    }
-
-    var sorted = todays.slice().sort(function (left, right) {
+    return todays.slice().sort(function (left, right) {
       var leftRank = Math.min(superLigPriorityRank(left.homeTeam), superLigPriorityRank(left.awayTeam));
       var rightRank = Math.min(superLigPriorityRank(right.homeTeam), superLigPriorityRank(right.awayTeam));
       if (leftRank !== rightRank) return leftRank - rightRank;
       return String(left.kickoff || "").localeCompare(String(right.kickoff || ""));
     });
+  }
 
-    var rows = sorted.map(function (match) {
-      var home = findSuperLigTeam(teamList, match.homeTeam) || { name: match.homeTeam, logo: "" };
-      var away = findSuperLigTeam(teamList, match.awayTeam) || { name: match.awayTeam, logo: "" };
-      // "Süper Lig'de Bugün" şeridi ham `isLiveMatch` kullanıyordu: dünkü
-      // maç bu şeritte "Canlı 81'" olarak kalabiliyordu. Ortak kapı.
-      var live = LiveGuard.isLive(match);
-      var finished = !live && isFinishedMatch(match);
-      var score = (live || finished) && match.score
-        ? escapeHtml(displayValue(match.score.home)) + " - " + escapeHtml(displayValue(match.score.away))
-        : escapeHtml(finished ? "MS" : (live ? "Canlı" : (match.time || "Planlandı")));
-      var minuteLabel = live ? liveMinuteLabel(match) : "";
-      var minuteHtml = minuteLabel ? ' <small class="superlig-strip-minute">' + escapeHtml(minuteLabel) + '</small>' : "";
+  function renderTodaySuperLigStrip(matches, teams) {
+    var sorted = selectTodaySuperLigMatches(matches, teams);
 
-      return '<a class="superlig-strip-row' + (live ? " is-live" : "") + '" data-card="superlig-strip" data-match="' + escapeHtml(match.id || "") + '" href="' + escapeHtml(matchDetailHref(match)) + '">' +
-        '<span class="superlig-strip-team">' + superLigTeamLogoHtml(home, home.name) + '<b>' + escapeHtml(home.name) + '</b></span>' +
-        '<span class="superlig-strip-score' + (live ? " is-live" : "") + '">' + (live ? '<i class="live-pulse" aria-hidden="true"></i>' : "") + score + minuteHtml + '</span>' +
-        '<span class="superlig-strip-team is-away">' + superLigTeamLogoHtml(away, away.name) + '<b>' + escapeHtml(away.name) + '</b></span>' +
-        '</a>';
-    }).join("");
+    if (!sorted.length) {
+      return "";
+    }
 
-    return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="superlig-strip-rail">' + rows + '</div>';
+    // Genel programdaki kart bileşeninin aynısı: boyut, içerik ve hızlı
+    // bağlantılar iki grup arasında ayrışmaz.
+    var cards = sorted.map(renderHomeFixtureCard).join("");
+
+    return '<span class="superlig-strip-kicker">Süper Lig\'de Bugün</span><div class="matches-grid superlig-today-grid">' + cards + '</div>';
   }
 
   // today-match-card-selection:start
@@ -4636,12 +4670,20 @@
   }
   // today-match-card-selection:end
 
-  function renderTodayMatchesPreview(matches) {
+  function renderTodayMatchesPreview(matches, teams) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
     }
 
-    var ordered = selectTodayMatchCards(matches);
+    // İlk çizimde takım listesi doğrudan gelir; sonraki canlı skor
+    // yoklamaları renderer'ı yalnızca maçlarla çağırır. O yenilemelerde
+    // önbelleği kullanmazsak Süper Lig maçları genel listeye geri düşer.
+    var teamList = superLigTeamLogoList(teams || latestSuperLigTeams || []);
+    var today = todayInIstanbul();
+    var remaining = matches.filter(function (match) {
+      return !isTodaySuperLigMatch(match, teamList, today);
+    });
+    var ordered = selectTodayMatchCards(remaining);
     if (!ordered.length) return "";
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
@@ -4774,7 +4816,7 @@
   // match-program-order:end
 
   function renderMatchesPageSection(matches, analysesIndex) {
-    var filteredMatches = Array.isArray(matches) ? orderMatchProgram(filterMatchesByStatus(matches)) : [];
+    var filteredMatches = Array.isArray(matches) ? orderMatchProgram(filterMatchesByStatus(filterFallbackData("matches", matches))) : [];
     if (!filteredMatches.length) {
       var params = new URLSearchParams(window.location.search);
       var selectedDate = params.get("date") || todayInIstanbul();
@@ -5010,6 +5052,7 @@
 
   function renderLiveScoreSection(matches) {
     var list = filterScoredMatches(matches);
+    list = filterFallbackData("matches", list);
     // "Canlı" panoya girmek için skor yetmez; canlılık DOĞRULANMIŞ olmalı.
     // isLiveMatch yalnızca durum+skora bakar; matchLiveVerdict tazeliği de
     // sorar (başlama saati çok geçmiş, güncellenmeyen "canlı" kayıt bayat
@@ -5038,9 +5081,14 @@
     });
 
     if (!finished.length) {
-      // Skorlu maç yoksa bölüm boş döner; statik yedek (o da skorsuz kart
-      // basmaz) ya da boş durum mesajı görünür. Skorsuz kart basmak yok.
-      return "";
+      // Keep the existing empty-state navigation when fresh data clears
+      // the old score cards, including on the initial render.
+      return '<article class="data-empty" data-card="empty-state">' +
+        '<strong>Şu anda canlı maç yok</strong>' +
+        '<span>Canlı maç başladığında skor, tempo ve maç içi sinyaller bu alanda görünecek.</span>' +
+        '<div class="match-empty-actions"><a class="detail-link" href="./bugunun-maclari.html">Günün tüm maçlarını aç</a>' +
+        '<a class="detail-link ghost" href="./super-lig-fikstur.html">Sezon fikstürüne git</a>' +
+        '<span class="tag soft">Canlı akış bekleniyor</span></div></article>';
     }
 
     return (
@@ -5119,15 +5167,18 @@
   // Zaten TAKİP EDİLEN bir maçın durumu/skoru bu süzgeçten ETKİLENMEZ —
   // aşağıdaki `existing !== undefined` dalı koşulsuz ilerler. Süzgeç
   // yalnızca YENİ bir kayıt eklemenin koşulu: bugünün (TSİ) FutbolRadar
-  // kapsamındaki bir yarışması olmalı — ya Türk takımı maçı ya da `base`de
-  // (düzgün kapsamlı `/api/matches` yanıtından gelen) bugün için zaten
-  // bilinen bir yarışma kimliği.
+  // kapsamındaki bir yarışması olmalı. Takım veya lig adı tek başına
+  // yeterli değildir: örneğin Kazakistan'ın Altay takımı Türk kulübüyle,
+  // aynı adlı Serie A ligleri de birbirleriyle karışmamalı.
   function isLiveMatchInFutbolRadarScope(match, base) {
     if (matchDateValue(match) !== todayInIstanbul()) {
       return false;
     }
-    if (isTurkishMatch(match)) {
-      return true;
+    if (match && match.providerLeagueId != null) {
+      return base.some(function (existing) {
+        return existing && existing.providerLeagueId != null &&
+          String(existing.providerLeagueId) === String(match.providerLeagueId);
+      });
     }
     var competitionId = match && match.competitionId;
     if (!competitionId) {
@@ -5153,6 +5204,13 @@
       var key = matchIdentityKey(liveMatch);
       var existing = indexByKey[key];
       if (existing === undefined) {
+        var providerId = String(liveMatch.providerId || liveMatch.id || "");
+        var found = base.findIndex(function (match) {
+          return providerId && [match.providerId, match.id, match.providerIds && match.providerIds.apiFootball].some(function (id) { return String(id || "") === providerId; });
+        });
+        if (found >= 0) existing = found;
+      }
+      if (existing === undefined) {
         if (!isLiveMatchInFutbolRadarScope(liveMatch, base)) {
           return;
         }
@@ -5171,11 +5229,16 @@
       // düşürürdü — kart "Canlı veri doğrulanamadı"ya döner ve daha önce
       // gösterilen skor kaybolurdu. Skor yalnızca yeni paket gerçekten
       // okunabilirse ilerletilir; değilse elde olan korunur.
+      var incomingTime = Date.parse(recordsUpdatedAt([liveMatch]));
+      var existingTime = Date.parse(recordsUpdatedAt([base[existing]]));
+      if (Number.isFinite(incomingTime) && Number.isFinite(existingTime) && incomingTime < existingTime) return;
       base[existing] = Object.assign({}, base[existing], {
         status: liveMatch.status || base[existing].status,
         providerStatus: liveMatch.providerStatus || base[existing].providerStatus,
-        minute: liveMatch.minute || base[existing].minute,
-        elapsed: liveMatch.elapsed || base[existing].elapsed,
+        minute: liveMatch.minute != null ? liveMatch.minute : base[existing].minute,
+        elapsed: liveMatch.elapsed != null ? liveMatch.elapsed : liveMatch.minute != null ? liveMatch.minute : base[existing].elapsed,
+        fetchedAt: liveMatch.fetchedAt || (liveMatch.timing && liveMatch.timing.serverReceivedAt) || base[existing].fetchedAt,
+        staleAfter: liveMatch.staleAfter || null,
         score: hasReadableScore(liveMatch) ? liveMatch.score : base[existing].score,
         // Kart ve penaltı rozetleri olay akışından okunur. Sağlayıcı canlı
         // uç noktada olay vermiyorsa mevcut (editoryal) kayıt korunur —
@@ -5298,7 +5361,10 @@
     }
 
     function paint(matches) {
-      var nextMatches = Array.isArray(matches) ? matches : [];
+      var nextMatches = filterFallbackData("matches", Array.isArray(matches) ? matches : []);
+      var dataTime = recordsUpdatedAt(nextMatches);
+      lastLiveUpdateMs = Date.parse(dataTime) || 0;
+      updateUpdatedAtLabel(dataTime, null, null, "matches");
       var changedGoals = goalChangeIds(lastKnownMatches, nextMatches);
       lastKnownMatches = nextMatches;
       // Donmuş bir "LIVE" kaydı ham kontrolden geçtiği için hızlı yoklamayı
@@ -5316,9 +5382,7 @@
         // bölüm başlığıyla birlikte kapanmalı.
         applyEmptyHide(target, Boolean(html));
 
-        if (html) {
-          setContent(target, html);
-        }
+        setContent(target, html || "");
       });
       updateLiveAges();
       flashGoals(changedGoals);
@@ -5606,7 +5670,7 @@
         sport: "Football"
       } : undefined,
       jobTitle: player.position || "Football Player",
-      url: "https://www.futbolradar.com/oyuncular/" + encodeURIComponent(player.id) + ".html",
+      url: playerCanonicalUrl(player.id),
       description: playerInsight(player),
       additionalProperty: [
         { "@type": "PropertyValue", name: "AI Rating", value: player.aiRating || player.rating || "" },
@@ -6450,10 +6514,15 @@
       }
 
       var playerId = button.getAttribute("data-share-player");
-      var profilePath = document.documentElement.lang.indexOf("en") === 0
-        ? "/en/player/" + encodeURIComponent(playerId) + ".html"
-        : playerProfileHref(playerId);
-      var url = new URL(profilePath, window.location.href).toString();
+      // PAYLAŞILAN ADRES KANONİK ADRESTİR.
+      //
+      // Paylaşım bağlantısı başkalarına gidiyor ve kalıcı oluyor; bir
+      // yönlendirmeye ya da uzantılı ikinci bir biçime işaret etmesi, o
+      // bağlantıyı taşıyan herkesi fazladan bir atlamadan geçirir.
+      var playerSlug = PLAYER_SLUGS[playerId];
+      var url = document.documentElement.lang.indexOf("en") === 0
+        ? new URL("/en/player/" + encodeURIComponent(playerSlug || playerId) + ".html", window.location.href).toString()
+        : playerCanonicalUrl(playerId);
       var title = "FutbolRadar oyuncu radar kartı";
 
       if (navigator.share) {
@@ -6963,7 +7032,7 @@
       var requestedIds = String(query.get("players") || "").split(",").filter(Boolean);
       var hasPlayersQuery = Boolean(query.get("players"));
       if (!requestedIds.length) {
-        requestedIds = [query.get("p1"), query.get("p2"), query.get("p3")].filter(Boolean);
+        requestedIds = [query.get("p1") || query.get("player"), query.get("p2"), query.get("p3")].filter(Boolean);
       }
       if (!requestedIds.length && seedIds.length) {
         requestedIds = seedIds;

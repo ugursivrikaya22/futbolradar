@@ -324,8 +324,8 @@ const CASES = [
   assert.ok(scopeGuard, "isLiveMatchInFutbolRadarScope bulunmalı");
   assert.match(scopeGuard[0], /todayInIstanbul\(\)/,
     "kapsam denetimi Europe/Istanbul 'bugün' sınırını kullanmalı");
-  assert.match(scopeGuard[0], /isTurkishMatch\(match\)/,
-    "Türk takımı maçı kapsamdan asla düşmemeli");
+  assert.match(scopeGuard[0], /providerLeagueId/,
+    "aynı takım veya lig adını taşıyan farklı yarışmalar sayısal sağlayıcı kimliğiyle ayrılmalı");
 }
 
 console.log("live-score-filter OK (12 bölüm)");

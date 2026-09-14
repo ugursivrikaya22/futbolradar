@@ -31,6 +31,26 @@ const { quotesForMatch } = require("../services/managerQuotes.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { t } = require("../services/i18n.js");
+const { getPlayers } = require("../services/playerService.js");
+const { resolvePlayerByName } = require("../services/playerMatchLogService.js");
+// main'den gelen takım merkezi bağlantıları — iki taraf da korunur.
+const { teamHubHref } = require("../services/teamHubLinks.js");
+
+/**
+ * MAÇ KADROSUNDAN OYUNCU PROFİLİNE.
+ *
+ * Bağ çift yönlü olmalı: oyuncu sayfası maç raporuna bağlanıyor, maç raporu
+ * da oyuncuya. Eşleşme belirsizse (aynı kulüpte aynı soyadı) bağlantı
+ * basılmaz — bkz. services/playerMatchLogService.js.
+ */
+const squadPlayers = (() => {
+  try {
+    return getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")));
+  } catch (error) {
+    console.warn(`[futbolradar:post-match] players.json okunamadı (${error.code || error.message}); kadro bağlantıları basılmayacak`);
+    return [];
+  }
+})();
 
 /**
  * Yer tutucu metinler TEK KAYNAKTAN gelir (locales/tr.json → `fallback.*`).
@@ -179,12 +199,17 @@ function statsHtml(match) {
   }).join("");
 }
 
-function lineupHtml(match) {
+function lineupHtml(match, depth) {
   const lineups = (match.lineups || []).filter((row) => row && Array.isArray(row.players) && row.players.length);
   if (!lineups.length) return "";
   return lineups.map((lineup) => `<article class="post-match-lineup-card">
     <header><h3>${escapeHtml(lineup.team)}</h3><span>${escapeHtml(lineup.formation || "Diziliş doğrulanmadı")}</span></header>
-    <ol>${lineup.players.map((player) => `<li>${escapeHtml(player)}</li>`).join("")}</ol>
+    <ol>${lineup.players.map((name) => {
+      const record = resolvePlayerByName(name, lineup.team, squadPlayers);
+      return record
+        ? `<li><a href="${escapeHtml(depth)}oyuncular/${escapeHtml(record.id)}.html">${escapeHtml(name)}</a></li>`
+        : `<li>${escapeHtml(name)}</li>`;
+    }).join("")}</ol>
   </article>`).join("");
 }
 
@@ -353,7 +378,9 @@ function pageHtml(report, match) {
     ]
   };
 
-  const lineups = lineupHtml(match);
+  // Rapor sayfası ya kökte (`...-mac-analizi.html`) ya `mac-raporu/`
+  // altında basılıyor; oyuncu bağlantısı bu yüzden sabit "../" olamaz.
+  const lineups = lineupHtml(match, depth);
   const subs = substitutionsHtml(match);
 
   return `<!doctype html>
@@ -416,6 +443,8 @@ function pageHtml(report, match) {
       ${nextMatchSectionHtml(report)}
 
       <section class="post-match-next-grid">
+        ${teamHubHref(match.homeTeam, depth) ? `<a href="${escapeHtml(teamHubHref(match.homeTeam, depth))}"><span>Takım merkezi</span><strong>${escapeHtml(match.homeTeam)}</strong><p>Maçlar, puan durumu, kadro ve takım gündemi.</p></a>` : ""}
+        ${teamHubHref(match.awayTeam, depth) ? `<a href="${escapeHtml(teamHubHref(match.awayTeam, depth))}"><span>Takım merkezi</span><strong>${escapeHtml(match.awayTeam)}</strong><p>Maçlar, puan durumu, kadro ve takım gündemi.</p></a>` : ""}
         <a href="${depth}mac-merkezi.html"><span>Maç merkezi</span><strong>Tüm maç raporları</strong><p>Tamamlanan karşılaşmaların veri odaklı okumalarına geç.</p></a>
         <a href="${depth}oyuncu-radari.html"><span>Oyuncu analizi</span><strong>${escapeHtml(match.homeTeam)} Oyuncu Radarı</strong><p>Kadro içindeki form ve rol sinyallerini incele.</p></a>
         <a href="${depth}bugunun-maclari.html"><span>Program</span><strong>Bugünkü maçlar</strong><p>Günün doğrulanmış karşılaşmalarını aç.</p></a>

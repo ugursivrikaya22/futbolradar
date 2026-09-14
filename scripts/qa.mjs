@@ -8,10 +8,33 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { validatePlayerData } = require("../services/playerService.js");
 const { publishedColumns } = require("../services/columnService.js");
+const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const newsData = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
 const columnData = JSON.parse(fs.readFileSync(path.join(root, "data", "columns.json"), "utf8"));
-const playerProfilePages = players.map((player) => `oyuncular/${player.id}.html`);
+/**
+ * OYUNCU PROFİLİ ARTIK SABİT BİR DİZİNDE DEĞİL.
+ *
+ * Tam adı bilinen oyuncu `/futbolcu/<tam-ad>` adresinde, bilinmeyen eski
+ * `/oyuncular/<id>` adresinde yayımlanıyor; eski konumda kalan dosya ise
+ * yönlendirme sayfası. Liste `oyuncular/` diye sabitlenince denetim, taşınan
+ * her oyuncunun profilini yönlendirme sayfasında arayıp "gövde yok" diyordu.
+ * Adres tek çözücüden okunur (services/playerUrl.js).
+ *
+ * KOPYA KAYITLAR listeye GİRMEZ: onların sayfası yok, kanonik kayda
+ * yönlendiriyorlar — profil denetimi kanonik sayfada zaten yapılıyor.
+ */
+const playerUrlTable = (() => {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, "data", "player-url-slugs.json"), "utf8"));
+  } catch {
+    return { entries: [], aliases: [] };
+  }
+})();
+const playerUrls = createPlayerUrlResolver(playerUrlTable);
+const playerProfilePages = [...new Set(players
+  .filter((player) => playerUrls.resolveId(player.id) === player.id)
+  .map((player) => playerUrls.playerPagePath(player.id)))];
 const newsArticlePages = (Array.isArray(newsData) ? newsData : newsData.items || newsData.news || [])
   .filter((article) => article && String(article.status || "").toLowerCase() === "verified" && article.slug && Array.isArray(article.body))
   .map((article) => `haber/${article.slug}.html`);
@@ -377,17 +400,30 @@ function checkJson() {
       rewrites.get("/oyuncular/:slug") === "/oyuncular/:slug.html",
       "vercel rewrite missing /oyuncular/:slug"
     );
-    expect(
-      redirects.get("/oyuncular/edina-dzeko") === "/oyuncular/edin-dzeko.html",
-      "vercel redirect missing /oyuncular/edina-dzeko"
-    );
-    expect(
-      redirects.get("/oyuncular/edina-dzeko.html") === "/oyuncular/edin-dzeko.html",
-      "vercel redirect missing /oyuncular/edina-dzeko.html"
-    );
+    // YAZIM HATASI ADRESİ KANONİK PROFİLE GİTMELİ — hedef SABİT DEĞİL.
+    //
+    // Kontrol hedefi "/oyuncular/edin-dzeko.html" diye sabit yazıyordu.
+    // Džeko tam isimli adrese taşınınca bu doğru yanıt olmaktan çıktı ve
+    // kontrol, zinciri tek atlamaya indiren doğru kuralı hatalı saydı.
+    // Kilitlenmesi gereken şey yol değil, niyet: bu adres oyuncunun
+    // güncel kanonik sayfasına, tek atlamada gitmeli.
+    const dzekoDestination = `/${playerUrls.playerPagePath("edin-dzeko").replace(/\.html$/, "")}`
+      .replace(/^\/oyuncular\/(.*)$/, "/oyuncular/$1.html");
+    for (const source of ["/oyuncular/edina-dzeko", "/oyuncular/edina-dzeko.html"]) {
+      expect(
+        redirects.get(source) === dzekoDestination,
+        `vercel redirect missing ${source} (beklenen hedef ${dzekoDestination}, bulunan ${redirects.get(source)})`
+      );
+    }
     for (const redirect of redirectRules) {
       const destination = redirect.destination || "";
-      if (!destination.startsWith("/") || destination.includes(":path*")) {
+      // PARAMETRELİ HEDEF TEK BİR DOSYAYA KARŞILIK GELMEZ.
+      //
+      // Kontrol yalnızca `:path*` kalıbını atlıyordu; `/oyuncular/:slug`
+      // gibi tek parçalı bir parametre "oyuncular/:slug.html" diye aranıp
+      // "hedef yok" hatası veriyordu. Kural parametrenin BİÇİMİ değil,
+      // varlığı: iki nokta taşıyan her hedef bir kalıptır.
+      if (!destination.startsWith("/") || destination.includes(":")) {
         continue;
       }
 
@@ -448,6 +484,11 @@ function checkJson() {
 
 function pageUrl(page) {
   if (columnArticlePages.includes(page) || newsArticlePages.includes(page)) {
+    return `https://www.futbolradar.com/${page.replace(/\.html$/i, "")}`;
+  }
+  // Tam isimli oyuncu adresleri uzantısız yayımlanıyor; canonical, site
+  // haritası ve bu denetim aynı biçimi kullanmak zorunda.
+  if (page.startsWith("futbolcu/")) {
     return `https://www.futbolradar.com/${page.replace(/\.html$/i, "")}`;
   }
   return `https://www.futbolradar.com/${page === "index.html" ? "" : page}`;
@@ -537,9 +578,15 @@ function checkSeoAndLinks() {
       expect(html.includes('data-api-target="player-detail"'), `${page}: missing player profile hydration target`);
       expect(html.includes('data-prerendered="1"'), `${page}: player profile must be prerendered for SEO`);
       // Doğrulanmamış kayıtta ölçüm bölümleri BASILMAZ; beklenen tek şey
-      // gerekçe kartı. Doğrulanmış kayıtta kimlik ızgarası her zaman çizilir.
+      // gerekçe kartı. Her profilde ise "Futbolcu 360" kimlik kartı çizilir.
+      //
+      // Kontrol artık bir BAŞLIK METNİ aramıyor: eskiden "Kimlik ve Kulüp"
+      // dizgesi aranıyordu ve o başlık 360 yığınına taşınınca (aynı bilgi,
+      // yeni başlık) kontrol sayfa gerçekte doluyken "gövde yok" diyordu.
+      // Bölüm işaretçisi başlık metninden bağımsız ve yeniden adlandırmaya
+      // dayanıklı.
       expect(
-        html.includes("Doğrulanmış veri bekleniyor") || html.includes("Kimlik ve Kulüp"),
+        html.includes("Doğrulanmış veri bekleniyor") || html.includes('data-p360-section="identity"'),
         `${page}: player profile body missing`
       );
       expect(html.includes("static-profile-links"), `${page}: missing static profile comparison links`);
@@ -933,8 +980,8 @@ async function callEndpoint(name, url = `/api/${name}`) {
 
 async function checkApi() {
   const cacheHeaders = {
-    matches: "public, s-maxage=60, stale-while-revalidate=180",
-    standings: "public, s-maxage=300, stale-while-revalidate=900",
+    matches: "no-store",
+    standings: "no-store",
     teams: "public, s-maxage=1800, stale-while-revalidate=7200",
     players: "public, s-maxage=3600, stale-while-revalidate=21600",
     "player-detail": "public, s-maxage=3600, stale-while-revalidate=21600",
@@ -960,7 +1007,7 @@ async function checkApi() {
       expect(!Number.isNaN(Date.parse(payload.updatedAt)), `${endpoint}: invalid updatedAt`);
     }
     expect(payload && Array.isArray(payload.data), `${endpoint}: data must be array`);
-    const expectedBrowserCache = endpoint === "health" ? "no-store" : "public, max-age=0";
+    const expectedBrowserCache = ["health", "matches", "standings"].includes(endpoint) ? "no-store" : "public, max-age=0";
     expect(response.headers["cache-control"] === expectedBrowserCache, `${endpoint}: browser cache header mismatch`);
     expect(
       response.headers["cdn-cache-control"] === cacheHeaders[endpoint],
