@@ -167,6 +167,22 @@ function find(rows, name) {
   return rows.filter((row) => row.name === name)[0];
 }
 
+/**
+ * İstemcinin akışa GERÇEKTEN abone olmasını bekler.
+ *
+ * `data-refresh.js` bağlanmadan önce sayfanın bir süre açık kalmasını
+ * şart koşuyor (oyalanma kuralı: içinden geçilen sayfa boşuna bağlantı
+ * açmasın). Test bunu varsaymak yerine sunucu tarafında beklerse hem
+ * gerçek davranışı sürmüş olur hem de sabit bir gecikmeye bel bağlamaz.
+ */
+async function waitForSubscriber(timeout = 15000) {
+  const end = Date.now() + timeout;
+  while (clients.size === 0) {
+    if (Date.now() > end) assert.fail("istemci canlı skor akışına abone olmadı");
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
 (async () => {
   await new Promise((resolve) => server.listen(PORT, "127.0.0.1", resolve));
 
@@ -211,6 +227,7 @@ function find(rows, name) {
       page.on("framenavigated", (frame) => { if (frame === page.mainFrame()) navigations.push(frame.url()); });
 
       // 2) 1-0
+      await waitForSubscriber();
       state.matches = [liveMatch(1, 0)];
       broadcast();
       rows = await waitFor(page, (list) => (find(list, "Ev Sahibi FK") || {}).points === 6, `${label} 1-0 sonrası ev sahibi 6 puana çıkmalı`);

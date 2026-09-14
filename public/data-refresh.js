@@ -384,6 +384,7 @@
   }
 
   function stopStream() {
+    if (connectTimer) { window.clearTimeout(connectTimer); connectTimer = null; }
     if (stream) { stream.close(); stream = null; }
   }
 
@@ -397,13 +398,53 @@
     }, FALLBACK_POLL_MS);
   }
 
-  function connectStream() {
-    if (!core || stream || document.hidden) return;
-    if (!window.EventSource) return scheduleFallback();
+  /**
+   * AKIŞ AÇMANIN BİR BEDELİ VAR.
+   *
+   * Uç nokta istemci başına dakikada 30 bağlantı kabul ediyor
+   * (server/liveScoreStreamRoute.js). Katman her puan durumu yüzeyinde
+   * KOŞULSUZ bağlanınca, sayfalar arasında hızlı gezinen bir okuyucu
+   * (ve tıklanabilirlik denetimi) o sınırı aşıp 429 alıyordu: hem konsola
+   * hata düşüyor hem de sunucuya, kimsenin okumadığı sayfalar için
+   * bağlantı açılıyordu.
+   *
+   * Üç kural bunu kapatıyor:
+   *
+   *   1. OYALANMA ŞARTI. Sayfa en az DWELL_MS boyunca açık ve görünür
+   *      kalmadan bağlanılmaz. İçinden geçilen sayfa hiç bağlantı açmaz —
+   *      zaten canlı tabloyu göremeyecek kadar kısa duruluyor.
+   *   2. TEK AKIŞ. Sayfada `app.js` varsa canlı skor akışını o zaten
+   *      açıyor; ikinci bir bağlantı aynı paketi iki kez çekmek olurdu.
+   *   3. HATADA YENİDEN DENEME YOK. Akış düşerse (429 dahil) yedek
+   *      yoklamaya geçilir ve sayfa ömrü boyunca tekrar denenmez; aksi
+   *      hâlde sınırı aşan istemci hata fırtınası üretir.
+   */
+  var DWELL_MS = 2500;
+  var streamDisabled = false;
+  var connectTimer = null;
+
+  function appOwnsStream() {
+    return Boolean(document.querySelector('script[src*="app.js"]'));
+  }
+
+  function openStream() {
+    connectTimer = null;
+    if (!core || stream || streamDisabled || document.hidden) return;
+    if (!window.EventSource || appOwnsStream()) return scheduleFallback();
     stream = new EventSource("/api/live-score-stream");
     stream.addEventListener("snapshot", handleSnapshot);
     stream.addEventListener("stream-end", function () { stopStream(); connectStream(); });
-    stream.onerror = function () { stopStream(); scheduleFallback(); };
+    stream.onerror = function () {
+      stopStream();
+      streamDisabled = true;
+      scheduleFallback();
+    };
+  }
+
+  function connectStream() {
+    if (!core || stream || streamDisabled || document.hidden || connectTimer) return;
+    if (!window.EventSource || appOwnsStream()) return scheduleFallback();
+    connectTimer = window.setTimeout(openStream, DWELL_MS);
   }
 
   document.querySelectorAll(".standings-tabs__radio").forEach(function (radio) {
