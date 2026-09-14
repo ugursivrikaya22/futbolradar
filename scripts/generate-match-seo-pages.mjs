@@ -581,12 +581,13 @@ function leagueLinks(entry, locale, base) {
     // EN karşılığı olmayan yarışmalar var (1. Lig); katalog kaydına bakıp
     // bağlantı basmak, olmayan bir sayfaya götürüyordu.
     const enPage = catalog ? `en/${catalog.slugEn}.html` : null;
-    return { standings: enPage && fileExists(enPage) ? `${base}${enPage}` : null, league: null };
+    return { standings: enPage && fileExists(enPage) ? `${base}${enPage}` : null, league: null, leaders };
   }
   const trPage = catalog ? `${catalog.slugTr}.html` : null;
   return {
     standings: trPage && fileExists(trPage) ? `${base}${catalog.slugTr}` : null,
-    league: fileExists(leaguePage) ? `${base}${leaguePage}` : null
+    league: fileExists(leaguePage) ? `${base}${leaguePage}` : null,
+    leaders
   };
 }
 

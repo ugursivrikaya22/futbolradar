@@ -70,7 +70,12 @@
   // Takım sayfalarındaki ("/galatasaray-puan-durumu") kompakt tablo. Bu
   // yüzey bugüne kadar hiç tazelenmiyordu: derleme anındaki satırlarla
   // kalıyordu. Süper Lig tablosunu gösteriyor.
-  var teamBody = document.querySelector('[data-api-target="standings"] .table-body');
+  // NİTELİK ELEMANIN KENDİSİNDE. Üretilen takım sayfasında
+  // `data-api-target="standings"` ile `.table-body` AYNI div'de
+  // (`galatasaray-puan-durumu.html`); alt seçici null dönüyordu ve dört takım
+  // sayfası canlı katmanı hiç almıyordu. `data-highlight-team` koşulu,
+  // merkezdeki `puan-durumu.html` yüzeyini app.js'in sahipliğinde bırakır.
+  var teamBody = document.querySelector('.table-body[data-api-target="standings"][data-highlight-team], [data-api-target="standings"][data-highlight-team] .table-body');
   var leaderMetric = path === "gol-kralligi" ? "goals" : path === "asist-kralligi" ? "assists" : null;
   var leadersTable = leaderMetric ? document.querySelector(".evergreen-table tbody") : null;
   // Lider listeleri bu turda yalnızca Türkçe (yukarıdaki nota bakınız).
@@ -135,6 +140,8 @@
   var core = window.FutbolRadarLiveStandings || null;
   var liveMatches = [];
   var leagueState = Object.create(null);
+  // Resmî tabloya girdiği DOĞRULANMIŞ maçlar (lig ayrımı gözetmeden).
+  var settledIds = Object.create(null);
 
   function stateFor(id) {
     if (!leagueState[id]) leagueState[id] = { official: [], updatedAt: null, baselines: {}, settled: [], awaitingOfficial: [], settleTimer: null };
@@ -151,7 +158,7 @@
     if (!core || !state.official.length) return { rows: state.official, live: false };
 
     var merged = core.applyLiveMatches(state.official, liveMatches, {
-      leagueIds: [id, leagueNameOf(id)],
+      leagueIds: leagueNamesOf(id),
       settledMatchIds: state.settled
     });
 
@@ -176,16 +183,24 @@
     return { rows: merged.rows, live: merged.appliedMatchIds.length > 0 };
   }
 
+  // YEDEK SAĞLAYICI KİMLİK TAŞIMIYOR. `services/providers/footballProvider.js`
+  // canlı maça yalnızca yarışmanın ADInı yazıyor (`league`); kimlik alanı yok.
+  // Kupaların adı burada olmayınca Şampiyonlar Ligi maçı "başka lig" diye
+  // eleniyor ve o sayfa hiç oynamıyordu. Her kimlik için bilinen adların
+  // TAMAMI aday olarak veriliyor.
   var leagueNames = {
-    "super-lig": "Süper Lig",
-    "1-lig": "Trendyol 1. Lig",
-    "premier-league": "Premier League",
-    "la-liga": "La Liga",
-    "serie-a": "Serie A",
-    "bundesliga": "Bundesliga",
-    "ligue-1": "Ligue 1"
+    "super-lig": ["Süper Lig", "Trendyol Süper Lig", "Super Lig"],
+    "1-lig": ["Trendyol 1. Lig", "1. Lig", "TFF First League"],
+    "premier-league": ["Premier League", "Premier Lig"],
+    "la-liga": ["La Liga", "Primera Division", "LaLiga"],
+    "serie-a": ["Serie A"],
+    "bundesliga": ["Bundesliga"],
+    "ligue-1": ["Ligue 1"],
+    "sampiyonlar-ligi": ["UEFA Champions League", "Champions League", "Şampiyonlar Ligi"],
+    "avrupa-ligi": ["UEFA Europa League", "Europa League", "Avrupa Ligi"],
+    "konferans-ligi": ["UEFA Europa Conference League", "UEFA Conference League", "Conference League", "Konferans Ligi"]
   };
-  function leagueNameOf(id) { return leagueNames[id] || id; }
+  function leagueNamesOf(id) { return [id].concat(leagueNames[id] || []); }
 
   function liveAttrs(row) {
     return row && row.live ? ' data-standings-live="true"' : "";
@@ -298,7 +313,10 @@
       state.updatedAt = payload.updatedAt;
       // Resmî tablo tazelendi: hangi canlı maçın artık gerekmediğini burada
       // öğreniyoruz. Bu olmadan biten bir maç iki kez sayılırdı.
-      if (core) state.settled = core.settledMatchIds(state.baselines, rows);
+      if (core) {
+        state.settled = core.settledMatchIds(state.baselines, rows);
+        state.settled.forEach(function (matchId) { settledIds[String(matchId)] = true; });
+      }
       paintLeague(id);
     });
   }
@@ -366,14 +384,45 @@
   var FALLBACK_POLL_MS = 30000;
   var stream = null;
   var fallbackTimer = null;
+  // Akıştan düşmüş ama resmî tabloya henüz girmemiş maçlar.
+  var retained = Object.create(null);
 
   function paintAll() {
     activeLeagueIds().forEach(paintLeague);
   }
 
+  /**
+   * AKIŞ YALNIZCA OYNANAN MAÇI TAŞIYOR.
+   *
+   * Sunucudaki hub paketi `isLiveMatch` ile süzüyor
+   * (`services/liveScoreStream.js`): maç bitince FT olarak GELMİYOR, paketten
+   * DÜŞÜYOR. Etkisini o anda bırakmak tabloyu geri götürürdü — resmî tablo o
+   * maçı ancak bir sonraki senkronda sayıyor. Bu yüzden düşen maçın son
+   * görülen hâli "bitmiş" olarak saklanıyor; resmî tablo onu saydığı an
+   * (`settledIds`) bırakılıyor.
+   */
   function acceptMatches(matches) {
     if (!Array.isArray(matches)) return;
-    liveMatches = matches;
+    var incoming = Object.create(null);
+    matches.forEach(function (match) {
+      var id = match && match.id !== null && match.id !== undefined ? String(match.id) : "";
+      if (id) incoming[id] = true;
+    });
+    liveMatches.forEach(function (match) {
+      var id = match && match.id !== null && match.id !== undefined ? String(match.id) : "";
+      if (!id || incoming[id] || retained[id] || settledIds[id]) return;
+      var copy = {};
+      Object.keys(match).forEach(function (key) { copy[key] = match[key]; });
+      copy.status = "FT";
+      copy.providerStatus = "FT";
+      copy.live = false;
+      retained[id] = copy;
+    });
+    var carried = Object.keys(retained).filter(function (id) {
+      if (incoming[id] || settledIds[id]) { delete retained[id]; return false; }
+      return true;
+    }).map(function (id) { return retained[id]; });
+    liveMatches = matches.concat(carried);
     paintAll();
   }
 
@@ -392,7 +441,9 @@
     if (fallbackTimer) return;
     fallbackTimer = window.setInterval(function () {
       if (document.hidden) return;
-      json("/api/matches?live=all").then(function (payload) {
+      // 60 saniyelik paylaşım önbelleği olmadan: yedek yoklama 30 saniyede bir
+      // koşuyor, önbellek her ikinci turu aynı yanıtla geçiştiriyordu.
+      json("/api/matches?live=all", true).then(function (payload) {
         acceptMatches((payload && payload.data) || []);
       }).catch(function () { /* canlı katman yoksa resmî tablo durur */ });
     }, FALLBACK_POLL_MS);
@@ -427,10 +478,35 @@
     return Boolean(document.querySelector('script[src*="app.js"]'));
   }
 
+  /**
+   * SAHİBİ APP.JS OLAN SAYFADA PAKET ONDAN GELİR.
+   *
+   * `app.js` aldığı her anlık görüntüyü `futbolradar:score-snapshot` olarak
+   * yayımlıyor. Bunu dinlemeyip yoklamaya düşmek, aynı veriyi ikinci kez
+   * istemek ve tabloyu yarım dakika geriden göstermek olurdu. Paket
+   * gelmiyorsa (app.js akışı hiç açmadıysa) yedek yoklama yine devreye
+   * giriyor — sessizce durmuyor.
+   */
+  var APP_SNAPSHOT_GRACE_MS = 20000;
+  var appSnapshotSeen = false;
+  document.addEventListener("futbolradar:score-snapshot", function (event) {
+    var packet = event && event.detail;
+    if (!packet) return;
+    appSnapshotSeen = true;
+    if (fallbackTimer) { window.clearInterval(fallbackTimer); fallbackTimer = null; }
+    acceptMatches(Array.isArray(packet.matches) ? packet.matches : []);
+  });
+  function awaitAppSnapshot() {
+    window.setTimeout(function () {
+      if (!appSnapshotSeen) scheduleFallback();
+    }, APP_SNAPSHOT_GRACE_MS);
+  }
+
   function openStream() {
     connectTimer = null;
     if (!core || stream || streamDisabled || document.hidden) return;
-    if (!window.EventSource || appOwnsStream()) return scheduleFallback();
+    if (appOwnsStream()) return awaitAppSnapshot();
+    if (!window.EventSource) return scheduleFallback();
     stream = new EventSource("/api/live-score-stream");
     stream.addEventListener("snapshot", handleSnapshot);
     stream.addEventListener("stream-end", function () { stopStream(); connectStream(); });
@@ -443,7 +519,8 @@
 
   function connectStream() {
     if (!core || stream || streamDisabled || document.hidden || connectTimer) return;
-    if (!window.EventSource || appOwnsStream()) return scheduleFallback();
+    if (appOwnsStream()) return awaitAppSnapshot();
+    if (!window.EventSource) return scheduleFallback();
     connectTimer = window.setTimeout(openStream, DWELL_MS);
   }
 
@@ -454,8 +531,13 @@
   window.setInterval(refresh, 60000);
   document.addEventListener("visibilitychange", function () {
     refresh();
-    if (document.hidden) stopStream();
-    else connectStream();
+    if (document.hidden) { stopStream(); return; }
+    connectStream();
+    // Sekme arkaplandayken yerleşme yoklaması duruyor; dönüşte yeniden
+    // kurulmazsa biten maç "canlı" rozetiyle bir sonraki tura kadar kalırdı.
+    Object.keys(leagueState).forEach(function (id) {
+      if (leagueState[id].awaitingOfficial.length) scheduleSettlementCheck(id);
+    });
   });
   connectStream();
 }());

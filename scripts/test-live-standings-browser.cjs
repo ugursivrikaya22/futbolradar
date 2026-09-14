@@ -132,8 +132,29 @@ function check(name, condition, detail) {
   console.log(`  ok  ${name}`);
 }
 
+/**
+ * Takım sayfasındaki kompakt tabloyu okur (sıra, ad, O, P, Av, Mom).
+ *
+ * Bu yüzey tam tablodan farklı: `<table>` değil, `.table-row` div'leri ve
+ * yalnızca altı sütun. Ayrı okuyucu olmasının nedeni bu.
+ */
+async function readTeamRows(page) {
+  return page.$$eval('.table-body[data-api-target="standings"] .table-row', (rows) => rows.map((row) => {
+    const cells = Array.from(row.children).map((cell) => cell.textContent.trim());
+    return {
+      rank: Number(cells[0]),
+      name: cells[1].replace(/(CANLI|LIVE)$/, "").trim(),
+      played: Number(cells[2]),
+      points: Number(cells[3]),
+      goalDifference: Number(String(cells[4]).replace("+", "")),
+      live: row.getAttribute("data-standings-live") === "true",
+      badge: Boolean(row.querySelector(".standings-live-badge"))
+    };
+  }));
+}
+
 /** Tablodaki satırları okur: sıra, ad, O, G, B, M, A, Y, AV, P ve canlı işareti. */
-async function readTable(page) {
+async function readFullTable(page) {
   return page.$$eval(".evergreen-table tbody tr", (rows) => rows.map((row) => {
     const cells = Array.from(row.querySelectorAll("td, th")).map((cell) => cell.textContent.trim());
     return {
@@ -152,6 +173,9 @@ async function readTable(page) {
     };
   }));
 }
+
+// Sürülen yüzeye göre satır okuyucusu; hedef değiştiğinde ayarlanıyor.
+let readTable = readFullTable;
 
 async function waitFor(page, predicate, message, timeout = 10000) {
   const end = Date.now() + timeout;
@@ -199,7 +223,12 @@ async function waitForSubscriber(timeout = 15000) {
   const TARGETS = [
     { path: "/super-lig-puan-durumu.html", viewport: { width: 1280, height: 900 }, badge: "CANLI", lang: "tr" },
     { path: "/super-lig-puan-durumu.html", viewport: { width: 390, height: 844 }, badge: "CANLI", lang: "tr" },
-    { path: "/en/super-lig-standings.html", viewport: { width: 390, height: 844 }, badge: "LIVE", lang: "en" }
+    { path: "/en/super-lig-standings.html", viewport: { width: 390, height: 844 }, badge: "LIVE", lang: "en" },
+    // TAKIM SAYFASI AYRI BİR YÜZEY. Nitelikler aynı elemanda duruyor ve
+    // satırlar `<table>` değil; burada sürülmediği için bu dört sayfa
+    // (Galatasaray/Fenerbahçe/Beşiktaş/Trabzonspor) canlı katmanı hiç
+    // almadığı hâlde testler geçiyordu.
+    { path: "/galatasaray-puan-durumu.html", viewport: { width: 390, height: 844 }, badge: "CANLI", lang: "tr", shape: "team" }
   ];
 
   try {
@@ -211,7 +240,8 @@ async function waitForSubscriber(timeout = 15000) {
       page.on("pageerror", (error) => consoleErrors.push(String(error)));
       page.on("console", (message) => { if (message.type() === "error") consoleErrors.push(message.text()); });
 
-      const label = `${target.lang}/${viewport.width}px`;
+      const label = `${target.lang}/${viewport.width}px${target.shape === "team" ? "/takım" : ""}`;
+      readTable = target.shape === "team" ? readTeamRows : readFullTable;
       state.absorbed = false;
       state.matches = [];
 
@@ -235,9 +265,14 @@ async function waitForSubscriber(timeout = 15000) {
       let away = find(rows, "Deplasman SK");
       check(`${label} 1-0: ev sahibi 6 puan`, home.points === 6);
       check(`${label} 1-0: ev sahibi zirvede`, home.rank === 1);
-      check(`${label} 1-0: oynanan maç 2, galibiyet 2`, home.played === 2 && home.won === 2);
-      check(`${label} 1-0: atılan/yenen gol ve averaj doğru`, home.goalsFor === 3 && home.goalsAgainst === 1 && home.goalDifference === 2);
-      check(`${label} 1-0: rakip 3 puanda kalır ve geriler`, away.points === 3 && away.lost === 1 && away.rank === 3);
+      check(`${label} 1-0: oynanan maç 2`, home.played === 2);
+      check(`${label} 1-0: averaj +2`, home.goalDifference === 2);
+      check(`${label} 1-0: rakip 3 puanda kalır ve geriler`, away.points === 3 && away.rank === 3);
+      if (target.shape !== "team") {
+        check(`${label} 1-0: galibiyet 2`, home.won === 2);
+        check(`${label} 1-0: atılan/yenen gol doğru`, home.goalsFor === 3 && home.goalsAgainst === 1);
+        check(`${label} 1-0: rakibin mağlubiyeti 1`, away.lost === 1);
+      }
       check(`${label} 1-0: yalnızca maçtaki takımlar canlı işaretli`, home.badge && away.badge && !find(rows, "Üçüncü Takım").badge);
       const badgeText = await page.$eval(".standings-live-badge", (node) => node.textContent.trim());
       check(`${label} rozet metni "${target.badge}"`, badgeText === target.badge, badgeText);
@@ -249,7 +284,7 @@ async function waitForSubscriber(timeout = 15000) {
       home = find(rows, "Ev Sahibi FK");
       away = find(rows, "Deplasman SK");
       check(`${label} 1-1: iki takım da 4 puan`, home.points === 4 && away.points === 4);
-      check(`${label} 1-1: beraberlik sayısı 1`, home.drawn === 1 && away.drawn === 1);
+      if (target.shape !== "team") check(`${label} 1-1: beraberlik sayısı 1`, home.drawn === 1 && away.drawn === 1);
       check(`${label} 1-1: ikisi de üçüncü takımın üstünde`, home.rank === 1 && away.rank === 2 && find(rows, "Üçüncü Takım").rank === 3);
 
       // 4) 1-2
@@ -259,8 +294,12 @@ async function waitForSubscriber(timeout = 15000) {
       home = find(rows, "Ev Sahibi FK");
       away = find(rows, "Deplasman SK");
       check(`${label} 1-2: deplasman 6 puan ve zirvede`, away.points === 6 && away.rank === 1);
-      check(`${label} 1-2: deplasman averajı +2`, away.goalDifference === 2 && away.goalsFor === 4);
-      check(`${label} 1-2: ev sahibi 3 puanda ve üçüncü`, home.points === 3 && home.lost === 1 && home.rank === 3);
+      check(`${label} 1-2: deplasman averajı +2`, away.goalDifference === 2);
+      check(`${label} 1-2: ev sahibi 3 puanda ve üçüncü`, home.points === 3 && home.rank === 3);
+      if (target.shape !== "team") {
+        check(`${label} 1-2: deplasmanın attığı gol 4`, away.goalsFor === 4);
+        check(`${label} 1-2: ev sahibinin mağlubiyeti 1`, home.lost === 1);
+      }
       check(`${label} 1-2: sıra numaraları tekil`, new Set(rows.map((row) => row.rank)).size === rows.length);
 
       // 5) Maç bitti, resmî tablo henüz saymadı: geçici etki KORUNUR.
@@ -269,6 +308,16 @@ async function waitForSubscriber(timeout = 15000) {
       await new Promise((resolve) => setTimeout(resolve, 300));
       rows = await readTable(page);
       check(`${label} maç bitince tablo geri gitmez`, find(rows, "Deplasman SK").points === 6);
+
+      // 5b) ÜRETİMDEKİ GERÇEK DAVRANIŞ: hub paketi `isLiveMatch` ile süzüyor
+      // (services/liveScoreStream.js), yani biten maç FT olarak GELMEZ,
+      // paketten DÜŞER. Etkisinin o anda bırakılması tabloyu geri götürürdü.
+      state.matches = [];
+      broadcast();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      rows = await readTable(page);
+      check(`${label} maç akıştan düşünce de tablo geri gitmez`, find(rows, "Deplasman SK").points === 6);
+      check(`${label} maç akıştan düşünce canlı işareti sürer`, find(rows, "Deplasman SK").badge);
 
       // 6) Resmî tablo maçı saydı: geçici etki bırakılır, puan iki kez sayılmaz.
       state.absorbed = true;

@@ -482,4 +482,64 @@ test("görev tanımındaki yedi sayfanın hepsi var ve canlı katmanı yükler",
   }
 });
 
+test("takım sayfasının yüzeyi istemcinin seçicisiyle eşleşiyor", () => {
+  // NİTELİK ELEMANIN KENDİSİNDE. Üretilen sayfada `data-api-target` ile
+  // `.table-body` aynı div'de; alt seçici (`[data-api-target] .table-body`)
+  // null döner ve bu dört sayfa canlı katmanı hiç almaz.
+  const html = fs.readFileSync(path.join(root, "galatasaray-puan-durumu.html"), "utf8");
+  assert.match(html, /<div class="table-body" data-api-target="standings" data-highlight-team="galatasaray"/);
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  assert.match(
+    source,
+    /\.table-body\[data-api-target="standings"\]\[data-highlight-team\]/,
+    "istemci seçicisi niteliği elemanın KENDİSİNDE aramalı"
+  );
+  // Merkezdeki tam tablo (`puan-durumu.html`) app.js'in sahipliğinde kalmalı:
+  // orada `data-highlight-team` yok, bu yüzden seçici onu almaz.
+  const central = fs.readFileSync(path.join(root, "puan-durumu.html"), "utf8");
+  assert.ok(!/data-highlight-team/.test(central), "merkez tablo vurgu niteliği taşımamalı");
+});
+
+test("yedek sağlayıcının yalnızca ad taşıyan kupa maçları eşleşiyor", () => {
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  for (const name of ["UEFA Champions League", "UEFA Europa League", "UEFA Europa Conference League"]) {
+    assert.ok(source.includes(name), `${name} lig adı adayları arasında olmalı`);
+  }
+  assert.match(source, /leagueNamesOf/, "adaylar liste olarak verilmeli");
+});
+
+test("yedek yoklama paylaşılan önbelleği atlar", () => {
+  // Yedek yoklama 30 saniyede bir koşuyor; 60 saniyelik paylaşım önbelleği
+  // her ikinci turu aynı yanıtla geçiştiriyordu.
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  assert.match(source, /json\("\/api\/matches\?live=all", true\)/);
+});
+
+test("app.js'in sahibi olduğu sayfada paket ondan alınır", () => {
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  assert.match(source, /futbolradar:score-snapshot/, "app.js'in yayımladığı olay dinlenmeli");
+  assert.match(source, /awaitAppSnapshot/, "paket gelmezse yedek yoklamaya düşülmeli");
+  const app = fs.readFileSync(path.join(root, "app.js"), "utf8");
+  assert.match(app, /futbolradar:score-snapshot/, "app.js olayı yayımlamayı sürdürmeli");
+});
+
+test("akıştan düşen biten maçın etkisi resmî tablo sayana kadar korunur", () => {
+  // Hub paketi `isLiveMatch` ile süzüyor: maç bitince FT olarak gelmez,
+  // paketten düşer. Etkisi o anda bırakılırsa tablo geri giderdi.
+  const hub = fs.readFileSync(path.join(root, "services", "liveScoreStream.js"), "utf8");
+  assert.match(hub, /\.filter\(isLiveMatch\)/, "hub yalnızca oynanan maçı yayımlıyor");
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  assert.match(source, /retained\[id\] = copy;/, "düşen maçın son hâli saklanmalı");
+  assert.match(source, /settledIds\[String\(matchId\)\] = true;/, "resmî tablo sayınca bırakılmalı");
+});
+
+test("sekme geri gelince yerleşme yoklaması yeniden kurulur", () => {
+  const source = fs.readFileSync(path.join(root, "data-refresh.js"), "utf8");
+  assert.match(
+    source,
+    /if \(leagueState\[id\]\.awaitingOfficial\.length\) scheduleSettlementCheck\(id\);/,
+    "arkaplandan dönüşte bekleyen maçlar için yeniden kurulmalı"
+  );
+});
+
 console.log(`\nCanlı puan durumu testleri geçti (${passed} senaryo)`);
