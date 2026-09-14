@@ -3786,32 +3786,24 @@
   }
 
   /**
-   * Hero'nun bant kararı ham `isLiveMatch` yerine bu fonksiyonu kullanır:
-   * sağlayıcı bir maçı hiç "FINISHED"e çevirmezse (iki sağlayıcı aynı maçı
-   * ayrı kayıtla bildirip biri gecikince olduğu gibi) ham kontrol o maçı
-   * GÜNLERCE "canlı" sayardı. Kural `services/featuredMatchSelector.js`
-   * ile AYNI: yaş ve okunabilir skor birlikte denetlenir; büyük kart
-   * doğrulanmamış bir canlılık iddiasını göstermez.
+   * Hero'nun bant kararı ham `isLiveMatch` yerine bu fonksiyonu kullanır.
+   *
+   * TAZELİK KARARI BURADA VERİLMİYOR. Bu blok kendi yaş penceresini
+   * uyguluyordu: yalnızca başlama saatine bakıyor, kaydın son güncellenme
+   * damgasını hiç sormuyordu. Servis tarafı ortak kapıya taşınınca
+   * (services/featuredMatchSelector.js#isLiveMatch → matchStatus#liveVerdict)
+   * iki taraf ayrıştı ve ayrışma ekranda görünür bir hataya döndü: sunucu
+   * hero'ya bugünün Süper Lig maçını basıyor, JS yüklenince istemci aynı
+   * havuzda donmuş bir "canlı" kaydı taze sayıp kartı onunla değiştiriyordu.
+   * Okuyucu için bu, hero kartının açılıştan saniyeler sonra "atlaması".
+   *
+   * Karar LiveGuard'a (app.js#live-freshness-guard, sunucudaki
+   * services/matchStatus.js#liveVerdict'in birebir kopyası) bırakıldı:
+   * gün, başlama saati, son güncellenme damgası ve okunabilir skor orada
+   * denetlenir. Süre penceresi servisle AYNI eşikten geçirilir.
    */
   function featuredIsLiveMatch(match, nowMs) {
-    if (!match) {
-      return false;
-    }
-
-    var status = String((match && (match.status || match.providerStatus)) || "").toUpperCase();
-    var claimsLive = match.live === true ||
-      ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].indexOf(status) !== -1;
-    if (!claimsLive || !hasReadableScore(match)) {
-      return false;
-    }
-
-    var kickoff = featuredKickoffTime(match);
-    if (kickoff.hasTime && isFinite(kickoff.value) && isFinite(nowMs)
-      && nowMs - kickoff.value > FEATURED_IN_PROGRESS_WINDOW_MS) {
-      return false;
-    }
-
-    return true;
+    return LiveGuard.isLive(match, { nowMs: nowMs, graceMs: FEATURED_IN_PROGRESS_WINDOW_MS });
   }
 
   function featuredBandOf(match, nowMs) {
