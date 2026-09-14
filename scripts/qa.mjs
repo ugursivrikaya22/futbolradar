@@ -495,6 +495,37 @@ function pageUrl(page) {
   return `https://www.futbolradar.com/${page === "index.html" ? "" : page}`;
 }
 
+/**
+ * Sayfa, aynı maçın başka bir adresine BİRLEŞTİRİLMİŞ bir kopya mı?
+ *
+ * Bir karşılaşma birden fazla adreste yayınlanabiliyor (maç öncesi sayfa,
+ * fikstür turu sayfası, maç sonu raporu, kök dizindeki eski `-mac-analizi`
+ * deseni). `scripts/unify-match-canonicals.mjs` bunlardan yalnızca tarih
+ * slug'lı `/mac/...` sayfasını kanonik bırakıp geri kalanının canonical ve
+ * `og:url` alanını oraya çeviriyor; kanibalizasyonu kesen şey bu.
+ *
+ * Böyle bir sayfa artık kendi adresini göstermez ve site haritasında
+ * durmaz — ikisi de KURALIN GEREĞİ, ihlali değil.
+ *
+ * Denetim gevşetilmiyor, daraltılıyor: hedefin gerçekten var olduğu ve
+ * KENDİ adresini gösterdiği doğrulanır. Hedefi olmayan ya da hedefi de
+ * başka yeri gösteren bir zincir yine hata.
+ */
+function consolidatedMatchTarget(canonical, page) {
+  if (!canonical || canonical === pageUrl(page)) return "";
+
+  const prefix = "https://www.futbolradar.com/mac/";
+  if (!canonical.startsWith(prefix)) return "";
+
+  const slug = canonical.slice(prefix.length).replace(/\.html$/, "");
+  const targetPage = path.join(root, "mac", `${slug}.html`);
+  if (!fs.existsSync(targetPage)) return "";
+
+  const targetHtml = fs.readFileSync(targetPage, "utf8");
+  const targetCanonical = (targetHtml.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i) || [])[1] || "";
+  return targetCanonical === canonical ? canonical : "";
+}
+
 function checkSeoAndLinks() {
   const titles = new Map();
   const descriptions = new Map();
@@ -518,8 +549,15 @@ function checkSeoAndLinks() {
 
     expect(Boolean(title), `${page}: missing title`);
     expect(Boolean(description), `${page}: missing meta description`);
-    expect(canonical === expectedUrl, `${page}: canonical mismatch`);
-    expect(ogUrl === expectedUrl, `${page}: og:url mismatch`);
+    // Birleştirilmiş maç kopyası kendi adresini değil hedefini gösterir;
+    // `og:url` de canonical ile aynı yeri göstermek zorunda.
+    const consolidatedTarget = consolidatedMatchTarget(canonical, page);
+    if (consolidatedTarget) {
+      expect(ogUrl === consolidatedTarget, `${page}: og:url canonical ile aynı olmalı`);
+    } else {
+      expect(canonical === expectedUrl, `${page}: canonical mismatch`);
+      expect(ogUrl === expectedUrl, `${page}: og:url mismatch`);
+    }
     expect(ogImage.startsWith("https://www.futbolradar.com/"), `${page}: og:image must use the canonical host`);
     if (ogImage.startsWith("https://www.futbolradar.com/")) {
       const ogImagePath = path.join(root, ogImage.replace("https://www.futbolradar.com/", ""));
@@ -607,7 +645,12 @@ function checkSeoAndLinks() {
       }
       expect(html.includes('class="column-author"'), `${page}: missing linked author`);
       expect(html.includes("yazarlar/"), `${page}: missing author archive route`);
-      expect(html.includes('"@type":"Article"'), `${page}: missing article schema`);
+      // Köşe yazısı `NewsArticle` bildiriyor (bkz. generate-column-pages.mjs):
+      // `Article`ın haber alt tipi, `datePublished`/`dateModified`/`author`
+      // üçlüsünü zorunlu kılan ve Google'ın haber yüzeylerinde okuduğu tip.
+      // Denetim yeni tipi ŞART KOŞUYOR: düz `Article`a geri düşmek sessiz
+      // bir gerileme olurdu.
+      expect(html.includes('"@type":"NewsArticle"'), `${page}: missing article schema`);
       expect(html.includes('"additionalType":"https://schema.org/OpinionNewsArticle"'), `${page}: missing opinion article schema`);
     }
 
@@ -716,8 +759,16 @@ function checkSeoAndLinks() {
   for (const page of pages) {
     const html = fs.readFileSync(path.join(root, page), "utf8");
     const robots = (html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i) || [])[1] || "";
+    const canonical = (html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i) || [])[1] || "";
     if (robots === ROBOTS_NOINDEX_FOLLOW) {
       expect(!sitemap.includes(`<loc>${pageUrl(page)}</loc>`), `sitemap must exclude noindex page ${pageUrl(page)}`);
+    } else if (consolidatedMatchTarget(canonical, page)) {
+      // Kanonik olmayan adres site haritasında durmamalı: tarayıcıya "bunu
+      // indeksle" derken sayfa "asıl adres başka" diyor, iki sinyal çelişir.
+      expect(
+        !sitemap.includes(`<loc>${pageUrl(page)}</loc>`),
+        `sitemap must exclude consolidated duplicate ${pageUrl(page)}`
+      );
     } else {
       expect(sitemap.includes(`<loc>${pageUrl(page)}</loc>`), `sitemap missing ${pageUrl(page)}`);
     }

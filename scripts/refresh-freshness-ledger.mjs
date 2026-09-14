@@ -18,6 +18,7 @@
  *   matches        → data/fixture-calendar.json · fetchedAt
  *   transfers      → data/transfers.json · lastVerifiedAt (en yenisi)
  *   news           → data/news-ticker.json · updatedAt
+ *   fixtures       → data/super-lig-fixtures.json · freshness.verifiedAt
  *
  * Damga bulunamayan kayda dokunulmaz: eski değeri kalır ve süresi
  * geçmişse arayüz bunu doğru biçimde "güncelleme gerekli" olarak yazar.
@@ -40,7 +41,10 @@ const VALIDITY_HOURS = {
   players: 24 * 7,
   transfers: 24 * 7,
   news: 24,
-  teamRadar: 24 * 7
+  teamRadar: 24 * 7,
+  // Süper Lig fikstür tarihleri yalnızca GÜNLÜK tam koşuda tazeleniyor
+  // (`run-scheduled-update.mjs` → `full`), o yüzden geçerlilik de 24 saat.
+  fixtures: 24
 };
 
 function readJson(file, fallback) {
@@ -79,6 +83,7 @@ function collectStamps() {
   const calendar = readJson("data/fixture-calendar.json", {});
   const transfers = readJson("data/transfers.json", []);
   const ticker = readJson("data/news-ticker.json", {});
+  const superLigFixtures = readJson("data/super-lig-fixtures.json", {});
 
   const playerStamp = latest(players.map((row) => row.lastProviderSeenAt || row.lastSyncedAt));
 
@@ -95,7 +100,17 @@ function collectStamps() {
     squads: playerStamp,
     matches: latest([calendar.fetchedAt]),
     transfers: latest(transfers.map((row) => row.lastVerifiedAt)),
-    news: latest([ticker.updatedAt])
+    news: latest([ticker.updatedAt]),
+    // `fixtures` KAYDI HİÇ BESLENMİYORDU ve 24 Temmuz 2026'da donmuştu;
+    // `validUntil` 17 Ağustos'ta dolduğu için arayüz o kaydı süresiz
+    // "güncelleme gerekli" gösteriyordu. Gerçek damga `sync-super-lig-
+    // fixture-dates.mjs`'in yazdığı `freshness` bloğunda zaten duruyor —
+    // burada uydurulmuyor, oradan okunuyor.
+    fixtures: latest([
+      superLigFixtures.freshness && superLigFixtures.freshness.verifiedAt,
+      superLigFixtures.freshness && superLigFixtures.freshness.fetchedAt,
+      superLigFixtures.lastVerifiedAt
+    ])
   };
 }
 

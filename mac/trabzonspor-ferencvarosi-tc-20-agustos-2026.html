@@ -51,11 +51,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-<!-- hreflang:start -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/trabzonspor-ferencvarosi-tc-20-agustos-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/trabzonspor-ferencvarosi-tc-august-20-2026" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/mac/trabzonspor-ferencvarosi-tc-20-agustos-2026" />
@@ -129,6 +142,7 @@
       <section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">İlk 11&#039;ler</h2><p class="muted-copy">Bu maç için doğrulanmış ilk 11 verisi mevcut değil.</p></section>
       <section class="msp-section" id="ozet" aria-labelledby="msp-summary-title"><h2 id="msp-summary-title" class="msp-section-title">Maç özeti</h2><p class="msp-more"><a class="detail-link" href="../mac-raporu/trabzonspor-ferencvarosi-tc-2026-08-20.html">Ayrıntılı maç raporu</a></p></section>
       <section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title"><h2 id="msp-standings-title" class="msp-section-title">Maç sonrası puan durumu · UEFA Avrupa Ligi</h2><div class="table-scroll"><table class="standings-table msp-standings"><thead><tr><th scope="col">#</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">Av</th><th scope="col">P</th></tr></thead><tbody><tr><td>1</td><td>Anderlecht</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>0</strong></td></tr><tr class="msp-standings-gap" aria-hidden="true"><td colspan="8">…</td></tr><tr><td>9</td><td>Celtic</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>0</strong></td></tr><tr><td>10</td><td>Crystal Palace</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>0</strong></td></tr><tr class="is-highlight"><td>11</td><td>Ferencvarosi TC</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>0</strong></td></tr><tr><td>12</td><td>Dinamo Zagreb</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>0</strong></td></tr><tr><td>13</td><td>Hapoel Beer Sheva</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td><strong>0</strong></td></tr></tbody></table></div><p class="msp-more"><a href="../avrupa-ligi-puan-durumu">Puan durumunun tamamı</a></p><p class="muted-copy">Son güncelleme: 12 Eylül 2026</p></section>
+      <section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title" data-league-id="3" data-season="2026" data-competition="avrupa-ligi"><h2 id="msp-leaders-title" class="msp-section-title">UEFA Avrupa Ligi gol ve asist krallığı · 2026/27 sezonu</h2><article class="card data-empty"><strong>Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.</strong></article></section>
       <section class="msp-section" id="sonraki-maclar" aria-labelledby="msp-next-title"><h2 id="msp-next-title" class="msp-section-title">Sonraki maçlar</h2><div class="msp-two-col"><article class="card msp-next"><h3>Trabzonspor</h3><ul><li><time datetime="2026-08-23T19:00:00+03:00">23 Ağustos 2026 19:00</time> <a href="../mac/trabzonspor-basaksehir-23-agustos-2026">Trabzonspor – Başakşehir</a> <small>Süper Lig</small></li><li><time datetime="2026-09-06T20:00:00+03:00">6 Eylül 2026 20:00</time> <a href="../mac/trabzonspor-genclerbirligi-6-eylul-2026">Trabzonspor – Gençlerbirliği</a> <small>Süper Lig</small></li><li><time datetime="2026-09-12T20:00:00+03:00">12 Eylül 2026 20:00</time> <a href="../mac/konyaspor-trabzonspor-12-eylul-2026">Konyaspor – Trabzonspor</a> <small>Süper Lig</small></li></ul></article><article class="card data-empty"><strong>Ferencvarosi TC</strong><span>Takımların sonraki maçı doğrulanmış takvime girdiğinde burada listelenir.</span></article></div></section>
       <section class="msp-section" id="son-maclar" aria-labelledby="msp-h2h-title"><h2 id="msp-h2h-title" class="msp-section-title">İki takım arasındaki son maçlar</h2><div class="card msp-h2h"><p class="msp-h2h-summary"><span><b>0</b> Trabzonspor</span><span><b>0</b> Beraberlik</span><span><b>1</b> Ferencvarosi TC</span></p><ul class="msp-h2h-list"><li><time datetime="2026-08-20">20 Ağustos 2026</time> <a href="../mac/trabzonspor-ferencvarosi-tc-20-agustos-2026">Trabzonspor <b>0-1</b> Ferencvarosi TC</a> <small>UEFA Avrupa Ligi</small></li></ul></div></section>
       <section class="msp-section msp-faq" id="ne-zaman" aria-label="Tarih">

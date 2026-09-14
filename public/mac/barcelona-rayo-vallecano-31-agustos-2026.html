@@ -55,6 +55,23 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/barcelona-rayo-vallecano-31-agustos-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/barcelona-rayo-vallecano-august-31-2026" />
@@ -129,6 +146,7 @@
       <section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">İlk 11&#039;ler</h2><p class="muted-copy">Bu maç için doğrulanmış ilk 11 verisi mevcut değil.</p></section>
       <section class="msp-section" id="ozet" aria-labelledby="msp-summary-title"><h2 id="msp-summary-title" class="msp-section-title">Maç özeti</h2><p class="msp-more"><a class="detail-link" href="../mac-raporu/barcelona-rayo-vallecano-2026-08-31.html">Ayrıntılı maç raporu</a></p></section>
       <section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title"><h2 id="msp-standings-title" class="msp-section-title">Maç sonrası puan durumu · LaLiga</h2><div class="table-scroll"><table class="standings-table msp-standings"><thead><tr><th scope="col">#</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">Av</th><th scope="col">P</th></tr></thead><tbody><tr class="is-highlight"><td>1</td><td>Barcelona</td><td>4</td><td>4</td><td>0</td><td>0</td><td>15</td><td><strong>12</strong></td></tr><tr><td>2</td><td>Alaves</td><td>4</td><td>3</td><td>1</td><td>0</td><td>7</td><td><strong>10</strong></td></tr><tr><td>3</td><td>Sevilla</td><td>5</td><td>3</td><td>1</td><td>1</td><td>2</td><td><strong>10</strong></td></tr><tr class="msp-standings-gap" aria-hidden="true"><td colspan="8">…</td></tr><tr><td>12</td><td>Espanyol</td><td>4</td><td>1</td><td>1</td><td>2</td><td>1</td><td><strong>4</strong></td></tr><tr><td>13</td><td>Racing Santander</td><td>4</td><td>1</td><td>1</td><td>2</td><td>-1</td><td><strong>4</strong></td></tr><tr class="is-highlight"><td>14</td><td>Rayo Vallecano</td><td>4</td><td>1</td><td>1</td><td>2</td><td>-3</td><td><strong>4</strong></td></tr><tr><td>15</td><td>Getafe</td><td>4</td><td>1</td><td>1</td><td>2</td><td>-3</td><td><strong>4</strong></td></tr><tr><td>16</td><td>Celta Vigo</td><td>5</td><td>0</td><td>3</td><td>2</td><td>-3</td><td><strong>3</strong></td></tr></tbody></table></div><p class="msp-more"><a href="../la-liga-puan-durumu">Puan durumunun tamamı</a></p><p class="muted-copy">Son güncelleme: 12 Eylül 2026</p></section>
+      <section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title" data-league-id="140" data-season="2026" data-competition="la-liga"><h2 id="msp-leaders-title" class="msp-section-title">LaLiga gol ve asist krallığı · 2026/27 sezonu</h2><article class="card data-empty"><strong>Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.</strong></article></section>
       <section class="msp-section" id="son-maclar" aria-labelledby="msp-h2h-title"><h2 id="msp-h2h-title" class="msp-section-title">İki takım arasındaki son maçlar</h2><div class="card msp-h2h"><p class="msp-h2h-summary"><span><b>1</b> Barcelona</span><span><b>0</b> Beraberlik</span><span><b>0</b> Rayo Vallecano</span></p><ul class="msp-h2h-list"><li><time datetime="2026-08-31">31 Ağustos 2026</time> <a href="../mac/barcelona-rayo-vallecano-31-agustos-2026">Barcelona <b>5-2</b> Rayo Vallecano</a> <small>LaLiga</small></li></ul></div></section>
       <section class="msp-section msp-faq" id="ne-zaman" aria-label="Tarih">
       <article class="card msp-qa"><h2>Barcelona - Rayo Vallecano maçı ne zaman?</h2><p>Barcelona - Rayo Vallecano maçı 31 Ağustos 2026 Pazartesi tarihinde LaLiga kapsamında oynandı.</p></article>

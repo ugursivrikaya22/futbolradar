@@ -48,6 +48,7 @@ import {
   hasScore,
   heroHtml,
   istanbulIso,
+  leadersSectionHtml,
   lineupsSectionHtml,
   longDate,
   nextMatchesSectionHtml,
@@ -60,7 +61,8 @@ import {
   statsSectionHtml,
   summarySectionHtml,
   teamSlug,
-  whenSectionHtml
+  whenSectionHtml,
+  faqEntries
 } from "./lib/matchSeoPage.mjs";
 
 const require = createRequire(import.meta.url);
@@ -90,6 +92,7 @@ const { sameClub } = require("../services/superLigTeams.js");
 const { teamHubHref } = require("../services/teamHubLinks.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { calculateMatchRadar } = require("../services/matchRadarService.js");
+const { resolveMatchLeaders } = require("../services/competitionLeaders.js");
 const { getPlayers } = require("../services/playerService.js");
 const { normalizeText } = require("../api/_utils.js");
 const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.js");
@@ -553,9 +556,26 @@ function teamLinks(teamName, locale, base) {
   return { page: null, fixtures: null, standings: null };
 }
 
+/**
+ * LİGE ÖZEL KRALLIK SAYFALARI. `gol-kralligi.html` / `asist-kralligi.html`
+ * YALNIZCA Süper Lig tablosunu yayınlar; başka bir ligin maç sayfasından
+ * oraya bağlantı vermek, kullanıcıyı yanlış ligin tablosuna götürür. Bu
+ * yüzden bağlantı yarışma kimliğine bakarak verilir, hiçbir lige varsayılan
+ * olarak düşülmez.
+ */
+const LEADER_PAGES = {
+  "super-lig": { tr: { scorers: "gol-kralligi.html", assists: "asist-kralligi.html" } }
+};
+
 function leagueLinks(entry, locale, base) {
   const catalog = STANDINGS_LEAGUES[entry.competitionId];
   const leaguePage = `lig/${entry.competitionId}.html`;
+  const leaderPages = (LEADER_PAGES[entry.competitionId] || {})[locale] || null;
+  const leaderHref = (relative) => (relative && fileExists(relative) ? `${base}${relative}` : null);
+  const leaders = {
+    scorers: leaderPages ? leaderHref(leaderPages.scorers) : null,
+    assists: leaderPages ? leaderHref(leaderPages.assists) : null
+  };
   if (locale === "en") {
     // KATALOGDA OLMAK, SAYFANIN ÜRETİLDİĞİ ANLAMINA GELMEZ. TR sayfası olup
     // EN karşılığı olmayan yarışmalar var (1. Lig); katalog kaydına bakıp
@@ -580,6 +600,18 @@ function pageTitles(entry, state, locale, disambiguate) {
   const score = hasScore(entry.score) ? `${entry.score.home}-${entry.score.away}` : "";
   const day = shortDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
+  // Başlık "…Hangi Kanalda?" diye soruyor; SERP parçacığı da cevabı
+  // taşımalı, yoksa okuyucu tıklamadan önce cevabı göremiyor. Kanal
+  // açıklamanın BAŞINA yakın duruyor: `normalize-meta` 160 karakterden
+  // sonrasını kesiyor, kuyruğa yazılan kanal parçacıkta görünmezdi.
+  // `broadcastChannel()` yalnızca DOĞRULANMIŞ kanalı döndürüyor: elle
+  // doğrulama → yayıncının kendi akışının taraması → sağlayıcı alanı.
+  // Lig düzeyindeki hak haritası (`services/broadcastRights.js`) buraya da
+  // hiçbir yere de yazılmıyor; o harita yalnızca hangi akışın taranacağını
+  // söylüyor. Bilinmiyorsa açıklamada kanal hiç geçmiyor — tahmin edilen
+  // bir kanal adı SERP'te doğrulanmış gibi okunurdu.
+  const { broadcastChannel } = require("../services/broadcastSchedule.js");
+  const channel = state === "pre" ? broadcastChannel(entry) : "";
   let title;
   let description;
   let h1;
@@ -607,7 +639,9 @@ function pageTitles(entry, state, locale, disambiguate) {
     } else {
       title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
-      description = `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
+      description = channel
+        ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
+        : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
     }
   } else if (state === "live") {
     title = `${home} ${entry.score.home}-${entry.score.away} ${away} Live Score & Commentary`;
@@ -632,7 +666,9 @@ function pageTitles(entry, state, locale, disambiguate) {
   } else {
     title = `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
     h1 = `${home} vs ${away}`;
-    description = `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
+    description = channel
+      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
+      : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
   }
   if (disambiguate) title = `${title} (${day})`;
   return { title: `${title} | FutbolRadar`, description, h1 };
@@ -641,7 +677,17 @@ function pageTitles(entry, state, locale, disambiguate) {
 function schemaFor(entry, state, locale, ctx, urls) {
   const text = STR[locale];
   const startDate = istanbulIso(entry.kickoff);
-  const eventStatus = state === "postponed" ? "https://schema.org/EventPostponed" : state === "cancelled" ? "https://schema.org/EventCancelled" : state === "post" ? null : "https://schema.org/EventScheduled";
+  // `EventStatusType` yalnızca ŞU değerleri tanır: EventScheduled,
+  // EventCancelled, EventPostponed, EventRescheduled, EventMovedOnline.
+  // "EventCompleted" diye bir değer YOK — yazılırsa Google alanı geçersiz
+  // sayıp atar. Oynanmış maç "planlandığı gibi gerçekleşti" demektir;
+  // doğru değer EventScheduled'dır. Bitmiş sayfalarda alan eskiden hiç
+  // basılmıyordu; artık maçın gerçekleştiği de bildiriliyor.
+  const eventStatus = state === "postponed"
+    ? "https://schema.org/EventPostponed"
+    : state === "cancelled"
+      ? "https://schema.org/EventCancelled"
+      : "https://schema.org/EventScheduled";
   const name = state === "post" && hasScore(entry.score)
     ? `${entry.homeTeam} ${entry.score.home}-${entry.score.away} ${entry.awayTeam}`
     : `${entry.homeTeam} ${locale === "en" ? "vs" : "-"} ${entry.awayTeam}`;
@@ -667,6 +713,24 @@ function schemaFor(entry, state, locale, ctx, urls) {
       inLanguage: locale === "en" ? "en" : "tr"
     });
   }
+  // FAQPage — soru-cevaplar sayfadaki "sık sorulanlar" bölümüyle AYNI
+  // kaynaktan (`faqEntries`) geliyor. Bölüm her durumda basıldığı için
+  // şema da her sayfada geçerli; görünmeyen soru bildirilmiyor.
+  const faq = faqEntries(entry, ctx);
+  if (faq.length) {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.note ? `${item.answer} ${item.note}` : item.answer
+        }
+      }))
+    });
+  }
+
   const crumbs = [
     { "@type": "ListItem", position: 1, name: text.breadcrumbHome, item: locale === "en" ? `${DOMAIN}/en` : `${DOMAIN}/` },
     { "@type": "ListItem", position: 2, name: text.allMatches, item: `${DOMAIN}/${locale === "en" ? HUB_EN.replace(/\.html$/, "") : HUB_TR.replace(/\.html$/, "")}` }
@@ -718,6 +782,9 @@ function pageHtml(entry, locale, options) {
     homeAbsolute: toAbsolute(home.page),
     awayAbsolute: toAbsolute(away.page),
     leagueAbsolute: toAbsolute(league.league || league.standings),
+    leagueHref: league.league || league.standings || null,
+    leadersScorersHref: league.leaders.scorers,
+    leadersAssistsHref: league.leaders.assists,
     homeLogo: logoFor(entry.homeTeam, entry.homeTeamLogo),
     awayLogo: logoFor(entry.awayTeam, entry.awayTeamLogo),
     competitionName,
@@ -736,6 +803,9 @@ function pageHtml(entry, locale, options) {
     away: nextFor(entry.awayTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) }))
   };
   const table = standingsFor(entry);
+  // Liderlik tablosu maçın KENDİ lig kimliği + sezonuyla çözülür; kayıtta
+  // kimlik yoksa bölüm "veri yok" der, başka bir ligin tablosunu basmaz.
+  const leaders = resolveMatchLeaders(entry);
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
 
   let sections = [];
@@ -747,6 +817,7 @@ function pageHtml(entry, locale, options) {
       lineupsSectionHtml(detail, analysis, ctx),
       summarySectionHtml(detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
+      leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),
       h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx)
@@ -758,6 +829,7 @@ function pageHtml(entry, locale, options) {
       statsSectionHtml(detail.statistics, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
+      leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx)
     ];
@@ -773,6 +845,7 @@ function pageHtml(entry, locale, options) {
       h2hSectionHtml(h2h, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),
+      leadersSectionHtml(leaders, ctx),
       analysisSectionHtml(radar, detail.prediction, ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       eventsSectionHtml([], ctx),

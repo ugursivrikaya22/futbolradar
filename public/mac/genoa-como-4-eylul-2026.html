@@ -55,6 +55,23 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/genoa-como-4-eylul-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/genoa-como-september-4-2026" />
@@ -130,6 +147,7 @@
       <section class="msp-section" id="istatistik" data-msp-stats aria-labelledby="msp-stats-title"><h2 id="msp-stats-title" class="msp-section-title">Maç istatistikleri</h2><div class="card msp-stats-shell" data-msp-stats-body><p class="muted-copy" data-msp-stats-note>İstatistikler maç başladığında burada canlı olarak açılır: topla oynama, şut, isabetli şut, korner ve diğerleri.</p></div></section>
       <section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">İlk 11&#039;ler</h2><p class="muted-copy">Bu maç için doğrulanmış ilk 11 verisi mevcut değil.</p></section>
       <section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title"><h2 id="msp-standings-title" class="msp-section-title">Maç sonrası puan durumu · Serie A</h2><div class="table-scroll"><table class="standings-table msp-standings"><thead><tr><th scope="col">#</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">Av</th><th scope="col">P</th></tr></thead><tbody><tr><td>1</td><td>AS Roma</td><td>3</td><td>3</td><td>0</td><td>0</td><td>9</td><td><strong>9</strong></td></tr><tr><td>2</td><td>Inter</td><td>3</td><td>3</td><td>0</td><td>0</td><td>5</td><td><strong>9</strong></td></tr><tr><td>3</td><td>Lazio</td><td>3</td><td>3</td><td>0</td><td>0</td><td>3</td><td><strong>9</strong></td></tr><tr class="is-highlight"><td>4</td><td>Como</td><td>3</td><td>2</td><td>1</td><td>0</td><td>4</td><td><strong>7</strong></td></tr><tr><td>5</td><td>AC Milan</td><td>3</td><td>2</td><td>1</td><td>0</td><td>3</td><td><strong>7</strong></td></tr><tr><td>6</td><td>Juventus</td><td>3</td><td>2</td><td>1</td><td>0</td><td>3</td><td><strong>7</strong></td></tr><tr class="msp-standings-gap" aria-hidden="true"><td colspan="8">…</td></tr><tr><td>17</td><td>Parma</td><td>3</td><td>0</td><td>1</td><td>2</td><td>-3</td><td><strong>1</strong></td></tr><tr><td>18</td><td>Monza</td><td>3</td><td>0</td><td>1</td><td>2</td><td>-4</td><td><strong>1</strong></td></tr><tr class="is-highlight"><td>19</td><td>Genoa</td><td>3</td><td>0</td><td>0</td><td>3</td><td>-6</td><td><strong>0</strong></td></tr><tr><td>20</td><td>Venezia</td><td>4</td><td>0</td><td>0</td><td>4</td><td>-7</td><td><strong>0</strong></td></tr></tbody></table></div><p class="msp-more"><a href="../serie-a-puan-durumu">Puan durumunun tamamı</a></p><p class="muted-copy">Son güncelleme: 12 Eylül 2026</p></section>
+      <section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title" data-league-id="135" data-season="2026" data-competition="serie-a"><h2 id="msp-leaders-title" class="msp-section-title">Serie A gol ve asist krallığı · 2026/27 sezonu</h2><article class="card data-empty"><strong>Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.</strong></article></section>
       <section class="msp-section" id="sonraki-maclar" aria-labelledby="msp-next-title"><h2 id="msp-next-title" class="msp-section-title">Sonraki maçlar</h2><div class="msp-two-col"><article class="card data-empty"><strong>Genoa</strong><span>Takımların sonraki maçı doğrulanmış takvime girdiğinde burada listelenir.</span></article><article class="card msp-next"><h3>Como</h3><ul><li><time datetime="2026-09-14T19:30:00+03:00">14 Eylül 2026 19:30</time> <a href="../mac/como-parma-14-eylul-2026">Como – Parma</a> <small>Serie A</small></li></ul></article></div></section>
       <section class="msp-section msp-faq" id="ne-zaman" aria-label="Tarih">
       <article class="card msp-qa"><h2>Genoa - Como maçı ne zaman?</h2><p>Genoa - Como maçı 4 Eylül 2026 Cuma tarihinde Serie A kapsamında oynandı.</p></article>

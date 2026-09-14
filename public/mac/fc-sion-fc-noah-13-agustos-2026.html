@@ -55,6 +55,23 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/fc-sion-fc-noah-13-agustos-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/fc-sion-fc-noah-august-13-2026" />
@@ -128,6 +145,7 @@
       <section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">Maç sonucu</h2><p class="muted-copy" data-msp-events-note>Bu maç için gol ve kart akışı sağlayıcıdan alınamadı; skor doğrulanmış kaynaktan gelir.</p></section>
       <section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">İlk 11&#039;ler</h2><p class="muted-copy">Bu maç için doğrulanmış ilk 11 verisi mevcut değil.</p></section>
       <section class="msp-section" id="ozet" aria-labelledby="msp-summary-title"><h2 id="msp-summary-title" class="msp-section-title">Maç özeti</h2><p class="msp-more"><a class="detail-link" href="../mac-raporu/fc-sion-fc-noah-2026-08-13.html">Ayrıntılı maç raporu</a></p></section>
+      <section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title" data-league-id="848" data-season="2026" data-competition="konferans-ligi"><h2 id="msp-leaders-title" class="msp-section-title">UEFA Konferans Ligi gol ve asist krallığı · 2026/27 sezonu</h2><article class="card data-empty"><strong>Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.</strong></article></section>
       <section class="msp-section" id="son-maclar" aria-labelledby="msp-h2h-title"><h2 id="msp-h2h-title" class="msp-section-title">İki takım arasındaki son maçlar</h2><div class="card msp-h2h"><p class="msp-h2h-summary"><span><b>1</b> FC Sion</span><span><b>0</b> Beraberlik</span><span><b>0</b> FC Noah</span></p><ul class="msp-h2h-list"><li><time datetime="2026-08-13">13 Ağustos 2026</time> <a href="../mac/fc-sion-fc-noah-13-agustos-2026">FC Sion <b>2-1</b> FC Noah</a> <small>UEFA Konferans Ligi</small></li></ul></div></section>
       <section class="msp-section msp-faq" id="ne-zaman" aria-label="Tarih">
       <article class="card msp-qa"><h2>FC Sion - FC Noah maçı ne zaman?</h2><p>FC Sion - FC Noah maçı 13 Ağustos 2026 Perşembe tarihinde UEFA Konferans Ligi kapsamında oynandı.</p></article>

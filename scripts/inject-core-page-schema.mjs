@@ -58,7 +58,7 @@ const PAGES = {
   "mac-merkezi.html": { section: null, kind: "collection" },
   "momentum.html": { section: { name: "Takımlar", href: "takimlar.html" }, kind: "collection" },
   "oyuncu-liderleri.html": { section: { name: "Oyuncu Radarı", href: "oyuncu-radari.html" }, kind: "collection" },
-  "puan-durumu.html": { section: null, kind: "collection" },
+  "puan-durumu.html": { section: null, kind: "collection", list: "standings" },
   "super-lig-fikstur.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "fixtures" },
   "takim-trendleri.html": { section: { name: "Takımlar", href: "takimlar.html" }, kind: "collection" },
   "takimlar.html": { section: null, kind: "collection" },
@@ -116,6 +116,30 @@ function confirmedFixtureEvents() {
   return events;
 }
 
+/**
+ * Puan durumu `ItemList`i — SAYFANIN KENDİ HTML'İNDEN okunur.
+ *
+ * Şemanın altın kuralı: bildirilen hiçbir alan sayfada görünmeyen bir
+ * bilgi olamaz. Veriyi `data/`den okusaydık bu garanti kaybolurdu —
+ * tablo istemci tarafından yenilenip şema eski kalabilir ya da tersi.
+ * Ön-üretilmiş satırları ayrıştırmak ikisini tanım gereği aynı tutuyor:
+ * satır sayfada yoksa şemada da yok.
+ *
+ * Başlık satırı (`is-head`) dışarıda: o bir takım değil, sütun adı.
+ */
+const STANDING_ROW_RE = /<div class="home-standing-row(?! is-head)[^"]*"[^>]*>([\s\S]*?)<\/div>/g;
+
+function standingsRows(html) {
+  const rows = [];
+  for (const [, inner] of html.matchAll(STANDING_ROW_RE)) {
+    const rank = Number(attr(inner, /<span class="home-standing-rank">([^<]*)<\/span>/));
+    const name = decodeEntities(attr(inner, /<a class="home-standing-team"[\s\S]*?<b>([^<]*)<\/b>/));
+    if (!name || !Number.isFinite(rank)) continue;
+    rows.push({ rank, name });
+  }
+  return rows.sort((left, right) => left.rank - right.rank);
+}
+
 function buildGraph(file, config, html) {
   const title = decodeEntities(attr(html, /<title>([\s\S]*?)<\/title>/));
   const description = decodeEntities(attr(html, /<meta name="description" content="([^"]*)"/));
@@ -150,6 +174,28 @@ function buildGraph(file, config, html) {
       }))
     }
   ];
+
+  if (config.list === "standings") {
+    const rows = standingsRows(html);
+    if (rows.length) {
+      graph.push({
+        "@type": "ItemList",
+        name: title.split("|")[0].trim(),
+        numberOfItems: rows.length,
+        itemListOrder: "https://schema.org/ItemListOrderAscending",
+        // Sıra `position`da, takım adı `name`de. PUAN YAZILMIYOR:
+        // schema.org'un `SportsTeam` tipinde lig puanını taşıyan bir alan
+        // yok ve `award` gibi yakın duran bir alana sıkıştırmak, alanın
+        // anlamını eğip bükmek olur. Emin olunmayan alan boş bırakılmaz,
+        // HİÇ yazılmaz.
+        itemListElement: rows.map((row) => ({
+          "@type": "ListItem",
+          position: row.rank,
+          item: { "@type": "SportsTeam", name: row.name }
+        }))
+      });
+    }
+  }
 
   if (config.kind === "fixtures") {
     const events = confirmedFixtureEvents();

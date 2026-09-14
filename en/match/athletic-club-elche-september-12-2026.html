@@ -51,11 +51,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-<!-- hreflang:start -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/athletic-club-elche-12-eylul-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/athletic-club-elche-september-12-2026" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/mac/athletic-club-elche-12-eylul-2026" />
@@ -128,6 +141,7 @@
       <section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">Result</h2><p class="muted-copy" data-msp-events-note>The goal and card feed for this match was not provided; the score comes from a verified source.</p></section>
       <section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">Starting line-ups</h2><p class="muted-copy">Verified starting line-up data is not available for this match.</p></section>
       <section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title"><h2 id="msp-standings-title" class="msp-section-title">Standings after the match · LaLiga</h2><div class="table-scroll"><table class="standings-table msp-standings"><thead><tr><th scope="col">#</th><th scope="col">Team</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody><tr><td>1</td><td>Barcelona</td><td>4</td><td>4</td><td>0</td><td>0</td><td>15</td><td><strong>12</strong></td></tr><tr class="msp-standings-gap" aria-hidden="true"><td colspan="8">…</td></tr><tr><td>8</td><td>Osasuna</td><td>4</td><td>2</td><td>1</td><td>1</td><td>-1</td><td><strong>7</strong></td></tr><tr><td>9</td><td>Real Sociedad</td><td>5</td><td>2</td><td>1</td><td>2</td><td>-2</td><td><strong>7</strong></td></tr><tr class="is-highlight"><td>10</td><td>Athletic Club</td><td>4</td><td>2</td><td>0</td><td>2</td><td>1</td><td><strong>6</strong></td></tr><tr><td>11</td><td>Levante</td><td>4</td><td>1</td><td>2</td><td>1</td><td>0</td><td><strong>5</strong></td></tr><tr><td>12</td><td>Espanyol</td><td>4</td><td>1</td><td>1</td><td>2</td><td>1</td><td><strong>4</strong></td></tr><tr class="msp-standings-gap" aria-hidden="true"><td colspan="8">…</td></tr><tr><td>17</td><td>Villarreal</td><td>4</td><td>0</td><td>2</td><td>2</td><td>-2</td><td><strong>2</strong></td></tr><tr><td>18</td><td>Malaga</td><td>4</td><td>0</td><td>2</td><td>2</td><td>-6</td><td><strong>2</strong></td></tr><tr class="is-highlight"><td>19</td><td>Elche</td><td>4</td><td>0</td><td>1</td><td>3</td><td>-7</td><td><strong>1</strong></td></tr><tr><td>20</td><td>Valencia</td><td>5</td><td>0</td><td>1</td><td>4</td><td>-9</td><td><strong>1</strong></td></tr></tbody></table></div><p class="msp-more"><a href="../../en/la-liga-standings.html">Full table</a></p><p class="muted-copy">Last updated: 12 September 2026</p></section>
+      <section class="msp-section msp-leaders" id="gol-asist-kralligi" aria-labelledby="msp-leaders-title" data-league-id="140" data-season="2026" data-competition="la-liga"><h2 id="msp-leaders-title" class="msp-section-title">LaLiga top scorers &amp; assists · 2026/27 season</h2><article class="card data-empty"><strong>Top scorer and assist data is not available for this competition yet.</strong></article></section>
       <section class="msp-section" id="son-maclar" aria-labelledby="msp-h2h-title"><h2 id="msp-h2h-title" class="msp-section-title">Head-to-head</h2><div class="card msp-h2h"><p class="msp-h2h-summary"><span><b>0</b> Athletic Club</span><span><b>1</b> Draw</span><span><b>0</b> Elche</span></p><ul class="msp-h2h-list"><li><time datetime="2026-09-12">12 September 2026</time> <a href="../../en/match/athletic-club-elche-september-12-2026">Athletic Club <b>1-1</b> Elche</a> <small>LaLiga</small></li></ul></div></section>
       <section class="msp-section msp-faq" id="ne-zaman" aria-label="Date">
       <article class="card msp-qa"><h2>When is Athletic Club vs Elche?</h2><p>Athletic Club vs Elche was played on Saturday, 12 September 2026 in the LaLiga.</p></article>
