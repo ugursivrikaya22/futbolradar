@@ -1,7 +1,87 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-14T10:52:07.921Z",
+  "updatedAt": "2026-09-14T13:27:20.786Z",
   "items": [
+    {
+      "id": "auto-news-7d5e62ad5d5db9a9f82c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Futbol Akademi Sporcularımıza Milli Davet - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-14T11:30:28.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1aSmhuVkxQZjVEVExiRWxtc1ZJZlVJLTBSUmRtZFNXVWp3Q3gtamlFdEN0ZFRXX0d6b3VyZ1RWVmExZk05M3BjdjhyRWZYOTBkMndEQklteFRyMW5adkdz?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-b41d8ec4262ffeba3ad5",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Trabzonspor maçı hazırlıkları başladı",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-14T11:26:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxOdi02dFFrN3BRc0FKV3B1ajFUZW94S2RzVWpSOVFhRTFfUFJYT3Y1cU1jekxRM1FYZ3VPVnU2ZkxYYmdnTVV1aHpaR2ItcVpNZjk1VU9vdGtwTHNlcDJCOXpwUE1tU0tISFZuMTJBUkhXclBiSUc1YUx6eHRmOGUtdnFyWTY5Y19nODBNNA?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-9c5abda96474b8eeb8f6",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kulübümüzden Açıklama - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-14T10:15:15.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE51VXBUYjNkdWZjNkhmU1p5amJ1ckZpOVdEU0JCYTVYTklhMzZsRTFUdnBWb09ucVN1UWtud2pVSUF2elZxRGNJLXNyUGhMMTF5dFZncDA4MEptZkU?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-ffe05b6cc0c2971058dc",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "9 Eylül İzmir Kurtuluş Kupası yarışları sona erdi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-14T08:40:16.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPS193ZGJaeTBOeWxaT1ZpZDI0Sm02T3J3LV91ZHJjd3EyYnZTUGtibHFyT0xfV01ZTnhzaU9ZWUN2eG5Xcm1DSGxHRnRPZGVoVVVtLWZjaW5BemFwekVpTXVwblVmWjdyZGxIWkVEZFNPZEZ1QnMxWGRCUzZaVEFEZWJ1NlNfYzVLV21xLVBlZGpBTUpQc3JMQlZaMEhncWtt?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-cf861ce1f1b58bc81217",
       "category": "official",
@@ -11,7 +91,7 @@
       "team": "Galatasaray",
       "timestamp": "2026-09-13T19:50:00.000Z",
       "source": {
-        "name": "galatasaray.org",
+        "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMiekFVX3lxTE9YbU5sNGN0aFJKakdaTXA1ejlfZ1huMlE2RkN6MWVvdjE2X3dNbEVFX0hWcXFqVGthekdrVG5nbjVPR1g0WVczRy1qWTBNS2EwLVgwNUdXMGJaTnVialU0S1IzMnNCU0syTTdqcURTanN3UEczYjA0aXR3?oc=5",
         "publisher": "galatasaray.org"
       },
@@ -31,7 +111,7 @@
       "team": "Galatasaray",
       "timestamp": "2026-09-13T19:41:00.000Z",
       "source": {
-        "name": "galatasaray.org",
+        "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMimgFBVV95cUxPOElSeFJ0NGlWaWQ5aG9nT3d5NTR3WGVkb25TWXRWVGozZ3AtOU9JOWkta3B0Yjl0VXRzZndJMGYtOExYMGkwYjF4Z1BVODVoS3Q2czZKOTNCMkl3Y1ptMnlsV2NQbkFVLTNYT1l4MXdoZWJmYW9yVU5RdlN4clJwNDFYNHNYNzRvQ2xfam1KSmFUcW1TbElSYkh3?oc=5",
         "publisher": "galatasaray.org"
       },
@@ -51,7 +131,7 @@
       "team": "Galatasaray",
       "timestamp": "2026-09-13T19:03:00.000Z",
       "source": {
-        "name": "galatasaray.org",
+        "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE5ZNkdMdVhsN2FWaVVUcm1aMzAyMmhqUGJ1UDNQdl8zNC1lX1UzaHhDWVJXV0JOWHdRVGY5NTNaWUJyVHZUcVAweUZBUzFGNW9Hdjd5UzRvRDBFSGpvcDBqNURIa19iaGV6Ulh4bnl4R3dMeHBDWURrZ2hLQ0NwWW8?oc=5",
         "publisher": "galatasaray.org"
       },
@@ -102,68 +182,6 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ffebef3d7cd2266f3d34",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başkanımız Aziz Yıldırım ve Yönetim Kurulu Üyelerimiz Diyarbakır’da ziyaretlerde bulundu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-13T18:20:06.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQR0I1dFViQW5hU0MzZEs1NXh1NlgzYi01R284UTFPX3RvakVjdUhodGxPTFN6djdVLVRLWmVyc3dIZDdKVzFPdmdRN24tU3UwUXBOT1RoN0JoRkNleElTbk1IcUhUaWE3U1NrOHdQaGQ0Q3Q1MkhtN3A4ampxdVBsaV9IMGhmQ3U1THl1cVA3R1ZMaXZuMGM2QkhjcDJhWVZqY242U1l0QmpuSlZqcldRSTY3R2I4d0RIb3VLcG0zUTJpRk9wWUJKR2dyRTVsOUZGQUVF?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-b5ab6b02a6f89291e88d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Dünyayı büyüleyen koreografi nasıl hayata geçirildi? İşte perde arkasındaki büyük emek ve aidiyet",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-13T17:45:04.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPY1hWS0NaWGwtOTY5M0FIb0VHQzd3aGNXZ2VlQUZ6N1hGZ3BjVnpWX2JNX0E3aHZFYTJ3aHJReGJZZzFCUUZnb1ByRTlDdTkwbkJTX3JpVFdzNTdlU2IzMjNMN3FONi1kQ29GV2t5b2ExX19mUjB1RTVIa204Y0ZfUjRIRVlteEppQVM0MEJqM0VlWmg5dXBQU2liYUZZeG5INFhrb05ubWp6YjlZa2VfT0NNNG53VUtsUm1Nc1dxSTZSRFo4NWp2SnJqM2JTU1Vz?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-acfccae6baeab837865f",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray 6-0 Ankara BB FOMGET",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-13T15:36:00.000Z",
-      "source": {
-        "name": "galatasaray.org",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxQU2N4OW4zRmQ3S2RrQWE4Yzd2R3dMNFBGaDNmRVR2T3J4TktueDhiWlFXanJtY1NMM2EtQkZIX2pxLTRDZEIxZVBnRUNnNjBkckJNZVIwME9aajJSclc4UmNSTERVYl8walpDeGhGcGw2aDBsQ3pCU3dVMXlIZ3JFMUEzTDJnajRZZEJtYTVYQy14dmE5SnFJ?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-12T14:22:00.000Z"
       }
     },
     {
@@ -227,62 +245,42 @@
       }
     },
     {
-      "id": "auto-news-ee7b110954d0b11ac0ff",
+      "id": "auto-news-5e013d8b1a2039ce09f1",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Alexander Nübel: “Performansımızdan çok mutluyum” - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-11T20:04:17.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE50elgxT2ZtWkVWSGtOcERheUdHZWNTd080bWp3bXlyM1l3Y3ZqMVowUlVRd2MzNlBaMnNhZVZsTENhZHdMN3IzREtyRjZrTlExOGRDRnhlN19fLVU?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-e1642173235b4ff43a64",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Emirhan Topçu: “Üç puan almaya devam etmek istiyoruz”",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-11T19:45:03.000Z",
-      "source": {
-        "name": "bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNMTBlNkdUN0pKRE01ZC1DWlZZRV9hYnNweHJ6ZUNZX25UUjRBY2dERWRTVHNram53WktoMjhuWVh3Q3pockxlRWZudzAwa0RKSHBZb01JWVdQR01sd2RpZklGcUE5bTNtRjBvblEzRzJMZG9Qbk1tamkyeUVTWGlyOFk1a0trcHdHU2c3V0lrV3JQS1NNc2dIZQ?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-b3458d5c93e4f7adbfa6",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Tümosan Konyaspor maçı hazırlıklarımız tamamlandı",
+      "text": "Hakkarigücü Spor 1-1 Trabzonspor Kadın Futbol Takımı",
       "team": "Trabzonspor",
-      "timestamp": "2026-09-11T12:58:11.000Z",
+      "timestamp": "2026-09-12T14:28:31.000Z",
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQcWoySV9nc0xEV3VIY3FmamdzWnl3TXhFNUhQbU4wRG1TVDdfZnJ4RS0wZDRDQkZZYW1ENTF5NnRZZHRtZHc3eUVLV0dyN1Y0dmk1NmlXRXdhdkF0TFpsSWI3c25XV0YtdjZGanJ0dmpQRTdCS2NkV2tvWVI2eGtPeGxFa1JUWWVwSUxHSm85MXJFRkJRN1NGMEtRN1k0TjA?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPLUxuTFp0WjNCby05Tk1QTzUzUVl0NzJ4TVFvaFJJeThURGdkQVdOQkNBVHNOX19kdER4SDR1QTQ0ZWF1NFp5ampYS2JscEstVHg4dDdfd2JXWnZIM29DZlBXWURYeGxXREF6eG1UM0RYUUQ2TGU1X1NOWTZzR0VrOXk5UFZRakY0Y2F5aENRMWRwTlVNdUt5amNqVWdYckRj?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
       "automation": {
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-0156cd3078c362741b80",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Futbol Akademimizden 7 oyuncu U16 Millî Takımı'nın Uluslararası Dörtlü Turnuva aday kadrosuna davet edildi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-14T09:45:16.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMi7gFBVV95cUxPRkktRFZhZDZRbXdPdUlmTnBJelY3LW82cHBHRWphWXhWSVhLZVpBMGNYdlZtR1RuOGN5VlRtcEVpYnBIS1hSWWVLa3JUY1NQaTZMVkQtVFYtbC1mS3RpM1BGYnlZUlBVVTlOc1h2bzRlOHVCajIwZmcyWnBDY25RVzExa3U4STBQLURJQUprM3VTRjFUclRpZHRUN0tPSHNJVm1vczZYSmxjbzB2bE0zLWNnU3J4VDE2dmtPZ0VDQXpOb3RXS3VDclo2TzFKSWt3WndZWEJLaEloTl85RjViZHozUWVvV0NEU3dVajV3?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
         "status": "OFFICIAL"
       }
     },
@@ -313,26 +311,6 @@
       },
       "team": "Fenerbahçe",
       "important": true
-    },
-    {
-      "id": "auto-news-0edb4d0973f50de835a3",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Galatasaray maçlarında gol yağmuru sürüyor, Barcelona farklı kazanmaya devam ediyor! İşte Misli’den günün tüyoları",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-13T08:13:52.000Z",
-      "source": {
-        "name": "hurriyet-spor",
-        "url": "https://www.hurriyet.com.tr/sporarena/galatasaray-maclarinda-gol-yagmuru-suruyor-barcelona-farkli-kazanmaya-devam-ediyor-iste-misliden-gunun-tuyolari-43304947",
-        "publisher": "hurriyet.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "hurriyet-spor",
-        "priority": 7,
-        "status": "REPORTED"
-      }
     },
     {
       "id": "news-besiktas-erzurumspor-galibiyeti-mac-fazlasiyla-zirve-12-eylul-2026",
@@ -453,38 +431,16 @@
       "team": "Real Madrid"
     },
     {
-      "id": "auto-news-cc3a63d5868838232e8d",
+      "id": "auto-news-faa5d717e57a25f82879",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Champions League Team of the Week: Matchday 1",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-09-11T15:12:14.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOdFdBVVN1UW1JdEs0eWZaZHFzRzZjbXdVSEEwY05jUzBSYklnbVNYYUJzbzdIVTJjQm1tTUZkOXpMaEJjZ1lHakxHWnRpM0lkdnI2R3Z5eTJVZ3B0RzdDYzlYaXZNaEVEVmN6c2hwakVUMEUwcEV3UlZyejBibmtRUjdRNHVLMm9pdGV3S2Fldm1BZ2FNNWZhWG8zLTVnQTBkNmsxaW03Y1JxbVNpNWlCUWJqUG5kejJmUkVtcmNFdkdiV2FxTG80?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-11T10:02:13.000Z"
-      }
-    },
-    {
-      "id": "auto-news-0855fb48f7f1a43523d3",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Genç Millî Takımlar Yeni Sezon Değerlendirme Toplantısı Riva'da Yapıldı",
+      "text": "Suwen Kadın Futbol Süper Ligi'nde 3. Haftanın Sonuçları",
       "team": "Süper Lig",
-      "timestamp": "2026-09-11T13:04:40.000Z",
+      "timestamp": "2026-09-14T07:06:16.000Z",
       "source": {
         "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9fRjBBM3RvR045ajJtTzlDTGRPaWJRSU9lRXVjOU96YUZEWW1wQTQwMEFGM2YtalZ5UVYycGpLcVNNQldUdWMxYVQzNjdtNExlckUxc2dQd1p4bUFBZk4xaXpyOG1YMFE?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE80UWpRZkJERWRLSjZvV3J4MGNsUDhXeDVLVGZualB4LVpLTEd2WlpqSE5hajFZQ1p3blpBVXBqN0dPM1BLVlVfZ1BUQ0h3UldTaXNvTWx6eWpGcjFsZVBCT3dSZzYwU0U?oc=5",
         "publisher": "tff.org"
       },
       "automation": {

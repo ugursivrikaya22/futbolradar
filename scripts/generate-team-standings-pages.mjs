@@ -120,7 +120,7 @@ function relatedStandingsLinks(team) {
   ];
   for (const other of TEAMS) {
     if (other.slug === team.slug) continue;
-    links.push({ href: `./${other.slug}-puan-durumu.html`, kicker: "Puan durumu", title: `${other.name} puan durumu`, text: `${other.name} Süper Lig'de kaçıncı sırada.` });
+    links.push({ href: `./${other.slug}-puan-durumu`, kicker: "Puan durumu", title: `${other.name} puan durumu`, text: `${other.name} Süper Lig'de kaçıncı sırada.` });
   }
   return `<div class="trend-link-grid">${links.map((link) => `<a href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
 }
@@ -152,7 +152,12 @@ function pageSchema(team, url, title, description) {
 
 function buildPage(team, sorted, total) {
   const file = `${team.slug}-puan-durumu.html`;
-  const url = `${DOMAIN}/${file}`;
+  // TEMİZ ADRES. Sayfa diskte `.html` olarak duruyor ama okuyucuya ve arama
+  // motoruna verilen adres uzantısız (`vercel.json` rewrite'ı bunu karşılıyor)
+  // — lig/kupa puan durumu sayfalarındaki kural burada da geçerli. Kanonik
+  // tek adres olmalı: iki adres aynı sayfayı gösterirse arama motoru ikisini
+  // ayrı sayfa sayıp ikisini de zayıflatır.
+  const url = `${DOMAIN}/${team.slug}-puan-durumu`;
   const title = `${team.name} Puan Durumu | Süper Lig Sıralaması ve Averaj | FutbolRadar`;
   const description = `${team.name} Süper Lig puan durumu: güncel sıra, puan, averaj ve momentum. Tam 18 takımlı tabloda ${team.name} satırı öne çıkarılmış.`;
   // `team` yalnızca slug/id/name taşır (TEAMS sabiti); sıra/puan/averaj gibi
@@ -247,7 +252,11 @@ if (fs.existsSync(sitemapPath)) {
   let added = 0;
 
   for (const file of written) {
-    const loc = `${DOMAIN}/${file}`;
+    // Site haritası KANONİK adresi listeler. Daha önce `.html`li adres
+    // yazılmıştı; bırakılsaydı harita kanonik olmayan bir adres gösterirdi.
+    const legacy = `${DOMAIN}/${file}`;
+    const loc = `${DOMAIN}/${file.replace(/\.html$/, "")}`;
+    xml = xml.replace(new RegExp(`\\s*<url>\\s*<loc>${legacy.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}</loc>[\\s\\S]*?</url>`), "");
     if (xml.includes(`<loc>${loc}</loc>`)) continue;
     xml = xml.replace("</urlset>", `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${stamp}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n</urlset>`);
     added += 1;

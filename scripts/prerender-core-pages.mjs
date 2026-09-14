@@ -331,7 +331,7 @@ function quickLinkTeamFor(match) {
  */
 function quickLinkStandingsHref(match) {
   const team = quickLinkTeamFor(match);
-  if (team) return `./${team.slug}-puan-durumu.html`;
+  if (team) return `./${team.slug}-puan-durumu`;
   return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
 }
 
