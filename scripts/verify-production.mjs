@@ -19,6 +19,11 @@ for (const args of [
   ['scripts/test-source-links.mjs'],
   [compiler, '--noEmit'],
   ['scripts/audit-interaction-routes.mjs'],
+  // Canlı puan durumu: gerçek sayfa + gerçek istemci, sahte skor akışıyla
+  // 1-0 / 1-1 / 1-2 senaryosu. Tarayıcı denetiminden ÖNCE koşuyor çünkü
+  // daha dar ve daha hızlı: tablo mantığı bozulduysa 170 senaryoluk geniş
+  // denetimi beklemeden burada görünür.
+  ['scripts/test-live-standings-browser.cjs'],
   ['scripts/test-clickable-browser.cjs']
 ]) {
   console.log('[production gate]', args.join(' '));
