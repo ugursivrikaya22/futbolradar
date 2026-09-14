@@ -35,6 +35,7 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { buildH2hEntries } from "./lib/matchAnalysisSections.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -104,7 +105,7 @@ const HUB_EN = "en/matches.html";
 const MONTH_DIR_TR = "mac-takvimi";
 const MONTH_DIR_EN = "en/matches";
 const BIG_FOUR = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
-const OG_IMAGE = `${DOMAIN}/assets/og-image.svg`;
+const OG_IMAGE = `${DOMAIN}/assets/og-image.png`;
 
 function readJson(relative, fallback) {
   try {
@@ -835,7 +836,7 @@ function pageHtml(entry, locale, options) {
     <title>${escapeHtml(titles.title)}</title>
     <meta name="description" content="${escapeHtml(titles.description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
-    <meta name="robots" content="${indexable ? "index,follow" : "noindex,follow"}" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="${locale === "en" ? "en_US" : "tr_TR"}" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -913,7 +914,7 @@ function shellHtml({ locale, title, description, canonical, base, h1, lead, body
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
-    <meta name="robots" content="${indexable ? "index,follow" : "noindex,follow"}" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${locale === "en" ? "en_US" : "tr_TR"}" />
     <meta property="og:site_name" content="FutbolRadar" />

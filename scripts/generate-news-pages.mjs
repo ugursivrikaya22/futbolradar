@@ -9,6 +9,7 @@ const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLi
 const { publishableNews } = createRequire(import.meta.url)("../services/newsFeed.js");
 const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -115,12 +116,12 @@ function jsonLd(article) {
     dateModified: article.updatedAt || article.publishedAt || null,
     inLanguage: "tr-TR",
     mainEntityOfPage: articleUrl(article),
-    image: `${domain}/assets/og-image.svg`,
+    image: `${domain}/assets/og-image.png`,
     author: { "@type": "Organization", name: "FutbolRadar" },
     publisher: {
       "@type": "Organization",
       name: "FutbolRadar",
-      logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.svg` }
+      logo: { "@type": "ImageObject", url: `${domain}/assets/og-image.png` }
     },
     keywords: Array.isArray(article.tags) ? article.tags.join(", ") : undefined,
     citation: sources.length ? sources.map((source) => source.url) : undefined
@@ -195,18 +196,18 @@ function pageHtml(article) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
-    <meta property="og:image" content="${domain}/assets/og-image.svg" />
+    <meta property="og:image" content="${domain}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${domain}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${domain}/assets/og-image.png" />
     <script type="application/ld+json">${JSON.stringify(jsonLd(article))}</script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
