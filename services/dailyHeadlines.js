@@ -124,12 +124,23 @@ function scoreOf(match) {
  * bağlanmak, kancası olan bir başlığı 404'e göndermek olurdu.
  */
 function hrefFor(match, reports) {
+  // SIRA: önce maçın KALICI sayfası. `matchPage` sicilden damgalanıyor
+  // (`services/matchSeoPages.js#withMatchPages`) ve o adres maçın tek
+  // kanonik adresi; `mac-raporu/...` raporu ise aynı maçın kopyası ve
+  // kanonik'i bu sayfayı gösteriyor. Rapor yolu önce okunursa manşet,
+  // sayfa yüklendikten sonra kopya adrese bağlanır — statik HTML'de
+  // birleştirilmiş bağlantıyı JS geri bozar.
+  //
+  // Uydurma yok, sıra değişti: her aday yine yalnızca kayıtta YAZAN yol.
+  const page = text(match && match.matchPage);
+  if (page) return `./${page.replace(/^\.?\//, "")}`;
+
   const report = reportFor(match, reports);
   const reportPath = report && (text(report.reportUrl) || text(report.seo && report.seo.path));
   if (reportPath) return `./${reportPath.replace(/^\.?\//, "")}`;
 
-  const page = text(match && match.matchPage) || text(match && match.analysisPage);
-  if (page) return `./${page.replace(/^\.?\//, "")}`;
+  const legacy = text(match && match.analysisPage);
+  if (legacy) return `./${legacy.replace(/^\.?\//, "")}`;
 
   if (isLiveStatus(match)) {
     return "./canli-skor.html";

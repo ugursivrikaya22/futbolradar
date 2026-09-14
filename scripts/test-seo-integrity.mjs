@@ -93,11 +93,49 @@ function canonicalMatches(actual, relativePath) {
   return variants.has(actual);
 }
 
+/**
+ * Çapraz canonical verebilen kopya aileleri.
+ *
+ * `mac/<takimlar>-<gun>-<ay>-<yil>.html` bu listede YOK: kanonik ailenin
+ * kendisi, canonical'ı kendini göstermek zorunda.
+ */
+const MATCH_DUPLICATE_RES = [
+  /^mac-raporu\/[^/]+\.html$/,
+  /^[a-z0-9-]+-mac-analizi\.html$/
+];
+
+const isMatchDuplicate = (relativePath) => {
+  const normalized = relativePath.split(path.sep).join("/");
+  return MATCH_DUPLICATE_RES.some((expression) => expression.test(normalized));
+};
+
 const files = walk(root);
 assert.ok(files.length > 1000, `üretilen ağaç taranmalı; bulunan dosya: ${files.length}`);
 
 const sitemapPath = path.join(root, "sitemap.xml");
 const sitemap = fs.existsSync(sitemapPath) ? fs.readFileSync(sitemapPath, "utf8") : "";
+
+/**
+ * Geçerli çapraz canonical hedefleri: diskte karşılığı olan ve canonical'ı
+ * kendini gösteren tarih slug'lı `/mac/` sayfaları. Uzantılı ve uzantısız
+ * yazım da kabul — barındırma ikisini de aynı sayfaya çözüyor.
+ */
+const canonicalTargets = new Set();
+{
+  const macDir = path.join(root, "mac");
+  const entries = fs.existsSync(macDir) ? fs.readdirSync(macDir) : [];
+  for (const name of entries) {
+    if (!name.endsWith(".html") || !/-\d{1,2}-[a-zçğıöşü]+-\d{4}\.html$/.test(name)) continue;
+    const html = fs.readFileSync(path.join(macDir, name), "utf8");
+    const own = pick(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
+    if (!canonicalMatches(own, `mac/${name}`)) continue;
+    canonicalTargets.add(`${DOMAIN}/mac/${name}`);
+    canonicalTargets.add(`${DOMAIN}/mac/${name.replace(/\.html$/, "")}`);
+  }
+}
+
+/** Çapraz canonical'a bağlanmış kopyalar — rapor için sayılır. */
+const crossCanonical = [];
 
 const titles = new Map();
 const descriptions = new Map();
@@ -150,23 +188,39 @@ for (const file of files) {
   // yazımlı bir takma addır, noindex'tir, sitemap'te yoktur ve doğru profile
   // işaret eder. Bu hata değil, doğru davranıştır.
   //
-  // ÜÇÜNCÜ HÂL — MAÇ MERKEZİ DEVRİ. Hafta numaralı maç sayfası
+  // İKİ İSTİSNA — ikisi de aynı maçın kopya adresleri, farklı aileler.
+  //
+  // (a) MAÇ MERKEZİ DEVRİ. Hafta numaralı maç sayfası
   // (`mac/<ev>-<dep>-2026-2027-r05.html`, aynısı `en/match/` altında) maçın
   // tarihi henüz atanmamışken üretilir ve o aşamada KENDİ adresi kanoniktir.
   // Tarih onaylanıp kalıcı Maç Merkezi adresi açılınca aynı maç iki sayfada
   // anlatılır; hafta sayfası kanonikliği Maç Merkezi'ne devreder, site
-  // haritasından düşer ama SİLİNMEZ (dış bağlantılar kırılmasın).
+  // haritasından düşer ama SİLİNMEZ (dış bağlantılar kırılmasın). Hedefin
+  // var olduğu, indekslenebilir olduğu ve takma adın haritadan düştüğü
+  // aşağıda ayrıca doğrulanır.
   //
-  // Burada noindex kullanılmaz: noindex sinyali düşürür, canonical ise
-  // birikmiş bağlantı değerini kanonik adrese TAŞIR. Devrin sessizce sayfayı
-  // indexten düşürmediğini garanti etmek için hedefin gerçekten var olduğu
-  // ve kendisinin indexlenebilir olduğu aşağıda ayrıca doğrulanır.
+  // (b) RAPOR VE ESKİ ANALİZ KOPYALARI. `mac-raporu/...` maç sonu raporu ve
+  // kök dizindeki eski `-mac-analizi` deseni de aynı sorguyu hedefliyordu;
+  // `scripts/unify-match-canonicals.mjs` bunları üretimden sonra tek geçişte
+  // tarih slug'lı `/mac/...` adresine bağlıyor.
+  //
+  // İkisinde de doğru sinyal `noindex` DEĞİL: noindex kopyayı indeksten
+  // düşürür ama biriktirdiği otoriteyi hiçbir yere aktarmaz. Otoriteyi tek
+  // adrese toplayan şey, indekslenebilir kalan kopyanın çapraz canonical'ıdır.
+  //
+  // Kural gevşetilmiyor, DARALTILIYOR: çapraz canonical yalnızca gerçekten
+  // var olan ve KENDİ adresini gösteren bir `/mac/` sayfasına verilebilir.
+  // Hedefi olmayan ya da hedefi de başka yeri gösteren bir zincir yine hata.
   const canonical = pick(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
   if (indexable) {
     if (!canonical) problems.missingCanonical.push(relative);
     else if (!canonicalMatches(canonical, relative)) {
       if (isRoundAliasPage(relative)) matchCentreAliases.push({ relative, canonical });
-      else problems.canonicalMismatch.push(`${relative}: ${canonical}`);
+      else if (isMatchDuplicate(relative) && canonicalTargets.has(canonical)) {
+        crossCanonical.push(`${relative} → ${canonical}`);
+      } else {
+        problems.canonicalMismatch.push(`${relative}: ${canonical}`);
+      }
     }
   }
 
@@ -377,6 +431,7 @@ const summarize = (list, limit = 5) =>
   list.slice(0, limit).join("; ") + (list.length > limit ? ` …(+${list.length - limit})` : "");
 
 console.log(`SEO bütünlüğü: ${files.length} sayfa tarandı, ${titles.size} benzersiz başlık.`);
+console.log(`SEO bütünlüğü: ${crossCanonical.length} maç kopyası tek kanonik /mac/ adresine bağlı.`);
 
 // ── Denetimler ─────────────────────────────────────────────────────────────
 

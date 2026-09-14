@@ -61,7 +61,8 @@ import {
   statsSectionHtml,
   summarySectionHtml,
   teamSlug,
-  whenSectionHtml
+  whenSectionHtml,
+  faqEntries
 } from "./lib/matchSeoPage.mjs";
 
 const require = createRequire(import.meta.url);
@@ -591,6 +592,18 @@ function pageTitles(entry, state, locale, disambiguate) {
   const score = hasScore(entry.score) ? `${entry.score.home}-${entry.score.away}` : "";
   const day = shortDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
+  // Başlık "…Hangi Kanalda?" diye soruyor; SERP parçacığı da cevabı
+  // taşımalı, yoksa okuyucu tıklamadan önce cevabı göremiyor. Kanal
+  // açıklamanın BAŞINA yakın duruyor: `normalize-meta` 160 karakterden
+  // sonrasını kesiyor, kuyruğa yazılan kanal parçacıkta görünmezdi.
+  // `broadcastChannel()` yalnızca DOĞRULANMIŞ kanalı döndürüyor: elle
+  // doğrulama → yayıncının kendi akışının taraması → sağlayıcı alanı.
+  // Lig düzeyindeki hak haritası (`services/broadcastRights.js`) buraya da
+  // hiçbir yere de yazılmıyor; o harita yalnızca hangi akışın taranacağını
+  // söylüyor. Bilinmiyorsa açıklamada kanal hiç geçmiyor — tahmin edilen
+  // bir kanal adı SERP'te doğrulanmış gibi okunurdu.
+  const { broadcastChannel } = require("../services/broadcastSchedule.js");
+  const channel = state === "pre" ? broadcastChannel(entry) : "";
   let title;
   let description;
   let h1;
@@ -618,7 +631,9 @@ function pageTitles(entry, state, locale, disambiguate) {
     } else {
       title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
-      description = `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
+      description = channel
+        ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
+        : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
     }
   } else if (state === "live") {
     title = `${home} ${entry.score.home}-${entry.score.away} ${away} Live Score & Commentary`;
@@ -643,7 +658,9 @@ function pageTitles(entry, state, locale, disambiguate) {
   } else {
     title = `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
     h1 = `${home} vs ${away}`;
-    description = `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
+    description = channel
+      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
+      : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
   }
   if (disambiguate) title = `${title} (${day})`;
   return { title: `${title} | FutbolRadar`, description, h1 };
@@ -652,7 +669,17 @@ function pageTitles(entry, state, locale, disambiguate) {
 function schemaFor(entry, state, locale, ctx, urls) {
   const text = STR[locale];
   const startDate = istanbulIso(entry.kickoff);
-  const eventStatus = state === "postponed" ? "https://schema.org/EventPostponed" : state === "cancelled" ? "https://schema.org/EventCancelled" : state === "post" ? null : "https://schema.org/EventScheduled";
+  // `EventStatusType` yalnızca ŞU değerleri tanır: EventScheduled,
+  // EventCancelled, EventPostponed, EventRescheduled, EventMovedOnline.
+  // "EventCompleted" diye bir değer YOK — yazılırsa Google alanı geçersiz
+  // sayıp atar. Oynanmış maç "planlandığı gibi gerçekleşti" demektir;
+  // doğru değer EventScheduled'dır. Bitmiş sayfalarda alan eskiden hiç
+  // basılmıyordu; artık maçın gerçekleştiği de bildiriliyor.
+  const eventStatus = state === "postponed"
+    ? "https://schema.org/EventPostponed"
+    : state === "cancelled"
+      ? "https://schema.org/EventCancelled"
+      : "https://schema.org/EventScheduled";
   const name = state === "post" && hasScore(entry.score)
     ? `${entry.homeTeam} ${entry.score.home}-${entry.score.away} ${entry.awayTeam}`
     : `${entry.homeTeam} ${locale === "en" ? "vs" : "-"} ${entry.awayTeam}`;
@@ -678,6 +705,24 @@ function schemaFor(entry, state, locale, ctx, urls) {
       inLanguage: locale === "en" ? "en" : "tr"
     });
   }
+  // FAQPage — soru-cevaplar sayfadaki "sık sorulanlar" bölümüyle AYNI
+  // kaynaktan (`faqEntries`) geliyor. Bölüm her durumda basıldığı için
+  // şema da her sayfada geçerli; görünmeyen soru bildirilmiyor.
+  const faq = faqEntries(entry, ctx);
+  if (faq.length) {
+    graph.push({
+      "@type": "FAQPage",
+      mainEntity: faq.map((item) => ({
+        "@type": "Question",
+        name: item.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: item.note ? `${item.answer} ${item.note}` : item.answer
+        }
+      }))
+    });
+  }
+
   const crumbs = [
     { "@type": "ListItem", position: 1, name: text.breadcrumbHome, item: locale === "en" ? `${DOMAIN}/en` : `${DOMAIN}/` },
     { "@type": "ListItem", position: 2, name: text.allMatches, item: `${DOMAIN}/${locale === "en" ? HUB_EN.replace(/\.html$/, "") : HUB_TR.replace(/\.html$/, "")}` }
