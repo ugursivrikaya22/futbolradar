@@ -241,6 +241,16 @@
 
     renderPulse(detail, status);
 
+    // MAÇ DETAYINI YAYINLA. Paylaşım satırı (radar-fan.js) skor, dakika,
+    // son gol ve Radar Nabzı değerlerini buradan alıyor. Kendi isteğini
+    // atsaydı aynı maç için ikinci bir yoklama döngüsü açılırdı; olay
+    // yayını hem bedava hem de iki dosyayı birbirine bağlamadan tutuyor.
+    try {
+      document.dispatchEvent(new CustomEvent("futbolradar:match-detail", { detail: detail }));
+    } catch (error) {
+      /* CustomEvent desteklenmiyorsa paylaşım satırı çizilmez, sayfa çalışır */
+    }
+
     if (status === "finished") finished = true;
   }
 

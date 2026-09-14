@@ -30,6 +30,7 @@ for (const file of [
   "performance-loader.js",
   "radar-pulse.js",
   "radar-home-card.js",
+  "radar-fan.js",
   "site.webmanifest",
   "404.html",
   "index.html",

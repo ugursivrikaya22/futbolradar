@@ -22580,3 +22580,123 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
    oysa doğrusu "ölçülmedi". Taralı bölge ikisini ayırır. */
 .rp-chart-gap { fill: var(--surface-sunken); }
 .rp-momentum-note { margin: var(--sp-1) 0 0; font-size: var(--fs-xs); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TARAFTAR ANKETİ — "Maçı kim kazanır?" + değiştirilebilir ikinci soru
+   ──────────────────────────────────────────────────────────────────────────
+   Radar Nabzı ile aynı jetonları ve aynı kart dilini kullanır; ayrı bir
+   görsel dil kurmaz. Oy deposu kapalıysa bölüm hiç açılmadığı için burada
+   "boş anket" durumu YOKTUR.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.fan-poll-section[hidden],
+.fan-poll-section [hidden] { display: none !important; }
+.fan-poll-body { display: grid; gap: var(--sp-4); }
+
+.fan-poll-question {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.fan-poll-question h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-md); font-weight: 700; }
+
+.fan-poll-options { display: grid; gap: var(--sp-2); }
+.fan-poll-option {
+  /* Parmakla rahat tıklanabilir: tam genişlik, 48px yükseklik. */
+  min-height: 48px;
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.fan-poll-option:hover:not(:disabled) { border-color: var(--green); background: var(--surface-tint); }
+.fan-poll-option:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-poll-option:disabled { opacity: 0.6; cursor: progress; }
+
+.fan-poll-results { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.fan-poll-result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.fan-poll-result-head b { font-variant-numeric: tabular-nums; }
+.fan-poll-result.is-leader .fan-poll-result-head b { color: var(--green); }
+.fan-poll-bar {
+  display: block;
+  height: 10px;
+  margin: var(--sp-1) 0 2px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.fan-poll-bar i { display: block; height: 100%; background: var(--green); }
+.fan-poll-result.is-leader .fan-poll-bar i { background: linear-gradient(90deg, var(--green-deep), var(--green)); }
+/* Okuyucunun kendi oyu işaretlenir — hangi seçeneği seçtiğini hatırlamak
+   için sayfayı yeniden okumak gerekmesin. */
+.fan-poll-result.is-mine .fan-poll-result-head span::after {
+  content: " ✓";
+  color: var(--green);
+  font-weight: 800;
+}
+.fan-poll-result small { font-size: var(--fs-xs); color: var(--muted); }
+.fan-poll-total, .fan-poll-note, .fan-poll-empty { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
+.fan-poll-error {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+@media (min-width: 560px) {
+  .fan-poll-options { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .fan-poll-option { text-align: center; }
+}
+
+/* ---------- Sosyal paylaşım satırı ---------- */
+/* Radar Nabzı bloğunun içinde yaşar: paylaşılacak sayılar zaten orada,
+   ayrı bir kutu aynı bilgiyi ikinci kez göstermek olurdu. */
+.fan-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.fan-share-label { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); }
+.fan-share-buttons { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.fan-share-button {
+  /* Dokunma hedefi 44px; dar ekranda da sığsın diye yatayda esnek. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fan-share-button:hover { border-color: var(--green); background: var(--surface-tint); }
+.fan-share-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-share-button.is-copy { border-style: dashed; }

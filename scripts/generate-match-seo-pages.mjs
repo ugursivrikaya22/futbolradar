@@ -50,6 +50,7 @@ import {
   lineupsSectionHtml,
   longDate,
   nextMatchesSectionHtml,
+  matchPollSectionHtml,
   normalizeEvents,
   radarPulseSectionHtml,
   relatedLinksHtml,
@@ -699,6 +700,9 @@ function pageHtml(entry, locale, options) {
     locale,
     base,
     state,
+    // Anket uç noktası hem Türkçe hem İngilizce slug'ı AYNI maça çözüyor,
+    // böylece iki dildeki okuyucu tek bir sayımı paylaşıyor.
+    pollSlug: slugValue,
     playerIndex,
     homeTeam: entry.homeTeam,
     awayTeam: entry.awayTeam,
@@ -736,6 +740,7 @@ function pageHtml(entry, locale, options) {
       state === "pending" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.pendingResult)}</strong></article></section>` : "",
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
+      matchPollSectionHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       summarySectionHtml(detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
@@ -747,6 +752,7 @@ function pageHtml(entry, locale, options) {
     sections = [
       `<section class="msp-section msp-live-note"><p class="muted-copy">${escapeHtml(text.liveNote)}</p></section>`,
       radarPulseSectionHtml(ctx),
+      matchPollSectionHtml(ctx),
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
@@ -767,6 +773,7 @@ function pageHtml(entry, locale, options) {
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),
       analysisSectionHtml(radar, detail.prediction, ctx),
+      matchPollSectionHtml(ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       radarPulseSectionHtml(ctx),
       eventsSectionHtml([], ctx),
@@ -840,6 +847,7 @@ function pageHtml(entry, locale, options) {
     ${siteFooter({ base, locale })}
     <script src="${base}site.js" defer></script>
     <script src="${base}radar-pulse.js" defer></script>
+    <script src="${base}radar-fan.js" defer></script>
     <script src="${base}match-center.js" defer></script>
   </body>
 </html>

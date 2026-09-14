@@ -202,6 +202,7 @@ export const STR = {
     radarPulseSubtitle: "Radar Nabzı, maçın son bölümündeki hücum ve baskı verilerinden hesaplanır.",
     radarPulsePending: "Radar Nabzı maç başladığında burada açılır.",
     radarPulseStale: "Canlı istatistik verisi geçici olarak güncellenemiyor.",
+    fanPollTitle: "Taraftar Anketi",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -312,6 +313,7 @@ export const STR = {
     radarPulseSubtitle: "Live Match Pulse is calculated from attacking and pressure data in the closing stage of the match.",
     radarPulsePending: "Live Match Pulse opens here once the match kicks off.",
     radarPulseStale: "Live statistics cannot be updated at the moment.",
+    fanPollTitle: "Fan Poll",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -834,6 +836,32 @@ export function radarPulseSectionHtml(ctx) {
     `<p class="rp-subtitle muted-copy">${escapeHtml(text.radarPulseSubtitle)}</p>` +
     `<div class="rp-body" data-radar-pulse-body></div>` +
     `<p class="rp-stale" data-radar-pulse-stale hidden>${escapeHtml(text.radarPulseStale)}</p>` +
+    `</section>`;
+}
+
+/**
+ * TARAFTAR ANKETİ KABUĞU.
+ *
+ * Sunucu yalnızca başlığı ve boş gövdeyi basar; sorular, sayım ve "bu
+ * tarayıcı oy verdi mi" bilgisi `radar-fan.js` ile `/api/match-poll`ten
+ * gelir. Sayım derleme anında basılamaz: her oyla değişir ve yayına giren
+ * statik bir sayı o andan itibaren yanlıştır.
+ *
+ * Kabuk `hidden` doğar. Oy deposu yapılandırılmamışsa istemci bölümü hiç
+ * açmaz — oy kabul edemeyen bir anketi göstermek, çalışmayan bir düğme
+ * sunmaktır.
+ */
+export function matchPollSectionHtml(ctx) {
+  const { locale, pollSlug } = ctx;
+  const text = STR[locale];
+  if (!pollSlug) return "";
+  const anchor = locale === "en" ? "fan-poll" : "taraftar-anketi";
+  return `<section class="msp-section fan-poll-section" id="${anchor}" data-match-poll ` +
+    `data-match-poll-slug="${escapeHtml(pollSlug)}" data-match-poll-locale="${locale}" hidden ` +
+    `aria-labelledby="fan-poll-title">` +
+    `<h2 id="fan-poll-title" class="msp-section-title">${escapeHtml(text.fanPollTitle)}</h2>` +
+    `<div class="fan-poll-body" data-match-poll-body></div>` +
+    `<p class="fan-poll-error" data-fan-poll-error hidden>${escapeHtml(locale === "en" ? "Votes cannot be recorded right now." : "Oy şu anda kaydedilemiyor.")}</p>` +
     `</section>`;
 }
 

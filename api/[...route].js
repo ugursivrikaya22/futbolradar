@@ -13,6 +13,7 @@ const { handleMotmVote } = require("../server/motmVoteRoute");
 const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
 const { handleMatchWinnerVote } = require("../server/matchWinnerVoteRoute");
+const { handleMatchPoll } = require("../server/matchPollRoute");
 const { handleMatchLineup } = require("../server/matchLineupRoute");
 const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
@@ -342,6 +343,15 @@ module.exports = async function handler(req, res) {
   // gerekçeyle alttaki genel kapılara sokulmuyor.
   if (routeName(req) === "match-winner-vote") {
     return handleMatchWinnerVote(req, res);
+  }
+
+  // HER MAÇ İÇİN taraftar anketi ("kim kazanır" + değiştirilebilir ikinci
+  // soru). Yukarıdaki derbi anketinden farkı maça sabitlenmemiş olması:
+  // maçı slug ile alır, soruları sicilden ve
+  // `data/match-poll-questions.json`dan kurar. Oy vermek POST, yanıt
+  // seçmene özel — alttaki tek politikalı okuma kapısına girmez.
+  if (routeName(req) === "match-poll") {
+    return handleMatchPoll(req, res);
   }
 
   // Maç dosyası ilk 11 + canlı skor: kendi önbellek politikasını maçın
