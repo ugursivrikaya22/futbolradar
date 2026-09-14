@@ -55,6 +55,23 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/sassuolo-juventus-13-eylul-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/sassuolo-juventus-september-13-2026" />
@@ -96,7 +113,7 @@
         <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track">
-            <div class="news-ticker-group"><a class="news-ticker-item" href="../mac-raporu/kocaelispor-samsunspor-2026-09-06.html"><span class="news-ticker-tag">Sonuç</span><span>Kocaelispor 1-0 Samsunspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../mac-raporu/caykur-rizespor-alanyaspor-2026-09-07.html"><span class="news-ticker-tag">Sonuç</span><span>Çaykur Rizespor 0-1 Alanyaspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5ZNkdMdVhsN2FWaVVUcm1aMzAyMmhqUGJ1UDNQdl8zNC1lX1UzaHhDWVJXV0JOWHdRVGY5NTNaWUJyVHZUcVAweUZBUzFGNW9Hdjd5UzRvRDBFSGpvcDBqNURIa19iaGV6Ulh4bnl4R3dMeHBDWURrZ2hLQ0NwWW8?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Galatasaray 1-0 Kocaelispor — kaynak: galatasaray.org" title="Kaynak: galatasaray.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Galatasaray 1-0 Kocaelispor</span></a></div>
+            <div class="news-ticker-group"><a class="news-ticker-item" href="../mac-raporu/kocaelispor-samsunspor-2026-09-06.html"><span class="news-ticker-tag">Sonuç</span><span>Kocaelispor 1-0 Samsunspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../mac-raporu/caykur-rizespor-alanyaspor-2026-09-07.html"><span class="news-ticker-tag">Sonuç</span><span>Çaykur Rizespor 0-1 Alanyaspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMiekFVX3lxTE9YbU5sNGN0aFJKakdaTXA1ejlfZ1huMlE2RkN6MWVvdjE2X3dNbEVFX0hWcXFqVGthekdrVG5nbjVPR1g0WVczRy1qWTBNS2EwLVgwNUdXMGJaTnVialU0S1IzMnNCU0syTTdqcURTanN3UEczYjA0aXR3?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Okan Buruk tarihe geçti! — kaynak: galatasaray.org" title="Kaynak: galatasaray.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Okan Buruk tarihe geçti!</span></a></div>
           </div>
         </div>
         <a class="news-ticker-all" href="../haberler.html">Tümü</a>
@@ -110,7 +127,7 @@
         <div class="msp-scoreboard">
           <div class="msp-team is-home"><img class="msp-badge" src="https://media.api-sports.io/football/teams/488.png" alt="Sassuolo logosu" width="44" height="44" loading="eager" decoding="async" /><span class="msp-team-name">Sassuolo</span></div>
           <div class="msp-score-wrap">
-            <p class="msp-score" data-msp-score><b data-msp-score-home>21:45</b></p>
+            <p class="msp-score" data-msp-score><b data-msp-score-home>3</b><span aria-hidden="true">-</span><b data-msp-score-away>2</b></p>
             <p class="msp-minute" data-msp-minute hidden></p>
             <span class="msp-ht" data-msp-halftime hidden></span>
           </div>
@@ -120,9 +137,9 @@
           <div><dt>Tarih</dt><dd><time datetime="2026-09-13T21:45:00+03:00">13 Eylül 2026 Pazar</time></dd></div>
           <div><dt>Saat</dt><dd>21:45 TSİ</dd></div>
           <div><dt>Turnuva</dt><dd>Serie A</dd></div>
-          <div><dt>Stadyum</dt><dd>Henüz açıklanmadı</dd></div>
+          <div><dt>Stadyum</dt><dd>Mapei Stadium</dd></div>
           <div><dt>Yayın kanalı</dt><dd>S Sport</dd></div>
-          <div><dt>Hakem</dt><dd>J. L. Sacchi</dd></div>
+          <div><dt>Hakem</dt><dd>Juan Luca Sacchi, Italy</dd></div>
         </dl>
       </section>
       <section class="msp-section"><article class="card data-empty"><strong>Maçın başlama saati geçti; nihai sonuç doğrulanmış kaynaktan alındığında bu sayfa otomatik güncellenir.</strong></article></section>

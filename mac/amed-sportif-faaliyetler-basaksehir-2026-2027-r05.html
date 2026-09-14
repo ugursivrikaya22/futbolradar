@@ -51,11 +51,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-<!-- hreflang:start -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/amed-sportif-faaliyetler-basaksehir-2026-2027-r05.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/amed-sportif-faaliyetler-basaksehir-2026-2027-r05.html" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/mac/amed-sportif-faaliyetler-basaksehir-2026-2027-r05.html" />
@@ -96,7 +109,7 @@
         <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track">
-            <div class="news-ticker-group"><a class="news-ticker-item" href="../mac-raporu/kocaelispor-samsunspor-2026-09-06.html"><span class="news-ticker-tag">Sonuç</span><span>Kocaelispor 1-0 Samsunspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../mac-raporu/caykur-rizespor-alanyaspor-2026-09-07.html"><span class="news-ticker-tag">Sonuç</span><span>Çaykur Rizespor 0-1 Alanyaspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMif0FVX3lxTE5ZNkdMdVhsN2FWaVVUcm1aMzAyMmhqUGJ1UDNQdl8zNC1lX1UzaHhDWVJXV0JOWHdRVGY5NTNaWUJyVHZUcVAweUZBUzFGNW9Hdjd5UzRvRDBFSGpvcDBqNURIa19iaGV6Ulh4bnl4R3dMeHBDWURrZ2hLQ0NwWW8?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Galatasaray 1-0 Kocaelispor — kaynak: galatasaray.org" title="Kaynak: galatasaray.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Galatasaray 1-0 Kocaelispor</span></a></div>
+            <div class="news-ticker-group"><a class="news-ticker-item" href="../mac-raporu/kocaelispor-samsunspor-2026-09-06.html"><span class="news-ticker-tag">Sonuç</span><span>Kocaelispor 1-0 Samsunspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../mac-raporu/caykur-rizespor-alanyaspor-2026-09-07.html"><span class="news-ticker-tag">Sonuç</span><span>Çaykur Rizespor 0-1 Alanyaspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMiekFVX3lxTE9YbU5sNGN0aFJKakdaTXA1ejlfZ1huMlE2RkN6MWVvdjE2X3dNbEVFX0hWcXFqVGthekdrVG5nbjVPR1g0WVczRy1qWTBNS2EwLVgwNUdXMGJaTnVialU0S1IzMnNCU0syTTdqcURTanN3UEczYjA0aXR3?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Okan Buruk tarihe geçti! — kaynak: galatasaray.org" title="Kaynak: galatasaray.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Okan Buruk tarihe geçti!</span></a></div>
           </div>
         </div>
         <a class="news-ticker-all" href="../haberler.html">Tümü</a>
@@ -121,7 +134,7 @@
         <div><span>Zayıf yönler</span><ul><li>Belirgin olumsuz bileşen yok</li></ul></div></div>
       </article><article class="match-ai-team card"><h3>Başakşehir</h3>
         <div class="match-ai-lists"><div><span>Güçlü yönler</span><ul><li>Kadro devamlılığı 100/100</li></ul></div>
-        <div><span>Zayıf yönler</span><ul><li>Kilit oyuncu formu 32/100</li><li>Son 5 maç formu 38/100</li></ul></div></div>
+        <div><span>Zayıf yönler</span><ul><li>Son 5 maç formu 30/100</li><li>Kilit oyuncu formu 32/100</li></ul></div></div>
       </article></div>
       
       <div class="match-ai-missing"><span>Eksikliği hissedilebilecek oyuncular</span><div class="match-ai-advantages"><span class="match-ai-chip is-missing">Başakşehir: D. Dilmen</span><span class="match-ai-chip is-missing">Başakşehir: M. Karbownik</span><span class="match-ai-chip is-missing">Başakşehir: C. Operi</span></div></div>
@@ -170,7 +183,7 @@
       </article></div>
     </section>
       <section class="match-info" aria-label="Maç bilgileri"><h2 class="match-section-title">Maç Bilgileri</h2>
-      <div class="card match-info-card"><dl class="match-info-grid"><div><dt>Stadyum</dt><dd>Diyarbakır Stadyumu</dd></div><div><dt>Şehir</dt><dd>Diyarbakır</dd></div><div><dt>Tarih</dt><dd>13 Eylül 2026 Pazar</dd></div><div><dt>Saat</dt><dd>20:00 TSİ</dd></div><div><dt>Hafta</dt><dd>5. Hafta</dd></div><div><dt>Yarışma</dt><dd>Trendyol Süper Lig</dd></div><div><dt>Hakem</dt><dd>C. Aydin</dd></div></dl>
+      <div class="card match-info-card"><dl class="match-info-grid"><div><dt>Stadyum</dt><dd>Diyarbakır Stadyumu</dd></div><div><dt>Şehir</dt><dd>Diyarbakır</dd></div><div><dt>Tarih</dt><dd>13 Eylül 2026 Pazar</dd></div><div><dt>Saat</dt><dd>20:00 TSİ</dd></div><div><dt>Hafta</dt><dd>5. Hafta</dd></div><div><dt>Yarışma</dt><dd>Trendyol Süper Lig</dd></div><div><dt>Hakem</dt><dd>Cihan Aydin, Türkiye</dd></div></dl>
       <p class="muted-copy">Yayıncı ve hava durumu bilgisi, doğrulanmış bir kaynaktan alınabildiğinde bu karta eklenir.</p></div>
     </section>
       <section class="match-live-stats" aria-label="Maç istatistikleri" data-match-live-stats data-provider-fixture="1584404" data-kickoff="2026-09-13T20:00:00+03:00">
@@ -188,16 +201,16 @@
       <div class="radar-explanation-grid"><div><span>Güçlü etkenler</span><ul><li>Yeterli olumlu bileşen oluşmadı</li></ul></div><div><span>Dikkat noktaları</span><ul><li>Belirgin olumsuz bileşen yok</li></ul></div></div>
     </details>
   </article><article class="match-radar-team-card">
-    <div class="match-radar-team-head"><span>Başakşehir</span><strong>55/100</strong></div>
+    <div class="match-radar-team-head"><span>Başakşehir</span><strong>51/100</strong></div>
     <div class="match-confidence"><span>Orta güven</span><b>Kapsam %50</b></div>
-    <div class="match-radar-bars"><div><span>Son 5 maç formu</span><i style="--value:37.5%"><b></b></i><em>38</em></div><div><span>Kadro devamlılığı</span><i style="--value:100%"><b></b></i><em>100</em></div><div><span>Kilit oyuncu formu</span><i style="--value:32.333333333333336%"><b></b></i><em>32</em></div></div>
+    <div class="match-radar-bars"><div><span>Son 5 maç formu</span><i style="--value:30%"><b></b></i><em>30</em></div><div><span>Kadro devamlılığı</span><i style="--value:100%"><b></b></i><em>100</em></div><div><span>Kilit oyuncu formu</span><i style="--value:32.333333333333336%"><b></b></i><em>32</em></div></div>
     <details class="radar-explanation" data-radar-explanation>
       <summary>Neden bu puan?</summary>
-      <div class="radar-explanation-grid"><div><span>Güçlü etkenler</span><ul><li>Kadro devamlılığı 100/100</li></ul></div><div><span>Dikkat noktaları</span><ul><li>Kilit oyuncu formu 32/100</li><li>Son 5 maç formu 38/100</li></ul></div></div>
+      <div class="radar-explanation-grid"><div><span>Güçlü etkenler</span><ul><li>Kadro devamlılığı 100/100</li></ul></div><div><span>Dikkat noktaları</span><ul><li>Son 5 maç formu 30/100</li><li>Kilit oyuncu formu 32/100</li></ul></div></div>
     </details>
   </article></section>
       <p class="match-radar-disclaimer">Radar puanı maç öncesi okuma içindir; kesin sonuç veya bahis önerisi değildir.</p>
-      <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">Amed Sportif Faaliyetler</span><h2>Form ve kadro</h2><div class="match-form-row"><span class="form-dot draw">B</span><span class="form-dot win">G</span><span class="form-dot loss">M</span><span class="form-dot win">G</span></div><p class="muted-copy">Eksik oyuncu bilgisi için doğrulanmış kayıt bekleniyor.</p><p class="muted-copy">Kilit oyuncu formu için yeterli doğrulanmış kadro kaydı yok.</p></article><article class="card"><span class="card-kicker">Başakşehir</span><h2>Form ve kadro</h2><div class="match-form-row"><span class="form-dot loss">M</span><span class="form-dot draw">B</span><span class="form-dot loss">M</span><span class="form-dot win">G</span></div><dl class="match-squad-metrics"><div><dt>Eksik oyuncu</dt><dd>2</dd></div><div><dt>Önemli eksik</dt><dd>U. Bozok</dd></div></dl><ul class="match-key-player-list"><li><a href="../oyuncular/s-kharebashvili-basaksehir.html">S. Kharebashvili</a><span>Radar 31</span></li><li><a href="../oyuncular/hamza-gureler-basaksehir.html">Hamza Güreler</a><span>Radar 30</span></li><li><a href="../oyuncular/ege-ozturk-basaksehir.html">Ege Ozturk</a><span>Radar 30</span></li></ul></article></section>
+      <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">Amed Sportif Faaliyetler</span><h2>Form ve kadro</h2><div class="match-form-row"><span class="form-dot win">G</span><span class="form-dot draw">B</span><span class="form-dot win">G</span><span class="form-dot loss">M</span><span class="form-dot win">G</span></div><p class="muted-copy">Eksik oyuncu bilgisi için doğrulanmış kayıt bekleniyor.</p><p class="muted-copy">Kilit oyuncu formu için yeterli doğrulanmış kadro kaydı yok.</p></article><article class="card"><span class="card-kicker">Başakşehir</span><h2>Form ve kadro</h2><div class="match-form-row"><span class="form-dot loss">M</span><span class="form-dot loss">M</span><span class="form-dot draw">B</span><span class="form-dot loss">M</span><span class="form-dot win">G</span></div><dl class="match-squad-metrics"><div><dt>Eksik oyuncu</dt><dd>2</dd></div><div><dt>Önemli eksik</dt><dd>U. Bozok</dd></div></dl><ul class="match-key-player-list"><li><a href="../oyuncular/s-kharebashvili-basaksehir.html">S. Kharebashvili</a><span>Radar 31</span></li><li><a href="../oyuncular/hamza-gureler-basaksehir.html">Hamza Güreler</a><span>Radar 30</span></li><li><a href="../oyuncular/ege-ozturk-basaksehir.html">Ege Ozturk</a><span>Radar 30</span></li></ul></article></section>
       <section class="match-related-grid" aria-label="İlgili radar ekranları"><a class="match-related-card" href="../mac/amed-sportif-faaliyetler-basaksehir-13-eylul-2026"><span>Canlı maç merkezi</span><strong>Ne zaman, hangi kanalda, canlı skor</strong><p>Maç saati, yayın, muhtemel 11'ler ve maç sonucu aynı kalıcı sayfada.</p></a><a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
     </main>
     <footer class="footer footer-premium" data-shared-layout="footer">

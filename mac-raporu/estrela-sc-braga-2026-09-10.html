@@ -54,11 +54,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-</head>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  </head>
   <body class="subpage post-match-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
@@ -132,7 +145,13 @@
 
       
 
-      
+      <section class="post-match-section" aria-labelledby="rapor-sonraki">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Rapor</span><h2 id="rapor-sonraki">Sonraki maç</h2><p>Doğrulanmış fikstüre dayanır.</p></div></div>
+        <article class="card post-match-next">
+          <ul><li>Estrela, galibiyetin moraliyle 14 Eylül 2026 tarihinde deplasmanda Rio Ave ile karşılaşacak.</li><li>SC Braga, mağlubiyetin ardından 14 Eylül 2026 tarihinde sahasında Estoril ile karşılaşacak.</li></ul>
+          <p class="muted-copy">Öngörü, doğrulanmış fikstür ve bu maçın sonucuna dayanır; skor tahmini içermez.</p>
+        </article>
+      </section>
 
       <section class="post-match-next-grid">
         

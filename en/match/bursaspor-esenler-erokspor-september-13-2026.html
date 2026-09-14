@@ -51,11 +51,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-<!-- hreflang:start -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/bursaspor-esenler-erokspor-13-eylul-2026" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/bursaspor-esenler-erokspor-september-13-2026" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/mac/bursaspor-esenler-erokspor-13-eylul-2026" />
@@ -110,7 +123,7 @@
         <div class="msp-scoreboard">
           <div class="msp-team is-home"><img class="msp-badge" src="https://media.api-sports.io/football/teams/1003.png" alt="Bursaspor logo" width="44" height="44" loading="eager" decoding="async" /><span class="msp-team-name">Bursaspor</span></div>
           <div class="msp-score-wrap">
-            <p class="msp-score" data-msp-score><b data-msp-score-home>20:00</b></p>
+            <p class="msp-score" data-msp-score><b data-msp-score-home>2</b><span aria-hidden="true">-</span><b data-msp-score-away>2</b></p>
             <p class="msp-minute" data-msp-minute hidden></p>
             <span class="msp-ht" data-msp-halftime hidden></span>
           </div>
