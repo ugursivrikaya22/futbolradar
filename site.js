@@ -2274,6 +2274,16 @@
     if (node) node.hidden = !visible;
   }
 
+  /** Binlik ayraçlı sayı; eski tarayıcıda ham sayıya düşer (kırılmaz). */
+  function formatCount(value) {
+    var number = Number(value) || 0;
+    try {
+      return number.toLocaleString(document.documentElement.lang === "en" ? "en-GB" : "tr-TR");
+    } catch (error) {
+      return String(number);
+    }
+  }
+
   /** Arma: yüklenemezse aynı boyutlu baş-harf kutusuna düşer. */
   function crest(option) {
     if (!option.logo) {
@@ -2302,6 +2312,339 @@
     return img;
   }
 
+
+  /* ══════════════════════════════════════════════════════════════════════
+     PAYLAŞIM — METİN, BAĞLANTI VE GÖRSEL KART.
+
+     Anket ancak paylaşılabildiği kadar yayılır, ama paylaşılan şey DOĞRU
+     olmak zorunda: metin kullanıcının SEÇTİĞİ takımı ve anketin O ANKİ
+     sonucunu söyler. İkisi de derleme anında bilinmediği için bu bölüm
+     tamamen istemcide kuruluyor.
+
+     ŞABLON BURADA YAZILMAZ. Türkçe/İngilizce cümleler uç noktadan geliyor
+     (`services/homePoll.js` → `SHARE_COPY`, anket kaydı kendi metnini
+     yazabiliyor). Burada yalnızca yer tutucular dolduruluyor — metni ikinci
+     kez tarayıcıya yazmak, bir gün iki sürümün ayrışması demekti.
+
+     YÜZDE UYDURULMAZ. Sayım yoksa yüzdesiz şablon kullanılır; "%0 ile lider"
+     demek veride olmayan bir sayı iddia etmektir.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /** Anketin kendi sayfası. Yoksa bulunulan sayfa (hash/sorgu atılmış). */
+  function pollShareUrl(section, poll) {
+    var path = (poll && poll.path) || section.getAttribute("data-home-poll-path") || "";
+    if (path) return window.location.origin + path;
+    return window.location.origin + window.location.pathname;
+  }
+
+  function fillTemplate(template, values) {
+    return String(template || "").replace(/\{(\w+)\}/g, function (match, key) {
+      return Object.prototype.hasOwnProperty.call(values, key) ? String(values[key]) : match;
+    });
+  }
+
+  /**
+   * KAMPANYA ETİKETİ ANKET KİMLİĞİNDEN TÜRER.
+   *
+   * Hangi ağdan kaç okuyucu geldiği ancak adres ayrışırsa ölçülebilir.
+   * Etiket elle yazılsaydı, yeni anket eklendiğinde birinin bir sabiti
+   * güncellemeyi unutması an meselesiydi.
+   */
+  function withUtm(url, platform, pollId) {
+    var campaign = "poll_" + String(pollId || "").replace(/-/g, "_");
+    var query = "utm_source=" + encodeURIComponent(platform) +
+      "&utm_medium=social&utm_campaign=" + encodeURIComponent(campaign);
+    return url + (url.indexOf("?") < 0 ? "?" : "&") + query;
+  }
+
+  /**
+   * Paylaşım metni: önce KENDİ oyun, sonra ANKETİN lideri, en sonda yalın
+   * soru. Sıra okuyucunun sahiplendiği şeye göre — kendi oyunu paylaşan
+   * kişi "benim seçimim" cümlesini bekler.
+   */
+  function buildShareText(poll, data) {
+    var copy = (poll && poll.share) || {};
+    var rows = (data && data.results) || [];
+    var mine = null;
+    var index;
+
+    if (data && data.choice) {
+      for (index = 0; index < rows.length; index += 1) {
+        if (rows[index].optionId === data.choice) { mine = rows[index]; break; }
+      }
+      // Sayımda satır yoksa (depo kapalı) seçenek listesinden etiketi al:
+      // "oy verdim" demek için yüzdeye ihtiyaç yok.
+      if (!mine && poll && poll.options) {
+        for (index = 0; index < poll.options.length; index += 1) {
+          if (poll.options[index].id === data.choice) {
+            mine = { label: poll.options[index].label, percent: 0 };
+            break;
+          }
+        }
+      }
+    }
+
+    if (mine) {
+      return mine.percent > 0
+        ? fillTemplate(copy.voted, { team: mine.label, percent: mine.percent })
+        : fillTemplate(copy.votedWithoutResult, { team: mine.label });
+    }
+    if (rows.length && data.total > 0) {
+      return fillTemplate(copy.leader, { team: rows[0].label, percent: rows[0].percent });
+    }
+    return fillTemplate(copy.plain, { question: poll ? poll.question : "" });
+  }
+
+  /**
+   * PAYLAŞIM SAYACI — SESSİZ VE ENGELLEYİCİ DEĞİL.
+   *
+   * İstek arka planda gider; başarısız olması paylaşımı durdurmaz. Sayılan
+   * şey bir NİYETTİR: hiçbir ağ bize paylaşımın tamamlandığını bildirmiyor
+   * ve bildirdiğini varsaymak, olmayan bir veriyi raporlamak olurdu.
+   */
+  function trackShare(pollId, platform, locale) {
+    trackPollEvent("poll_share", { platform: platform, pollId: pollId });
+    if (typeof window.fetch !== "function") return;
+    try {
+      window.fetch("/api/home-poll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ action: "share", pollId: pollId, platform: platform, locale: locale })
+      }).catch(function () { /* sayaç paylaşımı engelleyemez */ });
+    } catch (error) {
+      /* aynı gerekçe */
+    }
+  }
+
+  /* ── PAYLAŞILABİLİR GÖRSEL KART ────────────────────────────────────────
+     Metin ve bağlantı her ağda çalışır; Instagram'da ise paylaşılan şey
+     GÖRSELDİR. Kart bu yüzden tarayıcıda çiziliyor: sunucuda üretmek yeni
+     bir sunucusuz işlev demekti ve Vercel Hobby planındaki 12 işlev sınırı
+     dolu (gerekçe server/homePollRoute.js başlığında).
+
+     ARMA CORS'SUZ ÇİZİLMEZ. Kulüp armaları başka bir alan adından geliyor;
+     `crossOrigin="anonymous"` olmadan çizilen bir görsel tuvali KİRLETİR ve
+     `toBlob()` sessizce başarısız olur. Arma yüklenemezse baş harfli daire
+     çiziliyor — kart yine çıkıyor, yalnızca armasız.
+     ──────────────────────────────────────────────────────────────────── */
+
+  var CARD_FORMATS = {
+    square: { width: 1080, height: 1080 },
+    story: { width: 1080, height: 1920 }
+  };
+
+  function loadCrestImage(url) {
+    return new Promise(function (resolve) {
+      if (!url || typeof window.Image !== "function") { resolve(null); return; }
+      var img = new window.Image();
+      img.crossOrigin = "anonymous";
+      img.referrerPolicy = "no-referrer";
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = url;
+    });
+  }
+
+  /** Satır kaydırma: tuvalde otomatik sarma yok, elle hesaplanır. */
+  function wrapText(ctx, text, maxWidth, maxLines) {
+    var words = String(text || "").split(/\s+/).filter(Boolean);
+    var lines = [];
+    var current = "";
+    for (var i = 0; i < words.length; i += 1) {
+      var candidate = current ? current + " " + words[i] : words[i];
+      if (ctx.measureText(candidate).width <= maxWidth || !current) {
+        current = candidate;
+      } else {
+        lines.push(current);
+        current = words[i];
+        if (lines.length === maxLines - 1) break;
+      }
+    }
+    if (current && lines.length < maxLines) lines.push(current);
+    return lines;
+  }
+
+  function roundedRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+  }
+
+  /**
+   * Kartı çiz. Dönen söz bir `Blob`; çizim yapılamıyorsa (tuval yok, eski
+   * tarayıcı) `null` — ve o durumda paylaşım yine metin/bağlantı olarak
+   * çalışır, yalnızca görsel kart görünmez.
+   */
+  function drawShareCard(spec) {
+    var size = CARD_FORMATS[spec.format] || CARD_FORMATS.square;
+    var canvas = document.createElement("canvas");
+    if (!canvas.getContext) return Promise.resolve(null);
+    canvas.width = size.width;
+    canvas.height = size.height;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return Promise.resolve(null);
+
+    var story = spec.format === "story";
+    var padding = 90;
+    var centerX = size.width / 2;
+    var maxTextWidth = size.width - padding * 2;
+
+    // Zemin: FutbolRadar yeşilinden koyuya. Marka rengi sayfayla aynı;
+    // kart sitenin bir parçası gibi görünmeli.
+    var background = ctx.createLinearGradient(0, 0, size.width, size.height);
+    background.addColorStop(0, "#07281c");
+    background.addColorStop(0.55, "#0b3d2a");
+    background.addColorStop(1, "#05100c");
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, size.width, size.height);
+
+    ctx.fillStyle = "rgba(11, 143, 90, 0.25)";
+    ctx.beginPath();
+    ctx.arc(size.width, story ? 240 : 120, 420, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.textAlign = "center";
+
+    // Marka şeridi ve alt bant SABİT; aradaki her şey ölçülüp o boşluğa
+    // sığdırılıyor.
+    var brandY = story ? 220 : 130;
+    ctx.fillStyle = "#4ade80";
+    ctx.font = "900 46px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText("FUTBOLRADAR", centerX, brandY);
+
+    var footerHeight = story ? 220 : 180;
+    var footerTop = size.height - footerHeight;
+
+    /* ── DÜZEN ÖNCE ÖLÇÜLÜR, SONRA ÇİZİLİR ─────────────────────────────
+       İlk sürüm blokları yukarıdan aşağı, sabit aralıklarla basıyordu.
+       Soru iki satıra sarınca yığın alt banda taşıyor ve "Toplam … oy"
+       satırı çağrı metninin ÜSTÜNE biniyordu — kartı paylaşan herkes o
+       çakışmayı paylaşırdı.
+
+       Artık bloklar önce ölçülüyor: toplam yükseklik boşluğu aşarsa önce
+       arma küçülüyor (en çok yer kaplayan ve en az bilgi taşıyan öğe o),
+       yetmezse aralıklar daralıyor. Metin hiçbir koşulda kırpılmıyor. */
+    var region = { top: brandY + (story ? 70 : 52), bottom: footerTop - (story ? 60 : 40) };
+
+    ctx.font = "700 44px 'Segoe UI', Roboto, Arial, sans-serif";
+    var questionLines = wrapText(ctx, spec.question, maxTextWidth, 3);
+    ctx.font = "900 72px 'Segoe UI', Roboto, Arial, sans-serif";
+    var teamLines = wrapText(ctx, spec.team, maxTextWidth, 2);
+
+    var lineHeights = { question: 58, team: 84, label: 46, percent: 92, total: 52 };
+    var gap = story ? 44 : 30;
+    var crestSize = story ? 260 : 210;
+
+    function stackHeight() {
+      return questionLines.length * lineHeights.question + gap +
+        lineHeights.label + gap +
+        crestSize + gap +
+        teamLines.length * lineHeights.team +
+        (spec.percentText ? lineHeights.percent : 0) +
+        (spec.totalText ? lineHeights.total : 0);
+    }
+
+    var available = region.bottom - region.top;
+    // Arma 96 pikselin altına inmez: o boyutun altında arma tanınmaz olur
+    // ve kartta bir anlam taşımayan bir leke kalırdı.
+    while (stackHeight() > available && crestSize > 96) crestSize -= 10;
+    while (stackHeight() > available && gap > 10) gap -= 2;
+
+    var y = region.top + Math.max(0, (available - stackHeight()) / 2);
+
+    // Soru
+    ctx.fillStyle = "rgba(255,255,255,0.86)";
+    ctx.font = "700 44px 'Segoe UI', Roboto, Arial, sans-serif";
+    questionLines.forEach(function (line) {
+      y += lineHeights.question;
+      ctx.fillText(line, centerX, y);
+    });
+    y += gap;
+
+    // "Benim seçimim" / "Ankette lider"
+    y += lineHeights.label;
+    ctx.fillStyle = "#4ade80";
+    ctx.font = "800 34px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText(spec.pickLabel.toLocaleUpperCase("tr-TR"), centerX, y);
+    y += gap;
+
+    // Arma (yoksa baş harfli daire)
+    if (spec.crest) {
+      ctx.drawImage(spec.crest, centerX - crestSize / 2, y, crestSize, crestSize);
+    } else {
+      ctx.fillStyle = "rgba(255,255,255,0.12)";
+      ctx.beginPath();
+      ctx.arc(centerX, y + crestSize / 2, crestSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "900 " + Math.round(crestSize / 2.4) + "px 'Segoe UI', Roboto, Arial, sans-serif";
+      ctx.textBaseline = "middle";
+      ctx.fillText(spec.initials || "?", centerX, y + crestSize / 2);
+      ctx.textBaseline = "alphabetic";
+    }
+    y += crestSize + gap;
+
+    // Takım adı
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "900 72px 'Segoe UI', Roboto, Arial, sans-serif";
+    teamLines.forEach(function (line) {
+      y += lineHeights.team;
+      ctx.fillText(line, centerX, y);
+    });
+
+    // YÜZDE VE TOPLAM YALNIZCA GERÇEK SAYIM VARSA. Sıfır oyu "%0" diye
+    // yazmak da bir iddiadır ve o iddia ancak bir sayım varsa yapılabilir.
+    if (spec.percentText) {
+      y += lineHeights.percent;
+      ctx.fillStyle = "#4ade80";
+      ctx.font = "900 86px 'Segoe UI', Roboto, Arial, sans-serif";
+      ctx.fillText(spec.percentText, centerX, y);
+    }
+    if (spec.totalText) {
+      y += lineHeights.total;
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      ctx.font = "600 38px 'Segoe UI', Roboto, Arial, sans-serif";
+      ctx.fillText(spec.totalText, centerX, y);
+    }
+
+    // Alt bant: çağrı + adres
+    ctx.fillStyle = "rgba(255,255,255,0.08)";
+    roundedRect(ctx, padding / 2, footerTop, size.width - padding, footerHeight - padding / 2, 28);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "800 42px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText(spec.ctaText, centerX, footerTop + 70);
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.font = "600 32px 'Segoe UI', Roboto, Arial, sans-serif";
+    // Adres uzunsa kırpmak yerine küçültülür: paylaşılan kartta adresin
+    // yarısını göstermek, hiç göstermemekten kötüdür.
+    var urlWidth = ctx.measureText(spec.urlText).width;
+    if (urlWidth > maxTextWidth) {
+      ctx.font = "600 " + Math.max(20, Math.floor(32 * maxTextWidth / urlWidth)) + "px 'Segoe UI', Roboto, Arial, sans-serif";
+    }
+    ctx.fillText(spec.urlText, centerX, footerTop + 122);
+
+    return new Promise(function (resolve) {
+      if (typeof canvas.toBlob !== "function") { resolve(null); return; }
+      try {
+        canvas.toBlob(function (blob) { resolve(blob || null); }, "image/png");
+      } catch (error) {
+        // Tuval kirlenmişse (arma CORS'suz yüklendiyse) burada düşer.
+        resolve(null);
+      }
+    });
+  }
+
   function setupPoll(section) {
     var source = section.getAttribute("data-home-poll-source") || "/api/home-poll";
     var locale = section.getAttribute("data-home-poll-locale") === "en" ? "en" : "tr";
@@ -2309,15 +2652,32 @@
     var optionList = section.querySelector("[data-home-poll-options]");
     var resultList = section.querySelector("[data-home-poll-results]");
     var totalNode = section.querySelector("[data-home-poll-total]");
+    var podiumList = section.querySelector("[data-home-poll-podium]");
+    var sharePanel = section.querySelector("[data-poll-share]");
     var submit = section.querySelector("[data-home-poll-submit]");
     if (!form || !optionList || !resultList || typeof window.fetch !== "function") return;
 
     var strings = locale === "en"
-      ? { votes: "votes", total: "total votes", leader: "Leading", yours: "Your vote", ends: "Voting closes:" }
-      : { votes: "oy", total: "toplam oy", leader: "Önde", yours: "Senin oyun", ends: "Oylama bitişi:" };
+      ? {
+        votes: "votes", leader: "Leading", yours: "✓ Your vote", ends: "Voting closes:",
+        // Toplam katılım bir davettir, bir istatistik satırı değil: "13.842
+        // kişi oy kullandı" cümlesi okuyucuyu da oy vermeye çağırıyor.
+        totalLine: "🔥 {total} football fans have voted",
+        pickLabel: "My pick", leaderLabel: "Leading",
+        cardTotal: "{total} votes in total", cardCta: "Cast your vote too"
+      }
+      : {
+        votes: "oy", leader: "Önde", yours: "✓ Senin oyun", ends: "Oylama bitişi:",
+        totalLine: "🔥 Toplam {total} futbolsever oy kullandı",
+        pickLabel: "Benim seçimim", leaderLabel: "Ankette lider",
+        cardTotal: "Toplam {total} oy", cardCta: "Sen de oyunu kullan"
+      };
 
     var poll = null;
     var refreshTimer = null;
+    // Son çizilen yanıt. Kart biçimi (kare/story) değiştiğinde yeni bir ağ
+    // isteği atmadan yeniden çizebilmek için saklanıyor.
+    var lastData = null;
     // Formun ŞU AN oy alıp alamayacağı (anket açık + depo hazır + oy
     // verilmemiş). `render()`de güncellenir, `updateSubmitEnabled()`de
     // okunur — tıklama/klavye seçim yaptığında düğmeyi doğru açıp kapatmak
@@ -2439,7 +2799,8 @@
 
         var votes = document.createElement("span");
         votes.className = "home-poll__result-votes";
-        votes.textContent = row.votes + " " + strings.votes;
+        // Binlik ayraçlı: "4281 oy" dört haneden sonra okunmaz oluyor.
+        votes.textContent = formatCount(row.votes) + " " + strings.votes;
         head.appendChild(votes);
 
         var bar = document.createElement("div");
@@ -2461,9 +2822,328 @@
 
       show(resultList, rows.length > 0);
       if (totalNode) {
-        setText(totalNode, data.total ? data.total + " " + strings.total : "");
+        // Binlik ayracı okuyucunun diline göre: "13.842" (tr) / "13,842" (en).
+        setText(totalNode, data.total
+          ? fillTemplate(strings.totalLine, { total: formatCount(data.total) })
+          : "");
         show(totalNode, Boolean(data.total));
       }
+    }
+
+    /**
+     * ANKET LİDERLERİ — İLK ÜÇ, MADALYALARLA.
+     *
+     * Sonuç listesi zaten sıralı geliyor; podyum onun ilk üçünü büyütüyor.
+     * NEDEN AYRI: on sekiz satırlık bir listede "kim önde" sorusu ancak
+     * kaydırarak yanıtlanıyordu; paylaşmaya değer olan da bu üç satır.
+     *
+     * SAYIM YOKSA PODYUM ÇİZİLMEZ. Boş bir listeye madalya asmak, olmayan
+     * bir yarışın sonucunu bildirmek olurdu.
+     */
+    function renderPodium(data) {
+      if (!podiumList) return;
+      var rows = (data.results || []).slice(0, 3);
+      podiumList.innerHTML = "";
+      if (!rows.length || !data.total) {
+        show(podiumList, false);
+        return;
+      }
+
+      var medals = ["🥇", "🥈", "🥉"];
+      rows.forEach(function (row, index) {
+        var item = document.createElement("li");
+        item.className = "poll-podium__item is-rank-" + (index + 1) +
+          (data.choice && data.choice === row.optionId ? " is-yours" : "");
+
+        var medal = document.createElement("span");
+        medal.className = "poll-podium__medal";
+        medal.textContent = medals[index];
+        item.appendChild(medal);
+
+        var name = document.createElement("span");
+        name.className = "poll-podium__name";
+        name.textContent = row.label;
+        item.appendChild(name);
+
+        var percent = document.createElement("span");
+        percent.className = "poll-podium__percent";
+        percent.textContent = "%" + row.percent;
+        item.appendChild(percent);
+
+        podiumList.appendChild(item);
+      });
+      show(podiumList, true);
+    }
+
+
+    /* ── PAYLAŞIM PANELİ ────────────────────────────────────────────────
+       Panel oy verildikten (ya da anket kapandıktan) SONRA açılır: paylaşacak
+       bir şey olmadan "sonucu paylaş" demek, boş bir vaat olurdu.
+
+       Olay dinleyicileri BİR KEZ bağlanır (`shareWired`); `render()` canlı
+       tazelemede dakikada bir koşuyor ve her koşuda yeniden bağlamak aynı
+       tıklamayı birden çok kez saydırırdı.
+       ──────────────────────────────────────────────────────────────────── */
+    var shareWired = false;
+    var shareState = { text: "", url: "", blob: null, format: "square", objectUrl: "", signature: "" };
+
+    function shareStatus(message) {
+      var node = section.querySelector("[data-poll-share-status]");
+      if (!node) return;
+      setText(node, message);
+      show(node, Boolean(message));
+    }
+
+    function shareIntent(platform, text, url) {
+      var target = withUtm(url, platform, poll && poll.id);
+      var encodedText = encodeURIComponent(text);
+      var encodedUrl = encodeURIComponent(target);
+      if (platform === "x") return "https://twitter.com/intent/tweet?text=" + encodedText + "&url=" + encodedUrl;
+      if (platform === "whatsapp") return "https://api.whatsapp.com/send?text=" + encodeURIComponent(text + " " + target);
+      if (platform === "facebook") return "https://www.facebook.com/sharer/sharer.php?u=" + encodedUrl;
+      if (platform === "telegram") return "https://t.me/share/url?url=" + encodedUrl + "&text=" + encodedText;
+      return target;
+    }
+
+    /** Seçilen (yoksa önde giden) seçenek — kart ve metin ikisi de bunu anlatır. */
+    function shareSubject(data) {
+      var rows = data.results || [];
+      var index;
+      if (data.choice) {
+        for (index = 0; index < rows.length; index += 1) {
+          if (rows[index].optionId === data.choice) {
+            return { row: rows[index], mine: true };
+          }
+        }
+        for (index = 0; poll && index < poll.options.length; index += 1) {
+          if (poll.options[index].id === data.choice) {
+            return { row: { optionId: data.choice, label: poll.options[index].label, percent: 0 }, mine: true };
+          }
+        }
+      }
+      return rows.length ? { row: rows[0], mine: false } : null;
+    }
+
+    function optionById(optionId) {
+      for (var index = 0; poll && index < poll.options.length; index += 1) {
+        if (poll.options[index].id === optionId) return poll.options[index];
+      }
+      return null;
+    }
+
+    /**
+     * Kartı üret ve önizlemeye koy. Kart üretilemezse (eski tarayıcı, tuval
+     * yok) kart bölümü GİZLENİR — metin ve bağlantı paylaşımı çalışmaya
+     * devam eder. Çalışmayan bir düğme göstermek, seçenek sunmak değildir.
+     */
+    function refreshCard(data) {
+      var cardBox = section.querySelector("[data-poll-card]");
+      if (!cardBox) return;
+      var subject = shareSubject(data);
+      if (!subject) { show(cardBox, false); return; }
+
+      // AYNI KART İKİ KEZ ÇİZİLMEZ. Sonuç görünümdeyken `render()` dakikada
+      // bir koşuyor; her koşuda 1080 piksellik bir tuvali yeniden çizmek ve
+      // PNG'ye kodlamak, hiçbir şey değişmemişken telefonun pilini yakardı.
+      var signature = [shareState.format, subject.row.optionId, subject.row.percent, data.total].join("|");
+      if (signature === shareState.signature) return;
+      shareState.signature = signature;
+
+      var option = optionById(subject.row.optionId);
+      var percentText = subject.row.percent > 0 ? "%" + subject.row.percent : "";
+      var totalText = data.total
+        ? fillTemplate(strings.cardTotal, { total: formatCount(data.total) })
+        : "";
+
+      loadCrestImage(option && option.logo).then(function (image) {
+        return drawShareCard({
+          format: shareState.format,
+          question: poll.question,
+          pickLabel: subject.mine ? strings.pickLabel : strings.leaderLabel,
+          team: subject.row.label,
+          crest: image,
+          initials: option && option.initials,
+          percentText: percentText,
+          totalText: totalText,
+          ctaText: strings.cardCta,
+          urlText: shareState.url.replace(/^https?:\/\//, "")
+        });
+      }).then(function (blob) {
+        var preview = section.querySelector("[data-poll-card-preview]");
+        var download = section.querySelector("[data-poll-card-download]");
+        var cardShare = section.querySelector("[data-poll-card-share]");
+
+        if (!blob) {
+          show(cardBox, false);
+          return;
+        }
+        if (shareState.objectUrl) window.URL.revokeObjectURL(shareState.objectUrl);
+        shareState.blob = blob;
+        shareState.objectUrl = window.URL.createObjectURL(blob);
+
+        if (preview) {
+          preview.src = shareState.objectUrl;
+          show(preview, true);
+        }
+        show(download, true);
+        // GÖRSEL PAYLAŞIMI HER YERDE YOK: `canShare({files})` desteklenmiyorsa
+        // düğme gizli kalır ve okuyucuya indirme seçeneği sunulur.
+        show(cardShare, canShareFile(blob));
+        show(cardBox, true);
+      }).catch(function () {
+        show(cardBox, false);
+      });
+    }
+
+    function canShareFile(blob) {
+      if (!blob || typeof window.File !== "function" || !navigator.canShare) return false;
+      try {
+        return navigator.canShare({ files: [new window.File([blob], "card.png", { type: "image/png" })] });
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function shareImage(platform) {
+      if (!shareState.blob || typeof window.File !== "function" || !navigator.share) return false;
+      var file = new window.File([shareState.blob],
+        "futbolradar-" + (poll.slug || poll.id) + ".png", { type: "image/png" });
+      if (navigator.canShare && !navigator.canShare({ files: [file] })) return false;
+      navigator.share({
+        files: [file],
+        text: shareState.text,
+        url: withUtm(shareState.url, platform, poll && poll.id)
+      }).then(function () {
+        trackShare(poll.id, platform, locale);
+      }).catch(function () { /* kullanıcı vazgeçti; hata değil */ });
+      return true;
+    }
+
+    /**
+     * Görseli indir. Bağlantı DOM'da durmuyor (hedefsiz bir `<a>` bırakmamak
+     * için); tıklama anında geçici bir bağlantı kurulup tıklanıyor ve hemen
+     * kaldırılıyor. Kart henüz üretilmediyse `false` döner ve çağıran
+     * kullanıcıya bir şey söyler — sessizce hiçbir şey yapmayan bir düğme,
+     * bozuk bir düğmedir.
+     */
+    function downloadCard() {
+      if (!shareState.objectUrl) return false;
+      var link = document.createElement("a");
+      link.href = shareState.objectUrl;
+      link.download = "futbolradar-" + (poll.slug || poll.id) + "-" + shareState.format + ".png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      trackShare(poll.id, "download", locale);
+      return true;
+    }
+
+    function wireShare() {
+      if (shareWired || !sharePanel) return;
+      shareWired = true;
+
+      // KANAL DÜĞMELERİ PENCEREYİ KENDİLERİ AÇAR. Adres oy ve sayım
+      // bilinince kuruluyor, yani derleme anında bir `href` yazılamıyordu;
+      // hedefsiz bir `<a>` ise klavye sırasına girmeyen, denetimde de haklı
+      // olarak kırık sayılan bir bağlantı olurdu.
+      Array.prototype.forEach.call(sharePanel.querySelectorAll("[data-poll-share-link]"), function (button) {
+        button.addEventListener("click", function () {
+          var platform = button.getAttribute("data-poll-share-link");
+          var target = shareIntent(platform, shareState.text, shareState.url);
+          trackShare(poll && poll.id, platform, locale);
+          window.open(target, "_blank", "noopener,noreferrer");
+        });
+      });
+
+      var nativeButton = sharePanel.querySelector("[data-poll-share-native]");
+      if (nativeButton) {
+        nativeButton.addEventListener("click", function () {
+          if (!navigator.share) return;
+          navigator.share({
+            title: poll ? poll.question : "FutbolRadar",
+            text: shareState.text,
+            url: withUtm(shareState.url, "native", poll && poll.id)
+          }).then(function () {
+            trackShare(poll.id, "native", locale);
+          }).catch(function () { /* kullanıcı vazgeçti */ });
+        });
+      }
+
+      var copyButton = sharePanel.querySelector("[data-poll-share-copy]");
+      if (copyButton) {
+        copyButton.addEventListener("click", function () {
+          var payload = shareState.text + " " + withUtm(shareState.url, "copy", poll && poll.id);
+          var copy = navigator.clipboard && navigator.clipboard.writeText
+            ? navigator.clipboard.writeText(payload)
+            : Promise.reject(new Error("clipboard-unavailable"));
+          copy.then(function () {
+            shareStatus((poll.share || {}).copied);
+            trackShare(poll.id, "copy", locale);
+          }).catch(function () {
+            shareStatus((poll.share || {}).copyFailed);
+          });
+        });
+      }
+
+      /**
+       * INSTAGRAM: SAHTE ENTEGRASYON YOK.
+       *
+       * Instagram web'den doğrudan gönderi paylaşımına izin vermiyor. Bu
+       * yüzden burada "Instagram'a gönder" taklidi yapılmıyor: desteklenen
+       * cihazda telefonun kendi paylaşım penceresi GÖRSELLE açılıyor
+       * (kullanıcı oradan Instagram'ı seçiyor), desteklenmeyen yerde görsel
+       * indiriliyor ve kullanıcı onu uygulamaya kendisi yüklüyor.
+       */
+      var instagramButton = sharePanel.querySelector("[data-poll-share-instagram]");
+      if (instagramButton) {
+        instagramButton.addEventListener("click", function () {
+          if (shareImage("instagram")) return;
+          if (downloadCard()) return;
+          shareStatus((poll.share || {}).copyFailed);
+        });
+      }
+
+      var cardShare = sharePanel.querySelector("[data-poll-card-share]");
+      if (cardShare) cardShare.addEventListener("click", function () { shareImage("native"); });
+
+      var cardDownload = sharePanel.querySelector("[data-poll-card-download]");
+      if (cardDownload) {
+        cardDownload.addEventListener("click", function () { downloadCard(); });
+      }
+
+      Array.prototype.forEach.call(sharePanel.querySelectorAll("[data-poll-card-format]"), function (button) {
+        button.addEventListener("click", function () {
+          var wanted = button.getAttribute("data-poll-card-format");
+          if (shareState.format === wanted) return;
+          shareState.format = wanted;
+          Array.prototype.forEach.call(sharePanel.querySelectorAll("[data-poll-card-format]"), function (other) {
+            other.setAttribute("aria-pressed", other === button ? "true" : "false");
+          });
+          if (lastData) refreshCard(lastData);
+        });
+      });
+    }
+
+    /** Paneli güncelle: metin, bağlantılar, kart. */
+    function renderShare(data) {
+      if (!sharePanel || !poll) return;
+      var voted = Boolean(data.alreadyVoted || data.choice);
+      var closed = data.status === "closed";
+      // Paylaşacak bir şey ancak oy verildiyse ya da sonuç kesinleştiyse var.
+      if (!voted && !closed) {
+        show(sharePanel, false);
+        return;
+      }
+
+      shareState.text = buildShareText(poll, data);
+      shareState.url = pollShareUrl(section, poll);
+      setText(sharePanel.querySelector("[data-poll-share-text]"), shareState.text);
+
+      show(sharePanel.querySelector("[data-poll-share-native]"), Boolean(navigator.share));
+
+      wireShare();
+      refreshCard(data);
+      show(sharePanel, true);
     }
 
     function render(data) {
@@ -2518,7 +3198,10 @@
       show(section.querySelector('[data-home-poll-note="community"]'), !readOnly && (voted || closed));
       show(section.querySelector('[data-home-poll-note="local"]'), readOnly && voted);
 
+      lastData = data;
       renderResults(data);
+      renderPodium(data);
+      renderShare(data);
       section.hidden = false;
       window.requestAnimationFrame(function () { section.classList.add("is-ready"); });
       if (!section.hasAttribute("data-poll-impression-tracked")) {
@@ -2631,6 +3314,16 @@
       // blok basıldıktan sonra anket kapanmış ve sırada başlayan olmayabilir
       // (site saatte bir derleniyor). Sunucunun sözü SON SÖZDÜR.
       if (data && !data.poll) {
+        // ANKET SAYFASINDA BLOK GİZLENMEZ. `/anket/<slug>` yalnızca bu anket
+        // için var; kutuyu gizlemek sayfayı bomboş bırakırdı. Takvimden
+        // düşmüş bir anket için basılı soru ve seçenekler durur, oy formu
+        // kapalı kalır ve nedeni yazılır.
+        if (section.hasAttribute("data-home-poll-pinned")) {
+          canVote = false;
+          show(form, false);
+          show(section.querySelector('[data-home-poll-note="offline"]'), true);
+          return;
+        }
         section.hidden = true;
         return;
       }
@@ -2651,20 +3344,22 @@
   function pollStrings(locale) {
     return locale === "en"
       ? {
-        votes: "votes", total: "total votes", leader: "Leading", yours: "Your vote",
+        votes: "votes", total: "total votes", leader: "Leading", yours: "✓ Your vote",
         open: "Open", closed: "Closed", upcoming: "Upcoming",
         endsPrefix: "Closes", startsPrefix: "Opens", closedAt: "Closed on",
         button: "Cast Your Vote", thanks: "Thanks! Live results are below.",
         noVotes: "No votes recorded yet.", noStore: "The vote store cannot be reached, so no counts are shown.",
-        empty: "There are no polls scheduled right now.", failed: "Polls could not be loaded."
+        empty: "There are no polls scheduled right now.", failed: "Polls could not be loaded.",
+        openPoll: "Open the poll page and share it"
       }
       : {
-        votes: "oy", total: "toplam oy", leader: "Önde", yours: "Senin oyun",
+        votes: "oy", total: "toplam oy", leader: "Önde", yours: "✓ Senin oyun",
         open: "Açık", closed: "Kapandı", upcoming: "Yakında",
         endsPrefix: "Bitiş", startsPrefix: "Başlangıç", closedAt: "Kapanış",
         button: "Oyunu Ver", thanks: "Teşekkürler! Güncel sonuçlar aşağıda.",
         noVotes: "Henüz oy verilmemiş.", noStore: "Oy deposuna ulaşılamadığı için sayımlar gösterilemiyor.",
-        empty: "Şu an planlanmış bir anket yok.", failed: "Anketler yüklenemedi."
+        empty: "Şu an planlanmış bir anket yok.", failed: "Anketler yüklenemedi.",
+        openPoll: "Anket sayfasını aç ve paylaş"
       };
   }
 
@@ -2871,6 +3566,18 @@
       total.className = "home-poll__total";
       total.textContent = poll.total + " " + strings.total;
       card.appendChild(total);
+    }
+
+    // HER ANKETİN KENDİ SAYFASI VAR — VE PAYLAŞILAN ADRES ODUR.
+    // Arşiv kartı tam paylaşım panelini taşımıyor (panel seçime ve canlı
+    // sonuca bağlı, sayfada 3-4 kartla birlikte tekrarlanması karmaşa
+    // olurdu); onun yerine okuyucuyu anketin kendi sayfasına gönderiyor.
+    if (poll.path) {
+      var link = document.createElement("a");
+      link.className = "poll-archive__link";
+      link.href = poll.path;
+      link.textContent = strings.openPoll;
+      card.appendChild(link);
     }
 
     return card;

@@ -29,6 +29,19 @@
  * kaybetmektense düğme kapalı doğar; istemci depoyu hazır bulunca açar.
  */
 
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+/**
+ * ÇERÇEVE METİNLERİ SERVİSTEN GELİR, BURADA İKİNCİ KEZ YAZILMAZ.
+ *
+ * Aynı cümleler bir süre iki sözlükte birden durdu (burada ve
+ * `services/homePoll.js` → `COPY`). İki kopyanın bilinen sonu, Türkçesi
+ * düzeltilip İngilizcesi unutulan bir satırdır — ve anket iki dilde birebir
+ * aynı olmak zorunda. Servis kaynak, burası yalnızca çizim.
+ */
+const { COPY } = require("../../services/homePoll.js");
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -38,29 +51,52 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+/** Servisten gelen çerçeve metinleri + yalnızca çizime ait olanlar. */
+function framed(locale, extras) {
+  const base = COPY[locale];
+  return {
+    kicker: base.kicker,
+    button: base.button,
+    thanks: base.thanks,
+    closed: base.closed,
+    community: base.communityNote,
+    local: base.localNote,
+    offline: base.offline,
+    disclaimer: base.disclaimer,
+    region: base.region,
+    ...extras
+  };
+}
+
 const STRINGS = {
-  tr: {
-    kicker: "Okuyucu Anketi",
-    button: "Oyunu Ver",
-    thanks: "Teşekkürler! Güncel sonuçlar aşağıda.",
-    closed: "Bu anket kapandı; sonuçlar kesinleşti.",
-    community: "Sonuçlar tüm okuyucuların oylarından hesaplanıyor. Her tarayıcı bir kez oy verebilir.",
-    local: "Oy deposuna ulaşılamadı; aşağıdaki sonuç topluluk ortalaması değil, yalnızca bu tarayıcıda saklanan oydur.",
-    offline: "Oylama şu anda kullanılamıyor. Soru ve seçenekler görünür; oylar açıldığında bu kutudan oy verebilirsin.",
-    disclaimer: "Bu bölüm okuyucu tahminidir; sitenin doğrulanmış maç verisinden ayrıdır.",
-    region: "Ana sayfa tahmin anketi"
-  },
-  en: {
-    kicker: "Reader Poll",
-    button: "Cast Your Vote",
-    thanks: "Thanks! Live results are below.",
-    closed: "This poll has closed; the results are final.",
-    community: "Results are calculated from all readers' votes. Each browser can vote once.",
-    local: "The vote store could not be reached; the result below is not a community average, only the vote stored in this browser.",
-    offline: "Voting is unavailable right now. The question and options are shown; you will be able to vote from this box once voting opens.",
-    disclaimer: "This section is a reader prediction, separate from the site's verified match data.",
-    region: "Homepage prediction poll"
-  }
+  tr: framed("tr", {
+    shareTitle: "Sonucu Paylaş",
+    shareLead: "Paylaşım metni senin oyuna ve anketin güncel sonucuna göre oluşur.",
+    shareNative: "Paylaş",
+    shareCopy: "Bağlantıyı Kopyala",
+    shareInstagram: "Instagram'da Paylaş",
+    cardTitle: "Paylaşılabilir kart",
+    cardSquare: "Kare · 1080×1080",
+    cardStory: "Story · 1080×1920",
+    cardShare: "Görseli Paylaş",
+    cardDownload: "Görseli İndir",
+    cardAlt: "Anket sonucunun paylaşılabilir görsel kartı",
+    podiumLabel: "Anket liderleri"
+  }),
+  en: framed("en", {
+    shareTitle: "Share the Result",
+    shareLead: "The share text is built from your pick and the poll's live result.",
+    shareNative: "Share",
+    shareCopy: "Copy Link",
+    shareInstagram: "Share on Instagram",
+    cardTitle: "Shareable card",
+    cardSquare: "Square · 1080×1080",
+    cardStory: "Story · 1080×1920",
+    cardShare: "Share Image",
+    cardDownload: "Download Image",
+    cardAlt: "Shareable social card of the poll result",
+    podiumLabel: "Poll leaders"
+  })
 };
 
 const PROMO_STRINGS = {
@@ -88,12 +124,74 @@ function optionRow(option, pollId) {
 }
 
 /**
+ * PAYLAŞIM PANELİ — OY VERİLDİKTEN SONRA AÇILIR.
+ *
+ * `hidden` DOĞAR ve metinsiz doğar. Sebebi tek cümle: PAYLAŞIM METNİ SABİT
+ * OLAMAZ. "Ben Fenerbahçe'yi seçtim, şu anda %34 oy alıyor" cümlesi ancak
+ * seçim ve sayım bilindiğinde kurulabilir; ikisi de derleme anında yok.
+ * Şablonlar uç noktadan geliyor (`services/homePoll.js` → `SHARE_COPY`),
+ * istemci yalnızca yer tutucuları dolduruyor — metni tarayıcıda ikinci kez
+ * yazmak, bir gün Türkçenin düzeltilip İngilizcenin unutulması demekti.
+ *
+ * KANALLAR `<a>` DEĞİL `<button>`. Paylaşım adresi ancak seçim ve sayım
+ * bilinince kurulabiliyor; derleme anında yazılabilecek bir `href` yok.
+ * Boş bırakılan bir `<a>` ise iki kere bozuk: hedefsiz bir bağlantı klavye
+ * sırasına girmez, üstelik "her `<a>` bir yere gitmeli" denetimi
+ * (`scripts/audit-interaction-routes.mjs`) onu haklı olarak kırık sayar.
+ * Düğme, JavaScript olmadan hiçbir vaatte bulunmuyor — panel zaten JavaScript
+ * olmadan hiç açılmıyor.
+ *
+ * NATIVE PAYLAŞIM DÜĞMESİ DE GİZLİ DOĞAR: `navigator.share` yalnızca bazı
+ * tarayıcılarda var ve yalnızca güvenli bağlamda çalışıyor. Desteklenmeyen
+ * yerde düğmeyi göstermek, basınca hiçbir şey olmayan bir düğme demektir.
+ */
+function shareBlockHtml(copy) {
+  const channel = (platform, label) =>
+    `<button class="poll-share__button is-${platform}" type="button" ` +
+    `data-poll-share-link="${platform}">${escapeHtml(label)}</button>`;
+
+  return `
+            <div class="poll-share" data-poll-share hidden>
+              <p class="poll-share__title">${escapeHtml(copy.shareTitle)}</p>
+              <p class="poll-share__lead">${escapeHtml(copy.shareLead)}</p>
+              <p class="poll-share__text" data-poll-share-text></p>
+              <div class="poll-share__buttons">
+                <button class="poll-share__button is-native" type="button" data-poll-share-native hidden>${escapeHtml(copy.shareNative)}</button>
+                ${channel("x", "X")}
+                ${channel("whatsapp", "WhatsApp")}
+                ${channel("facebook", "Facebook")}
+                ${channel("telegram", "Telegram")}
+                <button class="poll-share__button is-instagram" type="button" data-poll-share-instagram>${escapeHtml(copy.shareInstagram)}</button>
+                <button class="poll-share__button is-copy" type="button" data-poll-share-copy>${escapeHtml(copy.shareCopy)}</button>
+              </div>
+              <div class="poll-card" data-poll-card hidden>
+                <p class="poll-card__title">${escapeHtml(copy.cardTitle)}</p>
+                <div class="poll-card__formats" role="group" aria-label="${escapeHtml(copy.cardTitle)}">
+                  <button class="poll-card__format" type="button" data-poll-card-format="square" aria-pressed="true">${escapeHtml(copy.cardSquare)}</button>
+                  <button class="poll-card__format" type="button" data-poll-card-format="story" aria-pressed="false">${escapeHtml(copy.cardStory)}</button>
+                </div>
+                <img class="poll-card__preview" data-poll-card-preview alt="${escapeHtml(copy.cardAlt)}" hidden>
+                <div class="poll-card__actions">
+                  <button class="poll-share__button is-card-share" type="button" data-poll-card-share hidden>${escapeHtml(copy.cardShare)}</button>
+                  <button class="poll-share__button is-card-download" type="button" data-poll-card-download>${escapeHtml(copy.cardDownload)}</button>
+                </div>
+              </div>
+              <p class="poll-share__status" data-poll-share-status role="status" hidden></p>
+            </div>`;
+}
+
+/**
  * Anket bloğu. `poll` yoksa BOŞ DÖNER — takvimde yayında anket olmadığında
  * ana sayfada boş bir kutu bırakmak, yer tutucu uydurmanın sessiz biçimidir.
  *
  * @param poll `localizePoll()` çıktısı (tek dile indirgenmiş)
  * @param options.locale "tr" | "en"
  * @param options.status "open" | "closed"
+ * @param options.heading başlık etiketi ("h2" varsayılan; anket sayfasında "h1")
+ * @param options.pinned true ise blok BU anketi ister (`?pollId=`), "şu an açık
+ *        olanı" değil — anket sayfası kapanmış bir anketi de göstermek zorunda
+ * @param options.containerClass dış kapsayıcı sınıfı (ana sayfada "container section")
+ * @param options.regionLabel bölgenin ekran okuyucu etiketi (varsayılan: ana sayfa metni)
  */
 export function homePollBlock(poll, options = {}) {
   if (!poll || !Array.isArray(poll.options) || poll.options.length < 2) return "";
@@ -101,7 +199,25 @@ export function homePollBlock(poll, options = {}) {
   const locale = options.locale === "en" ? "en" : "tr";
   const copy = STRINGS[locale];
   const closed = options.status === "closed";
+  const heading = options.heading === "h1" ? "h1" : "h2";
+  const containerClass = typeof options.containerClass === "string" ? options.containerClass : "container section";
+  // Bölge etiketi sayfaya göre değişir: "ana sayfa tahmin anketi" cümlesi
+  // anketin KENDİ sayfasında ekran okuyucuya yanlış yeri söylerdi.
+  const regionLabel = typeof options.regionLabel === "string" && options.regionLabel
+    ? options.regionLabel
+    : copy.region;
   const rows = poll.options.map((option) => optionRow(option, poll.id)).join("");
+
+  // ANKET SAYFASI BU ANKETİ İSTER, "ŞU AN AÇIK OLANI" DEĞİL.
+  //
+  // Ana sayfa takvimin açık anketini gösterir ve takvim kayarsa yeniden
+  // çizilir. `/anket/<slug>` bunu YAPAMAZ: adres belli bir anketi
+  // adlandırıyor ve o anket kapanmış olabilir. Uç nokta bu yüzden kimlikle
+  // sabitleniyor — sunucu yine takvimden doğruluyor, yani kimlik bir iddia
+  // olmaktan çıkmıyor, sadece hangi anketin sorulduğunu söylüyor.
+  const source = options.pinned
+    ? `/api/home-poll?pollId=${encodeURIComponent(poll.id)}`
+    : "/api/home-poll";
 
   // Kapanmış ankette form HİÇ basılmaz: oy alınmıyor, sonuç gösteriliyor.
   const form = closed
@@ -112,19 +228,21 @@ export function homePollBlock(poll, options = {}) {
               <button class="home-poll__submit" type="submit" data-home-poll-submit disabled>${escapeHtml(copy.button)}</button>
             </form>`;
 
-  return `<section class="container section home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" ` +
-    `data-home-poll data-home-poll-source="/api/home-poll" data-home-poll-locale="${locale}" ` +
-    `data-home-poll-id="${escapeHtml(poll.id)}" role="region" aria-label="${escapeHtml(copy.region)}">
+  return `<section class="${escapeHtml(containerClass)} home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" ` +
+    `data-home-poll data-home-poll-source="${escapeHtml(source)}" data-home-poll-locale="${locale}" ` +
+    `data-home-poll-id="${escapeHtml(poll.id)}"${options.pinned ? " data-home-poll-pinned" : ""} ` +
+    `data-home-poll-path="${escapeHtml(poll.path || "")}" role="region" aria-label="${escapeHtml(regionLabel)}">
           <div class="home-poll__inner">
             <div class="home-poll__head">
               <span class="home-poll__kicker" data-home-poll-kicker>${escapeHtml(copy.kicker)}</span>
-              <h2 class="home-poll__title" id="home-poll-title" data-home-poll-question>${escapeHtml(poll.question)}</h2>
+              <${heading} class="home-poll__title" id="home-poll-title" data-home-poll-question>${escapeHtml(poll.question)}</${heading}>
               ${poll.subtitle ? `<p class="home-poll__subtitle" data-home-poll-subtitle>${escapeHtml(poll.subtitle)}</p>` : `<p class="home-poll__subtitle" data-home-poll-subtitle hidden></p>`}
               <p class="home-poll__deadline" data-home-poll-deadline hidden></p>
             </div>${form}
             <p class="home-poll__thanks" data-home-poll-thanks hidden>${escapeHtml(copy.thanks)}</p>
+            <ol class="poll-podium" data-home-poll-podium aria-label="${escapeHtml(copy.podiumLabel)}" hidden></ol>
             <ol class="home-poll__results" data-home-poll-results aria-live="polite" hidden></ol>
-            <p class="home-poll__total" data-home-poll-total hidden></p>
+            <p class="home-poll__total" data-home-poll-total hidden></p>${shareBlockHtml(copy)}
             <p class="home-poll__note" data-home-poll-note="closed"${closed ? "" : " hidden"}>${escapeHtml(copy.closed)}</p>
             <p class="home-poll__note" data-home-poll-note="offline" hidden>${escapeHtml(copy.offline)}</p>
             <p class="home-poll__note" data-home-poll-note="community" hidden>${escapeHtml(copy.community)}</p>

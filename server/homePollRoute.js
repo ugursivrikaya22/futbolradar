@@ -7,12 +7,13 @@ const {
   sendSuccess,
   setCachePolicy
 } = require("../api/_utils");
-const { listHomePolls, localizePoll, selectHomePoll } = require("../services/homePoll");
+const { findPoll, listHomePolls, localizePoll, selectHomePoll } = require("../services/homePoll");
 const {
   configurationHint,
   findVote,
   isConfigured,
   readTally,
+  recordShare,
   recordVote,
   voterKeyFor
 } = require("../services/homePollVoteStore");
@@ -20,8 +21,11 @@ const {
 /**
  * ANA SAYFA TAHMİN ANKETİ UÇ NOKTASI.
  *
- *   GET  /api/home-poll[?locale=tr|en]  → açık (ya da son kapanmış) anket + sayım
- *   POST /api/home-poll                 → oy ver, güncel sayımı döndür
+ *   GET  /api/home-poll[?locale=tr|en]          → açık (ya da son kapanmış) anket + sayım
+ *   GET  /api/home-poll?pollId=…|?slug=…        → ADRESE SABİTLENMİŞ anket (anket sayfası)
+ *   GET  /api/home-poll?scope=all               → takvimin tamamı, durumlarıyla
+ *   POST /api/home-poll                         → oy ver, güncel sayımı döndür
+ *   POST /api/home-poll {action:"share"}        → paylaşım sayacı (oy değil)
  *
  * DOSYA `api/` ALTINDA DEĞİL — Vercel Hobby planında `api/` altındaki her
  * dosya bir sunucusuz işlev sayılıyor ve 12 işlev sınırı dolu (aynı gerekçe
@@ -80,6 +84,15 @@ function loadPolls() {
 function loadTeams() {
   try {
     return require("../data/teams.json");
+  } catch (error) {
+    return null;
+  }
+}
+
+/** Maç anketlerinin seçenekleri maç kaydından türer (ev/beraberlik/deplasman). */
+function loadMatches() {
+  try {
+    return require("../data/matches.json");
   } catch (error) {
     return null;
   }
@@ -195,7 +208,14 @@ async function handleHomePoll(req, res) {
   const locale = String((body && body.locale) || query.locale || "tr");
   const sources = {
     polls: loadPolls() || {},
-    teams: loadTeams() || []
+    teams: loadTeams() || [],
+    // MAÇ KAYDI TEMBEL OKUNUR. Dosya 178 KB ve yalnızca `optionSource:
+    // "match-outcome"` olan bir anket varsa gerekiyor; takvimde maç anketi
+    // yokken her soğuk başlangıçta onu ayrıştırmak, hiç kullanılmayacak bir
+    // işi her istekte ödemek olurdu. `require` yine SABİT dizeyle çağrılıyor
+    // (gerekçe `loadPolls` başlığında) — tembellik çözümleyiciyi değil,
+    // yalnızca okuma anını değiştiriyor.
+    get matches() { return loadMatches() || []; }
   };
 
   // ANKET SAYFASI KİPİ: takvimin TAMAMI, durumlarıyla.
@@ -254,8 +274,34 @@ async function handleHomePoll(req, res) {
     }
   }
 
+  // PAYLAŞIM SAYACI — OYDAN AYRI YOL.
+  //
+  // Ayrı bir uç nokta açılmadı: Vercel Hobby planındaki 12 işlev sınırı dolu
+  // (gerekçe dosya başında). Paylaşım bir oy DEĞİL, bu yüzden pencere ve
+  // seçenek kapılarından geçmez — ama kaydedilen anket kimliği yine
+  // takvimden doğrulanır, istemcinin gönderdiği herhangi bir dize tabloya
+  // yazılmasın diye.
+  if (method === "POST" && String((body && body.action) || "") === "share") {
+    const wanted = findPoll(sources, { id: (body && body.pollId) || "", slug: (body && body.slug) || "" });
+    if (!wanted.poll) {
+      return sendError(res, 400, "Bu anket takvimde yok.", "POLL_NOT_FOUND", SOURCE);
+    }
+    const outcome = await recordShare(wanted.poll.id, (body && body.platform) || "", locale);
+    // Sayamamak bir hata DEĞİL: paylaşım penceresi açılmışsa iş olmuştur.
+    return sendSuccess(res, { recorded: outcome.recorded, reason: outcome.reason }, SOURCE, new Date().toISOString());
+  }
+
   // KAPI 1 — hangi anket? Takvim karar verir, istemci değil.
-  const selection = selectHomePoll(sources);
+  //
+  // ANKET SAYFASI BELLİ BİR ANKETİ İSTER. Ana sayfa "şu an açık olanı"
+  // soruyor; `/anket/<slug>` ise adresindeki anketi — kapanmış olsa bile.
+  // İstemcinin gönderdiği kimlik yine de BİR İDDİADIR: takvimde karşılığı
+  // yoksa anket yok sayılır ve pencere kapısı (KAPI 2) değişmeden durur.
+  const pinnedId = String((body && body.pollId) || query.pollId || "");
+  const pinnedSlug = String((body && body.slug) || query.slug || "");
+  const selection = (pinnedId || pinnedSlug)
+    ? findPoll(sources, { id: pinnedId, slug: pinnedSlug })
+    : selectHomePoll(sources);
 
   if (!selection.poll) {
     // Gösterilecek anket yok: istemci bölümü hiç çizmez.
@@ -289,6 +335,12 @@ async function handleHomePoll(req, res) {
       // KAPI 2 — pencere açık mı?
       if (closed) {
         return sendError(res, 409, "Bu anket kapandi; sonuclar kesinlesti.", "POLL_CLOSED", SOURCE);
+      }
+      // Başlamamış ankete oy yazılamaz. Ana sayfa seçimi böyle bir anket
+      // döndürmez ama adrese sabitlenmiş kip döndürebilir: `/anket/<slug>`
+      // takvimdeki HER anketin sayfasını açıyor, sıradakiler dahil.
+      if (selection.status === "upcoming") {
+        return sendError(res, 409, "Bu anket henuz baslamadi.", "POLL_NOT_OPEN", SOURCE);
       }
 
       const optionId = String((body && body.optionId) || "").trim();
