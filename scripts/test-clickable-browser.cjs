@@ -506,6 +506,15 @@ async function until(check, message, timeout = 5000) {
         const original = [await score.innerText(), await status.innerText()];
         // Controlled DOM update verifies that the summary observes the same
         // source card; these values are never written to an API or data file.
+        //
+        // YENİDEN YAZMAK ZORUNLU. Ana sayfa canlı maç varken kendini 15
+        // saniyede bir baştan çiziyor (app.js LIVE_MATCH_FAST_POLL_MS →
+        // setContent → innerHTML). O çizim buraya denk gelirse enjekte
+        // edilen metni siliyor ve until() bir daha asla tutturamıyordu:
+        // test canlı maç günlerinde rastgele bir görünüm genişliğinde
+        // düşüyordu. Değer artık her denemede yeniden yazılıyor, böylece
+        // ölçülen şey tazelemeyle yarışmak değil, özetin kartı AYNALAYIP
+        // aynalamadığı oluyor.
         try {
           await until(async () => {
             await score.evaluate(e => { e.textContent = '2 - 1'; });
