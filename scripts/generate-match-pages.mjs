@@ -189,13 +189,51 @@ function relatedComparison(match) {
 }
 
 /**
+ * MAÇ MERKEZİ DEVRİ — bu sayfa kalıcı maç sayfasının takma adı mı?
+ *
+ * Hafta numaralı adres (`/mac/<ev>-<dep>-2026-2027-r05.html`) TFF fikstürü
+ * yalnızca EŞLEŞMEYİ bildirdiğinde, yani tarih henüz atanmamışken üretilir:
+ * o aşamada tarih slug'ı kurulamaz. Maç takvime oturup tarihi onaylanınca
+ * aynı maç için kalıcı Maç Merkezi adresi (`/mac/<ev>-<dep>-23-agustos-2026`)
+ * açılır ve maçın tüm yaşam döngüsü orada sürer.
+ *
+ * Devir gerçekleştikten sonra hafta numaralı sayfa SİLİNMEZ (dış bağlantılar
+ * ve eski paylaşımlar kırılmasın) ama artık kanonik değildir: canonical,
+ * og:url ve SportsEvent kimliği Maç Merkezi adresini gösterir, sayfa site
+ * haritasından düşer. Aksi hâlde Google aynı maçı iki ayrı indekslenebilir
+ * adreste görüyor — sezon ilerledikçe 306 eşleşmenin tamamı çiftlenirdi.
+ *
+ * Sicilde kayıt yoksa `null` döner: olmayan bir adrese canonical verilmez.
+ */
+function matchCentreSlug(match) {
+  if (!match || !match.kickoff) return null;
+  return slugForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }) || null;
+}
+
+/** Maç Merkezi'nin uzantısız yolu (`mac/<slug>`) ya da null. */
+function matchCentrePath(match) {
+  const seoSlug = matchCentreSlug(match);
+  return seoSlug ? trPagePath(seoSlug).replace(/\.html$/, "") : null;
+}
+
+/**
  * Kalıcı maç sayfası bağlantısı: aynı maçın "ne zaman / canlı skor / sonuç"
  * yüzeyi tarih slug'lı sayfada yaşıyor. Sicilde sayfa yoksa kart basılmaz.
  */
 function liveCenterCard(match) {
-  const seoSlug = match.kickoff ? slugForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }) : null;
-  if (!seoSlug) return "";
-  return `<a class="match-related-card" href="../${escapeHtml(trPagePath(seoSlug).replace(/\.html$/, ""))}"><span>Canlı maç merkezi</span><strong>Ne zaman, hangi kanalda, canlı skor</strong><p>Maç saati, yayın, muhtemel 11'ler ve maç sonucu aynı kalıcı sayfada.</p></a>`;
+  const centrePath = matchCentrePath(match);
+  if (!centrePath) return "";
+  return `<a class="match-related-card" href="../${escapeHtml(centrePath)}"><span>Canlı maç merkezi</span><strong>Ne zaman, hangi kanalda, canlı skor</strong><p>Maç saati, yayın, muhtemel 11'ler ve maç sonucu aynı kalıcı sayfada.</p></a>`;
+}
+
+/**
+ * Devredilmiş sayfanın en üstünde tek satırlık yönlendirme şeridi: kullanıcı
+ * canlı skoru ve sonucu aradığında ilgili sayfaya kaydırmadan geçebilsin.
+ */
+function centreHandoffBanner(match) {
+  const centrePath = matchCentrePath(match);
+  if (!centrePath) return "";
+  return `<p class="match-centre-handoff"><a href="../${escapeHtml(centrePath)}">${escapeHtml(`${match.homeTeam} - ${match.awayTeam}`)} maç merkezi: saat, yayın kanalı, canlı skor ve maç sonucu →</a></p>`;
 }
 
 /** "14 Ağustos 2026 Cuma" — TSİ. */
@@ -216,7 +254,11 @@ function clockLabel(value) {
 
 function pageHtml(match) {
   const slugValue = pageSlug(match);
-  const canonical = `${domain}/mac/${slugValue}.html`;
+  const selfUrl = `${domain}/mac/${slugValue}.html`;
+  // Maç Merkezi açıldıysa kanonik adres odur (bkz. matchCentreSlug).
+  const centrePath = matchCentrePath(match);
+  const canonical = centrePath ? `${domain}/${centrePath}` : selfUrl;
+  const isCentreAlias = canonical !== selfUrl;
   const freshness = normalizeFreshness(match.freshness);
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
   const homeTeam = getTeam(match.homeTeam);
@@ -292,7 +334,13 @@ function pageHtml(match) {
       //
       // Tarihi atanmamış fikstürde düğüm HİÇ yazılmaz. Alternatif, olmayan
       // bir tarih uydurmak olurdu; geçersiz şema, yanlış şemadan iyidir.
-      ...(match.kickoff ? [{
+      //
+      // Maç Merkezi'ne devredilmiş sayfada da yazılmaz: o maçın SportsEvent
+      // kimliği kanonik adreste yaşıyor ve orada canlı durumla (eventStatus,
+      // skor) güncelleniyor. Burada ikinci bir düğüm bırakmak aynı gerçek
+      // olayı iki ayrı adrese bağlar; bu sayfa artık yalnızca maç ÖNÜ
+      // analizini taşıyan takma addır.
+      ...(match.kickoff && !isCentreAlias ? [{
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
         url: canonical,
@@ -350,6 +398,7 @@ function pageHtml(match) {
     ${siteHeader({ base: "../" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
+      ${centreHandoffBanner(match)}
       <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
       ${preMatchSections}
@@ -386,7 +435,11 @@ function updateSitemap(matches) {
   // Kök etiket scripts/lib/sitemap.mjs'de: bu adım site haritasını baştan
   // yazdığı için ad alanları burada da bildirilmek zorunda; sabit bir dize
   // yazılsaydı iki dilli girdilerin `xhtml:` öneki tanımsız kalırdı.
-  const content = wrapUrlset(retained.concat(matches.map(sitemapEntry)));
+  // Maç Merkezi'ne devredilmiş hafta sayfaları site haritasından düşer:
+  // haritaya yalnızca kanonik adresler yazılır, takma ad yazılmaz. Sayfa
+  // dosyası yerinde kalır ve canonical ile kanonik adrese bağlanır.
+  const canonicalOnly = matches.filter((match) => !matchCentrePath(match));
+  const content = wrapUrlset(retained.concat(canonicalOnly.map(sitemapEntry)));
   fs.writeFileSync(sitemapPath, content, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), content, "utf8");
 }
