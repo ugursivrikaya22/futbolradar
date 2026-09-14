@@ -22576,6 +22576,81 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .rp-home-cta { text-align: right; }
 }
 
+/* FAVORİ TAKIM ROZETİ. Kartın neden bu maçı seçtiğini tek kelimeyle
+   söyler. Rozet bir İDDİA değil, bir GEREKÇE: skoru ya da nabzı
+   değiştirmez, yalnızca sıralamanın nedenini açık eder. */
+.rp-home-fav {
+  font-style: normal;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px var(--sp-2);
+  border-radius: 999px;
+  background: var(--green-tint);
+  color: var(--green-deep);
+  /* Uzun etiket kartı yırtmasın: taşarsa kırpılır, satır sarmaz. */
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* TAKİP EDİLEN CANLI MAÇLAR ŞERİDİ.
+   Yalnızca ŞU AN oynanan takip maçları çizilir; hiçbiri canlı değilse
+   şerit basılmaz. Yatay kaydırma yok — satırlar sarar. */
+.rp-home-followed {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.rp-home-followed-label {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.rp-home-followed-list {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rp-home-followed-list a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+  /* Parmakla açılabilir yükseklik. */
+  min-height: 44px;
+  padding: var(--sp-2);
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-size: var(--fs-sm);
+}
+.rp-home-followed-list a:hover { background: var(--surface-tint); }
+.rp-home-followed-list a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.rp-home-followed-list span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-home-followed-list b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.rp-home-followed-list i {
+  font-style: normal;
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--live);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 560px) {
+  .rp-home-followed-list { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
 /* Momentumun ÖLÇÜLMEDİĞİ dakikalar: düz bir çizgi "baskı yoktu" demektir,
    oysa doğrusu "ölçülmedi". Taralı bölge ikisini ayırır. */
 .rp-chart-gap { fill: var(--surface-sunken); }
@@ -22775,3 +22850,40 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   font-variant-numeric: tabular-nums;
 }
 .rp-players-source { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }
+
+/* ---------- Kazanma olasılığı ---------- */
+/* Takılı gerçek bir kaynak olmadan bu blok HİÇ basılmaz; boş durumu yoktur. */
+.rp-winprob {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-winprob h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); font-weight: 700; }
+.rp-winprob-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+}
+.rp-winprob-bar i { display: block; height: 100%; }
+.rp-winprob-bar .is-home { background: var(--green-deep); }
+.rp-winprob-bar .is-draw { background: var(--muted); }
+.rp-winprob-bar .is-away { background: var(--cyan); }
+.rp-winprob-legend {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+}
+.rp-winprob-legend li { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rp-winprob-legend span { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-winprob-legend b { font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
+.rp-winprob-legend li:nth-child(2) { text-align: center; }
+.rp-winprob-legend li:last-child { text-align: right; }
+.rp-winprob-source { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }

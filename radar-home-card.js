@@ -41,9 +41,30 @@
   var LIVE_CODES = { LIVE: 1, HALFTIME: 1, "1H": 1, "2H": 1, HT: 1, ET: 1, BT: 1, P: 1, IN_PLAY: 1, PAUSED: 1 };
 
   var TEXT = {
-    tr: { kicker: "RADAR NABZI", cta: "CANLI TAKİP ET", halftime: "Devre arası", live: "Canlı" },
-    en: { kicker: "LIVE MATCH PULSE", cta: "FOLLOW LIVE", halftime: "Half time", live: "Live" }
+    tr: {
+      kicker: "RADAR NABZI", cta: "CANLI TAKİP ET", halftime: "Devre arası", live: "Canlı",
+      favourite: "Favori takımın", followed: "Takip ettiğin canlı maçlar"
+    },
+    en: {
+      kicker: "LIVE MATCH PULSE", cta: "FOLLOW LIVE", halftime: "Half time", live: "Live",
+      favourite: "Your team", followed: "Live matches you follow"
+    }
   };
+
+  /** Favori takım ve maç takibi anahtarları — pwa.js ve radar-fan.js ile ORTAK. */
+  var LS_FAVORITE_TEAM = "fr_favorite_team";
+  var FOLLOW_STORE_PREFIX = "fr_follow_match_";
+
+  /**
+   * FAVORİ TAKIM ARTIŞI BİR KADEMEYİ AŞAMAZ.
+   *
+   * `services/matchRelevance.js` kademe adımını 100 olarak tanımlıyor ve
+   * kendi belgesinde şunu yazıyor: "kullanıcının favori takımının önemsiz
+   * bir maçı, Şampiyonlar Ligi finalinin üstüne çıkmamalı." Bu yüzden artış
+   * 100'ün ALTINDA: favori takım kendi kademesinde öne geçer, kademeyi
+   * ezmez.
+   */
+  var FAVOURITE_BOOST = 60;
 
   function esc(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
@@ -53,6 +74,34 @@
 
   function isNum(value) {
     return value !== null && value !== undefined && value !== "" && isFinite(Number(value));
+  }
+
+  function readLocal(key) {
+    try { return window.localStorage.getItem(key) || ""; } catch (error) { return ""; }
+  }
+
+  /** Okuyucunun favori takımı (pwa.js paneli yazıyor). Yoksa boş dizge. */
+  function favouriteTeamId() {
+    return String(readLocal(LS_FAVORITE_TEAM) || "").trim();
+  }
+
+  /** Bu cihazda takip edilen maçların sağlayıcı kimlikleri (radar-fan.js yazıyor). */
+  function followedMatchIds() {
+    var ids = [];
+    try {
+      for (var index = 0; index < window.localStorage.length; index += 1) {
+        var key = window.localStorage.key(index);
+        if (!key || key.indexOf(FOLLOW_STORE_PREFIX) !== 0) continue;
+        if (window.localStorage.getItem(key) !== "1") continue;
+        ids.push(key.slice(FOLLOW_STORE_PREFIX.length));
+      }
+    } catch (error) { /* localStorage kapalıysa takip listesi boş kalır */ }
+    return ids;
+  }
+
+  function isFavourite(match, favourite) {
+    if (!favourite) return false;
+    return String(match && match.homeTeamId) === favourite || String(match && match.awayTeamId) === favourite;
   }
 
   function statusOf(match) {
@@ -72,15 +121,54 @@
     return Boolean(score && isNum(score.home) && isNum(score.away));
   }
 
-  /** Sunucunun damgaladığı ilgi puanına göre en öne çıkan canlı maç. */
-  function pickMatch(rows) {
+  /**
+   * En öne çıkan canlı maç: sunucunun ilgi puanı + favori takım artışı.
+   *
+   * Sıralama kuralı hâlâ SUNUCUDA (services/matchRelevance.js); burada
+   * yalnızca okuyucunun kendi tercihi kademeyi ezmeyecek bir artış olarak
+   * ekleniyor.
+   */
+  function pickMatch(rows, options) {
+    var favourite = (options && options.favourite) || "";
     var live = (Array.isArray(rows) ? rows : []).filter(function (match) {
       return isLive(match) && hasScore(match) && match.matchPage;
     });
     if (!live.length) return null;
-    return live.slice().sort(function (left, right) {
-      return Number(right.relevance || 0) - Number(left.relevance || 0);
-    })[0];
+    var score = function (match) {
+      return Number(match.relevance || 0) + (isFavourite(match, favourite) ? FAVOURITE_BOOST : 0);
+    };
+    return live.slice().sort(function (left, right) { return score(right) - score(left); })[0];
+  }
+
+  /**
+   * Takip edilen CANLI maçlar şeridi.
+   *
+   * Yalnızca aynı yanıttaki canlı maçlardan kuruluyor — takip listesi için
+   * ikinci bir istek atılmıyor. Takip edilen maç şu an oynanmıyorsa şerit
+   * hiç çizilmiyor: "takip ettiğin 3 maç var" deyip hiçbirini gösterememek
+   * boş bir vaat olurdu.
+   */
+  function followedHtml(rows, followedIds, locale) {
+    if (!followedIds || !followedIds.length) return "";
+    var text = TEXT[locale === "en" ? "en" : "tr"];
+    var matches = (Array.isArray(rows) ? rows : []).filter(function (match) {
+      if (!isLive(match) || !hasScore(match) || !match.matchPage) return false;
+      var id = String(match.providerId || match.fixtureId || match.id || "");
+      return id && followedIds.indexOf(id) !== -1;
+    });
+    if (!matches.length) return "";
+
+    return '<div class="rp-home-followed" data-radar-followed>' +
+      '<span class="rp-home-followed-label">🔔 ' + esc(text.followed) + "</span>" +
+      '<ul class="rp-home-followed-list">' + matches.map(function (match) {
+        var href = (locale === "en" && match.matchPageEn) ? match.matchPageEn : match.matchPage;
+        if (!/^(https?:)?\/\//.test(href) && href.charAt(0) !== "/") href = "/" + href;
+        return '<li><a href="' + esc(href) + '" data-radar-followed-link>' +
+          "<span>" + esc(match.homeTeam) + "</span>" +
+          "<b>" + esc(match.score.home) + "-" + esc(match.score.away) + "</b>" +
+          "<span>" + esc(match.awayTeam) + "</span>" +
+          '<i>' + esc(minuteLabel(match, text)) + "</i></a></li>";
+      }).join("") + "</ul></div>";
   }
 
   function minuteLabel(match, text) {
@@ -128,7 +216,8 @@
     ].filter(Boolean).join(" · ");
 
     return '<a class="rp-home-link" href="' + esc(href) + '" data-radar-home-cta aria-label="' + esc(label) + '">' +
-      '<span class="rp-home-kicker"><i class="live-pulse" aria-hidden="true"></i>' + esc(text.kicker) + "</span>" +
+      '<span class="rp-home-kicker"><i class="live-pulse" aria-hidden="true"></i>' + esc(text.kicker) +
+        (match.isFavourite ? '<em class="rp-home-fav">' + esc(text.favourite) + "</em>" : "") + "</span>" +
       '<span class="rp-home-score">' +
         "<b>" + esc(match.homeTeam) + "</b>" +
         '<em>' + esc(match.score.home) + "-" + esc(match.score.away) + "</em>" +
@@ -150,10 +239,15 @@
     var current = null;
     var timer = null;
     var lastHtml = "";
+    /** Son taramadan kalan takip şeridi; detay tazelemeleri onu korur. */
+    var followedMarkup = "";
 
     function hide() {
       section.setAttribute("hidden", "");
       lastHtml = "";
+      // Şerit de unutulsun: kart kapalıyken elde kalan eski liste, bir
+      // sonraki açılışta bitmiş maçları canlıymış gibi gösterirdi.
+      followedMarkup = "";
     }
 
     function schedule(delay) {
@@ -164,6 +258,7 @@
     function paint(match, pulse) {
       var html = cardHtml(match, pulse, locale);
       if (!html) { hide(); return; }
+      html += followedMarkup;
       if (html !== lastHtml) {
         if (body) body.innerHTML = html;
         lastHtml = html;
@@ -182,8 +277,13 @@
     function scan() {
       return getJson("/api/matches?live=all&locale=" + locale).then(function (payload) {
         var rows = (payload && Array.isArray(payload.data)) ? payload.data : [];
-        current = pickMatch(rows);
+        var favourite = favouriteTeamId();
+        current = pickMatch(rows, { favourite: favourite });
+        // Takip şeridi AYNI yanıttan kuruluyor: kişiselleştirme uğruna
+        // fazladan tek bir istek bile atılmıyor.
+        followedMarkup = followedHtml(rows, followedMatchIds(), locale);
         if (!current) { hide(); schedule(SCAN_MS); return; }
+        current.isFavourite = isFavourite(current, favourite);
         // Liste yanıtında nabız yoktur (maç detayı gerekir); önce skorla
         // çiz, nabız bir sonraki adımda gelsin — kart beklemeden açılır.
         paint(current, null);
@@ -214,7 +314,8 @@
           status: detail.status,
           providerStatus: detail.providerStatus,
           matchPage: current.matchPage,
-          matchPageEn: current.matchPageEn
+          matchPageEn: current.matchPageEn,
+          isFavourite: current.isFavourite
         };
         var pulse = detail.radarPulse && detail.radarPulse.pulse ? detail.radarPulse.pulse : null;
         paint(merged, pulse);
@@ -241,16 +342,29 @@
     });
 
     document.addEventListener("click", function (event) {
-      var link = event.target && event.target.closest ? event.target.closest("[data-radar-home-cta]") : null;
+      var target = event.target && event.target.closest ? event.target : null;
+      if (!target) return;
+      var link = target.closest("[data-radar-home-cta]");
+      var source = "home_card";
+      if (!link) {
+        link = target.closest("[data-radar-followed-link]");
+        source = "home_followed";
+      }
       if (!link) return;
       var api = window.FutbolRadarPulse;
       if (api && typeof api.track === "function") {
-        api.track("live_match_open", { source: "home_card", locale: locale, link_url: link.href });
+        api.track("live_match_open", { source: source, locale: locale, link_url: link.href });
       }
     }, { capture: true, passive: true });
 
     schedule(1200);
   }
 
-  return { SCAN_MS: SCAN_MS, DETAIL_MS: DETAIL_MS, boot: boot, cardHtml: cardHtml, hasScore: hasScore, isLive: isLive, minuteLabel: minuteLabel, pickMatch: pickMatch };
+  return {
+    SCAN_MS: SCAN_MS, DETAIL_MS: DETAIL_MS, FAVOURITE_BOOST: FAVOURITE_BOOST,
+    LS_FAVORITE_TEAM: LS_FAVORITE_TEAM, FOLLOW_STORE_PREFIX: FOLLOW_STORE_PREFIX,
+    boot: boot, cardHtml: cardHtml, favouriteTeamId: favouriteTeamId,
+    followedHtml: followedHtml, followedMatchIds: followedMatchIds, hasScore: hasScore,
+    isFavourite: isFavourite, isLive: isLive, minuteLabel: minuteLabel, pickMatch: pickMatch
+  };
 });

@@ -698,6 +698,176 @@ try {
     await context.close();
   }
 
+  /* 14. KİŞİSELLEŞTİRME — FAVORİ TAKIM VE TAKİP EDİLEN MAÇLAR */
+  {
+    pulseStore.reset();
+    const context = await browser.newContext({ viewport: MOBILE, serviceWorkers: "block" });
+    const page = await context.newPage();
+    const errors = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    page.on("console", (message) => { if (message.type() === "error") errors.push(message.text()); });
+
+    // Okuyucunun tercihleri: pwa.js favori takımı, radar-fan.js takip
+    // edilen maçı bu anahtarlara yazıyor. Test onları ELLE yazmıyor —
+    // istemci modüllerinin dışa aktardığı anahtarları kullanıyor ki
+    // biri değiştiğinde test de kırılsın.
+    const keys = {
+      favourite: require("../radar-home-card.js").LS_FAVORITE_TEAM,
+      follow: require("../radar-fan.js").FOLLOW_STORE_PREFIX
+    };
+    await page.addInitScript(({ favourite, follow }) => {
+      window.localStorage.setItem(favourite, "besiktas");
+      window.localStorage.setItem(follow + "9999003", "1");
+      window.localStorage.setItem(follow + "9999004", "1");   // bu maç CANLI DEĞİL
+    }, keys);
+
+    await page.route(/media\.api-sports\.io\//, (route) => route.fulfill({
+      status: 200, contentType: "image/gif",
+      body: Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64")
+    }));
+    await page.route(/\/api\/matches(\?|$)/, (route) => route.fulfill({
+      status: 200, contentType: "application/json",
+      body: JSON.stringify(envelope([
+        // Sunucu puanı DAHA YÜKSEK ama favori değil.
+        { ...detail(), id: "yuksek", fixtureId: "9999001", providerId: "9999001",
+          homeTeam: "Küçük", awayTeam: "Takım", relevance: 320, matchPage: "mac/kucuk-takim" },
+        // Favori takım: puanı düşük, ama AYNI kademede — öne geçmeli.
+        { ...detail(), id: "favori", fixtureId: "9999002", providerId: "9999002",
+          homeTeam: "Beşiktaş", awayTeam: "Rizespor", homeTeamId: "besiktas",
+          relevance: 300, matchPage: "mac/besiktas-rizespor" },
+        // Takip edilen ve CANLI olan maç: şeritte görünmeli. Yolu GERÇEK
+        // bir sayfaya bakıyor ki tıklama testi var olmayan bir adrese
+        // gitmesin — 404'e giden bir bağlantı "çalışıyor" sayılmaz.
+        { ...detail(), id: "takip", fixtureId: "9999003", providerId: "9999003",
+          homeTeam: "Trabzonspor", awayTeam: "Konyaspor",
+          relevance: 120, matchPage: TR_PAGE.replace(/^\//, "") },
+        // Takip edilen ama BİTMİŞ maç: şeride girmemeli.
+        { ...detail(), id: "biten", fixtureId: "9999004", providerId: "9999004",
+          status: "FT", providerStatus: "FT", homeTeam: "Sivasspor", awayTeam: "Alanyaspor",
+          relevance: 110, matchPage: "mac/sivasspor-alanyaspor" }
+      ]))
+    }));
+    await page.route(/\/api\/match-detail(\?|$)/, (route) => route.fulfill({
+      status: 200, contentType: "application/json",
+      body: JSON.stringify(envelope([withPulse({
+        ...detail(), fixtureId: "9999002", homeTeam: "Beşiktaş", awayTeam: "Rizespor"
+      }, "tr")]))
+    }));
+    await page.route(/\/api\/live-score-stream(\?|$)/, (route) => route.fulfill({ status: 204, body: "" }));
+
+    await page.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(() => {
+      const card = document.querySelector("[data-radar-home-card]");
+      return card && !card.hasAttribute("hidden") && card.querySelector(".rp-home-link");
+    }, null, { timeout: 20000 });
+
+    const view = await page.evaluate(() => {
+      const node = document.querySelector("[data-radar-home-card]");
+      const badge = node.querySelector(".rp-home-fav");
+      const strip = node.querySelector("[data-radar-followed]");
+      return {
+        href: node.querySelector(".rp-home-link")?.getAttribute("href"),
+        badge: badge ? badge.textContent.trim() : null,
+        badgeVisible: badge ? badge.getBoundingClientRect().width > 0 : false,
+        stripLinks: strip ? [...strip.querySelectorAll("a")].map((a) => ({
+          href: a.getAttribute("href"),
+          text: a.textContent.replace(/\s+/g, " ").trim(),
+          height: Math.round(a.getBoundingClientRect().height)
+        })) : []
+      };
+    });
+
+    assert.equal(view.href, "/mac/besiktas-rizespor",
+      "favori takımın maçı aynı kademede öne geçmeli");
+    assert.equal(view.badge, "Favori takımın");
+    assert.equal(view.badgeVisible, true, "rozet basılıp gizli kalmamalı");
+    record("kişiselleştirme: favori takımın maçı öne çıktı ve rozet göründü");
+
+    assert.equal(view.stripLinks.length, 1, "yalnızca CANLI takip maçı şeritte olmalı");
+    assert.equal(view.stripLinks[0].href, TR_PAGE);
+    assert.match(view.stripLinks[0].text, /Trabzonspor/);
+    assert.ok(!view.stripLinks[0].text.includes("Sivasspor"), "biten maç şeride sızmamalı");
+    assert.ok(view.stripLinks[0].height >= 44,
+      `şerit bağlantısı parmakla açılabilir olmalı (${view.stripLinks[0].height}px)`);
+    record("kişiselleştirme: takip şeridi yalnızca canlı maçı gösterdi", view.stripLinks[0].text);
+
+    const overflow = await page.evaluate(() => ({
+      scrollWidth: document.documentElement.scrollWidth,
+      clientWidth: document.documentElement.clientWidth
+    }));
+    assert.ok(overflow.scrollWidth <= overflow.clientWidth + 1, "kişiselleştirilmiş ana sayfada yatay taşma yok");
+    assert.deepEqual(errors, [], errors.join(" | "));
+    record("kişiselleştirme: taşma ve console hatası yok");
+
+    // GERÇEK TIKLAMA — en sonda, çünkü buradan sonrası BAŞKA bir sayfa:
+    // onun kaynakları ve hataları bu senaryonun konusu değil. Şerit
+    // bağlantısı hem ölçüm olayını atmalı hem de maç sayfasını açmalı.
+    await page.evaluate(() => {
+      window.__events = [];
+      window.gtag = (type, name, params) => { window.__events.push({ type, name, params }); };
+    });
+    const tracked = await page.evaluate(() => {
+      document.querySelector("[data-radar-followed] a").click();
+      return (window.__events || []).map((event) => ({ name: event.name, source: event.params && event.params.source }));
+    });
+    assert.ok(
+      tracked.some((event) => event.name === "live_match_open" && event.source === "home_followed"),
+      `şerit tıklaması ölçülmeli, gelen: ${JSON.stringify(tracked)}`
+    );
+    // `waitForLoadState` burada ANINDA döner (mevcut sayfa zaten yüklü);
+    // beklenmesi gereken şey yükleme değil, ADRESİN değişmesi.
+    await page.waitForURL((url) => url.pathname === TR_PAGE, { timeout: 15000 });
+    assert.equal(new URL(page.url()).pathname, TR_PAGE);
+    record("kişiselleştirme: şerit bağlantısına tıklandı, ölçüldü, maç sayfası açıldı");
+    await context.close();
+  }
+
+  /* 15. TERCİH YOKKEN HİÇBİR ŞEY DEĞİŞMEZ */
+  {
+    pulseStore.reset();
+    const context = await browser.newContext({ viewport: MOBILE, serviceWorkers: "block" });
+    const page = await context.newPage();
+    await page.route(/media\.api-sports\.io\//, (route) => route.fulfill({
+      status: 200, contentType: "image/gif",
+      body: Buffer.from("R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "base64")
+    }));
+    await page.route(/\/api\/matches(\?|$)/, (route) => route.fulfill({
+      status: 200, contentType: "application/json",
+      body: JSON.stringify(envelope([
+        { ...detail(), id: "yuksek", fixtureId: "9999001", providerId: "9999001",
+          homeTeam: "Küçük", awayTeam: "Takım", relevance: 320, matchPage: "mac/kucuk-takim" },
+        { ...detail(), id: "favori", fixtureId: "9999002", providerId: "9999002",
+          homeTeam: "Beşiktaş", awayTeam: "Rizespor", homeTeamId: "besiktas",
+          relevance: 300, matchPage: "mac/besiktas-rizespor" }
+      ]))
+    }));
+    await page.route(/\/api\/match-detail(\?|$)/, (route) => route.fulfill({
+      status: 200, contentType: "application/json",
+      body: JSON.stringify(envelope([withPulse({ ...detail(), fixtureId: "9999001" }, "tr")]))
+    }));
+    await page.route(/\/api\/live-score-stream(\?|$)/, (route) => route.fulfill({ status: 204, body: "" }));
+
+    await page.goto(`${BASE}/index.html`, { waitUntil: "domcontentloaded" });
+    await page.waitForFunction(() => {
+      const card = document.querySelector("[data-radar-home-card]");
+      return card && !card.hasAttribute("hidden") && card.querySelector(".rp-home-link");
+    }, null, { timeout: 20000 });
+
+    const plain = await page.evaluate(() => {
+      const node = document.querySelector("[data-radar-home-card]");
+      return {
+        href: node.querySelector(".rp-home-link")?.getAttribute("href"),
+        badge: Boolean(node.querySelector(".rp-home-fav")),
+        strip: Boolean(node.querySelector("[data-radar-followed]"))
+      };
+    });
+    assert.equal(plain.href, "/mac/kucuk-takim", "tercih yokken sunucu sıralaması geçerli kalmalı");
+    assert.equal(plain.badge, false, "tercih yokken rozet basılmamalı");
+    assert.equal(plain.strip, false, "takip yokken şerit basılmamalı");
+    record("kişiselleştirme: tercih yokken kart eskisi gibi davrandı");
+    await context.close();
+  }
+
 } finally {
   await browser.close();
 }

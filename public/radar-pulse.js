@@ -36,6 +36,9 @@
       momentumFrom: "Momentum ölçümü {minute}. dakikada başladı; öncesi ölçülmedi.",
       timelineTitle: "Olay akışı",
       timelineAll: "Tüm olaylar",
+      winProbTitle: "Kazanma olasılığı",
+      winProbDraw: "Beraberlik",
+      winProbSource: "Kaynak",
       playersTitle: "Öne çıkan oyuncular",
       playersSource: "Dereceler sağlayıcı ölçümüdür (API-Football); FutbolRadar oyuncu derecesi üretmez.",
       statGoals: "gol",
@@ -75,6 +78,9 @@
       momentumFrom: "Momentum tracking started at minute {minute}; earlier minutes were not measured.",
       timelineTitle: "Match Timeline",
       timelineAll: "All events",
+      winProbTitle: "Win probability",
+      winProbDraw: "Draw",
+      winProbSource: "Source",
       playersTitle: "Top performers",
       playersSource: "Ratings are the provider's own measurement (API-Football); FutbolRadar does not produce player ratings.",
       statGoals: "goals",
@@ -381,6 +387,44 @@
   }
 
   /* ----------------------------------------------------------------- */
+  /* KAZANMA OLASILIĞI                                                   */
+  /* ----------------------------------------------------------------- */
+
+  /**
+   * Üçlü olasılık çubuğu — YALNIZCA gerçek bir kaynak varsa.
+   *
+   * Yük `winProbability: null` taşıdığı sürece (bugünkü durum) burası boş
+   * dizge döner ve bölüm hiç çizilmez. Sayı uydurulacak tek bir dal yok:
+   * gösterilen üç yüzde de sunucudaki denetimden geçmiş bir kaynağın
+   * okumasıdır ve kaynağın adı ekranda yazar.
+   */
+  function winProbabilityHtml(probability, names, locale) {
+    if (!probability) return "";
+    if (!isNum(probability.home) || !isNum(probability.draw) || !isNum(probability.away)) return "";
+    var text = t(locale);
+
+    var rows = [
+      { key: "home", label: names.home || "", value: Number(probability.home) },
+      { key: "draw", label: text.winProbDraw, value: Number(probability.draw) },
+      { key: "away", label: names.away || "", value: Number(probability.away) }
+    ];
+
+    return '<div class="rp-winprob" data-rp-winprob>' +
+      "<h3>" + esc(text.winProbTitle) + "</h3>" +
+      '<div class="rp-winprob-bar" role="img" aria-label="' +
+        esc(rows.map(function (row) { return row.label + " %" + row.value; }).join(", ")) + '">' +
+        rows.map(function (row) {
+          return '<i class="is-' + esc(row.key) + '" style="width:' + row.value + '%"></i>';
+        }).join("") +
+      "</div>" +
+      '<ul class="rp-winprob-legend">' + rows.map(function (row) {
+        return "<li><span>" + esc(row.label) + "</span><b>%" + esc(row.value) + "</b></li>";
+      }).join("") + "</ul>" +
+      '<p class="rp-winprob-source muted-copy">' + esc(text.winProbSource) + ": " + esc(probability.source) + "</p>" +
+      "</div>";
+  }
+
+  /* ----------------------------------------------------------------- */
   /* ÖNE ÇIKAN OYUNCULAR                                                 */
   /* ----------------------------------------------------------------- */
 
@@ -485,6 +529,7 @@
     var parts = [
       gaugeHtml(pulse, names, locale),
       windowHtml(payload && payload.window, names, locale),
+      winProbabilityHtml(payload && payload.winProbability, names, locale),
       momentumHtml(payload && payload.momentum, names, locale, payload && payload.minute),
       playersHtml(payload && payload.topPlayers, locale),
       timelineHtml(payload && payload.timeline, locale, settings.allEventsHref)
@@ -559,6 +604,7 @@
     render: render,
     timelineHtml: timelineHtml,
     track: track,
+    winProbabilityHtml: winProbabilityHtml,
     trackOnce: trackOnce,
     windowHtml: windowHtml
   };

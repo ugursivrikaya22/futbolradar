@@ -25,23 +25,14 @@ const pushSubscriptionStore = require("./pushSubscriptionStore");
 /** Maç takibi abonelik anahtarının öneki; takım kimlikleriyle çakışmaz. */
 const MATCH_FOLLOW_PREFIX = "match:";
 
-function loadTeams() {
-  try {
-    return require("../data/teams.json");
-  } catch (error) {
-    return [];
-  }
-}
-
-function normalizeName(value) {
-  return String(value || "").trim().toLocaleLowerCase("tr");
-}
+// AD → KİMLİK EŞLEMESİ ARTIK TEK YERDE (services/teamIdentity.js).
+// Aynı mantık ana sayfa kişiselleştirmesinde de gerekiyordu; kopyalamak
+// yerine ortak yardımcıya taşındı, böylece iki yüzey aynı takım için
+// farklı cevap veremez.
+const { loadTeams, normalizeName, teamIdForName } = require("./teamIdentity");
 
 function slugForTeamName(teamName, teams) {
-  const target = normalizeName(teamName);
-  if (!target) return null;
-  const match = (Array.isArray(teams) ? teams : []).find((team) => normalizeName(team && team.name) === target);
-  return match ? String(match.id) : null;
+  return teamIdForName(teamName, teams);
 }
 
 function vapidConfig() {

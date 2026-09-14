@@ -374,6 +374,13 @@
   /* BU MAÇI TAKİP ET (Web Push)                                         */
   /* ----------------------------------------------------------------- */
 
+  /**
+   * Takip edilen maç anahtarı.
+   *
+   * ANA SAYFA KARTI DA AYNI ÖNEKİ OKUYOR (radar-home-card.js). Bu yüzden
+   * dışa aktarılıyor ve testte iki dosyanın eşitliği doğrulanıyor: önek
+   * tek yerde değişirse takip edilen maçlar sessizce kaybolurdu.
+   */
   var FOLLOW_STORE_PREFIX = "fr_follow_match_";
 
   function vapidPublicKey() {
@@ -515,6 +522,7 @@
   }
 
   return {
+    FOLLOW_STORE_PREFIX: FOLLOW_STORE_PREFIX,
     TEXT: TEXT,
     boot: boot,
     bootPoll: bootPoll,

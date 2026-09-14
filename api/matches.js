@@ -1,5 +1,9 @@
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { withRelevance } = require("../services/matchRelevance");
+// Takım kimliği damgası: ana sayfa kişiselleştirmesi favori takımı bu
+// alanla eşleştiriyor. İstemcide ad normalleştirmesiyle eşleştirmek 18
+// kulübün yalnızca 5'inde tutardı — kimliklerin bir kısmı sağlayıcı numarası.
+const { withTeamIds } = require("../services/teamIdentity");
 // Kalıcı maç sayfası bağlantısı: sicilde sayfası olan maça `matchPage`.
 const { withMatchPages } = require("../services/matchSeoPages");
 // Yanıtın bayat olup olmadığı verinin kendisinden okunur.
@@ -72,7 +76,7 @@ module.exports = async function handler(req, res) {
   // `locale=en` istendiğinde İngilizce maç sayfası yolu da damgalanır
   // (ana sayfa Radar Nabzı kartı İngilizce yüzeyde İngilizce sayfaya
   // bağlanabilsin diye). Türkçe istek bu ek tabloyu hiç yüklemez.
-  const data = withMatchPages(withRelevance(rawData), undefined, {
+  const data = withMatchPages(withTeamIds(withRelevance(rawData)), undefined, {
     includeEn: String(query.locale || "").toLowerCase() === "en"
   });
 

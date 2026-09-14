@@ -16,6 +16,7 @@
 
 "use strict";
 
+const { resolveLiveWinProbability } = require("./winProbability");
 const {
   attackPoints,
   clamp,
@@ -329,6 +330,20 @@ function buildRadarPulse(input) {
     timeline: events,
     // Derecesi olmayan maçta boş dizi döner ve yüzey bölümü hiç çizmez.
     topPlayers: buildTopPlayers(detail.players),
+    // CANLI KAZANMA OLASILIĞI — BUGÜN HER ZAMAN null.
+    //
+    // Takılı gerçek bir kaynak yok (bkz. services/winProbability.js: maç
+    // öncesi model canlı okuma sayılmıyor). Alan yine de taşınıyor ki
+    // istemci "kaynak yok" ile "özellik hiç yok"u ayırt edebilsin ve
+    // gerçek bir besleme takıldığında çizim katmanı hiç değişmesin.
+    winProbability: resolveLiveWinProbability({
+      minute,
+      score: detail.score,
+      status: detail.status || detail.providerStatus,
+      homeTeam: homeName,
+      awayTeam: awayName,
+      fixtureId: detail.fixtureId || detail.providerId || detail.id
+    }),
     sampleCount: samples.length
   };
 }
