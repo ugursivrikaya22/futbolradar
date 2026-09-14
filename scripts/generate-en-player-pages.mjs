@@ -29,6 +29,7 @@ import {
   player360Title,
   renderPlayer360
 } from "./lib/player360.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -242,18 +243,18 @@ function pageHtml(player) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:title" content="${escapeHtml(title)}" />
     <meta property="og:description" content="${escapeHtml(description)}" />
     <meta property="og:url" content="${escapeHtml(canonical)}" />
-    <meta property="og:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta property="og:image" content="${DOMAIN}/assets/og-image.png" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
-    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.svg" />
+    <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
     <link rel="icon" href="${BASE}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${BASE}site.webmanifest" />
     <link rel="stylesheet" href="${BASE}page.css" />

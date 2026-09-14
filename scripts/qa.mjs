@@ -3,6 +3,7 @@ import path from "node:path";
 import { readJsonFile } from "./lib/readJsonFile.mjs";
 import { pathToFileURL } from "node:url";
 import { createRequire } from "node:module";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -562,7 +563,7 @@ function checkSeoAndLinks() {
       const ogImagePath = path.join(root, ogImage.replace("https://www.futbolradar.com/", ""));
       expect(fs.existsSync(ogImagePath), `${page}: og:image target missing`);
     }
-    expect(["index,follow", "noindex,follow"].includes(robots), `${page}: robots directive is invalid`);
+    expect([ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW].includes(robots), `${page}: robots directive is invalid`);
     expect(Boolean(ogTitle), `${page}: missing og:title`);
     expect(Boolean(ogDescription), `${page}: missing og:description`);
     expect(twitterCard === "summary_large_image", `${page}: twitter card mismatch`);
@@ -720,7 +721,7 @@ function checkSeoAndLinks() {
     }
 
     if (page === "404.html") {
-      expect(robots === "noindex,follow", `${page}: must be noindex,follow`);
+      expect(robots === ROBOTS_NOINDEX_FOLLOW, `${page}: must be noindex,follow`);
       expect(html.includes("mac-merkezi.html"), `${page}: missing match center recovery link`);
       expect(html.includes("oyuncu-radari.html"), `${page}: missing player radar recovery link`);
     }
@@ -759,7 +760,7 @@ function checkSeoAndLinks() {
     const html = fs.readFileSync(path.join(root, page), "utf8");
     const robots = (html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i) || [])[1] || "";
     const canonical = (html.match(/<link\s+rel="canonical"\s+href="([^"]+)"/i) || [])[1] || "";
-    if (robots === "noindex,follow") {
+    if (robots === ROBOTS_NOINDEX_FOLLOW) {
       expect(!sitemap.includes(`<loc>${pageUrl(page)}</loc>`), `sitemap must exclude noindex page ${pageUrl(page)}`);
     } else if (consolidatedMatchTarget(canonical, page)) {
       // Kanonik olmayan adres site haritasında durmamalı: tarayıcıya "bunu
@@ -794,6 +795,14 @@ function checkSeoAndLinks() {
 
   const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
   expect(robots.includes("Sitemap: https://www.futbolradar.com/sitemap.xml"), "robots.txt missing sitemap URL");
+  // PAYLAŞIM GÖRSELİ PNG'DİR. X, Facebook, WhatsApp ve Telegram SVG
+  // önizleme çözmez; SVG bildiren bir bağlantı o ağlarda GÖRSELSİZ çıkar.
+  // Bu yüzden asıl denetlenen varlık PNG: sayfaların og:image/twitter:image
+  // adresi bu dosyayı gösteriyor.
+  expect(fs.existsSync(path.join(root, "assets", "og-image.png")), "missing assets/og-image.png");
+  expect(fs.existsSync(path.join(root, "public", "assets", "og-image.png")), "missing public/assets/og-image.png");
+  // SVG kaynak tasarım olarak duruyor (PNG ondan rasterize ediliyor) ve
+  // silinmedi; varlığı denetlenmeye devam ediyor.
   expect(fs.existsSync(path.join(root, "assets", "og-image.svg")), "missing assets/og-image.svg");
   expect(fs.existsSync(path.join(root, "public", "assets", "og-image.svg")), "missing public/assets/og-image.svg");
   expect(fs.existsSync(path.join(root, "site.webmanifest")), "missing site.webmanifest");
