@@ -8936,8 +8936,11 @@
   function lookupTransferPhotoIdentity(record, index) {
     if (!index || !record) return null;
 
-    var byId = index.byId[String(record.playerId || "")];
-    if (byId) return byId;
+    for (var i = 0; i < 3; i++) {
+      var key = [record.playerId, record.providerId, record.playerProviderId][i];
+      var byId = index.byId[String(key || "")];
+      if (byId) return byId;
+    }
 
     var nameKey = transferPhotoNameKey(record.playerName);
     if (!nameKey) return null;

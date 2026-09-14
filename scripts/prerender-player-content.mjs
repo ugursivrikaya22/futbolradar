@@ -156,8 +156,10 @@ for (const player of players) {
 }
 
 function lookupTransferPhotoIdentity(transfer) {
-  const byId = photoIndex.byId.get(String(transfer.playerId || ""));
-  if (byId) return byId;
+  for (const key of [transfer.playerId, transfer.providerId, transfer.playerProviderId]) {
+    const byId = photoIndex.byId.get(String(key || ""));
+    if (byId) return byId;
+  }
 
   const nameKey = photoNameKey(transfer.playerName);
   if (!nameKey) return null;
