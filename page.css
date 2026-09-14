@@ -20436,7 +20436,21 @@ a.motm-week__card:focus-visible {
   .slider-nav button { min-height: 44px; min-width: 44px; }
   .fixture-card:active { background: var(--green-soft, rgba(11, 143, 90, .08)); }
   .fixture-card-rows { gap: 6px; }
-  .fixture-row-name { white-space: normal; overflow-wrap: anywhere; }
+  /* MOBİLDE AD SARAR, AMA KELİME İÇİNDEN KIRILMAZ.
+     `overflow-wrap: anywhere` min-content genişliğini TEK HARFE indiriyor;
+     `.fixture-row`ın `minmax(0, 1fr)` ad sütunu daraldığında takım adı
+     dikey, harf harf diziliyordu. Sarma yalnızca kelime sınırından olur;
+     satır yüksekliği iki satırla sınırlanır, taşan kısım kırpılır (taban
+     kuralda `overflow: hidden` zaten var). */
+  .fixture-row-name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
   .fixture-card-quicklinks a { min-height: 44px; padding: 4px; }
 }
 
@@ -22240,6 +22254,185 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .topbar-premium .brand { min-width: 44px; min-height: 44px; }
 }
 
+/* ============================================================================
+   FUTBOLCU ÖZELLİK PUANLARI (Overall / Form / Hücum / ...)
+   ----------------------------------------------------------------------------
+   Karşılaştırma ve profil sayfalarında sunucuda basılan sekiz satırlık tablo.
+   Tek bir sınıf ailesi kullanılıyor (`.player-rating-compare`), çünkü iki
+   sayfa aynı bilgiyi gösteriyor; ayrı stil yazmak ikisinin zamanla birbirinden
+   ayrışmasına yol açardı.
+
+   Satır bir <details>: özet satırı puanı ve çubuğu taşır, açılınca puanın
+   dayandığı gerçek istatistikler görünür. Böylece puan tek başına değil,
+   açıklamasıyla birlikte duruyor — ve açılım JavaScript gerektirmiyor.
+   ========================================================================== */
+.comparison-ratings { margin: var(--sp-5, 20px) 0; }
+.comparison-ratings .profile-section-head h2 { margin: 0; font-size: var(--fs-lg, 1.15rem); }
+.comparison-ratings .profile-section-head span { color: var(--muted); font-size: var(--fs-xs, 0.78rem); }
+
+.rating-lead {
+  margin: 6px 0 12px;
+  color: var(--muted);
+  font-size: var(--fs-sm, 0.88rem);
+  font-weight: 700;
+}
+
+.player-rating-compare {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg, 14px);
+  background: var(--surface);
+  padding: 12px;
+}
+
+/* Satır ızgarası: etiket + oyuncu sütunları. Üç oyuncuya kadar bozulmadan
+   genişler; `auto-fit` yerine `repeat(N)` kullanılmıyor ki sütun sayısı
+   şablondan bağımsız kalsın. */
+.rating-row-grid {
+  display: grid;
+  grid-template-columns: minmax(96px, 1.15fr) repeat(auto-fit, minmax(84px, 1fr));
+  gap: 10px;
+  align-items: center;
+}
+
+.rating-row-single { grid-template-columns: minmax(96px, 1.15fr) minmax(84px, 1fr); }
+
+.rating-head { border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 4px; }
+.rating-head-grid { align-items: end; }
+.rating-head-player { display: grid; gap: 2px; text-align: right; }
+.rating-head-player strong { font-size: var(--fs-sm, 0.88rem); }
+.rating-head-player span { color: var(--muted); font-size: var(--fs-xs, 0.78rem); }
+.rating-head .rating-row-label span { color: var(--muted); font-size: var(--fs-xs, 0.78rem); text-transform: uppercase; letter-spacing: 0.03em; }
+
+.rating-row { border-bottom: 1px solid var(--line); }
+.rating-row:last-of-type { border-bottom: 0; }
+.rating-row > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 0;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+.rating-row > summary::-webkit-details-marker { display: none; }
+.rating-row > summary:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; border-radius: 6px; }
+.rating-row > summary > .rating-row-grid { width: 100%; }
+
+.rating-row-label span { font-size: var(--fs-sm, 0.88rem); font-weight: 800; }
+/* Açılır satır olduğunu gösteren küçük işaret; okla değil, kenar çizgisiyle. */
+.rating-row-label span::after {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-right: 1.5px solid var(--muted);
+  border-bottom: 1.5px solid var(--muted);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform 0.15s ease;
+}
+.rating-row[open] > summary .rating-row-label span::after { transform: rotate(-135deg) translateY(-2px); }
+
+.rating-cell { display: grid; gap: 4px; justify-items: end; }
+.rating-cell b { font-size: var(--fs-md, 1rem); font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; }
+/* YÜKSEK OLAN DEĞER FUTBOLRADAR YEŞİLİYLE. Renk tek başına taşımıyor:
+   çubuk da doluyor ve aria-label sayıyı okuyor. */
+.rating-cell.is-leading b { color: var(--green); }
+.rating-cell.is-leading .rating-bar-fill { background: var(--green); }
+.rating-cell.is-empty b { color: var(--muted); font-size: var(--fs-xs, 0.78rem); font-weight: 800; }
+
+.rating-bar {
+  display: block;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(var(--surface-rgb, 255, 255, 255), 0.5);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.rating-bar-fill { display: block; height: 100%; border-radius: 999px; background: var(--cyan); }
+
+.rating-detail { padding: 0 0 12px; }
+.rating-detail-note { margin: 0 0 8px; color: var(--muted); font-size: var(--fs-xs, 0.78rem); }
+.rating-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.rating-detail-player {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  background: var(--surface-sunken, rgba(0, 0, 0, 0.02));
+}
+.rating-detail-player strong { display: block; margin-bottom: 4px; font-size: var(--fs-sm, 0.88rem); }
+.rating-detail-player dl { display: grid; gap: 3px; margin: 0; }
+.rating-detail-player dl > div { display: flex; justify-content: space-between; gap: 10px; }
+.rating-detail-player dt { color: var(--muted); font-size: var(--fs-xs, 0.78rem); }
+.rating-detail-player dd { margin: 0; font-size: var(--fs-xs, 0.78rem); font-weight: 800; font-variant-numeric: tabular-nums; }
+
+.rating-updated, .rating-sources, .rating-legend {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-xs, 0.78rem);
+}
+.rating-legend b { color: var(--ink); }
+
+.player-rating-card { margin: var(--sp-5, 20px) 0; }
+
+/* MOBİL: sütunlar daralıyor ama tablo YIĞILMIYOR — iki oyuncunun aynı
+   satırdaki sayısı yan yana kalmazsa karşılaştırma anlamını yitirir.
+   Kazanılan yer etiket sütunundan ve boşluklardan alınıyor. */
+@media (max-width: 640px) {
+  .player-rating-compare { padding: 10px 8px; }
+  .rating-row-grid { grid-template-columns: minmax(74px, 1fr) repeat(auto-fit, minmax(56px, 1fr)); gap: 6px; }
+  .rating-row-single { grid-template-columns: minmax(74px, 1fr) minmax(56px, 1fr); }
+  .rating-row-label span { font-size: var(--fs-xs, 0.78rem); }
+  .rating-cell b { font-size: var(--fs-sm, 0.88rem); }
+  .rating-cell.is-empty b { font-size: 0.68rem; line-height: 1.2; text-align: right; }
+  .rating-head-player strong { font-size: var(--fs-xs, 0.78rem); }
+  .rating-detail-grid { grid-template-columns: 1fr; }
+}
+
+/* İstemcide çizilen kıyas tablosundaki puan satırları (app.js
+   compareRatingRowHtml). Sunucudaki tabloyla aynı dili konuşur: yüksek olan
+   yeşil, her değerin altında yatay çubuk, ölçüm yoksa soluk "Veri yetersiz". */
+.compare-row-rating b {
+  display: grid;
+  gap: 4px;
+  justify-items: end;
+  font-variant-numeric: tabular-nums;
+}
+.compare-row-rating b.is-empty {
+  color: var(--muted);
+  font-size: var(--fs-xs, 0.78rem);
+  font-weight: 800;
+}
+.compare-row-bar {
+  display: block;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(var(--surface-rgb, 255, 255, 255), 0.5);
+  overflow: hidden;
+}
+.compare-row-bar > i { display: block; height: 100%; border-radius: 999px; background: var(--cyan); }
+.compare-row-rating b.is-leading .compare-row-bar > i { background: var(--green); }
+
+@media (max-width: 640px) {
+  .compare-row-rating b.is-empty { font-size: 0.68rem; line-height: 1.2; text-align: right; }
+}
+
+/* Kıyas tablosundaki sayım satırlarında ölçüm yoksa gerekçe yazılır; tire
+   basılmaz (bkz. app.js compareMultiRowHtml). */
+.compare-row-multi b.is-empty {
+  color: var(--muted);
+  font-size: var(--fs-xs, 0.78rem);
+  font-weight: 800;
+
+/* Maç Merkezi devir şeridi: hafta numaralı sayfa kalıcı maç adresine
+   devredildiğinde (bkz. scripts/generate-match-pages.mjs matchCentreSlug)
+   en üstte tek satırlık yönlendirme. Mobilde sarar, taşmaz. */
+.match-centre-handoff {
+  margin: 14px 0 0;
+
 /* ---------------------------------------------------------------------------
  * CANLI PUAN DURUMU
  *
@@ -22275,6 +22468,11 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   color: var(--live);
   font-weight: 600;
 }
+
+.match-centre-handoff a:hover,
+.match-centre-handoff a:focus-visible {
+  background: rgba(11, 143, 90, 0.13);
+  border-color: rgba(11, 143, 90, 0.45);
 
 @media (prefers-reduced-motion: no-preference) {
   .standings-live-badge { animation: standings-live-fade 2.4s ease-in-out infinite; }

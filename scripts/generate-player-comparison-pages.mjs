@@ -13,6 +13,22 @@ const { publicPlayerView, sourceMetadata } = require("../services/cardCredibilit
 const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
 const { playerPer90Stats } = require("../services/statNormalization.js");
 const { formatFreshnessDate } = require("../services/freshnessService.js");
+// ÖZELLİK PUANLARI SUNUCUDA BASILIR.
+//
+// Sekiz satır (Overall, Form, Hücum, Yaratıcılık, Savunma, Disiplin,
+// Süreklilik, Potansiyel) bugüne kadar yalnızca istemcide, `/api/players`
+// yanıtından çiziliyordu — ve orada hepsi "-" kalıyordu. Artık puan build
+// sırasında hesaplanıp (scripts/compute-player-ratings.mjs) statik HTML'e
+// gömülüyor: hem tablo doluyor hem de arama motoru "Osimhen overall rating"
+// sorgusunun cevabını JavaScript çalıştırmadan görüyor.
+const { withStoredRatings } = require("../services/playerRatingService.js");
+const {
+  comparisonRatingTableHtml,
+  categoryOf,
+  oldestRatingUpdatedAt,
+  ratingAdditionalProperties,
+  ratingScoresOf
+} = require("../services/playerRatingView.js");
 // Eş seçimi ve puanlama TEK kaynaktan (services/playerComparisonPairs.js):
 // profil sayfası, Futbolcu 360 kıyas bölümü ve bu üretici aynı listeyi
 // görmek zorunda, yoksa bağlantılar üretilmemiş sayfalara gider.
@@ -36,7 +52,22 @@ const {
  * sayfayı basan taraf (kopya kaydın profili) ortadan kalktığı için
  * bağlantı da kalmadı, ama sayfa ve site haritası girdisi kaldı.
  */
-const allPlayerRecords = annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"))));
+function readJsonFile(relativePath, fallback) {
+  const file = path.join(root, relativePath);
+  if (!fs.existsSync(file)) return fallback;
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch (error) {
+    console.warn(`[comparison-pages] ${relativePath} okunamadı: ${error.message}`);
+    return fallback;
+  }
+}
+
+const storedRatings = readJsonFile("data/player-ratings.json", { players: {} });
+const allPlayerRecords = withStoredRatings(
+  annotateDuplicates(getPlayers(JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8")))),
+  storedRatings
+);
 const players = allPlayerRecords.filter((player) => !player.isDuplicate);
 /** Kıyas adresi tek kaynaktan; editoryal istisnalar dahil. */
 const slugForPair = createComparisonSlugResolver(allPlayerRecords);
@@ -283,12 +314,99 @@ function comparisonSourceStripHtml(left, right) {
       </section>`;
 }
 
+/**
+ * META AÇIKLAMASI SAYIYI BAŞA ALIR.
+ *
+ * "Osimhen overall rating" ve "Osimhen Greenwood comparison" sorgularının
+ * cevabı sayfada hesaplanmış hâlde duruyor; açıklamanın da aynı sayıyı
+ * söylemesi, sonuç listesinde tıklanmadan önce doğru sayfanın görünmesini
+ * sağlıyor.
+ *
+ * CÜMLE SONA EKLENMEZ, BAŞA GEÇER. Açıklamalar yayından önce 160 karaktere
+ * kısaltılıyor (scripts/normalize-meta.mjs) ve genel tanıtım cümlesi zaten
+ * ~155 karakter; sona eklenen her şey kesiliyordu. Sayı başta olunca
+ * kırpma onu değil, tanıtım cümlesinin kuyruğunu alır.
+ *
+ * Puan hesaplanmamışsa cümle HİÇ kurulmaz: sayfanın gösteremeyeceği bir
+ * şeyi arama sonucunda vaat etmek, tıklayan okuyucuya boş satır göstermek
+ * demek olurdu.
+ */
+const META_DESCRIPTION_MAX = 160;
+
+function comparisonDescription(left, right) {
+  const generic = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
+  const leftOverall = categoryOf(left, "overall");
+  const rightOverall = categoryOf(right, "overall");
+  if (leftOverall.status !== "computed" || rightOverall.status !== "computed") return generic;
+
+  const lead = `${left.name} overall ${leftOverall.value}, ${right.name} overall ${rightOverall.value}.`;
+  const tail = " Form, hücum, yaratıcılık, savunma, disiplin, süreklilik ve potansiyel puanlarıyla FutbolRadar karşılaştırması.";
+  // Uzun isimlerde kuyruk düşer, sayı kalır.
+  return (lead + tail).length <= META_DESCRIPTION_MAX ? lead + tail : lead;
+}
+
+/**
+ * BÖLÜM, GÖSTERECEK BİR ŞEY YOKKEN HİÇ BASILMAZ.
+ *
+ * İki tarafın da hiçbir kategorisi hesaplanamıyorsa tablo sekiz satır
+ * "Veri yetersiz" yazan bir duvara dönüşüyor. Yokluğu bildirmenin dürüst
+ * yolu bu değil: kıyasın üst kısmındaki kaynak künyesi ("En az bir taraf
+ * doğrulama bekliyor") zaten durumu söylüyor. Tek taraf hesaplanmışsa tablo
+ * BASILIR — o zaman gerçekten kıyaslanacak bir sayı var ve diğer sütunun
+ * boşluğu bilgi taşıyor.
+ */
+function ratingSectionHtml(left, right, table) {
+  const anyComputed = [left, right].some((player) => {
+    const scores = ratingScoresOf(player);
+    return scores && scores.status === "computed";
+  });
+  if (!anyComputed || !table) return "";
+
+  return `<section class="comparison-ratings" aria-label="Özellik puanları">
+        <div class="profile-section-head">
+          <h2>${escapeHtml(left.name)} ve ${escapeHtml(right.name)} özellik puanları</h2>
+          <span>Overall, form, hücum, yaratıcılık, savunma, disiplin, süreklilik ve potansiyel</span>
+        </div>
+        ${ratingLeadHtml(left, right)}
+        ${table}
+      </section>`;
+}
+
+/** Sayfa başındaki özet cümle: iki oyuncunun sekiz satırdaki durumu. */
+function ratingLeadHtml(left, right) {
+  const rows = ["overall", "form", "attack"].map((key) => {
+    const leftCell = categoryOf(left, key);
+    const rightCell = categoryOf(right, key);
+    if (leftCell.status !== "computed" && rightCell.status !== "computed") return null;
+    return `${leftCell.label}: ${left.name} ${leftCell.display} - ${right.name} ${rightCell.display}`;
+  }).filter(Boolean);
+
+  if (!rows.length) return "";
+  return `<p class="rating-lead">${rows.map((row) => escapeHtml(row)).join(" · ")}</p>`;
+}
+
 function pageHtml(pair) {
   const { left, right, slug, reasons } = pair;
   const title = `${left.name} vs ${right.name} | Oyuncu Karşılaştırması | FutbolRadar`;
-  const description = `${left.name} ve ${right.name} oyuncu karşılaştırması; AI rating, form, gol tehdidi, yaratıcılık, pres gücü, piyasa değeri ve transfer bilgileriyle FutbolRadar'da analiz edilir.`;
+  const description = comparisonDescription(left, right);
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
+  const ratingUpdatedAt = oldestRatingUpdatedAt([left, right]);
+  const ratingTable = comparisonRatingTableHtml([left, right], {
+    updatedLabel: ratingUpdatedAt ? formatFreshnessDate(ratingUpdatedAt) : ""
+  });
+  const ratingPersonNodes = [left, right]
+    .map((player) => {
+      const properties = ratingAdditionalProperties(player);
+      if (!properties.length) return null;
+      return {
+        "@type": "Person",
+        name: player.name,
+        url: `${domain}/oyuncular/${player.id}.html`,
+        additionalProperty: properties
+      };
+    })
+    .filter(Boolean);
 
   return `<!doctype html>
 <html lang="tr">
@@ -335,7 +453,13 @@ function pageHtml(pair) {
               { "@type": "ListItem", position: 2, name: "Oyuncu Karşılaştırmaları", item: `${domain}/oyuncu-karsilastirmalari.html` },
               { "@type": "ListItem", position: 3, name: `${left.name} vs ${right.name}`, item: canonical }
             ]
-          }
+          },
+          // MEVCUT DÜĞÜMLER BOZULMADAN eklenir: Article ve BreadcrumbList
+          // aynen kalır, hesaplanmış puanlar yalnızca Person düğümlerine
+          // `additionalProperty` olarak girer. Hesaplanamayan kategori
+          // düğüme HİÇ girmez — makine okunur veride "Veri yetersiz" metni
+          // bir ölçü gibi görünmemeli.
+          ...ratingPersonNodes
         ]
       }, null, 8)}
     </script>
@@ -378,6 +502,8 @@ function pageHtml(pair) {
       </section>
 
       ${comparisonSourceStripHtml(left, right)}
+
+      ${ratingSectionHtml(left, right, ratingTable)}
 
       <section class="compare-grid" data-api-target="player-compare" data-compare-seed="${escapeHtml(left.id)},${escapeHtml(right.id)}">
         <article class="data-empty" data-card="empty-state">
