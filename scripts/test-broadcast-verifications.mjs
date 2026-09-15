@@ -10,4 +10,14 @@ assert.equal(source.broadcast.turkey, 'TRT 1, TRT Spor ve tabii', 'Do not mutate
 assert.equal(broadcastChannel(source), verified.broadcast.turkey, 'Schedule and API must agree');
 assert.equal(broadcastChannel({...source,kickoff:'2026-09-11T19:45:00+03:00'}),source.broadcast.turkey,'Do not leak a date-specific correction');
 assert.equal(broadcastChannel({kickoff:'2026-09-10T19:45:00+03:00'}),'','Never invent a channel');
-console.log('Broadcast verification OK: dated source, shared output, no mutation or inferred channel');
+
+// Hakem: elle doğrulama boşluğu doldurur, sağlayıcı kaydını EZMEZ.
+const bjk = { providerId:'2594885', kickoff:'2026-09-17T22:00:00+03:00', broadcast:null, referee:null };
+const bjkVerified = applyVerifiedBroadcast(bjk);
+assert.equal(bjkVerified.broadcast.turkey, 'TRT 1');
+assert.equal(bjkVerified.referee, 'Andrea Colombo (İtalya)');
+assert.ok(bjkVerified.refereeSourceUrl, 'Verified referee must carry its source');
+assert.equal(applyVerifiedBroadcast({...bjk, referee:'Sahadaki Hakem'}).referee, 'Sahadaki Hakem', 'Provider referee wins over the pre-match announcement');
+assert.equal(applyVerifiedBroadcast({...bjk, kickoff:'2026-09-18T22:00:00+03:00'}).referee, null, 'Do not leak a date-specific correction');
+
+console.log('Broadcast verification OK: dated source, shared output, no mutation or inferred channel; referee fills only the gap');
