@@ -118,20 +118,7 @@
 }
     </script>
     <link rel="stylesheet" href="../page.css?v=8aba6288" />
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-<!-- favicon:start -->
+  <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -149,11 +136,24 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-</head>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  </head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
@@ -371,7 +371,7 @@
       </section>
       <section class="p360" aria-labelledby="p360-transfers-title" data-p360-section="transfers">
         <div class="p360-head"><h2 id="p360-transfers-title">S. Yalçın Transfer Haberleri</h2></div>
-        <p class="p360-empty" data-card="empty-state">Bu oyuncu için kayıtlı transfer haberi bulunmuyor.</p>
+        <ul class="p360-feed"><li class="p360-feed-item"><span class="p360-trust p360-trust-claim">İddia</span><div><a href="../haber/fenerbahce-sergen-yalcin-328f7588.html"><strong>Fenerbahçe&#39;de Sergen Yalçın görüşmelerin sürdüğü iddiası</strong></a><span>15 Eyl 2026</span></div></li></ul>
       </section>
       <section class="p360" aria-labelledby="p360-career-title" data-p360-section="career">
         <div class="p360-head"><h2 id="p360-career-title">S. Yalçın Kariyeri</h2></div>
