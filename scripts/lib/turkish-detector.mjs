@@ -141,13 +141,30 @@ function escapeRegex(value) {
  * ki çevre metni ve konumlar kaymasın.
  */
 const PROPER_NOUNS = [
-  "Yeni Adana",
-  "Yeni Malatya",
-  "Yeni Şehir",
   "Atatürk Olimpiyat"
 ];
 
 const PROPER_NOUN_PATTERN = new RegExp(PROPER_NOUNS.map(escapeRegex).join("|"), "gi");
+
+/**
+ * ADIN BAŞINDAKİ "YENİ".
+ *
+ * Türkiye'de pek çok kulüp adı "Yeni" ile başlıyor: Yeni Malatyaspor, Yeni
+ * Adana Demirspor, Yeni Mersin İdmanyurdu. Bunlar İngilizce basında da aynen
+ * yazılıyor. Tek tek listelemek, liste her Türkiye Kupası turunda yeni bir
+ * amatör kulüp getirdiği için eskirdi — bu dosya aynı gerekçeyle stat
+ * adlarını da desenle çözüyor.
+ *
+ * Desen dar: yalnızca BÜYÜK harfli "Yeni" ve yalnızca ardından yine BÜYÜK
+ * harfle başlayan bir sözcük gelirse, yani ad öbeğinin ilk parçasıyken
+ * maskeleniyor. Cümle içindeki "yeni sezon" yakalanmaya devam ediyor.
+ *
+ * Başlık büyük harfiyle yazılmış gerçek bir Türkçe cümle ("Yeni Sezon
+ * Başlıyor") bu maskeden geçer ama sızıntı gizlenmez: böyle bir cümlede
+ * "başlıyor", "ve", "ile" gibi başka işlev sözcükleri de bulunur ve tarama
+ * onları yakalar. Maske tek bir sözcüğü susturur, cümleyi değil.
+ */
+const LEADING_YENI_PATTERN = /(?<![\p{L}\p{N}])Yeni(?=\s+\p{Lu})/gu;
 
 /**
  * TARİH ADI TAŞIYAN STAT ADLARI.
@@ -173,7 +190,8 @@ const DATE_VENUE_PATTERN = new RegExp(
 function maskProperNouns(value) {
   return String(value || "")
     .replace(PROPER_NOUN_PATTERN, (match) => " ".repeat(match.length))
-    .replace(DATE_VENUE_PATTERN, (match) => " ".repeat(match.length));
+    .replace(DATE_VENUE_PATTERN, (match) => " ".repeat(match.length))
+    .replace(LEADING_YENI_PATTERN, (match) => " ".repeat(match.length));
 }
 
 /**
