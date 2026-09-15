@@ -34,7 +34,7 @@ import {
   isLineupAlertStale
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
-import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
+import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
@@ -1159,20 +1159,46 @@ function archiveSection() {
 }
 
 /**
- * TAHMİN ANKETİ — ANA SAYFADA ARTIK BASILMIYOR.
+ * TAHMİN ANKETİ — İKİ DİLDE BİREBİR AYNI ANKET.
  *
- * Ana sayfa enjeksiyonu prodüksiyonda kapatıldı: `home-poll` adımı
- * `scripts/lib/postprocessChain.mjs`den çıkarıldı ve bu üreticinin ana
- * sayfaya özel çağrıları (`homePollSection`, `pollStickySection`) kaldırıldı.
- * `pollPromoSection` yalnızca `newsPage()` içinde, haber listesine serpiştirilen
- * vitrin kartı için hâlâ kullanılıyor — o çağrı ana sayfaya değil
- * `en/news.html`e yazıyor, kapsam dışı bırakıldı.
+ * Türkçe ana sayfaya blok `scripts/inject-home-poll.mjs` ile basılıyor
+ * (`index.html` elle tutulan bir kabuk); İngilizce ana sayfa üretilen bir
+ * dosya olduğu için blok burada, her derlemede yeniden yazılıyor. İki
+ * tarafta da kaynak AYNI: `scripts/lib/homePoll.mjs`. Metin ikinci kez
+ * yazılmıyor, yalnızca `locale` değişiyor — ve oylar TEK havuzda toplanıyor
+ * (aynı anket kimliği), çünkü dil başına ayrı havuz aynı soruya iki farklı
+ * "topluluk kararı" üretirdi.
  */
-function pollPromoSection(href) {
-  const selection = selectHomePoll({
+function currentPollSelection() {
+  return selectHomePoll({
     polls: readJson("home-polls.json", {}),
-    teams: readJson("teams.json", [])
+    teams: readJson("teams.json", []),
+    matches: readJson("matches.json", [])
   });
+}
+
+/** Ana anket kutusu: canlı skor kahramanının hemen ardında. */
+function homePollSection() {
+  const selection = currentPollSelection();
+  if (!selection.poll) return "";
+  return homePollBlock(localizePoll(selection.poll, LOCALE), {
+    locale: LOCALE,
+    status: selection.status
+  });
+}
+
+/** Sabit/yapışkan anket kutusu; görünürlüğü istemci yönetiyor. */
+function pollStickySection() {
+  const selection = currentPollSelection();
+  if (!selection.poll) return "";
+  return pollStickyWidgetHtml(localizePoll(selection.poll, LOCALE), {
+    locale: LOCALE,
+    status: selection.status
+  });
+}
+
+function pollPromoSection(href) {
+  const selection = currentPollSelection();
   if (!selection.poll) return "";
   return pollPromoCardHtml(localizePoll(selection.poll, LOCALE), {
     locale: LOCALE,
@@ -1207,12 +1233,13 @@ function homePage() {
   //   bugünün maçları → günün radar maçı → son maç raporu → son raporlar →
   //   oyuncu radarı → trend takımlar → hızlı gezinme → transfer radarı →
   //   haber akışı → arşiv → kaynak şeridi
-  // Tahmin anketi prodüksiyonda kapatıldı (gerekçe: scripts/lib/postprocessChain.mjs),
-  // sırada artık yok.
+  // Tahmin anketi canlı skor kahramanının HEMEN ARDINDA (Türkçe tarafta da
+  // aynı konum: scripts/inject-home-poll.mjs hero apankoruna yazıyor).
   // Puan tablosu artık arşivin ardındaki tek-lig özeti DEĞİL: canlı skorun
   // hemen altında, 9 yarışmalı sekmeli widget (`standingsTabsSection`) —
   // TR ana sayfasıyla (prerender-core-pages.mjs) aynı konum kuralı.
   const body = `      ${heroSection()}
+      ${homePollSection()}
       ${standingsTabsSection()}
       ${officialLineupAlertsSection()}
       ${columnsSection()}
@@ -1224,7 +1251,8 @@ function homePage() {
       ${quickNavSection()}
       ${transferWatchSection()}
       ${newsSection()}
-      ${archiveSection()}`;
+      ${archiveSection()}
+      ${pollStickySection()}`;
 
   return pageShell({
     routeKey: "home",

@@ -1,5 +1,5 @@
 {
-  "_comment": "ANA SAYFA TAHMİN ANKETLERİ — TAKVİMLİ KAMPANYA DOSYASI. Kural ve doğrulama: services/homePoll.js, belge: docs/home-poll.md. Ankete SIRAYLA girilir: aynı anda YALNIZCA BİR anket açıktır ve o, 'startsAt' ile 'endsAt' arasında bulunan ankettir. Bir anket kapanınca sonuçları gösterilmeye devam eder ve sıradaki anket kendi 'startsAt' saatinde otomatik açılır — kod değişikliği ya da elle müdahale gerekmez. Her anket EN AZ 14 gün açık kalmak ZORUNDA (kısa pencereli kayıt elenir ve nedeni derleme günlüğüne yazılır). Yeni anket eklemek için 'polls' dizisine bir nesne yazmak yeterlidir; tarihler çakışmamalıdır. 'optionSource' alanı 'super-lig-teams' ise seçenekler data/teams.json içindeki güncel Süper Lig kulüplerinden RESMİ ad ve armalarıyla otomatik doldurulur; başka anket türlerinde seçenekler 'options' dizisinde elle yazılır. Soru, alt başlık ve seçenek etiketleri Türkçe ve İngilizce olarak birlikte verilir — iki sürüm birebir aynı ankettir, yalnızca dil değişir.",
+  "_comment": "ANA SAYFA TAHMİN ANKETLERİ — TAKVİMLİ KAMPANYA DOSYASI. Kural ve doğrulama: services/homePoll.js, belge: docs/home-poll.md. Ankete SIRAYLA girilir: aynı anda YALNIZCA BİR anket açıktır ve o, 'startsAt' ile 'endsAt' arasında bulunan ankettir. Bir anket kapanınca sonuçları gösterilmeye devam eder ve sıradaki anket kendi 'startsAt' saatinde otomatik açılır — kod değişikliği ya da elle müdahale gerekmez. Her anket EN AZ 14 gün açık kalmak ZORUNDA (kısa pencereli kayıt elenir ve nedeni derleme günlüğüne yazılır). Yeni anket eklemek için 'polls' dizisine bir nesne yazmak yeterlidir; tarihler çakışmamalıdır. 'optionSource' alanı 'super-lig-teams' ise seçenekler data/teams.json içindeki güncel Süper Lig kulüplerinden RESMİ ad ve armalarıyla otomatik doldurulur; başka anket türlerinde seçenekler 'options' dizisinde elle yazılır. Her anketin 'slug' alanı kendi paylaşılabilir sayfasının adresini belirler: Türkçe '/anket/<slug.tr>', İngilizce '/en/poll/<slug.en>' — iki adres AYNI anketi ve AYNI oy havuzunu gösterir. 'surface' alanı anketin nerede yaşadığını söyler: 'home' (ana sayfa + anket sayfası, pencere en az 14 gün) ya da 'match' (bir maçın sayfası, 'matchId' zorunlu, pencere en az 1 saat, 'optionSource' olarak 'match-outcome' verilirse ev sahibi/beraberlik/deplasman seçenekleri maç kaydından türetilir). Soru, alt başlık ve seçenek etiketleri Türkçe ve İngilizce olarak birlikte verilir — iki sürüm birebir aynı ankettir, yalnızca dil değişir.",
   "_sample": {
     "_comment": "YALNIZCA ŞEKİL ÖRNEĞİ — YAYINA ÇIKMAZ. Bu anahtar servis tarafından HİÇ OKUNMAZ. Elle seçenekli bir anket (transfer/teknik direktör/oyuncu) böyle yazılır; kopyalayıp 'polls' dizisine taşıyın ve alanları gerçek bilgiyle doldurun.",
     "poll": {
@@ -27,28 +27,52 @@
       ]
     }
   },
-  "updatedAt": "2026-08-14T00:00:00+03:00",
+  "updatedAt": "2026-09-14T00:00:00+03:00",
   "polls": [
     {
       "id": "super-lig-2026-2027-sampiyon",
       "type": "champion",
+      "surface": "home",
+      "slug": {
+        "tr": "super-lig-sampiyonu-2026-27",
+        "en": "super-lig-champion-2026-27"
+      },
       "startsAt": "2026-08-14T00:00:00+03:00",
-      "endsAt": "2026-09-15T00:00:00+03:00",
+      "endsAt": "2026-12-15T00:00:00+03:00",
       "optionSource": "super-lig-teams",
       "question": {
-        "tr": "Bu sezon Trendyol Süper Lig şampiyonu sence kim olacak?",
-        "en": "Who do you think will win the Trendyol Süper Lig this season?"
+        "tr": "Sence 2026–27 Süper Lig şampiyonu kim olacak?",
+        "en": "Who will win the 2026–27 Turkish Süper Lig?"
       },
       "subtitle": {
-        "tr": "Okuyucu tahmini. Bu bir veri iddiası değil, topluluğun beklentisidir; her tarayıcı bir kez oy verebilir.",
-        "en": "A reader prediction. This is not a data claim but the community's expectation; each browser can vote once."
+        "tr": "Trendyol Süper Lig'in 18 kulübünün tamamı listede. Okuyucu tahminidir; her tarayıcı bir kez oy verebilir.",
+        "en": "All 18 Trendyol Süper Lig clubs are listed. A reader prediction; each browser can vote once."
+      },
+      "share": {
+        "voted": {
+          "tr": "Ben 2026–27 Süper Lig şampiyonu olarak {team} dedim! ⚽ FutbolRadar anketinde {team} şu anda %{percent} oy alıyor. Sen de oyunu kullan 👇",
+          "en": "I picked {team} to win the 2026–27 Süper Lig! ⚽ {team} is on {percent}% in the FutbolRadar poll. Cast your vote 👇"
+        },
+        "votedWithoutResult": {
+          "tr": "Ben 2026–27 Süper Lig şampiyonu olarak {team} dedim! ⚽ Sen de oyunu kullan 👇",
+          "en": "I picked {team} to win the 2026–27 Süper Lig! ⚽ Cast your vote 👇"
+        },
+        "leader": {
+          "tr": "🔥 FutbolRadar şampiyonluk anketi: {team} şu anda %{percent} ile lider! Sence şampiyon kim olacak? Oyunu kullan.",
+          "en": "🔥 FutbolRadar title poll: {team} leads with {percent}%! Who do you think wins it? Cast your vote."
+        }
       }
     },
     {
       "id": "super-lig-2026-2027-ilk-dort",
       "type": "top-four",
-      "startsAt": "2026-09-15T00:00:00+03:00",
-      "endsAt": "2026-10-15T00:00:00+03:00",
+      "surface": "home",
+      "slug": {
+        "tr": "super-lig-ilk-dort-2026-27",
+        "en": "super-lig-top-four-2026-27"
+      },
+      "startsAt": "2026-12-15T00:00:00+03:00",
+      "endsAt": "2027-01-15T00:00:00+03:00",
       "optionSource": "super-lig-teams",
       "question": {
         "tr": "Bu Sezon Süper Lig'i İlk 4'te Kim Bitirir?",
@@ -62,8 +86,13 @@
     {
       "id": "super-lig-2026-2027-dusen",
       "type": "relegation",
-      "startsAt": "2026-10-15T00:00:00+03:00",
-      "endsAt": "2026-11-15T00:00:00+03:00",
+      "surface": "home",
+      "slug": {
+        "tr": "super-lig-kume-dusme-2026-27",
+        "en": "super-lig-relegation-2026-27"
+      },
+      "startsAt": "2027-01-15T00:00:00+03:00",
+      "endsAt": "2027-02-15T00:00:00+03:00",
       "optionSource": "super-lig-teams",
       "question": {
         "tr": "Bu Sezon Süper Lig'den Kim Düşer?",
