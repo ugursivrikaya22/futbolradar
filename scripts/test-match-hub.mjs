@@ -485,9 +485,22 @@ test("haber dizini güncel ve gövde taşımıyor", () => {
 
 test("maç detay sayfası katmanı doğru sırayla yükler", () => {
   const html = fs.readFileSync(path.join(root, "mac-detay.html"), "utf8");
-  const core = html.indexOf("match-hub-core.js");
-  const ui = html.indexOf("match-hub.js\"");
-  const app = html.indexOf("app.js?");
+  // ARAMA VARLIK DAMGASINI TOLERE ETMEK ZORUNDA.
+  //
+  // `inject-asset-version.mjs` bu üç dosyayı da damgalıyor
+  // (ASSETS listesinde üçü de var), yani derlenmiş sayfada adres
+  // `match-hub.js?v=29b1a48d` biçiminde. Düz `indexOf("match-hub.js\"")`
+  // damgalı hâli BULAMIYOR: test yalnızca HİÇ DERLENMEMİŞ bir ağaçta
+  // geçiyordu ve tam derlemeden sonra kırmızıya dönüyordu. Sıralama
+  // iddiası (çekirdek → arayüz → app) korunuyor; değişen yalnızca
+  // adresin damgalı da olabileceğinin kabul edilmesi.
+  const at = (pattern) => {
+    const match = html.match(pattern);
+    return match ? match.index : -1;
+  };
+  const core = at(/match-hub-core\.js(\?[^"]*)?"/);
+  const ui = at(/match-hub\.js(\?[^"]*)?"/);
+  const app = at(/app\.js(\?[^"]*)?"/);
   assert.ok(core > -1 && ui > -1, "maç merkezi betikleri sayfaya bağlı olmalı");
   assert.ok(core < ui, "çekirdek arayüzden önce yüklenmeli");
   assert.ok(ui < app, "katman app.js'ten önce tanımlanmalı");
