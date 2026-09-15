@@ -179,16 +179,56 @@ function parsePercentValue(value) {
  * Toplam 100'den fazla saparsa REDDEDİLİR: sağlayıcının kendi verisiyle
  * çelişen bir yüzdeyi düzeltmek, düzeltilmiş hâli sağlayıcıya mal etmek
  * olurdu.
+ *
+ * ---------------------------------------------------------------------
+ * SIFIR BİR OLASILIK DEĞİLDİR
+ * ---------------------------------------------------------------------
+ * Sağlayıcının yüzdeleri kaba geliyor: 5'in katları, sık sık 0. Üretimden
+ * ölçüldü (15 Eylül 14:21 koşusu, 10 kayıt): Ajax - Willem II 50/50/0,
+ * Elche - Real Madrid 0/50/50, Altay - Söke 1970 0/50/50. Bunlar
+ * ayrıştırma hatası DEĞİL — sağlayıcının kendi `predictedWinner` ve
+ * `advice` alanlarıyla tutarlılar.
+ *
+ * Ama %0, ekranda "bu takımın kazanma ihtimali yok" demektir ve bu
+ * futbolda yanlıştır. Kaynağı doğru etiketlenmiş olsa bile yanlış bir
+ * iddiayı yayımlamış oluruz. Elimizde daha iyisi varken (piyasa oranı
+ * konsensüsü, sonra kendi modelimiz) bunu basmak için sebep yok.
+ *
+ * Bu yüzden üçlüde 0 varsa kayıt reddedilir ve zincir bir alt kaynağa
+ * geçer. Düzeltme YAPILMAZ (ör. 0'ı %2'ye çekmek): düzeltilmiş bir sayıyı
+ * sağlayıcıya mal etmek, 1. kuralın ihlalidir. Sağlayıcının kalan
+ * alanları (tavsiye, ikili karşılaştırma) ham yükte durmaya devam eder.
  */
 function parseProviderPercent(percent) {
-  if (!percent) return null;
-  const home = parsePercentValue(percent.home);
-  const draw = parsePercentValue(percent.draw);
-  const away = parsePercentValue(percent.away);
-  if (![home, draw, away].every((value) => Number.isFinite(value) && value >= 0)) return null;
-  const sum = home + draw + away;
-  if (sum < PROVIDER_SUM_TOLERANCE.min || sum > PROVIDER_SUM_TOLERANCE.max) return null;
-  return normalizeTriple([home, draw, away]);
+  return providerPercentIssue(percent) ? null : normalizeTriple([
+    parsePercentValue(percent.home),
+    parsePercentValue(percent.draw),
+    parsePercentValue(percent.away)
+  ]);
+}
+
+/**
+ * Yükün NEDEN kullanılamadığı — `null` ise kullanılabilir. Günlükte ve
+ * zincir nedeninde "kullanılamaz" demek yetmiyordu: kotanın bittiği bir
+ * koşu ile sağlayıcının %0 verdiği bir koşu aynı satırı yazıyordu.
+ */
+function providerPercentIssue(percent) {
+  if (!percent) return "missing";
+  const values = [percent.home, percent.draw, percent.away].map(parsePercentValue);
+  if (!values.every((value) => Number.isFinite(value) && value >= 0)) return "unparsable";
+  const sum = values[0] + values[1] + values[2];
+  if (sum < PROVIDER_SUM_TOLERANCE.min || sum > PROVIDER_SUM_TOLERANCE.max) return "sum-out-of-tolerance";
+  const normalized = normalizeTriple(values);
+  if (!normalized) return "unparsable";
+  if (hasZeroOutcome(normalized)) return "zero-outcome";
+  return null;
+}
+
+/** Üçlüde 0 var mı — bkz. parseProviderPercent başlığı. */
+function hasZeroOutcome(probabilities) {
+  if (!probabilities) return false;
+  return [probabilities.home, probabilities.draw, probabilities.away]
+    .some((value) => Number(value) === 0);
 }
 
 function comparisonBlock(comparison) {
@@ -478,6 +518,8 @@ module.exports = {
   normalizeTriple,
   parsePercentValue,
   parseProviderPercent,
+  providerPercentIssue,
+  hasZeroOutcome,
   normalizeProviderPrediction,
   impliedProbability,
   bookmakerProbabilities,

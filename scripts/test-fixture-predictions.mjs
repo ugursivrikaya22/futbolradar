@@ -24,7 +24,7 @@ import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
 import { predictionCardHtml, analysisSectionHtml } from "./lib/matchSeoPage.mjs";
 import { loadProbabilityContext, coverageFor } from "./lib/fixtureProbabilityData.mjs";
-import { selectUpcoming, apiFootballFixtureId, toFixture } from "./sync-fixture-predictions.mjs";
+import { selectUpcoming, apiFootballFixtureId, toFixture, isRejectedRecord } from "./sync-fixture-predictions.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -645,6 +645,55 @@ check("gerçek takvimde tahmin üretilebilen her maç tam 100 eder", () => {
     const { home, draw, away } = result.prediction.probabilities;
     assert.equal(home + draw + away, 100, `${match.id} toplamı 100 değil`);
   }
+});
+
+check("sağlayıcı bir tarafa %0 verdiyse kayıt REDDEDİLİR — sıfır bir olasılık değildir", () => {
+  // Üretimden ölçülmüş gerçek yükler (15 Eylül 14:21 koşusu): sağlayıcı
+  // kaba yüzdeler üretiyor ve sık sık 0 veriyor. Kaynağı doğru
+  // etiketlenmiş olsa bile "bu takım kazanamaz" yanlış bir iddiadır.
+  assert.equal(probability.providerPercentIssue({ home: "50%", draw: "50%", away: "0%" }), "zero-outcome");
+  assert.equal(probability.parseProviderPercent({ home: "50%", draw: "50%", away: "0%" }), null);
+  assert.equal(probability.parseProviderPercent({ home: "0%", draw: "50%", away: "50%" }), null);
+
+  // Kaba ama sıfırsız üçlü kabul edilir: reddettiğimiz kabalık değil,
+  // imkânsızlık iddiası.
+  assert.deepEqual(probability.parseProviderPercent({ home: "45%", draw: "45%", away: "10%" }), { home: 45, draw: 45, away: 10 });
+  assert.equal(probability.providerPercentIssue({ home: "45%", draw: "45%", away: "10%" }), null);
+});
+
+check("%0'lı sağlayıcı yükü zinciri bir alt kaynağa geçirir", () => {
+  const raw = {
+    predictions: {
+      percent: { home: "50%", draw: "50%", away: "0%" },
+      winner: { id: 194, name: "Ev SK", comment: "Win or draw" },
+      advice: "Double chance : Ev SK or draw"
+    }
+  };
+  assert.equal(probability.normalizeProviderPrediction(raw), null, "sağlayıcı kaydı üretilmemeli");
+
+  const engine = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Ev SK", "Dep FK") });
+  const model = engine.modelFor({ homeTeam: "Ev SK", awayTeam: "Dep FK", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
+  const resolved = probability.resolveFixtureProbability({
+    provider: probability.normalizeProviderPrediction(raw),
+    market: null,
+    model: model.prediction,
+    reasons: { provider_prediction: "provider-percentages-unusable:zero-outcome" }
+  });
+  assert.equal(resolved.source, "futbolradar_model");
+  const html = predictionCardHtml(resolved, { locale: "tr", homeTeam: "Ev SK", awayTeam: "Dep FK" });
+  assert.match(html, /FutbolRadar Tahmini/);
+  assert.doesNotMatch(html, /Sağlayıcı Tahmini/, "reddedilen yük sağlayıcıya MAL EDİLMEZ");
+  assert.doesNotMatch(html, /%0/, "sıfır yüzde ekrana basılmamalı");
+});
+
+check("depoda kalmış %0'lı sağlayıcı kaydı taze sayılmaz", () => {
+  // Kural sıkıştıktan sonra eski kayıtlar kendiliğinden geçersizleşmiyor;
+  // basamak kapısı onları bir sonraki basamağa kadar ekranda bırakırdı.
+  assert.equal(isRejectedRecord({ source: "provider_prediction", homeProbability: 50, drawProbability: 50, awayProbability: 0 }), true);
+  assert.equal(isRejectedRecord({ source: "provider_prediction", homeProbability: 45, drawProbability: 45, awayProbability: 10 }), false);
+  assert.equal(isRejectedRecord({ source: "futbolradar_model", homeProbability: 0, drawProbability: 50, awayProbability: 50 }), false,
+    "model kaydı bu kuralın konusu değil — kural sağlayıcı yükü içindir");
+  assert.equal(isRejectedRecord(null), false);
 });
 
 check("zamanlanmış koşu kapsam raporu basar — boşluk günlükte saklı kalmaz", () => {

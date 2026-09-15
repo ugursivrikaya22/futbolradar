@@ -70,6 +70,27 @@ basamak kapısı olmadan günlük tek koşu da T-6s tazelemesini kaçırırdı.
 İlk düdükten sonra maç öncesi tahmin **değişmez** (`frozen`). 2-0 öndeyken
 yüzdeyi güncellemek, tahmini sonuca göre geriye dönük düzeltmek olurdu.
 
+## 4.1 Sağlayıcı yükünün reddi — sıfır bir olasılık değildir
+
+Sağlayıcının yüzdeleri kaba: 5'in katları ve sık sık 0. Üretimden ölçüldü
+(15 Eylül 14:21 koşusu, 10 sağlayıcı kaydı): Ajax - Willem II 50/50/0,
+Elche - Real Madrid 0/50/50, Altay - Söke 1970 0/50/50. Bunlar ayrıştırma
+hatası değil; sağlayıcının kendi `winner` ve `advice` alanlarıyla
+tutarlılar.
+
+Yine de %0, ekranda "bu takımın kazanma ihtimali yok" demektir ve bu
+yanlıştır. Kaynağı doğru etiketlense bile yanlış bir iddia yayımlamış
+oluruz. Bu yüzden üçlüde 0 varsa yük **reddedilir** ve zincir bir alt
+kaynağa geçer (`parseProviderPercent` → `providerPercentIssue`
+`"zero-outcome"`). Düzeltme YAPILMAZ: 0'ı %2'ye çekip sonucu sağlayıcıya
+mal etmek, 1. kuralın ihlalidir.
+
+Kural sonradan sıkıştığı için depoda kalmış %0'lı kayıtlar da taze
+sayılmaz: `sync-fixture-predictions.mjs` onları basamak kapısına
+bakmadan yeniden çözer (`isRejectedRecord`) ve düşüş koruması bu
+kayıtları korumaz — koruma "elimizdeki daha iyi" içindir, "elimizdeki
+geçersiz" için değil.
+
 ## 5. Düşüş koruması
 
 Elde `provider_prediction` kaynaklı bir kayıt varken üst kaynaklar
