@@ -46,20 +46,20 @@ sunucusuz işlev sınırı dolu. Yönlendirme `api/[...route].js` içinde
 ## 3. Uç noktalar
 
 ```
-POST /api/auth/signup                 kayıt (otomatik PRO)
-POST /api/auth/login                  e-posta + şifre
-POST /api/auth/logout                 çıkış
-GET  /api/auth/session                oturum + profil + PRO durumu
-GET  /api/auth/google                 Google'a yönlendir (PKCE)
-GET  /api/auth/callback               kodu oturuma çevir
+POST /api/auth-signup                 kayıt (otomatik PRO)
+POST /api/auth-login                  e-posta + şifre
+POST /api/auth-logout                 çıkış
+GET  /api/auth-session                oturum + profil + PRO durumu
+GET  /api/auth-google                 Google'a yönlendir (PKCE)
+GET  /api/auth-callback               kodu oturuma çevir
 
-GET  /api/account/overview            hesap + favoriler + tercih + bildirim
-GET  /api/account/favorites
-POST /api/account/favorite            {kind, id, favorited?}
-GET  /api/account/notifications
-POST /api/account/notifications-read
-POST /api/account/preferences
-POST /api/account/profile
+GET  /api/account-overview            hesap + favoriler + tercih + bildirim
+GET  /api/account-favorites
+POST /api/account-favorite            {kind, id, favorited?}
+GET  /api/account-notifications
+POST /api/account-notifications-read
+POST /api/account-preferences
+POST /api/account-profile
 ```
 
 Hepsi `private, no-store`. Kişiye özel bir yanıtın CDN'de
@@ -164,7 +164,7 @@ açmıyor**.
 2. `SUPABASE_ANON_KEY` ve `MEMBERSHIP_SESSION_SECRET` değişkenlerini
    Vercel'e girin (bkz. `.env.example`).
 3. Google ile giriş için: Supabase → Authentication → Providers →
-   Google. Yönlendirme adresi `https://www.futbolradar.com/api/auth/callback`.
+   Google. Yönlendirme adresi `https://www.futbolradar.com/api/auth-callback`.
 
 Değişkenler tanımsızsa üyelik **sessizce kapalı** kalır: başlıkta
 "Giriş Yap" durur, tıklandığında giriş sayfası "servis şu anda

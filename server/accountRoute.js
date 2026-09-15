@@ -1,13 +1,13 @@
 /**
  * HESAP UÇ NOKTALARI — FAVORİLER, BİLDİRİMLER, TERCİHLER.
  *
- *   GET  /api/account/overview            → hesap + favoriler + tercihler + bildirimler
- *   GET  /api/account/favorites           → yalnızca favoriler
- *   POST /api/account/favorite            → favori ekle/çıkar
- *   GET  /api/account/notifications       → bildirim kutusu
- *   POST /api/account/notifications-read  → okundu işaretle
- *   POST /api/account/preferences         → bildirim tercihleri
- *   POST /api/account/profile             → görünen ad / dil
+ *   GET  /api/account-overview            → hesap + favoriler + tercihler + bildirimler
+ *   GET  /api/account-favorites           → yalnızca favoriler
+ *   POST /api/account-favorite            → favori ekle/çıkar
+ *   GET  /api/account-notifications       → bildirim kutusu
+ *   POST /api/account-notifications-read  → okundu işaretle
+ *   POST /api/account-preferences         → bildirim tercihleri
+ *   POST /api/account-profile             → görünen ad / dil
  *
  * `server/authRoute.js` ile aynı iki kural: yanıtlar `no-store` +
  * `private` (kişiye özel), yazma isteklerinde Origin denetimi.
@@ -35,10 +35,14 @@ const SOURCE = "membership-account";
 const READ_RATE = { windowMs: 60000, limit: 90, bucket: "account-read" };
 const WRITE_RATE = { windowMs: 60000, limit: 40, bucket: "account-write" };
 
+/** `server/authRoute.js#subRoute` ile aynı gerekçe: tek segment, tireli. */
+const ROUTE_PREFIX = "account-";
+
 function subRoute(req) {
   const url = new URL(req.url || "/", "http://localhost");
-  const parts = url.pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean);
-  return String(parts[1] || "").toLowerCase();
+  const first = url.pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean)[0] || "";
+  const name = String(first).toLowerCase();
+  return name.startsWith(ROUTE_PREFIX) ? name.slice(ROUTE_PREFIX.length) : "";
 }
 
 async function readJsonBody(req) {
@@ -303,6 +307,7 @@ async function dispatchAccount(req, res) {
 }
 
 module.exports = {
+  ROUTE_PREFIX,
   anonymousState,
   handleAccount,
   loadFavorites,

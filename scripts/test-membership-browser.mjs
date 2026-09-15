@@ -12,7 +12,7 @@
  *
  * ── NEDEN SAHTE UÇ NOKTA ────────────────────────────────────────────
  * Supabase derlemede yapılandırılmıyor ve olmamalı: bir test gerçek bir
- * hesap AÇMAMALI. `/api/auth/*` ve `/api/account/*` yanıtları burada
+ * hesap AÇMAMALI. `/api/auth-*` ve `/api/account-*` yanıtları burada
  * sahteleniyor — denenen şey SUNUCU DEĞİL, İSTEMCİ: doğru yanıt
  * geldiğinde ekran doğru şeyi gösteriyor mu?
  *
@@ -104,17 +104,17 @@ async function installApiStub(page, state) {
     // YALNIZCA ÜYELİK uç noktaları sayılıyor. Sayfa zaten kendi
     // verisi için `/api/matches`, `/api/standings` gibi çağrılar
     // yapıyor ve onlar bu testin konusu değil.
-    if (/^\/api\/(auth|account)\//.test(pathname)) state.apiCalls.push(pathname);
+    if (/^\/api\/(auth|account)-/.test(pathname)) state.apiCalls.push(pathname);
     return route.fallback();
   });
 
-  await page.route("**/api/auth/session*", (route) => route.fulfill({
+  await page.route("**/api/auth-session*", (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
     body: JSON.stringify({ ok: true, account: state.signedIn ? signedInAccount() : anonymousAccount() })
   }));
 
-  await page.route("**/api/account/overview*", (route) => route.fulfill({
+  await page.route("**/api/account-overview*", (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
     body: JSON.stringify({
@@ -127,7 +127,7 @@ async function installApiStub(page, state) {
     })
   }));
 
-  await page.route("**/api/account/notifications*", (route) => route.fulfill({
+  await page.route("**/api/account-notifications*", (route) => route.fulfill({
     status: 200,
     contentType: "application/json",
     body: JSON.stringify({
@@ -137,7 +137,7 @@ async function installApiStub(page, state) {
     })
   }));
 
-  await page.route("**/api/account/favorite*", async (route) => {
+  await page.route("**/api/account-favorite*", async (route) => {
     const body = JSON.parse(route.request().postData() || "{}");
     state.lastFavoriteWrite = body;
     if (body.favorited) {
@@ -163,7 +163,7 @@ async function installApiStub(page, state) {
 /**
  * OTURUM İPUCU ÇEREZİ.
  *
- * İstemci, `fr_auth` çerezi yoksa `/api/auth/session`i HİÇ çağırmıyor
+ * İstemci, `fr_auth` çerezi yoksa `/api/auth-session`i HİÇ çağırmıyor
  * (bkz. membership.js#mayBeSignedIn) — ziyaretçi için sıfır istek.
  * Üretimde bu çerezi sunucu, oturum çereziyle birlikte yazıyor; testte
  * elle konuyor. Çerez bir yetki değil, yalnızca "sormaya değer" işareti.
@@ -481,7 +481,7 @@ try {
       });
 
       await check(`${device.name}: hata mesajı ekranda gösteriliyor`, async () => {
-        await page.route("**/api/auth/signup*", (route) => route.fulfill({
+        await page.route("**/api/auth-signup*", (route) => route.fulfill({
           status: 400,
           contentType: "application/json",
           body: JSON.stringify({ ok: false, error: { code: "auth.error.emailTaken" } })

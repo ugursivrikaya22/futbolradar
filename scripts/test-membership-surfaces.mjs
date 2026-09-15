@@ -365,6 +365,43 @@ check("mac sayfasinda maci takip et dugmesi var ve cozuluyor", () => {
 });
 
 /* ------------------------------------------------------------------ */
+/* 7b. UÇ NOKTA YOLLARI TEK SEGMENTLİ OLMAK ZORUNDA                    */
+/* ------------------------------------------------------------------ */
+
+check("uyelik uc noktalari TEK SEGMENTLI", () => {
+  // BU TEST BİR OLAYIN ARDINDAN YAZILDI. Uç noktalar önce
+  // `/api/auth/session` biçimindeydi; yerelde ve testte çalıştı, canlı
+  // önizlemede 404 döndü. Bu dağıtımda `api/[...route].js` yakalayıcısı
+  // ikinci segmenti hiç görmüyor — `/api/motm-week` çalışıyor,
+  // `/api/motm-week/foo` 404. Depodaki ÇALIŞAN her yol bu yüzden tek
+  // segmentli ve tireli.
+  //
+  // Kontrol istemcinin GERÇEKTEN çağırdığı adresler üzerinden yapılıyor:
+  // yorumdaki bir örnek değil, çalışan kod.
+  const client = read("membership.js");
+  const block = client.match(/var ENDPOINTS = \{([\s\S]*?)\};/);
+  assert.ok(block, "ENDPOINTS bloğu bulunamadı");
+
+  const urls = [...block[1].matchAll(/"(\/api\/[^"]+)"/g)].map((match) => match[1]);
+  assert.ok(urls.length >= 10, `beklenenden az uç nokta: ${urls.length}`);
+
+  for (const url of urls) {
+    const segments = url.replace(/^\/api\//, "").split("/");
+    assert.equal(segments.length, 1, `${url} iki segmentli — bu dağıtımda 404 döner`);
+    assert.match(segments[0], /^(auth|account)-[a-z-]+$/, `${url} beklenen adlandırmada değil`);
+  }
+});
+
+check("sunucu ayni onekleri bekliyor", () => {
+  // İstemci ile sunucu ayrışırsa istemci 404 alır ve bu sessizdir.
+  assert.match(read("server/authRoute.js"), /const ROUTE_PREFIX = "auth-";/);
+  assert.match(read("server/accountRoute.js"), /const ROUTE_PREFIX = "account-";/);
+  const router = read("api/[...route].js");
+  assert.match(router, /routeName\(req\)\.startsWith\("auth-"\)/);
+  assert.match(router, /routeName\(req\)\.startsWith\("account-"\)/);
+});
+
+/* ------------------------------------------------------------------ */
 /* 8. ANALYTICS                                                        */
 /* ------------------------------------------------------------------ */
 

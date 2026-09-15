@@ -1,12 +1,12 @@
 /**
  * ÜYELİK KİMLİK UÇ NOKTALARI.
  *
- *   POST /api/auth/signup    → kayıt (otomatik FutbolRadar PRO)
- *   POST /api/auth/login     → e-posta + şifre girişi
- *   POST /api/auth/logout    → çıkış
- *   GET  /api/auth/session   → oturum + profil + PRO durumu
- *   GET  /api/auth/google    → Google'a yönlendir (PKCE)
- *   GET  /api/auth/callback  → Google dönüşü, kodu oturuma çevir
+ *   POST /api/auth-signup    → kayıt (otomatik FutbolRadar PRO)
+ *   POST /api/auth-login     → e-posta + şifre girişi
+ *   POST /api/auth-logout    → çıkış
+ *   GET  /api/auth-session   → oturum + profil + PRO durumu
+ *   GET  /api/auth-google    → Google'a yönlendir (PKCE)
+ *   GET  /api/auth-callback  → Google dönüşü, kodu oturuma çevir
  *
  * DOSYA `api/` ALTINDA DEĞİL — `server/pushSubscriptionRoute.js`teki
  * gerekçe: Vercel Hobby planında `api/` altındaki her dosya ayrı bir
@@ -55,10 +55,27 @@ const LOGIN_RATE = { windowMs: 60000, limit: 8, bucket: "auth-login" };
 const SIGNUP_RATE = { windowMs: 3600000, limit: 5, bucket: "auth-signup" };
 const READ_RATE = { windowMs: 60000, limit: 60, bucket: "auth-read" };
 
+/**
+ * YOL ADI TEK SEGMENTLİ — VE BU BİR TERCİH DEĞİL, DAĞITIMIN KURALI.
+ *
+ * Uç noktalar önce `/api/auth-session` biçimindeydi ve YEREL testlerde
+ * çalışıyordu; Vercel önizlemesinde 404 döndüler. Sebep, bu projenin
+ * dağıtım biçiminde `api/[...route].js` yakalayıcısının yalnızca TEK
+ * segment eşlemesi: `/api/motm-week` çalışıyor, `/api/motm-week/foo`
+ * 404. Bu yüzden depodaki ÇALIŞAN her yol tek segmentli ve tireli
+ * (`motm-week`, `home-poll`, `push-subscribe`, `match-winner-vote`).
+ *
+ * Üyelik uç noktaları da aynı biçime döndürüldü: `/api/auth-session`,
+ * `/api/account-overview`. Alt yol adı `auth-` önekinden sonraki
+ * kısımdır.
+ */
+const ROUTE_PREFIX = "auth-";
+
 function subRoute(req) {
   const url = new URL(req.url || "/", "http://localhost");
-  const parts = url.pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean);
-  return String(parts[1] || "").toLowerCase();
+  const first = url.pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean)[0] || "";
+  const name = String(first).toLowerCase();
+  return name.startsWith(ROUTE_PREFIX) ? name.slice(ROUTE_PREFIX.length) : "";
 }
 
 function getQueryParams(req) {
@@ -380,7 +397,7 @@ async function handleGoogleStart(req, res) {
 
   session.writeOauthCookie(req, res, { verifier, returnTo, locale, createdAt: Date.now() });
 
-  const redirectTo = `${origin}/api/auth/callback`;
+  const redirectTo = `${origin}/api/auth-callback`;
   res.statusCode = 302;
   res.setHeader("Location", authClient.googleAuthorizeUrl({ redirectTo, codeChallenge: challenge }));
   res.end();
@@ -491,6 +508,7 @@ async function dispatchAuth(req, res) {
 
 module.exports = {
   MIN_PASSWORD_LENGTH,
+  ROUTE_PREFIX,
   accountPayload,
   handleAuth,
   isSameOrigin,

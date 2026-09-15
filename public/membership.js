@@ -22,7 +22,7 @@
  * ---------------------------------------------------------------------
  * ÜYELİK SERVİSİ KAPALIYSA SAYFA HİÇ DEĞİŞMEZ
  * ---------------------------------------------------------------------
- * Yapılandırma eksikse (`/api/auth/session` 503) betik sessizce durur:
+ * Yapılandırma eksikse (`/api/auth-session` 503) betik sessizce durur:
  * başlıkta "Giriş Yap" kalır, konsola hata basılmaz. Bir üyelik
  * özelliğinin yokluğu, canlı skoru izleyen okuyucunun sorunu değildir.
  */
@@ -30,17 +30,17 @@
   "use strict";
 
   var ENDPOINTS = {
-    session: "/api/auth/session",
-    overview: "/api/account/overview",
-    login: "/api/auth/login",
-    signup: "/api/auth/signup",
-    logout: "/api/auth/logout",
-    favorite: "/api/account/favorite",
-    notifications: "/api/account/notifications",
-    notificationsRead: "/api/account/notifications-read",
-    preferences: "/api/account/preferences",
-    profile: "/api/account/profile",
-    google: "/api/auth/google"
+    session: "/api/auth-session",
+    overview: "/api/account-overview",
+    login: "/api/auth-login",
+    signup: "/api/auth-signup",
+    logout: "/api/auth-logout",
+    favorite: "/api/account-favorite",
+    notifications: "/api/account-notifications",
+    notificationsRead: "/api/account-notifications-read",
+    preferences: "/api/account-preferences",
+    profile: "/api/account-profile",
+    google: "/api/auth-google"
   };
 
   /**
@@ -1035,10 +1035,10 @@
   /**
    * HANGİ UÇ NOKTA? — sayfanın gerçekten ihtiyacı olan kadarı.
    *
-   * Çoğu sayfada yalnızca başlık güncelleniyor; orada `/api/auth/
-   * session` yeterli ve favori listesi boşuna taşınmıyor. Favori
+   * Çoğu sayfada yalnızca başlık güncelleniyor; orada `/api/auth-session`
+   * yeterli ve favori listesi boşuna taşınmıyor. Favori
    * düğmesi, profil ya da kişisel bölüm varsa tek çağrıda hepsini
-   * veren `/api/account/overview` kullanılıyor — iki ayrı istek
+   * veren `/api/account-overview` kullanılıyor — iki ayrı istek
    * yerine bir tane.
    */
   function needsOverview() {
@@ -1054,7 +1054,7 @@
    *
    * Sunucu, oturum çerezini yazarken yanına okunabilir bir ipucu
    * çerezi de koyuyor (`fr_auth=1`, bkz. services/membership/session.js).
-   * İpucu yoksa kullanıcı giriş yapmamıştır ve `/api/auth/session`
+   * İpucu yoksa kullanıcı giriş yapmamıştır ve `/api/auth-session`
    * çağrısına HİÇ gerek yoktur.
    *
    * Bu iki şeyi birden çözüyor:

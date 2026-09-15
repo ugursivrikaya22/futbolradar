@@ -48,7 +48,7 @@ const COOKIE_NAME = "fr_session";
  * Asıl oturum çerezi `httpOnly`; tarayıcıdaki betik onu OKUYAMAZ ve
  * okumamalı. Ama bu, istemcinin "giriş yapılmış mı" sorusuna ancak
  * ağa çıkarak cevap verebilmesi demekti: her sayfa yüklemesinde
- * `/api/auth/session` isteği — ziyaretçilerin BÜYÜK ÇOĞUNLUĞU giriş
+ * `/api/auth-session` isteği — ziyaretçilerin BÜYÜK ÇOĞUNLUĞU giriş
  * yapmamış olduğu hâlde.
  *
  * Bunun iki bedeli vardı: her sayfada gereksiz bir istek (bu sitede
@@ -57,7 +57,7 @@ const COOKIE_NAME = "fr_session";
  *
  * Bu çerez o soruyu ağa çıkmadan cevaplıyor. İçinde kimlik bilgisi
  * YOK — yalnızca "1". Sahtelenmesi bir şey kazandırmaz: istemci onu
- * görüp `/api/auth/session` çağırır, sunucu mühürlü asıl çereze bakar
+ * görüp `/api/auth-session` çağırır, sunucu mühürlü asıl çereze bakar
  * ve "giriş yok" der. Yani bu çerez bir YETKİ değil, bir İPUCU.
  *
  * `httpOnly` DEĞİL (okunması gerekiyor) ama asıl çerezle aynı anda

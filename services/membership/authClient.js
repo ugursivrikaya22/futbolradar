@@ -12,7 +12,7 @@
  * ---------------------------------------------------------------------
  * TARAYICI SUPABASE İLE KONUŞMUYOR — BURADA DA
  * ---------------------------------------------------------------------
- * Giriş formu `/api/auth/login`e POST atar; Supabase'e giden istek
+ * Giriş formu `/api/auth-login`e POST atar; Supabase'e giden istek
  * BURADAN çıkar. Böylece jetonlar hiç JavaScript'e değmez, `httpOnly`
  * mühürlü çerezde yaşar (bkz. session.js). Modül `window` görürse
  * açılışta PATLAR — sessizce devre dışı kalmak, istemci paketine

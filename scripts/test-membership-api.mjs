@@ -107,7 +107,7 @@ const PASSWORD = "futbolradar2026";
 // ---------------------------------------------------------------------
 // 1. KAYIT → OTOMATİK PRO
 // ---------------------------------------------------------------------
-const signup = await call("POST", "/api/auth/signup", {
+const signup = await call("POST", "/api/auth-signup", {
   body: { email: EMAIL, password: PASSWORD, displayName: "Taraftar", locale: "tr" },
   jar
 });
@@ -153,7 +153,7 @@ const signupStartedAt = stub.table("profiles")[0].subscription_started_at;
 // ---------------------------------------------------------------------
 // 2. AYNI E-POSTA İKİNCİ KEZ
 // ---------------------------------------------------------------------
-const duplicate = await call("POST", "/api/auth/signup", {
+const duplicate = await call("POST", "/api/auth-signup", {
   body: { email: EMAIL, password: PASSWORD }
 });
 check("ayni e-posta reddediliyor", () => assert.equal(duplicate.status, 400));
@@ -164,7 +164,7 @@ check("ayni e-posta dogru hata anahtari donuyor", () => {
 // ---------------------------------------------------------------------
 // 3. FAVORİLER
 // ---------------------------------------------------------------------
-const favAdd = await call("POST", "/api/account/favorite", {
+const favAdd = await call("POST", "/api/account-favorite", {
   body: { kind: "team", id: "galatasaray", favorited: true },
   jar
 });
@@ -177,7 +177,7 @@ check("favori etiketi kutukten geliyor", () => {
 });
 
 // İstemcinin gönderdiği sahte etiket YOK SAYILMALI.
-const favSpoof = await call("POST", "/api/account/favorite", {
+const favSpoof = await call("POST", "/api/account-favorite", {
   body: { kind: "team", id: "fenerbahce", label: "<script>alert(1)</script>", favorited: true },
   jar
 });
@@ -186,7 +186,7 @@ check("istemci etiketi yoksayiliyor", () => {
   assert.ok(!JSON.stringify(favSpoof.json).includes("<script>"));
 });
 
-const favGhost = await call("POST", "/api/account/favorite", {
+const favGhost = await call("POST", "/api/account-favorite", {
   body: { kind: "team", id: "boyle-bir-takim-yok", favorited: true },
   jar
 });
@@ -195,19 +195,19 @@ check("kutukte olmayan takim reddediliyor", () => {
   assert.equal(favGhost.json.error.code, "account.error.unknownTarget");
 });
 
-const favPlayer = await call("POST", "/api/account/favorite", {
+const favPlayer = await call("POST", "/api/account-favorite", {
   body: { kind: "player", id: "mauro-icardi", favorited: true },
   jar
 });
 check("favori oyuncu eklendi", () => assert.equal(favPlayer.json.favorited, true));
 
-const favLeague = await call("POST", "/api/account/favorite", {
+const favLeague = await call("POST", "/api/account-favorite", {
   body: { kind: "league", id: "la-liga", favorited: true },
   jar
 });
 check("favori lig eklendi", () => assert.equal(favLeague.json.favorited, true));
 
-const favOff = await call("POST", "/api/account/favorite", {
+const favOff = await call("POST", "/api/account-favorite", {
   body: { kind: "team", id: "fenerbahce", favorited: false },
   jar
 });
@@ -221,7 +221,7 @@ check("cikarilan favori listede yok", () => {
 // ---------------------------------------------------------------------
 // 4. BİLDİRİM TERCİHLERİ
 // ---------------------------------------------------------------------
-const prefs = await call("POST", "/api/account/preferences", {
+const prefs = await call("POST", "/api/account-preferences", {
   body: { goal: true, half_time: true, transfer_news: true, red_card: false },
   jar
 });
@@ -253,29 +253,29 @@ await profileStore.pushNotification({
   subjectKey: "match:1:goal:1"
 });
 
-const inbox = await call("GET", "/api/account/notifications", { jar });
+const inbox = await call("GET", "/api/account-notifications", { jar });
 check("bildirim kutusu okunuyor", () => assert.equal(inbox.status, 200));
 check("ayni olay iki kez yazilmiyor", () => assert.equal(inbox.json.notifications.length, 1));
 check("okunmamis sayisi dogru", () => assert.equal(inbox.json.unreadCount, 1));
 
-const markRead = await call("POST", "/api/account/notifications-read", { body: {}, jar });
+const markRead = await call("POST", "/api/account-notifications-read", { body: {}, jar });
 check("bildirim okundu isaretlendi", () => assert.equal(markRead.json.unreadCount, 0));
 
 // ---------------------------------------------------------------------
 // 6. ÇIKIŞ → YENİDEN GİRİŞ → TERCİHLER KORUNUYOR MU?
 // ---------------------------------------------------------------------
-const logout = await call("POST", "/api/auth/logout", { body: {}, jar });
+const logout = await call("POST", "/api/auth-logout", { body: {}, jar });
 check("cikis basarili", () => assert.equal(logout.status, 200));
 check("cikista oturum cerezi silindi", () => assert.ok(!jar.has("fr_session")));
 
-const anonymous = await call("GET", "/api/account/overview", { jar });
+const anonymous = await call("GET", "/api/account-overview", { jar });
 check("cikistan sonra hesap gorunmuyor", () => {
   assert.equal(anonymous.status, 200);
   assert.equal(anonymous.json.account.signedIn, false);
   assert.equal(anonymous.json.favorites.team.length, 0);
 });
 
-const login = await call("POST", "/api/auth/login", {
+const login = await call("POST", "/api/auth-login", {
   body: { email: EMAIL, password: PASSWORD },
   jar
 });
@@ -285,7 +285,7 @@ check("yeniden giriste PRO korunuyor", () => {
   assert.equal(login.json.account.user.subscriptionType, "pro");
 });
 
-const restored = await call("GET", "/api/account/overview", { jar });
+const restored = await call("GET", "/api/account-overview", { jar });
 check("yeniden giriste favori takim korunuyor", () => {
   assert.deepEqual(restored.json.favorites.team.map((item) => item.id), ["galatasaray"]);
 });
@@ -312,7 +312,7 @@ check("abonelik baslangici yeniden giriste SIFIRLANMIYOR", () => {
 // ---------------------------------------------------------------------
 // 7. YANLIŞ ŞİFRE / KİMLİKSİZ YAZMA / CSRF
 // ---------------------------------------------------------------------
-const badLogin = await call("POST", "/api/auth/login", {
+const badLogin = await call("POST", "/api/auth-login", {
   body: { email: EMAIL, password: "yanlis-sifre" }
 });
 check("yanlis sifre reddediliyor", () => {
@@ -320,7 +320,7 @@ check("yanlis sifre reddediliyor", () => {
   assert.equal(badLogin.json.error.code, "auth.error.invalidCredentials");
 });
 
-const anonWrite = await call("POST", "/api/account/favorite", {
+const anonWrite = await call("POST", "/api/account-favorite", {
   body: { kind: "team", id: "galatasaray", favorited: true }
 });
 check("giris yapmadan favori yazilamiyor", () => {
@@ -328,14 +328,14 @@ check("giris yapmadan favori yazilamiyor", () => {
   assert.equal(anonWrite.json.error.code, "auth.error.signInRequired");
 });
 
-const csrf = await call("POST", "/api/account/favorite", {
+const csrf = await call("POST", "/api/account-favorite", {
   body: { kind: "team", id: "galatasaray", favorited: true },
   jar,
   headers: { origin: "https://saldirgan.example" }
 });
 check("baska kokenden yazma reddediliyor", () => assert.equal(csrf.status, 403));
 
-const shortPassword = await call("POST", "/api/auth/signup", {
+const shortPassword = await call("POST", "/api/auth-signup", {
   body: { email: "yeni@example.com", password: "kisa" }
 });
 check("kisa sifre reddediliyor", () => {
@@ -343,7 +343,7 @@ check("kisa sifre reddediliyor", () => {
   assert.equal(shortPassword.json.error.code, "auth.error.weakPassword");
 });
 
-const badEmail = await call("POST", "/api/auth/signup", {
+const badEmail = await call("POST", "/api/auth-signup", {
   body: { email: "gecersiz", password: PASSWORD }
 });
 check("gecersiz e-posta reddediliyor", () => {

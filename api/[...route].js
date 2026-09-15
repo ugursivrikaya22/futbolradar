@@ -399,11 +399,15 @@ module.exports = async function handler(req, res) {
   //
   // Dosyalar `server/` altında, `api/` altında değil: Vercel Hobby
   // planındaki 12 sunucusuz işlev sınırı DOLU (bkz. motm-vote).
-  if (routeName(req) === "auth") {
+  // Yol adları TEK SEGMENTLİ: `/api/auth-session`, `/api/account-overview`.
+  // Gerekçe `server/authRoute.js#subRoute`ta: bu dağıtımda yakalayıcı
+  // ikinci bir segmenti hiç görmüyor (`/api/motm-week/foo` → 404), bu
+  // yüzden depodaki her çalışan yol tek segmentli ve tireli.
+  if (routeName(req).startsWith("auth-")) {
     return handleAuth(req, res);
   }
 
-  if (routeName(req) === "account") {
+  if (routeName(req).startsWith("account-")) {
     return handleAccount(req, res);
   }
 

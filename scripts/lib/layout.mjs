@@ -173,8 +173,8 @@ function languageSwitch(base, locale, altHref) {
  * HERKESE göstermek olurdu. Bu yüzden işaretleme tek bir hâl taşır:
  * "Giriş Yap" bağlantısı görünür, kullanıcı bloğu `hidden`.
  *
- * Giriş yapmış hâle geçişi `public/membership.js` yapıyor: `/api/auth/
- * session` yanıtına göre iki bloğun görünürlüğünü değiştiriyor.
+ * Giriş yapmış hâle geçişi `public/membership.js` yapıyor: `/api/auth-session`
+ * yanıtına göre iki bloğun görünürlüğünü değiştiriyor.
  * Değişen tek şey BAŞLIK — sayfanın ana içeriği sunucudan geldiği gibi
  * kalıyor, yani Googlebot ve ilk boyama etkilenmiyor.
  *

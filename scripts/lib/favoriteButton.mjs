@@ -12,7 +12,7 @@
  * `scripts/lib/layout.mjs` içindeki hesap bloğuyla aynı gerekçe: sayfa
  * CDN'de paylaşılıyor ve derleme anında bir kullanıcının favorisini
  * basmak, o hâli o sayfayı açan HERKESE göstermek olurdu. Gerçek durum
- * `membership.js` tarafından `/api/account/overview` yanıtıyla
+ * `membership.js` tarafından `/api/account-overview` yanıtıyla
  * yazılıyor.
  *
  * ---------------------------------------------------------------------
