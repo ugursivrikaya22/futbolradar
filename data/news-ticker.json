@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-15T14:23:21.794Z",
+  "updatedAt": "2026-09-15T17:08:29.118Z",
   "items": [
     {
       "id": "auto-news-bd74f9a32d45c685b824",
@@ -285,24 +285,18 @@
       }
     },
     {
-      "id": "auto-news-5e013d8b1a2039ce09f1",
-      "category": "official",
+      "id": "news-galatasaray-aleksey-batrakov-dbf592a0",
+      "origin": "news.json",
+      "category": "club-agenda",
       "confidence": "confirmed",
-      "section": "news",
-      "text": "Hakkarigücü Spor 1-1 Trabzonspor Kadın Futbol Takımı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-12T14:28:31.000Z",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Aleksey Batrakov'a dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-15T14:54:43.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPLUxuTFp0WjNCby05Tk1QTzUzUVl0NzJ4TVFvaFJJeThURGdkQVdOQkNBVHNOX19kdER4SDR1QTQ0ZWF1NFp5ampYS2JscEstVHg4dDdfd2JXWnZIM29DZlBXWURYeGxXREF6eG1UM0RYUUQ2TGU1X1NOWTZzR0VrOXk5UFZRakY0Y2F5aENRMWRwTlVNdUt5amNqVWdYckRj?oc=5",
-        "publisher": "trabzonspor.org.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-aleksey-batrakov-dbf592a0"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
+      "team": "Galatasaray",
+      "important": true
     },
     {
       "id": "news-fenerbahce-bulent-uygun-8aedaf5a",
@@ -316,20 +310,6 @@
         "url": "https://www.futbolradar.com/haber/fenerbahce-bulent-uygun-8aedaf5a"
       },
       "team": "Fenerbahçe",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-lesley-ugochukwu-4e091add",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Galatasaray çevresinde Lesley Ugochukwu'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-15T06:36:31.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-lesley-ugochukwu-4e091add"
-      },
-      "team": "Galatasaray",
       "important": true
     },
     {
@@ -442,6 +422,20 @@
         "url": "https://www.futbolradar.com/haber/trabzonspor-pep-guardiola-6ed911ff"
       },
       "team": "Trabzonspor",
+      "important": true
+    },
+    {
+      "id": "news-fenerbahce-sergen-yalcin-328f7588",
+      "origin": "news.json",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "text": "Sporx'in haberine göre Fenerbahçe'nin Sergen Yalçın görüşmelerini sürdürdüğü öne sürüldü.",
+      "timestamp": "2026-09-15T17:08:00.275Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-sergen-yalcin-328f7588"
+      },
+      "team": "Fenerbahçe",
       "important": true
     },
     {
