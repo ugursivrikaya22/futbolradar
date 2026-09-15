@@ -305,19 +305,10 @@ function sourceSteps(type, providerReady) {
     // fixture-calendar başarısız olsa bile çalışması güvenli.
     ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
     nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
-    // YAKLAŞAN MAÇLARIN TAHMİNİ — lig ayrımı yok, üç kaynaklı zincir:
-    // sağlayıcı /predictions → /odds 1X2 konsensüsü → FutbolRadar modeli.
-    //
-    // SAATLİK KOŞUDA DA ÇALIŞIR ve bu bilinçli: tazeleme basamakları
-    // (T-72s → T-24s → T-6s → T-90dk) ancak saatlik bir koşu varsa
-    // zamanında yakalanır; günlük tek koşu, maça 6 saat kala güncellenmesi
-    // gereken tahmini kaçırırdı. Kota yine korunuyor, çünkü her fikstür
-    // her basamakta EN FAZLA bir kez sorulur (services/fixturePredictionStore.js)
-    // ve kapsamı olmayan lige hiç istek gitmez.
-    // Sağlayıcı yapılandırılmamışken bile ATLANMAZ: zincirin üçüncü
-    // halkası (FutbolRadar modeli) kotadan bağımsız çalışır ve maç
-    // sayfalarının tahmin kartı bu koşuda tazelenir.
-    nodeStep("fixture-predictions", "sync-fixture-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000 }),
+    // Yaklaşan Süper Lig maçlarının sağlayıcı tahmini + ikili rekabeti
+    // (maç başına tek /predictions isteği). Günlük full koşu yeter:
+    // sağlayıcı tahmini gün içinde anlamlı değişmez.
+    ...(full ? [nodeStep("match-predictions", "sync-match-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     // Gol/asist krallığı: `/players/topscorers` + `/players/topassists`
     // ligin kendisiyle sorgulandığı için players.json'un turnuva-toplamı
@@ -394,6 +385,29 @@ function transformSteps(type, hasChanges, providerReady) {
     // yalnızca CPU.
     nodeStep("upcoming-analyses", "generate-match-analyses.mjs", ["--days=7", "--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("refetch-finished", "refetch-finished-matches.mjs", ["--apply", "--limit=25", "--days=4"], { kind: "source", source: "api-football", timeoutMs: 10 * 60 * 1000, skip: providerReady ? false : "API-Football is unavailable." }),
+    // KALICI ARŞİV — RAPOR DEPOSU YENİDEN ÜRETİLMEDEN ÖNCE.
+    //
+    // `generate-post-match-reports.mjs` depoyu maç havuzundan sıfırdan kurar:
+    // yalnızca o an havuzda olan maçlar için kayıt basar, havuzda olmayanın
+    // kaydı sessizce düşer. Havuzun yenilenen tek kaynağı fikstür takvimi ve
+    // penceresi 3 gün geriye bakıyor — yani bitmiş bir maç üç gün sonra
+    // havuzdan çıkıyor, bir sonraki koşuda da kaydı siliniyor.
+    //
+    // Arşiv bu kaybın güvenlik ağı: rapor üreteci arşivi havuza GERİ
+    // BESLİYOR, yani arşive bir kez giren maç bir daha düşmüyor. Ama arşivi
+    // dolduran adım yalnızca `npm run build` zincirinde vardı ve orada
+    // üretilen çıktı commit'lenmiyor. Sonuç: veriyi saatlik yazan hat arşivi
+    // hiç güncellemiyordu; iki elle build arasında pencereden düşen her maç
+    // kalıcı olarak kayboluyordu. Ölçüldü: 23 Ağustos - 6 Eylül arasında beş
+    // Süper Lig maçı (Göztepe-Gençlerbirliği, Kocaelispor-Amed,
+    // Başakşehir-Galatasaray, Trabzonspor-Gençlerbirliği, Kasımpaşa-Amed) ve
+    // Fenerbahçe'nin iki Avrupa maçı bu yolla silindi.
+    //
+    // SIRA ÖNEMLİ: arşivleme depo yeniden üretilmeden ÖNCE koşmak zorunda.
+    // Tersi olsaydı kayıt zaten silinmiş olurdu ve arşivlenecek bir şey
+    // kalmazdı. İkisi aynı listede olduğu için birlikte koşuyorlar: depo
+    // yeniden üretilmeyen bir koşuda arşivlemeye de gerek yok.
+    nodeStep("match-archive", "backfill-historical-match-archive.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-store", "generate-post-match-reports.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     // OYUNCU ÖZELLİK PUANLARI — maç/istatistik güncellemesinden HEMEN SONRA.
@@ -450,6 +464,22 @@ function hourlyBuildSteps(diff) {
   }
   if (diff.teamsUpdated) steps.push(nodeStep("render-team-pages", "generate-teams.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }));
   steps.push(
+    // KÖŞE YAZISI SAYFALARI — ANA SAYFA VE en/index.html ONLARA BAĞ VERİYOR.
+    //
+    // Bu adım eksikti ve sonucu kırık bağlantıydı: `prerender-core-pages.mjs`
+    // ile `generate-en-*` adımları data/columns.json'ı okuyup ana sayfaya ve
+    // en/index.html'e son yazıların kartlarını basıyor, ama yazının kendi
+    // sayfasını YALNIZCA generate-column-pages.mjs üretiyor ve o da yalnızca
+    // `npm run build` zincirindeydi. Saatlik hat karta bağ veriyor, hedefi
+    // üretmiyordu; test-seo-integrity bunu "kırık iç bağlantı" olarak
+    // yakalıyor (en/index.html → kose-yazilari/<slug>.html).
+    //
+    // Arşiv adımıyla aynı sınıf hata: veriyi saatlik yazan hat, kendi
+    // çıktısının bağlı olduğu bir üreteci çalıştırmıyordu.
+    //
+    // SIRA: çekirdek sayfalar basılmadan önce koşmalı ki bağ verilen hedef
+    // dosya diskte hazır olsun.
+    nodeStep("render-column-pages", "generate-column-pages.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-news-pages", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
     // English pages are generated from the final match registry by POSTPROCESS_CHAIN.
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
@@ -570,8 +600,26 @@ async function main() {
 
   const afterSources = collectionSnapshot();
   const sourceDiff = snapshotDiff(before, afterSources);
+  // ARŞİVLEME BAŞARISIZSA RAPOR DEPOSU YENİDEN ÜRETİLMEZ.
+  //
+  // `post-match-store` yıkıcı bir adım: depoyu havuzdan sıfırdan kurar ve
+  // havuzda olmayan kaydı düşürür. `match-archive` bunun güvenlik ağı — ama
+  // bu döngü `runStep` sonucunu HİÇ okumuyordu (`required` yalnızca
+  // doğrulama ve derleme döngülerinde onurlandırılıyor). Yani arşivleme
+  // zaman aşımına uğrasa ya da sıfırdan farklı kodla çıksa bile yıkıcı adım
+  // yine koşuyor ve tam olarak önlenmek istenen kayıp gerçekleşiyordu.
+  //
+  // Bağımlılık artık açık: arşivleme başarısızsa depo yeniden üretilmez,
+  // koşu `skipped` nedeniyle işaretlenir ve bir sonraki koşu tekrar dener.
+  // Eski kayıt yerinde kalır — bayat bir depo, silinmiş bir maçtan iyidir.
+  let archiveFailed = false;
   for (const spec of transformSteps(args.type, sourceDiff.changedFiles.length > 0, providerReady)) {
-    await runStep(spec, steps);
+    if (spec.id === "post-match-store" && archiveFailed) {
+      await runStep({ ...spec, skip: "match-archive başarısız oldu; kayıt kaybını önlemek için depo yeniden üretilmedi." }, steps);
+      continue;
+    }
+    const result = await runStep(spec, steps);
+    if (spec.id === "match-archive" && result.status === "failed") archiveFailed = true;
   }
 
   const afterTransforms = collectionSnapshot();

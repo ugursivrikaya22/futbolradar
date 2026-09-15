@@ -3962,17 +3962,31 @@
     },
     "homeTeam": "Kasımpaşa",
     "awayTeam": "Amed Sportif Faaliyetler",
-    "status": "SCHEDULED",
+    "status": "FINISHED",
     "source": "manual_verified",
-    "sourceName": "A Spor",
+    "sourceName": "FutbolRadar arşiv kurtarma",
     "sourceUrls": [
       "https://www.aspor.com.tr/spor-toto-super-lig/2026/09/06/kasimpasa-amedspor-maci-saat-kacta-hangi-kanalda"
     ],
-    "fetchedAt": "2026-09-06T15:45:00+03:00",
-    "lastVerifiedAt": "2026-09-06T15:45:00+03:00",
+    "fetchedAt": "2026-09-06T19:15:00+03:00",
+    "lastVerifiedAt": "2026-09-06T19:15:00+03:00",
     "dataStatus": "verified",
     "confidence": 1,
-    "needsReview": false
+    "needsReview": false,
+    "score": {
+      "home": 2,
+      "away": 2,
+      "halftimeHome": null,
+      "halftimeAway": null
+    },
+    "venue": "Recep Tayyip Erdoğan Stadyumu",
+    "city": "İstanbul",
+    "stage": "4. hafta",
+    "providerIds": {
+      "theSportsDb": "2527755",
+      "api-football": "1584399"
+    },
+    "note": "FutbolRadar arşiv kurtarma: bu kayıt küratörlü depoda skorsuz SCHEDULED taslağı olarak donmuştu. Bitmiş skor yalnızca 3 günlük fikstür takvimi penceresinde ve ondan türeyen rapor kaydında yaşıyordu; pencere geçince kayıt SCHEDULED'a geri döndü ve rapor silindi. Skor depo içi iki bağımsız kayıttan geri getirildi: match-seo-pages.json (FINISHED) ve üretilmiş maç raporu sayfası. Olay akışı, istatistik ve kadro verisi sağlayıcıdan yeniden çekilmeyi bekliyor."
   },
   {
     "id": "kocaelispor-samsunspor-2026-09-06",
@@ -5317,18 +5331,32 @@
     },
     "homeTeam": "Trabzonspor",
     "awayTeam": "Gençlerbirliği",
-    "status": "SCHEDULED",
+    "status": "FINISHED",
     "source": "manual_verified",
-    "sourceName": "Fotomaç",
+    "sourceName": "FutbolRadar arşiv kurtarma",
     "sourceUrls": [
       "https://www.fotomac.com.tr/superlig/2026/09/06/canli-trabzonspor-genclerbirligi-maci-saat-kacta-hangi-kanalda",
       "https://www.aspor.com.tr/spor-toto-super-lig/2026/09/06/trabzonspor-genclerbirligi-maci-saat-kacta-hangi-kanalda"
     ],
-    "fetchedAt": "2026-09-06T15:45:00+03:00",
-    "lastVerifiedAt": "2026-09-06T15:45:00+03:00",
+    "fetchedAt": "2026-09-06T22:15:00+03:00",
+    "lastVerifiedAt": "2026-09-06T22:15:00+03:00",
     "dataStatus": "verified",
     "confidence": 1,
-    "needsReview": false
+    "needsReview": false,
+    "score": {
+      "home": 5,
+      "away": 0,
+      "halftimeHome": null,
+      "halftimeAway": null
+    },
+    "venue": "Papara Park",
+    "city": "Trabzon",
+    "stage": "4. hafta",
+    "providerIds": {
+      "theSportsDb": "2527754",
+      "api-football": "1584402"
+    },
+    "note": "FutbolRadar arşiv kurtarma: bu kayıt küratörlü depoda skorsuz SCHEDULED taslağı olarak donmuştu. Bitmiş skor yalnızca 3 günlük fikstür takvimi penceresinde ve ondan türeyen rapor kaydında yaşıyordu; pencere geçince kayıt SCHEDULED'a geri döndü ve rapor silindi. Skor depo içi iki bağımsız kayıttan geri getirildi: match-seo-pages.json (FINISHED) ve üretilmiş maç raporu sayfası. Olay akışı, istatistik ve kadro verisi sağlayıcıdan yeniden çekilmeyi bekliyor."
   },
   {
     "id": "caykur-rizespor-alanyaspor-2026-09-07",
@@ -6932,5 +6960,94 @@
     },
     "providerSyncedAt": "2026-09-07T20:33:12.226Z",
     "liveStateSource": "api-football"
+  },
+  {
+    "id": "basaksehir-galatasaray-2026-09-04",
+    "competitionId": "super-lig",
+    "league": "Süper Lig",
+    "stage": "4. hafta",
+    "kickoff": "2026-09-04T20:00:00+03:00",
+    "time": "20:00",
+    "venue": "Başakşehir Fatih Terim Stadyumu",
+    "city": "İstanbul",
+    "homeTeam": "Başakşehir",
+    "awayTeam": "Galatasaray",
+    "status": "FINISHED",
+    "score": {
+      "home": 2,
+      "away": 3,
+      "halftimeHome": null,
+      "halftimeAway": null
+    },
+    "providerIds": {
+      "theSportsDb": "2527751",
+      "api-football": "1584394"
+    },
+    "source": "manual_verified",
+    "sourceName": "FutbolRadar arşiv kurtarma",
+    "sourceUrls": [
+      "https://www.futbolradar.com/kose-yazilari/basaksehir-galatasaray-90-1-gabriel-sara-karakter"
+    ],
+    "needsReview": false,
+    "note": "FutbolRadar arşiv kurtarma: kayıt, saatlik hattın maç havuzu penceresinden düştüğü için silinmişti (bkz. run-scheduled-update.mjs match-archive adımı). Skor depo içi kayıtlardan geri getirildi; olay akışı, istatistik ve kadro verisi sağlayıcıdan yeniden çekilmeyi bekliyor. Skor ve golcüler sitenin kendi köşe yazısından doğrulandı (Osimhen 17., Gabriel Sara 90+1).",
+    "lastVerifiedAt": "2026-09-04T23:15:00+03:00",
+    "fetchedAt": "2026-09-04T23:15:00+03:00"
+  },
+  {
+    "id": "lyon-fenerbahce-2026-08-26",
+    "competitionId": "sampiyonlar-ligi",
+    "league": "UEFA Şampiyonlar Ligi",
+    "stage": "Play-off turu, rövanş",
+    "kickoff": "2026-08-26T22:00:00+03:00",
+    "time": "22:00",
+    "venue": null,
+    "city": "Lyon",
+    "country": "Fransa",
+    "homeTeam": "Lyon",
+    "awayTeam": "Fenerbahçe",
+    "status": "FINISHED",
+    "score": {
+      "home": 1,
+      "away": 2,
+      "halftimeHome": null,
+      "halftimeAway": null
+    },
+    "source": "manual_verified",
+    "sourceName": "AŞ Spor, Fanatik, Takvim, Hürriyet, Fenerbahçe SK (resmî)",
+    "sourceUrls": [
+      "https://www.aspor.com.tr/fenerbahce/2026/08/26/ve-fenerbahce-sampiyonlar-liginde-lyonu-deviren-temsilcimiz-17-yillik-hasreti-bitirdi",
+      "https://www.fanatik.com.tr/fenerbahce/live-ve-fenerbahce-sampiyonlar-liginde-hasret-sona-erdi-fransada-tur-bizim-mac-ozeti-lyon-1-2-fenerbahce-2635580",
+      "https://www.takvim.com.tr/spor/fenerbahce/2026/08/26/18-yil-sonra-sampiyonlar-ligi-fenerbahce-lyonu-2-1-yendi"
+    ],
+    "needsReview": true,
+    "note": "FutbolRadar arşiv kurtarma: kayıt, saatlik hattın maç havuzu penceresinden düştüğü için silinmişti (bkz. run-scheduled-update.mjs match-archive adımı). Skor depo içi kayıtlardan geri getirildi; olay akışı, istatistik ve kadro verisi sağlayıcıdan yeniden çekilmeyi bekliyor. Skor (Muriç 24., Brown 28.; Fofana), tarih (26 Ağustos) ve turun 3-2 averajla geçildiği yukarıdaki kaynaklardan doğrulandı. Golcüler kaynaklardan doğrulandı; Fofana’nın gol dakikası kaynaklarda yok. MAÇ SAATİ VE STAT DOĞRULANMADI: hiçbir depo içi ya da listelenen kaynak vermiyor, bu yüzden needsReview=true. Sağlayıcı kaydı geldiğinde düzeltilmeli.",
+    "lastVerifiedAt": "2026-08-27T00:30:00+03:00",
+    "fetchedAt": "2026-08-27T00:30:00+03:00",
+    "events": [
+      {
+        "time": "24'",
+        "team": {
+          "name": "Fenerbahçe"
+        },
+        "type": "Gol",
+        "detail": "Vedat Muriqi skoru 0-1 yaptı."
+      },
+      {
+        "time": "28'",
+        "team": {
+          "name": "Fenerbahçe"
+        },
+        "type": "Gol",
+        "detail": "Archie Brown farkı ikiye çıkardı: 0-2."
+      },
+      {
+        "time": "-",
+        "team": {
+          "name": "Lyon"
+        },
+        "type": "Gol",
+        "detail": "Malick Fofana Lyon'un golünü attı. Dakika kaynaklarda verilmedi."
+      }
+    ]
   }
 ]

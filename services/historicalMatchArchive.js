@@ -138,6 +138,30 @@ function buildArchive({ sources, previous, now }) {
     const result = scores.size > 1 ? { coverageLevel: null, workflowState: WORKFLOW.REVIEW, reason: "Kaynaklar arasında nihai skor uyuşmazlığı var." } : classify(match);
     records.push({ identity: key, canonicalId: primary.id || key, match, manualAnalysis: match.manualAnalysis || null, completeness: details(match), ...result, sources: candidates.map((item) => ({ name: item.source, id: item.id || null, lastVerifiedAt: item.lastVerifiedAt })), lastVerifiedAt: candidates.map((item) => item.lastVerifiedAt).filter(Boolean).sort().at(-1) || null, archivedAt: prior && prior.archivedAt || now });
   }
+  // ARŞİV KÜÇÜLMEZ: KAYNAKLARDAN DÜŞEN MAÇ TAŞINIR.
+  //
+  // Yukarıdaki döngü çıktıyı YALNIZCA bu koşuda `grouped` edilen kaynaklardan
+  // kuruyordu; `previous` sadece `manualAnalysis` ve `archivedAt` için
+  // okunuyordu. Sonuç: bir maç `matches.json`, fikstür takvimi ve rapor
+  // deposunun ÜÇÜNDEN birden düştüğünde arşivden de siliniyordu.
+  //
+  // Bu, arşivin varlık sebebini ortadan kaldırıyor. Arşiv rapor üretecine
+  // havuz olarak geri besleniyor; kalıcı olmazsa kaybı önlediği düşünülen
+  // zincir tek bir başarısız koşudan sonra kopuyor: rapor deposu maçı
+  // düşürüyor, sonraki arşivleme onu artık hiçbir kaynakta bulamıyor ve
+  // kalıcı kayıt da gidiyor.
+  //
+  // Bu yüzden önceki arşivde olup bu koşunun kaynaklarında görünmeyen her
+  // kayıt OLDUĞU GİBİ taşınır. Kayıt zaten tam biçimli (identity, match,
+  // coverageLevel, sources, archivedAt); yeniden sınıflandırmaya gerek yok
+  // ve yeniden sınıflandırmak yanlış olurdu — elimizde o maça dair yeni bir
+  // kaynak yok, yalnızca en son bilinen hâli var.
+  for (const [key, prior] of priorByKey) {
+    if (grouped.has(key)) continue;
+    if (!prior || !prior.match) continue;
+    records.push({ ...prior, carriedForward: true });
+  }
+
   records.sort((a, b) => String(b.match.kickoff).localeCompare(String(a.match.kickoff)) || a.canonicalId.localeCompare(b.canonicalId));
   return { records, rejected };
 }
