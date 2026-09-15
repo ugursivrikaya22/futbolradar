@@ -293,6 +293,69 @@ function match(record, sourceId) {
   };
 }
 
+/** İzin verilen üç kaynak. Listenin dışı YAZILMAZ (şema da reddeder). */
+const PREDICTION_SOURCES = new Set(["provider_prediction", "market_probability", "futbolradar_model"]);
+
+/**
+ * MAÇ TAHMİNİ SATIRI.
+ *
+ * İki kural burada da geçerli:
+ *   1. Toplam tam 100 değilse satır YAZILMAZ. Normalize edilmemiş bir
+ *      üçlü, veritabanı kısıtına takılıp tüm parçayı düşürürdü; burada
+ *      erken eleniyor.
+ *   2. Tanınmayan kaynak etiketi kabul edilmez. "Piyasa olasılığı"nı
+ *      sağlayıcı tahmini diye saklamak, veriyi yanlış otoriteye mal
+ *      etmektir.
+ */
+function fixturePrediction(record, sourceId) {
+  const fixtureId = text(record && record.fixtureId);
+  const home = text(record && record.homeTeam);
+  const away = text(record && record.awayTeam);
+  const source = text(record && record.source);
+  if (!fixtureId || !home || !away || !source || !PREDICTION_SOURCES.has(source)) return null;
+
+  const homeProbability = publishedInt(record.homeProbability);
+  const drawProbability = publishedInt(record.drawProbability);
+  const awayProbability = publishedInt(record.awayProbability);
+  if (homeProbability === null || drawProbability === null || awayProbability === null) return null;
+  if (homeProbability + drawProbability + awayProbability !== 100) return null;
+
+  const winner = record.predictedWinner && typeof record.predictedWinner === "object"
+    ? text(record.predictedWinner.name) || text(record.predictedWinner.side)
+    : text(record.predictedWinner);
+
+  return {
+    fixture_id: fixtureId,
+    provider_fixture_id: text(record.providerFixtureId),
+    competition_id: text(record.competitionId),
+    league_id: text(record.leagueId),
+    season: text(record.season),
+    kickoff: isoStamp(record.kickoff),
+    home_team: home,
+    away_team: away,
+    home_team_id: text(record.homeTeamId),
+    away_team_id: text(record.awayTeamId),
+    source,
+    home_probability: homeProbability,
+    draw_probability: drawProbability,
+    away_probability: awayProbability,
+    predicted_winner: winner,
+    advice: text(record.advice),
+    under_over: text(record.underOver),
+    predicted_goals: record.predictedGoals || null,
+    comparison: record.comparison || null,
+    confidence: publishedInt(record.confidence),
+    model_version: text(record.modelVersion),
+    frozen: Boolean(record.frozen),
+    refresh_stage: text(record.refreshStage),
+    provider_updated_at: isoStamp(record.providerUpdatedAt),
+    calculated_at: isoStamp(record.calculatedAt) || new Date().toISOString(),
+    expires_at: isoStamp(record.expiresAt),
+    raw_provider_data: record.rawProviderData || null,
+    source_id: sourceId || null
+  };
+}
+
 /**
  * TRANSFER DURUMU EŞLEMESİ — İDDİA, DOĞRULANMIŞ SAYILMAZ.
  *
@@ -380,6 +443,7 @@ function analysisReport(record, sourceId) {
 
 module.exports = {
   analysisReport,
+  fixturePrediction,
   birthDate,
   foot,
   heightCm,

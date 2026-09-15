@@ -248,6 +248,11 @@ const CACHE_RESOURCE_BY_PATH = Object.freeze({
   // altına indiriyor.
   "/fixtures/players": "match-players",
   "/predictions": "match-detail",
+  // Oran ve sezonluk takım istatistiği maç öncesi verilerdir: dakikalık
+  // değil saatlik ölçekte değişirler. Kısa TTL vermek, aynı koşuda aynı
+  // fikstürü iki kez sormak demek olurdu.
+  "/odds": "pre-match-odds",
+  "/teams/statistics": "team-statistics",
   "/fixtures": "matches",
   "/standings": "standings",
   "/players": "players",
@@ -1793,6 +1798,67 @@ async function getPredictions(query) {
   return responseItems(payload);
 }
 
+/**
+ * MAÇ ÖNCESİ ORANLAR — tahmin zincirinin İKİNCİ halkası.
+ *
+ * `/predictions` her fikstür için yanıt vermiyor (plan kapsamı, alt ligler,
+ * kupa maçları). Oran verisi olan maçta 1X2 pazarı, sağlayıcı modelinin
+ * yokluğunda en güçlü ikinci sinyaldir: piyasa, gerçek parayla oluşmuş bir
+ * olasılık okumasıdır.
+ *
+ * Ham kayıt döner — hangi pazarın okunacağına, marjın nasıl çıkarılacağına
+ * ve bahisçiler arası konsensüse karar vermek `services/fixtureProbabilityService.js`
+ * işidir; bu katman yalnızca taşır.
+ */
+async function getOdds(query) {
+  const fixtureId = query && query.fixtureId;
+  if (!fixtureId) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Oran icin fixtureId query gerekli.");
+  }
+
+  const payload = await providerFetch("/odds", compactParams({
+    fixture: fixtureId,
+    // Pazar daraltması İSTEĞE BAĞLI: verilmezse bütün pazarlar gelir ve
+    // 1X2 seçimi normalleştirme katmanında yapılır. `bet=1` (Match Winner)
+    // verildiğinde yanıt küçülür ama bazı paketlerde bet filtresi boş
+    // dönüyor; bu yüzden varsayılan olarak GÖNDERİLMEZ.
+    bet: query && query.bet,
+    bookmaker: query && query.bookmaker,
+    page: query && query.page
+  }));
+  return responseItems(payload);
+}
+
+/**
+ * SEZONLUK TAKIM İSTATİSTİĞİ — FutbolRadar modelinin son çare girdisi.
+ *
+ * Model normalde yerel doğrulanmış maç geçmişinden beslenir (takvim +
+ * arşiv + lig tablosu) ve SAĞLAYICIYA HİÇ İSTEK ATMAZ. Bu uç nokta
+ * yalnızca o kaynakların tamamı boş olduğunda (yeni yükselen takım,
+ * sezonun ilk haftası, kupa maçında lig tablosunda olmayan takım)
+ * çağrılır; aksi hâlde maç başına iki ek istek kotayı gereksiz yakar.
+ */
+async function getTeamStatistics(query) {
+  const teamId = query && (query.teamId || query.team);
+  if (!teamId) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Takim istatistigi icin teamId query gerekli.");
+  }
+  const league = resolveLeague(query && query.league);
+  if (!league) {
+    throw new ProviderError("PROVIDER_QUERY_MISSING", "Takim istatistigi icin league query gerekli.");
+  }
+
+  const payload = await providerFetch("/teams/statistics", compactParams({
+    team: teamId,
+    league,
+    season: resolveSeason(query && query.season),
+    date: query && query.date
+  }));
+  const items = responseItems(payload);
+  // `/teams/statistics` tek nesne döndürür; responseItems onu diziye sarar.
+  return Array.isArray(items) ? items[0] || null : items || null;
+}
+
 async function getMatchDetail(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   if (!fixtureId) {
@@ -1821,11 +1887,22 @@ async function getMatchDetail(query) {
   const live = ["LIVE", "HALFTIME", "HT", "1H", "2H", "ET", "BT", "P", "IN_PLAY", "PAUSED"].includes(statusCode);
   const wantPlayers = finished || live;
 
+  // TAHMİN İSTEĞİ ARTIK İSTEĞE BAĞLI.
+  //
+  // `/predictions` her maç detayı isteğinde çağrılıyordu ve maç detay
+  // sayfası bu uç noktayı her görüntülemede tetikliyordu: günlük 100
+  // isteklik kota tek bir popüler maçta eriyebiliyordu. Tahmin artık
+  // zamanlanmış koşuda toplanıp `data/fixture-predictions.json` deposunda
+  // duruyor (bkz. scripts/sync-fixture-predictions.mjs), sayfa da oradan
+  // okuyor. Varsayılan DEĞİŞMEDİ — yalnızca istemci yolundaki çağrı
+  // `includePredictions: false` ile kapatılıyor.
+  const wantsPredictions = !query || query.includePredictions !== false;
+
   const [rawLineups, rawEvents, rawStatistics, predictions, rawPlayers] = await Promise.all([
     getLineups({ fixtureId }).catch(() => []),
     getFixtureEvents({ fixtureId }).catch(() => []),
     getFixtureStatistics({ fixtureId }).catch(() => []),
-    getPredictions({ fixtureId }).catch(() => []),
+    wantsPredictions ? getPredictions({ fixtureId }).catch(() => []) : Promise.resolve([]),
     wantPlayers ? getFixturePlayers({ fixtureId }).catch(() => []) : Promise.resolve([])
   ]);
   const lineups = normalizeFixtureLineups(rawLineups);
@@ -2034,6 +2111,8 @@ module.exports = {
   getProviderRateLimit,
   getFixturesByDate,
   getPredictions,
+  getOdds,
+  getTeamStatistics,
   getMatchDetail,
   normalizeFixture,
   normalizeFixtureLineups,

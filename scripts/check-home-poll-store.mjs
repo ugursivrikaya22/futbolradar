@@ -77,6 +77,19 @@ try {
     ? Object.values(tally).reduce((sum, n) => sum + (Number(n) || 0), 0)
     : 0;
   ok(`anket "${pollId}" için kayıtlı oy: ${total}`);
+
+  // PAYLAŞIM TABLOSU AYRI BİR SESSİZLİK KAYNAĞI. `recordShare` paylaşımı
+  // engellememek için hatayı yutuyor; tablo hiç oluşturulmamışsa sayaç
+  // sonsuza kadar boş kalır ve kimse fark etmez. Eksikliği OY AKIŞINI
+  // bozmadığı için burada uyarı, hata değil.
+  try {
+    const shares = await store.countShares(pollId);
+    ok(`paylaşım tablosu okunabiliyor: ${store.SHARE_TABLE} (${shares} kayıt)`);
+  } catch (error) {
+    bad(`paylaşım tablosu okunamadı: ${store.SHARE_TABLE} — ${error.message}`);
+    console.log("      (oy akışı etkilenmez; yalnızca paylaşım ölçümü toplanmaz)");
+  }
+
   console.log("\nSONUÇ: depo BAĞLI. Anket oy kabul ediyor.");
 } catch (error) {
   bad(`tablo okunamadı: ${error.message}`);

@@ -33,6 +33,10 @@ const DEFAULT_TTLS = Object.freeze({
   // ikinci bir sağlayıcı isteğinin maliyetini dakikada birin altına indirir.
   "match-players": 180 * 1000,
   standings: 5 * 60 * 1000,
+  // Maç öncesi oran ve sezonluk takım istatistiği: aynı koşu içinde ve
+  // art arda koşularda tekrar sorulmasın diye uzun TTL.
+  "pre-match-odds": 30 * 60 * 1000,
+  "team-statistics": 6 * 60 * 60 * 1000,
   "super-lig-fixtures": 30 * 60 * 1000,
   teams: 6 * 60 * 60 * 1000,
   squad: 6 * 60 * 60 * 1000,

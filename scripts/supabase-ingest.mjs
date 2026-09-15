@@ -194,6 +194,20 @@ async function ingestMatches() {
   return { read: total, written, skipped: total - rows.length };
 }
 
+/**
+ * MAÇ TAHMİNLERİ. Kaynak `data/fixture-predictions.json` — üç kaynaklı
+ * zincirin çözdüğü kayıtlar. Toplamı 100 etmeyen ya da tanınmayan kaynak
+ * etiketi taşıyan satırlar normalize katmanında elenir; şema da aynı
+ * kuralı ayrıca uygular.
+ */
+async function ingestPredictions() {
+  const store = readJson("data/fixture-predictions.json") || {};
+  const records = Array.isArray(store.predictions) ? store.predictions : [];
+  const rows = records.map((record) => normalize.fixturePrediction(record, "api-football")).filter(Boolean);
+  const written = dryRun ? 0 : (await client.upsert(TABLES.fixturePredictions.name, rows, TABLES.fixturePredictions.conflict)).written;
+  return { read: records.length, written, skipped: records.length - rows.length };
+}
+
 async function ingestTransfers() {
   const raw = readJson("data/transfers.json") || [];
   const list = Array.isArray(raw) ? raw : (raw.transfers || []);
@@ -257,6 +271,7 @@ const STEPS = {
   teams: () => runStep("teams", "internal", ingestTeams),
   players: () => runStep("players", "internal", ingestPlayers),
   matches: () => runStep("matches", "internal", ingestMatches),
+  predictions: () => runStep("fixture_predictions", "api-football", ingestPredictions),
   transfers: () => runStep("transfers", "internal", ingestTransfers),
   reports: () => runStep("analysis_reports", "api-football", ingestReports),
   polls: () => runStep("polls", "internal", ingestPolls)
@@ -264,7 +279,7 @@ const STEPS = {
 
 // Sıra ÖNEMLİ: yabancı anahtarlar yüzünden kaynaklar takımlardan,
 // takımlar oyunculardan/maçlardan önce yazılmalı.
-const ORDER = ["sources", "teams", "players", "matches", "transfers", "reports", "polls"];
+const ORDER = ["sources", "teams", "players", "matches", "predictions", "transfers", "reports", "polls"];
 
 async function main() {
   if (!dryRun && !client.isConfigured()) {

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">FutbolRadar Anketi</title>
+  <desc id="desc">FutbolRadar taraftar anketi: takımını seç, oyunu ver ve canlı sonuçları gör.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#071017"/>
+      <stop offset="0.55" stop-color="#081b20"/>
+      <stop offset="1" stop-color="#041012"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#80ff9b"/>
+      <stop offset="1" stop-color="#4de5ff"/>
+    </linearGradient>
+    <pattern id="grid" width="96" height="84" patternUnits="userSpaceOnUse">
+      <path d="M96 0H0V84" fill="none" stroke="#80ff9b" stroke-opacity="0.07" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+  <circle cx="990" cy="300" r="230" fill="#4de5ff" fill-opacity="0.07"/>
+
+  <rect x="88" y="72" width="76" height="76" rx="18" fill="#10262b" stroke="#80ff9b" stroke-width="3"/>
+  <text x="126" y="121" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="900" fill="#80ff9b">FR</text>
+  <text x="188" y="120" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="900" fill="#eef8f5">FutbolRadar</text>
+  <text x="188" y="152" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#80ff9b" letter-spacing="3">TARAFTAR ANKETİ</text>
+
+  <text x="90" y="256" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="900" fill="#eef8f5">Takımını seç,</text>
+  <text x="90" y="332" font-family="Arial, Helvetica, sans-serif" font-size="66" font-weight="900" fill="#eef8f5">oyunu kullan.</text>
+  <text x="94" y="392" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="600" fill="#b8cbc8">Canlı sonuçlar · Anket liderleri · Sonucu tek dokunuşla paylaş</text>
+
+  <!-- Anket çubukları: bir sonuç iddiası DEĞİL, anket biçiminin görsel
+       kısaltması. Bu yüzden hiçbir kulüp adı ve hiçbir yüzde yazmıyor —
+       sabit bir görselde gerçek sayım gösterilemez. -->
+  <rect x="92" y="438" width="620" height="26" rx="13" fill="#0e1b22"/>
+  <rect x="92" y="438" width="420" height="26" rx="13" fill="url(#accent)"/>
+  <rect x="92" y="486" width="620" height="26" rx="13" fill="#0e1b22"/>
+  <rect x="92" y="486" width="300" height="26" rx="13" fill="#4de5ff" fill-opacity="0.65"/>
+  <rect x="92" y="534" width="620" height="26" rx="13" fill="#0e1b22"/>
+  <rect x="92" y="534" width="180" height="26" rx="13" fill="#80ff9b" fill-opacity="0.45"/>
+
+  <circle cx="990" cy="300" r="150" fill="none" stroke="#80ff9b" stroke-opacity="0.38" stroke-width="3"/>
+  <circle cx="990" cy="300" r="92" fill="none" stroke="#4de5ff" stroke-opacity="0.28" stroke-width="4"/>
+  <text x="990" y="286" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="74" font-weight="900" fill="#eef8f5">?</text>
+  <text x="990" y="340" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="800" fill="#80ff9b" letter-spacing="2">SEN NE DİYORSUN</text>
+
+  <text x="990" y="546" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#b8cbc8">futbolradar.com</text>
+</svg>

@@ -47,6 +47,12 @@ export const POSTPROCESS_CHAIN = [
   { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "en-pages", script: "generate-en-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "match-focus-pages", script: "generate-match-focus.mjs", args: [], timeoutMinutes: 5 },
+  // Anketin kendi paylaşılabilir sayfaları (`/anket/<slug>`, `/en/poll/<slug>`).
+  // ORTAK YERLEŞİMDEN ÖNCE: sayfa yeni doğuyor ve başlık/altlık, favicon,
+  // tema, ölçüm, hreflang ve varlık damgası adımlarının hepsini görmek
+  // zorunda. Ayrıca takvime bağlı: anket kapanınca sayfanın durumu ve site
+  // haritası kaydı saatlik koşuda kendiliğinden güncelleniyor.
+  { id: "poll-pages", script: "generate-poll-pages.mjs", args: [], timeoutMinutes: 4 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
@@ -79,6 +85,11 @@ export const POSTPROCESS_CHAIN = [
   // disk gerçeği bellidir. `inject-hreflang`den SONRA: hreflang bildirimleri
   // bu geçişin dışında tutuluyor, önce yazılmış olmaları gerekiyor.
   { id: "match-canonicals", script: "unify-match-canonicals.mjs", args: [], timeoutMinutes: 8 },
+  // Ana sayfa anketi: canlı skor kahramanının hemen ardına, vitrin kartları
+  // maç/transfer bölümlerinin arasına, sabit kutu altlığın ardına.
+  // `shared-layout`ten SONRA koşar (blok gövdeye yazılıyor, `<head>`e değil)
+  // ve damga adımından ÖNCE.
+  { id: "home-poll", script: "inject-home-poll.mjs", args: [], timeoutMinutes: 5 },
   { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
   // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
   // damga adımından ÖNCE koşmalı (içeriği değiştirir).
