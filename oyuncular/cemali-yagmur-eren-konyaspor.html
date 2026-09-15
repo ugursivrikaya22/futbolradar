@@ -24,6 +24,19 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <link rel="stylesheet" href="../page.css?v=837d70e9" />
     <script>window.location.replace("../futbolcu/cemali-yagmur-eren.html");</script>
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -42,24 +55,11 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-  </head>
+</head>
   <body class="subpage">
     <main class="container">
       <section class="hero alias-redirect">
