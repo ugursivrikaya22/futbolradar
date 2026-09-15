@@ -1,9 +1,905 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-15T14:21:44.541Z",
-  "matchCount": 1309,
+  "updatedAt": "2026-09-15T19:00:55.363Z",
+  "matchCount": 1312,
   "records": [
+    {
+      "matchId": "rayo-vallecano-espanyol-2026-09-15",
+      "fixtureId": "1570391",
+      "provider": "api-football",
+      "slug": "rayo-vallecano-espanyol-2026-09-15",
+      "kickoff": "2026-09-15T20:00:00+03:00",
+      "kickoffUtc": "2026-09-15T17:00:00.000Z",
+      "kickoffLocal": "2026-09-15T20:00",
+      "date": "2026-09-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "La Liga",
+      "competition": "La Liga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Rayo Vallecano",
+      "awayTeam": "Espanyol",
+      "venue": "Municipal de Butarque",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Rayo Vallecano",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 20
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 46
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 20,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "0312bc918e716c5a",
+      "fingerprint": "0312bc918e716c5a",
+      "analysisGeneratedAt": "2026-09-15T19:00:55.310Z",
+      "analysisUpdatedAt": "2026-09-15T19:00:55.310Z",
+      "generatedAt": "2026-09-15T19:00:55.310Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Rayo Vallecano 2-1 Espanyol maç raporu: La Liga istatistikleri | FutbolRadar",
+        "description": "Municipal de Butarque'de oynanan La Liga maçını Rayo Vallecano 2-1 kazandı; Espanyol sahadan puansız ayrıldı.",
+        "path": "mac-raporu/rayo-vallecano-espanyol-2026-09-15.html",
+        "competition": "La Liga"
+      },
+      "reportUrl": "./mac-raporu/rayo-vallecano-espanyol-2026-09-15.html",
+      "digest": {
+        "headline": "Rayo Vallecano, Espanyol'u 2-1 yendi",
+        "paragraph": "Municipal de Butarque'de oynanan La Liga maçını Rayo Vallecano 2-1 kazandı; Espanyol sahadan puansız ayrıldı. Golleri 3. dakikada Álvaro García (Rayo Vallecano), 26. dakikada Adrià Pedrosa (Rayo Vallecano), 54. dakikada Roberto Fernández Jaén (Espanyol) kaydetti.",
+        "result": {
+          "winner": "Rayo Vallecano",
+          "loser": "Espanyol",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 2
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "90+8'",
+              "team": "Espanyol",
+              "type": "Kırmızı kart",
+              "detail": "Omar El Hilali",
+              "pivotal": true
+            },
+            {
+              "minute": "3'",
+              "team": "Rayo Vallecano",
+              "type": "Gol",
+              "detail": "Álvaro García",
+              "pivotal": true
+            },
+            {
+              "minute": "26'",
+              "team": "Rayo Vallecano",
+              "type": "Gol",
+              "detail": "Adrià Pedrosa",
+              "pivotal": true
+            },
+            {
+              "minute": "54'",
+              "team": "Espanyol",
+              "type": "Gol",
+              "detail": "Roberto Fernández Jaén",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Rayo Vallecano",
+              "type": "Oyuncu değişikliği",
+              "detail": "Georgiy Tsitaishvili",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Rayo Vallecano",
+              "type": "Oyuncu değişikliği",
+              "detail": "Sergio Camello",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Rayo Vallecano",
+              "type": "Sarı kart",
+              "detail": "Gnangoro Bouare",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Espanyol",
+              "type": "Oyuncu değişikliği",
+              "detail": "Urko Gonzalez",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Adrià Pedrosa",
+              "team": "Rayo Vallecano",
+              "contribution": "26' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Álvaro García",
+              "team": "Rayo Vallecano",
+              "contribution": "3' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Roberto Fernández Jaén",
+              "team": "Espanyol",
+              "contribution": "54' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Alexandre Zurawski",
+              "team": "Rayo Vallecano",
+              "contribution": "90+1' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Rayo Vallecano sahaya 4-3-3 dizilişiyle çıktı.",
+            "Espanyol sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "3' Rayo Vallecano — Álvaro García: gol",
+            "26' Rayo Vallecano — Adrià Pedrosa: gol",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "54' Espanyol — Roberto Fernández Jaén: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Rayo Vallecano maça 4-3-3 dizilişiyle başladı.",
+            "Espanyol maça 4-2-3-1 dizilişiyle başladı.",
+            "45' Espanyol değişikliği (Substitution 1). Değişiklikten sonra Espanyol adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Espanyol değişikliği (Substitution 2). Değişiklikten sonra Espanyol adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Espanyol değişikliği (Substitution 3). Değişiklikten sonra Espanyol adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "61' Rayo Vallecano değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Rayo Vallecano",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Espanyol",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Rayo Vallecano, Espanyol'u 2-1 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (2-5); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
+          ],
+          "strengths": [
+            "Rayo Vallecano topa daha çok sahip oldu (%54).",
+            "Espanyol daha çok şut denedi (16-19)."
+          ],
+          "improvements": [
+            "Rayo Vallecano şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan.",
+            "Kırmızı kart maçın seyrini etkiledi (90+8' Espanyol)."
+          ],
+          "closing": "Rayo Vallecano sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Rayo Vallecano",
+            "score": 65
+          },
+          "away": {
+            "team": "Espanyol",
+            "score": 61
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Rayo Vallecano %12.5, Espanyol %26.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Rayo Vallecano 28.1, Espanyol 18.9 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "altay-soke-1970-2026-09-15",
+      "fixtureId": "1637560",
+      "provider": "api-football",
+      "slug": "altay-soke-1970-2026-09-15",
+      "kickoff": "2026-09-15T20:00:00+03:00",
+      "kickoffUtc": "2026-09-15T17:00:00.000Z",
+      "kickoffLocal": "2026-09-15T20:00",
+      "date": "2026-09-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Türkiye Kupası",
+      "competition": "Türkiye Kupası",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Altay",
+      "awayTeam": "Söke 1970",
+      "venue": "Alsancak Mustafa Denizli Stadium",
+      "score": {
+        "home": 2,
+        "away": 4
+      },
+      "finalScore": "2-4",
+      "winner": "Söke 1970",
+      "turkish": true,
+      "turkishTeam": "Altay",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 6
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 6,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "90e68376fda2e1a1",
+      "fingerprint": "90e68376fda2e1a1",
+      "analysisGeneratedAt": "2026-09-15T19:00:55.310Z",
+      "analysisUpdatedAt": "2026-09-15T19:00:55.310Z",
+      "generatedAt": "2026-09-15T19:00:55.310Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Altay 2-4 Söke 1970 maç raporu: Türkiye Kupası istatistikleri | FutbolRadar",
+        "description": "Söke 1970, Alsancak Mustafa Denizli Stadium'da oynanan Türkiye Kupası karşılaşmasında Altay'ı 4-2 mağlup etti.",
+        "path": "mac-raporu/altay-soke-1970-2026-09-15.html",
+        "competition": "Türkiye Kupası"
+      },
+      "reportUrl": "./mac-raporu/altay-soke-1970-2026-09-15.html",
+      "digest": {
+        "headline": "Söke 1970, Altay'ı 4-2 yendi",
+        "paragraph": "Söke 1970, Alsancak Mustafa Denizli Stadium'da oynanan Türkiye Kupası karşılaşmasında Altay'ı 4-2 mağlup etti. Golleri 43. dakikada K. Bagis (Söke 1970), 45. dakikada E. Cakir (Söke 1970), 57. dakikada K. Bagis (Söke 1970), 68. dakikada C. Devrim (Söke 1970), 72. dakikada Y. Sarikaya (Altay), 90+3. dakikada E. Pehlivan (Altay) kaydetti.",
+        "result": {
+          "winner": "Söke 1970",
+          "loser": "Altay",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "43'",
+              "team": "Söke 1970",
+              "type": "Gol",
+              "detail": "K. Bagis",
+              "pivotal": true
+            },
+            {
+              "minute": "45'",
+              "team": "Söke 1970",
+              "type": "Gol",
+              "detail": "E. Cakir",
+              "pivotal": true
+            },
+            {
+              "minute": "57'",
+              "team": "Söke 1970",
+              "type": "Gol",
+              "detail": "K. Bagis",
+              "pivotal": true
+            },
+            {
+              "minute": "68'",
+              "team": "Söke 1970",
+              "type": "Gol",
+              "detail": "C. Devrim",
+              "pivotal": true
+            },
+            {
+              "minute": "72'",
+              "team": "Altay",
+              "type": "Gol",
+              "detail": "Y. Sarikaya",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (E. Pehlivan).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "90+3'",
+              "team": "Altay",
+              "type": "Gol",
+              "detail": "E. Pehlivan",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "K. Bagis",
+              "team": "Söke 1970",
+              "contribution": "43' gol · 57' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Devrim",
+              "team": "Söke 1970",
+              "contribution": "68' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "E. Cakir",
+              "team": "Söke 1970",
+              "contribution": "45' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "E. Pehlivan",
+              "team": "Altay",
+              "contribution": "90+3' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "43' Söke 1970 — K. Bagis: gol",
+            "45' Söke 1970 — E. Cakir: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (4 olay).",
+            "57' Söke 1970 — K. Bagis: gol",
+            "68' Söke 1970 — C. Devrim: gol",
+            "72' Altay — Y. Sarikaya: gol",
+            "90+3' Altay — E. Pehlivan: gol"
+          ],
+          "goals": 4
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Söke 1970, Altay'ı 2-4 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Söke 1970 sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "afyonkarahisarspor-urgupspor-2026-09-15",
+      "fixtureId": "1637559",
+      "provider": "api-football",
+      "slug": "afyonkarahisarspor-urgupspor-2026-09-15",
+      "kickoff": "2026-09-15T17:00:00+03:00",
+      "kickoffUtc": "2026-09-15T14:00:00.000Z",
+      "kickoffLocal": "2026-09-15T17:00",
+      "date": "2026-09-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Türkiye Kupası",
+      "competition": "Türkiye Kupası",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Afyonkarahisarspor",
+      "awayTeam": "Urgupspor",
+      "venue": null,
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Afyonkarahisarspor",
+      "turkish": true,
+      "turkishTeam": "Afyonkarahisarspor & Urgupspor",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "443088ba33db1367",
+      "fingerprint": "443088ba33db1367",
+      "analysisGeneratedAt": "2026-09-15T19:00:55.310Z",
+      "analysisUpdatedAt": "2026-09-15T19:00:55.310Z",
+      "generatedAt": "2026-09-15T19:00:55.310Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Afyonkarahisarspor 2-1 Urgupspor maç raporu: Türkiye Kupası istatistikleri | FutbolRadar",
+        "description": "Türkiye Kupası maçını Afyonkarahisarspor 2-1 kazandı; Urgupspor sahadan puansız ayrıldı.",
+        "path": "mac-raporu/afyonkarahisarspor-urgupspor-2026-09-15.html",
+        "competition": "Türkiye Kupası"
+      },
+      "reportUrl": "./mac-raporu/afyonkarahisarspor-urgupspor-2026-09-15.html",
+      "digest": {
+        "headline": "Afyonkarahisarspor, Urgupspor'u 2-1 yendi",
+        "paragraph": "Türkiye Kupası maçını Afyonkarahisarspor 2-1 kazandı; Urgupspor sahadan puansız ayrıldı. Golleri 21. dakikada B. Ozbakir (Afyonkarahisarspor), 28. dakikada A. Soysal (Urgupspor), 53. dakikada M. Can (Afyonkarahisarspor) kaydetti.",
+        "result": {
+          "winner": "Afyonkarahisarspor",
+          "loser": "Urgupspor",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "21'",
+              "team": "Afyonkarahisarspor",
+              "type": "Gol",
+              "detail": "B. Ozbakir",
+              "pivotal": true
+            },
+            {
+              "minute": "28'",
+              "team": "Urgupspor",
+              "type": "Gol",
+              "detail": "A. Soysal",
+              "pivotal": true
+            },
+            {
+              "minute": "53'",
+              "team": "Afyonkarahisarspor",
+              "type": "Gol",
+              "detail": "M. Can",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Soysal",
+              "team": "Urgupspor",
+              "contribution": "28' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Ozbakir",
+              "team": "Afyonkarahisarspor",
+              "contribution": "21' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Can",
+              "team": "Afyonkarahisarspor",
+              "contribution": "53' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "21' Afyonkarahisarspor — B. Ozbakir: gol",
+            "28' Urgupspor — A. Soysal: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "53' Afyonkarahisarspor — M. Can: gol"
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Afyonkarahisarspor, Urgupspor'u 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Afyonkarahisarspor sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "instituto-cordoba-estudiantes-de-rio-cuarto-2026-09-15",
       "fixtureId": "1493132",
