@@ -34,6 +34,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { buildH2hEntries } from "./lib/matchAnalysisSections.mjs";
+import { aiMatchCenterPanelHtml, tabsHtml, AI_STR } from "./lib/aiMatchCenter.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
@@ -100,6 +101,7 @@ const { resolveMatchLeaders } = require("../services/competitionLeaders.js");
 const { getPlayers } = require("../services/playerService.js");
 const { normalizeText } = require("../api/_utils.js");
 const { resolveStandingsForMatch } = require("../services/standingsResolver.js");
+const { buildAiMatchCenter } = require("../services/aiMatchCenter.js");
 const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 
@@ -183,6 +185,145 @@ function probabilityFor(entry, detail, state) {
   probabilitySourceCounts.none += 1;
   probabilityGaps.push({ id: detail.naturalId || entry.slug, reason: model.reason || "unknown" });
   return null;
+}
+
+/* ------------------------------------------------------------------ */
+/* AI MAÇ MERKEZİ — GİRDİ TOPLAMA                                       */
+/*                                                                      */
+/* Buradaki hiçbir satır YENİ veri çekmez: hepsi sayfanın zaten okuduğu */
+/* kayıtları AI okumasının beklediği biçime çevirir. Canlı skor yolu    */
+/* (api/match-detail, match-center.js) bu koddan hiç haberdar değildir; */
+/* derleme anında çalışır ve çalışma zamanına tek bir istek eklemez.    */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Modelin `inputs` bloğu — sürücülerin (hücum/savunma/form/sıra) tek
+ * kaynağı. `probabilityFor` yalnızca maç öncesi çağrıldığı ve depodan
+ * dönen kayıt `inputs` taşımadığı için model BURADA ayrıca hesaplanır.
+ * Sonuç maç başına önbelleğe alınır: aynı maçın TR ve EN sayfası tek
+ * hesaplamayı paylaşır.
+ */
+const aiModelCache = new Map();
+
+function aiModelPredictionFor(entry, detail) {
+  const key = entry.slug || detail.naturalId || entry.id || "";
+  if (aiModelCache.has(key)) return aiModelCache.get(key);
+  const calendarRecord = detail.calendar || {};
+  let prediction = null;
+  try {
+    const model = probabilityContext.engine.modelFor({
+      id: detail.naturalId || entry.id || null,
+      competitionId: entry.competitionId || calendarRecord.competitionId || null,
+      leagueId: calendarRecord.providerLeagueId || null,
+      kickoff: entry.kickoff,
+      homeTeam: entry.homeTeam,
+      awayTeam: entry.awayTeam,
+      homeTeamId: calendarRecord.homeTeamId || null,
+      awayTeamId: calendarRecord.awayTeamId || null
+    });
+    prediction = model && model.prediction ? model.prediction : null;
+  } catch {
+    // Model kurulamıyorsa AI paneli sürücüsüz çizilir; sayfa düşmez.
+    prediction = null;
+  }
+  aiModelCache.set(key, prediction);
+  return prediction;
+}
+
+/** Sakat/cezalı bildirimleri → { home, away }. Bildirim yoksa taraf null. */
+function aiAbsencesFor(homeTeam, awayTeam) {
+  const rows = squadStatus && Array.isArray(squadStatus.teams) ? squadStatus.teams : [];
+  const sideFor = (teamName) => {
+    const row = rows.find((item) => item && sameClub(item.team || item.name, teamName));
+    if (!row) return null;
+    const seen = new Set();
+    const players = (Array.isArray(row.absences) ? row.absences : []).filter((item) => {
+      const key = normalizeText(item && item.playerName);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    }).map((item) => ({ name: item.playerName, status: normalizeText(item.status) || "injured" }));
+    return { count: Number.isFinite(Number(row.absenceCount)) ? Number(row.absenceCount) : players.length, players };
+  };
+  return { home: sideFor(homeTeam), away: sideFor(awayTeam) };
+}
+
+/**
+ * Kadro durumu → { home, away }. Öncelik sırası maç sayfasındakiyle
+ * AYNI: resmî 11 → site modelinin muhtemel 11'i → basından derlenmiş
+ * muhtemel 11. Hiçbiri yoksa taraf null döner ve bölüm çizilmez.
+ */
+function aiLineupsFor(detail, analysis, predicted, homeTeam, awayTeam) {
+  const official = (Array.isArray(detail && detail.lineups) ? detail.lineups : [])
+    .filter((row) => row && Array.isArray(row.players) && row.players.length >= 7);
+  const officialFor = (teamName) => official.find((row) => sameClub(row.team, teamName)) || null;
+
+  const sideFor = (side, teamName) => {
+    const officialRow = officialFor(teamName);
+    if (officialRow) {
+      return { status: "official", formation: officialRow.formation || null, count: officialRow.players.length, missingKeyPlayers: [] };
+    }
+    const probable = analysis && analysis.probableLineups && analysis.probableLineups[side];
+    if (probable && probable.predictionStatus === "available" && Array.isArray(probable.starters) && probable.starters.length) {
+      return {
+        status: "predicted",
+        formation: probable.formation || null,
+        count: probable.starters.length,
+        missingKeyPlayers: Array.isArray(probable.missingKeyPlayers) ? probable.missingKeyPlayers : []
+      };
+    }
+    const editorial = predicted && predicted[side];
+    if (editorial && Array.isArray(editorial.rows) && editorial.rows.length) {
+      const count = editorial.rows.reduce((total, row) => total + (Array.isArray(row) ? row.length : 0), 0);
+      if (count) {
+        return {
+          status: "predicted",
+          formation: editorial.formation || null,
+          count,
+          missingKeyPlayers: (Array.isArray(editorial.flags) ? editorial.flags : [])
+            .map((flag) => (typeof flag === "string" ? flag : flag && flag.name))
+            .filter(Boolean)
+        };
+      }
+    }
+    return null;
+  };
+
+  return { home: sideFor("home", homeTeam), away: sideFor("away", awayTeam) };
+}
+
+/** İkili rekabet sayıları, sayfanın ev sahibi perspektifinden. */
+function aiH2hFor(entries, homeTeam) {
+  const list = Array.isArray(entries) ? entries : [];
+  if (!list.length) return null;
+  let homeWins = 0;
+  let awayWins = 0;
+  let draws = 0;
+  for (const entry of list) {
+    const pageHomeIsHome = sameClub(entry.homeTeam, homeTeam);
+    const pageHomeGoals = pageHomeIsHome ? entry.homeGoals : entry.awayGoals;
+    const pageAwayGoals = pageHomeIsHome ? entry.awayGoals : entry.homeGoals;
+    if (pageHomeGoals > pageAwayGoals) homeWins += 1;
+    else if (pageHomeGoals < pageAwayGoals) awayWins += 1;
+    else draws += 1;
+  }
+  return { entries: list, homeWins, draws, awayWins };
+}
+
+/**
+ * AI okumasında gösterilecek 1-X-2.
+ *
+ * Maç öncesi ve ertelenmiş maçta sayfanın zaten çözdüğü kayıt kullanılır
+ * (tek kaynak — iki farklı yüzde olmaz). Maç SÜRERKEN o kayıt üretilmediği
+ * için modelin kendi okuması gösterilir; model yalnızca başlama vuruşundan
+ * ÖNCEKİ maçlardan beslendiği için canlıda da geçerli bir maç öncesi
+ * okumadır. Maç bitince olasılık hiç gösterilmez: sonuç bellidir,
+ * "kazanma ihtimali" basmak okuyucuyu yanıltır.
+ */
+function aiProbabilityFor(state, probability, modelPrediction) {
+  if (state === "post" || state === "pending" || state === "cancelled") return null;
+  if (probability) return probability;
+  return modelPrediction || null;
 }
 
 const analyses = readJson("data/match-analyses.json", []);
@@ -894,6 +1035,27 @@ function pageHtml(entry, locale, options) {
     away: nextFor(entry.awayTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) }))
   };
   const table = standingsFor(entry);
+  // AI MAÇ MERKEZİ. Girdiler yukarıda zaten hesaplanmış bloklardan gelir;
+  // okuma dilden bağımsız kurulur ve panel iki dilde aynı bileşenleri
+  // aynı sırayla çizer (bkz. services/aiMatchCenter.js başlığı).
+  const aiModelPrediction = aiModelPredictionFor(entry, detail);
+  const aiProbability = aiProbabilityFor(state, probability, aiModelPrediction);
+  const aiModel = buildAiMatchCenter({
+    probability: aiProbability,
+    modelPrediction: aiModelPrediction,
+    forms,
+    absences: aiAbsencesFor(entry.homeTeam, entry.awayTeam),
+    lineups: aiLineupsFor(detail, analysis, predictedLineupFor(detail.naturalId), entry.homeTeam, entry.awayTeam),
+    h2h: aiH2hFor(h2h, entry.homeTeam),
+    state,
+    // Skor, SKOR TABLOSUYLA AYNI kaynaktan okunur (heroHtml → entry.score).
+    // İki yerin iki farklı alana bakması, tabelada 3-2 yazarken özetin
+    // maçı hiç oynanmamış saymasına yol açıyordu.
+    result: hasScore(entry.score) ? { home: entry.score.home, away: entry.score.away } : null
+  });
+  const aiSourceDisplay = aiProbability && aiProbability.source
+    ? probabilityService.displayFor(aiProbability.source, locale)
+    : null;
   // Liderlik tablosu maçın KENDİ lig kimliği + sezonuyla çözülür; kayıtta
   // kimlik yoksa bölüm "veri yok" der, başka bir ligin tablosunu basmaz.
   const leaders = resolveMatchLeaders(entry);
@@ -948,6 +1110,24 @@ function pageHtml(entry, locale, options) {
       statsSectionHtml([], ctx)
     ];
   }
+
+  /**
+   * SEKMELER — "Maç" ve "AI Analiz".
+   *
+   * Skor tablosu (heroHtml) sekmelerin DIŞINDA, üstte kalır: okuyucu AI
+   * sekmesine geçtiğinde skoru kaybetmez ve canlı güncelleme hedefleri
+   * (`data-msp-score`, `data-msp-minute`) her sekmede aynı yerdedir.
+   *
+   * "Maç" sekmesinin içeriği bu sürümde DEĞİŞMEDİ: mevcut bölümler aynı
+   * sırayla, aynı kimliklerle (#form, #son-maclar, #muhtemel-11) duruyor.
+   * Sekme kabuğu yalnızca onları sarar; hiçbir bölüm taşınmaz ya da
+   * silinmez, böylece eski derin bağlantılar çalışmaya devam eder.
+   */
+  const aiCtx = { ...ctx, shortDate, sourceLabel: aiSourceDisplay ? `${aiSourceDisplay.icon} ${aiSourceDisplay.title}` : null };
+  const matchTabs = tabsHtml([
+    { id: "mac", label: AI_STR[locale].tabMatch, panel: sections.filter(Boolean).join("\n        "), checked: true },
+    { id: "ai", label: AI_STR[locale].tabAi, badge: AI_STR[locale].proBadge, panel: `<section class="msp-section ai-match-center" data-ai-match-center data-ai-locale="${locale}" data-ai-state="${escapeHtml(state)}" data-ai-home="${escapeHtml(entry.homeTeam)}" data-ai-away="${escapeHtml(entry.awayTeam)}">${aiMatchCenterPanelHtml(aiModel, aiCtx)}</section>` }
+  ], ctx);
 
   const related = [
     home.page ? { kicker: text.teamPage, title: entry.homeTeam, href: home.page } : null,
@@ -1009,7 +1189,7 @@ function pageHtml(entry, locale, options) {
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
       ${matchFollowHtml(ctx)}
       ${heroHtml(entry, ctx)}
-      ${sections.filter(Boolean).join("\n      ")}
+      ${matchTabs}
       ${relatedLinksHtml(related, locale)}
       <p class="msp-source muted-copy"><b>${escapeHtml(text.dataSource)}:</b> ${escapeHtml(text.dataSourceNote)}</p>
     </main>
@@ -1018,6 +1198,7 @@ function pageHtml(entry, locale, options) {
     <script src="${base}radar-pulse.js" defer></script>
     <script src="${base}radar-fan.js" defer></script>
     <script src="${base}match-center.js" defer></script>
+    <script src="${base}ai-match-center.js" defer></script>
   </body>
 </html>
 `;
