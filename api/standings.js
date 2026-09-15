@@ -20,13 +20,36 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
+
+  // LİG ZORUNLU — "SÜPER LİG VARSAYILANI" KALDIRILDI.
+  //
+  // Burası eskiden `league` gelmediğinde sessizce "super-lig" koyuyordu.
+  // Sonuç: ligini bildirmeyi unutan HER çağıran (bir maç sayfası widget'ı
+  // dahil) Türkiye Süper Lig tablosunu alıyor, La Liga maçının altında
+  // Süper Lig puan durumu beliriyordu. Varsayılan yerine açık hata: yanlış
+  // ligin tablosunu servis etmektense hiçbir şey servis etmemek doğrudur.
+  // Süper Lig tablosu artık yalnızca `league=super-lig` denildiğinde döner.
+  const league = String(query.league || "").trim();
+  if (!league) {
+    return sendError(
+      res,
+      200,
+      "Puan durumu icin 'league' parametresi zorunlu; varsayilan lig yok.",
+      "MISSING_LEAGUE"
+    );
+  }
+
+  // Sezon da sorguya girer: sağlayıcı önbelleği anahtarını sorgudan kurduğu
+  // için (services/providerCache.js#cacheKey) anahtar zorunlu olarak
+  // lig + sezon taşır — bir ligin tablosu başka bir ligin ya da başka bir
+  // sezonun isteğine servis edilemez.
+  const season = String(query.season || "").trim();
+  const providerScope = { ...query, league, ...(season ? { season } : {}) };
   const result = await resolveFromProviders({
     resource: "standings",
-    // Live providers need an explicit league; the curated provider answers
-    // for the default competition on its own.
-    query: { ...query, league: query.league || "super-lig" },
+    query: providerScope,
     run: (provider, providerQuery) => provider.getStandings(
-      provider.name === "mock" ? { ...query, league: query.league || "super-lig" } : providerQuery
+      provider.name === "mock" ? providerScope : providerQuery
     )
   });
 
@@ -55,7 +78,7 @@ module.exports = async function handler(req, res) {
   // zorlanmıyor, bu değişiklik yalnızca sorunu görünür kılıyor.
   const violations = checkStandings(data);
   if (violations.length) {
-    console.warn(`[futbolradar:standings-integrity] league=${query.league || "super-lig"} provider=${result.provider.name} violations=${JSON.stringify(violations)}`);
+    console.warn(`[futbolradar:standings-integrity] league=${league} season=${season || "-"} provider=${result.provider.name} violations=${JSON.stringify(violations)}`);
   }
 
   return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result, { integrity: { violations } }));

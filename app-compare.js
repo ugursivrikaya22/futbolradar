@@ -143,13 +143,40 @@
     return Math.max(0, Math.min(100, number));
   }
 
+  /**
+   * Sayfanın hangi ligin (ve sezonun) puan durumunu istediğini söyler.
+   * Tek kaynak: adres çubuğu ya da `[data-api-target="standings"]`
+   * konteynerinin `data-standings-league` / `data-standings-season`
+   * öznitelikleri. Takım adından ya da URL metninden TAHMİN YAPILMAZ.
+   */
+  function standingsScope() {
+    var params = new URLSearchParams(window.location.search);
+    var target = document.querySelector('[data-api-target="standings"]');
+    var league = params.get("league") || (target && target.getAttribute("data-standings-league")) || "";
+    var season = params.get("season") || (target && target.getAttribute("data-standings-season")) || "";
+    return { league: league, season: season };
+  }
+
   function getApiUrl(config) {
     var url = API_ROOT + config.api;
 
     if (config.api === "matches" || config.api === "standings" || config.api === "match-detail" || config.api === "squad" || config.api === "teams" || config.api === "players") {
       var params = new URLSearchParams(window.location.search);
       var apiParams = new URLSearchParams();
-      if (config.api === "standings") apiParams.set("league", params.get("league") || "super-lig");
+      // PUAN DURUMU İÇİN LİG HER ZAMAN AÇIKÇA BİLDİRİLİR.
+      //
+      // Eskiden burada `params.get("league") || "super-lig"` vardı: ligini
+      // bildirmeyen her sayfa Süper Lig tablosunu çekiyordu. Artık lig
+      // sırasıyla (1) adres çubuğundaki `?league=`, (2) tabloyu isteyen
+      // konteynerin `data-standings-league` özniteliğinden okunur. İkisi de
+      // yoksa istek HİÇ kurulmaz — yanlış ligin tablosunu basmaktansa boş
+      // durum gösterilir (bkz. renderInto hata yolu).
+      if (config.api === "standings") {
+        var declared = standingsScope();
+        if (!declared.league) return null;
+        apiParams.set("league", declared.league);
+        if (declared.season) apiParams.set("season", declared.season);
+      }
 
       if ((config.api === "matches" || config.api === "match-detail") && params.get("date")) {
         apiParams.set("date", params.get("date"));
@@ -473,8 +500,15 @@
         });
       };
 
-      if (config.api) {
-        cache[name] = fetchJson(getApiUrl(config), { noStore: config.noStore })
+      var apiUrl = config.api ? getApiUrl(config) : null;
+      // Lig bildirilmediği için adres kurulamadıysa ne API'ye ne de statik
+      // yedeğe gidilir: statik yedek (data/teams.json) Süper Lig'dir ve tam
+      // da kaçınmak istediğimiz şey, ligini bilmediğimiz bir yüzeye Süper
+      // Lig tablosunu basmaktır. Boş durum dürüst olandır.
+      if (config.api && !apiUrl) {
+        cache[name] = Promise.reject(new Error("standings-scope-missing"));
+      } else if (config.api) {
+        cache[name] = fetchJson(apiUrl, { noStore: config.noStore })
           .then(function (result) {
             resourceMeta[name] = result;
             if (config.reportSource) {
@@ -579,6 +613,16 @@
   }
 
   /** Statik yedeğe dönüş: işaretleme geri gelince karusel de yeniden bağlanır. */
+  function setFallbackContent(target, html) {
+    if (!target) {
+      return;
+    }
+
+    target.innerHTML = html;
+    target.dataset.state = "fallback";
+    initFeaturedCarousel(target);
+  }
+
   function setEmpty(target, title, text) {
     if (!target) {
       return;
@@ -736,6 +780,35 @@
     return data.filter(function (match) {
       return matchDateValue(match) === selectedDate && matchCompetitionMatches(match, selectedLeague);
     });
+  }
+
+  function renderInto(target, dataName, renderer, emptyTitle) {
+    if (!target) {
+      return;
+    }
+
+    var staticFallback = dataName !== "matches" && target.dataset.staticFallback === "true" ? target.innerHTML : "";
+    target.dataset.state = "loading";
+    loadData(dataName)
+      .then(function (data) {
+        var html = renderer(data);
+        if (!html) {
+          if (staticFallback) {
+            setFallbackContent(target, staticFallback);
+            return;
+          }
+          setEmpty(target, emptyTitle || "Veri bulunamadi", "Bu bölüm icin gösterilecek kayit yok.");
+          return;
+        }
+        setContent(target, html);
+      })
+      .catch(function () {
+        if (staticFallback) {
+          setFallbackContent(target, staticFallback);
+          return;
+        }
+        setEmpty(target, emptyTitle || "Veri yüklenemedi", "Bu bölüm geçici olarak kullanılamıyor. Sayfanın diğer alanlarını incelemeye devam edebilirsin.");
+      });
   }
 
   function tagHtml(tag) {

@@ -35,6 +35,7 @@ const { sameClub } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
+const { resolveStandingsForMatch } = require("../services/standingsResolver.js");
 const {
   confidenceLabel,
   formatFreshnessDate,
@@ -45,9 +46,23 @@ const {
 const players = getPlayers(rawPlayers);
 const calendarMatches = Array.isArray(fixtureCalendar.matches) ? fixtureCalendar.matches : [];
 const archiveRecords = Array.isArray(matchArchive.records) ? matchArchive.records : [];
-const superLigStandings = (leagueStandings["super-lig"] && Array.isArray(leagueStandings["super-lig"].table))
-  ? leagueStandings["super-lig"]
-  : { table: [], updatedAt: null };
+/**
+ * Bu üretici YALNIZCA TFF Süper Lig fikstüründen sayfa basar
+ * (data/super-lig-fixtures.json), bu yüzden tablo da Süper Lig tablosudur.
+ * Yine de kimlik elle yazılmaz: tablo, diğer tüm maç yüzeyleriyle aynı
+ * çözümleyiciden (services/standingsResolver.js) `competitionId: "super-lig"`
+ * ile istenir — sezon denetimi ve "veri yoksa boş bırak" kuralı burada da
+ * aynı kodla işler, iki yüzey asla ayrışmaz.
+ */
+function standingsForFixture(match) {
+  return {
+    ...resolveStandingsForMatch(
+      { competitionId: "super-lig", league: fixtures.league, kickoff: match.kickoff },
+      { store: leagueStandings }
+    ),
+    fullHref: "../super-lig-puan-durumu.html"
+  };
+}
 const outDir = path.join(root, "mac");
 /** Bu üreticinin dosya deseni: <ev>-<dep>-<sezon>-r<NN>.html */
 const ROUND_PAGE_FILE_RE = /-\d{4}-\d{4}-r\d{2}\.html$/;
@@ -292,7 +307,7 @@ function pageHtml(match) {
     analysis ? absencesSection(analysis, squadStatus, match.homeTeam, match.awayTeam) : "",
     analysis ? formSection(analysis, match.homeTeam, match.awayTeam) : "",
     !analysis ? analysisPendingNote() : "",
-    h2hStandingsSection(h2hEntries, superLigStandings.table, match.homeTeam, match.awayTeam, superLigStandings.updatedAt),
+    h2hStandingsSection(h2hEntries, standingsForFixture(match), match.homeTeam, match.awayTeam),
     matchInfoSection(match, calendarRec, fixtureTeamRow && fixtureTeamRow.venue, fixtureTeamRow && fixtureTeamRow.city),
     liveStatsSection(match, providerFixtureId)
   ].filter(Boolean).join("\n      ");
