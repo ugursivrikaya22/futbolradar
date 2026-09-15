@@ -23,10 +23,11 @@
  * bir önkoşul.
  */
 
-const { enforceRateLimit, sendError, sendJson, setCachePolicy } = require("../api/_utils");
+const { enforceRateLimit, getQuery, sendError, sendJson, setCachePolicy } = require("../api/_utils");
 const { accountPayload, isSameOrigin, resolveSession } = require("./authRoute");
 const profileStore = require("../services/membership/profileStore");
 const catalog = require("../services/membership/catalog");
+const notifier = require("../services/membership/notifier");
 const config = require("../services/membership/config");
 const session = require("../services/membership/session");
 
@@ -129,6 +130,31 @@ async function ensureProfileFor(session) {
   }
 }
 
+/**
+ * BİLDİRİM METNİ OKUYANIN DİLİNDE KURULUR.
+ *
+ * Satır yazıldığında okuyucunun dili bilinmiyordu: aynı hesap hem
+ * Türkçe hem `/en/` yüzeyinden okunuyor (İngilizce eşitlik şartı).
+ * Metni yazma anında dondurmak, İngilizce okuyucuya Türkçe başlık
+ * göstermek olurdu — bu yüzden satır dilden bağımsız `payload`
+ * taşıyor ve metin burada kuruluyor.
+ *
+ * Dil sırayla: isteğin `?locale=` parametresi (istemci sayfanın
+ * `<html lang>` değerini gönderiyor), sonra üyelik kaydındaki tercih,
+ * sonra Türkçe.
+ */
+function readerLocale(req, profile) {
+  const query = getQuery(req) || {};
+  const candidate = query.locale || (profile && profile.locale) || "tr";
+  return String(candidate).toLowerCase().indexOf("en") === 0 ? "en" : "tr";
+}
+
+async function loadNotifications(req, userId, profile) {
+  const rows = await profileStore.listNotifications(userId, 20);
+  const locale = readerLocale(req, profile);
+  return rows.map((row) => notifier.renderNotification(row, locale));
+}
+
 async function loadFavorites(userId) {
   const rows = await profileStore.listFavorites(userId);
   return profileStore.groupFavorites(rows.map((row) => catalog.decorateFavorite(row)));
@@ -140,7 +166,7 @@ async function handleOverview(req, res) {
   const current = await resolveSession(req, res);
   if (!current) return ok(res, anonymousState());
 
-  const [profile, favorites, preferences, notifications] = await Promise.all([
+  const [profile, favorites, preferences, notificationRows] = await Promise.all([
     // `ensureProfile`, `getProfile` DEĞİL.
     //
     // Oturum geçerli ama üyelik satırı yoksa (panelden elle açılmış
@@ -154,6 +180,10 @@ async function handleOverview(req, res) {
     profileStore.getNotificationPrefs(current.userId),
     profileStore.listNotifications(current.userId, 20)
   ]);
+
+  // Metin, hesabın dil tercihi OKUNDUKTAN sonra kuruluyor.
+  const locale = readerLocale(req, profile);
+  const notifications = notificationRows.map((row) => notifier.renderNotification(row, locale));
 
   return ok(res, {
     account: accountPayload(profile),
@@ -232,7 +262,7 @@ async function handleNotifications(req, res) {
   const current = await resolveSession(req, res);
   if (!current) return ok(res, { notifications: [], unreadCount: 0 });
 
-  const notifications = await profileStore.listNotifications(current.userId, 20);
+  const notifications = await loadNotifications(req, current.userId, null);
   return ok(res, {
     notifications,
     unreadCount: notifications.filter((item) => !item.read).length
@@ -247,7 +277,7 @@ async function handleNotificationsRead(req, res) {
 
   const body = (await readJsonBody(req)) || {};
   await profileStore.markNotificationsRead(current.userId, Array.isArray(body.ids) ? body.ids : null);
-  const notifications = await profileStore.listNotifications(current.userId, 20);
+  const notifications = await loadNotifications(req, current.userId, null);
   return ok(res, { notifications, unreadCount: 0 });
 }
 

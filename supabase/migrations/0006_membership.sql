@@ -114,6 +114,50 @@ create index if not exists user_favorites_user_idx on user_favorites (user_id, k
 create index if not exists user_favorites_ref_idx on user_favorites (kind, ref_id);
 
 -- ---------------------------------------------------------------------
+-- TÜR BAŞINA FAVORİ SINIRI — SAYIM VERİTABANINDA, UYGULAMADA DEĞİL
+-- ---------------------------------------------------------------------
+-- Sınır uygulamada da okunuyor (`MAX_FAVORITES_PER_KIND`), ama orada
+-- "say, sonra yaz" iki ayrı istektir: aynı kullanıcının iki eşzamanlı
+-- isteği ikisi de 59 görüp ikisi de yazabilir. Tek istekte önemsiz bir
+-- taşma, bir betikte sınırın tamamen delinmesi demek.
+--
+-- Danışma kilidi (`pg_advisory_xact_lock`) tam da bunun için: aynı
+-- (kullanıcı, tür) çiftine yazan işlemler sıraya girer, sayım kilit
+-- altında yapılır. Kilit işlem sonunda kendiliğinden bırakılır.
+--
+-- Sayı burada ve `services/membership/profileStore.js` içinde AYNI
+-- olmak zorunda; `scripts/test-membership-api.mjs` iki tarafı
+-- karşılaştırıyor.
+create or replace function enforce_favorite_limit()
+returns trigger
+language plpgsql
+as $$
+declare
+  favorite_count integer;
+begin
+  perform pg_advisory_xact_lock(hashtextextended(new.user_id::text || ':' || new.kind, 0));
+  -- BU kayıt sayımın dışında: `addFavorite` upsert ile yazıyor, yani
+  -- var olan bir favoriye ikinci tık da bu tetikleyiciden geçiyor.
+  -- Onu saymak, tam sınırdaki bir kullanıcının kendi favorisini
+  -- yenileyememesi demekti.
+  select count(*) into favorite_count
+    from user_favorites
+   where user_id = new.user_id
+     and kind = new.kind
+     and ref_id <> new.ref_id;
+  if favorite_count >= 60 then
+    raise exception 'favorite_limit_reached' using errcode = 'check_violation';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists user_favorites_limit_trg on user_favorites;
+create trigger user_favorites_limit_trg
+  before insert on user_favorites
+  for each row execute function enforce_favorite_limit();
+
+-- ---------------------------------------------------------------------
 -- 3. BİLDİRİM TERCİHLERİ
 -- ---------------------------------------------------------------------
 --
@@ -155,15 +199,32 @@ create table if not exists user_notifications (
                 'goal', 'red_card', 'match_start', 'half_time',
                 'match_end', 'lineups', 'team_news', 'transfer_news'
               )),
+  -- `title`/`body` YEDEKTİR, KAYNAK DEĞİL.
+  --
+  -- Bildirim yazıldığı anda okuyucunun dili bilinmiyor: aynı satır hem
+  -- futbolradar.com/... hem /en/... okuyan iki kişiye gidiyor ve ikisi
+  -- de aynı hesabı kullanabiliyor (İngilizce eşitlik şartı). Metni
+  -- yazma anında dondurmak, İngilizce okuyucuya Türkçe "Maç başladı"
+  -- göstermek demekti.
+  --
+  -- Bu yüzden satır DİLDEN BAĞIMSIZ parçaları da taşıyor (`payload`:
+  -- takımlar, skor, dakika, gol atan taraf) ve metin OKUMA anında,
+  -- isteğin diline göre kuruluyor (`notifier.renderNotification`).
+  -- `title`/`body` yalnızca payload'ı olmayan eski satırlar için
+  -- kalıyor.
   title       text not null,
   body        text,
   href        text,
+  payload     jsonb,
   -- Bildirimin bağlı olduğu maç/takım anahtarı: aynı olay iki kez
   -- yazılmasın diye tekilleştirme anahtarı olarak da kullanılır.
   subject_key text,
   read_at     timestamptz,
   created_at  timestamptz not null default now()
 );
+
+-- Tablo daha önce (payload sütunu eklenmeden) açılmış olabilir.
+alter table user_notifications add column if not exists payload jsonb;
 
 create index if not exists user_notifications_user_idx
   on user_notifications (user_id, created_at desc);

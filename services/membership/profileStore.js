@@ -94,6 +94,7 @@ function mapNotification(row) {
     title: row.title || "",
     body: row.body || "",
     href: row.href || "",
+    payload: row.payload && typeof row.payload === "object" ? row.payload : null,
     read: Boolean(row.read_at),
     createdAt: row.created_at || null
   };
@@ -209,14 +210,28 @@ function groupFavorites(list) {
   return grouped;
 }
 
+/**
+ * Sınır aşımı VERİTABANINDAN gelir (bkz. 0006_membership.sql,
+ * `enforce_favorite_limit`). Buradaki sayım hızlı yoldur; kesin karar
+ * tetikleyicinin. `false` dönmesi "sınır doldu" demek, hata değil.
+ */
 async function addFavorite({ userId, kind, refId, label }) {
   const now = new Date().toISOString();
-  await supabase.upsert(
-    FAVORITES,
-    [{ user_id: userId, kind, ref_id: refId, label: label || null, created_at: now }],
-    "user_id,kind,ref_id"
-  );
+  try {
+    await supabase.upsert(
+      FAVORITES,
+      [{ user_id: userId, kind, ref_id: refId, label: label || null, created_at: now }],
+      "user_id,kind,ref_id"
+    );
+  } catch (error) {
+    if (isFavoriteLimitError(error)) return false;
+    throw error;
+  }
   return true;
+}
+
+function isFavoriteLimitError(error) {
+  return /favorite_limit_reached/.test(String((error && error.message) || ""));
 }
 
 async function removeFavorite({ userId, kind, refId }) {
@@ -257,11 +272,15 @@ async function toggleFavorite({ userId, kind, refId, label, desired }) {
   if (next === isFavorited) return { favorited: isFavorited, changed: false };
 
   if (next) {
+    // İki kapı: buradaki sayım gereksiz yazmayı önler, tetikleyici ise
+    // iki eşzamanlı isteğin ikisinin birden geçmesini önler. Yalnızca
+    // ilkine güvenmek, "say sonra yaz" yarışını açık bırakmaktı.
     const count = await countFavorites(userId, kind);
     if (count >= MAX_FAVORITES_PER_KIND) {
       return { favorited: false, changed: false, limitReached: true };
     }
-    await addFavorite({ userId, kind, refId, label });
+    const added = await addFavorite({ userId, kind, refId, label });
+    if (!added) return { favorited: false, changed: false, limitReached: true };
   } else {
     await removeFavorite({ userId, kind, refId });
   }
@@ -377,7 +396,7 @@ async function markNotificationsRead(userId, ids) {
  * benzersiz dizin). Canlı akış aynı golü tekrar gönderdiğinde ikinci
  * satır sessizce aynı satıra düşer.
  */
-async function pushNotification({ userId, kind, title, body, href, subjectKey }) {
+async function pushNotification({ userId, kind, title, body, href, subjectKey, payload }) {
   if (!userId || !NOTIFICATION_KINDS.includes(kind)) return false;
   const row = {
     user_id: userId,
@@ -385,6 +404,9 @@ async function pushNotification({ userId, kind, title, body, href, subjectKey })
     title: String(title || "").slice(0, 200),
     body: body ? String(body).slice(0, 500) : null,
     href: href ? String(href).slice(0, 500) : null,
+    // Dilden bağımsız parçalar: metin OKUMA anında kuruluyor
+    // (bkz. 0006_membership.sql `payload` gerekçesi).
+    payload: payload && typeof payload === "object" ? payload : null,
     subject_key: subjectKey ? String(subjectKey).slice(0, 200) : null,
     created_at: new Date().toISOString()
   };

@@ -15,6 +15,7 @@
  */
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { readFile } from "node:fs/promises";
 import { createSupabaseStub, fakeServiceKey } from "./lib/supabaseStub.mjs";
 
 const require = createRequire(import.meta.url);
@@ -430,6 +431,153 @@ await notifier.notifyMatchEvents([{
 }]);
 check("takip edilmeyen macin golu kimseye gitmiyor", () => {
   assert.equal(stub.table("user_notifications").length, beforeStranger);
+});
+
+/* ------------------------------------------------------------------ */
+/* BİLDİRİM METNİ OKUYANIN DİLİNDE                                      */
+/* ------------------------------------------------------------------ */
+//
+// Bildirim satırı yazıldığında okuyucunun dili BİLİNMİYOR: aynı hesap
+// hem Türkçe hem /en/ yüzeyinden açılıyor (İngilizce eşitlik şartı).
+// Metin yazma anında dondurulursa İngilizce okuyucuya Türkçe başlık
+// gider ve bu sessizce olur — kimse hata görmez, yalnızca yanlış dil.
+
+// Akıştan (notifier) gelen SON gol satırı. Testin başında elle
+// yazılmış satırlar payload taşımıyor — onlar aşağıda ayrıca
+// "eski satır" durumu olarak sınanıyor.
+const goalRows = stub.table("user_notifications").filter((row) => row.kind === "goal");
+const goalRow = goalRows[goalRows.length - 1];
+
+check("bildirim satiri DILDEN BAGIMSIZ parcalari sakliyor", () => {
+  assert.ok(goalRow, "gol bildirimi bulunamadı");
+  assert.ok(goalRow.payload && typeof goalRow.payload === "object", "payload yazılmamış");
+  assert.equal(goalRow.payload.home, "Galatasaray");
+  assert.equal(goalRow.payload.away, "Fenerbahçe");
+});
+
+check("ayni satir Ingilizce okuyucuya Ingilizce baslikla doner", () => {
+  const tr = notifier.renderNotification({ ...goalRow }, "tr");
+  const en = notifier.renderNotification({ ...goalRow }, "en");
+  assert.match(tr.title, /^Gol/, `TR başlık beklenmedik: ${tr.title}`);
+  assert.match(en.title, /^Goal/, `EN başlık beklenmedik: ${en.title}`);
+  // Takım adı ÇEVRİLMEZ: kulüp adı bir isimdir.
+  assert.match(en.title, /Galatasaray/);
+  // Gövde iki dilde de aynı: maç adı + skor.
+  assert.equal(tr.body, en.body);
+});
+
+check("baslangic olayi da iki dilde kuruluyor", () => {
+  const row = { kind: "match_start", title: "Maç başladı", body: "", payload: { v: 1, home: "A", away: "B", score: null, minute: null, side: null } };
+  assert.equal(notifier.renderNotification(row, "tr").title, "Maç başladı");
+  assert.equal(notifier.renderNotification(row, "en").title, "Match started");
+  assert.equal(notifier.renderNotification(row, "en").body, "A - B");
+});
+
+check("payload TASIMAYAN eski satir saklanan metniyle doner", () => {
+  // Bu alan eklenmeden önce yazılmış satırlar okunmaya devam etmeli;
+  // boş göstermek, okunmamış bir bildirimi sessizce kaybetmek olurdu.
+  const legacy = { kind: "goal", title: "Gol: Beşiktaş", body: "Beşiktaş - Trabzonspor 1-0", payload: null };
+  assert.equal(notifier.renderNotification(legacy, "en").title, "Gol: Beşiktaş");
+  assert.equal(notifier.renderNotification(legacy, "en").body, "Beşiktaş - Trabzonspor 1-0");
+});
+
+check("kirmizi kartta TAKIM ADI yazilmiyor (iki dilde de)", () => {
+  const row = { kind: "red_card", title: "", body: "", payload: { v: 1, home: "A", away: "B", score: null, minute: null, side: null } };
+  assert.equal(notifier.renderNotification(row, "tr").title, "Kırmızı kart");
+  assert.equal(notifier.renderNotification(row, "en").title, "Red card");
+});
+
+/* ------------------------------------------------------------------ */
+/* ŞEMA ↔ KOD: UPSERT HEDEFLERİ GERÇEKTEN TEKİL Mİ?                     */
+/* ------------------------------------------------------------------ */
+//
+// Bu testin somut bir sebebi var. `user_notifications` tekilleştirme
+// indeksi bir süre KISMİ (`where subject_key is not null`) yazılmıştı;
+// PostgreSQL kısmi indeksi ON CONFLICT hedefi saymaz ve her bildirim
+// yazma isteği "no unique or exclusion constraint matching the ON
+// CONFLICT specification" ile düşerdi. Yazma denemesi try/catch içinde
+// olduğu için bu SESSİZ olurdu: zil kutusu sonsuza dek boş kalır,
+// hiçbir yerde hata görünmezdi.
+//
+// Bu yüzden kontrol "indeks var mı" değil: hedef sütunlar TAM
+// (kısmi olmayan) bir tekil kısıtla eşleşiyor mu.
+
+const storeSource = await readFile(new URL("../services/membership/profileStore.js", import.meta.url), "utf8");
+const migrationSource = await readFile(new URL("../supabase/migrations/0006_membership.sql", import.meta.url), "utf8");
+
+const TABLE_CONSTANTS = Object.fromEntries(
+  [...storeSource.matchAll(/^const ([A-Z_]+) = "([a-z_]+)";$/gm)].map((match) => [match[1], match[2]])
+);
+
+const upsertTargets = [...storeSource.matchAll(/supabase\.upsert\(\s*([A-Z_]+)[\s\S]{0,220}?"([a-z_,]+)"\s*\)/g)]
+  .map((match) => ({ table: TABLE_CONSTANTS[match[1]] || match[1], columns: match[2].split(",").map((part) => part.trim()) }));
+
+/** Göçte TAM tekil olan sütun kümeleri (kısmi indeksler sayılmaz). */
+function totalUniqueSets(sql, table) {
+  const sets = [];
+
+  const createMatch = sql.match(new RegExp(`create table if not exists ${table} \\(([\\s\\S]*?)\\n\\);`));
+  if (createMatch) {
+    const body = createMatch[1];
+    for (const row of body.split("\n")) {
+      const line = row.replace(/--.*$/, "").trim();
+      const primary = line.match(/^([a-z_]+)\s+[\s\S]*primary key/);
+      if (primary) sets.push([primary[1]]);
+      const unique = line.match(/^unique\s*\(([^)]+)\)/);
+      if (unique) sets.push(unique[1].split(",").map((part) => part.trim()));
+    }
+  }
+
+  const indexRe = new RegExp(`create unique index[^;]*?on ${table}\\s*\\(([^)]+)\\)([^;]*);`, "g");
+  for (const match of sql.matchAll(indexRe)) {
+    // KISMİ indeks ON CONFLICT hedefi OLAMAZ — atla.
+    if (/\bwhere\b/i.test(match[2])) continue;
+    sets.push(match[1].split(",").map((part) => part.trim()));
+  }
+  return sets;
+}
+
+check("her upsert hedefi gocte bir TEKIL kisitla eslesiyor", () => {
+  assert.ok(upsertTargets.length >= 4, `upsert çağrıları okunamadı (${upsertTargets.length})`);
+  for (const target of upsertTargets) {
+    const sets = totalUniqueSets(migrationSource, target.table);
+    const wanted = [...target.columns].sort().join(",");
+    const found = sets.some((set) => [...set].sort().join(",") === wanted);
+    assert.ok(found, `${target.table}: ON CONFLICT (${target.columns.join(", ")}) için tam tekil kısıt yok — `
+      + `PostgreSQL bu yazmayı reddeder. Göçteki kümeler: ${JSON.stringify(sets)}`);
+  }
+});
+
+check("bildirim tekillestirme indeksi KISMI DEGIL", () => {
+  const match = migrationSource.match(/create unique index[^;]*user_notifications_dedupe_idx[^;]*;/);
+  assert.ok(match, "tekilleştirme indeksi göçte yok");
+  assert.ok(!/\bwhere\b/i.test(match[0]),
+    "indeks kısmi (`where`) — PostgreSQL kısmi indeksi ON CONFLICT hedefi saymaz, "
+    + "bildirim yazma SESSİZCE düşerdi");
+});
+
+/* ------------------------------------------------------------------ */
+/* FAVORİ SINIRI: SAYIM VERİTABANINDA DA VAR                            */
+/* ------------------------------------------------------------------ */
+//
+// Uygulamadaki "say, sonra yaz" iki ayrı istektir: aynı kullanıcının
+// eşzamanlı iki isteği ikisi de sınırın altını görüp ikisi de
+// yazabilir. Tetikleyici bu yarışı danışma kilidiyle kapatıyor.
+
+check("favori siniri veritabaninda da uygulanıyor", () => {
+  assert.match(migrationSource, /create trigger user_favorites_limit_trg/,
+    "favori sınırı tetikleyicisi göçte yok");
+  assert.match(migrationSource, /pg_advisory_xact_lock/,
+    "tetikleyici kilit almıyor — 'say sonra yaz' yarışı açık kalır");
+});
+
+check("SQL sinir sayisi ile MAX_FAVORITES_PER_KIND ayni", () => {
+  const fn = migrationSource.match(/create or replace function enforce_favorite_limit[\s\S]*?\$\$;/);
+  assert.ok(fn, "tetikleyici fonksiyonu okunamadı");
+  const limit = fn[0].match(/favorite_count >= (\d+)/);
+  assert.ok(limit, "sınır sayısı okunamadı");
+  assert.equal(Number(limit[1]), profileStore.MAX_FAVORITES_PER_KIND,
+    "SQL'deki sınır ile koddaki sınır ayrışmış");
 });
 
 await stub.close();

@@ -661,7 +661,7 @@ function predictedLineupSectionHtml(ctx, text) {
     ? `<p class="predicted-lineup-sources"><span>${escapeHtml(text.predictedSources)}:</span> ${links}${asOf ? ` · ${escapeHtml(text.lastUpdated)}: ${escapeHtml(asOf)}` : ""}</p>`
     : "";
 
-  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
+  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups="predicted" aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
 }
 
 export function lineupsSectionHtml(detail, analysis, ctx) {
@@ -681,7 +681,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
     const away = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "away") || official[1];
     if (home && away && home !== away) {
       const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialLineups)}</span>`;
-      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
+      return `<section class="msp-section" id="kadrolar" data-msp-lineups="official" aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
     }
   }
 
@@ -690,7 +690,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   // Keep previously published lineup deep links useful after kickoff, even
   // when the provider has not supplied official lineups. Never retain a prediction.
   if (ctx.state === "post" || ctx.state === "pending") {
-    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.officialLineups)}</h2><p class="muted-copy">${escapeHtml(text.lineupUnavailable)}</p></section>`;
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups="unavailable" aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.officialLineups)}</h2><p class="muted-copy">${escapeHtml(text.lineupUnavailable)}</p></section>`;
   }
   const probable = analysis && analysis.probableLineups;
   const probableSide = (side) => {
@@ -703,7 +703,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   if (probableHome || probableAway) {
     const badge = `<span class="msp-tag is-probable">${escapeHtml(text.lineups)}</span>`;
     const empty = `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`;
-    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups="probable" aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
   }
 
   // Site içi istatistik modelinin (yukarıdaki `probable`) verisi yoksa,
@@ -713,7 +713,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   const predictedSection = predictedLineupSectionHtml(ctx, text);
   if (predictedSection) return predictedSection;
 
-  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article></section>`;
+  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups="pending" aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article></section>`;
 }
 
 const POSITION_ORDER = { goalkeeper: 0, kaleci: 0, defender: 1, defans: 1, midfielder: 2, "orta saha": 2, attacker: 3, forvet: 3 };
@@ -995,6 +995,25 @@ function normalizeProbabilityInput(input) {
   return null;
 }
 
+/**
+ * Tahmin kartındaki "gol ortalaması" ve "xG" satırları YALNIZCA bu iki
+ * yüklemle basılıyor. Dayanak listesi de (`aiBasisHtml`) aynı yüklemi
+ * okumak zorunda: ayrı bir kopya tutmak, satır basılmazken listede
+ * "gol ortalamalarına bakıldı" yazması demekti.
+ */
+export function hasPredictedGoalsRow(record) {
+  return Boolean(
+    record
+    && record.predictedGoals
+    && (record.predictedGoals.home || record.predictedGoals.away)
+    && record.source === probabilityService.SOURCES.PROVIDER
+  );
+}
+
+export function hasExpectedGoalsRow(record) {
+  return Boolean(record && record.expectedGoals && Number.isFinite(Number(record.expectedGoals.home)));
+}
+
 /** Kaynağa göre ek satırlar — YALNIZCA kayıtta gerçekten varsa basılır. */
 function predictionMetaRows(record, ctx, percent) {
   const { locale, homeTeam, awayTeam } = ctx;
@@ -1008,13 +1027,13 @@ function predictionMetaRows(record, ctx, percent) {
   }
   if (record.advice) rows.push({ label: text.predictionAdvice, value: record.advice });
   if (record.underOver) rows.push({ label: text.predictionUnderOver, value: record.underOver });
-  if (record.predictedGoals && (record.predictedGoals.home || record.predictedGoals.away) && record.source === probabilityService.SOURCES.PROVIDER) {
+  if (hasPredictedGoalsRow(record)) {
     rows.push({
       label: text.predictionGoals,
       value: `${homeTeam} ${record.predictedGoals.home ?? "—"} · ${awayTeam} ${record.predictedGoals.away ?? "—"}`
     });
   }
-  if (record.expectedGoals && Number.isFinite(Number(record.expectedGoals.home))) {
+  if (hasExpectedGoalsRow(record)) {
     rows.push({
       label: text.predictionExpectedGoals,
       value: `${homeTeam} ${record.expectedGoals.home} · ${awayTeam} ${record.expectedGoals.away}`

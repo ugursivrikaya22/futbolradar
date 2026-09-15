@@ -215,6 +215,19 @@
    * yakalanmamış bir söz hatası bırakırdı. Hata bir DEĞER olarak
    * dönüyor: `{ ok: false, error: { code } }`.
    */
+  /**
+   * DİL, İSTEĞİN KENDİSİNDE TAŞINIR.
+   *
+   * Bildirim satırları dilden bağımsız saklanıyor; metni sunucu OKUMA
+   * anında kuruyor ve bunun için okuyucunun dilini bilmesi gerekiyor.
+   * Sayfanın `<html lang>` değeri tek doğru kaynak: aynı hesap hem
+   * Türkçe hem `/en/` yüzeyinden açılabiliyor.
+   */
+  function withLocale(url) {
+    if (url.indexOf("locale=") >= 0) return url;
+    return url + (url.indexOf("?") >= 0 ? "&" : "?") + "locale=" + encodeURIComponent(locale());
+  }
+
   function api(url, options) {
     var settings = options || {};
     var init = {
@@ -230,7 +243,7 @@
       init.body = JSON.stringify(settings.body);
     }
 
-    return window.fetch(url, init).then(function (response) {
+    return window.fetch(withLocale(url), init).then(function (response) {
       return response.json().catch(function () {
         return { ok: false, error: { code: "auth.error.generic" } };
       });

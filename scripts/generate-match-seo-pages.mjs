@@ -41,6 +41,8 @@ import {
   STR,
   absencesSectionHtml,
   analysisSectionHtml,
+  hasExpectedGoalsRow,
+  hasPredictedGoalsRow,
   clock,
   escapeHtml,
   eventsSectionHtml,
@@ -928,35 +930,55 @@ function pageHtml(entry, locale, options) {
       whenSectionHtml(entry, ctx)
     ];
   } else {
+    // Dayanak listesi SAYFANIN KENDİSİNDEN türetiliyor: her bayrak, o
+    // bölümün gerçekten veri bulup bulmadığını söylüyor. Sabit bir liste
+    // yazmak, H2H kaydı olmayan bir maçta "ikili rekabete bakıldı" demek
+    // olurdu (bkz. aiBasisHtml gerekçesi).
+    //
+    // Bunun için bölümler ÖNCE üretilip değişkende tutuluyor: bayrak
+    // artık üretim koşulunun ikinci bir kopyası değil, basılmış HTML'in
+    // kendisi. İki koşulu ayrı yerlerde tutmak, bölüm "veri bekleniyor"
+    // yazarken listenin "bakıldı" demesine izin veriyordu — nitekim
+    // veriyordu da: `squadStatus.teams.length` TÜM takımları sayıyordu,
+    // oysa bölüm yalnızca BU maçın iki takımından biri tabloda varsa
+    // çiziliyor.
+    const lineupsHtml = lineupsSectionHtml(detail, analysis, ctx);
+    const absencesHtml = absencesSectionHtml(squadStatus, ctx);
+    const formHtml = formSectionHtml(forms, ctx);
+    const h2hHtml = h2hSectionHtml(h2h, ctx);
+    const standingsHtml = standingsSectionHtml(table, ctx, { fullHref: league.standings });
+    // Radar bileşeni "değeri var mı" diye bakıyor; `null` = bakılamadı
+    // (0001_core_schema.sql: eksik veri NULL'dır, sıfır değil).
+    const radarUsed = (key) => ["home", "away"].some((side) => {
+      const components = radar && radar[side] && Array.isArray(radar[side].components) ? radar[side].components : [];
+      return components.some((item) => item && item.key === key && item.value !== null && item.value !== undefined);
+    });
+
     sections = [
       state === "postponed" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.postponedNote)}</strong></article></section>` : "",
       state === "cancelled" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.cancelledNote)}</strong></article></section>` : "",
       whenSectionHtml(entry, ctx),
-      lineupsSectionHtml(detail, analysis, ctx),
+      lineupsHtml,
       squadsSectionHtml(squads, ctx),
-      absencesSectionHtml(squadStatus, ctx),
-      formSectionHtml(forms, ctx),
-      h2hSectionHtml(h2h, ctx),
-      standingsSectionHtml(table, ctx, { fullHref: league.standings }),
+      absencesHtml,
+      formHtml,
+      h2hHtml,
+      standingsHtml,
       scorersSectionHtml(players, ctx),
       leadersSectionHtml(leaders, ctx),
-      // Dayanak listesi SAYFANIN KENDİSİNDEN türetiliyor: her bayrak,
-      // o bölümün gerçekten veri bulup bulmadığını söylüyor. Sabit bir
-      // liste yazmak, H2H kaydı olmayan bir maçta "ikili rekabete
-      // bakıldı" demek olurdu (bkz. aiBasisHtml gerekçesi).
       analysisSectionHtml(radar, probability, ctx, {
-        form: Boolean((forms.home && forms.home.length) || (forms.away && forms.away.length)),
-        venue: Boolean((forms.home && forms.home.length) || (forms.away && forms.away.length)),
-        goals: Boolean(probability && probability.predictedGoals),
-        xg: Boolean(probability && probability.expectedGoals),
-        // Bayraklar, ilgili bölümün OKUDUĞU alanla birebir aynı yoldan
-        // bakıyor (`squadStatus.teams`, `table.table`); başka bir yoldan
-        // bakmak, bölüm boş çizilirken listede "bakıldı" yazması demek
-        // olurdu.
-        absences: Boolean(squadStatus && Array.isArray(squadStatus.teams) && squadStatus.teams.length),
-        lineups: Boolean(analysis && analysis.probableLineups),
-        standings: Boolean(table && Array.isArray(table.table) && table.table.length),
-        h2h: Boolean(h2h && h2h.length)
+        form: Boolean(formHtml),
+        venue: radarUsed("venue"),
+        // Gol / xG satırlarının yükleminin tek kaynağı matchSeoPage.mjs.
+        goals: hasPredictedGoalsRow(probability),
+        xg: hasExpectedGoalsRow(probability),
+        absences: Boolean(absencesHtml),
+        // Kadro bölümü her zaman çiziliyor; asıl soru İÇİNDE 11 var mı.
+        lineups: /data-msp-lineups="(?:official|probable|predicted)"/.test(lineupsHtml),
+        // Puan durumu da her zaman çiziliyor; tablo bu maçın takımlarını
+        // bulamazsa bölüm "unavailable" damgasıyla basılıyor.
+        standings: standingsHtml.includes('data-standings-state="ok"'),
+        h2h: Boolean(h2hHtml)
       }),
       matchPollSectionHtml(ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.

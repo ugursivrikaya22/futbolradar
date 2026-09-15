@@ -102,21 +102,30 @@ function buildNotification(event) {
   // yazıyordu. Deplasman oyuncusu atıldığında bildirim yanlış takımı
   // suçluyordu — uydurulmuş bilgi, bu deponun yasakladığı türden.
   // Bilinmeyen taraf, adı hiç yazmamakla dürüstçe ifade edilir.
-  const titles = {
-    match_start: "Maç başladı",
-    goal: `Gol: ${event.side === "away" ? away : home}`,
-    half_time: "İlk yarı bitti",
-    match_end: "Maç bitti",
-    red_card: "Kırmızı kart",
-    lineups: "Kadrolar açıklandı"
-  };
+  const side = event.side === "home" || event.side === "away" ? event.side : null;
+  const minute = kind === "goal" && match.minute ? String(match.minute) : "";
 
-  const minuteText = kind === "goal" && match.minute ? ` · ${match.minute}'` : "";
+  // DİLDEN BAĞIMSIZ PARÇALAR — metin okuma anında kuruluyor.
+  //
+  // Bildirim yazıldığında okuyucunun dili bilinmiyor; aynı hesap hem
+  // Türkçe hem İngilizce yüzeyden okunuyor. Metni burada dondurmak,
+  // /en/ okuyucusuna Türkçe başlık göstermek olurdu. `title`/`body`
+  // yine yazılıyor ama YALNIZCA yedek: `renderNotification` payload'ı
+  // olan satırın metnini isteğin diline göre yeniden kuruyor.
+  const payload = {
+    v: 1,
+    home,
+    away,
+    score: scoreText || null,
+    minute: minute || null,
+    side
+  };
 
   return {
     kind,
-    title: titles[kind] || fixture,
-    body: `${fixture}${scoreText ? ` ${scoreText}` : ""}${minuteText}`.replace(/\s+/g, " ").trim(),
+    payload,
+    title: notificationTitle(kind, payload, "tr"),
+    body: notificationBody(payload),
     // TEKİLLEŞTİRME ANAHTARI — OLAYA ÖZGÜ, TÜRE DEĞİL.
     //
     // Golde skor anahtarın parçası: aynı gol tekrar gönderilirse aynı
@@ -128,6 +137,78 @@ function buildNotification(event) {
     // kararlı ve olaya özgü bir kimlik.
     subjectKey: `${matchKey(match) || fixture}:${kind}${eventIdentity(event, kind, scoreText)}`,
     href: matchHref(match)
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* OKUMA ANINDA METİN — bkz. buildNotification payload gerekçesi.       */
+/* ------------------------------------------------------------------ */
+
+const NOTIFICATION_TITLES = Object.freeze({
+  tr: {
+    match_start: "Maç başladı",
+    goal: "Gol",
+    half_time: "İlk yarı bitti",
+    match_end: "Maç bitti",
+    red_card: "Kırmızı kart",
+    lineups: "Kadrolar açıklandı",
+    team_news: "Takım haberi",
+    transfer_news: "Transfer haberi"
+  },
+  en: {
+    match_start: "Match started",
+    goal: "Goal",
+    half_time: "Half time",
+    match_end: "Full time",
+    red_card: "Red card",
+    lineups: "Line-ups announced",
+    team_news: "Team news",
+    transfer_news: "Transfer news"
+  }
+});
+
+function normalizeLocale(locale) {
+  return String(locale || "tr").toLowerCase().indexOf("en") === 0 ? "en" : "tr";
+}
+
+function notificationTitle(kind, payload, locale) {
+  const table = NOTIFICATION_TITLES[normalizeLocale(locale)];
+  const base = table[kind];
+  if (!base) return "";
+  // Golde ATAN TARAF biliniyorsa yazılır; bilinmiyorsa uydurulmaz
+  // (kırmızı kartta olduğu gibi — bkz. buildNotification gerekçesi).
+  if (kind === "goal" && payload && payload.side) {
+    const team = payload.side === "away" ? payload.away : payload.home;
+    if (team) return `${base}: ${team}`;
+  }
+  return base;
+}
+
+function notificationBody(payload) {
+  if (!payload || !payload.home || !payload.away) return "";
+  const fixture = `${payload.home} - ${payload.away}`;
+  const score = payload.score ? ` ${payload.score}` : "";
+  const minute = payload.minute ? ` · ${payload.minute}'` : "";
+  return `${fixture}${score}${minute}`.replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Saklanmış satırı OKUYANIN dilinde metne çevirir.
+ *
+ * Payload taşımayan satırlar (bu alan eklenmeden önce yazılanlar)
+ * saklanan metinle olduğu gibi döner: eski bildirimi silmek ya da boş
+ * göstermek, okunmamış bir bildirimi sessizce kaybetmek olurdu.
+ */
+function renderNotification(row, locale) {
+  if (!row) return row;
+  const payload = row.payload && typeof row.payload === "object" ? row.payload : null;
+  if (!payload) return row;
+  const title = notificationTitle(row.kind, payload, locale);
+  const body = notificationBody(payload);
+  return {
+    ...row,
+    title: title || row.title || "",
+    body: body || row.body || ""
   };
 }
 
@@ -297,5 +378,6 @@ module.exports = {
   isConfigured,
   matchHref,
   notifyMatchEvents,
-  recipientsFor
+  recipientsFor,
+  renderNotification
 };

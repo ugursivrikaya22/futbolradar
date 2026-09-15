@@ -339,18 +339,70 @@ check("AI analizinin HER kopyasinda cekince VAR", () => {
   }
 });
 
+/**
+ * DAYANAK LİSTESİ SAYFAYLA ÇELİŞEMEZ.
+ *
+ * Her satırın karşılığı, o bölümün GERÇEKTEN veri bulduğunu gösteren
+ * bir işaret. İşaret seçimi önemli: "bölüm var mı" yetmiyor, çünkü
+ * puan durumu ve kadro bölümleri veri bulunamadığında da çiziliyor
+ * ("veri bekleniyor" diye). Eskiden bayraklar bu ayrımı yapmıyordu ve
+ * liste, ekranda "bekleniyor" yazan bir bölüm için "bakıldı" diyordu.
+ */
+const BASIS_EVIDENCE = [
+  ["Son 5 maç formu", /id="form"/],
+  ["İç saha / deplasman performansı", /İç saha \/ deplasman performansı/],
+  ["Beklenen gol (xG)", />Model beklenen gol</],
+  ["Gol ortalamaları", />Beklenen gol</],
+  ["Eksik ve cezalı oyuncular", /id="sakat-cezali"/],
+  ["Muhtemel 11'ler", /data-msp-lineups="(?:official|probable|predicted)"/],
+  ["Lig sıralaması", /data-standings-state="ok"/],
+  ["İkili rekabet (H2H)", /msp-h2h-title/],
+  // İngilizce eşitlik: aynı sözleşme /en/ sayfalarında da geçerli.
+  ["Last five matches", /id="form"/],
+  ["Expected goals (xG)", />Model expected goals</],
+  ["Scoring averages", />Expected goals</],
+  ["Injuries and suspensions", /id="sakat-cezali"/],
+  ["Probable line-ups", /data-msp-lineups="(?:official|probable|predicted)"/],
+  ["League position", /data-standings-state="ok"/],
+  ["Head-to-head record", /msp-h2h-title/]
+];
+
 check("AI analizi dayanak listesini uyduruyor DEGIL", () => {
-  // Liste yalnızca sayfada gerçekten bulunan bölümlerden üretilmeli.
-  // H2H satırı varsa sayfada H2H bölümü de olmalı.
-  for (const file of aiPages.slice(0, 40)) {
+  let checked = 0;
+  for (const file of aiPages.slice(0, 120)) {
     const html = read(file);
     const basis = html.match(/<ul class="ai-basis">([\s\S]*?)<\/ul>/);
     if (!basis) continue;
-    if (basis[1].includes("İkili rekabet")) {
-      assert.match(html, /msp-h2h-title|id="h2h"/, `${file}: H2H iddiası var ama bölüm yok`);
+    checked += 1;
+    for (const [claim, evidence] of BASIS_EVIDENCE) {
+      if (!basis[1].includes(claim)) continue;
+      assert.match(html, evidence,
+        `${file}: "${claim}" iddiası var ama sayfada karşılığı yok`);
     }
-    if (basis[1].includes("Lig sıralaması")) {
-      assert.match(html, /msp-standings-title/, `${file}: sıralama iddiası var ama tablo yok`);
+  }
+  assert.ok(checked > 0, "dayanak listesi taşıyan sayfa bulunamadı");
+});
+
+check("dayanak listesi BOS bolume dayanak demiyor", () => {
+  // Tersten kontrol: puan durumu "unavailable" damgalıysa listede
+  // sıralama satırı OLMAMALI. Bu, en kolay kaçan yön — bölüm sayfada
+  // duruyor, ama içinde tablo yok.
+  for (const file of aiPages.slice(0, 120)) {
+    const html = read(file);
+    const basis = html.match(/<ul class="ai-basis">([\s\S]*?)<\/ul>/);
+    if (!basis) continue;
+    if (/data-standings-state="unavailable"/.test(html) && !/data-standings-state="ok"/.test(html)) {
+      assert.ok(!basis[1].includes("Lig sıralaması") && !basis[1].includes("League position"),
+        `${file}: puan durumu yokken sıralama dayanağı yazılmış`);
+    }
+    if (/data-msp-lineups="(?:pending|unavailable)"/.test(html)
+      && !/data-msp-lineups="(?:official|probable|predicted)"/.test(html)) {
+      assert.ok(!basis[1].includes("Muhtemel 11") && !basis[1].includes("Probable line-ups"),
+        `${file}: kadro yokken muhtemel 11 dayanağı yazılmış`);
+    }
+    if (!/id="sakat-cezali"/.test(html)) {
+      assert.ok(!basis[1].includes("Eksik ve cezalı") && !basis[1].includes("Injuries and suspensions"),
+        `${file}: sakat/cezalı bölümü yokken o dayanak yazılmış`);
     }
   }
 });
@@ -397,8 +449,15 @@ check("sunucu ayni onekleri bekliyor", () => {
   assert.match(read("server/authRoute.js"), /const ROUTE_PREFIX = "auth-";/);
   assert.match(read("server/accountRoute.js"), /const ROUTE_PREFIX = "account-";/);
   const router = read("api/[...route].js");
-  assert.match(router, /routeName\(req\)\.startsWith\("auth-"\)/);
-  assert.match(router, /routeName\(req\)\.startsWith\("account-"\)/);
+  // Yakalayıcıdaki tek kapı her iki öneki de tanımalı ve ikisini de
+  // kendi işleyicisine göndermeli.
+  assert.match(router, /\/\^\(auth\|account\)-\/\.test\(routeName\(req\)\)/,
+    "yönlendirici üyelik öneklerini tek kapıdan geçirmiyor");
+  assert.match(router, /handleAuth\(req, res\)/);
+  assert.match(router, /handleAccount\(req, res\)/);
+  // Fazla segmentli istek dispatch edilmeden reddedilmeli.
+  assert.match(router, /membershipPathDepth\(req\) !== 1/,
+    "fazla segment denetimi yok — /api/auth-session/foo aynı yanıtı verirdi");
 });
 
 /* ------------------------------------------------------------------ */
