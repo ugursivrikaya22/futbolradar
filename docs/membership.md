@@ -27,7 +27,7 @@ denetliyor.
 | Katman | Dosya | İşi |
 | --- | --- | --- |
 | Yapılandırma | `services/membership/config.js` | **Fiyat ve erişim kararının TEK kaynağı.** `canUseProFeature()` buradadır. |
-| Şema | `supabase/migrations/0005_membership.sql` | `profiles`, `user_favorites`, `user_notification_prefs`, `user_notifications` |
+| Şema | `supabase/migrations/0006_membership.sql` | `profiles`, `user_favorites`, `user_notification_prefs`, `user_notifications` |
 | Kimlik | `services/membership/authClient.js` | GoTrue'ya düz `fetch` (bağımlılık yok) |
 | Oturum | `services/membership/session.js` | AES-256-GCM mühürlü `httpOnly` çerez |
 | Veri | `services/membership/profileStore.js` | PostgREST okuma/yazma, satır → camelCase |
@@ -159,7 +159,7 @@ açmıyor**.
 
 ## 8. Kurulum
 
-1. `supabase/migrations/0005_membership.sql` dosyasını Supabase SQL
+1. `supabase/migrations/0006_membership.sql` dosyasını Supabase SQL
    düzenleyicisinde çalıştırın (defalarca çalıştırılabilir).
 2. `SUPABASE_ANON_KEY` ve `MEMBERSHIP_SESSION_SECRET` değişkenlerini
    Vercel'e girin (bkz. `.env.example`).

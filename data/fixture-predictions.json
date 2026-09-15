@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-15T07:03:05.865Z",
-  "predictionCount": 13,
+  "updatedAt": "2026-09-15T10:13:19.976Z",
+  "predictionCount": 15,
   "predictions": [
     {
       "fixtureId": "bahia-remo-2026-09-15",
@@ -186,6 +186,202 @@
       "refreshStage": "T-6h",
       "frozen": true,
       "frozenAt": "2026-09-15T07:03:05.683Z"
+    },
+    {
+      "fixtureId": "afyonkarahisarspor-urgupspor-2026-09-15",
+      "providerFixtureId": "1637559",
+      "competitionId": "turkiye-kupasi",
+      "leagueId": "206",
+      "season": null,
+      "kickoff": "2026-09-15T17:00:00+03:00",
+      "homeTeam": "Afyonkarahisarspor",
+      "awayTeam": "Urgupspor",
+      "homeTeamId": "13442",
+      "awayTeamId": "28380",
+      "source": "futbolradar_model",
+      "homeProbability": 43,
+      "drawProbability": 25,
+      "awayProbability": 32,
+      "predictedWinner": {
+        "id": null,
+        "name": "Afyonkarahisarspor",
+        "side": "home",
+        "comment": null
+      },
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": {
+        "home": "1.57",
+        "away": "1.31"
+      },
+      "comparison": null,
+      "confidence": 0,
+      "dataBasis": "competition-baseline",
+      "baselineScope": "pool",
+      "missingHistory": {
+        "home": true,
+        "away": true
+      },
+      "modelVersion": "futbolradar-probability-v1",
+      "expectedGoals": {
+        "home": 1.57,
+        "away": 1.31
+      },
+      "modelUnderOver": {
+        "line": 2.5,
+        "over": 55,
+        "under": 45
+      },
+      "bothTeamsScore": 58,
+      "marketConsensus": null,
+      "modelInputs": {
+        "dataBasis": "competition-baseline",
+        "baselineStatus": "inherited",
+        "baselinePull": 0.5,
+        "baselineSampleSize": 0,
+        "home": {
+          "matches": 0,
+          "venueMatches": 0,
+          "attackStrength": 1,
+          "defenseStrength": 1,
+          "formDelta": null,
+          "rank": null,
+          "pointsPerGame": null,
+          "cleanSheetRate": null,
+          "winRate": null,
+          "absences": null
+        },
+        "away": {
+          "matches": 0,
+          "venueMatches": 0,
+          "attackStrength": 1,
+          "defenseStrength": 1,
+          "formDelta": null,
+          "rank": null,
+          "pointsPerGame": null,
+          "cleanSheetRate": null,
+          "winRate": null,
+          "absences": null
+        },
+        "h2h": {
+          "sampleSize": 0,
+          "averageGoalDifference": null
+        },
+        "rankDelta": null
+      },
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-not-configured"
+        },
+        {
+          "source": "market_probability",
+          "reason": "league-coverage-has-no-odds"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-09-15T10:09:32.977Z",
+      "expiresAt": "2026-09-15T12:30:00.000Z",
+      "refreshStage": "T-6h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "altay-soke-1970-2026-09-15",
+      "providerFixtureId": "1637560",
+      "competitionId": "turkiye-kupasi",
+      "leagueId": "206",
+      "season": null,
+      "kickoff": "2026-09-15T20:00:00+03:00",
+      "homeTeam": "Altay",
+      "awayTeam": "Söke 1970",
+      "homeTeamId": "3566",
+      "awayTeamId": "19303",
+      "source": "futbolradar_model",
+      "homeProbability": 41,
+      "drawProbability": 24,
+      "awayProbability": 35,
+      "predictedWinner": {
+        "id": null,
+        "name": "Altay",
+        "side": "home",
+        "comment": null
+      },
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": {
+        "home": "1.7",
+        "away": "1.65"
+      },
+      "comparison": null,
+      "confidence": 8,
+      "dataBasis": "competition-baseline",
+      "baselineScope": "pool",
+      "missingHistory": {
+        "home": false,
+        "away": true
+      },
+      "modelVersion": "futbolradar-probability-v1",
+      "expectedGoals": {
+        "home": 1.7,
+        "away": 1.65
+      },
+      "modelUnderOver": {
+        "line": 2.5,
+        "over": 65,
+        "under": 35
+      },
+      "bothTeamsScore": 66,
+      "marketConsensus": null,
+      "modelInputs": {
+        "dataBasis": "competition-baseline",
+        "baselineStatus": "inherited",
+        "baselinePull": 0.46,
+        "baselineSampleSize": 0,
+        "home": {
+          "matches": 2,
+          "venueMatches": 1,
+          "attackStrength": 1.08,
+          "defenseStrength": 1.26,
+          "formDelta": 0,
+          "rank": null,
+          "pointsPerGame": 0.5,
+          "cleanSheetRate": 0,
+          "winRate": 0,
+          "absences": null
+        },
+        "away": {
+          "matches": 0,
+          "venueMatches": 0,
+          "attackStrength": 1,
+          "defenseStrength": 1,
+          "formDelta": null,
+          "rank": null,
+          "pointsPerGame": null,
+          "cleanSheetRate": null,
+          "winRate": null,
+          "absences": null
+        },
+        "h2h": {
+          "sampleSize": 0,
+          "averageGoalDifference": null
+        },
+        "rankDelta": null
+      },
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-not-configured"
+        },
+        {
+          "source": "market_probability",
+          "reason": "league-coverage-has-no-odds"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-09-15T10:09:32.977Z",
+      "expiresAt": "2026-09-15T11:00:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
     },
     {
       "fixtureId": "rayo-vallecano-espanyol-2026-09-15",

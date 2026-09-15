@@ -79,12 +79,16 @@ function attachProbability(detail) {
     source: record.source,
     title: display.title,
     icon: display.icon,
-    note: display.note,
+    note: probabilityService.displayNoteFor(record, "tr") || display.note,
     home: record.probabilities.home,
     draw: record.probabilities.draw,
     away: record.probabilities.away,
     advice: record.advice || null,
     predictedWinner: record.predictedWinner || null,
+    // Modelin veri temeli sınırlıysa açıklaması kartla birlikte gider:
+    // yüzdeyi taşıyıp dayanağını taşımamak, dayanağı gizlemektir.
+    dataBasis: record.dataBasis || null,
+    basisNote: probabilityService.dataBasisNote(record, "tr"),
     calculatedAt: record.calculatedAt || null
   };
 }

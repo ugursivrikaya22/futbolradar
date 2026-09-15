@@ -34,6 +34,7 @@ en güçlü sinyali çöpe atmak olur. Başlık `source` alanından türetilir; 
 | `scripts/lib/fixtureProbabilityData.mjs` | Senkronizasyon ve sayfa üretiminin PAYLAŞTIĞI veri bağlamı |
 | `data/fixture-predictions.json` | Depo (+ `public/` aynası) |
 | `supabase/migrations/0004_fixture_predictions.sql` | `fixture_predictions` tablosu |
+| `supabase/migrations/0005_fixture_prediction_data_basis.sql` | `data_basis` sütunu (bkz. 6.1) |
 
 ## 3. Kapsam kontrolü (kota)
 
@@ -97,8 +98,29 @@ Hesap:
 6. Üç yüzde tam sayıya yuvarlanır ve toplamları **tam 100** olur.
 
 Model deterministiktir: `Math.random` yok, hesapta `Date.now()` yok, girdi
-sırası çıktıyı değiştirmez. Yeterli veri yoksa model `null` döner — boş
-bölüm, uydurma yüzdeden iyidir.
+sırası çıktıyı değiştirmez.
+
+### 6.1 Veri temeli — her maçın tahmini olsun, ama dayanağı saklanmasın
+
+Model eskiden iki takımın geçmişi yoksa `null` dönüyordu ve maç sayfası
+tahminsiz kalıyordu (kupanın alt turları, ilk kez oynayan takımlar).
+"Tahmin yok" da bir cevap, ama okuyucunun sorusuna cevap değil. Artık
+yüzde üretiliyor; karşılığında yüzdenin NEYE dayandığı kayıtta ve ekranda
+yazıyor (`dataBasis`):
+
+| `dataBasis` | Ne demek | Güven tavanı | Kartta not |
+| --- | --- | --- | --- |
+| `team-history` | İki takımın da doğrulanmış maç geçmişi var | yok | yok |
+| `partial-history` | Yalnızca bir tarafın geçmişi var | %35 | var |
+| `competition-baseline` | Hiçbir tarafta yeterli geçmiş yok; yüzde taban oranıdır | %12 | var |
+
+`baselineScope` tabanın nereden ölçüldüğünü söyler: `competition`
+(turnuvanın kendi maçları) ya da `pool` (turnuvada hiç tamamlanmış maç
+yoksa, takip edilen tüm maçlar). Not bu ayrımı da yazar — olmayan bir
+ölçüme "bu turnuvanın oranı" demek yanlış atıf olurdu.
+
+Ölçülmüş tek bir maç bile yoksa model hâlâ `null` döner
+(`no-measured-baseline`): boş bölüm, uydurma yüzdeden iyidir.
 
 Ev sahibi avantajı ayrı bir sabit olarak eklenmez: ligin kendi ev/deplasman
 gol ortalamaları ve takımın kendi iç saha/deplasman serisi bu avantajı
@@ -136,6 +158,6 @@ Koşu sonunda üretici kaynak dağılımını basar:
 [match-seo-pages] tahmin kaynakları (maç öncesi): sağlayıcı=N piyasa=N model=N üretilemedi=N
 ```
 
-`üretilemedi > 0` ise sebepleri de basılır (`no-verified-match-history`,
-`insufficient-team-data`). Bu, kapatılması gereken gerçek bir veri
+`üretilemedi > 0` ise sebepleri de basılır (`no-measured-baseline`,
+`fixture-incomplete`). Bu, kapatılması gereken gerçek bir veri
 boşluğudur — kod hatası değil.

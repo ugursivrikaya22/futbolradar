@@ -212,6 +212,18 @@
 .mh-prob__legend span:nth-child(2) i { background: var(--muted, #6b7c76); }
 .mh-prob__legend span:nth-child(3) i { background: var(--cyan, #0d9488); }
 .mh-pred__note { margin: 10px 0 0; font-size: 12px; color: var(--muted, #6b7c76); line-height: 1.6; }
+/* Veri temeli uyarısı: tahmin iki takımın geçmişine dayanmıyorsa çıkar.
+   Soldaki çizgi, notu sıradan bir dipnottan ayırıyor. */
+.mh-pred__basis {
+  margin: 10px 0 0;
+  padding: 6px 8px;
+  border-left: 3px solid var(--warn, #c98a00);
+  background: color-mix(in srgb, var(--warn, #c98a00) 8%, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: var(--muted, #6b7c76);
+  line-height: 1.6;
+}
 
 /* ---------- 6. Hangi kanalda ---------------------------------------- */
 .mh-channels { display: flex; flex-wrap: wrap; gap: 10px; }

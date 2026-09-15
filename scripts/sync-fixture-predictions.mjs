@@ -331,6 +331,30 @@ async function main() {
     logLine(`  unresolved ${row.fixtureId}: ${Object.entries(row.reasons).map(([key, value]) => `${key}=${value}`).join(" · ")}`);
   }
 
+  // ZAMANLANMIŞ KOŞUNUN DURUM DOSYASINA KAPSAM RAPORU.
+  //
+  // Tahmin artık saatlik koşunun bir adımı; "çalıştı mı" sorusunun cevabı
+  // koşu günlüğünün içinde kalırsa yalnızca birisi o günlüğü açtığında
+  // okunur. Kapsam bu yüzden data/update-status.json'a da yazılır:
+  // `covered < checked` olan bir koşu, kapatılması gereken gerçek bir veri
+  // boşluğunu görünür kılar (bkz. scripts/run-scheduled-update.mjs).
+  const covered = report.provider + report.market + report.model + report.cached + report.kept;
+  console.log(`FUTBOLRADAR_STEP_SUMMARY ${JSON.stringify({
+    source: "api-football",
+    checked: report.total,
+    covered,
+    updated: report.provider + report.market + report.model,
+    provider: report.provider,
+    market: report.market,
+    model: report.model,
+    cached: report.cached,
+    kept: report.kept,
+    uncovered: report.unresolved.length,
+    uncoveredReasons: report.unresolved.slice(0, 10).map((row) => ({ fixtureId: row.fixtureId, reasons: row.reasons })),
+    providerRequests: budget.summary().spent,
+    errors: []
+  })}`);
+
   if (!args.apply) {
     logLine(`Dry run: ${existing.predictions.length} record(s) would be written to data/fixture-predictions.json. No file written.`);
     return;

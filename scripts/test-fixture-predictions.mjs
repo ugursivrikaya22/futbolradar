@@ -21,6 +21,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
 import { predictionCardHtml, analysisSectionHtml } from "./lib/matchSeoPage.mjs";
 import { loadProbabilityContext, coverageFor } from "./lib/fixtureProbabilityData.mjs";
 import { selectUpcoming, apiFootballFixtureId, toFixture } from "./sync-fixture-predictions.mjs";
@@ -328,19 +329,131 @@ check("senaryo 6: lig dışı/kupa maçı — kapsam yoksa taban üst havuzdan m
   assert.ok(result.prediction, "turnuva verisi olmasa da takım verisi varsa model çalışır");
 });
 
-check("senaryo 7: istatistiği olmayan fikstür — hata değil, açık 'veri yok'", () => {
+check("senaryo 7: ölçülecek tek maç bile yoksa — hata değil, açık 'veri yok'", () => {
+  // Havuz TAMAMEN boş: takım geçmişi de yok, turnuvanın taban oranı da
+  // ölçülemiyor. Bu noktada gösterilecek gerçek bir sayı kalmıyor.
   const engine = inputs.createProbabilityEngine({ finishedMatches: [] });
   const result = engine.modelFor({ homeTeam: "Bilinmeyen A", awayTeam: "Bilinmeyen B", competitionId: "x", kickoff: "2026-09-20T18:00:00+03:00" });
-  assert.equal(result.prediction, null, "veri yoksa model sayı uydurmaz");
-  assert.equal(result.reason, "no-verified-match-history");
+  assert.equal(result.prediction, null, "ölçülmüş taban yokken model sayı uydurmaz");
+  assert.equal(result.reason, "no-measured-baseline");
   assert.equal(predictionCardHtml(result.prediction, ctx), "", "boş tahmin kutusu basılmaz");
 });
 
-check("tek taraflı veri yetersizliğinde model çalışmaz", () => {
+check("tek taraflı geçmiş: model çalışır ama kart 'tek taraf' olduğunu SÖYLER", () => {
   const engine = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Tek Taraf", "Tek Taraf", { count: 5 }) });
   const result = engine.modelFor({ homeTeam: "Tek Taraf", awayTeam: "Hiç Oynamamış", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
-  assert.equal(result.prediction, null);
-  assert.equal(result.reason, "insufficient-team-data");
+  assert.ok(result.prediction, "bir tarafın geçmişi varken maç tahminsiz kalmamalı");
+  assert.equal(result.reason, null);
+  assert.equal(result.prediction.dataBasis, "partial-history");
+  assert.equal(result.prediction.missingHistory.away, true, "geçmişi olmayan taraf kayıtta işaretli");
+  assert.ok(result.prediction.confidence <= model.PARTIAL_MAX_CONFIDENCE,
+    `tek taraflı veride güven tavanı aşılmamalı (üretilen: ${result.prediction.confidence})`);
+  const { home, draw, away } = result.prediction.probabilities;
+  assert.equal(home + draw + away, 100);
+
+  const html = predictionCardHtml(result.prediction, { locale: "tr", homeTeam: "Tek Taraf", awayTeam: "Hiç Oynamamış" });
+  assert.match(html, /yalnızca bir takımın doğrulanmış maç geçmişi var/i,
+    "sınırlı veri temeli kartın içinde yazmalı");
+  assert.match(html, /data-prediction-basis="partial-history"/);
+});
+
+check("iki taraf da bilinmiyor: yüzde turnuva TABANIDIR ve kart bunu açıkça yazar", () => {
+  // Havuzda başka takımların bitmiş maçları var: turnuvanın ev/beraberlik/
+  // deplasman taban oranı ÖLÇÜLEBİLİYOR. Model bu tabanı gösterir — ama
+  // takımların formu diye değil, taban diye.
+  const engine = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Başka A", "Başka B", { count: 10 }) });
+  const result = engine.modelFor({ homeTeam: "Yepyeni A", awayTeam: "Yepyeni B", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
+  assert.ok(result.prediction, "ölçülmüş taban varken maç tahminsiz kalmamalı");
+  assert.equal(result.prediction.dataBasis, "competition-baseline");
+  assert.deepEqual(result.prediction.missingHistory, { home: true, away: true });
+  assert.ok(result.prediction.confidence <= model.BASELINE_MAX_CONFIDENCE,
+    `taban tahmininde güven tavanı aşılmamalı (üretilen: ${result.prediction.confidence})`);
+  const { home, draw, away } = result.prediction.probabilities;
+  assert.equal(home + draw + away, 100);
+
+  assert.equal(result.prediction.baselineScope, "competition", "taban turnuvanın KENDİ maçlarından ölçüldü");
+
+  const html = predictionCardHtml(result.prediction, { locale: "tr", homeTeam: "Yepyeni A", awayTeam: "Yepyeni B" });
+  assert.match(html, /yeterli doğrulanmış maç geçmişi yok/i);
+  assert.match(html, /bu turnuvanın ölçülmüş/i, "taban bu turnuvadan ölçüldüyse öyle yazılmalı");
+  assert.match(html, /data-prediction-basis="competition-baseline"/);
+
+  const en = predictionCardHtml(result.prediction, { locale: "en", homeTeam: "Yepyeni A", awayTeam: "Yepyeni B" });
+  assert.match(en, /Neither team has enough verified match history/i, "İngilizce kart aynı sınırı bildirir");
+});
+
+check("taban üst havuzdan devralındıysa kart 'bu turnuvanın oranı' DEMEZ", () => {
+  // Fikstürün turnuvasında hiç tamamlanmış maç yok; taban, takip edilen
+  // tüm maçlardan devralınıyor. Olmayan bir ölçüme atıf yapılmamalı.
+  const engine = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Başka A", "Başka B", { count: 10, competitionId: "baska-lig" }) });
+  const result = engine.modelFor({ homeTeam: "Yepyeni A", awayTeam: "Yepyeni B", competitionId: "bos-kupa", kickoff: "2026-09-20T18:00:00+03:00" });
+  assert.ok(result.prediction);
+  assert.equal(result.prediction.baselineScope, "pool");
+  const html = predictionCardHtml(result.prediction, { locale: "tr", homeTeam: "Yepyeni A", awayTeam: "Yepyeni B" });
+  assert.match(html, /takip edilen tüm maçlardan ölçülmüş/i);
+  assert.doesNotMatch(html, /bu turnuvanın ölçülmüş/i);
+});
+
+check("az maçlı iki taraf: not 'hiç geçmişi yok' demez, 'yeterli değil' der", () => {
+  // Bir tarafın iki maçı var: kademe yine taban, ama "geçmişi yok"
+  // demek yanlış olurdu. Not, kaydın gerçeğiyle uyumlu kalmalı.
+  const engine = inputs.createProbabilityEngine({
+    finishedMatches: [
+      ...syntheticMatches("Havuz A", "Havuz B", { count: 10 }),
+      { homeTeam: "İki Maçlık", awayTeam: "Havuz A", kickoff: "2026-08-12T18:00:00+03:00", score: { home: 1, away: 1 }, competitionId: "test-lig" },
+      { homeTeam: "Havuz B", awayTeam: "İki Maçlık", kickoff: "2026-08-19T18:00:00+03:00", score: { home: 2, away: 0 }, competitionId: "test-lig" }
+    ]
+  });
+  const result = engine.modelFor({ homeTeam: "İki Maçlık", awayTeam: "Hiç Oynamamış", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
+  assert.ok(result.prediction);
+  assert.equal(result.prediction.dataBasis, "competition-baseline");
+  assert.equal(result.prediction.missingHistory.home, false, "iki maçı olan taraf 'geçmişsiz' işaretlenmez");
+  const note = probability.dataBasisNote(result.prediction, "tr");
+  assert.match(note, /yeterli doğrulanmış maç geçmişi yok/i);
+  assert.doesNotMatch(note, /İki takımın da doğrulanmış maç geçmişi yok\./i);
+});
+
+check("taban tahmininde 'form ve geçmiş karşılaşmalar' cümlesi BASILMAZ", () => {
+  // Kullanılmayan girdiyi sayan bir açıklama, kaydın sınırını başlığın
+  // hemen altında gizler.
+  const engine = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Başka A", "Başka B", { count: 10 }) });
+  const result = engine.modelFor({ homeTeam: "Yepyeni A", awayTeam: "Yepyeni B", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
+  const html = predictionCardHtml(result.prediction, { locale: "tr", homeTeam: "Yepyeni A", awayTeam: "Yepyeni B" });
+  assert.doesNotMatch(html, /geçmiş karşılaşmalar kullanılarak/i);
+  assert.match(html, /kendi istatistik modelinden hesaplanmıştır/i);
+  assert.match(html, /FutbolRadar Tahmini/, "başlık yine kaynağı söyler");
+
+  // Tam geçmişli kayıtta cümle yerinde kalır.
+  const full = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Güçlü SK", "Zayıf FK") })
+    .modelFor({ homeTeam: "Güçlü SK", awayTeam: "Zayıf FK", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
+  const fullHtml = predictionCardHtml(full.prediction, { locale: "tr", homeTeam: "Güçlü SK", awayTeam: "Zayıf FK" });
+  assert.match(fullHtml, /geçmiş karşılaşmalar kullanılarak/i);
+});
+
+check("veri temeli deterministik ve sıra bağımsız", () => {
+  const matches = syntheticMatches("Başka A", "Başka B", { count: 10 });
+  const fixture = { homeTeam: "Yepyeni A", awayTeam: "Yepyeni B", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" };
+  const first = inputs.createProbabilityEngine({ finishedMatches: matches }).modelFor(fixture).prediction;
+  const second = inputs.createProbabilityEngine({ finishedMatches: matches.slice().reverse() }).modelFor(fixture).prediction;
+  assert.deepEqual(first.probabilities, second.probabilities);
+  assert.equal(first.dataBasis, second.dataBasis);
+});
+
+check("tam geçmişli tahminde sınır notu BASILMAZ — gereksiz uyarı güveni aşındırır", () => {
+  const engine = inputs.createProbabilityEngine({ finishedMatches: syntheticMatches("Güçlü SK", "Zayıf FK") });
+  const result = engine.modelFor({ homeTeam: "Güçlü SK", awayTeam: "Zayıf FK", competitionId: "test-lig", kickoff: "2026-09-20T18:00:00+03:00" });
+  assert.equal(result.prediction.dataBasis, "team-history");
+  assert.equal(probability.dataBasisNote(result.prediction, "tr"), null);
+  const html = predictionCardHtml(result.prediction, { locale: "tr", homeTeam: "Güçlü SK", awayTeam: "Zayıf FK" });
+  assert.doesNotMatch(html, /doğrulanmış maç geçmişi (yok|var)/i);
+});
+
+check("sınır notu yalnızca modele aittir: sağlayıcı ve piyasa kaydına iliştirilmez", () => {
+  const providerRecord = { source: "provider_prediction", probabilities: { home: 50, draw: 25, away: 25 }, dataBasis: "competition-baseline" };
+  const marketRecord = { source: "market_probability", probabilities: { home: 40, draw: 30, away: 30 }, dataBasis: "partial-history" };
+  assert.equal(probability.dataBasisNote(providerRecord, "tr"), null,
+    "sağlayıcı kaydının temeli kendi başlığında yazılı; model notu ona mal edilemez");
+  assert.equal(probability.dataBasisNote(marketRecord, "tr"), null);
 });
 
 check("model yalnızca maçtan ÖNCEKİ sonuçları kullanır", () => {
@@ -532,6 +645,22 @@ check("gerçek takvimde tahmin üretilebilen her maç tam 100 eder", () => {
     const { home, draw, away } = result.prediction.probabilities;
     assert.equal(home + draw + away, 100, `${match.id} toplamı 100 değil`);
   }
+});
+
+check("zamanlanmış koşu kapsam raporu basar — boşluk günlükte saklı kalmaz", () => {
+  // Kuru koşu: dosya yazmaz, sağlayıcıya istek atmaz.
+  const output = execFileSync(process.execPath, [path.join(root, "scripts", "sync-fixture-predictions.mjs"), "--model-only"], {
+    encoding: "utf8",
+    timeout: 120_000
+  });
+  const marker = [...output.matchAll(/FUTBOLRADAR_STEP_SUMMARY\s+(\{[^\r\n]+\})/g)].at(-1);
+  assert.ok(marker, "run-scheduled-update bu işareti okuyor; yoksa durum dosyasında adım özetsiz kalır");
+  const summary = JSON.parse(marker[1]);
+  for (const field of ["checked", "covered", "uncovered", "provider", "market", "model", "cached"]) {
+    assert.equal(typeof summary[field], "number", `özet alanı sayı olmalı: ${field}`);
+  }
+  assert.equal(summary.covered + summary.uncovered, summary.checked,
+    "kapsanan + kapsanmayan, bakılan fikstür sayısını vermeli — aradaki fark sessiz bir boşluk olurdu");
 });
 
 if (failures) {

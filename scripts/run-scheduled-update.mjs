@@ -305,10 +305,27 @@ function sourceSteps(type, providerReady) {
     // fixture-calendar başarısız olsa bile çalışması güvenli.
     ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
     nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
-    // Yaklaşan Süper Lig maçlarının sağlayıcı tahmini + ikili rekabeti
-    // (maç başına tek /predictions isteği). Günlük full koşu yeter:
-    // sağlayıcı tahmini gün içinde anlamlı değişmez.
-    ...(full ? [nodeStep("match-predictions", "sync-match-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider })] : []),
+    // YAKLAŞAN MAÇLARIN TAHMİNİ — lig ayrımı yok, üç kaynaklı zincir:
+    // sağlayıcı /predictions → /odds 1X2 konsensüsü → FutbolRadar modeli.
+    //
+    // SAATLİK KOŞUDA DA ÇALIŞIR ve bu bilinçli: tazeleme basamakları
+    // (T-72s → T-24s → T-6s → T-90dk) ancak saatlik bir koşu varsa
+    // zamanında yakalanır; günlük tek koşu, maça 6 saat kala güncellenmesi
+    // gereken tahmini kaçırırdı. Kota yine korunuyor, çünkü her fikstür
+    // her basamakta EN FAZLA bir kez sorulur (services/fixturePredictionStore.js)
+    // ve kapsamı olmayan lige hiç istek gitmez.
+    // Sağlayıcı yapılandırılmamışken bile ATLANMAZ: zincirin üçüncü
+    // halkası (FutbolRadar modeli) kotadan bağımsız çalışır ve maç
+    // sayfalarının tahmin kartı bu koşuda tazelenir.
+    //
+    // BU ADIM BİR KEZ KAYBOLDU. #271 onu buraya koydu, #274 dosyayı eski
+    // sürümüne döndürünce hem adım düştü hem de silinmiş bir betiğe
+    // (`sync-match-predictions.mjs`) yapılan çağrı geri geldi; sonuç,
+    // hiç tazelenmeyen tahminler ve her gün ENOENT ile düşen bir full
+    // koşu adımıydı. `scripts/test-scheduled-updates.mjs` artık her iki
+    // durumu da sınıyor — adımın varlığını ve her adımın betiğinin
+    // diskte GERÇEKTEN bulunduğunu.
+    nodeStep("fixture-predictions", "sync-fixture-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000 }),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     // Gol/asist krallığı: `/players/topscorers` + `/players/topassists`
     // ligin kendisiyle sorgulandığı için players.json'un turnuva-toplamı
@@ -767,4 +784,8 @@ if (isMain) {
   }
 }
 
-export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff };
+// Adım listeleri de dışa veriliyor: `scripts/test-scheduled-updates.mjs`
+// hattın gerçekten hangi betikleri çağırdığını okuyup her birinin diskte
+// bulunduğunu doğruluyor. Bir adımın sessizce düşmesi ya da silinmiş bir
+// betiğe işaret etmesi, ancak hat üretimde koşunca fark ediliyordu.
+export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff, sourceSteps, fullMaintenanceSteps, transformSteps };
