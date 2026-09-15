@@ -46,7 +46,13 @@ import { ROBOTS_INDEX } from "./lib/robots.mjs";
 const require = createRequire(import.meta.url);
 const { listHomePolls, localizePoll, logRejected } = require("../services/homePoll.js");
 
-const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+// Kök normalde deponun kendisi. `POLL_PAGES_ROOT` yalnızca testin bu adımı
+// geçici bir ağaçta koşturabilmesi için var: üretilmiş çıktılar (site
+// haritası) depoda saatlik derlemenin bıraktığı hâliyle duruyor, test ise
+// ADIMIN ÇIKTISINI denetlemek zorunda.
+const root = process.env.POLL_PAGES_ROOT
+  ? path.resolve(process.env.POLL_PAGES_ROOT)
+  : path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-poll.png`;
 const today = new Date().toISOString().slice(0, 10);

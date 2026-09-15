@@ -17,7 +17,10 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import os from "node:os";
 import { createRequire } from "node:module";
+import { execFileSync } from "node:child_process";
+import { homePollBlock } from "./lib/homePoll.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -554,6 +557,13 @@ console.log("home-poll");
 // yerine boşluk kalmasın diye) — bu yüzden yalnızca kabuk değil, seçenek
 // kartlarının kendisi de aranıyor.
 //
+// NEDEN GEÇİCİ DİZİNDE ÜRETİLİYOR: üretilmiş sayfalar (`index.html`,
+// `en/index.html`) depoda saatlik derlemenin bıraktığı hâliyle duruyor;
+// anket bloğunu oraya `home-poll` adımı basıyor. Test bu yüzden dosyanın o
+// anki içeriğini değil, ADIMIN ÇIKTISINI denetliyor: kaynak ağacın kendi
+// üreticileri geçici bir kopya üzerinde koşturuluyor. Böylece test derleme
+// sırasının nerede olduğundan bağımsız, "blok basılır mı" sorusunu sorar.
+//
 // KONUM DA BİR GEREKSİNİM: anket canlı skor kahramanının HEMEN ARDINDA
 // olmalı. "Sayfada bir yerde" yeterli değil; kutu haber akışının altına
 // düşerse mobilde hiç görülmez.
@@ -570,9 +580,37 @@ console.log("home-poll");
     "home-poll__inner", "home-poll__disclaimer", "tahmin-anketi"
   ];
 
+  // Geçici ağaç: `inject-home-poll.mjs` kökü `process.cwd()` üzerinden
+  // bulduğu için kopyanın içinde koşturmak yeterli. `data/` gerçek dizine
+  // bağlanıyor — anket takvimi ve takım listesi tek kaynaktan okunmalı.
+  const stage = fs.mkdtempSync(path.join(os.tmpdir(), "home-poll-"));
+  fs.symlinkSync(path.join(root, "data"), path.join(stage, "data"));
+  fs.copyFileSync(path.join(root, "index.html"), path.join(stage, "index.html"));
+  execFileSync(process.execPath, [path.join(root, "scripts", "inject-home-poll.mjs")], {
+    cwd: stage,
+    stdio: "pipe"
+  });
+
+  // İngilizce ana sayfayı `generate-en-pages.mjs` bütün olarak üretiyor;
+  // anket kutusunu oraya `homePollSection()` koyuyor. Bütün İngilizce ağacı
+  // yeniden üretmek yerine test AYNI ÜRETİCİ FONKSİYONU çağırıyor, konumu
+  // ise üreticinin gövde sırasından okuyor (aşağıda).
+  const enSelection = selectHomePoll({
+    polls: JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8")),
+    teams,
+    matches: []
+  });
+
   const pages = [
-    { file: "index.html", locale: "tr" },
-    { file: path.join("en", "index.html"), locale: "en" }
+    { locale: "tr", label: "index.html", html: fs.readFileSync(path.join(stage, "index.html"), "utf8") },
+    {
+      locale: "en",
+      label: "en/index.html",
+      html: homePollBlock(localizePoll(enSelection.poll, "en"), {
+        locale: "en",
+        status: enSelection.status
+      })
+    }
   ];
 
   // Ekranda hangi anketin olması gerektiği takvimden okunur — testin kendi
@@ -584,34 +622,44 @@ console.log("home-poll");
   assert.ok(live.poll, "ana sayfada gösterilecek anket olmalı (takvim boş)");
 
   for (const page of pages) {
-    const html = fs.readFileSync(path.join(root, page.file), "utf8");
+    const { html } = page;
 
     for (const hook of HOOKS) {
-      assert.ok(html.includes(hook), `${page.file}: "${hook}" kancası basılmamış`);
+      assert.ok(html.includes(hook), `${page.label}: "${hook}" kancası basılmamış`);
     }
-    assert.ok(/class="home-poll__option"/.test(html), `${page.file}: anket seçenek kartı basılmamış`);
-    assert.ok(/class="home-poll__radio"/.test(html), `${page.file}: anket radyo düğmesi basılmamış`);
+    assert.ok(/class="home-poll__option"/.test(html), `${page.label}: anket seçenek kartı basılmamış`);
+    assert.ok(/class="home-poll__radio"/.test(html), `${page.label}: anket radyo düğmesi basılmamış`);
 
     // Seçeneklerin TAMAMI basılı mı? Eksik bir kulüp, ankette olmayan bir
     // takım kadar yanlış: liste bir veri iddiasıdır.
     const optionCount = (html.match(/class="home-poll__option"/g) || []).length;
     assert.equal(optionCount, live.poll.options.length,
-      `${page.file}: ${optionCount} seçenek basılı, ${live.poll.options.length} olmalı`);
+      `${page.label}: ${optionCount} seçenek basılı, ${live.poll.options.length} olmalı`);
 
     // Uyarı metni iki dilde de yerinde: anket bir TAHMİNDİR ve bu yazılı olmalı.
     const escapeHtml = (value) => String(value)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     assert.ok(html.includes(escapeHtml(COPY[page.locale].disclaimer)),
-      `${page.file}: anket uyarı metni basılmamış`);
+      `${page.label}: anket uyarı metni basılmamış`);
 
-    // KONUM: anket bloğu canlı skor kahramanından SONRA, puan durumu
-    // sekmelerinden ÖNCE gelmeli.
-    const heroAt = html.indexOf('id="hero-canli-skor"');
-    const pollAt = html.indexOf('id="tahmin-anketi"');
-    assert.ok(heroAt >= 0, `${page.file}: canlı skor kahramanı bulunamadı`);
-    assert.ok(pollAt > heroAt, `${page.file}: anket canlı skor bölümünün altında değil`);
+    // KONUM: anket bloğu canlı skor kahramanından SONRA gelmeli. Türkçe
+    // tarafta bunu basılmış sayfada ölçebiliyoruz.
+    if (page.locale === "tr") {
+      const heroAt = html.indexOf('id="hero-canli-skor"');
+      const pollAt = html.indexOf('id="tahmin-anketi"');
+      assert.ok(heroAt >= 0, `${page.label}: canlı skor kahramanı bulunamadı`);
+      assert.ok(pollAt > heroAt, `${page.label}: anket canlı skor bölümünün altında değil`);
+    }
   }
+
+  // İngilizce tarafta konum kuralı üreticinin gövde sırasında yazılı: anket
+  // kutusu kahramanın HEMEN ardında. Araya bir bölüm girerse bu kırılır.
+  const enSource = fs.readFileSync(path.join(root, "scripts", "generate-en-pages.mjs"), "utf8");
+  assert.ok(/\$\{heroSection\(\)\}\s*\n\s*\$\{homePollSection\(\)\}/.test(enSource),
+    "en/index.html: anket kutusu canlı skor kahramanının hemen ardında değil");
+  assert.ok(/\$\{pollStickySection\(\)\}/.test(enSource),
+    "en/index.html: yapışkan anket kutusu gövdeye eklenmemiş");
 
   // Zincirde olmayan bir adım saatlik koşuda hiç çalışmaz; bloğun bir kez
   // elle basılıp sonraki derlemede sessizce düşmesi tam olarak bu yüzden
@@ -794,13 +842,13 @@ console.log("home-poll");
   for (const page of [{ file: "anketler.html", locale: "tr" }, { file: path.join("en", "polls.html"), locale: "en" }]) {
     const html = fs.readFileSync(path.join(root, page.file), "utf8");
     for (const hook of HOOKS) {
-      assert.ok(html.includes(hook), `${page.file}: "${hook}" kancası eksik`);
+      assert.ok(html.includes(hook), `${page.label}: "${hook}" kancası eksik`);
     }
-    assert.ok(html.includes(`data-poll-archive-locale="${page.locale}"`), `${page.file}: dil kancası yanlış`);
-    assert.ok(html.includes(`data-motm-archive-locale="${page.locale}"`), `${page.file}: maç anketi dil kancası yanlış`);
+    assert.ok(html.includes(`data-poll-archive-locale="${page.locale}"`), `${page.label}: dil kancası yanlış`);
+    assert.ok(html.includes(`data-motm-archive-locale="${page.locale}"`), `${page.label}: maç anketi dil kancası yanlış`);
     // Sayfa ortak yerleşimi almış olmalı (menü, arama, dil kutusu).
-    assert.ok(html.includes('data-shared-layout="header"'), `${page.file}: ortak başlık uygulanmamış`);
-    assert.ok(html.includes("lang-switch"), `${page.file}: dil kutusu yok`);
+    assert.ok(html.includes('data-shared-layout="header"'), `${page.label}: ortak başlık uygulanmamış`);
+    assert.ok(html.includes("lang-switch"), `${page.label}: dil kutusu yok`);
   }
 
   // Menüde iki dilde de var: erişilemeyen sayfa işe yaramaz.
@@ -943,8 +991,17 @@ console.log("home-poll");
     }
   }
 
-  // Site haritası yalnızca indekslenen anketleri taşır.
-  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  // Site haritası yalnızca indekslenen anketleri taşır. Depodaki
+  // `sitemap.xml` üretilmiş bir çıktı, bu yüzden adım geçici bir ağaçta
+  // koşturulup KENDİ çıktısı denetleniyor.
+  const mapStage = fs.mkdtempSync(path.join(os.tmpdir(), "poll-pages-"));
+  fs.symlinkSync(path.join(root, "data"), path.join(mapStage, "data"));
+  fs.copyFileSync(path.join(root, "sitemap.xml"), path.join(mapStage, "sitemap.xml"));
+  execFileSync(process.execPath, [path.join(root, "scripts", "generate-poll-pages.mjs")], {
+    env: { ...process.env, POLL_PAGES_ROOT: mapStage },
+    stdio: "pipe"
+  });
+  const sitemap = fs.readFileSync(path.join(mapStage, "sitemap.xml"), "utf8");
   for (const entry of entries) {
     const tr = localizePoll(entry.poll, "tr");
     const loc = `<loc>https://www.futbolradar.com${tr.path}</loc>`;
@@ -995,8 +1052,11 @@ console.log("home-poll");
   }
   assert.equal(seen.size, 6, "her ağ AYRI bir adres almalı, yoksa ölçüm ayrışmaz");
 
-  // İşaretleme: istenen kanalların hepsi basılı mı?
-  const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  // İşaretleme: istenen kanalların hepsi basılı mı? Anket sayfası ana
+  // sayfayla AYNI bloğu (`homePollBlock`) basar ve üretilmiş bir ana sayfaya
+  // bağlı olmadan denetlenebilir.
+  const html = fs.readFileSync(
+    path.join(root, "anket", `${localizePoll(poll, "tr").slug}.html`), "utf8");
   for (const platform of ["x", "whatsapp", "facebook", "telegram"]) {
     assert.ok(html.includes(`data-poll-share-link="${platform}"`), `${platform} paylaşım düğmesi yok`);
   }
