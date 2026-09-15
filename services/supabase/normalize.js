@@ -296,6 +296,9 @@ function match(record, sourceId) {
 /** İzin verilen üç kaynak. Listenin dışı YAZILMAZ (şema da reddeder). */
 const PREDICTION_SOURCES = new Set(["provider_prediction", "market_probability", "futbolradar_model"]);
 
+/** Modelin veri kademeleri — 0005 göçündeki CHECK ile aynı liste. */
+const DATA_BASIS_VALUES = new Set(["team-history", "partial-history", "competition-baseline"]);
+
 /**
  * MAÇ TAHMİNİ SATIRI.
  *
@@ -346,6 +349,9 @@ function fixturePrediction(record, sourceId) {
     comparison: record.comparison || null,
     confidence: publishedInt(record.confidence),
     model_version: text(record.modelVersion),
+    // Kademe listesi 0005 göçündeki CHECK ile aynı; tanınmayan bir değer
+    // satırı reddettirmek yerine NULL'a düşer ("bilinmiyor", "sıfır" değil).
+    data_basis: DATA_BASIS_VALUES.has(text(record.dataBasis)) ? text(record.dataBasis) : null,
     frozen: Boolean(record.frozen),
     refresh_stage: text(record.refreshStage),
     provider_updated_at: isoStamp(record.providerUpdatedAt),

@@ -286,8 +286,12 @@ function createProbabilityEngine(options = {}) {
     });
 
     if (!prediction) {
+      // Model artık takım geçmişi olmadan da turnuvanın ÖLÇÜLMÜŞ taban
+      // oranlarıyla çalışıyor (bkz. DATA_BASIS). Buraya düşmenin tek
+      // anlamlı sebebi kaldı: ortada ölçülecek bitmiş maç yok, yani
+      // taban da varsayım. O durumda gösterilecek gerçek sayı yoktur.
       const reason = homeProfile.overall.played === 0 && awayProfile.overall.played === 0
-        ? "no-verified-match-history"
+        ? "no-measured-baseline"
         : "insufficient-team-data";
       return { prediction: null, reason };
     }

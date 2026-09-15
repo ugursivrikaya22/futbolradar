@@ -12163,10 +12163,12 @@
     var hasLegacyProbability = !hasProbability && prediction &&
       (isFiniteNumber(prediction.homeWin) || isFiniteNumber(prediction.home));
     if (hasProbability) {
-      blocks += '<article class="md-ai-card md-probability" data-prediction-source="' + escapeHtml(probability.source || "") + '">' +
+      blocks += '<article class="md-ai-card md-probability" data-prediction-source="' + escapeHtml(probability.source || "") + '"' +
+        (probability.dataBasis ? ' data-prediction-basis="' + escapeHtml(probability.dataBasis) + '"' : "") + ">" +
         "<span>" + escapeHtml((probability.icon ? probability.icon + " " : "") + (probability.title || "Kazanma olasılığı")) + "</span>" +
         mdProbabilityHtml(detail, probability) +
         (probability.note ? '<p class="md-prob-note">' + escapeHtml(probability.note) + "</p>" : "") +
+        (probability.basisNote ? '<p class="md-prob-basis">' + escapeHtml(probability.basisNote) + "</p>" : "") +
         "</article>";
     } else if (hasLegacyProbability) {
       blocks += '<article class="md-ai-card md-probability"><span>Kazanma olasılığı</span>' +

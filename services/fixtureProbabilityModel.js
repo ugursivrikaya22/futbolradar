@@ -30,8 +30,10 @@
  * Her oran, örneklem büyüklüğüne göre lig ortalamasına ÇEKİLİR
  * (`shrink`). İki maç oynamış yeni yükselen bir takımın 4 gollük tek
  * galibiyeti, modeli tek başına uçuramaz. Veri yoksa sonuç lig
- * ortalamasına yakınsar — yani "bilmiyoruz"a. Hiç veri yoksa model
- * `null` döner: boş bölüm, uydurma yüzdeden iyidir.
+ * ortalamasına yakınsar — yani "bilmiyoruz"a. Ne kadar veriye dayandığı
+ * `dataBasis` alanında açıkça taşınır (bkz. DATA_BASIS) ve arayüz onu
+ * gizlemez. Ölçülmüş tek bir taban bile yoksa model `null` döner: boş
+ * bölüm, uydurma yüzdeden iyidir.
  */
 
 const MODEL_VERSION = "futbolradar-probability-v1";
@@ -103,6 +105,42 @@ const MAX_GOALS = 8;
 /** Model çalışması için gereken en az doğrulanmış veri. */
 const MIN_TOTAL_MATCHES = 4;
 const MIN_TEAM_MATCHES = 1;
+
+/**
+ * VERİ TEMELİ — tahminin neye dayandığını SAKLAMAYAN üç kademe.
+ *
+ * Önceki sürüm iki takımın da geçmişi yoksa `null` döndürüyordu ve maç
+ * sayfası tahminsiz kalıyordu (kupanın alt turlarında, yeni yükselen
+ * takımlarda, ilk kez karşılaşan Avrupa rakiplerinde). "Tahmin yok" da
+ * bir cevaptır ama okuyucunun sorusuna cevap değildir.
+ *
+ * Çözüm yüzdeyi UYDURMAK değil, yüzdenin NEYE dayandığını kaydın kendi
+ * alanında taşımak:
+ *
+ *   team-history         → iki takımın da doğrulanmış maç geçmişi var.
+ *   partial-history      → yalnızca bir tarafın geçmişi var; diğer takım
+ *                          turnuva ortalamasında kabul edildi.
+ *   competition-baseline → iki tarafın da geçmişi yok; yüzdeler yalnızca
+ *                          turnuvanın ÖLÇÜLMÜŞ ev/beraberlik/deplasman
+ *                          taban oranlarıdır.
+ *
+ * Alt iki kademede güven tavanlanır ve arayüz kaydın `dataBasis` alanından
+ * türettiği açıklamayı kartın içine yazar. Ölçülmüş bir taban bile yoksa
+ * (havuzda hiç bitmiş maç yok) model yine `null` döner: o noktada
+ * gösterilecek gerçek bir sayı kalmıyor.
+ */
+const DATA_BASIS = Object.freeze({
+  TEAM_HISTORY: "team-history",
+  PARTIAL_HISTORY: "partial-history",
+  COMPETITION_BASELINE: "competition-baseline"
+});
+
+/** Tek taraflı tahminde bilinen tarafta aranan en az maç. */
+const PARTIAL_MIN_MATCHES = 3;
+
+/** Alt kademelerin güven tavanı: sayı görünür, iddiası küçülür. */
+const PARTIAL_MAX_CONFIDENCE = 35;
+const BASELINE_MAX_CONFIDENCE = 12;
 
 function isFiniteNumber(value) {
   return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
@@ -297,6 +335,11 @@ function leagueBaselines(matches, options = {}) {
       awayGoals: fallback.awayGoals,
       pointsPerGame: NEUTRAL_BASELINE.pointsPerGame,
       sampleSize: 0,
+      // Devralınan tabanın KAÇ maçtan ölçüldüğü. "Devralındı" tek başına
+      // ölçüldüğü anlamına gelmiyor: üst havuz da boşsa devralınan şey
+      // varsayımın kendisidir. Bu sayı olmadan model, hiç maç görmemiş bir
+      // tabanı ölçülmüş sanıp yüzde basardı.
+      inheritedSampleSize: Number(fallback.sampleSize) || Number(fallback.inheritedSampleSize) || 0,
       status: fallback === NEUTRAL_BASELINE ? "assumed" : "inherited"
     };
   }
@@ -310,6 +353,7 @@ function leagueBaselines(matches, options = {}) {
     awayGoals: round2(observedAway * weight + fallback.awayGoals * (1 - weight)),
     pointsPerGame: NEUTRAL_BASELINE.pointsPerGame,
     sampleSize: rows.length,
+    inheritedSampleSize: 0,
     status: rows.length >= MIN_BASELINE_MATCHES ? "computed" : "blended"
   };
 }
@@ -459,6 +503,26 @@ function computeConfidence(homeRates, awayRates, h2h, baselines) {
 }
 
 /**
+ * Hangi veri kademesindeyiz? Sıra bağımlı değil: iki tarafın örneklemi
+ * neyse kademe odur, girdi sırası çıktıyı değiştirmez.
+ */
+function dataBasisFor(homeRates, awayRates, totalSample) {
+  const homeKnown = homeRates.sampleSize >= MIN_TEAM_MATCHES;
+  const awayKnown = awayRates.sampleSize >= MIN_TEAM_MATCHES;
+  if (homeKnown && awayKnown && totalSample >= MIN_TOTAL_MATCHES) return DATA_BASIS.TEAM_HISTORY;
+  const knownSample = Math.max(homeRates.sampleSize, awayRates.sampleSize);
+  if (knownSample >= PARTIAL_MIN_MATCHES) return DATA_BASIS.PARTIAL_HISTORY;
+  return DATA_BASIS.COMPETITION_BASELINE;
+}
+
+/** Kademenin güven tavanı. Tam geçmişte tavan yok. */
+function confidenceCeiling(dataBasis) {
+  if (dataBasis === DATA_BASIS.PARTIAL_HISTORY) return PARTIAL_MAX_CONFIDENCE;
+  if (dataBasis === DATA_BASIS.COMPETITION_BASELINE) return BASELINE_MAX_CONFIDENCE;
+  return 100;
+}
+
+/**
  * MODELİN GİRİŞ KAPISI.
  *
  * @param {object} input
@@ -482,11 +546,14 @@ function computeModelProbabilities(input = {}) {
   const homeRates = ratesFor(home, baselines, "home");
   const awayRates = ratesFor(away, baselines, "away");
 
-  // YETERLİ VERİ YOKSA MODEL ÇALIŞMAZ. Sıfır maçlık iki takım için
-  // üretilecek her sayı, lig ortalamasının kılık değiştirmiş hâli olurdu
-  // ve ekranda "tahmin" diye durmayı hak etmez.
+  // VERİ TEMELİ. Sıfır maçlık iki takım için üretilen sayı, lig
+  // ortalamasının kılık değiştirmiş hâlidir — bu yüzden kılık
+  // değiştirmesine izin verilmez: kademe kaydın içinde taşınır, arayüz
+  // de onu yazar. Ölçülmüş bir taban yoksa hâlâ `null`.
   const totalSample = homeRates.sampleSize + awayRates.sampleSize;
-  if (homeRates.sampleSize < MIN_TEAM_MATCHES || awayRates.sampleSize < MIN_TEAM_MATCHES || totalSample < MIN_TOTAL_MATCHES) {
+  const dataBasis = dataBasisFor(homeRates, awayRates, totalSample);
+  const measuredBaselineMatches = (Number(baselines.sampleSize) || 0) + (Number(baselines.inheritedSampleSize) || 0);
+  if (dataBasis === DATA_BASIS.COMPETITION_BASELINE && measuredBaselineMatches === 0) {
     return null;
   }
 
@@ -515,7 +582,10 @@ function computeModelProbabilities(input = {}) {
   const outcomes = poissonOutcomes(safeHome, safeAway);
   if (!outcomes) return null;
 
-  const confidence = computeConfidence(homeRates, awayRates, h2h, baselines);
+  const confidence = Math.min(
+    computeConfidence(homeRates, awayRates, h2h, baselines),
+    confidenceCeiling(dataBasis)
+  );
 
   // Veri güveni düşükken sonucu ligin taban dağılımına çek. Taban,
   // uydurulmuş bir "%33-%34-%33" değil, ligin kendi ev/deplasman gol
@@ -561,7 +631,17 @@ function computeModelProbabilities(input = {}) {
     underOver: null,
     comparison: null,
     confidence,
+    dataBasis,
+    // Tabanın NEREDEN ölçüldüğü. Turnuvanın kendi maçları yoksa taban üst
+    // havuzdan devralınır ve bunu "bu turnuvanın oranı" diye sunmak yanlış
+    // atıf olur; arayüzdeki açıklama bu alana göre değişir.
+    baselineScope: (Number(baselines.sampleSize) || 0) > 0 ? "competition" : "pool",
+    missingHistory: {
+      home: homeRates.sampleSize === 0,
+      away: awayRates.sampleSize === 0
+    },
     inputs: {
+      dataBasis,
       baselineStatus: baselines.status,
       baselinePull: round2(pull),
       baselineSampleSize: baselines.sampleSize || 0,
@@ -597,6 +677,10 @@ function computeModelProbabilities(input = {}) {
 
 module.exports = {
   MODEL_VERSION,
+  DATA_BASIS,
+  PARTIAL_MIN_MATCHES,
+  PARTIAL_MAX_CONFIDENCE,
+  BASELINE_MAX_CONFIDENCE,
   NEUTRAL_BASELINE,
   MIN_STRENGTH,
   MAX_STRENGTH,

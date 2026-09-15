@@ -89,6 +89,31 @@ const DISPLAY = Object.freeze({
   }
 });
 
+/**
+ * VERİ TEMELİ AÇIKLAMALARI — modelin kademesi ekranda saklanmaz.
+ *
+ * `futbolradar_model` kaydı iki takımın geçmişine dayanmıyorsa kartın
+ * içine bu satır yazılır. Yüzdeyi göstermek ile yüzdenin neye dayandığını
+ * göstermek ayrılmaz: ikincisi olmadan okuyucu, turnuva taban oranını
+ * takımların karşılaştırması sanır.
+ */
+const DATA_BASIS_NOTES = Object.freeze({
+  "partial-history": {
+    tr: "Bu maçta yalnızca bir takımın doğrulanmış maç geçmişi var; diğer takım turnuva ortalamasıyla temsil edildi. Güven düşük.",
+    en: "Only one of these teams has verified match history; the other is represented by the competition average. Confidence is low."
+  },
+  // Taban hangi havuzdan ölçüldüyse o yazılır. Turnuvada hiç tamamlanmış
+  // maç yokken "bu turnuvanın oranı" demek, olmayan bir ölçüme atıf olurdu.
+  "competition-baseline": {
+    tr: "Bu maçta iki takımın da model için yeterli doğrulanmış maç geçmişi yok. Yüzdeler bu turnuvanın ölçülmüş ev sahibi/beraberlik/deplasman taban oranlarıdır; takımların güncel formunu yansıtmaz.",
+    en: "Neither team has enough verified match history for the model. These percentages are the competition's measured home/draw/away base rates, not a read on either team's current form."
+  },
+  "competition-baseline:pool": {
+    tr: "Bu maçta iki takımın da model için yeterli doğrulanmış maç geçmişi yok; bu turnuvada tamamlanmış maç da bulunmuyor. Yüzdeler, takip edilen tüm maçlardan ölçülmüş ev sahibi/beraberlik/deplasman taban oranlarıdır; takımların güncel formunu yansıtmaz.",
+    en: "Neither team has enough verified match history, and this competition has no completed matches yet. These percentages are the home/draw/away base rates measured across every tracked match, not a read on either team's current form."
+  }
+});
+
 /** 1X2 pazarının sağlayıcıdaki adları — `/odds` yanıtı paket başına değişiyor. */
 const MATCH_WINNER_BET_IDS = new Set(["1"]);
 const MATCH_WINNER_BET_NAMES = /^(match winner|1x2|full time result|home\/draw\/away|3way result)$/i;
@@ -391,6 +416,38 @@ function displayFor(source, locale = "tr") {
   return { source, icon: entry.icon, title: text.title, note: text.note };
 }
 
+/**
+ * Kaydın veri temeli sınırlıysa okunabilir açıklama, değilse `null`.
+ * Yalnızca model kaynağı için anlamlı: sağlayıcı ve piyasa kayıtlarının
+ * temeli zaten kendi başlıklarında yazılı.
+ */
+function dataBasisNote(record, locale = "tr") {
+  if (!record || record.source !== SOURCES.MODEL) return null;
+  const scoped = record.baselineScope === "pool" ? `${record.dataBasis}:pool` : null;
+  const entry = (scoped && DATA_BASIS_NOTES[scoped]) || DATA_BASIS_NOTES[record.dataBasis];
+  if (!entry) return null;
+  return entry[locale] || entry.tr;
+}
+
+/**
+ * Kartın üst açıklaması — kaydın gerçeğine göre.
+ *
+ * Model kaydının varsayılan açıklaması "form, iç/dış saha performansı, gol
+ * istatistikleri ve geçmiş karşılaşmalar" diyor. Takım geçmişi olmadan
+ * üretilmiş bir tahminde bunların HİÇBİRİ kullanılmadı; cümleyi olduğu gibi
+ * basmak, kaydın sınırını başlığın hemen altında gizlemek olurdu.
+ */
+function displayNoteFor(record, locale = "tr") {
+  const display = displayFor(record && record.source, locale);
+  if (!display) return null;
+  if (record && record.source === SOURCES.MODEL && record.dataBasis === "competition-baseline") {
+    return locale === "en"
+      ? "Calculated by FutbolRadar's own statistical model."
+      : "FutbolRadar'ın kendi istatistik modelinden hesaplanmıştır.";
+  }
+  return display.note;
+}
+
 /** Bar sıralaması ve "öne çıkan" satırın belirlenmesi için yardımcı. */
 function leadingOutcome(probabilities) {
   if (!probabilities) return null;
@@ -415,6 +472,9 @@ module.exports = {
   SOURCES,
   SOURCE_PRIORITY,
   DISPLAY,
+  DATA_BASIS_NOTES,
+  dataBasisNote,
+  displayNoteFor,
   normalizeTriple,
   parsePercentValue,
   parseProviderPercent,
