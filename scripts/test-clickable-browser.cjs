@@ -16,6 +16,56 @@ async function until(check, message, timeout = 5000) {
   do { if (await check()) return; await delay(100); } while (Date.now() < end);
   assert.fail(message);
 }
+// MAÇSIZ GÜN BOZUK SAYFA DEĞİLDİR.
+//
+// Ana sayfanın fikstür kartları, kartların içindeki hızlı bağlantılar ve
+// öne çıkan maç kartı tek kaynaktan besleniyor: `data/matches.json` +
+// `data/fixture-calendar.json`, İSTANBUL gününe göre süzülüyor
+// (app.js#selectTodayMatchCards). O günde hiç maç yoksa
+// renderTodayMatchesPreview boş dize döndürüyor; kart da, hızlı bağlantı
+// da, Türk maçı rozeti de hiç basılmıyor ve kahraman alan dürüstçe
+// "şu anda doğrulanmış canlı maç yok" kartına düşüyor.
+//
+// Kapı bunu bir süre kırık sayfa saydı. Sonuç: derleme İstanbul gece
+// yarısını geçip maçsız bir güne girdiğinde, kodda TEK SATIR değişmeden
+// 34 senaryo birden düşüyordu (koşu 35022467659); aynı kapı `main`
+// üzerinde de kırmızıydı (35003804655, 358/365). Takvimde 15 Eylül'de 117
+// maç, 16 Eylül'de sıfır maç vardı — fark yalnızca derlemenin saatiydi.
+//
+// İDDİA ATLANMIYOR, TERSİNE ÇEVRİLİYOR. Maç varsa kart ZORUNLU (eski
+// katılık aynen duruyor); maç yoksa kartın OLMAMASI ve dürüst boş durumun
+// bulunması zorunlu. Kapı böylece iki yönlü: hem kart kaybını hem de
+// maçsız güne uydurulmuş dolguyu yakalar.
+//
+// Gün, sayaç okunduğu ANDA hesaplanıyor. 35 dakikalık bir koşu gece
+// yarısını geçebilir; başta bir kez hesaplanan sayı, koşunun ikinci
+// yarısında sayfanın çizdiğinden farklı bir güne bakardı.
+//
+// Dosyalar sayfanın ÇEKTİĞİ yerden okunuyor: app.js `DATA_ROOT = "/data/"`
+// ile bu ikisini birleştiriyor. `public/data/` aynı içeriğin kopyası
+// (sync-public-assets.mjs) ve yalnızca yedek olarak açılıyor.
+const MATCH_SOURCES = ['matches.json', 'fixture-calendar.json'];
+const istanbulDay = value => {
+  const time = new Date(value);
+  return Number.isNaN(time.getTime()) ? '' : time.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+};
+let matchDayCache = null;
+function todayFixtureCount() {
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+  if (matchDayCache && matchDayCache.day === today) return matchDayCache.count;
+  let count = 0;
+  for (const name of MATCH_SOURCES) {
+    let parsed = null;
+    for (const root of ['data/', 'public/data/']) {
+      try { parsed = JSON.parse(fs.readFileSync(root + name, 'utf8')); break; } catch { /* sonraki kök */ }
+    }
+    if (!parsed) continue;
+    const list = Array.isArray(parsed) ? parsed : (parsed.matches || parsed.fixtures || parsed.data || []);
+    count += list.filter(match => match && istanbulDay(match.kickoff || match.date || match.utcDate) === today).length;
+  }
+  matchDayCache = { day: today, count };
+  return count;
+}
 (async () => {
   fs.mkdirSync('outputs/clickable', { recursive: true });
   if (!process.env.AUDIT_BASE_URL) {
@@ -161,6 +211,18 @@ async function until(check, message, timeout = 5000) {
         }
         await until(async () => await page.locator('main [data-api-target][data-state="loading"]:visible').count() === 0, 'Back navigation content is still loading', 15000);
       }
+      // Maçsız günün dürüst ana sayfası. Doğrulanan üç şey var: kart
+      // UYDURULMAMIŞ, kahraman alan durumu SÖYLÜYOR ve okuyucuya en az bir
+      // ÇIKIŞ bırakıyor. Üçü de sayfanın kendi vaadi; boş gün diye
+      // gevşetilen tek şey "kart var mı" iddiası.
+      async function assertHonestEmptyMatchDay() {
+        assert.equal(await page.locator('.fixture-card').count(), 0,
+          'No fixture for today, yet the homepage prints match cards');
+        await page.locator('#featured-radar-match .home-match-command-empty').first().waitFor();
+        const exits = page.locator('#featured-radar-match .featured-match-actions a');
+        assert.ok(await exits.count(), 'Empty match day offers no route out');
+        return exits.first();
+      }
       for (const locale of ['tr', 'en']) {
         const home = locale === 'tr' ? 'index.html' : 'en/index.html';
         const en = locale === 'en';
@@ -271,6 +333,19 @@ async function until(check, message, timeout = 5000) {
           await page.emulateMedia({ reducedMotion: 'no-preference' });
           await open(home);
           const root = page.locator('[data-featured-carousel]');
+          // KAHRAMAN ALANIN YERLEŞMESİNİ BEKLE, SONRA "YOK" DE.
+          //
+          // Statik sayfa derleme anının gününe, istemci ise SAYFANIN AÇILDIĞI
+          // anın gününe göre çiziyor. Derleme İstanbul gece yarısını
+          // geçtiğinde ikisi farklı güne bakıyor: istemci statik kahramanı
+          // kendi (maçsız) günüyle değiştiriyor ve o değişimin ortasında
+          // sayan bir okuma, karuseli kopmuş bir ağaçta arıyordu. Boyamadan
+          // hemen sonra saymak bu yüzden yalancı kırmızı veriyordu.
+          await until(
+            async () => await root.count() > 0 || await page.locator('#featured-radar-match .featured-fixture').count() > 0,
+            'Featured hero never rendered',
+            15000
+          );
           if (!(await root.count())) {
             // No featurable fixture left (every match of the day has ended and
             // nothing new qualifies yet): the hero deliberately falls back to
@@ -376,7 +451,13 @@ async function until(check, message, timeout = 5000) {
           const trendTarget = new URL(await trendLink.getAttribute('href'), page.url());
           assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : trendTarget.pathname === '/takim-detay.html', 'Trending team must open its profile');
           await navigate(trendLink);
-          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor();
+          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
+          // `navigate` geri dönüyor: aşağıdaki kart ana sayfanın "Bugünün
+          // Maçları" önizlemesinden geliyor, takım profilinden değil.
+          if (!todayFixtureCount()) {
+            await navigate(await assertHonestEmptyMatchDay());
+            return;
+          }
           const firstCard = page.locator('.fixture-card').first();
           const matchId = await firstCard.getAttribute('data-match');
           const card = matchId ? page.locator('.fixture-card[data-match=' + JSON.stringify(matchId) + ']').first() : firstCard;
@@ -456,8 +537,22 @@ async function until(check, message, timeout = 5000) {
       }
       await test('mobile parity: visible actions and outside menu close', async () => {
         await open('index.html');
-        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor();
-        for (const selector of ['.news-ticker-all', '.fixture-card-action', '.fixture-card-quicklinks a']) {
+        // BEKLENEN ŞEY "YÜKLENDİ", "DOLU" DEĞİL.
+        //
+        // `waitFor()` varsayılanı `visible` ve boş bir ızgaranın yüksekliği
+        // sıfır: maçsız günde bölüm `ready` olmasına rağmen Playwright onu
+        // görünmez sayıp 15 saniye bekliyordu. Aynı hedef `navigate()`
+        // içinde zaten `attached` ile bekleniyor; burada da öyle.
+        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
+        // Hızlı bağlantılar maç kartının İÇİNDE yaşıyor (app.js#
+        // renderHomeFixtureCard). Maçsız günde kart basılmıyor, dolayısıyla
+        // aranacak bağlantı da yok; o gün sayfanın borcu kartlar değil,
+        // durumu söyleyen dürüst bir kahraman alan ve çalışan bir çıkış.
+        const matchDay = todayFixtureCount() > 0;
+        if (!matchDay) await navigate(await assertHonestEmptyMatchDay());
+        for (const selector of matchDay
+          ? ['.news-ticker-all', '.fixture-card-action', '.fixture-card-quicklinks a']
+          : ['.news-ticker-all', '.fixture-card-action']) {
           const target = page.locator(selector).first();
           assert.ok(await target.isVisible(), selector + ' hidden');
           if (touch) assert.ok((await target.boundingBox()).height >= 44, selector + ' small touch target');
@@ -534,9 +629,41 @@ async function until(check, message, timeout = 5000) {
       });
       if (touch) await test('mobile summary follows main card and opens match detail', async () => {
         await open('index.html');
+        // KARARI ÇİZİM BİTMEDEN VERME.
+        //
+        // Kahraman alanı istemci basıyor ve ilk çizim veri tamamlanmadan
+        // oluyor: Türk maçı kartı ancak bölüm `ready` olduktan sonra doğuyor.
+        // Daha erken saymak, maçlarla DOLU bir günde bile kartı "yok"
+        // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
+        // olarak buradan düşüyordu.
+        await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
         const featured = page.locator('[data-featured-turkish="true"]').first();
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();
+        // TÜRK MAÇI KARTI YOKSA ŞERİT DE O SATIRI KURMAZ.
+        //
+        // Özet satırını site.js#syncSummary yazıyor ve kaynağı tam olarak bu
+        // karttır; kart yoksa satır hiç eklenmiyor, şeritte yalnızca "Son
+        // gelişme" kalıyor. İddia bu yüzden "kart var" değil, İKİ YÜZEY AYNI
+        // ŞEYİ SÖYLÜYOR: kart varsa özet onu yansıtmalı, yoksa olmayan bir
+        // maçı uydurmamalı.
+        //
+        // Dal maç SAYISINA değil kartın kendisine bakıyor, çünkü maçlarla
+        // dolu bir günde de öne çıkan maç Türk takımının olmayabilir.
+        if (!(await featured.count())) {
+          const labels = await page.locator('.now-football__label').allInnerTexts();
+          assert.ok(
+            !labels.some(label => /Türk takımı maçı|Turkish club match/i.test(label)),
+            'Summary invents a Turkish match row while the hero shows none'
+          );
+          // "Son gelişme" satırı haber kaynağına, yani dış siteye gidebiliyor
+          // (site.js#nowRow bu satıra target="_blank" veriyor). Tıklanacak
+          // güvenli rota kahraman alanın kendi çıkışı.
+          const exit = page.locator('#featured-radar-match a[href]').first();
+          assert.ok(await exit.count(), 'Featured hero offers no route out');
+          await navigate(exit);
+          return;
+        }
         await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
         const score = featured.locator('.featured-fixture-score b');
         const status = featured.locator('.featured-fixture-score span');
