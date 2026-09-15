@@ -22811,3 +22811,665 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 @media (max-width: 480px) {
   .standings-live-badge { font-size: 8px; padding: 0 4px; margin-inline-start: 4px; }
 }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RADAR NABZI — CANLI BASKI DENGESİ / LIVE MATCH PULSE
+   ──────────────────────────────────────────────────────────────────────────
+   MOBİL ÖNCE. Bütün kurallar dar ekran için yazıldı; geniş ekran yalnızca
+   tek bir `min-width` sorgusuyla sütunlara ayrılıyor. Tersi (masaüstünü
+   yazıp mobilde bozulanı yamamak) bu bileşende yatay taşmayla biterdi.
+
+   TASARIM DİLİ DEĞİŞMİYOR: renkler `--green`, `--surface`, `--line`,
+   `--live` jetonlarından okunuyor; bu yüzden koyu tema için ayrı bir blok
+   YOK — jetonlar zaten temayla birlikte değişiyor.
+
+   DÜZEN KAYMASI YOK. Bölüm `hidden` doğuyor ve yalnızca çizilecek gerçek
+   veri varken açılıyor; "yükleniyor" diye yer kaplayan boş bir kutu
+   olmadığı için açılış anında da kayma olmuyor.
+
+   GRAFİK KÜTÜPHANESİ YOK: momentum alanı düz SVG, ölçer düz CSS.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.rp-section { scroll-margin-top: 72px; }
+.rp-subtitle { margin: calc(var(--sp-1) * -1) 0 var(--sp-3); font-size: var(--fs-xs); }
+.rp-body { display: grid; gap: var(--sp-4); }
+
+/* ---------- Nabız ölçeri ---------- */
+.rp-gauge {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--sp-2) var(--sp-3);
+  align-items: center;
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-side { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rp-side.is-home { order: 1; align-items: flex-start; text-align: left; }
+.rp-side.is-away { order: 2; align-items: flex-end; text-align: right; }
+.rp-side-name {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--muted);
+  /* Uzun kulüp adı taşmasın: ölçer dar ekranda da tek satır kalır. */
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rp-side-value {
+  font-size: var(--fs-2xl);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.rp-side.is-lead .rp-side-value { color: var(--green); }
+.rp-flame { font-size: var(--fs-sm); line-height: 1; }
+.rp-side.is-away .rp-flame { align-self: flex-end; }
+
+.rp-balance {
+  order: 3;
+  grid-column: 1 / -1;
+  position: relative;
+  height: 12px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.rp-balance-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: block;
+  background: linear-gradient(90deg, var(--green-deep), var(--green));
+  /* Genişlik satır içi stilden gelir (yüzde); geçiş kısa tutuldu —
+     "aşırı animasyonsuz" isteniyordu ve uzun geçiş mobilde titrer. */
+  transition: width 260ms ease-out;
+}
+.rp-balance-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--surface);
+  transition: left 260ms ease-out;
+}
+.rp-note { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
+
+/* ---------- Son 10 dakika paneli ---------- */
+.rp-window {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-window-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-2); margin-bottom: var(--sp-3); }
+.rp-window-head h3 {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--green-deep);
+}
+.rp-window-range { font-size: var(--fs-xs); }
+.rp-window-grid { display: grid; gap: var(--sp-2); }
+.rp-window-teams,
+.rp-window-row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) 3.5rem;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.rp-window-teams {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--muted);
+  padding-bottom: var(--sp-1);
+  border-bottom: 1px solid var(--line);
+}
+.rp-window-teams span:last-child { text-align: right; }
+.rp-window-teams span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-window-row b {
+  font-size: var(--fs-md);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+.rp-window-row b:last-child { text-align: right; }
+.rp-window-row span { text-align: center; font-size: var(--fs-xs); color: var(--muted); }
+.rp-comment {
+  margin: var(--sp-3) 0 0;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* ---------- Momentum ---------- */
+.rp-momentum {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+/* DAR EKRANDA BAŞLIK ÜSTTE, TAKIMLAR ALTTA.
+   Üç sütunlu tek satır 390px'de kulüp adlarını "Gaziantep …" diye kesiyordu;
+   grafiğin iki ucunun HANGİ takım olduğu ise okunamazsa grafik anlamsızlaşır.
+   Başlık kendi satırına alınınca adlara tam genişlik kalıyor. */
+.rp-momentum-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-1) var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.rp-momentum-head h3 {
+  grid-column: 1 / -1;
+  order: -1;
+  margin: 0;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--muted);
+  text-align: center;
+  white-space: nowrap;
+}
+.rp-momentum-head span { font-size: var(--fs-xs); font-weight: 700; color: var(--text-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-momentum-head span:last-child { text-align: right; }
+.rp-chart { display: block; width: 100%; height: 84px; }
+.rp-chart-mid { stroke: var(--line); stroke-width: 1; }
+.rp-chart-area { fill: var(--green); fill-opacity: 0.45; }
+.rp-momentum-empty { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
+
+.rp-markers { position: relative; height: 28px; margin-top: var(--sp-1); }
+.rp-marker {
+  position: absolute;
+  top: 0;
+  /* Parmakla rahat dokunulabilir alan: 28px kare, ortalanmış. */
+  width: 28px;
+  height: 28px;
+  margin-left: -14px;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  line-height: 1;
+}
+.rp-marker i { font-style: normal; }
+.rp-marker-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* ---------- Zaman çizelgesi ---------- */
+.rp-timeline {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-timeline-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); margin-bottom: var(--sp-2); }
+.rp-timeline-head h3 { margin: 0; font-size: var(--fs-sm); font-weight: 700; }
+.rp-timeline-all {
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  color: var(--green-deep);
+  /* Dokunma hedefi: satır yüksekliği 44px'e tamamlanır. */
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--sp-1);
+}
+.rp-timeline-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.rp-timeline-item {
+  display: grid;
+  grid-template-columns: 2.6rem 1.6rem minmax(0, 1fr);
+  align-items: center;
+  gap: var(--sp-2);
+  /* En yeni olay üstte; her satır kendi başına dokunulabilir yükseklikte. */
+  min-height: 44px;
+  padding-block: var(--sp-1);
+  border-bottom: 1px solid var(--line);
+}
+.rp-timeline-item:last-child { border-bottom: 0; }
+.rp-timeline-min { font-size: var(--fs-xs); font-weight: 800; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rp-timeline-icon { font-size: 15px; line-height: 1; }
+.rp-timeline-body { font-size: var(--fs-sm); min-width: 0; overflow-wrap: anywhere; }
+.rp-timeline-body em { font-style: normal; font-weight: 700; color: var(--text-soft); }
+.rp-timeline-body small { color: var(--muted); }
+.rp-timeline-assist { color: var(--muted); font-size: var(--fs-xs); }
+.rp-timeline-item.is-goal .rp-timeline-body em,
+.rp-timeline-item.is-penalty .rp-timeline-body em { color: var(--green-deep); }
+.rp-timeline-item.is-red .rp-timeline-body em,
+.rp-timeline-item.is-yellow-red .rp-timeline-body em { color: var(--live); }
+
+.rp-stale {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* `hidden` NİTELİĞİ HER ZAMAN KAZANIR.
+   Sayfada `display` atayan sınıflar var (`.data-empty { display: grid }`
+   gibi) ve bunlar tarayıcının `[hidden] { display: none }` varsayılanını
+   eziyor. Bu yüzden "veri güncellenemiyor" uyarısı SAĞLIKLI sayfada da
+   görünüyordu: yanlış veri göstermemek için yazılmış satır, kendisi yanlış
+   bir iddiaya dönüşmüştü. Radar bölümünün gizlenebilir parçaları bu kuralı
+   açıkça yazar. */
+.rp-section [hidden],
+.rp-home[hidden],
+[data-radar-pulse][hidden],
+[data-radar-home-card][hidden] { display: none !important; }
+
+/* Hareketi azalt tercihi: geçişler tamamen kapanır. */
+@media (prefers-reduced-motion: reduce) {
+  .rp-balance-fill,
+  .rp-balance-mark { transition: none; }
+}
+
+@media (min-width: 560px) {
+  .rp-gauge {
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 1.6fr) minmax(0, 1fr);
+  }
+  .rp-balance { order: 2; grid-column: auto; }
+  .rp-side.is-away { order: 3; }
+  .rp-side-value { font-size: 2.25rem; }
+  .rp-window-teams,
+  .rp-window-row { grid-template-columns: 4.5rem minmax(0, 1fr) 4.5rem; }
+  .rp-window-teams { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .rp-chart { height: 110px; }
+  /* Geniş ekranda adlar zaten sığıyor: başlık ortaya, tek satıra döner. */
+  .rp-momentum-head { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); }
+  .rp-momentum-head h3 { grid-column: auto; order: 0; }
+}
+
+/* ---------- Ana sayfa Radar Nabzı kartı ---------- */
+/* CANLI MAÇ YOKSA GÖRÜNMEZ. Bölüm `hidden` doğduğu ve `hidden` iken hiçbir
+   kenar boşluğu üretmediği için sakin bir günde ana sayfada boşluk kalmaz. */
+.rp-home[hidden] { display: none; }
+.rp-home { margin-block: var(--sp-4); }
+.rp-home-link {
+  display: grid;
+  gap: var(--sp-2);
+  padding: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--surface-tint), var(--surface));
+  color: inherit;
+  text-decoration: none;
+  /* Kart tamamı dokunma hedefi; parmakla açmak için ayrı bir düğme yok. */
+  min-height: 44px;
+}
+.rp-home-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--green-deep);
+}
+.rp-home-score {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  min-width: 0;
+}
+.rp-home-score em { font-style: normal; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rp-home-min {
+  font-style: normal;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--live);
+  font-variant-numeric: tabular-nums;
+}
+.rp-home-pulses { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--sp-2); }
+.rp-home-pulse {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.rp-home-pulse span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-home-pulse b { font-size: var(--fs-lg); font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
+.rp-home-pulse.is-lead b { color: var(--green); }
+.rp-home-pulse i { font-style: normal; }
+.rp-home-cta { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.04em; color: var(--green-deep); }
+.rp-home-link:hover { border-color: var(--green); }
+.rp-home-link:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+@media (min-width: 560px) {
+  .rp-home-link {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .rp-home-kicker { grid-column: 1 / -1; }
+  .rp-home-cta { text-align: right; }
+}
+
+/* FAVORİ TAKIM ROZETİ. Kartın neden bu maçı seçtiğini tek kelimeyle
+   söyler. Rozet bir İDDİA değil, bir GEREKÇE: skoru ya da nabzı
+   değiştirmez, yalnızca sıralamanın nedenini açık eder. */
+.rp-home-fav {
+  font-style: normal;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px var(--sp-2);
+  border-radius: 999px;
+  background: var(--green-tint);
+  color: var(--green-deep);
+  /* Uzun etiket kartı yırtmasın: taşarsa kırpılır, satır sarmaz. */
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* TAKİP EDİLEN CANLI MAÇLAR ŞERİDİ.
+   Yalnızca ŞU AN oynanan takip maçları çizilir; hiçbiri canlı değilse
+   şerit basılmaz. Yatay kaydırma yok — satırlar sarar. */
+.rp-home-followed {
+  display: grid;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+  padding: var(--sp-3);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.rp-home-followed-label {
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.rp-home-followed-list {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rp-home-followed-list a {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-width: 0;
+  /* Parmakla açılabilir yükseklik. */
+  min-height: 44px;
+  padding: var(--sp-2);
+  border-radius: 10px;
+  color: inherit;
+  text-decoration: none;
+  font-size: var(--fs-sm);
+}
+.rp-home-followed-list a:hover { background: var(--surface-tint); }
+.rp-home-followed-list a:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.rp-home-followed-list span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-home-followed-list b { font-weight: 800; font-variant-numeric: tabular-nums; }
+.rp-home-followed-list i {
+  font-style: normal;
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--live);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (min-width: 560px) {
+  .rp-home-followed-list { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+}
+
+/* Momentumun ÖLÇÜLMEDİĞİ dakikalar: düz bir çizgi "baskı yoktu" demektir,
+   oysa doğrusu "ölçülmedi". Taralı bölge ikisini ayırır. */
+.rp-chart-gap { fill: var(--surface-sunken); }
+.rp-momentum-note { margin: var(--sp-1) 0 0; font-size: var(--fs-xs); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   TARAFTAR ANKETİ — "Maçı kim kazanır?" + değiştirilebilir ikinci soru
+   ──────────────────────────────────────────────────────────────────────────
+   Radar Nabzı ile aynı jetonları ve aynı kart dilini kullanır; ayrı bir
+   görsel dil kurmaz. Oy deposu kapalıysa bölüm hiç açılmadığı için burada
+   "boş anket" durumu YOKTUR.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.fan-poll-section[hidden],
+.fan-poll-section [hidden] { display: none !important; }
+.fan-poll-body { display: grid; gap: var(--sp-4); }
+
+.fan-poll-question {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.fan-poll-question h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-md); font-weight: 700; }
+
+.fan-poll-options { display: grid; gap: var(--sp-2); }
+.fan-poll-option {
+  /* Parmakla rahat tıklanabilir: tam genişlik, 48px yükseklik. */
+  min-height: 48px;
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.fan-poll-option:hover:not(:disabled) { border-color: var(--green); background: var(--surface-tint); }
+.fan-poll-option:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-poll-option:disabled { opacity: 0.6; cursor: progress; }
+
+.fan-poll-results { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.fan-poll-result-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+.fan-poll-result-head b { font-variant-numeric: tabular-nums; }
+.fan-poll-result.is-leader .fan-poll-result-head b { color: var(--green); }
+.fan-poll-bar {
+  display: block;
+  height: 10px;
+  margin: var(--sp-1) 0 2px;
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.fan-poll-bar i { display: block; height: 100%; background: var(--green); }
+.fan-poll-result.is-leader .fan-poll-bar i { background: linear-gradient(90deg, var(--green-deep), var(--green)); }
+/* Okuyucunun kendi oyu işaretlenir — hangi seçeneği seçtiğini hatırlamak
+   için sayfayı yeniden okumak gerekmesin. */
+.fan-poll-result.is-mine .fan-poll-result-head span::after {
+  content: " ✓";
+  color: var(--green);
+  font-weight: 800;
+}
+.fan-poll-result small { font-size: var(--fs-xs); color: var(--muted); }
+.fan-poll-total, .fan-poll-note, .fan-poll-empty { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
+.fan-poll-error {
+  margin: var(--sp-3) 0 0;
+  padding: var(--sp-3);
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+@media (min-width: 560px) {
+  .fan-poll-options { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+  .fan-poll-option { text-align: center; }
+}
+
+/* ---------- Sosyal paylaşım satırı ---------- */
+/* Radar Nabzı bloğunun içinde yaşar: paylaşılacak sayılar zaten orada,
+   ayrı bir kutu aynı bilgiyi ikinci kez göstermek olurdu. */
+.fan-share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.fan-share-label { font-size: var(--fs-xs); font-weight: 700; color: var(--muted); }
+.fan-share-buttons { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.fan-share-button {
+  /* Dokunma hedefi 44px; dar ekranda da sığsın diye yatayda esnek. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fan-share-button:hover { border-color: var(--green); background: var(--surface-tint); }
+.fan-share-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-share-button.is-copy { border-style: dashed; }
+
+/* ---------- "Bu Maçı Takip Et" ---------- */
+/* Kap `hidden` doğar ve yalnızca push GERÇEKTEN mümkünse açılır; bildirim
+   gönderilemeyecek bir tarayıcıda düğme hiç görünmez. */
+.fan-follow-wrap[hidden] { display: none !important; }
+.fan-follow-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+  margin: calc(var(--sp-2) * -1) 0 var(--sp-4);
+}
+.fan-follow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+.fan-follow:hover { border-color: var(--green); background: var(--surface-tint); }
+.fan-follow:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-follow.is-on { border-color: var(--green); background: var(--green-tint); color: var(--green-deep); }
+.fan-follow-off {
+  min-height: 44px;
+  padding-inline: var(--sp-2);
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--fs-xs);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.fan-follow-note { flex-basis: 100%; margin: 0; font-size: var(--fs-xs); }
+
+/* ---------- Öne çıkan oyuncular ---------- */
+/* Sağlayıcı derece vermiyorsa bu blok hiç basılmaz; boş durum yoktur. */
+.rp-players {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-players h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); font-weight: 700; }
+.rp-players-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.rp-player {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-block: var(--sp-2);
+  border-bottom: 1px solid var(--line);
+}
+.rp-player:last-child { border-bottom: 0; }
+.rp-player-star { font-size: 13px; line-height: 1; }
+.rp-player-body { min-width: 0; font-size: var(--fs-sm); }
+.rp-player-body small { color: var(--muted); }
+.rp-player-stats { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); margin-top: 2px; }
+.rp-player-stats span { font-size: var(--fs-xs); color: var(--muted); }
+.rp-player-rating {
+  font-size: var(--fs-lg);
+  font-weight: 800;
+  color: var(--green);
+  font-variant-numeric: tabular-nums;
+}
+.rp-players-source { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }
+
+/* ---------- Kazanma olasılığı ---------- */
+/* Takılı gerçek bir kaynak olmadan bu blok HİÇ basılmaz; boş durumu yoktur. */
+.rp-winprob {
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.rp-winprob h3 { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); font-weight: 700; }
+.rp-winprob-bar {
+  display: flex;
+  height: 14px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--surface-sunken);
+}
+.rp-winprob-bar i { display: block; height: 100%; }
+.rp-winprob-bar .is-home { background: var(--green-deep); }
+.rp-winprob-bar .is-draw { background: var(--muted); }
+.rp-winprob-bar .is-away { background: var(--cyan); }
+.rp-winprob-legend {
+  list-style: none;
+  margin: var(--sp-2) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+  font-size: var(--fs-xs);
+}
+.rp-winprob-legend li { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.rp-winprob-legend span { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rp-winprob-legend b { font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
+.rp-winprob-legend li:nth-child(2) { text-align: center; }
+.rp-winprob-legend li:last-child { text-align: right; }
+.rp-winprob-source { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }

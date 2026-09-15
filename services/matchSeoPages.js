@@ -298,14 +298,67 @@ function slugForMatch(match, index) {
  * damgalansaydı rapor üreticisi kalıcı maç sayfasının adresine rapor
  * dosyası basardı. Ayrı alan, ayrı sorumluluk.
  */
-function withMatchPages(matches, index) {
+/**
+ * TR SLUG → EN SAYFA YOLU.
+ *
+ * Eşleme `data/en-route-map.json` içinde zaten var (hreflang enjeksiyonu ve
+ * dil düğmesi aynı dosyayı okuyor); burada yalnızca TERSİNE çevrilmiş, adres
+ * başına O(1) bir tablo kuruluyor.
+ *
+ * TEMBEL YÜKLENİR. Dosya 190 KB'ın üzerinde ve Türkçe yüzeyin ona hiç
+ * ihtiyacı yok; her `/api/matches` çağrısında ayrıştırmak, İngilizce
+ * okuyucu hiç gelmese bile her soğuk başlangıca bedel yazardı. Tablo
+ * yalnızca İngilizce yol İSTENDİĞİNDE kurulur ve örnek boyunca saklanır.
+ */
+let enSlugTableCache = null;
+
+function enSlugTable() {
+  if (enSlugTableCache) return enSlugTableCache;
+  enSlugTableCache = new Map();
+  try {
+    // eslint-disable-next-line global-require
+    const routes = require("../data/en-route-map.json");
+    for (const entry of Object.values(routes || {})) {
+      if (!entry || entry.kind !== "match-seo" || !entry.tr || !entry.en) continue;
+      const trSlug = String(entry.tr).replace(/^mac\//, "").replace(/\.html$/, "");
+      const enSlug = String(entry.en).replace(/^en\/match\//, "").replace(/\.html$/, "");
+      if (trSlug && enSlug) enSlugTableCache.set(trSlug, enSlug);
+    }
+  } catch {
+    // Eşleme dosyası yoksa İngilizce yol damgalanmaz; Türkçe yol bozulmaz.
+  }
+  return enSlugTableCache;
+}
+
+function resetEnSlugTable() {
+  enSlugTableCache = null;
+}
+
+/**
+ * @param {object[]} matches
+ * @param {object}   [index]            maç → slug tablosu (test için)
+ * @param {object}   [options]          { includeEn: boolean }
+ */
+function withMatchPages(matches, index, options) {
   if (!Array.isArray(matches)) return [];
   const table = index || loadIndex();
+  const includeEn = Boolean(options && options.includeEn);
   return matches.map((match) => {
     if (!match || typeof match !== "object" || match.matchPage) return match;
     const slug = slugForMatch(match, table);
     if (!slug) return match;
-    return { ...match, matchPage: trPagePath(slug).replace(/\.html$/, ""), matchPageUrl: trPageUrl(slug) };
+    const stamped = { ...match, matchPage: trPagePath(slug).replace(/\.html$/, ""), matchPageUrl: trPageUrl(slug) };
+    if (includeEn) {
+      const enSlug = enSlugTable().get(slug);
+      // İngilizce sayfası ÜRETİLMEMİŞ maça İngilizce bağlantı verilmez:
+      // olmayan bir adrese göndermektense alan hiç yazılmaz ve tüketici
+      // Türkçe sayfaya düşer.
+      if (enSlug) {
+        stamped.matchPageEn = enPagePath(enSlug).replace(/\.html$/, "");
+        stamped.matchPageEnUrl = enPageUrl(enSlug);
+      }
+    }
+    return stamped;
   });
 }
 
@@ -323,6 +376,7 @@ function competitionNameFor(competitionId, fallback) {
 }
 
 module.exports = {
+  resetEnSlugTable,
   DOMAIN,
   EN_MONTHS,
   INDEXABLE_COMPETITION_IDS,

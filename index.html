@@ -22,7 +22,7 @@
     <meta name="twitter:title" content="Canlı Skor, Maç Sonuçları, Puan Durumu ve Futbol Haberleri | FutbolRadar" />
     <meta name="twitter:description" content="Canlı skorlar, bugünün maçları, maç sonuçları, Süper Lig puan durumu, fikstür ve güncel futbol haberlerini FutbolRadar'da takip edin." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
-    <link rel="stylesheet" href="./page.css?v=7c04416e" />
+    <link rel="stylesheet" href="./page.css?v=837d70e9" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -166,6 +166,16 @@
 
 
       <main class="home-main">
+      <!-- RADAR NABZI ANA SAYFA KARTI.
+           Kabuk boş ve `hidden` doğar; radar-home-card.js yalnızca gerçekten
+           canlı bir maç bulduğunda doldurup açar, maç bitince yeniden kapatır.
+           Sunucu tarafında basılmamasının sebebi: "canlı" iddiası derleme
+           anında doğrulanamaz ve yayına giren statik bir kart o andan
+           itibaren yanlış olurdu. -->
+      <section class="container rp-home" data-radar-home-card data-radar-locale="tr" hidden aria-label="Radar Nabzı">
+        <div data-radar-home-body></div>
+      </section>
+
         <section class="container hero" id="hero-canli-skor">
           <div>
             <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Canlı maç merkezi</span>
@@ -955,6 +965,8 @@
   </div><!-- poll-sticky:end -->
     </div>
     <script src="./site.js?v=42c2d54c" defer></script>
-    <script src="./app.js?v=f7795bfd" defer></script>
+    <script src="./radar-pulse.js?v=6c6809bb" defer></script>
+    <script src="./radar-home-card.js?v=4c890f95" defer></script>
+    <script src="./app.js?v=a2cfb319" defer></script>
   </body>
 </html>

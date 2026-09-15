@@ -22,23 +22,17 @@
 const webPush = require("./webPush");
 const pushSubscriptionStore = require("./pushSubscriptionStore");
 
-function loadTeams() {
-  try {
-    return require("../data/teams.json");
-  } catch (error) {
-    return [];
-  }
-}
+/** Maç takibi abonelik anahtarının öneki; takım kimlikleriyle çakışmaz. */
+const MATCH_FOLLOW_PREFIX = "match:";
 
-function normalizeName(value) {
-  return String(value || "").trim().toLocaleLowerCase("tr");
-}
+// AD → KİMLİK EŞLEMESİ ARTIK TEK YERDE (services/teamIdentity.js).
+// Aynı mantık ana sayfa kişiselleştirmesinde de gerekiyordu; kopyalamak
+// yerine ortak yardımcıya taşındı, böylece iki yüzey aynı takım için
+// farklı cevap veremez.
+const { loadTeams, normalizeName, teamIdForName } = require("./teamIdentity");
 
 function slugForTeamName(teamName, teams) {
-  const target = normalizeName(teamName);
-  if (!target) return null;
-  const match = (Array.isArray(teams) ? teams : []).find((team) => normalizeName(team && team.name) === target);
-  return match ? String(match.id) : null;
+  return teamIdForName(teamName, teams);
 }
 
 function vapidConfig() {
@@ -60,13 +54,40 @@ function isConfigured() {
  * bu yüzden metin "kim attı"yı belirtir ama "sen kazandın/kaybettin"
  * demez.
  */
+/**
+ * Bildirimin açacağı adres: mümkünse MAÇIN KENDİ sayfası.
+ *
+ * Eskiden her bildirim canlı skor listesine gidiyordu ve okuyucu bildirimi
+ * gönderen maçı listede tekrar aramak zorunda kalıyordu. Sicilde kalıcı
+ * sayfası olan maçta doğrudan oraya gidilir; olmayan maçta liste kalır.
+ */
+function matchUrl(match) {
+  try {
+    // eslint-disable-next-line global-require
+    const { slugForMatch, trPagePath } = require("./matchSeoPages");
+    const slug = slugForMatch({
+      providerIds: { apiFootball: match && match.providerId },
+      providerId: match && match.providerId,
+      providerName: "api-football",
+      homeTeam: match && match.homeTeam,
+      awayTeam: match && match.awayTeam,
+      kickoff: match && match.kickoff
+    });
+    if (slug) return `/${trPagePath(slug).replace(/\.html$/, "")}`;
+  } catch (error) {
+    /* sicil okunamazsa listeye düşülür */
+  }
+  return "/canli-skor.html";
+}
+
 function buildPayload(event) {
   const { match, type, side } = event;
   const home = match.homeTeam || "";
   const away = match.awayTeam || "";
   const scoreHome = match.score && Number.isFinite(match.score.home) ? match.score.home : null;
   const scoreAway = match.score && Number.isFinite(match.score.away) ? match.score.away : null;
-  const url = "/canli-skor.html";
+  const scoreText = scoreHome !== null && scoreAway !== null ? `${scoreHome}-${scoreAway}` : "";
+  const url = matchUrl(match);
 
   if (type === "kickoff") {
     return {
@@ -79,12 +100,46 @@ function buildPayload(event) {
 
   if (type === "goal") {
     const scorer = side === "home" ? home : away;
-    const scoreText = scoreHome !== null && scoreAway !== null ? `${scoreHome}-${scoreAway}` : "";
     const minuteText = match.minute ? ` · ${match.minute}'` : "";
     return {
       title: `⚽ GOL! ${scorer}`,
       body: `${home} ${scoreText} ${away}${minuteText}`.replace(/\s+/g, " ").trim(),
       tag: `goal-${match.id}-${scoreHome}-${scoreAway}`,
+      url
+    };
+  }
+
+  // DEVRE ARASI / MAÇ SONU / KIRMIZI KART.
+  //
+  // Üçü de yalnızca DURUM GEÇİŞİNDE üretiliyor (bkz.
+  // services/liveScoreStream.js#detectMatchEvents), bu yüzden her yoklamada
+  // tekrarlanmıyor. Metin hiçbir yerde yorum yapmaz: ne olduğunu söyler,
+  // "iyi/kötü" demez — bildirimi kimin aldığını bilmiyoruz.
+  if (type === "halftime") {
+    return {
+      title: "⏸ Devre arası",
+      body: `${home} ${scoreText} ${away}`.replace(/\s+/g, " ").trim(),
+      tag: `halftime-${match.id}`,
+      url
+    };
+  }
+
+  if (type === "fulltime") {
+    return {
+      title: "🏁 Maç sonucu",
+      body: `${home} ${scoreText} ${away}`.replace(/\s+/g, " ").trim(),
+      tag: `fulltime-${match.id}`,
+      url
+    };
+  }
+
+  if (type === "red-card") {
+    return {
+      title: "🟥 Kırmızı kart",
+      body: `${home} ${scoreText} ${away}${match.minute ? ` · ${match.minute}'` : ""}`.replace(/\s+/g, " ").trim(),
+      // Etikete dakika giriyor: aynı maçta ikinci bir kırmızı kart
+      // birincinin bildirimini EZMESİN.
+      tag: `red-${match.id}-${match.minute || ""}`,
       url
     };
   }
@@ -121,9 +176,18 @@ async function notifyMatchEvents(events) {
     const payload = buildPayload(event);
     if (!payload) continue;
 
+    // ABONE ANAHTARLARI: takım takipçileri + BU MAÇIN takipçileri.
+    //
+    // "Bu Maçı Takip Et" düğmesi aboneliği `match:<sağlayıcı-kimliği>`
+    // anahtarıyla kaydediyor (bkz. server/pushSubscriptionRoute.js). Depo
+    // sütunu serbest metin olduğu için şema değişmedi; burada yalnızca
+    // aranacak anahtar listesi genişledi. Küme (`Set`) sayesinde hem
+    // takımı hem maçı takip eden kişiye AYNI olay iki kez gitmez.
     const slugs = [...new Set([
       slugForTeamName(event.match.homeTeam, teams),
-      slugForTeamName(event.match.awayTeam, teams)
+      slugForTeamName(event.match.awayTeam, teams),
+      event.match.providerId ? `${MATCH_FOLLOW_PREFIX}${event.match.providerId}` : null,
+      event.match.id ? `${MATCH_FOLLOW_PREFIX}${event.match.id}` : null
     ].filter(Boolean))];
 
     for (const slug of slugs) {
@@ -140,7 +204,9 @@ async function notifyMatchEvents(events) {
 }
 
 module.exports = {
+  MATCH_FOLLOW_PREFIX,
   buildPayload,
+  matchUrl,
   isConfigured,
   notifyMatchEvents,
   slugForTeamName,

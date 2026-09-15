@@ -35,6 +35,39 @@ function loadTeamIds() {
   }
 }
 
+/** Sicilde kayıtlı sağlayıcı maç kimlikleri — maç takibi anahtarı doğrulaması. */
+let matchIdCache = null;
+
+function loadMatchIds() {
+  if (matchIdCache) return matchIdCache;
+  matchIdCache = new Set();
+  try {
+    // eslint-disable-next-line global-require
+    const { loadRegistry } = require("../services/matchSeoPages");
+    const registry = loadRegistry();
+    for (const entry of (registry && Array.isArray(registry.pages)) ? registry.pages : []) {
+      const providerId = entry && entry.providerIds && entry.providerIds.apiFootball;
+      if (providerId) matchIdCache.add(String(providerId));
+    }
+  } catch (error) {
+    matchIdCache = new Set();
+  }
+  return matchIdCache;
+}
+
+function resetMatchIds() {
+  matchIdCache = null;
+}
+
+/** Takım kimliği mi, yoksa sicilde gerçekten var olan bir maç mı? */
+function isFollowKey(value) {
+  const key = String(value || "").trim();
+  if (!key) return false;
+  if (loadTeamIds().has(key)) return true;
+  const match = key.match(/^match:([A-Za-z0-9_-]{1,40})$/);
+  return Boolean(match && loadMatchIds().has(match[1]));
+}
+
 async function readJsonBody(req) {
   if (req.body && typeof req.body === "object") return req.body;
   if (typeof req.body === "string" && req.body.trim()) {
@@ -128,9 +161,15 @@ async function handlePushSubscription(req, res) {
     return sendError(res, 400, "Gecerli bir push abonelik nesnesi gerekli.", "INVALID_SUBSCRIPTION", SOURCE);
   }
 
-  const teamIds = loadTeamIds();
-  if (!favoriteTeam || !teamIds.has(favoriteTeam)) {
-    return sendError(res, 400, "Gecerli bir favori takim secilmeli.", "INVALID_TEAM", SOURCE);
+  // ABONELİK ANAHTARI: takım kimliği VEYA `match:<sağlayıcı-kimliği>`.
+  //
+  // İkincisi "Bu Maçı Takip Et" düğmesinden gelir. Serbest metin kabul
+  // EDİLMEZ: doğrulanmayan bir anahtar, deposu asla bildirim almayacak
+  // kayıtlarla doldurur ve okuyucuya bildirim izni verdirip sessizce
+  // hiçbir şey göndermemek olurdu. Maç kimliği sicilde gerçekten var mı
+  // diye bakılıyor.
+  if (!favoriteTeam || !isFollowKey(favoriteTeam)) {
+    return sendError(res, 400, "Gecerli bir takim ya da mac secilmeli.", "INVALID_TEAM", SOURCE);
   }
 
   try {
@@ -147,4 +186,4 @@ async function handlePushSubscription(req, res) {
   }
 }
 
-module.exports = { handlePushSubscription };
+module.exports = { handlePushSubscription, isFollowKey, resetMatchIds };

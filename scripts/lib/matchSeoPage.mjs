@@ -232,6 +232,11 @@ export const STR = {
     varEvent: "VAR",
     lastUpdated: "Son güncelleme",
     liveNote: "Skor ve olaylar sağlayıcıdan otomatik yenilenir.",
+    radarPulseTitle: "Maçın Anlık Baskı Dengesi",
+    radarPulseSubtitle: "Radar Nabzı, maçın son bölümündeki hücum ve baskı verilerinden hesaplanır.",
+    radarPulsePending: "Radar Nabzı maç başladığında burada açılır.",
+    radarPulseStale: "Canlı istatistik verisi geçici olarak güncellenemiyor.",
+    fanPollTitle: "Taraftar Anketi",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -369,6 +374,11 @@ export const STR = {
     varEvent: "VAR",
     lastUpdated: "Last updated",
     liveNote: "Score and events refresh automatically from the provider.",
+    radarPulseTitle: "Live Pressure",
+    radarPulseSubtitle: "Live Match Pulse is calculated from attacking and pressure data in the closing stage of the match.",
+    radarPulsePending: "Live Match Pulse opens here once the match kicks off.",
+    radarPulseStale: "Live statistics cannot be updated at the moment.",
+    fanPollTitle: "Fan Poll",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -1114,6 +1124,76 @@ export function eventsSectionHtml(events, ctx) {
     return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(text.goalsTitle, goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
   }
   return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${events.length ? eventsListHtml(events, text) : `<p class="muted-copy" data-msp-events-note>${escapeHtml(text.eventsPending)}</p>`}</div></section>`;
+}
+
+/**
+ * RADAR NABZI BÖLÜMÜNÜN KABUĞU.
+ *
+ * Sunucu tarafında yalnızca BAŞLIK ve BOŞ GÖVDE basılır; sayılar istemciye
+ * `/api/match-detail` yanıtıyla gelir (bkz. radar-pulse.js). Sebebi basit:
+ * Radar Nabzı "şu anki baskı"dır ve derleme anında üretilen bir sayı,
+ * sayfanın yayına girdiği andan itibaren yanlıştır.
+ *
+ * Kabuk `hidden` doğar. Veri gelene kadar sayfada YER KAPLAMAZ — bu hem
+ * düzen kaymasını (CLS) hem de "yükleniyor" diye duran boş bir kutuyu
+ * önler. İstemci yalnızca çizecek gerçek veri bulduğunda `hidden`ı kaldırır.
+ */
+export function radarPulseSectionHtml(ctx) {
+  const { locale } = ctx;
+  const text = STR[locale];
+  const anchor = locale === "en" ? "live-pulse" : "radar-nabzi";
+  return `<section class="msp-section rp-section" id="${anchor}" data-radar-pulse hidden aria-labelledby="rp-title">` +
+    `<h2 id="rp-title" class="msp-section-title">${escapeHtml(text.radarPulseTitle)}</h2>` +
+    `<p class="rp-subtitle muted-copy">${escapeHtml(text.radarPulseSubtitle)}</p>` +
+    `<div class="rp-body" data-radar-pulse-body></div>` +
+    `<p class="rp-stale" data-radar-pulse-stale hidden>${escapeHtml(text.radarPulseStale)}</p>` +
+    `</section>`;
+}
+
+/**
+ * TARAFTAR ANKETİ KABUĞU.
+ *
+ * Sunucu yalnızca başlığı ve boş gövdeyi basar; sorular, sayım ve "bu
+ * tarayıcı oy verdi mi" bilgisi `radar-fan.js` ile `/api/match-poll`ten
+ * gelir. Sayım derleme anında basılamaz: her oyla değişir ve yayına giren
+ * statik bir sayı o andan itibaren yanlıştır.
+ *
+ * Kabuk `hidden` doğar. Oy deposu yapılandırılmamışsa istemci bölümü hiç
+ * açmaz — oy kabul edemeyen bir anketi göstermek, çalışmayan bir düğme
+ * sunmaktır.
+ */
+/**
+ * "BU MAÇI TAKİP ET" KABUĞU — maç başlığının hemen altında.
+ *
+ * Sunucu yalnızca boş, `hidden` bir kap basar; düğmeyi `radar-fan.js` ancak
+ * push GERÇEKTEN mümkünse (VAPID anahtarı sayfada, servis çalışanı ve
+ * Notification API var) çizer. Düğmeyi koşulsuz basmak, bildirim
+ * gönderilemeyecek bir tarayıcıda okuyucudan izin istemek olurdu.
+ *
+ * Sağlayıcı maç kimliği olmayan maçta hiç basılmaz: takip aboneliği o
+ * kimliğe yazılıyor (bkz. server/pushSubscriptionRoute.js#isFollowKey).
+ */
+export function matchFollowHtml(ctx) {
+  const { locale, followFixtureId, pollSlug } = ctx;
+  if (!followFixtureId) return "";
+  return `<div class="fan-follow-wrap" data-match-follow hidden ` +
+    `data-match-follow-id="${escapeHtml(followFixtureId)}" ` +
+    `data-match-follow-slug="${escapeHtml(pollSlug || "")}" ` +
+    `data-match-follow-locale="${locale}"></div>`;
+}
+
+export function matchPollSectionHtml(ctx) {
+  const { locale, pollSlug } = ctx;
+  const text = STR[locale];
+  if (!pollSlug) return "";
+  const anchor = locale === "en" ? "fan-poll" : "taraftar-anketi";
+  return `<section class="msp-section fan-poll-section" id="${anchor}" data-match-poll ` +
+    `data-match-poll-slug="${escapeHtml(pollSlug)}" data-match-poll-locale="${locale}" hidden ` +
+    `aria-labelledby="fan-poll-title">` +
+    `<h2 id="fan-poll-title" class="msp-section-title">${escapeHtml(text.fanPollTitle)}</h2>` +
+    `<div class="fan-poll-body" data-match-poll-body></div>` +
+    `<p class="fan-poll-error" data-fan-poll-error hidden>${escapeHtml(locale === "en" ? "Votes cannot be recorded right now." : "Oy şu anda kaydedilemiyor.")}</p>` +
+    `</section>`;
 }
 
 export function statsSectionHtml(statistics, ctx) {

@@ -111,6 +111,27 @@ function matchSnapshot(match, serverReceivedAt) {
  * ancak önceki skor bilinirse ölçülebilir), yalnızca kickoff için ayrı
  * bir bekçi gerekiyordu.
  */
+/** Sağlayıcının durum kodu; bildirim geçişleri yalnızca buna bakar. */
+function statusCode(match) {
+  return String((match && (match.providerStatus || match.status)) || "").toUpperCase();
+}
+
+const HALFTIME_STATUSES = new Set(["HT", "HALFTIME", "BT"]);
+const FINISHED_STATUSES = new Set(["FT", "FINISHED", "AET", "PEN"]);
+
+/**
+ * Olay akışındaki kırmızı kart sayısı. "İkinci sarıdan kırmızı" da kırmızı
+ * sayılır — sahada sonucu aynı: takım eksik kalır.
+ */
+function countRedCards(events) {
+  let total = 0;
+  for (const event of Array.isArray(events) ? events : []) {
+    const detail = String((event && event.detail) || "").toLowerCase();
+    if (detail.includes("red card") || detail.includes("second yellow")) total += 1;
+  }
+  return total;
+}
+
 function detectMatchEvents(previousById, matches, everPolled) {
   const events = [];
   for (const match of matches) {
@@ -131,6 +152,35 @@ function detectMatchEvents(previousById, matches, everPolled) {
       }
       if (prevAway !== null && nextAway !== null && nextAway > prevAway) {
         events.push({ type: "goal", side: "away", match });
+      }
+
+      // DEVRE ARASI VE MAÇ SONU — DURUM GEÇİŞİNDEN, SAATTEN DEĞİL.
+      //
+      // Dakikaya bakarak "45 oldu, devre arasıdır" demek uzatma dakikalarında
+      // yanlış olurdu. Sağlayıcının kendi durum kodu tek doğru kaynak ve
+      // yalnızca GEÇİŞ anında olay üretilir: aynı durumda kalan her yoklama
+      // yeni bir bildirim göndermez.
+      const wasHalftime = HALFTIME_STATUSES.has(statusCode(prev));
+      const isHalftime = HALFTIME_STATUSES.has(statusCode(match));
+      if (!wasHalftime && isHalftime) {
+        events.push({ type: "halftime", match });
+      }
+
+      const wasFinished = FINISHED_STATUSES.has(statusCode(prev));
+      const isFinished = FINISHED_STATUSES.has(statusCode(match));
+      if (!wasFinished && isFinished) {
+        events.push({ type: "fulltime", match });
+      }
+
+      // KIRMIZI KART — OLAY AKIŞINDAKİ SAYIM ARTIŞINDAN.
+      //
+      // Skor gibi tek bir sayı yok; kırmızı kart olaylarının SAYISI
+      // karşılaştırılıyor. Sağlayıcı aynı kartı iki kez listelerse sayı
+      // artmaz, yani tekrar bildirim gitmez.
+      const prevReds = countRedCards(prev.events);
+      const nextReds = countRedCards(match.events);
+      if (nextReds > prevReds) {
+        events.push({ type: "red-card", match });
       }
     }
   }

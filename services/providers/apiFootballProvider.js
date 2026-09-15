@@ -239,7 +239,14 @@ const CACHE_RESOURCE_BY_PATH = Object.freeze({
   "/fixtures/lineups": "match-detail",
   "/fixtures/events": "match-detail",
   "/fixtures/statistics": "match-detail",
-  "/fixtures/players": "match-detail",
+  // OYUNCU İSTATİSTİĞİNİN KENDİ KOVASI VAR.
+  //
+  // Maç detayının geri kalanı 30 saniyede tazeleniyor (skor ve olaylar o
+  // hızda değişiyor). Oyuncu dereceleri o hızda değişmiyor ama her
+  // tazelemede ikinci bir sağlayıcı isteği demek olurdu — canlı maç başına
+  // kota iki katına çıkardı. Ayrı ve uzun TTL, yükü dakikada bir isteğin
+  // altına indiriyor.
+  "/fixtures/players": "match-players",
   "/predictions": "match-detail",
   // Oran ve sezonluk takım istatistiği maç öncesi verilerdir: dakikalık
   // değil saatlik ölçekte değişirler. Kısa TTL vermek, aynı koşuda aynı
@@ -1617,6 +1624,9 @@ function normalizeFixturePlayers(items) {
       assign("shotsOnTarget", stats.shots && stats.shots.on);
       assign("passes", stats.passes && stats.passes.total);
       assign("passAccuracy", stats.passes && stats.passes.accuracy);
+      // Kilit pas sağlayıcıda `passes.key` olarak geliyor; istenen oyuncu
+      // kartında bu alan vardı ve ölçülmüş bir değer olduğu için taşınıyor.
+      assign("keyPasses", stats.passes && stats.passes.key);
       assign("tackles", stats.tackles && stats.tackles.total);
       assign("duelsWon", stats.duels && stats.duels.won);
       assign("yellowCards", stats.cards && stats.cards.yellow);
@@ -1864,14 +1874,18 @@ async function getMatchDetail(query) {
     throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
   }
 
-  // Oyuncu istatistiği BİTMİŞ maçlarda çekilir. Uç nokta zaten vardı ama
-  // buradan hiç çağrılmıyordu: `players` alanı bu yüzden her maçta boştu ve
-  // "öne çıkan oyuncular" yalnızca gol/kart olaylarından türetilebiliyordu.
-  // Devam eden maçta istenmez — sağlayıcı maç bitmeden kısmi/oynak veri
-  // döndürüyor ve her yoklamada bir istek harcanırdı.
-  const finished = ["FT", "AET", "PEN", "FINISHED"].includes(
-    String((match.providerStatus || match.status || "")).toUpperCase()
-  );
+  // OYUNCU İSTATİSTİĞİ ARTIK CANLI MAÇTA DA ÇEKİLİYOR.
+  //
+  // Önceden yalnızca bitmiş maçta çekiliyordu; gerekçe her yoklamanın bir
+  // istek harcamasıydı. O gerekçe artık geçerli değil: uç noktanın kendi
+  // önbellek kovası var ("match-players", 3 dakika) ve tek uçuş sayesinde
+  // aynı maçı izleyen kaç okuyucu olursa olsun sağlayıcıya giden istek
+  // dakikada birin altında kalıyor. Başlamamış maçta hâlâ çekilmez —
+  // oynanmamış maçın oyuncu istatistiği yoktur.
+  const statusCode = String((match.providerStatus || match.status || "")).toUpperCase();
+  const finished = ["FT", "AET", "PEN", "FINISHED"].includes(statusCode);
+  const live = ["LIVE", "HALFTIME", "HT", "1H", "2H", "ET", "BT", "P", "IN_PLAY", "PAUSED"].includes(statusCode);
+  const wantPlayers = finished || live;
 
   // TAHMİN İSTEĞİ ARTIK İSTEĞE BAĞLI.
   //
@@ -1889,7 +1903,7 @@ async function getMatchDetail(query) {
     getFixtureEvents({ fixtureId }).catch(() => []),
     getFixtureStatistics({ fixtureId }).catch(() => []),
     wantsPredictions ? getPredictions({ fixtureId }).catch(() => []) : Promise.resolve([]),
-    finished ? getFixturePlayers({ fixtureId }).catch(() => []) : Promise.resolve([])
+    wantPlayers ? getFixturePlayers({ fixtureId }).catch(() => []) : Promise.resolve([])
   ]);
   const lineups = normalizeFixtureLineups(rawLineups);
   const events = normalizeFixtureEvents(rawEvents);
