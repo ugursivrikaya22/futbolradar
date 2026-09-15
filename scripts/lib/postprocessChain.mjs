@@ -53,6 +53,11 @@ export const POSTPROCESS_CHAIN = [
   // zorunda. Ayrıca takvime bağlı: anket kapanınca sayfanın durumu ve site
   // haritası kaydı saatlik koşuda kendiliğinden güncelleniyor.
   { id: "poll-pages", script: "generate-poll-pages.mjs", args: [], timeoutMinutes: 4 },
+  // FutbolRadar PRO sayfaları (/pro, /giris, /profil + EN). ORTAK
+  // YERLEŞİMDEN ÖNCE, `poll-pages` ile aynı gerekçeyle: sayfa burada
+  // doğuyor ve başlık/altlık, favicon, tema, ölçüm, hreflang ve varlık
+  // damgası adımlarının hepsini görmek zorunda.
+  { id: "membership-pages", script: "generate-membership-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
@@ -70,6 +75,11 @@ export const POSTPROCESS_CHAIN = [
   // pwa.js içerik damgası alır; bu yüzden önce sayfaya bağlanmalıdır.
   { id: "pwa", script: "inject-pwa.mjs", args: [], timeoutMinutes: 8 },
   { id: "theme-boot", script: "inject-theme-boot.mjs", args: [], timeoutMinutes: 5 },
+  // FutbolRadar PRO istemci katmanı (başlıktaki hesap bloğu, favori
+  // düğmeleri, bildirim zili). `pwa` ile aynı gerekçe: sayfaya yeni bir
+  // <script> ekliyor, damga adımı onu görmek zorunda. İçeriğe hiç
+  // dokunmuyor — yalnızca <head>e tek satır yazıyor.
+  { id: "membership", script: "inject-membership.mjs", args: [], timeoutMinutes: 8 },
   // Kulüp armaları tek bir dış kaynaktan geliyor ve sayfada 240'ı aşıyor;
   // bağlantı önden ısıtılmazsa ilk arma DNS + TLS el sıkışmasını bekliyor.
   { id: "preconnect", script: "inject-preconnect.mjs", args: [], timeoutMinutes: 8 },
@@ -91,6 +101,10 @@ export const POSTPROCESS_CHAIN = [
   // ve damga adımından ÖNCE.
   { id: "home-poll", script: "inject-home-poll.mjs", args: [], timeoutMinutes: 5 },
   { id: "motm-poll", script: "inject-motm-poll.mjs", args: [], timeoutMinutes: 5 },
+  // "Senin İçin" bölümü ana sayfalara. `home-poll`/`motm-poll` ile aynı
+  // yer ve aynı gerekçe: blok GÖVDEYE yazılıyor (head'e değil), yani
+  // `shared-layout`ten SONRA ve damga adımından ÖNCE koşmalı.
+  { id: "personal-home", script: "inject-personal-home.mjs", args: [], timeoutMinutes: 3 },
   // Meta uzunlukları üreticiler ne yazarsa yazsın son sözü burada bulur;
   // damga adımından ÖNCE koşmalı (içeriği değiştirir).
   { id: "normalize-meta", script: "normalize-meta.mjs", args: [], timeoutMinutes: 5 },

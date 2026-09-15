@@ -347,7 +347,28 @@ function getLiveScoreHub() {
     // bu dosyayı değil `getLiveScoreHub`ı hiç import etmiyor, ama ileride
     // etseydi bu satır modül yükleme sırasına bağlı kalmazdı.
     const { notifyMatchEvents } = require("./pushNotifier");
-    globalThis[key] = new LiveScoreHub({ onMatchEvents: notifyMatchEvents });
+    // SİTE İÇİ ZİL KUTUSU DA AYNI OLAYLARI ALIR.
+    //
+    // İki kanal yan yana çalışıyor: tarayıcı push'u (cihaz izni
+    // gerektirir, `push_subscriptions`) ve site içi bildirim
+    // (hesaba bağlı, `user_favorites`). Aynı gol ikisine de gider ve
+    // kullanıcı ikisini ayrı ayrı kapatabilir.
+    const siteNotifier = require("./membership/notifier");
+
+    // HER İKİ KANAL DA AYRI AYRI YUTULUR. Biri düşerse diğeri ve
+    // ASIL İŞ — canlı skor akışı — devam eder; bu kanca zaten
+    // `poll()` içinde try/catch ile sarılı ama oradaki tek catch,
+    // ilk hatada ikinci kanalı hiç çağırmamış olurdu.
+    globalThis[key] = new LiveScoreHub({
+      onMatchEvents: (events) => {
+        Promise.resolve()
+          .then(() => notifyMatchEvents(events))
+          .catch(() => {});
+        Promise.resolve()
+          .then(() => siteNotifier.notifyMatchEvents(events))
+          .catch(() => {});
+      }
+    });
   }
   return globalThis[key];
 }

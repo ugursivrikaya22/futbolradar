@@ -19,6 +19,8 @@ const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
 const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
+const { handleAuth } = require("../server/authRoute");
+const { handleAccount } = require("../server/accountRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -383,6 +385,26 @@ module.exports = async function handler(req, res) {
   // yalnızca okuma yöntemlerine (GET/HEAD) izin veriyor.
   if (routeName(req) === "push-subscribe") {
     return handlePushSubscription(req, res);
+  }
+
+  // ÜYELİK (FutbolRadar PRO): kimlik ve hesap uç noktaları.
+  //
+  // İkisi de alttaki genel kapıya sokulmuyor, üç ayrı gerekçeyle:
+  // (1) kayıt/giriş POST, genel kapı yalnızca GET/HEAD kabul ediyor;
+  // (2) yanıt KİŞİYE ÖZEL (`membership` politikası: private+no-store),
+  //     genel kapının paylaşılan önbelleği bir okuyucuya başkasının
+  //     oturumunu gösterirdi; (3) giriş denemesi kendi dar hız
+  //     sınırını taşıyor (dakikada 8), genel sınır (120) kaba kuvvet
+  //     için fazlasıyla gevşek.
+  //
+  // Dosyalar `server/` altında, `api/` altında değil: Vercel Hobby
+  // planındaki 12 sunucusuz işlev sınırı DOLU (bkz. motm-vote).
+  if (routeName(req) === "auth") {
+    return handleAuth(req, res);
+  }
+
+  if (routeName(req) === "account") {
+    return handleAccount(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

@@ -185,7 +185,11 @@ function collectClientFiles(dir) {
       if (dir === root && ["public"].includes(entry.name)) collectClientFiles(full);
       continue;
     }
-    if (entry.name === "app.js" || entry.name === "site.js") clientOnlyGlobs.push(full);
+    // `membership.js` de istemciye gidiyor ve ÜYELİK katmanının parçası:
+    // Supabase kimlik bilgisine en yakın duran istemci dosyası o. Kök
+    // kopyası da taranıyor ki `public/` kopyası henüz üretilmemişken
+    // (temiz ağaçta ilk derleme öncesi) kontrol atlanmış olmasın.
+    if (["app.js", "site.js", "membership.js"].includes(entry.name)) clientOnlyGlobs.push(full);
     if (dir.includes(`${path.sep}public${path.sep}`) && /\.js$/.test(entry.name)) clientOnlyGlobs.push(full);
   }
 }

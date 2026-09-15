@@ -601,6 +601,12 @@ function sitemapXml(files) {
     "gunun-radar-bulteni.html",
     // Indexable and linked from four pages, but was never listed here.
     "transfer-izleme.html",
+    // FutbolRadar PRO tanıtım sayfası (TR). İngilizce karşılığı aşağıda
+    // I18N_ROUTES üzerinden geliyor. `/giris` ve `/profil` BİLEREK yok:
+    // ikisi de `noindex` ve site haritası yalnızca indekslenen sayfaları
+    // bildirmeli — aksi hâlde Google'a "şunu indeksle" deyip sayfada
+    // "indeksleme" yazmış olurduk.
+    "pro.html",
     ...files,
     // İngilizce sürüm ayrı, indekslenebilir sayfalardan oluşuyor; site
     // haritasında görünmezlerse yalnızca dil kutusundan keşfedilirler.

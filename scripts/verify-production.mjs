@@ -30,6 +30,12 @@ for (const args of [
   // üretilmediği ancak bir tuval koşturarak bilinebilir; statik denetim
   // bunu göremez.
   ['scripts/test-poll-share-browser.mjs'],
+  // Üyelik arayüzü: gerçek tarayıcıda, 375px mobil + 1440px masaüstü.
+  // Aynı gerekçe — dar ve hızlı bir kapı, 170 senaryoluk geniş
+  // denetimden ÖNCE. Başlığın giriş yapınca profil bloğuna dönmesi,
+  // açılır panelin ekrandan taşmaması ve konsolun temiz kalması ancak
+  // gerçek bir düzende ölçülebilir; statik denetim bunu göremez.
+  ['scripts/test-membership-browser.mjs'],
   ['scripts/test-clickable-browser.cjs']
 ]) {
   console.log('[production gate]', args.join(' '));

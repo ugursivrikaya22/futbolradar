@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { favoriteButton } from "./lib/favoriteButton.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -151,7 +152,11 @@ function standingsPage() {
     intro: "Süper Lig takımlarının kayıtlı son puan durumu. Tablo, sağlayıcıdan doğrulanan lig verileriyle derleme sırasında oluşturulur.",
     breadcrumbs,
     schema: { "@type": "CollectionPage", "@id": `${siteUrl}/super-lig-puan-durumu#page`, url: `${siteUrl}/super-lig-puan-durumu`, name: "Süper Lig Puan Durumu", description: "Süper Lig 2026/27 puan durumu ve takım istatistikleri.", inLanguage: "tr-TR", dateModified: dataDate },
-    content: `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel lig tablosu</h2>${table(["Sıra", "Takım", "O", "G", "B", "M", "A", "Y", "Av.", "P"], rows, "Süper Lig 2026/27 puan durumu")}</section>${relatedLinks("Puan durumundan devam edin")}`
+    // "Ligi Takip Et" tablonun üstünde. Süper Lig sayfası
+    // `generate-league-standings-pages.mjs` tarafından ÜRETİLMİYOR
+    // (orada `TARGET_IDS` onu dışarıda bırakıyor, çünkü sayfası zaten
+    // burada); düğmenin de bu yüzden burada olması gerekiyor.
+    content: `${favoriteButton({ kind: "league", id: "super-lig", name: "Süper Lig", locale: "tr" })}<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel lig tablosu</h2>${table(["Sıra", "Takım", "O", "G", "B", "M", "A", "Y", "Av.", "P"], rows, "Süper Lig 2026/27 puan durumu")}</section>${relatedLinks("Puan durumundan devam edin")}`
   });
 }
 
@@ -209,7 +214,11 @@ function teamPage(featured) {
     intro: `${featured.name} için kayıtlı 2026/27 lig görünümü, takım formu ve doğrulanmış oyuncu kayıtlarına erişim sayfası.`,
     breadcrumbs,
     schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: { "@type": "SportsTeam", name: featured.name, sport: "Football", memberOf: { "@type": "SportsOrganization", name: team.league } } },
-    content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section><section class="evergreen-section" aria-labelledby="team-form"><h2 id="team-form">Kayıtlı form</h2><div class="evergreen-score-grid"><div><span>Form skoru</span><strong>${value(team.formScore)}</strong></div><div><span>Momentum</span><strong>${value(team.momentum)}</strong></div><div><span>Hücum</span><strong>${value(team.attack)}</strong></div><div><span>Savunma</span><strong>${value(team.defense)}</strong></div></div><div class="evergreen-form evergreen-form-large">${(team.form || []).map((item) => `<i class="is-${escapeHtml(item.result)}">${escapeHtml(item.label)}</i>`).join("") || "—"}</div></section></div><section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section><aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>${relatedLinks("Takım profilinden devam edin", "../")}`
+    // "Takımı Takip Et" sayfanın EN ÜSTÜNDE, lig görünümünden önce:
+    // okuyucu takımın sayfasına takımı için geliyor ve takip kararı
+    // istatistik tablosunu okumasını beklememeli. Kimlik `team.id`
+    // (slug) — sunucu `data/teams.json` kütüğünde doğruluyor.
+    content: `${favoriteButton({ kind: "team", id: team.id, name: featured.name, locale: "tr" })}<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section><section class="evergreen-section" aria-labelledby="team-form"><h2 id="team-form">Kayıtlı form</h2><div class="evergreen-score-grid"><div><span>Form skoru</span><strong>${value(team.formScore)}</strong></div><div><span>Momentum</span><strong>${value(team.momentum)}</strong></div><div><span>Hücum</span><strong>${value(team.attack)}</strong></div><div><span>Savunma</span><strong>${value(team.defense)}</strong></div></div><div class="evergreen-form evergreen-form-large">${(team.form || []).map((item) => `<i class="is-${escapeHtml(item.result)}">${escapeHtml(item.label)}</i>`).join("") || "—"}</div></section></div><section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section><aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>${relatedLinks("Takım profilinden devam edin", "../")}`
   });
 }
 

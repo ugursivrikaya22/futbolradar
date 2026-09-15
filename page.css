@@ -22751,12 +22751,14 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   color: var(--muted);
   font-size: var(--fs-xs, 0.78rem);
   font-weight: 800;
+}
 
 /* Maç Merkezi devir şeridi: hafta numaralı sayfa kalıcı maç adresine
    devredildiğinde (bkz. scripts/generate-match-pages.mjs matchCentreSlug)
    en üstte tek satırlık yönlendirme. Mobilde sarar, taşmaz. */
 .match-centre-handoff {
   margin: 14px 0 0;
+}
 
 /* ---------------------------------------------------------------------------
  * CANLI PUAN DURUMU
@@ -22798,6 +22800,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .match-centre-handoff a:focus-visible {
   background: rgba(11, 143, 90, 0.13);
   border-color: rgba(11, 143, 90, 0.45);
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .standings-live-badge { animation: standings-live-fade 2.4s ease-in-out infinite; }
@@ -23473,3 +23476,680 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .rp-winprob-legend li:nth-child(2) { text-align: center; }
 .rp-winprob-legend li:last-child { text-align: right; }
 .rp-winprob-source { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
+
+/* =====================================================================
+   FUTBOLRADAR PRO — ÜYELİK YÜZEYLERİ
+   =====================================================================
+   Tasarım kararı tek cümleyle: ÜYELİK SİTENİN ÜSTÜNE ÇIKMAZ.
+   FutbolRadar'ın işi canlı skor; hesap bloğu başlıkta dil kutusu
+   kadar yer tutar, PRO rozeti ise okunaklı ama sessizdir — parlak
+   gradyan, animasyon ya da altın sarısı yok. Marka yeşili (--green)
+   zaten vurgu rengi; rozet onun soluk tonunu (--green-tint) kullanır.
+
+   MOBİL: bütün bu yüzeyler 375px'te taşmadan çalışmak zorunda.
+   Sitenin trafiğinin büyük bölümü mobil ve başlık zaten kalabalık
+   (marka + arama + dil + hamburger). Hesap bloğu bu yüzden mobilde
+   kullanıcı ADINI gizler, yalnızca avatar + rozet bırakır.
+   ===================================================================== */
+
+/* `hidden` ÖZNİTELİĞİ YAZAR KURALINI YENMEK ZORUNDA.
+   Tarayıcının `[hidden] { display: none }` kuralı UA stil sayfasındadır
+   ve HERHANGİ bir yazar `display` bildirimi onu ezer. Aşağıdaki
+   bileşenlerin hepsine `display` veriliyor (`inline-flex`, `flex`), yani
+   `element.hidden = true` demek onları GİZLEMİYORDU: giriş yapan
+   kullanıcıda "Giriş Yap" bağlantısı ekranda kalıyordu, PRO olmayan
+   üyede rozet görünüyordu. Görünürlüğü JavaScript `hidden` ile
+   yönettiği için bu kural bileşenlerin doğru çalışmasının ön koşulu. */
+.account-nav [hidden],
+.account-nav[hidden],
+.pro-badge[hidden],
+.favorite-button[hidden],
+[data-personal-home][hidden],
+[data-profile-body][hidden],
+[data-profile-signin][hidden],
+[data-auth-panel][hidden] {
+  display: none !important;
+}
+
+/* --- Başlıktaki hesap bloğu --- */
+.account-nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* Başlık ızgarasında dil kutusundan sonra gelir; kendi genişliğini
+     içeriğinden alır ve daralmaz — daralsaydı uzun bir kullanıcı
+     adında hamburger düğmesini ezerdi. */
+  flex: 0 0 auto;
+}
+
+.account-signin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--green-deep);
+  font-size: var(--fs-sm, 0.8125rem);
+  font-weight: 650;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.account-signin:hover,
+.account-signin:focus-visible {
+  background: var(--green-tint);
+  border-color: var(--green);
+}
+
+.account-user { position: relative; }
+
+.account-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 34px;
+  padding: 3px 8px 3px 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm, 0.8125rem);
+  cursor: pointer;
+}
+
+.account-trigger:hover,
+.account-trigger:focus-visible { border-color: var(--line-strong); }
+
+.account-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--green-tint);
+  color: var(--green-deep);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.account-avatar svg { width: 18px; height: 18px; }
+.account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.account-name {
+  max-width: 10ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+/* --- PRO rozeti ---
+   Küçük, tek renk, kutu içinde. "PRO" bir statü işareti; bir reklam
+   değil. Bu yüzden gradyan/parıltı yok ve boyutu kullanıcı adından
+   küçük. */
+.pro-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border: 1px solid rgba(11, 143, 90, 0.3);
+  border-radius: 4px;
+  background: var(--green-tint);
+  color: var(--green-deep);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+/* --- Hesap menüsü --- */
+/* AÇILIR KATMANLAR SOLA YASLANIR.
+   Hesap bloğu başlığın SAĞINDA değil: `.nav` içinde dil kutusundan
+   hemen sonra geliyor ve sağında hamburger ile menü var. Ölçüldü —
+   bloğun sağ kenarı 375px'te 203, 1440px'te 234, 1024px'te 837:
+   yani hiçbir genişlikte ekranın sağ kenarı değil. `right: 0` bu
+   yüzden paneli ekranın soluna taşırıyordu (375px'te -97px).
+   Çapa bloğun KENDİ sol kenarı (her genişlikte 16–40px arası) ve
+   genişlik görünen alana kilitli: iki yönde de taşma imkânsız. */
+.account-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  z-index: 60;
+  max-width: calc(100vw - 32px);
+  min-width: 190px;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised, #fff);
+  box-shadow: var(--shadow-card);
+}
+
+.account-menu a,
+.account-menu button {
+  display: block;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-sm, 0.8125rem);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-menu a:hover,
+.account-menu button:hover,
+.account-menu a:focus-visible,
+.account-menu button:focus-visible { background: var(--surface-tint); }
+
+/* --- Bildirim zili --- */
+.account-bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.account-bell:hover,
+.account-bell:focus-visible { border-color: var(--line-strong); color: var(--green-deep); }
+.account-bell svg { width: 18px; height: 18px; }
+
+.account-bell-count {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: var(--radius-pill);
+  background: var(--live);
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.account-notifications {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  z-index: 60;
+  width: min(320px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised, #fff);
+  box-shadow: var(--shadow-card);
+}
+
+.account-notifications-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.account-notifications-head button {
+  border: 0;
+  background: none;
+  color: var(--green-deep);
+  font: inherit;
+  font-size: var(--fs-xs, 0.75rem);
+  cursor: pointer;
+}
+
+.account-notifications-list {
+  max-height: 320px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.account-notification { border-bottom: 1px solid var(--line); }
+.account-notification:last-child { border-bottom: 0; }
+
+.account-notification-link {
+  display: block;
+  padding: 8px 6px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.account-notification-link strong { display: block; font-size: var(--fs-sm, 0.8125rem); }
+.account-notification-link span { display: block; color: var(--muted); font-size: var(--fs-xs, 0.75rem); }
+.account-notification.is-unread .account-notification-link { background: var(--green-tint); border-radius: var(--radius); }
+.account-notifications-empty { margin: 8px 6px; color: var(--muted); font-size: var(--fs-sm, 0.8125rem); }
+
+/* --- Takip et (favori) düğmesi --- */
+.favorite-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--green-deep);
+  font: inherit;
+  font-size: var(--fs-sm, 0.8125rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.favorite-button:hover:not(:disabled) { background: var(--green-tint); }
+.favorite-button:disabled { opacity: 0.6; cursor: progress; }
+.favorite-button .favorite-star { width: 16px; height: 16px; flex: 0 0 16px; }
+
+/* Takip ediliyor: dolu yıldız + dolu zemin. Durum farkı yalnızca renkle
+   değil, yıldızın DOLULUĞU ile de veriliyor — renk körlüğünde tek
+   sinyal olarak renk yetmez. */
+.favorite-button.is-following {
+  background: var(--green);
+  border-color: var(--green);
+  color: #fff;
+}
+
+.favorite-button.is-following .favorite-star { fill: currentColor; }
+
+/* --- Kısa bildirim şeridi --- */
+.fr-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+  transform: translateX(-50%);
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  background: var(--ink);
+  color: #fff;
+  font-size: var(--fs-sm, 0.8125rem);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+}
+
+/* --- "Senin İçin" --- */
+.personal-home { margin: var(--sp-5, 24px) 0; }
+
+.personal-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.personal-card-link {
+  display: block;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.personal-card-link:hover { border-color: var(--line-strong); }
+.personal-card-kicker { display: block; color: var(--green-deep); font-size: var(--fs-xs, 0.75rem); }
+.personal-card-link strong { display: block; margin-top: 2px; font-size: var(--fs-md, 0.9375rem); }
+
+/* --- PRO sayfası --- */
+.pro-hero { padding: var(--sp-5, 24px) 0; }
+
+.pro-free-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 var(--sp-4, 18px);
+  padding: 12px 16px;
+  border: 1px solid var(--line-strong);
+  border-left: 3px solid var(--green);
+  border-radius: var(--radius-lg);
+  background: var(--green-tint);
+  color: var(--green-deep);
+  font-weight: 650;
+}
+
+.pro-price-note { color: var(--muted); font-size: var(--fs-sm, 0.8125rem); }
+
+.pro-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  background: var(--green);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pro-cta:hover { background: var(--green-deep); }
+
+.pro-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pro-feature {
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.pro-feature h3 { margin: 0 0 6px; font-size: var(--fs-md, 0.9375rem); }
+.pro-feature p { margin: 0; color: var(--text-soft); font-size: var(--fs-sm, 0.8125rem); }
+
+/* --- Profil sayfası --- */
+.profile-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.profile-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  flex: 0 0 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--green-tint);
+  color: var(--green-deep);
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.profile-favorites {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.profile-favorite {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.profile-favorite:last-child { border-bottom: 0; }
+.profile-favorite-name { color: var(--text); text-decoration: none; }
+.profile-favorite-name:hover { color: var(--green-deep); }
+.profile-favorite-empty { padding: 9px 0; color: var(--muted); font-size: var(--fs-sm, 0.8125rem); }
+
+.profile-favorite-remove {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.profile-favorite-remove:hover { border-color: var(--live); color: var(--live); }
+
+.profile-prefs { margin: 0; padding: 0; list-style: none; }
+
+.profile-pref {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.profile-pref:last-child { border-bottom: 0; }
+.profile-pref input { width: 20px; height: 20px; flex: 0 0 20px; accent-color: var(--green); }
+
+/* --- Giriş / kayıt formu --- */
+.auth-card {
+  width: min(420px, 100%);
+  margin: var(--sp-5, 24px) auto;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+}
+
+.auth-field { display: block; margin-bottom: 12px; }
+.auth-field span { display: block; margin-bottom: 4px; font-size: var(--fs-sm, 0.8125rem); font-weight: 600; }
+
+.auth-field input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  /* 16px altı yazı tipi, iOS Safari'de odaklanınca sayfayı
+     YAKINLAŞTIRIR ve kullanıcı formun geri kalanını kaybeder. */
+  font-size: 16px;
+}
+
+.auth-field input:focus-visible { border-color: var(--green); outline: 2px solid var(--green-tint); }
+
+.auth-submit {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--green);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.auth-submit:hover:not(:disabled) { background: var(--green-deep); }
+.auth-submit:disabled { opacity: 0.7; cursor: progress; }
+
+.auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-google:hover { background: var(--surface-tint); }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0;
+  color: var(--muted);
+  font-size: var(--fs-xs, 0.75rem);
+}
+
+.auth-divider::before,
+.auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+.auth-error {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(200, 30, 45, 0.28);
+  border-radius: var(--radius);
+  background: rgba(200, 30, 45, 0.07);
+  color: var(--live);
+  font-size: var(--fs-sm, 0.8125rem);
+}
+
+.auth-note {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background: var(--green-tint);
+  color: var(--green-deep);
+  font-size: var(--fs-sm, 0.8125rem);
+}
+
+.auth-switch { margin: 14px 0 0; text-align: center; font-size: var(--fs-sm, 0.8125rem); }
+
+/* --- AI analizi --- */
+.ai-analysis { margin: var(--sp-4, 18px) 0; }
+
+.ai-probabilities {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.ai-probability {
+  padding: 12px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: center;
+}
+
+.ai-probability span { display: block; color: var(--muted); font-size: var(--fs-xs, 0.75rem); }
+.ai-probability b { display: block; margin-top: 2px; font-size: 1.25rem; font-variant-numeric: tabular-nums; }
+.ai-probability-bar { height: 4px; margin-top: 8px; border-radius: var(--radius-pill); background: var(--green-tint); overflow: hidden; }
+.ai-probability-bar i { display: block; height: 100%; background: var(--green); }
+
+.ai-basis { margin: 0 0 10px; padding-left: 18px; color: var(--text-soft); font-size: var(--fs-sm, 0.8125rem); }
+
+/* UYARI METNİ GÖRÜNÜR OLMAK ZORUNDA. Tahmin gösteren her yüzeyde,
+   okunmayacak kadar soluk bir çekince yazmak çekince yazmamaktır. */
+.ai-disclaimer {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--warn);
+  border-radius: var(--radius);
+  background: rgba(176, 116, 16, 0.07);
+  color: var(--text-soft);
+  font-size: var(--fs-xs, 0.75rem);
+}
+
+/* --- Mobil (≤640px) ---
+   Başlık 375px'te zaten dolu: kullanıcı adı düşer, avatar + rozet
+   kalır. Bildirim paneli ekran genişliğine oturur ve sağ kenardan
+   taşmaz (`right: 0` + `width: min(...)`). */
+@media (max-width: 640px) {
+  .account-name { display: none; }
+  .account-nav { gap: 4px; }
+  .account-signin { padding: 0 10px; font-size: 0.75rem; }
+  .account-trigger { padding: 3px 6px 3px 3px; }
+  .account-bell { width: 32px; height: 32px; flex-basis: 32px; }
+
+  .ai-probabilities { grid-template-columns: 1fr; }
+  .ai-probability { display: flex; align-items: center; justify-content: space-between; gap: 10px; text-align: left; }
+  .ai-probability-bar { flex: 1 1 auto; margin-top: 0; }
+  .personal-list { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
+/* 380px altında rozet de düşer: marka ve hamburger önceliklidir. */
+@media (max-width: 380px) {
+  .account-trigger .pro-badge { display: none; }
+}
+
+/* --- Koyu tema --- */
+:root[data-theme="dark"] .account-signin,
+:root[data-theme="dark"] .account-trigger,
+:root[data-theme="dark"] .account-bell,
+:root[data-theme="dark"] .account-menu,
+:root[data-theme="dark"] .account-notifications,
+:root[data-theme="dark"] .auth-card,
+:root[data-theme="dark"] .pro-feature,
+:root[data-theme="dark"] .profile-head,
+:root[data-theme="dark"] .personal-card-link,
+:root[data-theme="dark"] .ai-probability {
+  background: var(--surface);
+  color: var(--text);
+}
+
+:root[data-theme="dark"] .pro-badge,
+:root[data-theme="dark"] .account-notification.is-unread .account-notification-link,
+:root[data-theme="dark"] .pro-free-banner {
+  background: rgba(11, 143, 90, 0.16);
+  color: var(--green);
+}
+
+/* Metin gibi görünen düğme: giriş ↔ kayıt geçişi bir gezinme değil,
+   aynı sayfada bir durum değişimi — bu yüzden <a> değil <button>.
+   Görünümü bağlantıya benzer ki okuyucu tıklanabilir olduğunu görsün. */
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--green-deep);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-button:hover { color: var(--green); }

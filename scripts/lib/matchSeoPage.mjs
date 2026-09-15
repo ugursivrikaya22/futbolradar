@@ -14,6 +14,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { favoriteButton } from "./favoriteButton.mjs";
 
 const require = createRequire(import.meta.url);
 const { normalizeText } = require("../../api/_utils.js");
@@ -164,7 +165,21 @@ export const STR = {
     leadersPending: "Bu turnuva için gol/asist liderliği verisi henüz mevcut değil.",
     leadersNote: "Tablo yalnızca bu maçın oynandığı lig ve sezonun verisinden üretilir; başka turnuvaların golleri buraya eklenmez.",
     leadersAll: "Tüm tabloyu gör",
-    analysis: "FutbolRadar maç öncesi analizi",
+    // BAŞLIK "AI ANALİZİ" — çünkü bölüm artık PRO yüzeyinin adını
+    // taşıyor ve okuyucu bu adı /pro sayfasında görüp burada arıyor.
+    // Altındaki okuma DEĞİŞMEDİ: aynı radar, aynı olasılık kartı, aynı
+    // çekince. Değişen yalnızca ad ve altına eklenen "bu analiz şu
+    // verilerden üretildi" listesi.
+    analysis: "FutbolRadar AI Analizi",
+    aiBasis: "Analiz şu verilerden üretildi",
+    aiBasisForm: "Son 5 maç formu",
+    aiBasisVenue: "İç saha / deplasman performansı",
+    aiBasisGoals: "Gol ortalamaları",
+    aiBasisAbsences: "Eksik ve cezalı oyuncular",
+    aiBasisLineups: "Muhtemel 11'ler",
+    aiBasisStandings: "Lig sıralaması",
+    aiBasisH2h: "İkili rekabet (H2H)",
+    aiBasisXg: "Beklenen gol (xG)",
     analysisPending: "Maç öncesi radar analizi maç haftası yaklaştığında doğrulanmış verilerle yayımlanır.",
     radarDisclaimer: "Radar puanı maç öncesi okuma içindir; kesin sonuç veya bahis önerisi değildir.",
     providerPrediction: "Sağlayıcı tahmini",
@@ -306,7 +321,16 @@ export const STR = {
     leadersPending: "Top scorer and assist data is not available for this competition yet.",
     leadersNote: "The table is built only from this match's own competition and season; goals scored in other tournaments are never added here.",
     leadersAll: "See the full table",
-    analysis: "FutbolRadar pre-match analysis",
+    analysis: "FutbolRadar AI Analysis",
+    aiBasis: "This analysis was built from",
+    aiBasisForm: "Last five matches",
+    aiBasisVenue: "Home / away performance",
+    aiBasisGoals: "Scoring averages",
+    aiBasisAbsences: "Injuries and suspensions",
+    aiBasisLineups: "Probable line-ups",
+    aiBasisStandings: "League position",
+    aiBasisH2h: "Head-to-head record",
+    aiBasisXg: "Expected goals (xG)",
     analysisPending: "The pre-match radar analysis is published with verified data as matchweek approaches.",
     radarDisclaimer: "The radar score is a pre-match reading; it is not a certain outcome or betting advice.",
     providerPrediction: "Provider prediction",
@@ -1016,7 +1040,43 @@ function comparisonHtml(record, ctx) {
   }</tbody></table></details>`;
 }
 
-export function analysisSectionHtml(radar, probability, ctx) {
+/**
+ * ANALİZİN DAYANDIĞI VERİLER — İDDİA DEĞİL, SAYIM.
+ *
+ * Liste sayfada GERÇEKTEN bulunan bölümlerden üretiliyor; sabit bir
+ * "şunlara bakıyoruz" listesi değil. Gerekçe doğrudan bu deponun
+ * birinci kuralından geliyor (bkz. 0001_core_schema.sql): eksik veri
+ * NULL'dır, sıfır değil. Sayfada H2H bölümü yoksa "ikili rekabet"
+ * satırını yazmak, bakılmamış bir veriye bakılmış demek olurdu — ve
+ * tahmin gösteren bir yüzeyde bu, okuru en çok yanıltan yalan türü.
+ *
+ * `basis` çağırandan gelir çünkü hangi bölümün çizildiğini yalnızca
+ * sayfayı kuran üretici bilir.
+ */
+function aiBasisHtml(basis, ctx) {
+  const { locale } = ctx;
+  const text = STR[locale];
+  if (!basis) return "";
+
+  const items = [
+    basis.form ? text.aiBasisForm : "",
+    basis.venue ? text.aiBasisVenue : "",
+    basis.goals ? text.aiBasisGoals : "",
+    basis.xg ? text.aiBasisXg : "",
+    basis.absences ? text.aiBasisAbsences : "",
+    basis.lineups ? text.aiBasisLineups : "",
+    basis.standings ? text.aiBasisStandings : "",
+    basis.h2h ? text.aiBasisH2h : ""
+  ].filter(Boolean);
+
+  if (!items.length) return "";
+
+  return `<p class="msp-ai-basis-label">${escapeHtml(text.aiBasis)}:</p><ul class="ai-basis">${
+    items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
+  }</ul>`;
+}
+
+export function analysisSectionHtml(radar, probability, ctx, basis) {
   const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
   const hasRadar = radar && (radar.home.score !== null || radar.away.score !== null);
@@ -1025,7 +1085,14 @@ export function analysisSectionHtml(radar, probability, ctx) {
 
   const radarCard = (name, side) => `<article class="card msp-radar"><h3>${escapeHtml(name)}</h3><p class="msp-radar-score">${side.score === null ? escapeHtml(locale === "en" ? "Score pending" : "Veri bekleniyor") : `<b>${escapeHtml(side.score)}</b>/100`}</p>${locale === "tr" && Array.isArray(side.components) && side.components.filter((item) => item.value !== null).length ? `<ul class="msp-radar-components">${side.components.filter((item) => item.value !== null).map((item) => `<li><span>${escapeHtml(item.label)}</span><i style="--value:${escapeHtml(Math.round(item.value))}%"><b></b></i><em>${escapeHtml(Math.round(item.value))}</em></li>`).join("")}</ul>` : ""}${locale === "tr" && side.positives && side.positives.length ? `<p class="msp-radar-note"><span>Güçlü:</span> ${escapeHtml(side.positives.slice(0, 2).join(" · "))}</p>` : ""}${locale === "tr" && side.negatives && side.negatives.length ? `<p class="msp-radar-note"><span>Dikkat:</span> ${escapeHtml(side.negatives.slice(0, 2).join(" · "))}</p>` : ""}</article>`;
 
-  return `<section class="msp-section" id="analiz" aria-labelledby="msp-analysis-title"><h2 id="msp-analysis-title" class="msp-section-title">${escapeHtml(text.analysis)}</h2>${hasRadar ? `${locale === "tr" && radar.lead ? `<p class="msp-lead">${escapeHtml(radar.lead)}</p>` : ""}<div class="msp-two-col">${radarCard(homeTeam, radar.home)}${radarCard(awayTeam, radar.away)}</div>` : ""}${predictionCard}<p class="msp-disclaimer">${escapeHtml(hasRadar ? text.radarDisclaimer : text.predictionDisclaimer)}</p></section>`;
+  // `data-ai-analysis`: istemci bu bölüm GERÇEKTEN ekrana girdiğinde
+  // `ai_analysis_view` ölçüm olayını yazıyor (membership.js). Sayfa
+  // açılışında yazmak, bölümü hiç görmeyen okuyucuyu da saymak olurdu.
+  //
+  // Çekince `ai-disclaimer` sınıfını da taşıyor: tahmin gösteren her
+  // yüzeyde uyarı GÖRÜNÜR olmak zorunda, okunmayacak kadar soluk bir
+  // çekince yazmak çekince yazmamaktır.
+  return `<section class="msp-section ai-analysis" id="analiz" data-ai-analysis aria-labelledby="msp-analysis-title"><h2 id="msp-analysis-title" class="msp-section-title">${escapeHtml(text.analysis)}</h2>${hasRadar ? `${locale === "tr" && radar.lead ? `<p class="msp-lead">${escapeHtml(radar.lead)}</p>` : ""}<div class="msp-two-col">${radarCard(homeTeam, radar.home)}${radarCard(awayTeam, radar.away)}</div>` : ""}${predictionCard}${aiBasisHtml(basis, ctx)}<p class="msp-disclaimer ai-disclaimer">${escapeHtml(hasRadar ? text.radarDisclaimer : text.predictionDisclaimer)}</p></section>`;
 }
 
 /* ------------------------------------------------------------------ */
@@ -1272,6 +1339,7 @@ export function heroHtml(entry, ctx) {
           <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.referee)}</dt><dd>${escapeHtml(entry.referee || text.notAnnounced)}</dd></div>
         </dl>
+        ${favoriteButton({ kind: "match", id: entry.slug || "", name: `${homeTeam} - ${awayTeam}`, locale })}
       </section>`;
 }
 

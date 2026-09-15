@@ -940,7 +940,24 @@ function pageHtml(entry, locale, options) {
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),
       leadersSectionHtml(leaders, ctx),
-      analysisSectionHtml(radar, probability, ctx),
+      // Dayanak listesi SAYFANIN KENDİSİNDEN türetiliyor: her bayrak,
+      // o bölümün gerçekten veri bulup bulmadığını söylüyor. Sabit bir
+      // liste yazmak, H2H kaydı olmayan bir maçta "ikili rekabete
+      // bakıldı" demek olurdu (bkz. aiBasisHtml gerekçesi).
+      analysisSectionHtml(radar, probability, ctx, {
+        form: Boolean((forms.home && forms.home.length) || (forms.away && forms.away.length)),
+        venue: Boolean((forms.home && forms.home.length) || (forms.away && forms.away.length)),
+        goals: Boolean(probability && probability.predictedGoals),
+        xg: Boolean(probability && probability.expectedGoals),
+        // Bayraklar, ilgili bölümün OKUDUĞU alanla birebir aynı yoldan
+        // bakıyor (`squadStatus.teams`, `table.table`); başka bir yoldan
+        // bakmak, bölüm boş çizilirken listede "bakıldı" yazması demek
+        // olurdu.
+        absences: Boolean(squadStatus && Array.isArray(squadStatus.teams) && squadStatus.teams.length),
+        lineups: Boolean(analysis && analysis.probableLineups),
+        standings: Boolean(table && Array.isArray(table.table) && table.table.length),
+        h2h: Boolean(h2h && h2h.length)
+      }),
       matchPollSectionHtml(ctx),
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       radarPulseSectionHtml(ctx),

@@ -22,6 +22,7 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { favoriteButton } from "./lib/favoriteButton.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -157,8 +158,8 @@ function competitionPage(entry) {
     { name: `${entry.nameTr} Puan Durumu`, href: `./${entry.slugTr}`, url: `${siteUrl}${canonicalPath}` }
   ];
   const content = hasData
-    ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${tableHtml(rows)}</section>${relatedLinksHtml(entry)}`
-    : `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${emptyStateHtml(entry.nameTr)}</section>${relatedLinksHtml(entry)}`;
+    ? `${favoriteButton({ kind: "league", id: entry.id, name: entry.nameTr, locale: "tr" })}<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${tableHtml(rows)}</section>${relatedLinksHtml(entry)}`
+    : `${favoriteButton({ kind: "league", id: entry.id, name: entry.nameTr, locale: "tr" })}<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${emptyStateHtml(entry.nameTr)}</section>${relatedLinksHtml(entry)}`;
 
   return pageDocument({
     title,

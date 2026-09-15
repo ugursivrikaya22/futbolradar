@@ -63,6 +63,10 @@ const FOOTER_LEGAL = [
 const ICONS = {
   search:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>',
+  bell:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8.6a6 6 0 1 0-12 0c0 5-2 6.4-2 6.4h16s-2-1.4-2-6.4"/><path d="M13.7 19a2 2 0 0 1-3.4 0"/></svg>',
+  user:
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="3.6"/><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0"/></svg>',
   x: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 3h3.1l-6.8 7.8L21.8 21h-6.2l-4.9-6.4L5.1 21H2l7.3-8.3L2.4 3h6.3l4.4 5.8ZM16.4 19.2h1.7L7.7 4.7H5.9Z"/></svg>',
   instagram:
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.2" fill="currentColor" stroke="none"/></svg>',
@@ -158,6 +162,66 @@ function languageSwitch(base, locale, altHref) {
   return `<a class="lang-switch" href="${escapeHtml(href)}" lang="${target}" hreflang="${target === "en" ? "en" : "tr-TR"}" data-lang-switch="${target}" aria-label="${escapeHtml(label)}" title="${escapeHtml(label)}">${escapeHtml(text)}</a>`;
 }
 
+/**
+ * HESAP DENETİMLERİ — ZİL + GİRİŞ / PROFİL.
+ *
+ * ---------------------------------------------------------------------
+ * SUNUCU ÇIKTISI HER ZAMAN "GİRİŞ YAPILMAMIŞ" HÂLİDİR
+ * ---------------------------------------------------------------------
+ * Bu 7.500 sayfa statik üretiliyor ve CDN'de PAYLAŞILIYOR. Başlığa
+ * derleme anında bir kullanıcı adı basmak, o adı o sayfayı açan
+ * HERKESE göstermek olurdu. Bu yüzden işaretleme tek bir hâl taşır:
+ * "Giriş Yap" bağlantısı görünür, kullanıcı bloğu `hidden`.
+ *
+ * Giriş yapmış hâle geçişi `public/membership.js` yapıyor: `/api/auth/
+ * session` yanıtına göre iki bloğun görünürlüğünü değiştiriyor.
+ * Değişen tek şey BAŞLIK — sayfanın ana içeriği sunucudan geldiği gibi
+ * kalıyor, yani Googlebot ve ilk boyama etkilenmiyor.
+ *
+ * ---------------------------------------------------------------------
+ * KUTU `.nav-menu` İÇİNDE DEĞİL
+ * ---------------------------------------------------------------------
+ * Dil kutusuyla aynı gerekçe: menü mobilde hamburgerin içine
+ * katlanıyor. Giriş ve bildirimler oraya girseydi, mobil okuyucu
+ * bildirimini görmek için önce menü açmak zorunda kalırdı — sitenin
+ * trafiğinin büyük bölümü mobil.
+ *
+ * ZİL VARSAYILAN OLARAK GİZLİ: giriş yapmamış ziyaretçiye hiç
+ * bildirim gitmiyor ve boş bir zil, tıklanacak bir şey vaat edip
+ * hiçbir şey vermez.
+ */
+function accountControls(base, locale) {
+  const signInLabel = t("account.signIn", locale);
+  const proHref = locale === "en" ? "en/pro.html" : "pro.html";
+  const profileHref = locale === "en" ? "en/profile.html" : "profil.html";
+  const loginHref = locale === "en" ? "en/login.html" : "giris.html";
+
+  return `<div class="account-nav" data-account-nav data-account-state="anonymous">
+            <button class="account-bell" type="button" data-account-bell aria-label="${escapeHtml(t("account.notificationsAria", locale))}" aria-expanded="false" aria-haspopup="true" hidden>${ICONS.bell}<span class="account-bell-count" data-account-unread hidden>0</span></button>
+            <a class="account-signin" href="${base}${loginHref}" data-account-signin>${escapeHtml(signInLabel)}</a>
+            <div class="account-user" data-account-user hidden>
+              <button class="account-trigger" type="button" data-account-toggle aria-expanded="false" aria-haspopup="true" aria-label="${escapeHtml(t("account.menuAria", locale))}">
+                <span class="account-avatar" data-account-avatar aria-hidden="true">${ICONS.user}</span>
+                <span class="account-name" data-account-name></span>
+                <span class="pro-badge" data-account-badge hidden title="${escapeHtml(t("account.proBadgeAria", locale))}">PRO</span>
+              </button>
+              <div class="account-menu" data-account-menu hidden role="menu">
+                <a role="menuitem" href="${base}${profileHref}">${escapeHtml(t("account.profile", locale))}</a>
+                <a role="menuitem" href="${base}${proHref}">FutbolRadar PRO</a>
+                <button role="menuitem" type="button" data-account-signout>${escapeHtml(t("account.signOut", locale))}</button>
+              </div>
+            </div>
+            <div class="account-notifications" data-account-panel hidden role="region" aria-label="${escapeHtml(t("account.notifications", locale))}">
+              <div class="account-notifications-head">
+                <strong>${escapeHtml(t("account.notifications", locale))}</strong>
+                <button type="button" data-account-mark-read>${escapeHtml(t("account.markAllRead", locale))}</button>
+              </div>
+              <ul class="account-notifications-list" data-account-notification-list></ul>
+              <p class="account-notifications-empty" data-account-notification-empty>${escapeHtml(t("account.noNotifications", locale))}</p>
+            </div>
+          </div>`;
+}
+
 export function siteHeader(options = {}) {
   const base = normalizeBase(options.base);
   const locale = normalizeLocale(options.locale);
@@ -203,7 +267,7 @@ export function siteHeader(options = {}) {
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
-          ${searchToggles.mobile}${languageSwitch(base, locale, options.altHref)}
+          ${searchToggles.mobile}${languageSwitch(base, locale, options.altHref)}${accountControls(base, locale)}
           <button class="nav-toggle" type="button" aria-label="${escapeHtml(t("nav.openMenu", locale))}" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
           <div class="nav-menu" id="primary-menu">
             <div class="nav-links">${primary}</div>

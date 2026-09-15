@@ -17,6 +17,7 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { favoriteButton } from "./lib/favoriteButton.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -154,8 +155,8 @@ function competitionPage(entry) {
     { name: `${entry.nameEn} Standings`, href: `./${entry.slugEn}`, url: `${siteUrl}${canonicalPath}` }
   ];
   const content = hasData
-    ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${tableHtml(rows, `${entry.nameEn} standings`)}</section>${relatedLinksHtml(entry)}`
-    : `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${emptyStateHtml(entry.nameEn)}</section>${relatedLinksHtml(entry)}`;
+    ? `${favoriteButton({ kind: "league", id: entry.id, name: entry.nameEn, locale: "en" })}<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${tableHtml(rows, `${entry.nameEn} standings`)}</section>${relatedLinksHtml(entry)}`
+    : `${favoriteButton({ kind: "league", id: entry.id, name: entry.nameEn, locale: "en" })}<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${emptyStateHtml(entry.nameEn)}</section>${relatedLinksHtml(entry)}`;
 
   return pageDocument({
     title,

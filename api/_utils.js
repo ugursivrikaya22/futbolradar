@@ -54,7 +54,14 @@ const CACHE_POLICIES = Object.freeze({
   "match-lineup-final": { maxAge: 1800, stale: 7200 },
   // Push abonelik uç noktası kişiye özel yazma işlemi taşır (GET yanıtı
   // bile VAPID durumunu her istekte taze yansıtmalı); önbelleğe alınmaz.
-  "push-subscription": { noStore: true }
+  "push-subscription": { noStore: true },
+  // ÜYELİK YANITLARI KİŞİYE ÖZELDİR VE ASLA PAYLAŞILMAZ.
+  //
+  // Oturum durumu, favoriler ve bildirimler tek bir okuyucuya aittir.
+  // CDN'de paylaşılan tek bir yanıt, bir ziyaretçiye BAŞKASININ
+  // hesabını gösterirdi — sessiz ve en kötü türden hata. `private`
+  // ayrıca ara vekillere de "bunu saklama" der.
+  membership: { noStore: true, private: true }
 });
 const QUERY_VALUE_MAX_LENGTH = 160;
 const QUERY_PARAM_MAX_COUNT = 24;
@@ -119,7 +126,13 @@ const APIFOOTBALL_COUNTRY_ENV_NAMES = [
 function cacheControlFor(policyName) {
   const policy = CACHE_POLICIES[policyName] || CACHE_POLICIES.default;
   if (policy.noStore) {
-    return { browser: "no-store", cdn: "no-store" };
+    // `private` yalnızca kişiye özel yanıtlarda: "no-store" zaten
+    // saklamayı yasaklıyor ama `private`, araya giren her vekile
+    // yanıtın TEK BİR kullanıcıya ait olduğunu da söyler. İkisi
+    // birlikte, yanlış yapılandırılmış bir ara önbelleğin bile
+    // oturum yanıtını paylaşmasını engeller.
+    const value = policy.private ? "private, no-store" : "no-store";
+    return { browser: value, cdn: value };
   }
 
   return {

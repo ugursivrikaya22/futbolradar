@@ -224,6 +224,29 @@ const ROUTES = Object.freeze([
     changefreq: "daily",
     priority: "0.7"
   },
+  /**
+   * FUTBOLRADAR PRO TANITIM SAYFASI.
+   *
+   * İKİ DİLDE DE GERÇEK, İNDEKSLENEBİLİR İÇERİK taşıyor: ne sunulduğunu
+   * anlatan bir sayfa, arama sonucunda görünmeye değer. Profil ve giriş
+   * sayfaları BİLEREK buraya yazılmadı — ikisi de `noindex`, çünkü
+   * içerikleri kişiye özel ve Google'a gösterecek hiçbir şeyleri yok.
+   * Buraya yazılmış olsalardı site haritasına girerlerdi.
+   */
+  {
+    key: "pro",
+    tr: "pro.html",
+    en: "en/pro.html",
+    changefreq: "monthly",
+    priority: "0.6",
+    // SAYFAYI `generate-en-pages.mjs` DEĞİL, `generate-membership-pages.mjs`
+    // üretiyor: PRO sayfasının iki dildeki içeriği de üyelik
+    // yapılandırmasından (fiyat, özellik listesi) türüyor ve o bilgi
+    // İngilizce sayfa üreticisinde yok. Rota yine de BURADA kayıtlı
+    // olmalı — dil kutusu, hreflang çifti ve site haritası bu eşlemeyi
+    // okuyor. Bayrak, iki üreticinin aynı dosyaya yazmasını önler.
+    externalGenerator: "generate-membership-pages.mjs"
+  },
   {
     key: "polls",
     tr: "anketler.html",
@@ -241,6 +264,24 @@ const ROUTES = Object.freeze([
  * kullanıcı "today's football matches" — başlık o amaca göre kurulur.
  */
 const ROUTE_META = Object.freeze({
+  /**
+   * FUTBOLRADAR PRO.
+   *
+   * Başlık iki dilde de "ücretsiz" demiyor: arama sonucunda görünen
+   * metin, fiyat değiştiği gün elle düzeltilmesi gereken bir söz
+   * olurdu ve tam olarak unutulacak yerdedir. Fiyat SAYFADA yazıyor
+   * ve oradaki değer `services/membership/config.js`ten geliyor.
+   */
+  pro: {
+    tr: {
+      title: "FutbolRadar PRO | Favori Takım, Bildirim ve AI Maç Analizi",
+      description: "FutbolRadar PRO: favori takım, oyuncu ve maç takibi, kişiselleştirilmiş bildirimler, AI maç analizi ve gelişmiş istatistikler."
+    },
+    en: {
+      title: "FutbolRadar PRO | Favourites, Alerts and AI Match Analysis",
+      description: "FutbolRadar PRO: follow teams, players and matches, get personalised alerts, and read AI match analysis with advanced statistics."
+    }
+  },
   home: {
     tr: {
       title: "FutbolRadar | Canlı Skor, Süper Lig Puan Durumu ve Maç Analizleri",

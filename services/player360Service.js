@@ -475,6 +475,11 @@ function buildIdentity(player, view, options) {
   const displayName = options.displayName || player.name;
 
   return {
+    // KAYIT KİMLİĞİ. Ekranda hiç görünmez; "Oyuncuyu Takip Et" düğmesinin
+    // hangi oyuncuyu kastettiğini söylemek için taşınıyor. Favori kaydı
+    // slug'a değil kimliğe bağlanır: slug ad değişince taşınabiliyor
+    // (bkz. playerSlugService), kimlik taşınmıyor.
+    playerId: player.id || null,
     name: displayName,
     // Kayıttaki ad artık başlıktan farklıysa ("V. Osimhen" ↔ "Victor
     // Osimhen") kimlik kartında ikinci kez basılmaz — aynı bilginin

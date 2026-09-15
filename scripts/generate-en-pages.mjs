@@ -2042,6 +2042,18 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;
 for (const route of ROUTES) {
+  // BAŞKA BİR ÜRETİCİYE AİT ROTALAR ATLANIR.
+  //
+  // Rota eşlemesi "bu Türkçe sayfanın İngilizce karşılığı şu" der;
+  // "bu dosyayı ben yazarım" demez. `externalGenerator` taşıyan bir
+  // rotanın sayfası adı geçen üreticide doğuyor ve burada ikinci kez
+  // yazılsaydı iki üretici aynı dosyayı sırayla ezerdi — sonuç,
+  // hangisinin en son koştuğuna bağlı bir sayfa olurdu.
+  //
+  // Aşağıdaki "builder yok" hatası KORUNUYOR: eşlemeye eklenip hiçbir
+  // yerde üretilmeyen bir rota hâlâ derlemeyi durdurur.
+  if (route.externalGenerator) continue;
+
   const build = PAGE_BUILDERS[route.key];
   if (!build) {
     throw new Error(`Route "${route.key}" has no English page builder; the route map and the generator disagree.`);

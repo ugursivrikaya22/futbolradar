@@ -23,6 +23,7 @@
  */
 
 import { createRequire } from "node:module";
+import { favoriteButton } from "./favoriteButton.mjs";
 
 const require = createRequire(import.meta.url);
 const { t } = require("../../services/i18n.js");
@@ -111,8 +112,16 @@ function renderIdentity(model, locale) {
     ? `<img class="p360-club-logo" src="${escapeHtml(model.identity.teamLogo)}" alt="${escapeHtml(model.identity.team || "")}" width="28" height="28" loading="lazy" decoding="async">`
     : "";
 
+  // "Oyuncuyu Takip Et" kimlik kartının içinde: okuyucu oyuncunun kim
+  // olduğunu gördüğü yerde takip kararını da veriyor. Kimlik yoksa
+  // (kütükte kaydı olmayan bir profil) düğme hiç çizilmez — sunucu
+  // zaten reddederdi ve çalışmayan bir düğme göstermek yanıltıcı olurdu.
+  const follow = model.identity.playerId
+    ? favoriteButton({ kind: "player", id: model.identity.playerId, name: model.identity.name, locale })
+    : "";
+
   return `<section class="p360 p360-identity" aria-labelledby="p360-identity-title" data-p360-section="identity">
-        <div class="p360-head"><h2 id="p360-identity-title">${escapeHtml(text("player360.identity.heading", locale))}</h2></div>
+        <div class="p360-head"><h2 id="p360-identity-title">${escapeHtml(text("player360.identity.heading", locale))}</h2>${follow}</div>
         ${logo}
         <dl class="p360-id-grid">${rows.join("")}</dl>
       </section>`;

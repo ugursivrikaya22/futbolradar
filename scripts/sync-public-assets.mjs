@@ -27,6 +27,7 @@ for (const file of [
   "match-detail-en.js",
   "pwa.js",
   "analytics.js",
+  "membership.js",
   "performance-loader.js",
   "radar-pulse.js",
   "radar-home-card.js",
