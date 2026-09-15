@@ -607,9 +607,21 @@ export function formSection(analysis, homeName, awayName) {
  * H2H girdileri çağıran tarafça gerçek kaynaklardan (maç arşivi + sağlayıcı
  * geçmişi) derlenip tekilleştirilir; burada yalnızca çizilir.
  */
-export function h2hStandingsSection(h2hEntries, standingsTable, homeName, awayName, standingsUpdatedAt) {
+/**
+ * `standings` = services/standingsResolver.js çıktısı (ya da yalnızca satır
+ * dizisi taşıyan eşdeğeri). Mini tablo HANGİ ligin tablosu olduğunu açıkça
+ * yazar ve "tamamını aç" bağlantısı o ligin kendi sayfasına gider; başlığı
+ * doğru ama tablosu başka lige ait bir kart üretilemez.
+ */
+export function h2hStandingsSection(h2hEntries, standings, homeName, awayName, standingsUpdatedAt) {
   const entries = Array.isArray(h2hEntries) ? h2hEntries : [];
-  const table = Array.isArray(standingsTable) ? standingsTable : [];
+  const resolved = Array.isArray(standings)
+    ? { status: standings.length ? "ok" : "unavailable", table: standings, updatedAt: standingsUpdatedAt || null, league: null, fullHref: null }
+    : (standings || {});
+  const table = resolved.status === "unavailable" ? [] : (Array.isArray(resolved.table) ? resolved.table : []);
+  const updatedAt = resolved.updatedAt || standingsUpdatedAt || null;
+  const leagueName = resolved.league || resolved.competitionName || null;
+  const fullHref = resolved.fullHref || "../puan-durumu.html";
 
   let h2hHtml = "";
   if (entries.length) {
@@ -643,12 +655,16 @@ export function h2hStandingsSection(h2hEntries, standingsTable, homeName, awayNa
       const highlight = wanted.includes(normalizeName(row.team || row.name)) ? ' class="is-focus"' : "";
       return `<tr${highlight}><td>${escapeHtml(row.rank)}</td><td>${escapeHtml(row.team || row.name)}</td><td>${escapeHtml(row.played)}</td><td>${escapeHtml(row.goalDifference > 0 ? `+${row.goalDifference}` : row.goalDifference)}</td><td><b>${escapeHtml(row.points)}</b></td></tr>`;
     }).join("");
-    standingsHtml = `<article class="card"><span class="card-kicker">Puan durumu${standingsUpdatedAt ? ` · ${escapeHtml(shortDay(standingsUpdatedAt))}` : ""}</span>
+    standingsHtml = `<article class="card" data-standings-league="${escapeHtml(resolved.competitionId || "")}" data-standings-season="${escapeHtml(resolved.season || "")}" data-standings-state="ok"><span class="card-kicker">Puan durumu${leagueName ? ` · ${escapeHtml(leagueName)}` : ""}${updatedAt ? ` · ${escapeHtml(shortDay(updatedAt))}` : ""}</span>
         <table class="match-mini-standings"><thead><tr><th>#</th><th>Takım</th><th>O</th><th>AV</th><th>P</th></tr></thead><tbody>${rows}</tbody></table>
-        <a class="detail-link" href="../puan-durumu.html">Tam puan durumunu aç</a>
+        <a class="detail-link" href="${escapeHtml(fullHref)}">Tam puan durumunu aç</a>
       </article>`;
   } else {
-    standingsHtml = `<article class="card"><span class="card-kicker">Puan durumu</span><p class="muted-copy">Sezon tablosu ilk sonuçlarla birlikte otomatik dolacak.</p></article>`;
+    // Yanlış ligin tablosunu göstermektense alanı dürüst bir notla bırak.
+    const note = resolved.status === "unavailable"
+      ? "Bu turnuva için güncel puan durumu verisi henüz mevcut değil."
+      : "Sezon tablosu ilk sonuçlarla birlikte otomatik dolacak.";
+    standingsHtml = `<article class="card" data-standings-league="${escapeHtml(resolved.competitionId || "")}" data-standings-season="${escapeHtml(resolved.season || "")}" data-standings-state="unavailable" data-standings-reason="${escapeHtml(resolved.reason || "no-data")}"><span class="card-kicker">Puan durumu${leagueName ? ` · ${escapeHtml(leagueName)}` : ""}</span><p class="muted-copy">${escapeHtml(note)}</p></article>`;
   }
 
   return `<section class="match-h2h-standings" aria-label="İkili rekabet ve puan durumu"><h2 class="match-section-title">İkili Rekabet ve Puan Durumu</h2>

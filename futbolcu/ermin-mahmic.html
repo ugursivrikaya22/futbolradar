@@ -124,7 +124,20 @@
         ]
 }
     </script>
-    <link rel="stylesheet" href="../page.css?v=1ee0e428" />
+    <link rel="stylesheet" href="../page.css?v=7c04416e" />
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -143,24 +156,11 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-  <!-- hreflang:start -->
+<!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/futbolcu/ermin-mahmic.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/player/ermin-mahmic.html" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/futbolcu/ermin-mahmic.html" />
@@ -500,7 +500,7 @@
       </nav>
     </footer>
     <script src="../player-profile.js?v=1f3f6c68" defer></script>
-    <script src="../site.js?v=5b1ce302" defer></script>
-    <script src="../app.js?v=6623b332" defer></script>
+    <script src="../site.js?v=42c2d54c" defer></script>
+    <script src="../app.js?v=f7795bfd" defer></script>
   </body>
 </html>

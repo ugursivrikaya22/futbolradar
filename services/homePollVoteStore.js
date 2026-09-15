@@ -80,6 +80,29 @@ const {
 
 const TABLE = "home_poll_votes";
 
+/**
+ * PAYLAŞIM SAYACI — AYRI TABLO, KİŞİSEL VERİ YOK.
+ *
+ * "Hangi ağda paylaşıldı" sorusu oy tablosunda yanıtlanamaz: paylaşım oy
+ * değildir, bir oyun üstüne yazılırsa sayım bozulur. Bu yüzden ayrı bir
+ * tablo — ve o tabloda SEÇMEN ANAHTARI YOKTUR: "kim paylaştı" sorusunu
+ * yanıtlamaya ihtiyacımız yok, "bu anket X'te kaç kez paylaşıldı" sorusu
+ * yetiyor. Toplamayacağımız veriyi toplamamak, sonradan korumak zorunda
+ * kalmamanın en ucuz yolu.
+ *
+ *   create table home_poll_shares (
+ *     id bigserial primary key,
+ *     poll_id text not null,
+ *     platform text not null,
+ *     locale text not null default 'tr',
+ *     created_at timestamptz not null default now()
+ *   );
+ */
+const SHARE_TABLE = "home_poll_shares";
+
+/** Kabul edilen paylaşım kanalları. Liste dışı bir değer YAZILMAZ. */
+const SHARE_PLATFORMS = Object.freeze(["x", "whatsapp", "facebook", "telegram", "native", "copy", "instagram", "download"]);
+
 /** Tek istek için üst sınır; ağ takılırsa uç nokta asılı kalmasın. */
 const REQUEST_TIMEOUT_MS = 4000;
 
@@ -196,17 +219,64 @@ async function findVote(pollId, voterKey) {
   return row ? { voted: true, optionId: String(row.option_id || "") } : { voted: false, optionId: "" };
 }
 
+/**
+ * PAYLAŞIMI KAYDET — SESSİZCE BAŞARISIZ OLUR.
+ *
+ * Paylaşım sayacı bir ANALİTİK; okuyucunun paylaşımını engelleyemez.
+ * Tablo yoksa ya da yazma düşerse `false` döner ve uç nokta yine "tamam"
+ * der: paylaşım penceresi açılmışsa iş zaten olmuştur, sayamamış olmamız
+ * kullanıcıya bir hata olarak gösterilemez.
+ */
+async function recordShare(pollId, platform, locale) {
+  const clean = String(platform || "").trim().toLowerCase();
+  if (!SHARE_PLATFORMS.includes(clean)) return { recorded: false, reason: "unknown-platform" };
+  if (!isConfigured()) return { recorded: false, reason: "not-configured" };
+
+  try {
+    await supabaseRequest(SHARE_TABLE, {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        poll_id: String(pollId || ""),
+        platform: clean,
+        locale: locale === "en" ? "en" : "tr"
+      })
+    });
+    return { recorded: true, reason: "" };
+  } catch (error) {
+    return { recorded: false, reason: "store-unavailable" };
+  }
+}
+
+/**
+ * PAYLAŞIM SAYISINI OKU — YALNIZCA TEŞHİS İÇİN.
+ *
+ * `recordShare` sessizce başarısız oluyor (paylaşımı engelleyemez), yani
+ * tablo hiç oluşturulmamışsa sayaç sonsuza kadar hiçbir şey yazmaz ve kimse
+ * fark etmez. `scripts/check-home-poll-store.mjs` bu okumayla o sessizliği
+ * kırıyor. Ekranda hiçbir yerde kullanılmaz.
+ */
+async function countShares(pollId) {
+  const query = `${SHARE_TABLE}?poll_id=eq.${encodeURIComponent(pollId)}&select=platform`;
+  const { rows } = await supabaseRequest(query, { method: "GET" });
+  return Array.isArray(rows) ? rows.length : 0;
+}
+
 module.exports = {
   ANON_KEY_ENV_NAMES,
   IP_SALT_ENV_NAMES,
   REST_URL_ENV_NAMES,
   SERVICE_KEY_ENV_NAMES,
+  SHARE_PLATFORMS,
+  SHARE_TABLE,
   TABLE,
   configurationHint,
+  countShares,
   findVote,
   isConfigured,
   keyRole,
   readTally,
+  recordShare,
   recordVote,
   voterKeyFor
 };

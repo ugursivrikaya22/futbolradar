@@ -151,6 +151,7 @@ export const STR = {
     standings: "Güncel puan durumu",
     standingsPost: "Maç sonrası puan durumu",
     standingsFull: "Puan durumunun tamamı",
+    standingsUnavailable: "Bu turnuva için güncel puan durumu verisi henüz mevcut değil.",
     scorers: "Takımların golcü oyuncuları",
     scorersPending: "Doğrulanmış gol istatistiği bulunan oyuncu kaydı yok.",
     goals: "gol",
@@ -287,6 +288,7 @@ export const STR = {
     standings: "Current standings",
     standingsPost: "Standings after the match",
     standingsFull: "Full table",
+    standingsUnavailable: "Standings data for this competition is not available yet.",
     scorers: "Top scorers",
     scorersPending: "No player with verified goal statistics is on record.",
     goals: "goals",
@@ -775,22 +777,45 @@ export function h2hSectionHtml(entries, ctx) {
   }).join("")}</ul></div></section>`;
 }
 
-export function standingsSectionHtml(standings, ctx, options = {}) {
+/**
+ * PUAN DURUMU BÖLÜMÜ — TABLO MAÇIN KENDİ LİGİNE AİTTİR, BAŞKA HİÇBİR ŞEYE.
+ *
+ * `resolved` doğrudan services/standingsResolver.js çıktısıdır: hangi
+ * yarışmanın, hangi sezonun tablosu olduğu orada karara bağlanmıştır. Burada
+ * yeniden lig tahmini YAPILMAZ ve yedek tablo seçilmez — veri yoksa bölüm
+ * dürüst bir not basar. Bölüm, ligi makine tarafından da doğrulanabilsin
+ * diye `data-standings-league` / `data-standings-season` taşır; böylece
+ * "başlık doğru, tablo yanlış" durumu testle yakalanabilir.
+ */
+export function standingsSectionHtml(resolved, ctx, options = {}) {
   const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
-  const table = standings && Array.isArray(standings.table) ? standings.table : [];
-  if (!table.length) return "";
+  const standings = resolved || {};
+  const table = Array.isArray(standings.table) ? standings.table : [];
+  const title = options.post ? text.standingsPost : text.standings;
+  // Yarışma DOĞRULANAMADIYSA başlıkta lig adı yazılmaz: kaydın ham `league`
+  // metni ("Bundesliga" — Almanya mı Avusturya mı?) tam da güvenilmediği
+  // için kimlik çözülememiştir; onu başlığa basmak doğrulanmamış iddiayı
+  // doğrulanmış gibi göstermek olurdu.
+  const competitionName = standings.competitionId ? (standings.league || standings.competitionName || "") : "";
+  const heading = `${escapeHtml(title)}${competitionName ? ` · ${escapeHtml(competitionLabel(competitionName, locale))}` : ""}`;
+  const attrs = `data-standings-league="${escapeHtml(standings.competitionId || "")}" data-standings-season="${escapeHtml(standings.season || "")}"`;
+  const unavailable = (reason) => `<section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title" ${attrs} data-standings-state="unavailable" data-standings-reason="${escapeHtml(reason || "")}"><h2 id="msp-standings-title" class="msp-section-title">${heading}</h2><p class="muted-copy">${escapeHtml(text.standingsUnavailable)}</p></section>`;
+
+  if (standings.status !== "ok" || !table.length) return unavailable(standings.reason || "no-data");
+
   const isSide = (row) => sameClub(row.team || row.name, homeTeam) || sameClub(row.team || row.name, awayTeam);
   const indexes = table.map((row, index) => (isSide(row) ? index : -1)).filter((index) => index >= 0);
-  if (!indexes.length) return "";
+  // İki takımdan hiçbiri tabloda yoksa gösterilecek doğru bir kesit yok.
+  // Eskiden bölüm sessizce kayboluyordu; artık nedeni yazılı kalıyor.
+  if (!indexes.length) return unavailable("teams-not-in-table");
   // Kompakt görünüm: iki takımın etrafı + lider. Tam tablo bağlantıyla.
   const keep = new Set();
   for (const index of indexes) for (let offset = -2; offset <= 2; offset += 1) if (table[index + offset]) keep.add(index + offset);
   keep.add(0);
   const rows = [...keep].sort((left, right) => left - right).map((index) => table[index]);
   const head = locale === "en" ? ["#", "Team", "P", "W", "D", "L", "GD", "Pts"] : ["#", "Takım", "O", "G", "B", "M", "Av", "P"];
-  const title = options.post ? text.standingsPost : text.standings;
-  return `<section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title"><h2 id="msp-standings-title" class="msp-section-title">${escapeHtml(title)}${standings.league ? ` · ${escapeHtml(competitionLabel(standings.league, locale))}` : ""}</h2><div class="table-scroll"><table class="standings-table msp-standings"><thead><tr>${head.map((cell) => `<th scope="col">${escapeHtml(cell)}</th>`).join("")}</tr></thead><tbody>${rows.map((row, position) => {
+  return `<section class="msp-section" id="puan-durumu" aria-labelledby="msp-standings-title" ${attrs} data-standings-state="ok"><h2 id="msp-standings-title" class="msp-section-title">${heading}</h2><div class="table-scroll"><table class="standings-table msp-standings"><thead><tr>${head.map((cell) => `<th scope="col">${escapeHtml(cell)}</th>`).join("")}</tr></thead><tbody>${rows.map((row, position) => {
     const prev = rows[position - 1];
     const gap = prev && Number(row.rank) - Number(prev.rank) > 1 ? `<tr class="msp-standings-gap" aria-hidden="true"><td colspan="8">…</td></tr>` : "";
     return `${gap}<tr${isSide(row) ? ' class="is-highlight"' : ""}><td>${escapeHtml(row.rank ?? "")}</td><td>${escapeHtml(row.team || row.name)}</td><td>${escapeHtml(row.played ?? "")}</td><td>${escapeHtml(row.won ?? "")}</td><td>${escapeHtml(row.drawn ?? "")}</td><td>${escapeHtml(row.lost ?? "")}</td><td>${escapeHtml(row.goalDifference ?? "")}</td><td><strong>${escapeHtml(row.points ?? "")}</strong></td></tr>`;

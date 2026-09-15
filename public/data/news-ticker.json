@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-14T22:34:20.827Z",
+  "updatedAt": "2026-09-15T06:51:58.793Z",
   "items": [
     {
       "id": "auto-news-b0db25cf1ab211004a74",
@@ -81,9 +81,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-13T18:25:07.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -307,17 +305,31 @@
       }
     },
     {
-      "id": "news-fenerbahce-ugur-meleke-02e3812a",
+      "id": "news-fenerbahce-bulent-uygun-8aedaf5a",
       "origin": "news.json",
       "category": "club-agenda",
       "confidence": "reported",
       "text": "Sporx'in aktardığına göre Fenerbahçe ile ilgili sahadaki son gelişmeler gündeme geldi.",
-      "timestamp": "2026-09-14T20:43:22.947Z",
+      "timestamp": "2026-09-15T06:51:30.676Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-ugur-meleke-02e3812a"
+        "url": "https://www.futbolradar.com/haber/fenerbahce-bulent-uygun-8aedaf5a"
       },
       "team": "Fenerbahçe",
+      "important": true
+    },
+    {
+      "id": "news-galatasaray-lesley-ugochukwu-4e091add",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Lesley Ugochukwu'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-15T06:36:31.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-lesley-ugochukwu-4e091add"
+      },
+      "team": "Galatasaray",
       "important": true
     },
     {
@@ -349,17 +361,17 @@
       "important": true
     },
     {
-      "id": "news-fenerbahce-lukaku-195228d9",
+      "id": "news-trabzonspor-sidny-lopes-cabral-52c9c74d",
       "origin": "news.json",
       "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Fenerbahçe çevresinde Lukaku'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-13T10:09:39.000Z",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Trabzonspor çevresinde Sidny Lopes Cabral'a dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-12T20:06:04.000Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-lukaku-195228d9"
+        "url": "https://www.futbolradar.com/haber/trabzonspor-sidny-lopes-cabral-52c9c74d"
       },
-      "team": "Fenerbahçe",
+      "team": "Trabzonspor",
       "important": true
     },
     {

@@ -47,6 +47,12 @@ const root = process.cwd();
  */
 const IMAGES = [
   "assets/og-image.svg",
+  // Anket sayfalarının paylaşım kartı. Sonuca göre DEĞİŞEN bir OG görseli
+  // isteği karşılayan bir sunucusuz işlev ister ve Vercel Hobby planındaki
+  // 12 işlev sınırı dolu; bu yüzden bağlantı önizlemesi markalı ve sabit.
+  // Sonuca özel görsel yine üretiliyor — ama tarayıcıda, oy verildikten
+  // sonra, paylaşım panelinden (site.js → drawShareCard).
+  "assets/og-poll.svg",
   // Köşe yazılarının kendi kapak görselleri de aynı kaptaydı ve aynı
   // sebeple önizlemesizdi (bkz. data/columns.json → featuredImage).
   "assets/columns/kasimpasa-trabzonspor-cevap-verme-vakti.svg",

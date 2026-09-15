@@ -96,6 +96,7 @@ const { calculateMatchRadar } = require("../services/matchRadarService.js");
 const { resolveMatchLeaders } = require("../services/competitionLeaders.js");
 const { getPlayers } = require("../services/playerService.js");
 const { normalizeText } = require("../api/_utils.js");
+const { resolveStandingsForMatch } = require("../services/standingsResolver.js");
 const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 
@@ -582,10 +583,20 @@ function logoFor(teamName, fallback) {
   return (intl && intl.logo) || null;
 }
 
+/**
+ * MAÇ → PUAN DURUMU EŞLEŞTİRMESİ.
+ *
+ * Tek yetkili kaynak services/standingsResolver.js: tablo maçın
+ * `competitionId`'sinden seçilir ve sezonu maçın sezonuyla doğrulanır.
+ * Burada lig tahmini yapılmaz, "bulunamazsa Süper Lig" gibi bir yedek
+ * yoktur — çözümleyici `status: "unavailable"` döndüğünde bölüm dürüst
+ * notu basar (bkz. standingsSectionHtml).
+ */
 function standingsFor(entry) {
-  const table = entry.competitionId && standings[entry.competitionId];
-  if (!table || !Array.isArray(table.table) || !table.table.length) return null;
-  return table;
+  return resolveStandingsForMatch(
+    { competitionId: entry.competitionId, league: entry.league, providerLeagueId: entry.providerLeagueId, kickoff: entry.kickoff },
+    { store: standings }
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -599,7 +610,17 @@ function teamLinks(teamName, locale, base) {
   const isSuperLig = Boolean(teams.find((team) => sameClub(team.name, teamName)));
   if (locale === "en") {
     const page = `en/team/${slug}.html`;
-    return fileExists(page) ? { page: `${base}${page}`, fixtures: `${base}${page}`, standings: `${base}en/super-lig-standings` } : { page: null, fixtures: null, standings: null };
+    if (!fileExists(page)) return { page: null, fixtures: null, standings: null };
+    // "Takım puan durumu" bağlantısı yalnızca takımın GERÇEKTEN oynadığı lige
+    // gider. Burası eskiden hangi takım olursa olsun Süper Lig tablosuna
+    // bağlıyordu: İngilizce tarafta bir La Liga kulübünün altında Süper Lig
+    // tablosu bağlantısı duruyordu. Adres main'deki #266 ile temiz adrese
+    // taşındı (uzantısız).
+    return {
+      page: `${base}${page}`,
+      fixtures: `${base}${page}`,
+      standings: isSuperLig ? `${base}en/super-lig-standings` : null
+    };
   }
   if (BIG_FOUR.includes(slug)) {
     return {

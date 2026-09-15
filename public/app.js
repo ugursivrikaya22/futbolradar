@@ -179,13 +179,40 @@
     return Math.max(0, Math.min(100, number));
   }
 
+  /**
+   * Sayfanın hangi ligin (ve sezonun) puan durumunu istediğini söyler.
+   * Tek kaynak: adres çubuğu ya da `[data-api-target="standings"]`
+   * konteynerinin `data-standings-league` / `data-standings-season`
+   * öznitelikleri. Takım adından ya da URL metninden TAHMİN YAPILMAZ.
+   */
+  function standingsScope() {
+    var params = new URLSearchParams(window.location.search);
+    var target = document.querySelector('[data-api-target="standings"]');
+    var league = params.get("league") || (target && target.getAttribute("data-standings-league")) || "";
+    var season = params.get("season") || (target && target.getAttribute("data-standings-season")) || "";
+    return { league: league, season: season };
+  }
+
   function getApiUrl(config) {
     var url = API_ROOT + config.api;
 
     if (config.api === "matches" || config.api === "standings" || config.api === "match-detail" || config.api === "squad" || config.api === "teams" || config.api === "players") {
       var params = new URLSearchParams(window.location.search);
       var apiParams = new URLSearchParams();
-      if (config.api === "standings") apiParams.set("league", params.get("league") || "super-lig");
+      // PUAN DURUMU İÇİN LİG HER ZAMAN AÇIKÇA BİLDİRİLİR.
+      //
+      // Eskiden burada `params.get("league") || "super-lig"` vardı: ligini
+      // bildirmeyen her sayfa Süper Lig tablosunu çekiyordu. Artık lig
+      // sırasıyla (1) adres çubuğundaki `?league=`, (2) tabloyu isteyen
+      // konteynerin `data-standings-league` özniteliğinden okunur. İkisi de
+      // yoksa istek HİÇ kurulmaz — yanlış ligin tablosunu basmaktansa boş
+      // durum gösterilir (bkz. renderInto hata yolu).
+      if (config.api === "standings") {
+        var declared = standingsScope();
+        if (!declared.league) return null;
+        apiParams.set("league", declared.league);
+        if (declared.season) apiParams.set("season", declared.season);
+      }
 
       if ((config.api === "matches" || config.api === "match-detail") && params.get("date")) {
         apiParams.set("date", params.get("date"));
@@ -509,8 +536,15 @@
         });
       };
 
-      if (config.api) {
-        cache[name] = fetchJson(getApiUrl(config), { noStore: config.noStore })
+      var apiUrl = config.api ? getApiUrl(config) : null;
+      // Lig bildirilmediği için adres kurulamadıysa ne API'ye ne de statik
+      // yedeğe gidilir: statik yedek (data/teams.json) Süper Lig'dir ve tam
+      // da kaçınmak istediğimiz şey, ligini bilmediğimiz bir yüzeye Süper
+      // Lig tablosunu basmaktır. Boş durum dürüst olandır.
+      if (config.api && !apiUrl) {
+        cache[name] = Promise.reject(new Error("standings-scope-missing"));
+      } else if (config.api) {
+        cache[name] = fetchJson(apiUrl, { noStore: config.noStore })
           .then(function (result) {
             resourceMeta[name] = result;
             if (config.reportSource) {

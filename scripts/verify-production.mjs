@@ -24,6 +24,12 @@ for (const args of [
   // daha dar ve daha hızlı: tablo mantığı bozulduysa 170 senaryoluk geniş
   // denetimi beklemeden burada görünür.
   ['scripts/test-live-standings-browser.cjs'],
+  // Anket paylaşımı: gerçek tarayıcıda, gerçek cihaz ölçülerinde oy →
+  // sonuç → paylaşım → sosyal kart. Aynı gerekçe: dar ve hızlı bir kapı,
+  // 170 senaryoluk geniş denetimden ÖNCE. Kartın 1080×1080 üretilip
+  // üretilmediği ancak bir tuval koşturarak bilinebilir; statik denetim
+  // bunu göremez.
+  ['scripts/test-poll-share-browser.mjs'],
   ['scripts/test-clickable-browser.cjs']
 ]) {
   console.log('[production gate]', args.join(' '));

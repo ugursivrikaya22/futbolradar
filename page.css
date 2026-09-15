@@ -18516,9 +18516,18 @@ body,
   font-weight: 700;
 }
 
+/**
+ * SEÇENEK IZGARASI — MOBİLDE İKİ SÜTUN, MASAÜSTÜNDE ÜÇ.
+ *
+ * Tek sütun 18 kulüple çok uzun bir liste demekti: mobilde anketin sonunu
+ * görmek için beş ekran kaydırmak gerekiyordu ve "Oyunu Ver" düğmesi hiç
+ * görünmüyordu. İki sütun listeyi yarıya indiriyor; dokunma alanı
+ * (`min-height: 58px`) küçülmüyor, çünkü daralan şey satır sayısı, satır
+ * yüksekliği değil.
+ */
 .home-poll__options {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0 0 16px;
   padding: 0;
   gap: 8px;
@@ -18539,6 +18548,8 @@ body,
   display: flex;
   align-items: center;
   gap: 10px;
+  /* Dokunma hedefi: iki sütuna geçince kart daraldı, yükseklik daralmadı. */
+  min-height: 58px;
   padding: 10px 12px;
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -18726,7 +18737,9 @@ body,
 .home-poll__disclaimer { opacity: 0.8; }
 
 @media (min-width: 640px) {
-  .home-poll__options { grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+  /* Masaüstünde üç sütun: `auto-fill` geniş kapsayıcıda beş sütuna kadar
+     açılıyordu ve kulüp adları yan yana okunmaz hâle geliyordu. */
+  .home-poll__options { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .home-poll__submit { width: auto; min-width: 220px; }
 }
 
@@ -18737,6 +18750,266 @@ body,
 .home-poll__label,
 .home-poll__submit { transition: none; }
 }
+
+
+/* ==========================================================================
+   ANKET LİDERLERİ (PODYUM)
+   --------------------------------------------------------------------------
+   On sekiz satırlık sonuç listesinde "kim önde" sorusu ancak kaydırarak
+   yanıtlanıyordu. Podyum o sorunun cevabını listenin ÜSTÜNE koyuyor; alttaki
+   tam liste yok olmuyor, çünkü kendi takımını arayan okuyucu da var.
+   Sayım yoksa podyum hiç çizilmez (site.js): boş bir listeye madalya asmak
+   olmayan bir yarışın sonucunu bildirmek olurdu.
+   ========================================================================== */
+.poll-podium {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.poll-podium[hidden] { display: none; }
+
+.poll-podium__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(11, 143, 90, 0.12), var(--surface));
+  font-weight: 800;
+}
+
+.poll-podium__item.is-rank-1 { border-color: var(--green); box-shadow: inset 0 0 0 1px var(--green); }
+.poll-podium__item.is-yours { outline: 2px dashed var(--green); outline-offset: 2px; }
+
+.poll-podium__medal { font-size: 1.25rem; line-height: 1; }
+.poll-podium__name { flex: 1 1 auto; min-width: 0; font-size: 0.95rem; }
+.poll-podium__percent { color: var(--green); font-size: 1.05rem; font-weight: 900; }
+
+/* ==========================================================================
+   PAYLAŞIM PANELİ
+   --------------------------------------------------------------------------
+   Oy verildikten sonra açılır. Düğmeler ızgaraya sarılır: yedi kanal dar
+   ekranda tek satıra sığmaz ve yatay kaydırma bırakmak, bir düğmeyi
+   görünmez yapmakla aynı şeydir.
+   ========================================================================== */
+.poll-share {
+  margin: 18px 0 0;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.poll-share[hidden] { display: none; }
+
+.poll-share__title {
+  margin: 0;
+  color: var(--green);
+  font-size: 0.95rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.poll-share__lead {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+/* Paylaşılacak metnin KENDİSİ görünür: kullanıcı ne göndereceğini
+   paylaşmadan önce okuyabilmeli. */
+.poll-share__text {
+  margin: 10px 0 12px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--green);
+  background: var(--panel);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.poll-share__buttons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.poll-share__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dokunma hedefi 44px'in altına inmez (WCAG 2.5.8). */
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.poll-share__button:hover { border-color: var(--green); transform: translateY(-1px); }
+.poll-share__button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.poll-share__button.is-native { background: var(--green); border-color: var(--green); color: #fff; }
+.poll-share__button[hidden] { display: none; }
+
+.poll-share__status {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.poll-share__status[hidden] { display: none; }
+
+/* ==========================================================================
+   PAYLAŞILABİLİR GÖRSEL KART
+   --------------------------------------------------------------------------
+   Önizleme kartın kendisi kadar önemli: kullanıcı paylaşmadan önce ne
+   göndereceğini görmeli. Görsel tuvalde 1080 piksel genişliğinde üretiliyor,
+   ekranda kapsayıcıya sığdırılıyor.
+   ========================================================================== */
+.poll-card {
+  margin: 14px 0 0;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+}
+
+.poll-card[hidden] { display: none; }
+
+.poll-card__title {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.poll-card__formats { display: flex; gap: 8px; margin: 0 0 10px; flex-wrap: wrap; }
+
+.poll-card__format {
+  padding: 8px 12px;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: inherit;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.poll-card__format[aria-pressed="true"] {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.12);
+  color: var(--green);
+}
+
+.poll-card__format:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+.poll-card__preview {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin: 0 auto 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+.poll-card__preview[hidden] { display: none; }
+
+.poll-card__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+/* Anket arşiv kartından anketin kendi sayfasına. */
+.poll-archive__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: 10px;
+  color: var(--green);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.poll-archive__link:hover { text-decoration: underline; }
+
+@media (min-width: 640px) {
+  .poll-share__buttons { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .poll-card__actions { grid-template-columns: repeat(2, minmax(0, 220px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poll-share__button { transition: none; }
+}
+
+
+/* ==========================================================================
+   ANKET SAYFASI — /anket/<slug> ve /en/poll/<slug>
+   --------------------------------------------------------------------------
+   Sosyal medyadan gelen okuyucunun ilk gördüğü şey SORU olmalı: sayfa
+   kısa, tek sütun ve anket kutusu ekranın üstünde. Ana sayfadaki kutunun
+   aynısı kullanılıyor (`.home-poll`), yalnızca kapsayıcı genişliği farklı —
+   ikinci bir kutu tasarlamak, iki yüzeyin zamanla ayrışması demekti.
+   ========================================================================== */
+.poll-page { padding: 18px 0 40px; }
+
+.poll-page__head { margin: 0 0 18px; }
+
+.poll-page__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.poll-page__status.is-open { background: rgba(11, 143, 90, 0.12); color: var(--green); }
+
+.poll-page__intro {
+  margin: 10px 0 0;
+  max-width: 60ch;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* Anket kutusu sayfada `container` DEĞİL: sayfa zaten bir `container`
+   içinde; ikinci bir kapsayıcı yan boşlukları iki katına çıkarırdı. */
+.poll-page__poll { margin: 0 0 28px; }
+
+.poll-page__about {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.poll-page__about h2 { margin: 0 0 10px; font-size: 1.05rem; }
+.poll-page__about ul { margin: 0 0 12px; padding-left: 20px; }
+.poll-page__about li { margin: 0 0 6px; color: var(--muted); font-size: 0.88rem; line-height: 1.6; }
 
 /* ==========================================================================
    ANKET VİTRİN KARTI — maç önü/maç sonrası arası, transfer-gündem kümesinin
