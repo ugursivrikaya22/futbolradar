@@ -434,12 +434,16 @@
       // ("Sağlayıcı Tahmini") ve açıklaması `note` içinde geliyor
       // (services/fixtureProbabilityService.js#DISPLAY). Ham anahtarı
       // başlığın yanına yazmak okuyucuya hiçbir şey söylemiyordu.
-      blocks.push('<article class="mh-pred">' +
+      blocks.push('<article class="mh-pred"' +
+        (pre.dataBasis ? ' data-prediction-basis="' + attr(pre.dataBasis) + '"' : "") + ">" +
         '<div class="mh-pred__head"><h3>' +
         (pre.icon ? esc(pre.icon) + " " : "") +
         esc(pre.title || "Maç öncesi tahmin") + "</h3></div>" +
         probabilityBarHtml(pre, detail, "Maç öncesi tahmin") +
         (pre.note ? '<p class="mh-pred__note">' + esc(pre.note) + "</p>" : "") +
+        // Modelin veri temeli sınırlıysa (tek taraflı geçmiş ya da yalnızca
+        // turnuva taban oranı) uyarı kartın İÇİNDE durur.
+        (pre.basisNote ? '<p class="mh-pred__basis">' + esc(pre.basisNote) + "</p>" : "") +
         (pre.advice ? '<p class="mh-pred__note">' + esc(pre.advice) + "</p>" : "") +
         "</article>");
     }
