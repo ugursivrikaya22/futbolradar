@@ -944,7 +944,16 @@ export function predictionCardHtml(probability, ctx) {
 
   const comparison = comparisonHtml(record, ctx);
 
-  return `<div class="card msp-prediction" data-prediction-source="${escapeHtml(record.source)}"><h3><span class="msp-prediction-icon" aria-hidden="true">${display.icon}</span> ${escapeHtml(display.title)}</h3>${bar}${rowList}<p class="msp-prediction-note">${escapeHtml(display.note)}</p>${meta}${comparison}</div>`;
+  // Modelin veri temeli sınırlıysa (tek taraflı geçmiş, ya da yalnızca
+  // turnuva taban oranı) bunu kartın İÇİNDE söyle. Yüzdeyi gösterip
+  // dayanağını göstermemek, okuyucunun sayıya hak etmediği bir otorite
+  // atfetmesine yol açar.
+  const basisNote = probabilityService.dataBasisNote(record, locale);
+  const basis = basisNote
+    ? `<p class="msp-prediction-basis" data-prediction-basis="${escapeHtml(record.dataBasis)}">${escapeHtml(basisNote)}</p>`
+    : "";
+
+  return `<div class="card msp-prediction" data-prediction-source="${escapeHtml(record.source)}"${record.dataBasis ? ` data-prediction-basis="${escapeHtml(record.dataBasis)}"` : ""}><h3><span class="msp-prediction-icon" aria-hidden="true">${display.icon}</span> ${escapeHtml(display.title)}</h3>${bar}${rowList}<p class="msp-prediction-note">${escapeHtml(probabilityService.displayNoteFor(record, locale) || display.note)}</p>${basis}${meta}${comparison}</div>`;
 }
 
 /**

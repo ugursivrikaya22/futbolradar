@@ -758,6 +758,13 @@
       note: record.note || null,
       icon: record.icon || null,
       advice: record.advice || null,
+      // VERİ TEMELİ DE GEÇER. FutbolRadar modeli, takım geçmişi olmadan
+      // turnuvanın taban oranlarıyla da çalışabiliyor
+      // (services/fixtureProbabilityModel.js → DATA_BASIS). O yüzdeyi
+      // dayanağını söylemeden göstermek, okuyucunun ona takım
+      // karşılaştırması diye bakmasına yol açar.
+      dataBasis: record.dataBasis || null,
+      basisNote: record.basisNote || null,
       predictedWinner: record.predictedWinner || null,
       calculatedAt: record.calculatedAt || null
     };
