@@ -907,7 +907,13 @@ function pageHtml(entry, locale, options) {
       statsSectionHtml(detail.statistics, ctx),
       matchPollSectionHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
-      summarySectionHtml(detail.summary, reportHref, ctx),
+      // MAÇ ÖZETİ EDİTORYAL TÜRKÇE METİNDİR.
+      //
+      // Kusursuz İngilizce bir maç sayfasının ortasında tek Türkçe paragraf
+      // olarak duruyordu. `reportHref` zaten `locale === "tr"` ile korunuyor;
+      // özet de aynı korumayı alıyor: İngilizce karşılığı varsa basılır,
+      // yoksa bölüm hiç çizilmez (olay akışı ve istatistik zaten İngilizce).
+      summarySectionHtml(locale === "en" ? (detail.summaryEn || "") : detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),

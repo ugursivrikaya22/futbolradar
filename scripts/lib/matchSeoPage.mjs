@@ -21,6 +21,8 @@ const { canonicalStatus, finishType, istanbulDay } = require("../../services/mat
 const { sameClub } = require("../../services/superLigTeams.js");
 const { publicPlayerView } = require("../../services/cardCredibility.js");
 const { slug: playerSlug } = require("../../services/playerService.js");
+// Stat adının tür sözcüğü ("… Stadyumu") İngilizce sayfada çevrilir.
+const { broadcastLabel, venueLabel } = require("../../services/displayLabels.js");
 
 /**
  * Oyuncu adresleri tek çözücüden. Maç SEO sayfaları hem Türkçe hem
@@ -97,6 +99,10 @@ export function istanbulIso(value) {
 
 export const STR = {
   tr: {
+    // Sözlüğün kendi dili. `text` nesnesi aşağıda dile bakması gereken her
+    // yere zaten geçiriliyor; ayrıca `locale` parametresi taşımak yerine
+    // sözlüğün kendisi dilini söylüyor.
+    locale: "tr",
     matchWord: "Maçı",
     notAnnounced: "Henüz açıklanmadı",
     tsi: "TSİ",
@@ -241,6 +247,7 @@ export const STR = {
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
   en: {
+    locale: "en",
     matchWord: "",
     notAnnounced: "Not announced yet",
     tsi: "Türkiye time",
@@ -491,8 +498,25 @@ function eventLabel(event, text) {
     case "yellow-red": return text.yellowRed;
     case "sub": return "";
     case "var": return text.varEvent;
-    default: return event.detail || "";
+    default: return eventDetail(event, text);
   }
+}
+
+/**
+ * OLAY NOTU — YALNIZCA SAYFANIN DİLİNDE.
+ *
+ * `event.detail` editoryal serbest metindir ve Türkçe yazılır ("Dakika
+ * kaynaklarda verilmedi."). İngilizce maç sayfasında bu not, kusursuz
+ * İngilizce bir olay akışının ortasında tek Türkçe cümle olarak duruyordu.
+ *
+ * İngilizce karşılığı (`detailEn`) varsa o basılır; yoksa NOT HİÇ BASILMAZ.
+ * Olay satırı zaten yapısal: dakika, ikon, olay türü, oyuncu ve takım
+ * İngilizce geliyor — eksik olan yalnızca isteğe bağlı serbest not.
+ */
+function eventDetail(event, text) {
+  if (!event) return "";
+  if (text && text.locale === "en") return String(event.detailEn || "").trim();
+  return String(event.detail || "").trim();
 }
 
 const EVENT_ICONS = {
@@ -507,7 +531,12 @@ export function eventRowHtml(event, text) {
   } else {
     const name = event.player ? `<b>${escapeHtml(event.player)}</b>` : "";
     const assist = event.assist ? ` <span class="msp-event-assist">(${escapeHtml(text.assists === "asist" ? "Asist" : "Assist")}: ${escapeHtml(event.assist)})</span>` : "";
-    const detail = !event.player && event.detail ? escapeHtml(event.detail) : (event.kind === "var" || event.kind === "other") && event.detail ? ` <span class="msp-event-assist">${escapeHtml(event.detail)}</span>` : "";
+    const detailText = eventDetail(event, text);
+    const detail = !event.player && detailText
+      ? escapeHtml(detailText)
+      : (event.kind === "var" || event.kind === "other") && detailText
+        ? ` <span class="msp-event-assist">${escapeHtml(detailText)}</span>`
+        : "";
     body = `${name}${assist}${detail}`;
   }
   return `<li class="msp-event is-${escapeHtml(event.kind)} is-${escapeHtml(event.side || "neutral")}"><span class="msp-event-min">${escapeHtml(event.time ? `${event.time}'` : "-")}</span><span class="msp-event-icon" aria-hidden="true">${EVENT_ICONS[event.kind] || "•"}</span><span class="msp-event-body">${label ? `<em>${escapeHtml(label)}</em> ` : ""}${body}${event.team ? ` <small>${escapeHtml(event.team)}</small>` : ""}</span></li>`;
@@ -527,7 +556,17 @@ const STAT_EN = {
   "topla oynama": "Possession", "toplam sut": "Total shots", "isabetli sut": "Shots on target", "isabetsiz sut": "Shots off target", "engellenen sut": "Blocked shots",
   "ceza sahasi icinden sut": "Shots inside box", "ceza sahasi disindan sut": "Shots outside box", korner: "Corners", ofsayt: "Offsides", faul: "Fouls",
   "sari kart": "Yellow cards", "kirmizi kart": "Red cards", "toplam pas": "Total passes", "isabetli pas": "Accurate passes", "pas isabeti": "Pass accuracy",
-  kurtaris: "Saves", "gol beklentisi (xg)": "Expected goals (xG)", "onlenen gol": "Goals prevented"
+  kurtaris: "Saves", "gol beklentisi (xg)": "Expected goals (xG)", "onlenen gol": "Goals prevented",
+  // SAĞLAYICININ GENİŞ İSTATİSTİK SETİ. Bu satırlar yalnızca bazı maçlarda
+  // geliyor ve eşlemede yoktu; İngilizce sayfa `row.type` yedeğine düşüp
+  // Türkçe etiketi basıyordu ("Taç atışı", "Kazanılan ikili mücadele").
+  direk: "Woodwork", sut: "Shots", "direkten donen sut": "Shots off the woodwork",
+  "kacan net pozisyon": "Big chances missed",
+  "rakip ceza sahasinda topla bulusma": "Touches in opposition box",
+  "tac atisi": "Throw-ins", "toplam orta": "Total crosses", "isabetli orta": "Accurate crosses",
+  "kazanilan ikili mucadele": "Duels won", "basarili top kapma": "Successful tackles",
+  "kazanilan hava topu": "Aerial duels won", "basarili calim": "Successful dribbles",
+  "pasa mudahale": "Interceptions", uzaklastirma: "Clearances"
 };
 
 export function normalizeStatistics(statistics) {
@@ -1065,7 +1104,7 @@ export function faqEntries(entry, ctx) {
   // yalnızca hangi akışın taranacağını söylüyor ve ekrana yazılmıyor,
   // çünkü "Süper Lig beIN'de" cümlesi maç düzeyinde eksik: hangi beIN
   // kanalı olduğunu söylemiyor. Bilinmiyorsa cevap "henüz açıklanmadı".
-  const channel = broadcastChannel(entry);
+  const channel = broadcastLabel(broadcastChannel(entry), locale);
   const competition = competitionName ? competitionLabel(competitionName, locale) : "";
   // Oynanmış maçta "yayınlanacak" demek sayfayı da şemayı da yanlış
   // yapıyordu; zaman kipi maçın durumunu izler.
@@ -1259,7 +1298,7 @@ export function heroHtml(entry, ctx) {
   const halftime = state === "post" && entry.score && scoreValue(entry.score.halftimeHome) !== null && scoreValue(entry.score.halftimeAway) !== null
     ? `<span class="msp-ht" data-msp-halftime>${escapeHtml(text.halftime)}: ${escapeHtml(entry.score.halftimeHome)}-${escapeHtml(entry.score.halftimeAway)}</span>`
     : `<span class="msp-ht" data-msp-halftime hidden></span>`;
-  const channel = broadcastChannel(entry);
+  const channel = broadcastLabel(broadcastChannel(entry), locale);
   const kickoffIso = istanbulIso(entry.kickoff);
 
   return `<section class="msp-hero is-${escapeHtml(state)}" data-msp-hero data-msp-state="${escapeHtml(state)}" aria-label="${escapeHtml(`${homeTeam} - ${awayTeam}`)}">
@@ -1277,7 +1316,7 @@ export function heroHtml(entry, ctx) {
           <div><dt>${escapeHtml(text.date)}</dt><dd><time datetime="${escapeHtml(kickoffIso || "")}">${escapeHtml(longDate(entry.kickoff, locale))}</time></dd></div>
           <div><dt>${escapeHtml(text.time)}</dt><dd>${escapeHtml(clock(entry.kickoff))} ${escapeHtml(text.tsi)}</dd></div>
           ${competitionName ? `<div><dt>${escapeHtml(text.competition)}</dt><dd>${escapeHtml(competitionLabel(competitionName, locale))}</dd></div>` : ""}
-          <div><dt>${escapeHtml(text.venue)}</dt><dd>${escapeHtml(entry.venue || text.notAnnounced)}</dd></div>
+          <div><dt>${escapeHtml(text.venue)}</dt><dd>${escapeHtml(entry.venue ? venueLabel(entry.venue, locale) : text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.referee)}</dt><dd>${escapeHtml(entry.referee || text.notAnnounced)}</dd></div>
         </dl>

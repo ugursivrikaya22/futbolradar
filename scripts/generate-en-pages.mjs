@@ -66,6 +66,7 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
+const { publishedColumns } = require("../services/columnService.js");
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
 // Maç programı sırası ve makine okunur karşılığı — Türkçe tarafla aynı servis.
@@ -153,11 +154,22 @@ const players = getPlayers(readJson("players.json", []));
 // Süper Lig'e ait bir kaynak. TR ve EN taraflar AYNI dosyayı okur, böylece
 // iki dil arasında sayı farkı olmaz (bkz. görev notu: TR/EN parity).
 const leagueLeaders = readJson("league-leaders.json", { topScorers: [], topAssists: [] });
-const columnList = (() => {
-  const doc = readJson("columns.json", { columns: [] });
-  const list = Array.isArray(doc) ? doc : (doc.columns || []);
-  return list.filter((entry) => entry && entry.status !== "draft");
-})();
+/**
+ * KÖŞE YAZILARI — SERVİSTEN, İNGİLİZCE OLARAK.
+ *
+ * Eskiden `columns.json` doğrudan okunuyor ve yalnızca `draft` eleniyordu;
+ * yani İngilizcesi HİÇ OLMAYAN yazılar da bu listeye giriyor, kartta Türkçe
+ * başlıkla `lang="tr"` etiketi taşıyarak yayımlanıyordu.
+ *
+ * Artık liste `services/columnService.js`ten geliyor ve orada `locale: "en"`
+ * istendiğinde İngilizcesi olmayan yazı HİÇ DÖNMÜYOR. Başlık, spot, künye
+ * ve kategori rozeti de İngilizce geliyor; bu dosyada dile dair ayrı bir
+ * kural kalmadı.
+ */
+const columnList = publishedColumns(
+  readJson("columns.json", { columns: [] }),
+  { locale: "en" }
+).columns;
 
 /**
  * YAZININ İNGİLİZCESİ VAR MI?
@@ -169,20 +181,22 @@ const columnList = (() => {
  * sayfası olması.
  */
 function englishColumn(entry) {
-  const en = (entry && entry.en) || {};
-  const hasBody = Array.isArray(en.body) && en.body.filter(Boolean).length > 0;
-  if (!en.title || !en.slug || !hasBody) return null;
+  // Liste `publishedColumns(..., { locale: "en" })` üzerinden geldiği için
+  // her kayıt ZATEN İngilizce sunulmuş durumda: `path` İngilizce sayfayı,
+  // `title`/`excerpt` İngilizce metni gösteriyor. Bu sarmalayıcı yalnızca
+  // çağrı yerlerinin biçimini koruyor.
+  if (!entry || !entry.title || !entry.path) return null;
   return {
-    href: `${BASE}en/columns/${en.slug}.html`,
-    title: en.title,
-    excerpt: en.excerpt || ""
+    href: `${BASE}${String(entry.path).replace(/^\.?\//, "")}`,
+    title: entry.title,
+    excerpt: entry.excerpt || ""
   };
 }
 // Haber akışı kuralı servistedir (services/newsFeed.js) ve Türkçe ön derleme
 // de aynı listeyi oradan alır. Süzgeç burada tekrar yazılmıyor: yazıldığı
 // için `archived` haberler bu sayfada kart olmuş, sayfaları üretilmediğinden
 // bağlantıları 404 vermişti.
-const newsList = publishableNews(readJson("news.json", []));
+const newsList = publishableNews(readJson("news.json", []), { locale: "en" });
 const postMatchRecords = (() => {
   const doc = readJson("post-match-reports.json", {});
   return Array.isArray(doc.records) ? doc.records : [];
@@ -761,12 +775,10 @@ function heroSection() {
 /**
  * KÖŞE YAZILARI — Türkçe .section-columns ile aynı kart ızgarası.
  *
- * Yazının KENDİSİ Türkçe ve İngilizce karşılığı üretilmiyor; makine çevirisi
- * de yapılmıyor (dosyanın başındaki kural). Bölümün çerçevesi — üst başlık,
- * rozet, kategori, yazar, tarih, etiketler, çağrı — İngilizce yazılır; yazı
- * başlığı ve özeti KAYNAK DİLİYLE, `lang="tr"` işaretiyle ve bağlantısı
- * Türkçe yazıya giderek gösterilir. Böylece bölüm İngilizce tarafta birebir
- * görünür ve okuyucu bağlantının hangi dile gittiğini önceden bilir.
+ * TAMAMI İNGİLİZCE. Liste `publishedColumns(..., { locale: "en" })`ten
+ * geliyor; İngilizcesi olmayan yazı listeye hiç girmiyor. Bu yüzden eski
+ * "başlığı `lang="tr"` ile kaynak dilinde göster" dalı kaldırıldı: artık
+ * hiçbir koşulda çalışmayacak bir dal, kartın Türkçe kalmasının tek yoluydu.
  */
 function columnsSection() {
   const columns = columnList
@@ -776,36 +788,25 @@ function columnsSection() {
   if (!columns.length) return "";
 
   const cards = columns.map((column) => {
-    const english = englishColumn(column);
-    const href = english ? escapeHtml(english.href) : `${BASE}kose-yazilari/${escapeHtml(column.slug || column.id)}.html`;
-    // Kategori veride slug biçiminde duruyor ("galatasaray"); Türkçe kartta
-    // olduğu gibi okunur biçimde yazılır.
-    const category = String(column.category || "")
-      .split(/[-\s]+/)
-      .filter(Boolean)
-      .map((word) => word.charAt(0).toLocaleUpperCase("tr") + word.slice(1))
-      .join(" ");
+    const href = escapeHtml(`${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
+    // Kategori rozeti servisten İngilizce geliyor ("Match commentary");
+    // burada ayrıca biçimlendirilmiyor.
+    const category = String(column.categoryLabel || "");
     const tags = (Array.isArray(column.tags) ? column.tags : []).slice(0, 3)
       .map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("");
     return `<article class="column-card" data-card="column">
       <div class="column-card-head">
-        <span class="column-badge">Opinion</span>
+        <span class="column-badge">${escapeHtml(column.badge || "Opinion")}</span>
         ${category ? `<span class="column-category">${escapeHtml(category)}</span>` : ""}
       </div>
-      <h3>${english
-        ? `<a href="${href}">${escapeHtml(english.title)}</a>`
-        : `<a href="${href}" hreflang="tr"><span lang="tr">${escapeHtml(column.title || "")}</span></a>`}</h3>
-      ${english
-        ? `<p>${escapeHtml(english.excerpt)}</p>`
-        : `<p lang="tr">${escapeHtml(column.excerpt || "")}</p>`}
+      <h3><a href="${href}">${escapeHtml(column.title || "")}</a></h3>
+      <p>${escapeHtml(column.excerpt || "")}</p>
       <div class="column-card-meta">
         <span class="column-author">${escapeHtml(column.author || "FutbolRadar")}</span>
         <time datetime="${escapeHtml(column.date || "")}">${escapeHtml(formatDate(column.date, LOCALE))}</time>
       </div>
       <div class="column-tags">${tags}</div>
-      <div class="column-card-actions">${english
-        ? `<a class="column-card-detail" href="${href}">Read the column</a>`
-        : `<a class="column-card-detail" href="${href}" hreflang="tr">Read the column (in Turkish)</a>`}</div>
+      <div class="column-card-actions"><a class="column-card-detail" href="${href}">Read the column</a></div>
     </article>`;
   }).join("");
 
@@ -1116,27 +1117,28 @@ function quickNavSection() {
 /**
  * FUTBOL GÜNDEMİ — Türkçe .home-news ile aynı kart ızgarası.
  *
- * Köşe yazılarındaki kuralın aynısı: bölümün çerçevesi İngilizce, haberin
- * kendi başlığı ve özeti kaynak diliyle (`lang="tr"`) ve bağlantısı Türkçe
- * habere. Haber metni İngilizce üretilmiyor; makine çevirisi yapılmıyor.
+ * Köşe yazılarındaki kuralın aynısı: liste `publishableNews(..., { locale:
+ * "en" })`ten geliyor, yani yalnızca İngilizce sürümü olan haberler. Başlık,
+ * özet ve kategori rozeti İngilizce; bağlantı da İngilizce haber sayfasına
+ * gidiyor (`en/news/<slug>.html`).
  */
 function newsSection() {
   const items = newsList.slice(0, 3);
   if (!items.length) return "";
   const cards = items.map((item) => {
     // Bağlantı da servisten: kartın gösterildiği her haberin sayfası var.
-    const href = escapeHtml(newsHref(item, BASE));
+    const href = escapeHtml(newsHref(item, BASE, "en"));
     const published = item.publishedAt || item.date || "";
     const isTransfer = /transfer/i.test(String(item.category || ""));
     const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
     const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
-    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}" hreflang="tr">` +
-      `<div class="news-card-meta"><span class="mega-badge ${badgeClass}" lang="tr">${escapeHtml(badgeLabel)}</span>` +
+    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}">` +
+      `<div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span>` +
       `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>` +
       `<div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>` +
-      `<h3 lang="tr">${escapeHtml(item.title || "")}</h3><p lang="tr">${escapeHtml(item.summary || "")}</p></div>` +
+      `<h3>${escapeHtml(item.title || "")}</h3><p>${escapeHtml(item.summary || "")}</p></div>` +
       `<div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>` +
-      `<span class="detail-link">Read the story (in Turkish)</span></div></a>`;
+      `<span class="detail-link">Read the story</span></div></a>`;
   }).join("");
 
   return `<section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title">
@@ -1147,13 +1149,20 @@ function newsSection() {
 
 /** Sezon arşivi — Türkçe .section-archive ile aynı üç kart. */
 function archiveSection() {
-  const archiveHref = `${BASE}arsiv.html`;
+  // ARŞİV KUTUSU İNGİLİZCE ARŞİV SAYFASINA GİDER.
+  //
+  // Üç kartın üçü de doğrudan Türkçe `arsiv.html`e bağlanıyordu ve etiketleri
+  // İngilizceydi: "Go to the seasons" yazan bir bağlantı okuyucuyu uyarısız
+  // Türkçe bir sayfaya düşürüyordu. `en/archive.html` üretiliyor; okuyucu
+  // önce orada kalır, Türkçe arşive geçmek isterse oradaki bağlantı "(TR)"
+  // ekiyle açıkça işaretli.
+  const archiveHref = `${BASE}en/archive.html`;
   return `<section class="container section section-archive" id="arsiv-girisi" aria-labelledby="archive-title">
           ${sectionHead("Season archive", "archive-title", "Past matches, squads and managerial spells", "Every season's recorded matches, team records, archived squads and sourced managerial history.", archiveHref, "Open the archive")}
           <div class="grid">
-            <article class="card"><span class="card-kicker">Match archive</span><h3>Results season by season</h3><p>Every finished match is written to the season it belongs to, linked straight to its report where one exists.</p><a class="detail-link" href="${archiveHref}" hreflang="tr">Go to the seasons</a></article>
-            <article class="card"><span class="card-kicker">Squad archive</span><h3>Squads of the season</h3><p>A squad is captured once per season and stays in the archive even if it is trimmed later.</p><a class="detail-link" href="${archiveHref}" hreflang="tr">See the squads</a></article>
-            <article class="card"><span class="card-kicker">Managers</span><h3>Spell pages</h3><p>Start date, recorded match record and source credits. A record without a source produces no page.</p><a class="detail-link" href="${archiveHref}" hreflang="tr">Review the spells</a></article>
+            <article class="card"><span class="card-kicker">Match archive</span><h3>Results season by season</h3><p>Every finished match is written to the season it belongs to, linked straight to its report where one exists.</p><a class="detail-link" href="${archiveHref}">Go to the seasons</a></article>
+            <article class="card"><span class="card-kicker">Squad archive</span><h3>Squads of the season</h3><p>A squad is captured once per season and stays in the archive even if it is trimmed later.</p><a class="detail-link" href="${archiveHref}">See the squads</a></article>
+            <article class="card"><span class="card-kicker">Managers</span><h3>Spell pages</h3><p>Start date, recorded match record and source credits. A record without a source produces no page.</p><a class="detail-link" href="${archiveHref}">Review the spells</a></article>
           </div>
         </section>`;
 }
@@ -1437,18 +1446,29 @@ ${sectionLinks()}`;
        radarı, transfer radarı, arşiv) — içeriği sayı ve yapısal alan.
        Bunlar tam anlamıyla İngilizce üretilir; çeviri sorunu yoktur.
 
-     • METİN SAYFALARI (köşe yazıları, haberler) — içeriği Türkçe SERBEST
-       METİN. Başlıklar ÇEVRİLMEZ: makine çevirisi yapmıyoruz ve bir yazarın
-       cümlesini uydurma bir İngilizceyle sunmak, yazıyı yanlış aktarmak
-       olurdu. Bunun yerine sayfanın ÇERÇEVESİ İngilizce, yazının kendi
-       başlığı `lang="tr"` ile kaynak dilinde ve bağlantı Türkçe metne
-       `hreflang="tr"` ile gider. Kural yeni değil: ana sayfadaki köşe yazısı
-       ve haber bölümleri (columnsSection/newsSection) zaten böyle çalışıyor.
+     • METİN SAYFALARI (köşe yazıları, haberler) — İNGİLİZCE SÜRÜMÜ OLAN
+       KAYITLAR YAYIMLANIR, DİĞERLERİ HİÇ GÖRÜNMEZ. Eskiden çevrilmemiş bir
+       yazı İngilizce listede Türkçe başlığıyla ve `lang="tr"` işaretiyle
+       çıkıyordu; yani "bu metin senin dilinde değil" demek, metni çevirmenin
+       yerine geçiyordu. Artık eleme servistedir (columnService/newsFeed) ve
+       İngilizce yüzey yalnızca İngilizce metin taşır.
+
+     • İNGİLİZCE KARŞILIĞI OLMAYAN ARAÇ SAYFALARI (arşiv, karşılaştırma
+       aracı) için bağlantı hâlâ Türkçe sayfaya gidebilir; ama etiketi
+       İngilizcedir ve görünür bir "(TR)" eki taşır (bkz. `trLink`).
    ══════════════════════════════════════════════════════════════════════════ */
 
-/** Türkçe yüzeye giden bağlantı: hedefin dili okuyucuya söylenir. */
+/**
+ * Türkçe yüzeye giden bağlantı: hedefin dili okuyucuya söylenir.
+ *
+ * `hreflang` VAR, `lang` YOK. İkisi farklı şey söyler: `hreflang` BAĞLANTININ
+ * GİTTİĞİ sayfanın dilidir, `lang` ise ETİKETİN KENDİ dili. Bu etiket
+ * İngilizce yazılıyor ("Open the archive (TR)"); `lang="tr"` eklemek ekran
+ * okuyucusuna İngilizce bir cümleyi Türkçe telaffuzla okutur. Okuyucuya
+ * hedefin Türkçe olduğunu söyleyen şey zaten görünen "(TR)" ekidir.
+ */
 function trLink(href, text) {
-  return `<a class="detail-link" href="${escapeHtml(`${BASE}${href}`)}" hreflang="tr" lang="tr">${escapeHtml(text)} (TR)</a>`;
+  return `<a class="detail-link" href="${escapeHtml(`${BASE}${href}`)}" hreflang="tr">${escapeHtml(text)} (TR)</a>`;
 }
 
 function resultsPage() {
@@ -1872,28 +1892,22 @@ function archivePage() {
 /**
  * KÖŞE YAZILARI — ÇERÇEVE İNGİLİZCE, YAZI KENDİ DİLİNDE.
  *
- * Yazı başlıkları çevrilmez: makine çevirisi yapmıyoruz ve bir yazarın
- * cümlesini uydurma bir İngilizceyle sunmak, yazıyı yanlış aktarmak olurdu.
- * Başlık `lang="tr"` taşır, bağlantı `hreflang="tr"` ile Türkçe metne gider.
+ * Liste yalnızca İngilizce sürümü YAYINA HAZIR yazılardan oluşur; kural
+ * `services/columnService.js`te. Bir yazının İngilizcesi yoksa bu sayfada
+ * Türkçe başlıkla görünmez, Türkçe tarafta olduğu gibi kalır.
  */
 function columnsPage() {
   const cards = columnList.slice(0, 24).map((column) => {
-    const english = englishColumn(column);
-    const href = escapeHtml(english
-      ? english.href
-      : `${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
+    const href = escapeHtml(`${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
     const published = column.publishedAt || column.date || "";
-    const titleAttr = english ? "" : ' lang="tr"';
-    const linkAttr = english ? "" : ' hreflang="tr" lang="tr"';
-    const summary = english ? english.excerpt : column.summary;
     return `<article class="column-card" data-card="column">
-            <div class="column-card-head"><span class="column-badge">Opinion</span>
-            <span class="column-category" lang="tr">${escapeHtml(column.categoryLabel || column.category || "")}</span></div>
-            <h3${titleAttr}>${escapeHtml(english ? english.title : (column.title || ""))}</h3>
-            ${summary ? `<p${titleAttr}>${escapeHtml(summary)}</p>` : ""}
+            <div class="column-card-head"><span class="column-badge">${escapeHtml(column.badge || "Opinion")}</span>
+            <span class="column-category">${escapeHtml(column.categoryLabel || "")}</span></div>
+            <h3>${escapeHtml(column.title || "")}</h3>
+            ${column.excerpt ? `<p>${escapeHtml(column.excerpt)}</p>` : ""}
             <div class="column-card-foot"><span>${escapeHtml(column.author || "FutbolRadar")}</span>
             ${published ? `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time>` : ""}</div>
-            <a class="detail-link" href="${href}"${linkAttr}>${english ? "Read the column" : "Read the column (in Turkish)"}</a>
+            <a class="detail-link" href="${href}">Read the column</a>
           </article>`;
   }).join("");
 
@@ -1901,7 +1915,7 @@ function columnsPage() {
         <h2 class="panel-title" id="en-columns-title">Latest columns</h2>
         <p class="muted-copy">Personal assessments by FutbolRadar writers. This section is opinion and is kept separate from the site's verified match data.</p>
         <div class="column-grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
-        <p class="muted-copy">Columns are written and published in Turkish. Titles are shown in the language they were written in rather than machine-translated.</p>
+        <p class="muted-copy">Every column listed here is published in English. Pieces that have not been prepared in English yet stay on the Turkish site rather than appearing here in Turkish.</p>
       </section>
 ${sectionLinks()}`;
 
@@ -1918,22 +1932,22 @@ ${sectionLinks()}`;
   });
 }
 
-/** Haberler — köşe yazılarıyla aynı kural: çerçeve İngilizce, haber kendi dilinde. */
+/** Haberler — köşe yazılarıyla aynı kural: liste yalnızca İngilizce haberler. */
 function newsPage() {
   const cardList = newsList.slice(0, 24).map((item) => {
-    const href = escapeHtml(newsHref(item, BASE));
+    const href = escapeHtml(newsHref(item, BASE, "en"));
     const published = item.publishedAt || item.date || "";
     const isTransfer = /transfer/i.test(String(item.category || ""));
     const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
     const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
-    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}" hreflang="tr" lang="tr">
-            <div class="news-card-meta"><span class="mega-badge ${badgeClass}" lang="tr">${escapeHtml(badgeLabel)}</span>
+    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}">
+            <div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span>
             <time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>
             <div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>
-            <h3 lang="tr">${escapeHtml(item.title || "")}</h3>
-            ${item.summary ? `<p lang="tr">${escapeHtml(item.summary)}</p>` : ""}</div>
+            <h3>${escapeHtml(item.title || "")}</h3>
+            ${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ""}</div>
             <div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>
-            <span class="detail-link">Read the story (in Turkish)</span></div>
+            <span class="detail-link">Read the story</span></div>
           </a>`;
   });
   // Ana sayfanın 3 kartlık önizlemesinden farklı olarak bu TAM liste; anket
@@ -1944,7 +1958,7 @@ function newsPage() {
   const body = `      <section class="data-panel" aria-labelledby="en-news-title">
         <h2 class="panel-title" id="en-news-title">Verified football agenda</h2>
         <div class="news-grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
-        <p class="muted-copy">Every story is published with the source it was confirmed against. Stories are written in Turkish and are not machine-translated.</p>
+        <p class="muted-copy">Every story is published with the source it was confirmed against. Only stories available in English are listed here; the rest stay on the Turkish site.</p>
       </section>
 ${sectionLinks()}`;
 
