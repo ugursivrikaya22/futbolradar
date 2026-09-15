@@ -429,9 +429,15 @@
     var blocks = [];
 
     if (pre) {
+      // KAYNAK ANAHTARI EKRANA BASILMAZ. `pre.source` bir makine anahtarı
+      // ("provider_prediction"); insan-okur karşılığı zaten `title` alanında
+      // ("Sağlayıcı Tahmini") ve açıklaması `note` içinde geliyor
+      // (services/fixtureProbabilityService.js#DISPLAY). Ham anahtarı
+      // başlığın yanına yazmak okuyucuya hiçbir şey söylemiyordu.
       blocks.push('<article class="mh-pred">' +
-        '<div class="mh-pred__head"><h3>' + esc(pre.title || "Maç öncesi tahmin") + "</h3>" +
-        (pre.source ? '<span class="tag soft">' + esc(pre.source) + "</span>" : "") + "</div>" +
+        '<div class="mh-pred__head"><h3>' +
+        (pre.icon ? esc(pre.icon) + " " : "") +
+        esc(pre.title || "Maç öncesi tahmin") + "</h3></div>" +
         probabilityBarHtml(pre, detail, "Maç öncesi tahmin") +
         (pre.note ? '<p class="mh-pred__note">' + esc(pre.note) + "</p>" : "") +
         (pre.advice ? '<p class="mh-pred__note">' + esc(pre.advice) + "</p>" : "") +
