@@ -174,14 +174,37 @@ check("olasılık çubuğu model yüzdeleriyle çizilir, bahis uyarısı taşır
   const html = probabilitySection(analysisFixture, null, "Ev Takımı", "Deplasman Takımı");
   assert.ok(html.includes("%45") && html.includes("%30") && html.includes("%25"));
   assert.ok(html.includes("bahis önerisi değildir"));
-  assert.ok(!html.includes("API-Football modeli"), "sağlayıcı yüzdesi yokken satırı basılmamalı");
+  assert.ok(!html.includes("Sağlayıcı Tahmini"), "sağlayıcı yüzdesi yokken satırı basılmamalı");
 });
 
 check("sağlayıcı yüzdesi varsa ayrı ve açık etiketle basılır", () => {
   const calendarRec = { prediction: { predictions: { percent: { home: "50%", draw: "28%", away: "22%" } } } };
   const html = probabilitySection(analysisFixture, calendarRec, "Ev", "Dep");
-  assert.ok(html.includes("API-Football modeli"));
+  // Etiket kaynağın adını taşır: sağlayıcı yüzdesi "Sağlayıcı Tahmini"dir.
+  assert.ok(html.includes("Sağlayıcı Tahmini"));
+  assert.ok(html.includes('data-prediction-source="provider_prediction"'));
   assert.ok(html.includes("%50 · %28 · %22"));
+});
+
+check("piyasa olasılığı satırı sağlayıcıya mal edilmez", () => {
+  const market = {
+    source: "market_probability",
+    probabilities: { home: 61, draw: 23, away: 16 }
+  };
+  const html = probabilitySection(analysisFixture, null, "Ev", "Dep", market);
+  assert.ok(html.includes("Piyasa Olasılığı"));
+  assert.ok(!html.includes("Sağlayıcı Tahmini"), "orandan türeyen yüzde sağlayıcı tahmini değildir");
+  assert.ok(html.includes("%61 · %23 · %16"));
+});
+
+check("FutbolRadar modeli satırı kendi adıyla anılır", () => {
+  const own = {
+    source: "futbolradar_model",
+    probabilities: { home: 40, draw: 30, away: 30 }
+  };
+  const html = probabilitySection(analysisFixture, null, "Ev", "Dep", own);
+  assert.ok(html.includes("FutbolRadar Tahmini"));
+  assert.ok(!html.includes("Sağlayıcı Tahmini") && !html.includes("Piyasa Olasılığı"));
 });
 
 check("tahmin 'unavailable' ise yüzde yerine dürüst bekleme kartı", () => {

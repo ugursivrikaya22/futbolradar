@@ -121,6 +121,22 @@ const TABLES = {
     conflict: "id",
     columns: ["occurred_at", "kind", "subject_type", "subject_id", "locale", "session_key", "meta"]
   },
+  // Maç tahmini deposu — bkz. supabase/migrations/0004_fixture_predictions.sql.
+  // `source` sütunu arayüzdeki başlığın tek kaynağıdır; kolon listesi
+  // göçle birebir eşleşmezse toplu yazmanın TAMAMI 400 ile düşer.
+  fixturePredictions: {
+    name: "fixture_predictions",
+    conflict: "fixture_id",
+    columns: [
+      "fixture_id", "provider_fixture_id", "competition_id", "league_id",
+      "season", "kickoff", "home_team", "away_team", "home_team_id",
+      "away_team_id", "source", "home_probability", "draw_probability",
+      "away_probability", "predicted_winner", "advice", "under_over",
+      "predicted_goals", "comparison", "confidence", "model_version",
+      "frozen", "refresh_stage", "provider_updated_at", "calculated_at",
+      "expires_at", "raw_provider_data", "source_id"
+    ]
+  },
   // Canlı skor veri hattı gecikme kütüğü — bkz. services/liveEventLatency.js
   // başlığındaki mimari notu. `event_key` üzerinden upsert edilir: satır
   // önce sunucu zaman damgalarıyla yazılır, istemci ekrana bastığında aynı
@@ -141,6 +157,6 @@ const TABLES = {
  * Sıra ÖNEMLİ: yabancı anahtarlar yüzünden takımlar oyunculardan, maçlar
  * takımlardan, analizler maçlardan önce yazılmalı.
  */
-const INGEST_ORDER = ["sources", "teams", "players", "matches", "transfers", "reports", "polls"];
+const INGEST_ORDER = ["sources", "teams", "players", "matches", "predictions", "transfers", "reports", "polls"];
 
 module.exports = { TABLES, INGEST_ORDER };

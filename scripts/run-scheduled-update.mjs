@@ -305,10 +305,19 @@ function sourceSteps(type, providerReady) {
     // fixture-calendar başarısız olsa bile çalışması güvenli.
     ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
     nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
-    // Yaklaşan Süper Lig maçlarının sağlayıcı tahmini + ikili rekabeti
-    // (maç başına tek /predictions isteği). Günlük full koşu yeter:
-    // sağlayıcı tahmini gün içinde anlamlı değişmez.
-    ...(full ? [nodeStep("match-predictions", "sync-match-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider })] : []),
+    // YAKLAŞAN MAÇLARIN TAHMİNİ — lig ayrımı yok, üç kaynaklı zincir:
+    // sağlayıcı /predictions → /odds 1X2 konsensüsü → FutbolRadar modeli.
+    //
+    // SAATLİK KOŞUDA DA ÇALIŞIR ve bu bilinçli: tazeleme basamakları
+    // (T-72s → T-24s → T-6s → T-90dk) ancak saatlik bir koşu varsa
+    // zamanında yakalanır; günlük tek koşu, maça 6 saat kala güncellenmesi
+    // gereken tahmini kaçırırdı. Kota yine korunuyor, çünkü her fikstür
+    // her basamakta EN FAZLA bir kez sorulur (services/fixturePredictionStore.js)
+    // ve kapsamı olmayan lige hiç istek gitmez.
+    // Sağlayıcı yapılandırılmamışken bile ATLANMAZ: zincirin üçüncü
+    // halkası (FutbolRadar modeli) kotadan bağımsız çalışır ve maç
+    // sayfalarının tahmin kartı bu koşuda tazelenir.
+    nodeStep("fixture-predictions", "sync-fixture-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000 }),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     // Gol/asist krallığı: `/players/topscorers` + `/players/topassists`
     // ligin kendisiyle sorgulandığı için players.json'un turnuva-toplamı
