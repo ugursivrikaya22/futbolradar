@@ -395,11 +395,23 @@ async function until(check, message, timeout = 5000) {
           await navigate(await tickerAll.isVisible() ? tickerAll : page.locator('main a.section-link[href$="' + (en ? 'news.html' : 'haberler.html') + '"]').first());
           await open(en ? 'en/news.html' : 'haberler.html');
           if (!en) await page.locator('[data-api-target="news-page"][data-state="ready"]').waitFor();
-          const news = page.locator('main a[href*="/haber/"], main a[href*="haber/"]').first();
+          // HABER VE YAZI ROTASI ARTIK DİLE GÖRE AYRI.
+          //
+          // İngilizce kart eskiden Türkçe `haber/<slug>` sayfasına
+          // bağlanıyordu; okuyucu tek tıkla Türkçe metne düşüyordu. Artık
+          // İngilizce haberin kendi sayfası var (`en/news/<slug>.html`) ve
+          // kart oraya gidiyor. Denetim bu yüzden Türkçe yolu İngilizce
+          // tarafta KABUL ETMİYOR: eski davranış geri gelirse burada kırılır.
+          const news = page.locator(en
+            ? 'main a[href*="en/news/"]'
+            : 'main a[href*="/haber/"], main a[href*="haber/"]').first();
           assert.ok(await news.count(), 'No news article route');
           await navigate(news);
           await open(en ? 'en/columns.html' : 'kose-yazilari.html');
-          const column = page.locator('main a[href*="kose-yazilari/"],main a[href*="columns/"]').first();
+          const column = page.locator(en
+            ? 'main a[href*="en/columns/"]'
+            : 'main a[href*="kose-yazilari/"]').first();
+          assert.ok(await column.count(), 'No column article route');
           await navigate(column);
         });
         await test(locale + ' notification panel opens and dismisses without covering menu', async () => {
