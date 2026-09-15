@@ -1420,7 +1420,15 @@ function buildSeo(match, summary) {
   // 1. Maçın kendi cümlesi. En bilgilendirici seçenek bu.
   if (summary.status === "ready" && String(summary.paragraph || "").trim()) {
     const sentence = String(summary.paragraph).trim();
-    const firstStop = sentence.match(/^[\s\S]*?[.!?](?=\s|$)/);
+    // SIRA SAYISININ NOKTASI CÜMLE SONU DEĞİLDİR.
+    //
+    // Türkçede sıra sayıları noktayla yazılıyor ("4. hafta", "90. dakika").
+    // Desen yalnızca "boşluktan önce gelen nokta" arayınca ilk sıra sayısında
+    // duruyordu: "... oynanan Süper Lig 4. hafta maçında ..." açıklaması
+    // "... Süper Lig 4." diye kesiliyor, meta/OG/Twitter alanları yarım
+    // cümleyle yayına çıkıyordu. Rakamdan hemen sonra gelen nokta artık
+    // sınır sayılmıyor; gerçek cümle sonu harf ya da noktalamayla bitiyor.
+    const firstStop = sentence.match(/^[\s\S]*?(?<![0-9])[.!?](?=\s|$)/);
     description = String(firstStop ? firstStop[0] : sentence).trim();
   }
 
