@@ -182,8 +182,19 @@ function isSubscriptionLive(profile, now = new Date()) {
 
   if (expiresAt) {
     const expiry = new Date(expiresAt);
-    if (Number.isFinite(expiry.getTime()) && expiry.getTime() <= now.getTime()) {
-      return false;
+    if (Number.isFinite(expiry.getTime())) {
+      // Süresi GERÇEKTEN dolmuşsa kademe ne olursa olsun erişim biter.
+      if (expiry.getTime() <= now.getTime()) return false;
+
+      // İPTAL EDİLMİŞ AMA SÜRESİ DOLMAMIŞ ABONELİK HÂLÂ CANLIDIR.
+      //
+      // Yukarıdaki açıklama bunu zaten söylüyordu ama kod söylemiyordu:
+      // `canceled` erişim veren durumlar listesinde olmadığı için,
+      // "iptal et" diyen kullanıcı ÖDEDİĞİ dönemin ortasında erişimini
+      // anında kaybediyordu. Her abonelik ürününde bu bir iade
+      // sebebidir. İptal, dönem sonunda yenilenmeyeceği anlamına gelir;
+      // dönemin kendisi ödenmiştir.
+      if (status === STATUSES.CANCELED) return true;
     }
   }
 

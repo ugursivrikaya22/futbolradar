@@ -335,7 +335,14 @@ async function handleLogin(req, res) {
   try {
     result = await authClient.signInWithPassword({ email, password });
   } catch (error) {
-    return fail(res, error.status === 503 ? 503 : 401, error.messageKey || "auth.error.invalidCredentials");
+    // DURUM KODU KORUNUR — 429 "şifren yanlış" DEĞİLDİR.
+    //
+    // Her hatayı 401'e indirmek, hız sınırına takılan kullanıcıya
+    // "e-posta veya şifre hatalı" demek olurdu; o da doğru şifresini
+    // tekrar tekrar dener ve sınırı daha da derinleştirir. Yukarı
+    // akıştan gelen 429 ve 503 olduğu gibi geçer.
+    const status = [429, 503].includes(error.status) ? error.status : 401;
+    return fail(res, status, error.messageKey || "auth.error.invalidCredentials");
   }
 
   // Giriş de profili GARANTİLER: Supabase panelinden elle açılmış ya da

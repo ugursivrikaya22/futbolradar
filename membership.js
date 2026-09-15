@@ -159,12 +159,28 @@
     }
   }
 
+  /**
+   * ÖNBELLEK KİMLİĞE BAĞLI.
+   *
+   * Saklanan şey KİŞİSEL veri (ad, favoriler, bildirimler). Anahtar
+   * sabit olunca, aynı tarayıcıda hesap değiştiğinde ağ yanıtı gelene
+   * kadar ÖNCEKİ kullanıcının adı ve favorileri çizilebiliyordu.
+   * Kayıt, ait olduğu kullanıcının kimliğini taşıyor ve okurken
+   * doğrulanıyor; eşleşmiyorsa yok sayılıyor.
+   */
+  function cacheOwner(payload) {
+    return (payload && payload.account && payload.account.user && payload.account.user.id) || "";
+  }
+
   function readCache() {
     try {
       var raw = window.sessionStorage.getItem(CACHE_KEY);
       if (!raw) return null;
       var parsed = JSON.parse(raw);
       if (!parsed || Date.now() - parsed.at > CACHE_TTL_MS) return null;
+      // İpucu çerezi yoksa kişisel önbellek hiç kullanılmaz.
+      if (!mayBeSignedIn()) return null;
+      if (parsed.owner !== cacheOwner(parsed.value)) return null;
       return parsed.value;
     } catch (error) {
       return null;
@@ -173,7 +189,11 @@
 
   function writeCache(value) {
     try {
-      window.sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: Date.now(), value: value }));
+      window.sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+        at: Date.now(),
+        owner: cacheOwner(value),
+        value: value
+      }));
     } catch (error) {
       /* gizli sekme / dolu depo: önbellek bir kolaylık, zorunluluk değil */
     }
@@ -501,6 +521,24 @@
     }
   }
 
+  /**
+   * DÖNÜŞ ADRESİ — SUNUCUDAKİ KURALIN AYNISI.
+   *
+   * Sunucu tarafı `safeReturnPath` ters eğik çizgiyi de eliyordu, bu
+   * istemci kontrolü elemiyordu: `/\\evil.com` bazı tarayıcılarda
+   * protokolden bağımsız adres gibi ele alınıp siteyi terk ettiriyor.
+   * İki kural ayrışırsa açık yönlendirme istemci tarafından geri
+   * gelir.
+   */
+  function safeReturnTo(value) {
+    var fallback = isEnglish() ? "/en/index.html" : "/index.html";
+    var raw = String(value || "");
+    if (raw.charAt(0) !== "/") return fallback;
+    if (raw.charAt(1) === "/" || raw.charAt(1) === "\\") return fallback;
+    if (raw.indexOf("\\") !== -1) return fallback;
+    return raw;
+  }
+
   function loginUrl() {
     var base = isEnglish() ? "/en/login.html" : "/giris.html";
     return base + "?returnTo=" + encodeURIComponent(window.location.pathname + window.location.search);
@@ -745,10 +783,7 @@
           clearCache();
           track(mode === "signup" ? "signup_completed" : "login_completed", { method: "email" });
 
-          var returnTo = new URLSearchParams(window.location.search).get("returnTo");
-          window.location.href = returnTo && returnTo.charAt(0) === "/" && returnTo.charAt(1) !== "/"
-            ? returnTo
-            : (isEnglish() ? "/en/index.html" : "/index.html");
+          window.location.href = safeReturnTo(new URLSearchParams(window.location.search).get("returnTo"));
         });
     });
   }

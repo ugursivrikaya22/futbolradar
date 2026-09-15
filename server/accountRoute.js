@@ -110,6 +110,25 @@ function anonymousState() {
   };
 }
 
+/**
+ * Üyelik satırını garantile — okuma yüzeyleri için.
+ *
+ * Yazma kapısında da kullanılıyor: profili olmayan bir kullanıcı
+ * `canUseProFeature(null)` yüzünden "PRO gerekli" hatası alırdı, oysa
+ * eksik olan tek şey henüz açılmamış bir satır.
+ */
+async function ensureProfileFor(session) {
+  try {
+    return await profileStore.ensureProfile({
+      userId: session.userId,
+      email: session.email,
+      locale: "tr"
+    });
+  } catch (error) {
+    return profileStore.getProfile(session.userId);
+  }
+}
+
 async function loadFavorites(userId) {
   const rows = await profileStore.listFavorites(userId);
   return profileStore.groupFavorites(rows.map((row) => catalog.decorateFavorite(row)));
@@ -122,7 +141,15 @@ async function handleOverview(req, res) {
   if (!current) return ok(res, anonymousState());
 
   const [profile, favorites, preferences, notifications] = await Promise.all([
-    profileStore.getProfile(current.userId),
+    // `ensureProfile`, `getProfile` DEĞİL.
+    //
+    // Oturum geçerli ama üyelik satırı yoksa (panelden elle açılmış
+    // hesap, tablo eklenmeden önce kaydolmuş kullanıcı, yarım kalmış
+    // kayıt) `getProfile` null döner ve `accountPayload(null)` bunu
+    // "giriş yapılmamış" diye çizerdi: kullanıcı giriş yaptığı hâlde
+    // başlıkta "Giriş Yap" görürdü. `/api/auth-session` bu düşüşü
+    // zaten onarıyordu; genel bakış da aynı davranmalı.
+    ensureProfileFor(current),
     loadFavorites(current.userId),
     profileStore.getNotificationPrefs(current.userId),
     profileStore.listNotifications(current.userId, 20)
@@ -167,7 +194,7 @@ async function handleFavoriteWrite(req, res) {
   // Kütükte olmayan bir kimlik sessizce kabul EDİLMEZ.
   if (!resolved) return fail(res, 400, "account.error.unknownTarget");
 
-  const profile = await profileStore.getProfile(current.userId);
+  const profile = await ensureProfileFor(current);
   const featureByKind = {
     team: config.FEATURES.FAVORITE_TEAMS,
     player: config.FEATURES.FAVORITE_PLAYERS,

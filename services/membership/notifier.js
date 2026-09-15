@@ -31,6 +31,16 @@ if (typeof window !== "undefined") {
 
 const profileStore = require("./profileStore");
 const config = require("./config");
+const { loadTeams, teamIdForName } = require("../teamIdentity");
+
+/** Takım kütüğü — `teamIdForName` için; modül önbelleğinde kalır. */
+function loadTeamCatalog() {
+  try {
+    return loadTeams();
+  } catch (error) {
+    return [];
+  }
+}
 
 /**
  * Canlı akış olay türü → bildirim türü (ve tercih sütunu).
@@ -44,7 +54,7 @@ const EVENT_TO_KIND = Object.freeze({
   goal: "goal",
   halftime: "half_time",
   fulltime: "match_end",
-  redcard: "red_card",
+  // Canlı akış bu adı üretiyor (services/liveScoreStream.js#detectMatchEvents).
   "red-card": "red_card",
   lineups: "lineups"
 });
@@ -80,12 +90,24 @@ function buildNotification(event) {
   const scoreText = scoreHome !== null && scoreAway !== null ? `${scoreHome}-${scoreAway}` : "";
   const fixture = `${home} - ${away}`;
 
+  // KIRMIZI KARTTA TAKIM ADI YAZILMAZ — ÇÜNKÜ BİLİNMİYOR.
+  //
+  // Golde akış hangi tarafın attığını söylüyor (`side: "home"|"away"`,
+  // skor artışından türetiliyor). Kırmızı kartta SÖYLEMİYOR: olay
+  // yalnızca kart SAYISININ arttığını bildiriyor
+  // (`{ type: "red-card", match }` — side alanı yok).
+  //
+  // Önceki hâli `event.side === "away" ? away : home` yazıyordu ve
+  // `side` tanımsız olduğu için HER kırmızı kartı ev sahibine
+  // yazıyordu. Deplasman oyuncusu atıldığında bildirim yanlış takımı
+  // suçluyordu — uydurulmuş bilgi, bu deponun yasakladığı türden.
+  // Bilinmeyen taraf, adı hiç yazmamakla dürüstçe ifade edilir.
   const titles = {
     match_start: "Maç başladı",
     goal: `Gol: ${event.side === "away" ? away : home}`,
     half_time: "İlk yarı bitti",
     match_end: "Maç bitti",
-    red_card: `Kırmızı kart: ${event.side === "away" ? away : home}`,
+    red_card: "Kırmızı kart",
     lineups: "Kadrolar açıklandı"
   };
 
@@ -95,17 +117,79 @@ function buildNotification(event) {
     kind,
     title: titles[kind] || fixture,
     body: `${fixture}${scoreText ? ` ${scoreText}` : ""}${minuteText}`.replace(/\s+/g, " ").trim(),
-    // TEKİLLEŞTİRME ANAHTARI. Aynı gol, canlı akış onu tekrar
-    // gönderdiğinde ikinci kez yazılmasın diye skoru da taşıyor
-    // (şemadaki kısmi benzersiz dizin bunu uyguluyor).
-    subjectKey: `${match.id || match.providerId || fixture}:${kind}${scoreText ? `:${scoreText}` : ""}`,
+    // TEKİLLEŞTİRME ANAHTARI — OLAYA ÖZGÜ, TÜRE DEĞİL.
+    //
+    // Golde skor anahtarın parçası: aynı gol tekrar gönderilirse aynı
+    // satıra düşer, İKİNCİ gol ise farklı skorla farklı satır açar.
+    //
+    // Kırmızı kartta skor değişmiyor; anahtar yalnızca tür olsaydı
+    // maçtaki İKİNCİ kırmızı kart sessizce yutulurdu. Akış olayı kart
+    // SAYISININ artışından üretiyor, dolayısıyla sayının kendisi
+    // kararlı ve olaya özgü bir kimlik.
+    subjectKey: `${matchKey(match) || fixture}:${kind}${eventIdentity(event, kind, scoreText)}`,
     href: matchHref(match)
   };
 }
 
+/** Olayın kendine özgü parçası — bkz. `subjectKey` gerekçesi. */
+function eventIdentity(event, kind, scoreText) {
+  if (kind === "goal") return scoreText ? `:${scoreText}` : "";
+  if (kind === "red_card") {
+    const count = countRedCards(event && event.match && event.match.events);
+    return count ? `:${count}` : "";
+  }
+  return "";
+}
+
+/** Olay akışındaki kırmızı kart sayısı (liveScoreStream ile aynı ölçüt). */
+function countRedCards(events) {
+  if (!Array.isArray(events)) return 0;
+  return events.filter((entry) => {
+    // ÜÇ ALANIN DA OKUNMASI GEREKİYOR, İLK DOLU OLANIN DEĞİL.
+    // Sağlayıcı kaydı çoğu zaman `{ type: "Card", detail: "Red Card" }`
+    // biçiminde geliyor: yalnızca `type`a bakan bir ölçüt "Card" görür,
+    // "red" geçmediği için kartı SAYMAZ ve tekilleştirme anahtarı
+    // sabit kalırdı — yani maçtaki ikinci kırmızı kart yutulurdu.
+    const text = [entry && entry.type, entry && entry.detail, entry && entry.kind]
+      .map((value) => String(value || ""))
+      .join(" ")
+      .toLowerCase();
+    return text.includes("red");
+  }).length;
+}
+
+/** Maçın kararlı anahtarı. Canlı nesnede `slug` YOK; `id`/`providerId` var. */
+function matchKey(match) {
+  return String((match && (match.id || match.providerId)) || "");
+}
+
+/**
+ * MAÇIN SİCİLDEKİ SLUG'I — canlı nesnede yok, türetilmesi gerekiyor.
+ *
+ * `services/pushNotifier.js#matchUrl` ile AYNI çözücü kullanılıyor;
+ * iki bildirim kanalı aynı maç için farklı adres üretemesin.
+ */
+function matchSlug(match) {
+  try {
+    // eslint-disable-next-line global-require
+    const { slugForMatch } = require("../matchSeoPages");
+    return slugForMatch({
+      providerIds: { apiFootball: match && match.providerId },
+      providerId: match && match.providerId,
+      providerName: "api-football",
+      homeTeam: match && match.homeTeam,
+      awayTeam: match && match.awayTeam,
+      kickoff: match && match.kickoff
+    }) || "";
+  } catch (error) {
+    return "";
+  }
+}
+
 function matchHref(match) {
-  const slug = String(match.slug || "");
+  const slug = matchSlug(match);
   if (slug) return `/mac/${slug}.html`;
+  // Sayfası çözülemeyen maçta canlı skora düşülür — uydurma adres değil.
   return "/canli-skor.html";
 }
 
@@ -116,10 +200,23 @@ function matchHref(match) {
  * iki kez yazılmaz (`pushNotifier`deki aynı gerekçe).
  */
 async function recipientsFor(match) {
+  // TAKIM ADINDAN KİMLİĞE ÇEVİRMEK ZORUNLU.
+  //
+  // Favoriler kütük kimliğiyle saklanıyor ("galatasaray"), canlı maç
+  // nesnesi ise yalnızca ADI taşıyor ("Galatasaray"): ölçüldü —
+  // `homeTeamId`, `homeTeamSlug` ve `slug` alanlarının ÜÇÜ DE tanımsız.
+  // Önceki hâli bu alanları okuduğu için hiçbir zaman alıcı bulamıyor,
+  // yani bildirim kimseye ulaşmıyordu; üstelik sessizce, çünkü "alıcı
+  // yok" geçerli bir durum.
+  //
+  // Çözüm `services/pushNotifier.js` ile AYNI yardımcıdan geçiyor
+  // (`teamIdentity#teamIdForName`), böylece iki kanal aynı takım için
+  // farklı cevap veremez.
+  const teams = loadTeamCatalog();
   const keys = [
-    ["team", match.homeTeamId || match.homeTeamSlug],
-    ["team", match.awayTeamId || match.awayTeamSlug],
-    ["match", match.slug],
+    ["team", teamIdForName(match.homeTeam, teams)],
+    ["team", teamIdForName(match.awayTeam, teams)],
+    ["match", matchSlug(match)],
     ["match", match.providerId],
     ["match", match.id]
   ].filter(([, value]) => value);
@@ -193,6 +290,8 @@ async function notifyMatchEvents(events) {
 
 module.exports = {
   EVENT_TO_KIND,
+  countRedCards,
+  matchSlug,
   MAX_RECIPIENTS_PER_EVENT,
   buildNotification,
   isConfigured,

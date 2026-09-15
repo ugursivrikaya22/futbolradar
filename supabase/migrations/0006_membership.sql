@@ -172,8 +172,24 @@ create index if not exists user_notifications_unread_idx
   on user_notifications (user_id) where read_at is null;
 -- AYNI OLAY İKİ KEZ BİLDİRİLMEZ. Gol bildirimi, canlı akış aynı olayı
 -- tekrar gönderdiğinde ikinci satırı açmamalı.
+--
+-- DİZİN KISMİ DEĞİL — VE BU ZORUNLU, TERCİH DEĞİL.
+--
+-- Önce `where subject_key is not null` ile KISMİ yazılmıştı. PostgreSQL
+-- kısmi bir benzersiz dizini `on conflict (sütunlar)` ile EŞLEŞTİREMEZ:
+-- aynı WHERE yüklemi de verilmek zorundadır. PostgREST'in
+-- `on_conflict=` parametresi ise yüklem taşıyamıyor. Sonuç, yazmanın
+-- "there is no unique or exclusion constraint matching the ON CONFLICT
+-- specification" ile reddedilmesi olurdu — yani HİÇBİR tekilleştirilmiş
+-- bildirim yazılamaz, zil kutusu sonsuza dek boş kalırdı. Sessiz bir
+-- arıza: "alıcı yok" ile "yazılamadı" dışarıdan aynı görünür.
+--
+-- Tam dizin aynı işi görüyor çünkü PostgreSQL'de NULL'lar benzersiz
+-- dizinde birbiriyle ÇAKIŞMAZ: `subject_key` NULL olan satırlar
+-- (tekilleştirilmeyen bildirimler) serbestçe eklenmeye devam eder,
+-- dolu olanlar ise tam olarak istendiği gibi tekilleşir.
 create unique index if not exists user_notifications_dedupe_idx
-  on user_notifications (user_id, kind, subject_key) where subject_key is not null;
+  on user_notifications (user_id, kind, subject_key);
 
 -- ---------------------------------------------------------------------
 -- RLS: VARSAYILAN REDDET

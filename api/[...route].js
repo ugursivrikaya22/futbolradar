@@ -59,6 +59,12 @@ async function getPlayerData(query) {
   };
 }
 
+/** `/api/` sonrasındaki bölüm sayısı; üyelik yolları için tam 1 olmalı. */
+function membershipPathDepth(req) {
+  const url = new URL(req.url || "/", "http://localhost");
+  return url.pathname.replace(/^\/api\/?/, "").split("/").filter(Boolean).length;
+}
+
 function routeName(req) {
   const url = new URL(req.url || "/", "http://localhost");
   return normalizeText(url.pathname.replace(/^\/api\/?/, "").split("/")[0]);
@@ -403,12 +409,18 @@ module.exports = async function handler(req, res) {
   // Gerekçe `server/authRoute.js#subRoute`ta: bu dağıtımda yakalayıcı
   // ikinci bir segmenti hiç görmüyor (`/api/motm-week/foo` → 404), bu
   // yüzden depodaki her çalışan yol tek segmentli ve tireli.
-  if (routeName(req).startsWith("auth-")) {
-    return handleAuth(req, res);
-  }
-
-  if (routeName(req).startsWith("account-")) {
-    return handleAccount(req, res);
+  // FAZLA SEGMENT REDDEDİLİR.
+  //
+  // `routeName` ilk bölümü alıyor, yani `/api/auth-session/foo` da
+  // `auth-session` olarak görünür ve aynı yanıtı verirdi. Tek segmentli
+  // sözleşme yalnızca bir üslup değil: aynı içeriğin sonsuz sayıda
+  // adreste servis edilmesi hem kişiye özel bir yanıtı beklenmedik
+  // adreslere yayar hem de sözleşmeyi doğrulayan testi anlamsızlaştırır.
+  if (/^(auth|account)-/.test(routeName(req))) {
+    if (membershipPathDepth(req) !== 1) {
+      return sendError(res, 404, "API endpoint bulunamadi.", "API_ROUTE_NOT_FOUND");
+    }
+    return routeName(req).startsWith("auth-") ? handleAuth(req, res) : handleAccount(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {
