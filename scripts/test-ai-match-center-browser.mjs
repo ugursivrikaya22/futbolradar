@@ -129,7 +129,13 @@ async function inspect(env, url, { javaScriptEnabled = true } = {}) {
     isMobile: env.mobile,
     reducedMotion: "reduce",
     serviceWorkers: "block",
-    javaScriptEnabled
+    javaScriptEnabled,
+    // Yalnızca DIŞ bir adrese (AI_BASE_URL ile canlı önizleme) koşarken.
+    // Bazı koşum ortamları dışarı giden HTTPS'i kendi CA'sıyla imzalayan
+    // bir vekil üzerinden geçirir; Chromium bunu haklı olarak reddeder ve
+    // sayfa hiç açılmaz. Yerel koşumda (varsayılan) istisna KAPALI kalır,
+    // böylece gerçek bir sertifika hatası testten kaçamaz.
+    ...(process.env.AI_BASE_URL ? { ignoreHTTPSErrors: true } : {})
   });
   const page = await context.newPage();
   const consoleErrors = [];
