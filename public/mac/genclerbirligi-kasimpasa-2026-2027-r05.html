@@ -20,23 +20,6 @@
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Ana Sayfa","item":"https://www.futbolradar.com/"},{"@type":"ListItem","position":2,"name":"Süper Lig Fikstürü","item":"https://www.futbolradar.com/super-lig-fikstur.html"},{"@type":"ListItem","position":3,"name":"Gençlerbirliği - Kasımpaşa","item":"https://www.futbolradar.com/mac/genclerbirligi-kasimpasa-13-eylul-2026"}]}]}</script>
     <link rel="stylesheet" href="../page.css?v=837d70e9" />
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -55,6 +38,23 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/mac/genclerbirligi-kasimpasa-2026-2027-r05.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/match/genclerbirligi-kasimpasa-2026-2027-r05.html" />
@@ -150,7 +150,7 @@
         <p class="match-probability-label">Ev sahibi bir adım önde</p>
         <div class="match-probability-chips"><span class="match-probability-chip">Gol potansiyeli: Orta</span><span class="match-probability-chip">Sürpriz riski: Yüksek</span></div>
         <p class="muted-copy">Model, ev sahibi için %40, beraberlik için %34, deplasman için %26 ihtimal hesaplıyor. Takım güç puanları 54/100 - 49/100 ve maç dengesi &quot;slight-home&quot; olarak okunuyor. Bu okuma 61/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.</p>
-        <div class="match-probability-provider"><span>API-Football modeli</span><div class="probability-bar-track is-thin" role="img" aria-label="API-Football: ev sahibi yüzde 10, beraberlik yüzde 45, deplasman yüzde 45"><span class="home-share" style="width:10%"></span><span class="draw-share" style="width:45%"></span><span class="away-share" style="width:45%"></span></div><b>%10 · %45 · %45</b></div>
+        <div class="match-probability-provider" data-prediction-source="provider_prediction"><span>📊 Sağlayıcı Tahmini</span><div class="probability-bar-track is-thin" role="img" aria-label="Sağlayıcı Tahmini: Gençlerbirliği yüzde 10, beraberlik yüzde 45, Kasımpaşa yüzde 45"><span class="home-share" style="width:10%"></span><span class="draw-share" style="width:45%"></span><span class="away-share" style="width:45%"></span></div><b>%10 · %45 · %45</b></div>
         <p class="match-radar-disclaimer">Olasılıklar istatistiksel okumadır; kesin sonuç veya bahis önerisi değildir.</p>
       </div>
     </section>
@@ -257,6 +257,6 @@
       </nav>
     </footer>
     <script src="../site.js?v=42c2d54c" defer></script>
-    <script src="../app-lite.js?v=6e9458de" defer></script>
+    <script src="../app-lite.js?v=609495cc" defer></script>
   </body>
 </html>
