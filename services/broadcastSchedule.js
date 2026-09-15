@@ -78,11 +78,39 @@ function primaryBroadcast(match) {
   return { channel, sourceUrl: text(match.broadcastSourceUrl) };
 }
 
+/**
+ * ELLE DOĞRULANMIŞ HAKEM — yalnızca `broadcast-verifications.json`dan.
+ *
+ * Hakem, maçtan birkaç gün önce turnuvayı yöneten federasyon tarafından
+ * açıklanır; sağlayıcı kaydı (`match.referee`) o sırada çoğu kez boştur ve
+ * maç oynanana kadar da öyle kalır. Kaynağı açıp gözüyle doğrulayan bir
+ * insanın girdiği atama, bu boşluğu dolduran TEK yoldur — günlük tarama
+ * dosyasında hakem alanı yoktur, bu yüzden buraya yalnızca elle doğrulama
+ * kaydı girebilir.
+ *
+ * Sağlayıcı bir hakem adı gönderdiyse o kazanır: elle girilen kayıt maç
+ * öncesi bir duyuruyu yansıtır, sağlayıcının maç anındaki kaydı ise sahada
+ * kimin düdük çaldığını. Son dakika değişikliğinde doğrusu ikincisidir.
+ */
+function verifiedReferee(match) {
+  if (!match) return null;
+  const manual = broadcastVerifications.find((record) => matchesRecord(match, record));
+  if (!manual || !text(manual.referee)) return null;
+  return { referee: text(manual.referee), sourceUrl: text(manual.refereeSourceUrl) || text(manual.sourceUrl) };
+}
+
 function applyVerifiedBroadcast(match) {
   const record = verifiedBroadcast(match);
-  if (!record) return match;
-  return { ...match, broadcast: { ...(typeof match.broadcast === "object" ? match.broadcast : {}), turkey: record.turkey },
-    broadcastSourceUrl: record.sourceUrl, broadcastVerifiedAt: record.verifiedAt };
+  const referee = verifiedReferee(match);
+  let next = match;
+  if (record) {
+    next = { ...next, broadcast: { ...(typeof next.broadcast === "object" ? next.broadcast : {}), turkey: record.turkey },
+      broadcastSourceUrl: record.sourceUrl, broadcastVerifiedAt: record.verifiedAt };
+  }
+  if (referee && !text(next.referee)) {
+    next = { ...next, referee: referee.referee, refereeSourceUrl: referee.sourceUrl };
+  }
+  return next;
 }
 
 /**
@@ -317,6 +345,7 @@ function competitionDisplayName(match) {
 module.exports = {
   applyVerifiedBroadcast,
   verifiedBroadcast,
+  verifiedReferee,
   PRIORITY_CLUBS,
   PRIORITY_COMPETITION_IDS,
   broadcastChannel,

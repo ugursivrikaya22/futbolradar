@@ -596,20 +596,38 @@
   function createLivePoller(intervalMs, task) {
     var timer = null;
     var running = false;
+    var stopped = false;
 
     function currentInterval() {
-      return typeof intervalMs === "function" ? Number(intervalMs()) || 20000 : intervalMs;
+      if (typeof intervalMs !== "function") {
+        return intervalMs;
+      }
+      // SIFIR "YOKLAMA İSTEMİYORUM" DEMEK — `|| 20000` bunu yutuyordu.
+      // Aralığı 0 döndüren çağıran (bitmiş maç, günler sonrasına ayarlı
+      // maç) sessizce 20 saniyelik yoklamaya düşüyordu; yani durdurma
+      // isteği hiç uygulanmıyor, yalnızca aralık değişiyordu. Geçersiz
+      // (sayı olmayan) sonuç için yedek değer korunuyor.
+      var value = Number(intervalMs());
+      return isFinite(value) ? value : 20000;
     }
 
     function schedule() {
-      if (timer) {
+      if (timer || stopped) {
         return;
       }
-      timer = window.setTimeout(run, currentInterval());
+      var wait = currentInterval();
+      // Aralık 0/negatif ise yoklama İSTENMİYOR demektir; sayaç kurulmaz.
+      if (!(wait > 0)) {
+        return;
+      }
+      timer = window.setTimeout(run, wait);
     }
 
     function run() {
       timer = null;
+      if (stopped) {
+        return;
+      }
       if (running || isDocumentHidden()) {
         schedule();
         return;
@@ -623,12 +641,31 @@
 
     return {
       start: function () {
+        if (stopped) {
+          return;
+        }
         schedule();
         document.addEventListener("visibilitychange", function () {
-          if (!isDocumentHidden() && !timer && !running) {
+          // SEKMEYE DÖNÜŞ, YOKLAMA İSTEMEYEN SAYFAYI DA TETİKLİYORDU.
+          // Aralık 0 olduğunda sayaç hiç kurulmuyor; `!timer` koşulu bunu
+          // "gecikmiş tur" sanıp her sekme dönüşünde bir istek atıyordu.
+          // Bitmiş bir maçın sayfasında sekme değiştirmek istek üretmemeli.
+          if (!stopped && !isDocumentHidden() && !timer && !running && currentInterval() > 0) {
             run();
           }
         });
+      },
+      // DURDURMA GEREKLİYDİ. Yoklama bir kez kurulduğunda sayfa kapanana
+      // kadar sürüyordu: bitmiş bir maçın sayfası da, günler sonrasına
+      // ayarlanmış bir maçın sayfası da her turda sağlayıcıya istek
+      // atıyordu. Değişmeyecek bir şeyi yoklamak hem kota hem pil
+      // harcamasıdır (bkz. initMatchDetailPolling).
+      stop: function () {
+        stopped = true;
+        if (timer) {
+          window.clearTimeout(timer);
+          timer = null;
+        }
       }
     };
   }
@@ -6434,6 +6471,78 @@
     ].join("|");
   }
 
+  /** Sayfada en son çizilen maç kaydı; yoklama aralığı bunu okur. */
+  var latestMatchDetail = null;
+
+  /**
+   * Maç detayını yazar ve maç merkezi katmanına haber verir.
+   *
+   * Katman DOM hazır olduktan sonra çalışmak zorunda: sticky panelin
+   * gözlemcisi, tembel bölümlerin (puan durumu, haberler) tetikleyicisi ve
+   * kart düğmeleri ancak düğümler yerine oturunca bağlanabilir.
+   */
+  function paintMatchDetail(target, detail) {
+    // Yoklama aralığı maçın durumuna bakıyor; ilk turda da doğru kararı
+    // verebilmesi için son çizilen kayıt burada saklanır.
+    latestMatchDetail = detail || latestMatchDetail;
+    setContent(target, renderMatchDetail(detail));
+    var hub = window.FutbolRadarMatchHubUI;
+    if (hub && typeof hub.afterRender === "function") {
+      try {
+        hub.afterRender(target, detail);
+      } catch (error) {
+        /* Son işlem yardımcı katman; hatası çizimi geçersiz kılmaz. */
+      }
+    }
+  }
+
+  /**
+   * YOKLAMA ARALIĞI MAÇIN DURUMUNA GÖRE.
+   *
+   * Önceden tek bir sabit vardı (15 sn) ve maçın durumuna bakılmıyordu:
+   *   • Üç hafta önce bitmiş bir maçın arşiv sayfası da 15 saniyede bir
+   *     `/api/match-detail` çağırıyordu — değişmeyecek bir kaydı yoklamak
+   *     için. Bu sayfalar sitenin en çok trafik alan sayfaları.
+   *   • Yarın oynanacak bir maçın sayfası da aynı hızda yokluyordu.
+   * Sonuç boşa giden sağlayıcı kotası, boşa giden pil ve boşa giden veri.
+   *
+   * Yeni kural, `match-center.js` içindeki (SEO maç sayfaları) disiplinin
+   * aynısı: canlıyken hızlı, başlamaya yakınken yavaş, uzaktayken ve
+   * bittiğinde HİÇ.
+   *
+   * @returns {number} milisaniye; 0 ise yoklama istenmiyor
+   */
+  function matchDetailPollInterval(detail) {
+    if (!detail) {
+      return MATCH_DETAIL_POLL_MS;
+    }
+
+    var status = String(detail.status || detail.providerStatus || "").toUpperCase();
+    if (["FINISHED", "FT", "AET", "PEN", "AWD", "WO", "PST", "POSTPONED", "CANC", "CANCELLED", "ABD"].indexOf(status) !== -1) {
+      return 0;
+    }
+    if (["LIVE", "HALFTIME", "1H", "2H", "ET", "P", "BT", "IN_PLAY", "PAUSED", "INT", "SUSP", "HT"].indexOf(status) !== -1) {
+      return LIVE_MATCH_FAST_POLL_MS;
+    }
+
+    var kickoff = Date.parse(detail.kickoff || "");
+    if (!isFinite(kickoff)) {
+      return MATCH_DETAIL_POLL_MS;
+    }
+
+    var untilKickoff = kickoff - Date.now();
+    // Başlamaya bir saatten çok var: sayfada değişecek bir şey yok.
+    if (untilKickoff > 60 * 60 * 1000) {
+      return 0;
+    }
+    // Başlama saati geçti ama sağlayıcı hâlâ "başlamadı" diyor: ilk düdüğü
+    // yakalamak için hızlı yoklama.
+    if (untilKickoff <= 0) {
+      return LIVE_MATCH_FAST_POLL_MS;
+    }
+    return MATCH_DETAIL_POLL_MS * 4;
+  }
+
   function initMatchDetailPolling(target) {
     if (!target || window.location.protocol === "file:") {
       return;
@@ -6441,12 +6550,10 @@
 
     var lastSignature = null;
     var lastStatus = null;
-    var LIVE_STATUSES = ["LIVE", "HALFTIME", "1H", "2H", "ET", "P", "BT", "IN_PLAY", "PAUSED"];
+    var poller = null;
 
-    createLivePoller(function () {
-      return lastStatus !== null && LIVE_STATUSES.indexOf(lastStatus) !== -1
-        ? LIVE_MATCH_FAST_POLL_MS
-        : MATCH_DETAIL_POLL_MS;
+    poller = createLivePoller(function () {
+      return matchDetailPollInterval(latestMatchDetail);
     }, function () {
       return forceReload("matchDetail").then(function (data) {
         var detail = Array.isArray(data) ? data[0] : data;
@@ -6462,6 +6569,7 @@
           ["FINISHED", "FT", "AET", "PEN"].indexOf(status) !== -1;
 
         lastStatus = status;
+        latestMatchDetail = detail;
 
         // Değişiklik yoksa DOM'a dokunulmaz: her yoklamada sayfayı yeniden
         // yazmak kaydırma konumunu ve odağı bozuyordu.
@@ -6470,7 +6578,7 @@
         }
 
         lastSignature = signature;
-        setContent(target, renderMatchDetail(detail));
+        paintMatchDetail(target, detail);
 
         // Maç yeni bitti: nihai istatistik ve kadro dökümü çoğu sağlayıcıda
         // son düdükten birkaç saniye sonra yayımlanır. Bir sonraki normal
@@ -6486,13 +6594,17 @@
               var freshSignature = matchAnalysisSignature(latest);
               if (freshSignature !== lastSignature) {
                 lastSignature = freshSignature;
-                setContent(target, renderMatchDetail(latest));
+                paintMatchDetail(target, latest);
               }
+              // Nihai veri alındı: bundan sonra yoklanacak bir şey yok.
+              if (poller && typeof poller.stop === "function") poller.stop();
             }).catch(function () {});
           }, MATCH_FINAL_ANALYSIS_DELAY_MS);
         }
       });
-    }).start();
+    });
+
+    poller.start();
   }
 
   function matchEmptyStateHtml(title, text, compact) {
@@ -11838,7 +11950,13 @@
       var teamName = typeof group.team === "string" ? group.team : (group.team && group.team.name) || "";
       var side = mdTeamSide(detail, teamName);
       var coach = side ? coaches[side] : null;
-      var bench = Array.isArray(group.bench) ? group.bench : [];
+      // YEDEK ALANI İKİ ADLA GELİYOR. Sağlayıcı `substitutes` yazıyor
+      // (services/providers/apiFootballProvider.js#normalizeFixtureLineups),
+      // depodaki küratörlü kayıtlar `bench`. Yalnızca `bench` okunduğu için
+      // sağlayıcıdan gelen HER maçta yedek kulübesi boş görünüyordu.
+      var bench = Array.isArray(group.bench)
+        ? group.bench
+        : (Array.isArray(group.substitutes) ? group.substitutes : []);
 
       var players = (group.players || []).map(function (name) {
         var stat = subStats.filter(function (item) {
@@ -12157,12 +12275,18 @@
     // zincirin (/api/match-detail) çözdüğü kayıttır: sağlayıcı tahmini,
     // piyasa oranı ya da FutbolRadar modeli. Kaynağı olmayan bir yüzde
     // basılmaz; kayıt yoksa dürüst bir not kalır.
-    var probability = detail.probability;
-    var prediction = detail.prediction;
+    //
+    // MAÇ MERKEZİ ETKİNSE BU KART ÇİZİLMEZ. Orada olasılık kendi bölümünde
+    // ("Tahmin merkezi") maç öncesi ve canlı okuma ayrımıyla gösteriliyor;
+    // ikisini birden basmak aynı yüzdeyi sayfada iki kez göstermek olurdu.
+    var probability = matchHubActive() ? null : detail.probability;
+    var prediction = matchHubActive() ? null : detail.prediction;
     var hasProbability = probability && isFiniteNumber(Number(probability.home));
     var hasLegacyProbability = !hasProbability && prediction &&
       (isFiniteNumber(prediction.homeWin) || isFiniteNumber(prediction.home));
-    if (hasProbability) {
+    if (matchHubActive()) {
+      /* Tahmin merkezi bölümü çiziyor. */
+    } else if (hasProbability) {
       blocks += '<article class="md-ai-card md-probability" data-prediction-source="' + escapeHtml(probability.source || "") + '">' +
         "<span>" + escapeHtml((probability.icon ? probability.icon + " " : "") + (probability.title || "Kazanma olasılığı")) + "</span>" +
         mdProbabilityHtml(detail, probability) +
@@ -12514,6 +12638,37 @@
       "</div></div></div>";
   }
 
+  /** Maç merkezi katmanı bu sayfada yüklü mü? */
+  function matchHubActive() {
+    var hub = window.FutbolRadarMatchHubUI;
+    return Boolean(hub && typeof hub.section === "function");
+  }
+
+  /**
+   * MAÇ MERKEZİ GENİŞLETME NOKTASI.
+   *
+   * `mac-detay.html` sayfasında `match-hub.js` yükleniyor ve her bölüm için
+   * daha zengin bir HTML üretebiliyor (sticky canlı panel, diziliş görseli,
+   * bu skorla puan durumu, maç sonu özeti...). Katman YÜKLENMEMİŞSE ya da
+   * bir bölümü çizemiyorsa buradaki mevcut HTML basılır — yani sayfa, ek
+   * betik hiç gelmese de eskisi gibi çalışır. Sözleşme tek yönlü: katman
+   * `undefined` döndüğünde yedek kazanır.
+   */
+  function mdSlot(key, detail, fallback) {
+    var hub = window.FutbolRadarMatchHubUI;
+    if (hub && typeof hub.section === "function") {
+      try {
+        var html = hub.section(key, detail, fallback || "");
+        if (typeof html === "string") {
+          return html;
+        }
+      } catch (error) {
+        /* Katman hatası sayfayı düşürmez; yedek HTML basılır. */
+      }
+    }
+    return fallback || "";
+  }
+
   function renderMatchDetail(detail) {
     if (!detail) {
       return "";
@@ -12523,19 +12678,28 @@
 
     return (
       '<article class="match-detail-card card md-shell" data-card="match-detail" data-match="' + escapeHtml(detail.id) + '">' +
-      mdScoreboardHtml(detail) +
+      mdSlot("scoreboard", detail, mdScoreboardHtml(detail)) +
       // Şerit skorun hemen altında: okuyucu sonucu gördükten sonra "kim ne
       // dedi"yi arıyor, istatistik tablolarının altında değil.
       mdQuotesHtml(detail) +
       mdFactsHtml(detail) +
+      mdSlot("broadcast", detail, "") +
       (detail.summary ? '<p class="md-lead">' + escapeHtml(detail.summary) + "</p>" : "") +
-      mdTimelineHtml(detail) +
-      mdLineupsHtml(detail) +
+      // MAÇ SONU ÖZETİ AKIŞIN ÜSTÜNDE. Maç bittiğinde okuyucunun aradığı ilk
+      // şey sonuç ve önemli olaylar; 90 dakikalık akışı kaydırmak zorunda
+      // kalmasın. Bölüm yalnızca bitmiş maçta HTML üretir.
+      mdSlot("summary", detail, "") +
+      mdSlot("timeline", detail, mdTimelineHtml(detail)) +
+      mdSlot("stats", detail, mdStatisticsHtml(detail)) +
+      mdSlot("lineups", detail, mdLineupsHtml(detail)) +
       mdPredictedLineupsHtml(detail) +
-      mdStatisticsHtml(detail) +
+      mdSlot("standings", detail, "") +
+      mdSlot("prediction", detail, "") +
       mdAnalysisHtml(detail) +
       mdPostMatchHtml(detail) +
       mdPlayersHtml(detail) +
+      mdSlot("news", detail, "") +
+      mdSlot("share", detail, "") +
       // Mevcut radar işlevleri korunur: momentum/form anlık görüntüsü, sinyal
       // kartları, takım radar bağlantıları ve aksiyon paneli. Radar bölümü
       // yalnızca gerçekten ölçülmüş bir sinyal varsa basılır; aksi hâlde
@@ -12557,6 +12721,23 @@
     }
 
     var staticFallback = target.dataset.staticFallback === "true" ? target.innerHTML : "";
+    var pollingStarted = false;
+
+    /**
+     * Yoklama, İLK KAYIT ELDE EDİLDİKTEN SONRA kurulur.
+     *
+     * Önce kurulsaydı ilk turun aralığı "maç ne durumda" bilinmeden
+     * seçilirdi: bitmiş bir maçın sayfası bile 15 saniye sonra bir kez
+     * daha sağlayıcıya giderdi. Kaydı gördükten sonra karar vermek o
+     * gereksiz turu tamamen kaldırıyor.
+     */
+    function startPolling() {
+      if (pollingStarted) {
+        return;
+      }
+      pollingStarted = true;
+      initMatchDetailPolling(target);
+    }
 
     function attemptLoad(isRetry) {
       target.dataset.state = "loading";
@@ -12593,7 +12774,8 @@
           return;
         }
 
-        setContent(target, renderMatchDetail(detail));
+        paintMatchDetail(target, detail);
+        startPolling();
       }).catch(function () {
         if (staticFallback) {
           target.innerHTML = staticFallback;
@@ -12605,7 +12787,6 @@
     }
 
     attemptLoad(false);
-    initMatchDetailPolling(target);
   }
 
   function buildAnalysesIndex(analyses) {

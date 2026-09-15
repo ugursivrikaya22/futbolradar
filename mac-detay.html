@@ -22,6 +22,7 @@
     <meta name="twitter:description" content="Maçları skor, kadro, olay ve istatistik katmanıyla analiz et." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <link rel="stylesheet" href="./page.css?v=f7de2a6d" />
+    <link rel="stylesheet" href="./match-hub.css?v=3172a706" />
     <script data-futbolradar-theme>
     (function () {
       try {
@@ -205,7 +206,12 @@
         </button>
       </nav>
     </footer>
+    <!-- MAÇ MERKEZİ. Yalnızca bu sayfada yüklenir ve app.js dosyasından ÖNCE
+         gelir: app.js, her bölümü basmadan önce bu katmana soruyor. Katman
+         gelmezse sayfa mevcut hâliyle çalışmaya devam eder. -->
+    <script src="./match-hub-core.js?v=e7fa3780" defer></script>
+    <script src="./match-hub.js?v=29b1a48d" defer></script>
     <script src="./site.js?v=42c2d54c" defer></script>
-    <script src="./app.js?v=2111c65f" defer></script>
+    <script src="./app.js?v=67903efc" defer></script>
   </body>
 </html>
