@@ -298,8 +298,33 @@ async function until(check, message, timeout = 5000) {
           if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
           const pause = root.locator('[data-featured-pause]');
           if (await pause.count()) {
+            // CANLI YENİLEME TIKLAMAYI YUTABİLİR. Karusel her veri
+            // yoklamasında yeniden çiziliyor (app.js#setContent: `innerHTML`
+            // düğümleri değiştirir, dinleyici de karusel KÖKÜNDE delege).
+            // Tıklama o pencereye denk gelirse kopmuş bir ağaca gider,
+            // hiçbir yere ulaşmaz ve düğme basılı kalmaz; yeni basılan
+            // işaretleme `aria-pressed="false"` ile doğuyor.
+            //
+            // Tek okumayla iddia etmek bu yüzden ara sıra YALANCI KIRMIZI
+            // veriyordu (main koşusu 34937323302: 365 kontrolde tek hata,
+            // tek viewport). Aynı testteki komşu iddiaların hepsi zaten
+            // `until` ile yeniden deniyor; bu tek satır denemiyordu.
+            //
+            // SIRA ÖNEMLİ: önce basılmasını BEKLE, ancak basılmadıysa bir
+            // kez daha tıkla. Beklemeden yeniden tıklamak, ilk tıklama
+            // tutmuşsa düğmeyi geri AÇARDI — yani düzeltme kendisi
+            // kırılganlık üretirdi.
+            const pressed = async () => await pause.getAttribute('aria-pressed') === 'true';
+            const latched = async ms => {
+              const end = Date.now() + ms;
+              do { if (await pressed()) return true; await delay(100); } while (Date.now() < end);
+              return false;
+            };
             await click(pause);
-            assert.equal(await pause.getAttribute('aria-pressed'), 'true');
+            if (!await latched(2000)) {
+              await click(pause);
+              await until(pressed, 'Pause button did not latch after a re-render swallowed the click');
+            }
           }
           const slides = root.locator('[data-featured-slide]');
           const slideCount = await slides.count();
