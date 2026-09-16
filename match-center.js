@@ -31,19 +31,47 @@
   var titleLive = root.getAttribute("data-msp-title-live") || "";
   var titlePost = root.getAttribute("data-msp-title-post") || "";
 
-  if (!query || isNaN(kickoffMs)) return;
-  if (state === "post" || state === "cancelled" || state === "postponed") return;
+  /**
+   * YOKLANABİLİR Mİ? Bitmiş, ertelenmiş ve iptal edilmiş maçta sağlayıcıya
+   * gidilmez; sağlayıcı kimliği ya da başlama saati olmayan sayfada zaten
+   * gidilemez.
+   *
+   * ERKEN DÖNÜLMÜYOR: akış filtresi yoklamadan bağımsız ve asıl orada
+   * gerekiyor — 390 maç sayfasının 366'sı bitmiş maç. Erken dönüş, filtre
+   * düğmelerinin tam da en çok işe yarayacakları sayfalarda hiç açılmaması
+   * demekti.
+   */
+  var pollable = !!query && !isNaN(kickoffMs) &&
+    state !== "post" && state !== "cancelled" && state !== "postponed";
 
-  var LIVE_POLL_MS = 45000;
-  var PRE_POLL_MS = 120000;
+  /**
+   * YOKLAMA ARALIKLARI SAYFADAN GELİR, KODA GÖMÜLÜ DEĞİL.
+   *
+   * Değerler `data-msp-poll-live` / `data-msp-poll-pre` ile geliyor
+   * (bkz. scripts/generate-match-seo-pages.mjs#POLL_SECONDS): sağlayıcı
+   * kotası daraldığında ya da bir maçta akış sıklaştırılmak istendiğinde
+   * bu dosyayı yeniden yayınlamak gerekmiyor.
+   *
+   * GELEN DEĞER KISITLANIR. Sayfadaki bir sayı sağlayıcıyı saniyede bir
+   * yoklatamaz: alt sınır 15 sn, üst sınır 10 dk. Eksik ya da anlamsız
+   * değerde eski sabitler geçerli kalır.
+   */
+  function pollMs(attribute, fallbackSeconds) {
+    var raw = Number(root.getAttribute(attribute));
+    var seconds = isFinite(raw) && raw > 0 ? raw : fallbackSeconds;
+    return Math.min(Math.max(seconds, 15), 600) * 1000;
+  }
+
+  var LIVE_POLL_MS = pollMs("data-msp-poll-live", 45);
+  var PRE_POLL_MS = pollMs("data-msp-poll-pre", 120);
   var GRACE_MS = 150 * 60 * 1000;
   var LIVE_CODES = { LIVE: 1, HALFTIME: 1, INTERRUPTED: 1, "1H": 1, "2H": 1, HT: 1, ET: 1, BT: 1, P: 1, IN_PLAY: 1, PAUSED: 1, SUSP: 1, INT: 1 };
   var FINISHED_CODES = { FINISHED: 1, FT: 1, AET: 1, PEN: 1, AWARDED: 1, AWD: 1, WO: 1 };
   var HALFTIME_CODES = { HALFTIME: 1, HT: 1, BT: 1, PAUSED: 1 };
 
   var T = locale === "en"
-    ? { live: "Live", halftime: "Half time", finished: "Full time", goal: "Goal", ownGoal: "Own goal", penalty: "Penalty goal", missedPenalty: "Missed penalty", yellow: "Yellow card", red: "Red card", yellowRed: "Second yellow", on: "on", off: "off", assist: "Assist", varLabel: "VAR", halftimeLabel: "Half-time", updated: "Last updated" }
-    : { live: "Canlı", halftime: "Devre arası", finished: "Tamamlandı", goal: "Gol", ownGoal: "Kendi kalesine", penalty: "Penaltı golü", missedPenalty: "Kaçan penaltı", yellow: "Sarı kart", red: "Kırmızı kart", yellowRed: "İkinci sarıdan kırmızı", on: "giriyor", off: "çıkıyor", assist: "Asist", varLabel: "VAR", halftimeLabel: "İlk yarı", updated: "Son güncelleme" };
+    ? { live: "Live", halftime: "Half time", finished: "Full time", halftimeLabel: "Half-time", updated: "Last updated" }
+    : { live: "Canlı", halftime: "Devre arası", finished: "Tamamlandı", halftimeLabel: "İlk yarı", updated: "Son güncelleme" };
 
   var STAT_EN = { "topla oynama": "Possession", "toplam sut": "Total shots", "isabetli sut": "Shots on target", "isabetsiz sut": "Shots off target", "engellenen sut": "Blocked shots", korner: "Corners", ofsayt: "Offsides", faul: "Fouls", "sari kart": "Yellow cards", "kirmizi kart": "Red cards", "toplam pas": "Total passes", "isabetli pas": "Accurate passes", "pas isabeti": "Pass accuracy", kurtaris: "Saves", "gol beklentisi (xg)": "Expected goals (xG)" };
   var STAT_ORDER = ["topla oynama", "toplam sut", "isabetli sut", "isabetsiz sut", "engellenen sut", "korner", "ofsayt", "faul", "sari kart", "kirmizi kart", "toplam pas", "isabetli pas", "pas isabeti", "kurtaris", "gol beklentisi (xg)"];
@@ -72,85 +100,138 @@
     return "scheduled";
   }
 
-  function sideOf(teamName) {
-    var key = normalize(teamName);
-    if (!key) return "";
-    if (key === normalize(homeName) || normalize(homeName).indexOf(key) === 0 || key.indexOf(normalize(homeName)) === 0) return "home";
-    if (key === normalize(awayName) || normalize(awayName).indexOf(key) === 0 || key.indexOf(normalize(awayName)) === 0) return "away";
-    return "";
+  /**
+   * AKIŞIN KURALLARI BU DOSYADA DEĞİL.
+   *
+   * Sınıflandırma, koşan skor, önem işareti ve satır işaretlemesi
+   * `services/matchTimeline.js` içinde tek kaynak; tarayıcı kopyası
+   * `match-timeline.js` olarak bu dosyadan ÖNCE yükleniyor. Burada ikinci
+   * bir tanım tutmak, maç sürerken çizilen akışla maç bitince sunucunun
+   * bastığı akışın zamanla ayrışması demekti.
+   *
+   * Çekirdek yüklenmediyse akış hiç güncellenmez; sayfanın geri kalanı
+   * (skor, dakika, istatistik, Radar Nabzı) çalışmaya devam eder.
+   */
+  var timelineApi = window.FutbolRadarMatchTimeline || null;
+
+  /** Girişi animasyonlanacak satırlar: bir önceki çizimde olmayanlar. */
+  var seenEventIds = null;
+
+  function collectEventIds(listEl) {
+    var ids = {};
+    if (!listEl) return ids;
+    var rows = listEl.querySelectorAll("[data-event-id]");
+    for (var index = 0; index < rows.length; index += 1) {
+      ids[rows[index].getAttribute("data-event-id")] = true;
+    }
+    return ids;
   }
 
-  function minuteSort(time) {
-    var found = String(time || "").match(/(\d+)(?:\+(\d+))?/);
-    if (!found) return 9999;
-    return Number(found[1]) * 10 + Math.min(Number(found[2] || 0), 9);
-  }
+  /**
+   * Akış bloğunu yeniden çizer ve YALNIZCA yeni gelen satıra giriş
+   * animasyonu verir.
+   *
+   * İlk çizimde hiçbir satır "yeni" sayılmaz: sayfa açıldığında maçın
+   * bütün olaylarının aynı anda içeri kayması, olmamış bir şeyi olmuş
+   * gibi göstermek olurdu. Animasyon `prefers-reduced-motion` ile
+   * CSS tarafında kapanıyor.
+   */
+  function renderTimeline(detail, status) {
+    if (!timelineApi) return;
+    var body = root.querySelector("[data-msp-events-body]");
+    if (!body) return;
 
-  function normalizeEvents(detail) {
-    var out = [];
-    var events = detail && Array.isArray(detail.events) ? detail.events : [];
-    events.forEach(function (raw) {
-      if (!raw) return;
-      var teamName = typeof raw.team === "string" ? raw.team : (raw.team && raw.team.name) || "";
-      var type = normalize(raw.type);
-      var detailKey = normalize(raw.detail);
-      var parts = String(raw.value || "").split(" · ").map(function (part) { return part.trim(); }).filter(Boolean);
-      var player = parts.length && !/^(asist|assist):/i.test(parts[0]) && normalize(parts[0]) !== detailKey ? parts[0] : "";
-      var assistPart = parts.filter(function (part) { return /^(asist|assist):/i.test(part); })[0];
-      var assist = assistPart ? assistPart.replace(/^(asist|assist):\s*/i, "") : "";
-      var event = { time: String(raw.time || "").replace(/'+$/, ""), sort: minuteSort(raw.time), team: teamName, side: sideOf(teamName), kind: "other", player: player, assist: assist, detail: String(raw.detail || "") };
-      if (type === "goal" || type === "gol") {
-        event.kind = detailKey.indexOf("own") !== -1 ? "own-goal" : detailKey.indexOf("missed") !== -1 ? "missed-penalty" : detailKey.indexOf("penalty") !== -1 ? "penalty" : "goal";
-      } else if (type === "card" || type.indexOf("kart") !== -1) {
-        event.kind = detailKey.indexOf("second yellow") !== -1 ? "yellow-red" : detailKey.indexOf("red") !== -1 || detailKey.indexOf("kirmizi") !== -1 ? "red" : "yellow";
-      } else if (type === "subst" || type.indexOf("degisik") !== -1) {
-        event.kind = "sub";
-        event.playerIn = player;
-        event.playerOut = assist;
-      } else if (type === "var") {
-        event.kind = "var";
+    var items = timelineApi.buildTimeline(detail, {
+      homeTeam: homeName,
+      awayTeam: awayName,
+      locale: locale,
+      finished: status === "finished"
+    });
+    if (!items.length) return;
+
+    var previous = seenEventIds === null ? null : seenEventIds;
+    var activeFilter = currentFilter();
+    body.innerHTML = timelineApi.timelineBodyHtml(items, { locale: locale, order: "desc" });
+
+    var list = body.querySelector("[data-msp-timeline]");
+    seenEventIds = collectEventIds(list);
+
+    if (previous && list) {
+      var rows = list.querySelectorAll("[data-event-id]");
+      for (var index = 0; index < rows.length; index += 1) {
+        if (!previous[rows[index].getAttribute("data-event-id")]) rows[index].classList.add("is-new");
       }
-      out.push(event);
-    });
-    var subs = detail && Array.isArray(detail.substitutions) ? detail.substitutions : [];
-    subs.forEach(function (raw) {
-      if (!raw) return;
-      var teamName = typeof raw.team === "string" ? raw.team : (raw.team && raw.team.name) || "";
-      out.push({ time: String(raw.time || "").replace(/'+$/, ""), sort: minuteSort(raw.time), team: teamName, side: sideOf(teamName), kind: "sub", playerIn: raw.in || "", playerOut: raw.out || "", detail: "" });
-    });
-    return out.sort(function (left, right) { return left.sort - right.sort; });
+    }
+
+    bindFilter();
+    applyFilter(activeFilter);
   }
 
-  var ICONS = { goal: "⚽", "own-goal": "⚽", penalty: "⚽", "missed-penalty": "✖", yellow: "🟨", red: "🟥", "yellow-red": "🟨🟥", sub: "🔁", var: "📺", other: "•" };
+  /* ---------------------------------------------------------------- */
+  /* FİLTRE — "Tümü / Sadece önemli olaylar"                            */
+  /* ---------------------------------------------------------------- */
 
-  function eventLabel(event) {
-    switch (event.kind) {
-      case "goal": return T.goal;
-      case "own-goal": return T.ownGoal;
-      case "penalty": return T.penalty;
-      case "missed-penalty": return T.missedPenalty;
-      case "yellow": return T.yellow;
-      case "red": return T.red;
-      case "yellow-red": return T.yellowRed;
-      case "var": return T.varLabel;
-      case "sub": return "";
-      default: return event.detail || "";
+  /**
+   * Filtreleme CSS ile yapılır, listeyi yeniden kurarak DEĞİL: bütün
+   * olaylar her hâlde DOM'da kalır. Böylece hem arama motoru tamamını
+   * görür hem de filtre değiştirmek yeni bir çizim (ve yeni bir
+   * animasyon dalgası) tetiklemez.
+   */
+  var filterState = "all";
+
+  function currentFilter() {
+    return filterState;
+  }
+
+  function applyFilter(mode) {
+    var body = root.querySelector("[data-msp-events-body]");
+    if (!body) return;
+    var list = body.querySelector("[data-msp-timeline]");
+    var bar = body.querySelector("[data-msp-events-filter]");
+    if (!list || !bar) return;
+
+    filterState = mode === "key" ? "key" : "all";
+    list.classList.toggle("is-filter-key", filterState === "key");
+
+    var buttons = bar.querySelectorAll("[data-msp-filter]");
+    for (var index = 0; index < buttons.length; index += 1) {
+      var active = buttons[index].getAttribute("data-msp-filter") === filterState;
+      buttons[index].classList.toggle("is-active", active);
+      buttons[index].setAttribute("aria-pressed", active ? "true" : "false");
+    }
+
+    // Önemli olay yoksa filtrelenmiş liste boş görünürdü; açıklayıcı not
+    // ancak o durumda açılır.
+    var note = body.querySelector("[data-msp-events-filtered-note]");
+    if (note) {
+      var visible = filterState === "all" || list.querySelector(".msp-event.is-key");
+      if (visible) note.setAttribute("hidden", ""); else note.removeAttribute("hidden");
     }
   }
 
-  function eventsHtml(events) {
-    return '<ol class="msp-events">' + events.map(function (event) {
-      var label = eventLabel(event);
-      var body = "";
-      if (event.kind === "sub") {
-        body = (event.playerIn ? "<b>" + escapeHtml(event.playerIn) + "</b> " + escapeHtml(T.on) : "") + (event.playerIn && event.playerOut ? " · " : "") + (event.playerOut ? escapeHtml(event.playerOut) + " " + escapeHtml(T.off) : "");
-      } else {
-        body = (event.player ? "<b>" + escapeHtml(event.player) + "</b>" : "") +
-          (event.assist ? ' <span class="msp-event-assist">(' + escapeHtml(T.assist) + ": " + escapeHtml(event.assist) + ")</span>" : "") +
-          (!event.player && event.detail ? escapeHtml(event.detail) : (event.kind === "var" || event.kind === "other") && event.detail ? ' <span class="msp-event-assist">' + escapeHtml(event.detail) + "</span>" : "");
-      }
-      return '<li class="msp-event is-' + escapeHtml(event.kind) + " is-" + escapeHtml(event.side || "neutral") + '"><span class="msp-event-min">' + escapeHtml(event.time ? event.time + "'" : "-") + '</span><span class="msp-event-icon" aria-hidden="true">' + (ICONS[event.kind] || "•") + '</span><span class="msp-event-body">' + (label ? "<em>" + escapeHtml(label) + "</em> " : "") + body + (event.team ? " <small>" + escapeHtml(event.team) + "</small>" : "") + "</span></li>";
-    }).join("") + "</ol>";
+  /**
+   * Çubuk `hidden` doğuyor (bkz. services/matchTimeline.js#timelineFilterHtml):
+   * JavaScript çalışmayan bir tarayıcıda hiçbir şey yapmayan iki düğme
+   * göstermemek için. Bağlandığı anda açılır.
+   *
+   * DİNLEYİCİ DÜĞMEYE DEĞİL, KAPSAYICIYA bağlanır ve yalnızca BİR KEZ
+   * kurulur: blok her yoklamada yeniden basıldığı için düğmeye bağlanan
+   * dinleyici her çizimde düşer, kapsayıcıya her çizimde yeniden bağlanan
+   * dinleyici ise üst üste birikirdi.
+   */
+  var filterBound = false;
+
+  function bindFilter() {
+    var bar = root.querySelector("[data-msp-events-filter]");
+    if (bar) bar.removeAttribute("hidden");
+    if (filterBound) return;
+    filterBound = true;
+    root.addEventListener("click", function (event) {
+      var button = event.target && event.target.closest ? event.target.closest("[data-msp-filter]") : null;
+      if (!button || !root.contains(button)) return;
+      event.preventDefault();
+      applyFilter(button.getAttribute("data-msp-filter"));
+    });
   }
 
   function statsHtml(statistics) {
@@ -231,9 +312,7 @@
     root.setAttribute("data-msp-state", status === "finished" ? "post" : "live");
     setTitle(status === "finished" ? titlePost : titleLive, detail);
 
-    var events = normalizeEvents(detail);
-    var eventsBody = root.querySelector("[data-msp-events-body]");
-    if (eventsBody && events.length) eventsBody.innerHTML = eventsHtml(events);
+    renderTimeline(detail, status);
 
     var statsBody = root.querySelector("[data-msp-stats-body]");
     var stats = statsHtml(detail.statistics);
@@ -320,6 +399,13 @@
       .catch(function () { schedule(LIVE_POLL_MS * 2); });
   }
 
+  // SUNUCUNUN BASTIĞI AKIŞ DA FİLTRELENEBİLİR OLMALI. Bitmiş maç sayfası
+  // hiç yoklama yapmıyor (`state === "post"` girişte dönülüyor); filtre
+  // yalnızca ilk yanıtta bağlansaydı o sayfalarda düğmeler hiç açılmazdı.
+  bindFilter();
+  applyFilter("all");
+  seenEventIds = collectEventIds(root.querySelector("[data-msp-timeline]"));
+
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden && !timer && !finished) schedule(1000);
   });
@@ -357,6 +443,8 @@
       });
     }
   })();
+
+  if (!pollable) return;
 
   var untilKickoff = kickoffMs - Date.now();
   if (untilKickoff > 60 * 60 * 1000) {

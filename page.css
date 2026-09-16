@@ -22283,6 +22283,47 @@ a.motm-week__card:focus-visible {
 .msp-event.is-yellow .msp-event-body em { color: var(--warn); }
 .msp-event.is-red .msp-event-body em, .msp-event.is-yellow-red .msp-event-body em { color: var(--live); }
 .msp-event-body small, .msp-event-assist { color: var(--muted); }
+
+/* CANLI MAÇ ANLATIMI — ters kronolojik akış, koşan skor, filtre.
+   Akış sırası HTML'de kuruluyor (services/matchTimeline.js); CSS yalnızca
+   görünürlük ve vurgu taşır, böylece JavaScript kapalıyken de doğru sırayla
+   okunur. Mevcut paletin dışına çıkılmadı: vurgu renkleri bölümün geri
+   kalanıyla aynı belirteçlerden geliyor. */
+.msp-event { grid-template-columns: 44px 24px minmax(0, 1fr) auto; }
+.msp-event-score { align-self: center; font-variant-numeric: tabular-nums; font-weight: 800; font-size: var(--fs-xs); color: var(--muted); padding: 2px 8px; border: 1px solid var(--line); border-radius: var(--radius-pill); white-space: nowrap; }
+.msp-event.is-goal, .msp-event.is-penalty, .msp-event.is-own-goal { background: var(--surface-tint); border-radius: var(--radius); padding-left: 8px; padding-right: 8px; }
+.msp-event.is-goal .msp-event-score, .msp-event.is-penalty .msp-event-score, .msp-event.is-own-goal .msp-event-score { color: var(--surface); background: var(--green-deep); border-color: var(--green-deep); }
+.msp-event.is-halftime, .msp-event.is-fulltime { color: var(--muted); font-weight: 700; }
+.msp-event.is-halftime .msp-event-body em, .msp-event.is-fulltime .msp-event-body em { color: var(--muted); }
+.msp-event.is-missed-penalty .msp-event-body em { color: var(--live); }
+.msp-event.is-var .msp-event-body em { color: var(--ink); }
+
+.msp-events-filter { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 10px; }
+.msp-events-filter[hidden] { display: none; }
+.msp-events-filter-btn { font: inherit; font-size: var(--fs-xs); font-weight: 700; color: var(--muted); background: var(--surface-sunken); border: 1px solid var(--line); border-radius: var(--radius-pill); padding: 6px 14px; cursor: pointer; }
+.msp-events-filter-btn:hover { color: var(--ink); }
+.msp-events-filter-btn.is-active { color: var(--surface); background: var(--green-deep); border-color: var(--green-deep); }
+.msp-events-filter-btn:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.msp-events.is-filter-key .msp-event:not(.is-key) { display: none; }
+.msp-events-empty { margin: 8px 0 0; }
+.msp-events-empty[hidden] { display: none; }
+
+/* Yeni olayın girişi. Yalnızca bir önceki çizimde OLMAYAN satıra
+   uygulanıyor (bkz. match-center.js#renderTimeline): sayfa açılışında
+   bütün akışın içeri kayması, olmamış bir şeyi olmuş gibi göstermek olurdu. */
+@keyframes msp-event-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.msp-event.is-new { animation: msp-event-in 320ms ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .msp-event.is-new { animation: none; }
+}
+
+@media (max-width: 480px) {
+  .msp-event { grid-template-columns: 34px 20px minmax(0, 1fr); column-gap: 6px; }
+  /* Dar ekranda koşan skor kendi satırına iner: üç sütun zaten sıkışık,
+     dördüncüsü oyuncu adını iki üç harfe düşürürdü. */
+  .msp-event-score { grid-column: 3; justify-self: start; margin-top: 4px; }
+  .msp-events-filter-btn { padding: 6px 10px; }
+}
 .msp-stats-shell { padding: 16px; min-height: 80px; }
 .msp-stats-head { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; margin: 0 0 8px; font-size: var(--fs-xs); font-weight: 800; color: var(--muted); }
 .msp-stats-head span:last-child { text-align: right; }

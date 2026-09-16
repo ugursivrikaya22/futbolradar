@@ -21,6 +21,14 @@ const { canonicalStatus, finishType, istanbulDay } = require("../../services/mat
 const { sameClub } = require("../../services/superLigTeams.js");
 const { publicPlayerView } = require("../../services/cardCredibility.js");
 const { slug: playerSlug } = require("../../services/playerService.js");
+/**
+ * Akışın kuralları (sınıflandırma, koşan skor, önem, satır işaretlemesi)
+ * `services/matchTimeline.js` içinde tek kaynak olarak duruyor; tarayıcı
+ * kopyasını `scripts/build-match-timeline-client.mjs` aynı dosyadan
+ * üretiyor. Burada ikinci bir tanım YOK — olması, maç sürerken ve maç
+ * bitince farklı iki anlatı çizmek demekti.
+ */
+const matchTimeline = require("../../services/matchTimeline.js");
 
 /**
  * Oyuncu adresleri tek çözücüden. Maç SEO sayfaları hem Türkçe hem
@@ -199,10 +207,6 @@ export const STR = {
     resultTitle: "Maç sonucu",
     finalScore: "Nihai skor",
     halftime: "İlk yarı",
-    goalsTitle: "Gol atanlar",
-    cardsTitle: "Kartlar",
-    subsTitle: "Oyuncu değişiklikleri",
-    varTitle: "VAR kararları",
     summary: "Maç özeti",
     report: "Ayrıntılı maç raporu",
     nextMatches: "Sonraki maçlar",
@@ -341,10 +345,6 @@ export const STR = {
     resultTitle: "Result",
     finalScore: "Final score",
     halftime: "Half-time",
-    goalsTitle: "Goalscorers",
-    cardsTitle: "Cards",
-    subsTitle: "Substitutions",
-    varTitle: "VAR decisions",
     summary: "Match summary",
     report: "Full match report",
     nextMatches: "Next matches",
@@ -415,12 +415,6 @@ export function hasScore(score) {
 /* OLAY NORMALİZASYONU                                                  */
 /* ------------------------------------------------------------------ */
 
-function minuteSort(time) {
-  const match = String(time || "").match(/(\d+)(?:\+(\d+))?/);
-  if (!match) return 9999;
-  return Number(match[1]) * 10 + Math.min(Number(match[2] || 0), 9);
-}
-
 function sideOf(teamName, homeTeam, awayTeam) {
   if (!teamName) return "";
   if (sameClub(teamName, homeTeam) || normalizeText(teamName) === normalizeText(homeTeam)) return "home";
@@ -430,92 +424,44 @@ function sideOf(teamName, homeTeam, awayTeam) {
 
 /**
  * Sağlayıcı (API-Football) ve editoryal (data/matches.json) olay kayıtlarını
- * tek biçime indirir. Tanınmayan tür `other` olarak korunur, düşürülmez.
+ * tek biçime indirir ve akışı kurar.
+ *
+ * Kararların tamamı `services/matchTimeline.js` içinde; bu işlev yalnızca
+ * çağrı biçimini koruyan ince bir kabuk. `detail` TAM kayıt olarak
+ * verilirse (skor dahil) koşan skor da hesaplanır; yalnızca
+ * `{events, substitutions}` verilirse olaylar skorsuz döner.
+ *
+ * @param {Object} detail   Maç kaydı.
+ * @param {string} homeTeam Ev sahibi künye adı.
+ * @param {string} awayTeam Deplasman künye adı.
+ * @param {Object} [options] {locale, finished}
  */
-export function normalizeEvents(detail, homeTeam, awayTeam) {
+export function normalizeEvents(detail, homeTeam, awayTeam, options = {}) {
   if (!detail) return [];
-  const out = [];
-  const rawEvents = Array.isArray(detail.events) ? detail.events : [];
-  for (const raw of rawEvents) {
-    if (!raw) continue;
-    const teamName = typeof raw.team === "string" ? raw.team : (raw.team && raw.team.name) || "";
-    const type = normalizeText(raw.type);
-    const detailText = String(raw.detail || "");
-    const detailKey = normalizeText(detailText);
-    const value = String(raw.value || "");
-    const valueParts = value.split(" · ").map((part) => part.trim()).filter(Boolean);
-    const player = valueParts.length && !/^(asist|assist):/i.test(valueParts[0]) && normalizeText(valueParts[0]) !== detailKey ? valueParts[0] : "";
-    const assistPart = valueParts.find((part) => /^(asist|assist):/i.test(part));
-    const assist = assistPart ? assistPart.replace(/^(asist|assist):\s*/i, "") : "";
-    const event = { time: String(raw.time || "").replace(/'+$/, ""), sort: minuteSort(raw.time), team: teamName, side: sideOf(teamName, homeTeam, awayTeam), kind: "other", player, assist, detail: detailText };
-
-    if (type === "goal" || type === "gol") {
-      if (detailKey.includes("own")) event.kind = "own-goal";
-      else if (detailKey.includes("missed")) event.kind = "missed-penalty";
-      else if (detailKey.includes("penalty")) event.kind = "penalty";
-      else event.kind = "goal";
-      // Editoryal kayıt: oyuncu adı `detail` cümlesinde. Cümle olduğu gibi
-      // taşınır; ad ayıklama tahmini yapılmaz.
-      if (!player && !valueParts.length) event.player = "";
-    } else if (type === "card" || type.includes("kart")) {
-      if (detailKey.includes("second yellow") || detailKey.includes("ikinci sari")) event.kind = "yellow-red";
-      else if (detailKey.includes("red") || detailKey.includes("kirmizi")) event.kind = "red";
-      else event.kind = "yellow";
-    } else if (type === "subst" || type.includes("degisik")) {
-      event.kind = "sub";
-      event.playerIn = player;
-      event.playerOut = assist;
-    } else if (type === "var") {
-      event.kind = "var";
-    }
-    out.push(event);
-  }
-
-  for (const raw of Array.isArray(detail.substitutions) ? detail.substitutions : []) {
-    if (!raw) continue;
-    const teamName = typeof raw.team === "string" ? raw.team : (raw.team && raw.team.name) || "";
-    out.push({ time: String(raw.time || "").replace(/'+$/, ""), sort: minuteSort(raw.time), team: teamName, side: sideOf(teamName, homeTeam, awayTeam), kind: "sub", playerIn: raw.in || "", playerOut: raw.out || "", detail: "" });
-  }
-
-  return out.sort((left, right) => left.sort - right.sort);
+  return matchTimeline.buildTimeline(detail, {
+    homeTeam,
+    awayTeam,
+    locale: options.locale || "tr",
+    finished: !!options.finished
+  });
 }
 
-function eventLabel(event, text) {
-  switch (event.kind) {
-    case "goal": return text.goal;
-    case "own-goal": return text.ownGoal;
-    case "penalty": return text.penalty;
-    case "missed-penalty": return text.missedPenalty;
-    case "yellow": return text.yellow;
-    case "red": return text.red;
-    case "yellow-red": return text.yellowRed;
-    case "sub": return "";
-    case "var": return text.varEvent;
-    default: return event.detail || "";
-  }
+export function eventRowHtml(event, textOrLocale) {
+  return matchTimeline.eventRowHtml(event, localeOf(textOrLocale));
 }
 
-const EVENT_ICONS = {
-  goal: "⚽", "own-goal": "⚽", penalty: "⚽", "missed-penalty": "✖", yellow: "🟨", red: "🟥", "yellow-red": "🟨🟥", sub: "🔁", var: "📺", other: "•"
-};
-
-export function eventRowHtml(event, text) {
-  const label = eventLabel(event, text);
-  let body = "";
-  if (event.kind === "sub") {
-    body = `${event.playerIn ? `<b>${escapeHtml(event.playerIn)}</b> ${escapeHtml(text.subIn)}` : ""}${event.playerIn && event.playerOut ? " · " : ""}${event.playerOut ? `${escapeHtml(event.playerOut)} ${escapeHtml(text.subOut)}` : ""}`;
-  } else {
-    const name = event.player ? `<b>${escapeHtml(event.player)}</b>` : "";
-    const assist = event.assist ? ` <span class="msp-event-assist">(${escapeHtml(text.assists === "asist" ? "Asist" : "Assist")}: ${escapeHtml(event.assist)})</span>` : "";
-    const detail = !event.player && event.detail ? escapeHtml(event.detail) : (event.kind === "var" || event.kind === "other") && event.detail ? ` <span class="msp-event-assist">${escapeHtml(event.detail)}</span>` : "";
-    body = `${name}${assist}${detail}`;
-  }
-  return `<li class="msp-event is-${escapeHtml(event.kind)} is-${escapeHtml(event.side || "neutral")}"><span class="msp-event-min">${escapeHtml(event.time ? `${event.time}'` : "-")}</span><span class="msp-event-icon" aria-hidden="true">${EVENT_ICONS[event.kind] || "•"}</span><span class="msp-event-body">${label ? `<em>${escapeHtml(label)}</em> ` : ""}${body}${event.team ? ` <small>${escapeHtml(event.team)}</small>` : ""}</span></li>`;
+export function eventsListHtml(events, textOrLocale, options = {}) {
+  return matchTimeline.timelineListHtml(events, { ...options, locale: localeOf(textOrLocale) });
 }
 
-export function eventsListHtml(events, text) {
-  if (!events.length) return "";
-  return `<ol class="msp-events">${events.map((event) => eventRowHtml(event, text)).join("")}</ol>`;
+/**
+ * Eski çağrılar bölüm metinleri sözlüğünü (`STR[locale]`) geçiriyordu;
+ * paylaşılan çekirdek ise dil kodunu istiyor. İkisi de kabul edilir ki
+ * çağrı yerleri tek tek değiştirilmek zorunda kalmasın.
+ */
+function localeOf(value) {
+  if (typeof value === "string") return value === "en" ? "en" : "tr";
+  return value && value.subIn === "on" ? "en" : "tr";
 }
 
 /* ------------------------------------------------------------------ */
@@ -1117,22 +1063,31 @@ export function whenSectionHtml(entry, ctx) {
 /* CANLI / SONUÇ BÖLÜMLERİ                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * CANLI MAÇ ANLATIMI — dakika dakika olay akışı.
+ *
+ * SIRALAMA TERS KRONOLOJİK. Canlı maçta okuyucunun sorduğu soru "az önce
+ * ne oldu"dur; akışı kronolojik basmak, cevabı her seferinde sayfanın en
+ * altına saklamak demekti. Bitmiş maçta da aynı sıra kullanılıyor: tek bir
+ * okuma biçimi var, maçın hâline göre değişen ikinci bir düzen yok.
+ *
+ * BÖLÜM HER HÂLDE SUNUCUDA BASILIR (boş kabuk dahil), çünkü maç başlayınca
+ * `match-center.js` içini aynı işaretlemeyle doldurur — istemciye bırakılan
+ * boş bir kutu değil, dolmaya hazır bir bölüm.
+ *
+ * Gol satırları `is-goal` sınıfıyla vurgulanır ve doğrulanabiliyorsa o
+ * andaki koşan skoru taşır (bkz. services/matchTimeline.js#attachRunningScore).
+ */
 export function eventsSectionHtml(events, ctx) {
   const { locale, state } = ctx;
   const text = STR[locale];
-  const title = state === "post" ? text.resultTitle : text.liveEvents;
-  if (state === "post") {
-    const goals = events.filter((event) => ["goal", "own-goal", "penalty"].includes(event.kind));
-    const cards = events.filter((event) => ["yellow", "red", "yellow-red"].includes(event.kind));
-    const subs = events.filter((event) => event.kind === "sub");
-    const vars = events.filter((event) => event.kind === "var" || event.kind === "missed-penalty");
-    if (!events.length) {
-      return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><p class="muted-copy" data-msp-events-note>${escapeHtml(text.noDetail)}</p></section>`;
-    }
-    const block = (heading, rows) => rows.length ? `<h3 class="msp-subtitle">${escapeHtml(heading)}</h3>${eventsListHtml(rows, text)}` : "";
-    return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(text.goalsTitle, goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
-  }
-  return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${events.length ? eventsListHtml(events, text) : `<p class="muted-copy" data-msp-events-note>${escapeHtml(text.eventsPending)}</p>`}</div></section>`;
+  const title = state === "post" ? text.resultTitle : text.liveTitle;
+  const emptyText = state === "post" ? text.noDetail : text.eventsPending;
+  const body = matchTimeline.timelineBodyHtml(events, { locale, order: "desc", emptyText });
+  return `<section class="msp-section msp-timeline-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title">` +
+    `<h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2>` +
+    `<div data-msp-events-body>${body}</div>` +
+    `</section>`;
 }
 
 /**

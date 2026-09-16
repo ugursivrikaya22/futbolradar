@@ -113,6 +113,26 @@ const MONTH_DIR_EN = "en/matches";
 const BIG_FOUR = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
 const OG_IMAGE = `${DOMAIN}/assets/og-image.png`;
 
+/**
+ * CANLI YOKLAMA ARALIKLARI (saniye) — sayfaya yazılır, koda gömülmez.
+ *
+ * Değer `match-center.js` içinde sabitti; sağlayıcı kotası daraldığında ya
+ * da bir derbide akış sıklaştırılmak istendiğinde istemci dosyasını
+ * değiştirip yeniden yayınlamak gerekiyordu. Artık her sayfa kendi
+ * aralığını `data-msp-poll-*` ile taşıyor ve derleme ortam değişkeniyle
+ * ayarlanabiliyor. İstemci gelen değeri ayrıca kendi güvenli aralığına
+ * KISITLAR: sayfadan gelen bir sayı sağlayıcıyı saniyede bir yoklatamaz.
+ */
+const POLL_SECONDS = {
+  live: envSeconds("MATCH_POLL_LIVE_SECONDS", 45),
+  pre: envSeconds("MATCH_POLL_PRE_SECONDS", 120)
+};
+
+function envSeconds(name, fallback) {
+  const raw = Number(process.env[name]);
+  return Number.isFinite(raw) && raw > 0 ? Math.round(raw) : fallback;
+}
+
 function readJson(relative, fallback) {
   try {
     return JSON.parse(fs.readFileSync(path.join(root, relative), "utf8"));
@@ -885,7 +905,16 @@ function pageHtml(entry, locale, options) {
     pageHrefFor: hrefForMatch
   };
 
-  const events = normalizeEvents({ events: detail.events, substitutions: detail.substitutions }, entry.homeTeam, entry.awayTeam);
+  // TAM kayıt geçiliyor (yalnızca olay listesi değil): koşan skor, akıştan
+  // toplanan golü TABELADAKİ skorla karşılaştırıp öyle yazılıyor, ayrıca
+  // devre arası satırı ilk yarı skorundan türetiliyor. İkisi de `score`
+  // alanı olmadan hesaplanamaz.
+  const events = normalizeEvents(
+    { events: detail.events, substitutions: detail.substitutions, score: entry.score || detail.score },
+    entry.homeTeam,
+    entry.awayTeam,
+    { locale, finished: state === "post" }
+  );
   const radar = state === "pre" ? calculateMatchRadar({ homeTeam: entry.homeTeam, awayTeam: entry.awayTeam }, { teams, players, squadStatus }) : null;
   const h2h = buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 5 });
   const forms = { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
@@ -1004,7 +1033,7 @@ function pageHtml(entry, locale, options) {
   </head>
   <body class="subpage match-seo-page">
     ${siteHeader({ base, locale, altHref })}
-    <main class="container msp" data-match-center data-msp-slug="${escapeHtml(slugValue)}" data-msp-locale="${locale}" data-msp-state="${escapeHtml(state)}" data-msp-kickoff="${escapeHtml(istanbulIso(entry.kickoff) || "")}" data-msp-query="${escapeHtml(detailQuery)}" data-msp-home="${escapeHtml(entry.homeTeam)}" data-msp-away="${escapeHtml(entry.awayTeam)}" data-msp-title-live="${escapeHtml(liveTitles.live)}" data-msp-title-post="${escapeHtml(liveTitles.post)}">
+    <main class="container msp" data-match-center data-msp-slug="${escapeHtml(slugValue)}" data-msp-locale="${locale}" data-msp-state="${escapeHtml(state)}" data-msp-kickoff="${escapeHtml(istanbulIso(entry.kickoff) || "")}" data-msp-query="${escapeHtml(detailQuery)}" data-msp-home="${escapeHtml(entry.homeTeam)}" data-msp-away="${escapeHtml(entry.awayTeam)}" data-msp-title-live="${escapeHtml(liveTitles.live)}" data-msp-title-post="${escapeHtml(liveTitles.post)}" data-msp-poll-live="${POLL_SECONDS.live}" data-msp-poll-pre="${POLL_SECONDS.pre}">
       <nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><a href="${base}${locale === "en" ? HUB_EN : HUB_TR}">${escapeHtml(text.allMatches)}</a><span>/</span>${breadcrumbCompetition}<span>${escapeHtml(entry.homeTeam)} ${locale === "en" ? "vs" : "-"} ${escapeHtml(entry.awayTeam)}</span></nav>
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
       ${matchFollowHtml(ctx)}
@@ -1017,6 +1046,7 @@ function pageHtml(entry, locale, options) {
     <script src="${base}site.js" defer></script>
     <script src="${base}radar-pulse.js" defer></script>
     <script src="${base}radar-fan.js" defer></script>
+    <script src="${base}match-timeline.js" defer></script>
     <script src="${base}match-center.js" defer></script>
   </body>
 </html>
