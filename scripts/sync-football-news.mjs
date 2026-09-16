@@ -71,6 +71,14 @@ export const DEFAULT_FEEDS = [
   { id: "trabzonspor", scope: "team", officialDomain: "trabzonspor.org.tr", team: "Trabzonspor", priority: 4, url: googleNewsUrl("Trabzonspor futbol site:trabzonspor.org.tr") },
   { id: "super-lig", scope: "team", officialDomain: "tff.org", team: "Süper Lig", priority: 5, url: googleNewsUrl("Süper Lig futbol site:tff.org") },
   { id: "uefa", scope: "team", officialDomain: "uefa.com", team: "Avrupa futbolu", priority: 9, url: googleNewsUrl("UEFA football site:uefa.com", "en") },
+  // 1. LİG. Süper Lig'den sonraki ikinci öncelik; kendi federasyon
+  // beslemesi var ve Süper Lig sorgusu bu haberleri hiç getirmiyordu.
+  { id: "bir-lig", scope: "team", officialDomain: "tff.org", team: "1. Lig", priority: 6, url: googleNewsUrl("1. Lig futbol site:tff.org") },
+  // Federasyonun kendi duyuruları (ceza, tahkim, kural, atama): Süper Lig
+  // sorgusuna takılmayan kurumsal gündem.
+  { id: "tff-kurumsal", scope: "team", officialDomain: "tff.org", team: "TFF", priority: 6, url: googleNewsUrl("Türkiye Futbol Federasyonu site:tff.org") },
+  { id: "milli-takim", scope: "team", officialDomain: "tff.org", team: "Milli Takım", priority: 5, url: googleNewsUrl("A Milli Futbol Takımı Türkiye site:tff.org") },
+  { id: "fifa", scope: "team", officialDomain: "fifa.com", team: "FIFA", priority: 9, url: googleNewsUrl("FIFA futbol site:fifa.com") },
 
   // Tier 2 — doğrudan Türk spor medyası beslemeleri (gerçek makale adresi)
   { id: "aa-spor", scope: "general", officialDomain: "aa.com.tr", trusted: true, priority: 6, url: "https://www.aa.com.tr/tr/rss/default?cat=spor" },
@@ -79,10 +87,27 @@ export const DEFAULT_FEEDS = [
   { id: "hurriyet-spor", scope: "general", officialDomain: "hurriyet.com.tr", trusted: true, priority: 7, url: "https://www.hurriyet.com.tr/rss/spor" },
   { id: "fotomac", scope: "general", officialDomain: "fotomac.com.tr", trusted: true, priority: 8, url: "https://www.fotomac.com.tr/rss/anasayfa.xml" },
   { id: "sabah-spor", scope: "general", officialDomain: "sabah.com.tr", trusted: true, priority: 8, url: "https://www.sabah.com.tr/rss/spor.xml" },
+  { id: "cnnturk-spor", scope: "general", officialDomain: "cnnturk.com", trusted: true, priority: 8, url: "https://www.cnnturk.com/feed/rss/spor/news" },
+
+  /*
+   * KAPSAM GENİŞLETME — DÖRT BÜYÜKLER DIŞI.
+   *
+   * Beslemelerin tamamı dört büyükler + ulusal gazeteydi; Süper Lig'in
+   * diğer 14 kulübü ve 1. Lig yalnızca tesadüfen, bir gazete yazdığında
+   * görünüyordu. Bu iki besleme onları doğrudan tarar. `scope: "general"`
+   * oldukları için başlıkta TANINAN bir kulüp/yarışma geçmesi şart
+   * (bkz. inScope) — açık uçlu sorgunun alakasız sayfa getirmesi böylece
+   * yapısal olarak engellenir.
+   */
+  { id: "diger-super-lig", scope: "general", priority: 7, url: googleNewsUrl("Başakşehir OR Konyaspor OR Antalyaspor OR Alanyaspor OR Kayserispor OR Göztepe OR Samsunspor futbol") },
+  { id: "bir-lig-kulupler", scope: "general", priority: 8, url: googleNewsUrl("1. Lig Trendyol futbol kulüp") },
 
   // Tier 3 — uluslararası (Türk futbolu geçmiyorsa banda hiç girmez)
   { id: "bbc-football", scope: "general", officialDomain: "bbc.co.uk", trusted: true, priority: 10, url: "https://feeds.bbci.co.uk/sport/football/rss.xml" },
-  { id: "sky-football", scope: "general", officialDomain: "skysports.com", trusted: true, priority: 10, url: "https://www.skysports.com/rss/12040" }
+  { id: "sky-football", scope: "general", officialDomain: "skysports.com", trusted: true, priority: 10, url: "https://www.skysports.com/rss/12040" },
+  // Avrupa'nın beş büyük ligi, Türkçe. Türk kulübü geçmese de ligin kendi
+  // adı tanınan bir başlık olduğu için süzgeçten geçer.
+  { id: "avrupa-ligleri", scope: "general", priority: 10, url: googleNewsUrl("Premier Lig OR La Liga OR Serie A OR Bundesliga OR Ligue 1 futbol") }
 ];
 
 function decodeXml(value) {
@@ -233,8 +258,24 @@ const TEAM_MATCHERS = (() => {
   // Fikstürde geçmeyen ama haberde sık anılan çatı başlıklar.
   const extra = [
     ["Süper Lig", /süper lig|super lig|trendyol süper/i],
+    // 1. LİG ÇATI BAŞLIĞI. Kulüpleri fikstürde geçiyor ama ligin KENDİ adı
+    // geçen haberler (fikstür, yayın, terfi/düşme) hiçbir kulüp adı
+    // taşımadığı için süzgeçten düşüyordu.
+    ["1. Lig", /1\. ?lig|birinci lig|trendyol 1\. ?lig/i],
     ["Milli Takım", /milli takım|a milli|türkiye a milli/i],
-    ["TFF", /\btff\b|türkiye futbol federasyonu/i]
+    ["TFF", /\btff\b|türkiye futbol federasyonu/i],
+    // Avrupa'nın beş büyük ligi ve kupalar: Türk kulübü geçmeyen ama
+    // gündem değeri taşıyan haberler bu başlıklarla banda girer.
+    ["Şampiyonlar Ligi", /şampiyonlar ligi|champions league/i],
+    ["Avrupa Ligi", /avrupa ligi|europa league/i],
+    ["Konferans Ligi", /konferans ligi|conference league/i],
+    ["Premier Lig", /premier lig|premier league/i],
+    ["La Liga", /la ?liga/i],
+    ["Serie A", /serie ?a\b/i],
+    ["Bundesliga", /bundesliga/i],
+    ["Ligue 1", /ligue ?1/i],
+    ["FIFA", /\bfifa\b/i],
+    ["UEFA", /\buefa\b/i]
   ];
 
   const fromFixture = [...names].map((name) => {

@@ -1,0 +1,53 @@
+# İNGİLİZCE HABER AKIŞI — SAATLİK TAZELEME.
+#
+# Türkçe akış saatlik `run-scheduled-update` içinde tazeleniyor ve İngilizce
+# adım da oraya eklendi. Bu iş akışı ONA EK bir güvenlik ağı: saatlik koşu
+# herhangi bir nedenle düşerse (sağlayıcı kotası, uzun süren bir derleme)
+# /en tarafı gün boyu donmasın diye akış kendi başına da tazelenir.
+#
+# Yalnızca VERİYİ tazeler ve sayfaları üretir; tam derleme zincirini
+# çalıştırmaz — o, saatlik koşunun işi.
+name: english-news
+
+on:
+  schedule:
+    # Saatlik koşudan kaymalı olsun diye :35'te; ikisi aynı anda push
+    # etmeye çalışıp çakışmasın.
+    - cron: "35 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  # Bir önceki koşu hâlâ sürüyorsa yenisi beklemez, iptal eder: iki koşunun
+  # aynı dosyayı yazması çakışan commit üretir.
+  group: english-news
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Akışı tazele
+        run: node scripts/sync-english-news.mjs
+
+      - name: Sözleşme denetimleri
+        # Sayfa üretmeden ÖNCE: akış bozulduysa bozuk veriden sayfa
+        # üretip yayına itmek, hiç güncellememekten kötüdür.
+        run: |
+          node scripts/test-editorial-status.mjs
+          node scripts/test-english-news.mjs
+
+      - name: Sayfaları üret
+        run: node scripts/generate-en-news-pages.mjs
+
+      - name: Değişiklikleri işle
+        run: node scripts/ci-commit-push.mjs "ci(english-news): otomatik İngilizce haber tazelemesi"

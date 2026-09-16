@@ -161,6 +161,25 @@ const columnList = (() => {
   return list.filter((entry) => entry && entry.status !== "draft");
 })();
 
+/*
+ * İNGİLİZCE YÜZEYDE YALNIZCA İNGİLİZCESİ OLAN YAZI.
+ *
+ * Köşe yazısı kartları, İngilizcesi olmayan yazıyı Türkçe başlık ve
+ * Türkçe özetle (`lang="tr"`) gösteriyordu; en/columns.html bu yüzden
+ * 96 Türkçe düğüm taşıyordu. Yazılar İNSAN KALEMİNDEN çıkma yorum
+ * metinleri: makineyle çevrilmezler ve uydurulmazlar.
+ *
+ * Bu yüzden çözüm çevirmek değil SÜZMEK. Depoda zaten bunun için bir yol
+ * var: bir yazının `en` alanı doldurulduğunda İngilizce sürümü yayımlanıyor
+ * (bkz. englishColumn). İngilizce yüzey artık yalnızca o yazıları gösterir.
+ * Türkçe yazılar silinmez, Türkçe tarafta olduğu gibi kalır — yalnızca
+ * okunamayacakları yüzeye basılmazlar. Bir yazıya `en` eklendiği anda
+ * kendiliğinden buraya da düşer.
+ */
+function englishColumnList() {
+  return columnList.filter((entry) => englishColumn(entry) !== null);
+}
+
 /**
  * YAZININ İNGİLİZCESİ VAR MI?
  *
@@ -819,8 +838,7 @@ function heroSection() {
  * görünür ve okuyucu bağlantının hangi dile gittiğini önceden bilir.
  */
 function columnsSection() {
-  const columns = columnList
-    .slice()
+  const columns = englishColumnList()
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")))
     .slice(0, 3);
   if (!columns.length) return "";
@@ -1912,7 +1930,7 @@ function archivePage() {
  * Başlık `lang="tr"` taşır, bağlantı `hreflang="tr"` ile Türkçe metne gider.
  */
 function columnsPage() {
-  const cards = columnList.slice(0, 24).map((column) => {
+  const cards = englishColumnList().slice(0, 24).map((column) => {
     const english = englishColumn(column);
     const href = escapeHtml(english
       ? english.href
@@ -1947,7 +1965,7 @@ ${sectionLinks()}`;
     heroKicker: "Opinion",
     heroTitle: "Turkish Football Columns",
     heroLead: "Commentary from FutbolRadar writers, kept separate from the site's verified match data.",
-    heroMeta: `${columnList.length} columns`,
+    heroMeta: `${englishColumnList().length} columns`,
     body,
     schema: schemaFor("columns", "en/columns.html", "CollectionPage")
   });
