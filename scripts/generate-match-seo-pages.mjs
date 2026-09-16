@@ -92,6 +92,7 @@ const {
   trSlugFor
 } = require("../services/matchSeoPages.js");
 const { canonicalStatus, istanbulDay, kickoffMs } = require("../services/matchStatus.js");
+const { venueLabel } = require("../services/displayLabels.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { teamHubHref } = require("../services/teamHubLinks.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
@@ -789,7 +790,7 @@ function schemaFor(entry, state, locale, ctx, urls) {
       ...(eventStatus ? { eventStatus } : {}),
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Football",
-      ...(entry.venue ? { location: { "@type": "Place", name: entry.venue } } : {}),
+      ...(entry.venue ? { location: { "@type": "Place", name: venueLabel(entry.venue, locale) } } : {}),
       homeTeam: team(entry.homeTeam, ctx.homeAbsolute),
       awayTeam: team(entry.awayTeam, ctx.awayAbsolute),
       competitor: [team(entry.homeTeam, ctx.homeAbsolute), team(entry.awayTeam, ctx.awayAbsolute)],

@@ -71,6 +71,7 @@ const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
 // Maç programı sırası ve makine okunur karşılığı — Türkçe tarafla aynı servis.
 const { orderMatchProgram } = require("../services/matchProgram.js");
+const { venueLabel } = require("../services/displayLabels.js");
 const { matchListSchema } = require("../services/matchSchema.js");
 // Anket seçimi servistedir; işaretleme iki dilde ORTAK bileşenden gelir.
 const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
@@ -723,7 +724,7 @@ function featuredCarousel() {
     const reasonLabel = FEATURED_REASON_EN[entry.reason] || entry.reason;
 
     return `<div class="featured-fixture${live ? " is-live" : ""}" data-featured-reason="${escapeHtml(entry.reason)}" data-featured-turkish="${entry.turkish ? "true" : "false"}" data-featured-reason-label="${escapeHtml(reasonLabel)}" data-kickoff="${escapeHtml(match.kickoff || "")}">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMark(competition)}${escapeHtml(competition)}</span><span>${escapeHtml(`${dateLabel} · ${match.venue || "Venue to be confirmed"}`)}</span></div>
+      <div class="featured-fixture-head"><span class="featured-fixture-league">${leagueMark(competition)}${escapeHtml(competition)}</span><span>${escapeHtml(`${dateLabel} · ${venueLabel(match.venue, LOCALE) || "Venue to be confirmed"}`)}</span></div>
       <div class="featured-fixture-board">
         ${side(match.homeTeam)}
         <div class="featured-fixture-score"><b>${escapeHtml(headline)}</b><span>${escapeHtml(stateLabel)}</span></div>
@@ -854,7 +855,7 @@ function dailyHeadlinesSection() {
     }
     if (match.stage) hookParts.push(String(match.stage));
     else if (match.league) hookParts.push(competitionLabel(match.league, LOCALE));
-    if (match.venue) hookParts.push(String(match.venue));
+    if (match.venue) hookParts.push(venueLabel(match.venue, LOCALE));
     const hook = hookParts.join(" · ");
     // Kancası olmayan başlık düşer — Türkçe taraftaki kuralın aynısı.
     if (!hook) return "";
@@ -1303,7 +1304,7 @@ function todaysMatchesPage() {
   // Maçların makine okunur karşılığı — Türkçe sayfayla aynı servis
   // (services/matchSchema.js). Eksik alan uydurulmaz: stadyum adı yoksa
   // `location` hiç yazılmaz.
-  const schemaBlock = matchListSchema(todaysMatches, { name: "Today's football matches" });
+  const schemaBlock = matchListSchema(todaysMatches, { name: "Today's football matches", locale: LOCALE });
   const schemaScript = schemaBlock
     ? `\n<script type="application/ld+json">${JSON.stringify(schemaBlock).replace(/</g, "\\u003c")}</script>`
     : "";

@@ -144,12 +144,38 @@ const VENUE_SUFFIXES = [
   [/\s+arenası$/i, " Arena"]
 ];
 
+/**
+ * TÜR SÖZCÜĞÜ HİÇ OLMAYAN, TARİH ADLI STATLAR.
+ *
+ * Türkiye'de pek çok stat bir anma tarihini taşır ve veride kimi zaman
+ * KISA biçimiyle durur: Adana'nın "5 Ocak Fatih Terim Stadyumu" fikstürde
+ * yalnızca "5 Ocak" olarak geçiyor. Ad özeldir, çevrilmez — ama tür
+ * sözcüğü hiç yok, üstteki sonek kuralının tutunacağı bir yer de yok.
+ * İngilizce sayfada "Venue: 5 Ocak" okuyucuya bir yer değil, yarım kalmış
+ * bir Türkçe tarih gibi görünüyor.
+ *
+ * Veride tür sözcüğünü taşıyan kardeşleri ("17 Eylül Stadium", "Yeni
+ * 4 Eylül Stadyumu") zaten doğru okunuyor; eksik olan tek şey o sözcük.
+ * Olgu değişmiyor, yalnızca yerin TÜRÜ adlandırılıyor.
+ *
+ * Yalnızca adın BAŞINDA duran gün+ay kalıbı sayılır; düz metindeki gerçek
+ * bir tarihe ("maç 4 Eylül'de oynandı") dokunulmaz, o zaten venue değil.
+ */
+const BARE_DATE_VENUE = new RegExp(
+  `^\\d{1,2}\\s+(?:${Object.keys(TURKISH_MONTHS).join("|")})(?![\\p{L}\\p{N}])`,
+  "iu"
+);
+// Adı zaten türünü söylüyorsa ikinci kez söyletme ("17 Eylül Stadium").
+const VENUE_TYPE_WORD =
+  /(?<![\p{L}\p{N}])(?:stadium|arena|ground|park|complex|facilities|stadyum\w*|stad[ıi]|aren(?:a|ası)|saha(?:sı)?)(?![\p{L}\p{N}])/iu;
+
 function venueLabel(value, locale) {
   const raw = String(value || "").trim();
   if (!isEnglish(locale) || !raw) return raw;
   for (const [pattern, replacement] of VENUE_SUFFIXES) {
     if (pattern.test(raw)) return raw.replace(pattern, replacement);
   }
+  if (BARE_DATE_VENUE.test(raw) && !VENUE_TYPE_WORD.test(raw)) return `${raw} Stadium`;
   return raw;
 }
 
