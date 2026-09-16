@@ -16,19 +16,6 @@
     <meta property="og:description" content="Ligue 1 güncel fikstür, maç sonuçları ve puan durumu. Doğrulanmış veriler FutbolRadar&#39;da." />
     <link rel="stylesheet" href="../page.css?v=8aba6288" />
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"SportsOrganization","name":"Ligue 1","sport":"Football","url":"https://www.futbolradar.com/lig/ligue-1.html"}</script>
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -47,6 +34,19 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="subpage league-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -83,7 +83,7 @@
         <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track">
-            <div class="news-ticker-group"><a class="news-ticker-item" href="../mac/kocaelispor-samsunspor-6-eylul-2026"><span class="news-ticker-tag">Sonuç</span><span>Kocaelispor 1-0 Samsunspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../mac/caykur-rizespor-alanyaspor-7-eylul-2026"><span class="news-ticker-tag">Sonuç</span><span>Çaykur Rizespor 0-1 Alanyaspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMimgFBVV95cUxNV3kyWmV2SG1vNVNLdzhNTzN3S0d0cm50U0VfR2paUlprUjdmS3NKekN3MVJ0M1pOLWt3aTJGZjR3VjcyRnhSODh1TVBNeWl0U2sxUkZ6dDVYNEw1cEx6YkpwaElrTEJxWFhzcjMzV09tS1NVSXJfbl9Zd1JnNHJ0bGgxNGpycUpyRmxtLWR6QUVMcjRUS3FkOXRn?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Olympique de Marseille Maçı Hazırlıkları Tamamlandı - Beşiktaş JK — kaynak: bjk.com.tr" title="Kaynak: bjk.com.tr"><span class="news-ticker-tag">Resmî açıklama</span><span>Olympique de Marseille Maçı Hazırlıkları Tamamlandı - Beşiktaş JK</span></a></div>
+            <div class="news-ticker-group"><a class="news-ticker-item" href="../mac/kocaelispor-samsunspor-6-eylul-2026"><span class="news-ticker-tag">Sonuç</span><span>Kocaelispor 1-0 Samsunspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../mac/caykur-rizespor-alanyaspor-7-eylul-2026"><span class="news-ticker-tag">Sonuç</span><span>Çaykur Rizespor 0-1 Alanyaspor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMingFBVV95cUxOZkFNZjJnUl9lM0NpRjRHNGxZbE40TVZJUTRvSFVDY1oxcVgyaEZhWDlwX0o2OEQ0V2dUcTJMWndvOWRsMmxWdG1FbGE2dTk0OTl2ekwzei02V1I5SUxYT2UxcEdmM0ZiX25iWW5JQnJ0c1RmelpDX1hIYkxyZGROT2p0Z244a09EZ2RGTzlLSENKLXBPLV9zcl9fYjJxZw?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Galatasaray&#039;a hoş geldin Lahna Diawara! — kaynak: galatasaray.org" title="Kaynak: galatasaray.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Galatasaray&#039;a hoş geldin Lahna Diawara!</span></a></div>
           </div>
         </div>
         <a class="news-ticker-all" href="../haberler.html">Tümü</a>
@@ -100,7 +100,19 @@
 
       <section class="league-page-section">
         <h2>Bugün ve yaklaşan maçlar</h2>
-        <article class="data-empty" data-card="empty-state"><strong>Bu ligde yaklaşan maç bulunmuyor</strong><span>Takvim güncellendiğinde bu bölüm otomatik dolar.</span></article>
+        <div class="matches-grid"><article class="fixture-card" data-card="fixture" data-match="us-ben-guerdane-cs-sfaxien-2026-09-16">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">L1</i>Ligue 1</span><span class="fixture-card-state ">18:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UB</span><span class="fixture-row-name">US Ben Guerdane</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CS</span><span class="fixture-row-name">CS Sfaxien</span><span class="fixture-row-score">–</span></div></div>
+    
+    
+    <a class="fixture-card-action" href="../mac-detay.html?id=1607427&amp;date=2026-09-16" data-match-click>Maç ayrıntısını aç</a>
+  </article><article class="fixture-card" data-card="fixture" data-match="es-zarzis-us-monastirienne-2026-09-16">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">L1</i>Ligue 1</span><span class="fixture-card-state ">18:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EZ</span><span class="fixture-row-name">ES Zarzis</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UM</span><span class="fixture-row-name">US Monastirienne</span><span class="fixture-row-score">–</span></div></div>
+    
+    
+    <a class="fixture-card-action" href="../mac-detay.html?id=1607434&amp;date=2026-09-16" data-match-click>Maç ayrıntısını aç</a>
+  </article></div>
       </section>
 
       
