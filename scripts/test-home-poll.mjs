@@ -997,10 +997,28 @@ console.log("home-poll");
   const mapStage = fs.mkdtempSync(path.join(os.tmpdir(), "poll-pages-"));
   fs.symlinkSync(path.join(root, "data"), path.join(mapStage, "data"));
   fs.copyFileSync(path.join(root, "sitemap.xml"), path.join(mapStage, "sitemap.xml"));
-  execFileSync(process.execPath, [path.join(root, "scripts", "generate-poll-pages.mjs")], {
+  // Anket listesi sayfaları da sahneye alınıyor: adım bunlara statik
+  // bağlantı yazıyor ve asıl denetlenen şey o (aşağıya bakınız).
+  //
+  // ÖNCEKİ ENJEKSİYON SÖKÜLEREK kopyalanıyor. Depodaki dosya üretilmiş
+  // bir çıktı ve içinde zaten bağlantılar var; olduğu gibi kopyalamak,
+  // adım hiçbir şey yapmasa bile geçen bir test demekti (denendi: geçti).
+  const stageHub = (source, destination) => {
+    const html = fs.readFileSync(source, "utf8")
+      .replace(/<!-- POLL-INDEX:BEGIN -->[\s\S]*?<!-- POLL-INDEX:END -->/g, "")
+      .replace(/ data-poll-archive-static/g, "");
+    fs.writeFileSync(destination, html, "utf8");
+  };
+  fs.mkdirSync(path.join(mapStage, "en"), { recursive: true });
+  stageHub(path.join(root, "anketler.html"), path.join(mapStage, "anketler.html"));
+  stageHub(path.join(root, "en", "polls.html"), path.join(mapStage, "en", "polls.html"));
+
+  const runPollPages = () => execFileSync(process.execPath, [path.join(root, "scripts", "generate-poll-pages.mjs")], {
     env: { ...process.env, POLL_PAGES_ROOT: mapStage },
     stdio: "pipe"
   });
+  runPollPages();
+
   const sitemap = fs.readFileSync(path.join(mapStage, "sitemap.xml"), "utf8");
   for (const entry of entries) {
     const tr = localizePoll(entry.poll, "tr");
@@ -1011,6 +1029,58 @@ console.log("home-poll");
       assert.ok(sitemap.includes(loc), `${tr.slug}: yayındaki anket site haritasında yok`);
     }
   }
+
+  // ── SİTE HARİTASINDAKİ HER ANKETİN GERÇEK BİR BAĞLANTISI VAR ──────────
+  //
+  // BU DENETİM BİR OLAYIN ARDINDAN YAZILDI. Anket listesi kartları
+  // yalnızca istemcide çiziliyordu; sunucu çıktısında liste kabı boştu.
+  // Sonuç: site haritası "bu anketi indeksle" derken sitenin kendisi o
+  // sayfaya hiçbir yerden bağlanmıyordu — iki sinyal birbiriyle
+  // çelişiyordu ve bunu `test-seo-integrity.mjs` orphan denetimi
+  // yakaladı. Kontrol burada, kaynağında duruyor.
+  const hubs = {
+    tr: fs.readFileSync(path.join(mapStage, "anketler.html"), "utf8"),
+    en: fs.readFileSync(path.join(mapStage, "en", "polls.html"), "utf8")
+  };
+  const anchors = (html) => new Set([...html.matchAll(/<a[^>]+href="([^"]+)"/g)].map((match) => match[1]));
+  const trLinks = anchors(hubs.tr);
+  const enLinks = anchors(hubs.en);
+
+  for (const entry of entries) {
+    const tr = localizePoll(entry.poll, "tr");
+    const en = localizePoll(entry.poll, "en");
+    if (entry.status === "upcoming") {
+      // `noindex` bir sayfayı statik listede öne çıkarmak, indekslenmesini
+      // istemediğimiz adrese bağlantı vermek olurdu.
+      assert.ok(!trLinks.has(tr.path), `${tr.slug}: başlamamış anket statik listede olmamalı`);
+      assert.ok(!enLinks.has(en.path), `${en.slug}: başlamamış anket statik listede olmamalı`);
+      continue;
+    }
+    assert.ok(trLinks.has(tr.path),
+      `${tr.slug}: site haritasında ama anket listesinden bağlanmıyor (orphan)`);
+    assert.ok(enLinks.has(en.path),
+      `${en.slug}: site haritasında ama anket listesinden bağlanmıyor (orphan)`);
+  }
+
+  // Kartlar SAYIM TAŞIMAZ: derleme anında oy sayısı bilinmiyor ve "%0"
+  // basmak veride olmayan bir sayı iddia etmek olurdu.
+  const injected = (hubs.tr.match(/<!-- POLL-INDEX:BEGIN -->([\s\S]*?)<!-- POLL-INDEX:END -->/) || [])[1] || "";
+  assert.ok(injected, "anket listesine statik kart yazılmamış");
+  assert.ok(!/%|poll-archive__bar|poll-archive__count/.test(injected),
+    "statik kart sayım ya da yüzde göstermemeli");
+
+  // İstemci hata durumunda kabı boşaltmasın diye işaret şart.
+  assert.match(hubs.tr, /data-poll-archive-list[^>]*data-poll-archive-static/,
+    "sunucudan gelen liste işaretlenmemiş — istemci ağ hatasında onu silerdi");
+
+  // Adım iki kez koşarsa çıktı DEĞİŞMEMELİ: derleme zinciri bu betiği
+  // her koşuda çalıştırıyor ve kart içinde de `</div>` var.
+  runPollPages();
+  runPollPages();
+  assert.equal(fs.readFileSync(path.join(mapStage, "anketler.html"), "utf8"), hubs.tr,
+    "anket listesi enjeksiyonu tekrar koşuda değişti");
+  assert.equal(fs.readFileSync(path.join(mapStage, "en", "polls.html"), "utf8"), hubs.en,
+    "İngilizce anket listesi enjeksiyonu tekrar koşuda değişti");
 }
 
 // ── 16. PAYLAŞIM: dinamik metin, UTM ve kanallar ──────────────────────────

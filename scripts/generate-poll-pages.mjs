@@ -96,6 +96,9 @@ const COPY = {
       "Bu bölüm okuyucu tahminidir; sitenin doğrulanmış maç verisinden ayrıdır."
     ],
     allPolls: "Tüm anketleri gör",
+    // Liste kartındaki bağlantı metni — site.js'teki `openPoll` ile aynı,
+    // çünkü istemci aynı kartın üstüne yazıyor.
+    openPoll: "Anket sayfasını aç ve paylaş",
     windowOpen: "Oylama bitişi",
     windowClosed: "Kapanış",
     windowUpcoming: "Başlangıç"
@@ -118,6 +121,7 @@ const COPY = {
       "This section is a reader prediction, separate from the site's verified match data."
     ],
     allPolls: "See every poll",
+    openPoll: "Open the poll page and share it",
     windowOpen: "Voting closes",
     windowClosed: "Closed",
     windowUpcoming: "Opens"
@@ -317,6 +321,115 @@ function pruneStale(directory, keep) {
   }
 }
 
+/* ------------------------------------------------------------------ */
+/* ANKET LİSTESİ SUNUCUDAN DA GELİR                                     */
+/* ------------------------------------------------------------------ */
+/**
+ * SİTE HARİTASINA YAZDIĞIMIZ HER ADRESİN SİTEDE GERÇEK BİR BAĞLANTISI OLMALI.
+ *
+ * Anket listesi (`anketler.html` / `en/polls.html`) kartları yalnızca
+ * istemcide, `/api/home-poll`'dan çiziyordu. Sunucu çıktısında liste
+ * kabı BOŞTU — yani site haritası "bu anketi indeksle" derken sitenin
+ * kendisi o sayfaya hiçbir yerden bağlanmıyordu. İki sinyal çelişiyor:
+ * Google'a "önemli" deyip aynı anda "hiçbir sayfadan bağlanmayacak kadar
+ * önemsiz" demek. `scripts/test-seo-integrity.mjs` bu çelişkiyi zaten
+ * arıyordu (`en-iyi-defanslar.html` aynı şekilde yakalanmıştı).
+ *
+ * Çözüm istemciyi kaldırmak değil: sayım ancak gerçek depodan gelir.
+ * Kartların SORU + DURUM + BAĞLANTI kısmı derleme anında basılıyor,
+ * sayım istemcide üstüne yazılıyor — sitenin geri kalanıyla aynı
+ * kademeli geliştirme sözleşmesi.
+ *
+ * YALNIZCA İNDEKSLENEN anketler basılıyor: liste, site haritasının
+ * birebir aynısı olsun diye. Başlamamış anket `noindex` — onu statik
+ * listeye koymak, indekslenmesini istemediğimiz bir sayfayı öne
+ * çıkarmak olurdu; istemci listesi onu yine de gösteriyor.
+ */
+const POLL_INDEX_BEGIN = "<!-- POLL-INDEX:BEGIN -->";
+const POLL_INDEX_END = "<!-- POLL-INDEX:END -->";
+
+/** İstemcideki `pollCard` ile AYNI sınıflar — CSS tek yerde kalsın. */
+function staticPollCard(row, locale) {
+  const copy = COPY[locale];
+  const status = row.status;
+  const when = status === "upcoming"
+    ? `${copy.windowUpcoming}: ${formatDate(row.startsAt, locale)}`
+    : `${status === "closed" ? copy.windowClosed : copy.windowOpen}: ${formatDate(row.endsAt, locale)}`;
+
+  // SAYIM YOK, YÜZDE DE YOK. Derleme anında oy sayısı bilinmiyor; "%0"
+  // basmak veride olmayan bir sayı iddia etmek olurdu (0001_core_schema.sql
+  // birinci kuralı). Sayımı istemci gerçek depodan getiriyor.
+  return `<article class="poll-archive__card is-${escapeHtml(status)}">`
+    + `<div class="poll-archive__head">`
+    + `<span class="poll-archive__badge is-${escapeHtml(status)}">${escapeHtml(copy.statusLabel[status] || status)}</span>`
+    + (when.endsWith(": ") ? "" : `<span class="poll-archive__when">${escapeHtml(when)}</span>`)
+    + `</div>`
+    + `<h2 class="poll-archive__question">${escapeHtml(row.question)}</h2>`
+    + (row.subtitle ? `<p class="poll-archive__subtitle">${escapeHtml(row.subtitle)}</p>` : "")
+    + `<a class="poll-archive__link" href="${escapeHtml(row.path)}">${escapeHtml(copy.openPoll)}</a>`
+    + `</article>`;
+}
+
+/**
+ * Listeyi sayfaya yerleştirir. Kap zaten sayfada (`data-poll-archive-list`);
+ * buraya yazmak, istemcinin canlı listeyi AYNI yere çizmesini sağlıyor —
+ * ikinci bir liste belirip yinelenen bağlantı üretmiyor.
+ *
+ * `data-poll-archive-static` işareti istemciye "bu kartlar sunucudan geldi"
+ * diyor: ağ hatasında istemci kabı boşaltmıyor (bkz. site.js).
+ */
+function injectPollIndex(relativePath, locale, rows) {
+  const cards = rows.map((row) => staticPollCard(row, locale)).join("");
+  let touched = 0;
+
+  for (const outputRoot of [root, path.join(root, "public")]) {
+    const file = path.join(outputRoot, relativePath);
+    if (!fs.existsSync(file)) continue;
+    const html = fs.readFileSync(file, "utf8");
+
+    // ÖNCE ESKİ ENJEKSİYON SÖKÜLÜR, SONRA YENİSİ YAZILIR.
+    //
+    // Kabın gövdesini doğrudan kalıpla yakalamak mümkün değil: kartların
+    // içinde de `</div>` var, yani "ilk kapanışa kadar" alan bir kalıp
+    // ikinci koşuda yarım kart bırakır (ölçüldü). İşaretler arasını
+    // silmek bu belirsizliği ortadan kaldırıyor ve adım kaç kez
+    // koşarsa koşsun aynı çıktıyı veriyor.
+    const stripped = html.replace(
+      new RegExp(`${POLL_INDEX_BEGIN}[\\s\\S]*?${POLL_INDEX_END}`, "g"),
+      ""
+    );
+
+    const emptyListRe = /<div class="poll-archive__list"([^>]*)data-poll-archive-list([^>]*)><\/div>/;
+    const match = stripped.match(emptyListRe);
+    if (!match) {
+      console.warn(`[poll-pages] anket listesi kabı bulunamadı: ${relativePath}`);
+      continue;
+    }
+
+    const attrs = `${match[1]}data-poll-archive-list${match[2]}`.replace(/\s*data-poll-archive-static/g, "");
+    const replacement = `<div class="poll-archive__list"${attrs}${cards ? " data-poll-archive-static" : ""}>`
+      + (cards ? `${POLL_INDEX_BEGIN}${cards}${POLL_INDEX_END}` : "")
+      + `</div>`;
+
+    // Durum satırı: kartlar sunucudan geldiyse "yükleniyor" yazmak yanlış
+    // olurdu — liste zaten ekranda. İstemci hata durumunda kendisi açıyor.
+    let next = stripped.replace(emptyListRe, replacement);
+    next = next.replace(
+      /<p class="poll-archive__status"([^>]*)data-poll-archive-status([^>]*)>/,
+      (whole, before, after) => {
+        const cleaned = `${before}data-poll-archive-status${after}`.replace(/\s*hidden/g, "");
+        return `<p class="poll-archive__status"${cleaned}${cards ? " hidden" : ""}>`;
+      }
+    );
+
+    if (next !== html) {
+      fs.writeFileSync(file, next, "utf8");
+      touched += 1;
+    }
+  }
+  return touched;
+}
+
 /** Site haritası: yalnızca indekslenen (açık/kapanmış) anketler girer. */
 function updateSitemap(file, rows) {
   if (!fs.existsSync(file)) return;
@@ -358,9 +471,16 @@ for (const entry of entries) {
   keepEn.add(`${enSlug}.html`);
 
   if (entry.status !== "upcoming") {
+    const tr = localizePoll(entry.poll, "tr");
+    const en = localizePoll(entry.poll, "en");
     indexed.push({
       trUrl: `${siteUrl}/anket/${trSlug}`,
-      enUrl: `${siteUrl}/en/poll/${enSlug}`
+      enUrl: `${siteUrl}/en/poll/${enSlug}`,
+      // Liste kartının sunum verisi: site haritası satırıyla AYNI
+      // kayıttan çıkıyor, böylece ikisi ayrışamaz.
+      status: entry.status,
+      tr: { question: tr.question, subtitle: tr.subtitle, path: tr.path, startsAt: tr.startsAt, endsAt: tr.endsAt, status: entry.status },
+      en: { question: en.question, subtitle: en.subtitle, path: en.path, startsAt: en.startsAt, endsAt: en.endsAt, status: entry.status }
     });
   }
 }
@@ -372,5 +492,9 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
   updateSitemap(sitemapPath, indexed);
 }
 
+// Site haritasına giren her anket, anket listesinden GERÇEKTEN bağlanır.
+const linked = injectPollIndex("anketler.html", "tr", indexed.map((row) => row.tr))
+  + injectPollIndex(path.join("en", "polls.html"), "en", indexed.map((row) => row.en));
+
 console.log(`[poll-pages] ${entries.length} anket için ${entries.length * 2} sayfa üretildi ` +
-  `(${indexed.length} tanesi site haritasında).`);
+  `(${indexed.length} tanesi site haritasında, ${linked} liste sayfasına bağlandı).`);

@@ -3396,6 +3396,29 @@
     var card = document.createElement("article");
     card.className = "poll-archive__card is-" + poll.status;
 
+    // HER ANKETİN KENDİ SAYFASI VAR — VE PAYLAŞILAN ADRES ODUR.
+    // Arşiv kartı tam paylaşım panelini taşımıyor (panel seçime ve canlı
+    // sonuca bağlı, sayfada 3-4 kartla birlikte tekrarlanması karmaşa
+    // olurdu); onun yerine okuyucuyu anketin kendi sayfasına gönderiyor.
+    //
+    // BAĞLANTI HER DURUMDA BASILIR. Eskiden kartın sonunda duruyordu ve
+    // ondan önceki ÜÇ erken dönüş (başlamamış anket, oy formu, sayım yok)
+    // onu atlıyordu: yani oy vermemiş bir okuyucu — ve JavaScript'i
+    // çalıştıran arama motoru — açık bir ankette anketin kendi sayfasına
+    // hiçbir bağlantı görmüyordu. Site haritası o adresi indekslemek
+    // isterken sitenin ona hiçbir yerden bağlanmaması tam da bu yüzdendi
+    // (bkz. scripts/generate-poll-pages.mjs, statik liste gerekçesi).
+    function done(node) {
+      if (poll.path) {
+        var link = document.createElement("a");
+        link.className = "poll-archive__link";
+        link.href = poll.path;
+        link.textContent = strings.openPoll;
+        node.appendChild(link);
+      }
+      return node;
+    }
+
     var head = document.createElement("div");
     head.className = "poll-archive__head";
 
@@ -3438,7 +3461,7 @@
         preview.appendChild(item);
       });
       card.appendChild(preview);
-      return card;
+      return done(card);
     }
 
     var canVote = poll.status === "open" && !poll.alreadyVoted && poll.storage === "ready";
@@ -3498,7 +3521,7 @@
         onVote(poll, selected.value, function () { submit.disabled = false; });
       });
       card.appendChild(form);
-      return card;
+      return done(card);
     }
 
     var rows = poll.results || [];
@@ -3507,7 +3530,7 @@
       note.className = "poll-archive__note";
       note.textContent = poll.storage === "ready" ? strings.noVotes : strings.noStore;
       card.appendChild(note);
-      return card;
+      return done(card);
     }
 
     if (poll.alreadyVoted && poll.status === "open") {
@@ -3588,19 +3611,7 @@
       card.appendChild(total);
     }
 
-    // HER ANKETİN KENDİ SAYFASI VAR — VE PAYLAŞILAN ADRES ODUR.
-    // Arşiv kartı tam paylaşım panelini taşımıyor (panel seçime ve canlı
-    // sonuca bağlı, sayfada 3-4 kartla birlikte tekrarlanması karmaşa
-    // olurdu); onun yerine okuyucuyu anketin kendi sayfasına gönderiyor.
-    if (poll.path) {
-      var link = document.createElement("a");
-      link.className = "poll-archive__link";
-      link.href = poll.path;
-      link.textContent = strings.openPoll;
-      card.appendChild(link);
-    }
-
-    return card;
+    return done(card);
   }
 
   function setupPollArchive(section) {
@@ -3647,11 +3658,23 @@
             status.hidden = false;
             status.textContent = data ? strings.empty : strings.failed;
           }
-          list.innerHTML = "";
+          // SUNUCUDAN GELEN LİSTE SİLİNMEZ.
+          //
+          // Kartların soru/durum/bağlantı kısmı derleme anında basılıyor
+          // (scripts/generate-poll-pages.mjs); sayım taşımıyorlar, yani
+          // bayatlayacak bir sayı yok. Ağ hatasında onları da silmek,
+          // okuyucuyu boş bir sayfayla baş başa bırakmak ve site
+          // haritasının bağlandığı anket bağlantılarını ekrandan
+          // kaldırmak olurdu.
+          if (!list.hasAttribute("data-poll-archive-static")) list.innerHTML = "";
           section.classList.remove("is-ready");
           return;
         }
         if (status) status.hidden = true;
+        // Canlı kartlar sunucu kartlarının YERİNE geçiyor; işaret de
+        // kalkıyor, çünkü bundan sonraki kartlar sayım taşıyor ve bir
+        // sonraki hatada bayat sayı göstermemeleri gerekiyor.
+        list.removeAttribute("data-poll-archive-static");
         list.innerHTML = "";
         polls.forEach(function (poll) {
           // Depo durumu anket başına değil yanıt başına geliyor; karta
