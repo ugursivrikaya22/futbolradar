@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-15T22:12:46.968Z",
+  "updatedAt": "2026-09-16T00:19:25.468Z",
   "matchCount": 1320,
   "records": [
     {
@@ -496,10 +496,10 @@
       "winner": "Kilmarnock",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 40,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -507,9 +507,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 14
         },
         "statistics": {
           "present": false,
@@ -529,19 +529,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 14,
         "statistics": 0,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -551,11 +547,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "bffd4e98c3dd7c31",
-      "fingerprint": "bffd4e98c3dd7c31",
+      "analysisSourceHash": "ce3a12cfdac7cfd5",
+      "fingerprint": "ce3a12cfdac7cfd5",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-15T22:12:46.883Z",
-      "generatedAt": "2026-09-15T22:12:46.883Z",
+      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
+      "generatedAt": "2026-09-16T00:19:25.389Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -567,7 +563,7 @@
       "reportUrl": "./mac-raporu/hibernian-kilmarnock-2026-09-15.html",
       "digest": {
         "headline": "Kilmarnock, Hibernian'ı 1-0 yendi",
-        "paragraph": "Kilmarnock, Easter Road'da oynanan Scottish Premiership karşılaşmasında Hibernian'ı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Kilmarnock, Easter Road'da oynanan Scottish Premiership karşılaşmasında Hibernian'ı 1-0 mağlup etti. Tek golü 40. dakikada George Stanger (Kilmarnock) kaydetti.",
         "result": {
           "winner": "Kilmarnock",
           "loser": "Hibernian",
@@ -580,22 +576,94 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "90+2'",
+              "team": "Kilmarnock",
+              "type": "Kırmızı kart",
+              "detail": "Djenairo Daniels",
+              "pivotal": true
+            },
+            {
+              "minute": "40'",
+              "team": "Kilmarnock",
+              "type": "Gol",
+              "detail": "George Stanger",
+              "pivotal": true
+            },
+            {
+              "minute": "56'",
+              "team": "Kilmarnock",
+              "type": "Gol",
+              "detail": "Joe Hugill",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Kilmarnock",
+              "type": "Sarı kart",
+              "detail": "Djenairo Daniels",
+              "decisive": false
+            },
+            {
+              "minute": "90+1'",
+              "team": "Kilmarnock",
+              "type": "Oyuncu değişikliği",
+              "detail": "Erik Ring",
+              "decisive": false
+            },
+            {
+              "minute": "90+2'",
+              "team": "Kilmarnock",
+              "type": "Kırmızı kart",
+              "detail": "Djenairo Daniels",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "George Stanger",
+              "team": "Kilmarnock",
+              "contribution": "40' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Joe Hugill",
+              "team": "Kilmarnock",
+              "contribution": "56' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Tyreece John-Jules",
+              "team": "Kilmarnock",
+              "contribution": "31' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Djenairo Daniels",
+              "team": "Kilmarnock",
+              "contribution": "78' sarı kart · 90+2' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "partial",
@@ -605,20 +673,31 @@
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "40' Kilmarnock — George Stanger: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Hibernian maça 3-1-4-2 dizilişiyle başladı.",
-            "Kilmarnock maça 3-4-2-1 dizilişiyle başladı."
+            "Kilmarnock maça 3-4-2-1 dizilişiyle başladı.",
+            "8' Hibernian değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "53' Hibernian değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "53' Hibernian değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "53' Hibernian değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
           "formations": [
             {
@@ -630,7 +709,7 @@
               "formation": "3-4-2-1"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -638,7 +717,9 @@
             "Kilmarnock, Hibernian'ı 0-1 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (90+2' Kilmarnock)."
+          ],
           "closing": "Kilmarnock sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -662,11 +743,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "coaching",
         "finalAssessment"
       ],
-      "coverage": 21,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -698,10 +785,10 @@
       "winner": "Aberdeen",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 80,
       "dataSources": {
         "score": {
           "present": true,
@@ -714,9 +801,9 @@
           "count": 19
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": false,
@@ -724,44 +811,36 @@
           "count": 0
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 19,
-        "statistics": 0,
+        "statistics": 15,
         "lineups": 0,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
           "field": "lineups",
           "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "2e6ec702121860fe",
-      "fingerprint": "2e6ec702121860fe",
+      "analysisSourceHash": "fa0f74157973dec2",
+      "fingerprint": "fa0f74157973dec2",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-15T22:12:46.883Z",
-      "generatedAt": "2026-09-15T22:12:46.883Z",
+      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
+      "generatedAt": "2026-09-16T00:19:25.389Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -890,8 +969,10 @@
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Motherwell topu elinde tutarken Aberdeen derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -929,27 +1010,95 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Aberdeen, Motherwell'i 0-4 yendi."
+            "Aberdeen, Motherwell'i 0-4 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (4-5); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
+          "strengths": [
+            "Motherwell topa daha çok sahip oldu (%69).",
+            "Motherwell daha çok şut denedi (12-11)."
+          ],
           "improvements": [
+            "Aberdeen şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan.",
             "Motherwell son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
           ],
           "closing": "Aberdeen sahadan 4 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Motherwell",
+            "score": 49
+          },
+          "away": {
+            "team": "Aberdeen",
+            "score": 71
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Motherwell %41.7, Aberdeen %36.4."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Motherwell 57.9, Aberdeen 28.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -960,16 +1109,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1000,10 +1152,10 @@
       "winner": "Lincoln",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 60,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 30,
       "dataSources": {
         "score": {
           "present": true,
@@ -1011,9 +1163,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 17
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -1033,15 +1185,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 17,
+        "events": 0,
         "statistics": 0,
         "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1055,11 +1211,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "20df975dd13c2910",
-      "fingerprint": "20df975dd13c2910",
+      "analysisSourceHash": "fb2d75e216e85a69",
+      "fingerprint": "fb2d75e216e85a69",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-15T22:12:46.883Z",
-      "generatedAt": "2026-09-15T22:12:46.883Z",
+      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
+      "generatedAt": "2026-09-16T00:19:25.389Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1071,7 +1227,7 @@
       "reportUrl": "./mac-raporu/bristol-city-lincoln-2026-09-15.html",
       "digest": {
         "headline": "Lincoln, Bristol City'yi 1-0 yendi",
-        "paragraph": "Ashton Gate Stadium'da oynanan Championship maçını Lincoln 1-0 kazandı; Bristol City sahadan puansız ayrıldı. Tek golü 53. dakikada F. Draper (Lincoln) kaydetti.",
+        "paragraph": "Ashton Gate Stadium'da oynanan Championship maçını Lincoln 1-0 kazandı; Bristol City sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Lincoln",
           "loser": "Bristol City",
@@ -1084,87 +1240,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "53'",
-              "team": "Lincoln",
-              "type": "Gol",
-              "detail": "F. Draper",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Bristol City",
-              "type": "Oyuncu değişikliği",
-              "detail": "Robert Dickie",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Bristol City",
-              "type": "Oyuncu değişikliği",
-              "detail": "Scott Twine",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Bristol City",
-              "type": "Oyuncu değişikliği",
-              "detail": "Substitution 4",
-              "decisive": false
-            },
-            {
-              "minute": "86'",
-              "team": "Bristol City",
-              "type": "Oyuncu değişikliği",
-              "detail": "Cameron Pring",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "F. Draper",
-              "team": "Lincoln",
-              "contribution": "45' sarı kart · 53' gol",
-              "impact": "orta"
-            },
-            {
-              "name": "Ben House",
-              "team": "Lincoln",
-              "contribution": "14' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Deji Elerewe",
-              "team": "Lincoln",
-              "contribution": "37' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "George Wickens",
-              "team": "Lincoln",
-              "contribution": "69' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -1174,30 +1265,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay)."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
-            "53' Lincoln — F. Draper: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Bristol City maça 4-2-3-1 dizilişiyle başladı.",
-            "Lincoln maça 3-4-2-1 dizilişiyle başladı.",
-            "59' Bristol City değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "63' Lincoln değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "71' Lincoln değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "71' Lincoln değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Lincoln maça 3-4-2-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1209,7 +1290,7 @@
               "formation": "3-4-2-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1241,17 +1322,11 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
+      "coverage": 21,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1860,10 +1935,10 @@
       "winner": "Valencia",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 40,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -1871,9 +1946,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "statistics": {
           "present": false,
@@ -1893,19 +1968,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 17,
         "statistics": 0,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1915,11 +1986,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "251eddf7283d00a0",
-      "fingerprint": "251eddf7283d00a0",
+      "analysisSourceHash": "39e2fc4835bd0d59",
+      "fingerprint": "39e2fc4835bd0d59",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-15T22:12:46.883Z",
-      "generatedAt": "2026-09-15T22:12:46.883Z",
+      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
+      "generatedAt": "2026-09-16T00:19:25.389Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1931,7 +2002,7 @@
       "reportUrl": "./mac-raporu/alaves-valencia-2026-09-15.html",
       "digest": {
         "headline": "Valencia, Alaves'i 1-0 yendi",
-        "paragraph": "Valencia, Estadio de Mendizorroza'da oynanan La Liga karşılaşmasında Alaves'i 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Valencia, Estadio de Mendizorroza'da oynanan La Liga karşılaşmasında Alaves'i 1-0 mağlup etti. Tek golü 78. dakikada Luis Rioja (Valencia) kaydetti.",
         "result": {
           "winner": "Valencia",
           "loser": "Alaves",
@@ -1947,19 +2018,91 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "18'",
+              "team": "Valencia",
+              "type": "Gol",
+              "detail": "Arnaut Danjuma",
+              "pivotal": true
+            },
+            {
+              "minute": "78'",
+              "team": "Valencia",
+              "type": "Gol",
+              "detail": "Luis Rioja",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (Luis Rioja), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Valencia",
+              "type": "Gol",
+              "detail": "Luis Rioja",
+              "decisive": true
+            },
+            {
+              "minute": "82'",
+              "team": "Valencia",
+              "type": "Oyuncu değişikliği",
+              "detail": "Luis Rioja",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Valencia",
+              "type": "Oyuncu değişikliği",
+              "detail": "Justin De Haas",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Valencia",
+              "type": "Oyuncu değişikliği",
+              "detail": "Pablo Maffeo",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Arnaut Danjuma",
+              "team": "Valencia",
+              "contribution": "18' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Luis Rioja",
+              "team": "Valencia",
+              "contribution": "78' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Aaron Mayol",
+              "team": "Valencia",
+              "contribution": "52' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Antonio Blanco",
+              "team": "Alaves",
+              "contribution": "21' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
           "status": "partial",
@@ -1969,20 +2112,30 @@
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "78' Valencia — Luis Rioja: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Alaves maça 3-5-2 dizilişiyle başladı.",
-            "Valencia maça 4-2-3-1 dizilişiyle başladı."
+            "Valencia maça 4-2-3-1 dizilişiyle başladı.",
+            "63' Valencia değişikliği (Substitution 1). Değişiklikten sonra Valencia adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "67' Alaves değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Alaves değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' Valencia değişikliği (Substitution 2). Değişiklikten sonra Valencia adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
           ],
           "formations": [
             {
@@ -1994,7 +2147,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2002,7 +2155,9 @@
             "Valencia, Alaves'i 0-1 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Alaves son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Valencia sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -2026,11 +2181,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "coaching",
         "finalAssessment"
       ],
-      "coverage": 21,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -2108,11 +2269,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "eede40fad3cb0634",
-      "fingerprint": "eede40fad3cb0634",
+      "analysisSourceHash": "9608e66cb7a08103",
+      "fingerprint": "9608e66cb7a08103",
       "analysisGeneratedAt": "2026-09-15T19:00:55.310Z",
-      "analysisUpdatedAt": "2026-09-15T22:12:46.883Z",
-      "generatedAt": "2026-09-15T22:12:46.883Z",
+      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
+      "generatedAt": "2026-09-16T00:19:25.389Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2341,7 +2502,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Rayo Vallecano 28.1, Espanyol 18.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Rayo Vallecano 28.1, Espanyol 18.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
