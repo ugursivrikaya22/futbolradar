@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-16T11:27:34.596Z",
+  "updatedAt": "2026-09-16T14:53:39.425Z",
   "items": [
     {
       "id": "auto-news-815b1071827047635192",
@@ -245,26 +245,6 @@
       }
     },
     {
-      "id": "auto-news-8071136b7ac1c51d222f",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray maçı hazırlıklarımız başladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-13T13:03:20.000Z",
-      "source": {
-        "name": "trabzonspor.org.tr",
-        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxNbzNhSnBuVzNZMzV6RzNVeHJjUFZaMUZEQlIyUHFSaGJqRWpQelFTOTBoT2lndzlWWGVDekh6QmxXekdaSFNJaEF2YUNaWXlseXlkdzBHYzY1Zk1yWWVlakNmcjdKUml4WDZDSUo0SVRQOHBOdHFxcmZZRlJPVnMtaW04aXl1dmE4NXlEV2FaSEJjZ0U?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-d7300a82ecb959c40c66",
       "category": "squad-update",
       "confidence": "confirmed",
@@ -285,17 +265,31 @@
       }
     },
     {
-      "id": "news-besiktas-leandro-trossard-4d91e6b0",
+      "id": "news-besiktas-avrupa-318a9956",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Beşiktaş cephesinde kadroya ilişkin bir gelişme yaşandığı bildirildi.",
+      "timestamp": "2026-09-16T14:46:43.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-avrupa-318a9956"
+      },
+      "team": "Beşiktaş",
+      "important": true
+    },
+    {
+      "id": "news-galatasaray-rafael-leao-9bd42e80",
       "origin": "news.json",
       "category": "club-agenda",
       "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Beşiktaş çevresinde Leandro Trossard'a dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-16T08:40:31.000Z",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Rafael Leao'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-16T13:28:17.000Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/besiktas-leandro-trossard-4d91e6b0"
+        "url": "https://www.futbolradar.com/haber/galatasaray-rafael-leao-9bd42e80"
       },
-      "team": "Beşiktaş",
+      "team": "Galatasaray",
       "important": true
     },
     {
@@ -327,17 +321,17 @@
       "important": true
     },
     {
-      "id": "news-galatasaray-mario-lemina-1ecf403f",
+      "id": "news-besiktas-orkun-kokcu-italiano-ef047411",
       "origin": "news.json",
       "category": "club-agenda",
       "confidence": "reported",
-      "text": "Sporx'in haberine göre Galatasaray cephesinde kadroya ilişkin bir gelişme yaşandığı bildirildi.",
-      "timestamp": "2026-09-13T19:45:00.000Z",
+      "text": "Sporx'in haberine göre Beşiktaş çevresinde Orkun Kökçü Italiano'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-13T10:37:36.000Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-mario-lemina-1ecf403f"
+        "url": "https://www.futbolradar.com/haber/besiktas-orkun-kokcu-italiano-ef047411"
       },
-      "team": "Galatasaray",
+      "team": "Beşiktaş",
       "important": true
     },
     {
