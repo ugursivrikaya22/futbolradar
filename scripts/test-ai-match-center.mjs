@@ -396,6 +396,47 @@ check("canlı istemci: skordan kazanma olasılığı TÜRETMEZ", () => {
   assert.ok(!/poisson|elo|expScore|Math\.exp\s*\(/i.test(source), "istemcide olasılık modeli kurulmamalı");
 });
 
+check("canlı istemci: her bileşen TEK BAŞINA geçerli bir yüzde olmalı", () => {
+  const source = read("ai-match-center.js");
+  // 101 / 0 / -1 toplamda 100 eder; toplam denetimi tek başına yetmez.
+  assert.ok(source.includes("inPercentRange"), "bileşen aralığı denetlenmeli");
+  assert.ok(/value >= 0 && value <= 100/.test(source), "aralık 0-100 olmalı");
+});
+
+check("canlı istemci: imza uzunluğa değil İÇERİĞE bakar", () => {
+  const source = read("ai-match-center.js");
+  // statsHtml.length aynı kalırken içerik değişebilir (şut 1 → 2);
+  // uzunluğa bakan imza paneli bayat bırakırdı.
+  assert.ok(!/statsHtml\.length|probHtml\.length/.test(source), "imza uzunluk okumamalı");
+});
+
+check("canlı istemci: sayfa açıkken evre değişirse 1-X-2 uyar", () => {
+  const source = read("ai-match-center.js");
+  // Evre, skor tablosunun yazdığı tek kaynaktan okunur — kod listesi
+  // burada ikinci kez tutulmaz.
+  assert.ok(source.includes('getAttribute("data-msp-state")'), "evre tek kaynaktan okunmalı");
+  assert.ok(source.includes("syncOutcomeBlock"), "evre değişiminde 1-X-2 bloğu güncellenmeli");
+  // Maç bitince blok kaldırılır (maç sonrası sayfada zaten yok).
+  assert.ok(/lifecycle === "post"[\s\S]{0,200}removeChild/.test(source), "maç bitince blok kaldırılmalı");
+  // Canlıya geçince dondurulmuş okuma uyarısı eklenir.
+  assert.ok(source.includes("livePreReading"), "canlıda dondurulmuş okuma uyarısı eklenmeli");
+  const center = read("match-center.js");
+  assert.ok(center.includes('setAttribute("data-msp-state"'), "match-center evreyi yazmalı");
+  assert.ok(center.indexOf('root.setAttribute("data-msp-state"') < center.indexOf('CustomEvent("futbolradar:match-detail"'),
+    "evre, olay yayınlanmadan ÖNCE yazılmalı");
+});
+
+check("canlı istemci: evre uyarısı iki dilde de sözlükten gelir", () => {
+  const source = read("ai-match-center.js");
+  const renderer = read("scripts/lib/aiMatchCenter.mjs");
+  // Aynı cümle iki dosyada iki kez yazılıyor; ayrışmamaları gerekir.
+  for (const locale of ["tr", "en"]) {
+    const expected = AI_STR[locale].livePreReading;
+    assert.ok(source.includes(expected), `${locale}: istemcideki uyarı sözlükle aynı olmalı`);
+    assert.ok(renderer.includes(expected), `${locale}: sözlükte bulunmalı`);
+  }
+});
+
 check("canlı istemci: skor yolu boyandıktan sonra çalışır (passive abone)", () => {
   const source = read("ai-match-center.js");
   assert.ok(source.includes("{ passive: true }"), "dinleyici passive olmalı");

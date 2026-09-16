@@ -33,8 +33,10 @@ iki dilde birden doğar, silindiğinde ikisinden birden düşer. Bir dile
 de yoktur.
 
 `scripts/test-ai-match-center.mjs` bunu mekanik olarak kilitler: sözlük
-anahtarlarının eşliğini, anahtar **türlerinin** eşliğini ve üretilmiş 361
-maç sayfasının TR/EN bileşen kümelerinin birebir aynı olduğunu doğrular.
+anahtarlarının eşliğini, anahtar **türlerinin** eşliğini ve üretilmiş
+**bütün** maç sayfalarının TR/EN bileşen kümelerinin birebir aynı olduğunu
+doğrular. Sayfa sayısı kayıttan (`data/match-seo-pages.json`) okunur; buraya
+sabit bir sayı yazılmaz, yazılsaydı ilk üretimde bayatlardı.
 
 ## 2. Uydurma yasağı
 
@@ -111,10 +113,12 @@ Paneller `<section>`, sekme listesi `<div>` olarak basılır. Bu tür farkı
 bilinçlidir: CSS seçili paneli `section:nth-of-type(n)` ile bulur ve sekme
 listesi aynı türden olsaydı sıra bir kayardı.
 
-Seçili olmayan panel DOM'dan **kaldırılmaz**, yalnızca görsel olarak
-gizlenir. Böylece arama motoru ve ekran okuyucu içeriğin tamamına erişir ve
-`#form`, `#son-maclar`, `#muhtemel-11` gibi mevcut derin bağlantılar
-bozulmaz. Skor tablosu sekmelerin **dışında**, üstte kalır: okuyucu AI
+Seçili olmayan panel DOM'dan **kaldırılmaz**, yalnızca `display: none` ile
+gizlenir. Böylece işaretlemenin tamamı kaynakta kalır — arama motoru içeriği
+görür ve `#form`, `#son-maclar`, `#muhtemel-11` gibi mevcut derin bağlantılar
+bozulmaz. `display: none` düğümü erişilebilirlik ağacından da düşürdüğü için
+ekran okuyucu yalnızca **seçili** paneli okur; bu, sekme deseninin beklenen
+davranışıdır (sekme etiketleri `role="tab"` ile gezilebilir kalır). Skor tablosu sekmelerin **dışında**, üstte kalır: okuyucu AI
 sekmesine geçtiğinde skoru kaybetmez.
 
 ## 6. Mobil öncelikli, masaüstünde eksiksiz

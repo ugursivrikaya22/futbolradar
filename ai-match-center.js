@@ -64,7 +64,8 @@
       },
       summaryLiveNoMinute: function (home, away) {
         return "The match stands at " + home + "-" + away + ".";
-      }
+      },
+      livePreReading: "These percentages are a PRE-MATCH reading, frozen at kick-off. No verified in-play win-probability model exists, so no percentage is derived from the score."
     }
     : {
       liveTitle: "Canlı veri okuması",
@@ -84,7 +85,8 @@
       },
       summaryLiveNoMinute: function (home, away) {
         return "Maç " + home + "-" + away + " durumunda.";
-      }
+      },
+      livePreReading: "Bu yüzdeler maç ÖNCESİ okumadır, başlama vuruşunda dondurulmuştur. Maç içi kazanma olasılığı için doğrulanmış bir model yok; skordan yüzde türetilmez."
     };
 
   /** İstatistik adları iki dilde de aynı anahtara iner. */
@@ -195,6 +197,11 @@
    * doğrulanmasının sebebi, istemcinin sunucuya körü körüne güvenmemesi:
    * bozuk bir yük ekrana uydurma bir yüzde olarak düşmemeli.
    */
+  /** 0-100 dışındaki bir bileşen, toplamı tutsa bile yüzde değildir. */
+  function inPercentRange(value) {
+    return value >= 0 && value <= 100;
+  }
+
   function liveProbabilityHtml(detail) {
     var pulse = detail && detail.radarPulse;
     var reading = pulse && pulse.winProbability;
@@ -203,6 +210,9 @@
     var draw = toNumber(reading.draw);
     var away = toNumber(reading.away);
     if (home === null || draw === null || away === null) return "";
+    // Her bileşen TEK BAŞINA da geçerli bir yüzde olmalı: 101 / 0 / -1
+    // toplamda 100 eder ama bar genişliği ve ekrandaki sayı anlamsız olur.
+    if (!inPercentRange(home) || !inPercentRange(draw) || !inPercentRange(away)) return "";
     if (Math.abs(home + draw + away - 100) > 1.5) return "";
     if (!reading.source) return "";
     return '<div class="ai-live-prob">'
@@ -228,22 +238,69 @@
     return block;
   }
 
+  /**
+   * EVRE, SKOR TABLOSUNUN OKUDUĞU YERDEN OKUNUR.
+   *
+   * match-center.js durum kodlarını zaten çözüyor ve sonucu kendi kökünde
+   * `data-msp-state` olarak yazıyor (olayı yaymadan ÖNCE). Aynı kod
+   * listelerini burada ikinci kez tutmak, ikisinin bir gün ayrışması
+   * demekti; tek kaynak okunur.
+   */
+  function lifecycleState() {
+    var host = document.querySelector("[data-match-center]");
+    var state = host && host.getAttribute("data-msp-state");
+    return state === "post" ? "post" : state === "live" ? "live" : "";
+  }
+
+  /**
+   * Maç bittiğinde maç öncesi 1-X-2 bloğu kaldırılır: sonuç bellidir ve
+   * yeniden basılmış bir maç sonrası sayfasında bu blok zaten yoktur.
+   * Maç canlıya geçtiğinde ise yüzdelerin dondurulmuş bir maç öncesi
+   * okuma olduğu uyarısı eklenir — sunucu bunu yalnızca sayfa canlıyken
+   * basıldığında koyabiliyor.
+   */
+  function syncOutcomeBlock(lifecycle) {
+    var outcome = root.querySelector("[data-ai-outcome]");
+    if (!outcome) return;
+    if (lifecycle === "post") {
+      outcome.parentNode.removeChild(outcome);
+      return;
+    }
+    if (lifecycle !== "live") return;
+    if (outcome.querySelector(".ai-warn")) return;
+    var warn = document.createElement("p");
+    warn.className = "ai-warn";
+    warn.textContent = T.livePreReading;
+    outcome.appendChild(warn);
+  }
+
   function renderLive(detail) {
     var score = detail && detail.score;
     var hasScore = score && isNumber(score.home) && isNumber(score.away);
     var stats = readStats(detail);
     var probHtml = liveProbabilityHtml(detail);
     var statsHtml = statsRowsHtml(stats);
+    var lifecycle = lifecycleState();
+
+    // MAÇ SAYFA AÇIKKEN EVRE DEĞİŞTİRİRSE, MAÇ ÖNCESİ OKUMA DA UYMALI.
+    // Sayfa sunucuda basıldığı andaki evreye göre çizildi; tarayıcıda
+    // maç başlayabilir ya da bitebilir. Yeni basılmış bir sayfayla aynı
+    // şeyi göstermezsek okuyucuya yanlış bilgi kalır.
+    syncOutcomeBlock(lifecycle);
 
     // Gösterilecek doğrulanmış hiçbir şey yoksa DOM'a dokunulmaz: boş bir
     // kutu açmak, veri varmış izlenimi verir.
     if (!hasScore && !statsHtml && !probHtml) return;
 
+    // İmza, uzunluk değil İÇERİK üzerinden kurulur: aynı dakikada şut
+    // 1'den 2'ye çıktığında dizgi aynı uzunlukta kalır ve uzunluğa bakan
+    // bir imza bu değişikliği "değişmedi" sayıp paneli bayat bırakırdı.
     var signature = [
       hasScore ? score.home + "-" + score.away : "",
       detail.minute,
-      statsHtml.length,
-      probHtml.length
+      lifecycle,
+      statsHtml,
+      probHtml
     ].join("|");
     if (signature === lastSignature) return;
     lastSignature = signature;
