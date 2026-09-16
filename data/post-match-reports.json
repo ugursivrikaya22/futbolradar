@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-16T00:19:25.468Z",
+  "updatedAt": "2026-09-16T06:00:06.609Z",
   "matchCount": 1320,
   "records": [
     {
@@ -496,10 +496,10 @@
       "winner": "Kilmarnock",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 70,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -507,9 +507,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 14
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -529,15 +529,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 14,
+        "events": 0,
         "statistics": 0,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -547,11 +551,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ce3a12cfdac7cfd5",
-      "fingerprint": "ce3a12cfdac7cfd5",
+      "analysisSourceHash": "bffd4e98c3dd7c31",
+      "fingerprint": "bffd4e98c3dd7c31",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
-      "generatedAt": "2026-09-16T00:19:25.389Z",
+      "analysisUpdatedAt": "2026-09-16T06:00:06.531Z",
+      "generatedAt": "2026-09-16T06:00:06.531Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -563,7 +567,7 @@
       "reportUrl": "./mac-raporu/hibernian-kilmarnock-2026-09-15.html",
       "digest": {
         "headline": "Kilmarnock, Hibernian'ı 1-0 yendi",
-        "paragraph": "Kilmarnock, Easter Road'da oynanan Scottish Premiership karşılaşmasında Hibernian'ı 1-0 mağlup etti. Tek golü 40. dakikada George Stanger (Kilmarnock) kaydetti.",
+        "paragraph": "Kilmarnock, Easter Road'da oynanan Scottish Premiership karşılaşmasında Hibernian'ı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Kilmarnock",
           "loser": "Hibernian",
@@ -576,94 +580,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "90+2'",
-              "team": "Kilmarnock",
-              "type": "Kırmızı kart",
-              "detail": "Djenairo Daniels",
-              "pivotal": true
-            },
-            {
-              "minute": "40'",
-              "team": "Kilmarnock",
-              "type": "Gol",
-              "detail": "George Stanger",
-              "pivotal": true
-            },
-            {
-              "minute": "56'",
-              "team": "Kilmarnock",
-              "type": "Gol",
-              "detail": "Joe Hugill",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "1 kırmızı kart bu bölümde görüldü.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "78'",
-              "team": "Kilmarnock",
-              "type": "Sarı kart",
-              "detail": "Djenairo Daniels",
-              "decisive": false
-            },
-            {
-              "minute": "90+1'",
-              "team": "Kilmarnock",
-              "type": "Oyuncu değişikliği",
-              "detail": "Erik Ring",
-              "decisive": false
-            },
-            {
-              "minute": "90+2'",
-              "team": "Kilmarnock",
-              "type": "Kırmızı kart",
-              "detail": "Djenairo Daniels",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "George Stanger",
-              "team": "Kilmarnock",
-              "contribution": "40' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Joe Hugill",
-              "team": "Kilmarnock",
-              "contribution": "56' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Tyreece John-Jules",
-              "team": "Kilmarnock",
-              "contribution": "31' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Djenairo Daniels",
-              "team": "Kilmarnock",
-              "contribution": "78' sarı kart · 90+2' kırmızı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -673,31 +605,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "40' Kilmarnock — George Stanger: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Hibernian maça 3-1-4-2 dizilişiyle başladı.",
-            "Kilmarnock maça 3-4-2-1 dizilişiyle başladı.",
-            "8' Hibernian değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "53' Hibernian değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "53' Hibernian değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "53' Hibernian değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Kilmarnock maça 3-4-2-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -709,7 +630,7 @@
               "formation": "3-4-2-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -717,9 +638,7 @@
             "Kilmarnock, Hibernian'ı 0-1 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Kırmızı kart maçın seyrini etkiledi (90+2' Kilmarnock)."
-          ],
+          "improvements": [],
           "closing": "Kilmarnock sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -743,17 +662,11 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
+      "coverage": 21,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -788,7 +701,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coveragePercent": 50,
       "dataSources": {
         "score": {
           "present": true,
@@ -796,9 +709,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 19
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -818,15 +731,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 19,
+        "events": 0,
         "statistics": 15,
         "lineups": 0,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "lineups",
           "label": "Kadrolar"
@@ -836,11 +753,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "fa0f74157973dec2",
-      "fingerprint": "fa0f74157973dec2",
+      "analysisSourceHash": "dded5b1d9335d44d",
+      "fingerprint": "dded5b1d9335d44d",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
-      "generatedAt": "2026-09-16T00:19:25.389Z",
+      "analysisUpdatedAt": "2026-09-16T06:00:06.531Z",
+      "generatedAt": "2026-09-16T06:00:06.531Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -852,7 +769,7 @@
       "reportUrl": "./mac-raporu/motherwell-aberdeen-2026-09-15.html",
       "digest": {
         "headline": "Aberdeen, Motherwell'i 4-0 yendi",
-        "paragraph": "Aberdeen, Fir Park'ta oynanan Scottish Premiership karşılaşmasında Motherwell'i 4-0 mağlup etti. Golleri 38. dakikada Gavin Molloy (Aberdeen), 46. dakikada Connor Patrick Ronan (Aberdeen), 76. dakikada Ayoub Mouloua (Aberdeen), 87. dakikada Kevin Nisbet (Aberdeen) kaydetti.",
+        "paragraph": "Aberdeen, Fir Park'ta oynanan Scottish Premiership karşılaşmasında Motherwell'i 4-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Aberdeen",
           "loser": "Motherwell",
@@ -868,105 +785,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "38'",
-              "team": "Aberdeen",
-              "type": "Gol",
-              "detail": "Gavin Molloy",
-              "pivotal": true
-            },
-            {
-              "minute": "46'",
-              "team": "Aberdeen",
-              "type": "Gol",
-              "detail": "Connor Patrick Ronan",
-              "pivotal": true
-            },
-            {
-              "minute": "76'",
-              "team": "Aberdeen",
-              "type": "Gol",
-              "detail": "Ayoub Mouloua",
-              "pivotal": true
-            },
-            {
-              "minute": "87'",
-              "team": "Aberdeen",
-              "type": "Gol",
-              "detail": "Kevin Nisbet",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 2 gol kaydedildi, (Ayoub Mouloua, Kevin Nisbet).",
-          "goals": {
-            "home": 0,
-            "away": 2
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "Motherwell",
-              "type": "Oyuncu değişikliği",
-              "detail": "Substitution 5",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Aberdeen",
-              "type": "Gol",
-              "detail": "Ayoub Mouloua",
-              "decisive": true
-            },
-            {
-              "minute": "76'",
-              "team": "Aberdeen",
-              "type": "Sarı kart",
-              "detail": "Ayoub Mouloua",
-              "decisive": false
-            },
-            {
-              "minute": "78'",
-              "team": "Aberdeen",
-              "type": "Oyuncu değişikliği",
-              "detail": "Mats Knoester",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Connor Patrick Ronan",
-              "team": "Aberdeen",
-              "contribution": "46' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Gavin Molloy",
-              "team": "Aberdeen",
-              "contribution": "38' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Kevin Nisbet",
-              "team": "Aberdeen",
-              "contribution": "87' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Ayoub Mouloua",
-              "team": "Aberdeen",
-              "contribution": "76' gol · 76' sarı kart",
-              "impact": "orta"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -975,37 +806,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "38' Aberdeen — Gavin Molloy: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
-            "46' Aberdeen — Connor Patrick Ronan: gol",
-            "76' Aberdeen — Ayoub Mouloua: gol",
-            "87' Aberdeen — Kevin Nisbet: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "45' Aberdeen değişikliği (Substitution 1). Değişiklikten sonra Aberdeen adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "53' Motherwell değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "53' Motherwell değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Aberdeen değişikliği (Substitution 2). Değişiklikten sonra Aberdeen adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "67' Motherwell değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "68' Motherwell değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
@@ -1018,8 +832,7 @@
             "Motherwell daha çok şut denedi (12-11)."
           ],
           "improvements": [
-            "Aberdeen şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan.",
-            "Motherwell son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Aberdeen şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Aberdeen sahadan 4 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -1107,20 +920,13 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
-        "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -1552,10 +1358,10 @@
       "winner": "Ajax",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -1563,9 +1369,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 16
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -1585,24 +1391,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 16,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 45
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "512ee2234150b527",
-      "fingerprint": "512ee2234150b527",
+      "analysisSourceHash": "9e911db715fc4ab4",
+      "fingerprint": "9e911db715fc4ab4",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-15T22:12:46.883Z",
-      "generatedAt": "2026-09-15T22:12:46.883Z",
+      "analysisUpdatedAt": "2026-09-16T06:00:06.531Z",
+      "generatedAt": "2026-09-16T06:00:06.531Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1614,7 +1425,7 @@
       "reportUrl": "./mac-raporu/ajax-willem-ii-2026-09-15.html",
       "digest": {
         "headline": "Ajax, Willem II'yı 5-1 yendi",
-        "paragraph": "Ajax, Johan Cruijff Arena'da oynanan Eredivisie karşılaşmasında Willem II'yı 5-1 mağlup etti. Golleri 41. dakikada Davy Klaassen (Ajax), 45. dakikada Julian Brandt (Ajax), 69. dakikada Viktor Tsygankov (Ajax), 74. dakikada Oscar Gloukh (Ajax), 76. dakikada Alessandro Ciranni (Willem II), 87. dakikada Kasper Dolberg (Ajax) kaydetti.",
+        "paragraph": "Ajax, Johan Cruijff Arena'da oynanan Eredivisie karşılaşmasında Willem II'yı 5-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Ajax",
           "loser": "Willem II",
@@ -1630,112 +1441,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "41'",
-              "team": "Ajax",
-              "type": "Gol",
-              "detail": "Davy Klaassen",
-              "pivotal": true
-            },
-            {
-              "minute": "45'",
-              "team": "Ajax",
-              "type": "Gol",
-              "detail": "Julian Brandt",
-              "pivotal": true
-            },
-            {
-              "minute": "69'",
-              "team": "Ajax",
-              "type": "Gol",
-              "detail": "Viktor Tsygankov",
-              "pivotal": true
-            },
-            {
-              "minute": "74'",
-              "team": "Ajax",
-              "type": "Gol",
-              "detail": "Oscar Gloukh",
-              "pivotal": true
-            },
-            {
-              "minute": "76'",
-              "team": "Willem II",
-              "type": "Gol",
-              "detail": "Alessandro Ciranni",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 2 gol kaydedildi, (Alessandro Ciranni, Kasper Dolberg).",
-          "goals": {
-            "home": 1,
-            "away": 1
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Willem II",
-              "type": "Gol",
-              "detail": "Alessandro Ciranni",
-              "decisive": true
-            },
-            {
-              "minute": "77'",
-              "team": "Ajax",
-              "type": "Oyuncu değişikliği",
-              "detail": "Thilo Kehrer",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "Willem II",
-              "type": "Oyuncu değişikliği",
-              "detail": "Maxim Dekker",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Ajax",
-              "type": "Gol",
-              "detail": "Kasper Dolberg",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Alessandro Ciranni",
-              "team": "Willem II",
-              "contribution": "76' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Davy Klaassen",
-              "team": "Ajax",
-              "contribution": "41' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Julian Brandt",
-              "team": "Ajax",
-              "contribution": "45' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Kasper Dolberg",
-              "team": "Ajax",
-              "contribution": "87' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -1746,36 +1464,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "41' Ajax — Davy Klaassen: gol",
-            "45' Ajax — Julian Brandt: gol",
-            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
-            "69' Ajax — Viktor Tsygankov: gol",
-            "74' Ajax — Oscar Gloukh: gol",
-            "76' Willem II — Alessandro Ciranni: gol",
-            "87' Ajax — Kasper Dolberg: gol",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 4
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Ajax maça 4-3-3 dizilişiyle başladı.",
-            "Willem II maça 4-2-3-1 dizilişiyle başladı.",
-            "45' Willem II değişikliği (Substitution 1). Değişiklikten sonra Willem II adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Willem II değişikliği (Substitution 2). Değişiklikten sonra Willem II adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "57' Ajax değişikliği (Substitution 1). Değişiklikten sonra Ajax adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "57' Ajax değişikliği (Substitution 2). Değişiklikten sonra Ajax adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Willem II maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1787,7 +1489,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1800,8 +1502,7 @@
             "Ajax daha çok şut denedi (33-10)."
           ],
           "improvements": [
-            "Ajax şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan.",
-            "Willem II son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Ajax şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Ajax sahadan 4 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -1889,21 +1590,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -1935,10 +1630,10 @@
       "winner": "Valencia",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 70,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1946,9 +1641,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 17
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -1968,15 +1663,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 17,
+        "events": 0,
         "statistics": 0,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1986,11 +1685,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "39e2fc4835bd0d59",
-      "fingerprint": "39e2fc4835bd0d59",
+      "analysisSourceHash": "8af083f5f7a0d5d7",
+      "fingerprint": "8af083f5f7a0d5d7",
       "analysisGeneratedAt": "2026-09-15T22:12:46.883Z",
-      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
-      "generatedAt": "2026-09-16T00:19:25.389Z",
+      "analysisUpdatedAt": "2026-09-16T06:00:06.531Z",
+      "generatedAt": "2026-09-16T06:00:06.531Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2002,7 +1701,7 @@
       "reportUrl": "./mac-raporu/alaves-valencia-2026-09-15.html",
       "digest": {
         "headline": "Valencia, Alaves'i 1-0 yendi",
-        "paragraph": "Valencia, Estadio de Mendizorroza'da oynanan La Liga karşılaşmasında Alaves'i 1-0 mağlup etti. Tek golü 78. dakikada Luis Rioja (Valencia) kaydetti.",
+        "paragraph": "Valencia, Estadio de Mendizorroza'da oynanan La Liga karşılaşmasında Alaves'i 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Valencia",
           "loser": "Alaves",
@@ -2018,91 +1717,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "18'",
-              "team": "Valencia",
-              "type": "Gol",
-              "detail": "Arnaut Danjuma",
-              "pivotal": true
-            },
-            {
-              "minute": "78'",
-              "team": "Valencia",
-              "type": "Gol",
-              "detail": "Luis Rioja",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Luis Rioja), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 0,
-            "away": 1
-          },
-          "moments": [
-            {
-              "minute": "78'",
-              "team": "Valencia",
-              "type": "Gol",
-              "detail": "Luis Rioja",
-              "decisive": true
-            },
-            {
-              "minute": "82'",
-              "team": "Valencia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Luis Rioja",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Valencia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Justin De Haas",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Valencia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Pablo Maffeo",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Arnaut Danjuma",
-              "team": "Valencia",
-              "contribution": "18' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Luis Rioja",
-              "team": "Valencia",
-              "contribution": "78' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Aaron Mayol",
-              "team": "Valencia",
-              "contribution": "52' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Antonio Blanco",
-              "team": "Alaves",
-              "contribution": "21' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -2112,30 +1739,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay)."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
-            "78' Valencia — Luis Rioja: gol",
-            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Alaves maça 3-5-2 dizilişiyle başladı.",
-            "Valencia maça 4-2-3-1 dizilişiyle başladı.",
-            "63' Valencia değişikliği (Substitution 1). Değişiklikten sonra Valencia adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "67' Alaves değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Alaves değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "70' Valencia değişikliği (Substitution 2). Değişiklikten sonra Valencia adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Valencia maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2147,7 +1764,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2155,9 +1772,7 @@
             "Valencia, Alaves'i 0-1 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Alaves son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
-          ],
+          "improvements": [],
           "closing": "Valencia sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -2181,17 +1796,11 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
+      "coverage": 21,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -2223,10 +1832,10 @@
       "winner": "Rayo Vallecano",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2234,9 +1843,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 20
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2256,24 +1865,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 20,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9608e66cb7a08103",
-      "fingerprint": "9608e66cb7a08103",
+      "analysisSourceHash": "47163ec5ee364e3a",
+      "fingerprint": "47163ec5ee364e3a",
       "analysisGeneratedAt": "2026-09-15T19:00:55.310Z",
-      "analysisUpdatedAt": "2026-09-16T00:19:25.389Z",
-      "generatedAt": "2026-09-16T00:19:25.389Z",
+      "analysisUpdatedAt": "2026-09-16T06:00:06.531Z",
+      "generatedAt": "2026-09-16T06:00:06.531Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2285,7 +1899,7 @@
       "reportUrl": "./mac-raporu/rayo-vallecano-espanyol-2026-09-15.html",
       "digest": {
         "headline": "Rayo Vallecano, Espanyol'u 2-1 yendi",
-        "paragraph": "Municipal de Butarque'de oynanan La Liga maçını Rayo Vallecano 2-1 kazandı; Espanyol sahadan puansız ayrıldı. Golleri 3. dakikada Álvaro García (Rayo Vallecano), 26. dakikada Adrià Pedrosa (Rayo Vallecano), 54. dakikada Roberto Fernández Jaén (Espanyol) kaydetti.",
+        "paragraph": "Municipal de Butarque'de oynanan La Liga maçını Rayo Vallecano 2-1 kazandı; Espanyol sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Rayo Vallecano",
           "loser": "Espanyol",
@@ -2298,108 +1912,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "90+8'",
-              "team": "Espanyol",
-              "type": "Kırmızı kart",
-              "detail": "Omar El Hilali",
-              "pivotal": true
-            },
-            {
-              "minute": "3'",
-              "team": "Rayo Vallecano",
-              "type": "Gol",
-              "detail": "Álvaro García",
-              "pivotal": true
-            },
-            {
-              "minute": "26'",
-              "team": "Rayo Vallecano",
-              "type": "Gol",
-              "detail": "Adrià Pedrosa",
-              "pivotal": true
-            },
-            {
-              "minute": "54'",
-              "team": "Espanyol",
-              "type": "Gol",
-              "detail": "Roberto Fernández Jaén",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "1 kırmızı kart bu bölümde görüldü.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Rayo Vallecano",
-              "type": "Oyuncu değişikliği",
-              "detail": "Georgiy Tsitaishvili",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Rayo Vallecano",
-              "type": "Oyuncu değişikliği",
-              "detail": "Sergio Camello",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "Rayo Vallecano",
-              "type": "Sarı kart",
-              "detail": "Gnangoro Bouare",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "Espanyol",
-              "type": "Oyuncu değişikliği",
-              "detail": "Urko Gonzalez",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Adrià Pedrosa",
-              "team": "Rayo Vallecano",
-              "contribution": "26' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Álvaro García",
-              "team": "Rayo Vallecano",
-              "contribution": "3' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Roberto Fernández Jaén",
-              "team": "Espanyol",
-              "contribution": "54' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Alexandre Zurawski",
-              "team": "Rayo Vallecano",
-              "contribution": "90+1' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -2409,33 +1937,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
-            "3' Rayo Vallecano — Álvaro García: gol",
-            "26' Rayo Vallecano — Adrià Pedrosa: gol",
-            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
-            "54' Espanyol — Roberto Fernández Jaén: gol",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Rayo Vallecano maça 4-3-3 dizilişiyle başladı.",
-            "Espanyol maça 4-2-3-1 dizilişiyle başladı.",
-            "45' Espanyol değişikliği (Substitution 1). Değişiklikten sonra Espanyol adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Espanyol değişikliği (Substitution 2). Değişiklikten sonra Espanyol adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Espanyol değişikliği (Substitution 3). Değişiklikten sonra Espanyol adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "61' Rayo Vallecano değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Espanyol maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2447,7 +1962,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2460,8 +1975,7 @@
             "Espanyol daha çok şut denedi (16-19)."
           ],
           "improvements": [
-            "Rayo Vallecano şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan.",
-            "Kırmızı kart maçın seyrini etkiledi (90+8' Espanyol)."
+            "Rayo Vallecano şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Rayo Vallecano sahadan 1 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -2549,20 +2063,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2594,10 +2102,10 @@
       "winner": "Söke 1970",
       "turkish": true,
       "turkishTeam": "Altay",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -2605,9 +2113,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 6
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -2627,15 +2135,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 6,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -2653,11 +2165,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "90e68376fda2e1a1",
-      "fingerprint": "90e68376fda2e1a1",
+      "analysisSourceHash": "43a084478028aca0",
+      "fingerprint": "43a084478028aca0",
       "analysisGeneratedAt": "2026-09-15T19:00:55.310Z",
-      "analysisUpdatedAt": "2026-09-15T19:00:55.310Z",
-      "generatedAt": "2026-09-15T19:00:55.310Z",
+      "analysisUpdatedAt": "2026-09-16T06:00:06.531Z",
+      "generatedAt": "2026-09-16T06:00:06.531Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2669,7 +2181,7 @@
       "reportUrl": "./mac-raporu/altay-soke-1970-2026-09-15.html",
       "digest": {
         "headline": "Söke 1970, Altay'ı 4-2 yendi",
-        "paragraph": "Söke 1970, Alsancak Mustafa Denizli Stadium'da oynanan Türkiye Kupası karşılaşmasında Altay'ı 4-2 mağlup etti. Golleri 43. dakikada K. Bagis (Söke 1970), 45. dakikada E. Cakir (Söke 1970), 57. dakikada K. Bagis (Söke 1970), 68. dakikada C. Devrim (Söke 1970), 72. dakikada Y. Sarikaya (Altay), 90+3. dakikada E. Pehlivan (Altay) kaydetti.",
+        "paragraph": "Söke 1970, Alsancak Mustafa Denizli Stadium'da oynanan Türkiye Kupası karşılaşmasında Altay'ı 4-2 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Söke 1970",
           "loser": "Altay",
@@ -2682,118 +2194,36 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "43'",
-              "team": "Söke 1970",
-              "type": "Gol",
-              "detail": "K. Bagis",
-              "pivotal": true
-            },
-            {
-              "minute": "45'",
-              "team": "Söke 1970",
-              "type": "Gol",
-              "detail": "E. Cakir",
-              "pivotal": true
-            },
-            {
-              "minute": "57'",
-              "team": "Söke 1970",
-              "type": "Gol",
-              "detail": "K. Bagis",
-              "pivotal": true
-            },
-            {
-              "minute": "68'",
-              "team": "Söke 1970",
-              "type": "Gol",
-              "detail": "C. Devrim",
-              "pivotal": true
-            },
-            {
-              "minute": "72'",
-              "team": "Altay",
-              "type": "Gol",
-              "detail": "Y. Sarikaya",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (E. Pehlivan).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "90+3'",
-              "team": "Altay",
-              "type": "Gol",
-              "detail": "E. Pehlivan",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "K. Bagis",
-              "team": "Söke 1970",
-              "contribution": "43' gol · 57' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "C. Devrim",
-              "team": "Söke 1970",
-              "contribution": "68' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "E. Cakir",
-              "team": "Söke 1970",
-              "contribution": "45' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "E. Pehlivan",
-              "team": "Altay",
-              "contribution": "90+3' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
-            "43' Söke 1970 — K. Bagis: gol",
-            "45' Söke 1970 — E. Cakir: gol"
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı dengeli bir olay akışı üretti (4 olay).",
-            "57' Söke 1970 — K. Bagis: gol",
-            "68' Söke 1970 — C. Devrim: gol",
-            "72' Altay — Y. Sarikaya: gol",
-            "90+3' Altay — E. Pehlivan: gol"
-          ],
-          "goals": 4
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "unavailable",
@@ -2831,16 +2261,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 57,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
