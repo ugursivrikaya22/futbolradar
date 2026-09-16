@@ -1055,20 +1055,55 @@
   }
 
   /**
-   * Şerit, sitenin yapışkan üst çubuğunun ALTINA yapışır.
+   * Şerit, sayfanın TEPESİNDEKİ ŞERİTLERİN ALTINA oturur.
    *
-   * Yükseklik CSS'te sabit yazılabilirdi ama üst çubuk ekran genişliğine,
-   * yazı tipi yüklenmesine ve dil anahtarına göre değişiyor; yanlış bir
-   * sabit, şeridi menünün altında yarı gizli bırakırdı. Bu yüzden gerçek
-   * yükseklik bir kez ölçülüp değişkene yazılıyor.
+   * Önce yalnızca `.topbar` yüksekliği ölçülüyordu ve şerit 59px'e
+   * çivileniyordu. Ama üst çubuğun hemen altında bir de son dakika bandı
+   * var: sayfa tepesindeyken (kaydırma 0) o bant 59-100 aralığını
+   * kaplıyor ve şerit tam onun üstüne biniyordu — iki metin iç içe
+   * geçiyordu. Canlı bir maçta şerit hep açık olduğu için bu, sayfa her
+   * açıldığında görünen bir hataydı.
+   *
+   * Bant YAPIŞKAN DEĞİL, sayfayla birlikte kayıp gidiyor. Bu yüzden sabit
+   * bir "topbar + bant" toplamı da yanlış olurdu: bant kayınca şeridin
+   * altında boşluk kalırdı. Doğru davranış, tepedeki şeritlerin O ANKİ alt
+   * kenarını izlemek — bant yukarı kaydıkça hesap kendiliğinden üst
+   * çubuğun altına iner.
    */
+  var STICKY_CHROME = [".topbar", ".news-ticker"];
+  var stickyOffsetBound = false;
+  var stickyOffsetFrame = 0;
+
+  function stickyOffset() {
+    var offset = 0;
+    STICKY_CHROME.forEach(function (selector) {
+      var node = document.querySelector(selector);
+      if (!node || !node.getBoundingClientRect) return;
+      var box = node.getBoundingClientRect();
+      // Yalnızca ekranın tepesinde duran şeritler sayılır: aşağı kaymış
+      // ya da tamamen çıkmış bir öğe şeridi yerinden oynatmamalı.
+      if (box.bottom > offset && box.top < 160) offset = box.bottom;
+    });
+    return Math.max(0, Math.min(200, Math.round(offset)));
+  }
+
   function syncStickyOffset() {
-    var bar = document.querySelector(".topbar");
-    if (!bar || !bar.getBoundingClientRect) return;
-    var height = Math.round(bar.getBoundingClientRect().height);
-    if (height > 0 && height < 200) {
-      document.documentElement.style.setProperty("--mh-sticky-top", height + "px");
-    }
+    document.documentElement.style.setProperty("--mh-sticky-top", stickyOffset() + "px");
+  }
+
+  /** Kaydırmada yeniden ölçüm — kare başına en fazla bir kez. */
+  function bindStickyOffset() {
+    if (stickyOffsetBound) return;
+    stickyOffsetBound = true;
+    var onScroll = function () {
+      if (stickyOffsetFrame) return;
+      stickyOffsetFrame = window.requestAnimationFrame(function () {
+        stickyOffsetFrame = 0;
+        syncStickyOffset();
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
   }
 
   /** Çizimden sonra: sticky davranışı, tembel bölümler, SEO ve kart düğmeleri. */
@@ -1078,6 +1113,7 @@
     try { applySeo(detail); } catch (error) { /* SEO yardımcı katman. */ }
 
     syncStickyOffset();
+    bindStickyOffset();
     hoistSticky(root, detail);
 
     // MAÇ SONU ÖZETİ TABLODAN ÖNCE GELİYOR. "Puan etkisi" satırı tabloya
