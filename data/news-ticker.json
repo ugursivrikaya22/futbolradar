@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-16T20:09:11.652Z",
+  "updatedAt": "2026-09-16T21:42:21.580Z",
   "items": [
     {
       "id": "auto-news-f2115e1a23bf8fb824c9",
@@ -307,6 +307,20 @@
       }
     },
     {
+      "id": "news-besiktas-hapoel-beer-sheva-ec651ffa",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in aktardığına göre Beşiktaş ile ilgili sahadaki son gelişmeler gündeme geldi.",
+      "timestamp": "2026-09-16T20:57:00.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-hapoel-beer-sheva-ec651ffa"
+      },
+      "team": "Beşiktaş",
+      "important": true
+    },
+    {
       "id": "news-besiktas-avrupa-318a9956",
       "origin": "news.json",
       "category": "club-agenda",
@@ -346,20 +360,6 @@
         "url": "https://www.futbolradar.com/haber/galatasaray-singo-e26813f6"
       },
       "team": "Galatasaray",
-      "important": true
-    },
-    {
-      "id": "news-fenerbahce-bulent-uygun-8aedaf5a",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in aktardığına göre Fenerbahçe ile ilgili sahadaki son gelişmeler gündeme geldi.",
-      "timestamp": "2026-09-15T06:51:30.676Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-bulent-uygun-8aedaf5a"
-      },
-      "team": "Fenerbahçe",
       "important": true
     },
     {
