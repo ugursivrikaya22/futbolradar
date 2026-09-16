@@ -163,6 +163,13 @@ function buildRecord(options = {}) {
     comparison: resolved.comparison || null,
     confidence: resolved.confidence === undefined ? null : resolved.confidence,
 
+    // Modelin hangi veri kademesinde çalıştığı (bkz. fixtureProbabilityModel
+    // → DATA_BASIS). Kayıtla birlikte taşınır ki tahmin, üretildiği andaki
+    // temeliyle birlikte okunsun; sayfa bunu yeniden hesaplayamaz.
+    dataBasis: resolved.dataBasis || null,
+    baselineScope: resolved.baselineScope || null,
+    missingHistory: resolved.missingHistory || null,
+
     modelVersion: resolved.modelVersion || null,
     expectedGoals: resolved.expectedGoals || null,
     modelUnderOver: resolved.modelUnderOver || null,
@@ -266,6 +273,9 @@ function toDisplayRecord(record) {
     predictedGoals: record.predictedGoals || null,
     comparison: record.comparison || null,
     confidence: record.confidence === undefined ? null : record.confidence,
+    dataBasis: record.dataBasis || null,
+    baselineScope: record.baselineScope || null,
+    missingHistory: record.missingHistory || null,
     expectedGoals: record.expectedGoals || null,
     modelUnderOver: record.modelUnderOver || null,
     bothTeamsScore: record.bothTeamsScore === undefined ? null : record.bothTeamsScore,

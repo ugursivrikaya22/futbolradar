@@ -454,7 +454,9 @@ function externalProbabilityRow(probability, calendarRec) {
     title: display.title,
     home: record.probabilities.home,
     draw: record.probabilities.draw,
-    away: record.probabilities.away
+    away: record.probabilities.away,
+    dataBasis: record.dataBasis || null,
+    basisNote: probabilityService.dataBasisNote(record, "tr")
   };
 }
 
@@ -505,7 +507,7 @@ export function probabilitySection(analysis, calendarRec, homeName, awayName, pr
   // "API-Football modeli" diye etiketlenmesi yanlış atıf olurdu.
   const external = externalProbabilityRow(probability, calendarRec);
   const providerRow = external
-    ? `<div class="match-probability-provider" data-prediction-source="${escapeHtml(external.source)}"><span>${escapeHtml(external.icon)} ${escapeHtml(external.title)}</span><div class="probability-bar-track is-thin" role="img" aria-label="${escapeHtml(`${external.title}: ${homeName} yüzde ${external.home}, beraberlik yüzde ${external.draw}, ${awayName} yüzde ${external.away}`)}"><span class="home-share" style="width:${external.home}%"></span><span class="draw-share" style="width:${external.draw}%"></span><span class="away-share" style="width:${external.away}%"></span></div><b>%${external.home} · %${external.draw} · %${external.away}</b></div>`
+    ? `<div class="match-probability-provider" data-prediction-source="${escapeHtml(external.source)}"${external.dataBasis ? ` data-prediction-basis="${escapeHtml(external.dataBasis)}"` : ""}><span>${escapeHtml(external.icon)} ${escapeHtml(external.title)}</span><div class="probability-bar-track is-thin" role="img" aria-label="${escapeHtml(`${external.title}: ${homeName} yüzde ${external.home}, beraberlik yüzde ${external.draw}, ${awayName} yüzde ${external.away}`)}"><span class="home-share" style="width:${external.home}%"></span><span class="draw-share" style="width:${external.draw}%"></span><span class="away-share" style="width:${external.away}%"></span></div><b>%${external.home} · %${external.draw} · %${external.away}</b></div>${external.basisNote ? `<p class="match-probability-basis">${escapeHtml(external.basisNote)}</p>` : ""}`
     : "";
 
   return `<section class="match-probability" aria-label="Kazanma olasılığı"><h2 class="match-section-title">Kazanma Olasılığı</h2>

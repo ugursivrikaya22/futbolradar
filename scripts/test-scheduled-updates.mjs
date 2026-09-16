@@ -6,7 +6,7 @@ import { mergeCalendarMatches, selectDetailTargets } from "./sync-live-fixtures.
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
-import { dedupeKey } from "./run-scheduled-update.mjs";
+import { dedupeKey, sourceSteps, fullMaintenanceSteps, transformSteps } from "./run-scheduled-update.mjs";
 import { POSTPROCESS_CHAIN } from "./lib/postprocessChain.mjs";
 
 const root = process.cwd();
@@ -172,5 +172,44 @@ const adminGenerator = fs.readFileSync(path.join(root, "scripts", "generate-upda
 assert.match(adminGenerator, /data-update-monitor/);
 assert.match(adminGenerator, /data\/update-status\.json/);
 assert.match(adminGenerator, /Kaynak sorunu/);
+
+// ── HAT GERÇEKTEN VAR OLAN BETİKLERİ ÇAĞIRIYOR MU ───────────────────────
+//
+// #274 bu dosyayı eski bir sürüme döndürünce iki şey birden oldu: saatlik
+// tahmin adımı düştü ve silinmiş bir betiğe (`sync-match-predictions.mjs`)
+// yapılan çağrı geri geldi. İkisi de üretimde sessiz kaldı — biri hiç
+// tazelenmeyen tahmin, diğeri her gün ENOENT ile düşen bir adım olarak.
+// Her ikisi de burada, koşu beklemeden yakalanır.
+const pipelineSteps = [
+  ...sourceSteps("hourly", true),
+  ...sourceSteps("full", true),
+  ...sourceSteps("full", false),
+  ...fullMaintenanceSteps(true),
+  ...transformSteps("full", true, true),
+  ...transformSteps("hourly", true, true)
+];
+
+for (const step of pipelineSteps) {
+  const script = step.args[step.args.length - 1].startsWith("--")
+    ? step.args.find((arg) => String(arg).endsWith(".mjs"))
+    : step.args[0];
+  assert.ok(script, `adımın betiği okunamadı: ${step.id}`);
+  assert.ok(
+    fs.existsSync(script),
+    `${step.id} adımı diskte olmayan bir betiğe işaret ediyor: ${script} — ` +
+    "bu koşu üretimde ENOENT ile düşer"
+  );
+}
+
+const predictionSteps = ["hourly", "full"].map((type) =>
+  sourceSteps(type, false).find((step) => step.id === "fixture-predictions"));
+assert.ok(predictionSteps[0], "tahmin adımı SAATLİK koşuda olmalı: tazeleme basamakları (T-6s, T-90dk) günlük koşuyla yakalanmaz");
+assert.ok(predictionSteps[1], "tahmin adımı günlük koşuda da olmalı");
+assert.ok(
+  predictionSteps.every((step) => !step.skip),
+  "sağlayıcı yapılandırılmamışken bile atlanmamalı: zincirin üçüncü halkası (FutbolRadar modeli) kotadan bağımsız çalışır"
+);
+
+console.log(`hat bütünlüğü: ${pipelineSteps.length} adımın betiği diskte var; tahmin adımı saatlik ve günlük koşuda.`);
 
 console.log("Scheduled update tests passed (cron split, dedupe, live merge, standings, absences, RSS, monitoring cache)." );

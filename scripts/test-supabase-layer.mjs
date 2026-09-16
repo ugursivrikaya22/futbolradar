@@ -61,6 +61,24 @@ const migrationSql = fs.readdirSync(migrationsDir)
   .map((file) => fs.readFileSync(path.join(migrationsDir, file), "utf8"))
   .join("\n");
 
+/**
+ * Sonraki göçlerin EKLEDİĞİ sütunlar. Şema yalnızca `create table` ile
+ * büyümüyor: 0005 `alter table ... add column` ile bir sütun ekledi ve
+ * parite testi onu göremediği için, göç dosyası yerinde dururken
+ * "sütun göçte yok" diye YANLIŞ pozitif verdi. Test, şemanın gerçekte
+ * nasıl büyüdüğünü okumalı; aksi hâlde doğru göçü yazan kişiyi testi
+ * atlatmaya iter.
+ */
+function columnsAddedByAlter(sql, tableName) {
+  const pattern = new RegExp(
+    `alter table\\s+${tableName}\\s+add column(?:\\s+if not exists)?\\s+([a-z_]+)`,
+    "gi"
+  );
+  const columns = [];
+  for (const match of sql.matchAll(pattern)) columns.push(match[1]);
+  return columns;
+}
+
 function columnsInCreateTable(sql, tableName) {
   const pattern = new RegExp(`create table if not exists ${tableName} \\(([\\s\\S]*?)\\n\\);`, "m");
   const match = sql.match(pattern);
@@ -77,7 +95,10 @@ function columnsInCreateTable(sql, tableName) {
 }
 
 for (const [key, table] of Object.entries(TABLES)) {
-  const realColumns = new Set(columnsInCreateTable(migrationSql, table.name));
+  const realColumns = new Set([
+    ...columnsInCreateTable(migrationSql, table.name),
+    ...columnsAddedByAlter(migrationSql, table.name)
+  ]);
   for (const column of table.columns) {
     assert.ok(
       realColumns.has(column),

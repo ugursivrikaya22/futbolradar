@@ -9807,6 +9807,17 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
   color: var(--text-soft);
 }
 
+/* Veri temeli uyarısı — bkz. .msp-prediction-basis. */
+.match-probability-basis {
+  margin: 8px 0 0;
+  padding: 6px 8px;
+  border-left: 3px solid var(--warn);
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
 .probability-bar-track.is-thin {
   height: 6px;
 }
@@ -15628,6 +15639,17 @@ table {
    mi geldiğini kartın kendisi söyler. */
 .md-prob-note {
   margin: var(--sp-2) 0 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+/* Dinamik maç detayındaki karşılığı — bkz. .msp-prediction-basis. */
+.md-prob-basis {
+  margin: var(--sp-2) 0 0;
+  padding: 6px 8px;
+  border-left: 3px solid var(--warn, #c98a00);
+  background: color-mix(in srgb, var(--warn, #c98a00) 8%, transparent);
+  border-radius: 0 6px 6px 0;
   font-size: var(--fs-xs);
   color: var(--muted);
 }
@@ -22226,6 +22248,19 @@ a.motm-week__card:focus-visible {
 .msp-prediction-row[data-outcome="draw"] .msp-prediction-track b { background: var(--muted); }
 .msp-prediction-row[data-outcome="away"] .msp-prediction-track b { background: var(--cyan); }
 .msp-prediction-note { margin: 8px 0 0; font-size: var(--fs-xs); color: var(--muted); }
+/* VERİ TEMELİ UYARISI. Model tahmini iki takımın geçmişine dayanmıyorsa
+   (tek taraflı geçmiş ya da yalnızca turnuva taban oranı) bu satır çıkar.
+   Solundaki çizgi, notu sıradan bir dipnottan ayırıyor: burada okunan
+   sayının kapsamı daralmış durumda. */
+.msp-prediction-basis {
+  margin: 8px 0 0;
+  padding: 6px 8px;
+  border-left: 3px solid var(--warn, #c98a00);
+  background: color-mix(in srgb, var(--warn, #c98a00) 8%, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
 .msp-prediction-meta { margin: 10px 0 0; display: grid; gap: 6px; font-size: var(--fs-xs); }
 .msp-prediction-meta div { display: flex; justify-content: space-between; gap: 10px; }
 .msp-prediction-meta dt { color: var(--muted); }

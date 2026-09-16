@@ -1,0 +1,334 @@
+/* MAÇ MERKEZİ — YALNIZCA MAÇ DETAY SAYFASINDA YÜKLENİR.
+   Renkler `page.css` içindeki tema değişkenlerinden okunur; böylece koyu
+   tema için ikinci bir palet tutmak gerekmez ve tema anahtarı bu bölümleri
+   de kendiliğinden çevirir. Sabit bir renk yalnızca durum renkleri için
+   (canlı kırmızısı, kart sarısı) kullanılır. */
+
+:root {
+  /* Üst çubuk (.topbar) sticky ve ~76px; şerit onun ALTINA yapışmalı.
+     Kesin değer çizimden sonra ölçülüp güncelleniyor (match-hub.js),
+     buradaki değer yalnızca ilk boyamanın sıçramaması için. */
+  --mh-sticky-top: 76px;
+}
+@media (max-width: 720px) { :root { --mh-sticky-top: 60px; } }
+
+.mh-section { scroll-margin-top: 140px; }
+.mh-section .md-section-head h2 { margin: 0; }
+
+/* ---------- 1. Canlı maç paneli (sayfa boyunca asılı) --------------- */
+/* NEDEN `fixed`, `sticky` DEĞİL:
+   Şerit maç kartının içinde doğuyor; o kartın kapsayıcısında `overflow:
+   hidden` ve `transform` var. İkisi de bir yapışkan/sabit öğenin
+   davranışını sessizce bozuyor — şerit kartla birlikte kayıp gidiyordu
+   (hata yok, yalnızca özellik yok). Bu yüzden `match-hub.js` çizimden
+   sonra şeridi `document.body` altına taşıyor ve burada `fixed`
+   konumlanıyor: sayfanın HER yerinde, üst çubuğun hemen altında.
+   `fixed` ayrıca yerleşimi hiç etkilemez — şerit belirdiğinde sayfa
+   zıplamaz (CLS). */
+.mh-sticky {
+  position: fixed;
+  top: var(--mh-sticky-top, 0px);
+  left: 0;
+  right: 0;
+  z-index: 9;
+  border-bottom: 1px solid var(--line, #dde3e0);
+  background: var(--panel-strong, var(--surface, #fff));
+  backdrop-filter: blur(14px);
+  box-shadow: 0 6px 18px rgba(14, 26, 22, .07);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease, visibility .18s;
+}
+.mh-sticky.is-pinned { opacity: 1; visibility: visible; transform: none; pointer-events: auto; }
+.mh-sticky[data-live="true"] { border-bottom-color: var(--live, #c81e2d); }
+
+/* Şerit kart içinde de basılıyor (tek HTML kaynağı); taşınana kadar
+   görünmesin diye taşınmamış kopya gizli tutulur. */
+.mh-sticky:not([data-mh-hoisted]) { display: none; }
+
+.mh-sticky__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  max-width: var(--container, 1180px);
+  margin: 0 auto;
+}
+.mh-sticky__team { display: flex; align-items: center; gap: 8px; min-width: 0; }
+/* `row-reverse` ana ekseni sağdan sola çeviriyor: burada `flex-start`
+   içeriği SAĞA yaslar. `flex-end` yazılsaydı deplasman adı skorun
+   dibine yapışırdı. */
+.mh-sticky__team.is-away { justify-content: flex-start; flex-direction: row-reverse; }
+.mh-sticky__team b {
+  font-size: 14px; font-weight: 700; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.mh-sticky__core { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.mh-sticky__score { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.mh-sticky__state {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--muted, #6b7c76);
+}
+.mh-sticky__state.is-live { color: var(--live, #c81e2d); }
+.mh-sticky__progress { height: 3px; background: var(--surface-sunken, #f1f4f3); overflow: hidden; }
+.mh-sticky__progress i { display: block; height: 100%; background: var(--live, #c81e2d); transition: width .4s ease; }
+.mh-logo { width: 28px; height: 28px; object-fit: contain; flex: none; }
+
+/* ---------- 2. Maç akışı ------------------------------------------- */
+.mh-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.mh-ev {
+  display: grid;
+  grid-template-columns: 52px 30px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+  padding: 11px 10px;
+  border-radius: 8px;
+  border-left: 3px solid transparent;
+  background: transparent;
+}
+.mh-ev + .mh-ev { border-top: 1px solid var(--line, #eceeed); }
+.mh-ev__min { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 13px; color: var(--muted, #6b7c76); }
+.mh-ev__mark { display: grid; place-items: center; color: var(--muted, #6b7c76); }
+.mh-ev__icon { width: 20px; height: 20px; }
+.mh-ev__body b { display: block; font-size: 13px; font-weight: 700; }
+.mh-ev__body b em { font-style: normal; font-weight: 500; color: var(--muted, #6b7c76); }
+.mh-ev__body span { display: block; font-size: 13px; line-height: 1.6; color: var(--text-soft, #3f4f49); }
+.mh-ev__score {
+  font-style: normal; font-variant-numeric: tabular-nums; font-weight: 800;
+  margin-left: 6px; padding: 1px 6px; border-radius: 5px;
+  background: var(--surface-sunken, #f1f4f3);
+}
+.mh-ev.is-goal, .mh-ev.is-penalty { border-left-color: var(--green, #0b8f5a); background: rgba(11, 143, 90, .05); }
+.mh-ev.is-goal .mh-ev__mark, .mh-ev.is-penalty .mh-ev__mark { color: var(--green, #0b8f5a); }
+.mh-ev.is-own-goal { border-left-color: var(--warn, #b07410); background: rgba(176, 116, 16, .06); }
+.mh-ev.is-red, .mh-ev.is-second-yellow { border-left-color: var(--live, #c81e2d); background: rgba(200, 30, 45, .05); }
+.mh-ev.is-red .mh-ev__mark, .mh-ev.is-second-yellow .mh-ev__mark { color: var(--live, #c81e2d); }
+.mh-ev.is-yellow .mh-ev__mark { color: #d9a908; }
+.mh-ev.is-var { border-left-color: var(--cyan, #0d9488); background: rgba(13, 148, 136, .05); }
+.mh-ev.is-var .mh-ev__mark { color: var(--cyan, #0d9488); }
+.mh-ev.is-away { text-align: left; }
+.mh-ev.is-away .mh-ev__body { padding-left: 2px; }
+.mh-ev__flag {
+  align-self: center; font-size: 10px; font-weight: 800; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--live, #c81e2d);
+  border: 1px solid currentColor; border-radius: 20px; padding: 3px 8px; white-space: nowrap;
+}
+.mh-ev.is-latest { box-shadow: inset 0 0 0 1px var(--live, #c81e2d); animation: mh-flash 1.6s ease-out; }
+@keyframes mh-flash { 0% { background: rgba(200, 30, 45, .18); } 100% { background: transparent; } }
+
+/* ---------- 3. İstatistik karşılaştırması --------------------------- */
+.mh-stat-head {
+  display: flex; justify-content: space-between; gap: 12px;
+  font-size: 12px; font-weight: 700; color: var(--muted, #6b7c76);
+  text-transform: uppercase; letter-spacing: .05em; margin-bottom: 10px;
+}
+.mh-stat-grid { display: grid; gap: 14px; }
+.mh-stat__top { display: grid; grid-template-columns: 64px minmax(0, 1fr) 64px; align-items: center; gap: 8px; }
+.mh-stat__val { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 15px; }
+.mh-stat__val.is-away { text-align: right; }
+.mh-stat__label { text-align: center; font-size: 12px; color: var(--muted, #6b7c76); }
+.mh-stat__bar { display: flex; height: 8px; border-radius: 6px; overflow: hidden; background: var(--surface-sunken, #f1f4f3); margin-top: 6px; }
+.mh-stat__bar i { display: block; height: 100%; transition: width .45s ease; }
+.mh-stat__bar i.is-home { background: var(--green, #0b8f5a); }
+.mh-stat__bar i.is-away { background: var(--cyan, #0d9488); opacity: .55; }
+.mh-stat.leader-home .mh-stat__val.is-home, .mh-stat.leader-away .mh-stat__val.is-away { color: var(--green, #0b8f5a); }
+.mh-stat-group h3 { font-size: 13px; margin: 18px 0 10px; color: var(--muted, #6b7c76); }
+.mh-more { margin-top: 18px; }
+.mh-more > summary {
+  cursor: pointer; font-size: 13px; font-weight: 700; padding: 10px 0;
+  color: var(--green, #0b8f5a); min-height: 44px; display: flex; align-items: center;
+}
+
+/* ---------- 4. Kadrolar ve diziliş ---------------------------------- */
+.mh-lineup-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 18px; }
+.mh-lineup { border: 1px solid var(--line, #eceeed); border-radius: 12px; padding: 16px; min-width: 0; }
+.mh-lineup__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.mh-lineup__head strong { font-size: 15px; }
+.mh-formation {
+  font-size: 12px; font-weight: 800; letter-spacing: .04em;
+  border: 1px solid var(--line-strong, #cfd6d3); border-radius: 20px; padding: 3px 10px;
+}
+.mh-coach { margin: 0 0 12px; font-size: 12px; color: var(--muted, #6b7c76); }
+.mh-pitch {
+  display: grid; gap: 8px; padding: 14px 8px; margin-bottom: 14px;
+  border-radius: 10px;
+  background:
+    linear-gradient(0deg, rgba(11, 143, 90, .10), rgba(11, 143, 90, .10)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 22px, transparent 22px 44px);
+  border: 1px solid var(--line, #eceeed);
+}
+.mh-pitch__row { display: flex; justify-content: space-evenly; gap: 4px; }
+.mh-pitch__player {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  flex: 1 1 0; min-width: 0; text-align: center;
+}
+.mh-pitch__no {
+  display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--surface, #fff); border: 1px solid var(--line-strong, #cfd6d3);
+  font-size: 11px; font-weight: 800; font-style: normal; font-variant-numeric: tabular-nums;
+}
+.mh-pitch__player b {
+  font-size: 10px; font-weight: 600; line-height: 1.25; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.mh-lineup__list h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted, #6b7c76); margin: 0 0 8px; }
+.mh-lineup__list ol, .mh-lineup__list ul { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 2px; }
+.mh-lineup__list li { padding: 5px 0; border-bottom: 1px solid var(--line, #f0f2f1); }
+.mh-chip { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.mh-chip__no {
+  font-style: normal; font-variant-numeric: tabular-nums; font-weight: 800; font-size: 12px;
+  min-width: 22px; text-align: right; color: var(--muted, #6b7c76);
+}
+.mh-chip__name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.mh-chip__pos {
+  margin-left: auto; font-style: normal; font-size: 10px; font-weight: 800;
+  letter-spacing: .05em; color: var(--muted, #6b7c76);
+  border: 1px solid var(--line, #eceeed); border-radius: 4px; padding: 1px 5px;
+}
+.mh-bench-empty { font-size: 12px; color: var(--muted, #6b7c76); margin: 0; }
+
+/* ---------- 5. Tahmin merkezi --------------------------------------- */
+.mh-pred-grid { display: grid; gap: 16px; }
+.mh-pred { border: 1px solid var(--line, #eceeed); border-radius: 12px; padding: 16px; }
+.mh-pred__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.mh-pred__head h3 { font-size: 15px; margin: 0; }
+.mh-prob__bar { display: flex; height: 30px; border-radius: 8px; overflow: hidden; background: var(--surface-sunken, #f1f4f3); }
+.mh-prob__bar i {
+  display: grid; place-items: center; height: 100%; min-width: 0;
+  font-style: normal; font-size: 12px; font-weight: 800; color: #fff;
+  transition: width .5s ease;
+}
+.mh-prob__bar i span { overflow: hidden; }
+.mh-prob__bar i.is-home { background: var(--green, #0b8f5a); }
+.mh-prob__bar i.is-draw { background: var(--muted, #6b7c76); }
+.mh-prob__bar i.is-away { background: var(--cyan, #0d9488); }
+.mh-prob__legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 10px; font-size: 12px; color: var(--muted, #6b7c76); }
+.mh-prob__legend span { display: inline-flex; align-items: center; gap: 6px; }
+.mh-prob__legend i { width: 10px; height: 10px; border-radius: 3px; background: var(--green, #0b8f5a); }
+.mh-prob__legend span:nth-child(2) i { background: var(--muted, #6b7c76); }
+.mh-prob__legend span:nth-child(3) i { background: var(--cyan, #0d9488); }
+.mh-pred__note { margin: 10px 0 0; font-size: 12px; color: var(--muted, #6b7c76); line-height: 1.6; }
+/* Veri temeli uyarısı: tahmin iki takımın geçmişine dayanmıyorsa çıkar.
+   Soldaki çizgi, notu sıradan bir dipnottan ayırıyor. */
+.mh-pred__basis {
+  margin: 10px 0 0;
+  padding: 6px 8px;
+  border-left: 3px solid var(--warn, #c98a00);
+  background: color-mix(in srgb, var(--warn, #c98a00) 8%, transparent);
+  border-radius: 0 6px 6px 0;
+  font-size: 12px;
+  color: var(--muted, #6b7c76);
+  line-height: 1.6;
+}
+
+/* ---------- 6. Hangi kanalda ---------------------------------------- */
+.mh-channels { display: flex; flex-wrap: wrap; gap: 10px; }
+.mh-channel {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--line-strong, #cfd6d3); border-radius: 10px;
+  padding: 10px 14px; font-weight: 700; font-size: 14px;
+}
+.mh-channel svg { width: 18px; height: 18px; }
+.mh-channels__source { margin: 10px 0 0; font-size: 12px; }
+
+/* ---------- 7. Puan durumu ------------------------------------------ */
+.mh-standings__head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-size: 13px; font-weight: 700; }
+.mh-toggle { display: inline-flex; border: 1px solid var(--line-strong, #cfd6d3); border-radius: 22px; overflow: hidden; }
+.mh-toggle button {
+  border: 0; background: transparent; cursor: pointer;
+  padding: 9px 14px; font-size: 12px; font-weight: 700; color: inherit; min-height: 44px;
+}
+.mh-toggle button[aria-pressed="true"] { background: var(--green, #0b8f5a); color: #fff; }
+.mh-table-wrap { overflow-x: auto; }
+.mh-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mh-table th, .mh-table td { padding: 9px 8px; text-align: center; border-bottom: 1px solid var(--line, #eceeed); white-space: nowrap; }
+.mh-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted, #6b7c76); }
+.mh-table__team { text-align: left !important; display: flex; align-items: center; gap: 8px; }
+.mh-table__team .mh-logo { width: 20px; height: 20px; }
+.mh-table tr.is-focus { background: rgba(11, 143, 90, .07); font-weight: 700; }
+.mh-table__caption, .mh-table__foot { font-size: 12px; color: var(--muted, #6b7c76); line-height: 1.6; }
+.mh-table__foot { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
+.mh-delta { font-weight: 800; font-size: 12px; }
+.mh-delta.is-up { color: var(--green, #0b8f5a); }
+.mh-delta.is-down { color: var(--live, #c81e2d); }
+.mh-delta.is-flat { color: var(--muted, #6b7c76); }
+
+/* ---------- 8. Haberler ---------------------------------------------- */
+.mh-news { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.mh-news li { border-bottom: 1px solid var(--line, #eceeed); }
+.mh-news a, .mh-news__plain { display: block; padding: 12px 6px; text-decoration: none; color: inherit; }
+.mh-news a:hover { background: var(--surface-sunken, #f7f9f8); }
+.mh-news b { display: block; font-size: 14px; font-weight: 700; line-height: 1.45; }
+.mh-news span { display: block; font-size: 13px; color: var(--text-soft, #3f4f49); margin-top: 4px; line-height: 1.6; }
+.mh-news em { display: block; font-style: normal; font-size: 11px; color: var(--muted, #6b7c76); margin-top: 6px; }
+
+/* ---------- 9. Maç sonu özeti ---------------------------------------- */
+.mh-summary__score { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 14px; text-align: center; margin-bottom: 12px; }
+.mh-summary__score b { font-size: clamp(30px, 6vw, 46px); font-weight: 800; font-variant-numeric: tabular-nums; }
+.mh-summary__score span { font-size: 14px; font-weight: 700; }
+.mh-summary__verdict { margin: 0 0 18px; text-align: center; font-size: 14px; color: var(--muted, #6b7c76); }
+.mh-summary h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted, #6b7c76); margin: 20px 0 10px; }
+.mh-summary__events { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.mh-summary__events li { display: grid; grid-template-columns: 48px auto minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line, #eceeed); font-size: 13px; }
+.mh-summary__min { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--muted, #6b7c76); }
+.mh-summary__empty, .mh-summary__hint { font-size: 12px; color: var(--muted, #6b7c76); margin: 6px 0 0; }
+.mh-impact { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.mh-impact li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line, #eceeed); border-radius: 10px; font-size: 13px; }
+.mh-impact__pts { font-weight: 800; color: var(--green, #0b8f5a); }
+.mh-impact__rank { margin-left: auto; color: var(--muted, #6b7c76); }
+.mh-summary__next ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
+.mh-summary__next li { padding: 8px 0; border-bottom: 1px solid var(--line, #eceeed); }
+
+/* ---------- 10. Paylaşılabilir kartlar -------------------------------- */
+.mh-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.mh-card { border: 1px solid var(--line, #eceeed); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+.mh-card__head { padding: 12px 14px; background: var(--surface-sunken, #f7f9f8); border-bottom: 1px solid var(--line, #eceeed); }
+.mh-card__head span { display: block; font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--muted, #6b7c76); }
+.mh-card__head b { display: block; font-size: 15px; margin-top: 3px; }
+.mh-card__body { padding: 14px; flex: 1; font-size: 13px; }
+.mh-card__body ul { margin: 6px 0 0; padding-left: 18px; }
+/* Forma numarası zaten satırın başında; liste işaretçisi "1. 1 Bahadır"
+   gibi çift numara üretiyordu. */
+.mh-card__body ol { margin: 6px 0 0; padding-left: 0; list-style: none; }
+.mh-card__body li { line-height: 1.7; }
+.mh-card__cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.mh-card__cols b { font-size: 13px; }
+.mh-card__cols em { display: block; font-style: normal; font-size: 11px; color: var(--muted, #6b7c76); }
+.mh-card__lead { margin: 0; line-height: 1.6; }
+.mh-card__score { font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 4px 0; }
+.mh-card__foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-top: 1px solid var(--line, #eceeed); font-size: 11px; color: var(--muted, #6b7c76); }
+.mh-card__save {
+  border: 1px solid var(--line-strong, #cfd6d3); background: transparent; color: inherit;
+  border-radius: 8px; padding: 9px 12px; font-size: 12px; font-weight: 700; cursor: pointer; min-height: 44px;
+}
+.mh-card__save:hover { background: var(--surface-sunken, #f7f9f8); }
+
+/* ---------- Ortak -------------------------------------------------- */
+.mh-note { display: grid; gap: 4px; margin: 0; padding: 16px; border: 1px dashed var(--line-strong, #cfd6d3); border-radius: 10px; }
+.mh-note strong { font-size: 14px; }
+.mh-note span { font-size: 13px; color: var(--muted, #6b7c76); line-height: 1.6; }
+.mh-lazy { min-height: 120px; display: grid; place-items: center; }
+/* Yükleme durumu ortalanıyor; içerik geldiğinde bu ortalama TABLOYU da
+   daraltıp ortalıyordu. Yüklenen kutu normal akışa döner. */
+.mh-lazy[data-mh-loaded="true"] { display: block; min-height: 0; }
+.mh-lazy__hint { font-size: 13px; color: var(--muted, #6b7c76); margin: 0; }
+
+@media (max-width: 720px) {
+  .mh-sticky__inner { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); padding: 8px 10px; }
+  .mh-sticky__team b { font-size: 12px; }
+  .mh-sticky__score { font-size: 19px; }
+  .mh-ev { grid-template-columns: 42px 24px minmax(0, 1fr); padding: 10px 4px; }
+  .mh-ev__flag { grid-column: 1 / -1; justify-self: start; margin-top: 4px; }
+  .mh-stat__top { grid-template-columns: 52px minmax(0, 1fr) 52px; }
+  .mh-card__cols { grid-template-columns: 1fr; }
+  .mh-section { scroll-margin-top: 92px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mh-ev.is-latest { animation: none; }
+  .mh-sticky, .mh-stat__bar i, .mh-prob__bar i, .mh-sticky__progress i { transition: none; }
+}

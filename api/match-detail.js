@@ -6,6 +6,7 @@ const managerQuoteStore = require("../data/manager-quotes.json");
 const { isRadarPulseEnabled } = require("../services/featureFlags");
 const { buildRadarPulse } = require("../services/radarPulseBuilder");
 const { recordSample } = require("../services/livePulseStore");
+const { resolveLiveWinProbability } = require("../services/winProbability");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -78,12 +79,16 @@ function attachProbability(detail) {
     source: record.source,
     title: display.title,
     icon: display.icon,
-    note: display.note,
+    note: probabilityService.displayNoteFor(record, "tr") || display.note,
     home: record.probabilities.home,
     draw: record.probabilities.draw,
     away: record.probabilities.away,
     advice: record.advice || null,
     predictedWinner: record.predictedWinner || null,
+    // Modelin veri temeli sınırlıysa açıklaması kartla birlikte gider:
+    // yüzdeyi taşıyıp dayanağını taşımamak, dayanağı gizlemektir.
+    dataBasis: record.dataBasis || null,
+    basisNote: probabilityService.dataBasisNote(record, "tr"),
     calculatedAt: record.calculatedAt || null
   };
 }
@@ -160,6 +165,29 @@ module.exports = async function handler(req, res) {
   // düşerdi ve "son 10 dakika" penceresi tam ihtiyaç duyulan anda kaybolurdu.
   const liveNow = ["LIVE", "HALFTIME", "HT", "1H", "2H", "ET", "BT", "P", "IN_PLAY", "PAUSED", "INT", "SUSP"]
     .includes(String((detail && (detail.providerStatus || detail.status)) || "").toUpperCase());
+
+  // CANLI KAZANMA OLASILIĞI — SOKET UÇTAN UCA BAĞLI, BUGÜN BOŞ.
+  //
+  // `services/winProbability.js` bilerek boş bir soket: depoda maç İÇİ
+  // olasılık üretebilen doğrulanmış bir model yok ve maç öncesi yüzdeyi
+  // "canlı" diye yayımlamak, sayının gerçek ama iddianın yalan olduğu bir
+  // durum yaratırdı. Çağrı yine de BURADA duruyor ki gerçek bir kaynak
+  // takıldığı gün (registerSource) alan kendiliğinden dolsun ve maç
+  // merkezindeki bölüm tek satır değişiklik olmadan açılsın. Bugün dönen
+  // değer `null`; istemci de o zaman hiçbir şey çizmiyor.
+  if (detail && liveNow) {
+    try {
+      detail.liveWinProbability = resolveLiveWinProbability({
+        fixtureId: detail.fixtureId || detail.providerId || detail.id,
+        minute: detail.minute,
+        score: detail.score,
+        statistics: detail.statistics,
+        events: detail.events
+      });
+    } catch (error) {
+      detail.liveWinProbability = null;
+    }
+  }
 
   if (detail && liveNow && isRadarPulseEnabled()) {
     try {

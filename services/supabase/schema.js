@@ -133,8 +133,8 @@ const TABLES = {
       "away_team_id", "source", "home_probability", "draw_probability",
       "away_probability", "predicted_winner", "advice", "under_over",
       "predicted_goals", "comparison", "confidence", "model_version",
-      "frozen", "refresh_stage", "provider_updated_at", "calculated_at",
-      "expires_at", "raw_provider_data", "source_id"
+      "data_basis", "frozen", "refresh_stage", "provider_updated_at",
+      "calculated_at", "expires_at", "raw_provider_data", "source_id"
     ]
   },
   // Canlı skor veri hattı gecikme kütüğü — bkz. services/liveEventLatency.js
