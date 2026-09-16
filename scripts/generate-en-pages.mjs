@@ -221,9 +221,18 @@ const newsList = publishableNews(readJson("news.json", []));
  */
 const englishNewsList = rankEnglishNews(readJson("news-en.json", []).filter(isPublishableEnglish));
 
-/** Bir İngilizce haberin kendi sayfası. */
+/**
+ * Bir İngilizce haberin kendi sayfası.
+ *
+ * BASE BURADA KULLANILMAZ. `BASE` ("../") /en sayfalarından KÖK dizine
+ * çıkmak için var; haber sayfaları ise /en'in ALTINDA (`en/news/...`).
+ * `${BASE}news/…` yazıldığında bağlantı `/news/<slug>.html` adresine,
+ * yani var olmayan bir kök dizin yoluna gidiyordu —
+ * `scripts/audit-interaction-routes.mjs` bunu yakaladı. Kart, sayfayla
+ * aynı dizinden bir alta iner.
+ */
 function englishNewsHref(item) {
-  return `${BASE}news/${item.slug}.html`;
+  return `news/${item.slug}.html`;
 }
 
 /**

@@ -50,4 +50,8 @@ jobs:
         run: node scripts/generate-en-news-pages.mjs
 
       - name: Değişiklikleri işle
-        run: node scripts/ci-commit-push.mjs "ci(english-news): otomatik İngilizce haber tazelemesi"
+        # Blok skaler ŞART: commit mesajı ": " içeriyor ve tırnaksız bir
+        # YAML skalerinde bu dizi eşleme ayracı sayılıp dosyayı
+        # ayrıştırılamaz hâle getiriyor (scripts/qa.mjs bunu denetliyor).
+        run: |
+          node scripts/ci-commit-push.mjs "ci(english-news): otomatik İngilizce haber tazelemesi"
