@@ -1174,7 +1174,15 @@ async function getFixtures(query) {
   // uygulanırsa sağlayıcı tüm maçları döndürse bile yalnızca FutbolRadar'ın
   // önceden tanıdığı ligler kalır. Editoryal öncelik sunum katmanının işi;
   // backend canlı kayıtlardan hiçbir ligi elemez.
-  const supportedMatches = liveValue ? matches : filterSupportedCompetitions(matches);
+  //
+  // TEK FİKSTÜR KİMLİĞİYLE SORGU DA SÜZÜLMEZ — aynı gerekçeyle.
+  // Katalog filtresi "günün listesinde hangi maçlar öne çıksın" sorusunu
+  // yanıtlar; "şu kimlikteki maçı ver" diyen bir çağrı için anlamsızdır ve
+  // zararlıdır: çağıran maçın hangi ligde olduğunu zaten bilerek soruyor.
+  // Yarışma kataloğunda karşılığı bulunmayan (ya da sağlayıcı kimliği henüz
+  // doğrulanmamış) bir ligin maç sayfası, sağlayıcı kaydı DÖNDÜRDÜĞÜ hâlde
+  // "bulunamadı" sayılıyor ve canlı veriye hiç ulaşamıyordu.
+  const supportedMatches = liveValue || fixtureId ? matches : filterSupportedCompetitions(matches);
   const filteredMatches = league && competition
     && !liveValue
     ? supportedMatches.filter((match) => competitionMatchesFixture(match, competition))
@@ -1859,17 +1867,68 @@ async function getTeamStatistics(query) {
   return Array.isArray(items) ? items[0] || null : items || null;
 }
 
+/** Kayıt aranan fikstür mü? Kimlik iki alanda da taşınıyor. */
+function fixtureIdMatches(item, fixtureId) {
+  const wanted = String(fixtureId);
+  return Boolean(item) && (String(item.id) === wanted || String(item.providerId) === wanted);
+}
+
+/**
+ * MAÇI BUL — ÖNCE KİMLİKLE, SONRA CANLI AKIŞLA, EN SON GÜNÜN LİSTESİYLE.
+ *
+ * ESKİ DAVRANIŞ VE ÜRETİMDEKİ SONUCU. `date` sorguda varsa (maç SEO
+ * sayfalarının tamamı `fixtureId=...&date=...` gönderir) maç YALNIZCA o
+ * günün fikstür listesinde aranıyordu. O liste sağlayıcıdan geldikten
+ * sonra `filterSupportedCompetitions` ile yarışma kataloğuna göre
+ * süzülüyor; kataloğun tanımadığı ya da sağlayıcının o gün başka bir
+ * takvim gününe yazdığı (TSİ gece yarısını geçen) bir fikstür listede
+ * BULUNAMIYOR ve `PROVIDER_NOT_FOUND` atılıyordu. api/match-detail.js bu
+ * hatayı yakalayıp kürasyonlu sağlayıcıya düşüyor, o da kayıtsız maç için
+ * `null` döndürüyordu: uç nokta `data: []` ile başarılı yanıt veriyor,
+ * istemci çizecek bir şey bulamıyor ve statik HTML'deki maç ÖNCESİ damga
+ * ("Başlamadı") maç oynanırken bile olduğu gibi kalıyordu. Gol atılmış,
+ * skor değişmiş, sayfa aynı.
+ *
+ * YENİ DAVRANIŞ. Fikstür kimliği zaten elimizde ve sağlayıcının EN kesin
+ * arama anahtarı o: `/fixtures?id=` tek bir kaydı döndürür, katalog
+ * süzgecinden geçmez, takvim günü yorumuna bağlı değildir ve kendi kısa
+ * TTL'li önbellek kovasını kullanır (bkz. cacheResourceFor: "matches-live",
+ * 15 sn). Yani hem DAHA DOĞRU hem DAHA UCUZ hem DAHA TAZE.
+ *
+ * İki yedek yol yalnızca kimlikli sorgu boş dönerse denenir:
+ *   1. Canlı akış (`live=all`) — oynanan bir maç tanım gereği bu akıştadır.
+ *      Kimlikli sorgu geçici olarak boş dönse bile CANLI maç kaybolmaz.
+ *   2. Günün listesi — eski yol; yalnızca son çare olarak duruyor.
+ *
+ * Her yol kendi içinde yutulur: biri patlarsa diğerleri yine denenir,
+ * çünkü buradaki tek başarısızlık biçimi "maç yok" demektir ve o cevap
+ * sayfayı maç öncesi damgasında dondurur.
+ */
+async function findFixtureById(fixtureId, requestedDate) {
+  const byId = await getFixtures({ fixtureId }).catch(() => []);
+  const exact = byId.find((item) => fixtureIdMatches(item, fixtureId));
+  if (exact) return exact;
+
+  const live = await getFixtures({ live: true }).catch(() => []);
+  const playing = live.find((item) => fixtureIdMatches(item, fixtureId));
+  if (playing) return playing;
+
+  if (requestedDate) {
+    const sameDay = await getFixtures({ date: requestedDate }).catch(() => []);
+    const listed = sameDay.find((item) => fixtureIdMatches(item, fixtureId));
+    if (listed) return listed;
+  }
+
+  return null;
+}
+
 async function getMatchDetail(query) {
   const fixtureId = query && (query.fixtureId || query.id);
   if (!fixtureId) {
     throw new ProviderError("PROVIDER_QUERY_MISSING", "Mac detayi icin fixtureId veya id query gerekli.");
   }
 
-  const requestedDate = query && query.date;
-  const fixtures = requestedDate
-    ? await getFixtures({ date: requestedDate })
-    : await getFixtures({ fixtureId });
-  const match = fixtures.find((item) => String(item.id) === String(fixtureId)) || null;
+  const match = await findFixtureById(fixtureId, query && query.date);
   if (!match) {
     throw new ProviderError("PROVIDER_NOT_FOUND", "Mac detayi provider tarafinda bulunamadi.");
   }
@@ -1906,7 +1965,19 @@ async function getMatchDetail(query) {
     wantPlayers ? getFixturePlayers({ fixtureId }).catch(() => []) : Promise.resolve([])
   ]);
   const lineups = normalizeFixtureLineups(rawLineups);
-  const events = normalizeFixtureEvents(rawEvents);
+  // OLAY AKIŞI İKİ KAYNAKTAN GELİR; HANGİSİ DOLUYSA O KAZANIR.
+  //
+  // `/fixtures/events` ayrıntılı kaynaktır ve normalde tercih edilir. Ama o
+  // istek düşerse (zaman aşımı, dakikalık limit, geçici 5xx) `.catch` boş
+  // dizi döndürüyor ve maç sayfasındaki olaylar bölümü, sağlayıcı golü
+  // BİLDİĞİ hâlde boş kalıyordu. `/fixtures?id=` yanıtı aynı olayları zaten
+  // gömülü taşıyor (bkz. normalizeFixture: `events`), yani veri elimizdeydi
+  // ve atılıyordu. Artık ayrıntılı kaynak boşsa fikstür yükündeki akış
+  // kullanılır — "sağlayıcıda olay varsa hiçbir maçta boş bırakma" kuralı
+  // tek bir isteğin şansına bağlı kalmaz.
+  const detailedEvents = normalizeFixtureEvents(rawEvents);
+  const embeddedEvents = Array.isArray(match.events) ? match.events : [];
+  const events = detailedEvents.length >= embeddedEvents.length ? detailedEvents : embeddedEvents;
   const statistics = normalizeFixtureStatistics(rawStatistics, match);
   const players = normalizeFixturePlayers(rawPlayers);
   const analysis = buildLiveMatchAnalysis(match, statistics, events);

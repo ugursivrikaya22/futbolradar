@@ -19,6 +19,15 @@ const {
   withTimeout
 } = require("./_utils");
 
+/** Sağlayıcı bu kodlardan birini bildiriyorsa yanıt asla önbelleklenmez. */
+const LIVE_CACHE_STATUSES = ["LIVE", "HALFTIME", "1H", "2H", "ET", "P", "BT", "IN_PLAY", "PAUSED", "INT", "SUSP"];
+
+/** İlk vuruştan bu kadar önce önbellek kapanır — kick-off yanıtı donmasın. */
+const PRE_KICKOFF_NO_STORE_MS = 10 * 60 * 1000;
+
+/** İlk vuruştan sonra maçın sürebileceği en uzun süre (uzatma + penaltılar). */
+const MATCH_WINDOW_MS = 210 * 60 * 1000;
+
 /** Depo bir kez okunur; işlev örneği boyunca bellekte kalır. */
 let probabilityIndex = null;
 function probabilityLookup() {
@@ -102,11 +111,6 @@ module.exports = async function handler(req, res) {
   if (enforceRateLimit(req, res)) return;
 
   const query = getQuery(req);
-  // The permanent match-day page must see kick-off and full time without
-  // serving the scheduled response from stale-while-revalidate CDN storage.
-  if (String(query.fixtureId || '') === '1635659' || query.id === 'fenerbahce-roma-2026-09-10') {
-    setCachePolicy(res, "match-detail-live");
-  }
   const provider = getProvider("match-detail");
   // SAYFA GÖRÜNTÜLEMESİ TAHMİN İSTEĞİ TETİKLEMEZ. `/predictions` çağrısı
   // zamanlanmış koşuya ait; burada depo okunur (aşağıda `attachProbability`).
@@ -212,12 +216,38 @@ module.exports = async function handler(req, res) {
     }
   }
 
-  // Maç CANLIYSA önbellek politikası no-store'a geçer — bitmiş/başlamamış
-  // maçta üstteki normal politika (kısa CDN önbelleği) geçerli kalır,
-  // çünkü orada içerik dakikalarca değişmiyor ve önbellek gerçek bir
-  // fayda sağlıyor.
+  // ÖNBELLEK KAPISI MAÇ PENCERESİNE GÖRE AÇILIR, DURUM KODUNA GÖRE DEĞİL.
+  //
+  // Eski kural yalnızca sağlayıcı ZATEN "canlı" diyorsa no-store'a geçiyordu
+  // ve bu, düzeltmesi gereken anı tam olarak dışarıda bırakıyordu: başlama
+  // saatinden hemen önceki yanıt "Başlamadı" içeriğiyle CDN'e yazılıyor
+  // (s-maxage=30 + stale-while-revalidate=120), maç başladıktan sonra da iki
+  // buçuk dakikaya kadar o yanıt servis ediliyordu. Depoda bu sorunun izi
+  // duruyordu: TEK bir fikstür kimliği (Fenerbahçe-Roma) elle koda
+  // yazılarak no-store'a alınmıştı. Aynı hata diğer bütün maçlarda
+  // düzeltilmeden kalmıştı — kuralın maça özel değil, genel olması gerekir.
+  //
+  // Yeni kural: maç PENCERESİ içindeyken (başlamaya 10 dakika kala başlar,
+  // ilk vuruştan 3,5 saat sonra biter) yanıt hiç önbelleklenmez. Bu
+  // pencere, uzatma ve penaltılar dahil en uzun maçı ve sağlayıcının durum
+  // kodunu geç güncellediği aralığı birlikte kapsar. Pencerenin dışında —
+  // yarınki maç, dünkü sonuç — içerik dakikalarca değişmiyor ve kısa CDN
+  // önbelleği gerçek bir fayda sağlıyor; orada eski politika sürüyor.
+  //
+  // Sağlayıcı canlı/devam eden bir durum bildiriyorsa pencere hesabından
+  // bağımsız olarak yine no-store: kod her zaman saat hesabını ezer.
   const status = String((detail && (detail.status || detail.providerStatus)) || "").toUpperCase();
-  if (["LIVE", "HALFTIME", "1H", "2H", "ET", "P", "BT", "IN_PLAY", "PAUSED"].includes(status)) {
+  const kickoffAt = Date.parse((detail && (detail.kickoff || detail.date)) || "");
+  const sinceKickoff = Number.isNaN(kickoffAt) ? null : Date.now() - kickoffAt;
+  const inMatchWindow = sinceKickoff !== null &&
+    sinceKickoff > -PRE_KICKOFF_NO_STORE_MS &&
+    sinceKickoff < MATCH_WINDOW_MS;
+
+  // Kayıt HİÇ çözülemediyse (sağlayıcı hatası + kürasyonlu karşılığı yok)
+  // yanıt boş döner. Boş yanıtın önbelleklenmesi, geçici bir sağlayıcı
+  // kesintisini iki buçuk dakika boyunca "maç yok" olarak dondururdu;
+  // istemcinin bir sonraki yoklaması da aynı boş yanıta çarpardı.
+  if (!detail || inMatchWindow || LIVE_CACHE_STATUSES.includes(status)) {
     setCachePolicy(res, "match-detail-live");
   }
 

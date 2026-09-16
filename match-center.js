@@ -32,9 +32,34 @@
   var titlePost = root.getAttribute("data-msp-title-post") || "";
 
   if (!query || isNaN(kickoffMs)) return;
-  if (state === "post" || state === "cancelled" || state === "postponed") return;
+  // Oynanmayacak maçta yoklanacak bir şey yok.
+  if (state === "cancelled" || state === "postponed") return;
 
-  var LIVE_POLL_MS = 45000;
+  /**
+   * BİTMİŞ SAYFADA GERİYE DÖNÜK TAMAMLAMA.
+   *
+   * Sağlayıcı gol/kart akışını son düdükle birlikte yayımlamıyor; olaylar
+   * çoğu zaman dakikalar sonra tamamlanıyor. Sayfa "post" durumunda
+   * üretildiyse bu betik eskiden HİÇ çalışmıyordu ve o gecikmeyle gelen
+   * olaylar sayfaya bir daha hiç girmiyordu: maç bitmiş, skor doğru, olaylar
+   * bölümü kalıcı olarak boş. Artık bitmiş sayfa da SADECE olayları eksikse
+   * ve SADECE sınırlı sayıda yoklanır — dolduğu anda döngü durur, dolu
+   * sayfada ise tek bir istek bile atılmaz.
+   */
+  var eventsSection = root.querySelector("[data-msp-events]");
+  var eventsFilled = Boolean(eventsSection && eventsSection.querySelector(".msp-event"));
+  var backfillOnly = state === "post" && !eventsFilled;
+  var backfillLeft = backfillOnly ? 8 : 0;
+  if (state === "post" && !backfillOnly) return;
+
+  var LIVE_POLL_MS = 30000;
+  // İLK VURUŞ PENCERESİ. "Başlamadı"nın "Canlı"ya dönmesi gereken tek an bu;
+  // burada 30 saniye bile görünür bir gecikme (gol atılmış, sayfa hâlâ maç
+  // öncesi). Pencere dar tutuldu ki ek yoklama kotaya yayılmasın.
+  var KICKOFF_POLL_MS = 15000;
+  var KICKOFF_WINDOW_BEFORE_MS = 3 * 60 * 1000;
+  var KICKOFF_WINDOW_AFTER_MS = 15 * 60 * 1000;
+  var BACKFILL_POLL_MS = 90000;
   var PRE_POLL_MS = 120000;
   var GRACE_MS = 150 * 60 * 1000;
   var LIVE_CODES = { LIVE: 1, HALFTIME: 1, INTERRUPTED: 1, "1H": 1, "2H": 1, HT: 1, ET: 1, BT: 1, P: 1, IN_PLAY: 1, PAUSED: 1, SUSP: 1, INT: 1 };
@@ -183,6 +208,28 @@
       .replace("{as}", String(detail.score.away));
   }
 
+  /**
+   * OLAYLARIN YAZILACAĞI KABI GARANTİ EDER.
+   *
+   * Bölüm "olay yok" notuyla üretilmiş olabilir; o durumda yazılacak kap
+   * yoktur (bkz. scripts/lib/matchSeoPage.mjs#eventsSectionHtml). Üretici
+   * artık kabı her zaman basıyor, ama YAYINDA DURAN sayfalar bir sonraki
+   * yeniden üretime kadar eski biçimde kalıyor. Kap yoksa burada açılır:
+   * geriye dönük tamamlama, sayfanın yeniden üretilmesini beklemez.
+   */
+  function ensureEventsBody() {
+    var body = root.querySelector("[data-msp-events-body]");
+    if (body) return body;
+    var section = root.querySelector("[data-msp-events]");
+    if (!section) return null;
+    body = document.createElement("div");
+    body.setAttribute("data-msp-events-body", "");
+    var note = section.querySelector("[data-msp-events-note]");
+    if (note && note.parentNode) note.parentNode.replaceChild(body, note);
+    else section.appendChild(body);
+    return body;
+  }
+
   function render(detail) {
     var status = statusOf(detail);
     var score = detail && detail.score;
@@ -232,8 +279,11 @@
     setTitle(status === "finished" ? titlePost : titleLive, detail);
 
     var events = normalizeEvents(detail);
-    var eventsBody = root.querySelector("[data-msp-events-body]");
-    if (eventsBody && events.length) eventsBody.innerHTML = eventsHtml(events);
+    var eventsBody = ensureEventsBody();
+    if (eventsBody && events.length) {
+      eventsBody.innerHTML = eventsHtml(events);
+      eventsFilled = true;
+    }
 
     var statsBody = root.querySelector("[data-msp-stats-body]");
     var stats = statsHtml(detail.statistics);
@@ -251,7 +301,10 @@
       /* CustomEvent desteklenmiyorsa paylaşım satırı çizilmez, sayfa çalışır */
     }
 
-    if (status === "finished") finished = true;
+    // DÖNGÜYÜ ÇİZİM DURDURMAZ. "Bitti" kararı yoklama döngüsüne ait (tick):
+    // maç bitmiş ama olaylar henüz gelmemişse döngü tamamlama moduna geçiyor
+    // ve burada kurulan bir `finished` bayrağı o modu daha başlamadan
+    // kapatırdı (schedule, bayrak kalkıkken hiç zamanlayıcı kurmaz).
   }
 
   /**
@@ -296,11 +349,29 @@
     timer = setTimeout(tick, delay);
   }
 
+  /**
+   * BİR SONRAKİ YOKLAMAYA NE KADAR VAR?
+   *
+   * Tek yerde toplandı ki "canlıyken 30 sn" kuralıyla "ilk vuruş penceresinde
+   * 15 sn" kuralı iki ayrı dalda birbirinden habersiz kalmasın.
+   */
+  function nextDelay(status, now) {
+    if (backfillOnly) return BACKFILL_POLL_MS;
+    var sinceKickoff = now - kickoffMs;
+    var atKickoff = sinceKickoff > -KICKOFF_WINDOW_BEFORE_MS && sinceKickoff < KICKOFF_WINDOW_AFTER_MS;
+    if (status === "live" || status === "halftime") return atKickoff ? KICKOFF_POLL_MS : LIVE_POLL_MS;
+    // Sağlayıcı hâlâ "başlamadı" diyor ama saat geçti: durumun dönmesini
+    // bekleyen tek yüzey bu sayfa, o yüzden pencere içinde sık sorulur.
+    if (atKickoff) return KICKOFF_POLL_MS;
+    if (status === "scheduled" && sinceKickoff > GRACE_MS) return 15 * 60 * 1000;
+    return status === "scheduled" ? PRE_POLL_MS : LIVE_POLL_MS;
+  }
+
   function tick() {
     timer = null;
     if (document.hidden) { schedule(LIVE_POLL_MS); return; }
     var now = Date.now();
-    if (now < kickoffMs - 5 * 60 * 1000) { schedule(Math.min(kickoffMs - 5 * 60 * 1000 - now, PRE_POLL_MS)); return; }
+    if (!backfillOnly && now < kickoffMs - 5 * 60 * 1000) { schedule(Math.min(kickoffMs - 5 * 60 * 1000 - now, PRE_POLL_MS)); return; }
     // DİL SUNUCUYA SÖYLENİR. "Son 10 dakika" yorumu sunucuda, şablondan
     // üretiliyor (services/radarPulseBuilder.js); istek dili taşımazsa
     // sunucu Türkçe varsayar ve İNGİLİZCE sayfada Türkçe bir cümle çıkar.
@@ -312,10 +383,28 @@
         var detail = rows[0] || null;
         if (detail) render(detail);
         var status = detail ? statusOf(detail) : "scheduled";
+
+        // GERİYE DÖNÜK TAMAMLAMA DÖNGÜSÜ. Bitmiş maç normalde ilk yanıtta
+        // durur; burada durma koşulu "maç bitti" değil, "olaylar geldi".
+        // Sağlayıcı hiç vermeyecekse deneme sayısı tükendiğinde durulur —
+        // sonsuz yoklama yok.
+        if (backfillOnly) {
+          backfillLeft -= 1;
+          if (eventsFilled || backfillLeft <= 0) { finished = true; return; }
+          schedule(BACKFILL_POLL_MS);
+          return;
+        }
+
+        // Maç bitti ama olaylar henüz gelmedi: sayfayı eksik bırakmamak için
+        // tamamlama moduna geçilir (aynı sınırlı deneme bütçesiyle).
+        if (status === "finished" && !eventsFilled) {
+          backfillOnly = true;
+          backfillLeft = 8;
+          schedule(BACKFILL_POLL_MS);
+          return;
+        }
         if (status === "finished") { finished = true; return; }
-        // Başlama saati çok geçti ve sağlayıcı canlı demiyor: nadir yokla.
-        var stale = status === "scheduled" && now - kickoffMs > GRACE_MS;
-        schedule(stale ? 15 * 60 * 1000 : status === "scheduled" ? PRE_POLL_MS : LIVE_POLL_MS);
+        schedule(nextDelay(status, now));
       })
       .catch(function () { schedule(LIVE_POLL_MS * 2); });
   }

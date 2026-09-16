@@ -1126,8 +1126,16 @@ export function eventsSectionHtml(events, ctx) {
     const cards = events.filter((event) => ["yellow", "red", "yellow-red"].includes(event.kind));
     const subs = events.filter((event) => event.kind === "sub");
     const vars = events.filter((event) => event.kind === "var" || event.kind === "missed-penalty");
+    // OLAY KABI HER ZAMAN BASILIR — BOŞ OLSA BİLE.
+    //
+    // Eskiden olay listesi boş olan bitmiş bir maçta yalnızca "ayrıntı yok"
+    // notu basılıyor, `data-msp-events-body` kabı HİÇ var olmuyordu. Sağlayıcı
+    // olayları maç bittikten dakikalar sonra yayımladığında (sık görülür)
+    // istemci (match-center.js) yazacak kabı bulamıyor ve sayfa kalıcı olarak
+    // "ayrıntı yok" ile dondu kalıyordu: veri sonradan GELİYOR ama gösterilecek
+    // yeri yok. Kap her durumda basılırsa geriye dönük tamamlama mümkün olur.
     if (!events.length) {
-      return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><p class="muted-copy" data-msp-events-note>${escapeHtml(text.noDetail)}</p></section>`;
+      return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body><p class="muted-copy" data-msp-events-note>${escapeHtml(text.noDetail)}</p></div></section>`;
     }
     const block = (heading, rows) => rows.length ? `<h3 class="msp-subtitle">${escapeHtml(heading)}</h3>${eventsListHtml(rows, text)}` : "";
     return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(text.goalsTitle, goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
