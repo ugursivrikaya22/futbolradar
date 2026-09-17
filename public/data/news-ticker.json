@@ -1,7 +1,69 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-17T17:10:14.594Z",
+  "updatedAt": "2026-09-17T19:06:31.960Z",
   "items": [
+    {
+      "id": "auto-news-6d251e3285110058d919",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kadın Futbol Takımımız düzenlenen yemekte bir araya geldi",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-17T18:52:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxNaFF0bWlfS05DSjd3OWFvMVhYMDVLSV9mdGEtOFdjbDVhREJheVRZaHJfOU5uR2ZubGZZUFM2V0oxUEtvaXlrdXZBcmlGcTFnajFqM2pDUndjQjJ2b3F1bzM2eklmUTNJZTRGYTQ2TFl3WE55aTBmNmZrWnIyV3FpMU05V2Y2bUdNaER2czh5N0FNd1pzSXVOYkxMWjRpblBOclJfQW1xZUpkU2hMTWRtelE2Q1luYmdi?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-3f065000453845d82c7f",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe Tarfin, EuroLeague Süper Kupa organizasyonunda parkeye çıkıyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-17T15:16:14.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNN3VqSjVHOHd2X1VfaGlpcm1IUXZZNFEtQ3NoQTlmOWVKeXdZRThpdDkyd3YwbkxyUGMtNFdkODB0NE40YkhfcENDOS1tSmgyZW93dXFRLWFyYWlZQWFfTDFSb00xdU9WZ0wxYm5KU2Zxckl5WE1DSFczRXVCcWg3LUtPcWlfQ1Nvd3dsWHI2SHJvMGYtYlRBNHhvcTRJRk94b0ZmS2RUUWViTUN4cjlOQ040ZFNoZzA4S0JZYUlYNlNZRGlCcE9JMDZ5SQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 3,
+        "firstSeenAt": "2026-09-17T12:01:11.000Z"
+      }
+    },
+    {
+      "id": "auto-news-4d9c367d402541fd8524",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "transfer",
+      "text": "Teknik Direktörümüz Thomas Reis için Papara Park’ta imza töreni düzenlendi",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-17T14:00:30.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxOOGRzMlUxa0hFQXlwcllrTjdBall6UTc5a0FkZk84a2VQZk14ZndROFMwSDFvejhsQ2JnZ0UyZG1yUGU0dlo2Y2VfdDg2MVJnY1VhVnd6OGxrOXdOdl84QWRXbXhUWGdOUG5uaUFOT0Y4MWJ0Ulp2OG1JMVFSNnJjTG84NjZwR1V0Nk1XaFgxV0RxMHRZN3pYdFpEMEoxa0ZqSlI4bDFNYWdESDNuUzBVS1JsQzdENVZjaWtseg?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-ff16db21286de17fe60e",
       "category": "official",
@@ -43,28 +105,6 @@
       }
     },
     {
-      "id": "auto-news-a25f463dc713af2678c1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe Tarfin, Abu Dhabi’deki ilk antrenmanını yaptı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-17T12:01:11.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxNa1JTblViRDlMWnlULUZZSTcyRmVvbjA2ODcycU1ORXFreFZSeV9HVXFZdnhVYVZTVHNYYmhmX3VuZVhkSm9MQ2UwNFZ2OGZZZ1JTcFgxQ0lOaTMxX3pDc1k2TnpvOHNaeWkyVDhRcU9rcXNHaEZLeHVMNzlmdWpMRU1CeHkwTnFhMlUtVjZFYkN2QXZjbDhyNmtzU0dBNTBhSVpIRjhndVNDbnVndXc3Ty1jM1Q?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-16T20:50:43.000Z"
-      }
-    },
-    {
       "id": "auto-news-7a832a49ef685d32d374",
       "category": "official",
       "confidence": "confirmed",
@@ -81,9 +121,7 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-16T18:50:00.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -401,23 +439,25 @@
       "important": true
     },
     {
-      "id": "auto-news-109019388a854f4a68fa",
-      "category": "club-agenda",
-      "confidence": "reported",
+      "id": "auto-news-be722d330f74e91dee00",
+      "category": "official",
+      "confidence": "confirmed",
       "section": "news",
-      "text": "İsmail Kartal için çok konuşulacak iddia! Fenerbahçe Eyüpspor'a yenilirse...",
-      "team": "Eyüpspor",
-      "timestamp": "2026-09-16T21:17:16.000Z",
+      "text": "2026/27 Europa League: All the league phase fixtures",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-09-17T16:39:38.000Z",
       "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/fenerbahce/2026/09/16/ismail-kartal-icin-cok-konusulacak-iddia-fenerbahce-eyupspora-yenilirse",
-        "publisher": "fotomac.com.tr"
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQaFpDUGprSzVqMGNEV2RmcDlSYkFKalQxQVpLZWxYOEJXcFZtZmdPMzdrak5nYkFiWHlURnQzeDl4bXU0bGx0M2tBX1JFTkN2SDBWWi1kNjZsVXQ2N0tMNHU0aWZteWwtQmlzbG1mVzl2dDhXWlNEVUIwTVdsaENJOEV3ekRCaDNwdjA4dWtEWF9HNm9WcV9jTEtWUzlBUGo1RG41Q01sMmxPLS1fTmFUN21MalVGMEZDZ1lzVi1Pajd1ZktFWjZqbGVaQlE?oc=5",
+        "publisher": "uefa.com"
       },
       "automation": {
         "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "RUMOUR"
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL",
+        "mergedReports": 4,
+        "firstSeenAt": "2026-09-15T09:31:16.000Z"
       }
     },
     {
@@ -437,48 +477,6 @@
         "source": "rss",
         "feed": "uefa",
         "priority": 9,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-59746ea825cac5b515cc",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Europa League Matchday 1 highlights and round-up: Benfica, Sunderland, Lyon sparkle on opening night",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-09-16T21:27:28.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxNeG1yNnV2ZTRuTmJBRjBlNmFENGNUVFdtd3lVTGQ4RWxFRXkyWEkzM09YckZzeWJCLVJhRkJsT3VabDF3dy1OUUE0TF9lU1pzNEQtWlViWjJhWFVWTGdnNWZLdEtkd0drVEgzZlZIa0RneGc2NlI4X3dYbjhrNnQ3T3JOcUhUVFB0REsyZFZNcXJXM2xORWRsUnlBRTYwZGg3STNQMG9TWkloZEI3ZmxfaWpmNWpUS0c4T1hhRHVKZEtpdjhyMlAtLS1MaDNNVVVfWmJpWg?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-09-15T09:31:16.000Z"
-      }
-    },
-    {
-      "id": "auto-news-c71db6cf4f44dbdd6f27",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Profesyonel Kulüplerin Resmî A Takım Oyuncu Listeleri Açıklandı",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-16T13:49:55.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE80ak43N3JiSUZnN2o2dFZaM3hzOTNIRmVHZDhHbl9ZNDl1Si1md3U4VnpTNzJET2trZFpzR2RYVDZ1bGc3S1BIXy1QanMyeGtHSFpuTUVrVlNUMWExU1hjMDZjdjcwdjQ?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
         "status": "OFFICIAL"
       }
     }
