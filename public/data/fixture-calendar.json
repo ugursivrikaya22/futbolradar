@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-09-17T08:41:10.610Z",
+  "fetchedAt": "2026-09-17T14:21:50.077Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -280133,7 +280133,9 @@
       "live": false,
       "score": {
         "home": 0,
-        "away": 0
+        "away": 0,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -280150,8 +280152,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-17T08:41:11.260Z",
-      "staleAfter": "2026-09-17T08:46:11.260Z",
+      "fetchedAt": "2026-09-17T14:21:50.684Z",
+      "staleAfter": "2026-09-17T14:26:50.684Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -285058,8 +285060,8 @@
       "competitionId": "la-liga",
       "providerLeagueId": "140",
       "round": 6,
-      "venue": "Metropolitano Stadium",
-      "referee": "F. Maeso",
+      "venue": "Riyadh Air Metropolitano",
+      "referee": "Francisco Hernandez Maeso, Spain",
       "kickoff": "2026-09-16T20:00:00+03:00",
       "time": "20:00",
       "homeTeam": "Atletico Madrid",
@@ -285094,8 +285096,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-17T08:41:11.260Z",
-      "staleAfter": "2026-09-17T08:46:11.260Z",
+      "fetchedAt": "2026-09-17T14:21:50.684Z",
+      "staleAfter": "2026-09-17T14:26:50.684Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -288007,8 +288009,8 @@
       "competitionId": "la-liga",
       "providerLeagueId": "140",
       "round": 6,
-      "venue": "Estadio Municipal de Riazor",
-      "referee": "A. Hernandez",
+      "venue": "Estadio Riazor",
+      "referee": "Alejandro Hernandez, Spain",
       "kickoff": "2026-09-16T20:00:00+03:00",
       "time": "20:00",
       "homeTeam": "Deportivo La Coruna",
@@ -288043,8 +288045,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-17T08:41:11.260Z",
-      "staleAfter": "2026-09-17T08:46:11.260Z",
+      "fetchedAt": "2026-09-17T14:21:50.684Z",
+      "staleAfter": "2026-09-17T14:26:50.684Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -305880,7 +305882,7 @@
       "providerLeagueId": "140",
       "round": 6,
       "venue": "Camp Nou",
-      "referee": "J. Munuera",
+      "referee": "José Luis Munuera Montero, Spain",
       "kickoff": "2026-09-16T22:30:00+03:00",
       "time": "22:30",
       "homeTeam": "Barcelona",
@@ -305915,8 +305917,8 @@
       "events": [],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-17T08:41:11.260Z",
-      "staleAfter": "2026-09-17T08:46:11.260Z",
+      "fetchedAt": "2026-09-17T14:21:50.684Z",
+      "staleAfter": "2026-09-17T14:26:50.684Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -311610,14 +311612,14 @@
       "awayTeamId": "28382",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/19299.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/28382.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 10,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -311633,11 +311635,122 @@
       "goalExpectation": null,
       "goalPotential": null,
       "risk": null,
-      "events": [],
+      "events": [
+        {
+          "time": "1'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Kinali · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "4'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Aksakal · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "6'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Ozbahceci · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "30'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Erol · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "32'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Aksakal · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "35'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Karahan · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "39'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Karahan · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "50'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Y. Kobya · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "70'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Ozturk · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "85'",
+          "team": {
+            "name": "Amasyaspor 1968"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "H. Celik · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-17T01:24:08.564Z",
-      "staleAfter": "2026-09-17T01:29:08.564Z",
+      "fetchedAt": "2026-09-17T14:21:50.985Z",
+      "staleAfter": "2026-09-17T14:26:50.985Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -312308,7 +312421,1758 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-17T08:41:14.900Z"
+      "predictionFetchedAt": "2026-09-17T08:41:14.900Z",
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 85' H. Celik tarafından kaydedildi. Amasyaspor 1968 skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Amasyaspor 1968 tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "85'",
+            "text": "Son gol 85' H. Celik tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "10-0",
+            "text": "Amasyaspor 1968 skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 10,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
+    },
+    {
+      "id": "baku-sportinq-s-bail-2026-09-17",
+      "providerId": "1630440",
+      "league": "Birinci Dasta",
+      "competitionId": "birinci-dasta",
+      "providerLeagueId": "418",
+      "round": 3,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T15:30:00+03:00",
+      "time": "15:30",
+      "homeTeam": "Baku Sportinq",
+      "awayTeam": "Səbail",
+      "homeTeamId": "22788",
+      "awayTeamId": "4199",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/22788.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/4199.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 90,
+      "elapsed": 90,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "28'",
+          "team": {
+            "name": "Səbail"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Y. Said · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1630440"
+      }
+    },
+    {
+      "id": "simal-sahdag-2026-09-17",
+      "providerId": "1630444",
+      "league": "Birinci Dasta",
+      "competitionId": "birinci-dasta",
+      "providerLeagueId": "418",
+      "round": 3,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T15:30:00+03:00",
+      "time": "15:30",
+      "homeTeam": "Şimal",
+      "awayTeam": "Şahdağ",
+      "homeTeamId": "25273",
+      "awayTeamId": "5576",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/25273.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/5576.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 85,
+      "elapsed": 85,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "7'",
+          "team": {
+            "name": "Şahdağ"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "U. Ismayilov · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "37'",
+          "team": {
+            "name": "Şahdağ"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Mammadov · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Şimal"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "C. Kalbaliyev · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "83'",
+          "team": {
+            "name": "Şahdağ"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1630444"
+      }
+    },
+    {
+      "id": "fc-iberia-1999-ii-wit-georgia-2026-09-17",
+      "providerId": "1507444",
+      "league": "Liga 3",
+      "competitionId": "liga-3",
+      "providerLeagueId": "1104",
+      "round": 22,
+      "venue": "Stadioni Bendela",
+      "referee": null,
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "FC Iberia 1999 II",
+      "awayTeam": "WIT Georgia",
+      "homeTeamId": "14863",
+      "awayTeamId": "3504",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/14863.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/3504.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 62,
+      "elapsed": 62,
+      "live": true,
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "20'",
+          "team": {
+            "name": "FC Iberia 1999 II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "akaki menagarishvili · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "37'",
+          "team": {
+            "name": "FC Iberia 1999 II"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Davit Gogilashvili · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1507444"
+      }
+    },
+    {
+      "id": "navbahor-dinamo-samarqand-2026-09-17",
+      "providerId": "1516141",
+      "league": "Super League",
+      "competitionId": "super-league",
+      "providerLeagueId": "369",
+      "round": 22,
+      "venue": "Markaziy Stadium",
+      "referee": "D. Rahmonov",
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "Navbahor",
+      "awayTeam": "Dinamo Samarqand",
+      "homeTeamId": "4216",
+      "awayTeamId": "4224",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/4216.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/4224.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 55,
+      "elapsed": 55,
+      "live": true,
+      "score": {
+        "home": 3,
+        "away": 2
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "7'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "A. Amonov · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "18'",
+          "team": {
+            "name": "Navbahor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "G. Jgerenaia · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "19'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "N. Tukhtasinov · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "21'",
+          "team": {
+            "name": "Navbahor"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Abdurakhmonov · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "26'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Jumaboev · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "27'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Jumaboev · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "39'",
+          "team": {
+            "name": "Navbahor"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "G. Jgerenaia · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "41'",
+          "team": {
+            "name": "Navbahor"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Abdurakhmonov · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "43'",
+          "team": {
+            "name": "Navbahor"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "U. Yusupov · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+6'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Radayev · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "R. Djeparov · Asist: R. Yuldashev · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "Dinamo Samarqand"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "B. Oblakulov · Asist: J. Abdusalomov · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1516141"
+      }
+    },
+    {
+      "id": "khatlon-regar-tadaz-2026-09-17",
+      "providerId": "1527741",
+      "league": "Vysshaya Liga",
+      "competitionId": "vysshaya-liga",
+      "providerLeagueId": "571",
+      "round": 17,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "Khatlon",
+      "awayTeam": "Regar-TadAZ",
+      "homeTeamId": "12265",
+      "awayTeamId": "12268",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/12265.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/12268.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 63,
+      "elapsed": 63,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "21'",
+          "team": {
+            "name": "Regar-TadAZ"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1527741"
+      }
+    },
+    {
+      "id": "mukura-police-2026-09-17",
+      "providerId": "1632487",
+      "league": "National Soccer League",
+      "competitionId": "national-soccer-league",
+      "providerLeagueId": "405",
+      "round": 3,
+      "venue": "Stade Huye",
+      "referee": null,
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "Mukura",
+      "awayTeam": "Police",
+      "homeTeamId": "5320",
+      "awayTeamId": "5322",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/5320.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/5322.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 64,
+      "elapsed": 64,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1632487"
+      }
+    },
+    {
+      "id": "france-u20-w-canada-u20-w-2026-09-17",
+      "providerId": "1639330",
+      "league": "World Cup - U20 - Women",
+      "competitionId": "world-cup-u20-women",
+      "providerLeagueId": "920",
+      "round": 16,
+      "venue": null,
+      "referee": "A. Twanyanyukwa",
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "France U20 W",
+      "awayTeam": "Canada U20 W",
+      "homeTeamId": "19083",
+      "awayTeamId": "19080",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/19083.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/19080.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 63,
+      "elapsed": 63,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "28'",
+          "team": {
+            "name": "Canada U20 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "K. Hunter · Asist: J. Hernandez-Gray · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "33'",
+          "team": {
+            "name": "Canada U20 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "K. Hunter · Asist: J. Okeke · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "France U20 W"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "C. Delcroix · Asist: C. Chabod · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "57'",
+          "team": {
+            "name": "Canada U20 W"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "I. Nourani · Asist: S. Gibson · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1639330"
+      }
+    },
+    {
+      "id": "england-u20-w-nigeria-u20-w-2026-09-17",
+      "providerId": "1639481",
+      "league": "World Cup - U20 - Women",
+      "competitionId": "world-cup-u20-women",
+      "providerLeagueId": "920",
+      "round": 16,
+      "venue": "Stadion Miejski w Bielsku Bialej",
+      "referee": "M. Marcotte",
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "England U20 W",
+      "awayTeam": "Nigeria U20 W",
+      "homeTeamId": "27219",
+      "awayTeamId": "19090",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/27219.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/19090.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 62,
+      "elapsed": 62,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "Nigeria U20 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "T. Rafiu · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "36'",
+          "team": {
+            "name": "England U20 W"
+          },
+          "type": "Goal",
+          "detail": "Missed Penalty",
+          "value": "R. Maltby · Asist: R. Maltby · Missed Penalty",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "46'",
+          "team": {
+            "name": "England U20 W"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "L. Dent · Asist: V. Lia · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "47'",
+          "team": {
+            "name": "Nigeria U20 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Akekoromowei · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "61'",
+          "team": {
+            "name": "Nigeria U20 W"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "R. Kareem · Asist: M. Mamudu · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1639481"
+      }
+    },
+    {
+      "id": "paraguay-u19-argentina-u19-2026-09-17",
+      "providerId": "1640180",
+      "league": "South American Youth Games",
+      "competitionId": "south-american-youth-games",
+      "providerLeagueId": "951",
+      "round": 1,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T16:00:00+03:00",
+      "time": "16:00",
+      "homeTeam": "Paraguay U19",
+      "awayTeam": "Argentina U19",
+      "homeTeamId": "20535",
+      "awayTeamId": "20532",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/20535.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/20532.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 62,
+      "elapsed": 62,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "41'",
+          "team": {
+            "name": "Argentina U19"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Dominguez · Asist: J. Salas · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Paraguay U19"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "J. Gamarra · Asist: E. Delmas · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1640180"
+      }
+    },
+    {
+      "id": "fc-orenburg-fc-krasnodar-2026-09-17",
+      "providerId": "1561400",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "235",
+      "round": 9,
+      "venue": "Gazovik Stadium",
+      "referee": null,
+      "kickoff": "2026-09-17T16:15:00+03:00",
+      "time": "16:15",
+      "homeTeam": "FC Orenburg",
+      "awayTeam": "FC Krasnodar",
+      "homeTeamId": "1080",
+      "awayTeamId": "621",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1080.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/621.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 49,
+      "elapsed": 49,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "17'",
+          "team": {
+            "name": "FC Orenburg"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Aleksey Tataev · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "20'",
+          "team": {
+            "name": "FC Orenburg"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Danila Khotulev · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "31'",
+          "team": {
+            "name": "FC Krasnodar"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Vitor Tormena · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1561400"
+      }
+    },
+    {
+      "id": "ismaily-sc-haras-el-hodood-2026-09-17",
+      "providerId": "1594834",
+      "league": "Second League",
+      "competitionId": "second-league",
+      "providerLeagueId": "887",
+      "round": 5,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T16:30:00+03:00",
+      "time": "16:30",
+      "homeTeam": "Ismaily SC",
+      "awayTeam": "Haras El Hodood",
+      "homeTeamId": "1030",
+      "awayTeamId": "1576",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1030.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1576.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "45'",
+          "team": {
+            "name": "Haras El Hodood"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1594834"
+      }
+    },
+    {
+      "id": "el-mansura-team-2026-09-17",
+      "providerId": "1594835",
+      "league": "Second League",
+      "competitionId": "second-league",
+      "providerLeagueId": "887",
+      "round": 5,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T16:30:00+03:00",
+      "time": "16:30",
+      "homeTeam": "El Mansura",
+      "awayTeam": "Team",
+      "homeTeamId": "16432",
+      "awayTeamId": "25472",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/16432.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/25472.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 44,
+      "elapsed": 44,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "25'",
+          "team": {
+            "name": "El Mansura"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1594835"
+      }
+    },
+    {
+      "id": "tanta-sc-al-nasr-sc-2026-09-17",
+      "providerId": "1594836",
+      "league": "Second League",
+      "competitionId": "second-league",
+      "providerLeagueId": "887",
+      "round": 5,
+      "venue": "Tanta Stadium",
+      "referee": null,
+      "kickoff": "2026-09-17T16:30:00+03:00",
+      "time": "16:30",
+      "homeTeam": "Tanta SC",
+      "awayTeam": "AL Nasr SC",
+      "homeTeamId": "1045",
+      "awayTeamId": "2617",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1045.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/2617.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "37'",
+          "team": {
+            "name": "Tanta SC"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1594836"
+      }
+    },
+    {
+      "id": "el-dakhleya-tersana-2026-09-17",
+      "providerId": "1594833",
+      "league": "Second League",
+      "competitionId": "second-league",
+      "providerLeagueId": "887",
+      "round": 5,
+      "venue": "Police Academy Stadium",
+      "referee": null,
+      "kickoff": "2026-09-17T16:30:00+03:00",
+      "time": "16:30",
+      "homeTeam": "El Dakhleya",
+      "awayTeam": "Tersana",
+      "homeTeamId": "1032",
+      "awayTeamId": "15739",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1032.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/15739.png",
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "14'",
+          "team": {
+            "name": "Tersana"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1594833"
+      }
+    },
+    {
+      "id": "kalamata-larisa-2026-09-17",
+      "providerId": "1635501",
+      "league": "Cup",
+      "competitionId": "cup",
+      "providerLeagueId": "199",
+      "round": 3,
+      "venue": "Kalamata Metropolitan Stadium",
+      "referee": "M. Gioumatzidis",
+      "kickoff": "2026-09-17T16:30:00+03:00",
+      "time": "16:30",
+      "homeTeam": "Kalamata",
+      "awayTeam": "Larisa",
+      "homeTeamId": "5046",
+      "awayTeamId": "953",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/5046.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/953.png",
+      "status": "HALFTIME",
+      "providerStatus": "HT",
+      "minute": 45,
+      "elapsed": 45,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "14'",
+          "team": {
+            "name": "Larisa"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "A. Parras · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "21'",
+          "team": {
+            "name": "Kalamata"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "J. Bonetto · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "42'",
+          "team": {
+            "name": "Larisa"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "A. Parras · Asist: V. Nikokyrakis · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45'",
+          "team": {
+            "name": "Larisa"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "V. Nikokyrakis · Asist: N. Nitsos · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1635501"
+      }
+    },
+    {
+      "id": "fc-astana-kairat-almaty-2026-09-17",
+      "providerId": "1528103",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "389",
+      "round": 27,
+      "venue": "Astana Arena",
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "FC Astana",
+      "awayTeam": "Kairat Almaty",
+      "homeTeamId": "562",
+      "awayTeamId": "664",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/562.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/664.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 22,
+      "elapsed": 22,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "11'",
+          "team": {
+            "name": "Kairat Almaty"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "A. Sadybekov · Red Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "14'",
+          "team": {
+            "name": "FC Astana"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Karimov · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1528103"
+      }
+    },
+    {
+      "id": "fk-tobol-kostanay-yelimay-semey-2026-09-17",
+      "providerId": "1528106",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "389",
+      "round": 27,
+      "venue": "Centralnyj Stadion",
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "FK Tobol Kostanay",
+      "awayTeam": "Yelimay Semey",
+      "homeTeamId": "2259",
+      "awayTeamId": "21011",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/2259.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/21011.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 21,
+      "elapsed": 21,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "16'",
+          "team": {
+            "name": "Yelimay Semey"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "F. Placca · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1528106"
+      }
+    },
+    {
+      "id": "graficar-ofk-bor-1919-2026-09-17",
+      "providerId": "1554317",
+      "league": "Prva Liga",
+      "competitionId": "prva-liga",
+      "providerLeagueId": "287",
+      "round": 9,
+      "venue": "Stadion Rajko Mit",
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "Grafičar",
+      "awayTeam": "OFK Bor 1919",
+      "homeTeamId": "4252",
+      "awayTeamId": "26409",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/4252.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/26409.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 20,
+      "elapsed": 20,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "4'",
+          "team": {
+            "name": "Grafičar"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Lazic · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1554317"
+      }
+    },
+    {
+      "id": "tekstilshchik-rotor-volgograd-2026-09-17",
+      "providerId": "1577536",
+      "league": "First League",
+      "competitionId": "first-league",
+      "providerLeagueId": "236",
+      "round": 12,
+      "venue": "Stadion Tekstilshchik",
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "Tekstilshchik",
+      "awayTeam": "Rotor Volgograd",
+      "homeTeamId": "3984",
+      "awayTeamId": "2010",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/3984.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/2010.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 21,
+      "elapsed": 21,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "11'",
+          "team": {
+            "name": "Tekstilshchik"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Abdullo Dzhebov · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1577536"
+      }
+    },
+    {
+      "id": "masr-olympic-el-qanah-2026-09-17",
+      "providerId": "1612241",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "233",
+      "round": 5,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "Masr",
+      "awayTeam": "Olympic El Qanah",
+      "homeTeamId": "7520",
+      "awayTeamId": "13822",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/7520.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/13822.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 21,
+      "elapsed": 21,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "15'",
+          "team": {
+            "name": "Masr"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Mohamed Shawky · Yellow Card",
+          "comments": "Dissent",
+          "providerEventAt": null
+        },
+        {
+          "time": "16'",
+          "team": {
+            "name": "Masr"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Mohamed Shawky · Red Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1612241"
+      }
+    },
+    {
+      "id": "updf-maroons-2026-09-17",
+      "providerId": "1635266",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "585",
+      "round": 4,
+      "venue": "Hamz Stadium",
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "UPDF",
+      "awayTeam": "Maroons",
+      "homeTeamId": "12466",
+      "awayTeamId": "12454",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/12466.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/12454.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 20,
+      "elapsed": 20,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1635266"
+      }
+    },
+    {
+      "id": "alga-kara-balta-2026-09-17",
+      "providerId": "1639702",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "569",
+      "round": 24,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "Alga",
+      "awayTeam": "Kara-Balta",
+      "homeTeamId": "12235",
+      "awayTeamId": "12238",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/12235.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/12238.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 20,
+      "elapsed": 20,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1639702"
+      }
+    },
+    {
+      "id": "djibouti-u20-sudan-u20-2026-09-17",
+      "providerId": "1639474",
+      "league": "CECAFA U20 Championship",
+      "competitionId": "cecafa-u20-championship",
+      "providerLeagueId": "1159",
+      "round": 2,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-17T17:00:00+03:00",
+      "time": "17:00",
+      "homeTeam": "Djibouti U20",
+      "awayTeam": "Sudan U20",
+      "homeTeamId": "19625",
+      "awayTeamId": "11046",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/19625.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/11046.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 64,
+      "elapsed": 64,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "2'",
+          "team": {
+            "name": "Sudan U20"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "52'",
+          "team": {
+            "name": "Sudan U20"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-17T14:21:50.471Z",
+      "staleAfter": "2026-09-17T14:23:20.471Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1639474"
+      }
     },
     {
       "id": "orduspor-1967-torul-belediye-genclik-2026-09-17",
@@ -313025,7 +314889,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:44.173Z"
+      "predictionFetchedAt": "2026-09-17T14:21:56.069Z"
     },
     {
       "id": "levski-sofia-red-bull-salzburg-2026-09-17",
@@ -313415,8 +315279,8 @@
             "last_5": {
               "played": 4,
               "form": "83%",
-              "att": "47%",
-              "def": "82%",
+              "att": "100%",
+              "def": "50%",
               "goals": {
                 "for": {
                   "total": 8,
@@ -313747,7 +315611,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:44.378Z"
+      "predictionFetchedAt": "2026-09-17T14:21:56.323Z"
     },
     {
       "id": "ofi-1899-hoffenheim-2026-09-17",
@@ -313836,7 +315700,7 @@
             "last_5": {
               "played": 2,
               "form": "100%",
-              "att": "29%",
+              "att": "83%",
               "def": "100%",
               "goals": {
                 "for": {
@@ -314469,7 +316333,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:44.571Z"
+      "predictionFetchedAt": "2026-09-17T14:21:56.498Z"
     },
     {
       "id": "real-betis-getafe-2026-09-17",
@@ -314558,8 +316422,8 @@
             "last_5": {
               "played": 5,
               "form": "80%",
-              "att": "47%",
-              "def": "60%",
+              "att": "35%",
+              "def": "70%",
               "goals": {
                 "for": {
                   "total": 7,
@@ -314864,8 +316728,8 @@
             "last_5": {
               "played": 5,
               "form": "33%",
-              "att": "20%",
-              "def": "60%",
+              "att": "15%",
+              "def": "70%",
               "goals": {
                 "for": {
                   "total": 3,
@@ -315905,7 +317769,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-09-16T22:57:44.765Z"
+      "predictionFetchedAt": "2026-09-17T14:21:56.675Z"
     },
     {
       "id": "besiktas-marseille-2026-09-17",
@@ -315962,7 +317826,681 @@
       "risk": null,
       "events": [],
       "providerName": "api-football",
-      "needsReview": false
+      "needsReview": false,
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 3,
+          "name": "UEFA Europa League",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/3.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 549,
+            "name": "Beşiktaş",
+            "logo": "https://media.api-sports.io/football/teams/549.png",
+            "last_5": {
+              "played": 5,
+              "form": "80%",
+              "att": "100%",
+              "def": "83%",
+              "goals": {
+                "for": {
+                  "total": 7,
+                  "average": "1.4"
+                },
+                "against": {
+                  "total": 1,
+                  "average": "0.2"
+                }
+              }
+            },
+            "league": {
+              "form": "WWWWWL",
+              "fixtures": {
+                "played": {
+                  "home": 3,
+                  "away": 3,
+                  "total": 6
+                },
+                "wins": {
+                  "home": 3,
+                  "away": 2,
+                  "total": 5
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 1,
+                  "total": 1
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 5,
+                    "away": 3,
+                    "total": 8
+                  },
+                  "average": {
+                    "home": "1.7",
+                    "away": "1.0",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 2,
+                      "percentage": "25.00%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "12.50%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "25.00%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 5,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 2,
+                      "under": 4
+                    },
+                    "2.5": {
+                      "over": 1,
+                      "under": 5
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 6
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 6
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 1,
+                    "total": 1
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.3",
+                    "total": "0.2"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "100.00%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 1,
+                      "under": 5
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 6
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 6
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 6
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 6
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 5,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": "3-0",
+                  "away": "0-2"
+                },
+                "loses": {
+                  "home": null,
+                  "away": "1-0"
+                },
+                "goals": {
+                  "for": {
+                    "home": 3,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 1
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 3,
+                "away": 2,
+                "total": 5
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 1,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 2,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 2
+              },
+              "lineups": [
+                {
+                  "formation": "4-1-4-1",
+                  "played": 4
+                },
+                {
+                  "formation": "4-3-3",
+                  "played": 1
+                }
+              ],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "46-60": {
+                    "total": 1,
+                    "percentage": "10.00%"
+                  },
+                  "61-75": {
+                    "total": 2,
+                    "percentage": "20.00%"
+                  },
+                  "76-90": {
+                    "total": 6,
+                    "percentage": "60.00%"
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": 1,
+                    "percentage": "100.00%"
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 81,
+            "name": "Marseille",
+            "logo": "https://media.api-sports.io/football/teams/81.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "att": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "def": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "total": {
+            "home": "0%",
+            "away": "0%"
+          }
+        },
+        "h2h": []
+      },
+      "predictionFetchedAt": "2026-09-17T14:21:56.854Z"
     },
     {
       "id": "celtic-ferencvarosi-tc-2026-09-17",
@@ -316352,8 +318890,8 @@
             "last_5": {
               "played": 5,
               "form": "73%",
-              "att": "53%",
-              "def": "82%",
+              "att": "100%",
+              "def": "50%",
               "goals": {
                 "for": {
                   "total": 9,
@@ -316903,7 +319441,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-09-16T22:57:44.963Z"
+      "predictionFetchedAt": "2026-09-17T14:21:57.034Z"
     },
     {
       "id": "crystal-palace-lech-poznan-2026-09-17",
@@ -317293,8 +319831,8 @@
             "last_5": {
               "played": 4,
               "form": "83%",
-              "att": "88%",
-              "def": "88%",
+              "att": "100%",
+              "def": "67%",
               "goals": {
                 "for": {
                   "total": 15,
@@ -317625,7 +320163,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:45.152Z"
+      "predictionFetchedAt": "2026-09-17T14:21:57.207Z"
     },
     {
       "id": "juventus-nec-nijmegen-2026-09-17",
@@ -318342,7 +320880,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:45.339Z"
+      "predictionFetchedAt": "2026-09-17T14:21:57.380Z"
     },
     {
       "id": "lillestrom-torreense-2026-09-17",
@@ -318431,8 +320969,8 @@
             "last_5": {
               "played": 2,
               "form": "67%",
-              "att": "12%",
-              "def": "94%",
+              "att": "33%",
+              "def": "83%",
               "goals": {
                 "for": {
                   "total": 2,
@@ -319064,7 +321602,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:45.527Z"
+      "predictionFetchedAt": "2026-09-17T14:21:57.554Z"
     },
     {
       "id": "plzen-union-st-gilloise-2026-09-17",
@@ -319153,8 +321691,8 @@
             "last_5": {
               "played": 2,
               "form": "50%",
-              "att": "29%",
-              "def": "76%",
+              "att": "83%",
+              "def": "33%",
               "goals": {
                 "for": {
                   "total": 5,
@@ -319790,7 +322328,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-16T22:57:45.723Z"
+      "predictionFetchedAt": "2026-09-17T14:21:57.733Z"
     },
     {
       "id": "real-sociedad-bournemouth-2026-09-17",
@@ -320648,7 +323186,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-09-16T22:57:45.916Z"
+      "predictionFetchedAt": "2026-09-17T14:21:57.906Z"
     },
     {
       "id": "malaga-villarreal-2026-09-17",
@@ -320737,8 +323275,8 @@
             "last_5": {
               "played": 5,
               "form": "20%",
-              "att": "13%",
-              "def": "47%",
+              "att": "10%",
+              "def": "60%",
               "goals": {
                 "for": {
                   "total": 2,
@@ -321051,8 +323589,8 @@
             "last_5": {
               "played": 5,
               "form": "13%",
-              "att": "47%",
-              "def": "33%",
+              "att": "35%",
+              "def": "50%",
               "goals": {
                 "for": {
                   "total": 7,
@@ -321365,8 +323903,8 @@
             "away": "44%"
           },
           "poisson_distribution": {
-            "home": "51%",
-            "away": "49%"
+            "home": "49%",
+            "away": "51%"
           },
           "h2h": {
             "home": "29%",
@@ -321377,8 +323915,8 @@
             "away": "75%"
           },
           "total": {
-            "home": "40.5%",
-            "away": "59.5%"
+            "home": "40.2%",
+            "away": "59.8%"
           }
         },
         "h2h": [
@@ -322084,7 +324622,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-09-16T22:57:46.109Z"
+      "predictionFetchedAt": "2026-09-17T14:21:58.079Z"
     },
     {
       "id": "erzurumspor-fk-samsunspor-2026-09-20",

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-17T08:41:14.965Z",
+  "updatedAt": "2026-09-17T14:21:58.091Z",
   "predictionCount": 56,
   "predictions": [
     {
@@ -3091,7 +3091,8 @@
       "calculatedAt": "2026-09-17T08:41:14.383Z",
       "expiresAt": "2026-09-17T10:00:00.000Z",
       "refreshStage": "T-6h",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-09-17T14:21:55.686Z"
     },
     {
       "fixtureId": "orduspor-1967-torul-belediye-genclik-2026-09-17",
@@ -3153,10 +3154,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:44.173Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T10:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:56.068Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T14:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3219,10 +3220,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:44.378Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T10:45:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:56.323Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T15:15:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3285,10 +3286,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:44.571Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T10:45:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:56.498Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T15:15:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3358,108 +3359,76 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:44.765Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T11:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:56.675Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T15:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
       "fixtureId": "besiktas-marseille-2026-09-17",
-      "providerFixtureId": null,
+      "providerFixtureId": "1636232",
       "competitionId": "avrupa-ligi",
-      "leagueId": null,
+      "leagueId": "3",
       "season": null,
       "kickoff": "2026-09-17T22:00:00+03:00",
       "homeTeam": "Beşiktaş",
       "awayTeam": "Marseille",
-      "homeTeamId": null,
-      "awayTeamId": null,
-      "source": "futbolradar_model",
-      "homeProbability": 73,
-      "drawProbability": 16,
-      "awayProbability": 11,
-      "predictedWinner": {
-        "id": null,
-        "name": "Beşiktaş",
-        "side": "home",
-        "comment": null
-      },
-      "advice": null,
+      "homeTeamId": "549",
+      "awayTeamId": "81",
+      "source": "provider_prediction",
+      "homeProbability": 34,
+      "drawProbability": 33,
+      "awayProbability": 33,
+      "predictedWinner": null,
+      "advice": "No predictions available",
       "underOver": null,
-      "predictedGoals": {
-        "home": "2.42",
-        "away": "0.6"
-      },
-      "comparison": null,
-      "confidence": 67,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.42,
-        "away": 0.6
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 58,
-        "under": 42
-      },
-      "bothTeamsScore": 41,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "blended",
-        "baselinePull": 0.16,
-        "baselineSampleSize": 27,
-        "home": {
-          "matches": 10,
-          "venueMatches": 7,
-          "attackStrength": 1.5,
-          "defenseStrength": 0.65,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 2.4,
-          "cleanSheetRate": 0.6,
-          "winRate": 0.8,
-          "absences": 3
+      "predictedGoals": null,
+      "comparison": {
+        "form": {
+          "home": 100,
+          "away": 0
         },
-        "away": {
-          "matches": 6,
-          "venueMatches": 2,
-          "attackStrength": 0.74,
-          "defenseStrength": 1.01,
-          "formDelta": -0.4,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0.17,
-          "winRate": 0.33,
-          "absences": null
+        "att": {
+          "home": 100,
+          "away": 0
+        },
+        "def": {
+          "home": 0,
+          "away": 100
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 0,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "no-verified-provider-fixture-id"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "no-verified-provider-fixture-id"
+        "total": {
+          "home": 0,
+          "away": 0
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-09-16T20:05:43.944Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-09-17T14:21:56.854Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3529,10 +3498,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:44.963Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:57.034Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3595,10 +3564,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:45.152Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:57.207Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3661,10 +3630,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:45.339Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:57.380Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3727,10 +3696,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:45.527Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:57.554Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3793,10 +3762,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:45.723Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:57.733Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3863,10 +3832,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:45.916Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:57.906Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T17:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3909,8 +3878,8 @@
           "away": 44
         },
         "poisson_distribution": {
-          "home": 51,
-          "away": 49
+          "home": 49,
+          "away": 51
         },
         "h2h": {
           "home": 29,
@@ -3921,8 +3890,8 @@
           "away": 75
         },
         "total": {
-          "home": 40.5,
-          "away": 59.5
+          "home": 40.2,
+          "away": 59.8
         }
       },
       "confidence": null,
@@ -3936,10 +3905,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-09-16T22:57:46.109Z",
-      "calculatedAt": "2026-09-16T22:57:43.500Z",
-      "expiresAt": "2026-09-17T13:30:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-09-17T14:21:58.079Z",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-17T18:00:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -3954,27 +3923,33 @@
       "homeTeamId": null,
       "awayTeamId": null,
       "source": "futbolradar_model",
-      "homeProbability": 35,
+      "homeProbability": 36,
       "drawProbability": 28,
-      "awayProbability": 37,
+      "awayProbability": 36,
       "predictedWinner": {
         "id": null,
-        "name": "Samsunspor",
-        "side": "away",
+        "name": null,
+        "side": "draw",
         "comment": null
       },
       "advice": null,
       "underOver": null,
       "predictedGoals": {
-        "home": "1.04",
-        "away": "1.15"
+        "home": "1.05",
+        "away": "1.13"
       },
       "comparison": null,
-      "confidence": 51,
+      "confidence": 56,
+      "dataBasis": "team-history",
+      "baselineScope": "competition",
+      "missingHistory": {
+        "home": false,
+        "away": false
+      },
       "modelVersion": "futbolradar-probability-v1",
       "expectedGoals": {
-        "home": 1.04,
-        "away": 1.15
+        "home": 1.05,
+        "away": 1.13
       },
       "modelUnderOver": {
         "line": 2.5,
@@ -3984,14 +3959,15 @@
       "bothTeamsScore": 44,
       "marketConsensus": null,
       "modelInputs": {
-        "baselineStatus": "blended",
-        "baselinePull": 0.24,
-        "baselineSampleSize": 39,
+        "dataBasis": "team-history",
+        "baselineStatus": "computed",
+        "baselinePull": 0.22,
+        "baselineSampleSize": 43,
         "home": {
           "matches": 5,
           "venueMatches": 2,
           "attackStrength": 0.65,
-          "defenseStrength": 1.32,
+          "defenseStrength": 1.31,
           "formDelta": 0,
           "rank": 15,
           "pointsPerGame": 0.8,
@@ -4003,7 +3979,7 @@
           "matches": 7,
           "venueMatches": 3,
           "attackStrength": 0.75,
-          "defenseStrength": 1.05,
+          "defenseStrength": 1.04,
           "formDelta": -0.2,
           "rank": 13,
           "pointsPerGame": 1,
@@ -4028,9 +4004,9 @@
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-09-14T19:55:04.037Z",
-      "expiresAt": "2026-09-17T14:00:00.000Z",
-      "refreshStage": "scheduled",
+      "calculatedAt": "2026-09-17T14:21:55.686Z",
+      "expiresAt": "2026-09-19T14:00:00.000Z",
+      "refreshStage": "T-72h",
       "frozen": false
     }
   ]
