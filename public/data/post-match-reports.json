@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-18T00:14:44.040Z",
+  "updatedAt": "2026-09-18T05:54:38.439Z",
   "matchCount": 1362,
   "records": [
     {
@@ -226,10 +226,10 @@
       "winner": "Beşiktaş",
       "turkish": true,
       "turkishTeam": "Beşiktaş",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -237,9 +237,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 18
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -259,24 +259,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 18,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ac0f044a45ccc13d",
-      "fingerprint": "ac0f044a45ccc13d",
+      "analysisSourceHash": "d19f6f88e33efcf0",
+      "fingerprint": "d19f6f88e33efcf0",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
-      "generatedAt": "2026-09-18T00:14:43.940Z",
+      "analysisUpdatedAt": "2026-09-18T05:54:38.363Z",
+      "generatedAt": "2026-09-18T05:54:38.363Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -288,7 +293,7 @@
       "reportUrl": "./mac-raporu/besiktas-marseille-2026-09-17.html",
       "digest": {
         "headline": "Beşiktaş, Marseille'yi 4-1 yendi",
-        "paragraph": "Besiktas Park'ta oynanan Avrupa Ligi maçını Beşiktaş 4-1 kazandı; Marseille sahadan puansız ayrıldı. Golleri 15. dakikada Ilhan Fakili (Beşiktaş), 29. dakikada Keyliane Abdallah (Marseille), 56. dakikada Václav Černý (Beşiktaş), 59. dakikada Amir Murillo (Beşiktaş), 81. dakikada Ernest Poku (Beşiktaş) kaydetti.",
+        "paragraph": "Besiktas Park'ta oynanan Avrupa Ligi maçını Beşiktaş 4-1 kazandı; Marseille sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Beşiktaş",
           "loser": "Marseille",
@@ -301,115 +306,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "15'",
-              "team": "Beşiktaş",
-              "type": "Gol",
-              "detail": "Ilhan Fakili",
-              "pivotal": true
-            },
-            {
-              "minute": "29'",
-              "team": "Marseille",
-              "type": "Gol",
-              "detail": "Keyliane Abdallah",
-              "pivotal": true
-            },
-            {
-              "minute": "56'",
-              "team": "Beşiktaş",
-              "type": "Gol",
-              "detail": "Václav Černý",
-              "pivotal": true
-            },
-            {
-              "minute": "59'",
-              "team": "Beşiktaş",
-              "type": "Gol",
-              "detail": "Amir Murillo",
-              "pivotal": true
-            },
-            {
-              "minute": "81'",
-              "team": "Beşiktaş",
-              "type": "Gol",
-              "detail": "Ernest Poku",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Ernest Poku).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "81'",
-              "team": "Beşiktaş",
-              "type": "Gol",
-              "detail": "Ernest Poku",
-              "decisive": true
-            },
-            {
-              "minute": "82'",
-              "team": "Marseille",
-              "type": "Oyuncu değişikliği",
-              "detail": "Keyliane Abdallah",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Beşiktaş",
-              "type": "Oyuncu değişikliği",
-              "detail": "Junior Olaitan",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Beşiktaş",
-              "type": "Oyuncu değişikliği",
-              "detail": "Ilhan Fakili",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Amir Murillo",
-              "team": "Beşiktaş",
-              "contribution": "59' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Ernest Poku",
-              "team": "Beşiktaş",
-              "contribution": "81' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Ilhan Fakili",
-              "team": "Beşiktaş",
-              "contribution": "15' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Keyliane Abdallah",
-              "team": "Marseille",
-              "contribution": "29' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -419,35 +331,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
-            "15' Beşiktaş — Ilhan Fakili: gol",
-            "29' Marseille — Keyliane Abdallah: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
-            "56' Beşiktaş — Václav Černý: gol",
-            "59' Beşiktaş — Amir Murillo: gol",
-            "81' Beşiktaş — Ernest Poku: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Beşiktaş maça 4-1-4-1 dizilişiyle başladı.",
-            "Marseille maça 4-2-3-1 dizilişiyle başladı.",
-            "45' Beşiktaş değişikliği (Substitution 1). Değişiklikten sonra Beşiktaş adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "58' Marseille değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "58' Marseille değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Marseille değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Marseille maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -459,7 +356,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -472,8 +369,7 @@
             "Beşiktaş daha çok şut denedi (18-14)."
           ],
           "improvements": [
-            "Marseille şut isabetinde geride kaldı (%21); bitiricilik geliştirilmesi gereken alan.",
-            "Marseille son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Marseille şut isabetinde geride kaldı (%21); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Beşiktaş sahadan 3 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -561,20 +457,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -606,10 +496,10 @@
       "winner": "Ferencvarosi TC",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -617,9 +507,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 16
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -639,15 +529,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 16,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -665,11 +559,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ab5ddf853642becf",
-      "fingerprint": "ab5ddf853642becf",
+      "analysisSourceHash": "8be7070a258fcba1",
+      "fingerprint": "8be7070a258fcba1",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T05:54:38.363Z",
+      "generatedAt": "2026-09-18T05:54:38.363Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -681,7 +575,7 @@
       "reportUrl": "./mac-raporu/celtic-ferencvarosi-tc-2026-09-17.html",
       "digest": {
         "headline": "Ferencvarosi TC, Celtic'i 3-1 yendi",
-        "paragraph": "Ferencvarosi TC, Celtic Park'ta oynanan Avrupa Ligi karşılaşmasında Celtic'i 3-1 mağlup etti. Golleri 20. dakikada Bamidele Isa Yusuf (Ferencvarosi TC), 44. dakikada Mika Baur (Celtic), 45+1. dakikada Kristoffer Zachariassen (Ferencvarosi TC), 47. dakikada Daniel Arzani (Ferencvarosi TC) kaydetti.",
+        "paragraph": "Ferencvarosi TC, Celtic Park'ta oynanan Avrupa Ligi karşılaşmasında Celtic'i 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Ferencvarosi TC",
           "loser": "Celtic",
@@ -697,142 +591,39 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "20'",
-              "team": "Ferencvarosi TC",
-              "type": "Gol",
-              "detail": "Bamidele Isa Yusuf",
-              "pivotal": true
-            },
-            {
-              "minute": "44'",
-              "team": "Celtic",
-              "type": "Gol",
-              "detail": "Mika Baur",
-              "pivotal": true
-            },
-            {
-              "minute": "45+1'",
-              "team": "Ferencvarosi TC",
-              "type": "Gol",
-              "detail": "Kristoffer Zachariassen",
-              "pivotal": true
-            },
-            {
-              "minute": "47'",
-              "team": "Ferencvarosi TC",
-              "type": "Gol",
-              "detail": "Daniel Arzani",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "80'",
-              "team": "Celtic",
-              "type": "Oyuncu değişikliği",
-              "detail": "Colby Donovan",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Ferencvarosi TC",
-              "type": "Oyuncu değişikliği",
-              "detail": "Mariano Gómez",
-              "decisive": false
-            },
-            {
-              "minute": "86'",
-              "team": "Ferencvarosi TC",
-              "type": "Sarı kart",
-              "detail": "Jonathan Levi",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Ferencvarosi TC",
-              "type": "Sarı kart",
-              "detail": "Attila Osváth",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Bamidele Isa Yusuf",
-              "team": "Ferencvarosi TC",
-              "contribution": "20' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Daniel Arzani",
-              "team": "Ferencvarosi TC",
-              "contribution": "47' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Kristoffer Zachariassen",
-              "team": "Ferencvarosi TC",
-              "contribution": "45+1' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Mika Baur",
-              "team": "Celtic",
-              "contribution": "44' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
-            "20' Ferencvarosi TC — Bamidele Isa Yusuf: gol",
-            "44' Celtic — Mika Baur: gol",
-            "45+1' Ferencvarosi TC — Kristoffer Zachariassen: gol",
-            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
-            "47' Ferencvarosi TC — Daniel Arzani: gol",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "45' Celtic değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "45' Ferencvarosi TC değişikliği (Substitution 1). Değişiklikten sonra Ferencvarosi TC adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "57' Celtic değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "57' Celtic değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "66' Ferencvarosi TC değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "66' Ferencvarosi TC değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
@@ -864,17 +655,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
-        "coaching",
         "finalAssessment"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -906,10 +690,10 @@
       "winner": "Crystal Palace",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -917,9 +701,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 16
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -939,24 +723,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 16,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 43
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "23847e927b9b93bf",
-      "fingerprint": "23847e927b9b93bf",
+      "analysisSourceHash": "3d32e7140b9f10e3",
+      "fingerprint": "3d32e7140b9f10e3",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
-      "generatedAt": "2026-09-18T00:14:43.940Z",
+      "analysisUpdatedAt": "2026-09-18T05:54:38.363Z",
+      "generatedAt": "2026-09-18T05:54:38.363Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -968,7 +757,7 @@
       "reportUrl": "./mac-raporu/crystal-palace-lech-poznan-2026-09-17.html",
       "digest": {
         "headline": "Crystal Palace, Lech Poznan'ı 4-0 yendi",
-        "paragraph": "Selhurst Park'ta oynanan Avrupa Ligi maçını Crystal Palace 4-0 kazandı; Lech Poznan sahadan puansız ayrıldı. Golleri 10. dakikada Yeremy Pino (Crystal Palace), 27. dakikada Chris Richards (Crystal Palace), 34. dakikada Jörgen Strand Larsen (Crystal Palace), 89. dakikada Eddie Nketiah (Crystal Palace) kaydetti.",
+        "paragraph": "Selhurst Park'ta oynanan Avrupa Ligi maçını Crystal Palace 4-0 kazandı; Lech Poznan sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Crystal Palace",
           "loser": "Lech Poznan",
@@ -984,112 +773,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "10'",
-              "team": "Crystal Palace",
-              "type": "Gol",
-              "detail": "Yeremy Pino",
-              "pivotal": true
-            },
-            {
-              "minute": "27'",
-              "team": "Crystal Palace",
-              "type": "Gol",
-              "detail": "Chris Richards",
-              "pivotal": true
-            },
-            {
-              "minute": "34'",
-              "team": "Crystal Palace",
-              "type": "Penaltı",
-              "detail": "Jörgen Strand Larsen",
-              "pivotal": true
-            },
-            {
-              "minute": "87'",
-              "team": "Lech Poznan",
-              "type": "Kırmızı kart",
-              "detail": "Radosław Murawski",
-              "pivotal": true
-            },
-            {
-              "minute": "89'",
-              "team": "Crystal Palace",
-              "type": "Gol",
-              "detail": "Eddie Nketiah",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Eddie Nketiah), 1 kırmızı kart bu bölümde görüldü.",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Lech Poznan",
-              "type": "Sarı kart",
-              "detail": "Radosław Murawski",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Lech Poznan",
-              "type": "Oyuncu değişikliği",
-              "detail": "Pablo Rodriguez Delgado",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Lech Poznan",
-              "type": "Kırmızı kart",
-              "detail": "Radosław Murawski",
-              "decisive": true
-            },
-            {
-              "minute": "89'",
-              "team": "Crystal Palace",
-              "type": "Gol",
-              "detail": "Eddie Nketiah",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Chris Richards",
-              "team": "Crystal Palace",
-              "contribution": "27' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Eddie Nketiah",
-              "team": "Crystal Palace",
-              "contribution": "89' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Jörgen Strand Larsen",
-              "team": "Crystal Palace",
-              "contribution": "34' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Yeremy Pino",
-              "team": "Crystal Palace",
-              "contribution": "10' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -1099,33 +795,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "10' Crystal Palace — Yeremy Pino: gol",
-            "27' Crystal Palace — Chris Richards: gol",
-            "34' Crystal Palace — Jörgen Strand Larsen: penaltı"
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
-            "89' Crystal Palace — Eddie Nketiah: gol",
-            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Crystal Palace maça 3-4-3 dizilişiyle başladı.",
-            "Lech Poznan maça 4-2-3-1 dizilişiyle başladı.",
-            "61' Lech Poznan değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' Lech Poznan değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "62' Crystal Palace değişikliği (Substitution 1). Değişiklikten sonra Crystal Palace adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "62' Crystal Palace değişikliği (Substitution 2). Değişiklikten sonra Crystal Palace adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Lech Poznan maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1137,7 +820,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1150,9 +833,7 @@
             "Lech Poznan daha çok şut denedi (16-17)."
           ],
           "improvements": [
-            "Lech Poznan şut isabetinde geride kaldı (%35); bitiricilik geliştirilmesi gereken alan.",
-            "Lech Poznan son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
-            "Kırmızı kart maçın seyrini etkiledi (87' Lech Poznan)."
+            "Lech Poznan şut isabetinde geride kaldı (%35); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Crystal Palace sahadan 4 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -1240,20 +921,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2203,10 +1878,10 @@
       "winner": "Real Betis",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2214,9 +1889,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 19
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2236,24 +1911,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 19,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 45
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "e9201956c3bb4755",
-      "fingerprint": "e9201956c3bb4755",
+      "analysisSourceHash": "d12794641d6ba3f3",
+      "fingerprint": "d12794641d6ba3f3",
       "analysisGeneratedAt": "2026-09-17T19:03:21.108Z",
-      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
-      "generatedAt": "2026-09-18T00:14:43.940Z",
+      "analysisUpdatedAt": "2026-09-18T05:54:38.363Z",
+      "generatedAt": "2026-09-18T05:54:38.363Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2265,7 +1945,7 @@
       "reportUrl": "./mac-raporu/real-betis-getafe-2026-09-17.html",
       "digest": {
         "headline": "Real Betis, Getafe'yi 1-0 yendi",
-        "paragraph": "Estadio de La Cartuja'da oynanan La Liga maçını Real Betis 1-0 kazandı; Getafe sahadan puansız ayrıldı. Tek golü 45. dakikada Abde Ezzalzouli (Real Betis) kaydetti.",
+        "paragraph": "Estadio de La Cartuja'da oynanan La Liga maçını Real Betis 1-0 kazandı; Getafe sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Real Betis",
           "loser": "Getafe",
@@ -2278,101 +1958,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "45'",
-              "team": "Real Betis",
-              "type": "Gol",
-              "detail": "Abde Ezzalzouli",
-              "pivotal": true
-            },
-            {
-              "minute": "87'",
-              "team": "Getafe",
-              "type": "Kırmızı kart",
-              "detail": "Mario Martín Rielves",
-              "pivotal": true
-            },
-            {
-              "minute": "45+2'",
-              "team": "Real Betis",
-              "type": "Gol",
-              "detail": "Abde Ezzalzouli",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "1 kırmızı kart bu bölümde görüldü.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "81'",
-              "team": "Getafe",
-              "type": "Oyuncu değişikliği",
-              "detail": "Francho Serrano Gracia",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Getafe",
-              "type": "Oyuncu değişikliği",
-              "detail": "Orel Mangala",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Getafe",
-              "type": "Kırmızı kart",
-              "detail": "Mario Martín Rielves",
-              "decisive": true
-            },
-            {
-              "minute": "90+2'",
-              "team": "Real Betis",
-              "type": "Oyuncu değişikliği",
-              "detail": "Antony Matheus",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Abde Ezzalzouli",
-              "team": "Real Betis",
-              "contribution": "45' gol · 45+2' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Ángel Ortiz",
-              "team": "Real Betis",
-              "contribution": "24' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "David Cordón Mancha",
-              "team": "Getafe",
-              "contribution": "25' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "José Bordalás Jiménez",
-              "team": "Getafe",
-              "contribution": "19' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -2383,31 +1984,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
-            "45' Real Betis — Abde Ezzalzouli: gol",
-            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Real Betis maça 4-2-3-1 dizilişiyle başladı.",
-            "Getafe maça 4-1-4-1 dizilişiyle başladı.",
-            "45' Getafe değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "45' Real Betis değişikliği (Substitution 1). Değişiklikten sonra Real Betis adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Getafe değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' Real Betis değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Getafe maça 4-1-4-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2419,7 +2009,7 @@
               "formation": "4-1-4-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2432,8 +2022,7 @@
             "Real Betis daha çok şut denedi (22-8)."
           ],
           "improvements": [
-            "Getafe şut isabetinde geride kaldı (%25); bitiricilik geliştirilmesi gereken alan.",
-            "Kırmızı kart maçın seyrini etkiledi (87' Getafe)."
+            "Getafe şut isabetinde geride kaldı (%25); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Real Betis sahadan 1 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -2521,21 +2110,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2567,10 +2150,10 @@
       "winner": "Red Bull Salzburg",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2578,9 +2161,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 15
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2600,24 +2183,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 15,
+        "events": 0,
         "statistics": 14,
         "lineups": 2,
         "players": 43
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a52f7e760a06e1b2",
-      "fingerprint": "a52f7e760a06e1b2",
+      "analysisSourceHash": "475382c7143fea6c",
+      "fingerprint": "475382c7143fea6c",
       "analysisGeneratedAt": "2026-09-17T19:03:21.108Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T05:54:38.363Z",
+      "generatedAt": "2026-09-18T05:54:38.363Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2629,7 +2217,7 @@
       "reportUrl": "./mac-raporu/levski-sofia-red-bull-salzburg-2026-09-17.html",
       "digest": {
         "headline": "Red Bull Salzburg, Levski Sofia'yı 1-0 yendi",
-        "paragraph": "Red Bull Salzburg, National Stadium Vasil Levski'de oynanan Avrupa Ligi karşılaşmasında Levski Sofia'yı 1-0 mağlup etti. Tek golü 39. dakikada Haris Tabaković (Red Bull Salzburg) kaydetti.",
+        "paragraph": "Red Bull Salzburg, National Stadium Vasil Levski'de oynanan Avrupa Ligi karşılaşmasında Levski Sofia'yı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Red Bull Salzburg",
           "loser": "Levski Sofia",
@@ -2642,87 +2230,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "39'",
-              "team": "Red Bull Salzburg",
-              "type": "Gol",
-              "detail": "Haris Tabaković",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Levski Sofia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Reinaldo Nascimento Satorno",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Levski Sofia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Armstrong Oko-Flex",
-              "decisive": false
-            },
-            {
-              "minute": "88'",
-              "team": "Levski Sofia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Francisco Everton Mota",
-              "decisive": false
-            },
-            {
-              "minute": "88'",
-              "team": "Levski Sofia",
-              "type": "Oyuncu değişikliği",
-              "detail": "Christian Makoun",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Haris Tabaković",
-              "team": "Red Bull Salzburg",
-              "contribution": "39' gol · 56' sarı kart",
-              "impact": "orta"
-            },
-            {
-              "name": "Abubakr Barry",
-              "team": "Red Bull Salzburg",
-              "contribution": "90+3' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Álex Centelles",
-              "team": "Levski Sofia",
-              "contribution": "55' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Bartosz Mazurek",
-              "team": "Red Bull Salzburg",
-              "contribution": "60' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -2732,30 +2255,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
-            "39' Red Bull Salzburg — Haris Tabaković: gol"
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Levski Sofia maça 4-2-3-1 dizilişiyle başladı.",
-            "Red Bull Salzburg maça 4-2-3-1 dizilişiyle başladı.",
-            "58' Levski Sofia değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "63' Red Bull Salzburg değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "69' Red Bull Salzburg değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "76' Levski Sofia değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Red Bull Salzburg maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2767,7 +2280,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2868,20 +2381,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
