@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-18T11:11:31.557Z",
+  "updatedAt": "2026-09-18T14:00:44.372Z",
   "items": [
     {
       "id": "auto-news-842a55ac5e2b4e91fb57",
@@ -327,6 +327,20 @@
       }
     },
     {
+      "id": "news-trabzonspor-okay-yokuslu-c9b4cc74",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Trabzonspor cephesinde kadroya ilişkin bir gelişme yaşandığı bildirildi.",
+      "timestamp": "2026-09-18T13:42:00.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-okay-yokuslu-c9b4cc74"
+      },
+      "team": "Trabzonspor",
+      "important": true
+    },
+    {
       "id": "news-besiktas-dusan-vlahovic-22663dc8",
       "origin": "news.json",
       "category": "club-agenda",
@@ -392,20 +406,6 @@
       "source": {
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/haber/besiktas-hapoel-beer-sheva-ec651ffa"
-      },
-      "team": "Beşiktaş",
-      "important": true
-    },
-    {
-      "id": "news-besiktas-avrupa-318a9956",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Beşiktaş cephesinde kadroya ilişkin bir gelişme yaşandığı bildirildi.",
-      "timestamp": "2026-09-16T14:46:43.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/besiktas-avrupa-318a9956"
       },
       "team": "Beşiktaş",
       "important": true
