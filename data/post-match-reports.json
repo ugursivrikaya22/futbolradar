@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-17T22:10:24.695Z",
+  "updatedAt": "2026-09-18T00:14:44.040Z",
   "matchCount": 1362,
   "records": [
     {
@@ -272,11 +272,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "8ac45de6c3687726",
-      "fingerprint": "8ac45de6c3687726",
+      "analysisSourceHash": "ac0f044a45ccc13d",
+      "fingerprint": "ac0f044a45ccc13d",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -514,7 +514,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Beşiktaş 29.3, Marseille 31.6 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Beşiktaş 31.3, Marseille 32.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -906,10 +906,10 @@
       "winner": "Crystal Palace",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 60,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -922,9 +922,9 @@
           "count": 16
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": true,
@@ -932,40 +932,31 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 43
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 16,
-        "statistics": 0,
+        "statistics": 15,
         "lineups": 2,
-        "players": 0
+        "players": 43
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ce592fb85002cdfb",
-      "fingerprint": "ce592fb85002cdfb",
+      "analysisSourceHash": "23847e927b9b93bf",
+      "fingerprint": "23847e927b9b93bf",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1151,28 +1142,96 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Crystal Palace, Lech Poznan'ı 4-0 yendi."
+            "Crystal Palace, Lech Poznan'ı 4-0 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (6-6); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
+          "strengths": [
+            "Crystal Palace topa daha çok sahip oldu (%53).",
+            "Lech Poznan daha çok şut denedi (16-17)."
+          ],
           "improvements": [
+            "Lech Poznan şut isabetinde geride kaldı (%35); bitiricilik geliştirilmesi gereken alan.",
             "Lech Poznan son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
             "Kırmızı kart maçın seyrini etkiledi (87' Lech Poznan)."
           ],
           "closing": "Crystal Palace sahadan 4 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Crystal Palace",
+            "score": 89
+          },
+          "away": {
+            "team": "Lech Poznan",
+            "score": 54
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Crystal Palace %37.5, Lech Poznan %35.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Crystal Palace 34.1, Lech Poznan 28.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1183,16 +1242,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1223,9 +1285,9 @@
       "winner": "Juventus",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
       "coveragePercent": 70,
       "dataSources": {
         "score": {
@@ -1234,14 +1296,14 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 17
-        },
-        "statistics": {
           "present": false,
           "source": null,
           "count": 0
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": true,
@@ -1256,8 +1318,8 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 17,
-        "statistics": 0,
+        "events": 0,
+        "statistics": 15,
         "lineups": 2,
         "players": 42
       },
@@ -1266,19 +1328,19 @@
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
+          "field": "events",
+          "label": "Olay akışı"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6461c6ff23790229",
-      "fingerprint": "6461c6ff23790229",
+      "analysisSourceHash": "f62f0d98b9e8bf3a",
+      "fingerprint": "f62f0d98b9e8bf3a",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1290,7 +1352,7 @@
       "reportUrl": "./mac-raporu/juventus-nec-nijmegen-2026-09-17.html",
       "digest": {
         "headline": "Juventus, NEC Nijmegen'i 5-0 yendi",
-        "paragraph": "Allianz Stadium'da oynanan Avrupa Ligi maçını Juventus 5-0 kazandı; NEC Nijmegen sahadan puansız ayrıldı. Golleri 9. dakikada Nicolás Iván Gonzalez (Juventus), 24. dakikada Kerim Alajbegovic (Juventus), 35. dakikada Nick Woltemade (Juventus), 75. dakikada Zeki Çelik (Juventus), 82. dakikada Randal Kolo Muani (Juventus) kaydetti.",
+        "paragraph": "Allianz Stadium'da oynanan Avrupa Ligi maçını Juventus 5-0 kazandı; NEC Nijmegen sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Juventus",
           "loser": "NEC Nijmegen",
@@ -1306,112 +1368,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "9'",
-              "team": "Juventus",
-              "type": "Gol",
-              "detail": "Nicolás Iván Gonzalez",
-              "pivotal": true
-            },
-            {
-              "minute": "24'",
-              "team": "Juventus",
-              "type": "Gol",
-              "detail": "Kerim Alajbegovic",
-              "pivotal": true
-            },
-            {
-              "minute": "35'",
-              "team": "Juventus",
-              "type": "Penaltı",
-              "detail": "Nick Woltemade",
-              "pivotal": true
-            },
-            {
-              "minute": "75'",
-              "team": "Juventus",
-              "type": "Gol",
-              "detail": "Zeki Çelik",
-              "pivotal": true
-            },
-            {
-              "minute": "82'",
-              "team": "Juventus",
-              "type": "Gol",
-              "detail": "Randal Kolo Muani",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 2 gol kaydedildi, (Zeki Çelik, Randal Kolo Muani).",
-          "goals": {
-            "home": 2,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "Juventus",
-              "type": "Gol",
-              "detail": "Zeki Çelik",
-              "decisive": true
-            },
-            {
-              "minute": "78'",
-              "team": "NEC Nijmegen",
-              "type": "Oyuncu değişikliği",
-              "detail": "Noe Lebreton",
-              "decisive": false
-            },
-            {
-              "minute": "79'",
-              "team": "NEC Nijmegen",
-              "type": "Oyuncu değişikliği",
-              "detail": "Bryan Linssen",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Juventus",
-              "type": "Gol",
-              "detail": "Randal Kolo Muani",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Kerim Alajbegovic",
-              "team": "Juventus",
-              "contribution": "24' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Nick Woltemade",
-              "team": "Juventus",
-              "contribution": "35' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Nicolás Iván Gonzalez",
-              "team": "Juventus",
-              "contribution": "9' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Randal Kolo Muani",
-              "team": "Juventus",
-              "contribution": "82' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -1421,35 +1390,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
-            "9' Juventus — Nicolás Iván Gonzalez: gol",
-            "24' Juventus — Kerim Alajbegovic: gol",
-            "35' Juventus — Nick Woltemade: penaltı",
-            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
-            "75' Juventus — Zeki Çelik: gol",
-            "82' Juventus — Randal Kolo Muani: gol",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Juventus maça 3-4-2-1 dizilişiyle başladı.",
-            "NEC Nijmegen maça 3-4-2-1 dizilişiyle başladı.",
-            "32' NEC Nijmegen değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "45' NEC Nijmegen değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' Juventus değişikliği (Substitution 1). Değişiklikten sonra Juventus adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "61' Juventus değişikliği (Substitution 2). Değişiklikten sonra Juventus adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "NEC Nijmegen maça 3-4-2-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1461,32 +1415,99 @@
               "formation": "3-4-2-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Juventus, NEC Nijmegen'i 5-0 yendi."
+            "Juventus, NEC Nijmegen'i 5-0 yendi.",
+            "İsabetli şutta da öndeydi (7-3); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
+          "strengths": [
+            "NEC Nijmegen topa daha çok sahip oldu (%52).",
+            "NEC Nijmegen daha çok şut denedi (11-11)."
+          ],
           "improvements": [
-            "NEC Nijmegen son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "NEC Nijmegen şut isabetinde geride kaldı (%27); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Juventus sahadan 5 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Juventus",
+            "score": 84
+          },
+          "away": {
+            "team": "NEC Nijmegen",
+            "score": 37
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Juventus %63.6, NEC Nijmegen %27.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Juventus 45.4, NEC Nijmegen 50 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1495,18 +1516,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
+        "signals",
+        "statistics",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
+      "coverage": 43,
       "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1537,10 +1555,10 @@
       "winner": "Torreense",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 50,
       "dataSources": {
         "score": {
           "present": true,
@@ -1553,9 +1571,9 @@
           "count": 0
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": false,
@@ -1563,19 +1581,19 @@
           "count": 0
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 44
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 0,
-        "statistics": 0,
+        "statistics": 15,
         "lineups": 0,
-        "players": 0
+        "players": 44
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
@@ -1584,27 +1602,19 @@
           "label": "Olay akışı"
         },
         {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
           "field": "lineups",
           "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "fac5ef7e2ed8a0e1",
-      "fingerprint": "fac5ef7e2ed8a0e1",
+      "analysisSourceHash": "3ef1f79e9baf2bc4",
+      "fingerprint": "3ef1f79e9baf2bc4",
       "analysisGeneratedAt": "2026-09-17T22:10:24.583Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1647,8 +1657,10 @@
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Lillestrom topu elinde tutarken Torreense derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
           "status": "unavailable",
@@ -1669,25 +1681,94 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Torreense, Lillestrom'u 1-2 yendi."
+            "Torreense, Lillestrom'u 1-2 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (3-6); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Lillestrom topa daha çok sahip oldu (%67).",
+            "Lillestrom daha çok şut denedi (25-11)."
+          ],
+          "improvements": [
+            "Lillestrom şut isabetinde geride kaldı (%24); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Torreense sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Lillestrom",
+            "score": 69
+          },
+          "away": {
+            "team": "Torreense",
+            "score": 57
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Lillestrom %24, Torreense %27.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Lillestrom 22.4, Torreense 25.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1696,11 +1777,14 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "signals",
+        "statistics",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 36,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -2165,11 +2249,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "169fd941465a4a63",
-      "fingerprint": "169fd941465a4a63",
+      "analysisSourceHash": "e9201956c3bb4755",
+      "fingerprint": "e9201956c3bb4755",
       "analysisGeneratedAt": "2026-09-17T19:03:21.108Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2829,10 +2913,10 @@
       "winner": "OFI",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2840,9 +2924,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 17
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2862,24 +2946,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 17,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "1b8dbed3aa24e47b",
-      "fingerprint": "1b8dbed3aa24e47b",
+      "analysisSourceHash": "97f2ff2a1e28cf16",
+      "fingerprint": "97f2ff2a1e28cf16",
       "analysisGeneratedAt": "2026-09-17T19:03:21.108Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2891,7 +2980,7 @@
       "reportUrl": "./mac-raporu/ofi-1899-hoffenheim-2026-09-17.html",
       "digest": {
         "headline": "OFI, 1899 Hoffenheim'i 2-0 yendi",
-        "paragraph": "OFI, Pankritio Stadium'da oynanan Avrupa Ligi karşılaşmasında 1899 Hoffenheim'i 2-0 mağlup etti. Golleri 30. dakikada Aitor Cantalapiedra (OFI), 84. dakikada Georgios Kanellopoulos (OFI) kaydetti.",
+        "paragraph": "OFI, Pankritio Stadium'da oynanan Avrupa Ligi karşılaşmasında 1899 Hoffenheim'i 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "OFI",
           "loser": "1899 Hoffenheim",
@@ -2907,91 +2996,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "30'",
-              "team": "OFI",
-              "type": "Gol",
-              "detail": "Aitor Cantalapiedra",
-              "pivotal": true
-            },
-            {
-              "minute": "84'",
-              "team": "OFI",
-              "type": "Gol",
-              "detail": "Georgios Kanellopoulos",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Georgios Kanellopoulos).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "1899 Hoffenheim",
-              "type": "Oyuncu değişikliği",
-              "detail": "Adam Hložek",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "OFI",
-              "type": "Oyuncu değişikliği",
-              "detail": "Lorenzo Dickmann",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "OFI",
-              "type": "Oyuncu değişikliği",
-              "detail": "Kenan Kodro",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "OFI",
-              "type": "Gol",
-              "detail": "Georgios Kanellopoulos",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Georgios Kanellopoulos",
-              "team": "OFI",
-              "contribution": "84' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Aitor Cantalapiedra",
-              "team": "OFI",
-              "contribution": "30' gol · 64' sarı kart",
-              "impact": "orta"
-            },
-            {
-              "name": "Athanasios Androutsos",
-              "team": "OFI",
-              "contribution": "56' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Koki Machida",
-              "team": "1899 Hoffenheim",
-              "contribution": "63' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -3002,32 +3019,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "30' OFI — Aitor Cantalapiedra: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
-            "84' OFI — Georgios Kanellopoulos: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "OFI maça 3-4-3 dizilişiyle başladı.",
-            "1899 Hoffenheim maça 4-2-3-1 dizilişiyle başladı.",
-            "45' 1899 Hoffenheim değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' 1899 Hoffenheim değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' 1899 Hoffenheim değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' OFI değişikliği (Substitution 1). Değişiklikten sonra OFI adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "1899 Hoffenheim maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -3039,7 +3044,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3052,8 +3057,7 @@
             "1899 Hoffenheim daha çok şut denedi (9-21)."
           ],
           "improvements": [
-            "1899 Hoffenheim şut isabetinde geride kaldı (%24); bitiricilik geliştirilmesi gereken alan.",
-            "1899 Hoffenheim son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "1899 Hoffenheim şut isabetinde geride kaldı (%24); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "OFI sahadan 2 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -3141,21 +3145,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -3187,10 +3185,10 @@
       "winner": "Orduspor 1967",
       "turkish": true,
       "turkishTeam": "Orduspor 1967",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
       "dataSources": {
         "score": {
           "present": true,
@@ -3198,9 +3196,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 10
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -3220,15 +3218,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 10,
+        "events": 0,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.2,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -3246,11 +3248,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "fda9d1e8ebd6a1b7",
-      "fingerprint": "fda9d1e8ebd6a1b7",
+      "analysisSourceHash": "15885c9005b903e4",
+      "fingerprint": "15885c9005b903e4",
       "analysisGeneratedAt": "2026-09-17T19:03:21.108Z",
-      "analysisUpdatedAt": "2026-09-17T22:10:24.583Z",
-      "generatedAt": "2026-09-17T22:10:24.583Z",
+      "analysisUpdatedAt": "2026-09-18T00:14:43.940Z",
+      "generatedAt": "2026-09-18T00:14:43.940Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3262,7 +3264,7 @@
       "reportUrl": "./mac-raporu/orduspor-1967-torul-belediye-genclik-2026-09-17.html",
       "digest": {
         "headline": "Orduspor 1967, Torul Belediye Genclik'i 10-0 yendi",
-        "paragraph": "Türkiye Kupası maçını Orduspor 1967 10-0 kazandı; Torul Belediye Genclik sahadan puansız ayrıldı. Golleri 13. dakikada B. Kalkan (Orduspor 1967), 17. dakikada R. Metin (Orduspor 1967), 27. dakikada T. Balsu (Orduspor 1967), 30. dakikada T. Balsu (Orduspor 1967), 32. dakikada B. Kalkan (Orduspor 1967), 35. dakikada Y. Tiryaki (Orduspor 1967), 58. dakikada T. Yasin (Orduspor 1967), 59. dakikada A. Aybasti (Orduspor 1967), 78. dakikada A. Dogancan (Orduspor 1967), 90. dakikada B. Gun (Orduspor 1967) kaydetti.",
+        "paragraph": "Türkiye Kupası maçını Orduspor 1967 10-0 kazandı; Torul Belediye Genclik sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Orduspor 1967",
           "loser": "Torul Belediye Genclik",
@@ -3278,125 +3280,33 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "13'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "B. Kalkan",
-              "pivotal": true
-            },
-            {
-              "minute": "17'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "R. Metin",
-              "pivotal": true
-            },
-            {
-              "minute": "27'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "T. Balsu",
-              "pivotal": true
-            },
-            {
-              "minute": "30'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "T. Balsu",
-              "pivotal": true
-            },
-            {
-              "minute": "32'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "B. Kalkan",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 2 gol kaydedildi, (A. Dogancan, B. Gun).",
-          "goals": {
-            "home": 2,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "78'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "A. Dogancan",
-              "decisive": true
-            },
-            {
-              "minute": "90'",
-              "team": "Orduspor 1967",
-              "type": "Gol",
-              "detail": "B. Gun",
-              "decisive": true
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "B. Kalkan",
-              "team": "Orduspor 1967",
-              "contribution": "13' gol · 32' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "T. Balsu",
-              "team": "Orduspor 1967",
-              "contribution": "27' gol · 30' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "A. Aybasti",
-              "team": "Orduspor 1967",
-              "contribution": "59' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "A. Dogancan",
-              "team": "Orduspor 1967",
-              "contribution": "78' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
-            "13' Orduspor 1967 — B. Kalkan: gol",
-            "17' Orduspor 1967 — R. Metin: gol",
-            "27' Orduspor 1967 — T. Balsu: gol",
-            "30' Orduspor 1967 — T. Balsu: gol",
-            "32' Orduspor 1967 — B. Kalkan: gol"
-          ],
-          "goals": 6
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı dengeli bir olay akışı üretti (4 olay).",
-            "58' Orduspor 1967 — T. Yasin: gol",
-            "59' Orduspor 1967 — A. Aybasti: gol",
-            "78' Orduspor 1967 — A. Dogancan: gol",
-            "90' Orduspor 1967 — B. Gun: gol"
-          ],
-          "goals": 4
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "unavailable",
@@ -3410,9 +3320,7 @@
             "Orduspor 1967, Torul Belediye Genclik'i 10-0 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Torul Belediye Genclik son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
-          ],
+          "improvements": [],
           "closing": "Orduspor 1967 sahadan 10 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -3436,16 +3344,10 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 57,
-      "dataStatus": "partial",
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
