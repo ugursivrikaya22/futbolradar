@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-18T15:01:39.953Z",
+  "updatedAt": "2026-09-18T18:25:17.745Z",
   "matchCount": 1363,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Ümraniyespor",
       "turkish": true,
       "turkishTeam": "Bandırmaspor & Ümraniyespor",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -48,9 +48,9 @@
           "count": 12
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": true,
@@ -66,28 +66,23 @@
       "apiKeyPresent": true,
       "availability": {
         "events": 12,
-        "statistics": 0,
+        "statistics": 15,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "1a8813e6debb7a72",
-      "fingerprint": "1a8813e6debb7a72",
+      "analysisSourceHash": "0995a1d688d82335",
+      "fingerprint": "0995a1d688d82335",
       "analysisGeneratedAt": "2026-09-18T15:01:39.907Z",
-      "analysisUpdatedAt": "2026-09-18T15:01:39.907Z",
-      "generatedAt": "2026-09-18T15:01:39.907Z",
+      "analysisUpdatedAt": "2026-09-18T18:25:17.696Z",
+      "generatedAt": "2026-09-18T18:25:17.696Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -189,10 +184,11 @@
           ]
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
             "Bandırmaspor sahaya 4-2-3-1 dizilişiyle çıktı.",
-            "Ümraniyespor sahaya 4-3-3 dizilişiyle çıktı."
+            "Ümraniyespor sahaya 4-3-3 dizilişiyle çıktı.",
+            "Bandırmaspor topu elinde tutarken Ümraniyespor derin blokta savunma yapmayı tercih etti."
           ]
         },
         "firstHalf": {
@@ -236,27 +232,95 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Ümraniyespor, Bandırmaspor'u 0-1 yendi."
+            "Ümraniyespor, Bandırmaspor'u 0-1 yendi.",
+            "İsabetli şutta da öndeydi (3-2); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
+          "strengths": [
+            "Bandırmaspor topa daha çok sahip oldu (%68).",
+            "Bandırmaspor daha çok şut denedi (9-7)."
+          ],
           "improvements": [
+            "Bandırmaspor şut isabetinde geride kaldı (%22); bitiricilik geliştirilmesi gereken alan.",
             "Bandırmaspor son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
           ],
           "closing": "Ümraniyespor sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Bandırmaspor",
+            "score": 50
+          },
+          "away": {
+            "team": "Ümraniyespor",
+            "score": 53
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Bandırmaspor %22.2, Ümraniyespor %42.9."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Bandırmaspor 67.6, Ümraniyespor 41.4 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -267,16 +331,20 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
