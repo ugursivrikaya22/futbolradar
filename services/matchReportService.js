@@ -1500,6 +1500,18 @@ function buildMatchReport(match, context) {
 
 module.exports = {
   LATE_GAME_FROM,
+  // Olay ve istatistik okuyucuları DIŞARI AÇIK: maç sonu köşe yazısı
+  // üreticisi (services/trabzonsporMatchColumn.js) aynı olay lehçelerini
+  // (kürasyonlu Türkçe akış ve API-Football'un İngilizce akışı) ikinci kez
+  // çözmek zorunda kalmasın. İki ayrı çözümleyici, iki ayrı doğruluk
+  // demekti; rapordaki dakika ile yazıdaki dakikanın ayrışmaması için
+  // kaynak tek tutuluyor.
+  eventTeamName,
+  isType,
+  minuteOf,
+  playerFromEvent,
+  statPair,
+  statValue,
   buildCoachingDecisions,
   buildFinalAssessment,
   buildFinish,

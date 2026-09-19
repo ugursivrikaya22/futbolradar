@@ -1,0 +1,136 @@
+name: Trabzonspor Post-Match Column
+
+# MAÇ BİTER BİTMEZ ANALİZ.
+#
+# Bu iş akışı Trabzonspor'un bitmiş maçını arar; bulursa maç sonu köşe
+# yazısını üretir, sayfalarını basar ve main'e commit eder. Vercel commit'i
+# görüp yalnızca değişen çıktıyı yayımlar.
+#
+# ── NEDEN SIK, NEDEN YİNE DE UCUZ ───────────────────────────────────────
+#
+# Maçın bitiş dakikası önceden bilinmiyor; uzatma ve devre arası maç sonunu
+# 15-20 dakika kaydırabiliyor. Bu yüzden koşu sık: maç saatlerini kapsayan
+# aralıkta on beş dakikada bir. Koşunun kendisi ucuz çünkü SAĞLAYICIYA
+# GİTMİYOR — depodaki veriyi okuyor. Bitmiş maç yoksa betik ilk saniyede
+# "yapacak iş yok" deyip 0 ile çıkıyor ve hiçbir dosya değişmiyor.
+#
+# Veriyi tazeleyen taraf ayrı iş akışı (match-analysis.yml, saatlik). Bu
+# ayrım bilinçli: iki iş akışı da aynı dosyalara yazsaydı yarış olurdu.
+# Buradaki tek yazma yolu data/columns.json, üretilmiş sayfalar ve kapak
+# görseli.
+#
+# ── YAYIN KAPISI BETİKTE, BURADA DEĞİL ──────────────────────────────────
+#
+# Yazının yayına girip girmeyeceğine iş akışı karar vermiyor; betik veriye
+# bakıp karar veriyor (bitiş doğrulaması, veri kapsamı, uzunluk). Kapılardan
+# biri düşerse kayıt `draft` yazılır ve hiçbir yüzeyde görünmez. Elle onay
+# beklenmiyor, ama kapılar da kalkmıyor.
+
+on:
+  schedule:
+    # Türkiye maç saatlerini kapsayan pencere (16:00–03:00 Europe/Istanbul),
+    # on beş dakikada bir. Saat başı yoğunluğundan kaçmak için :04 ofseti —
+    # match-analysis.yml ile aynı gerekçe (bkz. docs/scheduled-updates.md).
+    - cron: "4,19,34,49 13-23,0 * * *"
+  workflow_dispatch:
+    inputs:
+      match_id:
+        description: "Belirli bir maç kimliği (boşsa son bitmiş Trabzonspor maçı seçilir)"
+        required: false
+        default: ""
+      window_hours:
+        description: "Kaç saat geriye bakılsın (varsayılan 36)"
+        required: false
+        default: "36"
+      dry_run:
+        description: "true ise hiçbir şey yazılmaz, yalnızca çıktı günlüğe basılır"
+        required: false
+        default: "false"
+
+permissions:
+  contents: write
+
+# Üretim güncellemesiyle AYNI grup: iki iş akışı da depoya yazıyor ve aynı
+# anda çalışırlarsa biri diğerinin commit'ini bulamaz. Sıraya girsinler.
+concurrency:
+  group: futbolradar-production-update
+  cancel-in-progress: false
+
+jobs:
+  column:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Checkout current production data
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # KAPI 0: üretim mantığının kendi denetimi. Düşerse yazı üretilmez.
+      # Bozuk bir üreticiden çıkan metni yayımlamaktansa hiç yayımlamamak
+      # doğru; bu adım bilerek `continue-on-error` taşımıyor.
+      - name: Verify column generator
+        run: node scripts/test-trabzonspor-post-match-column.mjs
+
+      - name: Detect finished Trabzonspor match
+        id: detect
+        shell: bash
+        env:
+          MATCH_ID: ${{ inputs.match_id }}
+          WINDOW: ${{ inputs.window_hours }}
+        run: |
+          set -o pipefail
+          ARGS=""
+          [ -n "${MATCH_ID}" ] && ARGS="--match=${MATCH_ID}"
+          [ -n "${WINDOW}" ] && ARGS="${ARGS} --window=${WINDOW}"
+          node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee detect.log
+          if grep -q "Hiçbir şey üretilmedi" detect.log; then
+            echo "found=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "found=true" >> "${GITHUB_OUTPUT}"
+          fi
+
+      - name: Generate and publish column
+        if: steps.detect.outputs.found == 'true' && inputs.dry_run != 'true'
+        shell: bash
+        env:
+          MATCH_ID: ${{ inputs.match_id }}
+          WINDOW: ${{ inputs.window_hours }}
+        run: |
+          set -o pipefail
+          ARGS="--apply"
+          [ -n "${MATCH_ID}" ] && ARGS="${ARGS} --match=${MATCH_ID}"
+          [ -n "${WINDOW}" ] && ARGS="${ARGS} --window=${WINDOW}"
+          node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee column.log
+          # Sayfalar, ana sayfa vitrini, kose-yazilari listesi, sitemap ve
+          # İngilizce sürüm hep bu adımda basılıyor.
+          node scripts/generate-column-pages.mjs
+          # hreflang bağlantıları en-route-map.json'dan enjekte ediliyor;
+          # bu adım olmadan İngilizce sayfa Türkçesine bağlanmaz.
+          node scripts/inject-hreflang.mjs
+          node scripts/generate-search-index.mjs
+
+      - name: Commit published column
+        if: steps.detect.outputs.found == 'true' && inputs.dry_run != 'true'
+        run: >-
+          node scripts/ci-commit-push.mjs
+          "ci(column): Trabzonspor maç sonu analizi"
+
+      - name: Preserve run log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trabzonspor-column-${{ github.run_id }}
+          path: |
+            detect.log
+            column.log
+          if-no-files-found: ignore
+          retention-days: 14
