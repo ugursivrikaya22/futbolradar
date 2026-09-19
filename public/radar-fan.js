@@ -39,7 +39,35 @@
       followOff: "Takibi bırak",
       followDenied: "Bildirim izni verilmedi. Tarayıcı ayarlarından açabilirsin.",
       followError: "Takip şu anda açılamadı.",
-      followTypes: "Maç başladı, gol, kırmızı kart, devre arası ve maç sonucu bildirimi alırsın."
+      followTypes: "Maç başladı, gol, kırmızı kart, devre arası ve maç sonucu bildirimi alırsın.",
+      commentsTitle: "Yorumlar",
+      commentsNote: "Takma adla yazılır; doğrulanmış kimlik değildir. Bağlantı paylaşılamaz.",
+      commentName: "Takma adın",
+      commentBody: "Yorumun",
+      commentSend: "Gönder",
+      commentReply: "Cevapla",
+      commentReplySend: "Cevabı gönder",
+      commentCancel: "Vazgeç",
+      commentLike: "Beğen",
+      commentReport: "Bildir",
+      commentReported: "Bildirildi",
+      commentRemoved: "Bu yorum bildirimler üzerine kaldırıldı.",
+      commentEmpty: "Henüz yorum yok — ilk yorumu sen yaz.",
+      commentMine: "senin yorumun",
+      commentError: "Yorum şu anda gönderilemiyor.",
+      ratingsTitle: "Oyuncu puanları",
+      ratingsNote: "Okuyucu puanıdır; sağlayıcı derecesinden ayrıdır. Bir oyuncuya bir kez puan verirsin, fikrini değiştirebilirsin.",
+      ratingsAverage: "Ortalama",
+      ratingsVotes: "oy",
+      ratingsMine: "senin puanın",
+      ratingsEmpty: "Henüz puan verilmedi.",
+      ratingsError: "Puan şu anda kaydedilemiyor.",
+      cardMake: "Paylaşım kartı oluştur",
+      cardMaking: "Kart hazırlanıyor…",
+      cardDownload: "Kartı indir",
+      cardShare: "Kartı paylaş",
+      cardError: "Kart bu tarayıcıda üretilemedi; metin bağlantıları çalışıyor.",
+      cardAlt: "Maç paylaşım kartı"
     },
     en: {
       pollTitle: "Fan Poll",
@@ -60,7 +88,35 @@
       followOff: "Unfollow",
       followDenied: "Notification permission was not granted. You can enable it in browser settings.",
       followError: "Follow could not be enabled right now.",
-      followTypes: "You will get kick-off, goal, red card, half time and full time alerts."
+      followTypes: "You will get kick-off, goal, red card, half time and full time alerts.",
+      commentsTitle: "Comments",
+      commentsNote: "Posted under a nickname; this is not a verified identity. Links are not allowed.",
+      commentName: "Your nickname",
+      commentBody: "Your comment",
+      commentSend: "Post",
+      commentReply: "Reply",
+      commentReplySend: "Post reply",
+      commentCancel: "Cancel",
+      commentLike: "Like",
+      commentReport: "Report",
+      commentReported: "Reported",
+      commentRemoved: "This comment was removed after reports.",
+      commentEmpty: "No comments yet — be the first.",
+      commentMine: "your comment",
+      commentError: "The comment cannot be posted right now.",
+      ratingsTitle: "Player ratings",
+      ratingsNote: "A reader rating, separate from the provider score. One rating per player; you can change your mind.",
+      ratingsAverage: "Average",
+      ratingsVotes: "votes",
+      ratingsMine: "your rating",
+      ratingsEmpty: "No ratings yet.",
+      ratingsError: "The rating cannot be saved right now.",
+      cardMake: "Create share card",
+      cardMaking: "Preparing the card…",
+      cardDownload: "Download card",
+      cardShare: "Share card",
+      cardError: "The card could not be created in this browser; the text links still work.",
+      cardAlt: "Match share card"
     }
   };
 
@@ -515,17 +571,549 @@
     paint(readLocal(storeKey) === "1");
   }
 
+  /* ================================================================== */
+  /* YORUMLAR                                                           */
+  /* ================================================================== */
+
+  /**
+   * Zaman damgasını okunur hâle getirir.
+   *
+   * Saat dilimi Europe/Istanbul: sunucu UTC yazıyor, okuyucu Türkiye
+   * saatini bekliyor. Tarayıcının kendi diliminden değil, SABİT dilimden
+   * üretiliyor ki yurt dışındaki okuyucu da maçın saatiyle aynı ekseni
+   * görsün.
+   */
+  function whenText(value, locale) {
+    if (!value) return "";
+    var date = new Date(value);
+    if (isNaN(date.getTime())) return "";
+    try {
+      return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
+        timeZone: "Europe/Istanbul", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+      }).format(date);
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function commentHtml(item, locale, depth) {
+    var text = t(locale);
+    if (item.hidden) {
+      return '<li class="fan-comment is-removed"' + ' data-comment-id="' + esc(item.id) + '">' +
+        '<p class="fan-comment-removed muted-copy">' + esc(text.commentRemoved) + "</p></li>";
+    }
+
+    var replies = (item.replies || []).map(function (reply) {
+      return commentHtml(reply, locale, 1);
+    }).join("");
+
+    return '<li class="fan-comment' + (item.mine ? " is-mine" : "") + '" data-comment-id="' + esc(item.id) + '">' +
+      '<div class="fan-comment-head">' +
+        "<b>" + esc(item.authorName) + "</b>" +
+        (item.mine ? '<span class="fan-comment-mine">' + esc(text.commentMine) + "</span>" : "") +
+        '<time datetime="' + esc(item.createdAt || "") + '">' + esc(whenText(item.createdAt, locale)) + "</time>" +
+      "</div>" +
+      '<p class="fan-comment-body">' + esc(item.body).replace(/\n/g, "<br>") + "</p>" +
+      '<div class="fan-comment-actions">' +
+        '<button type="button" class="fan-comment-action' + (item.likedByMe ? " is-on" : "") +
+          '" data-comment-like="' + esc(item.id) + '" aria-pressed="' + (item.likedByMe ? "true" : "false") + '">' +
+          "♥ " + esc(text.commentLike) + (item.likes ? ' <i>' + esc(item.likes) + "</i>" : "") + "</button>" +
+        // Cevaba cevap yok: tek seviye kuralı sunucuda da uygulanıyor
+        // (services/matchSocial.js), düğme de derinlikte hiç basılmıyor.
+        (depth ? "" : '<button type="button" class="fan-comment-action" data-comment-reply="' + esc(item.id) + '">' +
+          esc(text.commentReply) + "</button>") +
+        '<button type="button" class="fan-comment-action is-report" data-comment-report="' + esc(item.id) + '">' +
+          esc(text.commentReport) + "</button>" +
+      "</div>" +
+      (replies ? '<ul class="fan-comment-replies">' + replies + "</ul>" : "") +
+      "</li>";
+  }
+
+  function commentsHtml(payload, locale) {
+    var text = t(locale);
+    var items = (payload && payload.comments) || [];
+    var list = items.length
+      ? '<ul class="fan-comment-list">' + items.map(function (item) { return commentHtml(item, locale, 0); }).join("") + "</ul>"
+      : '<p class="fan-comment-empty muted-copy">' + esc(text.commentEmpty) + "</p>";
+    return list;
+  }
+
+  /**
+   * Yorum formu.
+   *
+   * Takma ad `localStorage`da hatırlanıyor — her yorumda yeniden yazmak
+   * okuyucuyu yorar. Hatırlanan ad bir KİMLİK DEĞİL: sunucu tarafında
+   * tekrarı engelleyen şey çerezdeki seçmen anahtarı.
+   */
+  function commentFormHtml(locale, parentId) {
+    var text = t(locale);
+    var saved = "";
+    try { saved = window.localStorage.getItem("futbolradar-yorum-ad") || ""; } catch (error) { saved = ""; }
+    return '<form class="fan-comment-form" data-comment-form' + (parentId ? ' data-comment-parent="' + esc(parentId) + '"' : "") + '>' +
+      '<label class="fan-comment-field"><span>' + esc(text.commentName) + "</span>" +
+        '<input type="text" name="name" maxlength="24" required value="' + esc(saved) + '" autocomplete="nickname"></label>' +
+      '<label class="fan-comment-field"><span>' + esc(text.commentBody) + "</span>" +
+        '<textarea name="body" maxlength="600" rows="3" required></textarea></label>' +
+      '<div class="fan-comment-form-actions">' +
+        '<button type="submit" class="fan-comment-submit">' + esc(parentId ? text.commentReplySend : text.commentSend) + "</button>" +
+        (parentId ? '<button type="button" class="fan-comment-action" data-comment-cancel>' + esc(text.commentCancel) + "</button>" : "") +
+      "</div>" +
+      '<p class="fan-comment-error" data-comment-error hidden></p>' +
+      "</form>";
+  }
+
+  function bootComments() {
+    var section = document.querySelector("[data-match-comments]");
+    if (!section || !window.fetch) return;
+    var body = section.querySelector("[data-match-comments-body]");
+    var slug = section.getAttribute("data-match-comments-slug") || "";
+    var locale = section.getAttribute("data-match-comments-locale") === "en" ? "en" : "tr";
+    if (!slug || !body) return;
+    var text = t(locale);
+
+    function paint(payload) {
+      // DEPO KAPALIYSA BÖLÜM HİÇ AÇILMAZ — anket katmanıyla aynı kural:
+      // yazı kabul edemeyen bir formu göstermek, çalışmayan bir düğme
+      // sunmaktır.
+      if (!payload || payload.storage === "none") {
+        section.setAttribute("hidden", "");
+        return;
+      }
+      body.innerHTML = commentFormHtml(locale, null) + commentsHtml(payload, locale);
+      section.removeAttribute("hidden");
+    }
+
+    function showError(form, msg) {
+      var note = form ? form.querySelector("[data-comment-error]") : null;
+      if (!note) return;
+      note.textContent = msg || text.commentError;
+      note.removeAttribute("hidden");
+    }
+
+    function send(url, payload, form) {
+      return fetch(url, {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) {
+          return response.json().then(function (json) { return { status: response.status, json: json }; });
+        })
+        .then(function (result) {
+          if (!result.json || result.json.ok === false) {
+            // SUNUCUNUN SEBEBİ GÖSTERİLİR. "Bir şeyler ters gitti" demek,
+            // okuyucunun neyi düzelteceğini bilmemesi demek.
+            showError(form, (result.json && result.json.error && result.json.error.message) || text.commentError);
+            return;
+          }
+          paint(result.json.data);
+        })
+        .catch(function () { showError(form, text.commentError); });
+    }
+
+    function load() {
+      return fetch("/api/match-comments?slug=" + encodeURIComponent(slug) + "&locale=" + locale, { cache: "no-store" })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) { paint(payload && payload.data); })
+        .catch(function () { section.setAttribute("hidden", ""); });
+    }
+
+    // Dinleyici KAPSAYICIYA bağlanır: gövde her gönderimden sonra yeniden
+    // basıldığı için tek tek düğmelere bağlanan dinleyici düşerdi.
+    section.addEventListener("submit", function (event) {
+      var form = event.target && event.target.closest ? event.target.closest("[data-comment-form]") : null;
+      if (!form) return;
+      event.preventDefault();
+      var name = (form.querySelector('[name="name"]') || {}).value || "";
+      var content = (form.querySelector('[name="body"]') || {}).value || "";
+      var parent = form.getAttribute("data-comment-parent");
+      try { window.localStorage.setItem("futbolradar-yorum-ad", name.trim()); } catch (error) { /* localStorage kapalıysa ad hatırlanmaz */ }
+      send("/api/match-comments", {
+        slug: slug, locale: locale, name: name, body: content,
+        parentId: parent ? Number(parent) : null
+      }, form);
+      track("fan_comment", { match_slug: slug, locale: locale, reply: parent ? 1 : 0 });
+    });
+
+    section.addEventListener("click", function (event) {
+      var target = event.target && event.target.closest ? event.target : null;
+      if (!target || !target.closest) return;
+
+      var like = target.closest("[data-comment-like]");
+      if (like) {
+        send("/api/match-comments", { slug: slug, locale: locale, like: Number(like.getAttribute("data-comment-like")) }, null);
+        return;
+      }
+
+      var report = target.closest("[data-comment-report]");
+      if (report) {
+        report.disabled = true;
+        report.textContent = text.commentReported;
+        send("/api/match-comments", { slug: slug, locale: locale, report: Number(report.getAttribute("data-comment-report")) }, null);
+        return;
+      }
+
+      var reply = target.closest("[data-comment-reply]");
+      if (reply) {
+        var item = reply.closest("[data-comment-id]");
+        if (!item || item.querySelector("[data-comment-parent]")) return;
+        var holder = document.createElement("div");
+        holder.innerHTML = commentFormHtml(locale, reply.getAttribute("data-comment-reply"));
+        item.appendChild(holder.firstChild);
+        return;
+      }
+
+      var cancel = target.closest("[data-comment-cancel]");
+      if (cancel) {
+        var form = cancel.closest("[data-comment-form]");
+        if (form) form.remove();
+      }
+    });
+
+    load();
+  }
+
+  /* ================================================================== */
+  /* OYUNCU PUANLARI                                                    */
+  /* ================================================================== */
+
+  function ratingRowHtml(row, locale) {
+    var text = t(locale);
+    var options = "";
+    for (var value = 1; value <= 10; value += 1) {
+      options += '<button type="button" class="fan-rating-chip' + (row.mine === value ? " is-on" : "") +
+        '" data-rating-player="' + esc(row.playerName) + '" data-rating-value="' + value + '"' +
+        ' aria-pressed="' + (row.mine === value ? "true" : "false") + '">' + value + "</button>";
+    }
+    return '<li class="fan-rating-row">' +
+      '<div class="fan-rating-head"><b>' + esc(row.playerName) + "</b>" +
+        (row.average !== null && row.average !== undefined
+          ? '<span class="fan-rating-average">' + esc(row.average) + '<small>' + esc(row.votes) + " " + esc(text.ratingsVotes) + "</small></span>"
+          : "") +
+        (row.mine ? '<span class="fan-rating-mine">' + esc(text.ratingsMine) + ": " + esc(row.mine) + "</span>" : "") +
+      "</div>" +
+      '<div class="fan-rating-scale" role="group" aria-label="' + esc(row.playerName) + '">' + options + "</div>" +
+      "</li>";
+  }
+
+  /**
+   * Puanlanabilir oyuncular SAYFADAN okunur.
+   *
+   * Liste sunucunun bastığı ilk 11'den geliyor (data-rating-roster);
+   * istemcide oyuncu adı UYDURULMUYOR. Kadro yoksa bölüm hiç açılmıyor:
+   * puanlanacak oyuncu listesi bir VERİ İDDİASIDIR — ekrana bir ad
+   * bastığımız anda "bu oyuncu bu maçta oynadı" demiş oluruz.
+   */
+  function bootRatings() {
+    var section = document.querySelector("[data-match-ratings]");
+    if (!section || !window.fetch) return;
+    var body = section.querySelector("[data-match-ratings-body]");
+    var slug = section.getAttribute("data-match-ratings-slug") || "";
+    var locale = section.getAttribute("data-match-ratings-locale") === "en" ? "en" : "tr";
+    var roster = (section.getAttribute("data-rating-roster") || "").split("|").map(function (name) {
+      return name.trim();
+    }).filter(Boolean);
+    if (!slug || !body || !roster.length) return;
+    var text = t(locale);
+
+    function paint(payload) {
+      if (!payload || payload.storage === "none") {
+        section.setAttribute("hidden", "");
+        return;
+      }
+      var byName = {};
+      (payload.ratings || []).forEach(function (row) { byName[row.playerName] = row; });
+      var rows = roster.map(function (name) {
+        var found = byName[name];
+        return found || { playerName: name, average: null, votes: 0, mine: null };
+      });
+      // Puanlananlar üstte; puanlanmayanlar kadro sırasında kalır.
+      rows.sort(function (left, right) { return (right.average || 0) - (left.average || 0); });
+      body.innerHTML = '<ul class="fan-rating-list">' + rows.map(function (row) {
+        return ratingRowHtml(row, locale);
+      }).join("") + "</ul>" +
+      '<p class="fan-rating-error" data-rating-error hidden>' + esc(text.ratingsError) + "</p>";
+      section.removeAttribute("hidden");
+    }
+
+    function load() {
+      return fetch("/api/match-ratings?slug=" + encodeURIComponent(slug) + "&locale=" + locale, { cache: "no-store" })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) { paint(payload && payload.data); })
+        .catch(function () { section.setAttribute("hidden", ""); });
+    }
+
+    section.addEventListener("click", function (event) {
+      var chip = event.target && event.target.closest ? event.target.closest("[data-rating-value]") : null;
+      if (!chip) return;
+      var player = chip.getAttribute("data-rating-player");
+      var value = Number(chip.getAttribute("data-rating-value"));
+      fetch("/api/match-ratings", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: slug, locale: locale, player: player, rating: value })
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) {
+          if (!payload || payload.ok === false) throw new Error("rating-failed");
+          paint(payload.data);
+          track("fan_player_rating", { match_slug: slug, locale: locale, rating: value });
+        })
+        .catch(function () {
+          var note = section.querySelector("[data-rating-error]");
+          if (note) note.removeAttribute("hidden");
+        });
+    });
+
+    load();
+  }
+
+  /* ================================================================== */
+  /* PAYLAŞIM KARTI                                                     */
+  /* ================================================================== */
+
+  /**
+   * KART NEDEN TARAYICIDA ÇİZİLİYOR.
+   *
+   * Maça özel bir `og:image` ya isteği karşılayan bir sunucusuz işlev
+   * ister — Vercel Hobby'deki 12 işlev sınırı DOLU — ya da her maç için
+   * derlemede PNG üretmeyi, yani derlemeye Chromium sokmayı (bkz.
+   * scripts/generate-og-images.mjs: bilerek reddedilmiş). Anket kartında
+   * da aynı yol seçilmişti (site.js → drawShareCard): bağlantı önizlemesi
+   * markalı ve sabit, maça özel kart tarayıcıda.
+   *
+   * KART VERİ ÜRETMEZ. Skor, istatistik ve künye satırı sunucunun bastığı
+   * veri niteliklerinden okunuyor; burada tek bir sayı hesaplanmıyor.
+   * Kartta görünen değer, sayfada görünen değerin ta kendisi.
+   */
+  var CARD_WIDTH = 1200;
+  var CARD_HEIGHT = 630;
+
+  function cardSpec(section) {
+    if (!section) return null;
+    var stats = (section.getAttribute("data-match-card-stats") || "")
+      .split("~")
+      .map(function (chunk) { return chunk.split("|"); })
+      .filter(function (parts) { return parts.length === 3 && parts[0]; })
+      .map(function (parts) { return { label: parts[0], home: parts[1], away: parts[2] }; });
+
+    return {
+      home: section.getAttribute("data-match-card-home") || "",
+      away: section.getAttribute("data-match-card-away") || "",
+      score: section.getAttribute("data-match-card-score") || "",
+      kicker: section.getAttribute("data-match-card-kicker") || "",
+      url: section.getAttribute("data-match-card-url") || "",
+      message: section.getAttribute("data-match-card-message") || "",
+      stats: stats
+    };
+  }
+
+  /**
+   * Metni verilen genişliğe SIĞDIRIR — kırpmaz, küçültür.
+   *
+   * Kırpılmış bir takım adı ("Gençlerbirliği S…") paylaşılan her kartta
+   * görünürdü; punto düşürmek bilgiyi korur.
+   */
+  function fitFont(ctx, text, maxWidth, weight, startSize, minSize) {
+    var size = startSize;
+    while (size > minSize) {
+      ctx.font = weight + " " + size + "px 'Segoe UI', Roboto, Arial, sans-serif";
+      if (ctx.measureText(text).width <= maxWidth) return size;
+      size -= 2;
+    }
+    ctx.font = weight + " " + minSize + "px 'Segoe UI', Roboto, Arial, sans-serif";
+    return minSize;
+  }
+
+  function drawMatchCard(spec) {
+    var canvas = document.createElement("canvas");
+    if (!canvas.getContext) return Promise.resolve(null);
+    canvas.width = CARD_WIDTH;
+    canvas.height = CARD_HEIGHT;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return Promise.resolve(null);
+
+    // Zemin ve marka rengi site.js'teki anket kartıyla AYNI: iki kart da
+    // aynı siteden çıkıyor, ikinci bir görsel dil kurulmuyor.
+    var background = ctx.createLinearGradient(0, 0, CARD_WIDTH, CARD_HEIGHT);
+    background.addColorStop(0, "#07281c");
+    background.addColorStop(0.55, "#0b3d2a");
+    background.addColorStop(1, "#05100c");
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
+
+    // Süs dairesi SAĞ ÜST KÖŞEDE kalıyor. Anket kartındaki gibi geniş
+    // çizilince istatistik şeritlerinin üstünden geçiyor ve deplasman
+    // sayılarının zeminini karartıyordu — okunurluk süsten önce gelir.
+    ctx.fillStyle = "rgba(11, 143, 90, 0.22)";
+    ctx.beginPath();
+    ctx.arc(CARD_WIDTH - 40, 40, 300, 0, Math.PI * 2);
+    ctx.fill();
+
+    var padding = 80;
+    var maxWidth = CARD_WIDTH - padding * 2;
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#4ade80";
+    ctx.font = "900 40px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText("FUTBOLRADAR", CARD_WIDTH / 2, 92);
+
+    if (spec.kicker) {
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      fitFont(ctx, spec.kicker, maxWidth, "600", 30, 20);
+      ctx.fillText(spec.kicker, CARD_WIDTH / 2, 142);
+    }
+
+    // Skor satırı: takım adları iki yanda, skor ortada. Adlar kendi
+    // yarılarına sığdırılıyor; uzun ad skoru itmiyor.
+    var scoreY = 268;
+    ctx.fillStyle = "#ffffff";
+    var scoreSize = fitFont(ctx, spec.score, 300, "900", 108, 64);
+    ctx.fillText(spec.score, CARD_WIDTH / 2, scoreY);
+
+    var sideWidth = (CARD_WIDTH - 300) / 2 - padding / 2;
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.textAlign = "right";
+    fitFont(ctx, spec.home, sideWidth, "700", 46, 26);
+    ctx.fillText(spec.home, CARD_WIDTH / 2 - 170, scoreY - 8);
+    ctx.textAlign = "left";
+    fitFont(ctx, spec.away, sideWidth, "700", 46, 26);
+    ctx.fillText(spec.away, CARD_WIDTH / 2 + 170, scoreY - 8);
+
+    // İSTATİSTİK YOKSA SATIR ÇİZİLMİYOR. Boş bir ızgara, ölçülmemiş
+    // değeri ölçülmüş gibi gösterirdi; kart skorla yetiniyor.
+    var rows = (spec.stats || []).slice(0, 3);
+    var rowY = 380;
+    for (var index = 0; index < rows.length; index += 1) {
+      var row = rows[index];
+      ctx.fillStyle = "rgba(255,255,255,0.10)";
+      ctx.fillRect(padding, rowY - 34, maxWidth, 52);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 30px 'Segoe UI', Roboto, Arial, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(row.home, padding + 24, rowY);
+      ctx.textAlign = "right";
+      ctx.fillText(row.away, CARD_WIDTH - padding - 24, rowY);
+
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.textAlign = "center";
+      fitFont(ctx, row.label, maxWidth - 260, "600", 26, 18);
+      ctx.fillText(row.label, CARD_WIDTH / 2, rowY);
+
+      rowY += 66;
+    }
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.65)";
+    ctx.font = "600 26px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText(String(spec.url || "").replace(/^https?:\/\//, ""), CARD_WIDTH / 2, CARD_HEIGHT - 52);
+
+    return new Promise(function (resolve) {
+      if (!canvas.toBlob) { resolve(null); return; }
+      canvas.toBlob(function (blob) { resolve(blob || null); }, "image/png");
+    });
+  }
+
+  /**
+   * Kart araçlarını bağlar.
+   *
+   * ARAÇLAR JS OLMADAN GÖSTERİLMİYOR (`hidden` doğar): çizilemeyecek bir
+   * kartın düğmesini basmak, çalışmayan bir düğme sunmaktır. Metin
+   * paylaşım bağlantıları ise SUNUCUDA basılı ve JS'siz de çalışıyor —
+   * bölüm bu yüzden boş kutu değil.
+   */
+  function bootCard() {
+    var section = document.querySelector("[data-match-card]");
+    if (!section) return;
+    var tools = section.querySelector("[data-match-card-tools]");
+    var spec = cardSpec(section);
+    if (!tools || !spec || !spec.score) return;
+    var locale = section.getAttribute("data-match-card-locale") === "en" ? "en" : "tr";
+    var text = t(locale);
+    var slug = (document.querySelector("[data-match-center]") || { getAttribute: function () { return ""; } }).getAttribute("data-msp-slug") || "";
+
+    var probe = document.createElement("canvas");
+    if (!probe.getContext || !probe.toBlob || typeof Promise === "undefined") return;
+
+    var objectUrl = "";
+
+    tools.innerHTML = '<button type="button" class="fan-card-button" data-card-make>' + esc(text.cardMake) + "</button>";
+    tools.removeAttribute("hidden");
+
+    function fail() {
+      tools.innerHTML = '<p class="fan-card-error">' + esc(text.cardError) + "</p>";
+    }
+
+    function present(blob) {
+      if (!blob) { fail(); return; }
+      if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+      objectUrl = window.URL.createObjectURL(blob);
+      var fileName = (slug || "futbolradar-mac") + ".png";
+
+      // Paylaş düğmesi YALNIZCA tarayıcı dosya paylaşabiliyorsa basılıyor.
+      // `navigator.share` var diye basmak yetmez: masaüstü tarayıcıların
+      // bir kısmı metni paylaşıp dosyayı sessizce düşürüyor.
+      var file = null;
+      try { file = new File([blob], fileName, { type: "image/png" }); } catch (error) { file = null; }
+      var canShareFile = Boolean(file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
+
+      tools.innerHTML =
+        '<img class="fan-card-preview" src="' + esc(objectUrl) + '" alt="' + esc(text.cardAlt) + '" width="1200" height="630">' +
+        '<div class="fan-card-actions">' +
+          '<a class="fan-card-button" href="' + esc(objectUrl) + '" download="' + esc(fileName) + '" data-card-download>' + esc(text.cardDownload) + "</a>" +
+          (canShareFile ? '<button type="button" class="fan-card-button is-share" data-card-share>' + esc(text.cardShare) + "</button>" : "") +
+        "</div>";
+
+      if (canShareFile) {
+        var shareButton = tools.querySelector("[data-card-share]");
+        if (shareButton) {
+          shareButton.addEventListener("click", function () {
+            navigator.share({ files: [file], text: spec.message, url: spec.url })
+              .then(function () { track("share_match_card", { match_slug: slug, locale: locale, channel: "web-share" }); })
+              .catch(function () { /* okuyucu vazgeçti; hata değil */ });
+          });
+        }
+      }
+    }
+
+    tools.addEventListener("click", function (event) {
+      var download = event.target && event.target.closest ? event.target.closest("[data-card-download]") : null;
+      if (download) {
+        track("share_match_card", { match_slug: slug, locale: locale, channel: "download" });
+        return;
+      }
+      var make = event.target && event.target.closest ? event.target.closest("[data-card-make]") : null;
+      if (!make) return;
+      make.disabled = true;
+      make.textContent = text.cardMaking;
+      drawMatchCard(spec).then(present).catch(fail);
+    });
+  }
+
   function boot() {
     try { bootPoll(); } catch (error) { /* anket çökerse sayfa çalışmaya devam eder */ }
     try { bootShare(); } catch (error) { /* paylaşım çökerse sayfa çalışmaya devam eder */ }
     try { bootFollow(); } catch (error) { /* takip çökerse sayfa çalışmaya devam eder */ }
+    try { bootComments(); } catch (error) { /* yorumlar çökerse sayfa çalışmaya devam eder */ }
+    try { bootRatings(); } catch (error) { /* puanlama çökerse sayfa çalışmaya devam eder */ }
+    try { bootCard(); } catch (error) { /* kart çökerse metin paylaşımı çalışmaya devam eder */ }
   }
 
   return {
     FOLLOW_STORE_PREFIX: FOLLOW_STORE_PREFIX,
     TEXT: TEXT,
     boot: boot,
+    bootCard: bootCard,
+    bootComments: bootComments,
     bootPoll: bootPoll,
+    bootRatings: bootRatings,
+    cardSpec: cardSpec,
+    commentsHtml: commentsHtml,
+    commentFormHtml: commentFormHtml,
+    ratingRowHtml: ratingRowHtml,
     esc: esc,
     pollHtml: pollHtml,
     questionHtml: questionHtml,

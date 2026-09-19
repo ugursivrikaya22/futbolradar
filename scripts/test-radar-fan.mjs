@@ -90,11 +90,15 @@ ok("ikinci soru yapılandırmadan gelir ve değiştirilebilir", () => {
   assert.equal(second.options.length, 3, "ev + deplasman + nötr");
 });
 
-ok("maç bitince kazanan sorusu KAPANIR", () => {
+ok("maç BAŞLAYINCA kazanan sorusu KAPANIR", () => {
+  const before = route.buildQuestions(entry, "tr", kickoffMs - 60 * 1000);
+  assert.equal(before[0].closed, false, "ilk vuruştan önce açık olmalı");
+  // 60. dakikada 3-0 önde olan takıma oy vermek tahmin değil, sonucu
+  // okuyup işaretlemektir; kapı bu yüzden ilk vuruşta iniyor.
   const during = route.buildQuestions(entry, "tr", kickoffMs + 60 * 60000);
-  assert.equal(during[0].closed, false, "maç sürerken açık kalmalı");
-  const after = route.buildQuestions(entry, "tr", kickoffMs + route.WINNER_CLOSES_AFTER_MS + 1000);
-  assert.equal(after[0].closed, true, "sonucu bilerek oy vermek anketin anlamını bozar");
+  assert.equal(during[0].closed, true, "başlamış maça oy verilemez");
+  const atKickoff = route.buildQuestions(entry, "tr", kickoffMs);
+  assert.equal(atKickoff[0].closed, true, "ilk vuruş ANININDA kapalı");
 });
 
 ok("seçeneği olmayan soru yayımlanmaz", () => {

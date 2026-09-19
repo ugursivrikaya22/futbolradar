@@ -46,6 +46,9 @@ export const POSTPROCESS_CHAIN = [
   // dizini. İkisi de kaynağından üretiliyor ve varlık damgasından ÖNCE
   // kesinleşmek zorunda (bkz. build-match-hub-client.mjs).
   { id: "match-hub-core", script: "build-match-hub-client.mjs", args: [], timeoutMinutes: 2 },
+  // Maç anlatımı çekirdeği de aynı gerekçeyle burada: `/mac/<slug>`
+  // sayfaları bu dosyayı yüklüyor ve damgadan önce kesinleşmeli.
+  { id: "match-timeline-core", script: "build-match-timeline-client.mjs", args: [], timeoutMinutes: 2 },
   { id: "match-news-index", script: "build-match-news-index.mjs", args: [], timeoutMinutes: 2 },
   // Resolve English links after match registries and Turkish pages exist.
   // Scheduled postprocessing must refresh these links as well as full builds.
