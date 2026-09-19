@@ -68,10 +68,29 @@ const OFFICIAL_DOMAINS = Object.freeze([
 
   // Türkiye — federasyon ve lig
   "tff.org",
+  // Halka açık kulüpler transferin bedelini ÖNCE Kamuyu Aydınlatma
+  // Platformu'na bildirir. KAP bildirimi kulübün imzalı beyanıdır —
+  // gazete aktarımından değil, kulüptendir.
+  "kap.org.tr",
+  // Kulüplerin kendi medya kolları: fenermedia.com Fenerbahçe'nin yayın
+  // organıdır, alan adı farklı diye kademe düşmemeli.
+  "fenermedia.com",
+  "gsstore.org",
 
   // Uluslararası kurumlar
   "uefa.com",
   "fifa.com",
+  "theifab.com",
+  "cas-cci.org",
+
+  // Lig kurumları — ligin kendi duyurusu da resmîdir (fikstür, ceza, kural).
+  "premierleague.com",
+  "bundesliga.com",
+  "laliga.com",
+  "legaseriea.it",
+  "ligue1.com",
+  "ligue1.fr",
+  "efl.com",
 
   // Avrupa kulüpleri (kaynak olarak geçenler)
   "mancity.com",
@@ -87,7 +106,51 @@ const OFFICIAL_DOMAINS = Object.freeze([
   "fcbayern.com",
   "bvb.de",
   "psg.fr",
-  "acffiorentina.com"
+  "acffiorentina.com",
+  "atleticodemadrid.com",
+  "sscnapoli.it",
+  "asroma.com",
+  "sslazio.it",
+  "atalanta.it",
+  "rbleipzig.com",
+  "bayer04.de",
+  "olympiquelyonnais.com",
+  "om.fr",
+  "asmonaco.com",
+  "sevillafc.es",
+  "valenciacf.com",
+  "realbetisbalompie.es",
+  "athletic-club.eus",
+  "realsociedad.eus",
+  "villarrealcf.es",
+  "tottenhamhotspur.com",
+  "nufc.co.uk",
+  "avfc.co.uk",
+  "wolves.co.uk",
+  "brightonandhovealbion.com",
+  "westhamunited.com",
+  "evertonfc.com",
+  "cfc.co.uk",
+  "benfica.pt",
+  "fcporto.pt",
+  "sporting.pt",
+  "ajax.nl",
+  "psv.nl",
+  "feyenoord.nl",
+  "rscanderlecht.be",
+  "clubbrugge.be",
+  "celticfc.com",
+  "rangers.co.uk",
+  "shakhtar.com",
+  "fcdynamo.kyiv.ua",
+  "olympiacos.org",
+  "paofc.gr",
+  "aekfc.gr",
+  "reddevils.com",
+  "crvenazvezdafk.com",
+  "alnassr.sa",
+  "alhilal.com",
+  "alittihadclub.sa"
 ]);
 
 /**
@@ -113,7 +176,49 @@ const HIGH_TRUST_DOMAINS = Object.freeze([
   "kicker.de",
   "gazzetta.it",
   "marca.com",
-  "as.com"
+  "as.com",
+
+  /*
+   * TÜRKİYE'NİN ULUSAL YAYINCILARI.
+   *
+   * Bunlar listede YOKTU. Sonuç depoda ölçüldü: Hürriyet, Fanatik,
+   * Fotomaç, Milliyet gibi yayın kurulu olan ulusal gazetelerin haberleri
+   * "kaynağı zayıf" sayılıp İDDİA rozetiyle gösteriliyordu. Kaynaksızlık
+   * güvenilirlik değildir — ama ulusal bir gazete de kaynaksız değildir.
+   * Bu kurumlar bir haberi DOĞRU verebilir; yine de kulübün resmî
+   * açıklamasının yerine geçmezler, o yüzden kademe 1 değil kademe 2.
+   */
+  "hurriyet.com.tr",
+  "milliyet.com.tr",
+  "sabah.com.tr",
+  "fotomac.com.tr",
+  "fanatik.com.tr",
+  "ntv.com.tr",
+  "ntvspor.net",
+  "haberturk.com",
+  "sozcu.com.tr",
+  "aspor.com.tr",
+  "beinsports.com.tr",
+  "sporx.com",
+  "fotospor.com.tr",
+  "cnnturk.com",
+  "dha.com.tr",
+  "iha.com.tr",
+
+  // Avrupa spor basını — ulusal ölçekte yayın kurulu olan kurumlar.
+  "sport.es",
+  "mundodeportivo.com",
+  "corrieredellosport.it",
+  "tuttosport.com",
+  "sport1.de",
+  "bild.de",
+  "rmcsport.bfmtv.com",
+  "guardian.com",
+  "theguardian.com",
+  "telegraph.co.uk",
+  "goal.com",
+  "record.pt",
+  "abola.pt"
 ]);
 
 /**

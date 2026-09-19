@@ -57,6 +57,9 @@ const { cardBroadcastLabel } = require("../services/broadcastSchedule.js");
 // Haber akışı kuralı da tek yerde: services/newsFeed.js. Veri okumadan önce
 // alınıyor, çünkü `news` sabiti hemen aşağıda bu süzgeci kullanıyor.
 const { publishableNews, newsHref, isExternalHref } = require("../services/newsFeed.js");
+// Haber durumu (Resmî / Görüşme / İddia / Haber) tek yerden gelir; İngilizce
+// taraf da aynı servisi kullanır, iki dil aynı ölçüyle etiketlenir.
+const { editorialStatusOf } = require("../services/editorialStatus.js");
 const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
@@ -1539,19 +1542,39 @@ function newsCardActionLabel(item) {
   return { href, external, label };
 }
 
+/**
+ * KARTTAKİ ROZET, HABERİN NE KADAR KESİN OLDUĞUNU SÖYLER.
+ *
+ * Eskiden rozet kategoriyi yazıyordu ("Galatasaray", "Transfer"). Kategori
+ * kartın kickerında zaten vardı; rozet ikinci kez aynı şeyi söyleyip
+ * okurun asıl sorusunu ("bu kesin mi?") yanıtsız bırakıyordu. Kulübün
+ * duyurduğu transfer ile kulis iddiası kartta aynı görünüyordu.
+ *
+ * Durum her koşuda kaynaktan TÜRETİLİR, veriye yazılmaz: kayda bir kaynak
+ * eklendiğinde rozet kendiliğinden düzelir, veri göçü gerekmez.
+ * "Son Dakika" durumun yerine geçmez, yanına eklenir.
+ */
+function newsStatusBadges(item) {
+  const verdict = editorialStatusOf(item);
+  const badges = [
+    `<span class="mega-badge mega-badge--status" data-status="${escapeHtml(verdict.status)}">${escapeHtml(verdict.label.tr)}</span>`
+  ];
+  if (verdict.isBreaking) {
+    badges.push(`<span class="mega-badge mega-badge--breaking">${escapeHtml(verdict.breakingLabel.tr)}</span>`);
+  }
+  return badges.join("");
+}
+
 function newsCardList(limit) {
   return news.slice(0, limit || news.length).map((item) => {
     const action = newsCardActionLabel(item);
-    const isTransfer = /transfer/i.test(String(item.category || ""));
-    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
-    const badgeLabel = isTransfer ? "Transfer" : String(item.category || "Radar");
     // Kart tamamen tıklanabilir: <a> gövdesi, iç içe link yok. Kaynağa çıkan
     // linkler `nofollow` taşır (services/sourceLinks.js ile aynı kural).
     const attrs = action.href
       ? ` href="${escapeHtml(action.href)}"${action.external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : ""}`
       : "";
     const tag = action.href ? "a" : "article";
-    return `<${tag} class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"${attrs}><div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span><time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${action.href ? `<span class="detail-link">${action.label}</span>` : ""}</div></${tag}>`;
+    return `<${tag} class="news-card" data-card="news" data-news="${escapeHtml(item.id)}"${attrs}><div class="news-card-meta">${newsStatusBadges(item)}<time datetime="${escapeHtml(item.publishedAt || "")}">${escapeHtml(formatFreshnessDate(item.publishedAt) || "Tarih açıklanmadı")}</time></div><div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.summary)}</p></div><div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Resmî kaynak")}</span>${action.href ? `<span class="detail-link">${action.label}</span>` : ""}</div></${tag}>`;
   });
 }
 
