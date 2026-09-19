@@ -66,7 +66,7 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
-const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
+const { ENGLISH_NEWS_HUB_LIMIT, isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
 const { statusLabel, BREAKING_LABEL } = require("../services/editorialStatus.js");
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
@@ -1982,7 +1982,7 @@ ${sectionLinks()}`;
 
 /** Haberler — tamamı İngilizce: çerçeve de, haberin kendisi de. */
 function newsPage() {
-  const cardList = englishNewsList.slice(0, 24).map(englishNewsCard);
+  const cardList = englishNewsList.slice(0, ENGLISH_NEWS_HUB_LIMIT).map(englishNewsCard);
   // Ana sayfanın 3 kartlık önizlemesinden farklı olarak bu TAM liste; anket
   // vitrin kartı her 7 haberden sonra araya giriyor (gerekçe
   // scripts/lib/homePoll.mjs#interleavePollPromo).
