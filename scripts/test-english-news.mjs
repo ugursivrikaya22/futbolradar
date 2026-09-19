@@ -148,4 +148,42 @@ const make = (title, sourceName, link, publishedAt = "2026-09-16T11:30:00.000Z")
   }
 }
 
+// ── 12. BİRLEŞİK AKIŞ: ÇEVİRİ GİREBİLİR, ARKADAN ────────────────────────
+//
+// /en tek sıralı akış: İngilizce kaynaklı haberler önde, Türkçe masadan
+// çevrilenler arkada. Denetim iki şeyi birden sabitliyor, çünkü ikisi de
+// kolayca bozulur: çeviri akışa GİREBİLMELİ (yoksa Türkiye gündemi
+// İngilizce okura hiç ulaşmaz) ama İngilizce kaynaklının ÜSTÜNE
+// çıkamamalı — tazelik ya da resmî olmak bile onu öne almamalı.
+{
+  const translated = {
+    ...make("Fenerbahce confirm midfielder signing", "FutbolRadar", "https://www.futbolradar.com/1"),
+    origin: "translated",
+    editorialStatus: STATUS.OFFICIAL,
+    isBreaking: true,
+    publishedAt: "2026-09-16T11:59:00.000Z"
+  };
+  // İngilizce kaynaklı taraf bilerek ZAYIF: eski, öncelikli turnuva değil,
+  // resmî değil, son dakika değil. Yine de üstte kalmalı.
+  const englishSourced = {
+    ...make("Refereeing standards under review", "BBC Sport", "https://www.bbc.co.uk/9"),
+    publishedAt: "2026-09-13T08:00:00.000Z"
+  };
+
+  assert.equal(isPublishableEnglish(translated), true,
+    "İngilizce metni olan çeviri akışa girebilmeli");
+
+  const ranked = rankEnglishNews([translated, englishSourced], { now: NOW });
+  assert.equal(ranked[0].slug, englishSourced.slug,
+    "İngilizce kaynaklı haber, resmî ve taze bir çevirinin bile üstünde olmalı");
+  assert.equal(ranked[1].slug, translated.slug, "çeviri akıştan düşmemeli, arkaya geçmeli");
+
+  // `origin` taşımayan kayıt İngilizce kaynaklı sayılır: mevcut
+  // çağıranların davranışı değişmemeli.
+  const untagged = { ...translated, origin: undefined };
+  const pair = rankEnglishNews([untagged, englishSourced], { now: NOW });
+  assert.equal(pair[0].slug, untagged.slug,
+    "köken işareti olmayan kayıt cezalandırılmamalı");
+}
+
 console.log("english-news passed");

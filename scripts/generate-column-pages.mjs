@@ -107,6 +107,27 @@ function relativeAssetUrl(filePath, base = "./") {
   return `${base}${String(filePath || "").replace(/^\.?\//, "")}`;
 }
 
+const SHARE_STRINGS = {
+  tr: {
+    label: "Bu yazıyı paylaş",
+    sectionLabel: "Yazıyı paylaş",
+    facebook: "Facebook'ta Paylaş",
+    x: "X'te Paylaş",
+    shareAria: (title) => `${title} yazısını paylaş`,
+    facebookAria: (title) => `${title} yazısını Facebook'ta paylaş`,
+    xAria: (title) => `${title} yazısını X'te paylaş`
+  },
+  en: {
+    label: "Share this column",
+    sectionLabel: "Share the column",
+    facebook: "Share on Facebook",
+    x: "Share on X",
+    shareAria: (title) => `Share the column ${title}`,
+    facebookAria: (title) => `Share the column ${title} on Facebook`,
+    xAria: (title) => `Share the column ${title} on X`
+  }
+};
+
 function shareUrls(column) {
   const url = publicUrl(column.path);
   const xText = `${column.title} — FutbolRadar | futbolradar.com`;
@@ -117,22 +138,31 @@ function shareUrls(column) {
   };
 }
 
+/**
+ * Paylaşım bağlantıları — ERİŞİLEBİLİRLİK ETİKETLERİ DE ÇEVRİLİR.
+ *
+ * `aria-label` ekranda görünmez ama ekran okuyucusu onu OKUR. İngilizce
+ * sayfada Türkçe bir aria-label, ekran okuyucusu kullanan okuyucu için
+ * sayfanın görünen kısmının Türkçe kalmasıyla aynı şey.
+ */
 function shareLinks(column, { compact = false } = {}) {
   const urls = shareUrls(column);
   const title = escapeHtml(column.title);
+  const locale = column.locale === "en" ? "en" : "tr";
+  const copy = SHARE_STRINGS[locale];
 
   if (compact) {
-    return `<div class="column-card-share-actions" aria-label="${title} yazısını paylaş">
-          <a class="column-card-share column-card-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${title} yazısını Facebook'ta paylaş" title="Facebook'ta paylaş"><span aria-hidden="true">f</span></a>
-          <a class="column-card-share column-card-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${title} yazısını X'te paylaş" title="X'te paylaş"><span aria-hidden="true">X</span></a>
+    return `<div class="column-card-share-actions" aria-label="${copy.shareAria(title)}">
+          <a class="column-card-share column-card-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${copy.facebookAria(title)}" title="${escapeHtml(copy.facebook)}"><span aria-hidden="true">f</span></a>
+          <a class="column-card-share column-card-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${copy.xAria(title)}" title="${escapeHtml(copy.x)}"><span aria-hidden="true">X</span></a>
         </div>`;
   }
 
-  return `<section class="column-share" aria-label="Yazıyı paylaş">
-          <span class="column-share-label">Bu yazıyı paylaş</span>
+  return `<section class="column-share" aria-label="${escapeHtml(copy.sectionLabel)}">
+          <span class="column-share-label">${escapeHtml(copy.label)}</span>
           <div class="column-share-actions">
-            <a class="column-share-button column-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${title} yazısını Facebook'ta paylaş"><span class="column-share-symbol" aria-hidden="true">f</span><span>Facebook'ta Paylaş</span></a>
-            <a class="column-share-button column-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${title} yazısını X'te paylaş"><span class="column-share-symbol" aria-hidden="true">X</span><span>X'te Paylaş</span></a>
+            <a class="column-share-button column-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${copy.facebookAria(title)}"><span class="column-share-symbol" aria-hidden="true">f</span><span>${escapeHtml(copy.facebook)}</span></a>
+            <a class="column-share-button column-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${copy.xAria(title)}"><span class="column-share-symbol" aria-hidden="true">X</span><span>${escapeHtml(copy.x)}</span></a>
           </div>
         </section>`;
 }
@@ -147,10 +177,16 @@ function readStore() {
   }
 }
 
-function formatDate(value) {
+/**
+ * Tarih — SAYFANIN DİLİNDE.
+ *
+ * Biçim dili sabit "tr-TR" idi; İngilizce yazı sayfasında künye tarihi
+ * "14 Ağustos 2026" olarak basılıyordu. Ay adı da metindir.
+ */
+function formatDate(value, locale = "tr") {
   const parsed = new Date(value);
   if (Number.isNaN(parsed.getTime())) return "";
-  return new Intl.DateTimeFormat("tr-TR", {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
     day: "2-digit", month: "long", year: "numeric", timeZone: "Europe/Istanbul"
   }).format(parsed);
 }
@@ -181,7 +217,7 @@ export function columnCard(column, base = "./", { showShareControls = false } = 
       ${column.excerpt ? `<p>${escapeHtml(column.excerpt)}</p>` : ""}
       <div class="column-card-meta">
         <a class="column-author" href="${escapeHtml(base + column.authorPath)}">${escapeHtml(column.author)}</a>
-        <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date))}</time>
+        <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date, column.locale))}</time>
       </div>
       ${tags ? `<div class="column-tags">${tags}</div>` : ""}
       ${actions}
@@ -339,7 +375,7 @@ export function columnPageHtml(column, locale = "tr") {
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
   </head>
   <body class="subpage column-page">
-    ${siteHeader({ base })}
+    ${siteHeader({ base, locale })}
     <main class="container">
       <nav class="breadcrumb" aria-label="${copy.breadcrumbLabel}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(copy.home)}</a><span>/</span><a href="${base}${copy.indexPath}">${escapeHtml(locale === "en" ? "Columns" : SECTION_NAME)}</a><span>/</span><span>${escapeHtml(column.title)}</span></nav>
 
@@ -352,7 +388,7 @@ export function columnPageHtml(column, locale = "tr") {
           <h1>${escapeHtml(column.title)}</h1>
           <div class="column-article-meta">
             <a class="column-author" href="${base}${escapeHtml(column.authorPath)}">${escapeHtml(column.author)}</a>
-            <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date))}</time>
+            <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date, column.locale))}</time>
           </div>
         </header>
 
@@ -372,7 +408,7 @@ export function columnPageHtml(column, locale = "tr") {
         <a class="detail-link" href="${base}${copy.indexPath}">${escapeHtml(copy.backAll)}</a>
       </section>
     </main>
-    ${siteFooter({ base })}
+    ${siteFooter({ base, locale })}
     <script src="${base}site.js" defer></script>
   </body>
 </html>

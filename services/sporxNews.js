@@ -361,6 +361,241 @@ const CONFIDENCE_SENTENCE = {
   rumour: (team) => `Bu içerik henüz doğrulanmamış bir iddia niteliğinde; ${team} veya ilgili taraflarca resmi olarak teyit edilmedi. Gelişmeler netleştikçe haber güncellenecek.`
 };
 
+/**
+ * İNGİLİZCE HABER KATMANI.
+ * ---------------------------------------------------------------------------
+ * `/en` tarafında Türkçe haber gösterilmemesi kuralının uygulandığı yer.
+ *
+ * Haber metni ZATEN ŞABLONDAN üretiliyor: olay türü, takım, kişi ve güven
+ * seviyesi belli. Yani İngilizce karşılık çeviriyle değil, AYNI YAPISAL
+ * VERİDEN ikinci kez üretilerek elde edilir. Bu, makine çevirisinden hem daha
+ * doğru hem de daha doğal: iki dilin de cümlesi kendi dilinde yazılmıştır.
+ *
+ * Türkçe şablonların aksine burada hâl ekleri yok; İngilizce'de takım adı
+ * çekimlenmiyor. Bu yüzden `withLocative` benzeri yardımcılar kullanılmaz.
+ */
+/**
+ * "AT GALATASARAY" AMA "IN EUROPEAN FOOTBALL".
+ *
+ * Akışta `team` alanı her zaman bir kulüp değil; "Avrupa Futbolu",
+ * "Süper Lig", "Transfer Gündemi" gibi KONU başlıkları da bu alana yazılıyor.
+ * Kulüp için doğru edat "at", konu başlığı için "in" — "at European
+ * Football" İngilizce bir futbol sitesinde kulağa yanlış gelir.
+ *
+ * Ölçüt veriye dayanır: ad kategori sözlüğünün bir karşılığıysa konu
+ * başlığıdır, değilse kulüptür. Küme TEMBEL kuruluyor, çünkü
+ * `NEWS_CATEGORY_EN` bu satırlardan SONRA tanımlanıyor; modül yüklenirken
+ * okumak `ReferenceError` verirdi.
+ */
+let categoryLabelSet = null;
+
+function teamPreposition(team) {
+  if (!categoryLabelSet) categoryLabelSet = new Set(Object.values(NEWS_CATEGORY_EN));
+  return categoryLabelSet.has(String(team)) ? "in" : "at";
+}
+
+const EVENT_TEMPLATES_EN = {
+  official: {
+    title: ({ team, player }) => `Official development ${teamPreposition(team)} ${team} over ${player || "the transfer file"}`,
+    lead: ({ team, player, sourceName }) =>
+      `${sourceName} report that an official step has been taken ${teamPreposition(team)} ${team} regarding ${player || "the file in question"}.`
+  },
+  departure: {
+    title: ({ team, player }) => `${team} and ${player || "a squad member"} said to have parted ways`,
+    lead: ({ team, player, sourceName }) =>
+      `${sourceName} report that ${team} and ${player || "a member of the squad"} have gone their separate ways.`
+  },
+  denial: {
+    title: ({ team, player }) => `${team} deny reports over ${player || "the claims"}`,
+    lead: ({ team, player, sourceName }) =>
+      `${sourceName} report that ${team} have denied the claims regarding ${player || "the matter in question"}.`
+  },
+  negotiation: {
+    title: ({ team, player }) => `Claim that talks continue ${teamPreposition(team)} ${team} over ${player || "a transfer file"}`,
+    lead: ({ team, player, sourceName }) =>
+      `${sourceName} report that ${team} are continuing talks over ${player || "a transfer file"}.`
+  },
+  squad: {
+    title: ({ team }) => `Squad agenda ${teamPreposition(team)} ${team}`,
+    lead: ({ team, sourceName }) =>
+      `${sourceName} report a squad-related development ${teamPreposition(team)} ${team}.`
+  },
+  result: {
+    title: ({ team }) => `Match agenda for ${team}`,
+    lead: ({ team, sourceName }) =>
+      `${sourceName} report that the latest on-pitch developments involving ${team} are in the spotlight.`
+  },
+  statement: {
+    title: ({ team, player }) => player
+      ? `Claim of a statement ${teamPreposition(team)} ${team} regarding ${player}`
+      : `Claim of a statement ${teamPreposition(team)} ${team} on the current agenda`,
+    lead: ({ team, player, sourceName }) =>
+      `${sourceName} report that a statement regarding ${player || "the matter in question"} has been relayed around ${team}.`
+  }
+};
+
+const CONFIDENCE_SENTENCE_EN = {
+  confirmed: (team) => `This matches the verified transfer data FutbolRadar tracks; it has been confirmed by official records from ${team}.`,
+  reported: (team) => `So far this has only appeared in the press; there is no official statement yet from ${team} or from the other party. FutbolRadar will update the story once an official announcement arrives.`,
+  rumour: (team) => `This remains an unverified claim; it has not been officially confirmed by ${team} or the parties involved. The story will be updated as the situation becomes clearer.`
+};
+
+/**
+ * Kategori rozetleri. Kartın üstünde GÖRÜNEN metin bu.
+ * Tabloda olmayan ad olduğu gibi geçer (çoğu zaten özel ad: "La Liga").
+ */
+const NEWS_CATEGORY_EN = Object.freeze({
+  "süper lig": "Süper Lig",
+  "avrupa futbolu": "European Football",
+  "dünya futbolu": "World Football",
+  "şampiyonlar ligi": "Champions League",
+  "avrupa ligi": "Europa League",
+  "transfer gündemi": "Transfer Agenda",
+  "transfer haberleri": "Transfer News",
+  "son dakika transfer": "Breaking Transfer",
+  "kulüp gündemi": "Club Agenda",
+  "hazırlık maçı": "Friendly",
+  "kamp programı": "Pre-season Schedule",
+  "maç sonucu": "Match Result",
+  "türkiye milli takımı": "Türkiye National Team",
+  "maç programı": "Fixture Schedule"
+});
+
+function categoryEn(category) {
+  const raw = text(category);
+  return NEWS_CATEGORY_EN[raw.toLowerCase()] || raw;
+}
+
+/**
+ * ÖZNENİN İNGİLİZCESİ.
+ *
+ * `discovery.subject` Sporx başlığından çıkarılıyor ve çoğu zaman bir kişi
+ * adı ("Victor Osimhen") — çeviri istemez. Ama çıkarım bazen Türkçe bir
+ * ÜNVAN yakalıyor: "Sporting Teknik Direktörü", "Kayserispor Yardımcı
+ * Antrenörü". Bu ad İngilizce cümlenin ortasına olduğu gibi yerleştiğinde
+ * ("a statement regarding Sporting Teknik Direktörü") cümlenin yarısı
+ * Türkçe kalıyordu.
+ *
+ * Bilinen ünvanlar çevrilir. Çeviriden sonra HÂLÂ Türkçe ünvan kalıntısı
+ * varsa özne TAMAMEN DÜŞÜRÜLÜR: şablonun öznesiz varyantı ("on the current
+ * agenda") doğru İngilizce bir cümle kurar. Yarı Türkçe bir cümle
+ * yayımlamaktansa daha genel ama kusursuz bir cümle yayımlamak doğrudur.
+ */
+// `\b` KULLANILMIYOR. JavaScript'te `\b` ASCII sözcük karakterine bakar;
+// "direktörü" gibi bir dizide `ö`/`ü` sözcük karakteri SAYILMADIĞI için
+// sınır yanlış yerde oluşuyor ve desen sözcüğün yarısını eşliyordu
+// ("Teknik Direktör" + artakalan "ü"). Sınır bu yüzden Unicode harf
+// sınıfına bakan ileri/geri bakışlarla kuruluyor.
+function turkishWord(pattern) {
+  return new RegExp(`(?<![\\p{L}])(?:${pattern})(?![\\p{L}])`, "giu");
+}
+
+const SUBJECT_ROLE_EN = [
+  [turkishWord("teknik\\s+direktör[üu]?"), "head coach"],
+  [turkishWord("yardımcı\\s+antrenör[üu]?"), "assistant coach"],
+  [turkishWord("antrenör[üu]?"), "coach"],
+  [turkishWord("başkan[ıi]?"), "president"],
+  [turkishWord("kaptan[ıi]?"), "captain"],
+  [turkishWord("sözcü(?:sü)?"), "spokesperson"],
+  [turkishWord("menajer[i]?"), "agent"],
+  [turkishWord("yabancı"), ""]
+];
+
+/** Çeviriden sonra da Türkçe ünvan/işlev sözcüğü taşıyor mu? */
+const TURKISH_RESIDUE = turkishWord(
+  [
+    // İşlev ve ünvan sözcükleri.
+    "ve", "ile", "için", "hoca", "yönetici", "futbolcu", "oyuncu", "kulüp",
+    "taraftar", "basın", "gündem", "haber", "açıklama", "iddia",
+    // Tamlama sonları. Başlıktan çıkarılan özne bir kişi adı değil de bir
+    // OLAY/DÖNEM adı olduğunda ("Adnan Süvari Sezonu", "Şampiyonlar Ligi")
+    // İngilizce cümlenin ortasına Türkçe bir tamlama giriyordu.
+    "sezon", "sezonu", "hafta", "haftası", "kupa", "kupası", "ligi",
+    "maçı", "derbisi", "kadrosu", "programı", "listesi", "raporu",
+    "tablosu", "transferi", "sakatlık", "sakatlığı", "kararı", "toplantısı"
+  ].join("|")
+);
+
+function subjectEn(subject) {
+  let value = text(subject);
+  if (!value) return "";
+  for (const [pattern, replacement] of SUBJECT_ROLE_EN) value = value.replace(pattern, replacement);
+  value = value.replace(/\s{2,}/g, " ").trim();
+  if (!value) return "";
+  // Global bayraklı desende `test` `lastIndex` taşır; her çağrı bağımsız olmalı.
+  TURKISH_RESIDUE.lastIndex = 0;
+  if (TURKISH_RESIDUE.test(value)) return "";
+  return value;
+}
+
+/**
+ * Bir haberin İngilizce sürümünü YAPISAL VERİDEN üretir.
+ *
+ * Girdi, `discovery` alanında zaten saklanan şeylerdir; bu yüzden aynı
+ * fonksiyon hem yeni haberde (üretim anında) hem de eski 382 kayıtta
+ * (geri doldurma) çalışır.
+ */
+/**
+ * Etiketlerin İngilizcesi.
+ *
+ * Etiket listesi takım adı, kaynak adı, öncelik etiketi ve kişi adından
+ * oluşuyor. Özel adlar olduğu gibi kalır; "Transfer Gündemi" gibi
+ * betimleyici etiketler kategori tablosundan çevrilir. Çeviriden sonra da
+ * Türkçe kalan etiket (ör. başlıktan çıkarılmış yarım bir tamlama)
+ * listeden DÜŞÜRÜLÜR — etiket kartın üstünde görünen metindir.
+ */
+function tagsEn(tags) {
+  const list = Array.isArray(tags) ? tags.map(text).filter(Boolean) : [];
+  const out = [];
+  for (const tag of list) {
+    const mapped = NEWS_CATEGORY_EN[tag.toLowerCase()] || subjectEn(tag);
+    if (mapped && !out.includes(mapped)) out.push(mapped);
+  }
+  return out;
+}
+
+function buildEnglishArticle({ team, player, eventType, confidence, amount, sourceName = "Sporx", category, slug, tags }) {
+  // `team` her zaman bir kulüp değil: akış "Avrupa Futbolu", "Süper Lig",
+  // "Transfer Gündemi" gibi KATEGORİ adlarını da takım alanına yazıyor.
+  // Kulüp adı olduğu gibi geçer, kategori adı İngilizceye çevrilir.
+  const safeTeam = categoryEn(team) || "the club";
+  const person = subjectEn(player);
+  const template = EVENT_TEMPLATES_EN[eventType] || EVENT_TEMPLATES_EN.statement;
+  const title = template.title({ team: safeTeam, player: person });
+  const lead = template.lead({ team: safeTeam, player: person, sourceName });
+
+  const detailParts = [];
+  if (person) detailParts.push(`The name in the spotlight is ${person}.`);
+  if (text(amount)) detailParts.push(`The figure being discussed is ${text(amount)}.`);
+  const detailSentence = detailParts.length
+    ? detailParts.join(" ")
+    : `${sourceName} shared one further detail on the subject; FutbolRadar is relaying it cautiously until it is confirmed by official sources.`;
+
+  const level = CONFIDENCE_SENTENCE_EN[confidence] ? confidence : "reported";
+  const confidenceSentence = CONFIDENCE_SENTENCE_EN[level](safeTeam);
+
+  const evaluationSentence = level === "confirmed"
+    ? "FutbolRadar's assessment: because the development matches the site's verified transfer records, it is presented to readers as settled information."
+    : `FutbolRadar's assessment: the matter is still at the "${level === "rumour" ? "claim" : "press report"}" stage; this page will be updated when an official statement arrives.`;
+
+  const summary = lead;
+
+  return {
+    slug: text(slug) || "",
+    category: categoryEn(category),
+    title,
+    summary,
+    spot: `${lead} ${confidenceSentence}`,
+    body: [lead, detailSentence, confidenceSentence, evaluationSentence],
+    tags: tagsEn(tags),
+    seo: {
+      metaTitle: `${title} | FutbolRadar`,
+      metaDescription: summary.slice(0, 155)
+    },
+    ticker: { text: lead }
+  };
+}
+
 const TEAM_INTERNAL_LINKS = {
   "Galatasaray": [
     { label: "Galatasaray transfer radarı", href: "../galatasaray-transfer-radar.html" },
@@ -535,6 +770,17 @@ function buildArticle({ candidate, classification, transfers = [], now = new Dat
     }
   };
 
+  // İNGİLİZCE SÜRÜM ÜRETİM ANINDA YAZILIR.
+  //
+  // Sonradan doldurulacak bir alan bırakmak, "İngilizcesi hazır olmayan haber
+  // /en tarafında görünmesin" kuralının her yeni haberde bir gün boyunca
+  // haberi İngilizce yüzeyden düşürmesi demekti. Aynı yapısal veriden
+  // üretildiği için ek maliyeti yok.
+  article.en = buildEnglishArticle({
+    team, player: playerName, eventType, confidence, amount, sourceName,
+    category: classification.category, slug, tags
+  });
+
   if (includeInTicker) {
     // "official" kategorisi resmî ağız (kulüp/federasyon) kaynağı ister —
     // Sporx bu şartı hiçbir zaman karşılamaz (bkz. services/sourceTrust.js).
@@ -583,6 +829,8 @@ function isGenericArticle(article) {
 
 const ISTANBUL_DAY_MONTH = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", timeZone: "Europe/Istanbul" });
 const ISTANBUL_CLOCK = new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" });
+// İngilizce sürümün ayırt edici son eki de İngilizce olmalı: "(15 September)".
+const ISTANBUL_DAY_MONTH_EN = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "long", timeZone: "Europe/Istanbul" });
 
 /** Daha önce eklenmiş bir ayırt edici son eki soyar; işlev böylece idempotent kalır. */
 const SEO_SUFFIX_RE = / \(\d{1,2} \p{L}+(?:, \d{2}:\d{2})?(?:, \d+)?\)$/u;
@@ -592,10 +840,11 @@ function stripSeoSuffix(value) {
 }
 
 /** Sırayla denenen ekler: "", " (3 Eylül)", " (3 Eylül, 11:13)"; sonra sıra numarası. */
-function seoSuffixCandidates(publishedAt) {
+function seoSuffixCandidates(publishedAt, locale) {
   const date = new Date(publishedAt || "");
   const valid = Number.isFinite(date.getTime());
-  const day = valid ? ISTANBUL_DAY_MONTH.format(date) : "";
+  const formatter = String(locale || "tr").toLowerCase() === "en" ? ISTANBUL_DAY_MONTH_EN : ISTANBUL_DAY_MONTH;
+  const day = valid ? formatter.format(date) : "";
   const clock = valid ? ISTANBUL_CLOCK.format(date) : "";
   const candidates = [""];
   if (day) candidates.push(` (${day})`, ` (${day}, ${clock})`);
@@ -679,6 +928,58 @@ function dedupeArticleSeo(articles) {
   return output;
 }
 
+/**
+ * İNGİLİZCE BAŞLIK VE AÇIKLAMA TEKİLLİĞİ.
+ *
+ * Türkçe başlıklar hâl ekleri ve kişi adı sayesinde doğal olarak ayrışıyor;
+ * İngilizce şablon ise özne düştüğünde aynı cümleyi üretiyor ("Claim of a
+ * statement at Beşiktaş on the current agenda"). Aynı başlık onlarca sayfada
+ * tekrarlandığında arama motoru sayfaları kopya sayar.
+ *
+ * Algoritma Türkçe tarafla AYNI (`dedupeArticleSeo`): en eski kayıt başlığını
+ * korur, sonrakiler tarih/saat son ekiyle ayrışır. Tek fark, okunan ve
+ * yazılan alanın `article.en` olması ve son ekin İngilizce biçimlenmesi.
+ */
+function dedupeEnglishSeo(articles) {
+  const list = Array.isArray(articles) ? articles : [];
+  const order = list
+    .map((article, index) => ({ article, index }))
+    .filter(({ article }) => article && typeof article === "object" && article.en && text(article.en.title))
+    .sort((left, right) =>
+      text(left.article.publishedAt).localeCompare(text(right.article.publishedAt)) || left.index - right.index);
+
+  const usedTitles = new Set();
+  const usedDescriptions = new Set();
+  const output = list.slice();
+
+  for (const { article, index } of order) {
+    const en = article.en;
+    const suffixes = seoSuffixCandidates(article.publishedAt, "en");
+    const seo = en.seo && typeof en.seo === "object" ? en.seo : {};
+    const baseTitle = stripSeoSuffix(en.title);
+    const effectiveDescription = text(seo.metaDescription) || text(en.spot) || text(en.summary) || text(en.title);
+    const baseDescription = stripSeoSuffix(effectiveDescription);
+
+    const title = baseTitle ? pickUnique(baseTitle, usedTitles, suffixes) : text(en.title);
+    const description = baseDescription ? pickUnique(baseDescription, usedDescriptions, suffixes) : effectiveDescription;
+    if (title) usedTitles.add(title);
+    if (description) usedDescriptions.add(description);
+
+    if (title === text(en.title) && description === effectiveDescription) continue;
+
+    output[index] = {
+      ...article,
+      en: {
+        ...en,
+        title,
+        seo: { ...seo, metaTitle: `${title} | FutbolRadar`, metaDescription: description }
+      }
+    };
+  }
+
+  return output;
+}
+
 module.exports = {
   PRIORITY,
   PRIORITY_LABELS,
@@ -693,6 +994,12 @@ module.exports = {
   resolveConfidence,
   corroborateWithConfirmedTransfers,
   buildArticle,
+  buildEnglishArticle,
+  categoryEn,
+  dedupeEnglishSeo,
+  subjectEn,
+  tagsEn,
+  NEWS_CATEGORY_EN,
   isGenericArticle,
   dedupeArticleSeo,
   stripSeoSuffix,

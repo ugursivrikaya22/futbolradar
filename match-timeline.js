@@ -391,6 +391,23 @@
   }
 
   /**
+   * OLAY NOTU — YALNIZCA SAYFANIN DİLİNDE.
+   *
+   * `detail` editoryal serbest metindir ve Türkçe yazılır ("Dakika
+   * kaynaklarda verilmedi."). İngilizce maç sayfasında bu not, kusursuz
+   * İngilizce bir akışın ortasında tek Türkçe cümle olarak duruyordu.
+   *
+   * İngilizce karşılığı (`detailEn`) varsa o basılır; yoksa NOT HİÇ
+   * BASILMAZ. Satır zaten yapısal: dakika, ikon, olay türü, oyuncu ve
+   * takım İngilizce geliyor — eksik olan yalnızca isteğe bağlı not.
+   */
+  function detailText(raw, locale) {
+    if (!raw) return "";
+    if (locale === "en") return String(raw.detailEn || "").trim();
+    return String(raw.detail || "").trim();
+  }
+
+  /**
    * Gol/kart/değişiklik kayıtlarını tek akışta, dakikaya göre SIRALI
    * (artan) verir. Ekrandaki sıralamayı çizim katmanı belirler.
    *
@@ -422,7 +439,7 @@
         side: sideOf(teamName, homeTeam, awayTeam),
         player: names.player,
         assist: names.assist,
-        detail: String(raw.detail || "").trim(),
+        detail: detailText(raw, locale),
         label: labelFor(kind, locale)
       };
       if (kind === "sub") {
