@@ -1,41 +1,235 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-19T10:55:00.376Z",
-  "matchCount": 1377,
+  "updatedAt": "2026-09-19T14:26:36.377Z",
+  "matchCount": 1382,
   "records": [
     {
-      "matchId": "auckland-western-sydney-wanderers-2026-09-19",
-      "fixtureId": "1638578",
+      "matchId": "osasuna-rayo-vallecano-2026-09-19",
+      "fixtureId": "1570399",
       "provider": "api-football",
-      "slug": "auckland-western-sydney-wanderers-2026-09-19",
-      "kickoff": "2026-09-19T06:00:00+03:00",
-      "kickoffUtc": "2026-09-19T03:00:00.000Z",
-      "kickoffLocal": "2026-09-19T06:00",
+      "slug": "osasuna-rayo-vallecano-2026-09-19",
+      "kickoff": "2026-09-19T15:00:00+03:00",
+      "kickoffUtc": "2026-09-19T12:00:00.000Z",
+      "kickoffLocal": "2026-09-19T15:00",
       "date": "2026-09-19",
       "status": "FINISHED",
       "providerStatus": "FT",
       "finishType": "regular",
       "finishLabel": "Normal sürede tamamlandı",
-      "league": "Hazırlık Maçı",
-      "competition": "Hazırlık Maçı",
+      "league": "La Liga",
+      "competition": "La Liga",
       "competitionType": null,
       "season": null,
-      "homeTeam": "Auckland",
-      "awayTeam": "Western Sydney Wanderers",
-      "venue": null,
+      "homeTeam": "Osasuna",
+      "awayTeam": "Rayo Vallecano",
+      "venue": "Estadio El Sadar",
       "score": {
         "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "1d4916186584a1a0",
+      "fingerprint": "1d4916186584a1a0",
+      "analysisGeneratedAt": "2026-09-19T14:26:36.262Z",
+      "analysisUpdatedAt": "2026-09-19T14:26:36.262Z",
+      "generatedAt": "2026-09-19T14:26:36.262Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Osasuna 1-1 Rayo Vallecano maç raporu: La Liga istatistikleri | FutbolRadar",
+        "description": "Osasuna ile Rayo Vallecano, Estadio El Sadar'da oynanan La Liga karşılaşmasında 1-1 berabere kaldı.",
+        "path": "mac-raporu/osasuna-rayo-vallecano-2026-09-19.html",
+        "competition": "La Liga"
+      },
+      "reportUrl": "./mac-raporu/osasuna-rayo-vallecano-2026-09-19.html",
+      "digest": {
+        "headline": "Osasuna ile Rayo Vallecano 1-1 berabere kaldı",
+        "paragraph": "Osasuna ile Rayo Vallecano, Estadio El Sadar'da oynanan La Liga karşılaşmasında 1-1 berabere kaldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "tottenham-aston-villa-2026-09-19",
+      "fixtureId": "1557416",
+      "provider": "api-football",
+      "slug": "tottenham-aston-villa-2026-09-19",
+      "kickoff": "2026-09-19T14:30:00+03:00",
+      "kickoffUtc": "2026-09-19T11:30:00.000Z",
+      "kickoffLocal": "2026-09-19T14:30",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Tottenham",
+      "awayTeam": "Aston Villa",
+      "venue": "Tottenham Hotspur Stadium",
+      "score": {
+        "home": 2,
         "away": 3
       },
-      "finalScore": "1-3",
-      "winner": "Western Sydney Wanderers",
+      "finalScore": "2-3",
+      "winner": "Aston Villa",
       "turkish": false,
       "turkishTeam": "",
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 60,
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -45,7 +239,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 4
+          "count": 20
         },
         "statistics": {
           "present": false,
@@ -58,57 +252,53 @@
           "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 4,
+        "events": 20,
         "statistics": 0,
         "lineups": 2,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.6,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "00b9bd8b80b4223a",
-      "fingerprint": "00b9bd8b80b4223a",
-      "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
-      "analysisUpdatedAt": "2026-09-19T10:55:00.311Z",
-      "generatedAt": "2026-09-19T10:55:00.311Z",
+      "analysisSourceHash": "f8ad75ec417577d7",
+      "fingerprint": "f8ad75ec417577d7",
+      "analysisGeneratedAt": "2026-09-19T14:26:36.262Z",
+      "analysisUpdatedAt": "2026-09-19T14:26:36.262Z",
+      "generatedAt": "2026-09-19T14:26:36.262Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
-        "title": "Auckland 1-3 Western Sydney Wanderers maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
-        "description": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı.",
-        "path": "mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
-        "competition": "Hazırlık Maçı"
+        "title": "Tottenham 2-3 Aston Villa maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Tottenham Hotspur Stadium'da oynanan Premier League maçını Aston Villa 3-2 kazandı; Tottenham sahadan puansız ayrıldı.",
+        "path": "mac-raporu/tottenham-aston-villa-2026-09-19.html",
+        "competition": "Premier League"
       },
-      "reportUrl": "./mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
+      "reportUrl": "./mac-raporu/tottenham-aston-villa-2026-09-19.html",
       "digest": {
-        "headline": "Western Sydney Wanderers, Auckland'ı 3-1 yendi",
-        "paragraph": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı. Golleri 45. dakikada Normal Goal (Auckland), 45. dakikada Normal Goal (Western Sydney Wanderers), 45. dakikada Normal Goal (Western Sydney Wanderers), 90. dakikada B. Borrello (Western Sydney Wanderers) kaydetti.",
+        "headline": "Aston Villa, Tottenham'ı 3-2 yendi",
+        "paragraph": "Tottenham Hotspur Stadium'da oynanan Premier League maçını Aston Villa 3-2 kazandı; Tottenham sahadan puansız ayrıldı. Golleri 45+4. dakikada Johan Manzambi (Aston Villa), 67. dakikada Nicolas Jackson (Aston Villa), 79. dakikada Emiliano Buendía (Aston Villa), 86. dakikada Conor Gallagher (Tottenham), 90+8. dakikada Jan Paul (Tottenham) kaydetti.",
         "result": {
-          "winner": "Western Sydney Wanderers",
-          "loser": "Auckland",
+          "winner": "Aston Villa",
+          "loser": "Tottenham",
           "draw": false,
-          "margin": 2
+          "margin": 1
         },
         "finish": {
           "status": "ready",
@@ -116,37 +306,44 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 3
         },
         "turningPoints": {
           "status": "ready",
           "moments": [
             {
-              "minute": "45'",
-              "team": "Auckland",
+              "minute": "45+4'",
+              "team": "Aston Villa",
               "type": "Gol",
-              "detail": "Normal Goal",
+              "detail": "Johan Manzambi",
               "pivotal": true
             },
             {
-              "minute": "45'",
-              "team": "Western Sydney Wanderers",
+              "minute": "60'",
+              "team": "Tottenham",
               "type": "Gol",
-              "detail": "Normal Goal",
+              "detail": "Mohammed Kudus",
               "pivotal": true
             },
             {
-              "minute": "45'",
-              "team": "Western Sydney Wanderers",
+              "minute": "67'",
+              "team": "Aston Villa",
               "type": "Gol",
-              "detail": "Normal Goal",
+              "detail": "Nicolas Jackson",
               "pivotal": true
             },
             {
-              "minute": "90'",
-              "team": "Western Sydney Wanderers",
+              "minute": "79'",
+              "team": "Aston Villa",
               "type": "Gol",
-              "detail": "B. Borrello",
+              "detail": "Emiliano Buendía",
+              "pivotal": true
+            },
+            {
+              "minute": "86'",
+              "team": "Tottenham",
+              "type": "Gol",
+              "detail": "Conor Gallagher",
               "pivotal": true
             }
           ]
@@ -154,18 +351,39 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (B. Borrello).",
+          "verdict": "Son bölümde 3 gol kaydedildi, (Emiliano Buendía, Conor Gallagher, Jan Paul), sonucu belirleyen fark bu bölümde oluştu.",
           "goals": {
-            "home": 0,
+            "home": 2,
             "away": 1
           },
           "moments": [
             {
-              "minute": "90'",
-              "team": "Western Sydney Wanderers",
+              "minute": "79'",
+              "team": "Aston Villa",
               "type": "Gol",
-              "detail": "B. Borrello",
+              "detail": "Emiliano Buendía",
               "decisive": true
+            },
+            {
+              "minute": "84'",
+              "team": "Aston Villa",
+              "type": "Oyuncu değişikliği",
+              "detail": "John McGinn",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Aston Villa",
+              "type": "Oyuncu değişikliği",
+              "detail": "Boubacar Kamara",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Tottenham",
+              "type": "Oyuncu değişikliği",
+              "detail": "Rodrigo Bentancur",
+              "decisive": false
             }
           ]
         },
@@ -173,63 +391,91 @@
           "status": "ready",
           "players": [
             {
-              "name": "Normal Goal",
-              "team": "Western Sydney Wanderers",
-              "contribution": "45' gol · 45' gol",
+              "name": "Conor Gallagher",
+              "team": "Tottenham",
+              "contribution": "86' gol",
               "impact": "yüksek"
             },
             {
-              "name": "B. Borrello",
-              "team": "Western Sydney Wanderers",
-              "contribution": "90' gol",
+              "name": "Emiliano Buendía",
+              "team": "Aston Villa",
+              "contribution": "79' gol",
               "impact": "yüksek"
             },
             {
-              "name": "Normal Goal",
-              "team": "Auckland",
-              "contribution": "45' gol",
+              "name": "Johan Manzambi",
+              "team": "Aston Villa",
+              "contribution": "45+4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Mohammed Kudus",
+              "team": "Tottenham",
+              "contribution": "60' gol",
               "impact": "yüksek"
             }
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Tottenham sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Aston Villa sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "45' Auckland — Normal Goal: gol",
-            "45' Western Sydney Wanderers — Normal Goal: gol",
-            "45' Western Sydney Wanderers — Normal Goal: gol"
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "45+4' Aston Villa — Johan Manzambi: gol",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 3
+          "goals": 1
         },
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "90' Western Sydney Wanderers — B. Borrello: gol"
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "67' Aston Villa — Nicolas Jackson: gol",
+            "79' Aston Villa — Emiliano Buendía: gol",
+            "86' Tottenham — Conor Gallagher: gol",
+            "90+8' Tottenham — Jan Paul: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 1
+          "goals": 4
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Tottenham maça 4-2-3-1 dizilişiyle başladı.",
+            "Aston Villa maça 4-2-3-1 dizilişiyle başladı.",
+            "19' Tottenham değişikliği (Substitution 1). Değişiklikten sonra Tottenham adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Aston Villa değişikliği (Substitution 1). Değişiklikten sonra Aston Villa adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Tottenham değişikliği (Substitution 2). Değişiklikten sonra Tottenham adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "66' Tottenham değişikliği (Substitution 3). Değişiklikten sonra Tottenham adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Tottenham",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Aston Villa",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Western Sydney Wanderers, Auckland'ı 1-3 yendi."
+            "Aston Villa, Tottenham'ı 2-3 yendi."
           ],
           "strengths": [],
           "improvements": [
-            "Auckland son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Tottenham son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
           ],
-          "closing": "Western Sydney Wanderers sahadan 2 farkla ayrıldı.",
+          "closing": "Aston Villa sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -258,10 +504,1319 @@
         "secondHalf",
         "turningPoints",
         "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 57,
+      "coverage": 64,
       "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "cardiff-charlton-2026-09-19",
+      "fixtureId": "1563170",
+      "provider": "api-football",
+      "slug": "cardiff-charlton-2026-09-19",
+      "kickoff": "2026-09-19T14:30:00+03:00",
+      "kickoffUtc": "2026-09-19T11:30:00.000Z",
+      "kickoffLocal": "2026-09-19T14:30",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Championship",
+      "competition": "Championship",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Cardiff",
+      "awayTeam": "Charlton",
+      "venue": "Cardiff City Stadium",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "Cardiff",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 22
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 22,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "019b132587d822e7",
+      "fingerprint": "019b132587d822e7",
+      "analysisGeneratedAt": "2026-09-19T14:26:36.262Z",
+      "analysisUpdatedAt": "2026-09-19T14:26:36.262Z",
+      "generatedAt": "2026-09-19T14:26:36.262Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Cardiff 3-1 Charlton maç raporu: Championship istatistikleri | FutbolRadar",
+        "description": "Cardiff City Stadium'da oynanan Championship maçını Cardiff 3-1 kazandı; Charlton sahadan puansız ayrıldı.",
+        "path": "mac-raporu/cardiff-charlton-2026-09-19.html",
+        "competition": "Championship"
+      },
+      "reportUrl": "./mac-raporu/cardiff-charlton-2026-09-19.html",
+      "digest": {
+        "headline": "Cardiff, Charlton'u 3-1 yendi",
+        "paragraph": "Cardiff City Stadium'da oynanan Championship maçını Cardiff 3-1 kazandı; Charlton sahadan puansız ayrıldı. Golleri 8. dakikada Jack Moylan (Cardiff), 24. dakikada Yousef Salech (Cardiff), 29. dakikada Tyreece Campbell (Charlton), 61. dakikada Jack Moylan (Cardiff) kaydetti.",
+        "result": {
+          "winner": "Cardiff",
+          "loser": "Charlton",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 4
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Cardiff",
+              "type": "Gol",
+              "detail": "Jack Moylan",
+              "pivotal": true
+            },
+            {
+              "minute": "24'",
+              "team": "Cardiff",
+              "type": "Gol",
+              "detail": "Yousef Salech",
+              "pivotal": true
+            },
+            {
+              "minute": "29'",
+              "team": "Charlton",
+              "type": "Gol",
+              "detail": "Tyreece Campbell",
+              "pivotal": true
+            },
+            {
+              "minute": "61'",
+              "team": "Cardiff",
+              "type": "Gol",
+              "detail": "Jack Moylan",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 8 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "82'",
+              "team": "Cardiff",
+              "type": "Oyuncu değişikliği",
+              "detail": "Jack Moylan",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Cardiff",
+              "type": "Oyuncu değişikliği",
+              "detail": "Gabriel Osho",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Charlton",
+              "type": "Oyuncu değişikliği",
+              "detail": "Miles Leaburn",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Charlton",
+              "type": "Oyuncu değişikliği",
+              "detail": "Dan McNamara",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Jack Moylan",
+              "team": "Cardiff",
+              "contribution": "8' gol · 61' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Tyreece Campbell",
+              "team": "Charlton",
+              "contribution": "29' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Yousef Salech",
+              "team": "Cardiff",
+              "contribution": "24' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Alexander Sean Pablo Robertson",
+              "team": "Cardiff",
+              "contribution": "27' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Cardiff sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Charlton sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Cardiff topu elinde tutarken Charlton derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
+            "8' Cardiff — Jack Moylan: gol",
+            "24' Cardiff — Yousef Salech: gol",
+            "29' Charlton — Tyreece Campbell: gol",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "61' Cardiff — Jack Moylan: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Cardiff maça 4-2-3-1 dizilişiyle başladı.",
+            "Charlton maça 4-2-3-1 dizilişiyle başladı.",
+            "45' Charlton değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "45' Charlton değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "62' Cardiff değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' Cardiff değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Cardiff",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Charlton",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Cardiff, Charlton'u 3-1 yendi.",
+            "İsabetli şutta da öndeydi (8-3); sonuç üretilen pozisyonla uyumlu."
+          ],
+          "strengths": [
+            "Cardiff topa daha çok sahip oldu (%62).",
+            "Cardiff daha çok şut denedi (27-6)."
+          ],
+          "improvements": [
+            "Cardiff şut isabetinde geride kaldı (%30); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "Cardiff sahadan 2 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Cardiff",
+            "score": 91
+          },
+          "away": {
+            "team": "Charlton",
+            "score": 32
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Cardiff %29.6, Charlton %50."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Cardiff 18.7, Charlton 51.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "millwall-west-ham-2026-09-19",
+      "fixtureId": "1563172",
+      "provider": "api-football",
+      "slug": "millwall-west-ham-2026-09-19",
+      "kickoff": "2026-09-19T14:30:00+03:00",
+      "kickoffUtc": "2026-09-19T11:30:00.000Z",
+      "kickoffLocal": "2026-09-19T14:30",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Championship",
+      "competition": "Championship",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Millwall",
+      "awayTeam": "West Ham",
+      "venue": "The Den",
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 18
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 18,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "39a9905a51248806",
+      "fingerprint": "39a9905a51248806",
+      "analysisGeneratedAt": "2026-09-19T14:26:36.262Z",
+      "analysisUpdatedAt": "2026-09-19T14:26:36.262Z",
+      "generatedAt": "2026-09-19T14:26:36.262Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Millwall 2-2 West Ham maç raporu: Championship istatistikleri | FutbolRadar",
+        "description": "The Den'de oynanan Championship maçında Millwall ile West Ham birbirini geçemedi: 2-2. Golleri 16. dakikada Caleb Taylor (Millwall), 45+3. dakikada Camiel...",
+        "path": "mac-raporu/millwall-west-ham-2026-09-19.html",
+        "competition": "Championship"
+      },
+      "reportUrl": "./mac-raporu/millwall-west-ham-2026-09-19.html",
+      "digest": {
+        "headline": "Millwall ile West Ham 2-2 berabere kaldı",
+        "paragraph": "The Den'de oynanan Championship maçında Millwall ile West Ham birbirini geçemedi: 2-2. Golleri 16. dakikada Caleb Taylor (Millwall), 45+3. dakikada Camiel Neghli (Millwall), 74. dakikada Mohamadou Kante (West Ham), 80. dakikada Konstantinos Mavropanos (West Ham) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 4
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "16'",
+              "team": "Millwall",
+              "type": "Gol",
+              "detail": "Caleb Taylor",
+              "pivotal": true
+            },
+            {
+              "minute": "74'",
+              "team": "West Ham",
+              "type": "Gol",
+              "detail": "Mohamadou Kante",
+              "pivotal": true
+            },
+            {
+              "minute": "80'",
+              "team": "West Ham",
+              "type": "Gol",
+              "detail": "Konstantinos Mavropanos",
+              "pivotal": true
+            },
+            {
+              "minute": "89'",
+              "team": "West Ham",
+              "type": "Kırmızı kart",
+              "detail": "Mohamadou Kante",
+              "pivotal": true
+            },
+            {
+              "minute": "45+3'",
+              "team": "Millwall",
+              "type": "Gol",
+              "detail": "Camiel Neghli",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Konstantinos Mavropanos), 1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "West Ham",
+              "type": "Gol",
+              "detail": "Konstantinos Mavropanos",
+              "decisive": true
+            },
+            {
+              "minute": "81'",
+              "team": "Millwall",
+              "type": "Oyuncu değişikliği",
+              "detail": "Taïryk Arconte",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Millwall",
+              "type": "Oyuncu değişikliği",
+              "detail": "Jenson Metcalfe",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "West Ham",
+              "type": "Sarı kart",
+              "detail": "Pablo Felipe Pereira",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Caleb Taylor",
+              "team": "Millwall",
+              "contribution": "16' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Camiel Neghli",
+              "team": "Millwall",
+              "contribution": "45+3' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Konstantinos Mavropanos",
+              "team": "West Ham",
+              "contribution": "80' gol · 90+5' sarı kart",
+              "impact": "orta"
+            },
+            {
+              "name": "Mohamadou Kante",
+              "team": "West Ham",
+              "contribution": "74' gol · 89' kırmızı kart",
+              "impact": "orta"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Millwall sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "West Ham sahaya 4-4-2 dizilişiyle çıktı.",
+            "West Ham topu elinde tutarken Millwall derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "16' Millwall — Caleb Taylor: gol",
+            "45+3' Millwall — Camiel Neghli: gol",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "74' West Ham — Mohamadou Kante: gol",
+            "80' West Ham — Konstantinos Mavropanos: gol",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Millwall maça 4-2-3-1 dizilişiyle başladı.",
+            "West Ham maça 4-4-2 dizilişiyle başladı.",
+            "45' West Ham değişikliği (Substitution 1). Değişiklikten sonra West Ham adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' West Ham değişikliği (Substitution 2). Değişiklikten sonra West Ham adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "68' West Ham değişikliği (Substitution 3). Değişiklikten sonra West Ham adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "70' Millwall değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Millwall",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "West Ham",
+              "formation": "4-4-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [
+            "West Ham topa daha çok sahip oldu (%67).",
+            "Millwall daha çok şut denedi (19-15)."
+          ],
+          "improvements": [
+            "Millwall şut isabetinde geride kaldı (%37); bitiricilik geliştirilmesi gereken alan.",
+            "Kırmızı kart maçın seyrini etkiledi (89' West Ham)."
+          ],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Millwall",
+            "score": 72
+          },
+          "away": {
+            "team": "West Ham",
+            "score": 73
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Millwall %36.8, West Ham %40."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Millwall 11.2, West Ham 28.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "stoke-city-sheffield-utd-2026-09-19",
+      "fixtureId": "1563176",
+      "provider": "api-football",
+      "slug": "stoke-city-sheffield-utd-2026-09-19",
+      "kickoff": "2026-09-19T14:30:00+03:00",
+      "kickoffUtc": "2026-09-19T11:30:00.000Z",
+      "kickoffLocal": "2026-09-19T14:30",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Championship",
+      "competition": "Championship",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Stoke City",
+      "awayTeam": "Sheffield Utd",
+      "venue": "bet365 Stadium",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Stoke City",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 21
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 15
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 21,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "d2ecae6dda682e8a",
+      "fingerprint": "d2ecae6dda682e8a",
+      "analysisGeneratedAt": "2026-09-19T14:26:36.262Z",
+      "analysisUpdatedAt": "2026-09-19T14:26:36.262Z",
+      "generatedAt": "2026-09-19T14:26:36.262Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Stoke City 2-1 Sheffield Utd maç raporu: Championship istatistikleri | FutbolRadar",
+        "description": "Bet365 Stadium'da oynanan Championship maçını Stoke City 2-1 kazandı; Sheffield Utd sahadan puansız ayrıldı.",
+        "path": "mac-raporu/stoke-city-sheffield-utd-2026-09-19.html",
+        "competition": "Championship"
+      },
+      "reportUrl": "./mac-raporu/stoke-city-sheffield-utd-2026-09-19.html",
+      "digest": {
+        "headline": "Stoke City, Sheffield Utd'u 2-1 yendi",
+        "paragraph": "Bet365 Stadium'da oynanan Championship maçını Stoke City 2-1 kazandı; Sheffield Utd sahadan puansız ayrıldı. Golleri 51. dakikada Kalvin Phillips (Sheffield Utd), 78. dakikada Jack Mcglynn (Stoke City), 86. dakikada Sam Gallagher (Stoke City) kaydetti.",
+        "result": {
+          "winner": "Stoke City",
+          "loser": "Sheffield Utd",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "51'",
+              "team": "Sheffield Utd",
+              "type": "Gol",
+              "detail": "Kalvin Phillips",
+              "pivotal": true
+            },
+            {
+              "minute": "78'",
+              "team": "Stoke City",
+              "type": "Gol",
+              "detail": "Jack Mcglynn",
+              "pivotal": true
+            },
+            {
+              "minute": "86'",
+              "team": "Stoke City",
+              "type": "Gol",
+              "detail": "Sam Gallagher",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 2 gol kaydedildi, (Jack Mcglynn, Sam Gallagher), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 2,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Stoke City",
+              "type": "Gol",
+              "detail": "Jack Mcglynn",
+              "decisive": true
+            },
+            {
+              "minute": "80'",
+              "team": "Sheffield Utd",
+              "type": "Oyuncu değişikliği",
+              "detail": "Hamza Choudhury",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Sheffield Utd",
+              "type": "Oyuncu değişikliği",
+              "detail": "Ben Brereton",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Sheffield Utd",
+              "type": "Oyuncu değişikliği",
+              "detail": "Patrick Bamford",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Jack Mcglynn",
+              "team": "Stoke City",
+              "contribution": "78' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Sam Gallagher",
+              "team": "Stoke City",
+              "contribution": "86' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Kalvin Phillips",
+              "team": "Sheffield Utd",
+              "contribution": "10' sarı kart · 51' gol",
+              "impact": "orta"
+            },
+            {
+              "name": "Eric Junior Bocat",
+              "team": "Stoke City",
+              "contribution": "63' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Stoke City sahaya 3-4-3 dizilişiyle çıktı.",
+            "Sheffield Utd sahaya 3-4-2-1 dizilişiyle çıktı.",
+            "Stoke City topu elinde tutarken Sheffield Utd derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "51' Sheffield Utd — Kalvin Phillips: gol",
+            "78' Stoke City — Jack Mcglynn: gol",
+            "86' Stoke City — Sam Gallagher: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Stoke City maça 3-4-3 dizilişiyle başladı.",
+            "Sheffield Utd maça 3-4-2-1 dizilişiyle başladı.",
+            "64' Stoke City değişikliği (Substitution 1). Değişiklikten sonra Stoke City adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "64' Stoke City değişikliği (Substitution 2). Değişiklikten sonra Stoke City adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' Stoke City değişikliği (Substitution 3). Değişiklikten sonra Stoke City adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "67' Sheffield Utd değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Stoke City",
+              "formation": "3-4-3"
+            },
+            {
+              "team": "Sheffield Utd",
+              "formation": "3-4-2-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Stoke City, Sheffield Utd'u 2-1 yendi.",
+            "İsabetli şutta da öndeydi (5-3); sonuç üretilen pozisyonla uyumlu."
+          ],
+          "strengths": [
+            "Stoke City topa daha çok sahip oldu (%62).",
+            "Stoke City daha çok şut denedi (12-8)."
+          ],
+          "improvements": [
+            "Sheffield Utd şut isabetinde geride kaldı (%38); bitiricilik geliştirilmesi gereken alan.",
+            "Sheffield Utd son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Stoke City sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Stoke City",
+            "score": 71
+          },
+          "away": {
+            "team": "Sheffield Utd",
+            "score": 41
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Stoke City %41.7, Sheffield Utd %37.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Stoke City 38.9, Sheffield Utd 36.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
+      "publishState": "page"
+    },
+    {
+      "matchId": "auckland-western-sydney-wanderers-2026-09-19",
+      "fixtureId": "1638578",
+      "provider": "api-football",
+      "slug": "auckland-western-sydney-wanderers-2026-09-19",
+      "kickoff": "2026-09-19T06:00:00+03:00",
+      "kickoffUtc": "2026-09-19T03:00:00.000Z",
+      "kickoffLocal": "2026-09-19T06:00",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Auckland",
+      "awayTeam": "Western Sydney Wanderers",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "finalScore": "1-3",
+      "winner": "Western Sydney Wanderers",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 30,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "2e09eddfef193089",
+      "fingerprint": "2e09eddfef193089",
+      "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T14:26:36.262Z",
+      "generatedAt": "2026-09-19T14:26:36.262Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Auckland 1-3 Western Sydney Wanderers maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı.",
+        "path": "mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
+      "digest": {
+        "headline": "Western Sydney Wanderers, Auckland'ı 3-1 yendi",
+        "paragraph": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Western Sydney Wanderers",
+          "loser": "Auckland",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Western Sydney Wanderers, Auckland'ı 1-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Western Sydney Wanderers sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
