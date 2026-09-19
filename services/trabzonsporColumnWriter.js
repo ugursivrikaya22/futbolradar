@@ -23,6 +23,7 @@
  */
 
 const { competitionLabel } = require("./i18n.js");
+const { passRateFrom } = require("./playerMatchHistory.js");
 const {
   TR_MONTHS,
   EN_MONTHS,
@@ -58,6 +59,23 @@ function trNumber(value) {
 
 function enNumber(value) {
   return isNumber(value) ? String(value) : "";
+}
+
+
+/**
+ * OYUNCU PAS İSABETİ BİR ORAN DEĞİL, BİR SAYIDIR.
+ *
+ * Sağlayıcının oyuncu satırındaki `passAccuracy` alanı İSABETLİ PAS
+ * SAYISIDIR, yüzde değil. İlk sürüm bunu doğrudan "%11 pas isabeti" diye
+ * bastı ve Rafael Leão'nun 13 pasın 11'ini yerine koyduğu bir maç,
+ * yazıda %11'lik bir felakete dönüştü. Takım istatistiğindeki "Pas
+ * isabeti" gerçekten yüzdedir; ikisi aynı ada sahip olduğu için karışıyor.
+ *
+ * Oran ancak toplam pas da ölçülmüşse hesaplanır; ölçülmemişse hiçbir
+ * yüzde basılmaz.
+ */
+function playerPassRate(row) {
+  return passRateFrom(num(row && row.passAccuracy), num(row && row.passes));
 }
 
 /** `[görünen](adres)` — adres yoksa düz metin döner. */
@@ -266,6 +284,24 @@ function renderTurkish(model) {
     );
   }
 
+  // RAKİP DOSYASI VARSA GİRİŞ ORAYA KÖPRÜ KURAR.
+  //
+  // Yazının ikinci yarısı rakibin transfer verimini ve teknik direktör
+  // tercihlerini tartışıyor; okuyucu o tartışmaya hazırlıksız girmesin
+  // diye giriş maçtan kulübün daha geniş dönemine geçiyor. Cümle iddia
+  // taşımıyor: bir gecenin neyi gösterdiğini değil, neyi sorduğunu söylüyor.
+  if (model.opponentFocus && (model.opponentFocus.signings || []).length) {
+    const focus = model.opponentFocus;
+    body.push(
+      `Bazı maçlar yalnızca doksan dakikayı anlatmaz; bir takımın son aylarda hangi yöne gittiğini de sorar. ` +
+      `${focus.team} cephesinden bakıldığında bu gece tam olarak öyle bir gece: ` +
+      `${focus.signings.length} yeni transferin sahada olduğu, ` +
+      `${focus.congestion ? `son 30 günde ${focus.congestion.matches30d} resmî maç oynamış` : "yoğun bir takvimden gelen"} bir kadro, ` +
+      `${focus.manager ? `${focus.manager}'un ` : ""}oyuncu kullanımı hakkında konuşmayı bir kez daha açıyor. ` +
+      `Yazının ikinci yarısı bu tartışmaya ayrıldı — ve orada da kural değişmiyor: ölçülen yazılır, ölçülmeyen yazılmaz.`
+    );
+  }
+
   body.push(
     `Bu yazı bir maç özeti değil. Aşağıdaki her satır, karşılaşmanın sağlayıcı tarafından ölçülmüş verisine dayanıyor: ` +
     `olay akışı, takım istatistikleri, dizilişler ve oyuncu bazlı üretim kalemleri. ` +
@@ -321,6 +357,36 @@ function renderTurkish(model) {
       closing.push(`Son çeyrekte (75. dakika ve sonrası) ${late.length} gol düştü; maçın tabelası geç şekillendi.`);
     }
     if (closing.length) body.push(closing.join(" "));
+  }
+
+  /* — Skor çizgisinin ilerleyişi — */
+  if (model.goals.length >= 2) {
+    let us = 0;
+    let them = 0;
+    const states = model.goals.map((goal) => {
+      if (goal.forUs) us += 1; else them += 1;
+      return `${minuteLabel(goal.minute)} ${us}-${them}`;
+    });
+    const leadChanges = (() => {
+      let a = 0;
+      let b = 0;
+      let last = "level";
+      let changes = 0;
+      for (const goal of model.goals) {
+        if (goal.forUs) a += 1; else b += 1;
+        const state = a === b ? "level" : a > b ? "ahead" : "behind";
+        if (state !== last) { changes += 1; last = state; }
+      }
+      return changes;
+    })();
+    body.push(
+      `Tabela şu sırayla ilerledi: ${states.join(" → ")}. ` +
+      (leadChanges >= 3
+        ? `Üstünlük ${leadChanges} kez el değiştirdi; iki takım da maçın hiçbir bölümünde sonucu güvenceye alamadı.`
+        : leadChanges === 2
+          ? `Durum iki kez değişti: maçın yönü tek bir anda değil, iki ayrı kırılmada belirlendi.`
+          : `Skor çizgisi bir kez yön değiştirdi ve sonrasında iki takım da o çizgiyi kabul ederek oynadı.`)
+    );
   }
 
   /* — Kırılma anı — */
@@ -426,9 +492,88 @@ function renderTurkish(model) {
         : ` Kale az sınandı; savunma bloğu rakibi büyük ölçüde net vuruş mesafesinin dışında tuttu.`)
     );
   }
+  if (stats.saves && isNumber(stats.saves.us) && stats.shotsOn && isNumber(stats.shotsOn.them)) {
+    const faced = stats.shotsOn.them;
+    const saved = stats.saves.us;
+    if (faced > 0) {
+      const rate = Math.round((saved / faced) * 100);
+      balance.push(
+        `Kaleyi bulan ${trNumber(faced)} şutun ${trNumber(saved)} tanesi kurtarıldı; kurtarış oranı %${rate}.` +
+        (rate >= 80
+          ? ` Kalede geçirilen gece, skorun görünenden daha yakın olmasını engelleyen unsurdu.`
+          : rate >= 50
+            ? ` Kaleci payına düşeni yaptı; geçen goller kurtarış hatasından çok pozisyonun kalitesinden geldi.`
+            : ` Kaleyi bulan şutların çoğu ağlarla buluştu: bu oran, hem bitiricilik kalitesini hem savunmanın verdiği pozisyonların netliğini birlikte anlatıyor.`)
+      );
+    }
+  }
   if (balance.length) {
     body.push("## Orta saha ve savunma dengesi");
     body.push(balance.join(" "));
+  }
+
+  /* — Pres ve rakip kurulumu — */
+  //
+  // DOĞRUDAN PRES VERİSİ YOK. Sağlayıcı "yüksek geri kazanım" ya da
+  // "pres başarısı" göndermiyor; bu yüzden pres hakkında ölçüm varmış gibi
+  // yazılmıyor. Yazılan şey, presin İZLERİ sayılabilecek ölçülmüş
+  // göstergeler ve okuyucuya bunların gösterge olduğu açıkça söyleniyor.
+  const press = [];
+  if (stats.passAccuracy && isNumber(stats.passAccuracy.them)) {
+    press.push(
+      `Rakibin pas isabeti %${trNumber(stats.passAccuracy.them)}` +
+      (stats.passAccuracy.them <= 78
+        ? `: kurulum oyunu rahat işlemedi, top sık sık ayaktan çıktı.`
+        : `: ${opponent} topu ayakta tutmakta zorlanmadı ve kurulum hattı büyük ölçüde rahat oynadı.`)
+    );
+  }
+  if (stats.fouls && isNumber(stats.fouls.us)) {
+    press.push(
+      stats.fouls.us >= 15
+        ? `Trabzonspor'un ${trNumber(stats.fouls.us)} faulü, topu geri kazanma çabasının sık sık kural dışına taştığını gösteriyor.`
+        : `Trabzonspor ${trNumber(stats.fouls.us)} faulle kaldı; geri kazanım çabası oyunu bölen bir sertliğe dönüşmedi.`
+    );
+  }
+  if (stats.offsides && isNumber(stats.offsides.them)) {
+    press.push(`Rakibin ${trNumber(stats.offsides.them)} ofsaytı, savunma hattının ne sıklıkta yukarı çıktığına dair tek ölçülmüş işaret.`);
+  }
+  if (press.length >= 2) {
+    body.push("## Pres ve rakibin kurulum oyunu");
+    body.push(
+      `Sağlayıcı bu maç için doğrudan bir pres ölçümü paylaşmıyor; aşağıdakiler presin izini taşıyan ölçülmüş göstergeler, presin kendisi değil. ` +
+      press.join(" ")
+    );
+  }
+
+  /* — Ceza sahası etkinliği — */
+  const box = [];
+  const outside = stats.outsideShots;
+  if (stats.boxShots && isNumber(stats.boxShots.us) && outside && isNumber(outside.us)) {
+    const total = stats.boxShots.us + outside.us;
+    if (total > 0) {
+      const share = Math.round((stats.boxShots.us / total) * 100);
+      box.push(
+        `Trabzonspor'un vuruşları ceza sahası içi–dışı olarak ${trNumber(stats.boxShots.us)}–${trNumber(outside.us)} dağıldı (içeriden %${share}).` +
+        (share >= 60
+          ? ` Hücum, şansını uzaktan aramak yerine son otuz metreye girerek kurdu.`
+          : ` Vuruşların yarısından çoğu ceza sahası dışından geldi; bu, savunmanın içeriye giriş yollarını kapattığı anlamına geliyor.`)
+      );
+    }
+  }
+  if (stats.boxShots && isNumber(stats.boxShots.them) && outside && isNumber(outside.them)) {
+    const total = stats.boxShots.them + outside.them;
+    if (total > 0) {
+      const share = Math.round((stats.boxShots.them / total) * 100);
+      box.push(`Rakip tarafta aynı dağılım ${trNumber(stats.boxShots.them)}–${trNumber(outside.them)} (içeriden %${share}).`);
+    }
+  }
+  const blocked = stats.blockedShots;
+  if (blocked && isNumber(blocked.them) && blocked.them > 0) {
+    box.push(`Trabzonspor savunması ${trNumber(blocked.them)} şutu bloklayarak kaleciye ulaşmadan kesti; bu sayı, ceza sahasındaki gövde savunmasının ölçülmüş karşılığı.`);
+  }
+  if (box.length >= 2) {
+    body.push("## Ceza sahası etkinliği");
+    body.push(box.join(" "));
   }
 
   /* — Hücum organizasyonu — */
@@ -553,7 +698,7 @@ function renderTurkish(model) {
       if (num(row.saves) > 0) bits.push(`${num(row.saves)} kurtarış`);
       if (num(row.shotsOnTarget) > 0) bits.push(`${num(row.shotsOnTarget)} isabetli şut`);
       if (num(row.duelsWon) > 0) bits.push(`${num(row.duelsWon)} kazanılan mücadele`);
-      if (num(row.passAccuracy) > 0) bits.push(`%${num(row.passAccuracy)} pas isabeti`);
+      if (playerPassRate(row) !== null) bits.push(`%${playerPassRate(row)} pas isabeti`);
       return `${playerLink(row.name, links)} (${trNumber(num(row.providerRating))}${bits.length ? ` — ${bits.slice(0, 3).join(", ")}` : ""})`;
     });
     body.push(
@@ -645,7 +790,7 @@ function renderTurkish(model) {
   if (dueller) production.push(`İkili mücadelede öne çıkan ${playerLink(dueller.name, links)} oldu (${num(dueller.duelsWon)} kazanılan mücadele).`);
   const passer = ours.filter((row) => num(row.passes) >= 30)
     .sort((left, right) => num(right.passes) - num(left.passes))[0];
-  if (passer) production.push(`Oyunun dağıtım merkezi ${playerLink(passer.name, links)}: ${num(passer.passes)} pas${num(passer.passAccuracy) > 0 ? `, %${num(passer.passAccuracy)} isabet` : ""}.`);
+  if (passer) production.push(`Oyunun dağıtım merkezi ${playerLink(passer.name, links)}: ${num(passer.passes)} pas${playerPassRate(passer) !== null ? `, %${playerPassRate(passer)} isabet` : ""}.`);
   const keeper = ours.filter((row) => num(row.saves) > 0)
     .sort((left, right) => num(right.saves) - num(left.saves))[0];
   if (keeper) production.push(`Kalede ${playerLink(keeper.name, links)} ${num(keeper.saves)} kurtarışla kaydını tamamladı.`);
@@ -683,6 +828,11 @@ function renderTurkish(model) {
       lines.push(`Ölçülen kalemlerde eşik aşan bir olumluluk çıkmaması da ayrı bir veri: sorun tek bir bölgede değil, oyunun geneline yayılmış durumda.`);
     }
     body.push(lines.join(" "));
+  }
+
+  /* — Rakip dosyası — */
+  if (model.opponentFocus) {
+    body.push(...opponentSectionTr(model.opponentFocus, links));
   }
 
   /* — Lig açısından anlamı — */
@@ -747,6 +897,157 @@ function renderTurkish(model) {
   return body;
 }
 
+
+/* ------------------------------------------------------------------ *
+ * RAKİP DOSYASI — TRANSFER VERİMİ VE TEKNİK DİREKTÖR TARTIŞMASI
+ *
+ * Bu bölüm yazının en iddialı yeri, bu yüzden kanıt eşiği de en yüksek
+ * olan yer. Tek bir kural: DÜŞÜŞ ANCAK ÖLÇÜLDÜYSE YAZILIR. Ölçülemediyse
+ * ölçülemediği yazılır — "bazı oyuncularda göze çarpan düşüş" gibi
+ * kanıtın yerini tutmaya çalışan bir ifade de kurulmaz.
+ * ------------------------------------------------------------------ */
+
+function opponentSectionTr(focus, links) {
+  if (!focus) return [];
+  const body = [];
+  const team = focus.team;
+  const manager = focus.manager;
+  const signings = focus.signings || [];
+  const evidence = focus.evidence || {};
+
+  body.push(`## Rakip dosyası: ${link(team, links.opponentTeam)}'da transferler${manager ? ` ve ${manager} tartışması` : ""}`);
+
+  /* — Transferler: kim, ne zaman, bu maçta ne ölçüldü — */
+  if (signings.length) {
+    const rows = signings.map((row) => {
+      const when = row.date ? row.date.split("-").reverse().join(".") : "";
+      const bits = [when, row.type, row.fromTeam ? `${row.fromTeam}'dan` : ""].filter(Boolean).join(", ");
+      const age = Number.isFinite(row.daysAtClub) ? `kulüpte ${row.daysAtClub} gün` : "";
+      return `${playerLink(row.name, links)} (${[bits, age].filter(Boolean).join("; ")})`;
+    });
+    body.push(
+      `${team}'ın bu sezon kadroya kattığı ${link("doğrulanmış transferler", links.opponentTransfers)} şunlar: ${joinList(rows, "ve")}. ` +
+      `Aşağıdaki değerlendirme yalnızca bu isimler ve yalnızca ölçülmüş kalemler üzerinden yapılıyor; ` +
+      `kulübün adıyla anılan ama resmîleşmemiş hiçbir transfer bu tabloya girmiyor.`
+    );
+
+    const played = signings.filter((row) => row.played && row.thisMatch);
+    if (played.length) {
+      const lines = played.map((row) => {
+        const stat = row.thisMatch;
+        const bits = [];
+        if (isNumber(stat.minutes)) bits.push(`${stat.minutes} dakika`);
+        if (isNumber(stat.rating)) bits.push(`reyting ${trNumber(stat.rating)}`);
+        if (num(stat.goals) > 0) bits.push(`${stat.goals} gol`);
+        if (num(stat.assists) > 0) bits.push(`${stat.assists} asist`);
+        if (num(stat.shotsOnTarget) > 0) bits.push(`${stat.shotsOnTarget} isabetli şut`);
+        if (num(stat.duelsWon) > 0) bits.push(`${stat.duelsWon} kazanılan mücadele`);
+        if (isNumber(stat.passRate)) bits.push(`%${trNumber(stat.passRate)} pas isabeti`);
+        return `${playerLink(row.name, links)}: ${bits.join(", ")}`;
+      });
+      body.push(`Bu maçta sahada ölçülen değerleriyle: ${lines.join(". ")}.`);
+    }
+  }
+
+  /* — ASIL SORU: ilk dönem ↔ son dönem — */
+  body.push(`### İlk geldiklerinde nasıllardı, şimdi neredeler?`);
+
+  if (evidence.windowsAvailable) {
+    // Ölçüm var: pencereler karşılaştırılır ve yön AÇIKÇA söylenir.
+    for (const row of signings.filter((entry) => entry.comparison && entry.comparison.sufficient)) {
+      const first = row.comparison.firstWindow;
+      const last = row.comparison.lastWindow;
+      const size = row.comparison.size;
+      const moved = (row.decline.moved || []).slice(0, 4)
+        .map((item) => `${MEASURE_TR[item.measure] || item.measure} ${item.direction === "down" ? "%" + Math.abs(item.change) + " geriledi" : "%" + item.change + " arttı"} (${trNumber(item.before)} → ${trNumber(item.after)})`);
+      const verdict = row.decline.verdict === "decline"
+        ? `Tablo net: ${row.decline.down} üretim kaleminde gerileme var ve bu, tek bir maçın dalgalanması değil.`
+        : row.decline.verdict === "improvement"
+          ? `Beklenenin tersi: kalemlerin çoğu yukarı gidiyor; bu oyuncu için "düşüş" demek veriye aykırı olur.`
+          : `Kalemler tek yöne gitmiyor: bu oyuncu için ne düşüş ne yükseliş denebilir, tablo yatay.`;
+      body.push(
+        `${playerLink(row.name, links)} — ilk ${size} maç (${row.comparison.firstDate}) ile son ${size} maç (${row.comparison.lastDate}) karşılaştırması, ` +
+        `toplam ${row.comparison.sampleSize} ölçülmüş maç üzerinden: ${moved.length ? moved.join("; ") + "." : "kalemlerde eşiği aşan bir hareket yok."} ${verdict}`
+      );
+    }
+  } else {
+    // ÖLÇÜM YOK: tez kurulmaz, sebebi yazılır.
+    body.push(
+      `Bu sorunun dürüst cevabı bugün için şu: **bu karşılaştırmayı yapacak ölçüm henüz elimizde yok.** ` +
+      `FutbolRadar'ın oyuncu–maç zaman serisinde ${team} transferleri için en uzun seri ${evidence.bestSeries} maç; ` +
+      `ilk ${evidence.windowSize} maç ile son ${evidence.windowSize} maçı karşılaştırabilmek için oyuncu başına en az ${evidence.required} ölçülmüş maç gerekiyor. ` +
+      `Elimizdeki veri bir eğilim değil, birkaç fotoğraf.`
+    );
+    body.push(
+      `Bu satırı "düşüş yok" diye okumak da yanlış olur, "düşüş var" diye okumak da. Ölçülmemiş bir şey hakkında iki yönde de hüküm kurulmaz. ` +
+      `Kulübün transferlerinin ilk haftalardaki etkisini koruyup koruyamadığı, ancak her oyuncunun maç maç üretim kalemleri biriktikten sonra söylenebilir — ` +
+      `ve o seri her hafta biraz daha doluyor. Bu yazının bu bölümü, seri dolduğunda sayılarla konuşacak; bugün elindeki tek dürüst cümle bu.`
+    );
+  }
+
+  /* — Rotasyon ve fikstür yükü: ölçüldüğü kadarıyla — */
+  const load = [];
+  const congestion = focus.congestion;
+  if (congestion) {
+    load.push(
+      `${team} bu maça ${congestion.restDays} günlük dinlenmeyle geldi; son 14 günde ${congestion.matches14d}, son 30 günde ${congestion.matches30d} resmî maç oynadı.`
+    );
+    if (congestion.matches14d >= 4) {
+      load.push(`İki haftada dört ve üzeri resmî maç, kadro derinliğini tercih meselesi olmaktan çıkarıp zorunluluğa çeviren bir tempodur.`);
+    } else if (congestion.restDays <= 3) {
+      load.push(`Üç gün ya da daha kısa bir aralık, aynı on birle çıkmanın fiziksel maliyetinin en yüksek olduğu aralıktır.`);
+    }
+  }
+  const rotation = focus.rotation || {};
+  if (rotation.matchesConsidered >= 3) {
+    load.push(
+      `Elimizdeki ${rotation.matchesConsidered} resmî maçlık dizilişte ${rotation.distinctStarters} farklı oyuncu ilk 11'de başladı, ` +
+      `${rotation.everPresent} isim her maçta başladı` +
+      `${isNumber(rotation.averageChanges) ? ` ve ardışık iki on bir arasında ortalama ${trNumber(rotation.averageChanges)} değişiklik yapıldı` : ""}. ` +
+      (rotation.everPresent >= 8
+        ? `Bu tablo rotasyonun dar olduğunu, yükün aynı isimlerde toplandığını gösteriyor.`
+        : `Bu tablo, kadronun geniş bir bölümünün sahaya çıktığı bir dağılıma işaret ediyor.`)
+    );
+  } else if (rotation.matchesConsidered) {
+    load.push(
+      `Rotasyon hakkında sayı vermiyoruz: depodaki resmî maç dizilişi ${rotation.matchesConsidered} taneyle sınırlı ve ` +
+      `tek dizilişten rotasyon çıkarmak, hazırlık maçlarını da sayıp "her maç on bir değişiyor" demek kadar yanıltıcı olurdu.`
+    );
+  }
+  if (load.length) {
+    body.push(`### Fikstür yükü ve rotasyon`);
+    body.push(load.join(" "));
+  }
+
+  /* — SORULAR: hüküm değil, soru — */
+  body.push(`### ${manager ? manager + " için" : "Teknik heyet için"} asıl sorular`);
+  body.push(
+    `Aşağıdakiler iddia değil, yukarıdaki ölçümlerin açtığı sorular — ve cevapları bu tek maçta yok:` +
+    ` Oyuncular transfer oldukları ilk haftalarda neden daha dinamik görünüyor; bu bir uyum eğrisi mi, yoksa tempo ve yüklenme farkı mı?` +
+    ` Aynı isimlerin sürekli sahada olması fiziksel ve zihinsel yıpranma üretiyor mu, üretiyorsa bu üretim kalemlerinde kaçıncı haftada görünür?` +
+    ` Rotasyon, ${congestion ? `son 30 günde ${congestion.matches30d} maçlık` : "mevcut"} bir takvimi taşıyacak genişlikte mi?` +
+    ` Yeni transferlerin güçlü yönleri sistemde kullanılıyor mu — oyuncu sisteme mi uyarlanıyor, sistem oyuncuya göre mi şekilleniyor?` +
+    ` Değişiklikler oyunun yönü belli olmadan mı geliyor, belli olduktan sonra mı?`
+  );
+  body.push(
+    `Bu soruların hepsinin ortak bir üst sorusu var ve tartışmayı asıl kuran o: ` +
+    `**${team} oyuncu transfer etmekte mi başarılı, yoksa transfer ettiği oyuncunun performansını uzun süre korumakta mı zorlanıyor?** ` +
+    `Hemen ardından gelen soru da şu: sorun oyuncularda mı, yoğun fikstürde mi, yoksa oyuncu kullanım modelinde mi? ` +
+    `Üçünü tek bir sebebe indirgeyen her cevap, futbolun kendisinden daha basit olurdu. ` +
+    `Dürüst yol, üç başlığın da ölçülerini ayrı ayrı biriktirip hangisinin gerçekten hareket ettiğini görmek — bu yazının yaptığı da bu.`
+  );
+
+  return body;
+}
+
+/** Ölçüm adlarının Türkçesi. Sayı hangi kalemden geliyor, okuyucu görsün. */
+const MEASURE_TR = {
+  goals: "gol", assists: "asist", shots: "şut", shotsOnTarget: "isabetli şut",
+  keyPasses: "kilit pas", duelsWon: "kazanılan ikili mücadele", dribbles: "başarılı dripling",
+  rating: "maç reytingi", minutes: "maç başına dakika", passes: "pas", passAccuracy: "pas isabeti",
+  tackles: "top çalma", saves: "kurtarış", lostBalls: "top kaybı"
+};
+
 /* ------------------------------------------------------------------ *
  * İNGİLİZCE — kendi cümleleriyle
  * ------------------------------------------------------------------ */
@@ -797,6 +1098,17 @@ function renderEnglish(model) {
         : `A draw is the most argued-over result in football: a loss to one side of the argument, a point gained to the other. The production numbers, the territory and ${link("the standings", links.standings)} decide which reading holds here.`
   );
 
+  if (model.opponentFocus && (model.opponentFocus.signings || []).length) {
+    const focus = model.opponentFocus;
+    body.push(
+      `Some matches describe more than ninety minutes; they ask where a team has been heading for months. ` +
+      `Seen from the ${focus.team} side, this was one of them: ${focus.signings.length} new signings on the pitch, a squad ` +
+      `${focus.congestion ? `that has played ${focus.congestion.matches30d} competitive matches in 30 days` : "arriving from a crowded calendar"}, and ` +
+      `${focus.manager ? `${focus.manager}'s ` : "the manager's "}use of that squad open for discussion again. ` +
+      `The second half of this piece is given to that argument — and the rule there does not change either: what is measured gets written, what is not does not.`
+    );
+  }
+
   body.push(
     `This is not a match summary. Every line below rests on data measured by the provider: the event feed, the team statistics, the team sheets and the per-player output. ` +
     `Nothing unmeasured has been written, and no words have been put in the mouth of a manager or a player. ` +
@@ -840,6 +1152,32 @@ function renderEnglish(model) {
           : `None of Trabzonspor's goals carry a recorded assist: the finishers largely made the chances themselves.`
       );
     }
+  }
+
+  if (model.goals.length >= 2) {
+    let us = 0;
+    let them = 0;
+    const states = model.goals.map((goal) => {
+      if (goal.forUs) us += 1; else them += 1;
+      return `${minuteLabel(goal.minute)} ${us}-${them}`;
+    });
+    let a = 0;
+    let b = 0;
+    let last = "level";
+    let changes = 0;
+    for (const goal of model.goals) {
+      if (goal.forUs) a += 1; else b += 1;
+      const state = a === b ? "level" : a > b ? "ahead" : "behind";
+      if (state !== last) { changes += 1; last = state; }
+    }
+    body.push(
+      `The scoreline moved in this order: ${states.join(" → ")}. ` +
+      (changes >= 3
+        ? `The advantage changed hands ${changes} times; neither side ever had the result secured.`
+        : changes === 2
+          ? `The state of the game changed twice, so the direction of this match was set at two separate breaks rather than one.`
+          : `The scoreline turned once, and both sides then played as though they accepted it.`)
+    );
   }
 
   const turn = model.turningPoint;
@@ -906,9 +1244,61 @@ function renderEnglish(model) {
   if (stats.saves && isNumber(stats.saves.us)) {
     balance.push(`Trabzonspor's goalkeeper made ${enNumber(stats.saves.us)} saves.${stats.saves.us >= 4 ? " That is a goal genuinely tested, which means the defensive line was conceding clear sights of it." : " The goal was rarely tested; the block kept the opposition outside clear shooting range."}`);
   }
+  if (stats.saves && isNumber(stats.saves.us) && stats.shotsOn && isNumber(stats.shotsOn.them) && stats.shotsOn.them > 0) {
+    const rate = Math.round((stats.saves.us / stats.shotsOn.them) * 100);
+    balance.push(
+      `Of the ${enNumber(stats.shotsOn.them)} shots that hit the target, ${enNumber(stats.saves.us)} were saved — a ${rate}% save rate.` +
+      (rate >= 80
+        ? ` The goalkeeping is what kept the scoreline from being closer than it looked.`
+        : rate >= 50
+          ? ` The keeper did his share; the goals came from the quality of the chances rather than from errors behind them.`
+          : ` Most shots on target found the net, which speaks at once to the finishing and to how clear the chances conceded were.`)
+    );
+  }
   if (balance.length) {
     body.push("## Midfield and the defensive balance");
     body.push(balance.join(" "));
+  }
+
+  const press = [];
+  if (stats.passAccuracy && isNumber(stats.passAccuracy.them)) {
+    press.push(`The opposition completed ${enNumber(stats.passAccuracy.them)}% of their passes${stats.passAccuracy.them <= 78 ? ", so the build-up never ran smoothly and the ball kept leaving their feet." : ", so they were never made uncomfortable in possession."}`);
+  }
+  if (stats.fouls && isNumber(stats.fouls.us)) {
+    press.push(stats.fouls.us >= 15
+      ? `Trabzonspor's ${enNumber(stats.fouls.us)} fouls say the attempt to win the ball back repeatedly spilled over into the referee's notebook.`
+      : `At ${enNumber(stats.fouls.us)} fouls, the recovery work never turned into the kind of niggle that breaks a game up.`);
+  }
+  if (stats.offsides && isNumber(stats.offsides.them)) {
+    press.push(`${enNumber(stats.offsides.them)} offsides against the opposition is the one measured sign of how high the defensive line stepped.`);
+  }
+  if (press.length >= 2) {
+    body.push("## The press, and the opposition's build-up");
+    body.push(`No direct pressing metric is published for this match, so what follows are measured traces of pressure rather than pressure itself. ` + press.join(" "));
+  }
+
+  const box = [];
+  const outside = stats.outsideShots;
+  if (stats.boxShots && isNumber(stats.boxShots.us) && outside && isNumber(outside.us)) {
+    const total = stats.boxShots.us + outside.us;
+    if (total > 0) {
+      const share = Math.round((stats.boxShots.us / total) * 100);
+      box.push(`Trabzonspor's shots split ${enNumber(stats.boxShots.us)}–${enNumber(outside.us)} inside and outside the box (${share}% from inside).${share >= 60 ? " The attack was built by getting in, not by shooting from range." : " More than half the volume came from outside, which is a defence closing the routes inside."}`);
+    }
+  }
+  if (stats.boxShots && isNumber(stats.boxShots.them) && outside && isNumber(outside.them)) {
+    const total = stats.boxShots.them + outside.them;
+    if (total > 0) {
+      box.push(`At the other end the same split reads ${enNumber(stats.boxShots.them)}–${enNumber(outside.them)} (${Math.round((stats.boxShots.them / total) * 100)}% from inside).`);
+    }
+  }
+  const blocked = stats.blockedShots;
+  if (blocked && isNumber(blocked.them) && blocked.them > 0) {
+    box.push(`Trabzonspor blocked ${enNumber(blocked.them)} shots before they reached the goalkeeper — the measured value of bodies in the box.`);
+  }
+  if (box.length >= 2) {
+    body.push("## Penalty-box effectiveness");
+    body.push(box.join(" "));
   }
 
   const attack = [];
@@ -1049,7 +1439,7 @@ function renderEnglish(model) {
   const dueller = leaderOf("duelsWon");
   if (dueller) production.push(`${playerLink(dueller.name, links)} led the duels with ${num(dueller.duelsWon)} won.`);
   const passer = ours.filter((row) => num(row.passes) >= 30).sort((left, right) => num(right.passes) - num(left.passes))[0];
-  if (passer) production.push(`${playerLink(passer.name, links)} was the distribution point: ${num(passer.passes)} passes${num(passer.passAccuracy) > 0 ? ` at ${num(passer.passAccuracy)}%` : ""}.`);
+  if (passer) production.push(`${playerLink(passer.name, links)} was the distribution point: ${num(passer.passes)} passes${playerPassRate(passer) !== null ? ` at ${playerPassRate(passer)}%` : ""}.`);
   const keeper = ours.filter((row) => num(row.saves) > 0).sort((left, right) => num(right.saves) - num(left.saves))[0];
   if (keeper) production.push(`${playerLink(keeper.name, links)} finished with ${num(keeper.saves)} saves in goal.`);
   if (production.length >= 3) {
@@ -1076,6 +1466,10 @@ function renderEnglish(model) {
       lines.push(`That nothing measured crossed the threshold into a positive is a finding in itself: the problem is spread across the game rather than sitting in one area.`);
     }
     body.push(lines.join(" "));
+  }
+
+  if (model.opponentFocus) {
+    body.push(...opponentSectionEn(model.opponentFocus, links));
   }
 
   if (model.standing) {
@@ -1117,8 +1511,133 @@ function renderEnglish(model) {
   return body;
 }
 
+
+function opponentSectionEn(focus, links) {
+  if (!focus) return [];
+  const body = [];
+  const team = focus.team;
+  const manager = focus.manager;
+  const signings = focus.signings || [];
+  const evidence = focus.evidence || {};
+
+  body.push(`## The opposition file: ${link(team, links.opponentTeam)}'s signings${manager ? ` and the ${manager} question` : ""}`);
+
+  if (signings.length) {
+    const rows = signings.map((row) => {
+      const bits = [row.date, row.type, row.fromTeam ? `from ${row.fromTeam}` : ""].filter(Boolean).join(", ");
+      const age = Number.isFinite(row.daysAtClub) ? `${row.daysAtClub} days at the club` : "";
+      return `${playerLink(row.name, links)} (${[bits, age].filter(Boolean).join("; ")})`;
+    });
+    body.push(
+      `${team}'s ${link("confirmed signings", links.opponentTransfers)} this season: ${joinList(rows, "and")}. ` +
+      `What follows covers those names only, and only what was measured; a transfer linked with the club but never confirmed does not enter this table.`
+    );
+
+    const played = signings.filter((row) => row.played && row.thisMatch);
+    if (played.length) {
+      const lines = played.map((row) => {
+        const stat = row.thisMatch;
+        const bits = [];
+        if (isNumber(stat.minutes)) bits.push(`${enNumber(stat.minutes)} minutes`);
+        if (isNumber(stat.rating)) bits.push(`rated ${enNumber(stat.rating)}`);
+        if (num(stat.goals) > 0) bits.push(`${stat.goals} goals`);
+        if (num(stat.assists) > 0) bits.push(`${stat.assists} assists`);
+        if (num(stat.shotsOnTarget) > 0) bits.push(`${stat.shotsOnTarget} shots on target`);
+        if (num(stat.duelsWon) > 0) bits.push(`${stat.duelsWon} duels won`);
+        return `${playerLink(row.name, links)}: ${bits.join(", ")}`;
+      });
+      body.push(`Measured on the pitch in this match: ${lines.join(". ")}.`);
+    }
+  }
+
+  body.push(`### How they looked on arrival, and where they are now`);
+
+  if (evidence.windowsAvailable) {
+    for (const row of signings.filter((entry) => entry.comparison && entry.comparison.sufficient)) {
+      const size = row.comparison.size;
+      const moved = (row.decline.moved || []).slice(0, 4)
+        .map((item) => `${MEASURE_EN[item.measure] || item.measure} ${item.direction === "down" ? `down ${Math.abs(item.change)}%` : `up ${item.change}%`} (${enNumber(item.before)} → ${enNumber(item.after)})`);
+      const verdict = row.decline.verdict === "decline"
+        ? `That is a genuine fall across ${row.decline.down} production columns, not the noise of one bad night.`
+        : row.decline.verdict === "improvement"
+          ? `The opposite of the expected story: most columns are rising, and calling this a decline would contradict the data.`
+          : `The columns do not move together, so neither decline nor improvement can be claimed here.`;
+      body.push(
+        `${playerLink(row.name, links)} — first ${size} matches (${row.comparison.firstDate}) against the last ${size} (${row.comparison.lastDate}), across ${row.comparison.sampleSize} measured matches: ` +
+        `${moved.length ? moved.join("; ") + "." : "nothing moved beyond the threshold."} ${verdict}`
+      );
+    }
+  } else {
+    body.push(
+      `The honest answer today: **the measurement that would settle this does not exist yet.** ` +
+      `In FutbolRadar's player-by-match series, the longest run for a ${team} signing is ${evidence.bestSeries} match(es), and comparing a player's first ${evidence.windowSize} matches with their last ${evidence.windowSize} needs at least ${evidence.required} measured matches each. ` +
+      `What we hold is not a trend. It is a handful of photographs.`
+    );
+    body.push(
+      `Reading that as "there is no decline" would be as wrong as reading it as "there is one". No verdict runs in either direction on something unmeasured. ` +
+      `Whether this club's signings hold their early impact can only be said once each player's production columns have accumulated match by match — and that series fills a little more every week. ` +
+      `This section will speak in numbers when it can; today the only honest sentence is this one.`
+    );
+  }
+
+  const load = [];
+  const congestion = focus.congestion;
+  if (congestion) {
+    load.push(`${team} came into this match on ${congestion.restDays} days' rest, with ${congestion.matches14d} competitive matches in the last 14 days and ${congestion.matches30d} in the last 30.`);
+    if (congestion.matches14d >= 4) load.push(`Four or more competitive matches in a fortnight turns squad depth from a preference into a requirement.`);
+    else if (congestion.restDays <= 3) load.push(`Three days or fewer is the window in which naming the same eleven costs the most physically.`);
+  }
+  const rotation = focus.rotation || {};
+  if (rotation.matchesConsidered >= 3) {
+    load.push(
+      `Across the ${rotation.matchesConsidered} competitive team sheets on record, ${rotation.distinctStarters} different players have started, ${rotation.everPresent} of them in every match` +
+      `${isNumber(rotation.averageChanges) ? `, with an average of ${enNumber(rotation.averageChanges)} changes between consecutive elevens` : ""}. ` +
+      (rotation.everPresent >= 8
+        ? `That is a narrow rotation, with the load concentrated on the same names.`
+        : `That points to a wide distribution of minutes across the squad.`)
+    );
+  } else if (rotation.matchesConsidered) {
+    load.push(`No rotation figures are given here: only ${rotation.matchesConsidered} competitive team sheet(s) are on record, and drawing a rotation pattern from that would mislead as badly as counting pre-season friendlies would.`);
+  }
+  if (load.length) {
+    body.push(`### Fixture load and rotation`);
+    body.push(load.join(" "));
+  }
+
+  body.push(`### The real questions${manager ? ` for ${manager}` : ""}`);
+  body.push(
+    `These are questions the measurements open up, not claims, and one match does not answer them:` +
+    ` why do players look sharper in their first weeks at a club — an adaptation curve, or a difference in tempo and load?` +
+    ` Does naming the same players continuously produce physical and mental wear, and if so, in which week does it show up in the production columns?` +
+    ` Is the rotation wide enough to carry ${congestion ? `a calendar of ${congestion.matches30d} matches in 30 days` : "the current calendar"}?` +
+    ` Are the new signings' strengths actually used by the system — is the player adapted to the system, or the system shaped around the player?` +
+    ` Do the substitutions arrive before the shape of the game is settled, or after?`
+  );
+  body.push(
+    `All of them sit under one larger question, and that is the one worth arguing about: ` +
+    `**is ${team} good at signing players, or does it struggle to hold on to the performance of the players it signs?** ` +
+    `And immediately after it: is the problem the players, the congested fixture list, or the way the squad is used? ` +
+    `Any answer that reduces those three to one cause would be simpler than football is. ` +
+    `The honest route is to accumulate the measurements for all three separately and watch which one actually moves — which is exactly what this piece is doing.`
+  );
+
+  return body;
+}
+
+const MEASURE_EN = {
+  goals: "goals", assists: "assists", shots: "shots", shotsOnTarget: "shots on target",
+  keyPasses: "key passes", duelsWon: "duels won", dribbles: "successful dribbles",
+  rating: "match rating", minutes: "minutes per match", passes: "passes",
+  passAccuracy: "pass accuracy", tackles: "tackles", saves: "saves", lostBalls: "possession lost"
+};
+
 module.exports = {
   renderTurkish,
+  playerPassRate,
+  opponentSectionTr,
+  opponentSectionEn,
+  MEASURE_TR,
+  MEASURE_EN,
   enStage,
   enCompetition,
   renderEnglish,

@@ -57,6 +57,8 @@ const SHARE_IMAGE_TITLE = "TRABZONSPOR | MAÇ SONU ANALİZİ";
 const DROP_ORDER = [
   "## Beklentinin altında kalanlar",
   "## Sayılarla bireysel üretim",
+  "## Pres ve rakibin kurulum oyunu",
+  "## Ceza sahası etkinliği",
   "## Rakip ne üretti, savunma neyi verdi",
   "## İlk yarı, ikinci yarı: gece ikiye bölündü mü",
   "## Rakip ne üretti, savunma neyi verdi",
@@ -69,6 +71,8 @@ const DROP_ORDER = [
 const DROP_ORDER_EN = [
   "## Below expectation",
   "## The individual numbers",
+  "## The press, and the opposition's build-up",
+  "## Penalty-box effectiveness",
   "## What the defence gave up",
   "## Two halves, or one match",
   "## What the defence gave up",
@@ -142,9 +146,59 @@ function fixtureLine(model) {
     : `${model.opponent} ${model.theirScore}-${model.ourScore} Trabzonspor`;
 }
 
+
+/**
+ * RAKİP ODAKLI BAŞLIK — ANCAK MAÇTA/VERİDE KARŞILIĞI VARSA.
+ *
+ * İstenen başlık alternatiflerinden biri transferlerin "ilk günkü etkiyi
+ * kaybettiğini" söylüyor. Bu başlık, o düşüş GERÇEKTEN ölçülmedikçe
+ * kullanılmıyor: ölçülmemiş bir tezi başlığa taşımak, tam da
+ * kaçınılması istenen clickbait olurdu. Ölçüm yokken başlık soru sorar,
+ * hüküm vermez.
+ */
+function focusHeadline(model) {
+  const focus = model.opponentFocus;
+  if (!focus) return null;
+  const manager = focus.manager;
+  const evidence = focus.evidence || {};
+  const declining = (focus.signings || []).filter((row) => row.decline && row.decline.verdict === "decline");
+
+  if (evidence.windowsAvailable && declining.length >= 2) {
+    return `${focus.team}'da Dikkat Çeken Tablo: Transferler Neden İlk Günkü Etkiyi Kaybediyor?`;
+  }
+  if (manager) {
+    return `Trabzonspor–${focus.team} Maçının Ardından: ${manager} İçin Asıl Soru Şimdi Başlıyor`;
+  }
+  if ((focus.signings || []).length) {
+    return `90 Dakikadan Fazlası: ${focus.team}'ın Transfer Verimi Üzerine`;
+  }
+  return null;
+}
+
+function focusHeadlineEn(model) {
+  const focus = model.opponentFocus;
+  if (!focus) return null;
+  const manager = focus.manager;
+  const evidence = focus.evidence || {};
+  const declining = (focus.signings || []).filter((row) => row.decline && row.decline.verdict === "decline");
+
+  if (evidence.windowsAvailable && declining.length >= 2) {
+    return `The Pattern at ${focus.team}: Why Do the Signings Lose Their Early Impact?`;
+  }
+  if (manager) {
+    return `After Trabzonspor–${focus.team}: The Real Question for ${manager} Starts Now`;
+  }
+  if ((focus.signings || []).length) {
+    return `More Than 90 Minutes: What ${focus.team} Gets From Its Signings`;
+  }
+  return null;
+}
+
 function headline(model) {
   const signal = signalOf(model);
   const tail = fixtureLine(model);
+  const focused = focusHeadline(model);
+  if (focused) return `${focused} | ${tail}`;
 
   const hooks = {
     "red-us": `On Kişi Kalan Trabzonspor'da Gecenin Hikâyesi`,
@@ -164,6 +218,8 @@ function headline(model) {
 function headlineEn(model) {
   const signal = signalOf(model);
   const tail = fixtureLine(model);
+  const focused = focusHeadlineEn(model);
+  if (focused) return `${focused} | ${tail}`;
   const hooks = {
     "red-us": `Down to Ten: The Story of Trabzonspor's Night`,
     "red-them": `What the Extra Man Actually Changed for Trabzonspor`,
@@ -184,6 +240,15 @@ function headlineEn(model) {
  * "Trabzonspor maç sonucu", "Trabzonspor maç analizi" ve "maç özeti" aynı
  * cümlede tıkıştırılmaz; başlık okunabilir kalır ve kalıplardan ikisini
  * taşır. Üçünü birden yazmak arama motoru için de kötü, okuyucu için de.
+ */
+/**
+ * SEO başlığı — maç bittiği anda yükselen kalıpları DOĞAL taşır.
+ *
+ * "Trabzonspor Galatasaray maç sonucu" ve "maç analizi" kalıplarının ikisi
+ * de saha sırasındaki skor satırının içinden geçiyor; üçüncü, dördüncü
+ * kalıbı aynı başlığa tıkıştırmak hem okunmaz hem de arama motoru için
+ * kötü olurdu. Geri kalan kalıplar (maç özeti, istatistikleri, son dakika)
+ * meta açıklamasında ve gövdede doğal biçimde geçiyor.
  */
 function seoTitle(model) {
   return `${fixtureLine(model)} maç sonucu ve maç analizi | FutbolRadar`;
@@ -297,6 +362,29 @@ function trimBody(body, order, max = MAX_WORDS) {
     out = dropSection(out, heading);
   }
   return out;
+}
+
+
+/**
+ * MAÇ SAYFASINDA GÖSTERİLECEK ÇAĞRI.
+ *
+ * Maç sayfasına gelen okuyucu skoru görüp çıkmasın diye yazıya bir köprü
+ * kuruluyor. Cümle yazının GERÇEK içeriğinden türüyor: rakip dosyası
+ * açıldıysa tartışmanın öznesini, açılmadıysa maçın kendi sorusunu sorar.
+ * İçerikte karşılığı olmayan bir merak cümlesi kurulmuyor.
+ */
+function promoFor(model) {
+  const focus = model.opponentFocus;
+  if (focus && (focus.signings || []).length) {
+    return {
+      tr: `Maçın ardından köşe yazısı: ${focus.team}'da ne değişiyor?`,
+      en: `The column after the match: what is changing at ${focus.team}?`
+    };
+  }
+  return {
+    tr: `Maçın ardından köşe yazısı: maç nerede kazanıldı, nerede kaybedildi?`,
+    en: `The column after the match: where was it won, and where was it lost?`
+  };
 }
 
 /* ------------------------------------------------------------------ *
@@ -439,7 +527,16 @@ function buildColumnEntry(match, context = {}) {
     date: context.now || new Date().toISOString(),
     category: CATEGORY,
     contentType: CONTENT_TYPE,
-    tags: ["Trabzonspor", model.opponent, model.competition, "Maç Analizi"].filter(Boolean),
+    tags: [
+      "Trabzonspor",
+      model.opponent,
+      model.competition,
+      "Maç Analizi",
+      // Rakip dosyası açıldıysa tartışmanın öznesi de etikete girer;
+      // etiketler yazının gerçekten içerdiği başlıkları göstermeli.
+      model.opponentFocus && model.opponentFocus.manager ? model.opponentFocus.manager : "",
+      model.opponentFocus && (model.opponentFocus.signings || []).length ? `${model.opponentFocus.team} Transferleri` : ""
+    ].filter(Boolean),
     // Durum, kapıdan geçtikten sonra aşağıda belirleniyor.
     status: "draft",
     excerpt: excerpt(model),
@@ -456,6 +553,8 @@ function buildColumnEntry(match, context = {}) {
       spot: spotEn(model),
       body: bodyEn
     },
+    // Maç sayfasından yazıya köprü (bkz. scripts/inject-match-column-link.mjs).
+    promo: promoFor(model),
     // KÖKEN: bu kaydın hangi maçtan ve hangi kapılardan geçerek doğduğu.
     generated: {
       by: "scripts/generate-trabzonspor-post-match-column.mjs",
@@ -481,6 +580,9 @@ function buildColumnEntry(match, context = {}) {
 module.exports = {
   AUTHOR,
   fixtureLine,
+  promoFor,
+  focusHeadline,
+  focusHeadlineEn,
   CATEGORY,
   CONTENT_TYPE,
   DROP_ORDER,

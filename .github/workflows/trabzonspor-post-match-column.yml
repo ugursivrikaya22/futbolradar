@@ -1,37 +1,44 @@
 name: Trabzonspor Post-Match Column
 
-# MAÇ BİTER BİTMEZ ANALİZ.
+# MAÇ BİTER BİTMEZ ANALİZ — HEDEF: İLK 0–5 DAKİKA.
 #
-# Bu iş akışı Trabzonspor'un bitmiş maçını arar; bulursa maç sonu köşe
-# yazısını üretir, sayfalarını basar ve main'e commit eder. Vercel commit'i
-# görüp yalnızca değişen çıktıyı yayımlar.
+# Zincir tek koşuda tamamlanıyor: sağlayıcıdan bitiş doğrulaması ve maç
+# dökümü → köşe yazısı → sayfalar → commit. Vercel commit'i görüp yalnızca
+# değişen çıktıyı yayımlıyor.
 #
-# ── NEDEN SIK, NEDEN YİNE DE UCUZ ───────────────────────────────────────
+# ── NEDEN SAĞLAYICIYA BU İŞ AKIŞI GİDİYOR ───────────────────────────────
 #
-# Maçın bitiş dakikası önceden bilinmiyor; uzatma ve devre arası maç sonunu
-# 15-20 dakika kaydırabiliyor. Bu yüzden koşu sık: maç saatlerini kapsayan
-# aralıkta on beş dakikada bir. Koşunun kendisi ucuz çünkü SAĞLAYICIYA
-# GİTMİYOR — depodaki veriyi okuyor. Bitmiş maç yoksa betik ilk saniyede
-# "yapacak iş yok" deyip 0 ile çıkıyor ve hiçbir dosya değişmiyor.
+# İlk sürüm yalnızca depodaki veriyi okuyordu ve veriyi saatlik iş akışı
+# (match-analysis.yml) tazeliyordu. Ölçüldü: 19 Eylül'de saat 21:26'da,
+# 20:00'de başlamış maç depoda hâlâ SCHEDULED ve skorsuzdu. Yani "maç
+# bitince yayımla" zinciri, en iyi ihtimalle bir sonraki saat başını
+# bekliyordu — 0–5 dakika hedefiyle bağdaşmaz. Bu yüzden bitiş
+# doğrulamasını bu iş akışı KENDİSİ yapıyor.
 #
-# Veriyi tazeleyen taraf ayrı iş akışı (match-analysis.yml, saatlik). Bu
-# ayrım bilinçli: iki iş akışı da aynı dosyalara yazsaydı yarış olurdu.
-# Buradaki tek yazma yolu data/columns.json, üretilmiş sayfalar ve kapak
-# görseli.
+# `sync-live-fixtures.mjs --apply` yalnızca skor değil, maç dökümünü de
+# (olay akışı, diziliş, istatistik, oyuncu satırları) çekiyor; yani yazının
+# ihtiyaç duyduğu her bölüm tek adımda geliyor.
 #
-# ── YAYIN KAPISI BETİKTE, BURADA DEĞİL ──────────────────────────────────
+# ── 0–5 DAKİKA NEREYE KADAR GARANTİ EDİLEBİLİR ──────────────────────────
 #
-# Yazının yayına girip girmeyeceğine iş akışı karar vermiyor; betik veriye
-# bakıp karar veriyor (bitiş doğrulaması, veri kapsamı, uzunluk). Kapılardan
-# biri düşerse kayıt `draft` yazılır ve hiçbir yüzeyde görünmez. Elle onay
-# beklenmiyor, ama kapılar da kalkmıyor.
+# Edilemez, ve bunu iş akışının kendisi söylemeli: GitHub `schedule` için
+# en sık aralık BEŞ DAKİKADIR ve kuyruk yoğunken gecikir (bu depoda saat
+# başına sabitlenmiş koşuların saatlerce geciktiği ölçüldü — bkz.
+# docs/scheduled-updates.md). Yani cron ile ulaşılabilecek en iyi değer
+# "maçın bitişinden sonraki ilk koşu", tipik olarak 0–10 dakika.
+# Gerçekten garantili bir 0–5 dakika, dışarıdan `workflow_dispatch`
+# tetikleyen daima açık bir zamanlayıcı ister; bu iş akışı o tetiği de
+# kabul ediyor (aşağıdaki workflow_dispatch).
+#
+# Koşu ucuz: bitmiş maç yoksa betik ilk saniyede "yapacak iş yok" deyip
+# çıkıyor ve hiçbir dosya değişmiyor.
 
 on:
   schedule:
-    # Türkiye maç saatlerini kapsayan pencere (16:00–03:00 Europe/Istanbul),
-    # on beş dakikada bir. Saat başı yoğunluğundan kaçmak için :04 ofseti —
-    # match-analysis.yml ile aynı gerekçe (bkz. docs/scheduled-updates.md).
-    - cron: "4,19,34,49 13-23,0 * * *"
+    # Beş dakikada bir, Türkiye maç saatlerini kapsayan pencerede
+    # (16:00–03:00 Europe/Istanbul). Saat başındaki kuyruk yoğunluğundan
+    # kaçmak için :02 ofsetiyle başlıyor.
+    - cron: "2,7,12,17,22,27,32,37,42,47,52,57 13-23,0 * * *"
   workflow_dispatch:
     inputs:
       match_id:
@@ -42,6 +49,10 @@ on:
         description: "Kaç saat geriye bakılsın (varsayılan 36)"
         required: false
         default: "36"
+      skip_provider:
+        description: "true ise sağlayıcı senkronu atlanır, yalnızca depodaki veri kullanılır"
+        required: false
+        default: "false"
       dry_run:
         description: "true ise hiçbir şey yazılmaz, yalnızca çıktı günlüğe basılır"
         required: false
@@ -50,8 +61,7 @@ on:
 permissions:
   contents: write
 
-# Üretim güncellemesiyle AYNI grup: iki iş akışı da depoya yazıyor ve aynı
-# anda çalışırlarsa biri diğerinin commit'ini bulamaz. Sıraya girsinler.
+# Üretim güncellemesiyle AYNI grup: iki iş akışı da depoya yazıyor.
 concurrency:
   group: futbolradar-production-update
   cancel-in-progress: false
@@ -61,6 +71,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+      APIFOOTBALL_API_BASE_URL: ${{ secrets.APIFOOTBALL_API_BASE_URL }}
+      APIFOOTBALL_LEAGUE_ID: ${{ secrets.APIFOOTBALL_LEAGUE_ID }}
+      APIFOOTBALL_SEASON: ${{ secrets.APIFOOTBALL_SEASON }}
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     steps:
@@ -74,11 +88,24 @@ jobs:
         with:
           node-version: 22
 
-      # KAPI 0: üretim mantığının kendi denetimi. Düşerse yazı üretilmez.
-      # Bozuk bir üreticiden çıkan metni yayımlamaktansa hiç yayımlamamak
-      # doğru; bu adım bilerek `continue-on-error` taşımıyor.
+      # KAPI 0: üretim mantığının kendi denetimi. Bozuk bir üreticiden çıkan
+      # metni yayımlamaktansa hiç yayımlamamak doğru.
       - name: Verify column generator
         run: node scripts/test-trabzonspor-post-match-column.mjs
+
+      # BİTİŞ DOĞRULAMASI SAĞLAYICIDAN. Skor, olay akışı, diziliş,
+      # istatistik ve oyuncu satırları bu adımda geliyor. Anahtar yoksa
+      # betik bunu açıkça söyleyip çıkar; zincir depodaki veriyle devam
+      # eder ve kapılar zaten eksik veriyi yakalar.
+      - name: Sync live fixtures from provider
+        if: inputs.skip_provider != 'true'
+        continue-on-error: true
+        run: node scripts/sync-live-fixtures.mjs --apply
+
+      # Oyuncu–maç zaman serisi: transfer performansı karşılaştırmasının
+      # tek kaynağı. Her bitmiş maçtan sonra biraz daha doluyor.
+      - name: Accumulate player match history
+        run: node scripts/harvest-player-match-history.mjs --apply
 
       - name: Detect finished Trabzonspor match
         id: detect
@@ -110,12 +137,12 @@ jobs:
           [ -n "${MATCH_ID}" ] && ARGS="${ARGS} --match=${MATCH_ID}"
           [ -n "${WINDOW}" ] && ARGS="${ARGS} --window=${WINDOW}"
           node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee column.log
-          # Sayfalar, ana sayfa vitrini, kose-yazilari listesi, sitemap ve
-          # İngilizce sürüm hep bu adımda basılıyor.
+          # Sayfalar, ana sayfa vitrini, liste, sitemap ve İngilizce sürüm.
           node scripts/generate-column-pages.mjs
-          # hreflang bağlantıları en-route-map.json'dan enjekte ediliyor;
-          # bu adım olmadan İngilizce sayfa Türkçesine bağlanmaz.
+          # İki dilin karşılıklı bağlantısı.
           node scripts/inject-hreflang.mjs
+          # Maç ve maç raporu sayfalarından yazıya köprü.
+          node scripts/inject-match-column-link.mjs
           node scripts/generate-search-index.mjs
 
       - name: Commit published column

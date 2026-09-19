@@ -38,8 +38,8 @@ const CLUB = "Trabzonspor";
 const FINISHED_STATUSES = new Set(["FINISHED", "FT", "AET", "PEN"]);
 
 /** Yazının yayımlanabilmesi için gereken kelime aralığı. */
-const MIN_WORDS = 1000;
-const MAX_WORDS = 1500;
+const MIN_WORDS = 1200;
+const MAX_WORDS = 1800;
 
 /**
  * YAYIN KAPISI: bu bölümler olmadan "maç analizi" denmez.
@@ -184,6 +184,24 @@ function pair(match, type) {
   const them = side === "home" ? values.away : values.home;
   if (!isNumber(num(us)) && !isNumber(num(them))) return null;
   return { us: num(us), them: num(them) };
+}
+
+
+/**
+ * İki ölçülmüş sayıdan yüzde türetir (isabetli/toplam).
+ *
+ * Her iki taraf da ölçülmemişse null döner — yarım bir oran, ölçülmemiş
+ * tarafı sıfır saymak demek olurdu.
+ */
+function derivedRate(numerator, denominator) {
+  if (!numerator || !denominator) return null;
+  const rate = (top, bottom) => (isNumber(top) && isNumber(bottom) && bottom > 0
+    ? Math.round((top / bottom) * 100)
+    : null);
+  const us = rate(numerator.us, denominator.us);
+  const them = rate(numerator.them, denominator.them);
+  if (us === null && them === null) return null;
+  return { us, them };
 }
 
 /** Olay akışından gol satırları. Kaçan penaltı gol sayılmaz. */
@@ -392,9 +410,19 @@ function buildModel(match, context = {}) {
       shots: pair(match, "Toplam şut"),
       shotsOn: pair(match, "İsabetli şut"),
       boxShots: pair(match, "Ceza sahası içinden şut"),
+      outsideShots: pair(match, "Ceza sahası dışından şut"),
+      blockedShots: pair(match, "Engellenen şut"),
       corners: pair(match, "Korner"),
       passes: pair(match, "Toplam pas"),
-      passAccuracy: pair(match, "Pas isabeti"),
+      // PAS İSABETİ ÇOĞU MAÇTA DOĞRUDAN GELMİYOR (havuzdaki 96 maçın
+      // yalnızca 24'ünde var) ama "Toplam pas" ve "İsabetli pas" 96'sında
+      // da duruyor. Oran bu ikisinden TÜRETİLİYOR: bu bir tahmin değil,
+      // sağlayıcının kendi iki sayısının bölümü. Doğrudan gelen değer
+      // varsa o kullanılır, türetme yalnızca boşluğu doldurur.
+      passAccuracy: pair(match, "Pas isabeti") || derivedRate(
+        pair(match, "İsabetli pas"),
+        pair(match, "Toplam pas")
+      ),
       saves: pair(match, "Kurtarış"),
       fouls: pair(match, "Faul"),
       offsides: pair(match, "Ofsayt"),
@@ -403,6 +431,9 @@ function buildModel(match, context = {}) {
       crosses: pair(match, "Toplam orta")
     },
     standing: context.standing || null,
+    // Rakip dosyası (transfer verimi, rotasyon, fikstür yükü) — bkz.
+    // services/opponentFocus.js. Yoksa bölüm hiç açılmaz.
+    opponentFocus: context.opponentFocus || null,
     nextMatch: context.nextMatch || null,
     links: context.links || {}
   };
@@ -439,6 +470,7 @@ function readiness(match) {
 
 module.exports = {
   CLUB,
+  derivedRate,
   FINISHED_STATUSES,
   MIN_WORDS,
   MAX_WORDS,

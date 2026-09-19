@@ -50,8 +50,9 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 
 const { curatedMatches } = require("../services/providers/mockProvider.js");
-const { selectMatch, isTrabzonspor, normalize } = require("../services/trabzonsporMatchColumn.js");
+const { selectMatch, isTrabzonspor, normalize, slugify } = require("../services/trabzonsporMatchColumn.js");
 const { buildColumnEntry } = require("../services/trabzonsporColumnBuild.js");
+const { buildOpponentFocus } = require("../services/opponentFocus.js");
 const { validateColumn } = require("../services/columnService.js");
 const { sendTelegramMessage, telegramConfig, escapeMarkdown } = require("../services/telegramNotifier.js");
 
@@ -60,6 +61,8 @@ const STANDINGS_PATH = path.join(root, "data", "league-standings.json");
 const REPORTS_PATH = path.join(root, "data", "post-match-reports.json");
 const SLUGS_PATH = path.join(root, "data", "player-url-slugs.json");
 const ROUTE_MAP_PATH = path.join(root, "data", "en-route-map.json");
+const HISTORY_PATH = path.join(root, "data", "player-match-history.json");
+const TRANSFERS_PATH = path.join(root, "data", "transfers.json");
 
 const GENERATOR = "scripts/generate-trabzonspor-post-match-column.mjs";
 
@@ -203,7 +206,21 @@ console.log(`[ts-column] maç: ${match.id} (${match.homeTeam} ${match.score && m
 const trPlayers = playerLinks();
 const enPlayers = englishPlayerLinks();
 
+/**
+ * Rakip yüzeyleri. Takım adından türetilen adresler DENETLENİR
+ * (`pageIfExists`); üretilmemiş bir sayfaya bağlantı vermek okuyucuyu 404'e
+ * göndermek olurdu. Teknik direktör sayfası bu depoda yok, o yüzden
+ * yazıda da bağlantısı verilmiyor.
+ */
+const opponentName = isTrabzonspor(match.homeTeam) ? match.awayTeam : match.homeTeam;
+const opponentSlug = slugify(opponentName);
+
 const links = {
+  opponentTeam: pageIfExists(`${opponentSlug}-maclari.html`),
+  opponentStandings: pageIfExists(`${opponentSlug}-puan-durumu.html`),
+  opponentTransfers: pageIfExists(`${opponentSlug}-transfer-radar.html`) || pageIfExists("transfer-radari.html"),
+  transfers: pageIfExists("transfer-radari.html"),
+  fixtures: pageIfExists("super-lig-fikstur.html"),
   report: reportPathFor(match.id),
   team: pageIfExists("trabzonspor-maclari.html"),
   standings: pageIfExists("trabzonspor-puan-durumu.html") || pageIfExists("super-lig-puan-durumu.html"),
@@ -212,6 +229,10 @@ const links = {
 };
 
 const linksEn = {
+  opponentTeam: pageIfExists(`en/team/${opponentSlug}.html`),
+  opponentStandings: pageIfExists("en/super-lig-standings.html"),
+  opponentTransfers: pageIfExists("en/transfer-radar.html"),
+  transfers: pageIfExists("en/transfer-radar.html"),
   report: englishCounterpart(links.report),
   team: pageIfExists("en/team/trabzonspor.html"),
   standings: pageIfExists("en/super-lig-standings.html") || pageIfExists("en/standings.html"),
@@ -219,8 +240,34 @@ const linksEn = {
   players: enPlayers
 };
 
+/**
+ * RAKİP DOSYASI. Transfer verimi, rotasyon ve fikstür yükü ölçümleri
+ * `services/opponentFocus.js`ten geliyor; oyuncu–maç zaman serisi
+ * `data/player-match-history.json`da birikiyor (bkz.
+ * scripts/harvest-player-match-history.mjs).
+ */
+const opponentFocus = buildOpponentFocus({
+  team: opponentName,
+  match,
+  pool,
+  history: readJson(HISTORY_PATH, { rows: [] }),
+  transfers: (() => {
+    const store = readJson(TRANSFERS_PATH, []);
+    return Array.isArray(store) ? store : Object.values(store);
+  })(),
+  kickoff: match.kickoff
+});
+
+if (opponentFocus) {
+  console.log(
+    `[ts-column] rakip dosyası: ${opponentFocus.team} · ${opponentFocus.signings.length} doğrulanmış transfer · ` +
+    `pencere karşılaştırması ${opponentFocus.evidence.windowsAvailable ? "VAR" : `YOK (en uzun seri ${opponentFocus.evidence.bestSeries} maç, gereken ${opponentFocus.evidence.required})`}`
+  );
+}
+
 const built = buildColumnEntry(match, {
   now: new Date().toISOString(),
+  opponentFocus,
   standing: standingFor(),
   nextMatch: nextMatchFor(pool, match.kickoff),
   links,

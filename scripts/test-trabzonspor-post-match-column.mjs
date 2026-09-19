@@ -25,6 +25,13 @@ const {
   SHARE_IMAGE_TITLE
 } = require("../services/trabzonsporColumnBuild.js");
 const { validateColumn } = require("../services/columnService.js");
+const {
+  compareWindows,
+  declineVerdict,
+  matchRowsFrom,
+  mergeHistory
+} = require("../services/playerMatchHistory.js");
+const { buildOpponentFocus, isCompetitive, signingsFor } = require("../services/opponentFocus.js");
 
 let failures = 0;
 function check(label, condition, detail) {
@@ -401,6 +408,119 @@ console.log("\n[11] Başlık maçın sinyalinden seçilir");
   check(
     "sinyalsiz maçta genel başlık",
     sig({ events: [], score: { home: 1, away: 0 } }) === "plain"
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 12. OYUNCU–MAÇ GEÇMİŞİ VE PENCERE KARŞILAŞTIRMASI
+ * ------------------------------------------------------------------ */
+console.log("\n[12] Oyuncu–maç geçmişi");
+{
+  const rows = matchRowsFrom(fullMatch());
+  check("bitmiş maçtan oyuncu satırı çıkar", rows.length > 0);
+  check("oynamamış oyuncu satır açmaz", rows.every((row) => row.minutes > 0));
+  check("ilk 11 bilgisi dizilişten okunur", rows.some((row) => row.started === true));
+  check(
+    "pas isabeti ORAN olarak saklanır",
+    // Sörloth: 31 pas, 81 isabetli "sayı" → oran 100'ü aşamaz.
+    rows.every((row) => row.passAccuracy === undefined || (row.passAccuracy >= 0 && row.passAccuracy <= 100)),
+    JSON.stringify(rows.filter((row) => row.passAccuracy > 100).map((row) => [row.name, row.passAccuracy]))
+  );
+
+  const merged = mergeHistory({ rows: [] }, rows);
+  check("aynı satır iki kez eklenmez", mergeHistory(merged, rows).added === 0);
+
+  const thin = compareWindows(rows.slice(0, 4), { size: 5, minimum: 10 });
+  check("örneklem yetmezse karşılaştırma yapılmaz", thin.sufficient === false);
+  check("yetersizlik sebebi sayıyla söylenir", /en az 10/.test(thin.reason || ""), thin.reason);
+
+  // Yapay ama ölçülmüş bir seri: ilk beş maç güçlü, son beş maç zayıf.
+  const timeline = [];
+  for (let index = 0; index < 10; index += 1) {
+    const strong = index < 5;
+    timeline.push({
+      date: `2026-0${index < 9 ? index + 1 : 9}-1${index}`,
+      minutes: strong ? 90 : 60,
+      goals: strong ? 1 : 0,
+      shots: strong ? 4 : 1,
+      shotsOnTarget: strong ? 2 : 0,
+      duelsWon: strong ? 8 : 3,
+      rating: strong ? 7.8 : 6.2
+    });
+  }
+  const comparison = compareWindows(timeline, { size: 5, minimum: 10 });
+  check("yeterli örneklemde karşılaştırma yapılır", comparison.sufficient === true);
+  check("ilk pencere ortalaması doğru", comparison.firstWindow.goals === 1);
+  check("son pencere ortalaması doğru", comparison.lastWindow.goals === 0);
+  const verdict = declineVerdict(comparison);
+  check("çoklu kalemde gerileme düşüş sayılır", verdict.verdict === "decline", JSON.stringify(verdict));
+  check("yetersiz örneklemde hüküm verilmez", declineVerdict(thin).verdict === "insufficient");
+}
+
+/* ------------------------------------------------------------------ *
+ * 13. RAKİP DOSYASI
+ * ------------------------------------------------------------------ */
+console.log("\n[13] Rakip dosyası ve teknik direktör tartışması");
+{
+  const transfers = [
+    { playerName: "Aleksey Batrakov", toTeam: "Galatasaray", date: "2026-08-20", type: "Bonservis", fromTeam: "Lokomotiv", status: "confirmed", season: "2026/27" },
+    { playerName: "Söylenti Oyuncu", toTeam: "Galatasaray", date: "2026-08-25", type: "Bonservis", fromTeam: "X", status: "rumour", season: "2026/27" }
+  ];
+  check("doğrulanmamış transfer yazıya girmez", signingsFor("Galatasaray", transfers).length === 1);
+  check("hazırlık maçı resmî sayılmaz", isCompetitive({ competitionId: "hazirlik-maci", league: "Hazırlık Maçı" }) === false);
+  check("lig maçı resmî sayılır", isCompetitive({ competitionId: "super-lig", league: "Süper Lig" }) === true);
+
+  const match = fullMatch();
+  const focus = buildOpponentFocus({
+    team: "Galatasaray",
+    match,
+    pool: [match],
+    history: { rows: [] },
+    transfers,
+    kickoff: match.kickoff
+  });
+  check("rakip dosyası kurulur", Boolean(focus) && focus.team === "Galatasaray");
+  check("teknik direktör dizilişten okunur", focus.manager === "Okan Buruk", String(focus.manager));
+  check("ölçüm yoksa pencere kapısı kapalı", focus.evidence.windowsAvailable === false);
+
+  const withFocus = buildColumnEntry(match, { ...CONTEXT, opponentFocus: focus });
+  const focusText = withFocus.entry.body.join("\n");
+  check("rakip dosyası bölümü yazılır", focusText.includes("## Rakip dosyası"));
+  check("transferler tek tek sayılır", focusText.includes("Aleksey Batrakov"));
+  check("doğrulanmamış transfer metinde geçmez", !focusText.includes("Söylenti Oyuncu"));
+  check("asıl tartışma sorusu sorulur", /transfer etmekte mi başarılı/.test(focusText));
+  check("teknik direktör soruları sorulur", /asıl sorular/i.test(focusText));
+
+  // EN ÖNEMLİ KURAL: ölçüm yokken düşüş İDDİA EDİLMEZ.
+  check(
+    "ölçüm yokken düşüş iddia edilmez",
+    /bu karşılaştırmayı yapacak ölçüm henüz elimizde yok/.test(focusText)
+  );
+  check(
+    "ölçüm yokken 'düşüş var' cümlesi kurulmaz",
+    !/performansı hızla düştü|belirgin bir düşüş var|düşüşte/i.test(focusText)
+  );
+  check(
+    "ölçüm yokken başlık düşüş iddia etmez",
+    !/İlk Günkü Etkiyi Kaybediyor/.test(withFocus.entry.title),
+    withFocus.entry.title
+  );
+  check(
+    "ölçüm yokken başlık rakip odaklı soruya döner",
+    withFocus.entry.title.includes("Okan Buruk"),
+    withFocus.entry.title
+  );
+  check("maç sayfası çağrısı üretilir", Boolean(withFocus.entry.promo && withFocus.entry.promo.tr));
+  check(
+    "çağrı rakibi adıyla anar",
+    withFocus.entry.promo.tr.includes("Galatasaray"),
+    withFocus.entry.promo.tr
+  );
+  check("İngilizce rakip bölümü ayrı yazılır", withFocus.entry.en.body.join("\n").includes("## The opposition file"));
+  check(
+    "İngilizce rakip bölümünde Türkçe sızıntı yok",
+    (findTurkish(withFocus.entry.en.body.join("\n")) || []).length === 0,
+    JSON.stringify(findTurkish(withFocus.entry.en.body.join("\n")) || []).slice(0, 160)
   );
 }
 
