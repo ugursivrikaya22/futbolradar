@@ -42,6 +42,7 @@ import {
   absencesSectionHtml,
   analysisSectionHtml,
   clock,
+  commentsSectionHtml,
   escapeHtml,
   eventsSectionHtml,
   formSectionHtml,
@@ -57,6 +58,7 @@ import {
   matchPollSectionHtml,
   normalizeEvents,
   radarPulseSectionHtml,
+  ratingsSectionHtml,
   relatedLinksHtml,
   scorersSectionHtml,
   shortDate,
@@ -936,12 +938,16 @@ function pageHtml(entry, locale, options) {
       statsSectionHtml(detail.statistics, ctx),
       matchPollSectionHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
+      // Puanlama YALNIZCA bitmiş maçta açılır ve kadro kaydı yoksa hiç
+      // basılmaz; kararı bölümün kendisi veriyor (matchSeoPage.mjs).
+      ratingsSectionHtml(detail, ctx),
       summarySectionHtml(detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),
       h2hSectionHtml(h2h, ctx),
-      whenSectionHtml(entry, ctx)
+      whenSectionHtml(entry, ctx),
+      commentsSectionHtml(ctx)
     ];
   } else if (state === "live") {
     sections = [
@@ -957,7 +963,8 @@ function pageHtml(entry, locale, options) {
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),
-      whenSectionHtml(entry, ctx)
+      whenSectionHtml(entry, ctx),
+      commentsSectionHtml(ctx)
     ];
   } else {
     sections = [
@@ -977,7 +984,8 @@ function pageHtml(entry, locale, options) {
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       radarPulseSectionHtml(ctx),
       eventsSectionHtml([], ctx),
-      statsSectionHtml([], ctx)
+      statsSectionHtml([], ctx),
+      commentsSectionHtml(ctx)
     ];
   }
 

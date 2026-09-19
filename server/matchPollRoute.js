@@ -50,12 +50,23 @@ const SOURCE = "match-poll";
 const VOTER_COOKIE_MAX_AGE = 400 * 24 * 60 * 60;
 
 /**
- * "Kim kazanır" sorusunun kapanışı: ilk vuruştan 2 saat 45 dakika sonra.
- * Uzatma ve penaltılar dâhil en uzun maçı kapsar. Bu kapı SUNUCUDA duruyor
- * çünkü sonucu bilerek oy vermek anketin anlamını bozar — istemciye
- * bırakılsaydı sayfayı düzenleyen herkes bitmiş maça oy verebilirdi.
+ * "Kim kazanır" sorusunun kapanışı: İLK VURUŞ.
+ *
+ * Önceden kapanış maçın bitişindeydi (ilk vuruş + 2s45dk). O kural, 60.
+ * dakikada 3-0 önde olan takıma oy vermeye izin veriyordu: bu bir TAHMİN
+ * değil, sonucu okuyup işaretlemektir ve sayımı anlamsızlaştırır. Anket
+ * "ne olacağını düşünüyorsun" diye soruyor; o soru ancak hiçbir şey
+ * olmadan önce sorulabilir.
+ *
+ * Kapı SUNUCUDA duruyor — istemciye bırakılsaydı sayfayı düzenleyen
+ * herkes başlamış maça oy verebilirdi. Sayım kapandıktan sonra da
+ * GÖRÜNÜR kalıyor; kapanan şey oy vermek, sonucu göstermek değil.
+ *
+ * Sıfır değil de sabit bir pay bırakılmadı: ilk vuruş saati sağlayıcıdan
+ * geliyor ve maç o saatte başlıyor sayılıyor; "birkaç dakika daha" demek,
+ * başlamış maça oy kabul etmenin başka bir adı olurdu.
  */
-const WINNER_CLOSES_AFTER_MS = 165 * 60 * 1000;
+const WINNER_CLOSES_AFTER_MS = 0;
 
 /** Sicilde kayıtlı maçlar slug ile aranır; sicil örnek başına bir kez okunur. */
 let slugIndexCache = null;
@@ -142,7 +153,7 @@ function pollId(entry, questionId) {
 function buildQuestions(entry, locale, now) {
   const lang = locale === "en" ? "en" : "tr";
   const kickoffMs = Date.parse(entry.kickoff || "");
-  const winnerClosed = Number.isFinite(kickoffMs) && now > kickoffMs + WINNER_CLOSES_AFTER_MS;
+  const winnerClosed = Number.isFinite(kickoffMs) && now >= kickoffMs + WINNER_CLOSES_AFTER_MS;
 
   const questions = [{
     id: "winner",

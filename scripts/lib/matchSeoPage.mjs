@@ -252,6 +252,10 @@ export const STR = {
     radarPulsePending: "Radar Nabzı maç başladığında burada açılır.",
     radarPulseStale: "Canlı istatistik verisi geçici olarak güncellenemiyor.",
     fanPollTitle: "Taraftar Anketi",
+    commentsTitle: "Yorumlar",
+    commentsNote: "Yorumlar takma adla yazılır ve doğrulanmış kimlik taşımaz; küfür ve bağlantı kabul edilmez.",
+    ratingsTitle: "Oyuncu puanları",
+    ratingsNote: "Okuyucu puanıdır (1–10) ve sağlayıcının maç derecesinden ayrıdır.",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -393,6 +397,10 @@ export const STR = {
     radarPulsePending: "Live Match Pulse opens here once the match kicks off.",
     radarPulseStale: "Live statistics cannot be updated at the moment.",
     fanPollTitle: "Fan Poll",
+    commentsTitle: "Comments",
+    commentsNote: "Comments are posted under a nickname and carry no verified identity; profanity and links are not accepted.",
+    ratingsTitle: "Player ratings",
+    ratingsNote: "A reader rating (1–10), separate from the provider match score.",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -1264,6 +1272,86 @@ export function matchPollSectionHtml(ctx) {
     `<h2 id="fan-poll-title" class="msp-section-title">${escapeHtml(text.fanPollTitle)}</h2>` +
     `<div class="fan-poll-body" data-match-poll-body></div>` +
     `<p class="fan-poll-error" data-fan-poll-error hidden>${escapeHtml(locale === "en" ? "Votes cannot be recorded right now." : "Oy şu anda kaydedilemiyor.")}</p>` +
+    `</section>`;
+}
+
+/**
+ * YORUM BÖLÜMÜNÜN KABUĞU.
+ *
+ * Sunucu yalnızca BAŞLIK ve BOŞ GÖVDE basar; yorumlar, form ve "bu okuyucu
+ * neyi beğenmiş" bilgisi `radar-fan.js` ile `/api/match-comments`ten gelir.
+ * Yorumlar derleme anında basılamaz: her gönderimde değişir ve yayına giren
+ * statik bir liste o andan itibaren eksiktir.
+ *
+ * Kabuk `hidden` doğar. Depo yapılandırılmamışsa istemci bölümü hiç açmaz —
+ * yazı kabul edemeyen bir formu göstermek, çalışmayan bir düğme sunmaktır.
+ *
+ * SEO NOTU: bu bölüm bilerek arama motoru içeriği DEĞİLDİR. Okuyucu
+ * yorumları sayfanın doğrulanmış maç verisi değil; onları sunucuda basıp
+ * indekslenebilir içerik gibi göstermek, sitenin kendi veri iddiasıyla
+ * okuyucu metnini karıştırmak olurdu.
+ */
+export function commentsSectionHtml(ctx) {
+  const { locale, pollSlug } = ctx;
+  const text = STR[locale];
+  if (!pollSlug) return "";
+  const anchor = locale === "en" ? "comments" : "yorumlar";
+  return `<section class="msp-section fan-comments-section" id="${anchor}" data-match-comments ` +
+    `data-match-comments-slug="${escapeHtml(pollSlug)}" data-match-comments-locale="${locale}" hidden ` +
+    `aria-labelledby="fan-comments-title">` +
+    `<h2 id="fan-comments-title" class="msp-section-title">${escapeHtml(text.commentsTitle)}</h2>` +
+    `<p class="muted-copy">${escapeHtml(text.commentsNote)}</p>` +
+    `<div class="fan-comments-body" data-match-comments-body></div>` +
+    `</section>`;
+}
+
+/**
+ * OYUNCU PUANLAMA BÖLÜMÜNÜN KABUĞU.
+ *
+ * PUANLANABİLİR OYUNCU LİSTESİ SUNUCUDAN GELİR. Ekrana bir futbolcu adı
+ * bastığımız anda "bu oyuncu bu maçta oynadı" demiş oluyoruz; bu yüzden
+ * liste istemcide üretilmiyor, maçın KENDİ kadro kaydından çıkıyor.
+ * Kadro yoksa bölüm hiç basılmıyor — `services/motmPoll.js` ile aynı kural.
+ *
+ * Maç bitmeden puanlama açılmıyor: oynanmamış bir maçta oyuncuya puan
+ * vermek, hakkında yargı verilecek bir performans olmadan yargı vermektir.
+ */
+export function ratingsSectionHtml(detail, ctx) {
+  const { locale, pollSlug, state } = ctx;
+  const text = STR[locale];
+  if (!pollSlug || state !== "post") return "";
+
+  const lineups = Array.isArray(detail && detail.lineups) ? detail.lineups : [];
+  const roster = [];
+  const seen = new Set();
+  for (const lineup of lineups) {
+    for (const player of Array.isArray(lineup && lineup.players) ? lineup.players : []) {
+      const name = typeof player === "string" ? player : (player && player.name) || "";
+      const key = normalizeText(name);
+      if (!name || seen.has(key)) continue;
+      seen.add(key);
+      roster.push(name);
+    }
+  }
+  // Oyuna GİRENLER de puanlanabilir; kulübede kalan oyuncu listeye girmez
+  // (services/motmPoll.js ile aynı ayrım: kadroda olmak, oynamak değildir).
+  for (const sub of Array.isArray(detail && detail.substitutions) ? detail.substitutions : []) {
+    const name = (sub && sub.in) || "";
+    const key = normalizeText(name);
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    roster.push(name);
+  }
+  if (!roster.length) return "";
+
+  const anchor = locale === "en" ? "player-ratings" : "oyuncu-puanlari";
+  return `<section class="msp-section fan-ratings-section" id="${anchor}" data-match-ratings ` +
+    `data-match-ratings-slug="${escapeHtml(pollSlug)}" data-match-ratings-locale="${locale}" ` +
+    `data-rating-roster="${escapeHtml(roster.join("|"))}" hidden ` +
+    `aria-labelledby="fan-ratings-title">` +
+    `<h2 id="fan-ratings-title" class="msp-section-title">${escapeHtml(text.ratingsTitle)}</h2>` +
+    `<p class="muted-copy">${escapeHtml(text.ratingsNote)}</p>` +
+    `<div class="fan-ratings-body" data-match-ratings-body></div>` +
     `</section>`;
 }
 

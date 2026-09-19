@@ -39,7 +39,29 @@
       followOff: "Takibi bırak",
       followDenied: "Bildirim izni verilmedi. Tarayıcı ayarlarından açabilirsin.",
       followError: "Takip şu anda açılamadı.",
-      followTypes: "Maç başladı, gol, kırmızı kart, devre arası ve maç sonucu bildirimi alırsın."
+      followTypes: "Maç başladı, gol, kırmızı kart, devre arası ve maç sonucu bildirimi alırsın.",
+      commentsTitle: "Yorumlar",
+      commentsNote: "Takma adla yazılır; doğrulanmış kimlik değildir. Bağlantı paylaşılamaz.",
+      commentName: "Takma adın",
+      commentBody: "Yorumun",
+      commentSend: "Gönder",
+      commentReply: "Cevapla",
+      commentReplySend: "Cevabı gönder",
+      commentCancel: "Vazgeç",
+      commentLike: "Beğen",
+      commentReport: "Bildir",
+      commentReported: "Bildirildi",
+      commentRemoved: "Bu yorum bildirimler üzerine kaldırıldı.",
+      commentEmpty: "Henüz yorum yok — ilk yorumu sen yaz.",
+      commentMine: "senin yorumun",
+      commentError: "Yorum şu anda gönderilemiyor.",
+      ratingsTitle: "Oyuncu puanları",
+      ratingsNote: "Okuyucu puanıdır; sağlayıcı derecesinden ayrıdır. Bir oyuncuya bir kez puan verirsin, fikrini değiştirebilirsin.",
+      ratingsAverage: "Ortalama",
+      ratingsVotes: "oy",
+      ratingsMine: "senin puanın",
+      ratingsEmpty: "Henüz puan verilmedi.",
+      ratingsError: "Puan şu anda kaydedilemiyor."
     },
     en: {
       pollTitle: "Fan Poll",
@@ -60,7 +82,29 @@
       followOff: "Unfollow",
       followDenied: "Notification permission was not granted. You can enable it in browser settings.",
       followError: "Follow could not be enabled right now.",
-      followTypes: "You will get kick-off, goal, red card, half time and full time alerts."
+      followTypes: "You will get kick-off, goal, red card, half time and full time alerts.",
+      commentsTitle: "Comments",
+      commentsNote: "Posted under a nickname; this is not a verified identity. Links are not allowed.",
+      commentName: "Your nickname",
+      commentBody: "Your comment",
+      commentSend: "Post",
+      commentReply: "Reply",
+      commentReplySend: "Post reply",
+      commentCancel: "Cancel",
+      commentLike: "Like",
+      commentReport: "Report",
+      commentReported: "Reported",
+      commentRemoved: "This comment was removed after reports.",
+      commentEmpty: "No comments yet — be the first.",
+      commentMine: "your comment",
+      commentError: "The comment cannot be posted right now.",
+      ratingsTitle: "Player ratings",
+      ratingsNote: "A reader rating, separate from the provider score. One rating per player; you can change your mind.",
+      ratingsAverage: "Average",
+      ratingsVotes: "votes",
+      ratingsMine: "your rating",
+      ratingsEmpty: "No ratings yet.",
+      ratingsError: "The rating cannot be saved right now."
     }
   };
 
@@ -515,17 +559,323 @@
     paint(readLocal(storeKey) === "1");
   }
 
+  /* ================================================================== */
+  /* YORUMLAR                                                           */
+  /* ================================================================== */
+
+  /**
+   * Zaman damgasını okunur hâle getirir.
+   *
+   * Saat dilimi Europe/Istanbul: sunucu UTC yazıyor, okuyucu Türkiye
+   * saatini bekliyor. Tarayıcının kendi diliminden değil, SABİT dilimden
+   * üretiliyor ki yurt dışındaki okuyucu da maçın saatiyle aynı ekseni
+   * görsün.
+   */
+  function whenText(value, locale) {
+    if (!value) return "";
+    var date = new Date(value);
+    if (isNaN(date.getTime())) return "";
+    try {
+      return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
+        timeZone: "Europe/Istanbul", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit"
+      }).format(date);
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function commentHtml(item, locale, depth) {
+    var text = t(locale);
+    if (item.hidden) {
+      return '<li class="fan-comment is-removed"' + ' data-comment-id="' + esc(item.id) + '">' +
+        '<p class="fan-comment-removed muted-copy">' + esc(text.commentRemoved) + "</p></li>";
+    }
+
+    var replies = (item.replies || []).map(function (reply) {
+      return commentHtml(reply, locale, 1);
+    }).join("");
+
+    return '<li class="fan-comment' + (item.mine ? " is-mine" : "") + '" data-comment-id="' + esc(item.id) + '">' +
+      '<div class="fan-comment-head">' +
+        "<b>" + esc(item.authorName) + "</b>" +
+        (item.mine ? '<span class="fan-comment-mine">' + esc(text.commentMine) + "</span>" : "") +
+        '<time datetime="' + esc(item.createdAt || "") + '">' + esc(whenText(item.createdAt, locale)) + "</time>" +
+      "</div>" +
+      '<p class="fan-comment-body">' + esc(item.body).replace(/\n/g, "<br>") + "</p>" +
+      '<div class="fan-comment-actions">' +
+        '<button type="button" class="fan-comment-action' + (item.likedByMe ? " is-on" : "") +
+          '" data-comment-like="' + esc(item.id) + '" aria-pressed="' + (item.likedByMe ? "true" : "false") + '">' +
+          "♥ " + esc(text.commentLike) + (item.likes ? ' <i>' + esc(item.likes) + "</i>" : "") + "</button>" +
+        // Cevaba cevap yok: tek seviye kuralı sunucuda da uygulanıyor
+        // (services/matchSocial.js), düğme de derinlikte hiç basılmıyor.
+        (depth ? "" : '<button type="button" class="fan-comment-action" data-comment-reply="' + esc(item.id) + '">' +
+          esc(text.commentReply) + "</button>") +
+        '<button type="button" class="fan-comment-action is-report" data-comment-report="' + esc(item.id) + '">' +
+          esc(text.commentReport) + "</button>" +
+      "</div>" +
+      (replies ? '<ul class="fan-comment-replies">' + replies + "</ul>" : "") +
+      "</li>";
+  }
+
+  function commentsHtml(payload, locale) {
+    var text = t(locale);
+    var items = (payload && payload.comments) || [];
+    var list = items.length
+      ? '<ul class="fan-comment-list">' + items.map(function (item) { return commentHtml(item, locale, 0); }).join("") + "</ul>"
+      : '<p class="fan-comment-empty muted-copy">' + esc(text.commentEmpty) + "</p>";
+    return list;
+  }
+
+  /**
+   * Yorum formu.
+   *
+   * Takma ad `localStorage`da hatırlanıyor — her yorumda yeniden yazmak
+   * okuyucuyu yorar. Hatırlanan ad bir KİMLİK DEĞİL: sunucu tarafında
+   * tekrarı engelleyen şey çerezdeki seçmen anahtarı.
+   */
+  function commentFormHtml(locale, parentId) {
+    var text = t(locale);
+    var saved = "";
+    try { saved = window.localStorage.getItem("futbolradar-yorum-ad") || ""; } catch (error) { saved = ""; }
+    return '<form class="fan-comment-form" data-comment-form' + (parentId ? ' data-comment-parent="' + esc(parentId) + '"' : "") + '>' +
+      '<label class="fan-comment-field"><span>' + esc(text.commentName) + "</span>" +
+        '<input type="text" name="name" maxlength="24" required value="' + esc(saved) + '" autocomplete="nickname"></label>' +
+      '<label class="fan-comment-field"><span>' + esc(text.commentBody) + "</span>" +
+        '<textarea name="body" maxlength="600" rows="3" required></textarea></label>' +
+      '<div class="fan-comment-form-actions">' +
+        '<button type="submit" class="fan-comment-submit">' + esc(parentId ? text.commentReplySend : text.commentSend) + "</button>" +
+        (parentId ? '<button type="button" class="fan-comment-action" data-comment-cancel>' + esc(text.commentCancel) + "</button>" : "") +
+      "</div>" +
+      '<p class="fan-comment-error" data-comment-error hidden></p>' +
+      "</form>";
+  }
+
+  function bootComments() {
+    var section = document.querySelector("[data-match-comments]");
+    if (!section || !window.fetch) return;
+    var body = section.querySelector("[data-match-comments-body]");
+    var slug = section.getAttribute("data-match-comments-slug") || "";
+    var locale = section.getAttribute("data-match-comments-locale") === "en" ? "en" : "tr";
+    if (!slug || !body) return;
+    var text = t(locale);
+
+    function paint(payload) {
+      // DEPO KAPALIYSA BÖLÜM HİÇ AÇILMAZ — anket katmanıyla aynı kural:
+      // yazı kabul edemeyen bir formu göstermek, çalışmayan bir düğme
+      // sunmaktır.
+      if (!payload || payload.storage === "none") {
+        section.setAttribute("hidden", "");
+        return;
+      }
+      body.innerHTML = commentFormHtml(locale, null) + commentsHtml(payload, locale);
+      section.removeAttribute("hidden");
+    }
+
+    function showError(form, msg) {
+      var note = form ? form.querySelector("[data-comment-error]") : null;
+      if (!note) return;
+      note.textContent = msg || text.commentError;
+      note.removeAttribute("hidden");
+    }
+
+    function send(url, payload, form) {
+      return fetch(url, {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+        .then(function (response) {
+          return response.json().then(function (json) { return { status: response.status, json: json }; });
+        })
+        .then(function (result) {
+          if (!result.json || result.json.ok === false) {
+            // SUNUCUNUN SEBEBİ GÖSTERİLİR. "Bir şeyler ters gitti" demek,
+            // okuyucunun neyi düzelteceğini bilmemesi demek.
+            showError(form, (result.json && result.json.error && result.json.error.message) || text.commentError);
+            return;
+          }
+          paint(result.json.data);
+        })
+        .catch(function () { showError(form, text.commentError); });
+    }
+
+    function load() {
+      return fetch("/api/match-comments?slug=" + encodeURIComponent(slug) + "&locale=" + locale, { cache: "no-store" })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) { paint(payload && payload.data); })
+        .catch(function () { section.setAttribute("hidden", ""); });
+    }
+
+    // Dinleyici KAPSAYICIYA bağlanır: gövde her gönderimden sonra yeniden
+    // basıldığı için tek tek düğmelere bağlanan dinleyici düşerdi.
+    section.addEventListener("submit", function (event) {
+      var form = event.target && event.target.closest ? event.target.closest("[data-comment-form]") : null;
+      if (!form) return;
+      event.preventDefault();
+      var name = (form.querySelector('[name="name"]') || {}).value || "";
+      var content = (form.querySelector('[name="body"]') || {}).value || "";
+      var parent = form.getAttribute("data-comment-parent");
+      try { window.localStorage.setItem("futbolradar-yorum-ad", name.trim()); } catch (error) { /* localStorage kapalıysa ad hatırlanmaz */ }
+      send("/api/match-comments", {
+        slug: slug, locale: locale, name: name, body: content,
+        parentId: parent ? Number(parent) : null
+      }, form);
+      track("fan_comment", { match_slug: slug, locale: locale, reply: parent ? 1 : 0 });
+    });
+
+    section.addEventListener("click", function (event) {
+      var target = event.target && event.target.closest ? event.target : null;
+      if (!target || !target.closest) return;
+
+      var like = target.closest("[data-comment-like]");
+      if (like) {
+        send("/api/match-comments", { slug: slug, locale: locale, like: Number(like.getAttribute("data-comment-like")) }, null);
+        return;
+      }
+
+      var report = target.closest("[data-comment-report]");
+      if (report) {
+        report.disabled = true;
+        report.textContent = text.commentReported;
+        send("/api/match-comments", { slug: slug, locale: locale, report: Number(report.getAttribute("data-comment-report")) }, null);
+        return;
+      }
+
+      var reply = target.closest("[data-comment-reply]");
+      if (reply) {
+        var item = reply.closest("[data-comment-id]");
+        if (!item || item.querySelector("[data-comment-parent]")) return;
+        var holder = document.createElement("div");
+        holder.innerHTML = commentFormHtml(locale, reply.getAttribute("data-comment-reply"));
+        item.appendChild(holder.firstChild);
+        return;
+      }
+
+      var cancel = target.closest("[data-comment-cancel]");
+      if (cancel) {
+        var form = cancel.closest("[data-comment-form]");
+        if (form) form.remove();
+      }
+    });
+
+    load();
+  }
+
+  /* ================================================================== */
+  /* OYUNCU PUANLARI                                                    */
+  /* ================================================================== */
+
+  function ratingRowHtml(row, locale) {
+    var text = t(locale);
+    var options = "";
+    for (var value = 1; value <= 10; value += 1) {
+      options += '<button type="button" class="fan-rating-chip' + (row.mine === value ? " is-on" : "") +
+        '" data-rating-player="' + esc(row.playerName) + '" data-rating-value="' + value + '"' +
+        ' aria-pressed="' + (row.mine === value ? "true" : "false") + '">' + value + "</button>";
+    }
+    return '<li class="fan-rating-row">' +
+      '<div class="fan-rating-head"><b>' + esc(row.playerName) + "</b>" +
+        (row.average !== null && row.average !== undefined
+          ? '<span class="fan-rating-average">' + esc(row.average) + '<small>' + esc(row.votes) + " " + esc(text.ratingsVotes) + "</small></span>"
+          : "") +
+        (row.mine ? '<span class="fan-rating-mine">' + esc(text.ratingsMine) + ": " + esc(row.mine) + "</span>" : "") +
+      "</div>" +
+      '<div class="fan-rating-scale" role="group" aria-label="' + esc(row.playerName) + '">' + options + "</div>" +
+      "</li>";
+  }
+
+  /**
+   * Puanlanabilir oyuncular SAYFADAN okunur.
+   *
+   * Liste sunucunun bastığı ilk 11'den geliyor (data-rating-roster);
+   * istemcide oyuncu adı UYDURULMUYOR. Kadro yoksa bölüm hiç açılmıyor:
+   * puanlanacak oyuncu listesi bir VERİ İDDİASIDIR — ekrana bir ad
+   * bastığımız anda "bu oyuncu bu maçta oynadı" demiş oluruz.
+   */
+  function bootRatings() {
+    var section = document.querySelector("[data-match-ratings]");
+    if (!section || !window.fetch) return;
+    var body = section.querySelector("[data-match-ratings-body]");
+    var slug = section.getAttribute("data-match-ratings-slug") || "";
+    var locale = section.getAttribute("data-match-ratings-locale") === "en" ? "en" : "tr";
+    var roster = (section.getAttribute("data-rating-roster") || "").split("|").map(function (name) {
+      return name.trim();
+    }).filter(Boolean);
+    if (!slug || !body || !roster.length) return;
+    var text = t(locale);
+
+    function paint(payload) {
+      if (!payload || payload.storage === "none") {
+        section.setAttribute("hidden", "");
+        return;
+      }
+      var byName = {};
+      (payload.ratings || []).forEach(function (row) { byName[row.playerName] = row; });
+      var rows = roster.map(function (name) {
+        var found = byName[name];
+        return found || { playerName: name, average: null, votes: 0, mine: null };
+      });
+      // Puanlananlar üstte; puanlanmayanlar kadro sırasında kalır.
+      rows.sort(function (left, right) { return (right.average || 0) - (left.average || 0); });
+      body.innerHTML = '<ul class="fan-rating-list">' + rows.map(function (row) {
+        return ratingRowHtml(row, locale);
+      }).join("") + "</ul>" +
+      '<p class="fan-rating-error" data-rating-error hidden>' + esc(text.ratingsError) + "</p>";
+      section.removeAttribute("hidden");
+    }
+
+    function load() {
+      return fetch("/api/match-ratings?slug=" + encodeURIComponent(slug) + "&locale=" + locale, { cache: "no-store" })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) { paint(payload && payload.data); })
+        .catch(function () { section.setAttribute("hidden", ""); });
+    }
+
+    section.addEventListener("click", function (event) {
+      var chip = event.target && event.target.closest ? event.target.closest("[data-rating-value]") : null;
+      if (!chip) return;
+      var player = chip.getAttribute("data-rating-player");
+      var value = Number(chip.getAttribute("data-rating-value"));
+      fetch("/api/match-ratings", {
+        method: "POST",
+        cache: "no-store",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: slug, locale: locale, player: player, rating: value })
+      })
+        .then(function (response) { return response.json(); })
+        .then(function (payload) {
+          if (!payload || payload.ok === false) throw new Error("rating-failed");
+          paint(payload.data);
+          track("fan_player_rating", { match_slug: slug, locale: locale, rating: value });
+        })
+        .catch(function () {
+          var note = section.querySelector("[data-rating-error]");
+          if (note) note.removeAttribute("hidden");
+        });
+    });
+
+    load();
+  }
+
   function boot() {
     try { bootPoll(); } catch (error) { /* anket çökerse sayfa çalışmaya devam eder */ }
     try { bootShare(); } catch (error) { /* paylaşım çökerse sayfa çalışmaya devam eder */ }
     try { bootFollow(); } catch (error) { /* takip çökerse sayfa çalışmaya devam eder */ }
+    try { bootComments(); } catch (error) { /* yorumlar çökerse sayfa çalışmaya devam eder */ }
+    try { bootRatings(); } catch (error) { /* puanlama çökerse sayfa çalışmaya devam eder */ }
   }
 
   return {
     FOLLOW_STORE_PREFIX: FOLLOW_STORE_PREFIX,
     TEXT: TEXT,
     boot: boot,
+    bootComments: bootComments,
     bootPoll: bootPoll,
+    bootRatings: bootRatings,
+    commentsHtml: commentsHtml,
+    commentFormHtml: commentFormHtml,
+    ratingRowHtml: ratingRowHtml,
     esc: esc,
     pollHtml: pollHtml,
     questionHtml: questionHtml,

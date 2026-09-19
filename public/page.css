@@ -23519,6 +23519,187 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .fan-poll-option { text-align: center; }
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MAÇ YORUMLARI VE OYUNCU PUANLARI
+   ──────────────────────────────────────────────────────────────────────────
+   Anket bloğuyla AYNI jetonlar ve aynı kart dili; ayrı bir görsel dil
+   kurulmuyor. İki bölüm de depo kapalıysa hiç açılmadığı için burada
+   "kapalı depo" durumu yoktur; boş liste durumu ise `.fan-comment-empty`.
+
+   Cevaplar TEK SEVİYE: girinti yalnızca bir kademe tanımlı, çünkü kural
+   sunucuda da tek seviye (services/matchSocial.js). İkinci bir kademe
+   tanımlamak, olmayan bir derinliği varmış gibi göstermek olurdu.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.fan-comments-section[hidden],
+.fan-comments-section [hidden],
+.fan-ratings-section[hidden],
+.fan-ratings-section [hidden] { display: none !important; }
+
+.fan-comments-body { display: grid; gap: var(--sp-4); margin-top: var(--sp-3); }
+
+.fan-comment-form {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.fan-comment-field { display: grid; gap: var(--sp-1); font-size: var(--fs-sm); font-weight: 600; }
+.fan-comment-field input,
+.fan-comment-field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-weight: 500;
+}
+.fan-comment-field textarea { resize: vertical; }
+.fan-comment-field input:focus-visible,
+.fan-comment-field textarea:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+
+.fan-comment-form-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+.fan-comment-submit {
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-5);
+  border: 1px solid var(--green);
+  border-radius: 10px;
+  background: var(--green);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fan-comment-submit:hover { background: var(--green-deep); border-color: var(--green-deep); }
+.fan-comment-submit:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+
+.fan-comment-list,
+.fan-comment-replies { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+
+.fan-comment {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.fan-comment.is-mine { border-color: var(--green); }
+/* Kaldırılan yorumun GÖVDESİ zaten sunucudan gelmiyor; kutu yalnızca
+   konuşmanın akışında bir boşluk kalmasın diye duruyor. */
+.fan-comment.is-removed { background: var(--surface-sunken); border-style: dashed; }
+.fan-comment-removed { margin: 0; font-size: var(--fs-sm); }
+
+.fan-comment-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+.fan-comment-head b { font-weight: 700; }
+.fan-comment-head time { color: var(--muted); font-size: var(--fs-xs); }
+.fan-comment-mine {
+  padding: 1px var(--sp-2);
+  border-radius: 999px;
+  background: var(--surface-tint);
+  color: var(--green);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.fan-comment-body { margin: var(--sp-2) 0 0; font-size: var(--fs-sm); line-height: 1.55; overflow-wrap: anywhere; }
+
+.fan-comment-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-top: var(--sp-2); }
+.fan-comment-action {
+  min-height: 36px;
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  cursor: pointer;
+}
+.fan-comment-action:hover:not(:disabled) { border-color: var(--green); color: var(--text); }
+.fan-comment-action:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-comment-action:disabled { opacity: 0.6; cursor: default; }
+.fan-comment-action.is-on { border-color: var(--green); color: var(--green); }
+.fan-comment-action i { font-style: normal; font-variant-numeric: tabular-nums; }
+.fan-comment-action.is-report { margin-left: auto; }
+
+.fan-comment-replies { margin-top: var(--sp-3); padding-left: var(--sp-3); border-left: 2px solid var(--line); }
+
+.fan-comment-empty { margin: 0; font-size: var(--fs-sm); }
+.fan-comment-error {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+/* ---------- Oyuncu puanları ---------- */
+
+.fan-ratings-body { margin-top: var(--sp-3); }
+.fan-rating-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--sp-3); }
+.fan-rating-row {
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.fan-rating-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+}
+.fan-rating-average {
+  margin-left: auto;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--green);
+}
+.fan-rating-average small { margin-left: var(--sp-1); color: var(--muted); font-weight: 500; font-size: var(--fs-xs); }
+.fan-rating-mine { font-size: var(--fs-xs); color: var(--muted); }
+
+/* 1-10 ölçeği dar ekranda da tek bakışta okunur: sabit sütun yerine
+   sarmalanan jetonlar, 10 rakamı yan yana sıkıştırmaktan iyidir. */
+.fan-rating-scale { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin-top: var(--sp-2); }
+.fan-rating-chip {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 var(--sp-2);
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.fan-rating-chip:hover { border-color: var(--green); }
+.fan-rating-chip:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-rating-chip.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+
+.fan-rating-error {
+  margin: var(--sp-3) 0 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-soft);
+}
+
+@media (min-width: 560px) {
+  .fan-rating-scale { gap: var(--sp-2); }
+}
+
 /* ---------- Sosyal paylaşım satırı ---------- */
 /* Radar Nabzı bloğunun içinde yaşar: paylaşılacak sayılar zaten orada,
    ayrı bir kutu aynı bilgiyi ikinci kez göstermek olurdu. */
