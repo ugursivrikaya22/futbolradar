@@ -3,8 +3,14 @@
  * İNGİLİZCE HABER SAYFALARI — `en/news/<slug>.html`.
  *
  * Türkçe `generate-news-pages.mjs`nin karşılığı. Aynı iskelet, ayrı
- * kaynak: bu üretici YALNIZCA `data/news-en.json` okur. Türkçe dosyayı
- * hiç açmaz, böylece bir Türkçe kayıt buraya yapısal olarak giremez.
+ * kaynak: bu üretici YALNIZCA `data/news-en.json` okur ve yalnızca onun
+ * sayfalarını YAZAR. Türkçe dosyayı içerik için hiç açmaz, böylece bir
+ * Türkçe kayıt buraya yapısal olarak giremez.
+ *
+ * Ama `en/news/` DİZİNİ ARTIK ORTAK: Türkçe masadan çevrilen haberlerin
+ * İngilizce sayfalarını `generate-news-pages.mjs` aynı dizine yazıyor.
+ * Bu yüzden budama ve site haritası, öteki kökenin adreslerini de bilmek
+ * zorunda — bilmediği sürece her koşuda onları öksüz sanıp siliyordu.
  *
  * Sayfa `lang="en"` ile yayımlanır ve hiçbir `lang="tr"` düğüm taşımaz.
  */
@@ -17,16 +23,34 @@ import { ROBOTS_INDEX } from "./lib/robots.mjs";
 const require = createRequire(import.meta.url);
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const {
-  ENGLISH_NEWS_HUB_LIMIT,
   isPublishableEnglish,
   rankEnglishNews,
   withUniqueEnglishMetadata
 } = require("../services/englishNews.js");
 const { statusLabel, BREAKING_LABEL } = require("../services/editorialStatus.js");
+const { publishableNews } = require("../services/newsFeed.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
 const newsPath = path.join(root, "data", "news-en.json");
+
+/**
+ * ÖTEKİ KÖKENİN ADRESLERİ.
+ *
+ * Çevrilen haberlerin İngilizce sayfaları da `en/news/` altında duruyor.
+ * Burada içerikleri değil YALNIZCA slug'ları okunuyor: bu üretici onların
+ * sayfasını yazmaz, sadece "bunlar öksüz değil" demek için tanır.
+ */
+function translatedArticles() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
+    return publishableNews(parsed, { locale: "en" })
+      .map((article) => ({ slug: String(article.slug || ""), publishedAt: article.publishedAt }))
+      .filter((article) => article.slug);
+  } catch {
+    return [];
+  }
+}
 
 function readNews() {
   try {
@@ -221,11 +245,15 @@ function writeArticle(article) {
  * ARTIK ÜRETİLMEYEN SAYFA DİSKTE KALMAMALI.
  *
  * Kaynak akıştan düşen bir haberin sayfası yerinde kalırsa site haritasında
- * olmayan ama canlıda duran öksüz sayfalar birikir. Yalnızca BU üreticinin
- * ürettiği dizin temizlenir.
+ * olmayan ama canlıda duran öksüz sayfalar birikir.
+ *
+ * KORUNAN KÜME İKİ KÖKENİN BİRLEŞİMİ. Dizin ortak olduğu için yalnızca
+ * kendi slug'larını koruyan bir budama, her koşuda çevrilen haberlerin
+ * sayfalarını siliyordu — kart onlara bağlanmaya devam ettiği için
+ * sonuç kırık bağlantıydı.
  */
 function pruneRemoved(slugs) {
-  const keep = new Set(slugs.map((slug) => `${slug}.html`));
+  const keep = new Set([...slugs, ...translatedArticles().map((article) => article.slug)].map((slug) => `${slug}.html`));
   let removed = 0;
   for (const targetRoot of [root, path.join(root, "public")]) {
     const dir = path.join(targetRoot, "en", "news");
@@ -240,17 +268,19 @@ function pruneRemoved(slugs) {
 }
 
 /**
- * SİTE HARİTASI YALNIZCA BAĞLANAN SAYFALARI DUYURUR.
+ * SİTE HARİTASI: BAĞLANAN HABERLER + ÇEVRİLEN SAYFALAR.
  *
- * `en/news.html` sıralamanın ilk `ENGLISH_NEWS_HUB_LIMIT` haberini
- * bağlıyor. Geri kalan sayfalar üretilmeye devam eder (eski bağlantılar
- * ve paylaşımlar kırılmasın diye) ama site haritasına girmez: bağlamadığın
- * bir sayfayı arama motoruna duyurmak öksüz sayfa üretir ve üretim kapısı
- * bunu haklı olarak düşürür (scripts/test-seo-integrity.mjs).
+ * `en/news.html` haberlerin TAMAMINI bağlıyor, site haritası da tümünü
+ * duyurur: iki küme aynı olduğu sürece "sitemap'te var ama hiçbir yerden
+ * bağlanmıyor" durumu doğmaz (scripts/test-seo-integrity.mjs).
+ *
+ * Çevrilen haberler (öteki köken) ayrı bir kümedir ve kendi listelenme
+ * yolundan gelir; ikisi aynı URL uzayında olduğu için liste yine tek yerde
+ * kurulur.
  */
 function updateSitemap(allArticles) {
-  const articles = allArticles.slice(0, ENGLISH_NEWS_HUB_LIMIT);
-  const entries = articles.map((article) => `  <url>
+  const all = [...allArticles, ...translatedArticles()];
+  const entries = all.map((article) => `  <url>
     <loc>${articleUrl(article)}</loc>
     <lastmod>${String(article.publishedAt || "").slice(0, 10) || "2026-09-01"}</lastmod>
     <changefreq>daily</changefreq>

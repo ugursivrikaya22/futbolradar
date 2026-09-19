@@ -93,6 +93,7 @@ const {
   trSlugFor
 } = require("../services/matchSeoPages.js");
 const { canonicalStatus, istanbulDay, kickoffMs } = require("../services/matchStatus.js");
+const { venueLabel } = require("../services/displayLabels.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { teamHubHref } = require("../services/teamHubLinks.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
@@ -930,7 +931,7 @@ function schemaFor(entry, state, locale, ctx, urls) {
       ...(eventStatus ? { eventStatus } : {}),
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Football",
-      ...(entry.venue ? { location: { "@type": "Place", name: entry.venue } } : {}),
+      ...(entry.venue ? { location: { "@type": "Place", name: venueLabel(entry.venue, locale) } } : {}),
       homeTeam: team(entry.homeTeam, ctx.homeAbsolute),
       awayTeam: team(entry.awayTeam, ctx.awayAbsolute),
       competitor: [team(entry.homeTeam, ctx.homeAbsolute), team(entry.awayTeam, ctx.awayAbsolute)],
@@ -1069,7 +1070,13 @@ function pageHtml(entry, locale, options) {
       statsSectionHtml(detail.statistics, ctx),
       matchPollSectionHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
-      summarySectionHtml(detail.summary, reportHref, ctx),
+      // MAÇ ÖZETİ EDİTORYAL TÜRKÇE METİNDİR.
+      //
+      // Kusursuz İngilizce bir maç sayfasının ortasında tek Türkçe paragraf
+      // olarak duruyordu. `reportHref` zaten `locale === "tr"` ile korunuyor;
+      // özet de aynı korumayı alıyor: İngilizce karşılığı varsa basılır,
+      // yoksa bölüm hiç çizilmez (olay akışı ve istatistik zaten İngilizce).
+      summarySectionHtml(locale === "en" ? (detail.summaryEn || "") : detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),

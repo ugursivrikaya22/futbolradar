@@ -31,6 +31,7 @@ const require = createRequire(import.meta.url);
 const root = process.cwd();
 const seo = require("../services/matchSeoPages.js");
 const { dynamicRoutePairs } = require("../services/i18n.js");
+const { venueLabel } = require("../services/displayLabels.js");
 
 let passed = 0;
 function check(name, fn) {
@@ -215,7 +216,15 @@ check("G/H/I) Googlebot'un aldığı SSR HTML: canonical kendini gösterir, tek 
       assert.equal(event.homeTeam.name, entry.homeTeam);
       assert.equal(event.awayTeam.name, entry.awayTeam);
       assert.equal(event.competitor.length, 2);
-      if (event.location) assert.equal(event.location.name, entry.venue, `${relative}: location uydurulmamalı`);
+      // Şema, sayfanın GÖRÜNEN metniyle aynı olmak zorunda; ayrışırlarsa bu
+      // Google'ın "yapılandırılmış veri sayfayla eşleşmiyor" ihlalidir. Stat adı
+      // veriden gelir ve uydurulmaz — `venueLabel` girdisinin saf bir işlevidir,
+      // başka bir stat üretemez; yalnızca tür sözcüğünü sayfanın diline çevirir
+      // ("Chobani Stadyumu" → İngilizce sayfada "Chobani Stadium"), görünen
+      // metnin de geçtiği kuralın aynısı.
+      if (event.location) {
+        assert.equal(event.location.name, venueLabel(entry.venue, locale), `${relative}: location uydurulmamalı`);
+      }
       assert.ok(graph.some((node) => node["@type"] === "BreadcrumbList"), `${relative}: BreadcrumbList`);
       assert.ok(html.includes(`hreflang="tr-TR" href="${seo.trPageUrl(entry.slug)}"`) && html.includes(`hreflang="en" href="${seo.enPageUrl(entry.enSlug)}"`), `${relative}: hreflang çifti`);
       // Skor SSR'da yazılıysa şemada UYDURMA canlı durum yok, hâl HTML'den okunur.

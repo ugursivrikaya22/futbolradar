@@ -12,7 +12,13 @@ concurrency:
 jobs:
   production:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # The build regenerates the whole site (match pages, both news feeds,
+    # every English page) and then runs verify-production with three
+    # browser gates. On a 2-vCPU runner that grew past the old 45-minute
+    # ceiling and the job started being cancelled mid-build — the gates
+    # never reported, so the ceiling verified nothing. Nothing is skipped
+    # here; the same checks are simply allowed to finish.
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
