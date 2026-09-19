@@ -105,13 +105,12 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+    <div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track" style="--live-ticker-duration:15s" data-live-scores-track data-live-rendered-at="2026-09-19T05:53:01.497Z">
-            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1606657&amp;date=2026-09-19" data-live-until="2026-09-19T07:30:00.000Z" aria-label="J2 League | Consadole Sapporo 0 - 0 Oita Trinita | 45&#039;"><span class="live-scores-ticker__league">J2 League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Consadole Sapporo</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Oita Trinita</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>45&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639707&amp;date=2026-09-19" data-live-until="2026-09-19T07:45:00.000Z" aria-label="Western Australia State League 1 | Rockingham City 0 - 1 Balga | 36&#039;"><span class="live-scores-ticker__league">Western Australia State League 1</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Rockingham City</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Balga</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>36&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639332&amp;date=2026-09-19" data-live-until="2026-09-19T08:00:00.000Z" aria-label="Victoria NPL | Oakleigh Cannons 0 - 0 Avondale | 15&#039;"><span class="live-scores-ticker__league">Victoria NPL</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Oakleigh Cannons</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Avondale</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>15&#039;</span></a></div>
-            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1606657&amp;date=2026-09-19" tabindex="-1" data-live-until="2026-09-19T07:30:00.000Z" aria-label="J2 League | Consadole Sapporo 0 - 0 Oita Trinita | 45&#039;"><span class="live-scores-ticker__league">J2 League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Consadole Sapporo</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Oita Trinita</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>45&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639707&amp;date=2026-09-19" tabindex="-1" data-live-until="2026-09-19T07:45:00.000Z" aria-label="Western Australia State League 1 | Rockingham City 0 - 1 Balga | 36&#039;"><span class="live-scores-ticker__league">Western Australia State League 1</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Rockingham City</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Balga</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>36&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639332&amp;date=2026-09-19" tabindex="-1" data-live-until="2026-09-19T08:00:00.000Z" aria-label="Victoria NPL | Oakleigh Cannons 0 - 0 Avondale | 15&#039;"><span class="live-scores-ticker__league">Victoria NPL</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Oakleigh Cannons</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Avondale</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>15&#039;</span></a></div>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
           </div>
         </div>
       </div>
@@ -134,57 +133,99 @@
             </div>
           </div>
           <div class="hero-featured" id="featured-radar-match" aria-label="Today's match centre summary">
-            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-09-19T05:52:59.071Z" data-featured-interval="10000" data-featured-count="3" aria-roledescription="carousel" aria-label="Featured matches">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="consadole-sapporo-oita-trinita-2026-09-19" role="group" aria-roledescription="slide" aria-label="1 / 3"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-19T08:00:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">JL</i>J2 League</span><span>Today · Sapporo Dome</span></div>
+            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-09-19T09:26:51.847Z" data-featured-interval="10000" data-featured-count="6" aria-roledescription="carousel" aria-label="Featured matches">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="adana-01-fk-yeni-orduspor-2026-09-19" role="group" aria-roledescription="slide" aria-label="1 / 6"><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-09-19T15:30:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">T2</i>TFF 2. Lig</span><span>Today · Venue to be confirmed</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">CS</span>
-        <strong>Consadole Sapporo</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">A0</span>
+        <strong>Adana 01 FK</strong>
       </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 45&#039;</span></div>
+        <div class="featured-fixture-score"><b>15:30</b><span>Kick-off</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">OT</span>
-        <strong>Oita Trinita</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">YO</span>
+        <strong>Yeni Orduspor</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=consadole-sapporo-oita-trinita-2026-09-19&amp;date=2026-09-19">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="rockingham-city-balga-2026-09-19" role="group" aria-roledescription="slide" aria-label="2 / 3" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-19T08:15:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">WA</i>Western Australia State League 1</span><span>Today · Venue to be confirmed</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=adana-01-fk-yeni-orduspor-2026-09-19&amp;date=2026-09-19">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="arnavutkoy-belediyespor-corluspor-1947-2026-09-19" role="group" aria-roledescription="slide" aria-label="2 / 6" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-09-19T16:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">T2</i>TFF 2. Lig</span><span>Today · Venue to be confirmed</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">RC</span>
-        <strong>Rockingham City</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">AB</span>
+        <strong>Arnavutköy Belediyespor</strong>
       </div>
-        <div class="featured-fixture-score"><b>0 - 1</b><span>Live 36&#039;</span></div>
+        <div class="featured-fixture-score"><b>16:00</b><span>Kick-off</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">B</span>
-        <strong>Balga</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">Ç1</span>
+        <strong>Çorluspor 1947</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=rockingham-city-balga-2026-09-19&amp;date=2026-09-19">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="oakleigh-cannons-avondale-2026-09-19" role="group" aria-roledescription="slide" aria-label="3 / 3" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-19T08:30:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">VN</i>Victoria NPL</span><span>Today · Jack Edwards Reserve</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=arnavutkoy-belediyespor-corluspor-1947-2026-09-19&amp;date=2026-09-19">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="corum-fk-alanyaspor-2026-09-19" role="group" aria-roledescription="slide" aria-label="3 / 6" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-09-19T17:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span>Today · Corum Stadyumu</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">OC</span>
-        <strong>Oakleigh Cannons</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">ÇF</span>
+        <strong>Çorum FK</strong>
       </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 15&#039;</span></div>
+        <div class="featured-fixture-score"><b>17:00</b><span>Kick-off</span></div>
         <div class="featured-fixture-team">
         <span class="fixture-row-fallback" aria-hidden="true">A</span>
-        <strong>Avondale</strong>
+        <strong>Alanyaspor</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=oakleigh-cannons-avondale-2026-09-19&amp;date=2026-09-19">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/corum-fk-alanyaspor-september-19-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="3" data-featured-match="keciorengucu-sivasspor-2026-09-19" role="group" aria-roledescription="slide" aria-label="4 / 6" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-09-19T17:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">T1</i>Trendyol 1. Lig</span><span>Today · Aktepe Stadium</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">K</span>
+        <strong>Keçiörengücü</strong>
+      </div>
+        <div class="featured-fixture-score"><b>17:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">S</span>
+        <strong>Sivasspor</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/keciorengucu-sivasspor-september-19-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="4" data-featured-match="kocaelispor-gaziantep-fk-2026-09-19" role="group" aria-roledescription="slide" aria-label="5 / 6" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-09-19T17:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span>Today · Turka Arac Muayene Kocaeli Stadyumu</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">K</span>
+        <strong>Kocaelispor</strong>
+      </div>
+        <div class="featured-fixture-score"><b>17:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">GF</span>
+        <strong>Gaziantep FK</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/kocaelispor-gaziantep-fk-september-19-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="5" data-featured-match="sariyer-boluspor-2026-09-19" role="group" aria-roledescription="slide" aria-label="6 / 6" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-09-19T17:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">T1</i>Trendyol 1. Lig</span><span>Today · Yusuf Ziya Onis</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">S</span>
+        <strong>Sarıyer</strong>
+      </div>
+        <div class="featured-fixture-score"><b>17:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">B</span>
+        <strong>Boluspor</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/sariyer-boluspor-september-19-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
     </div></div></div>
       <div class="featured-carousel-nav">
       <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Previous match"><span aria-hidden="true">&lsaquo;</span></button>
-      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Consadole Sapporo - Oita Trinita"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Rockingham City - Balga"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Oakleigh Cannons - Avondale"><span aria-hidden="true"></span></button></div>
+      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Adana 01 FK - Yeni Orduspor"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Arnavutköy Belediyespor - Çorluspor 1947"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Çorum FK - Alanyaspor"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="3" role="tab" aria-selected="false" aria-label="Keçiörengücü - Sivasspor"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="4" role="tab" aria-selected="false" aria-label="Kocaelispor - Gaziantep FK"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="5" role="tab" aria-selected="false" aria-label="Sarıyer - Boluspor"><span aria-hidden="true"></span></button></div>
       <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Next match"><span aria-hidden="true">&rsaquo;</span></button>
       <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
     </div>
-    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat is-live" href="./live-football-scores.html"><span>Live</span><b class="live-number">3</b></a><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>69</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>4</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>4</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>91</b></a></div>
+    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>69</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>4</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>4</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>91</b></a></div>
           </div>
         </section>
       <section class="container section home-poll" id="tahmin-anketi" aria-labelledby="home-poll-title" data-home-poll data-home-poll-source="/api/home-poll" data-home-poll-locale="en" data-home-poll-id="super-lig-2026-2027-sampiyon" data-home-poll-path="/en/poll/super-lig-champion-2026-27" role="region" aria-label="Homepage prediction poll">
@@ -312,10 +353,10 @@
         </section>
       <section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Today&#039;s fixtures</span><h2 id="today-title">Matches and live scores</h2><p>Matches in play come first, followed by kick-offs still to come and finished games.</p></div><a class="section-link" href="./todays-matches.html">View All</a></div>
-          <div class="superlig-strip" aria-label="Today's Süper Lig matches"><span class="superlig-strip-kicker">Süper Lig Today</span><div class="matches-grid superlig-today-grid" data-live-rendered-at="2026-09-19T05:53:00.743Z"><article class="fixture-card" data-card="fixture">
+          <div class="superlig-strip" aria-label="Today's Süper Lig matches"><span class="superlig-strip-kicker">Süper Lig Today</span><div class="matches-grid superlig-today-grid" data-live-rendered-at="2026-09-19T09:26:53.472Z"><article class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Trabzonspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">G</span><span class="fixture-row-name">Galatasaray</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.beinsports.com.tr/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: beIN Sports</span></div>
     
     <a class="fixture-card-action" href="../en/match/trabzonspor-galatasaray-september-19-2026">Open match details</a>
   </article><article class="fixture-card" data-card="fixture">
@@ -439,7 +480,7 @@
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">19:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AR</span><span class="fixture-row-name">AS Roma</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">I</span><span class="fixture-row-name">Inter</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/as-roma-inter-september-19-2026">Open match details</a>
   </article>
@@ -460,28 +501,28 @@
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">21:45</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">V</span><span class="fixture-row-name">Venezia</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">L</span><span class="fixture-row-name">Lazio</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/venezia-lazio-september-19-2026">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">L</i>LaLiga</span><span class="fixture-card-state ">22:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">S</span><span class="fixture-row-name">Sevilla</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Barcelona</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/sevilla-barcelona-september-19-2026">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">L</i>LaLiga</span><span class="fixture-card-state ">15:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">O</span><span class="fixture-row-name">Osasuna</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RV</span><span class="fixture-row-name">Rayo Vallecano</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/osasuna-rayo-vallecano-september-19-2026">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SA</i>Serie A</span><span class="fixture-card-state ">16:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Bologna</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Torino</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/bologna-torino-september-19-2026">Open match details</a>
   </article>
@@ -502,7 +543,7 @@
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">B</i>Bundesliga</span><span class="fixture-card-state ">16:30</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EF</span><span class="fixture-row-name">Eintracht Frankfurt</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SF</span><span class="fixture-row-name">SC Freiburg</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/eintracht-frankfurt-sc-freiburg-september-19-2026">Open match details</a>
   </article>
@@ -516,7 +557,7 @@
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">B</i>Bundesliga</span><span class="fixture-card-state ">16:30</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">WB</span><span class="fixture-row-name">Werder Bremen</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">FA</span><span class="fixture-row-name">FC Augsburg</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/werder-bremen-fc-augsburg-september-19-2026">Open match details</a>
   </article>
@@ -537,7 +578,7 @@
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">L</i>LaLiga</span><span class="fixture-card-state ">19:30</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CV</span><span class="fixture-row-name">Celta Vigo</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RS</span><span class="fixture-row-name">Racing Santander</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.ssportplus.com/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>TV: S Sport</span></div>
     
     <a class="fixture-card-action" href="../en/match/celta-vigo-racing-santander-september-19-2026">Open match details</a>
   </article>
@@ -582,27 +623,6 @@
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=sporting-cp-arouca-2026-09-19&amp;date=2026-09-19">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">VN</i>Victoria NPL</span><span class="fixture-card-state is-live">Live 15&#039;</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">OC</span><span class="fixture-row-name">Oakleigh Cannons</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Avondale</span><span class="fixture-row-score">0</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=oakleigh-cannons-avondale-2026-09-19&amp;date=2026-09-19">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">WA</i>Western Australia State League 1</span><span class="fixture-card-state is-live">Live 36&#039;</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RC</span><span class="fixture-row-name">Rockingham City</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Balga</span><span class="fixture-row-score">1</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=rockingham-city-balga-2026-09-19&amp;date=2026-09-19">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">JL</i>J2 League</span><span class="fixture-card-state is-live">Live 45&#039;</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CS</span><span class="fixture-row-name">Consadole Sapporo</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">OT</span><span class="fixture-row-name">Oita Trinita</span><span class="fixture-row-score">0</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=consadole-sapporo-oita-trinita-2026-09-19&amp;date=2026-09-19">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">C</i>Championship</span><span class="fixture-card-state ">14:30</span></div>
@@ -806,6 +826,27 @@
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=mirassol-botafogo-2026-09-19&amp;date=2026-09-19">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">VN</i>Victoria NPL</span><span class="fixture-card-state ">Live</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">OC</span><span class="fixture-row-name">Oakleigh Cannons</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Avondale</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=oakleigh-cannons-avondale-2026-09-19&amp;date=2026-09-19">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">WA</i>Western Australia State League 1</span><span class="fixture-card-state ">Live</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RC</span><span class="fixture-row-name">Rockingham City</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Balga</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=rockingham-city-balga-2026-09-19&amp;date=2026-09-19">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">JL</i>J2 League</span><span class="fixture-card-state ">Live</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CS</span><span class="fixture-row-name">Consadole Sapporo</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">OT</span><span class="fixture-row-name">Oita Trinita</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=consadole-sapporo-oita-trinita-2026-09-19&amp;date=2026-09-19">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">AP</i>Argentina Primera División</span><span class="fixture-card-state is-final">FT</span></div>
@@ -1034,7 +1075,7 @@
         </section>
       <section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Verified football agenda</span><h2 id="news-title">Match, fixture and transfer flow</h2><p>Short updates selected from official club and competition statements.</p></div><a class="section-link" href="./news.html">All updates</a></div>
-          <div class="news-grid"><a class="news-card" data-card="news" data-news="monaco-monaco-lens-13b903ca" href="../haber/monaco-monaco-lens-13b903ca" hreflang="tr"><div class="news-card-meta"><span class="mega-badge mega-badge--radar" lang="tr">Avrupa Futbolu</span><time datetime="2026-09-18T22:04:45.000Z">19 September 2026</time></div><div><span class="card-kicker">Monaco</span><h3 lang="tr">Monaco&#039;da Monaco Lens&#039;e ilişkin açıklama iddiası</h3><p lang="tr">Sporx&#039;in haberine göre Monaco çevresinde Monaco Lens&#039;e dair bir açıklama aktarıldı.</p></div><div class="news-card-footer"><span>FutbolRadar</span><span class="detail-link">Read the story (in Turkish)</span></div></a><a class="news-card" data-card="news" data-news="kasimpasa-ilhan-palut-74eacafe" href="../haber/kasimpasa-ilhan-palut-74eacafe" hreflang="tr"><div class="news-card-meta"><span class="mega-badge mega-badge--radar" lang="tr">Süper Lig</span><time datetime="2026-09-18T20:27:00.000Z">18 September 2026</time></div><div><span class="card-kicker">Kasımpaşa</span><h3 lang="tr">Kasımpaşa&#039;da İlhan Palut&#039;a ilişkin açıklama iddiası</h3><p lang="tr">Sporx&#039;in haberine göre Kasımpaşa çevresinde İlhan Palut&#039;a dair bir açıklama aktarıldı.</p></div><div class="news-card-footer"><span>FutbolRadar</span><span class="detail-link">Read the story (in Turkish)</span></div></a><a class="news-card" data-card="news" data-news="kasimpasa-emre-belozoglu-091c9156" href="../haber/kasimpasa-emre-belozoglu-091c9156" hreflang="tr"><div class="news-card-meta"><span class="mega-badge mega-badge--radar" lang="tr">Süper Lig</span><time datetime="2026-09-18T20:22:00.000Z">18 September 2026</time></div><div><span class="card-kicker">Kasımpaşa</span><h3 lang="tr">Kasımpaşa&#039;da Emre Belözoğlu&#039;ya ilişkin açıklama iddiası (18 Eylül)</h3><p lang="tr">Sporx&#039;in haberine göre Kasımpaşa çevresinde Emre Belözoğlu&#039;ya dair bir açıklama aktarıldı.</p></div><div class="news-card-footer"><span>FutbolRadar</span><span class="detail-link">Read the story (in Turkish)</span></div></a></div>
+          <div class="news-grid"><a class="news-card" data-card="news" data-news="galatasaray-okan-buruk-e280d8ef" href="../haber/galatasaray-okan-buruk-e280d8ef" hreflang="tr"><div class="news-card-meta"><span class="mega-badge mega-badge--radar" lang="tr">Galatasaray</span><time datetime="2026-09-19T09:00:57.000Z">19 September 2026</time></div><div><span class="card-kicker">Galatasaray</span><h3 lang="tr">Galatasaray&#039;da Okan Buruk&#039;a ilişkin açıklama iddiası (19 Eylül, 12:00)</h3><p lang="tr">Sporx&#039;in haberine göre Galatasaray çevresinde Okan Buruk&#039;a dair bir açıklama aktarıldı.</p></div><div class="news-card-footer"><span>FutbolRadar</span><span class="detail-link">Read the story (in Turkish)</span></div></a><a class="news-card" data-card="news" data-news="galatasaray-trabzon-4d529558" href="../haber/galatasaray-trabzon-4d529558" hreflang="tr"><div class="news-card-meta"><span class="mega-badge mega-badge--radar" lang="tr">Galatasaray</span><time datetime="2026-09-19T08:12:01.000Z">19 September 2026</time></div><div><span class="card-kicker">Galatasaray</span><h3 lang="tr">Galatasaray&#039;da Trabzon&#039;a ilişkin açıklama iddiası</h3><p lang="tr">Sporx&#039;in haberine göre Galatasaray çevresinde Trabzon&#039;a dair bir açıklama aktarıldı.</p></div><div class="news-card-footer"><span>FutbolRadar</span><span class="detail-link">Read the story (in Turkish)</span></div></a><a class="news-card" data-card="news" data-news="galatasaray-okan-buruk-856a5a5c" href="../haber/galatasaray-okan-buruk-856a5a5c" hreflang="tr"><div class="news-card-meta"><span class="mega-badge mega-badge--radar" lang="tr">Galatasaray</span><time datetime="2026-09-19T07:58:12.000Z">19 September 2026</time></div><div><span class="card-kicker">Galatasaray</span><h3 lang="tr">Galatasaray&#039;da Okan Buruk&#039;a ilişkin açıklama iddiası (19 Eylül)</h3><p lang="tr">Sporx&#039;in haberine göre Galatasaray çevresinde Okan Buruk&#039;a dair bir açıklama aktarıldı.</p></div><div class="news-card-footer"><span>FutbolRadar</span><span class="detail-link">Read the story (in Turkish)</span></div></a></div>
         </section>
       <section class="container section section-archive" id="arsiv-girisi" aria-labelledby="archive-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Season archive</span><h2 id="archive-title">Past matches, squads and managerial spells</h2><p>Every season&#039;s recorded matches, team records, archived squads and sourced managerial history.</p></div><a class="section-link" href="../arsiv.html">Open the archive</a></div>
