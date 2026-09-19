@@ -12,6 +12,7 @@ import {
   transferWatchShell,
   superLigTodayStripHtml,
   officialLineupAlertHtml,
+  officialLineupFlagLabel,
   isLineupAlertStale
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
@@ -559,6 +560,13 @@ function staticFixtureCard(match, meta) {
   const homeScore = finalScore ? Number(String(finalScore).split("-")[0]) : null;
   const awayScore = finalScore ? Number(String(finalScore).split("-")[1]) : null;
 
+  // RESMÎ İLK 11 ETİKETİ — kaynaklı `data/official-lineup-alerts.json`
+  // kaydı varsa kartın üstüne tek satır düşer. Kadro açıklanmamışken
+  // hiçbir kartta etiket olmaz: "her kartta duran rozet hiçbir maçı öne
+  // çıkarmaz" kuralı (bkz. app.js coverageStatusChipHtml notu) burada da
+  // geçerli.
+  const flagLabel = officialLineupFlagLabel(lineupAlertRecords(), match.id, "tr");
+
   const homeForm = staticFormPercent(match.homeTeam);
   const awayForm = staticFormPercent(match.awayTeam);
   const formHtml = homeForm === null && awayForm === null
@@ -577,6 +585,7 @@ function staticFixtureCard(match, meta) {
     homeScore,
     awayScore,
     formHtml,
+    flagLabel,
     // Bağlantı kuralı istemciyle AYNI (services/matchProgram.js). Eskiden her
     // kart `./canli-skor.html`e gidiyordu: on iki kart, tek hedef ve maç
     // başına hiçbir tarama yolu yok. JavaScript yüklendiğinde bağlantı zaten
@@ -1024,8 +1033,13 @@ function resultsLiveSection() {
  *      sonuç henüz doğrulanmamışsa yedek sinyal. Eşiğin kendisi ve gerekçesi
  *      scripts/lib/matchCards.mjs'de, İngilizce üreticiyle ORTAK.
  */
+/** Ham uyarı kayıtları — hem ana sayfa şeridi hem maç kartı etiketi okur. */
+function lineupAlertRecords() {
+  return require("../data/official-lineup-alerts.json").records || [];
+}
+
 function officialLineupAlerts() {
-  const alerts = require("../data/official-lineup-alerts.json").records || [];
+  const alerts = lineupAlertRecords();
   const finishedIds = new Set(
     curatedMatches().filter(isVerifiedFinalMatch).map((match) => String(match.id || ""))
   );

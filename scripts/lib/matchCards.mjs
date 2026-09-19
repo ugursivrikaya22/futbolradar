@@ -71,6 +71,32 @@ export function isLineupAlertStale(alert, now = Date.now()) {
  * (numara/mevki bilinmiyorsa uydurulmaz), kaynak adı ve bağlantısı
  * ZORUNLU — kaynağı gösterilemeyen bir kart basılmaz.
  */
+/**
+ * Bir maça ait YAYIMLANABİLİR resmî kadro uyarısını bulur (maç kartı
+ * etiketi için). `officialLineupAlertHtml` ile aynı eşik: ad listesi ve
+ * kaynak bağlantısı olmayan kayıt hiç sayılmaz, bayat kayıt düşer.
+ */
+export function officialLineupAlertsForMatch(alerts, matchId, now = Date.now()) {
+  if (!matchId) return [];
+  return (Array.isArray(alerts) ? alerts : []).filter((alert) =>
+    alert
+    && alert.matchId === matchId
+    && Array.isArray(alert.startingXI)
+    && alert.startingXI.length
+    && alert.sourceUrl
+    && !isLineupAlertStale(alert, now));
+}
+
+/** Kart etiketi metni — "<Takım> İlk 11 Açıklandı" / "<Team> Lineup Confirmed". */
+export function officialLineupFlagLabel(alerts, matchId, locale, now = Date.now()) {
+  const matched = officialLineupAlertsForMatch(alerts, matchId, now);
+  if (!matched.length) return "";
+  const loc = normalizeLocale(locale);
+  const suffix = t("lineup.card.announced", loc);
+  if (matched.length > 1) return `${t("lineup.card.bothTeams", loc)} ${suffix}`;
+  return `${matched[0].team} ${suffix}`;
+}
+
 export function officialLineupAlertHtml(alert, locale) {
   if (!alert || !Array.isArray(alert.startingXI) || !alert.startingXI.length || !alert.sourceUrl) return "";
   const loc = normalizeLocale(locale);
@@ -210,6 +236,10 @@ export function broadcastLineHtml(label) {
  *                   iç-link düğmeleri (ör. "Analiz — Puan Durumu — Takım
  *                   Formu"); yalnızca çağıran bir şey verirse basılır —
  *                   varsayılan davranış (mevcut tüm sayfalar) değişmez.
+ *   flagLabel       kartın üstüne basılan tek satırlık vurgu etiketi
+ *                   (ör. "Galatasaray İlk 11 Açıklandı"); yalnızca
+ *                   DOĞRULANMIŞ bir olay varken çağıran tarafından
+ *                   verilir, bileşen kendiliğinden üretmez
  *   locale
  */
 export function fixtureCard(options) {
@@ -217,6 +247,7 @@ export function fixtureCard(options) {
   const leagueLabel = options.league || t("card.leagueFallback", locale);
   return `<article class="fixture-card${options.live ? " is-live" : ""}" data-card="fixture"${options.id ? ` data-match="${escapeHtml(options.id)}"` : ""}>
     <div class="fixture-card-top"><span class="fixture-card-league">${leagueMarkHtml(leagueLabel)}${escapeHtml(leagueLabel)}</span><span class="fixture-card-state ${options.stateClass || ""}">${escapeHtml(options.stateLabel || "")}</span></div>
+    ${options.flagLabel ? `<div class="fixture-card-flag" data-card-flag="official-lineup">${escapeHtml(options.flagLabel)}</div>` : ""}
     <div class="fixture-card-rows">${fixtureRow(options.homeTeam, options.homeScore, options.awayScore)}${fixtureRow(options.awayTeam, options.awayScore, options.homeScore)}</div>
     ${broadcastLineHtml(options.broadcast)}
     ${options.formHtml ? `<div class="fixture-card-meta">${options.formHtml}</div>` : ""}

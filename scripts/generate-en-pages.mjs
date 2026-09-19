@@ -31,6 +31,7 @@ import {
   transferWatchShell,
   superLigTodayStripHtml,
   officialLineupAlertHtml,
+  officialLineupFlagLabel,
   isLineupAlertStale
 } from "./lib/matchCards.mjs";
 import { transferTypeEn } from "./lib/enTicker.mjs";
@@ -389,6 +390,9 @@ function fixtureCard(match) {
     homeScore: hasScore ? Number(match.score.home) : null,
     awayScore: hasScore ? Number(match.score.away) : null,
     formHtml: "",
+    // Türkçe tarafla AYNI kaynaktan (data/official-lineup-alerts.json);
+    // etiket metni yalnızca dile göre değişir, eşik değil.
+    flagLabel: officialLineupFlagLabel(require("../data/official-lineup-alerts.json").records || [], match.id, LOCALE),
     actionHref: enMatchHref(match),
     broadcast: cardBroadcastLabel(match, LOCALE),
     withMatchClick: false

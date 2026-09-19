@@ -51,6 +51,8 @@ import {
   istanbulIso,
   leadersSectionHtml,
   lineupsSectionHtml,
+  officialLineupBannerHtml,
+  officialLineupRows,
   longDate,
   nextMatchesSectionHtml,
   matchFollowHtml,
@@ -679,7 +681,7 @@ function leagueLinks(entry, locale, base) {
 /* 5. SAYFA ÜRETİMİ                                                     */
 /* ------------------------------------------------------------------ */
 
-function pageTitles(entry, state, locale, disambiguate) {
+function pageTitles(entry, state, locale, disambiguate, officialLineups) {
   const home = entry.homeTeam;
   const away = entry.awayTeam;
   const score = hasScore(entry.score) ? `${entry.score.home}-${entry.score.away}` : "";
@@ -722,11 +724,19 @@ function pageTitles(entry, state, locale, disambiguate) {
       h1 = `${home} - ${away} Maçı`;
       description = `${home} - ${away} maçı (${day}) iptal edildi. FutbolRadar maç takvimi.`;
     } else {
-      title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
+      // RESMÎ İLK 11 AÇIKLANDIĞINDA BAŞLIK ONU SÖYLER.
+      // Maç öncesi sıcak trafikte arayan kişinin sorusu artık "ne zaman,
+      // hangi kanalda" değil "kim oynuyor". Başlık yalnızca DOĞRULANMIŞ
+      // kadro varken değişir; tahmini 11 başlığa çıkmaz.
+      title = officialLineups
+        ? `${home} - ${away} İlk 11 Açıklandı`
+        : `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
-      description = channel
-        ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
-        : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
+      description = officialLineups
+        ? `${home} - ${away} resmî ilk 11'leri açıklandı. ${day} ${hour} TSİ${channel ? `, ${channel}` : ""}. Kadrolar, diziliş, yedekler ve canlı skor FutbolRadar maç merkezinde.`
+        : channel
+          ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
+          : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
     }
   } else if (state === "live") {
     title = `${home} ${entry.score.home}-${entry.score.away} ${away} Live Score & Commentary`;
@@ -749,11 +759,15 @@ function pageTitles(entry, state, locale, disambiguate) {
     h1 = `${home} vs ${away}`;
     description = `${home} vs ${away} (${day}) has been cancelled. FutbolRadar match calendar.`;
   } else {
-    title = `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
+    title = officialLineups
+      ? `${home} vs ${away} Confirmed Lineups`
+      : `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
     h1 = `${home} vs ${away}`;
-    description = channel
-      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
-      : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
+    description = officialLineups
+      ? `${home} vs ${away} confirmed starting line-ups. ${day}, ${hour} Türkiye time${channel ? ` on ${channel}` : ""}. Formations, substitutes and live score in the FutbolRadar match centre.`
+      : channel
+        ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
+        : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
   }
   if (disambiguate) title = `${title} (${day})`;
   return { title: `${title} | FutbolRadar`, description, h1 };
@@ -830,7 +844,10 @@ function pageHtml(entry, locale, options) {
   const { state, detail, analysis, report, disambiguate, hrefForMatch, probability } = options;
   const base = locale === "en" ? "../../" : "../";
   const text = STR[locale];
-  const titles = pageTitles(entry, state, locale, disambiguate);
+  // Resmî kadro yalnızca maç ÖNCESİ bir haber değeri taşır; başlık ve
+  // şerit bu yüzden "pre" durumuyla sınırlı.
+  const officialAnnounced = state === "pre" && officialLineupRows(detail).length > 0;
+  const titles = pageTitles(entry, state, locale, disambiguate, officialAnnounced);
   const slugValue = locale === "en" ? entry.enSlug : entry.slug;
   const canonical = locale === "en" ? enPageUrl(slugValue) : trPageUrl(slugValue);
   const relative = locale === "en" ? enPagePath(slugValue) : trPagePath(slugValue);
@@ -931,8 +948,12 @@ function pageHtml(entry, locale, options) {
     sections = [
       state === "postponed" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.postponedNote)}</strong></article></section>` : "",
       state === "cancelled" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.cancelledNote)}</strong></article></section>` : "",
-      whenSectionHtml(entry, ctx),
-      lineupsSectionHtml(detail, analysis, ctx),
+      // Resmî kadro açıklandığında okuyucunun aradığı ilk şey odur:
+      // kadro bölümü "ne zaman / hangi kanalda"nın ÜSTÜNE alınır.
+      // Kadro yokken sıra eskisi gibi kalır — tasarım değişmez.
+      ...(officialAnnounced
+        ? [lineupsSectionHtml(detail, analysis, ctx), whenSectionHtml(entry, ctx)]
+        : [whenSectionHtml(entry, ctx), lineupsSectionHtml(detail, analysis, ctx)]),
       squadsSectionHtml(squads, ctx),
       absencesSectionHtml(squadStatus, ctx),
       formSectionHtml(forms, ctx),
@@ -1009,6 +1030,7 @@ function pageHtml(entry, locale, options) {
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
       ${matchFollowHtml(ctx)}
       ${heroHtml(entry, ctx)}
+      ${officialLineupBannerHtml(detail, ctx)}
       ${sections.filter(Boolean).join("\n      ")}
       ${relatedLinksHtml(related, locale)}
       <p class="msp-source muted-copy"><b>${escapeHtml(text.dataSource)}:</b> ${escapeHtml(text.dataSourceNote)}</p>

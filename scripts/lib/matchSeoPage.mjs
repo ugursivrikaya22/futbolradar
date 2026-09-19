@@ -125,7 +125,11 @@ export const STR = {
     // Lig yayın hakkından gelen kanal, o maça özel doğrulanmış bilgiyle
     // aynı şey değil. Not ikisini ayırıyor: okuyucu neye baktığını bilsin.
     lineups: "Muhtemel 11'ler",
-    officialLineups: "İlk 11'ler",
+    officialLineups: "Resmî İlk 11'ler",
+    officialBadge: "Resmî İlk 11",
+    officialAnnounced: (team) => `${team} İlk 11 Açıklandı`,
+    officialAnnouncedBoth: "İlk 11'ler Açıklandı",
+    officialBannerCta: "Kadroyu gör",
     lineupUnavailable: "Bu maç için doğrulanmış ilk 11 verisi mevcut değil.",
     lineupNote: "Muhtemel 11, doğrulanmış kadro ve uygunluk verisinden üretilen bir tahmindir; resmî 11 açıklandığında bu bölüm otomatik güncellenir.",
     lineupPending: "Kadrolar açıklandığında burada yayımlanır. Muhtemel 11 tahmini doğrulanmış kadro verisi olmadan yazılmaz.",
@@ -267,7 +271,11 @@ export const STR = {
     channelBodyLive: (h, a, channel) => `${h} vs ${a} is being broadcast live on ${channel} in Türkiye.`,
     channelUnknown: (h, a) => `The broadcaster for ${h} vs ${a} has not been announced yet. This section updates automatically once a verified source confirms the channel; no channel is guessed.`,
     lineups: "Probable line-ups",
-    officialLineups: "Starting line-ups",
+    officialLineups: "Confirmed Lineup",
+    officialBadge: "Confirmed Lineup",
+    officialAnnounced: (team) => `${team} Confirmed Lineup`,
+    officialAnnouncedBoth: "Confirmed Lineups Announced",
+    officialBannerCta: "See the lineup",
     lineupUnavailable: "Verified starting line-up data is not available for this match.",
     lineupNote: "The probable XI is a prediction built from verified squad and availability data; it updates automatically once the official line-up is announced.",
     lineupPending: "Line-ups will be published here once announced. No probable XI is written without verified squad data.",
@@ -640,23 +648,123 @@ function predictedLineupSectionHtml(ctx, text) {
   return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
 }
 
+/**
+ * RESMÎ İLK 11 SAHA ÇİZİMİ.
+ *
+ * Diziliş ÇİZİLMEZ, YALNIZCA OKUNUR: hatlar kaynağın kendi verdiği diziliş
+ * dizgisinden ("4-2-3-1") ve oyuncuların kaynaktaki SIRASINDAN türetilir.
+ * Kaynak diziliş vermediyse ya da hat toplamı ilk 11 ile tutmuyorsa saha
+ * çizilmez ve sayfa eski liste görünümüyle devam eder — eksik veriyi
+ * doldurmak için mevki tahmin edilmez (bkz. data/predicted-lineups.json
+ * başındaki "uydurulmaz" kuralı).
+ *
+ * `predictedPitchHtml`ten farkı: orada satır İÇİ sıralama kaynağın kendi
+ * bilinen (sağdan sola) düzeni olduğu için ters çevriliyor. Resmî esamede
+ * satır içi yön BİLİNMEZ, bu yüzden burada yalnızca HAT SIRASI ters
+ * çevrilir (forvet üstte, kaleci altta); satır içi sıra kaynaktaki gibi
+ * bırakılır ve sayfa hiçbir sağ/sol iddiasında bulunmaz.
+ */
+function parseFormationLines(formation) {
+  const parts = String(formation || "").trim().split(/[^0-9]+/).filter(Boolean).map(Number);
+  if (parts.length < 2 || parts.some((value) => !Number.isFinite(value) || value < 1 || value > 6)) return null;
+  const total = parts.reduce((sum, value) => sum + value, 0);
+  return total === 10 ? parts : null;
+}
+
+function officialPitchHtml(lineup, names, ctx) {
+  const lines = parseFormationLines(lineup && lineup.formation);
+  if (!lines || names.length !== 11) return "";
+  const { locale, base, playerIndex } = ctx;
+
+  const rows = [[names[0]]];
+  let cursor = 1;
+  for (const count of lines) {
+    rows.push(names.slice(cursor, cursor + count));
+    cursor += count;
+  }
+
+  const numberOf = (name) => {
+    const row = Array.isArray(lineup.startingDetails) ? lineup.startingDetails.find((item) => item && item.name === name) : null;
+    return row && row.number ? row.number : "";
+  };
+
+  const rowsHtml = rows.slice().reverse().map((row) => {
+    const players = row.map((name) => {
+      const number = numberOf(name);
+      return `<span class="match-special__pitch-player official-lineup-player">${number ? `<i class="official-lineup-no" aria-hidden="true">${escapeHtml(number)}</i>` : ""}${playerLinkHtml(name, playerIndex, base, locale)}</span>`;
+    }).join("");
+    return `<div class="match-special__pitch-row is-${Math.max(1, Math.min(6, row.length))}">${players}</div>`;
+  }).join("");
+
+  return `<div class="match-special__pitch official-lineup-pitch" role="group" aria-label="${escapeHtml(`${(lineup && lineup.teamLabel) || ""} ${lineup.formation}`.trim())}">${rowsHtml}</div>`;
+}
+
+/**
+ * Google'dan gelen okuyucu sayfaya girdiği anda "ilk 11 açıklandı mı?"
+ * sorusunun cevabını GÖRSÜN diye kahramanın hemen altına basılan tek
+ * satırlık şerit. Yalnızca DOĞRULANMIŞ resmî kadro varken çizilir; maç
+ * başladıktan sonra bilgi değerini yitirdiği için "pre" dışında basılmaz.
+ */
+export function officialLineupBannerHtml(detail, ctx) {
+  if (ctx.state !== "pre") return "";
+  const text = STR[ctx.locale];
+  const official = officialLineupRows(detail);
+  if (!official.length) return "";
+  const home = official.find((row) => sideOf(row.team, ctx.homeTeam, ctx.awayTeam) === "home");
+  const away = official.find((row) => sideOf(row.team, ctx.homeTeam, ctx.awayTeam) === "away");
+  const label = home && away
+    ? text.officialAnnouncedBoth
+    : text.officialAnnounced(home ? ctx.homeTeam : away ? ctx.awayTeam : official[0].team);
+
+  return `<aside class="msp-lineup-banner" data-msp-lineup-banner>` +
+    `<span class="msp-tag is-official">${escapeHtml(text.officialBadge)}</span>` +
+    `<strong>${escapeHtml(label)}</strong>` +
+    `<a class="detail-link" href="#kadrolar">${escapeHtml(text.officialBannerCta)}</a>` +
+    `</aside>`;
+}
+
+/** Resmî kadro satırları — hem bölüm hem şerit aynı eşiği kullanır. */
+export function officialLineupRows(detail) {
+  return (Array.isArray(detail && detail.lineups) ? detail.lineups : [])
+    .filter((row) => row && Array.isArray(row.players) && row.players.length >= 7);
+}
+
 export function lineupsSectionHtml(detail, analysis, ctx) {
   const { locale, base, playerIndex, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
-  const official = (Array.isArray(detail && detail.lineups) ? detail.lineups : []).filter((row) => row && Array.isArray(row.players) && row.players.length >= 7);
+  const official = officialLineupRows(detail);
   const coaches = detail && detail.coaches && typeof detail.coaches === "object" ? detail.coaches : null;
 
-  const sideHtml = (title, lineup, badge, coach) => `<article class="card msp-lineup"><header class="msp-lineup-head"><h3>${escapeHtml(title)}</h3>${badge}</header>${lineup.formation ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.formation)}:</span> <b>${escapeHtml(lineup.formation)}</b>${coach ? ` · <span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b>` : ""}</p>` : coach ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b></p>` : ""}<ol class="msp-lineup-list">${lineup.players.map((player) => {
-    const name = typeof player === "string" ? player : (player && player.name) || "";
-    const detailRow = Array.isArray(lineup.startingDetails) ? lineup.startingDetails.find((row) => row && row.name === name) : null;
-    return `<li>${detailRow && detailRow.number ? `<span class="msp-lineup-no">${escapeHtml(detailRow.number)}</span>` : ""}${playerLinkHtml(name, playerIndex, base, locale)}</li>`;
-  }).join("")}</ol>${Array.isArray(lineup.substitutes) && lineup.substitutes.length ? `<p class="msp-lineup-bench"><span>${escapeHtml(text.bench)}:</span> ${lineup.substitutes.map((player) => escapeHtml(typeof player === "string" ? player : (player && player.name) || "")).filter(Boolean).join(", ")}</p>` : ""}</article>`;
+  const playerName = (player) => (typeof player === "string" ? player : (player && player.name) || "");
+
+  const sideHtml = (title, lineup, badge, coach) => {
+    const names = lineup.players.map(playerName).filter(Boolean);
+    // Saha çizimi yalnızca kaynağın verdiği diziliş okunabildiğinde eklenir;
+    // liste her hâlükârda basılır (ekran okuyucu ve saha çizilemeyen maçlar).
+    const pitch = officialPitchHtml({ ...lineup, teamLabel: title }, names, ctx);
+    const numberOf = (name) => {
+      const row = Array.isArray(lineup.startingDetails) ? lineup.startingDetails.find((item) => item && item.name === name) : null;
+      return row && row.number ? row.number : "";
+    };
+    const bench = Array.isArray(lineup.substitutes) ? lineup.substitutes.map(playerName).filter(Boolean) : [];
+    return `<article class="card msp-lineup"><header class="msp-lineup-head"><h3>${escapeHtml(title)}</h3>${badge}</header>` +
+      (lineup.formation
+        ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.formation)}:</span> <b>${escapeHtml(lineup.formation)}</b>${coach ? ` · <span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b>` : ""}</p>`
+        : coach ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b></p>` : "") +
+      pitch +
+      `<ol class="msp-lineup-list">${names.map((name) => {
+        const number = numberOf(name);
+        return `<li>${number ? `<span class="msp-lineup-no">${escapeHtml(number)}</span>` : ""}${playerLinkHtml(name, playerIndex, base, locale)}</li>`;
+      }).join("")}</ol>` +
+      (bench.length ? `<p class="msp-lineup-bench"><span>${escapeHtml(text.bench)}:</span> ${bench.map((name) => playerLinkHtml(name, playerIndex, base, locale)).join(", ")}</p>` : "") +
+      `</article>`;
+  };
 
   if (official.length) {
     const home = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "home") || official[0];
     const away = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "away") || official[1];
     if (home && away && home !== away) {
-      const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialLineups)}</span>`;
+      const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialBadge)}</span>`;
       return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
     }
   }
