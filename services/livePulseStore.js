@@ -9,16 +9,28 @@
  * Bu depo o iki anı tutar. Sağlayıcıya FAZLADAN TEK BİR İSTEK bile
  * atmaz: yanıtı zaten alınmış olan maç detayından geçerken kopyalar.
  *
- * SÜREÇ İÇİ VE GEÇİCİ. Sunucusuz ortamda sıcak örnek boyunca yaşar, yeni
- * örnekte sıfırlanır. Bu bir eksiklik değil, bilinçli sınır: kalıcı depo
- * (Supabase/Redis) her yoklamada yazma maliyeti getirirdi ve pencere
- * kaybolduğunda ürün bozulmuyor — yalnızca "Son 10 Dakika" paneli, veri
- * yeniden birikene kadar GİZLENİYOR. Yanlış veri göstermektense panelin
- * bir süre görünmemesi tercih edildi.
+ * SÜREÇ İÇİ VE HIZLI KATMAN. Sunucusuz ortamda sıcak örnek boyunca yaşar,
+ * yeni örnekte sıfırlanır. "Son 10 Dakika" paneli için bu yeterliydi:
+ * pencere kaybolduğunda panel yalnızca gizleniyordu.
  *
- * Kalıcı depoya geçilmek istenirse değiştirilecek tek yer burasıdır:
- * `recordSample`/`getSamples` sözleşmesi aynı kaldığı sürece hesaplama
- * katmanı hiç bilmez.
+ * MOMENTUM GRAFİĞİ İÇİN YETMEDİ. O grafik tek bir pencereyi değil, maçın
+ * BAŞINDAN o ana kadarki bütün dilimleri istiyor; her yeni işlev örneği
+ * depoyu sıfırladığı için grafik pratikte hep birkaç dilimde kalıyordu.
+ * Bu yüzden altına KALICI BİR ARŞİV kondu:
+ * `services/livePulseArchive.js` (Supabase `live_pulse_samples`).
+ *
+ * İŞ BÖLÜMÜ:
+ *   • Bu dosya hızlı katman — okuma bellekten, sözleşme SENKRON.
+ *   • Arşiv yavaş katman — örnek o maçı ilk gördüğünde bir kez okunur
+ *     (`hydrate`), yeni ölçüm eklendiğinde bir kez yazılır.
+ *
+ * Yazma maliyeti okuyucuya değil MAÇIN DAKİKASINA bağlı: `recordSample`
+ * aynı dakikanın ikinci yanıtını yeni görüntü SAYMADIĞI için
+ * (`appended: false`) arşive de yazılmıyor. Kalıcı depoya geçmemenin eski
+ * gerekçesi olan "her yoklamada yazma" böylece ortadan kalkıyor.
+ *
+ * Arşiv yapılandırılmamışsa (Supabase yok) bu dosya eskisi gibi tek
+ * başına çalışır; momentum grafiği yalnızca daha kısa olur.
  */
 
 "use strict";
@@ -92,9 +104,9 @@ function compactStatistics(statistics) {
  *   • dakika ilerlememiş — yeni ölçüm değil (ama skor/istatistik
  *     TAZELENİR: son görüntü her zaman en güncel toplamı taşımalı).
  */
-function recordSample(fixtureId, sample) {
+function recordSampleWithOutcome(fixtureId, sample) {
   const key = String(fixtureId == null ? "" : fixtureId).trim();
-  if (!key) return [];
+  if (!key) return { samples: [], appended: false, record: null };
 
   const now = (sample && Number.isFinite(sample.now)) ? sample.now : Date.now();
   pruneExpired(now);
@@ -121,7 +133,7 @@ function recordSample(fixtureId, sample) {
     : Number(rawMinute);
   const statistics = compactStatistics(sample && sample.statistics);
   if (!Number.isFinite(minute) || minute < 0 || !statistics.length) {
-    return entry.samples.slice();
+    return { samples: entry.samples.slice(), appended: false, record: null };
   }
 
   const record = {
@@ -136,20 +148,79 @@ function recordSample(fixtureId, sample) {
     // Aynı dakikanın yeni yanıtı: en güncel toplamı taşıması için ÜZERİNE
     // yazılır, ikinci bir görüntü olarak eklenmez.
     entry.samples[entry.samples.length - 1] = record;
-    return entry.samples.slice();
+    return { samples: entry.samples.slice(), appended: false, record };
   }
 
   // Sağlayıcı dakikayı geri aldıysa (düzeltme) eski görüntüler geçersizdir.
   if (last && minute < last.minute) {
     entry.samples = [record];
-    return entry.samples.slice();
+    return { samples: entry.samples.slice(), appended: true, record };
   }
 
   entry.samples.push(record);
   if (entry.samples.length > MAX_SAMPLES_PER_FIXTURE) {
     entry.samples.splice(0, entry.samples.length - MAX_SAMPLES_PER_FIXTURE);
   }
-  return entry.samples.slice();
+  return { samples: entry.samples.slice(), appended: true, record };
+}
+
+/**
+ * Eski sözleşme: yalnızca görüntü listesini döndürür.
+ *
+ * Çağıranların çoğu "yeni ölçüm mü eklendi" bilgisini istemiyor; yalnızca
+ * arşive yazacak olan (api/match-detail.js) istiyor. Dönüş türünü
+ * değiştirmek yerine ince bir sarmalayıcı bırakıldı.
+ */
+function recordSample(fixtureId, sample) {
+  return recordSampleWithOutcome(fixtureId, sample).samples;
+}
+
+/**
+ * Arşivden gelen ölçümleri süreç içi depoya besler.
+ *
+ * YALNIZCA BİR KEZ ve yalnızca depo o maç için BOŞSA. İki kural da aynı
+ * hatayı önlüyor: arşiv, bellekteki daha yeni ölçümlerin üzerine
+ * yazmamalı. Arşiv okuması istekle yarışıyor (okuma başlarken bellek boş
+ * olabilir, dönerken dolu); `hydrated` işareti ikinci bir besleme
+ * denemesini de kapatıyor.
+ *
+ * @returns {boolean} besleme yapıldıysa true.
+ */
+function hydrate(fixtureId, samples) {
+  const key = String(fixtureId == null ? "" : fixtureId).trim();
+  const rows = (Array.isArray(samples) ? samples : [])
+    .filter((sample) => sample && Number.isFinite(Number(sample.minute)) && Array.isArray(sample.statistics) && sample.statistics.length)
+    .map((sample) => ({
+      minute: Number(sample.minute),
+      at: sample.at || null,
+      statistics: sample.statistics,
+      score: sample.score || null
+    }))
+    .sort((left, right) => left.minute - right.minute);
+  if (!key || !rows.length) return false;
+
+  const now = Date.now();
+  pruneExpired(now);
+  let entry = store.get(key);
+  if (!entry) {
+    entry = { samples: [], touchedAt: now, hydrated: false };
+    store.set(key, entry);
+  }
+  if (entry.hydrated || entry.samples.length) {
+    entry.hydrated = true;
+    return false;
+  }
+
+  entry.samples = rows.slice(-MAX_SAMPLES_PER_FIXTURE);
+  entry.touchedAt = now;
+  entry.hydrated = true;
+  return true;
+}
+
+/** Bu örnek bu maç için arşivi daha önce okudu mu? */
+function isHydrated(fixtureId) {
+  const entry = store.get(String(fixtureId == null ? "" : fixtureId).trim());
+  return Boolean(entry && entry.hydrated);
 }
 
 function getSamples(fixtureId) {
@@ -181,7 +252,10 @@ module.exports = {
   compactStatistics,
   forget,
   getSamples,
+  hydrate,
+  isHydrated,
   recordSample,
+  recordSampleWithOutcome,
   reset,
   stats
 };

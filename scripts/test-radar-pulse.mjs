@@ -328,9 +328,66 @@ ok("segment değeri baskıyı yönüyle birlikte taşır", () => {
     { minute: 58, statistics: stats({ shots: [8, 2], onTarget: [5, 1], xg: [1.2, 0.2] }) }
   ];
   const momentum = builder.buildMomentum({ events: [], samples, minute: 58 });
+  // 50→58 iki sabit dilime taşıyor: [50,55) ve [55,60).
+  assert.equal(momentum.segments.length, 2);
+  for (const segment of momentum.segments) {
+    assert.ok(segment.value > 40, "ev sahibi baskısı her dilimde pozitif ve belirgin olmalı");
+    assert.ok(segment.value <= 100);
+  }
+});
+
+/* ---------------------------------------------------------------- */
+/* MOMENTUM DİLİMLERİ — SABİT 5 DAKİKA                                */
+/* ---------------------------------------------------------------- */
+
+ok("dilimler 5 dakikalık SABİT ızgaraya oturur", () => {
+  const samples = [
+    { minute: 3, statistics: stats({ shots: [0, 0] }) },
+    { minute: 17, statistics: stats({ shots: [6, 1] }) }
+  ];
+  const momentum = builder.buildMomentum({ events: [], samples, minute: 17 });
+  // Ölçüm 3. dakikada başlıyor: [0,5), [5,10), [10,15), [15,20).
+  assert.deepEqual(momentum.segments.map((segment) => [segment.from, segment.to]),
+    [[0, 5], [5, 10], [10, 15], [15, 20]]);
+  assert.equal(momentum.resolutionMinutes, builder.MOMENTUM_BUCKET_MINUTES);
+  // Yoklama sıklığı ne olursa olsun genişlik aynı: çubuklar karşılaştırılabilir.
+  for (const segment of momentum.segments) assert.equal(segment.to - segment.from, 5);
+});
+
+ok("ÖLÇÜLMEYEN dakika için dilim üretilmez", () => {
+  // Sunucu 60. dakikada ısınmış: öncesi ölçülmedi. Sıfır değerli dilim
+  // yazmak "o dakikalarda baskı yoktu" demek olurdu.
+  const samples = [
+    { minute: 60, statistics: stats({ shots: [4, 4] }) },
+    { minute: 68, statistics: stats({ shots: [7, 4] }) }
+  ];
+  const momentum = builder.buildMomentum({ events: [], samples, minute: 68 });
+  assert.equal(momentum.segments[0].from, 60, "kapsanmayan dakikalar dilim açmamalı");
+  assert.equal(momentum.coverage.fromMinute, 60);
+  assert.equal(momentum.complete, false, "seri maçın başından beri değilse eksik işaretlenmeli");
+});
+
+ok("dilim sınırına taşan ölçüm süreyle ORANTILI bölünür, toplam korunur", () => {
+  // Tek çift 8 şut üretiyor ve iki dilime taşıyor; dağıtım toplamı
+  // değiştirmemeli. İki dilimde de aynı taraf baskın olduğu için
+  // işaretler aynı yönde olmalı.
+  const samples = [
+    { minute: 8, statistics: stats({ shots: [0, 0] }) },
+    { minute: 12, statistics: stats({ shots: [8, 0] }) }
+  ];
+  const momentum = builder.buildMomentum({ events: [], samples, minute: 12 });
+  assert.equal(momentum.segments.length, 2);
+  assert.ok(momentum.segments.every((segment) => segment.value > 0), "iki dilimde de ev sahibi baskın");
+});
+
+ok("tek dakikadan kısa aralık dilim ızgarasını bozmaz", () => {
+  const samples = [
+    { minute: 22, statistics: stats({ shots: [1, 1] }) },
+    { minute: 23, statistics: stats({ shots: [3, 1] }) }
+  ];
+  const momentum = builder.buildMomentum({ events: [], samples, minute: 23 });
   assert.equal(momentum.segments.length, 1);
-  assert.ok(momentum.segments[0].value > 40, "ev sahibi baskısı pozitif ve belirgin olmalı");
-  assert.ok(momentum.segments[0].value <= 100);
+  assert.deepEqual([momentum.segments[0].from, momentum.segments[0].to], [20, 25]);
 });
 
 ok("iki tarafın da üretmediği aralık sessiz işaretlenir", () => {
@@ -412,7 +469,9 @@ ok("birleşik yük nabız, pencere, momentum ve akış taşır", () => {
   assert.equal(payload.window.spanMinutes, 12);
   // 60. dakika tabanından 72'ye: 61' Beşiktaş, 70' Galatasaray.
   assert.deepEqual(payload.window.goals, { home: 1, away: 1 });
-  assert.equal(payload.momentum.segments.length, 1);
+  // 60→72 üç sabit dilime düşüyor: [60,65), [65,70), [70,75).
+  assert.equal(payload.momentum.segments.length, 3);
+  assert.deepEqual(payload.momentum.segments.map((segment) => segment.from), [60, 65, 70]);
   assert.equal(payload.timeline.length, 3);
   assert.match(payload.window.comment, /Son 12 dakikada iki takım da gol buldu\./);
 });
@@ -534,10 +593,24 @@ ok("son 10 dakika paneli yalnızca ölçülen satırları basar", () => {
   assert.equal(html.includes("xG"), false, "gelmeyen xG satırı basılmamalı");
 });
 
-ok("momentum yolu orta çizgiden başlar ve kapanır", () => {
-  const path = client.momentumPath([{ from: 10, to: 20, value: 50 }, { from: 20, to: 30, value: -50 }], 90);
-  assert.match(path, /^M[\d.]+,42 /);
-  assert.match(path, /Z$/);
+ok("çubuklar orta çizgiden iki yöne uzanır: ev üstte, deplasman altta", () => {
+  const bars = client.momentumBars([{ from: 10, to: 15, value: 50 }, { from: 15, to: 20, value: -50 }], 90);
+  const rects = [...bars.matchAll(/class="rp-chart-bar is-(home|away)" x="([\d.]+)" y="([\d.]+)"[^>]*height="([\d.]+)"/g)]
+    .map((match) => ({ side: match[1], y: Number(match[3]), height: Number(match[4]) }));
+  assert.equal(rects.length, 2);
+  assert.equal(rects[0].side, "home");
+  // Ev sahibi çubuğu orta çizginin ÜSTÜNDE bitmeli.
+  assert.equal(Number((rects[0].y + rects[0].height).toFixed(0)), 42);
+  assert.equal(rects[1].side, "away");
+  // Deplasman çubuğu orta çizgiden BAŞLAMALI.
+  assert.equal(rects[1].y, 42);
+});
+
+ok("ölçülmüş ama sessiz dilim, ölçülmemiş dilimden ayrılır", () => {
+  // Sessiz dilim orta çizgide ince bir iz bırakır; hiç çizmemek
+  // "ölçülmedi" ile karıştırılırdı.
+  const bars = client.momentumBars([{ from: 10, to: 15, value: 0, quiet: true }], 90);
+  assert.match(bars, /rp-chart-bar is-quiet/);
 });
 
 ok("zaman çizelgesi en yeni olayı üste alır ve sınırı aşmaz", () => {
