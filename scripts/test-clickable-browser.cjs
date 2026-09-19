@@ -476,15 +476,21 @@ function todayFixtureCount() {
           await navigate(await tickerAll.isVisible() ? tickerAll : page.locator('main a.section-link[href$="' + (en ? 'news.html' : 'haberler.html') + '"]').first());
           await open(en ? 'en/news.html' : 'haberler.html');
           if (!en) await page.locator('[data-api-target="news-page"][data-state="ready"]').waitFor();
-          // HABER VE YAZI ROTASI ARTIK DİLE GÖRE AYRI.
+          // HABER ROTASI DİLE GÖRE AYRI.
           //
           // İngilizce kart eskiden Türkçe `haber/<slug>` sayfasına
           // bağlanıyordu; okuyucu tek tıkla Türkçe metne düşüyordu. Artık
-          // İngilizce haberin kendi sayfası var (`en/news/<slug>.html`) ve
-          // kart oraya gidiyor. Denetim bu yüzden Türkçe yolu İngilizce
-          // tarafta KABUL ETMİYOR: eski davranış geri gelirse burada kırılır.
+          // İngilizce haberin kendi sayfası var ve kart oraya gidiyor.
+          // Denetimin koruduğu şey bu: İngilizce tarafta Türkçe yol KABUL
+          // EDİLMEZ — `haber/` içinde `news/` geçmediği için seçici onu
+          // zaten dışarıda bırakır, eski davranış geri gelirse burada kırılır.
+          //
+          // Seçici `en/news/` değil `news/` arar: kart sayfayla aynı dizinden
+          // bir alta indiği için href göreli (`news/<slug>.html`), `en/`
+          // öneki taşımıyor. Dar desen İngilizce kartı hiç bulamaz ve denetim
+          // "No news article route" ile yanlış yere düşerdi.
           const news = page.locator(en
-            ? 'main a[href*="en/news/"]'
+            ? 'main a[href*="news/"]'
             : 'main a[href*="/haber/"], main a[href*="haber/"]').first();
           assert.ok(await news.count(), 'No news article route');
           await navigate(news);

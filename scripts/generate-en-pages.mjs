@@ -67,6 +67,8 @@ const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js"
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { publishedColumns } = require("../services/columnService.js");
+const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
+const { statusLabel, BREAKING_LABEL, editorialStatusOf } = require("../services/editorialStatus.js");
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
 // Maç programı sırası ve makine okunur karşılığı — Türkçe tarafla aynı servis.
@@ -172,6 +174,25 @@ const columnList = publishedColumns(
   { locale: "en" }
 ).columns;
 
+/*
+ * İNGİLİZCE YÜZEYDE YALNIZCA İNGİLİZCESİ OLAN YAZI.
+ *
+ * Köşe yazısı kartları, İngilizcesi olmayan yazıyı Türkçe başlık ve
+ * Türkçe özetle (`lang="tr"`) gösteriyordu; en/columns.html bu yüzden
+ * 96 Türkçe düğüm taşıyordu. Yazılar İNSAN KALEMİNDEN çıkma yorum
+ * metinleri: makineyle çevrilmezler ve uydurulmazlar.
+ *
+ * Bu yüzden çözüm çevirmek değil SÜZMEK. Depoda zaten bunun için bir yol
+ * var: bir yazının `en` alanı doldurulduğunda İngilizce sürümü yayımlanıyor
+ * (bkz. englishColumn). İngilizce yüzey artık yalnızca o yazıları gösterir.
+ * Türkçe yazılar silinmez, Türkçe tarafta olduğu gibi kalır — yalnızca
+ * okunamayacakları yüzeye basılmazlar. Bir yazıya `en` eklendiği anda
+ * kendiliğinden buraya da düşer.
+ */
+function englishColumnList() {
+  return columnList.filter((entry) => englishColumn(entry) !== null);
+}
+
 /**
  * YAZININ İNGİLİZCESİ VAR MI?
  *
@@ -197,7 +218,83 @@ function englishColumn(entry) {
 // de aynı listeyi oradan alır. Süzgeç burada tekrar yazılmıyor: yazıldığı
 // için `archived` haberler bu sayfada kart olmuş, sayfaları üretilmediğinden
 // bağlantıları 404 vermişti.
-const newsList = publishableNews(readJson("news.json", []), { locale: "en" });
+/*
+ * /en HABER AKIŞI — TEK SIRALI AKIŞ, İKİ KÖKEN.
+ *
+ * Burada iki yaklaşım birleşiyor. Biri akışı İNGİLİZCE KAYNAKTAN yazıyor
+ * (`services/englishNews.js`: UEFA, FIFA, lig kurumları, BBC, Sky,
+ * Guardian, ESPN). Öteki, Türkçe haberin İngilizce sürümünü üretim anında
+ * aynı yapısal veriden kuruyor ve ona kendi sayfasını veriyor
+ * (`newsFeed.publishableNews({ locale: "en" })`). İkisi de gerekliydi:
+ * yalnızca İngilizce kaynak, Türkiye gündemini okuyana hiç göstermiyordu;
+ * yalnızca çeviri ise İngilizce okura Avrupa'yı hiç vermiyordu.
+ *
+ * Havuz ortak ama KAPI KAPALI: her iki kökenden gelen HER kayıt havuza
+ * girmeden `isPublishableEnglish`ten geçer — metninde Türkçe cümle olan
+ * kayıt, kökeni ne olursa olsun akışa giremez. Ayrı dosyalar tasarımının
+ * koruduğu güvence budur ve burada kapıya taşındı; sayfa taraması
+ * (`test-en-language-purity`) ikinci ağ olarak duruyor.
+ */
+function englishNewsHref(item) {
+  // BASE BURADA KULLANILMAZ. `BASE` ("../") /en sayfalarından KÖK dizine
+  // çıkmak için var; haber sayfaları ise /en'in ALTINDA. `${BASE}news/…`
+  // yazıldığında bağlantı var olmayan bir kök dizin yoluna gidiyordu.
+  return `news/${item.slug}.html`;
+}
+
+const englishSourced = readJson("news-en.json", []).map((item) => ({
+  ...item,
+  href: englishNewsHref(item)
+}));
+
+/*
+ * Türkçe kökenli kayıtlar. `editorialStatus` bu kayıtlarda saklanmıyor,
+ * kaynak kademesinden HESAPLANIYOR — rozet iki kökende de aynı ölçüte
+ * dayansın diye. Bağlantı `newsFeed.newsHref(..., "en")`ten geliyor:
+ * İngilizce kart Türkçe sayfaya düşmez.
+ */
+const turkishOriginEnglish = publishableNews(readJson("news.json", []), { locale: "en" })
+  .map((item) => {
+    const verdict = editorialStatusOf(item);
+    return {
+      ...item,
+      href: newsHref(item, BASE, "en"),
+      origin: "translated",
+      editorialStatus: verdict.status,
+      isBreaking: verdict.isBreaking
+    };
+  });
+
+const englishNewsList = rankEnglishNews(
+  [...englishSourced, ...turkishOriginEnglish].filter(isPublishableEnglish)
+);
+
+/**
+ * Durum rozetleri. Türkçe taraftaki "Transfer/Radar" rozetinin yerine
+ * okura gerçekten bilgi veren etiket geçer: haber resmî mi, görüşme mi,
+ * iddia mı. "Breaking" bunun yerine geçmez, yanına eklenir.
+ */
+function englishStatusBadges(item) {
+  const badges = [
+    `<span class="mega-badge mega-badge--status" data-status="${escapeHtml(item.editorialStatus || "reported")}">${escapeHtml(statusLabel(item.editorialStatus, "en"))}</span>`
+  ];
+  if (item.isBreaking) {
+    badges.push(`<span class="mega-badge mega-badge--breaking">${escapeHtml(BREAKING_LABEL.en)}</span>`);
+  }
+  return badges.join("");
+}
+
+/** Tek bir İngilizce haber kartı — iki bölüm de, iki köken de bunu kullanır. */
+function englishNewsCard(item) {
+  const published = item.publishedAt || item.date || "";
+  return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id || item.slug || "")}" data-origin="${escapeHtml(item.origin || "english-source")}" href="${escapeHtml(item.href)}">` +
+    `<div class="news-card-meta">${englishStatusBadges(item)}` +
+    `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>` +
+    `<div><span class="card-kicker">${escapeHtml(item.team || item.competition || "FutbolRadar")}</span>` +
+    `<h3>${escapeHtml(item.title || "")}</h3><p>${escapeHtml(item.summary || "")}</p></div>` +
+    `<div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Source")}</span>` +
+    `<span class="detail-link">Read the story</span></div></a>`;
+}
 const postMatchRecords = (() => {
   const doc = readJson("post-match-reports.json", {});
   return Array.isArray(doc.records) ? doc.records : [];
@@ -782,8 +879,7 @@ function heroSection() {
  * hiçbir koşulda çalışmayacak bir dal, kartın Türkçe kalmasının tek yoluydu.
  */
 function columnsSection() {
-  const columns = columnList
-    .slice()
+  const columns = englishColumnList()
     .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")))
     .slice(0, 3);
   if (!columns.length) return "";
@@ -1116,34 +1212,20 @@ function quickNavSection() {
 }
 
 /**
- * FUTBOL GÜNDEMİ — Türkçe .home-news ile aynı kart ızgarası.
+ * FUTBOL GÜNDEMİ — artık İngilizce akıştan beslenir.
  *
- * Köşe yazılarındaki kuralın aynısı: liste `publishableNews(..., { locale:
- * "en" })`ten geliyor, yani yalnızca İngilizce sürümü olan haberler. Başlık,
- * özet ve kategori rozeti İngilizce; bağlantı da İngilizce haber sayfasına
- * gidiyor (`en/news/<slug>.html`).
+ * Kart başlığı, özeti ve bağlantısı İngilizcedir; `lang="tr"` işareti
+ * taşımaz çünkü taşıyacak Türkçe metin yoktur. Liste birleşik havuzdan
+ * geliyor: İngilizce kaynaklı haberler ve İngilizce sürümü olan Türkçe
+ * kökenli haberler, tek sıralamada.
  */
 function newsSection() {
-  const items = newsList.slice(0, 3);
+  const items = englishNewsList.slice(0, 3);
   if (!items.length) return "";
-  const cards = items.map((item) => {
-    // Bağlantı da servisten: kartın gösterildiği her haberin sayfası var.
-    const href = escapeHtml(newsHref(item, BASE, "en"));
-    const published = item.publishedAt || item.date || "";
-    const isTransfer = /transfer/i.test(String(item.category || ""));
-    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
-    const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
-    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}">` +
-      `<div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span>` +
-      `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>` +
-      `<div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>` +
-      `<h3>${escapeHtml(item.title || "")}</h3><p>${escapeHtml(item.summary || "")}</p></div>` +
-      `<div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>` +
-      `<span class="detail-link">Read the story</span></div></a>`;
-  }).join("");
+  const cards = items.map(englishNewsCard).join("");
 
-  return `<section class="container section home-news" id="futbol-gundemi" aria-labelledby="news-title">
-          ${sectionHead("Verified football agenda", "news-title", "Match, fixture and transfer flow", "Short updates selected from official club and competition statements.", "./news.html", "All updates")}
+  return `<section class="container section home-news" id="football-agenda" aria-labelledby="news-title">
+          ${sectionHead("Football agenda", "news-title", "Match, fixture and transfer flow", "Written in English from English-language sources, with the original report linked on every story.", "./news.html", "All updates")}
           <div class="news-grid">${cards}</div>
         </section>`;
 }
@@ -1898,8 +1980,11 @@ function archivePage() {
  * Türkçe başlıkla görünmez, Türkçe tarafta olduğu gibi kalır.
  */
 function columnsPage() {
-  const cards = columnList.slice(0, 24).map((column) => {
-    const href = escapeHtml(`${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
+  const cards = englishColumnList().slice(0, 24).map((column) => {
+    const english = englishColumn(column);
+    const href = escapeHtml(english
+      ? english.href
+      : `${BASE}${String(column.path || "").replace(/^\.?\//, "")}`);
     const published = column.publishedAt || column.date || "";
     return `<article class="column-card" data-card="column">
             <div class="column-card-head"><span class="column-badge">${escapeHtml(column.badge || "Opinion")}</span>
@@ -1927,39 +2012,35 @@ ${sectionLinks()}`;
     heroKicker: "Opinion",
     heroTitle: "Turkish Football Columns",
     heroLead: "Commentary from FutbolRadar writers, kept separate from the site's verified match data.",
-    heroMeta: `${columnList.length} columns`,
+    heroMeta: `${englishColumnList().length} columns`,
     body,
     schema: schemaFor("columns", "en/columns.html", "CollectionPage")
   });
 }
 
-/** Haberler — köşe yazılarıyla aynı kural: liste yalnızca İngilizce haberler. */
+/**
+ * Haberler — tamamı İngilizce: çerçeve de, haberin kendisi de.
+ *
+ * LİSTE KESİLMİYOR. Eski 24'lük sınır, akışta yalnızca bir köken varken
+ * görünmez bir kusurdu; iki köken birleşince gerçek bir kusura dönüştü:
+ * İngilizce kaynaklı haber sayısı sınırı aştığı anda, arkada sıralanan
+ * çeviriler listeye HİÇ giremiyordu — 450 sayfa üretilip site haritasına
+ * yazılıyor ama okurun gidebileceği bir liste bağlantısı kalmıyordu.
+ * Türkçe kardeşi (`haberler.html`) zaten akışın tamamını listeliyor;
+ * buradaki kural da artık aynı. Sıralama değişmiyor: önce İngilizce
+ * kaynaklılar, sonra çeviriler.
+ */
 function newsPage() {
-  const cardList = newsList.slice(0, 24).map((item) => {
-    const href = escapeHtml(newsHref(item, BASE, "en"));
-    const published = item.publishedAt || item.date || "";
-    const isTransfer = /transfer/i.test(String(item.category || ""));
-    const badgeClass = isTransfer ? "mega-badge--transfer" : "mega-badge--radar";
-    const badgeLabel = isTransfer ? "Transfer" : (item.category || "Radar");
-    return `<a class="news-card" data-card="news" data-news="${escapeHtml(item.id)}" href="${href}">
-            <div class="news-card-meta"><span class="mega-badge ${badgeClass}">${escapeHtml(badgeLabel)}</span>
-            <time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time></div>
-            <div><span class="card-kicker">${escapeHtml(item.team || item.sourceName || "FutbolRadar")}</span>
-            <h3>${escapeHtml(item.title || "")}</h3>
-            ${item.summary ? `<p>${escapeHtml(item.summary)}</p>` : ""}</div>
-            <div class="news-card-footer"><span>${escapeHtml(item.sourceName || "Official source")}</span>
-            <span class="detail-link">Read the story</span></div>
-          </a>`;
-  });
+  const cardList = englishNewsList.map(englishNewsCard);
   // Ana sayfanın 3 kartlık önizlemesinden farklı olarak bu TAM liste; anket
   // vitrin kartı her 7 haberden sonra araya giriyor (gerekçe
   // scripts/lib/homePoll.mjs#interleavePollPromo).
   const cards = interleavePollPromo(cardList, pollPromoSection("./polls.html"));
 
   const body = `      <section class="data-panel" aria-labelledby="en-news-title">
-        <h2 class="panel-title" id="en-news-title">Verified football agenda</h2>
+        <h2 class="panel-title" id="en-news-title">Football agenda</h2>
         <div class="news-grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
-        <p class="muted-copy">Every story is published with the source it was confirmed against. Only stories available in English are listed here; the rest stay on the Turkish site.</p>
+        <p class="muted-copy">Every story is published in English and links back to the source it was confirmed against — either written from an English-language source, or from our own Turkish desk. Each one carries a status — Official, In talks, Claim or Reported — so you can see how firm it is.</p>
       </section>
 ${sectionLinks()}`;
 
@@ -1968,11 +2049,11 @@ ${sectionLinks()}`;
     trPath: "haberler.html",
     enPath: "en/news.html",
     heroKicker: "News",
-    heroTitle: "Turkish Football News",
-    heroLead: "Verified updates from official club and competition statements.",
-    heroMeta: `${newsList.length} stories`,
-    body,
-    schema: schemaFor("news", "en/news.html", "CollectionPage")
+    heroTitle: "Football News",
+    heroLead: "Turkish and world football, written in English with the source and status on every story.",
+    heroMeta: `${englishNewsList.length} stories`,
+    schema: schemaFor("news", "en/news.html", "CollectionPage"),
+    body
   });
 }
 

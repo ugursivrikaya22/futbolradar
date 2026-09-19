@@ -8,6 +8,8 @@ const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLi
 // (canlıda 404 veren iki bağlantı) yapısal olarak imkânsız.
 const { publishableNews } = createRequire(import.meta.url)("../services/newsFeed.js");
 const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks.js");
+// Haber durumu rozeti — İngilizce tarafla aynı servis, aynı ölçü.
+const { editorialStatusOf } = createRequire(import.meta.url)("../services/editorialStatus.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
@@ -236,6 +238,26 @@ function jsonLd(article, locale = "tr") {
   return { "@context": "https://schema.org", "@graph": [newsArticle, breadcrumb] };
 }
 
+/**
+ * DURUM ROZETİ. Okur haberin ne kadar kesin olduğunu başlıkla birlikte
+ * görür; "Son Dakika" ayrı rozettir, durumun yerine geçmez.
+ *
+ * Rozet SAYFANIN DİLİNDE basılır. `label` ve `breakingLabel` zaten
+ * `{tr, en}` taşıyor; dile bağlanmasaydı İngilizce haber sayfası
+ * "İddia" / "Son Dakika" yazardı ve dil denetimi haklı olarak düşerdi.
+ */
+function statusBadges(article, locale = "tr") {
+  const lang = locale === "en" ? "en" : "tr";
+  const verdict = editorialStatusOf(article);
+  const badges = [
+    `<span class="mega-badge mega-badge--status" data-status="${escapeHtml(verdict.status)}">${escapeHtml(verdict.label[lang])}</span>`
+  ];
+  if (verdict.isBreaking) {
+    badges.push(`<span class="mega-badge mega-badge--breaking">${escapeHtml(verdict.breakingLabel[lang])}</span>`);
+  }
+  return badges.join("");
+}
+
 function pageHtml(article, locale = "tr") {
   const copy = copyFor(locale);
   const base = locale === "en" ? "../../" : "../";
@@ -321,7 +343,7 @@ ${siteHeader({ base, locale })}
       <nav class="breadcrumb" aria-label="${escapeHtml(copy.breadcrumbLabel)}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(copy.home)}</a><span>/</span><a href="${base}${copy.indexPath}">${escapeHtml(copy.indexLabel)}</a><span>${escapeHtml(article.title)}</span></nav>
       <article class="column-article">
         <header class="column-article-head">
-          <div class="column-article-meta"><span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
+          <div class="column-article-meta">${statusBadges(article, locale)}<span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
           <p class="lead">${escapeHtml(description)}</p>
           ${tagHtml}
