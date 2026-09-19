@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-19T05:49:49.708Z",
+  "updatedAt": "2026-09-19T10:55:00.376Z",
   "matchCount": 1377,
   "records": [
     {
@@ -9,9 +9,9 @@
       "fixtureId": "1638578",
       "provider": "api-football",
       "slug": "auckland-western-sydney-wanderers-2026-09-19",
-      "kickoff": "2026-09-19T08:00:00+03:00",
-      "kickoffUtc": "2026-09-19T05:00:00.000Z",
-      "kickoffLocal": "2026-09-19T08:00",
+      "kickoff": "2026-09-19T06:00:00+03:00",
+      "kickoffUtc": "2026-09-19T03:00:00.000Z",
+      "kickoffLocal": "2026-09-19T06:00",
       "date": "2026-09-19",
       "status": "FINISHED",
       "providerStatus": "FT",
@@ -35,7 +35,7 @@
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -53,9 +53,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -67,20 +67,16 @@
       "availability": {
         "events": 4,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -91,11 +87,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6d7c551388042b5d",
-      "fingerprint": "6d7c551388042b5d",
+      "analysisSourceHash": "00b9bd8b80b4223a",
+      "fingerprint": "00b9bd8b80b4223a",
       "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
-      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
-      "generatedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T10:55:00.311Z",
+      "generatedAt": "2026-09-19T10:55:00.311Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -107,7 +103,7 @@
       "reportUrl": "./mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
       "digest": {
         "headline": "Western Sydney Wanderers, Auckland'ı 3-1 yendi",
-        "paragraph": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı. Golleri 45. dakikada Normal Goal (Auckland), 45. dakikada Normal Goal (Western Sydney Wanderers), 45. dakikada Normal Goal (Western Sydney Wanderers), 90. dakikada Normal Goal (Western Sydney Wanderers) kaydetti.",
+        "paragraph": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı. Golleri 45. dakikada Normal Goal (Auckland), 45. dakikada Normal Goal (Western Sydney Wanderers), 45. dakikada Normal Goal (Western Sydney Wanderers), 90. dakikada B. Borrello (Western Sydney Wanderers) kaydetti.",
         "result": {
           "winner": "Western Sydney Wanderers",
           "loser": "Auckland",
@@ -150,7 +146,7 @@
               "minute": "90'",
               "team": "Western Sydney Wanderers",
               "type": "Gol",
-              "detail": "Normal Goal",
+              "detail": "B. Borrello",
               "pivotal": true
             }
           ]
@@ -158,7 +154,7 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Normal Goal).",
+          "verdict": "Son bölümde 1 gol kaydedildi, (B. Borrello).",
           "goals": {
             "home": 0,
             "away": 1
@@ -168,7 +164,7 @@
               "minute": "90'",
               "team": "Western Sydney Wanderers",
               "type": "Gol",
-              "detail": "Normal Goal",
+              "detail": "B. Borrello",
               "decisive": true
             }
           ]
@@ -179,7 +175,13 @@
             {
               "name": "Normal Goal",
               "team": "Western Sydney Wanderers",
-              "contribution": "45' gol · 45' gol · 90' gol",
+              "contribution": "45' gol · 45' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "B. Borrello",
+              "team": "Western Sydney Wanderers",
+              "contribution": "90' gol",
               "impact": "yüksek"
             },
             {
@@ -208,7 +210,7 @@
           "status": "ready",
           "notes": [
             "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "90' Western Sydney Wanderers — Normal Goal: gol"
+            "90' Western Sydney Wanderers — B. Borrello: gol"
           ],
           "goals": 1
         },
@@ -291,10 +293,10 @@
       "winner": "Racing Club",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -302,9 +304,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 19
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -324,24 +326,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 19,
+        "events": 0,
         "statistics": 17,
         "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "5492433e7c56670b",
-      "fingerprint": "5492433e7c56670b",
+      "analysisSourceHash": "c1e3965f6dbd34c6",
+      "fingerprint": "c1e3965f6dbd34c6",
       "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
-      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
-      "generatedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T10:55:00.311Z",
+      "generatedAt": "2026-09-19T10:55:00.311Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -353,7 +360,7 @@
       "reportUrl": "./mac-raporu/racing-club-sarmiento-junin-2026-09-19.html",
       "digest": {
         "headline": "Racing Club, Sarmiento Junin'i 3-1 yendi",
-        "paragraph": "Estadio Presidente Perón'de oynanan Argentina Primera División maçını Racing Club 3-1 kazandı; Sarmiento Junin sahadan puansız ayrıldı. Golleri 23. dakikada G. Escudero (Racing Club), 26. dakikada J. Marabel (Sarmiento Junin), 52. dakikada Adrian Martinez (Racing Club), 80. dakikada I. Rodriguez (Racing Club) kaydetti.",
+        "paragraph": "Estadio Presidente Perón'de oynanan Argentina Primera División maçını Racing Club 3-1 kazandı; Sarmiento Junin sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Racing Club",
           "loser": "Sarmiento Junin",
@@ -366,108 +373,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "23'",
-              "team": "Racing Club",
-              "type": "Gol",
-              "detail": "G. Escudero",
-              "pivotal": true
-            },
-            {
-              "minute": "26'",
-              "team": "Sarmiento Junin",
-              "type": "Gol",
-              "detail": "J. Marabel",
-              "pivotal": true
-            },
-            {
-              "minute": "52'",
-              "team": "Racing Club",
-              "type": "Gol",
-              "detail": "Adrian Martinez",
-              "pivotal": true
-            },
-            {
-              "minute": "80'",
-              "team": "Racing Club",
-              "type": "Gol",
-              "detail": "I. Rodriguez",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (I. Rodriguez).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "78'",
-              "team": "Racing Club",
-              "type": "Oyuncu değişikliği",
-              "detail": "G. Escudero",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "Racing Club",
-              "type": "Gol",
-              "detail": "I. Rodriguez",
-              "decisive": true
-            },
-            {
-              "minute": "81'",
-              "team": "Sarmiento Junin",
-              "type": "Oyuncu değişikliği",
-              "detail": "M. Martinez",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Sarmiento Junin",
-              "type": "Oyuncu değişikliği",
-              "detail": "N. Pasquini",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "G. Escudero",
-              "team": "Racing Club",
-              "contribution": "23' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "I. Rodriguez",
-              "team": "Racing Club",
-              "contribution": "80' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "J. Marabel",
-              "team": "Sarmiento Junin",
-              "contribution": "26' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Adrian Martinez",
-              "team": "Racing Club",
-              "contribution": "52' gol · 63' sarı kart",
-              "impact": "orta"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -478,33 +399,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "23' Racing Club — G. Escudero: gol",
-            "26' Sarmiento Junin — J. Marabel: gol"
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
-            "52' Racing Club — Adrian Martinez: gol",
-            "80' Racing Club — I. Rodriguez: gol",
-            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Racing Club maça 5-3-2 dizilişiyle başladı.",
-            "Sarmiento Junin maça 4-4-2 dizilişiyle başladı.",
-            "58' Sarmiento Junin değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "58' Sarmiento Junin değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "78' Racing Club değişikliği (Substitution 1). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "81' Sarmiento Junin değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Sarmiento Junin maça 4-4-2 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -516,7 +424,7 @@
               "formation": "4-4-2"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -530,8 +438,7 @@
             "Racing Club daha çok şut denedi (16-9)."
           ],
           "improvements": [
-            "Sarmiento Junin şut isabetinde geride kaldı (%11); bitiricilik geliştirilmesi gereken alan.",
-            "Sarmiento Junin son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Sarmiento Junin şut isabetinde geride kaldı (%11); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Racing Club sahadan 2 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -629,21 +536,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 70,
       "publishState": "page"
     },
@@ -675,10 +576,10 @@
       "winner": "New York Red Bulls",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -686,9 +587,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 13
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -708,24 +609,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 13,
+        "events": 0,
         "statistics": 17,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "cd70ae496b88ef0b",
-      "fingerprint": "cd70ae496b88ef0b",
+      "analysisSourceHash": "872299b05eb5191d",
+      "fingerprint": "872299b05eb5191d",
       "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
-      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
-      "generatedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T10:55:00.311Z",
+      "generatedAt": "2026-09-19T10:55:00.311Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -737,7 +643,7 @@
       "reportUrl": "./mac-raporu/new-york-city-fc-new-york-red-bulls-2026-09-19.html",
       "digest": {
         "headline": "New York Red Bulls, New York City FC'i 1-0 yendi",
-        "paragraph": "New York Red Bulls, Yankee Stadium'da oynanan MLS karşılaşmasında New York City FC'i 1-0 mağlup etti. Tek golü 57. dakikada J. Hall (New York Red Bulls) kaydetti.",
+        "paragraph": "New York Red Bulls, Yankee Stadium'da oynanan MLS karşılaşmasında New York City FC'i 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "New York Red Bulls",
           "loser": "New York City FC",
@@ -753,84 +659,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "57'",
-              "team": "New York Red Bulls",
-              "type": "Gol",
-              "detail": "J. Hall",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "New York City FC",
-              "type": "Oyuncu değişikliği",
-              "detail": "A. Ojeda",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "New York Red Bulls",
-              "type": "Oyuncu değişikliği",
-              "detail": "C. Cowell",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "New York Red Bulls",
-              "type": "Oyuncu değişikliği",
-              "detail": "A. Mehmeti",
-              "decisive": false
-            },
-            {
-              "minute": "84'",
-              "team": "New York Red Bulls",
-              "type": "Oyuncu değişikliği",
-              "detail": "J. Hall",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "J. Hall",
-              "team": "New York Red Bulls",
-              "contribution": "57' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "A. Mehmeti",
-              "team": "New York Red Bulls",
-              "contribution": "6' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "A. O'Neill",
-              "team": "New York City FC",
-              "contribution": "55' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "C. Cowell",
-              "team": "New York Red Bulls",
-              "contribution": "22' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -840,30 +681,19 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay)."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
-            "57' New York Red Bulls — J. Hall: gol",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
-            "New York Red Bulls maça 4-3-3 dizilişiyle başladı.",
-            "62' New York Red Bulls değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "62' New York City FC değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "62' New York City FC değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "75' New York City FC değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "84' New York Red Bulls değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "New York Red Bulls maça 4-3-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -871,7 +701,7 @@
               "formation": "4-3-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -982,20 +812,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 70,
       "publishState": "page"
     },
