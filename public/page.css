@@ -698,6 +698,74 @@ h1 {
   color: #f0fdf4;
 }
 
+/*
+ * HABER DURUMU ROZETİ — Resmî / Görüşme / İddia / Haber.
+ *
+ * Renk sırası bilerek bir GÜVEN merdiveni: yeşil (kurum konuştu) → kehribar
+ * (süreç sürüyor) → gri (yalnızca iddia). Okur rengi okumadan da sırayı
+ * anlar. "Son Dakika" bu merdivende YOKTUR; o ayrı bir rozettir
+ * (.mega-badge--breaking) ve durumun yerine geçmez, yanında durur —
+ * tazelik doğruluk değildir.
+ *
+ * Varsayılan "Haber" tonudur: durumu okunamayan bir kayıt, kendini
+ * olduğundan güvenilir gösteren yeşile değil nötr tona düşer.
+ */
+.mega-badge--status {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.mega-badge--status[data-status="official"] {
+  background: #15803d;
+  color: #f0fdf4;
+}
+
+.mega-badge--status[data-status="negotiation"] {
+  background: #b45309;
+  color: #fffbeb;
+}
+
+.mega-badge--status[data-status="claim"] {
+  background: #cbd5e1;
+  color: #334155;
+}
+
+.mega-badge--status[data-status="reported"] {
+  background: #1d4ed8;
+  color: #eff6ff;
+}
+
+/*
+ * KOYU TEMA. Açık tema tonları koyu zeminde ya okunmuyor ya da parlıyor;
+ * her durum kendi koyu karşılığını alır, kontrast korunur.
+ */
+@media (prefers-color-scheme: dark) {
+  .mega-badge--status {
+    background: #334155;
+    color: #e2e8f0;
+  }
+
+  .mega-badge--status[data-status="official"] {
+    background: #166534;
+    color: #dcfce7;
+  }
+
+  .mega-badge--status[data-status="negotiation"] {
+    background: #92400e;
+    color: #fef3c7;
+  }
+
+  .mega-badge--status[data-status="claim"] {
+    background: #475569;
+    color: #e2e8f0;
+  }
+
+  .mega-badge--status[data-status="reported"] {
+    background: #1e40af;
+    color: #dbeafe;
+  }
+}
+
 .mega-badge--transfer {
   background: var(--green);
   color: #f0fdf4;
