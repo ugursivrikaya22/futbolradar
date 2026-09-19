@@ -395,7 +395,17 @@ async function until(check, message, timeout = 5000) {
           await navigate(await tickerAll.isVisible() ? tickerAll : page.locator('main a.section-link[href$="' + (en ? 'news.html' : 'haberler.html') + '"]').first());
           await open(en ? 'en/news.html' : 'haberler.html');
           if (!en) await page.locator('[data-api-target="news-page"][data-state="ready"]').waitFor();
-          const news = page.locator('main a[href*="/haber/"], main a[href*="haber/"]').first();
+          // Haber yazısının rotası DİLE GÖRE değişir. Türkçe yazılar
+          // `/haber/<slug>`, İngilizce yazılar `/en/news/<slug>` altında.
+          // Bu seçici eskiden iki dilde de `haber/` arıyordu; o zaman
+          // doğruydu, çünkü İngilizce sayfa Türkçe habere bağlanıyordu.
+          // /en kendi akışına geçince İngilizce sayfada `haber/` kalmadı ve
+          // denetim "No news article route" ile düştü — testin kendisi eski
+          // yapıyı sabitliyordu. İddia aynı: haber listesinden bir yazıya
+          // gidilebilmeli.
+          const news = page.locator(en
+            ? 'main a[href*="news/"]'
+            : 'main a[href*="/haber/"], main a[href*="haber/"]').first();
           assert.ok(await news.count(), 'No news article route');
           await navigate(news);
           await open(en ? 'en/columns.html' : 'kose-yazilari.html');
