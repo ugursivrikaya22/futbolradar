@@ -36,6 +36,8 @@ const {
 const {
   renderTurkish,
   renderEnglish,
+  enCompetition,
+  enStage,
   trDate,
   enDate
 } = require("./trabzonsporColumnWriter.js");
@@ -253,7 +255,9 @@ function spot(model) {
 
 function spotEn(model) {
   const parts = [
-    [model.competition, model.stage].filter(Boolean).join(" "),
+    // Turnuva ve aşama adı İngilizceye çevrilir; aşama çevrilemiyorsa hiç
+    // yazılmaz (bkz. trabzonsporColumnWriter.js → enCompetition/enStage).
+    [enCompetition(model.competition), enStage(model.stage)].filter(Boolean).join(" "),
     fixtureLine(model),
     [model.venue, enDate(model.date)].filter(Boolean).join(", ")
   ].filter(Boolean);

@@ -11,6 +11,7 @@
  *   5. Türkçe ve İngilizce metinler AYRI yazılır.
  */
 import { createRequire } from "node:module";
+import { findTurkish } from "./lib/turkish-detector.mjs";
 
 const require = createRequire(import.meta.url);
 const { selectMatch, readiness, countWords, MIN_WORDS, MAX_WORDS } =
@@ -300,6 +301,41 @@ console.log("\n[8] İngilizce sürüm çeviri değil");
   check("İngilizce başlıklar İngilizce", enText.includes("## The goals, in order"));
   check("İngilizce metinde Türkçe bölüm başlığı yok", !enText.includes("## Gecenin golleri"));
   check("İngilizce başlık İngilizce", /[A-Za-z]/.test(entry.en.title) && !/Gecenin/.test(entry.en.title));
+
+  // `/en` yüzeyinde Türkçe sızıntı olmamalı (scripts/test-en-language-purity.mjs
+  // ile aynı dedektör). Buradaki denetim üreticiyi kaynağında tutuyor:
+  // Türkçe bir işlev sözcüğü İngilizce şablona sızarsa sayfa basılmadan
+  // yakalanır.
+  const leaks = findTurkish([
+    entry.en.title,
+    entry.en.seoTitle,
+    entry.en.metaDescription,
+    entry.en.excerpt,
+    entry.en.spot,
+    ...entry.en.body
+  ].join("\n")) || [];
+  check("İngilizce metinde Türkçe sızıntı yok", leaks.length === 0, JSON.stringify(leaks).slice(0, 200));
+
+  // Türkçe gelen turnuva ve aşama adları İngilizce yüzeyde çevrilir;
+  // çevrilemeyen aşama adı hiç yazılmaz.
+  const european = buildColumnEntry(
+    fullMatch({ league: "UEFA Şampiyonlar Ligi", stage: "2. eleme turu, rövanş" }),
+    { ...CONTEXT, nextMatch: { ...CONTEXT.nextMatch, competition: "Avrupa Ligi" } }
+  );
+  const europeanText = [european.entry.en.spot, ...european.entry.en.body].join("\n");
+  check("turnuva adı İngilizceye çevrilir", europeanText.includes("UEFA Champions League"), european.entry.en.spot);
+  check("aşama adı İngilizceye çevrilir", europeanText.includes("Qualifying round 2, second leg"));
+  check("sıradaki maçın turnuvası da çevrilir", europeanText.includes("UEFA Europa League"));
+  check(
+    "Avrupa kupası metninde Türkçe sızıntı yok",
+    (findTurkish(europeanText) || []).length === 0,
+    JSON.stringify(findTurkish(europeanText) || []).slice(0, 200)
+  );
+  check(
+    "çevrilemeyen aşama adı İngilizce metne girmez",
+    !buildColumnEntry(fullMatch({ stage: "Hollanda kampı, sezon öncesi hazırlık" }), CONTEXT)
+      .entry.en.body.join("\n").includes("kampı")
+  );
 }
 
 /* ------------------------------------------------------------------ *

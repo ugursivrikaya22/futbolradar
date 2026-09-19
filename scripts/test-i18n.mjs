@@ -246,7 +246,23 @@ for (const route of ROUTES) {
       const pattern = new RegExp(`href="[^"]*${item.href.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\\\$&")}"[^>]*hreflang="tr"`);
       check(`en/index.html: ${item.href} bağlantısı hreflang="tr" taşıyor`, pattern.test(enHome));
     }
-    check("en/index.html: Türkçe hedefler (TR) etiketi taşıyor", enHome.includes("(TR)</a>"));
+    // İŞARETİN KENDİSİ SINANIYOR, VARLIĞI DEĞİL.
+    //
+    // Eskiden yalnızca sayfada bir yerde "(TR)</a>" dizisi aranıyordu; tek
+    // bir işaretli bağlantı, diğer bütün işaretsiz Türkçe hedefleri
+    // gölgeliyordu (nitekim ana sayfadaki üç arşiv bağlantısı yıllarca
+    // işaretsiz kaldı). Artık Türkçeye giden HER bağlantı tek tek
+    // denetleniyor: dil kutusu dışında `hreflang="tr"` taşıyan her <a>,
+    // etiketinde görünür bir "(TR)" taşımalı.
+    const body = enHome.replace(/<a class="lang-switch"[\s\S]*?<\/a>/g, "");
+    const trAnchors = [...body.matchAll(/<a\b[^>]*hreflang="tr"[^>]*>([\s\S]*?)<\/a>/g)];
+    const unlabelled = trAnchors
+      .filter((match) => !match[1].includes("(TR)"))
+      .map((match) => match[0].slice(0, 80));
+    check("en/index.html: Türkçe hedeflerin tamamı (TR) etiketi taşıyor",
+      unlabelled.length === 0, unlabelled.slice(0, 3).join(" | "));
+    check("en/index.html: en az bir işaretli Türkçe hedef var (işaret gerçekten basılıyor)",
+      trAnchors.length === 0 || trAnchors.some((match) => match[1].includes("(TR)")));
   }
 }
 

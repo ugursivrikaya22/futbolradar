@@ -766,8 +766,38 @@ const COMPETITION_KEYS = Object.freeze({
   "hazirlik maci": "friendlies",
   "hazırlık maçı": "friendlies",
   "friendlies clubs": "friendlies",
-  friendlies: "friendlies"
+  friendlies: "friendlies",
+  // TÜRKİYE KUPASI VE ALT LİGLER. Sağlayıcı bunları yalnızca Türkçe adıyla
+  // veriyor; eşleme olmadığında ad olduğu gibi geçtiği için İngilizce maç
+  // sayfasında "Türkiye Kupası" yazıyordu.
+  "turkiye kupasi": "turkish-cup",
+  "türkiye kupası": "turkish-cup",
+  "ziraat turkiye kupasi": "turkish-cup",
+  "ziraat türkiye kupası": "turkish-cup",
+  "turkish cup": "turkish-cup",
+  "1. lig": "first-league",
+  "trendyol 1. lig": "first-league",
+  "tff 1. lig": "first-league",
+  "2. lig": "second-league",
+  "tff 2. lig": "second-league",
+  "3. lig": "third-league",
+  "tff 3. lig": "third-league",
+  // Türkçe olmayan ama İngilizce sayfada yerel adıyla kalan iki turnuva.
+  // Okuyucu için "Magyar Kupa" ile "Türkiye Kupası" arasında fark yok.
+  "magyar kupa": "hungarian-cup",
+  "ligi kuu bara": "tanzanian-premier-league"
 });
+
+/**
+ * GRUP NUMARASI TAŞIYAN ALT LİG ADLARI.
+ *
+ * "3. Lig - Group 2" tek tek eşlenemez: grup sayısı sezona göre değişiyor ve
+ * sağlayıcı ayırıcıyı ("-", "–", ":") tutarsız yazıyor. Bu yüzden tier ve
+ * grup ayrı yakalanıp etiket sözlükten kuruluyor; grup numarası olduğu gibi
+ * korunuyor çünkü o bir olgu, çeviri değil.
+ */
+const TIER_GROUP_PATTERN = /^(?:tff\s*|trendyol\s*)?([123])\.\s*lig(?:\s*[-–:]\s*(?:group|grup)\s*(\d+))?$/i;
+const TIER_KEYS = Object.freeze({ 1: "first-league", 2: "second-league", 3: "third-league" });
 
 function competitionKey(name) {
   const raw = String(name || "").trim().toLowerCase();
@@ -776,8 +806,18 @@ function competitionKey(name) {
 }
 
 function competitionLabel(name, locale) {
-  const key = competitionKey(name);
-  return key ? t(`competition.${key}`, locale) : String(name || "");
+  const raw = String(name || "").trim();
+  const key = competitionKey(raw);
+  if (key) return t(`competition.${key}`, locale);
+
+  // Statik eşleme tutmadıysa grup numaralı alt lig kalıbı denenir.
+  const tier = raw.toLowerCase().match(TIER_GROUP_PATTERN);
+  if (tier) {
+    const base = t(`competition.${TIER_KEYS[tier[1]]}`, locale);
+    return tier[2] ? `${base} — ${t("common.group", locale)} ${tier[2]}` : base;
+  }
+
+  return raw;
 }
 
 module.exports = {

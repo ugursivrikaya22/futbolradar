@@ -25,7 +25,9 @@
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { t } = require("../../services/i18n.js");
+const { competitionLabel, t } = require("../../services/i18n.js");
+// Veride Türkçe hazır metin olarak duran künye satırları.
+const { sourceNoteLabel } = require("../../services/displayLabels.js");
 
 export function escapeHtml(value) {
   return String(value ?? "")
@@ -143,7 +145,7 @@ function renderSeason(model, locale) {
         <div class="p360-stat-grid">${stats.positional.map((row) => statCard(row.key, row.value, locale, row.suffix)).join("")}</div>`
     : "";
   const source = stats.source
-    ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, stats.source))}</p>`
+    ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, sourceNoteLabel(stats.source, locale)))}</p>`
     : "";
 
   return `<section class="p360" aria-labelledby="p360-season-title" data-p360-section="season">
@@ -189,7 +191,7 @@ function renderMatches(model, locale) {
 
     return `<tr>
             <th scope="row">${escapeHtml(date)}</th>
-            <td>${escapeHtml(row.league || "")}</td>
+            <td>${escapeHtml(row.league ? competitionLabel(row.league, locale) : "")}</td>
             <td>${row.side === "home" ? "" : "@"}${opponent}</td>
             <td class="p360-score${resultClass}">${escapeHtml(row.scoreLine || "")}</td>
             <td>${escapeHtml(role)}</td>
@@ -306,7 +308,7 @@ function renderForm(model, locale) {
   return `<section class="p360" aria-labelledby="p360-form-title" data-p360-section="form">
         <div class="p360-head"><h2 id="p360-form-title">${escapeHtml(heading)}</h2></div>
         <div class="p360-stat-grid p360-stat-grid-compact">${cards}</div>
-        ${model.seasonStats.source ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, model.seasonStats.source))}</p>` : ""}
+        ${model.seasonStats.source ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, sourceNoteLabel(model.seasonStats.source, locale)))}</p>` : ""}
       </section>`;
 }
 
@@ -337,7 +339,7 @@ function renderAvailability(model, locale) {
   const reason = availabilityReason(state.note, locale);
   const details = state.available
     ? `<div class="p360-status p360-status-${escapeHtml(state.status)}"><strong>${escapeHtml(statusLabel)}</strong>${reason ? `<span>${escapeHtml(reason)}</span>` : ""}</div>
-        ${state.source ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, state.source))}</p>` : ""}`
+        ${state.source ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, sourceNoteLabel(state.source, locale)))}</p>` : ""}`
     : `<div class="p360-status p360-status-unknown"><strong>${escapeHtml(statusLabel)}</strong></div>
         ${emptyNote(text("player360.availability.unknownNote", locale))}`;
 

@@ -22,6 +22,7 @@
  * deyimleriyle yazılıyor ve bu yüzden cümle sayısı bile birebir tutmuyor.
  */
 
+const { competitionLabel } = require("./i18n.js");
 const {
   TR_MONTHS,
   EN_MONTHS,
@@ -128,6 +129,71 @@ function strengthsAndWeaknesses(model) {
   if (stats.fouls && isNumber(stats.fouls.us) && stats.fouls.us >= 18) bad.push({ key: "fouls", value: stats.fouls.us });
 
   return { good, bad };
+}
+
+
+/**
+ * AŞAMA ADI İNGİLİZCEYE ÇEVRİLİR — ÇEVRİLEMİYORSA HİÇ YAZILMAZ.
+ *
+ * `stage` alanı Türkçe geliyor ("6. hafta", "2. eleme turu, rövanş") ve
+ * İngilizce metne olduğu gibi basıldığında `/en` yüzeyinde Türkçe sızıntı
+ * oluyordu — `scripts/test-en-language-purity.mjs`in tam olarak aradığı
+ * hata. Bilinen kalıplar çevriliyor; tanınmayan bir aşama adı ise
+ * UYDURULMUYOR ve İngilizce metinde hiç geçmiyor: eksik bir ayrıntı,
+ * okuyucunun anlamadığı bir dildeki ayrıntıdan iyidir.
+ */
+function enStage(stage) {
+  const raw = String(stage || "").trim();
+  if (!raw) return "";
+
+  const week = raw.match(/^(\d+)\.\s*hafta$/i);
+  if (week) return `Matchday ${week[1]}`;
+
+  const qualifying = raw.match(/^(\d+)\.\s*eleme turu(?:,\s*(ilk maç|rövanş))?$/i);
+  if (qualifying) {
+    const leg = qualifying[2] && /rövanş/i.test(qualifying[2])
+      ? ", second leg"
+      : qualifying[2] ? ", first leg" : "";
+    return `Qualifying round ${qualifying[1]}${leg}`;
+  }
+
+  const playoff = raw.match(/^play-?off turu(?:,\s*(ilk maç|rövanş))?$/i);
+  if (playoff) {
+    const leg = playoff[1] && /rövanş/i.test(playoff[1])
+      ? ", second leg"
+      : playoff[1] ? ", first leg" : "";
+    return `Play-off round${leg}`;
+  }
+
+  const known = {
+    "sezon öncesi hazırlık": "pre-season friendly",
+    "grup aşaması": "group stage",
+    "çeyrek final": "quarter-final",
+    "yarı final": "semi-final",
+    "final": "final"
+  };
+  const hit = known[raw.toLocaleLowerCase("tr")];
+  if (hit) return hit;
+
+  // Türkçe işlev sözcüğü taşıyan tanınmayan aşama adı İngilizce metne
+  // girmez. Latin harfli, Türkçe sözcük içermeyen adlar (örneğin
+  // "Summer Series Upper Austria") olduğu gibi kalır.
+  return /\b(hafta|tur|turu|eleme|maç|rövanş|kampı|sezon|aşaması|final|hazırlık)\b/i.test(raw)
+    ? ""
+    : raw;
+}
+
+/**
+ * Turnuva adı İngilizce yüzeyde İngilizce yazılır.
+ *
+ * `model.competition` Türkçe geliyor ("UEFA Şampiyonlar Ligi", "Avrupa
+ * Ligi") ve İngilizce metne olduğu gibi basıldığında dil saflığı denetimi
+ * haklı olarak düşüyordu. Karşılıklar sitenin kendi sözlüğünden alınıyor
+ * (locales/en.json); burada ikinci bir liste tutmak, iki listenin
+ * ayrışması demek olurdu.
+ */
+function enCompetition(name) {
+  return competitionLabel(name, "en");
 }
 
 /* ------------------------------------------------------------------ *
@@ -721,7 +787,7 @@ function renderEnglish(model) {
   const place = model.isHome ? "at home" : "away";
   body.push(
     `Trabzonspor ${verb} ${opponent} ${score} ${place}${model.venue ? ` at ${model.venue}` : ""} on ${enDate(model.date)}, ` +
-    `in the ${model.competition}${model.stage ? `, ${model.stage}` : ""}. The ${link("full match report", links.report)} carries the raw numbers; this piece is about what they mean.`
+    `in the ${enCompetition(model.competition)}${enStage(model.stage) ? `, ${enStage(model.stage)}` : ""}. The ${link("full match report", links.report)} carries the raw numbers; this piece is about what they mean.`
   );
   body.push(
     model.result === "win"
@@ -734,7 +800,7 @@ function renderEnglish(model) {
   body.push(
     `This is not a match summary. Every line below rests on data measured by the provider: the event feed, the team statistics, the team sheets and the per-player output. ` +
     `Nothing unmeasured has been written, and no words have been put in the mouth of a manager or a player. ` +
-    `What the ${model.competition}${model.stage ? ` ${model.stage}` : ""} fixture left behind is the sum of those measurements.`
+    `What the ${enCompetition(model.competition)}${enStage(model.stage) ? ` ${enStage(model.stage)}` : ""} fixture left behind is the sum of those measurements.`
   );
 
   if (!model.goals.length && model.ourScore === 0 && model.theirScore === 0) {
@@ -1037,7 +1103,7 @@ function renderEnglish(model) {
     body.push("## What to take into the next match");
     const next = model.nextMatch;
     body.push(
-      `Next up: ${next.opponent}${next.isHome ? " at home" : " away"}${next.date ? ` on ${enDate(next.date)}` : ""}${next.competition ? `, ${next.competition}` : ""}. ` +
+      `Next up: ${next.opponent}${next.isHome ? " at home" : " away"}${next.date ? ` on ${enDate(next.date)}` : ""}${next.competition ? `, ${enCompetition(next.competition)}` : ""}. ` +
       `${link("Trabzonspor's fixture list and latest news", links.team)} follows the build-up. The real question this night leaves behind is whether the pattern in the numbers above — a surplus of creation, a shortfall in finishing, whichever it was — is a one-match deviation or a running theme of the season. The same columns in the next match will answer it.`
     );
   }
@@ -1053,6 +1119,8 @@ function renderEnglish(model) {
 
 module.exports = {
   renderTurkish,
+  enStage,
+  enCompetition,
   renderEnglish,
   trDate,
   enDate,
