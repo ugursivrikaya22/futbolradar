@@ -40,6 +40,9 @@ const {
   writeDynamicRoutePairs
 } = require("../services/i18n.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
+// Fikstür etiketleri veride Türkçe hazır metin olarak duruyor ("3. Hafta",
+// "14-17 Ağustos 2026"); İngilizce sayfada sunum katmanında çözülüyor.
+const { dateRangeLabel, dateTimeLabel, roundLabel, venueLabel } = require("../services/displayLabels.js");
 const { sameClub, slug: teamSlug } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { getPlayers, slug: playerSlug } = require("../services/playerService.js");
@@ -99,8 +102,10 @@ function flattenFixtures() {
     league: fixtures.league,
     season: fixtures.season,
     round: round.round,
-    roundLabel: round.label,
-    dateRange: match.dateLabel || round.dateRange || null,
+    roundLabel: roundLabel(round.round, round.label, LOCALE),
+    dateRange: match.dateLabel
+      ? dateTimeLabel(match.dateLabel, LOCALE)
+      : (round.dateRange ? dateRangeLabel(round.dateRange, LOCALE) : null),
     freshness: match.freshness || fixtures.freshness
   }))).filter((match) => match.homeTeam && match.awayTeam && CONFIRMED_FIXTURE_STATUSES.has(match.fixtureStatus));
 }
@@ -236,7 +241,7 @@ function pageHtml(match) {
   const description = finalResult
     ? resultDescription(match, finalResult, LOCALE)
     : match.kickoff
-      ? `${match.homeTeam} vs ${match.awayTeam} kicks off ${kickoffDay} at ${kickoffClock} (Türkiye time).${match.venue ? ` Venue: ${match.venue}.` : ""} Pre-match form, radar score and squad news on FutbolRadar.`
+      ? `${match.homeTeam} vs ${match.awayTeam} kicks off ${kickoffDay} at ${kickoffClock} (Türkiye time).${match.venue ? ` Venue: ${venueLabel(match.venue, LOCALE)}.` : ""} Pre-match form, radar score and squad news on FutbolRadar.`
       : `${match.homeTeam} vs ${match.awayTeam} — Trendyol Süper Lig preview with team form, radar score and squad news on FutbolRadar.`;
 
   const schema = {
@@ -264,7 +269,7 @@ function pageHtml(match) {
           { "@type": "SportsTeam", name: match.homeTeam },
           { "@type": "SportsTeam", name: match.awayTeam }
         ],
-        ...(match.venue ? { location: { "@type": "Place", name: match.venue } } : {}),
+        ...(match.venue ? { location: { "@type": "Place", name: venueLabel(match.venue, LOCALE) } } : {}),
         superEvent: { "@type": "SportsOrganization", name: fixtures.league || "Süper Lig" },
         sport: "Football",
         inLanguage: "en"
@@ -297,7 +302,7 @@ function pageHtml(match) {
           ${finalResult.halftimeHome !== null && finalResult.halftimeAway !== null ? `<span>Half-time <b>${escapeHtml(finalResult.halftimeHome)}-${escapeHtml(finalResult.halftimeAway)}</b></span>` : ""}
           ${finalResult.finishKey && finalResult.finishKey !== "regular" ? `<span>Finish <b>${escapeHtml(label(`finish.${finalResult.finishKey}`))}</b></span>` : ""}
           ${finalResult.kickoff ? `<span>${escapeHtml(label("common.date"))} <b>${escapeHtml(shortDateLabel(finalResult.kickoff, LOCALE))}</b></span>` : ""}
-          ${match.venue ? `<span>${escapeHtml(label("common.venue"))} <b>${escapeHtml(match.venue)}</b></span>` : ""}
+          ${match.venue ? `<span>${escapeHtml(label("common.venue"))} <b>${escapeHtml(venueLabel(match.venue, LOCALE))}</b></span>` : ""}
         </div>
       </section>
 `
