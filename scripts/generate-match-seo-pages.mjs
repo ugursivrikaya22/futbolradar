@@ -51,6 +51,8 @@ import {
   istanbulIso,
   leadersSectionHtml,
   lineupsSectionHtml,
+  matchCenterPlusPayloadHtml,
+  matchCenterPlusSectionsHtml,
   longDate,
   nextMatchesSectionHtml,
   matchFollowHtml,
@@ -497,6 +499,11 @@ function detailFor(entry) {
     events,
     substitutions,
     lineups: pickArray("lineups"),
+    // Maç merkezi zenginleştirmesi (oyuncu puanları, ısı haritası, şut
+    // haritası) bu iki alandan besleniyor. Depoda yoksa boş dizi kalır ve
+    // ilgili bölümler hiç açılmaz — uydurma yok.
+    players: pickArray("players"),
+    shots: pickArray("shots"),
     statistics: pickArray("statistics", twoSided),
     coaches: (fromEditorial && fromEditorial.coaches) || null,
     summary: (fromEditorial && fromEditorial.summary) || null,
@@ -907,6 +914,7 @@ function pageHtml(entry, locale, options) {
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       matchPollSectionHtml(ctx),
+      matchCenterPlusSectionsHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       // MAÇ ÖZETİ EDİTORYAL TÜRKÇE METİNDİR.
       //
@@ -928,6 +936,7 @@ function pageHtml(entry, locale, options) {
       matchPollSectionHtml(ctx),
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
+      matchCenterPlusSectionsHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
@@ -952,7 +961,8 @@ function pageHtml(entry, locale, options) {
       // Canlı bölümlerin kabuğu: istemci başlama vuruşundan sonra doldurur.
       radarPulseSectionHtml(ctx),
       eventsSectionHtml([], ctx),
-      statsSectionHtml([], ctx)
+      statsSectionHtml([], ctx),
+      matchCenterPlusSectionsHtml(ctx)
     ];
   }
 
@@ -1025,6 +1035,8 @@ function pageHtml(entry, locale, options) {
     <script src="${base}radar-pulse.js" defer></script>
     <script src="${base}radar-fan.js" defer></script>
     <script src="${base}match-center.js" defer></script>
+    <script src="${base}match-center-plus.js" defer></script>
+    ${matchCenterPlusPayloadHtml(detail, entry, state)}
   </body>
 </html>
 `;

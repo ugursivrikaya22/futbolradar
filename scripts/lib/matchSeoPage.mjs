@@ -250,6 +250,14 @@ export const STR = {
     radarPulsePending: "Radar Nabzı maç başladığında burada açılır.",
     radarPulseStale: "Canlı istatistik verisi geçici olarak güncellenemiyor.",
     fanPollTitle: "Taraftar Anketi",
+    mcpPitch: "saha üzerinde ilk 11 ve diziliş",
+    mcpRatings: "oyuncu maç puanları",
+    mcpXg: "gol beklentisi (xG)",
+    mcpShotMap: "şut haritası",
+    mcpTimeline: "maç zaman çizgisi",
+    mcpStats: "canlı takım istatistikleri",
+    mcpHeatmap: "oyuncu ısı haritaları",
+    mcpAnalysis: "FutbolRadar maç analizi",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -399,6 +407,14 @@ export const STR = {
     radarPulsePending: "Live Match Pulse opens here once the match kicks off.",
     radarPulseStale: "Live statistics cannot be updated at the moment.",
     fanPollTitle: "Fan Poll",
+    mcpPitch: "starting XI and formation on the pitch",
+    mcpRatings: "player match ratings",
+    mcpXg: "expected goals (xG)",
+    mcpShotMap: "shot map",
+    mcpTimeline: "match timeline",
+    mcpStats: "live team statistics",
+    mcpHeatmap: "player heat maps",
+    mcpAnalysis: "FutbolRadar match analysis",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -704,6 +720,12 @@ function predictedLineupSectionHtml(ctx, text) {
 function lowerFirstTr(value, locale) {
   const text = String(value || "");
   if (!text) return text;
+  // ÖZEL AD KÜÇÜLTÜLMEZ. "FutbolRadar maç analizi" başlığı bölüm adının
+  // ortasına girdiğinde marka adı "futbolRadar" oluyordu. İlk kelimesinde
+  // İÇERİDE büyük harf taşıyan (FutbolRadar, xG) ya da tamamı büyük olan
+  // bir sözcük özel addır; küçültme yalnızca sıradan sözcüklere uygulanır.
+  const firstWord = text.split(/\s+/)[0];
+  if (/[A-ZÇĞİÖŞÜ]/.test(firstWord.slice(1))) return text;
   const first = text[0];
   const lowered = locale === "en"
     ? first.toLowerCase()
@@ -1404,4 +1426,91 @@ export function relatedLinksHtml(links, locale) {
 
 export function dayOf(value) {
   return istanbulDay(value);
+}
+
+/* ------------------------------------------------------------------ */
+/* FUTBOLRADAR MAÇ MERKEZİ — ZENGİNLEŞTİRME KABUKLARI                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * SAHA ÜZERİNDE İLK 11, OYUNCU PUANLARI, xG, ŞUT HARİTASI, ZAMAN
+ * ÇİZGİSİ, GENİŞLETİLMİŞ İSTATİSTİK, ISI HARİTASI VE OTOMATİK ANALİZ —
+ * HEPSİ BOŞ VE `hidden` DOĞAR.
+ *
+ * Sunucu bu bölümlerin İÇERİĞİNİ basmaz; yalnızca başlığı ve boş gövdeyi
+ * koyar. Sebep tek: bu bölümlerin her biri VERİYE BAĞLIDIR ve verinin
+ * olup olmadığına ancak o anki sağlayıcı yanıtı karar verebilir. Derleme
+ * anında "xG kutusu" basmak, sağlayıcı xG göndermediğinde sayfada kalıcı
+ * bir boş kutu bırakırdı.
+ *
+ * `hidden` doğmaları DÜZEN KAYMASINI (CLS) da önler: `match-center-plus.js`
+ * yalnızca çizecek gerçek veri bulduğu bölümü açar, gerisi sayfada hiç
+ * yer kaplamaz. Betik hiç çalışmazsa okuyucu bugünkü sayfayı görür.
+ *
+ * MEVCUT BÖLÜMLER SİLİNMEZ. Zengin zaman çizgisi ve istatistik paneli
+ * çizildiğinde SSR'ın düz listeleri yalnızca GİZLENİR (bkz.
+ * match-center-plus.js#foldLegacy), böylece istemci tarafı bir nedenle
+ * çalışmazsa okuyucu yine olayları ve istatistikleri görür.
+ */
+export function matchCenterPlusSectionsHtml(ctx) {
+  const { locale } = ctx;
+  const text = STR[locale === "en" ? "en" : "tr"];
+
+  const shellFor = (key, label) =>
+    `<section class="msp-section mcp-section" id="mcp-section-${key}" data-mcp="${key}" hidden ` +
+    `aria-labelledby="mcp-title-${key}">` +
+    `<h2 id="mcp-title-${key}" class="msp-section-title">${escapeHtml(fixtureHeading(label, ctx))}</h2>` +
+    `<div data-mcp-body></div>` +
+    `</section>`;
+
+  return [
+    shellFor("pitch", text.mcpPitch),
+    shellFor("ratings", text.mcpRatings),
+    shellFor("xg", text.mcpXg),
+    shellFor("shotmap", text.mcpShotMap),
+    shellFor("timeline", text.mcpTimeline),
+    shellFor("stats", text.mcpStats),
+    shellFor("heatmap", text.mcpHeatmap),
+    shellFor("analysis", text.mcpAnalysis)
+  ].join("");
+}
+
+/**
+ * BİTMİŞ / OYNANMAKTA OLAN MAÇIN ANLIK GÖRÜNTÜSÜ SAYFAYA GÖMÜLÜR.
+ *
+ * `match-center.js` bitmiş maçta yoklamayı durduruyor (doğru karar: bitmiş
+ * maç değişmez). Ama o zaman zengin bölümlerin çizileceği veri de yok
+ * demekti — ve her bitmiş maç sayfası için yeni bir `/api/match-detail`
+ * isteği açmak, en çok trafiği alan sayfalarda sağlayıcı kotasını boşa
+ * harcamak olurdu.
+ *
+ * Bunun yerine derleme anında ELDE OLAN kayıt sayfaya gömülüyor: sıfır
+ * ağ isteği, sıfır bekleme. Yalnızca çizim için gereken alanlar taşınır —
+ * tüm kaydı gömmek sayfayı gereksiz büyütürdü.
+ *
+ * Veri yoksa hiç basılmaz: boş bir JSON bloğu, hiç olmamasından farksız
+ * ama sayfada yer kaplar.
+ */
+export function matchCenterPlusPayloadHtml(detail, entry, state) {
+  if (!detail || (state !== "post" && state !== "live" && state !== "pending")) return "";
+  const pick = (value) => (Array.isArray(value) && value.length ? value : null);
+  const payload = {
+    homeTeam: entry.homeTeam,
+    awayTeam: entry.awayTeam,
+    status: entry.status || (state === "post" ? "FT" : ""),
+    providerStatus: entry.providerStatus || "",
+    minute: entry.minute === undefined ? null : entry.minute,
+    score: entry.score || null,
+    lineups: pick(detail.lineups),
+    players: pick(detail.players),
+    events: pick(detail.events),
+    substitutions: pick(detail.substitutions),
+    statistics: pick(detail.statistics),
+    shots: pick(detail.shots)
+  };
+  // Çizilecek hiçbir şey yoksa blok basılmaz.
+  if (!payload.lineups && !payload.players && !payload.events && !payload.statistics) return "";
+  // `</script>` dizisi JSON içinde geçerse bloğu erken kapatır; kaçırılır.
+  const json = JSON.stringify(payload).replace(/</g, "\\u003c");
+  return `<script type="application/json" data-mcp-payload>${json}</script>`;
 }
