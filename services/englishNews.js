@@ -540,6 +540,43 @@ function extractPersonName(rawTitle) {
  * yayıncı o listeden değilse kayıt DÜŞER: yanlış künyeli haber, eksik
  * haberden daha kötüdür.
  */
+/**
+ * İNGİLİZCE SAYFADA KÜNYE DE İNGİLİZCE OKUNABİLMELİ.
+ *
+ * Gövde metni kalıplardan üretildiği için her zaman İngilizce. Künye ise
+ * DOĞRUDAN yayıncıdan geliyor ve o denetimin dışında kalıyordu: canlı
+ * koşuda Suriye devlet ajansı "سانا" adıyla /en kartlarına düştü. Metin
+ * İngilizceydi, kartın altındaki ad Arap alfabesiyleydi.
+ *
+ * Türkçe sızıntı denetimi (`containsTurkish`) bunu yakalayamaz — yakalaması
+ * da beklenmez, o Türkçeye bakar. Bu yüzden kural dile değil YAZIYA bakar:
+ * künye ağırlıklı olarak Latin alfabesi olmalı. Böylece Arapça, Kiril,
+ * Yunan, CJK künyeler tek kuralla elenir ve her yeni örnek için engel
+ * listesine satır eklemek gerekmez.
+ *
+ * Eşik %100 DEĞİL: "Beşiktaş JK", "Fenerbahçe", "Türkiye Today" gibi meşru
+ * künyeler Latin dışı görünen harfler taşıyabilir. Ölçüt, harflerin
+ * çoğunluğunun Latin olması.
+ */
+const LATIN_LETTER = /\p{Script=Latin}/u;
+const ANY_LETTER = /\p{L}/u;
+const LATIN_MAJORITY_THRESHOLD = 0.6;
+
+function hasLatinPublisherName(name) {
+  const value = text(name).trim();
+  if (!value) return false;
+  let letters = 0;
+  let latin = 0;
+  for (const ch of value) {
+    if (!ANY_LETTER.test(ch)) continue;
+    letters += 1;
+    if (LATIN_LETTER.test(ch)) latin += 1;
+  }
+  // Harf içermeyen künye (yalnızca rakam/işaret) bir yayın adı değildir.
+  if (letters === 0) return false;
+  return latin / letters >= LATIN_MAJORITY_THRESHOLD;
+}
+
 function matchesExpectedDomain(publisherUrl, feed) {
   let host;
   try {
@@ -572,7 +609,25 @@ const DEFAULT_BLOCKED_DOMAINS = Object.freeze([
   "legal.fifa.com",
   "publications.fifa.com",
   // Açık uçlu sorgunun getirdiği futbol dışı alan adları (ölçüldü).
-  "uv.es"
+  "uv.es",
+
+  /*
+   * SKOR SERVİSİ VE BAHİS SİTESİ GAZETECİLİK DEĞİLDİR.
+   *
+   * Canlı koşuda ölçüldü: `turkish-football-en` beslemesi kulüp adı geçtiği
+   * için oddsscanner.com ve flashscore.com sayfalarını akışa soktu. İkisi
+   * de meşru site ama haber ÜRETMİYOR — biri oran karşılaştırıyor, diğeri
+   * skor tablosu yayımlıyor. Künyede "Odds Scanner" yazan bir kart, okura
+   * bir yayın kurulunun arkasında durduğu izlenimini verir.
+   */
+  "oddsscanner.com",
+  "flashscore.com",
+  "sofascore.com",
+  "livescore.com",
+  "footystats.org",
+  "betting.com",
+  "oddspedia.com",
+  "forebet.com"
 ]);
 
 /**
@@ -612,6 +667,8 @@ function buildEnglishArticle({ item, feed = {}, now = new Date() }) {
    */
   const publisherUrl = text(item.sourceUrl);
   if (!matchesExpectedDomain(publisherUrl, feed)) return null;
+  // Künye Latin alfabesi değilse kayıt /en akışına giremez (bkz. yukarısı).
+  if (!hasLatinPublisherName(publisher)) return null;
   /*
    * AÇIK UÇLU SORGU KENDİNİ SINIRLAMAZ. Türk futbolunu İngilizce tarayan
    * besleme `site:` ile daraltılamıyor; sorgu kulüp adı geçen HER sayfayı
@@ -676,6 +733,33 @@ function buildEnglishArticle({ item, feed = {}, now = new Date() }) {
 }
 
 /**
+ * KURALLAR DEĞİŞİNCE ESKİ KAYITLAR DA YENİDEN DENETLENİR.
+ *
+ * PROBLEM. `sync` mevcut dosyayı okuyup üzerine ekliyor; eski kayıtlara
+ * bir daha bakmıyordu. Bunun bedeli ölçüldü: künye kuralı eklendikten
+ * sonra YENİ kayıtlara "سانا" giremedi ama daha önce girmiş olanlar
+ * dosyada kaldı ve /en kartlarında görünmeye devam etti. Yani her kural
+ * düzeltmesi, elle veri temizliği gerektiriyordu.
+ *
+ * ÇÖZÜM. Kabul edilebilirlik bir KAPI değil, SÜREKLİ BİR KOŞUL. Her
+ * koşuda dosyadaki her kayıt güncel kurallardan yeniden geçer; geçemeyen
+ * düşer. Böylece bir kuralı sıkılaştırmak, bir sonraki koşuda geçmişi de
+ * kendiliğinden temizler.
+ *
+ * Kayıt RSS öğesi değil, depolanmış haber nesnesi olduğu için künye
+ * bilgisi `sourceName`/`publisherUrl` alanlarından okunur.
+ */
+function isStillAcceptable(article) {
+  if (!isPublishableEnglish(article)) return false;
+  if (!hasLatinPublisherName(article && article.sourceName)) return false;
+  // Yayıncı alan adı bilinmiyorsa kayıt korunur: eksik üstveri, kusur değil.
+  const publisherUrl = text(article && article.publisherUrl);
+  if (publisherUrl && !matchesExpectedDomain(publisherUrl, {})) return false;
+  return true;
+}
+
+/**
+ * YAYINLANABİLİR Mİ?/**
  * YAYINLANABİLİR Mİ?
  *
  * Üç koşul: metin İngilizce, künye var, başlık bir şey söylüyor. Türkçe
@@ -745,8 +829,10 @@ module.exports = {
   DEFAULT_BLOCKED_DOMAINS,
   detectEventType,
   extractPersonName,
+  hasLatinPublisherName,
   internalLinksFor,
   isPublishableEnglish,
+  isStillAcceptable,
   jaccard,
   matchesExpectedDomain,
   rankEnglishNews,

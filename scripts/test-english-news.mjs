@@ -16,6 +16,7 @@ const {
   detectClub,
   detectCompetition,
   detectEventType,
+  hasLatinPublisherName,
   isPublishableEnglish,
   jaccard,
   rankEnglishNews,
@@ -184,6 +185,77 @@ const make = (title, sourceName, link, publishedAt = "2026-09-16T11:30:00.000Z")
   const pair = rankEnglishNews([untagged, englishSourced], { now: NOW });
   assert.equal(pair[0].slug, untagged.slug,
     "köken işareti olmayan kayıt cezalandırılmamalı");
+}
+
+// ── 12. KÜNYE DE İNGİLİZCE OKUNABİLMELİ ──────────────────────────────────
+{
+  // Gövde kalıplardan üretiliyor, her zaman İngilizce. Künye ise doğrudan
+  // yayıncıdan geliyor ve o denetimin dışındaydı: canlı koşuda Suriye
+  // devlet ajansı "سانا" adıyla /en kartlarına düştü.
+  for (const name of ["BBC Sport", "The Guardian", "turkish-football.com", "ESPN"]) {
+    assert.equal(hasLatinPublisherName(name), true, `${name} meşru künye sayılmalı`);
+  }
+  // Türkçe/Latin-ötesi harf taşıyan MEŞRU künyeler elenmemeli.
+  for (const name of ["Türkiye Today", "Beşiktaş JK", "Fenerbahçe"]) {
+    assert.equal(hasLatinPublisherName(name), true, `${name} elenmemeli — Latin alfabesi`);
+  }
+  // Latin olmayan yazı sistemleri tek kuralla elenir; engel listesi gerekmez.
+  for (const name of ["سانا", "Спорт-Экспресс", "日本サッカー"]) {
+    assert.equal(hasLatinPublisherName(name), false, `${name} /en künyesinde görünmemeli`);
+  }
+  // Künyesizlik künye değildir.
+  assert.equal(hasLatinPublisherName(""), false, "boş künye geçmemeli");
+  assert.equal(hasLatinPublisherName("123"), false, "harfsiz künye bir yayın adı değildir");
+}
+
+// ── 13. LATİN OLMAYAN KÜNYELİ KAYIT AKIŞA GİRMEZ ─────────────────────────
+{
+  const leaked = buildEnglishArticle({
+    item: {
+      title: "Galatasaray sign a new midfielder",
+      sourceName: "سانا",
+      sourceUrl: "https://sana.sy",
+      link: "https://sana.sy/en/1",
+      publishedAt: "2026-09-16T11:30:00.000Z"
+    },
+    feed: { id: "turkish-football-en", requireClub: true, competition: "Süper Lig" },
+    now: NOW
+  });
+  assert.equal(leaked, null, "Latin olmayan künyeli kayıt üretilmemeli");
+}
+
+// ── 14. SKOR SERVİSİ VE BAHİS SİTESİ HABER DEĞİLDİR ──────────────────────
+{
+  // İkisi de meşru site ama haber ÜRETMİYOR; künyede bir yayın kurulu
+  // varmış izlenimi verirler.
+  for (const host of ["https://oddsscanner.com", "https://www.flashscore.com"]) {
+    const junk = buildEnglishArticle({
+      item: {
+        title: "Fenerbahce vs Besiktas preview",
+        sourceName: "Odds Scanner",
+        sourceUrl: host,
+        link: `${host}/x`,
+        publishedAt: "2026-09-16T11:30:00.000Z"
+      },
+      feed: { id: "turkish-football-en", requireClub: true, competition: "Süper Lig" },
+      now: NOW
+    });
+    assert.equal(junk, null, `${host} akışa girmemeli`);
+  }
+
+  // MEŞRU haber kurumu elenmemeli — bu kural bir yayıncı kara listesi değil.
+  const legit = buildEnglishArticle({
+    item: {
+      title: "Galatasaray sign a new midfielder",
+      sourceName: "France 24",
+      sourceUrl: "https://www.france24.com",
+      link: "https://www.france24.com/en/1",
+      publishedAt: "2026-09-16T11:30:00.000Z"
+    },
+    feed: { id: "turkish-football-en", requireClub: true, competition: "Süper Lig" },
+    now: NOW
+  });
+  assert.ok(legit, "France 24 meşru bir haber kurumudur, elenmemeli");
 }
 
 console.log("english-news passed");
