@@ -12,7 +12,22 @@ concurrency:
 jobs:
   production:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # SÜRE SINIRI 45 → 75 DAKİKA.
+    #
+    # Koşu 45 dakikada KESİLDİ (run 35455733680, 19 Eylül): test düşmedi,
+    # iş zaman aşımına uğradı — günlüğün sonunda `npm run build` ve
+    # tıklanabilirlik denetiminin chrome-headless-shell süreci hâlâ
+    # çalışırken "Terminate orphan process" satırları var.
+    #
+    # Derleme sınıra dayanmış durumda: 16 Eylül'de 36 dakika, 19 Eylül'de
+    # 44 dakika 46 saniye (sınırın 14 saniye altında), sonraki koşuda 45
+    # dakikayı aştı. Site büyüdükçe (sayfa sayısı, 109 adımlık test
+    # zinciri, 365 senaryoluk tarayıcı denetimi) bu her koşuda olur ve
+    # main'in kendi push'larını da keser.
+    #
+    # Sınır kaldırılmıyor, yalnızca gerçekliğe göre yükseltiliyor: takılan
+    # bir koşu hâlâ kendiliğinden ölür.
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
