@@ -18,6 +18,7 @@ const {
   detectEventType,
   hasLatinPublisherName,
   isPublishableEnglish,
+  isStillAcceptable,
   jaccard,
   rankEnglishNews,
   ENGLISH_FEEDS
@@ -256,6 +257,63 @@ const make = (title, sourceName, link, publishedAt = "2026-09-16T11:30:00.000Z")
     now: NOW
   });
   assert.ok(legit, "France 24 meşru bir haber kurumudur, elenmemeli");
+}
+
+// ── 15. AÇIK UÇLU BESLEME İZİNLİ LİSTEYLE SINIRLIDIR ─────────────────────
+{
+  // Yazı kuralı Latin alfabeli ama İngilizce OLMAYAN yayıncıyı yakalayamaz:
+  // Endonezya yerel gazetesi "SuaraGarut.ID" üç süzgeçten de geçmişti
+  // (Latin alfabesi, haber sitesi, başlıkta kulüp adı). Kapalı liste,
+  // açık uçlu sorgunun tek yapısal karşılığı.
+  const foreign = buildEnglishArticle({
+    item: {
+      title: "Galatasaray menang atas Besiktas",
+      sourceName: "SuaraGarut.ID",
+      sourceUrl: "https://suaragarut.id",
+      link: "https://suaragarut.id/1",
+      publishedAt: "2026-09-16T11:30:00.000Z"
+    },
+    feed: ENGLISH_FEEDS.find((f) => f.id === "turkish-football-en"),
+    now: NOW
+  });
+  assert.equal(foreign, null, "izinli listede olmayan yayıncı akışa girmemeli");
+
+  const allowed = buildEnglishArticle({
+    item: {
+      title: "Galatasaray sign a new midfielder",
+      sourceName: "turkish-football.com",
+      sourceUrl: "https://turkish-football.com",
+      link: "https://turkish-football.com/1",
+      publishedAt: "2026-09-16T11:30:00.000Z"
+    },
+    feed: ENGLISH_FEEDS.find((f) => f.id === "turkish-football-en"),
+    now: NOW
+  });
+  assert.ok(allowed, "izinli yayıncı geçmeli");
+}
+
+// ── 16. KURAL DEĞİŞİNCE ESKİ KAYIT DA DÜŞER ──────────────────────────────
+{
+  // Asıl kusur buydu: izinli liste eklendiğinde YENİ kayıtlar engellendi
+  // ama dosyadaki eskisi ayakta kaldı. Geriye dönük denetim, kaydın KENDİ
+  // beslemesinin kurallarını uygulamak zorunda.
+  const stored = {
+    slug: "eski-kayit",
+    lang: "en",
+    title: "Galatasaray transfer development",
+    summary: "A publisher reports a transfer development involving Galatasaray.",
+    body: ["A publisher reports a transfer development involving Galatasaray."],
+    sourceName: "SuaraGarut.ID",
+    publisherUrl: "https://suaragarut.id",
+    sources: [{ name: "SuaraGarut.ID", url: "https://suaragarut.id/1" }],
+    discovery: { source: "turkish-football-en" }
+  };
+  assert.equal(isStillAcceptable(stored), false,
+    "beslemenin izinli listesi eski kayda da uygulanmalı");
+
+  // Meşru kayıt elenmemeli.
+  assert.equal(isStillAcceptable({ ...stored, sourceName: "BBC Sport", publisherUrl: "https://www.bbc.co.uk", sources: [{ name: "BBC", url: "https://www.bbc.co.uk/1" }] }), true,
+    "izinli yayıncının eski kaydı korunmalı");
 }
 
 console.log("english-news passed");

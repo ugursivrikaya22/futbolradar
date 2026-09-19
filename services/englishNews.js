@@ -69,7 +69,63 @@ const ENGLISH_FEEDS = Object.freeze([
    * Türkçe basından ÇEVRİLMEZ. TFF'nin ve kulüplerin İngilizce sayfaları
    * ile uluslararası basının Türkiye kapsaması kullanılır.
    */
-  { id: "turkish-football-en", name: "International coverage", requireClub: true, url: googleNewsFeed('"Super Lig" OR Galatasaray OR Fenerbahce OR Besiktas OR Trabzonspor football'), competition: "Süper Lig", priority: 6, trusted: false }
+  /*
+   * AÇIK UÇLU SORGU İZİNLİ LİSTEYLE SINIRLANIR.
+   *
+   * Diğer beslemeler `site:` ile tek bir kuruma daraltılabiliyor; bu
+   * besleme daraltılamıyor ve Türk kulübü ANAN her sayfayı getiriyor.
+   * Süzgeçleri sırayla denedik ve her biri bir sonrakini açıkta bıraktı:
+   *   - `requireClub` Valencia Üniversitesi'ni eledi, ama...
+   *   - yazı kuralı (Latin alfabesi) Suriye ajansı "سانا"yı eledi, ama...
+   *   - engel listesi bahis/skor sitelerini eledi, ama...
+   *   - Endonezya yerel gazetesi "SuaraGarut.ID" üçünden de geçti:
+   *     Latin alfabesi, haber sitesi, başlıkta kulüp adı var. Yalnızca
+   *     İNGİLİZCE DEĞİL.
+   *
+   * Dilin kendisini metinden güvenilir biçimde çıkarmak (künye "SuaraGarut"
+   * gibi bir özel isimken) mümkün değil. Bu yüzden kural tersine çevrildi:
+   * bu beslemede yayıncı, İngilizce yayın yapan TANINAN kurumlar
+   * listesinde olmak zorunda. Kapalı liste, açık uçlu sorgunun tek
+   * yapısal karşılığı — engellenecek siteyi saymak yerine kabul edileni
+   * saymak, çünkü dünyadaki yerel gazetelerin sayısı sonsuz.
+   */
+  {
+    id: "turkish-football-en",
+    name: "International coverage",
+    requireClub: true,
+    url: googleNewsFeed('"Super Lig" OR Galatasaray OR Fenerbahce OR Besiktas OR Trabzonspor football'),
+    competition: "Süper Lig",
+    priority: 6,
+    trusted: false,
+    expectDomains: [
+      // Türk futbolunu İngilizce yayımlayan kurumlar
+      "turkish-football.com",
+      "turkiyetoday.com",
+      "dailysabah.com",
+      "hurriyetdailynews.com",
+      "trtworld.com",
+      // Uluslararası ajans ve yayıncılar
+      "bbc.co.uk",
+      "bbc.com",
+      "theguardian.com",
+      "espn.com",
+      "espn.co.uk",
+      "reuters.com",
+      "apnews.com",
+      "aljazeera.com",
+      "france24.com",
+      "nytimes.com",
+      "yahoo.com",
+      "cnn.com",
+      "skysports.com",
+      "goal.com",
+      "si.com",
+      // Kurumlar
+      "uefa.com",
+      "fifa.com",
+      "beinsports.com"
+    ]
+  }
 ]);
 
 /** Öncelikli turnuvalar — /en ana akışında üste çıkarlar. */
@@ -754,7 +810,24 @@ function isStillAcceptable(article) {
   if (!hasLatinPublisherName(article && article.sourceName)) return false;
   // Yayıncı alan adı bilinmiyorsa kayıt korunur: eksik üstveri, kusur değil.
   const publisherUrl = text(article && article.publisherUrl);
-  if (publisherUrl && !matchesExpectedDomain(publisherUrl, {})) return false;
+  if (!publisherUrl) return true;
+
+  /*
+   * KAYDIN KENDİ BESLEMESİNİN KURALLARI UYGULANIR.
+   *
+   * Burası boş bir besleme nesnesiyle (`{}`) çağrılıyordu; sonuç olarak
+   * yalnızca genel engel listesi işliyor, beslemeye ÖZGÜ izinli liste
+   * (`expectDomains`) hiç bakılmıyordu. Ölçüldü: açık uçlu beslemeye
+   * izinli liste eklendikten sonra YENİ kayıtlarda SuaraGarut.ID
+   * engellendi ama dosyadaki eski kaydı ayakta kaldı.
+   *
+   * Kayıt hangi beslemeden geldiğini `discovery.source` alanında taşıyor;
+   * o besleme bulunup kendi kurallarıyla denetlenir. Besleme artık
+   * tanımlı değilse (listeden çıkarılmışsa) yalnızca genel kurallar kalır.
+   */
+  const feedId = text(article && article.discovery && article.discovery.source);
+  const feed = ENGLISH_FEEDS.find((entry) => entry.id === feedId) || {};
+  if (!matchesExpectedDomain(publisherUrl, feed)) return false;
   return true;
 }
 
