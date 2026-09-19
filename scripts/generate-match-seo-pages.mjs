@@ -132,6 +132,50 @@ const archive = readJson("data/historical-match-archive.json", { records: [] });
 const archiveRecords = Array.isArray(archive.records) ? archive.records : [];
 
 /**
+ * RESMÎ İLK 11 UYARILARI — maç sayfası için ikinci, ELLE KÜRE EDİLMİŞ kanal.
+ *
+ * Sağlayıcı kadrosu (`fixture-calendar.json` → `lineups`) yalnızca canlı
+ * sağlayıcı anahtarı varken dolar. Anahtar yokken maç öncesi resmî kadro
+ * siteye hiç giremiyordu; oysa `data/official-lineup-alerts.json` tam da
+ * bunun için var: kulübün kendi açıklamasından elle girilmiş, KAYNAĞI
+ * ZORUNLU kayıt (bkz. o dosyanın başındaki not ve matchCards.mjs).
+ *
+ * Buradaki tek iş, aynı kaydı maç sayfasının beklediği `lineups` şekline
+ * çevirmektir. Eşik gevşetilmiyor: ad listesi ve kaynak bağlantısı olmayan
+ * kayıt atlanır, forma numarası yalnızca kayıtta varsa taşınır, diziliş
+ * yalnızca kayıtta varsa yazılır (yoksa saha çizilmez — tahmin edilmez).
+ * Sağlayıcı kadrosu geldiğinde O kazanır: bu kanal yalnızca sağlayıcı
+ * boş döndüğünde devreye girer.
+ */
+const officialLineupAlerts = Array.isArray(readJson("data/official-lineup-alerts.json", { records: [] }).records)
+  ? readJson("data/official-lineup-alerts.json", { records: [] }).records
+  : [];
+
+function alertLineupsFor(naturalId) {
+  if (!naturalId) return [];
+  return officialLineupAlerts
+    .filter((alert) => alert
+      && alert.matchId === naturalId
+      && Array.isArray(alert.startingXI)
+      && alert.startingXI.length >= 7
+      && alert.sourceUrl)
+    .map((alert) => {
+      const players = alert.startingXI.map((player) => (player && player.name) || "").filter(Boolean);
+      const startingDetails = alert.startingXI
+        .filter((player) => player && player.name && player.number !== null && player.number !== undefined && player.number !== "")
+        .map((player) => ({ name: player.name, number: player.number }));
+      const lineup = { team: alert.team, players };
+      if (alert.formation) lineup.formation = alert.formation;
+      if (startingDetails.length) lineup.startingDetails = startingDetails;
+      if (Array.isArray(alert.substitutes) && alert.substitutes.length) {
+        lineup.substitutes = alert.substitutes.map((player) => (typeof player === "string" ? player : (player && player.name) || "")).filter(Boolean);
+      }
+      return lineup;
+    })
+    .filter((lineup) => lineup.players.length >= 7);
+}
+
+/**
  * TAHMİN KAYNAĞI — depo önce, sonra takvimdeki ham sağlayıcı yükü, en son
  * FutbolRadar modeli.
  *
@@ -491,18 +535,21 @@ function detailFor(entry) {
   const twoSided = (rows) => rows.some((row) => row && row.home !== undefined && row.away !== undefined);
   const events = pickArray("events");
   const substitutions = pickArray("substitutions");
+  const naturalId = (fromCalendar && fromCalendar.id) || (fromEditorial && fromEditorial.id) || null;
+  const providerLineups = pickArray("lineups");
+
   return {
     calendar: fromCalendar,
     archive: fromArchive,
     editorial: fromEditorial,
     events,
     substitutions,
-    lineups: pickArray("lineups"),
+    lineups: providerLineups.length ? providerLineups : alertLineupsFor(naturalId),
     statistics: pickArray("statistics", twoSided),
     coaches: (fromEditorial && fromEditorial.coaches) || null,
     summary: (fromEditorial && fromEditorial.summary) || null,
     prediction: (fromCalendar && fromCalendar.prediction) || null,
-    naturalId: (fromCalendar && fromCalendar.id) || (fromEditorial && fromEditorial.id) || null
+    naturalId
   };
 }
 
