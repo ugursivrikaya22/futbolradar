@@ -278,7 +278,24 @@ try {
         const aiPanel = page.locator("#msp-panel-ai");
         check(label, "panel içeriği sunucudan geliyor (SSR)", (await aiPanel.count()) === 1);
         check(label, "açılışta AI paneli kapalı", !(await aiPanel.isVisible()));
-        await page.locator('label[for="msp-tab-ai"]').click();
+        /*
+         * ALT GEZİNME ÇUBUĞU SEKMEYİ ÖRTEBİLİR.
+         *
+         * `.bottom-nav` 900px altında ekranın altına YAPIŞIK duruyor
+         * (position: fixed, z-index 70). JS kapalıyken panel kapalı
+         * olduğu için sayfa kısa kalıyor ve sekme şeridi ilk kaydırmada
+         * tam çubuğun altına denk gelebiliyor: ölçüldü, sekmenin
+         * ortasında elementFromPoint `.bottom-nav__label` döndürüyor.
+         * Sayfanın altında (body'nin 64px'lik alt dolgusu sayesinde)
+         * kaydıracak yer var; tekerlek hareketi tarayıcının kendi işi,
+         * JavaScript gerektirmiyor. Böylece sınav, çubuğun kapattığı bir
+         * noktaya tıklamayı değil, sekmenin gerçekten çalıştığını ölçer.
+         */
+        const aiTabLabel = page.locator('label[for="msp-tab-ai"]');
+        await aiTabLabel.scrollIntoViewIfNeeded();
+        await page.mouse.wheel(0, 400);
+        await page.waitForTimeout(150);
+        await aiTabLabel.click();
         await page.waitForTimeout(120);
         check(label, "JS olmadan da sekme açılıyor", await aiPanel.isVisible());
         const panelText = await aiPanel.innerText();

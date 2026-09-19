@@ -24340,3 +24340,21 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .ai-tab,
   .ai-tab-panel { transition: none; }
 }
+
+/* ====================================================================== */
+/* AI SEKME ŞERİDİ — ALT GEZİNME ÇUBUĞUNUN ALTINDA KALMASIN               */
+/*                                                                        */
+/* `.bottom-nav` 900px altında ekranın altına yapışıyor (position: fixed, */
+/* z-index 70). Sekme şeridi kaydırılarak görünür kılındığında tam o      */
+/* çubuğun altına denk gelebiliyordu: dokunuş sekmeye değil çubuğa        */
+/* gidiyordu. Ölçüldü — elementFromPoint sekmenin ortasında               */
+/* `.bottom-nav__label` döndürüyordu ve JS kapalı sınamada tıklama hiç    */
+/* ulaşamıyordu. Kaydırma payı şeridi her zaman çubuğun ÜSTÜNDE durdurur; */
+/* görünümü değiştirmez, yalnızca kaydırmanın nerede duracağını söyler.   */
+/* ====================================================================== */
+@media (max-width: 900px) {
+  .ai-tablist,
+  .ai-tab {
+    scroll-margin-bottom: 96px;
+  }
+}
