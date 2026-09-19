@@ -23700,6 +23700,94 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .fan-rating-scale { gap: var(--sp-2); }
 }
 
+
+/* ══════════════════════════════════════════════════════════════════════════
+   GERİ SAYIM + YAYIN KANALI — başlığın hemen altında
+   ──────────────────────────────────────────────────────────────────────────
+   Maç öncesi en çok sorulan iki şey burada: ne zaman ve hangi kanalda.
+   İkisi de künyede (msp-facts) zaten var ama kahramanın ALTINDA; telefonda
+   ilk ekranda görünmüyordu.
+
+   Sayaç satırı `hidden` doğar ve yalnızca JS doldurduktan sonra açılır —
+   sunucu "3 saat kaldı" basamaz, statik sayfa o cümleyi saatlerce sunar.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.msp-countdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2) var(--sp-4);
+  margin: 0 0 var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.msp-countdown p { margin: 0; font-size: var(--fs-sm); }
+.msp-countdown-when b { margin-left: var(--sp-2); font-size: var(--fs-md); font-weight: 800; font-variant-numeric: tabular-nums; }
+.msp-countdown-when small { margin-left: 4px; color: var(--muted); font-size: var(--fs-xs); }
+.msp-countdown-channel span { color: var(--muted); font-size: var(--fs-xs); }
+.msp-countdown-channel b { margin-left: var(--sp-2); font-weight: 700; }
+.msp-countdown-clock[hidden] { display: none !important; }
+.msp-countdown-clock {
+  margin-left: auto;
+  padding: 2px var(--sp-3);
+  border-radius: 999px;
+  background: var(--surface-tint);
+  color: var(--green);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 560px) {
+  /* Dar ekranda sayaç kendi satırına iner; "margin-left: auto" ile aynı
+     satırda kalsaydı kanal adını sıkıştırırdı. */
+  .msp-countdown-clock { margin-left: 0; }
+}
+
+/* ---------- Paylaşım kartı ---------- */
+/* Metin bağlantıları sunucuda basılı ve JS'siz çalışıyor; kart araçları
+   `hidden` doğar, çünkü çizilemeyecek bir kartın düğmesi çalışmayan bir
+   düğmedir. */
+
+.fan-card-section [hidden] { display: none !important; }
+.fan-card-line { margin: var(--sp-2) 0 var(--sp-3); font-size: var(--fs-sm); font-weight: 600; }
+.fan-card-tools { margin-top: var(--sp-3); display: grid; gap: var(--sp-3); justify-items: start; }
+.fan-card-actions { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.fan-card-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: var(--surface-sunken);
+  color: var(--text);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.fan-card-button:hover { border-color: var(--green); background: var(--surface-tint); }
+.fan-card-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.fan-card-button:disabled { opacity: 0.6; cursor: progress; }
+.fan-card-button.is-share { border-color: var(--green); color: var(--green); }
+
+/* Önizleme 1200×630 çiziliyor; ölçü niteliklerle bildiriliyor ki kart
+   yüklenirken sayfa zıplamasın. */
+.fan-card-preview {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.fan-card-error, .fan-card-note { margin: 0; font-size: var(--fs-xs); }
+.fan-card-error { font-weight: 600; color: var(--text-soft); }
+
 /* ---------- Sosyal paylaşım satırı ---------- */
 /* Radar Nabzı bloğunun içinde yaşar: paylaşılacak sayılar zaten orada,
    ayrı bir kutu aynı bilgiyi ikinci kez göstermek olurdu. */

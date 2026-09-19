@@ -43,6 +43,7 @@ import {
   analysisSectionHtml,
   clock,
   commentsSectionHtml,
+  countdownHtml,
   escapeHtml,
   eventsSectionHtml,
   formSectionHtml,
@@ -60,6 +61,7 @@ import {
   radarPulseSectionHtml,
   ratingsSectionHtml,
   relatedLinksHtml,
+  shareCardSectionHtml,
   scorersSectionHtml,
   shortDate,
   squadsSectionHtml,
@@ -904,6 +906,9 @@ function pageHtml(entry, locale, options) {
     roundLabel: entry.round ? (locale === "en" ? `Matchweek ${entry.round}` : `${entry.round}. Hafta`) : "",
     channel,
     description: titles.description,
+    // Paylaşım bağlantıları SUNUCUDA kuruluyor; JS kapalıyken de çalışsın
+    // diye adres istemciden değil kanonikten geliyor.
+    canonical,
     pageHrefFor: hrefForMatch
   };
 
@@ -936,6 +941,9 @@ function pageHtml(entry, locale, options) {
       state === "pending" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.pendingResult)}</strong></article></section>` : "",
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
+      // Paylaşım bölümü istatistiklerin ARDINDAN: kartın taşıdığı sayılar
+      // hemen yukarıda duruyor, okuyucu neyi paylaştığını görmüş oluyor.
+      shareCardSectionHtml(detail, entry, ctx),
       matchPollSectionHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       // Puanlama YALNIZCA bitmiş maçta açılır ve kadro kaydı yoksa hiç
@@ -1048,6 +1056,7 @@ function pageHtml(entry, locale, options) {
       <nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><a href="${base}${locale === "en" ? HUB_EN : HUB_TR}">${escapeHtml(text.allMatches)}</a><span>/</span>${breadcrumbCompetition}<span>${escapeHtml(entry.homeTeam)} ${locale === "en" ? "vs" : "-"} ${escapeHtml(entry.awayTeam)}</span></nav>
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
       ${matchFollowHtml(ctx)}
+      ${countdownHtml(entry, ctx)}
       ${heroHtml(entry, ctx)}
       ${sections.filter(Boolean).join("\n      ")}
       ${relatedLinksHtml(related, locale)}

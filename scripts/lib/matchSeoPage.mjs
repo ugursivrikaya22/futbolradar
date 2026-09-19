@@ -256,6 +256,19 @@ export const STR = {
     commentsNote: "Yorumlar takma adla yazılır ve doğrulanmış kimlik taşımaz; küfür ve bağlantı kabul edilmez.",
     ratingsTitle: "Oyuncu puanları",
     ratingsNote: "Okuyucu puanıdır (1–10) ve sağlayıcının maç derecesinden ayrıdır.",
+    countdownTitle: "Başlamasına",
+    countdownStarted: "Maç başladı",
+    countdownDay: "gün",
+    countdownHour: "saat",
+    countdownMinute: "dk",
+    countdownSecond: "sn",
+    shareCardTitle: "Maçı paylaş",
+    shareCardNote: "Kart, sayfadaki doğrulanmış skor ve istatistiklerden üretilir.",
+    shareCardMake: "Paylaşım kartı oluştur",
+    shareCardMaking: "Kart hazırlanıyor…",
+    shareCardDownload: "Kartı indir",
+    shareCardShare: "Kartı paylaş",
+    shareCardError: "Kart bu tarayıcıda üretilemedi; metin bağlantıları çalışıyor.",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -401,6 +414,19 @@ export const STR = {
     commentsNote: "Comments are posted under a nickname and carry no verified identity; profanity and links are not accepted.",
     ratingsTitle: "Player ratings",
     ratingsNote: "A reader rating (1–10), separate from the provider match score.",
+    countdownTitle: "Kick-off in",
+    countdownStarted: "The match has started",
+    countdownDay: "d",
+    countdownHour: "h",
+    countdownMinute: "m",
+    countdownSecond: "s",
+    shareCardTitle: "Share this match",
+    shareCardNote: "The card is built from the verified score and statistics on this page.",
+    shareCardMake: "Create share card",
+    shareCardMaking: "Preparing the card…",
+    shareCardDownload: "Download card",
+    shareCardShare: "Share card",
+    shareCardError: "The card could not be created in this browser; the text links still work.",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -1352,6 +1378,114 @@ export function ratingsSectionHtml(detail, ctx) {
     `<h2 id="fan-ratings-title" class="msp-section-title">${escapeHtml(text.ratingsTitle)}</h2>` +
     `<p class="muted-copy">${escapeHtml(text.ratingsNote)}</p>` +
     `<div class="fan-ratings-body" data-match-ratings-body></div>` +
+    `</section>`;
+}
+
+/**
+ * GERİ SAYIM VE YAYIN KANALI — sayfanın EN ÜSTÜNDE.
+ *
+ * Maç öncesi okuyucunun iki sorusu var: "ne zaman" ve "nerede izlerim".
+ * İkisi de künyede (msp-facts) zaten yazılıydı ama kahramanın ALTINDA,
+ * altı satırlık bir listenin içinde; telefonda ilk ekranda görünmüyordu.
+ * Bu blok o iki cevabı başlığın hemen altına taşıyor.
+ *
+ * ── SAYAÇ DERLEME ANINDA YAZILAMAZ ───────────────────────────────────────
+ * Sunucu "3 saat kaldı" bassaydı, sayfa yayına girdiği an o cümle yanlış
+ * olurdu; statik sayfa saatlerce, bazen günlerce aynı HTML'i sunuyor.
+ * Bu yüzden SUNUCU DEĞİŞMEYEN GERÇEĞİ basıyor — tarih, saat ve kanal —
+ * sayacı ise `match-center.js` dolduruyor. Boş kutu değil: JS hiç
+ * çalışmasa bile blok okunabilir bir cevap taşıyor.
+ *
+ * KANAL BİLİNMİYORSA UYDURULMUYOR; künyedeki ile aynı "henüz açıklanmadı"
+ * yazıyor (services/broadcastSchedule.js#broadcastChannel).
+ *
+ * Yalnızca BAŞLAMAMIŞ maçta basılıyor: başlamış bir maçta geri sayım
+ * geçmişe doğru sayar ve anlamı kalmaz.
+ */
+export function countdownHtml(entry, ctx) {
+  const { locale, state } = ctx;
+  const text = STR[locale];
+  if (state !== "pre") return "";
+  const kickoffIso = istanbulIso(entry.kickoff);
+  if (!kickoffIso) return "";
+
+  const channel = broadcastChannel(entry);
+  return `<section class="msp-countdown" data-msp-countdown data-msp-countdown-kickoff="${escapeHtml(kickoffIso)}" aria-label="${escapeHtml(text.countdownTitle)}">` +
+    `<p class="msp-countdown-when"><time datetime="${escapeHtml(kickoffIso)}">${escapeHtml(longDate(entry.kickoff, locale))}</time>` +
+    `<b>${escapeHtml(clock(entry.kickoff))}</b><small>${escapeHtml(text.tsi)}</small></p>` +
+    `<p class="msp-countdown-channel"><span>${escapeHtml(text.channel)}</span><b>${escapeHtml(channel || text.notAnnounced)}</b></p>` +
+    // Sayaç `hidden` doğar: JS bağlanmadan önce boş bir kutu göstermek,
+    // okuyucuya dolacağını vaat edip doldurmamaktır.
+    `<p class="msp-countdown-clock" data-msp-countdown-clock hidden aria-live="polite"></p>` +
+    `</section>`;
+}
+
+/**
+ * PAYLAŞIM KARTI — bitmiş maçın skoru ve öne çıkan istatistikleri.
+ *
+ * ── NEDEN `og:image` DEĞİL ───────────────────────────────────────────────
+ * Maça özel bir bağlantı önizlemesi ya isteği karşılayan bir sunucusuz
+ * işlev ister (Vercel Hobby'deki 12 işlev sınırı DOLU) ya da her maç için
+ * derlemede PNG üretmeyi (derlemeye Chromium sokmak — bkz.
+ * scripts/generate-og-images.mjs, bilerek reddedilmiş). Bu yüzden bağlantı
+ * önizlemesi markalı ve sabit kalıyor; maça özel kart TARAYICIDA çiziliyor.
+ * Anket kartında da aynı yol seçilmişti (site.js → drawShareCard).
+ *
+ * ── SUNUCU NE BASAR ──────────────────────────────────────────────────────
+ * Paylaşım bağlantıları (X, WhatsApp, Facebook) ve paylaşılacak metin
+ * SUNUCUDA kuruluyor: bitmiş maçın skoru artık değişmiyor, dolayısıyla
+ * derleme anında yazılabilir ve JS kapalıyken de çalışır. Kartı çizen
+ * istemci de veriyi buradan okuyor — ekrana çıkan sayı sayfadaki
+ * doğrulanmış sayının ta kendisi, istemcide yeniden hesaplanmıyor.
+ *
+ * Canlı maçta bu bölüm basılmıyor: orada paylaşım satırı Radar Nabzı
+ * bloğunun içinde yaşıyor ve skor her yoklamada değişiyor
+ * (radar-fan.js#bootShare). İki ayrı paylaşım kutusu aynı işi iki kez
+ * gösterirdi.
+ */
+export function shareCardSectionHtml(detail, entry, ctx) {
+  const { locale, state, homeTeam, awayTeam, canonical, competitionName } = ctx;
+  const text = STR[locale];
+  if (state !== "post" || !canonical) return "";
+  if (!hasScore(entry.score)) return "";
+
+  const scoreLine = `${homeTeam} ${entry.score.home}–${entry.score.away} ${awayTeam}`;
+  const competition = competitionName ? competitionLabel(competitionName, locale) : "";
+  const message = [scoreLine, competition, shortDate(entry.kickoff, locale)].filter(Boolean).join(" · ");
+
+  // Kartta üç satır yer var. Hangi üçü olduğu SIRALAMAYA bırakılıyor
+  // (STAT_ORDER): "önemli" olanı burada seçmek, sayfadaki tablonun kendi
+  // sırasıyla çelişen ikinci bir önem iddiası olurdu.
+  const stats = normalizeStatistics(detail && detail.statistics).slice(0, 3).map((row) => ({
+    label: locale === "en" ? (STAT_EN[row.key] || row.type) : row.type,
+    home: `${row.home ?? "-"}${row.unit}`,
+    away: `${row.away ?? "-"}${row.unit}`
+  }));
+
+  const encodedUrl = encodeURIComponent(canonical);
+  const encodedText = encodeURIComponent(message);
+  const targets = [
+    { id: "x", label: "X", href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}` },
+    { id: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`${message}\n${canonical}`)}` },
+    { id: "facebook", label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` }
+  ];
+
+  const anchor = locale === "en" ? "share" : "paylas";
+  return `<section class="msp-section fan-card-section" id="${anchor}" data-match-card ` +
+    `data-match-card-locale="${locale}" data-match-card-url="${escapeHtml(canonical)}" ` +
+    `data-match-card-message="${escapeHtml(message)}" ` +
+    `data-match-card-home="${escapeHtml(homeTeam)}" data-match-card-away="${escapeHtml(awayTeam)}" ` +
+    `data-match-card-score="${escapeHtml(`${entry.score.home}-${entry.score.away}`)}" ` +
+    `data-match-card-kicker="${escapeHtml([competition, shortDate(entry.kickoff, locale)].filter(Boolean).join(" · "))}" ` +
+    `data-match-card-stats="${escapeHtml(stats.map((row) => `${row.label}|${row.home}|${row.away}`).join("~"))}" ` +
+    `aria-labelledby="fan-card-title">` +
+    `<h2 id="fan-card-title" class="msp-section-title">${escapeHtml(text.shareCardTitle)}</h2>` +
+    `<p class="fan-card-line">${escapeHtml(message)}</p>` +
+    `<div class="fan-share-buttons">` +
+    targets.map((target) => `<a class="fan-share-button is-${target.id}" href="${escapeHtml(target.href)}" target="_blank" rel="noopener noreferrer" data-fan-share-target="${target.id}">${escapeHtml(target.label)}</a>`).join("") +
+    `</div>` +
+    `<div class="fan-card-tools" data-match-card-tools hidden></div>` +
+    `<p class="muted-copy fan-card-note">${escapeHtml(text.shareCardNote)}</p>` +
     `</section>`;
 }
 

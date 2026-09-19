@@ -399,6 +399,75 @@
       .catch(function () { schedule(LIVE_POLL_MS * 2); });
   }
 
+  /* ------------------------------------------------------------------ */
+  /* GERİ SAYIM                                                          */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Başlamaya kalan süreyi yazar.
+   *
+   * SUNUCU BU SAYIYI BASAMAZ: statik sayfa saatlerce aynı HTML'i sunuyor,
+   * derleme anında yazılan "3 saat kaldı" yayına girdiği an yanlış olurdu.
+   * Sunucu tarih, saat ve kanalı basıyor; burada yalnızca değişen kısım
+   * dolduruluyor (bkz. scripts/lib/matchSeoPage.mjs#countdownHtml).
+   *
+   * İKİ BİRİM GÖSTERİLİYOR. "2 gün 4 saat 11 dk 9 sn" okunacak bir cümle
+   * değil; okuyucunun sorusu "yetişir miyim", cevabı iki birimle veriliyor.
+   * Son bir saatte saniye görünüyor, çünkü orada asıl merak edilen o.
+   *
+   * SAAT BAŞLAMA ANINDA DURUR. Geçmişe doğru saymak geri sayım değildir;
+   * sayaç "maç başladı" yazıp kapanıyor ve zamanlayıcı bırakılıyor.
+   */
+  function bootCountdown() {
+    var section = root.querySelector("[data-msp-countdown]");
+    if (!section) return;
+    var holder = section.querySelector("[data-msp-countdown-clock]");
+    var startsAt = Date.parse(section.getAttribute("data-msp-countdown-kickoff") || "");
+    if (!holder || isNaN(startsAt)) return;
+
+    var units = locale === "en"
+      ? { day: "d", hour: "h", minute: "m", second: "s", title: "Kick-off in", started: "The match has started" }
+      : { day: "gün", hour: "saat", minute: "dk", second: "sn", title: "Başlamasına", started: "Maç başladı" };
+
+    var countdownTimer = null;
+
+    function paint() {
+      var left = startsAt - Date.now();
+      if (left <= 0) {
+        holder.textContent = units.started;
+        holder.removeAttribute("hidden");
+        if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+        return;
+      }
+
+      var totalSeconds = Math.floor(left / 1000);
+      var days = Math.floor(totalSeconds / 86400);
+      var hours = Math.floor((totalSeconds % 86400) / 3600);
+      var minutes = Math.floor((totalSeconds % 3600) / 60);
+      var seconds = totalSeconds % 60;
+
+      // SIFIR BİRİM YAZILMIYOR: "0 dk 42 sn" okunacak bir cümle değil.
+      // Son dakikada yalnızca saniye kalıyor.
+      var parts = days
+        ? [days + " " + units.day, hours + " " + units.hour]
+        : hours
+          ? [hours + " " + units.hour, minutes + " " + units.minute]
+          : minutes
+            ? [minutes + " " + units.minute, seconds + " " + units.second]
+            : [seconds + " " + units.second];
+
+      holder.textContent = units.title + ": " + parts.join(" ");
+      holder.removeAttribute("hidden");
+    }
+
+    paint();
+    // Bir günden uzak süre saniyede bir yeniden çizilmiyor: görünen
+    // birim dakika bile değil, dakikada bir tazelemek yeter.
+    countdownTimer = setInterval(paint, startsAt - Date.now() > 24 * 60 * 60 * 1000 ? 60000 : 1000);
+  }
+
+  try { bootCountdown(); } catch (error) { /* sayaç çökerse sayfanın kalanı çalışmaya devam eder */ }
+
   // SUNUCUNUN BASTIĞI AKIŞ DA FİLTRELENEBİLİR OLMALI. Bitmiş maç sayfası
   // hiç yoklama yapmıyor (`state === "post"` girişte dönülüyor); filtre
   // yalnızca ilk yanıtta bağlansaydı o sayfalarda düğmeler hiç açılmazdı.

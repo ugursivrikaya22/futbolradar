@@ -61,7 +61,13 @@
       ratingsVotes: "oy",
       ratingsMine: "senin puanın",
       ratingsEmpty: "Henüz puan verilmedi.",
-      ratingsError: "Puan şu anda kaydedilemiyor."
+      ratingsError: "Puan şu anda kaydedilemiyor.",
+      cardMake: "Paylaşım kartı oluştur",
+      cardMaking: "Kart hazırlanıyor…",
+      cardDownload: "Kartı indir",
+      cardShare: "Kartı paylaş",
+      cardError: "Kart bu tarayıcıda üretilemedi; metin bağlantıları çalışıyor.",
+      cardAlt: "Maç paylaşım kartı"
     },
     en: {
       pollTitle: "Fan Poll",
@@ -104,7 +110,13 @@
       ratingsVotes: "votes",
       ratingsMine: "your rating",
       ratingsEmpty: "No ratings yet.",
-      ratingsError: "The rating cannot be saved right now."
+      ratingsError: "The rating cannot be saved right now.",
+      cardMake: "Create share card",
+      cardMaking: "Preparing the card…",
+      cardDownload: "Download card",
+      cardShare: "Share card",
+      cardError: "The card could not be created in this browser; the text links still work.",
+      cardAlt: "Match share card"
     }
   };
 
@@ -858,21 +870,247 @@
     load();
   }
 
+  /* ================================================================== */
+  /* PAYLAŞIM KARTI                                                     */
+  /* ================================================================== */
+
+  /**
+   * KART NEDEN TARAYICIDA ÇİZİLİYOR.
+   *
+   * Maça özel bir `og:image` ya isteği karşılayan bir sunucusuz işlev
+   * ister — Vercel Hobby'deki 12 işlev sınırı DOLU — ya da her maç için
+   * derlemede PNG üretmeyi, yani derlemeye Chromium sokmayı (bkz.
+   * scripts/generate-og-images.mjs: bilerek reddedilmiş). Anket kartında
+   * da aynı yol seçilmişti (site.js → drawShareCard): bağlantı önizlemesi
+   * markalı ve sabit, maça özel kart tarayıcıda.
+   *
+   * KART VERİ ÜRETMEZ. Skor, istatistik ve künye satırı sunucunun bastığı
+   * veri niteliklerinden okunuyor; burada tek bir sayı hesaplanmıyor.
+   * Kartta görünen değer, sayfada görünen değerin ta kendisi.
+   */
+  var CARD_WIDTH = 1200;
+  var CARD_HEIGHT = 630;
+
+  function cardSpec(section) {
+    if (!section) return null;
+    var stats = (section.getAttribute("data-match-card-stats") || "")
+      .split("~")
+      .map(function (chunk) { return chunk.split("|"); })
+      .filter(function (parts) { return parts.length === 3 && parts[0]; })
+      .map(function (parts) { return { label: parts[0], home: parts[1], away: parts[2] }; });
+
+    return {
+      home: section.getAttribute("data-match-card-home") || "",
+      away: section.getAttribute("data-match-card-away") || "",
+      score: section.getAttribute("data-match-card-score") || "",
+      kicker: section.getAttribute("data-match-card-kicker") || "",
+      url: section.getAttribute("data-match-card-url") || "",
+      message: section.getAttribute("data-match-card-message") || "",
+      stats: stats
+    };
+  }
+
+  /**
+   * Metni verilen genişliğe SIĞDIRIR — kırpmaz, küçültür.
+   *
+   * Kırpılmış bir takım adı ("Gençlerbirliği S…") paylaşılan her kartta
+   * görünürdü; punto düşürmek bilgiyi korur.
+   */
+  function fitFont(ctx, text, maxWidth, weight, startSize, minSize) {
+    var size = startSize;
+    while (size > minSize) {
+      ctx.font = weight + " " + size + "px 'Segoe UI', Roboto, Arial, sans-serif";
+      if (ctx.measureText(text).width <= maxWidth) return size;
+      size -= 2;
+    }
+    ctx.font = weight + " " + minSize + "px 'Segoe UI', Roboto, Arial, sans-serif";
+    return minSize;
+  }
+
+  function drawMatchCard(spec) {
+    var canvas = document.createElement("canvas");
+    if (!canvas.getContext) return Promise.resolve(null);
+    canvas.width = CARD_WIDTH;
+    canvas.height = CARD_HEIGHT;
+    var ctx = canvas.getContext("2d");
+    if (!ctx) return Promise.resolve(null);
+
+    // Zemin ve marka rengi site.js'teki anket kartıyla AYNI: iki kart da
+    // aynı siteden çıkıyor, ikinci bir görsel dil kurulmuyor.
+    var background = ctx.createLinearGradient(0, 0, CARD_WIDTH, CARD_HEIGHT);
+    background.addColorStop(0, "#07281c");
+    background.addColorStop(0.55, "#0b3d2a");
+    background.addColorStop(1, "#05100c");
+    ctx.fillStyle = background;
+    ctx.fillRect(0, 0, CARD_WIDTH, CARD_HEIGHT);
+
+    // Süs dairesi SAĞ ÜST KÖŞEDE kalıyor. Anket kartındaki gibi geniş
+    // çizilince istatistik şeritlerinin üstünden geçiyor ve deplasman
+    // sayılarının zeminini karartıyordu — okunurluk süsten önce gelir.
+    ctx.fillStyle = "rgba(11, 143, 90, 0.22)";
+    ctx.beginPath();
+    ctx.arc(CARD_WIDTH - 40, 40, 300, 0, Math.PI * 2);
+    ctx.fill();
+
+    var padding = 80;
+    var maxWidth = CARD_WIDTH - padding * 2;
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "#4ade80";
+    ctx.font = "900 40px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText("FUTBOLRADAR", CARD_WIDTH / 2, 92);
+
+    if (spec.kicker) {
+      ctx.fillStyle = "rgba(255,255,255,0.72)";
+      fitFont(ctx, spec.kicker, maxWidth, "600", 30, 20);
+      ctx.fillText(spec.kicker, CARD_WIDTH / 2, 142);
+    }
+
+    // Skor satırı: takım adları iki yanda, skor ortada. Adlar kendi
+    // yarılarına sığdırılıyor; uzun ad skoru itmiyor.
+    var scoreY = 268;
+    ctx.fillStyle = "#ffffff";
+    var scoreSize = fitFont(ctx, spec.score, 300, "900", 108, 64);
+    ctx.fillText(spec.score, CARD_WIDTH / 2, scoreY);
+
+    var sideWidth = (CARD_WIDTH - 300) / 2 - padding / 2;
+    ctx.fillStyle = "rgba(255,255,255,0.95)";
+    ctx.textAlign = "right";
+    fitFont(ctx, spec.home, sideWidth, "700", 46, 26);
+    ctx.fillText(spec.home, CARD_WIDTH / 2 - 170, scoreY - 8);
+    ctx.textAlign = "left";
+    fitFont(ctx, spec.away, sideWidth, "700", 46, 26);
+    ctx.fillText(spec.away, CARD_WIDTH / 2 + 170, scoreY - 8);
+
+    // İSTATİSTİK YOKSA SATIR ÇİZİLMİYOR. Boş bir ızgara, ölçülmemiş
+    // değeri ölçülmüş gibi gösterirdi; kart skorla yetiniyor.
+    var rows = (spec.stats || []).slice(0, 3);
+    var rowY = 380;
+    for (var index = 0; index < rows.length; index += 1) {
+      var row = rows[index];
+      ctx.fillStyle = "rgba(255,255,255,0.10)";
+      ctx.fillRect(padding, rowY - 34, maxWidth, 52);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 30px 'Segoe UI', Roboto, Arial, sans-serif";
+      ctx.textAlign = "left";
+      ctx.fillText(row.home, padding + 24, rowY);
+      ctx.textAlign = "right";
+      ctx.fillText(row.away, CARD_WIDTH - padding - 24, rowY);
+
+      ctx.fillStyle = "rgba(255,255,255,0.75)";
+      ctx.textAlign = "center";
+      fitFont(ctx, row.label, maxWidth - 260, "600", 26, 18);
+      ctx.fillText(row.label, CARD_WIDTH / 2, rowY);
+
+      rowY += 66;
+    }
+
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,0.65)";
+    ctx.font = "600 26px 'Segoe UI', Roboto, Arial, sans-serif";
+    ctx.fillText(String(spec.url || "").replace(/^https?:\/\//, ""), CARD_WIDTH / 2, CARD_HEIGHT - 52);
+
+    return new Promise(function (resolve) {
+      if (!canvas.toBlob) { resolve(null); return; }
+      canvas.toBlob(function (blob) { resolve(blob || null); }, "image/png");
+    });
+  }
+
+  /**
+   * Kart araçlarını bağlar.
+   *
+   * ARAÇLAR JS OLMADAN GÖSTERİLMİYOR (`hidden` doğar): çizilemeyecek bir
+   * kartın düğmesini basmak, çalışmayan bir düğme sunmaktır. Metin
+   * paylaşım bağlantıları ise SUNUCUDA basılı ve JS'siz de çalışıyor —
+   * bölüm bu yüzden boş kutu değil.
+   */
+  function bootCard() {
+    var section = document.querySelector("[data-match-card]");
+    if (!section) return;
+    var tools = section.querySelector("[data-match-card-tools]");
+    var spec = cardSpec(section);
+    if (!tools || !spec || !spec.score) return;
+    var locale = section.getAttribute("data-match-card-locale") === "en" ? "en" : "tr";
+    var text = t(locale);
+    var slug = (document.querySelector("[data-match-center]") || { getAttribute: function () { return ""; } }).getAttribute("data-msp-slug") || "";
+
+    var probe = document.createElement("canvas");
+    if (!probe.getContext || !probe.toBlob || typeof Promise === "undefined") return;
+
+    var objectUrl = "";
+
+    tools.innerHTML = '<button type="button" class="fan-card-button" data-card-make>' + esc(text.cardMake) + "</button>";
+    tools.removeAttribute("hidden");
+
+    function fail() {
+      tools.innerHTML = '<p class="fan-card-error">' + esc(text.cardError) + "</p>";
+    }
+
+    function present(blob) {
+      if (!blob) { fail(); return; }
+      if (objectUrl) window.URL.revokeObjectURL(objectUrl);
+      objectUrl = window.URL.createObjectURL(blob);
+      var fileName = (slug || "futbolradar-mac") + ".png";
+
+      // Paylaş düğmesi YALNIZCA tarayıcı dosya paylaşabiliyorsa basılıyor.
+      // `navigator.share` var diye basmak yetmez: masaüstü tarayıcıların
+      // bir kısmı metni paylaşıp dosyayı sessizce düşürüyor.
+      var file = null;
+      try { file = new File([blob], fileName, { type: "image/png" }); } catch (error) { file = null; }
+      var canShareFile = Boolean(file && navigator.share && navigator.canShare && navigator.canShare({ files: [file] }));
+
+      tools.innerHTML =
+        '<img class="fan-card-preview" src="' + esc(objectUrl) + '" alt="' + esc(text.cardAlt) + '" width="1200" height="630">' +
+        '<div class="fan-card-actions">' +
+          '<a class="fan-card-button" href="' + esc(objectUrl) + '" download="' + esc(fileName) + '" data-card-download>' + esc(text.cardDownload) + "</a>" +
+          (canShareFile ? '<button type="button" class="fan-card-button is-share" data-card-share>' + esc(text.cardShare) + "</button>" : "") +
+        "</div>";
+
+      if (canShareFile) {
+        var shareButton = tools.querySelector("[data-card-share]");
+        if (shareButton) {
+          shareButton.addEventListener("click", function () {
+            navigator.share({ files: [file], text: spec.message, url: spec.url })
+              .then(function () { track("share_match_card", { match_slug: slug, locale: locale, channel: "web-share" }); })
+              .catch(function () { /* okuyucu vazgeçti; hata değil */ });
+          });
+        }
+      }
+    }
+
+    tools.addEventListener("click", function (event) {
+      var download = event.target && event.target.closest ? event.target.closest("[data-card-download]") : null;
+      if (download) {
+        track("share_match_card", { match_slug: slug, locale: locale, channel: "download" });
+        return;
+      }
+      var make = event.target && event.target.closest ? event.target.closest("[data-card-make]") : null;
+      if (!make) return;
+      make.disabled = true;
+      make.textContent = text.cardMaking;
+      drawMatchCard(spec).then(present).catch(fail);
+    });
+  }
+
   function boot() {
     try { bootPoll(); } catch (error) { /* anket çökerse sayfa çalışmaya devam eder */ }
     try { bootShare(); } catch (error) { /* paylaşım çökerse sayfa çalışmaya devam eder */ }
     try { bootFollow(); } catch (error) { /* takip çökerse sayfa çalışmaya devam eder */ }
     try { bootComments(); } catch (error) { /* yorumlar çökerse sayfa çalışmaya devam eder */ }
     try { bootRatings(); } catch (error) { /* puanlama çökerse sayfa çalışmaya devam eder */ }
+    try { bootCard(); } catch (error) { /* kart çökerse metin paylaşımı çalışmaya devam eder */ }
   }
 
   return {
     FOLLOW_STORE_PREFIX: FOLLOW_STORE_PREFIX,
     TEXT: TEXT,
     boot: boot,
+    bootCard: bootCard,
     bootComments: bootComments,
     bootPoll: bootPoll,
     bootRatings: bootRatings,
+    cardSpec: cardSpec,
     commentsHtml: commentsHtml,
     commentFormHtml: commentFormHtml,
     ratingRowHtml: ratingRowHtml,
