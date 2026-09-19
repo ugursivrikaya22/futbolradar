@@ -96,6 +96,9 @@ const TURKISH_WORDS = [
   "gizlilik", "iletişim", "hakkında", "şartları", "kullanım",
   "güncelleme", "güncellendi", "veri", "verileri", "kaynak", "kaynağı",
   "tarih", "tarihi", "saat", "saati", "nerede", "nezaman", "hangi",
+  // "son" ve "stat" listede DURUR ama BAĞLAMA BAKARLAR — aşağıdaki
+  // AMBIGUOUS_WITH_ENGLISH kuralına bakın; ikisi de aynı zamanda
+  // İngilizce sözcüktür.
   // "kim"/"kimler" ve "ne"/"mi" LİSTEDE YOK: "Kim Min-Jae" gibi Korece
   // soyadları ve "Ne" ile başlayan özel adlar bu kısa dizileri yanlış
   // pozitif yapıyordu. Kısa ve belirsiz dizilerin bedeli, yakaladıkları
@@ -200,6 +203,26 @@ function maskProperNouns(value) {
  * `context` ile döner: hangi cümlede geçtiğini görmeden düzeltmek mümkün
  * değil — tek başına "maç" raporu, sayfada nereye bakılacağını söylemez.
  */
+/**
+ * İNGİLİZCE EŞSESLİLER.
+ *
+ * Listedeki iki sözcük aynı zamanda düpedüz İngilizcedir: "son" (oğul) ve
+ * "stat" (istatistik). Guardian başlığındaki "Bill Belichick's son resigns"
+ * bu yüzden Türkçe sayılıp İngilizce haber sayfasını düşürüyordu.
+ *
+ * Listeden çıkarmak da doğru değil: "maçın son dakikasında" gerçek Türkçe
+ * ve o cümlede başka hiçbir liste sözcüğü yok (çekimli biçimler listede
+ * durmuyor). Bu yüzden sözcük listede kalıyor ama TEK BAŞINA kanıt
+ * sayılmıyor: çevresinde Türkçeye ÖZGÜ bir harf taşıyan başka bir sözcük
+ * aranıyor. "ı/İ/ş/ğ" başka dillerde yok; "ç/ö/ü" var, o yüzden onlara
+ * bakılmıyor.
+ *
+ * Özel adlar bu noktada zaten maskelenmiş durumda, yani "Beşiktaş" gibi bir
+ * kulüp adı yanlışlıkla kanıt yerine geçmiyor.
+ */
+const AMBIGUOUS_WITH_ENGLISH = new Set(["son", "stat"]);
+const TURKISH_ONLY_LETTER = /[ıİşŞğĞ]/;
+
 export function findTurkish(text, options = {}) {
   const limit = Number.isFinite(options.limit) ? options.limit : 12;
   const source = maskProperNouns(String(text || "").replace(/\s+/g, " "));
@@ -219,6 +242,10 @@ export function findTurkish(text, options = {}) {
     const context = source.slice(start, match.index + raw.length + 60).trim();
     const key = `${word}|${context.slice(0, 40)}`;
     if (seen.has(key)) continue;
+    if (AMBIGUOUS_WITH_ENGLISH.has(word)) {
+      const around = source.slice(Math.max(0, match.index - 40), match.index + raw.length + 40);
+      if (!TURKISH_ONLY_LETTER.test(around)) continue;
+    }
     seen.add(key);
     hits.push({ word, context });
   }

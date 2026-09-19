@@ -200,6 +200,13 @@ export const STR = {
     liveTitle: "Canlı maç anlatımı",
     liveEvents: "Maç olayları",
     liveStats: "Maç istatistikleri",
+    // Başlıklarda takım adları arasına giren ayraç; İngilizcede "vs".
+    fixtureVersus: "-",
+    goalsHeading: "golleri ve asistleri",
+    scoreQuestionLive: (h, a) => `${h} - ${a} maçı kaç kaç?`,
+    scoreAnswerLive: (h, a, score, minute) => `${h} - ${a} maçında skor ${minute ? `${minute}. dakikada ` : ""}${score}.`,
+    scoreQuestionPost: (h, a) => `${h} - ${a} maç sonucu ne oldu?`,
+    scoreAnswerPost: (h, a, score) => `${h} - ${a} maçı ${score} sona erdi.`,
     liveStatsPending: "İstatistikler maç başladığında burada canlı olarak açılır: topla oynama, şut, isabetli şut, korner ve diğerleri.",
     eventsPending: "Gol, kart ve oyuncu değişiklikleri maç başladığında burada listelenir.",
     resultTitle: "Maç sonucu",
@@ -343,6 +350,12 @@ export const STR = {
     liveTitle: "Live commentary",
     liveEvents: "Match events",
     liveStats: "Match statistics",
+    fixtureVersus: "vs",
+    goalsHeading: "goals and assists",
+    scoreQuestionLive: (h, a) => `What is the score in ${h} vs ${a}?`,
+    scoreAnswerLive: (h, a, score, minute) => `${h} vs ${a} stands at ${score}${minute ? ` after ${minute} minutes` : ""}.`,
+    scoreQuestionPost: (h, a) => `What was the result of ${h} vs ${a}?`,
+    scoreAnswerPost: (h, a, score) => `${h} vs ${a} finished ${score}.`,
     liveStatsPending: "Statistics open here live once the match starts: possession, shots, shots on target, corners and more.",
     eventsPending: "Goals, cards and substitutions are listed here once the match starts.",
     resultTitle: "Result",
@@ -676,7 +689,43 @@ function predictedLineupSectionHtml(ctx, text) {
     ? `<p class="predicted-lineup-sources"><span>${escapeHtml(text.predictedSources)}:</span> ${links}${asOf ? ` · ${escapeHtml(text.lastUpdated)}: ${escapeHtml(asOf)}` : ""}</p>`
     : "";
 
-  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
+  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.lineups, ctx))}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
+}
+
+/* ------------------------------------------------------------------ */
+/* BÖLÜM BAŞLIKLARI — ARAMA NİYETİNE GÖRE                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Türkçe küçültme: "İ" → "i", "I" → "ı". Yerleşik `toLowerCase` bu iki
+ * harfi İngilizce kurallarına göre çevirip "Ilk 11" gibi yanlış bir
+ * başlık üretiyordu.
+ */
+function lowerFirstTr(value, locale) {
+  const text = String(value || "");
+  if (!text) return text;
+  const first = text[0];
+  const lowered = locale === "en"
+    ? first.toLowerCase()
+    : first === "İ" ? "i" : first === "I" ? "ı" : first.toLocaleLowerCase("tr-TR");
+  return lowered + text.slice(1);
+}
+
+/**
+ * BÖLÜM BAŞLIĞINA MAÇIN ADI GİRER.
+ *
+ * "Maç istatistikleri" başlığı sayfada hangi maçtan söz edildiğini
+ * söylemiyor; okuyucu da, arama motoru da başlığı bağlamsız görüyordu.
+ * "Beşiktaş - Marseille maç istatistikleri" ise sayfanın gerçek konusunu
+ * söyleyen doğal bir başlık — aynı cümle okuyucunun aradığı cümle.
+ * Kural tek yerde ve TÜM maç sayfaları için aynı: kulüp adına bağlı bir
+ * istisna yok, anahtar kelime tekrarı yok, her bölüm bir kez adlandırılır.
+ */
+export function fixtureHeading(label, ctx) {
+  const { locale, homeTeam, awayTeam } = ctx || {};
+  const text = STR[locale === "en" ? "en" : "tr"];
+  if (!homeTeam || !awayTeam || !label) return String(label || "");
+  return `${homeTeam} ${text.fixtureVersus} ${awayTeam} ${lowerFirstTr(label, locale)}`;
 }
 
 export function lineupsSectionHtml(detail, analysis, ctx) {
@@ -696,7 +745,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
     const away = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "away") || official[1];
     if (home && away && home !== away) {
       const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialLineups)}</span>`;
-      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
+      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(fixtureHeading(text.officialLineups, ctx))}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
     }
   }
 
@@ -705,7 +754,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   // Keep previously published lineup deep links useful after kickoff, even
   // when the provider has not supplied official lineups. Never retain a prediction.
   if (ctx.state === "post" || ctx.state === "pending") {
-    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.officialLineups)}</h2><p class="muted-copy">${escapeHtml(text.lineupUnavailable)}</p></section>`;
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.officialLineups, ctx))}</h2><p class="muted-copy">${escapeHtml(text.lineupUnavailable)}</p></section>`;
   }
   const probable = analysis && analysis.probableLineups;
   const probableSide = (side) => {
@@ -718,7 +767,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   if (probableHome || probableAway) {
     const badge = `<span class="msp-tag is-probable">${escapeHtml(text.lineups)}</span>`;
     const empty = `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`;
-    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.lineups, ctx))}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
   }
 
   // Site içi istatistik modelinin (yukarıdaki `probable`) verisi yoksa,
@@ -728,7 +777,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   const predictedSection = predictedLineupSectionHtml(ctx, text);
   if (predictedSection) return predictedSection;
 
-  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article></section>`;
+  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.lineups, ctx))}</h2><article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article></section>`;
 }
 
 const POSITION_ORDER = { goalkeeper: 0, kaleci: 0, defender: 1, defans: 1, midfielder: 2, "orta saha": 2, attacker: 3, forvet: 3 };
@@ -758,7 +807,7 @@ export function squadsSectionHtml(squads, ctx) {
     return `<article class="card msp-squad"><h3>${escapeHtml(teamName)}</h3>${ordered.map(([group, players]) => `<p class="msp-squad-group"><span>${escapeHtml(POSITION_LABEL[locale][group])}:</span> ${players.map((player) => playerLinkHtml(player.name, playerIndex, base, locale)).join(", ")}</p>`).join("")}</article>`;
   };
 
-  return `<section class="msp-section" id="kadro" aria-labelledby="msp-squads-title"><h2 id="msp-squads-title" class="msp-section-title">${escapeHtml(text.squads)}</h2><details class="msp-details"><summary>${escapeHtml(homeTeam)} · ${escapeHtml(awayTeam)}</summary><div class="msp-two-col">${groupHtml(home, homeTeam)}${groupHtml(away, awayTeam)}</div></details></section>`;
+  return `<section class="msp-section" id="kadro" aria-labelledby="msp-squads-title"><h2 id="msp-squads-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.squads, ctx))}</h2><details class="msp-details"><summary>${escapeHtml(homeTeam)} · ${escapeHtml(awayTeam)}</summary><div class="msp-two-col">${groupHtml(home, homeTeam)}${groupHtml(away, awayTeam)}</div></details></section>`;
 }
 
 export function absencesSectionHtml(squadStatus, ctx) {
@@ -805,7 +854,7 @@ export function formSectionHtml(forms, ctx) {
       return `<li><time datetime="${escapeHtml(row.match.kickoff)}">${escapeHtml(shortDate(row.match.kickoff, locale))}</time> ${href ? `<a href="${escapeHtml(href)}">${line}</a>` : line}${row.match.league ? ` <small>${escapeHtml(competitionLabel(row.match.league, locale))}</small>` : ""}</li>`;
     }).join("")}</ul></article>`;
   };
-  return `<section class="msp-section" id="form" aria-labelledby="msp-form-title"><h2 id="msp-form-title" class="msp-section-title">${escapeHtml(text.form)}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div></section>`;
+  return `<section class="msp-section" id="form" aria-labelledby="msp-form-title"><h2 id="msp-form-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.form, ctx))}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div></section>`;
 }
 
 export function h2hSectionHtml(entries, ctx) {
@@ -1122,7 +1171,30 @@ export function faqEntries(entry, ctx) {
     ? channelBody(homeTeam, awayTeam, channel)
     : text.channelUnknown(homeTeam, awayTeam);
 
+  // SKOR SORUSU YALNIZCA OKUNABİLİR SKOR VARKEN SORULUR.
+  // "Maç kaç kaç bitti?" sorusuna boş ya da tahmini bir cevap yazmak,
+  // hem okuyucuyu hem de SSS şemasını yanıltırdı. Skor yoksa soru hiç
+  // eklenmez; maç başlamadan da eklenmez.
+  const scoreQuestions = [];
+  if ((state === "live" || state === "post") && hasScore(entry.score)) {
+    const line = `${scoreValue(entry.score.home)}-${scoreValue(entry.score.away)}`;
+    scoreQuestions.push(
+      state === "post"
+        ? {
+            id: "mac-sonucu",
+            question: text.scoreQuestionPost(homeTeam, awayTeam),
+            answer: text.scoreAnswerPost(homeTeam, awayTeam, line)
+          }
+        : {
+            id: "canli-skor",
+            question: text.scoreQuestionLive(homeTeam, awayTeam),
+            answer: text.scoreAnswerLive(homeTeam, awayTeam, line, entry.minute || "")
+          }
+    );
+  }
+
   return [
+    ...scoreQuestions,
     {
       id: "ne-zaman",
       question: text.whenTitle(homeTeam, awayTeam),
@@ -1159,7 +1231,7 @@ export function whenSectionHtml(entry, ctx) {
 export function eventsSectionHtml(events, ctx) {
   const { locale, state } = ctx;
   const text = STR[locale];
-  const title = state === "post" ? text.resultTitle : text.liveEvents;
+  const title = fixtureHeading(state === "post" ? text.resultTitle : text.liveEvents, ctx);
   if (state === "post") {
     const goals = events.filter((event) => ["goal", "own-goal", "penalty"].includes(event.kind));
     const cards = events.filter((event) => ["yellow", "red", "yellow-red"].includes(event.kind));
@@ -1169,7 +1241,7 @@ export function eventsSectionHtml(events, ctx) {
       return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><p class="muted-copy" data-msp-events-note>${escapeHtml(text.noDetail)}</p></section>`;
     }
     const block = (heading, rows) => rows.length ? `<h3 class="msp-subtitle">${escapeHtml(heading)}</h3>${eventsListHtml(rows, text)}` : "";
-    return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(text.goalsTitle, goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
+    return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(fixtureHeading(text.goalsHeading, ctx), goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
   }
   return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${events.length ? eventsListHtml(events, text) : `<p class="muted-copy" data-msp-events-note>${escapeHtml(text.eventsPending)}</p>`}</div></section>`;
 }
@@ -1249,7 +1321,7 @@ export function statsSectionHtml(statistics, ctx) {
   const text = STR[locale];
   const table = statsTableHtml(statistics, locale, homeTeam, awayTeam);
   if (!table && state === "post") return "";
-  return `<section class="msp-section" id="istatistik" data-msp-stats aria-labelledby="msp-stats-title"><h2 id="msp-stats-title" class="msp-section-title">${escapeHtml(text.liveStats)}</h2><div class="card msp-stats-shell" data-msp-stats-body>${table || `<p class="muted-copy" data-msp-stats-note>${escapeHtml(text.liveStatsPending)}</p>`}</div></section>`;
+  return `<section class="msp-section" id="istatistik" data-msp-stats aria-labelledby="msp-stats-title"><h2 id="msp-stats-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.liveStats, ctx))}</h2><div class="card msp-stats-shell" data-msp-stats-body>${table || `<p class="muted-copy" data-msp-stats-note>${escapeHtml(text.liveStatsPending)}</p>`}</div></section>`;
 }
 
 export function summarySectionHtml(summary, reportHref, ctx) {
