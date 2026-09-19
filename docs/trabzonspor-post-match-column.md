@@ -13,7 +13,10 @@ bir tartışma.
 ## Zincir
 
 ```
-trabzonspor-post-match-column.yml   → 5 dakikada bir, 16:00–03:00 TRT
+trabzonspor-post-match-column.yml   → SAATTE BİR ucuz gözcü
+  → trabzonspor-match-watch.mjs --plan   → yoklanacak maç var mı?
+     yoksa koşu burada biter (< 1 dakika)
+     varsa 60 saniyede bir yoklama (tavan: gözcünün verdiği sayı)
   ↓
 scripts/sync-live-fixtures.mjs --apply      → BİTİŞ DOĞRULAMASI + maç dökümü
                                                (olay, diziliş, istatistik, oyuncu)
@@ -31,6 +34,28 @@ scripts/generate-search-index.mjs   → site içi arama
   ↓
 scripts/ci-commit-push.mjs          → main → Vercel
 ```
+
+### Maliyet: sıklık maça bağlı, takvime değil
+
+İkinci sürüm maç saatlerinde beş dakikada bir koşuyordu — günde 144 iş.
+GitHub her işi **en az bir dakikadan** faturalandırıyor ve bu depo private
+olduğu için o dakikalar doğrudan plan kotasından düşüyor. Hiç maç olmayan
+günlerde bile ayda binlerce dakika; kota bittiğinde de **bütün** iş
+akışları duruyor. 19 Eylül akşamı yaşanan tam olarak buydu: 17:27'den
+itibaren her koşu, her dalda, koşucu atanmadan 1–5 saniyede düştü.
+
+Şimdi cron saatte bir çalışan ucuz bir gözcü:
+
+| Durum | Maliyet |
+| --- | --- |
+| Maç yok | ~20–30 sn → 1 dakika × 24 = **~720 dk/ay** |
+| Maç bitişe yakın | 60 sn aralıkla yoklama, bitince kırılır → maç başına **~20–25 dk** |
+| Toplam (ayda ~8 maç) | **~900 dk/ay** (önceki tasarım: ~5.000–8.600 dk/ay) |
+
+Gecikme de iyileşiyor: pencere açıkken yoklama aralığı 60 saniye.
+
+Kaçırılan maç kayıp değil: bitmiş ama yazısı çıkmamış bir maç **altı saat**
+boyunca her saatlik gözcüde yeniden yakalanıyor (`CATCHUP_HOURS`).
 
 ### 0–5 dakika hedefi ve gerçek sınırı
 
@@ -63,6 +88,7 @@ olduğu için aynı anda yazmazlar.
 | `services/opponentFocus.js` | Rakip dosyası: transferler, rotasyon, fikstür yükü, kanıt durumu. |
 | `scripts/harvest-player-match-history.mjs` | Bitmiş maçlardan zaman serisini biriktirir. |
 | `scripts/inject-match-column-link.mjs` | Maç ve maç raporu sayfalarına yazıya köprü basar. |
+| `scripts/trabzonspor-match-watch.mjs` | Saatlik gözcü: yoklamaya değer mi, kaç kez yoklanacak. |
 | `scripts/generate-trabzonspor-post-match-column.mjs` | Dosya okuma/yazma, bağlantı çözümü, bildirim. |
 | `scripts/test-trabzonspor-post-match-column.mjs` | Denetim. `npm test` zincirinde. |
 

@@ -12,45 +12,44 @@ name: Trabzonspor Post-Match Column
 # (match-analysis.yml) tazeliyordu. Ölçüldü: 19 Eylül'de saat 21:26'da,
 # 20:00'de başlamış maç depoda hâlâ SCHEDULED ve skorsuzdu. Yani "maç
 # bitince yayımla" zinciri, en iyi ihtimalle bir sonraki saat başını
-# bekliyordu — 0–5 dakika hedefiyle bağdaşmaz. Bu yüzden bitiş
-# doğrulamasını bu iş akışı KENDİSİ yapıyor.
+# bekliyordu — 0–5 dakika hedefiyle bağdaşmaz.
 #
-# `sync-live-fixtures.mjs --apply` yalnızca skor değil, maç dökümünü de
-# (olay akışı, diziliş, istatistik, oyuncu satırları) çekiyor; yani yazının
-# ihtiyaç duyduğu her bölüm tek adımda geliyor.
+# ── SIKLIK MAÇA BAĞLI, TAKVİME DEĞİL ────────────────────────────────────
+#
+# İkinci sürüm maç saatlerinde BEŞ DAKİKADA BİR koşuyordu: günde 144 iş.
+# GitHub her işi en az bir dakikadan faturalandırdığı ve bu depo private
+# olduğu için o dakikalar plan kotasından düşüyordu — ayda binlerce dakika,
+# üstelik hiç maç olmayan günlerde bile. Kota bittiğinde BÜTÜN iş akışları
+# durdu; 19 Eylül akşamı yaşanan tam olarak buydu.
+#
+# Artık cron saatte bir çalışan UCUZ BİR GÖZCÜ:
+# `scripts/trabzonspor-match-watch.mjs` fikstüre bakıp "yoklamaya değer mi"
+# diye cevap veriyor. Ortada bitmek üzere olan bir Trabzonspor maçı yoksa
+# iş saniyeler içinde çıkıyor. Yalnızca maç bitişe yakınken dakikalık
+# yoklama başlıyor — yani maliyet maç sayısıyla orantılı, takvim
+# büyüklüğüyle değil.
+#
+# Kaçırılan maç da kayıp değil: bitmiş ama yazısı çıkmamış bir maç altı saat
+# boyunca her saatlik gözcüde yeniden yakalanıyor.
 #
 # ── 0–5 DAKİKA NEREYE KADAR GARANTİ EDİLEBİLİR ──────────────────────────
 #
-# Edilemez, ve bunu iş akışının kendisi söylemeli: GitHub `schedule` için
-# en sık aralık BEŞ DAKİKADIR ve kuyruk yoğunken gecikir (bu depoda saat
-# başına sabitlenmiş koşuların saatlerce geciktiği ölçüldü — bkz.
-# docs/scheduled-updates.md). Yani cron ile ulaşılabilecek en iyi değer
-# "maçın bitişinden sonraki ilk koşu", tipik olarak 0–10 dakika.
-# Gerçekten garantili bir 0–5 dakika, dışarıdan `workflow_dispatch`
-# tetikleyen daima açık bir zamanlayıcı ister; bu iş akışı o tetiği de
-# kabul ediyor (aşağıdaki workflow_dispatch).
-#
-# Koşu ucuz: bitmiş maç yoksa betik ilk saniyede "yapacak iş yok" deyip
-# çıkıyor ve hiçbir dosya değişmiyor.
+# Yoklama penceresi açıkken gecikme yoklama aralığı kadardır (60 saniye).
+# Pencereyi açan saatlik cron ise GitHub kuyruğuna tabi ve gecikebilir;
+# bu yüzden garanti değil, hedef. Elle tetikleme her zaman açık.
 
 on:
   schedule:
-    # Beş dakikada bir, Türkiye maç saatlerini kapsayan pencerede
-    # (16:00–03:00 Europe/Istanbul). Saat başındaki kuyruk yoğunluğundan
-    # kaçmak için :02 ofsetiyle başlıyor.
-    - cron: "2,7,12,17,22,27,32,37,42,47,52,57 13-23,0 * * *"
+    # Saatte bir gözcü. Saat başındaki kuyruk yoğunluğundan kaçmak için :05.
+    - cron: "5 * * * *"
   workflow_dispatch:
     inputs:
       match_id:
-        description: "Belirli bir maç kimliği (boşsa son bitmiş Trabzonspor maçı seçilir)"
+        description: "Belirli bir maç kimliği (boşsa gözcünün bulduğu maç)"
         required: false
         default: ""
-      window_hours:
-        description: "Kaç saat geriye bakılsın (varsayılan 36)"
-        required: false
-        default: "36"
-      skip_provider:
-        description: "true ise sağlayıcı senkronu atlanır, yalnızca depodaki veri kullanılır"
+      force_watch:
+        description: "true ise gözcü atlanır ve doğrudan yoklama yapılır"
         required: false
         default: "false"
       dry_run:
@@ -88,54 +87,82 @@ jobs:
         with:
           node-version: 22
 
-      # KAPI 0: üretim mantığının kendi denetimi. Bozuk bir üreticiden çıkan
-      # metni yayımlamaktansa hiç yayımlamamak doğru.
-      - name: Verify column generator
-        run: node scripts/test-trabzonspor-post-match-column.mjs
+      # GÖZCÜ: bu koşuda yapacak iş var mı? Yoksa burada bitiyor ve koşu
+      # bir dakikadan az sürüyor.
+      - name: Plan the watch window
+        id: plan
+        if: inputs.force_watch != 'true'
+        run: node scripts/trabzonspor-match-watch.mjs --plan
 
-      # BİTİŞ DOĞRULAMASI SAĞLAYICIDAN. Skor, olay akışı, diziliş,
-      # istatistik ve oyuncu satırları bu adımda geliyor. Anahtar yoksa
-      # betik bunu açıkça söyleyip çıkar; zincir depodaki veriyle devam
-      # eder ve kapılar zaten eksik veriyi yakalar.
-      - name: Sync live fixtures from provider
-        if: inputs.skip_provider != 'true'
-        continue-on-error: true
-        run: node scripts/sync-live-fixtures.mjs --apply
-
-      # Oyuncu–maç zaman serisi: transfer performansı karşılaştırmasının
-      # tek kaynağı. Her bitmiş maçtan sonra biraz daha doluyor.
-      - name: Accumulate player match history
-        run: node scripts/harvest-player-match-history.mjs --apply
-
-      - name: Detect finished Trabzonspor match
-        id: detect
+      - name: Resolve watch decision
+        id: watch
         shell: bash
         env:
-          MATCH_ID: ${{ inputs.match_id }}
-          WINDOW: ${{ inputs.window_hours }}
+          PLAN_WATCH: ${{ steps.plan.outputs.watch }}
+          PLAN_POLLS: ${{ steps.plan.outputs.polls }}
+          PLAN_MATCH: ${{ steps.plan.outputs.match }}
+          FORCE: ${{ inputs.force_watch }}
+          MANUAL_MATCH: ${{ inputs.match_id }}
+        run: |
+          if [ "${FORCE}" = "true" ]; then
+            echo "watch=true" >> "${GITHUB_OUTPUT}"
+            echo "polls=10" >> "${GITHUB_OUTPUT}"
+            echo "match=${MANUAL_MATCH}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "watch=${PLAN_WATCH:-false}" >> "${GITHUB_OUTPUT}"
+            echo "polls=${PLAN_POLLS:-0}" >> "${GITHUB_OUTPUT}"
+            echo "match=${MANUAL_MATCH:-${PLAN_MATCH}}" >> "${GITHUB_OUTPUT}"
+          fi
+
+      # KAPI 0: üretim mantığının kendi denetimi. Yalnızca gerçekten
+      # yayımlama ihtimali varken koşuyor; boş günlerde saniye harcamıyor.
+      - name: Verify column generator
+        if: steps.watch.outputs.watch == 'true'
+        run: node scripts/test-trabzonspor-post-match-column.mjs
+
+      # YOKLAMA: sağlayıcıdan bitişi doğrula, bitmişse çık. Maç bitene kadar
+      # 60 saniyede bir, gözcünün verdiği tavana kadar.
+      - name: Poll provider until the final whistle
+        id: poll
+        if: steps.watch.outputs.watch == 'true'
+        shell: bash
+        env:
+          POLLS: ${{ steps.watch.outputs.polls }}
+          MATCH_ID: ${{ steps.watch.outputs.match }}
         run: |
           set -o pipefail
           ARGS=""
           [ -n "${MATCH_ID}" ] && ARGS="--match=${MATCH_ID}"
-          [ -n "${WINDOW}" ] && ARGS="${ARGS} --window=${WINDOW}"
-          node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee detect.log
-          if grep -q "Hiçbir şey üretilmedi" detect.log; then
-            echo "found=false" >> "${GITHUB_OUTPUT}"
-          else
-            echo "found=true" >> "${GITHUB_OUTPUT}"
-          fi
+          found=false
+          for attempt in $(seq 1 "${POLLS:-1}"); do
+            echo "::group::yoklama ${attempt}/${POLLS}"
+            node scripts/sync-live-fixtures.mjs --apply || echo "[poll] sağlayıcı senkronu başarısız; depodaki veriyle denenecek"
+            node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee detect.log
+            echo "::endgroup::"
+            if ! grep -q "Hiçbir şey üretilmedi" detect.log; then
+              found=true
+              echo "[poll] bitiş doğrulandı (${attempt}. yoklama)."
+              break
+            fi
+            if [ "${attempt}" -lt "${POLLS:-1}" ]; then sleep 60; fi
+          done
+          echo "found=${found}" >> "${GITHUB_OUTPUT}"
+
+      # Oyuncu–maç zaman serisi: transfer performansı karşılaştırmasının
+      # tek kaynağı. Her bitmiş maçtan sonra biraz daha doluyor.
+      - name: Accumulate player match history
+        if: steps.poll.outputs.found == 'true' && inputs.dry_run != 'true'
+        run: node scripts/harvest-player-match-history.mjs --apply
 
       - name: Generate and publish column
-        if: steps.detect.outputs.found == 'true' && inputs.dry_run != 'true'
+        if: steps.poll.outputs.found == 'true' && inputs.dry_run != 'true'
         shell: bash
         env:
-          MATCH_ID: ${{ inputs.match_id }}
-          WINDOW: ${{ inputs.window_hours }}
+          MATCH_ID: ${{ steps.watch.outputs.match }}
         run: |
           set -o pipefail
           ARGS="--apply"
           [ -n "${MATCH_ID}" ] && ARGS="${ARGS} --match=${MATCH_ID}"
-          [ -n "${WINDOW}" ] && ARGS="${ARGS} --window=${WINDOW}"
           node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee column.log
           # Sayfalar, ana sayfa vitrini, liste, sitemap ve İngilizce sürüm.
           node scripts/generate-column-pages.mjs
@@ -146,7 +173,7 @@ jobs:
           node scripts/generate-search-index.mjs
 
       - name: Commit published column
-        if: steps.detect.outputs.found == 'true' && inputs.dry_run != 'true'
+        if: steps.poll.outputs.found == 'true' && inputs.dry_run != 'true'
         run: >-
           node scripts/ci-commit-push.mjs
           "ci(column): Trabzonspor maç sonu analizi"
