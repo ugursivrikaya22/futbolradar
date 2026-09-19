@@ -276,8 +276,18 @@ const EVENT_TEMPLATES = Object.freeze({
       `${publisher} reports on the latest match involving ${subject}.`
   },
   statement: {
-    title: ({ subject, person }) =>
-      person ? `${person} speaks on the ${subject} agenda` : `${subject} agenda in focus`,
+    /*
+     * YAYINCI ADI BAŞLIĞIN AYIRT EDİCİ PARÇASIDIR.
+     *
+     * Adı geçen bir kişi yoksa başlık yalnızca `subject`'ten kurulurdu ve
+     * aynı kulüp hakkında iki ayrı açıklama haberi geldiğinde iki sayfa
+     * BİREBİR aynı başlığı alırdı (ölçüldü: "Barcelona agenda in focus"
+     * ve "Fenerbahçe agenda in focus" ikişer sayfa; test-seo-integrity
+     * haklı olarak düşüyordu). Yayıncı adı kaydın kendisinde zaten var,
+     * yani uydurma bir ayrım eklenmiyor — haberin gerçek kaynağı yazılıyor.
+     */
+    title: ({ subject, person, publisher }) =>
+      person ? `${person} speaks on the ${subject} agenda` : `${subject} agenda in focus — ${publisher}`,
     lead: ({ subject, publisher, person }) =>
       person
         ? `${publisher} reports comments from ${person} relating to ${subject}.`

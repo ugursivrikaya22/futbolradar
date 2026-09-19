@@ -250,7 +250,63 @@ function updateSitemap(articles) {
   }
 }
 
-const articles = rankEnglishNews(readNews().filter(isPublishableEnglish));
+/**
+ * İKİ SAYFA AYNI BAŞLIĞI VE AYNI AÇIKLAMAYI TAŞIYAMAZ.
+ *
+ * Başlık, haber kaydı yazılırken `services/englishNews.js` kalıplarından
+ * üretilip `data/news.json` içine DONDURULUR. Kalıp düzeltilse bile daha
+ * önce yazılmış kayıtlar eski başlıklarını taşımaya devam eder; bu yüzden
+ * çizim tarafında da bir güvence gerekir (bkz. scripts/test-seo-integrity.mjs).
+ *
+ * Ayrım uydurulmaz: önce kaydın KENDİ yayıncı adı, o da ayırt etmiyorsa
+ * kaydın kalıcı slug'ı kullanılır. Sıra `rankEnglishNews` sırasıdır, yani
+ * aynı girdi her koşuda aynı çıktıyı verir.
+ */
+function sourceHeadlineOf(article) {
+  const first = Array.isArray(article.sources) ? article.sources[0] : null;
+  const name = String((first && first.name) || "").trim();
+  if (!name) return "";
+  // Kaynak adı "<yayıncı> — <özgün başlık>" biçiminde saklanır.
+  const dash = name.indexOf(" — ");
+  return dash === -1 ? name : name.slice(dash + 3).trim();
+}
+
+function withUniqueMetadata(list) {
+  const titles = new Map();
+  const descriptions = new Map();
+  return list.map((article) => {
+    const next = { ...article };
+
+    const title = String(next.title || "").trim();
+    if (title) {
+      if (titles.has(title)) {
+        const publisher = String(next.sourceName || "").trim();
+        let candidate = publisher && !title.includes(publisher) ? `${title} — ${publisher}` : "";
+        if (!candidate || titles.has(candidate)) candidate = `${title} — ${next.slug}`;
+        next.title = candidate;
+      }
+      titles.set(String(next.title).trim(), true);
+    }
+
+    // Açıklama da benzersiz olmalı: aynı kulüp + aynı yayıncı ikilisinde
+    // kalıp cümleler birebir aynı çıkıyor. Ayrım için haberin KENDİ özgün
+    // başlığı yazılır — kayıtta zaten duran gerçek veri.
+    const description = String(next.spot || next.summary || next.title || "").trim();
+    if (description) {
+      if (descriptions.has(description)) {
+        const headline = sourceHeadlineOf(next);
+        let candidate = headline ? `${description} Source headline: “${headline}”.` : "";
+        if (!candidate || descriptions.has(candidate)) candidate = `${description} Reference: ${next.slug}.`;
+        next.spot = candidate;
+      }
+      descriptions.set(String(next.spot || next.summary || next.title).trim(), true);
+    }
+
+    return next;
+  });
+}
+
+const articles = withUniqueMetadata(rankEnglishNews(readNews().filter(isPublishableEnglish)));
 for (const article of articles) writeArticle(article);
 const removed = pruneRemoved(articles.map((article) => article.slug));
 updateSitemap(articles);
