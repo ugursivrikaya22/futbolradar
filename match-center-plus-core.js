@@ -665,9 +665,31 @@
     for (var i = 0; i < stats.length; i += 1) {
       if (stats[i] && XG_ALIASES.indexOf(normalize(stats[i].type)) !== -1) { row = stats[i]; break; }
     }
-    if (!row) return null;
-    var home = measured(row.home);
-    var away = measured(row.away);
+
+    var home = row ? measured(row.home) : null;
+    var away = row ? measured(row.away) : null;
+    var source = "provider";
+
+    // ŞUT BAZINDA xG'DEN TAKIM TOPLAMI.
+    //
+    // Sağlayıcı takım toplamını göndermediği maçlarda (çoğu) elimizde yine
+    // de ŞUT BAZINDA ölçülmüş xG olabiliyor. Takım xG'si zaten tanımı
+    // gereği o şutların toplamıdır — burada hesaplanan yeni bir tahmin
+    // değil, ölçülmüş değerlerin toplanmasıdır. Uydurma olurdu ki: xG'si
+    // OLMAYAN şutlara bir değer atamak. Bu yüzden toplam, ancak şutların
+    // TAMAMI xG taşıyorsa kurulur; bir şutun bile ölçümü eksikse toplam
+    // gerçeğin altında kalır ve hiç gösterilmez.
+    if (home === null || away === null) {
+      var shots = shotMap(detail);
+      if (!shots || !shots.length) return null;
+      if (shots.some(function (shot) { return shot.xg === null; })) return null;
+      var totals = { home: 0, away: 0 };
+      shots.forEach(function (shot) { totals[shot.side] += shot.xg; });
+      home = Math.round(totals.home * 100) / 100;
+      away = Math.round(totals.away * 100) / 100;
+      source = "shots";
+    }
+
     if (home === null || away === null) return null;
     if (home < 0 || away < 0 || home > 25 || away > 25) return null;
     return {
@@ -675,6 +697,7 @@
       away: away,
       homeText: home.toFixed(2),
       awayText: away.toFixed(2),
+      source: source,
       leader: home === away ? null : home > away ? "home" : "away"
     };
   }

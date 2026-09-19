@@ -1509,7 +1509,12 @@ export function matchCenterPlusPayloadHtml(detail, entry, state) {
     shots: pick(detail.shots)
   };
   // Çizilecek hiçbir şey yoksa blok basılmaz.
-  if (!payload.lineups && !payload.players && !payload.events && !payload.statistics) return "";
+  //
+  // `shots` DA SAYILIR. Beş büyük ligdeki maçların çoğunda ana sağlayıcıdan
+  // kadro/oyuncu dökümü gelmiyor ama Understat'tan şut koordinatı geliyor;
+  // muhafaza yalnızca ilk dört alana baksaydı o maçlarda blok hiç basılmaz
+  // ve elimizdeki şut haritası ile xG eğrisi SESSİZCE kaybolurdu.
+  if (!payload.lineups && !payload.players && !payload.events && !payload.statistics && !payload.shots) return "";
   // `</script>` dizisi JSON içinde geçerse bloğu erken kapatır; kaçırılır.
   const json = JSON.stringify(payload).replace(/</g, "\\u003c");
   return `<script type="application/json" data-mcp-payload>${json}</script>`;

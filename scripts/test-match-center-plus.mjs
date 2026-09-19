@@ -84,7 +84,43 @@ const ok = (message) => { checks += 1; console.log(`  ok  ${message}`); };
   assert.equal(plus.expectedGoals(withXg("", "")), null);
   assert.equal(plus.expectedGoals({ statistics: [] }), null, "xG yoksa bölüm açılmamalı");
   assert.equal(plus.expectedGoals({}), null);
-  ok("xG yalnızca geçerli ölçümde açılıyor; negatif/imkânsız değer eleniyor");
+
+  // ŞUT BAZINDA xG'DEN TAKIM TOPLAMI.
+  //
+  // Sağlayıcı takım toplamını vermediği maçlarda, ölçülmüş şut xG'leri
+  // toplanarak takım xG'si kurulur — bu yeni bir tahmin değil, xG'nin
+  // tanımı. Ama ancak ŞUTLARIN TAMAMI ölçülmüşse: bir şutun bile xG'si
+  // eksikse toplam gerçeğin altında kalır ve hiç gösterilmez.
+  const withShots = {
+    homeTeam: "A", awayTeam: "B",
+    shots: [
+      { x: 90, y: 50, side: "home", outcome: "goal", minute: 10, xg: 0.5, team: "A" },
+      { x: 80, y: 40, side: "home", outcome: "on", minute: 20, xg: 0.25, team: "A" },
+      { x: 85, y: 55, side: "away", outcome: "off", minute: 30, xg: 0.1, team: "B" }
+    ]
+  };
+  const derived = plus.expectedGoals(withShots);
+  assert.equal(derived.source, "shots");
+  assert.equal(derived.homeText, "0.75");
+  assert.equal(derived.awayText, "0.10");
+
+  // Sağlayıcının kendi toplamı VARSA o kazanır.
+  const both = { ...withShots, statistics: [{ type: "Gol beklentisi (xG)", home: 2.11, away: 0.77 }] };
+  assert.equal(plus.expectedGoals(both).source, "provider");
+  assert.equal(plus.expectedGoals(both).homeText, "2.11");
+
+  // Tek bir şutun ölçümü eksikse toplam kurulmaz.
+  const partial = { ...withShots, shots: withShots.shots.map((s, i) => (i ? s : { ...s, xg: null })) };
+  assert.equal(plus.expectedGoals(partial), null, "eksik ölçümle toplam kurulmamalı");
+
+  // xG eğrisi şut bazında xG'den doğar.
+  const curve = plus.xgTimeline({ ...withShots, shots: withShots.shots.concat([
+    { x: 70, y: 30, side: "away", outcome: "on", minute: 60, xg: 0.2, team: "B" }
+  ]) });
+  assert.ok(curve && curve.home.length >= 2 && curve.away.length >= 2, "eğri iki taraf için de kurulmalı");
+  assert.equal(curve.goals.length, 1, "gol işareti konmalı");
+  assert.equal(plus.xgTimeline({}), null, "şut yoksa eğri yok");
+  ok("xG yalnızca geçerli ölçümde açılıyor; şut bazında toplam ve eğri kuruluyor");
 }
 
 /* ── 5. ŞUT HARİTASI: koordinat yoksa harita yok ───────────────────── */
@@ -366,6 +402,12 @@ const ok = (message) => { checks += 1; console.log(`  ok  ${message}`); };
     assert.ok(client.includes(`"${name}"`), `istemci "${name}" modülünü kaybetmiş`);
     assert.ok(ssr.includes(`shellFor("${name}"`), `SSR "${name}" kabuğunu basmıyor`);
   }
+  // ŞUT LİSTESİ ERİŞİLEBİLİRLİK AYAĞI: haritadaki noktalar üst üste
+  // biniyor ve yarısı dokunarak seçilemiyor; liste kaybolursa o şutlara
+  // ulaşmanın hiçbir yolu kalmaz.
+  assert.ok(client.includes("mcp-shot-row"), "şut listesi kaybolmuş");
+  assert.ok(client.includes("mcp-shot-list"), "şut listesi kapsayıcısı kaybolmuş");
+
   for (const hook of ["data-mcp-body", "data-mcp-payload", "futbolradar:match-detail"]) {
     assert.ok(client.includes(hook), `istemci "${hook}" kancasını kaybetmiş`);
   }

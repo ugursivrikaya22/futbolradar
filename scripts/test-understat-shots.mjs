@@ -115,7 +115,17 @@ const ok = (message) => { checks += 1; console.log(`  ok  ${message}`); };
 {
   assert.equal(understat.sameClub("Wolverhampton Wanderers", "Wolverhampton"), true);
   assert.equal(understat.sameClub("Paris Saint Germain", "Paris Saint-Germain"), true);
-  assert.equal(understat.sameClub("Bayern München", "Bayern Munich"), false, "farklı yazımlar zorlanmamalı");
+  // TAKMA AD TABLOSU: Understat'ın kendi lig yükünden ölçülmüş karşılıklar.
+  assert.equal(understat.sameClub("Bayern München", "Bayern Munich"), true);
+  assert.equal(understat.sameClub("1. FC Köln", "FC Cologne"), true);
+  assert.equal(understat.sameClub("RB Leipzig", "RasenBallsport Leipzig"), true);
+  assert.equal(understat.sameClub("Borussia Mönchengladbach", "Borussia M.Gladbach"), true);
+  assert.equal(understat.sameClub("Estac Troyes", "Troyes"), true);
+  assert.equal(understat.sameClub("Stade Brestois 29", "Brest"), true);
+  // Takma ad tablosu FARKLI kulüpleri birbirine bağlamamalı.
+  assert.equal(understat.sameClub("1. FC Köln", "Bayern Munich"), false);
+  assert.equal(understat.sameClub("RB Leipzig", "Werder Bremen"), false);
+  assert.equal(understat.sameClub("Estac Troyes", "Toulouse"), false);
   assert.equal(understat.sameClub("Real Sociedad", "Real Madrid"), false, "aynı önek farklı kulüp");
   assert.equal(understat.sameClub("Manchester United", "Manchester City"), false);
   assert.equal(understat.sameClub("", "Arsenal"), false);
@@ -174,7 +184,14 @@ const ok = (message) => { checks += 1; console.log(`  ok  ${message}`); };
         assert.ok(["home", "away"].includes(shot.side), `${key}: taraf belirsiz`);
         assert.ok(shot.xg === null || (shot.xg >= 0 && shot.xg <= 1), `${key}: ölçek dışı xG`);
         assert.ok(shot.minute === null || (shot.minute >= 0 && shot.minute <= 130), `${key}: imkânsız dakika`);
-        assert.ok(!/null|undefined|NaN/i.test(`${shot.player}${shot.team}`), `${key}: bozuk metin`);
+        // DENETİM TAM DEĞERE BAKAR, İÇİNDE ARAMAZ. "Bruno Fernandes",
+        // "Kenan Karaman", "Brennan Johnson" gerçek adlar ve içlerinde
+        // "nan" geçiyor; alt dize araması bunları bozuk veri sanıyordu.
+        for (const value of [shot.player, shot.team, shot.assist]) {
+          if (value === null) continue;
+          assert.ok(!/^(null|undefined|nan)$/i.test(String(value).trim()),
+            `${key}: bozuk metin — ${JSON.stringify(value)}`);
+        }
         if (shot.xg !== null) withXg += 1;
       }
     }

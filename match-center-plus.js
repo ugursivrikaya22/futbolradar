@@ -291,23 +291,71 @@
       return '<span class="mcp-shot-key is-' + key + '">' + SHOT_ICON[key] + " " + esc(label) + "</span>";
     }).join("");
 
-    var dots = shots.map(function (shot, index) {
+    // NOKTA BOYUTU xG'YE GÖRE — VE ÇİZİM SIRASI BUNA BAĞLI.
+    //
+    // Bir maçta 30-40 şut var ve sahada üst üste biniyorlar. Hepsi aynı
+    // boyutta çizildiğinde alttaki şut TAMAMEN kapanıyor ve tıklanamıyordu:
+    // okuyucu o şutun ayrıntısına hiçbir şekilde ulaşamıyordu.
+    //
+    // Çözüm iki işi birden yapıyor: nokta, şutun xG'si kadar büyür (pozisyon
+    // kalitesi tek bakışta okunur — şut haritalarının standart dili) ve
+    // BÜYÜKLER ÖNCE çizilir, küçükler üste gelir. Böylece küçük nokta büyük
+    // noktanın altında kaybolmaz ve her şut tıklanabilir kalır. Üstelik
+    // düğümler gerçek <button> olduğu için klavyeyle de tek tek gezilir.
+    var ordered = shots.slice().sort(function (left, right) {
+      return (right.xg === null ? 0 : right.xg) - (left.xg === null ? 0 : left.xg);
+    });
+
+    var dots = ordered.map(function (shot, index) {
       // Ev sahibi soldan sağa, deplasman sağdan sola hücum eder; tek sahada
       // iki takımı göstermenin okunur yolu budur.
       var x = shot.side === "home" ? shot.x : 100 - shot.x;
       var y = shot.side === "home" ? shot.y : 100 - shot.y;
+      // xG ölçülmemişse taban boyut kullanılır — boyuttan bir değer
+      // OKUNMASIN diye büyütülmez.
+      var size = shot.xg === null ? 20 : 18 + Math.round(Math.sqrt(shot.xg) * 22);
+      var label = (shot.player || T.noPlayer) +
+        (shot.minute === null ? "" : " " + shot.minute + "'") +
+        " · " + (shot.outcome === "goal" ? T.shotGoal : shot.outcome === "on" ? T.shotOn : shot.outcome === "off" ? T.shotOff : T.shotBlocked) +
+        (shot.xgText ? " · xG " + shot.xgText : "");
       return '<button type="button" class="mcp-shot is-' + shot.outcome + " is-" + shot.side + '" ' +
-        'style="left:' + x.toFixed(1) + "%;top:" + y.toFixed(1) + '%" data-mcp-shot="' + index + '" ' +
-        'aria-label="' + esc((shot.player || T.noPlayer) + " · " + (shot.minute === null ? "" : shot.minute + "'")) + '">' +
+        'style="left:' + x.toFixed(1) + "%;top:" + y.toFixed(1) + "%;--mcp-shot-size:" + size + 'px" ' +
+        'data-mcp-shot="' + index + '" aria-label="' + esc(label) + '">' +
         SHOT_ICON[shot.outcome] + "</button>";
+    }).join("");
+
+    // ŞUT LİSTESİ — HARİTANIN ERİŞİLEBİLİRLİK AYAĞI.
+    //
+    // Bir maçta 30-40 şut sahaya sığmıyor: noktalar üst üste biniyor ve
+    // ölçüldüğünde şutların YARISININ merkezi başka bir noktanın altında
+    // kalıyordu; o şutlara dokunarak ulaşmak imkânsızdı. Liste bu boşluğu
+    // kapatıyor — her şut tek bir satır olarak her zaman erişilebilir,
+    // satıra dokunmak haritadaki noktayı seçip öne çıkarıyor.
+    //
+    // Yan faydası küçük değil: okuyucu maçı satır satır tarayabiliyor ve
+    // ekran okuyucu için de sıralı, okunabilir bir yapı oluşuyor.
+    var rows = ordered.map(function (shot, index) {
+      var label = shot.outcome === "goal" ? T.shotGoal : shot.outcome === "on" ? T.shotOn
+        : shot.outcome === "off" ? T.shotOff : T.shotBlocked;
+      return '<li><button type="button" class="mcp-shot-row is-' + shot.outcome + '" data-mcp-shot="' + index + '">' +
+        '<span class="mcp-shot-min">' + esc(shot.minute === null ? "-" : shot.minute + "'") + "</span>" +
+        '<span class="mcp-shot-ico" aria-hidden="true">' + SHOT_ICON[shot.outcome] + "</span>" +
+        '<span class="mcp-shot-who"><b>' + esc(shot.player || T.noPlayer) + "</b>" +
+        (shot.team ? "<small>" + esc(shot.team) + "</small>" : "") + "</span>" +
+        '<span class="mcp-shot-res">' + esc(label) + "</span>" +
+        (shot.xgText ? '<span class="mcp-shot-xg">' + esc(shot.xgText) + "</span>" : '<span class="mcp-shot-xg"></span>') +
+        "</button></li>";
     }).join("");
 
     var html = '<article class="card mcp-shotmap"><div class="mcp-shot-legend">' + legend + "</div>" +
       '<div class="mcp-shot-pitch" data-mcp-shot-pitch>' + dots + "</div>" +
-      '<p class="mcp-shot-detail muted-copy" data-mcp-shot-detail>' + esc(T.shotHint) + "</p></article>";
+      '<p class="mcp-shot-detail muted-copy" data-mcp-shot-detail>' + esc(T.shotHint) + "</p>" +
+      '<ol class="mcp-shot-list">' + rows + "</ol></article>";
 
     var painted = paint("shotmap", html);
-    if (painted) bindShotMap(shots);
+    // Tıklama sicili ÇİZİM SIRASIYLA aynı dizi olmalı: `data-mcp-shot`
+    // indeksi bu diziye bakıyor.
+    if (painted) bindShotMap(ordered);
     return painted;
   }
 
@@ -336,8 +384,15 @@
       if (shot.assist) parts.push(T.assist + ": " + shot.assist);
       if (shot.xgText) parts.push("xG " + shot.xgText);
       out.textContent = parts.join(" · ");
-      section.querySelectorAll(".mcp-shot.is-active").forEach(function (node) { node.classList.remove("is-active"); });
-      button.classList.add("is-active");
+      // Seçim HER İKİ YÜZEYDE de işaretlenir: haritadan seçilen şutun
+      // listedeki satırı, listeden seçilenin haritadaki noktası vurgulanır.
+      // Aksi hâlde listeden bir şut seçen okuyucu, haritada nereye baktığını
+      // göremezdi.
+      section.querySelectorAll(".is-active").forEach(function (node) { node.classList.remove("is-active"); });
+      var index = button.getAttribute("data-mcp-shot");
+      section.querySelectorAll('[data-mcp-shot="' + index + '"]').forEach(function (node) {
+        node.classList.add("is-active");
+      });
     });
   }
 

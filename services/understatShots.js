@@ -157,7 +157,35 @@ function normalizeMatchShots(payload) {
  */
 const CLUB_NOISE = /\b(fc|afc|cf|ac|as|sc|ss|ssc|ssd|us|ud|rc|rcd|cd|sv|tsv|vfl|vfb|bsc|fsv|sp|spor|club|calcio|de|futbol|football)\b/g;
 
+/**
+ * KULÜP TAKMA ADLARI — İKİ KAYNAK AYNI KULÜBÜ BAŞKA ADLA YAZIYOR.
+ *
+ * Aşağıdaki karşılıkların hepsi VARSAYIM DEĞİL, ÖLÇÜM: Understat'ın kendi
+ * lig yükündeki (`getLeagueData`) takım adları okunarak çıkarıldı. Genel
+ * bir "benzerlik" kuralı bu farkları kapatamaz — "Köln" ile "Cologne"
+ * ortak harf dizisi taşımıyor, "RB" ile "RasenBallsport" ise ancak
+ * tehlikeli derecede gevşek bir kuralla eşleşirdi. Bu yüzden istisna
+ * olarak tek tek yazılıyor: liste kısa, açık ve denetlenebilir.
+ *
+ * Anahtarların ikisi de `clubKey` çıktısıdır (aksansız, eksiz, sadeleşmiş).
+ */
+const CLUB_ALIASES = Object.freeze({
+  "bayern munchen": "bayern munich",
+  "borussia monchengladbach": "borussia m gladbach",
+  "1 koln": "cologne",
+  koln: "cologne",
+  "rb leipzig": "rasenballsport leipzig",
+  "estac troyes": "troyes",
+  "stade brestois 29": "brest",
+  "stade brestois": "brest"
+});
+
 function clubKey(name) {
+  const key = rawClubKey(name);
+  return CLUB_ALIASES[key] || key;
+}
+
+function rawClubKey(name) {
   return String(name || "")
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
@@ -238,6 +266,7 @@ function findMatch(dates, fixture) {
 }
 
 module.exports = {
+  CLUB_ALIASES,
   clubKey,
   dayOf,
   findMatch,
