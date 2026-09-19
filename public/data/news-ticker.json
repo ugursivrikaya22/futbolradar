@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-19T00:19:31.567Z",
+  "updatedAt": "2026-09-19T05:53:02.269Z",
   "items": [
     {
       "id": "auto-news-b8566fd4e6848d58cca1",
@@ -253,7 +253,7 @@
       "category": "official",
       "confidence": "confirmed",
       "section": "transfer",
-      "text": "BJK Plaza A ve B Blokta Yer Alan Toplam 39 Adet Bağımsız Bölümün Kiralama İşi İhale Süreci Tamamlandı - Beşiktaş JK",
+      "text": "BJK Plaza A ve B Blokta Yer Alan Toplam 39 Adet Bağımsız Bölümün Kiralama İşi İhale Süreci Tamamlandı",
       "team": "Beşiktaş",
       "timestamp": "2026-09-17T13:26:18.000Z",
       "source": {
@@ -328,6 +328,26 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-87c5a032a74f7d134cf6",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Lider Galatasaray, Trabzonspor deplasmanında! İşte muhtemel 11'ler",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-19T04:00:00.000Z",
+      "source": {
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/lider-galatasaray-trabzonspor-deplasmaninda-iste-muhtemel-11ler-43311818",
+        "publisher": "hurriyet.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
       }
     },
     {
@@ -429,45 +449,25 @@
       "important": true
     },
     {
-      "id": "auto-news-28767852da9ce74078a1",
+      "id": "auto-news-b752fefb1da3d6b186e7",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Disiplin Sevkleri - 18.09.2026",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-18T20:08:36.000Z",
+      "text": "UEFA Nations League: Zinédine Zidane, Jürgen Klopp, Xavi and Roberto Mancini make first impressions",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-09-18T08:08:32.000Z",
       "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBwSTJNQjVCeWdQWDdnUUV3bnVFVkw4VnJGX2dXbXRMWjNKM3NrS3ZBRkpXaHl4SEU3X1FqcW9IYTlLTDJzZmxWTGl6SkxvSXZWazZEaDhUMmlHQmJFdkljQ0MxVno1WlRS?oc=5",
-        "publisher": "tff.org"
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPS0taNkl0WWNKLWMyR2czTmF6UEFURnNRSHk5ZXFYSkdWcjVEbjlwZUxHLUN0eGlMQi1SSHk0SlBkTUphOHB4Q2gwNnRBSlJmUWplenlmelRCY0ZUZ3ZLeG85emgyZ3Q2NGlXYXFDcmJzMERJYXhrMXU4SVRWM3V3QWpZOTBlN2tpcVJ1RldHT3ZLQ1JFWUlsemdqdEk0RUJYZHJLS25qSkVlcldKMXctMmVLX2VVOXR6Rm1uUk9GdWUzelpTYlhtX0tEMDM2aU4zTnZlNw?oc=5",
+        "publisher": "uefa.com"
       },
       "automation": {
         "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-bb5216c797282c9ab072",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fransa'nın Aday Kadrosu Açıklandı",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-18T19:54:13.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9Ed2JYVHFxZDZHX0RqMkZwWUx0ZkttZlgxRTZBNlVXSk9WRF9NSzM2aVlUT3F6WHRaRmNvak5HNjh1b2hlM2hrQkktdGt4bnRFbUVrcnFtVTQyem9KMGxiRkhwaTJDUTQ?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
+        "feed": "uefa",
+        "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-18T13:03:34.000Z"
+        "mergedReports": 4,
+        "firstSeenAt": "2026-09-16T21:09:52.000Z"
       }
     }
   ]

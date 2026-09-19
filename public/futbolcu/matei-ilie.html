@@ -112,19 +112,6 @@
 }
     </script>
     <link rel="stylesheet" href="../page.css?v=8aba6288" />
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -143,6 +130,19 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -362,10 +362,10 @@
             <td><a href="../mac/kasimpasa-konyaspor-18-eylul-2026">Konyaspor</a></td>
             <td class="p360-score p360-result-draw">0-0</td>
             <td>İlk 11</td>
-            <td>90&#39;</td>
             <td></td>
             <td></td>
-            <td><span class="p360-card p360-card-yellow" aria-hidden="true"></span></td>
+            <td></td>
+            <td></td>
           </tr>
 <tr>
             <th scope="row">13 Eyl 2026</th>

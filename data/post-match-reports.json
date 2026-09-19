@@ -1,9 +1,1004 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-19T00:16:30.551Z",
-  "matchCount": 1374,
+  "updatedAt": "2026-09-19T05:49:49.708Z",
+  "matchCount": 1377,
   "records": [
+    {
+      "matchId": "auckland-western-sydney-wanderers-2026-09-19",
+      "fixtureId": "1638578",
+      "provider": "api-football",
+      "slug": "auckland-western-sydney-wanderers-2026-09-19",
+      "kickoff": "2026-09-19T08:00:00+03:00",
+      "kickoffUtc": "2026-09-19T05:00:00.000Z",
+      "kickoffLocal": "2026-09-19T08:00",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Auckland",
+      "awayTeam": "Western Sydney Wanderers",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 3
+      },
+      "finalScore": "1-3",
+      "winner": "Western Sydney Wanderers",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 4
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 4,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "6d7c551388042b5d",
+      "fingerprint": "6d7c551388042b5d",
+      "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Auckland 1-3 Western Sydney Wanderers maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı.",
+        "path": "mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/auckland-western-sydney-wanderers-2026-09-19.html",
+      "digest": {
+        "headline": "Western Sydney Wanderers, Auckland'ı 3-1 yendi",
+        "paragraph": "Hazırlık maçını Western Sydney Wanderers 3-1 kazandı; Auckland sahadan puansız ayrıldı. Golleri 45. dakikada Normal Goal (Auckland), 45. dakikada Normal Goal (Western Sydney Wanderers), 45. dakikada Normal Goal (Western Sydney Wanderers), 90. dakikada Normal Goal (Western Sydney Wanderers) kaydetti.",
+        "result": {
+          "winner": "Western Sydney Wanderers",
+          "loser": "Auckland",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "45'",
+              "team": "Auckland",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "45'",
+              "team": "Western Sydney Wanderers",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "45'",
+              "team": "Western Sydney Wanderers",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "90'",
+              "team": "Western Sydney Wanderers",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Normal Goal).",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "90'",
+              "team": "Western Sydney Wanderers",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Western Sydney Wanderers",
+              "contribution": "45' gol · 45' gol · 90' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Normal Goal",
+              "team": "Auckland",
+              "contribution": "45' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "45' Auckland — Normal Goal: gol",
+            "45' Western Sydney Wanderers — Normal Goal: gol",
+            "45' Western Sydney Wanderers — Normal Goal: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "90' Western Sydney Wanderers — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Western Sydney Wanderers, Auckland'ı 1-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Auckland son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Western Sydney Wanderers sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "racing-club-sarmiento-junin-2026-09-19",
+      "fixtureId": "1493146",
+      "provider": "api-football",
+      "slug": "racing-club-sarmiento-junin-2026-09-19",
+      "kickoff": "2026-09-19T03:15:00+03:00",
+      "kickoffUtc": "2026-09-19T00:15:00.000Z",
+      "kickoffLocal": "2026-09-19T03:15",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Argentina Primera División",
+      "competition": "Argentina Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Racing Club",
+      "awayTeam": "Sarmiento Junin",
+      "venue": "Estadio Presidente Perón",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "Racing Club",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 19
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 46
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 19,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 46
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "5492433e7c56670b",
+      "fingerprint": "5492433e7c56670b",
+      "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Racing Club 3-1 Sarmiento Junin maç raporu: Argentina Primera División istatistikleri | FutbolRadar",
+        "description": "Estadio Presidente Perón'de oynanan Argentina Primera División maçını Racing Club 3-1 kazandı; Sarmiento Junin sahadan puansız ayrıldı.",
+        "path": "mac-raporu/racing-club-sarmiento-junin-2026-09-19.html",
+        "competition": "Argentina Primera División"
+      },
+      "reportUrl": "./mac-raporu/racing-club-sarmiento-junin-2026-09-19.html",
+      "digest": {
+        "headline": "Racing Club, Sarmiento Junin'i 3-1 yendi",
+        "paragraph": "Estadio Presidente Perón'de oynanan Argentina Primera División maçını Racing Club 3-1 kazandı; Sarmiento Junin sahadan puansız ayrıldı. Golleri 23. dakikada G. Escudero (Racing Club), 26. dakikada J. Marabel (Sarmiento Junin), 52. dakikada Adrian Martinez (Racing Club), 80. dakikada I. Rodriguez (Racing Club) kaydetti.",
+        "result": {
+          "winner": "Racing Club",
+          "loser": "Sarmiento Junin",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 2
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "23'",
+              "team": "Racing Club",
+              "type": "Gol",
+              "detail": "G. Escudero",
+              "pivotal": true
+            },
+            {
+              "minute": "26'",
+              "team": "Sarmiento Junin",
+              "type": "Gol",
+              "detail": "J. Marabel",
+              "pivotal": true
+            },
+            {
+              "minute": "52'",
+              "team": "Racing Club",
+              "type": "Gol",
+              "detail": "Adrian Martinez",
+              "pivotal": true
+            },
+            {
+              "minute": "80'",
+              "team": "Racing Club",
+              "type": "Gol",
+              "detail": "I. Rodriguez",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (I. Rodriguez).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Racing Club",
+              "type": "Oyuncu değişikliği",
+              "detail": "G. Escudero",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Racing Club",
+              "type": "Gol",
+              "detail": "I. Rodriguez",
+              "decisive": true
+            },
+            {
+              "minute": "81'",
+              "team": "Sarmiento Junin",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Martinez",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Sarmiento Junin",
+              "type": "Oyuncu değişikliği",
+              "detail": "N. Pasquini",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "G. Escudero",
+              "team": "Racing Club",
+              "contribution": "23' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "I. Rodriguez",
+              "team": "Racing Club",
+              "contribution": "80' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. Marabel",
+              "team": "Sarmiento Junin",
+              "contribution": "26' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Adrian Martinez",
+              "team": "Racing Club",
+              "contribution": "52' gol · 63' sarı kart",
+              "impact": "orta"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "ready",
+          "notes": [
+            "Racing Club sahaya 5-3-2 dizilişiyle çıktı.",
+            "Sarmiento Junin sahaya 4-4-2 dizilişiyle çıktı.",
+            "Racing Club topu elinde tutarken Sarmiento Junin derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "23' Racing Club — G. Escudero: gol",
+            "26' Sarmiento Junin — J. Marabel: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
+            "52' Racing Club — Adrian Martinez: gol",
+            "80' Racing Club — I. Rodriguez: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Racing Club maça 5-3-2 dizilişiyle başladı.",
+            "Sarmiento Junin maça 4-4-2 dizilişiyle başladı.",
+            "58' Sarmiento Junin değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "58' Sarmiento Junin değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Racing Club değişikliği (Substitution 1). Değişiklikten sonra Racing Club adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "81' Sarmiento Junin değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Racing Club",
+              "formation": "5-3-2"
+            },
+            {
+              "team": "Sarmiento Junin",
+              "formation": "4-4-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Racing Club, Sarmiento Junin'i 3-1 yendi.",
+            "İsabetli şutta da öndeydi (6-1); sonuç üretilen pozisyonla uyumlu.",
+            "Racing Club, gol beklentisinin 1,36 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "Racing Club topa daha çok sahip oldu (%62).",
+            "Racing Club daha çok şut denedi (16-9)."
+          ],
+          "improvements": [
+            "Sarmiento Junin şut isabetinde geride kaldı (%11); bitiricilik geliştirilmesi gereken alan.",
+            "Sarmiento Junin son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Racing Club sahadan 2 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "Racing Club",
+            "score": 82
+          },
+          "away": {
+            "team": "Sarmiento Junin",
+            "score": 32
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Racing Club %37.5, Sarmiento Junin %11.1."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Racing Club 26.3, Sarmiento Junin 29.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Racing Club 0.103, Sarmiento Junin 0.068. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
+    {
+      "matchId": "new-york-city-fc-new-york-red-bulls-2026-09-19",
+      "fixtureId": "1490481",
+      "provider": "api-football",
+      "slug": "new-york-city-fc-new-york-red-bulls-2026-09-19",
+      "kickoff": "2026-09-19T02:30:00+03:00",
+      "kickoffUtc": "2026-09-18T23:30:00.000Z",
+      "kickoffLocal": "2026-09-19T02:30",
+      "date": "2026-09-19",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "MLS",
+      "competition": "MLS",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "New York City FC",
+      "awayTeam": "New York Red Bulls",
+      "venue": "Yankee Stadium",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "New York Red Bulls",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 13
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 17
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 13,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "cd70ae496b88ef0b",
+      "fingerprint": "cd70ae496b88ef0b",
+      "analysisGeneratedAt": "2026-09-19T05:49:49.578Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "New York City FC 0-1 New York Red Bulls maç raporu: MLS istatistikleri | FutbolRadar",
+        "description": "New York Red Bulls, Yankee Stadium'da oynanan MLS karşılaşmasında New York City FC'i 1-0 mağlup etti.",
+        "path": "mac-raporu/new-york-city-fc-new-york-red-bulls-2026-09-19.html",
+        "competition": "MLS"
+      },
+      "reportUrl": "./mac-raporu/new-york-city-fc-new-york-red-bulls-2026-09-19.html",
+      "digest": {
+        "headline": "New York Red Bulls, New York City FC'i 1-0 yendi",
+        "paragraph": "New York Red Bulls, Yankee Stadium'da oynanan MLS karşılaşmasında New York City FC'i 1-0 mağlup etti. Tek golü 57. dakikada J. Hall (New York Red Bulls) kaydetti.",
+        "result": {
+          "winner": "New York Red Bulls",
+          "loser": "New York City FC",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "57'",
+              "team": "New York Red Bulls",
+              "type": "Gol",
+              "detail": "J. Hall",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "New York City FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Ojeda",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "New York Red Bulls",
+              "type": "Oyuncu değişikliği",
+              "detail": "C. Cowell",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "New York Red Bulls",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Mehmeti",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "New York Red Bulls",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Hall",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "J. Hall",
+              "team": "New York Red Bulls",
+              "contribution": "57' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Mehmeti",
+              "team": "New York Red Bulls",
+              "contribution": "6' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "A. O'Neill",
+              "team": "New York City FC",
+              "contribution": "55' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "C. Cowell",
+              "team": "New York Red Bulls",
+              "contribution": "22' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "New York Red Bulls sahaya 4-3-3 dizilişiyle çıktı.",
+            "New York City FC topu elinde tutarken New York Red Bulls derin blokta savunma yapmayı tercih etti."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
+            "57' New York Red Bulls — J. Hall: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "New York Red Bulls maça 4-3-3 dizilişiyle başladı.",
+            "62' New York Red Bulls değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "62' New York City FC değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "62' New York City FC değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "75' New York City FC değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "84' New York Red Bulls değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "New York Red Bulls",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "New York Red Bulls, New York City FC'i 0-1 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (1-4); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
+          ],
+          "strengths": [
+            "New York City FC topa daha çok sahip oldu (%63).",
+            "New York City FC daha çok şut denedi (16-10)."
+          ],
+          "improvements": [
+            "New York Red Bulls şut isabetinde geride kaldı (%10); bitiricilik geliştirilmesi gereken alan."
+          ],
+          "closing": "New York Red Bulls sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "New York City FC",
+            "score": 70
+          },
+          "away": {
+            "team": "New York Red Bulls",
+            "score": 54
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti New York City FC %25, New York Red Bulls %10."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için New York City FC 31.6, New York Red Bulls 29.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG New York City FC 0.144, New York Red Bulls 0.14. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
     {
       "matchId": "central-cordoba-de-santiago-defensa-y-justicia-2026-09-19",
       "fixtureId": "1493140",
@@ -226,10 +1221,10 @@
       "winner": "Brentford",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 90,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -237,9 +1232,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 14
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -259,15 +1254,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 14,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "players",
           "label": "Oyuncu istatistikleri"
@@ -277,11 +1276,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "3a19b5a4f8649cea",
-      "fingerprint": "3a19b5a4f8649cea",
+      "analysisSourceHash": "9d02624d756ae568",
+      "fingerprint": "9d02624d756ae568",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-19T00:16:30.465Z",
-      "generatedAt": "2026-09-19T00:16:30.465Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -293,7 +1292,7 @@
       "reportUrl": "./mac-raporu/brentford-chelsea-2026-09-18.html",
       "digest": {
         "headline": "Brentford, Chelsea'yı 3-0 yendi",
-        "paragraph": "Gtech Community Stadium'da oynanan Premier League maçını Brentford 3-0 kazandı; Chelsea sahadan puansız ayrıldı. Golleri 61. dakikada Jaidon Anthony (Brentford), 83. dakikada Igor Thiago (Brentford), 90+4. dakikada Fabio Carvalho (Brentford) kaydetti.",
+        "paragraph": "Gtech Community Stadium'da oynanan Premier League maçını Brentford 3-0 kazandı; Chelsea sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Brentford",
           "loser": "Chelsea",
@@ -306,101 +1305,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "61'",
-              "team": "Brentford",
-              "type": "Gol",
-              "detail": "Jaidon Anthony",
-              "pivotal": true
-            },
-            {
-              "minute": "83'",
-              "team": "Brentford",
-              "type": "Gol",
-              "detail": "Igor Thiago",
-              "pivotal": true
-            },
-            {
-              "minute": "90+4'",
-              "team": "Brentford",
-              "type": "Gol",
-              "detail": "Fabio Carvalho",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 2 gol kaydedildi, (Igor Thiago, Fabio Carvalho).",
-          "goals": {
-            "home": 2,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "81'",
-              "team": "Brentford",
-              "type": "Oyuncu değişikliği",
-              "detail": "Jaidon Anthony",
-              "decisive": false
-            },
-            {
-              "minute": "81'",
-              "team": "Brentford",
-              "type": "Oyuncu değişikliği",
-              "detail": "Keane Lewis-Potter",
-              "decisive": false
-            },
-            {
-              "minute": "83'",
-              "team": "Brentford",
-              "type": "Gol",
-              "detail": "Igor Thiago",
-              "decisive": true
-            },
-            {
-              "minute": "84'",
-              "team": "Brentford",
-              "type": "Sarı kart",
-              "detail": "Igor Thiago",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Fabio Carvalho",
-              "team": "Brentford",
-              "contribution": "90+4' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Jaidon Anthony",
-              "team": "Brentford",
-              "contribution": "61' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Igor Thiago",
-              "team": "Brentford",
-              "contribution": "83' gol · 84' sarı kart",
-              "impact": "orta"
-            },
-            {
-              "name": "Mamadou Sangare",
-              "team": "Brentford",
-              "contribution": "85' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -416,25 +1336,15 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
-            "61' Brentford — Jaidon Anthony: gol",
-            "83' Brentford — Igor Thiago: gol",
-            "90+4' Brentford — Fabio Carvalho: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Brentford maça 4-2-3-1 dizilişiyle başladı.",
-            "Chelsea maça 3-4-2-1 dizilişiyle başladı.",
-            "69' Brentford değişikliği (Substitution 1). Değişiklikten sonra Brentford adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "69' Brentford değişikliği (Substitution 2). Değişiklikten sonra Brentford adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "71' Chelsea değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "71' Chelsea değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Chelsea maça 3-4-2-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -446,7 +1356,7 @@
               "formation": "3-4-2-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -459,8 +1369,7 @@
             "Brentford daha çok şut denedi (13-12)."
           ],
           "improvements": [
-            "Chelsea şut isabetinde geride kaldı (%17); bitiricilik geliştirilmesi gereken alan.",
-            "Chelsea son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Chelsea şut isabetinde geride kaldı (%17); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Brentford sahadan 3 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -548,20 +1457,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -981,10 +1885,10 @@
       "winner": "Monza",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -992,9 +1896,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 18
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -1014,24 +1918,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 18,
+        "events": 0,
         "statistics": 17,
         "lineups": 2,
         "players": 49
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "aaf873c34d9b6c05",
-      "fingerprint": "aaf873c34d9b6c05",
+      "analysisSourceHash": "b684ab28ef35b7bf",
+      "fingerprint": "b684ab28ef35b7bf",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-18T21:42:30.962Z",
-      "generatedAt": "2026-09-18T21:42:30.962Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1043,7 +1952,7 @@
       "reportUrl": "./mac-raporu/monza-sassuolo-2026-09-18.html",
       "digest": {
         "headline": "Monza, Sassuolo'yu 2-1 yendi",
-        "paragraph": "Monza, U-Power Stadium'da oynanan Serie A karşılaşmasında Sassuolo'yu 2-1 mağlup etti. Golleri 51. dakikada G. Varela (Monza), 63. dakikada G. Varela (Monza), 88. dakikada V. Adzic (Sassuolo) kaydetti.",
+        "paragraph": "Monza, U-Power Stadium'da oynanan Serie A karşılaşmasında Sassuolo'yu 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Monza",
           "loser": "Sassuolo",
@@ -1056,101 +1965,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "51'",
-              "team": "Monza",
-              "type": "Gol",
-              "detail": "G. Varela",
-              "pivotal": true
-            },
-            {
-              "minute": "63'",
-              "team": "Monza",
-              "type": "Penaltı",
-              "detail": "G. Varela",
-              "pivotal": true
-            },
-            {
-              "minute": "88'",
-              "team": "Sassuolo",
-              "type": "Gol",
-              "detail": "V. Adzic",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (V. Adzic), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 0,
-            "away": 1
-          },
-          "moments": [
-            {
-              "minute": "82'",
-              "team": "Monza",
-              "type": "Oyuncu değişikliği",
-              "detail": "J. Robinson",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Sassuolo",
-              "type": "Oyuncu değişikliği",
-              "detail": "D. Bakola",
-              "decisive": false
-            },
-            {
-              "minute": "85'",
-              "team": "Sassuolo",
-              "type": "Sarı kart",
-              "detail": "L. Lipani",
-              "decisive": false
-            },
-            {
-              "minute": "85'",
-              "team": "Monza",
-              "type": "Sarı kart",
-              "detail": "S. Birindelli",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "G. Varela",
-              "team": "Monza",
-              "contribution": "51' gol · 63' gol · 90+2' sarı kart",
-              "impact": "yüksek"
-            },
-            {
-              "name": "V. Adzic",
-              "team": "Sassuolo",
-              "contribution": "88' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "E. Kouadio",
-              "team": "Monza",
-              "contribution": "30' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "L. Lipani",
-              "team": "Sassuolo",
-              "contribution": "85' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -1161,32 +1991,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (17 olay).",
-            "51' Monza — G. Varela: gol",
-            "63' Monza — G. Varela: penaltı",
-            "88' Sassuolo — V. Adzic: gol",
-            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Monza maça 3-4-2-1 dizilişiyle başladı.",
-            "Sassuolo maça 4-3-3 dizilişiyle başladı.",
-            "56' Monza değişikliği (Substitution 1). Değişiklikten sonra Monza adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "56' Monza değişikliği (Substitution 2). Değişiklikten sonra Monza adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "56' Monza değişikliği (Substitution 3). Değişiklikten sonra Monza adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "64' Sassuolo değişikliği (Substitution 1). Değişiklikten sonra Sassuolo adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "Sassuolo maça 4-3-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1198,7 +2016,7 @@
               "formation": "4-3-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1310,21 +2128,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 70,
       "publishState": "page"
     },
@@ -1614,10 +2426,10 @@
       "winner": "Gent",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 70,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1625,9 +2437,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 12
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": false,
@@ -1647,15 +2459,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 12,
+        "events": 0,
         "statistics": 0,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1665,11 +2481,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a7242606e2ba966d",
-      "fingerprint": "a7242606e2ba966d",
+      "analysisSourceHash": "5b72e39259046846",
+      "fingerprint": "5b72e39259046846",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-19T00:16:30.465Z",
-      "generatedAt": "2026-09-19T00:16:30.465Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1681,7 +2497,7 @@
       "reportUrl": "./mac-raporu/gent-standard-liege-2026-09-18.html",
       "digest": {
         "headline": "Gent, Standard Liege'yi 2-1 yendi",
-        "paragraph": "Gent, Ghelamco Arena'da oynanan Belgian Pro League karşılaşmasında Standard Liege'yi 2-1 mağlup etti. Golleri 31. dakikada Josue Vergara (Gent), 45+3. dakikada Casper Nielsen (Standard Liege), 83. dakikada Christian Burgess (Gent) kaydetti.",
+        "paragraph": "Gent, Ghelamco Arena'da oynanan Belgian Pro League karşılaşmasında Standard Liege'yi 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Gent",
           "loser": "Standard Liege",
@@ -1694,101 +2510,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 2
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "31'",
-              "team": "Gent",
-              "type": "Gol",
-              "detail": "Josue Vergara",
-              "pivotal": true
-            },
-            {
-              "minute": "45+3'",
-              "team": "Standard Liege",
-              "type": "Gol",
-              "detail": "Casper Nielsen",
-              "pivotal": true
-            },
-            {
-              "minute": "83'",
-              "team": "Gent",
-              "type": "Gol",
-              "detail": "Christian Burgess",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Christian Burgess), sonucu belirleyen fark bu bölümde oluştu.",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Gent",
-              "type": "Sarı kart",
-              "detail": "Siebe Van Der Heyden",
-              "decisive": false
-            },
-            {
-              "minute": "83'",
-              "team": "Gent",
-              "type": "Gol",
-              "detail": "Christian Burgess",
-              "decisive": true
-            },
-            {
-              "minute": "87'",
-              "team": "Standard Liege",
-              "type": "Oyuncu değişikliği",
-              "detail": "Alexis Trouillet",
-              "decisive": false
-            },
-            {
-              "minute": "87'",
-              "team": "Standard Liege",
-              "type": "Oyuncu değişikliği",
-              "detail": "Marlon Fossey",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Casper Nielsen",
-              "team": "Standard Liege",
-              "contribution": "45+3' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Christian Burgess",
-              "team": "Gent",
-              "contribution": "83' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Josue Vergara",
-              "team": "Gent",
-              "contribution": "31' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Siebe Van Der Heyden",
-              "team": "Gent",
-              "contribution": "76' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -1798,33 +2535,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "31' Gent — Josue Vergara: gol",
-            "45+3' Standard Liege — Casper Nielsen: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
-            "83' Gent — Christian Burgess: gol",
-            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Gent maça 3-4-2-1 dizilişiyle başladı.",
-            "Standard Liege maça 4-3-3 dizilişiyle başladı.",
-            "27' Gent değişikliği (Substitution 1). Değişiklikten sonra Gent adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "71' Gent değişikliği (Substitution 2). Değişiklikten sonra Gent adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "71' Gent değişikliği (Substitution 3). Değişiklikten sonra Gent adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "71' Standard Liege değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Standard Liege maça 4-3-3 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -1836,7 +2560,7 @@
               "formation": "4-3-3"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1844,9 +2568,7 @@
             "Gent, Standard Liege'yi 2-1 yendi."
           ],
           "strengths": [],
-          "improvements": [
-            "Standard Liege son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
-          ],
+          "improvements": [],
           "closing": "Gent sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -1870,17 +2592,11 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
+      "coverage": 21,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1912,10 +2628,10 @@
       "winner": "Bayern München",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -1923,9 +2639,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 21
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -1945,24 +2661,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 21,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a78ee620a4da81aa",
-      "fingerprint": "a78ee620a4da81aa",
+      "analysisSourceHash": "7455af632d844c31",
+      "fingerprint": "7455af632d844c31",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-19T00:16:30.465Z",
-      "generatedAt": "2026-09-19T00:16:30.465Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1974,7 +2695,7 @@
       "reportUrl": "./mac-raporu/bayern-munchen-union-berlin-2026-09-18.html",
       "digest": {
         "headline": "Bayern München, Union Berlin'i 7-0 yendi",
-        "paragraph": "Bayern München, Allianz Arena'da oynanan Bundesliga karşılaşmasında Union Berlin'i 7-0 mağlup etti. Golleri 18. dakikada Jamal Musiala (Bayern München), 39. dakikada Harry Kane (Bayern München), 43. dakikada Michael Olise (Bayern München), 54. dakikada Harry Kane (Bayern München), 70. dakikada Ismael Saibari (Bayern München), 73. dakikada Michael Olise (Bayern München), 76. dakikada Michael Olise (Bayern München) kaydetti.",
+        "paragraph": "Bayern München, Allianz Arena'da oynanan Bundesliga karşılaşmasında Union Berlin'i 7-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Bayern München",
           "loser": "Union Berlin",
@@ -1990,112 +2711,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "18'",
-              "team": "Bayern München",
-              "type": "Gol",
-              "detail": "Jamal Musiala",
-              "pivotal": true
-            },
-            {
-              "minute": "39'",
-              "team": "Bayern München",
-              "type": "Penaltı",
-              "detail": "Harry Kane",
-              "pivotal": true
-            },
-            {
-              "minute": "43'",
-              "team": "Bayern München",
-              "type": "Gol",
-              "detail": "Michael Olise",
-              "pivotal": true
-            },
-            {
-              "minute": "54'",
-              "team": "Bayern München",
-              "type": "Gol",
-              "detail": "Harry Kane",
-              "pivotal": true
-            },
-            {
-              "minute": "70'",
-              "team": "Bayern München",
-              "type": "Gol",
-              "detail": "Ismael Saibari",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Michael Olise).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "76'",
-              "team": "Bayern München",
-              "type": "Gol",
-              "detail": "Michael Olise",
-              "decisive": true
-            },
-            {
-              "minute": "77'",
-              "team": "Bayern München",
-              "type": "Oyuncu değişikliği",
-              "detail": "Harry Kane",
-              "decisive": false
-            },
-            {
-              "minute": "78'",
-              "team": "Union Berlin",
-              "type": "Sarı kart",
-              "detail": "Livan Burcu",
-              "decisive": false
-            },
-            {
-              "minute": "82'",
-              "team": "Union Berlin",
-              "type": "Oyuncu değişikliği",
-              "detail": "András Schäfer",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Michael Olise",
-              "team": "Bayern München",
-              "contribution": "43' gol · 73' gol · 76' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Harry Kane",
-              "team": "Bayern München",
-              "contribution": "39' gol · 54' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Ismael Saibari",
-              "team": "Bayern München",
-              "contribution": "70' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Jamal Musiala",
-              "team": "Bayern München",
-              "contribution": "18' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "ready",
@@ -2106,37 +2734,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (8 olay).",
-            "18' Bayern München — Jamal Musiala: gol",
-            "39' Bayern München — Harry Kane: penaltı",
-            "43' Bayern München — Michael Olise: gol",
-            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 3
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
-            "54' Bayern München — Harry Kane: gol",
-            "70' Bayern München — Ismael Saibari: gol",
-            "73' Bayern München — Michael Olise: gol",
-            "76' Bayern München — Michael Olise: gol",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 4
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Bayern München maça 4-2-3-1 dizilişiyle başladı.",
-            "Union Berlin maça 4-2-3-1 dizilişiyle başladı.",
-            "45' Bayern München değişikliği (Substitution 1). Değişiklikten sonra Bayern München adına 4 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "45' Union Berlin değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' Union Berlin değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "60' Union Berlin değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Union Berlin maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2148,7 +2759,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2161,8 +2772,7 @@
             "Bayern München daha çok şut denedi (23-3)."
           ],
           "improvements": [
-            "Bayern München şut isabetinde geride kaldı (%65); bitiricilik geliştirilmesi gereken alan.",
-            "Union Berlin son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+            "Bayern München şut isabetinde geride kaldı (%65); bitiricilik geliştirilmesi gereken alan."
           ],
           "closing": "Bayern München sahadan 7 farkla ayrıldı.",
           "basis": "statistics+events"
@@ -2250,21 +2860,15 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
         "tactical",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 93,
-      "dataStatus": "complete",
+      "coverage": 50,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2299,7 +2903,7 @@
       "coverageGrade": "partial",
       "coverageLabel": "Kısmi analiz",
       "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coveragePercent": 50,
       "dataSources": {
         "score": {
           "present": true,
@@ -2307,9 +2911,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 15
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2329,15 +2933,19 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 15,
+        "events": 0,
         "statistics": 14,
         "lineups": 0,
         "players": 44
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
         {
           "field": "lineups",
           "label": "Kadrolar"
@@ -2347,11 +2955,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "0c85ad3e86bb5346",
-      "fingerprint": "0c85ad3e86bb5346",
+      "analysisSourceHash": "29fbcec11d0220bf",
+      "fingerprint": "29fbcec11d0220bf",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-18T21:42:30.962Z",
-      "generatedAt": "2026-09-18T21:42:30.962Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2363,7 +2971,7 @@
       "reportUrl": "./mac-raporu/groningen-pec-zwolle-2026-09-18.html",
       "digest": {
         "headline": "Groningen, PEC Zwolle'yi 3-0 yendi",
-        "paragraph": "Hitachi Capital Mobility Stadion'da oynanan Eredivisie maçını Groningen 3-0 kazandı; PEC Zwolle sahadan puansız ayrıldı. Golleri 20. dakikada Thom Van Bergen (Groningen), 43. dakikada Jorg Schreuders (Groningen), 68. dakikada Tygo Land (Groningen) kaydetti.",
+        "paragraph": "Hitachi Capital Mobility Stadion'da oynanan Eredivisie maçını Groningen 3-0 kazandı; PEC Zwolle sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Groningen",
           "loser": "PEC Zwolle",
@@ -2379,134 +2987,39 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "20'",
-              "team": "Groningen",
-              "type": "Gol",
-              "detail": "Thom Van Bergen",
-              "pivotal": true
-            },
-            {
-              "minute": "43'",
-              "team": "Groningen",
-              "type": "Gol",
-              "detail": "Jorg Schreuders",
-              "pivotal": true
-            },
-            {
-              "minute": "68'",
-              "team": "Groningen",
-              "type": "Gol",
-              "detail": "Tygo Land",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 7 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "79'",
-              "team": "PEC Zwolle",
-              "type": "Sarı kart",
-              "detail": "Sherel Floranus",
-              "decisive": false
-            },
-            {
-              "minute": "79'",
-              "team": "PEC Zwolle",
-              "type": "Sarı kart",
-              "detail": "Koen Kostons",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "PEC Zwolle",
-              "type": "Oyuncu değişikliği",
-              "detail": "Koen Kostons",
-              "decisive": false
-            },
-            {
-              "minute": "80'",
-              "team": "PEC Zwolle",
-              "type": "Oyuncu değişikliği",
-              "detail": "Olivier Aertssen",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "Jorg Schreuders",
-              "team": "Groningen",
-              "contribution": "43' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Thom Van Bergen",
-              "team": "Groningen",
-              "contribution": "20' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Tygo Land",
-              "team": "Groningen",
-              "contribution": "68' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Koen Kostons",
-              "team": "PEC Zwolle",
-              "contribution": "79' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "20' Groningen — Thom Van Bergen: gol",
-            "43' Groningen — Jorg Schreuders: gol",
-            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
-            "68' Groningen — Tygo Land: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 1
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
-          "status": "ready",
-          "notes": [
-            "28' PEC Zwolle değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' PEC Zwolle değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' PEC Zwolle değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "66' Groningen değişikliği (Substitution 1). Değişiklikten sonra Groningen adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "66' Groningen değişikliği (Substitution 2). Değişiklikten sonra Groningen adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "80' PEC Zwolle değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "formations": [],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": null
         },
         "finalAssessment": {
           "status": "ready",
@@ -2607,20 +3120,13 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
-        "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
@@ -2652,10 +3158,10 @@
       "winner": "draw",
       "turkish": true,
       "turkishTeam": "Kasımpaşa & Konyaspor",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -2663,9 +3169,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 16
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -2685,24 +3191,29 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 16,
+        "events": 0,
         "statistics": 17,
         "lineups": 2,
         "players": 42
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "e79076eac5676728",
-      "fingerprint": "e79076eac5676728",
+      "analysisSourceHash": "b1a6655461e1f505",
+      "fingerprint": "b1a6655461e1f505",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-18T21:42:30.962Z",
-      "generatedAt": "2026-09-18T21:42:30.962Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2730,91 +3241,19 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "partial",
-          "moments": [
-            {
-              "minute": "24'",
-              "team": "Kasımpaşa",
-              "type": "Sarı kart",
-              "detail": "M. Ilie",
-              "pivotal": false
-            },
-            {
-              "minute": "30'",
-              "team": "Kasımpaşa",
-              "type": "Sarı kart",
-              "detail": "C. Winck",
-              "pivotal": false
-            },
-            {
-              "minute": "33'",
-              "team": "Kasımpaşa",
-              "type": "Sarı kart",
-              "detail": "E. Belozoglu",
-              "pivotal": false
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
-          "goals": {
-            "home": 0,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "85'",
-              "team": "Kasımpaşa",
-              "type": "Sarı kart",
-              "detail": "A. Karapo",
-              "decisive": false
-            },
-            {
-              "minute": "88'",
-              "team": "Kasımpaşa",
-              "type": "Oyuncu değişikliği",
-              "detail": "A. Benedyczak",
-              "decisive": false
-            },
-            {
-              "minute": "89'",
-              "team": "Konyaspor",
-              "type": "Oyuncu değişikliği",
-              "detail": "D. Turuc",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "A. Demirbag",
-              "team": "Konyaspor",
-              "contribution": "40' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "A. Karapo",
-              "team": "Kasımpaşa",
-              "contribution": "85' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "C. Winck",
-              "team": "Kasımpaşa",
-              "contribution": "30' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "E. Belozoglu",
-              "team": "Kasımpaşa",
-              "contribution": "33' sarı kart",
-              "impact": "olumsuz"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -2824,29 +3263,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay)."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
-            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
-          ],
+          "status": "unavailable",
+          "notes": [],
           "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Kasımpaşa maça 4-2-3-1 dizilişiyle başladı.",
-            "Konyaspor maça 4-2-3-1 dizilişiyle başladı.",
-            "58' Konyaspor değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "61' Kasımpaşa değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "71' Kasımpaşa değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "71' Kasımpaşa değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Konyaspor maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -2858,7 +3288,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2969,19 +3399,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 79,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 70,
       "publishState": "page"
     },
@@ -3013,10 +3438,10 @@
       "winner": "draw",
       "turkish": true,
       "turkishTeam": "Muğlaspor & Iğdır FK",
-      "coverageGrade": "full",
-      "coverageLabel": "Tam analiz",
-      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
-      "coveragePercent": 100,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -3024,9 +3449,9 @@
           "count": 1
         },
         "events": {
-          "present": true,
-          "source": "curated",
-          "count": 19
+          "present": false,
+          "source": null,
+          "count": 0
         },
         "statistics": {
           "present": true,
@@ -3046,36 +3471,41 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 19,
+        "events": 0,
         "statistics": 15,
         "lineups": 2,
         "players": 42
       },
-      "dataCompleteness": 1,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [],
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        }
+      ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "completed",
+      "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d10d5532b54348f8",
-      "fingerprint": "d10d5532b54348f8",
+      "analysisSourceHash": "04d82547fa983c56",
+      "fingerprint": "04d82547fa983c56",
       "analysisGeneratedAt": "2026-09-18T21:42:30.962Z",
-      "analysisUpdatedAt": "2026-09-18T21:42:30.962Z",
-      "generatedAt": "2026-09-18T21:42:30.962Z",
+      "analysisUpdatedAt": "2026-09-19T05:49:49.578Z",
+      "generatedAt": "2026-09-19T05:49:49.578Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Muğlaspor 2-2 Iğdır FK maç raporu: Trendyol 1. Lig istatistikleri | FutbolRadar",
-        "description": "Mugla Ataturk Stadyumu'nda oynanan Trendyol 1. Lig maçında Muğlaspor ile Iğdır FK birbirini geçemedi: 2-2. Golleri 3. dakikada S.",
+        "description": "Mugla Ataturk Stadyumu'nda oynanan Trendyol 1. Lig maçında Muğlaspor ile Iğdır FK birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafı...",
         "path": "mac-raporu/muglaspor-igdir-fk-2026-09-18.html",
         "competition": "Trendyol 1. Lig"
       },
       "reportUrl": "./mac-raporu/muglaspor-igdir-fk-2026-09-18.html",
       "digest": {
         "headline": "Muğlaspor ile Iğdır FK 2-2 berabere kaldı",
-        "paragraph": "Mugla Ataturk Stadyumu'nda oynanan Trendyol 1. Lig maçında Muğlaspor ile Iğdır FK birbirini geçemedi: 2-2. Golleri 3. dakikada S. Gurler (Iğdır FK), 41. dakikada L. Mago (Muğlaspor), 57. dakikada H. Karabey (Iğdır FK), 90+3. dakikada Y. Uzunoglu (Muğlaspor) kaydetti.",
+        "paragraph": "Mugla Ataturk Stadyumu'nda oynanan Trendyol 1. Lig maçında Muğlaspor ile Iğdır FK birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": null,
           "loser": null,
@@ -3088,115 +3518,22 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 1
+          "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "ready",
-          "moments": [
-            {
-              "minute": "3'",
-              "team": "Iğdır FK",
-              "type": "Gol",
-              "detail": "S. Gurler",
-              "pivotal": true
-            },
-            {
-              "minute": "25'",
-              "team": "Iğdır FK",
-              "type": "Gol",
-              "detail": "G. Kaya",
-              "pivotal": true
-            },
-            {
-              "minute": "41'",
-              "team": "Muğlaspor",
-              "type": "Gol",
-              "detail": "L. Mago",
-              "pivotal": true
-            },
-            {
-              "minute": "57'",
-              "team": "Iğdır FK",
-              "type": "Gol",
-              "detail": "H. Karabey",
-              "pivotal": true
-            },
-            {
-              "minute": "90+3'",
-              "team": "Muğlaspor",
-              "type": "Gol",
-              "detail": "Y. Uzunoglu",
-              "pivotal": true
-            }
-          ]
+          "status": "unavailable",
+          "moments": []
         },
         "lateGame": {
-          "status": "ready",
+          "status": "unavailable",
           "from": 75,
-          "verdict": "Son bölümde 1 gol kaydedildi, (Y. Uzunoglu).",
-          "goals": {
-            "home": 1,
-            "away": 0
-          },
-          "moments": [
-            {
-              "minute": "75'",
-              "team": "Iğdır FK",
-              "type": "Oyuncu değişikliği",
-              "detail": "S. Gurler",
-              "decisive": false
-            },
-            {
-              "minute": "75'",
-              "team": "Iğdır FK",
-              "type": "Oyuncu değişikliği",
-              "detail": "F. Afena-Gyan",
-              "decisive": false
-            },
-            {
-              "minute": "75'",
-              "team": "Iğdır FK",
-              "type": "Oyuncu değişikliği",
-              "detail": "A. Colak",
-              "decisive": false
-            },
-            {
-              "minute": "76'",
-              "team": "Muğlaspor",
-              "type": "Oyuncu değişikliği",
-              "detail": "M. Diarra",
-              "decisive": false
-            }
-          ]
+          "verdict": null,
+          "goals": null,
+          "moments": []
         },
         "keyPlayers": {
-          "status": "ready",
-          "players": [
-            {
-              "name": "G. Kaya",
-              "team": "Iğdır FK",
-              "contribution": "25' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "H. Karabey",
-              "team": "Iğdır FK",
-              "contribution": "57' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "L. Mago",
-              "team": "Muğlaspor",
-              "contribution": "41' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "Y. Uzunoglu",
-              "team": "Muğlaspor",
-              "contribution": "90+3' gol",
-              "impact": "yüksek"
-            }
-          ]
+          "status": "unavailable",
+          "players": []
         },
         "tactical": {
           "status": "partial",
@@ -3206,33 +3543,20 @@
           ]
         },
         "firstHalf": {
-          "status": "ready",
-          "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
-            "3' Iğdır FK — S. Gurler: gol",
-            "41' Muğlaspor — L. Mago: gol"
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "secondHalf": {
-          "status": "ready",
-          "notes": [
-            "İkinci yarı kayıtlı olay bakımından yoğun geçti (16 olay).",
-            "57' Iğdır FK — H. Karabey: gol",
-            "90+3' Muğlaspor — Y. Uzunoglu: gol",
-            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
-          ],
-          "goals": 2
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Muğlaspor maça 4-4-2 dizilişiyle başladı.",
-            "Iğdır FK maça 4-2-3-1 dizilişiyle başladı.",
-            "62' Iğdır FK değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "69' Muğlaspor değişikliği (Substitution 1). Değişiklikten sonra Muğlaspor adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "75' Iğdır FK değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "75' Iğdır FK değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Iğdır FK maça 4-2-3-1 dizilişiyle başladı."
           ],
           "formations": [
             {
@@ -3244,7 +3568,7 @@
               "formation": "4-2-3-1"
             }
           ],
-          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3344,20 +3668,14 @@
       },
       "readySections": [
         "summary",
-        "standoutPlayers",
-        "momentum",
         "signals",
         "statistics",
-        "firstHalf",
-        "secondHalf",
-        "turningPoints",
-        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
-      "dataStatus": "complete",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 60,
       "publishState": "page"
     },
