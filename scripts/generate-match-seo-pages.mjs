@@ -951,6 +951,9 @@ function pageHtml(entry, locale, options) {
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
+      // Maça sonradan katılan okuyucu "kim yok" diye de soruyor; blok
+      // kendi verisi yoksa zaten hiç basılmıyor.
+      absencesSectionHtml(squadStatus, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),

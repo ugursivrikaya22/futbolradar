@@ -29,6 +29,14 @@ const { slug: playerSlug } = require("../../services/playerService.js");
  * bitince farklı iki anlatı çizmek demekti.
  */
 const matchTimeline = require("../../services/matchTimeline.js");
+/**
+ * Diziliş satırları (saha görseli) `services/matchHub.js` içinde tek kaynak.
+ * `mac-detay.html` merkezi aynı işlevi kullanıyor; burada ikinci bir kopya
+ * tutmak, iki yüzeyin aynı kadroyu farklı dizmesi demekti. Kural da oradan
+ * geliyor: sağlayıcının `grid` koordinatı YA DA diziliş metni + 11 oyuncunun
+ * sırası; ikisi de yoksa `null` döner ve saha ÇİZİLMEZ.
+ */
+const matchHub = require("../../services/matchHub.js");
 
 /**
  * Oyuncu adresleri tek çözücüden. Maç SEO sayfaları hem Türkçe hem
@@ -142,6 +150,9 @@ export const STR = {
     predictedFlags: "Şüpheli / izlenmesi gereken",
     predictedSources: "Kaynaklar",
     bench: "Yedekler",
+    benchPending: "Yedek listesi yayımlanmadı.",
+    pitchLabel: "dizilişi",
+    startingEleven: "İlk 11",
     formation: "Diziliş",
     coach: "Teknik direktör",
     squads: "Takım kadroları",
@@ -280,6 +291,9 @@ export const STR = {
     predictedFlags: "Doubtful / to watch",
     predictedSources: "Sources",
     bench: "Substitutes",
+    benchPending: "The bench has not been published.",
+    pitchLabel: "formation",
+    startingEleven: "Starting XI",
     formation: "Formation",
     coach: "Head coach",
     squads: "Squads",
@@ -586,24 +600,117 @@ function predictedLineupSectionHtml(ctx, text) {
   return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${homeHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}${awayHtml || `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`}</div><p class="muted-copy">${escapeHtml(text.predictedLineupNote)}</p>${footer}</section>`;
 }
 
+/**
+ * İsim listesini ve ayrıntı listesini tek modele katlar.
+ *
+ * Sağlayıcı `players`/`substitutes` alanlarını geriye dönük uyumluluk için
+ * düz isim listesi olarak tutuyor; forma numarası, mevki ve saha koordinatı
+ * `startingDetails`/`substituteDetails` içinde geliyor (bkz.
+ * services/providers/apiFootballProvider.js#normalizeFixtureLineups).
+ * Ayrıntı yoksa oyuncu yine listelenir, numarası boş kalır — numara
+ * UYDURULMAZ. `services/matchHub.js#mergePlayers` ile aynı kural.
+ */
+function mergeLineupPlayers(names, details) {
+  const list = Array.isArray(details) && details.length
+    ? details.map((entry) => ({
+      name: (entry && entry.name) || "",
+      number: entry && entry.number !== undefined && entry.number !== null ? Number(entry.number) : null,
+      position: (entry && entry.position) || null,
+      grid: (entry && entry.grid) || null
+    }))
+    : (Array.isArray(names) ? names : []).map((entry) => ({
+      name: typeof entry === "string" ? entry : (entry && entry.name) || "",
+      number: entry && entry.number !== undefined && entry.number !== null ? Number(entry.number) : null,
+      position: (entry && entry.position) || null,
+      grid: (entry && entry.grid) || null
+    }));
+  return list.filter((entry) => entry.name);
+}
+
+/** Forma numarası + oyuncu sayfası bağlantısı taşıyan tek satır/çip gövdesi. */
+function lineupPlayerHtml(player, ctx) {
+  const { base, playerIndex, locale } = ctx;
+  const number = player.number !== null && Number.isFinite(player.number)
+    ? `<i class="msp-lineup-no">${escapeHtml(player.number)}</i>`
+    : "";
+  const position = player.position
+    ? `<em class="msp-lineup-pos">${escapeHtml(player.position)}</em>`
+    : "";
+  return `${number}<b class="msp-lineup-name">${playerLinkHtml(player.name, playerIndex, base, locale)}</b>${position}`;
+}
+
+/**
+ * SAHA GÖRSELİ.
+ *
+ * Satırlar `services/matchHub.js#formationRows` tarafından üretiliyor:
+ * `rows[0]` KALECİ, sonraki hatlar hücuma doğru ilerliyor. Ekranda sıra
+ * TERS ÇEVRİLİR ki kaleci altta, forvet üstte dursun —
+ * `match-hub.js#pitchHtml` ile birebir aynı dönüşüm.
+ *
+ * Hat İÇİNDEKİ sıra sağlayıcının `grid` sütununu izler; sağ/sol bek iddiası
+ * bu görselin taşıdığı bir bilgi DEĞİLDİR. Bölümün söylediği tek şey
+ * hatların kaç kişilik olduğu, yani dizilişin kendisidir.
+ *
+ * Satır yoksa boş dize döner: koordinatı da geçerli dizilişi de olmayan bir
+ * kadroyu sahaya yerleştirmek, okuyucuya doğrulanmamış bir taktik iddiası
+ * sunmak olurdu. Çağıran o durumda yalnızca listeyi basar.
+ */
+function lineupPitchHtml(rows, teamName, formation, ctx) {
+  if (!Array.isArray(rows) || !rows.length) return "";
+  const text = STR[ctx.locale];
+  const label = `${teamName}${formation ? ` ${formation}` : ""} ${text.pitchLabel}`;
+  const display = rows.slice().reverse();
+  return `<div class="msp-pitch match-special__pitch" role="img" aria-label="${escapeHtml(label)}">${display.map((line) => {
+    const count = Math.max(1, Math.min(5, line.length));
+    return `<div class="msp-pitch-row match-special__pitch-row is-${count}">${line.map((player) => (
+      `<span class="msp-pitch-player match-special__pitch-player">${lineupPlayerHtml(player, ctx)}</span>`
+    )).join("")}</div>`;
+  }).join("")}</div>`;
+}
+
+/**
+ * Bir takımın kadro kutusu: künye, saha görseli, ilk 11 listesi, yedekler.
+ *
+ * Saha ve liste BİRLİKTE basılıyor — `match-hub.js#lineupsHtml` ile aynı
+ * düzen. Saha dizilişi gösterir, liste numarayı, mevkiyi ve oyuncu sayfası
+ * bağlantısını taşır; ikisi farklı soruları yanıtlıyor.
+ */
+function lineupSideHtml(teamName, lineup, badge, coach, ctx) {
+  const text = STR[ctx.locale];
+  const starters = mergeLineupPlayers(lineup.players, lineup.startingDetails);
+  const bench = mergeLineupPlayers(lineup.bench || lineup.substitutes, lineup.substituteDetails);
+  const rows = matchHub.formationRows(starters, lineup.formation);
+
+  const meta = lineup.formation || coach
+    ? `<p class="msp-lineup-meta">${lineup.formation ? `<span>${escapeHtml(text.formation)}:</span> <b>${escapeHtml(lineup.formation)}</b>` : ""}${lineup.formation && coach ? " · " : ""}${coach ? `<span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b>` : ""}</p>`
+    : "";
+
+  const benchHtml = bench.length
+    ? `<div class="msp-lineup-bench"><h4>${escapeHtml(text.bench)}</h4><ul class="msp-lineup-bench-list">${bench.map((player) => `<li>${lineupPlayerHtml(player, ctx)}</li>`).join("")}</ul></div>`
+    : `<div class="msp-lineup-bench"><h4>${escapeHtml(text.bench)}</h4><p class="muted-copy">${escapeHtml(text.benchPending)}</p></div>`;
+
+  return `<article class="card msp-lineup">` +
+    `<header class="msp-lineup-head"><h3>${escapeHtml(teamName)}</h3>${badge}</header>` +
+    meta +
+    lineupPitchHtml(rows, teamName, lineup.formation, ctx) +
+    `<h4 class="msp-lineup-subtitle">${escapeHtml(text.startingEleven)}</h4>` +
+    `<ol class="msp-lineup-list">${starters.map((player) => `<li>${lineupPlayerHtml(player, ctx)}</li>`).join("")}</ol>` +
+    benchHtml +
+    `</article>`;
+}
+
 export function lineupsSectionHtml(detail, analysis, ctx) {
-  const { locale, base, playerIndex, homeTeam, awayTeam } = ctx;
+  const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
   const official = (Array.isArray(detail && detail.lineups) ? detail.lineups : []).filter((row) => row && Array.isArray(row.players) && row.players.length >= 7);
   const coaches = detail && detail.coaches && typeof detail.coaches === "object" ? detail.coaches : null;
-
-  const sideHtml = (title, lineup, badge, coach) => `<article class="card msp-lineup"><header class="msp-lineup-head"><h3>${escapeHtml(title)}</h3>${badge}</header>${lineup.formation ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.formation)}:</span> <b>${escapeHtml(lineup.formation)}</b>${coach ? ` · <span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b>` : ""}</p>` : coach ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b></p>` : ""}<ol class="msp-lineup-list">${lineup.players.map((player) => {
-    const name = typeof player === "string" ? player : (player && player.name) || "";
-    const detailRow = Array.isArray(lineup.startingDetails) ? lineup.startingDetails.find((row) => row && row.name === name) : null;
-    return `<li>${detailRow && detailRow.number ? `<span class="msp-lineup-no">${escapeHtml(detailRow.number)}</span>` : ""}${playerLinkHtml(name, playerIndex, base, locale)}</li>`;
-  }).join("")}</ol>${Array.isArray(lineup.substitutes) && lineup.substitutes.length ? `<p class="msp-lineup-bench"><span>${escapeHtml(text.bench)}:</span> ${lineup.substitutes.map((player) => escapeHtml(typeof player === "string" ? player : (player && player.name) || "")).filter(Boolean).join(", ")}</p>` : ""}</article>`;
 
   if (official.length) {
     const home = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "home") || official[0];
     const away = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "away") || official[1];
     if (home && away && home !== away) {
       const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialLineups)}</span>`;
-      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
+      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(text.officialLineups)}</span></h2><div class="msp-two-col">${lineupSideHtml(homeTeam, home, badge, coaches && coaches.home, ctx)}${lineupSideHtml(awayTeam, away, badge, coaches && coaches.away, ctx)}</div></section>`;
     }
   }
 
@@ -625,7 +732,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   if (probableHome || probableAway) {
     const badge = `<span class="msp-tag is-probable">${escapeHtml(text.lineups)}</span>`;
     const empty = `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`;
-    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(text.lineups)}</h2><div class="msp-two-col">${probableHome ? lineupSideHtml(homeTeam, probableHome, badge, null, ctx) : empty}${probableAway ? lineupSideHtml(awayTeam, probableAway, badge, null, ctx) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
   }
 
   // Site içi istatistik modelinin (yukarıdaki `probable`) verisi yoksa,
