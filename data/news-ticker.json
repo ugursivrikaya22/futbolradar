@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-18T21:45:45.750Z",
+  "updatedAt": "2026-09-19T00:19:31.567Z",
   "items": [
+    {
+      "id": "auto-news-b8566fd4e6848d58cca1",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Galatasaray maçı hazırlıklarımız tamamlandı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-18T19:29:28.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPZU5KYnJwejc3WUx0OHdITUREeUtSUFVyMjVoZzJZVUQtbXNDcVVGX1NkY2xDZzFOazZOcGhkbjAwTUtPS2tIMzZrQlg0dllzRUF2Z0JlNmxQMmN3MG9RbEVidWFjNG5DM012eDVqd3U0M3kzMUNjM2R5QXE1OHFWTS1DUUF5SzZBWVZTT0huVmVMU3Nyb1dB?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-11f1ff5eea80ee8c5219",
       "category": "official",
@@ -19,9 +39,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-18T16:12:30.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -64,26 +82,6 @@
         "status": "OFFICIAL",
         "mergedReports": 2,
         "firstSeenAt": "2026-09-18T13:48:00.000Z"
-      }
-    },
-    {
-      "id": "auto-news-b8566fd4e6848d58cca1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray maçı hazırlıklarımız tamamlandı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-18T16:48:08.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPZU5KYnJwejc3WUx0OHdITUREeUtSUFVyMjVoZzJZVUQtbXNDcVVGX1NkY2xDZzFOazZOcGhkbjAwTUtPS2tIMzZrQlg0dllzRUF2Z0JlNmxQMmN3MG9RbEVidWFjNG5DM012eDVqd3U0M3kzMUNjM2R5QXE1OHFWTS1DUUF5SzZBWVZTT0huVmVMU3Nyb1dB?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
       }
     },
     {
@@ -431,16 +429,16 @@
       "important": true
     },
     {
-      "id": "auto-news-71becdf8753320912f51",
+      "id": "auto-news-28767852da9ce74078a1",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "U17 Kız Millî Takımımızın Hazırlık Kampı Tamamlandı",
+      "text": "Disiplin Sevkleri - 18.09.2026",
       "team": "Süper Lig",
-      "timestamp": "2026-09-18T15:18:36.000Z",
+      "timestamp": "2026-09-18T20:08:36.000Z",
       "source": {
         "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE55UTVXT184aXhZVXM2Z1c1T3ItMkpFQzAtQTlKb3FVZ1QtckplMWMwNThyaFFwM1REaHZJUTc1NkZoeThpbHR6OWI1T2Y2N3lieVI5c2Q5NDF1S29zSXBLOE8zcXQwck0?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTFBwSTJNQjVCeWdQWDdnUUV3bnVFVkw4VnJGX2dXbXRMWjNKM3NrS3ZBRkpXaHl4SEU3X1FqcW9IYTlLTDJzZmxWTGl6SkxvSXZWazZEaDhUMmlHQmJFdkljQ0MxVno1WlRS?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
