@@ -34,6 +34,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
+import { isLineupAlertStale } from "./lib/matchCards.mjs";
 const { applyVerifiedBroadcast } = require("../services/broadcastSchedule.js");
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
@@ -246,6 +247,45 @@ function matchPageHref(match) {
   return fixtureId ? `./mac-detay.html?fixtureId=${encodeURIComponent(fixtureId)}` : "./mac-merkezi.html";
 }
 
+/**
+ * TAKIM SAYFASI — BUGÜNKÜ MAÇIN RESMÎ İLK 11'İ.
+ *
+ * Kaynak, ana sayfa şeridi ve maç kartı etiketiyle AYNI dosya:
+ * `data/official-lineup-alerts.json` (elle küre edilmiş, kaynağı zorunlu).
+ * Yalnızca BU takımın kadrosu basılır — takım sayfası rakibin kadrosunu
+ * listelemek için yer değil, okuyucu "bizimkiler kim" diye geliyor.
+ * Kayıt yoksa hiçbir şey çizilmez: "kadro bekleniyor" gibi her gün her
+ * takımda duran bir satır hiçbir maçı öne çıkarmaz.
+ */
+function officialLineupBlock(match, team) {
+  if (!match || !match.id) return "";
+  const alerts = require("../data/official-lineup-alerts.json").records || [];
+  const now = Date.now();
+  const mine = alerts.find((alert) => alert
+    && alert.matchId === match.id
+    && sameClub(alert.team, team.name)
+    && Array.isArray(alert.startingXI)
+    && alert.startingXI.length
+    && alert.sourceUrl
+    && !isLineupAlertStale(alert, now));
+  if (!mine) return "";
+
+  // Forma numarası yalnızca kayıtta varsa basılır; sıra numarası gibi bir
+  // vekil değer uydurulmaz (bkz. matchCards.mjs officialLineupAlertHtml).
+  const players = mine.startingXI.map((player) => {
+    const number = player && player.number !== null && player.number !== undefined && player.number !== ""
+      ? `<b class="lineup-alert-number">${escapeHtml(player.number)}</b>`
+      : "";
+    return `<li class="lineup-alert-player">${number}<span>${escapeHtml((player && player.name) || "")}</span></li>`;
+  }).join("");
+
+  return `<div class="team-next-match-lineup" data-card="official-lineup-team">
+      <div class="team-next-match-lineup-head"><span class="tag green">Resmî İlk 11</span>${mine.formation ? `<span>${escapeHtml(mine.formation)}</span>` : ""}</div>
+      <ol class="lineup-alert-grid">${players}</ol>
+      <p class="team-next-match-lineup-source">Kaynak: ${escapeHtml(mine.sourceName)} · <a href="${escapeHtml(mine.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">Kaynağı aç</a></p>
+    </div>`;
+}
+
 function nextMatchCard(match, team, today) {
   if (!match) {
     return `<article class="data-empty" data-card="empty-state"><strong>Takvimde doğrulanmış sıradaki maç yok</strong><span>Kulüp ya da organizasyon gün ve saat açıkladığında bu alan otomatik güncellenir. Tahmini tarih yazılmaz.</span></article>`;
@@ -263,6 +303,7 @@ function nextMatchCard(match, team, today) {
       <div><dt>Konum</dt><dd>${home ? "İç saha" : "Deplasman"}</dd></div>
       ${match.broadcast && match.broadcast.turkey ? `<div><dt>Yayın</dt><dd>${escapeHtml(match.broadcast.turkey)}</dd></div>` : ""}
     </dl>
+    ${officialLineupBlock(match, team)}
     <a class="detail-link" href="${escapeHtml(matchPageHref(match))}">Maç ayrıntısı</a>
   </article>`;
 }

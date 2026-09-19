@@ -14129,6 +14129,12 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
 /* RESMÎ İLK 11 ETİKETİ — maç kartının üstünde tek satır.
    Yalnızca doğrulanmış kadro kaydı varken basılır (matchCards.mjs). */
+/* Takım sayfası "Bugünkü maç" kartındaki resmî ilk 11 bloğu.
+   Oyuncu ızgarası ana sayfa uyarı kartıyla ortak (.lineup-alert-grid). */
+.team-next-match-lineup { margin: 12px 0 4px; padding-top: 12px; border-top: 1px solid var(--line); }
+.team-next-match-lineup-head { display: flex; align-items: center; gap: 8px; margin-bottom: 9px; font-size: var(--fs-sm); font-weight: 800; }
+.team-next-match-lineup-source { margin: 9px 0 0; color: var(--muted); font-size: .76rem; }
+
 .fixture-card-flag {
   display: block;
   margin: 8px 0 0;
