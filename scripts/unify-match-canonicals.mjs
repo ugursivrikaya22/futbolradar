@@ -257,6 +257,56 @@ const HREF_RE = /href="((?:\.{1,2}\/)*|\/)((?:mac-raporu|mac)\/[a-z0-9-]+|[a-z0-
 const HREFLANG_TAG_RE = /<link\s+rel="alternate"\s+hreflang="[^"]*"\s+href="[^"]*"\s*\/?>/g;
 const HREFLANG_MASK = "\u0000hreflang\u0000";
 
+/**
+ * Birleştirilmiş kopyadan `SportsEvent` düğümünü düşürür.
+ *
+ * NEDEN SONRADAN. Kopyanın kimliği bu düğümden okunuyor (bkz. `slugOf`),
+ * bu yüzden eşleştirme bitene kadar düğüm yerinde kalmak ZORUNDA. Ama
+ * eşleştirmeden sonra kalması hatalı: aynı gerçek olay iki ayrı adreste
+ * `SportsEvent` olarak duruyor, Google hangisinin o maç olduğunu bilemiyor
+ * ve canonical'ın topladığı otoriteyi şema yeniden bölüyor.
+ *
+ * `generate-match-pages.mjs` hedefi ÖNCEDEN bilinen sayfada bu düğümü
+ * zaten hiç yazmıyor ve gerekçesini kendi yorumunda anlatıyor. Ama hedef
+ * sayfayı `generate-match-seo-pages.mjs` ondan SONRA üretiyor: maça tarih
+ * yeni atandığı koşuda tur sayfası yazılırken sicilde (`data/
+ * match-seo-index.json`) henüz kayıt yok, düğüm yazılıyor, hedef birkaç
+ * adım sonra doğuyor ve devri bu betik yapıyor. Devrin eksik kalan adımı
+ * buydu: canonical, og:url ve site haritası taşınıyor, şema kalıyordu.
+ *
+ * Yalnızca `SportsEvent` düşer. `BreadcrumbList`, `FAQPage` ve diğer
+ * düğümler sayfanın KENDİ yapısını anlatıyor; kanonik hedefe ait değiller
+ * ve kopyanın kendi adresinde doğru kalmaya devam ediyorlar.
+ *
+ * Ayrıştırılamayan blok `slugOf` ile AYNI toleransla atlanır: burada amaç
+ * doğrulama değil; bozuk JSON-LD'yi `test-seo-integrity` yakalıyor.
+ */
+function stripSportsEvent(html) {
+  return html.replace(/([ \t]*)<script type="application\/ld\+json">([\s\S]*?)<\/script>(\n?)/g, (block, indent, raw, newline) => {
+    let parsed;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      return block;
+    }
+
+    const graph = parsed && Array.isArray(parsed["@graph"]) ? parsed["@graph"] : null;
+    if (graph) {
+      const kept = graph.filter((node) => !(node && node["@type"] === "SportsEvent"));
+      // Düğüm yoksa blok bit bit korunur: betik ikinci kez koşunca hiçbir
+      // şey değişmemeli, yoksa `--check` kapısı kendi çıktısını hata sayar.
+      if (kept.length === graph.length) return block;
+      // Boş `@graph` yayımlanmaz: doğrulayıcıda hata, faydası yok.
+      if (kept.length === 0) return "";
+      return `${indent}<script type="application/ld+json">${JSON.stringify({ ...parsed, "@graph": kept })}</script>${newline}`;
+    }
+
+    // Graf değil, tek nesne olarak basılmış `SportsEvent`: blok komple gider.
+    if (parsed && parsed["@type"] === "SportsEvent") return "";
+    return block;
+  });
+}
+
 function rewrite(html, selfPath) {
   // `public/` bir AYNA: `public/mac/x.html` ile `mac/x.html` aynı sayfa.
   // Karşılaştırma ham yolla yapılınca koruma yalnızca kökte çalışıyor,
@@ -285,7 +335,23 @@ function rewrite(html, selfPath) {
   });
 
   let restored = 0;
-  return next.replace(new RegExp(HREFLANG_MASK, "g"), () => preserved[restored++]);
+  next = next.replace(new RegExp(HREFLANG_MASK, "g"), () => preserved[restored++]);
+
+  // Şema YALNIZCA kopyanın KENDİ dosyasında temizlenir. Kopyaya BAĞLANAN
+  // sayfaların (hub, lig, ana sayfa) `SportsEvent` düğümleri kendi
+  // olaylarını anlatıyor; onlara dokunmak siteyi şemasız bırakırdı.
+  //
+  // Ve yalnızca TUR SAYFASINDA. Değişmezi yazan ve sınayan taraf orası:
+  // `generate-match-pages.mjs` hedefi önceden bilinen tur sayfasına bu
+  // düğümü hiç yazmıyor, `test-match-seo-pages.mjs` de devredilmiş tur
+  // sayfasında kalmadığını doğruluyor. `mac-raporu/...` raporlarında ve
+  // eski kök deseninde böyle bir kural YOK: 345 rapor sayfası bugün
+  // düğümüyle birlikte birleştirilmiş durumda ve hiçbir kapı itiraz
+  // etmiyor. Onları da kapsamak bu düzeltmeyi 4 dosyadan ~700 dosyaya
+  // çıkarır; ayrı bir karar, ayrı bir değişiklik.
+  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) next = stripSportsEvent(next);
+
+  return next;
 }
 
 // ── 4. UYGULAMA ───────────────────────────────────────────────────────────

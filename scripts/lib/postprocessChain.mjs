@@ -54,6 +54,14 @@ export const POSTPROCESS_CHAIN = [
   // Scheduled postprocessing must refresh these links as well as full builds.
   { id: "en-team-pages", script: "generate-en-team-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "en-pages", script: "generate-en-pages.mjs", args: [], timeoutMinutes: 5 },
+  // İngilizce haber sayfaları (`/en/news/<slug>`). ZİNCİRDE OLMAK ZORUNDA,
+  // derleme kuyruğunda değil: sayfa yeni doğuyor ve ortak yerleşim,
+  // favicon, tema, hreflang ve varlık damgası adımlarının hepsini görmesi
+  // gerekiyor. Kuyrukta durduğunda bu adımların hiçbirini görmüyordu ve
+  // test-favicon / test-asset-version / test-live-scores-ticker üçü birden
+  // düştü. `en-pages`ten SONRA: haber listesi sayfası da aynı akıştan
+  // besleniyor, iki üretici aynı veriyi aynı koşuda okusun.
+  { id: "en-news-pages", script: "generate-en-news-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "match-focus-pages", script: "generate-match-focus.mjs", args: [], timeoutMinutes: 5 },
   // Anketin kendi paylaşılabilir sayfaları (`/anket/<slug>`, `/en/poll/<slug>`).
   // ORTAK YERLEŞİMDEN ÖNCE: sayfa yeni doğuyor ve başlık/altlık, favicon,
