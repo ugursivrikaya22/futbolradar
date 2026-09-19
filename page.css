@@ -22862,12 +22862,14 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   color: var(--muted);
   font-size: var(--fs-xs, 0.78rem);
   font-weight: 800;
+}
 
 /* Maç Merkezi devir şeridi: hafta numaralı sayfa kalıcı maç adresine
    devredildiğinde (bkz. scripts/generate-match-pages.mjs matchCentreSlug)
    en üstte tek satırlık yönlendirme. Mobilde sarar, taşmaz. */
 .match-centre-handoff {
   margin: 14px 0 0;
+}
 
 /* ---------------------------------------------------------------------------
  * CANLI PUAN DURUMU
@@ -22909,6 +22911,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .match-centre-handoff a:focus-visible {
   background: rgba(11, 143, 90, 0.13);
   border-color: rgba(11, 143, 90, 0.45);
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .standings-live-badge { animation: standings-live-fade 2.4s ease-in-out infinite; }
@@ -23093,7 +23096,18 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .rp-momentum-head span:last-child { text-align: right; }
 .rp-chart { display: block; width: 100%; height: 84px; }
 .rp-chart-mid { stroke: var(--line); stroke-width: 1; }
-.rp-chart-area { fill: var(--green); fill-opacity: 0.45; }
+/* MOMENTUM ÇUBUKLARI — ev sahibi üstte, deplasman altta.
+   İki yön AYRI renk taşıyor: tek renkle yalnızca çubuğun yönü ayırt
+   edici olurdu ve ince çubuklarda yön okunmuyordu. İkisi de mevcut
+   paletten; yeni renk üretilmedi. */
+/* Ev/deplasman ayrımı sitenin kendi kuralıyla: kazanma olasılığı çubuğu
+   da deplasmanı `--cyan` ile çiziyor (.rp-winprob-bar .is-away). Yön
+   (üst/alt) tek başına yeterli değil — ince çubukta okunmuyor. */
+.rp-chart-bar.is-home { fill: var(--green); fill-opacity: .85; }
+.rp-chart-bar.is-away { fill: var(--cyan); fill-opacity: .85; }
+/* Ölçülmüş ama iki tarafın da üretmediği dilim: orta çizgide ince iz.
+   Hiç çizmemek "ölçülmedi" ile karışırdı. */
+.rp-chart-bar.is-quiet { fill: var(--muted); fill-opacity: .5; }
 .rp-momentum-empty { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
 
 .rp-markers { position: relative; height: 28px; margin-top: var(--sp-1); }
