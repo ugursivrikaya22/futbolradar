@@ -81,6 +81,7 @@
     "column:trabzonspor": "node scripts/generate-trabzonspor-post-match-column.mjs",
     "history:players": "node scripts/harvest-player-match-history.mjs --apply",
     "column:trabzonspor:apply": "node scripts/harvest-player-match-history.mjs --apply && node scripts/generate-trabzonspor-post-match-column.mjs --apply && node scripts/generate-column-pages.mjs && node scripts/inject-match-column-link.mjs",
+    "column:trabzonspor:live": "node scripts/sync-live-fixtures.mjs --apply && npm run column:trabzonspor:apply && node scripts/inject-hreflang.mjs && node scripts/generate-search-index.mjs",
     "demand:signals": "node scripts/fetch-search-signals.mjs",
     "demand:gsc": "node scripts/fetch-search-console.mjs",
     "demand:data": "node scripts/build-search-demand-data.mjs",

@@ -149,6 +149,35 @@ elle listeye yazılamaz, yazılmayınca da paylaşımda görselsiz kalırlardı)
 Telegram bildirimi bir **yan etkidir**: gönderilemezse yazı yine üretilmiş
 olur ve koşu çökmez.
 
+## GitHub Actions çalışmıyorken elle yayın
+
+Koşucular düşükken (ya da acil bir yayın gerektiğinde) zincirin tamamı tek
+komutla yerelde çalışır. Sağlayıcı anahtarı şart: bitiş doğrulaması ve maç
+dökümü oradan geliyor.
+
+```bash
+export APIFOOTBALL_API_KEY=<anahtar>
+npm run column:trabzonspor:live
+git add -A && git commit -m "ci(column): Trabzonspor maç sonu analizi" && git push
+```
+
+`column:trabzonspor:live` sırayla şunları yapar: sağlayıcıdan canlı/bitmiş
+fikstürleri çeker (skor + olay + diziliş + istatistik + oyuncu satırları),
+oyuncu–maç geçmişini biriktirir, yazıyı üretir, sayfaları basar, maç
+sayfasına köprüyü ekler, hreflang'i ve arama dizinini tazeler.
+
+Anahtar yoksa ilk adım "istek gönderilmedi" deyip **1 ile çıkar ve zincir
+orada durur**. Bu bilinçli: bu komutun tek varlık sebebi bitişi sağlayıcıdan
+doğrulamak; anahtarsız koşması, tazelenmemiş veriyle yayın yapmaya
+çalışmak olurdu.
+
+Veri zaten tazeyse (örneğin saatlik iş akışı çalıştıysa) sağlayıcıya hiç
+gitmeyen kısa yol:
+
+```bash
+npm run column:trabzonspor:apply
+```
+
 ## Elle çalıştırma
 
 ```bash
