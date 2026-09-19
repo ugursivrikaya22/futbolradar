@@ -189,15 +189,31 @@ function englishCounterpart(trPath) {
 const args = parseArgs(process.argv.slice(2));
 const pool = curatedMatches();
 
+/**
+ * ELLE VERİLEN MAÇ KİMLİĞİ DE AYNI KAPILARDAN GEÇER.
+ *
+ * İlk sürüm `--match` verildiğinde havuzdan kimliği doğrudan alıyor ve
+ * `selectMatch`i atlıyordu — yani Trabzonspor kontrolü, bitiş
+ * doğrulaması, skor kontrolü ve pencere kontrolü devre dışı kalıyordu.
+ * Elle tetiklenen bir koşu, dökümü tam olan BAŞKA bir takımın maçını
+ * seçip Trabzonspor analizi diye yayımlayabilirdi. Kimlik artık yalnızca
+ * havuzu daraltıyor; kararı yine `selectMatch` veriyor.
+ */
 const match = args.match
-  ? pool.find((row) => row && row.id === args.match) || null
+  ? selectMatch(pool.filter((row) => row && row.id === args.match), { windowHours: args.windowHours })
   : selectMatch(pool, { windowHours: args.windowHours });
 
 if (!match) {
   console.log(
-    `[ts-column] Son ${args.windowHours} saat içinde bitişi doğrulanmış bir Trabzonspor maçı yok. ` +
-    "Hiçbir şey üretilmedi."
+    args.match
+      ? `[ts-column] --match=${args.match}: bu kimlik kapılardan geçmedi ` +
+        `(Trabzonspor maçı değil, bitişi doğrulanmamış, skoru eksik ya da ${args.windowHours} saatlik pencerenin dışında).`
+      : `[ts-column] Son ${args.windowHours} saat içinde bitişi doğrulanmış bir Trabzonspor maçı yok.`
   );
+  console.log("[ts-column] Hiçbir şey üretilmedi.");
+  // MAKİNE OKUNUR SONUÇ. İş akışı bu satıra bakıyor; günlük metnini
+  // ayrıştırmak kırılgandı (bkz. aşağıdaki `sonuc=` satırları).
+  console.log("[ts-column] sonuc=yok");
   process.exit(0);
 }
 
@@ -306,6 +322,11 @@ if (existing && existing.status === "published" && entry.status !== "published")
   console.log(`[ts-column] ${entry.id} yayında ve bu koşunun çıktısı yayın kapısından geçmedi — kayıt korundu.`);
   process.exit(0);
 }
+
+// SONUÇ SATIRI: yayımlanabilir mi? İş akışı yoklama döngüsünü buna göre
+// kırıyor. "Hiçbir şey üretilmedi" yokluğuna bakmak yanlıştı: taslak da o
+// dizeyi basmıyor, yani maç daha bitmeden döngü kırılıp taslak yazılıyordu.
+console.log(`[ts-column] sonuc=${entry.status === "published" ? "published" : "draft"}`);
 
 if (!args.apply) {
   console.log("[ts-column] kuru koşu — hiçbir dosya yazılmadı.");

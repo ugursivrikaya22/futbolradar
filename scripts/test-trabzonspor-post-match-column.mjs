@@ -26,11 +26,15 @@ const {
 } = require("../services/trabzonsporColumnBuild.js");
 const { validateColumn } = require("../services/columnService.js");
 const {
+  aggregate,
   compareWindows,
   declineVerdict,
   matchRowsFrom,
-  mergeHistory
+  mergeHistory,
+  passRateFrom,
+  playerKey
 } = require("../services/playerMatchHistory.js");
+const { readiness: readinessGate, selectMatch: selectMatchGate } = require("../services/trabzonsporMatchColumn.js");
 const { buildOpponentFocus, isCompetitive, signingsFor } = require("../services/opponentFocus.js");
 
 let failures = 0;
@@ -96,7 +100,7 @@ function fullMatch(overrides = {}) {
       statRow("Toplam orta", 21, 12)
     ],
     players: [
-      { name: "A. Onana", team: "Trabzonspor", minutes: 90, providerRating: 7.4, saves: 2, passes: 34, passAccuracy: 78 },
+      { name: "A. Onana", team: "Trabzonspor", minutes: 90, providerRating: 7.4, saves: 2, passes: 34, passAccuracy: 27, source: "api-football" },
       { name: "P. Sörloth", team: "Trabzonspor", minutes: 90, providerRating: 8.3, goals: 1, shots: 5, shotsOnTarget: 3, duelsWon: 9, passes: 31, passAccuracy: 81 },
       { name: "E. Visca", team: "Trabzonspor", minutes: 58, providerRating: 7.6, assists: 1, shots: 2, shotsOnTarget: 1, duelsWon: 6, passes: 44, passAccuracy: 88 },
       { name: "B. Bakasetas", team: "Trabzonspor", minutes: 70, providerRating: 6.9, passes: 61, passAccuracy: 90, duelsWon: 5 },
@@ -521,6 +525,67 @@ console.log("\n[13] Rakip dosyası ve teknik direktör tartışması");
     "İngilizce rakip bölümünde Türkçe sızıntı yok",
     (findTurkish(withFocus.entry.en.body.join("\n")) || []).length === 0,
     JSON.stringify(findTurkish(withFocus.entry.en.body.join("\n")) || []).slice(0, 160)
+  );
+}
+
+/* ------------------------------------------------------------------ *
+ * 14. İNCELEME BULGULARI — HER DÜZELTMENİN KENDİ DENETİMİ
+ * ------------------------------------------------------------------ */
+console.log("\n[14] İnceleme bulgularına karşı korumalar");
+{
+  // (a) ORTALAMA ölçülmüş maç sayısına bölünür; eksik ölçüm sıfır sayılmaz.
+  const rows = [
+    { date: "2026-01-01", minutes: 90, shots: 4 },
+    { date: "2026-01-08", minutes: 90 },            // şut ölçülmemiş
+    { date: "2026-01-15", minutes: 90, shots: 2 }
+  ];
+  const agg = aggregate(rows);
+  check("eksik ölçüm ortalamayı aşağı çekmez", agg.shots === 3, `shots=${agg.shots} (beklenen 3)`);
+  check("ölçülen maç sayısı raporlanır", agg.measured && agg.measured.shots === 2, JSON.stringify(agg.measured));
+
+  // (b) PAS İSABETİ birimi tahmin edilmez, kökenden okunur.
+  check("api-football sayısı orana çevrilir", passRateFrom(11, 13, { source: "api-football" }) === 85);
+  check("belirsiz birimde oran üretilmez", passRateFrom(82, 90, {}) === null);
+  check("toplam yoksa değer yüzde sayılır", passRateFrom(82, null, {}) === 82);
+  check("isabet toplamı aşarsa oran üretilmez", passRateFrom(95, 90, { source: "api-football" }) === null);
+
+  // (c) DİZİLİŞ KAPISI boş diziliş nesnelerini kabul etmez.
+  const emptyLineups = readinessGate(fullMatch({ lineups: [{ team: "Trabzonspor", players: [] }, { team: "Galatasaray", players: [] }] }));
+  check("boş diziliş nesneleri kapıyı geçmez", emptyLineups.missing.includes("lineups"));
+  const oneSided = readinessGate(fullMatch({ lineups: [{ team: "Galatasaray", players: ["F. Muslera"] }] }));
+  check("tek taraflı diziliş kapıyı geçmez", oneSided.missing.includes("lineups"));
+  check("iki taraflı gerçek diziliş kapıyı geçer", !readinessGate(fullMatch()).missing.includes("lineups"));
+
+  // (d) İNGİLİZCE uzunluk da yayın kapısında. Gövdesi kısaltılan bir
+  //     kayıt, Türkçesi kusursuz olsa bile yayına girmemeli.
+  const trimmedEn = buildColumnEntry(fullMatch(), CONTEXT);
+  check("İngilizce kelime sayısı raporlanır", Number.isFinite(trimmedEn.assessment.wordsEn));
+  check(
+    "İngilizce gövde de banda tabi",
+    built.assessment.wordsEn >= MIN_WORDS && built.assessment.wordsEn <= MAX_WORDS,
+    String(built.assessment.wordsEn)
+  );
+
+  // (e) ELLE VERİLEN KİMLİK aynı kapılardan geçer.
+  const foreign = { ...fullMatch(), id: "corum-eyupspor-2026-09-19", homeTeam: "Çorum FK", awayTeam: "Eyüpspor" };
+  const now = "2026-09-19T23:00:00+03:00";
+  check(
+    "başka takımın maçı kimlikle bile seçilmez",
+    selectMatchGate([foreign], { now }) === null
+  );
+  check(
+    "Trabzonspor maçı kimlikle seçilir",
+    Boolean(selectMatchGate([fullMatch()], { now }))
+  );
+
+  // (f) SERİ ANAHTARI kimlik yoksa ad/takım yedeğine düşer.
+  check(
+    "kimlikli satır p: anahtarı alır",
+    playerKey({ providerPlayerId: "123", name: "X", team: "Y" }) === "p:123"
+  );
+  check(
+    "kimliksiz satır ad/takım anahtarı alır",
+    playerKey({ name: "P. Sörloth", team: "Trabzonspor" }).startsWith("n:")
   );
 }
 

@@ -564,14 +564,31 @@ function buildColumnEntry(match, context = {}) {
   };
 
   const assessment = assessColumn(entry, verdict);
-  const assessmentEn = { words: countWords(bodyEn) };
+
+  /**
+   * İNGİLİZCE DE KAPIDAN GEÇER.
+   *
+   * İlk sürüm yalnızca Türkçe gövdeyi ölçüp yayın kararını ona bağlıyordu;
+   * İngilizce kelime sayısı raporlanıyor ama hiçbir şeye etki etmiyordu.
+   * Yani `/en` yüzeyinde, bandın dışında bir metin yayımlanabilirdi —
+   * üstelik aynı dokümanda 1.200–1.800 sözü verilmişken. Uzunluk sözü iki
+   * dil için de geçerliyse kapı da iki dil için işlemeli.
+   */
+  const wordsEn = countWords(bodyEn);
+  const englishReasons = [];
+  if (wordsEn < MIN_WORDS) englishReasons.push(`İngilizce gövde ${wordsEn} kelime (taban ${MIN_WORDS})`);
+  if (wordsEn > MAX_WORDS) englishReasons.push(`İngilizce gövde ${wordsEn} kelime (tavan ${MAX_WORDS})`);
+  if (!entry.en.metaDescription) englishReasons.push("İngilizce meta açıklaması yok");
+
+  assessment.reasons = [...assessment.reasons, ...englishReasons];
+  assessment.publishable = assessment.publishable && englishReasons.length === 0;
   entry.status = assessment.publishable ? "published" : "draft";
 
   return {
     entry,
     model,
     verdict,
-    assessment: { ...assessment, wordsEn: assessmentEn.words },
+    assessment: { ...assessment, wordsEn },
     social: socialFor(model, entry),
     cover: coverSvg(model)
   };

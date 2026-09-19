@@ -24,6 +24,7 @@
 const {
   compareWindows,
   passRateFrom,
+  playerKey,
   declineVerdict,
   normalize,
   num,
@@ -206,9 +207,17 @@ function buildOpponentFocus(input = {}) {
   const signings = signingsFor(team, input.transfers, { season: input.season }).map((row) => {
     const name = text(row.playerName);
     const thisMatch = matchRowFor(name, matchRows);
-    const seriesKey = thisMatch && thisMatch.providerPlayerId
-      ? `p:${text(thisMatch.providerPlayerId)}`
-      : null;
+    /**
+     * SERİ ANAHTARI, GEÇMİŞİN KENDİ ANAHTARIYLA AYNI ÜRETİLİR.
+     *
+     * İlk sürüm yalnızca sağlayıcı kimliğinden anahtar kuruyordu; kimlik
+     * yoksa `null` döndürüp geçmişi hiç aramıyordu. Oysa `playerKey`
+     * kimlik yokken bilerek `n:<ad>@<takım>` yedeğine düşüyor. Sonuç:
+     * kimliksiz gelen bir sağlayıcı şeklinde, depoda on ölçülmüş maç
+     * dursa bile her transfer "karşılaştırma yok" diye raporlanırdı —
+     * yani bölümün tamamı sessizce körleşirdi.
+     */
+    const seriesKey = thisMatch ? playerKey(thisMatch) : "";
     const timeline = seriesKey ? playerTimeline(input.history, seriesKey) : [];
     const comparison = compareWindows(timeline, { size: WINDOW_SIZE, minimum: WINDOW_MINIMUM });
 
@@ -238,7 +247,7 @@ function buildOpponentFocus(input = {}) {
             // `passAccuracy` sağlayıcıda İSABETLİ PAS SAYISI; oran buradan
             // türetiliyor (bkz. trabzonsporColumnWriter.js → playerPassRate).
             accuratePasses: num(thisMatch.passAccuracy),
-            passRate: passRateFrom(num(thisMatch.passAccuracy), num(thisMatch.passes)),
+            passRate: passRateFrom(num(thisMatch.passAccuracy), num(thisMatch.passes), { source: thisMatch.source }),
             duelsWon: num(thisMatch.duelsWon)
           }
         : null,

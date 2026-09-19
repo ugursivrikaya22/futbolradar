@@ -86,27 +86,43 @@ function isFinished(match) {
 
 
 /**
- * OYUNCU PAS İSABETİ — İKİ LEHÇE, TEK OKUMA.
+ * OYUNCU PAS İSABETİ — BİRİM TAHMİN EDİLMEZ.
  *
  * Sağlayıcının oyuncu satırındaki `passAccuracy` alanı iki farklı anlamda
  * gelebiliyor ve alan adı ikisinde de aynı:
- *   - İSABETLİ PAS SAYISI (ölçüldü: Rafael Leão 13 pas / 11 isabet),
- *   - hazır YÜZDE (bazı kayıtlarda doğrudan 82 gibi).
+ *   - İSABETLİ PAS SAYISI (API-Football oyuncu dökümü; ölçüldü: Rafael
+ *     Leão 13 pas / 11 isabet, kaleci 38 pas / 24 isabet),
+ *   - hazır YÜZDE (sezon toplamı tutan `data/players.json` şekli).
  *
- * Ayırt etmek için sayının kendisine bakılıyor: isabet, toplam pastan
- * BÜYÜK olamaz. Büyükse elde tutulan değer zaten yüzdedir. Bu ayrım
- * olmadan ilk sürüm "13 pasın 11'i" olan bir maçı "%11 pas isabeti" diye
- * bastı — yani oyuncuya yaşamadığı bir gece atfetti.
+ * İlk sürüm birimi SAYIYA BAKARAK tahmin ediyordu: "isabet toplamı
+ * aşamaz" kuralı. Kural yanlış ayırıyor — 90 pas atmış bir oyuncunun
+ * hazır %82 değeri de bu testi geçer ve %91'e çevrilirdi. Yani tahmin,
+ * düzeltmeye çalıştığı hatanın aynısını başka bir yerde üretiyordu.
  *
- * Hiçbiri tutmuyorsa null döner ve hiçbir yüzde basılmaz.
+ * Artık birim KÖKENDEN okunuyor:
+ *   - `source` api-football ise değer sayıdır, oran toplamdan türetilir;
+ *   - toplam pas hiç yoksa ve değer 0–100 aralığındaysa zaten yüzdedir;
+ *   - ikisi de tutmuyorsa ORAN ÜRETİLMEZ (null). Bilinmeyen birimden
+ *     yüzde uydurmaktansa o cümleyi hiç kurmamak doğru.
  */
-function passRateFrom(accurate, total) {
+const COUNT_SEMANTICS_SOURCES = new Set(["api-football", "apifootball"]);
+
+function passRateFrom(accurate, total, options = {}) {
   if (accurate === null || accurate === undefined) return null;
-  if (total !== null && total !== undefined && total > 0 && accurate <= total) {
+  const source = normalize(options.source);
+
+  if (COUNT_SEMANTICS_SOURCES.has(source)) {
+    if (total === null || total === undefined || !(total > 0)) return null;
+    if (accurate > total) return null;
     return Math.round((accurate / total) * 100);
   }
-  // Toplam yoksa ya da isabet toplamı aşıyorsa değer yüzde olarak okunur.
-  return accurate >= 0 && accurate <= 100 ? Math.round(accurate) : null;
+
+  // Kökeni bilinmiyor: yalnızca toplam pas hiç ölçülmemişse değer yüzde
+  // sayılabilir. Toplam varsa birim belirsizdir ve oran üretilmez.
+  if (total === null || total === undefined) {
+    return accurate >= 0 && accurate <= 100 ? Math.round(accurate) : null;
+  }
+  return null;
 }
 
 /** İlk 11'de başlayanların adları — diziliş varsa. */
@@ -170,7 +186,7 @@ function matchRowsFrom(match) {
     // alanı isabetli pas SAYISI; pencere karşılaştırmasında yüzde gibi
     // ortalaması alınırsa anlamsız bir sayı çıkar.
     if (row.passAccuracy !== undefined) {
-      const rate = passRateFrom(row.passAccuracy, num(row.passes));
+      const rate = passRateFrom(row.passAccuracy, num(row.passes), { source: entry.source });
       if (rate === null) delete row.passAccuracy;
       else {
         if (num(row.passes) > 0 && row.passAccuracy <= row.passes) row.accuratePasses = row.passAccuracy;
@@ -238,11 +254,27 @@ function teamPlayers(store, team) {
 
 function aggregate(rows) {
   const out = { matches: rows.length };
+  /**
+   * ORTALAMA, ÖLÇÜLMÜŞ MAÇ SAYISINA BÖLÜNÜR — MAÇ SAYISINA DEĞİL.
+   *
+   * İlk sürüm toplamı `rows.length`e bölüyordu. Sağlayıcı bir maçta
+   * `shots` göndermediyse o maç ölçümden düşüyor ama BÖLEN düşmüyordu;
+   * yani eksik ölçüm sessizce SIFIR sayılıyordu. Bunun bedeli doğrudan bu
+   * modülün var oluş sebebine çarpıyor: ilk pencerede dökümü tam, son
+   * pencerede yarım gelen bir oyuncu, hiçbir şey değişmemiş olsa bile
+   * "düşüşte" görünürdü. Yani eksik veri, üretilmiş bir tez hâline
+   * gelirdi.
+   *
+   * `measured` alanı kaç maçın gerçekten ölçüldüğünü taşıyor; yazı
+   * katmanı isterse örneklemi okuyucuya söyleyebilsin.
+   */
   for (const measure of PER_MATCH) {
     const values = rows.map((row) => num(row[measure])).filter((value) => value !== null);
     if (!values.length) continue;
     const total = values.reduce((sum, value) => sum + value, 0);
-    out[measure] = Math.round((total / rows.length) * 100) / 100;
+    out[measure] = Math.round((total / values.length) * 100) / 100;
+    out.measured = out.measured || {};
+    out.measured[measure] = values.length;
   }
   for (const measure of AVERAGED) {
     const values = rows.map((row) => num(row[measure])).filter((value) => value !== null);

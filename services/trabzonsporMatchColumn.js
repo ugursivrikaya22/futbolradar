@@ -460,7 +460,20 @@ function readiness(match) {
   if (!score || !isNumber(num(score.home)) || !isNumber(num(score.away))) missing.push("score");
   if (!(Array.isArray(match && match.events) && match.events.length)) missing.push("events");
   if (!(Array.isArray(match && match.statistics) && match.statistics.length >= 6)) missing.push("statistics");
-  if (!(Array.isArray(match && match.lineups) && match.lineups.length >= 2)) missing.push("lineups");
+  /**
+   * DİZİLİŞ KAPISI HAM DİZİYİ DEĞİL, ÇÖZÜMLENMİŞ KADROYU SORAR.
+   *
+   * İlk sürüm `match.lineups.length >= 2` diyordu. Sağlayıcı iki BOŞ
+   * diziliş nesnesi (ya da yalnızca rakibin kadrosu) gönderdiğinde bu
+   * sayım geçiyor, ama `lineupsFrom` oyuncusuz satırları attığı için yazı
+   * katmanının elinde hiçbir kadro kalmıyordu: "kadro verisi geldi" diyen
+   * bir kapıdan, kadrosuz bir analiz çıkıyordu. Kapı artık iki tarafın da
+   * gerçekten oyuncu listesi taşıdığını doğruluyor.
+   */
+  const parsedLineups = lineupsFrom(match || {});
+  const hasBothLineups = Boolean(parsedLineups.us && parsedLineups.us.players.length
+    && parsedLineups.them && parsedLineups.them.players.length);
+  if (!hasBothLineups) missing.push("lineups");
 
   return {
     ready: REQUIRED_SECTIONS.every((section) => !missing.includes(section)) && !missing.includes("finished"),
