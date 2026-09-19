@@ -341,6 +341,10 @@ function sourceSteps(type, providerReady) {
     ...(full ? [nodeStep("competition-leaders", "sync-competition-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
+    // İNGİLİZCE AKIŞ AYRI ADIMDIR. Türkçe akışla aynı sıklıkta tazelenir
+    // ama ayrı beslemelerden ayrı dosyaya yazar; biri düşerse diğeri
+    // çalışmaya devam eder. Gün boyu güncel kalması için saatlik koşuda.
+    nodeStep("english-news", "sync-english-news.mjs", [], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
     // MAÇ SONU AÇIKLAMALARI. Maç sonrası saatlerde toplanır; saatlik koşuda
     // olmalı ki açıklamalar yayımlandıkları gece şeride girsin, ertesi güne
     // kalmasın. Zaman aşımı diğer beslemelerden uzun: aday başlıkların bir

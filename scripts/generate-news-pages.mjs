@@ -8,6 +8,8 @@ const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLi
 // (canlıda 404 veren iki bağlantı) yapısal olarak imkânsız.
 const { publishableNews } = createRequire(import.meta.url)("../services/newsFeed.js");
 const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks.js");
+// Haber durumu rozeti — İngilizce tarafla aynı servis, aynı ölçü.
+const { editorialStatusOf } = createRequire(import.meta.url)("../services/editorialStatus.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
@@ -150,6 +152,21 @@ function jsonLd(article) {
   return { "@context": "https://schema.org", "@graph": [newsArticle, breadcrumb] };
 }
 
+/**
+ * DURUM ROZETİ. Okur haberin ne kadar kesin olduğunu başlıkla birlikte
+ * görür; "Son Dakika" ayrı rozettir, durumun yerine geçmez.
+ */
+function statusBadges(article) {
+  const verdict = editorialStatusOf(article);
+  const badges = [
+    `<span class="mega-badge mega-badge--status" data-status="${escapeHtml(verdict.status)}">${escapeHtml(verdict.label.tr)}</span>`
+  ];
+  if (verdict.isBreaking) {
+    badges.push(`<span class="mega-badge mega-badge--breaking">${escapeHtml(verdict.breakingLabel.tr)}</span>`);
+  }
+  return badges.join("");
+}
+
 function pageHtml(article) {
   const seo = article && typeof article.seo === "object" && article.seo ? article.seo : {};
   const url = /^https?:\/\//i.test(String(seo.canonical || "")) ? String(seo.canonical) : articleUrl(article);
@@ -219,7 +236,7 @@ ${siteHeader({ base: "../" })}
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../haberler.html">Haberler</a><span>${escapeHtml(article.title)}</span></nav>
       <article class="column-article">
         <header class="column-article-head">
-          <div class="column-article-meta"><span>${escapeHtml(article.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">Güncelleme: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
+          <div class="column-article-meta">${statusBadges(article)}<span>${escapeHtml(article.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">Güncelleme: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
           <p class="lead">${escapeHtml(description)}</p>
           ${tagHtml}
