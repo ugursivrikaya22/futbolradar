@@ -38,6 +38,20 @@ const {
  */
 const MOMENTUM_INTENSITY_FLOOR = 0.4;
 
+/**
+ * MOMENTUM DİLİMİ — SABİT 5 DAKİKA.
+ *
+ * Dilimler önceden anlık görüntüler arasındaki farktan doğuyordu; genişlik
+ * yoklama sıklığına bağlıydı ve okuyucu iki dilimi karşılaştıramıyordu
+ * (biri 2, diğeri 7 dakikayı temsil edebiliyordu). Sabit dilimde her
+ * çubuk AYNI süreyi anlatır, yani yükseklikler karşılaştırılabilir.
+ *
+ * 5 dakika seçildi çünkü 90 dakikayı 18 çubuğa bölüyor: telefon
+ * genişliğinde okunabilen en ince kırılım. Daha dar dilim (1-2 dk) tek
+ * bir kornerin bütün dilimi "tam baskı" göstermesine yol açardı.
+ */
+const MOMENTUM_BUCKET_MINUTES = 5;
+
 /** Son 10 dakika yorumunun "belirgin" demesi için gereken üstünlük sayısı. */
 const CLEAR_EDGE_METRICS = 3;
 
@@ -54,6 +68,105 @@ const CLEAR_EDGE_METRICS = 3;
  * akışından gelir ve maçın TAMAMINI kapsar — sunucu maçın ortasında
  * yeniden başlasa bile işaretler eksilmez.
  */
+/**
+ * Bir anlık görüntü çiftinin ürettiği hücum puanlarını döndürür.
+ *
+ * Sağlayıcı istatistiği KÜMÜLATİF: aradaki üretim ancak iki toplamın
+ * farkıyla bulunur. Negatif fark (sağlayıcı düzeltmesi) sıfır sayılır —
+ * "eksi korner" diye bir şey yok.
+ */
+function pairPoints(before, after, events) {
+  const beforeStats = readStats(before.statistics);
+  const afterStats = readStats(after.statistics);
+  const delta = (key, side) => {
+    const now = afterStats[key];
+    const past = beforeStats[key];
+    if (!now || !past || now[side] === null || past[side] === null) return 0;
+    const difference = now[side] - past[side];
+    return difference > 0 ? difference : 0;
+  };
+
+  const goals = countEvents(events, before.minute, after.minute).goals;
+  const points = (side) => attackPoints({
+    goals: goals[side],
+    xg: delta("xg", side),
+    onTarget: delta("onTarget", side),
+    shots: delta("shots", side),
+    corners: delta("corners", side)
+  });
+
+  return { home: points("home"), away: points("away") };
+}
+
+/**
+ * Anlık görüntü çiftlerini SABİT 5 DAKİKALIK dilimlere dağıtır.
+ *
+ * Bir çift birden çok dilime taşabilir (yoklama seyrekse): üretim,
+ * çiftin her dilimde geçirdiği süreyle ORANTILI bölünür. Bu bir tahmin
+ * değil, ölçülmüş toplamın zamana eşit dağıtılmasıdır ve dilim sınırının
+ * nereye düştüğünden bağımsız aynı toplamı verir.
+ *
+ * ÖLÇÜLMEYEN DİLİM HİÇ ÜRETİLMEZ. Anlık görüntüyle kapsanmayan dakikalar
+ * için dilim yazılsaydı, okuyucu "o dakikalarda baskı yoktu" diye okurdu;
+ * doğrusu "o dakikalar ölçülmedi". Yüzey kapsanmayan bölgeyi taralı
+ * çiziyor (bkz. radar-pulse.js#momentumHtml).
+ */
+function bucketSegments(samples, events) {
+  const buckets = new Map();
+  const touch = (index) => {
+    if (!buckets.has(index)) {
+      buckets.set(index, {
+        from: index * MOMENTUM_BUCKET_MINUTES,
+        to: (index + 1) * MOMENTUM_BUCKET_MINUTES,
+        home: 0,
+        away: 0,
+        measuredMinutes: 0
+      });
+    }
+    return buckets.get(index);
+  };
+
+  for (let index = 1; index < samples.length; index += 1) {
+    const before = samples[index - 1];
+    const after = samples[index];
+    const span = after.minute - before.minute;
+    if (span <= 0) continue;
+
+    const points = pairPoints(before, after, events);
+    const firstBucket = Math.floor(before.minute / MOMENTUM_BUCKET_MINUTES);
+    const lastBucket = Math.floor(Math.max(before.minute, after.minute - 1e-9) / MOMENTUM_BUCKET_MINUTES);
+
+    for (let bucket = firstBucket; bucket <= lastBucket; bucket += 1) {
+      const start = Math.max(before.minute, bucket * MOMENTUM_BUCKET_MINUTES);
+      const finish = Math.min(after.minute, (bucket + 1) * MOMENTUM_BUCKET_MINUTES);
+      const overlap = finish - start;
+      if (overlap <= 0) continue;
+      const ratio = overlap / span;
+      const row = touch(bucket);
+      row.home += points.home * ratio;
+      row.away += points.away * ratio;
+      row.measuredMinutes += overlap;
+    }
+  }
+
+  return [...buckets.values()]
+    .sort((left, right) => left.from - right.from)
+    .map((row) => {
+      const total = row.home + row.away;
+      if (total <= 0) return { from: row.from, to: row.to, value: 0, quiet: true };
+      const share = row.home / total;
+      const minutes = row.measuredMinutes > 0 ? row.measuredMinutes : MOMENTUM_BUCKET_MINUTES;
+      const intensity = clamp(total / minutes / INTENSITY_REFERENCE_RATE, 0, 1);
+      const scale = MOMENTUM_INTENSITY_FLOOR + (1 - MOMENTUM_INTENSITY_FLOOR) * intensity;
+      return {
+        from: row.from,
+        to: row.to,
+        value: Math.round((share - 0.5) * 2 * 100 * scale),
+        quiet: false
+      };
+    });
+}
+
 function buildMomentum(input) {
   const source = input || {};
   const events = Array.isArray(source.events) ? source.events : [];
@@ -62,49 +175,7 @@ function buildMomentum(input) {
     .sort((left, right) => left.minute - right.minute);
   const minute = Number.isFinite(source.minute) ? source.minute : null;
 
-  const segments = [];
-  for (let index = 1; index < samples.length; index += 1) {
-    const before = samples[index - 1];
-    const after = samples[index];
-    const span = after.minute - before.minute;
-    if (span <= 0) continue;
-
-    const beforeStats = readStats(before.statistics);
-    const afterStats = readStats(after.statistics);
-    const delta = (key, side) => {
-      const now = afterStats[key];
-      const past = beforeStats[key];
-      if (!now || !past || now[side] === null || past[side] === null) return 0;
-      const difference = now[side] - past[side];
-      return difference > 0 ? difference : 0;
-    };
-
-    const goals = countEvents(events, before.minute, after.minute).goals;
-    const points = (side) => attackPoints({
-      goals: goals[side],
-      xg: delta("xg", side),
-      onTarget: delta("onTarget", side),
-      shots: delta("shots", side),
-      corners: delta("corners", side)
-    });
-
-    const home = points("home");
-    const away = points("away");
-    const total = home + away;
-    if (total <= 0) {
-      segments.push({ from: before.minute, to: after.minute, value: 0, quiet: true });
-      continue;
-    }
-    const share = home / total;
-    const intensity = clamp(total / span / INTENSITY_REFERENCE_RATE, 0, 1);
-    const scale = MOMENTUM_INTENSITY_FLOOR + (1 - MOMENTUM_INTENSITY_FLOOR) * intensity;
-    segments.push({
-      from: before.minute,
-      to: after.minute,
-      value: Math.round((share - 0.5) * 2 * 100 * scale),
-      quiet: false
-    });
-  }
+  const segments = bucketSegments(samples, events);
 
   // İŞARETLER OLAY AKIŞINDAN — anlık görüntüden bağımsız, maçın tamamı.
   const markers = events
@@ -119,9 +190,8 @@ function buildMomentum(input) {
     }));
 
   return {
-    resolutionMinutes: segments.length
-      ? Math.max(1, Math.round(segments.reduce((sum, segment) => sum + (segment.to - segment.from), 0) / segments.length))
-      : null,
+    // Dilim genişliği artık sabit; yüzey eksende bunu yazabilir.
+    resolutionMinutes: segments.length ? MOMENTUM_BUCKET_MINUTES : null,
     segments,
     markers,
     coverage: segments.length
@@ -352,6 +422,7 @@ module.exports = {
   CLEAR_EDGE_METRICS,
   PLAYER_STAT_KEYS,
   buildTopPlayers,
+  MOMENTUM_BUCKET_MINUTES,
   MOMENTUM_INTENSITY_FLOOR,
   buildMomentum,
   buildRadarPulse,

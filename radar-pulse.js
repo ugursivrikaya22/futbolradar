@@ -288,25 +288,40 @@
   var CHART = { width: 320, height: 84, mid: 42, pad: 2 };
 
   /**
-   * Segmentleri basamaklı bir alan yoluna çevirir. Ev sahibi baskısı orta
-   * çizginin ÜSTÜNDE, deplasman ALTINDA çizilir.
+   * Dilimleri ÇİFT YÖNLÜ ÇUBUKLARA çevirir: ev sahibi baskısı orta
+   * çizginin ÜSTÜNDE, deplasman ALTINDA.
+   *
+   * NEDEN ÇUBUK, ALAN DEĞİL. Alan yolu dilimleri birbirine bağlıyordu ve
+   * ölçülmemiş boşluk ile gerçekten sessiz geçen dakika aynı düz çizgi
+   * gibi görünüyordu. Ayrı çubukta her dilim kendi başına duruyor: bir
+   * dilim yoksa çubuğu da yok, uydurma bir bağlantı çizilmiyor.
+   *
+   * Dilimler sabit 5 dakika (services/radarPulseBuilder.js#
+   * MOMENTUM_BUCKET_MINUTES), yani çubuk yükseklikleri karşılaştırılabilir.
    */
-  function momentumPath(segments, maxMinute) {
+  function momentumBars(segments, maxMinute) {
     if (!segments.length) return "";
+    var span = CHART.width - CHART.pad * 2;
     var scaleX = function (minute) {
-      return CHART.pad + (Math.max(0, Math.min(minute, maxMinute)) / maxMinute) * (CHART.width - CHART.pad * 2);
+      return CHART.pad + (Math.max(0, Math.min(minute, maxMinute)) / maxMinute) * span;
     };
-    var scaleY = function (value) {
-      return CHART.mid - (Math.max(-100, Math.min(100, value)) / 100) * (CHART.mid - CHART.pad);
-    };
-    var path = "M" + scaleX(segments[0].from).toFixed(1) + "," + CHART.mid;
-    segments.forEach(function (segment) {
-      var y = scaleY(segment.value).toFixed(1);
-      path += " L" + scaleX(segment.from).toFixed(1) + "," + y;
-      path += " L" + scaleX(segment.to).toFixed(1) + "," + y;
-    });
-    path += " L" + scaleX(segments[segments.length - 1].to).toFixed(1) + "," + CHART.mid + " Z";
-    return path;
+    var usable = CHART.mid - CHART.pad;
+
+    return segments.map(function (segment) {
+      var x = scaleX(segment.from);
+      var width = Math.max(1, scaleX(segment.to) - x - 0.6);
+      if (segment.quiet || !segment.value) {
+        // Ölçüldü ama iki taraf da üretmedi: orta çizgide ince bir iz.
+        // Çubuk hiç çizmemek "ölçülmedi" ile karıştırılırdı.
+        return '<rect class="rp-chart-bar is-quiet" x="' + x.toFixed(1) + '" y="' + (CHART.mid - 0.6).toFixed(1) +
+          '" width="' + width.toFixed(1) + '" height="1.2"></rect>';
+      }
+      var value = Math.max(-100, Math.min(100, segment.value));
+      var height = Math.max(1.5, (Math.abs(value) / 100) * usable);
+      var y = value > 0 ? CHART.mid - height : CHART.mid;
+      return '<rect class="rp-chart-bar is-' + (value > 0 ? "home" : "away") + '" x="' + x.toFixed(1) +
+        '" y="' + y.toFixed(1) + '" width="' + width.toFixed(1) + '" height="' + height.toFixed(1) + '"></rect>';
+    }).join("");
   }
 
   function momentumHtml(momentum, names, locale, minute) {
@@ -333,7 +348,7 @@
         '<p class="rp-momentum-empty muted-copy">' + esc(text.momentumEmpty) + "</p></div>";
     }
 
-    var path = momentumPath(segments, maxMinute);
+    var bars = momentumBars(segments, maxMinute);
 
     // ÖLÇÜLMEYEN DAKİKALAR ÖLÇÜLMÜŞ GİBİ ÇİZİLMEZ.
     //
@@ -359,8 +374,8 @@
       '<svg class="rp-chart" viewBox="0 0 ' + CHART.width + " " + CHART.height + '" preserveAspectRatio="none" ' +
         'role="img" aria-label="' + esc(text.momentumTitle) + '" focusable="false">' +
         gap +
+        bars +
         '<line class="rp-chart-mid" x1="0" y1="' + CHART.mid + '" x2="' + CHART.width + '" y2="' + CHART.mid + '"></line>' +
-        '<path class="rp-chart-area" d="' + path + '"></path>' +
       "</svg>" +
       markersHtml(markers, maxMinute, locale) +
       gapNote +
@@ -599,7 +614,7 @@
     gaugeHtml: gaugeHtml,
     isStale: isStale,
     momentumHtml: momentumHtml,
-    momentumPath: momentumPath,
+    momentumBars: momentumBars,
     playersHtml: playersHtml,
     render: render,
     timelineHtml: timelineHtml,

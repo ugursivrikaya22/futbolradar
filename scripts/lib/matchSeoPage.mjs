@@ -21,6 +21,22 @@ const { canonicalStatus, finishType, istanbulDay } = require("../../services/mat
 const { sameClub } = require("../../services/superLigTeams.js");
 const { publicPlayerView } = require("../../services/cardCredibility.js");
 const { slug: playerSlug } = require("../../services/playerService.js");
+/**
+ * Akışın kuralları (sınıflandırma, koşan skor, önem, satır işaretlemesi)
+ * `services/matchTimeline.js` içinde tek kaynak olarak duruyor; tarayıcı
+ * kopyasını `scripts/build-match-timeline-client.mjs` aynı dosyadan
+ * üretiyor. Burada ikinci bir tanım YOK — olması, maç sürerken ve maç
+ * bitince farklı iki anlatı çizmek demekti.
+ */
+const matchTimeline = require("../../services/matchTimeline.js");
+/**
+ * Diziliş satırları (saha görseli) `services/matchHub.js` içinde tek kaynak.
+ * `mac-detay.html` merkezi aynı işlevi kullanıyor; burada ikinci bir kopya
+ * tutmak, iki yüzeyin aynı kadroyu farklı dizmesi demekti. Kural da oradan
+ * geliyor: sağlayıcının `grid` koordinatı YA DA diziliş metni + 11 oyuncunun
+ * sırası; ikisi de yoksa `null` döner ve saha ÇİZİLMEZ.
+ */
+const matchHub = require("../../services/matchHub.js");
 // Stat adının tür sözcüğü ("… Stadyumu") İngilizce sayfada çevrilir.
 const { broadcastLabel, venueLabel } = require("../../services/displayLabels.js");
 
@@ -140,6 +156,9 @@ export const STR = {
     predictedFlags: "Şüpheli / izlenmesi gereken",
     predictedSources: "Kaynaklar",
     bench: "Yedekler",
+    benchPending: "Yedek listesi yayımlanmadı.",
+    pitchLabel: "dizilişi",
+    startingEleven: "İlk 11",
     formation: "Diziliş",
     coach: "Teknik direktör",
     squads: "Takım kadroları",
@@ -212,10 +231,6 @@ export const STR = {
     resultTitle: "Maç sonucu",
     finalScore: "Nihai skor",
     halftime: "İlk yarı",
-    goalsTitle: "Gol atanlar",
-    cardsTitle: "Kartlar",
-    subsTitle: "Oyuncu değişiklikleri",
-    varTitle: "VAR kararları",
     summary: "Maç özeti",
     report: "Ayrıntılı maç raporu",
     nextMatches: "Sonraki maçlar",
@@ -250,6 +265,23 @@ export const STR = {
     radarPulsePending: "Radar Nabzı maç başladığında burada açılır.",
     radarPulseStale: "Canlı istatistik verisi geçici olarak güncellenemiyor.",
     fanPollTitle: "Taraftar Anketi",
+    commentsTitle: "Yorumlar",
+    commentsNote: "Yorumlar takma adla yazılır ve doğrulanmış kimlik taşımaz; küfür ve bağlantı kabul edilmez.",
+    ratingsTitle: "Oyuncu puanları",
+    ratingsNote: "Okuyucu puanıdır (1–10) ve sağlayıcının maç derecesinden ayrıdır.",
+    countdownTitle: "Başlamasına",
+    countdownStarted: "Maç başladı",
+    countdownDay: "gün",
+    countdownHour: "saat",
+    countdownMinute: "dk",
+    countdownSecond: "sn",
+    shareCardTitle: "Maçı paylaş",
+    shareCardNote: "Kart, sayfadaki doğrulanmış skor ve istatistiklerden üretilir.",
+    shareCardMake: "Paylaşım kartı oluştur",
+    shareCardMaking: "Kart hazırlanıyor…",
+    shareCardDownload: "Kartı indir",
+    shareCardShare: "Kartı paylaş",
+    shareCardError: "Kart bu tarayıcıda üretilemedi; metin bağlantıları çalışıyor.",
     dataSource: "Veri kaynağı",
     dataSourceNote: "Maç bilgileri doğrulanmış sağlayıcı verisinden derlenir; eksik alanlar tahminle doldurulmaz."
   },
@@ -290,6 +322,9 @@ export const STR = {
     predictedFlags: "Doubtful / to watch",
     predictedSources: "Sources",
     bench: "Substitutes",
+    benchPending: "The bench has not been published.",
+    pitchLabel: "formation",
+    startingEleven: "Starting XI",
     formation: "Formation",
     coach: "Head coach",
     squads: "Squads",
@@ -361,10 +396,6 @@ export const STR = {
     resultTitle: "Result",
     finalScore: "Final score",
     halftime: "Half-time",
-    goalsTitle: "Goalscorers",
-    cardsTitle: "Cards",
-    subsTitle: "Substitutions",
-    varTitle: "VAR decisions",
     summary: "Match summary",
     report: "Full match report",
     nextMatches: "Next matches",
@@ -399,6 +430,23 @@ export const STR = {
     radarPulsePending: "Live Match Pulse opens here once the match kicks off.",
     radarPulseStale: "Live statistics cannot be updated at the moment.",
     fanPollTitle: "Fan Poll",
+    commentsTitle: "Comments",
+    commentsNote: "Comments are posted under a nickname and carry no verified identity; profanity and links are not accepted.",
+    ratingsTitle: "Player ratings",
+    ratingsNote: "A reader rating (1–10), separate from the provider match score.",
+    countdownTitle: "Kick-off in",
+    countdownStarted: "The match has started",
+    countdownDay: "d",
+    countdownHour: "h",
+    countdownMinute: "m",
+    countdownSecond: "s",
+    shareCardTitle: "Share this match",
+    shareCardNote: "The card is built from the verified score and statistics on this page.",
+    shareCardMake: "Create share card",
+    shareCardMaking: "Preparing the card…",
+    shareCardDownload: "Download card",
+    shareCardShare: "Share card",
+    shareCardError: "The card could not be created in this browser; the text links still work.",
     dataSource: "Data source",
     dataSourceNote: "Match information is compiled from verified provider data; missing fields are never filled with guesses."
   }
@@ -435,12 +483,6 @@ export function hasScore(score) {
 /* OLAY NORMALİZASYONU                                                  */
 /* ------------------------------------------------------------------ */
 
-function minuteSort(time) {
-  const match = String(time || "").match(/(\d+)(?:\+(\d+))?/);
-  if (!match) return 9999;
-  return Number(match[1]) * 10 + Math.min(Number(match[2] || 0), 9);
-}
-
 function sideOf(teamName, homeTeam, awayTeam) {
   if (!teamName) return "";
   if (sameClub(teamName, homeTeam) || normalizeText(teamName) === normalizeText(homeTeam)) return "home";
@@ -450,114 +492,44 @@ function sideOf(teamName, homeTeam, awayTeam) {
 
 /**
  * Sağlayıcı (API-Football) ve editoryal (data/matches.json) olay kayıtlarını
- * tek biçime indirir. Tanınmayan tür `other` olarak korunur, düşürülmez.
+ * tek biçime indirir ve akışı kurar.
+ *
+ * Kararların tamamı `services/matchTimeline.js` içinde; bu işlev yalnızca
+ * çağrı biçimini koruyan ince bir kabuk. `detail` TAM kayıt olarak
+ * verilirse (skor dahil) koşan skor da hesaplanır; yalnızca
+ * `{events, substitutions}` verilirse olaylar skorsuz döner.
+ *
+ * @param {Object} detail   Maç kaydı.
+ * @param {string} homeTeam Ev sahibi künye adı.
+ * @param {string} awayTeam Deplasman künye adı.
+ * @param {Object} [options] {locale, finished}
  */
-export function normalizeEvents(detail, homeTeam, awayTeam) {
+export function normalizeEvents(detail, homeTeam, awayTeam, options = {}) {
   if (!detail) return [];
-  const out = [];
-  const rawEvents = Array.isArray(detail.events) ? detail.events : [];
-  for (const raw of rawEvents) {
-    if (!raw) continue;
-    const teamName = typeof raw.team === "string" ? raw.team : (raw.team && raw.team.name) || "";
-    const type = normalizeText(raw.type);
-    const detailText = String(raw.detail || "");
-    const detailKey = normalizeText(detailText);
-    const value = String(raw.value || "");
-    const valueParts = value.split(" · ").map((part) => part.trim()).filter(Boolean);
-    const player = valueParts.length && !/^(asist|assist):/i.test(valueParts[0]) && normalizeText(valueParts[0]) !== detailKey ? valueParts[0] : "";
-    const assistPart = valueParts.find((part) => /^(asist|assist):/i.test(part));
-    const assist = assistPart ? assistPart.replace(/^(asist|assist):\s*/i, "") : "";
-    const event = { time: String(raw.time || "").replace(/'+$/, ""), sort: minuteSort(raw.time), team: teamName, side: sideOf(teamName, homeTeam, awayTeam), kind: "other", player, assist, detail: detailText };
-
-    if (type === "goal" || type === "gol") {
-      if (detailKey.includes("own")) event.kind = "own-goal";
-      else if (detailKey.includes("missed")) event.kind = "missed-penalty";
-      else if (detailKey.includes("penalty")) event.kind = "penalty";
-      else event.kind = "goal";
-      // Editoryal kayıt: oyuncu adı `detail` cümlesinde. Cümle olduğu gibi
-      // taşınır; ad ayıklama tahmini yapılmaz.
-      if (!player && !valueParts.length) event.player = "";
-    } else if (type === "card" || type.includes("kart")) {
-      if (detailKey.includes("second yellow") || detailKey.includes("ikinci sari")) event.kind = "yellow-red";
-      else if (detailKey.includes("red") || detailKey.includes("kirmizi")) event.kind = "red";
-      else event.kind = "yellow";
-    } else if (type === "subst" || type.includes("degisik")) {
-      event.kind = "sub";
-      event.playerIn = player;
-      event.playerOut = assist;
-    } else if (type === "var") {
-      event.kind = "var";
-    }
-    out.push(event);
-  }
-
-  for (const raw of Array.isArray(detail.substitutions) ? detail.substitutions : []) {
-    if (!raw) continue;
-    const teamName = typeof raw.team === "string" ? raw.team : (raw.team && raw.team.name) || "";
-    out.push({ time: String(raw.time || "").replace(/'+$/, ""), sort: minuteSort(raw.time), team: teamName, side: sideOf(teamName, homeTeam, awayTeam), kind: "sub", playerIn: raw.in || "", playerOut: raw.out || "", detail: "" });
-  }
-
-  return out.sort((left, right) => left.sort - right.sort);
+  return matchTimeline.buildTimeline(detail, {
+    homeTeam,
+    awayTeam,
+    locale: options.locale || "tr",
+    finished: !!options.finished
+  });
 }
 
-function eventLabel(event, text) {
-  switch (event.kind) {
-    case "goal": return text.goal;
-    case "own-goal": return text.ownGoal;
-    case "penalty": return text.penalty;
-    case "missed-penalty": return text.missedPenalty;
-    case "yellow": return text.yellow;
-    case "red": return text.red;
-    case "yellow-red": return text.yellowRed;
-    case "sub": return "";
-    case "var": return text.varEvent;
-    default: return eventDetail(event, text);
-  }
+export function eventRowHtml(event, textOrLocale) {
+  return matchTimeline.eventRowHtml(event, localeOf(textOrLocale));
+}
+
+export function eventsListHtml(events, textOrLocale, options = {}) {
+  return matchTimeline.timelineListHtml(events, { ...options, locale: localeOf(textOrLocale) });
 }
 
 /**
- * OLAY NOTU — YALNIZCA SAYFANIN DİLİNDE.
- *
- * `event.detail` editoryal serbest metindir ve Türkçe yazılır ("Dakika
- * kaynaklarda verilmedi."). İngilizce maç sayfasında bu not, kusursuz
- * İngilizce bir olay akışının ortasında tek Türkçe cümle olarak duruyordu.
- *
- * İngilizce karşılığı (`detailEn`) varsa o basılır; yoksa NOT HİÇ BASILMAZ.
- * Olay satırı zaten yapısal: dakika, ikon, olay türü, oyuncu ve takım
- * İngilizce geliyor — eksik olan yalnızca isteğe bağlı serbest not.
+ * Eski çağrılar bölüm metinleri sözlüğünü (`STR[locale]`) geçiriyordu;
+ * paylaşılan çekirdek ise dil kodunu istiyor. İkisi de kabul edilir ki
+ * çağrı yerleri tek tek değiştirilmek zorunda kalmasın.
  */
-function eventDetail(event, text) {
-  if (!event) return "";
-  if (text && text.locale === "en") return String(event.detailEn || "").trim();
-  return String(event.detail || "").trim();
-}
-
-const EVENT_ICONS = {
-  goal: "⚽", "own-goal": "⚽", penalty: "⚽", "missed-penalty": "✖", yellow: "🟨", red: "🟥", "yellow-red": "🟨🟥", sub: "🔁", var: "📺", other: "•"
-};
-
-export function eventRowHtml(event, text) {
-  const label = eventLabel(event, text);
-  let body = "";
-  if (event.kind === "sub") {
-    body = `${event.playerIn ? `<b>${escapeHtml(event.playerIn)}</b> ${escapeHtml(text.subIn)}` : ""}${event.playerIn && event.playerOut ? " · " : ""}${event.playerOut ? `${escapeHtml(event.playerOut)} ${escapeHtml(text.subOut)}` : ""}`;
-  } else {
-    const name = event.player ? `<b>${escapeHtml(event.player)}</b>` : "";
-    const assist = event.assist ? ` <span class="msp-event-assist">(${escapeHtml(text.assists === "asist" ? "Asist" : "Assist")}: ${escapeHtml(event.assist)})</span>` : "";
-    const detailText = eventDetail(event, text);
-    const detail = !event.player && detailText
-      ? escapeHtml(detailText)
-      : (event.kind === "var" || event.kind === "other") && detailText
-        ? ` <span class="msp-event-assist">${escapeHtml(detailText)}</span>`
-        : "";
-    body = `${name}${assist}${detail}`;
-  }
-  return `<li class="msp-event is-${escapeHtml(event.kind)} is-${escapeHtml(event.side || "neutral")}"><span class="msp-event-min">${escapeHtml(event.time ? `${event.time}'` : "-")}</span><span class="msp-event-icon" aria-hidden="true">${EVENT_ICONS[event.kind] || "•"}</span><span class="msp-event-body">${label ? `<em>${escapeHtml(label)}</em> ` : ""}${body}${event.team ? ` <small>${escapeHtml(event.team)}</small>` : ""}</span></li>`;
-}
-
-export function eventsListHtml(events, text) {
-  if (!events.length) return "";
-  return `<ol class="msp-events">${events.map((event) => eventRowHtml(event, text)).join("")}</ol>`;
+function localeOf(value) {
+  if (typeof value === "string") return value === "en" ? "en" : "tr";
+  return value && value.subIn === "on" ? "en" : "tr";
 }
 
 /* ------------------------------------------------------------------ */
@@ -728,24 +700,117 @@ export function fixtureHeading(label, ctx) {
   return `${homeTeam} ${text.fixtureVersus} ${awayTeam} ${lowerFirstTr(label, locale)}`;
 }
 
+/**
+ * İsim listesini ve ayrıntı listesini tek modele katlar.
+ *
+ * Sağlayıcı `players`/`substitutes` alanlarını geriye dönük uyumluluk için
+ * düz isim listesi olarak tutuyor; forma numarası, mevki ve saha koordinatı
+ * `startingDetails`/`substituteDetails` içinde geliyor (bkz.
+ * services/providers/apiFootballProvider.js#normalizeFixtureLineups).
+ * Ayrıntı yoksa oyuncu yine listelenir, numarası boş kalır — numara
+ * UYDURULMAZ. `services/matchHub.js#mergePlayers` ile aynı kural.
+ */
+function mergeLineupPlayers(names, details) {
+  const list = Array.isArray(details) && details.length
+    ? details.map((entry) => ({
+      name: (entry && entry.name) || "",
+      number: entry && entry.number !== undefined && entry.number !== null ? Number(entry.number) : null,
+      position: (entry && entry.position) || null,
+      grid: (entry && entry.grid) || null
+    }))
+    : (Array.isArray(names) ? names : []).map((entry) => ({
+      name: typeof entry === "string" ? entry : (entry && entry.name) || "",
+      number: entry && entry.number !== undefined && entry.number !== null ? Number(entry.number) : null,
+      position: (entry && entry.position) || null,
+      grid: (entry && entry.grid) || null
+    }));
+  return list.filter((entry) => entry.name);
+}
+
+/** Forma numarası + oyuncu sayfası bağlantısı taşıyan tek satır/çip gövdesi. */
+function lineupPlayerHtml(player, ctx) {
+  const { base, playerIndex, locale } = ctx;
+  const number = player.number !== null && Number.isFinite(player.number)
+    ? `<i class="msp-lineup-no">${escapeHtml(player.number)}</i>`
+    : "";
+  const position = player.position
+    ? `<em class="msp-lineup-pos">${escapeHtml(player.position)}</em>`
+    : "";
+  return `${number}<b class="msp-lineup-name">${playerLinkHtml(player.name, playerIndex, base, locale)}</b>${position}`;
+}
+
+/**
+ * SAHA GÖRSELİ.
+ *
+ * Satırlar `services/matchHub.js#formationRows` tarafından üretiliyor:
+ * `rows[0]` KALECİ, sonraki hatlar hücuma doğru ilerliyor. Ekranda sıra
+ * TERS ÇEVRİLİR ki kaleci altta, forvet üstte dursun —
+ * `match-hub.js#pitchHtml` ile birebir aynı dönüşüm.
+ *
+ * Hat İÇİNDEKİ sıra sağlayıcının `grid` sütununu izler; sağ/sol bek iddiası
+ * bu görselin taşıdığı bir bilgi DEĞİLDİR. Bölümün söylediği tek şey
+ * hatların kaç kişilik olduğu, yani dizilişin kendisidir.
+ *
+ * Satır yoksa boş dize döner: koordinatı da geçerli dizilişi de olmayan bir
+ * kadroyu sahaya yerleştirmek, okuyucuya doğrulanmamış bir taktik iddiası
+ * sunmak olurdu. Çağıran o durumda yalnızca listeyi basar.
+ */
+function lineupPitchHtml(rows, teamName, formation, ctx) {
+  if (!Array.isArray(rows) || !rows.length) return "";
+  const text = STR[ctx.locale];
+  const label = `${teamName}${formation ? ` ${formation}` : ""} ${text.pitchLabel}`;
+  const display = rows.slice().reverse();
+  return `<div class="msp-pitch match-special__pitch" role="img" aria-label="${escapeHtml(label)}">${display.map((line) => {
+    const count = Math.max(1, Math.min(5, line.length));
+    return `<div class="msp-pitch-row match-special__pitch-row is-${count}">${line.map((player) => (
+      `<span class="msp-pitch-player match-special__pitch-player">${lineupPlayerHtml(player, ctx)}</span>`
+    )).join("")}</div>`;
+  }).join("")}</div>`;
+}
+
+/**
+ * Bir takımın kadro kutusu: künye, saha görseli, ilk 11 listesi, yedekler.
+ *
+ * Saha ve liste BİRLİKTE basılıyor — `match-hub.js#lineupsHtml` ile aynı
+ * düzen. Saha dizilişi gösterir, liste numarayı, mevkiyi ve oyuncu sayfası
+ * bağlantısını taşır; ikisi farklı soruları yanıtlıyor.
+ */
+function lineupSideHtml(teamName, lineup, badge, coach, ctx) {
+  const text = STR[ctx.locale];
+  const starters = mergeLineupPlayers(lineup.players, lineup.startingDetails);
+  const bench = mergeLineupPlayers(lineup.bench || lineup.substitutes, lineup.substituteDetails);
+  const rows = matchHub.formationRows(starters, lineup.formation);
+
+  const meta = lineup.formation || coach
+    ? `<p class="msp-lineup-meta">${lineup.formation ? `<span>${escapeHtml(text.formation)}:</span> <b>${escapeHtml(lineup.formation)}</b>` : ""}${lineup.formation && coach ? " · " : ""}${coach ? `<span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b>` : ""}</p>`
+    : "";
+
+  const benchHtml = bench.length
+    ? `<div class="msp-lineup-bench"><h4>${escapeHtml(text.bench)}</h4><ul class="msp-lineup-bench-list">${bench.map((player) => `<li>${lineupPlayerHtml(player, ctx)}</li>`).join("")}</ul></div>`
+    : `<div class="msp-lineup-bench"><h4>${escapeHtml(text.bench)}</h4><p class="muted-copy">${escapeHtml(text.benchPending)}</p></div>`;
+
+  return `<article class="card msp-lineup">` +
+    `<header class="msp-lineup-head"><h3>${escapeHtml(teamName)}</h3>${badge}</header>` +
+    meta +
+    lineupPitchHtml(rows, teamName, lineup.formation, ctx) +
+    `<h4 class="msp-lineup-subtitle">${escapeHtml(text.startingEleven)}</h4>` +
+    `<ol class="msp-lineup-list">${starters.map((player) => `<li>${lineupPlayerHtml(player, ctx)}</li>`).join("")}</ol>` +
+    benchHtml +
+    `</article>`;
+}
+
 export function lineupsSectionHtml(detail, analysis, ctx) {
-  const { locale, base, playerIndex, homeTeam, awayTeam } = ctx;
+  const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
   const official = (Array.isArray(detail && detail.lineups) ? detail.lineups : []).filter((row) => row && Array.isArray(row.players) && row.players.length >= 7);
   const coaches = detail && detail.coaches && typeof detail.coaches === "object" ? detail.coaches : null;
-
-  const sideHtml = (title, lineup, badge, coach) => `<article class="card msp-lineup"><header class="msp-lineup-head"><h3>${escapeHtml(title)}</h3>${badge}</header>${lineup.formation ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.formation)}:</span> <b>${escapeHtml(lineup.formation)}</b>${coach ? ` · <span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b>` : ""}</p>` : coach ? `<p class="msp-lineup-meta"><span>${escapeHtml(text.coach)}:</span> <b>${escapeHtml(coach)}</b></p>` : ""}<ol class="msp-lineup-list">${lineup.players.map((player) => {
-    const name = typeof player === "string" ? player : (player && player.name) || "";
-    const detailRow = Array.isArray(lineup.startingDetails) ? lineup.startingDetails.find((row) => row && row.name === name) : null;
-    return `<li>${detailRow && detailRow.number ? `<span class="msp-lineup-no">${escapeHtml(detailRow.number)}</span>` : ""}${playerLinkHtml(name, playerIndex, base, locale)}</li>`;
-  }).join("")}</ol>${Array.isArray(lineup.substitutes) && lineup.substitutes.length ? `<p class="msp-lineup-bench"><span>${escapeHtml(text.bench)}:</span> ${lineup.substitutes.map((player) => escapeHtml(typeof player === "string" ? player : (player && player.name) || "")).filter(Boolean).join(", ")}</p>` : ""}</article>`;
 
   if (official.length) {
     const home = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "home") || official[0];
     const away = official.find((row) => sideOf(row.team, homeTeam, awayTeam) === "away") || official[1];
     if (home && away && home !== away) {
       const badge = `<span class="msp-tag is-official">${escapeHtml(text.officialLineups)}</span>`;
-      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(fixtureHeading(text.officialLineups, ctx))}</span></h2><div class="msp-two-col">${sideHtml(homeTeam, home, badge, coaches && coaches.home)}${sideHtml(awayTeam, away, badge, coaches && coaches.away)}</div></section>`;
+      return `<section class="msp-section" id="kadrolar" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title"><span id="muhtemel-11">${escapeHtml(fixtureHeading(text.officialLineups, ctx))}</span></h2><div class="msp-two-col">${lineupSideHtml(homeTeam, home, badge, coaches && coaches.home, ctx)}${lineupSideHtml(awayTeam, away, badge, coaches && coaches.away, ctx)}</div></section>`;
     }
   }
 
@@ -767,7 +832,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   if (probableHome || probableAway) {
     const badge = `<span class="msp-tag is-probable">${escapeHtml(text.lineups)}</span>`;
     const empty = `<article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article>`;
-    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.lineups, ctx))}</h2><div class="msp-two-col">${probableHome ? sideHtml(homeTeam, probableHome, badge, null) : empty}${probableAway ? sideHtml(awayTeam, probableAway, badge, null) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
+    return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.lineups, ctx))}</h2><div class="msp-two-col">${probableHome ? lineupSideHtml(homeTeam, probableHome, badge, null, ctx) : empty}${probableAway ? lineupSideHtml(awayTeam, probableAway, badge, null, ctx) : empty}</div><p class="muted-copy">${escapeHtml(text.lineupNote)}</p></section>`;
   }
 
   // Site içi istatistik modelinin (yukarıdaki `probable`) verisi yoksa,
@@ -1228,22 +1293,36 @@ export function whenSectionHtml(entry, ctx) {
 /* CANLI / SONUÇ BÖLÜMLERİ                                              */
 /* ------------------------------------------------------------------ */
 
+/**
+ * CANLI MAÇ ANLATIMI — dakika dakika olay akışı.
+ *
+ * SIRALAMA TERS KRONOLOJİK. Canlı maçta okuyucunun sorduğu soru "az önce
+ * ne oldu"dur; akışı kronolojik basmak, cevabı her seferinde sayfanın en
+ * altına saklamak demekti. Bitmiş maçta da aynı sıra kullanılıyor: tek bir
+ * okuma biçimi var, maçın hâline göre değişen ikinci bir düzen yok.
+ *
+ * BÖLÜM HER HÂLDE SUNUCUDA BASILIR (boş kabuk dahil), çünkü maç başlayınca
+ * `match-center.js` içini aynı işaretlemeyle doldurur — istemciye bırakılan
+ * boş bir kutu değil, dolmaya hazır bir bölüm.
+ *
+ * Gol satırları `is-goal` sınıfıyla vurgulanır ve doğrulanabiliyorsa o
+ * andaki koşan skoru taşır (bkz. services/matchTimeline.js#attachRunningScore).
+ */
 export function eventsSectionHtml(events, ctx) {
   const { locale, state } = ctx;
   const text = STR[locale];
-  const title = fixtureHeading(state === "post" ? text.resultTitle : text.liveEvents, ctx);
-  if (state === "post") {
-    const goals = events.filter((event) => ["goal", "own-goal", "penalty"].includes(event.kind));
-    const cards = events.filter((event) => ["yellow", "red", "yellow-red"].includes(event.kind));
-    const subs = events.filter((event) => event.kind === "sub");
-    const vars = events.filter((event) => event.kind === "var" || event.kind === "missed-penalty");
-    if (!events.length) {
-      return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><p class="muted-copy" data-msp-events-note>${escapeHtml(text.noDetail)}</p></section>`;
-    }
-    const block = (heading, rows) => rows.length ? `<h3 class="msp-subtitle">${escapeHtml(heading)}</h3>${eventsListHtml(rows, text)}` : "";
-    return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${block(fixtureHeading(text.goalsHeading, ctx), goals)}${block(text.cardsTitle, cards)}${block(text.subsTitle, subs)}${block(text.varTitle, vars)}</div></section>`;
-  }
-  return `<section class="msp-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title"><h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2><div data-msp-events-body>${events.length ? eventsListHtml(events, text) : `<p class="muted-copy" data-msp-events-note>${escapeHtml(text.eventsPending)}</p>`}</div></section>`;
+  // Başlık main'den: maçın adını taşıyor (fixtureHeading). Gövde ise
+  // Faz 1'in ters kronolojik akışı — main'in gruplu düzeni (goller /
+  // kartlar / değişiklikler) yerine tek akış, çünkü canlı maçta sorulan
+  // soru "az önce ne oldu" ve iki ayrı okuma biçimi tutmak, maç sürerken
+  // ve maç bitince farklı iki anlatı çizmek demekti.
+  const title = fixtureHeading(state === "post" ? text.resultTitle : text.liveTitle, ctx);
+  const emptyText = state === "post" ? text.noDetail : text.eventsPending;
+  const body = matchTimeline.timelineBodyHtml(events, { locale, order: "desc", emptyText });
+  return `<section class="msp-section msp-timeline-section" id="olaylar" data-msp-events aria-labelledby="msp-events-title">` +
+    `<h2 id="msp-events-title" class="msp-section-title">${escapeHtml(title)}</h2>` +
+    `<div data-msp-events-body>${body}</div>` +
+    `</section>`;
 }
 
 /**
@@ -1313,6 +1392,194 @@ export function matchPollSectionHtml(ctx) {
     `<h2 id="fan-poll-title" class="msp-section-title">${escapeHtml(text.fanPollTitle)}</h2>` +
     `<div class="fan-poll-body" data-match-poll-body></div>` +
     `<p class="fan-poll-error" data-fan-poll-error hidden>${escapeHtml(locale === "en" ? "Votes cannot be recorded right now." : "Oy şu anda kaydedilemiyor.")}</p>` +
+    `</section>`;
+}
+
+/**
+ * YORUM BÖLÜMÜNÜN KABUĞU.
+ *
+ * Sunucu yalnızca BAŞLIK ve BOŞ GÖVDE basar; yorumlar, form ve "bu okuyucu
+ * neyi beğenmiş" bilgisi `radar-fan.js` ile `/api/match-comments`ten gelir.
+ * Yorumlar derleme anında basılamaz: her gönderimde değişir ve yayına giren
+ * statik bir liste o andan itibaren eksiktir.
+ *
+ * Kabuk `hidden` doğar. Depo yapılandırılmamışsa istemci bölümü hiç açmaz —
+ * yazı kabul edemeyen bir formu göstermek, çalışmayan bir düğme sunmaktır.
+ *
+ * SEO NOTU: bu bölüm bilerek arama motoru içeriği DEĞİLDİR. Okuyucu
+ * yorumları sayfanın doğrulanmış maç verisi değil; onları sunucuda basıp
+ * indekslenebilir içerik gibi göstermek, sitenin kendi veri iddiasıyla
+ * okuyucu metnini karıştırmak olurdu.
+ */
+export function commentsSectionHtml(ctx) {
+  const { locale, pollSlug } = ctx;
+  const text = STR[locale];
+  if (!pollSlug) return "";
+  const anchor = locale === "en" ? "comments" : "yorumlar";
+  return `<section class="msp-section fan-comments-section" id="${anchor}" data-match-comments ` +
+    `data-match-comments-slug="${escapeHtml(pollSlug)}" data-match-comments-locale="${locale}" hidden ` +
+    `aria-labelledby="fan-comments-title">` +
+    `<h2 id="fan-comments-title" class="msp-section-title">${escapeHtml(text.commentsTitle)}</h2>` +
+    `<p class="muted-copy">${escapeHtml(text.commentsNote)}</p>` +
+    `<div class="fan-comments-body" data-match-comments-body></div>` +
+    `</section>`;
+}
+
+/**
+ * OYUNCU PUANLAMA BÖLÜMÜNÜN KABUĞU.
+ *
+ * PUANLANABİLİR OYUNCU LİSTESİ SUNUCUDAN GELİR. Ekrana bir futbolcu adı
+ * bastığımız anda "bu oyuncu bu maçta oynadı" demiş oluyoruz; bu yüzden
+ * liste istemcide üretilmiyor, maçın KENDİ kadro kaydından çıkıyor.
+ * Kadro yoksa bölüm hiç basılmıyor — `services/motmPoll.js` ile aynı kural.
+ *
+ * Maç bitmeden puanlama açılmıyor: oynanmamış bir maçta oyuncuya puan
+ * vermek, hakkında yargı verilecek bir performans olmadan yargı vermektir.
+ */
+export function ratingsSectionHtml(detail, ctx) {
+  const { locale, pollSlug, state } = ctx;
+  const text = STR[locale];
+  if (!pollSlug || state !== "post") return "";
+
+  const lineups = Array.isArray(detail && detail.lineups) ? detail.lineups : [];
+  const roster = [];
+  const seen = new Set();
+  for (const lineup of lineups) {
+    for (const player of Array.isArray(lineup && lineup.players) ? lineup.players : []) {
+      const name = typeof player === "string" ? player : (player && player.name) || "";
+      const key = normalizeText(name);
+      if (!name || seen.has(key)) continue;
+      seen.add(key);
+      roster.push(name);
+    }
+  }
+  // Oyuna GİRENLER de puanlanabilir; kulübede kalan oyuncu listeye girmez
+  // (services/motmPoll.js ile aynı ayrım: kadroda olmak, oynamak değildir).
+  for (const sub of Array.isArray(detail && detail.substitutions) ? detail.substitutions : []) {
+    const name = (sub && sub.in) || "";
+    const key = normalizeText(name);
+    if (!name || seen.has(key)) continue;
+    seen.add(key);
+    roster.push(name);
+  }
+  if (!roster.length) return "";
+
+  const anchor = locale === "en" ? "player-ratings" : "oyuncu-puanlari";
+  return `<section class="msp-section fan-ratings-section" id="${anchor}" data-match-ratings ` +
+    `data-match-ratings-slug="${escapeHtml(pollSlug)}" data-match-ratings-locale="${locale}" ` +
+    `data-rating-roster="${escapeHtml(roster.join("|"))}" hidden ` +
+    `aria-labelledby="fan-ratings-title">` +
+    `<h2 id="fan-ratings-title" class="msp-section-title">${escapeHtml(text.ratingsTitle)}</h2>` +
+    `<p class="muted-copy">${escapeHtml(text.ratingsNote)}</p>` +
+    `<div class="fan-ratings-body" data-match-ratings-body></div>` +
+    `</section>`;
+}
+
+/**
+ * GERİ SAYIM VE YAYIN KANALI — sayfanın EN ÜSTÜNDE.
+ *
+ * Maç öncesi okuyucunun iki sorusu var: "ne zaman" ve "nerede izlerim".
+ * İkisi de künyede (msp-facts) zaten yazılıydı ama kahramanın ALTINDA,
+ * altı satırlık bir listenin içinde; telefonda ilk ekranda görünmüyordu.
+ * Bu blok o iki cevabı başlığın hemen altına taşıyor.
+ *
+ * ── SAYAÇ DERLEME ANINDA YAZILAMAZ ───────────────────────────────────────
+ * Sunucu "3 saat kaldı" bassaydı, sayfa yayına girdiği an o cümle yanlış
+ * olurdu; statik sayfa saatlerce, bazen günlerce aynı HTML'i sunuyor.
+ * Bu yüzden SUNUCU DEĞİŞMEYEN GERÇEĞİ basıyor — tarih, saat ve kanal —
+ * sayacı ise `match-center.js` dolduruyor. Boş kutu değil: JS hiç
+ * çalışmasa bile blok okunabilir bir cevap taşıyor.
+ *
+ * KANAL BİLİNMİYORSA UYDURULMUYOR; künyedeki ile aynı "henüz açıklanmadı"
+ * yazıyor (services/broadcastSchedule.js#broadcastChannel).
+ *
+ * Yalnızca BAŞLAMAMIŞ maçta basılıyor: başlamış bir maçta geri sayım
+ * geçmişe doğru sayar ve anlamı kalmaz.
+ */
+export function countdownHtml(entry, ctx) {
+  const { locale, state } = ctx;
+  const text = STR[locale];
+  if (state !== "pre") return "";
+  const kickoffIso = istanbulIso(entry.kickoff);
+  if (!kickoffIso) return "";
+
+  const channel = broadcastChannel(entry);
+  return `<section class="msp-countdown" data-msp-countdown data-msp-countdown-kickoff="${escapeHtml(kickoffIso)}" aria-label="${escapeHtml(text.countdownTitle)}">` +
+    `<p class="msp-countdown-when"><time datetime="${escapeHtml(kickoffIso)}">${escapeHtml(longDate(entry.kickoff, locale))}</time>` +
+    `<b>${escapeHtml(clock(entry.kickoff))}</b><small>${escapeHtml(text.tsi)}</small></p>` +
+    `<p class="msp-countdown-channel"><span>${escapeHtml(text.channel)}</span><b>${escapeHtml(channel || text.notAnnounced)}</b></p>` +
+    // Sayaç `hidden` doğar: JS bağlanmadan önce boş bir kutu göstermek,
+    // okuyucuya dolacağını vaat edip doldurmamaktır.
+    `<p class="msp-countdown-clock" data-msp-countdown-clock hidden aria-live="polite"></p>` +
+    `</section>`;
+}
+
+/**
+ * PAYLAŞIM KARTI — bitmiş maçın skoru ve öne çıkan istatistikleri.
+ *
+ * ── NEDEN `og:image` DEĞİL ───────────────────────────────────────────────
+ * Maça özel bir bağlantı önizlemesi ya isteği karşılayan bir sunucusuz
+ * işlev ister (Vercel Hobby'deki 12 işlev sınırı DOLU) ya da her maç için
+ * derlemede PNG üretmeyi (derlemeye Chromium sokmak — bkz.
+ * scripts/generate-og-images.mjs, bilerek reddedilmiş). Bu yüzden bağlantı
+ * önizlemesi markalı ve sabit kalıyor; maça özel kart TARAYICIDA çiziliyor.
+ * Anket kartında da aynı yol seçilmişti (site.js → drawShareCard).
+ *
+ * ── SUNUCU NE BASAR ──────────────────────────────────────────────────────
+ * Paylaşım bağlantıları (X, WhatsApp, Facebook) ve paylaşılacak metin
+ * SUNUCUDA kuruluyor: bitmiş maçın skoru artık değişmiyor, dolayısıyla
+ * derleme anında yazılabilir ve JS kapalıyken de çalışır. Kartı çizen
+ * istemci de veriyi buradan okuyor — ekrana çıkan sayı sayfadaki
+ * doğrulanmış sayının ta kendisi, istemcide yeniden hesaplanmıyor.
+ *
+ * Canlı maçta bu bölüm basılmıyor: orada paylaşım satırı Radar Nabzı
+ * bloğunun içinde yaşıyor ve skor her yoklamada değişiyor
+ * (radar-fan.js#bootShare). İki ayrı paylaşım kutusu aynı işi iki kez
+ * gösterirdi.
+ */
+export function shareCardSectionHtml(detail, entry, ctx) {
+  const { locale, state, homeTeam, awayTeam, canonical, competitionName } = ctx;
+  const text = STR[locale];
+  if (state !== "post" || !canonical) return "";
+  if (!hasScore(entry.score)) return "";
+
+  const scoreLine = `${homeTeam} ${entry.score.home}–${entry.score.away} ${awayTeam}`;
+  const competition = competitionName ? competitionLabel(competitionName, locale) : "";
+  const message = [scoreLine, competition, shortDate(entry.kickoff, locale)].filter(Boolean).join(" · ");
+
+  // Kartta üç satır yer var. Hangi üçü olduğu SIRALAMAYA bırakılıyor
+  // (STAT_ORDER): "önemli" olanı burada seçmek, sayfadaki tablonun kendi
+  // sırasıyla çelişen ikinci bir önem iddiası olurdu.
+  const stats = normalizeStatistics(detail && detail.statistics).slice(0, 3).map((row) => ({
+    label: locale === "en" ? (STAT_EN[row.key] || row.type) : row.type,
+    home: `${row.home ?? "-"}${row.unit}`,
+    away: `${row.away ?? "-"}${row.unit}`
+  }));
+
+  const encodedUrl = encodeURIComponent(canonical);
+  const encodedText = encodeURIComponent(message);
+  const targets = [
+    { id: "x", label: "X", href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}` },
+    { id: "whatsapp", label: "WhatsApp", href: `https://wa.me/?text=${encodeURIComponent(`${message}\n${canonical}`)}` },
+    { id: "facebook", label: "Facebook", href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}` }
+  ];
+
+  const anchor = locale === "en" ? "share" : "paylas";
+  return `<section class="msp-section fan-card-section" id="${anchor}" data-match-card ` +
+    `data-match-card-locale="${locale}" data-match-card-url="${escapeHtml(canonical)}" ` +
+    `data-match-card-message="${escapeHtml(message)}" ` +
+    `data-match-card-home="${escapeHtml(homeTeam)}" data-match-card-away="${escapeHtml(awayTeam)}" ` +
+    `data-match-card-score="${escapeHtml(`${entry.score.home}-${entry.score.away}`)}" ` +
+    `data-match-card-kicker="${escapeHtml([competition, shortDate(entry.kickoff, locale)].filter(Boolean).join(" · "))}" ` +
+    `data-match-card-stats="${escapeHtml(stats.map((row) => `${row.label}|${row.home}|${row.away}`).join("~"))}" ` +
+    `aria-labelledby="fan-card-title">` +
+    `<h2 id="fan-card-title" class="msp-section-title">${escapeHtml(text.shareCardTitle)}</h2>` +
+    `<p class="fan-card-line">${escapeHtml(message)}</p>` +
+    `<div class="fan-share-buttons">` +
+    targets.map((target) => `<a class="fan-share-button is-${target.id}" href="${escapeHtml(target.href)}" target="_blank" rel="noopener noreferrer" data-fan-share-target="${target.id}">${escapeHtml(target.label)}</a>`).join("") +
+    `</div>` +
+    `<div class="fan-card-tools" data-match-card-tools hidden></div>` +
+    `<p class="muted-copy fan-card-note">${escapeHtml(text.shareCardNote)}</p>` +
     `</section>`;
 }
 

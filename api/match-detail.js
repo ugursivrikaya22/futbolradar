@@ -5,7 +5,8 @@ const { quotesForMatch } = require("../services/managerQuotes");
 const managerQuoteStore = require("../data/manager-quotes.json");
 const { isRadarPulseEnabled } = require("../services/featureFlags");
 const { buildRadarPulse } = require("../services/radarPulseBuilder");
-const { recordSample } = require("../services/livePulseStore");
+const pulseStore = require("../services/livePulseStore");
+const pulseArchive = require("../services/livePulseArchive");
 const { resolveLiveWinProbability } = require("../services/winProbability");
 const {
   DEFAULT_TIMEOUT_MS,
@@ -192,11 +193,31 @@ module.exports = async function handler(req, res) {
   if (detail && liveNow && isRadarPulseEnabled()) {
     try {
       const fixtureKey = detail.fixtureId || detail.providerId || detail.id || query.fixtureId || query.id;
-      const samples = recordSample(fixtureKey, {
+
+      // ARŞİV BİR KEZ OKUNUR. Momentum grafiği maçın başından beri bütün
+      // dilimleri istiyor; süreç içi depo ise her yeni işlev örneğinde
+      // boş doğuyor. Bu örnek bu maçı ilk kez görüyorsa arşiv okunup
+      // belleğe besleniyor, sonraki yoklamalar bellekten sürüyor
+      // (bkz. services/livePulseArchive.js).
+      if (!pulseStore.isHydrated(fixtureKey)) {
+        pulseStore.hydrate(fixtureKey, await pulseArchive.loadSamples(fixtureKey));
+      }
+
+      const outcome = pulseStore.recordSampleWithOutcome(fixtureKey, {
         minute: detail.minute,
         statistics: detail.statistics,
         score: detail.score
       });
+      const samples = outcome.samples;
+
+      // ARŞİVE YALNIZCA YENİ ÖLÇÜM YAZILIR. Aynı dakikanın ikinci yanıtı
+      // yeni bir ölçüm değil; yazılsaydı yazma sayısı okuyucu sayısıyla
+      // birlikte büyürdü. Böyle 90 dakikalık maçta üst sınır ~90 satır.
+      // Yazma başarısız olursa sessiz: arşiv yardımcı katman, maç detayı
+      // onsuz da dönüyor.
+      if (outcome.appended && outcome.record) {
+        await pulseArchive.saveSample(fixtureKey, outcome.record);
+      }
       const pulse = buildRadarPulse({
         detail,
         samples,
