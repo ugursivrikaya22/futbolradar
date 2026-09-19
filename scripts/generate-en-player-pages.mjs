@@ -100,8 +100,10 @@ function enPlayerSlug(player) {
   return table.replace(/^.*\//, "").replace(/\.html$/, "");
 }
 
-const newsSlugs = generatedSlugs("haber");
-const newsItems = publishableNews(readJson("data/news.json", []));
+// İngilizce haber sayfaları `en/news/` altında üretiliyor; oyuncu sayfasının
+// bağlanabileceği küme de o.
+const newsSlugs = generatedSlugs("en/news");
+const newsItems = publishableNews(readJson("data/news.json", []), { locale: "en" });
 const matchRecords = readJson("data/matches.json", []);
 const archiveRecords = readJson("data/historical-match-archive.json", { records: [] }).records || [];
 const squadStatuses = readJson("data/squad-statuses.json", { teams: [] });
@@ -116,8 +118,9 @@ const confirmedTransfers = readJson("data/transfers.json", [])
  *
  *   • Maç raporu — o rotanın İngilizce karşılığı bu kimlikle üretilmiyor,
  *     bu yüzden `null`: satır bağlantısız kalır, kırık link üretilmez.
- *   • Haber — haber metinleri yalnızca Türkçe yayımlanıyor. Bağlantı
- *     Türkçe sayfaya gider; İngilizce bir kopya UYDURULMAZ.
+ *   • Haber — artık İngilizce sürümü olan haberlerin kendi sayfası var
+ *     (`en/news/<slug>.html`); İngilizce karşılığı olmayan haber listeye
+ *     hiç girmez.
  */
 const EN_ROUTES = {
   teamHref: (teamName) => {
@@ -125,7 +128,7 @@ const EN_ROUTES = {
     return team ? `en/team/${teamSlug(team.name)}.html` : null;
   },
   matchReportHref: () => null,
-  newsHref: (slug) => (slug && newsSlugs.has(slug) ? `haber/${slug}.html` : null),
+  newsHref: (slug) => (slug && newsSlugs.has(slug) ? `en/news/${slug}.html` : null),
   comparisonHref: (slug) => `karsilastirma/${slug}.html`,
   comparePickerHref: (playerId) => `oyuncu-karsilastir.html?player=${encodeURIComponent(playerId)}`,
   topScorers: "en/top-scorers.html",

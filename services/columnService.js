@@ -27,6 +27,8 @@
  * doğru değildir.
  */
 
+const { t } = require("./i18n.js");
+
 /** Yazı durumları. Sıra bir yaşam döngüsüdür. */
 const STATUSES = Object.freeze({
   draft: { label: "Taslak", public: false },
@@ -48,9 +50,36 @@ const CATEGORIES = Object.freeze({
   "trabzonspor": "Trabzonspor"
 });
 
-/** Bölüm adı ve künye. Her yüzeyde aynı sözcük kullanılmalı. */
+/**
+ * Bölüm adı ve künye. Her yüzeyde aynı sözcük kullanılmalı.
+ *
+ * Sabitler TÜRKÇE karşılığı tutuyor: Türkçe üretici ve mevcut testler bunları
+ * doğrudan okuyor. Dile göre karşılık isteyen yüzeyler aşağıdaki
+ * `sectionName`/`opinionBadge`/`opinionDisclaimer` çağrılarını kullanır.
+ */
 const SECTION_NAME = "Radar Yorumu";
 const OPINION_BADGE = "Köşe Yazısı";
+
+/** Dile göre bölüm adı / rozet / künye. Sözlük tek kaynak. */
+function sectionName(locale) { return t("column.section", locale); }
+function opinionBadge(locale) { return t("column.badge", locale); }
+function opinionDisclaimer(locale) { return t("column.disclaimer", locale); }
+
+/**
+ * Kategori etiketi — dile göre.
+ *
+ * Kategori ANAHTARI dilden bağımsız (`mac-yorumu`); ekranda görünen karşılığı
+ * sözlükten geliyor. İngilizce kartta "Maç yorumu" rozeti bu yüzden çıkıyordu:
+ * etiket veriye gömülüydü.
+ */
+function categoryLabelFor(category, locale) {
+  const key = text(category);
+  if (!key) return "";
+  const label = t(`columnCategory.${key}`, locale);
+  // Sözlükte yoksa `t` anahtarın kendisini döndürür; o hâlde eski Türkçe
+  // tabloya düşmek, ham anahtar basmaktan iyidir.
+  return label === `columnCategory.${key}` ? (CATEGORIES[key] || key) : label;
+}
 
 /**
  * Künye metni. Köşe yazısının haberden ayrıldığını SÖYLEYEN cümle bu;
@@ -138,6 +167,54 @@ function normalizeLocale(locale) {
 }
 
 /**
+ * ETİKETLERİN İNGİLİZCESİ.
+ *
+ * Etiketler kartın ve yazı sayfasının altında GÖRÜNEN metindir. Çoğu özel
+ * ad ("Fenerbahçe", "Victor Osimhen") ve çeviri istemez; ama "Puan Durumu",
+ * "Hazırlık maçı", "Şampiyonlar Ligi" gibi betimleyici etiketler İngilizce
+ * sayfada Türkçe kalıyordu.
+ *
+ * Tabloda OLMAYAN etiket olduğu gibi geçer — özel adların ezici çoğunlukta
+ * olduğu bir listede varsayılan davranış budur. Bir yazı kendi
+ * `en.tags` dizisini verirse o dizi bu tabloyu tamamen geçersiz kılar.
+ */
+const TAG_TRANSLATIONS = Object.freeze({
+  "2026-2027 sezonu": "2026-27 season",
+  "avrupa": "Europe",
+  "avrupa kupaları": "European competitions",
+  "chobani stadyumu": "Chobani Stadium",
+  "derbi": "Derby",
+  "hazırlık maçı": "Friendly",
+  "kulüp tarihi": "Club history",
+  "köşe yazısı": "Opinion",
+  "oyuncu geliştirme": "Player development",
+  "puan durumu": "Standings",
+  "scout departmanı": "Scouting department",
+  "sezon hazırlığı": "Pre-season",
+  "süper lig gündemi": "Süper Lig agenda",
+  "taraftar": "Supporters",
+  "transfer politikası": "Transfer policy",
+  "transfer yorumu": "Transfer commentary",
+  "tüpraş stadyumu": "Tüpraş Stadium",
+  "türk futbolu": "Turkish football",
+  "uefa avrupa ligi": "UEFA Europa League",
+  "uefa şampiyonlar ligi": "UEFA Champions League",
+  "yüksek divan kurulu": "General Assembly",
+  "şampiyonlar ligi": "Champions League",
+  "şampiyonluk": "Title race"
+});
+
+function localizeTags(entry, locale) {
+  const raw = Array.isArray(entry.tags) ? entry.tags.map(text).filter(Boolean) : [];
+  if (normalizeLocale(locale) !== "en") return raw;
+
+  const override = (entry.en || {}).tags;
+  if (Array.isArray(override)) return override.map(text).filter(Boolean);
+
+  return raw.map((tag) => TAG_TRANSLATIONS[tag.toLowerCase()] || tag);
+}
+
+/**
  * Yazının İngilizce karşılığı YAYINA HAZIR MI?
  *
  * Yarım çeviri yayına girmemeli: başlık İngilizce ama gövde Türkçe kalırsa
@@ -178,18 +255,28 @@ function presentColumn(entry, locale) {
     authorPath: authorPath(entry.author),
     date: text(entry.date),
     category,
-    categoryLabel: CATEGORIES[category] || category,
-    tags: Array.isArray(entry.tags) ? entry.tags.map(text).filter(Boolean) : [],
+    categoryLabel: categoryLabelFor(category, wanted),
+    tags: localizeTags(entry, wanted),
     status,
     statusLabel: STATUSES[status] ? STATUSES[status].label : status,
     isPublic: Boolean(STATUSES[status] && STATUSES[status].public),
-    contentType: text(entry.contentType),
+    // `contentType` yazıya elle yazılan bir rozet ("Opinion / Köşe Yazısı").
+    //
+    // İngilizce yüzeyde SADECE `en.contentType` okunuyor; yayılma ile Türkçe
+    // kayda düşmek, çeviriyi yazan kişi bu alanı doldurmayı unuttuğunda
+    // İngilizce kartın üstüne Türkçe rozet basardı. Boşsa rozet kategoriden
+    // gelir — sessizce dil değiştirmektense boş bırakmak doğrudur.
+    contentType: wanted === "en" ? text((entry.en || {}).contentType) : text(entry.contentType),
     excerpt: text(source.excerpt),
     spot: text(source.spot),
     seoTitle: text(source.seoTitle),
     metaDescription: text(source.metaDescription),
+    // Görsel dosyası dilden bağımsız; ALT METNİ DEĞİL. `alt` ekran
+    // okuyucusunun sesli okuduğu cümledir, yani görünen metnin ta kendisi.
     featuredImage: text(entry.featuredImage),
-    featuredImageAlt: text(entry.featuredImageAlt),
+    featuredImageAlt: wanted === "en"
+      ? text((entry.en || {}).featuredImageAlt)
+      : text(entry.featuredImageAlt),
     hideStandfirst: Boolean(entry.hideStandfirst),
     body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
     path: columnPath(entry, wanted),
@@ -197,9 +284,11 @@ function presentColumn(entry, locale) {
     counterpartPath: hasEnglish(entry)
       ? columnPath(entry, wanted === "en" ? "tr" : "en")
       : "",
-    // Ayrımı taşıyan iki alan. Her kart ve her sayfa bunları basar.
-    badge: OPINION_BADGE,
-    disclaimer: OPINION_DISCLAIMER
+    // Ayrımı taşıyan iki alan. Her kart ve her sayfa bunları basar —
+    // okuyucunun dilinde, çünkü künyeyi anlamayan okuyucu için künye yoktur.
+    badge: opinionBadge(wanted),
+    disclaimer: opinionDisclaimer(wanted),
+    sectionName: sectionName(wanted)
   };
 }
 
@@ -208,10 +297,26 @@ function presentColumn(entry, locale) {
  *
  * Taslak ve incelemedeki yazılar hiçbir genel yüzeye çıkmaz. Bu, "taslak
  * üretilsin, yayın elle olsun" kuralının uygulandığı yer.
+ *
+ * DİL ELEMESİ BURADA, ÇAĞIRANDA DEĞİL.
+ *
+ * Eskiden `locale: "en"` istendiğinde İngilizcesi olmayan yazı da dönüyordu;
+ * yalnızca alanları Türkçe kalıyordu. Eleme her çağıranın kendi `hasEnglish`
+ * kontrolüne bırakılmıştı — biri unuttuğunda İngilizce sayfada Türkçe başlık
+ * yayımlanıyordu ve nitekim unutulmuştu (`en/columns.html`, `en/index.html`).
+ *
+ * Artık kural servistedir: İngilizce istenen yerde İngilizcesi olmayan yazı
+ * HİÇ DÖNMEZ. Yarım çeviriyi yayımlamaktansa yazıyı İngilizce tarafta hiç
+ * göstermemek doğrudur; Türkçe sürüm `/tr` tarafında olduğu gibi durur.
+ *
+ * `includeUntranslated: true` yalnızca editoryal araçlar içindir (hangi
+ * yazının çevrilmediğini listelemek); genel yüzeyler bunu kullanmaz.
  */
 function publishedColumns(store, options = {}) {
   const raw = Array.isArray(store) ? store : (store && Array.isArray(store.columns) ? store.columns : []);
   const limit = Number.isFinite(options.limit) ? options.limit : Infinity;
+  const wanted = normalizeLocale(options.locale);
+  const englishOnly = wanted === "en" && options.includeUntranslated !== true;
 
   const columns = [];
   const rejected = [];
@@ -223,6 +328,7 @@ function publishedColumns(store, options = {}) {
       continue;
     }
     if (text(entry.status) !== "published") continue;
+    if (englishOnly && !hasEnglish(entry)) continue;
     columns.push(presentColumn(entry, options.locale));
   }
 
@@ -236,7 +342,9 @@ function draftColumns(store) {
   const raw = Array.isArray(store) ? store : (store && Array.isArray(store.columns) ? store.columns : []);
   return raw
     .filter((entry) => text(entry && entry.status) === "draft")
-    .map(presentColumn);
+    // `.map(presentColumn)` demek, dizideki index'i locale olarak geçirmek
+    // demekti. Şimdilik Türkçe kastediliyor; açıkça yazılıyor.
+    .map((entry) => presentColumn(entry, "tr"));
 }
 
 function logRejected(scope, rejected) {
@@ -253,8 +361,12 @@ module.exports = {
   SECTION_NAME,
   STATUSES,
   authorPath,
+  categoryLabelFor,
   columnPath,
   hasEnglish,
+  opinionBadge,
+  opinionDisclaimer,
+  sectionName,
   draftColumns,
   logRejected,
   presentColumn,

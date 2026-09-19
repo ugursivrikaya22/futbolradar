@@ -26,6 +26,7 @@
  * Google tarafında hâlâ oynanacakmış gibi görünür.
  */
 const { canonicalStatus } = require("./matchStatus.js");
+const { venueLabel } = require("./displayLabels.js");
 
 const SITE = "https://www.futbolradar.com";
 
@@ -93,7 +94,12 @@ function sportsEventNode(match, options = {}) {
   }
 
   // Konum: sağlayıcı verdiyse. Uydurulmaz.
-  const venue = text(match.venue);
+  //
+  // Stat adı veride Türkçe saklanıyor ("Yeni 4 Eylül Stadyumu", "5 Ocak").
+  // İşaretleme sayfanın GÖRÜNEN metniyle aynı olmak zorunda; görünen metin
+  // `venueLabel`den geçtiği için işaretleme de geçer. Olgu değişmiyor,
+  // yalnızca tür sözcüğü sayfanın diline çevriliyor.
+  const venue = venueLabel(text(match.venue), options.locale || "tr");
   if (venue) {
     node.location = { "@type": "Place", name: venue };
     const city = text(match.city);
@@ -139,7 +145,11 @@ function matchListSchema(matches, options = {}) {
 
   const items = [];
   for (const match of list) {
-    const node = sportsEventNode(match, { url: urlFor(match), broadcast: broadcastFor(match) });
+    const node = sportsEventNode(match, {
+      url: urlFor(match),
+      broadcast: broadcastFor(match),
+      locale: options.locale
+    });
     if (!node) continue;
     items.push({ "@type": "ListItem", position: items.length + 1, item: node });
   }

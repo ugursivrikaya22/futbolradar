@@ -428,8 +428,6 @@ const TURKISH_FUNCTION_WORDS = new Set([
   "gündemi", "gündem", "yazdığına", "belirtildi", "duyurdu", "imza"
 ]);
 
-/** Türkçeye özgü harfler — tek başına kanıt değil, destekleyici işaret. */
-const TURKISH_LETTERS = /[ıİşŞğĞ]/;
 
 function turkishTokens(value) {
   return text(value)
@@ -450,27 +448,24 @@ function turkishTokens(value) {
 function containsTurkish(value) {
   const tokens = turkishTokens(value);
   if (!tokens.length) return false;
-  let hits = 0;
+  // ÖLÇÜT KARAKTER DEĞİL SÖZCÜK.
+  //
+  // Burada bir zamanlar ikinci bir kural vardı: "Türkçe harf taşıyan sözcük
+  // de Türkçe sayılır", yanında da onu telafi etmesi beklenen elle yazılmış
+  // bir kulüp adı listesi. O liste tanımı gereği hiçbir zaman tamamlanamaz —
+  // oyuncu, başkan, hakem, kasaba adları sonsuz. Ölçtük: "Aziz Yıldırım"
+  // geçen 60 haber, metinleri tertemiz İngilizce olduğu hâlde akıştan
+  // eleniyordu, çünkü "Yıldırım" listede yoktu.
+  //
+  // Geriye kalan kural doğru olanı: Türkçe İŞLEV SÖZCÜKLERİ. Bunlar hiçbir
+  // özel adın içinde geçmez, dolayısıyla "Fenerbahçe and Beşiktaş meet on
+  // Sunday" temiz kalırken "Fenerbahçe'de görüşme yapıldı" yakalanır.
   for (const token of tokens) {
-    if (TURKISH_FUNCTION_WORDS.has(token)) hits += 1;
-    // Türkçe harf taşıyan ve bilinen kulüp adı olmayan sözcük de sayılır.
-    else if (TURKISH_LETTERS.test(token) && !KNOWN_TURKISH_PROPER_NOUNS.has(token)) hits += 1;
-    if (hits >= 1) return true;
+    if (TURKISH_FUNCTION_WORDS.has(token)) return true;
   }
   return false;
 }
 
-/**
- * Türkçe harf taşıyan ama İngilizce metinde MEŞRU olan özel isimler.
- * Bunlar kulüp/şehir adıdır; çevrilmezler ve sızıntı sayılmazlar.
- */
-const KNOWN_TURKISH_PROPER_NOUNS = new Set([
-  "fenerbahçe", "beşiktaş", "galatasaray", "trabzonspor", "başakşehir",
-  "göztepe", "kasımpaşa", "eyüpspor", "şampiyonlar", "türkiye", "istanbul",
-  "i̇stanbul", "kayserispor", "gaziantep", "çaykur", "rizespor", "sivasspor",
-  "alanyaspor", "konyaspor", "samsunspor", "antalyaspor", "süper", "lig",
-  "kocaelispor", "çorum", "erzurumspor", "gençlerbirliği"
-]);
 
 /**
  * BAŞLIKTAKİ KİŞİ ADI.
@@ -702,6 +697,8 @@ function isPublishableEnglish(article) {
  * Bayat içerik geri plana alınır — `stalenessPenaltyHours` sonrası her
  * haber sıralamada aşağı iner, silinmez.
  */
+const TRANSLATED_ORIGIN_PENALTY = 1000;
+
 function rankEnglishNews(articles, options = {}) {
   const now = options.now ? new Date(options.now).getTime() : Date.now();
   const staleAfterHours = Number.isFinite(options.staleAfterHours) ? options.staleAfterHours : 48;
@@ -715,6 +712,16 @@ function rankEnglishNews(articles, options = {}) {
       if (priorityIndex >= 0) score += 40 - priorityIndex * 2;
       if (article.editorialStatus === STATUS.OFFICIAL) score += 25;
       if (article.isBreaking) score += 20;
+      // KÖKEN. /en öncelikle İngilizce kaynaklı bir yayın; Türkçe masadan
+      // çevrilen haberler arkadan doldurur. Ceza öteki terimlerin toplam
+      // aralığından büyük seçildi, yani ayrım KESİN: tazelik ya da resmî
+      // olmak bir çeviriyi İngilizce kaynaklının üstüne çıkaramaz. Bedeli
+      // bilinçli — dün yazılmış bir UEFA duyurusu, bugünkü bir transfer
+      // çevirisinin üstünde kalır; karşılığında okur /en'e girdiğinde önce
+      // kendi basınını görür. Sıralama her iki grubun İÇİNDE aynı kurallarla
+      // sürer. `origin` taşımayan kayıt İngilizce kaynaklı sayılır, yani
+      // mevcut çağıranların davranışı birebir korunur.
+      if (article.origin === "translated") score -= TRANSLATED_ORIGIN_PENALTY;
       // Bayatlık cezası: eşikten sonra her 12 saat için puan düşer.
       if (ageHours > staleAfterHours) score -= Math.min(60, ((ageHours - staleAfterHours) / 12) * 10);
       return { article, score, published: Number.isFinite(published) ? published : 0 };
