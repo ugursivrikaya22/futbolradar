@@ -476,6 +476,29 @@ function sameMatch(entry, record) {
   return record && isSameFixture(entry, record) && sameClub(entry.homeTeam, record.homeTeam) && sameClub(entry.awayTeam, record.awayTeam);
 }
 
+/**
+ * UNDERSTAT ŞUT DEPOSU — ŞUT HARİTASI VE xG EĞRİSİNİN KAYNAĞI.
+ *
+ * Ana sağlayıcı şut koordinatı vermiyor; beş büyük ligdeki maçlar için
+ * koordinatlar `scripts/sync-understat-shots.mjs` ile önceden çekilip
+ * depoya yazılıyor. Depo yoksa ya da maç kapsam dışıysa alan boş kalır
+ * ve şut haritası bölümü GİZLİ doğar — uydurma koordinat üretilmez.
+ */
+const understatShots = (() => {
+  try {
+    const raw = fs.readFileSync(path.join(root, "data", "understat-shots.json"), "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.matches && typeof parsed.matches === "object" ? parsed.matches : {};
+  } catch {
+    return {};
+  }
+})();
+
+function shotsFor(entry) {
+  const record = entry && entry.slug ? understatShots[entry.slug] : null;
+  return record && Array.isArray(record.shots) && record.shots.length ? record.shots : [];
+}
+
 function detailFor(entry) {
   const ids = entry.providerIds || {};
   const fromCalendar = calendarMatches.find((match) => (ids.apiFootball && match.providerIds && String(match.providerIds.apiFootball) === String(ids.apiFootball)) || sameMatch(entry, match)) || null;
@@ -503,7 +526,9 @@ function detailFor(entry) {
     // haritası) bu iki alandan besleniyor. Depoda yoksa boş dizi kalır ve
     // ilgili bölümler hiç açılmaz — uydurma yok.
     players: pickArray("players"),
-    shots: pickArray("shots"),
+    // Şut koordinatı ana sağlayıcıda yok; varsa Understat deposundan gelir
+    // (beş büyük lig). Kapsam dışı maçta boş kalır ve bölüm açılmaz.
+    shots: pickArray("shots").length ? pickArray("shots") : shotsFor(entry),
     statistics: pickArray("statistics", twoSided),
     coaches: (fromEditorial && fromEditorial.coaches) || null,
     summary: (fromEditorial && fromEditorial.summary) || null,
