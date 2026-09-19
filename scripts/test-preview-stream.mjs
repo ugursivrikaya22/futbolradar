@@ -18,6 +18,21 @@ try {
       if (match) { clearTimeout(timeout); resolve(match[1]); }
     });
   });
+  const homeSource = await fetch(base + '/', { signal: AbortSignal.timeout(10000) });
+  assert.equal(homeSource.status, 200);
+  const homeHtml = await homeSource.text();
+  assert.match(homeHtml, /\/__preview\/media\/football\/teams\/\d+\.png/, 'preview homepage should localize team logos');
+  const playerSource = await fetch(base + '/futbolcu/qazim-laci.html', { signal: AbortSignal.timeout(10000) });
+  assert.equal(playerSource.status, 200);
+  const playerHtml = await playerSource.text();
+  assert.match(playerHtml, /\/__preview\/media\/football\/players\/\d+\.png/, 'preview player page should localize player photos');
+  const siteSource = await fetch(base + '/site.js', { signal: AbortSignal.timeout(10000) });
+  assert.equal(siteSource.status, 200);
+  assert.match(await siteSource.text(), /\/__preview\/media\/football\/teams\//, 'preview JS should emit localized media URLs');
+  const placeholder = await fetch(base + '/__preview/media/football/teams/645.png', { signal: AbortSignal.timeout(10000) });
+  assert.equal(placeholder.status, 200);
+  assert.match(placeholder.headers.get('content-type'), /image\/svg\+xml/);
+  assert.match(await placeholder.text(), /<svg/, 'preview media placeholder should be served locally');
   const streamAbort = new AbortController();
   const timeout = setTimeout(() => streamAbort.abort(), 10000);
   try {
@@ -56,7 +71,7 @@ try {
   const home = await fetch(base + '/', { signal: AbortSignal.timeout(10000) });
   assert.equal(home.status, 200, 'preview remains available after stream cancellation');
   await home.arrayBuffer();
-  console.log('preview-stream OK: immediate SSE, cancellation, real telemetry validation, preflight passthrough, write protection');
+  console.log('preview-stream OK: media rewrite, local placeholder, immediate SSE, cancellation, real telemetry validation, preflight passthrough, write protection');
 } finally {
   if (child.exitCode === null) {
     const exited = once(child, 'exit');

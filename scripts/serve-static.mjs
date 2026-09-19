@@ -18,6 +18,33 @@ let apiPort;
 let apiProcess;
 const apiCache = new Map();
 const apiPending = new Map();
+const PREVIEW_MEDIA_ROOT = "https://media.api-sports.io/football/";
+const PREVIEW_MEDIA_PREFIX = "/__preview/media/football/";
+const PREVIEW_MEDIA_PLACEHOLDER = Buffer.from(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="FutbolRadar placeholder">' +
+  '<rect width="96" height="96" rx="20" fill="#162031"/>' +
+  '<text x="48" y="58" text-anchor="middle" font-size="28" font-family="Arial, sans-serif" fill="#f7f8fb">FR</text>' +
+  "</svg>"
+);
+function rewritePreviewMediaText(source) {
+  const value = String(source || "");
+  return value.includes(PREVIEW_MEDIA_ROOT)
+    ? value.split(PREVIEW_MEDIA_ROOT).join(PREVIEW_MEDIA_PREFIX)
+    : value;
+}
+function rewritePreviewBody(body, contentType) {
+  const mime = String(contentType || "").split(";")[0].trim().toLowerCase();
+  if (!/^(text\/html|text\/javascript|application\/javascript|application\/json|application\/xml|text\/xml)$/.test(mime)) {
+    return { body, changed: false };
+  }
+  const source = Buffer.isBuffer(body) ? body.toString("utf8") : String(body || "");
+  const rewritten = rewritePreviewMediaText(source);
+  if (rewritten === source) return { body, changed: false };
+  return { body: Buffer.from(rewritten), changed: true };
+}
+function withContentLength(headers, body) {
+  return { ...headers, "content-length": String(Buffer.byteLength(body)) };
+}
 function streamApi(request, response) {
   const proxy = http.request({ hostname: '127.0.0.1', port: apiPort, path: request.url, method: request.method, headers: request.headers, agent: false }, upstream => {
     if (response.destroyed) { upstream.destroy(); return; }
@@ -52,7 +79,9 @@ function readApi(request) {
         const policy = upstream.headers['vercel-cdn-cache-control'] || upstream.headers['cdn-cache-control'] || '';
         const seconds = /(?:^|,)\s*s-maxage=(\d+)/.exec(policy);
         const ttl = !/no-store|private/.test(policy) && seconds ? Number(seconds[1]) * 1000 : 0;
-        const result = { status: upstream.statusCode, headers: upstream.headers, body: Buffer.concat(chunks), expires: Date.now() + ttl };
+        const rewritten = rewritePreviewBody(Buffer.concat(chunks), upstream.headers["content-type"]);
+        const headers = rewritten.changed ? withContentLength(upstream.headers, rewritten.body) : upstream.headers;
+        const result = { status: upstream.statusCode, headers, body: rewritten.body, expires: Date.now() + ttl };
         if (result.status === 200 && ttl > 0) apiCache.set(key, result);
         resolve(result);
       });
@@ -73,6 +102,16 @@ const contentTypes = {
 
 const server = http.createServer((request, response) => {
   const pathname = decodeURIComponent(new URL(request.url, "http://localhost").pathname);
+  if (pathname.startsWith(PREVIEW_MEDIA_PREFIX)) {
+    response.writeHead(200, {
+      "Cache-Control": "no-store",
+      "Content-Length": String(PREVIEW_MEDIA_PLACEHOLDER.byteLength),
+      "Content-Type": "image/svg+xml; charset=utf-8"
+    });
+    if (request.method === "HEAD") response.end();
+    else response.end(PREVIEW_MEDIA_PLACEHOLDER);
+    return;
+  }
   // Exercise real API reads and local render telemetry in browser tests.
   // Voting, subscriptions and administrative writes stay out of preview.
   if (pathname.startsWith("/api/")) {
@@ -134,9 +173,21 @@ const server = http.createServer((request, response) => {
     return;
   }
 
+  const contentType = contentTypes[path.extname(filePath)] || "application/octet-stream";
+  if ([".html", ".js", ".json", ".xml"].includes(path.extname(filePath))) {
+    const body = Buffer.from(rewritePreviewMediaText(fs.readFileSync(filePath, "utf8")));
+    response.writeHead(200, {
+      "Cache-Control": "no-store",
+      "Content-Length": String(body.byteLength),
+      "Content-Type": contentType
+    });
+    if (request.method === "HEAD") response.end();
+    else response.end(body);
+    return;
+  }
   response.writeHead(200, {
     "Cache-Control": "no-store",
-    "Content-Type": contentTypes[path.extname(filePath)] || "application/octet-stream"
+    "Content-Type": contentType
   });
   fs.createReadStream(filePath).pipe(response);
 });
