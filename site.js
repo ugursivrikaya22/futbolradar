@@ -247,8 +247,68 @@
 
     // Reuse the visible match card and ticker, including later live updates.
     var summarySignature = "";
+
+    /**
+     * ÖZET SATIRI, YAZDIĞI MAÇA GÖTÜRÜR.
+     *
+     * Öne çıkan maç listesi canlı yoklamada (20 sn) yeniden sıralanıyor:
+     * başlayan bir maç öne geçtiğinde ilk kart değişiyor ve bu satır
+     * sessizce BAŞKA bir maça bağlanıyordu. Üretim denetiminde ölçüldü
+     * (19 Eylül, tıklanabilirlik taraması): satırın bağlantısı okunduğunda
+     * "Ankaragücü - Serik Spor" (mac-detay.html?id=1591610), tıklandığında
+     * varılan yer /mac/basaksehir-genclerbirligi-19-eylul-2026 idi.
+     * Okuyucu gördüğü maça dokunup başka maçın sayfasına düşüyordu.
+     *
+     * Çözüm satırı bir maça SABİTLEMEK: o maçın kartı öne çıkanlar
+     * arasında durdukça satır onu izler (skor ve dakika dahil), kart
+     * listeden düştüğünde yeni maça geçer. Böylece bağlantı, parmağın
+     * altında değişmez.
+     */
+    var summaryPinnedKey = "";
+
+    function featuredCardKey(card) {
+      var teams = card ? card.querySelectorAll(".featured-fixture-team strong") : null;
+      if (!teams || teams.length !== 2) return "";
+      return [
+        teams[0].textContent.trim(),
+        teams[1].textContent.trim(),
+        card.getAttribute("data-kickoff") || ""
+      ].join("|");
+    }
+
+    // summary-pin:start
+    // Bu blok scripts/test-summary-pin.mjs tarafından ayıklanıp doğrudan
+    // sınanıyor: kartların kimlik dizisi ve sabitlenmiş kimlik verilince
+    // hangi kartın izleneceğini söyler. İşaret yorumlarını silme.
+    function pickSummaryCardIndex(keys, pinnedKey) {
+      if (!keys || !keys.length) return -1;
+      var pinned = pinnedKey ? keys.indexOf(pinnedKey) : -1;
+      // Sabitlenen maç hâlâ listedeyse — sırası değişmiş olsa bile — o
+      // izlenir; düştüyse listenin ilki devralır.
+      return pinned >= 0 ? pinned : 0;
+    }
+    // summary-pin:end
+
+    function pinnedFeaturedCard() {
+      var cards = [];
+      var keys = [];
+      Array.prototype.forEach.call(document.querySelectorAll('[data-featured-turkish="true"]'), function (card) {
+        var key = featuredCardKey(card);
+        if (!key) return;
+        cards.push(card);
+        keys.push(key);
+      });
+      var index = pickSummaryCardIndex(keys, summaryPinnedKey);
+      if (index < 0) {
+        summaryPinnedKey = "";
+        return null;
+      }
+      summaryPinnedKey = keys[index];
+      return cards[index];
+    }
+
     function syncSummary() {
-      var featured = document.querySelector('[data-featured-turkish="true"]');
+      var featured = pinnedFeaturedCard();
       var teams = featured && featured.querySelectorAll(".featured-fixture-team strong");
       var when = featured && featured.querySelector(".featured-fixture-score b");
       var status = featured && featured.querySelector(".featured-fixture-score span");
