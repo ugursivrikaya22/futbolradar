@@ -101,11 +101,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "beinsports.com.tr",
     "milliyet.com.tr",
     "haberturk.com",
-    // CNN Türk: ulusal haber yayıncısı; listedeki habertürk, NTV ve Sözcü ile
-    // aynı sınıf. Haber akışı tazelemesi bu alan adından bir maç haberi
-    // çektiğinde kaynak kapısı bütün koşuyu düşürüyordu — ve bağlantı koşu
-    // anında geldiği için hata depodaki hiçbir commit'te görünmüyor, rastgele
-    // PR'larda patlıyordu.
+    // CNN Türk: ulusal haber yayıncısı; listedeki ntv.com.tr ve haberturk.com
+    // ile aynı sınıf. Saatlik haber taraması bu alan adından künye üretmeye
+    // başlayınca üretim kapısı haklı olarak durdurdu — kaynak gerçekten
+    // güvenilir olduğu için BİLİNÇLİ eklendi.
     "cnnturk.com",
     "ahaber.com.tr",
     "takvim.com.tr",
