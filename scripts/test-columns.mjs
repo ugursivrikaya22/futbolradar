@@ -285,6 +285,10 @@ function column(overrides = {}) {
   assert.equal(rewrites.get("/kose-yazilari"), "/kose-yazilari.html");
   assert.equal(rewrites.get("/kose-yazilari/:slug"), "/kose-yazilari/:slug.html");
   assert.equal(rewrites.get("/yazarlar/:slug"), "/yazarlar/:slug.html");
+  // İNGİLİZCE YAZI DA UZANTISIZ AÇILMALI. Üretilen sayfa kendi canonical
+  // adresini uzantısız yazıyor; kural olmadığında o adres 404 veriyordu.
+  assert.equal(rewrites.get("/en/columns"), "/en/columns.html");
+  assert.equal(rewrites.get("/en/columns/:slug"), "/en/columns/:slug.html");
 
   const generator = fs.readFileSync(path.join(root, "scripts", "generate-column-pages.mjs"), "utf8");
   assert.match(generator, /columns\.slice\(0, 3\)/, "ana sayfa yalnızca son üç yazıyı göstermeli");
