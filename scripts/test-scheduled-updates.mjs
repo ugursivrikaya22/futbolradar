@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-import { mergeCalendarMatches, selectDetailTargets, datesForTarget } from "./sync-live-fixtures.mjs";
+import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete } from "./sync-live-fixtures.mjs";
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
@@ -76,6 +76,56 @@ const agedOut = [
   { id: "fresh", homeTeam: "Samsunspor", awayTeam: "Rizespor", kickoff: "2026-09-20T06:00:00Z", status: "FINISHED", league: "Süper Lig" }
 ];
 const agedNow = Date.parse("2026-09-20T09:30:00Z");
+// EKSİK DÖKÜM İKİNCİ ŞANS ALIR, TAM DÖKÜM ALMAZ.
+//
+// 8 saatlik pencere kotayı koruyordu ama tek denemeyi nihai yapıyordu: o
+// pencerede sağlayıcının olay çağrısı düşerse (getMatchDetail her alanı
+// `.catch(() => [])` ile yutuyor) maç sonsuza dek olaysız kalıyordu.
+// Ölçüldü: 383 bitmiş maçın 381'inde olay akışı boştu.
+const tam = { events: [{}], lineups: [{}], statistics: [{}], players: [{}] };
+const olaysiz = { events: [], lineups: [{}], statistics: [{}], players: [{}] };
+
+assert.equal(detailIncomplete(olaysiz), true, "olay akışı boşsa döküm eksiktir");
+assert.equal(detailIncomplete(tam), false, "dört alan da doluysa döküm tamdır");
+assert.equal(detailIncomplete(null), true, "depoda kayıt yoksa döküm eksiktir");
+
+// Yaş penceresinin dışında (16,5 saat), depoda olay akışı boş → yeniden sorulur.
+assert.deepEqual(
+  selectDetailTargets(agedOut, {
+    nowMs: agedNow,
+    limit: 5,
+    storedFor: (match) => (match.id === "ts-gs" ? olaysiz : tam)
+  }).map((item) => item.id),
+  ["fresh", "ts-gs"],
+  "dökümü eksik, penceresi geçmiş maç yeniden sorulur — ama yeni bitmiş maçtan SONRA"
+);
+
+// Aynı maçın dökümü tamsa bir daha hiç sorulmaz: kotayı koruyan asıl kural.
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5, storedFor: () => tam }).map((item) => item.id),
+  ["fresh"],
+  "dökümü tam olan maç yaş penceresi dışında yeniden sorulmaz"
+);
+
+// Pencere de sınırsız değil: getirilen gün aralığından eski maç seçilmez.
+assert.deepEqual(
+  selectDetailTargets(agedOut, {
+    nowMs: agedNow,
+    limit: 5,
+    retryWindowMs: 10 * 60 * 60 * 1000,
+    storedFor: () => olaysiz
+  }).map((item) => item.id),
+  ["fresh"],
+  "yeniden deneme penceresinden de eski maç seçilmez"
+);
+
+// Depo bilgisi verilmezse davranış ESKİSİ GİBİ: yalnızca 8 saatlik pencere.
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5 }).map((item) => item.id),
+  ["fresh"],
+  "storedFor verilmediğinde eski davranış korunur"
+);
+
 assert.deepEqual(
   selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5 }).map((item) => item.id),
   ["fresh"],
