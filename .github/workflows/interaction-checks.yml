@@ -38,18 +38,21 @@ jobs:
       - run: npx playwright install --with-deps chromium
       # postbuild gates success on lint, types, all routes and real clicks.
       #
-      # GENİŞLİK KÜMESİ DALA GÖRE. Tıklanabilirlik denetimi dokuz genişlikte
-      # 365 senaryo koşuyor ve koşu ~50 dakika sürüyor; private depoda her PR
-      # push'u bunu baştan ödüyor. PR'da üç temsili genişlik koşuyor (mobil
-      # 390, tablet 768, masaüstü 1440), main'e push'ta dokuzunun tamamı.
+      # GENİŞLİK KÜMESİNİ PR'DA DARALTMAK DENENDİ VE GERİ ALINDI. 20.09.2026'da
+      # bu adım PR'larda `AUDIT_WIDTH=390,768,1440` ile koşturuldu; dokuz
+      # genişlik yerine üç genişlik. Ölçüm, tasarrufun olmadığını gösterdi:
       #
-      # Hiçbir senaryo atlanmıyor, gevşetilmiyor ya da karantinaya alınmıyor:
-      # değişen tek şey PR'da kaç genişlikte tekrarlandığı. Bir dal tam taramayı
-      # merge'den önce koşmak isterse "Run workflow" ile elle tetiklenen koşu
-      # dokuz genişliği de koşar.
+      #   koşu 411 (3 genişlik, PR)   16:27:39 → 17:15:30 = 47,9 dk
+      #   koşu 404 (9 genişlik, main) 13:11    → 13:59    = ~48 dk
+      #   koşu 402 (9 genişlik, PR)   12:08    → 12:58    = ~50 dk
+      #
+      # Sebebi adım dökümünde görünüyor: `npm run build` 46:54 sürüyor ve bunun
+      # ezici çoğunluğu SİTENİN YENİDEN ÜRETİLMESİ; tıklanabilirlik denetimi bu
+      # sürenin küçük bir dilimi. Yani daraltma, ölçülebilir bir dakika
+      # kazandırmadan PR'ların denetlendiği genişlik sayısını azaltıyordu —
+      # bedava olmayan bir kapsam kaybı. Tekrar denenecekse önce derleme
+      # süresi ele alınmalı, denetim değil.
       - run: npm run build
-        env:
-          AUDIT_WIDTH: ${{ github.event_name == 'pull_request' && '390,768,1440' || '' }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
