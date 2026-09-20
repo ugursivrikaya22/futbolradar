@@ -2993,6 +2993,10 @@
       "destination": "/en/news.html"
     },
     {
+      "source": "/en/news/:slug",
+      "destination": "/en/news/:slug.html"
+    },
+    {
       "source": "/en/polls",
       "destination": "/en/polls.html"
     },
@@ -3186,6 +3190,15 @@
     },
     {
       "source": "/performance-loader.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, s-maxage=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/ai-match-center.js",
       "headers": [
         {
           "key": "Cache-Control",
