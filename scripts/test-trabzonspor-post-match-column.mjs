@@ -10,6 +10,9 @@
  *   4. Uzunluk 1.000–1.500 kelime aralığında; tavan aşılırsa bölüm düşer.
  *   5. Türkçe ve İngilizce metinler AYRI yazılır.
  */
+import fs from "node:fs";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { findTurkish } from "./lib/turkish-detector.mjs";
 
@@ -626,6 +629,46 @@ console.log("\n[15] Yayımlanmış yazıda yakalanan hatalar");
   check("belirleyici anın dakikası yazılır", early.includes("dakikada kurulmuştu"));
   check("tek yönlü maçta skor çizgisi 'yön değiştirdi' denmez", !early.includes("Skor çizgisi bir kez yön değiştirdi"));
   check("tek yönlü maç böyle anlatılır", early.includes("Skor çizgisi hiç el değiştirmedi"));
+}
+
+console.log("\n[16] Elle kaldırılmış yazı geri getirilmez");
+{
+  // Kapı üreticinin içinde; davranışı CLI üzerinden ölçüyoruz çünkü asıl
+  // soru "koşu ne yapar" — fonksiyon ne döndürür değil.
+  const run = (args, env = {}) => {
+    const result = spawnSync(process.execPath, ["scripts/generate-trabzonspor-post-match-column.mjs", ...args], {
+      cwd: process.cwd(),
+      encoding: "utf8",
+      env: { ...process.env, ...env }
+    });
+    return { code: result.status, out: `${result.stdout || ""}${result.stderr || ""}` };
+  };
+
+  const removedPath = path.join(process.cwd(), "data", "removed-columns.json");
+  const original = fs.existsSync(removedPath) ? fs.readFileSync(removedPath, "utf8") : null;
+  try {
+    // (a) LİSTEDEKİ SLUG YAYIMLANMAZ ve döngü için açık sonuç basılır.
+    fs.writeFileSync(removedPath, JSON.stringify(["trabzonspor-mac-analizi-19-eylul-2026"], null, 2));
+    const blocked = run(["--match=trabzonspor-galatasaray-2026-09-19"]);
+    check("kaldırılmış yazı yayımlanmaz", blocked.out.includes("sonuc=kaldirildi"), blocked.out.slice(-200));
+    check("kaldırma koşuyu düşürmez", blocked.code === 0, `çıkış kodu ${blocked.code}`);
+    check("kaldırılmış yazı published sonucu basmaz", !blocked.out.includes("sonuc=published"));
+
+    // (b) BOZUK LİSTE ÜRETİCİYİ ÇÖKERTMEZ. Çıplak readFileSync bütün zinciri
+    //     1 ile düşürüyordu; liste okunamıyorsa boş sayılmalı.
+    fs.writeFileSync(removedPath, "{bozuk");
+    const broken = run(["--match=trabzonspor-galatasaray-2026-09-19"]);
+    check("bozuk liste koşuyu düşürmez", broken.code === 0, `çıkış kodu ${broken.code}`);
+    check("bozuk listede yayın kararı eskisi gibi verilir", broken.out.includes("sonuc=published") || broken.out.includes("sonuc=draft"), broken.out.slice(-200));
+
+    // (c) BOŞ LİSTE HİÇBİR ŞEYİ ENGELLEMEZ.
+    fs.writeFileSync(removedPath, "[]");
+    const open = run(["--match=trabzonspor-galatasaray-2026-09-19"]);
+    check("boş liste yayını engellemez", !open.out.includes("sonuc=kaldirildi"), open.out.slice(-200));
+  } finally {
+    if (original === null) fs.rmSync(removedPath, { force: true });
+    else fs.writeFileSync(removedPath, original);
+  }
 }
 
 console.log(
