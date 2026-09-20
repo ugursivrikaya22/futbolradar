@@ -332,8 +332,18 @@ const EVENT_TEMPLATES = Object.freeze({
       `${publisher} reports on the latest match involving ${subject}.`
   },
   statement: {
-    title: ({ subject, person }) =>
-      person ? `${person} speaks on the ${subject} agenda` : `${subject} agenda in focus`,
+    /*
+     * YAYINCI ADI BAŞLIĞIN AYIRT EDİCİ PARÇASIDIR.
+     *
+     * Adı geçen bir kişi yoksa başlık yalnızca `subject`'ten kurulurdu ve
+     * aynı kulüp hakkında iki ayrı açıklama haberi geldiğinde iki sayfa
+     * BİREBİR aynı başlığı alırdı (ölçüldü: "Barcelona agenda in focus"
+     * ve "Fenerbahçe agenda in focus" ikişer sayfa; test-seo-integrity
+     * haklı olarak düşüyordu). Yayıncı adı kaydın kendisinde zaten var,
+     * yani uydurma bir ayrım eklenmiyor — haberin gerçek kaynağı yazılıyor.
+     */
+    title: ({ subject, person, publisher }) =>
+      person ? `${person} speaks on the ${subject} agenda` : `${subject} agenda in focus — ${publisher}`,
     lead: ({ subject, publisher, person }) =>
       person
         ? `${publisher} reports comments from ${person} relating to ${subject}.`
@@ -838,6 +848,68 @@ function isStillAcceptable(article) {
  * Üç koşul: metin İngilizce, künye var, başlık bir şey söylüyor. Türkçe
  * sızıntı denetimi burada — akışa giren her kayıt bu kapıdan geçer.
  */
+/**
+ * İKİ HABER AYNI BAŞLIĞI VE AYNI AÇIKLAMAYI TAŞIYAMAZ.
+ *
+ * Kalıplar kulüp + yayıncı ikilisi aynı olduğunda birebir aynı metni
+ * üretebiliyor; üretim kapısı bunu haklı olarak düşürüyor
+ * (scripts/test-seo-integrity.mjs). Ayrım UYDURULMAZ: sırayla kaydın kendi
+ * yayıncı adı, haberin özgün başlığı ve kalıcı slug'ı kullanılır — üçü de
+ * kayıtta zaten duran veri. Sıra korunur, yani aynı girdi her koşuda aynı
+ * çıktıyı verir.
+ *
+ * Hem akışı yazan taraf (scripts/sync-english-news.mjs) hem de sayfayı
+ * çizen taraf (scripts/generate-en-news-pages.mjs) bu işlevden geçer.
+ */
+function sourceHeadlineOf(article) {
+  const first = Array.isArray(article.sources) ? article.sources[0] : null;
+  const name = String((first && first.name) || "").trim();
+  if (!name) return "";
+  // Kaynak adı "<yayıncı> — <özgün başlık>" biçiminde saklanır.
+  const dash = name.indexOf(" — ");
+  return dash === -1 ? name : name.slice(dash + 3).trim();
+}
+
+function withUniqueEnglishMetadata(list) {
+  const titles = new Map();
+  const descriptions = new Map();
+  return (Array.isArray(list) ? list : []).map((article) => {
+    const next = { ...article };
+
+    const title = String(next.title || "").trim();
+    if (title) {
+      if (titles.has(title)) {
+        const publisher = String(next.sourceName || "").trim();
+        let candidate = publisher && !title.includes(publisher) ? `${title} — ${publisher}` : "";
+        if (!candidate || titles.has(candidate)) candidate = `${title} — ${next.slug}`;
+        next.title = candidate;
+      }
+      titles.set(String(next.title).trim(), true);
+    }
+
+    const description = String(next.spot || next.summary || next.title || "").trim();
+    if (description) {
+      if (descriptions.has(description)) {
+        /*
+         * AYIRT EDİCİ PARÇA BAŞA YAZILIR.
+         *
+         * `scripts/normalize-meta.mjs` açıklamayı 160 karakterde kırpıyor;
+         * sona eklenen bir ek kırpılıp gidiyor ve iki açıklama yine birebir
+         * aynı kalıyordu (ölçüldü). Haberin özgün başlığı bu yüzden öne
+         * alınır: kırpma sonrası da ayrım ayakta kalır.
+         */
+        const headline = sourceHeadlineOf(next);
+        let candidate = headline ? `\u201C${headline}\u201D — ${description}` : "";
+        if (!candidate || descriptions.has(candidate)) candidate = `${next.slug} — ${description}`;
+        next.spot = candidate;
+      }
+      descriptions.set(String(next.spot || next.summary || next.title).trim(), true);
+    }
+
+    return next;
+  });
+}
+
 function isPublishableEnglish(article) {
   if (!article || !article.slug) return false;
   if (!Array.isArray(article.sources) || !article.sources.length) return false;
@@ -904,6 +976,7 @@ module.exports = {
   extractPersonName,
   hasLatinPublisherName,
   internalLinksFor,
+  withUniqueEnglishMetadata,
   isPublishableEnglish,
   isStillAcceptable,
   jaccard,

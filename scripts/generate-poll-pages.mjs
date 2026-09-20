@@ -192,7 +192,9 @@ function pollDocument(entry, locale) {
     heading: "h1",
     pinned: true,
     containerClass: "poll-page__poll",
-    regionLabel: poll.question
+    regionLabel: poll.question,
+    // Anketin KENDİ sayfası: kendine bağlantı basılmaz.
+    selfPage: true
   });
 
   const breadcrumbs = [

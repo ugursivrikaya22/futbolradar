@@ -70,6 +70,7 @@ function framed(locale, extras) {
 
 const STRINGS = {
   tr: framed("tr", {
+    permalink: "Anketin kendi sayfası",
     shareTitle: "Sonucu Paylaş",
     shareLead: "Paylaşım metni senin oyuna ve anketin güncel sonucuna göre oluşur.",
     shareNative: "Paylaş",
@@ -84,6 +85,7 @@ const STRINGS = {
     podiumLabel: "Anket liderleri"
   }),
   en: framed("en", {
+    permalink: "Open this poll's own page",
     shareTitle: "Share the Result",
     shareLead: "The share text is built from your pick and the poll's live result.",
     shareNative: "Share",
@@ -208,6 +210,21 @@ export function homePollBlock(poll, options = {}) {
     : copy.region;
   const rows = poll.options.map((option) => optionRow(option, poll.id)).join("");
 
+  /*
+   * ANKETİN KENDİ SAYFASINA GERÇEK BİR BAĞLANTI.
+   *
+   * Adres şimdiye kadar yalnızca `data-home-poll-path` özniteliğinde
+   * duruyordu; bağlantıyı istemci kuruyordu. Site haritası o sayfayı
+   * duyurduğu hâlde hiçbir sayfa ona `<a href>` ile bağlanmıyordu — üretim
+   * kapısı bunu "hiçbir yerden bağlanmayan sayfa" diye düşürüyor
+   * (scripts/test-seo-integrity.mjs) ve JavaScript kapalıyken sayfaya
+   * ulaşmanın yolu da yoktu. Anketin KENDİ sayfasında basılmaz: okuyucu
+   * zaten oradadır (`options.selfPage`).
+   */
+  const permalink = poll.path && !options.selfPage
+    ? `\n            <p class="home-poll__permalink"><a href="${escapeHtml(poll.path)}">${escapeHtml(copy.permalink)}</a></p>`
+    : "";
+
   // ANKET SAYFASI BU ANKETİ İSTER, "ŞU AN AÇIK OLANI" DEĞİL.
   //
   // Ana sayfa takvimin açık anketini gösterir ve takvim kayarsa yeniden
@@ -247,7 +264,7 @@ export function homePollBlock(poll, options = {}) {
             <p class="home-poll__note" data-home-poll-note="offline" hidden>${escapeHtml(copy.offline)}</p>
             <p class="home-poll__note" data-home-poll-note="community" hidden>${escapeHtml(copy.community)}</p>
             <p class="home-poll__note" data-home-poll-note="local" hidden>${escapeHtml(copy.local)}</p>
-            <p class="home-poll__disclaimer">${escapeHtml(copy.disclaimer)}</p>
+            <p class="home-poll__disclaimer">${escapeHtml(copy.disclaimer)}</p>${permalink}
           </div>
         </section>`;
 }

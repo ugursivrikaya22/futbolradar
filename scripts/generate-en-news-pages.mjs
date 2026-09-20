@@ -22,7 +22,11 @@ import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
-const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
+const {
+  isPublishableEnglish,
+  rankEnglishNews,
+  withUniqueEnglishMetadata
+} = require("../services/englishNews.js");
 const { statusLabel, BREAKING_LABEL } = require("../services/editorialStatus.js");
 const { publishableNews } = require("../services/newsFeed.js");
 
@@ -264,15 +268,18 @@ function pruneRemoved(slugs) {
 }
 
 /**
- * `/en/news/` BLOĞU BURADA KURULUR — İKİ KÖKEN BİRDEN.
+ * SİTE HARİTASI: BAĞLANAN HABERLER + ÇEVRİLEN SAYFALAR.
  *
- * Blok tümüyle silinip yeniden yazılıyor; öteki köken de burada listelenmezse
- * çevrilen haberlerin sayfaları diskte durur ama site haritasında hiç
- * görünmez. Bu boşluk (c) öncesinde de vardı: o sayfalar hiçbir zaman
- * listelenmemişti. Adresler aynı URL uzayında, listelenmeleri de tek yerden.
+ * `en/news.html` haberlerin TAMAMINI bağlıyor, site haritası da tümünü
+ * duyurur: iki küme aynı olduğu sürece "sitemap'te var ama hiçbir yerden
+ * bağlanmıyor" durumu doğmaz (scripts/test-seo-integrity.mjs).
+ *
+ * Çevrilen haberler (öteki köken) ayrı bir kümedir ve kendi listelenme
+ * yolundan gelir; ikisi aynı URL uzayında olduğu için liste yine tek yerde
+ * kurulur.
  */
-function updateSitemap(articles) {
-  const all = [...articles, ...translatedArticles()];
+function updateSitemap(allArticles) {
+  const all = [...allArticles, ...translatedArticles()];
   const entries = all.map((article) => `  <url>
     <loc>${articleUrl(article)}</loc>
     <lastmod>${String(article.publishedAt || "").slice(0, 10) || "2026-09-01"}</lastmod>
@@ -288,7 +295,19 @@ function updateSitemap(articles) {
   }
 }
 
-const articles = rankEnglishNews(readNews().filter(isPublishableEnglish));
+/**
+ * İKİ SAYFA AYNI BAŞLIĞI VE AYNI AÇIKLAMAYI TAŞIYAMAZ.
+ *
+ * Başlık, haber kaydı yazılırken `services/englishNews.js` kalıplarından
+ * üretilip `data/news.json` içine DONDURULUR. Kalıp düzeltilse bile daha
+ * önce yazılmış kayıtlar eski başlıklarını taşımaya devam eder; bu yüzden
+ * çizim tarafında da bir güvence gerekir (bkz. scripts/test-seo-integrity.mjs).
+ *
+ * Ayrım uydurulmaz: önce kaydın KENDİ yayıncı adı, o da ayırt etmiyorsa
+ * kaydın kalıcı slug'ı kullanılır. Sıra `rankEnglishNews` sırasıdır, yani
+ * aynı girdi her koşuda aynı çıktıyı verir.
+ */
+const articles = withUniqueEnglishMetadata(rankEnglishNews(readNews().filter(isPublishableEnglish)));
 for (const article of articles) writeArticle(article);
 const removed = pruneRemoved(articles.map((article) => article.slug));
 updateSitemap(articles);
