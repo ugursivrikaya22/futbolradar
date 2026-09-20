@@ -310,6 +310,28 @@ function todayFixtureCount() {
             '.player-card a[href*="futbolcu/"]'
           ].join(', ')).first());
         });
+        // ERİŞİLEBİLİRLİK GENİŞLİĞE BAĞLI, HEDEFİN SAĞLAMLIĞI DEĞİL.
+        //
+        // Bu senaryo iki AYRI şey doğruluyor ve ikisinin genişlikle ilişkisi
+        // aynı değil:
+        //
+        //   1. Her menü yolu o genişlikte OKUYUCUYA ULAŞILABİLİR mi — çekmece
+        //      açılıyor mu, açılmıyorsa aynı yol altbilgide var mı. Bu tamamen
+        //      genişliğe bağlı; dokuz genişlikte de sorulmaya devam ediyor.
+        //   2. Yolun ucundaki SAYFA açılıyor mu, doğru adrese gidiyor mu, boş
+        //      mu değil mi. Bu statik HTML her genişliğe BİREBİR aynı gidiyor;
+        //      21 hedefi dokuz kez gezmek aynı baytı dokuz kez doğruluyordu.
+        //
+        // Ölçüm (koşu 35525361626): bu tek senaryo tıklanabilirlik
+        // denetiminin 37,3 dakikasının 13,3'ünü yiyordu — genişlik başına 21
+        // tam sayfa yüklemesi, her biri 3,4-6,8 sn. Hedef gezintisi üç temsilî
+        // genişliğe indirildi; erişilebilirlik iddiası dokuzunda da duruyor.
+        //
+        // Bu, AUDIT_WIDTH ile kapıyı daraltmak DEĞİL: verify-production.mjs o
+        // değişkeni bilerek siliyor ve silmeye devam ediyor. Burada kapının
+        // kendi içinde, gerekçesi yazılı bir kapsam kararı var.
+        const routeSweepWidths = [1440, 768, 390];
+        const sweepsRoutes = routeSweepWidths.includes(viewport.width);
         await test(locale + ' primary navigation routes and footer', async () => {
           await open(home);
           const links = await page.locator('.nav-links a').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')));
@@ -318,15 +340,24 @@ function todayFixtureCount() {
             const target = page.locator('.nav-links a[href=' + JSON.stringify(href) + ']');
             // Secondary navigation is intentionally in the mobile drawer;
             // desktop visitors reach those same routes through the footer.
-            if (await target.isVisible()) await navigate(target);
-            else {
-              const footer = page.locator('footer a[href=' + JSON.stringify(href) + ']').first();
-              assert.ok(await footer.count(), 'Hidden menu item has no accessible alternative: ' + href);
-              await navigate(footer);
+            const inMenu = await target.isVisible();
+            const footer = page.locator('footer a[href=' + JSON.stringify(href) + ']').first();
+            if (!inMenu) assert.ok(await footer.count(), 'Hidden menu item has no accessible alternative: ' + href);
+            if (!sweepsRoutes) {
+              // Çekmece açık kaldıysa kapat: sonraki tur onu yeniden açacak ve
+              // açık bir çekmecede ikinci tıklama onu KAPATIRDI.
+              if (viewport.width < 1366) await click(page.locator('.nav-toggle'));
+              continue;
             }
+            await navigate(inMenu ? target : footer);
           }
           for (const suffix of en ? [] : ['hakkinda.html', 'iletisim.html', 'gizlilik.html', 'kullanim-sartlari.html']) {
-            await navigate(page.locator('footer a[href$=' + JSON.stringify(suffix) + ']').first());
+            const link = page.locator('footer a[href$=' + JSON.stringify(suffix) + ']').first();
+            if (!sweepsRoutes) {
+              assert.ok(await link.count(), 'Footer link missing: ' + suffix);
+              continue;
+            }
+            await navigate(link);
           }
         });
         await test(locale + ' featured carousel, pause and card', async () => {
