@@ -145,6 +145,18 @@ function compactDetail(detail) {
   return output;
 }
 
+// Takvim listesi çağrısı (`/fixtures?date=`) olay taşımaz; sağlayıcı yine de
+// `events: []` üretir. Bu boş dizi ham satırdan birleşmeye sızarsa depodaki
+// gerçek olay akışını siler. Boş döküm alanları asla yazılmaz: veri yoksa
+// "veri yok" demek, elde olanı silmek değildir.
+function withoutEmptyDetail(match) {
+  const copy = { ...match };
+  for (const field of ["lineups", "events", "substitutions", "statistics", "players"]) {
+    if (Array.isArray(copy[field]) && copy[field].length === 0) delete copy[field];
+  }
+  return copy;
+}
+
 function normalizedIncoming(match, detail) {
   // Sağlayıcının sayısal lig kimliği varsa ÖNCE o denenir — ad hiçbir zaman
   // kimliği ezmez (bkz. services/competitionCatalog.js: resolveCompetitionId).
@@ -152,7 +164,7 @@ function normalizedIncoming(match, detail) {
   const providerId = String(match.providerId || match.id || "");
   const status = canonicalStatus(match.status || match.providerStatus);
   return {
-    ...match,
+    ...withoutEmptyDetail(match),
     ...compactDetail(detail),
     id: naturalId(match),
     homeTeam: canonicalTeamName(match.homeTeam),

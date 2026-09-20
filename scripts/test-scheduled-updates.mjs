@@ -57,6 +57,32 @@ const unchangedCalendar = mergeCalendarMatches(calendarMerge.matches, [{
 }]);
 assert.equal(unchangedCalendar.updated, 0, "volatile provider timestamps must not cause hourly rewrites");
 
+// BOŞ DÖKÜM ALANI DEPODAKİ GERÇEK VERİYİ SİLMEMELİ. `/fixtures?date=` yanıtı
+// olay taşımadığı için sağlayıcı satırı `events: []` ile geliyor; bu boş dizi
+// birleşmeye sızarsa bitmiş maçın olay akışı her saat başı siliniyordu.
+const preserved = mergeCalendarMatches(calendarMerge.matches, [{
+  match: {
+    id: "9001", providerId: "9001", homeTeam: "Galatasaray", awayTeam: "Fenerbahçe",
+    kickoff: "2026-08-08T20:00:00+03:00", league: "Süper Lig", status: "FINISHED",
+    providerStatus: "FT", score: { home: 2, away: 1 },
+    events: [], lineups: [], statistics: [], players: []
+  },
+  detail: null
+}]);
+assert.equal(preserved.matches[0].events.length, 1, "boş olay dizisi mevcut olay akışını silmemeli");
+assert.equal(preserved.matches[0].lineups.length, 1, "boş dizilişler mevcut dizilişi silmemeli");
+
+// Dolu bir döküm elbette yazılabilmeli.
+const replaced = mergeCalendarMatches(calendarMerge.matches, [{
+  match: {
+    id: "9001", providerId: "9001", homeTeam: "Galatasaray", awayTeam: "Fenerbahçe",
+    kickoff: "2026-08-08T20:00:00+03:00", league: "Süper Lig", status: "FINISHED",
+    providerStatus: "FT", score: { home: 2, away: 1 }
+  },
+  detail: { events: [{ type: "Goal", minute: 61 }, { type: "Card", minute: 70 }] }
+}]);
+assert.equal(replaced.matches[0].events.length, 2, "gerçek döküm geldiğinde yazılmalı");
+
 const targetNow = Date.parse("2026-08-08T18:30:00Z");
 const targets = selectDetailTargets([
   { id: "eu", homeTeam: "Liverpool", awayTeam: "Arsenal", kickoff: "2026-08-08T18:00:00Z", status: "LIVE" },
