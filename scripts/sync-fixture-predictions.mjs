@@ -102,6 +102,21 @@ export function toFixture(match) {
 }
 
 /** Yaklaşan fikstürler: başlamamış, pencere içinde, kimliği olan kayıtlar. */
+/**
+ * Depodaki kayıt bugünün kurallarını geçiyor mu. Kural sonradan
+ * sıkılaştığında (ör. %0'lı sağlayıcı üçlüsünün reddi) eski kayıtlar
+ * kendiliğinden geçersizleşmez — bu kontrol onları yakalar.
+ */
+export function isRejectedRecord(record) {
+  if (!record) return false;
+  if (record.source !== probability.SOURCES.PROVIDER) return false;
+  return probability.hasZeroOutcome({
+    home: record.homeProbability,
+    draw: record.drawProbability,
+    away: record.awayProbability
+  });
+}
+
 export function selectUpcoming(matches, options = {}) {
   const now = options.now instanceof Date ? options.now : new Date();
   const nowMs = now.getTime();
@@ -171,7 +186,8 @@ async function main() {
     kept: 0,
     unresolved: [],
     skippedCoverage: { predictions: 0, odds: 0 },
-    budgetStops: 0
+    budgetStops: 0,
+    rejectedStored: 0
   };
 
   let providerTargets = 0;
@@ -181,9 +197,20 @@ async function main() {
     const fixture = toFixture(match);
     const cached = index.find(fixture.id, fixture.providerFixtureId);
 
-    if (!args.all && !store.needsRefresh(cached, fixture.kickoff, now)) {
+    // KURALI ARTIK GEÇMEYEN KAYIT TAZE SAYILMAZ. Sağlayıcının %0'lı
+    // üçlüsü depoya yazıldıktan SONRA reddedilir oldu (bkz.
+    // services/fixtureProbabilityService.js → parseProviderPercent).
+    // Basamak kapısı bu kayıtları "taze" görüp bir sonraki basamağa
+    // kadar ekranda bırakırdı; yanlış bir iddiayı saatlerce taşımak,
+    // bir istek tasarrufuna değmez.
+    const cachedRejected = isRejectedRecord(cached);
+    if (!args.all && !cachedRejected && !store.needsRefresh(cached, fixture.kickoff, now)) {
       report.cached += 1;
       continue;
+    }
+    if (cachedRejected) {
+      report.rejectedStored += 1;
+      logLine(`  ${fixture.id}: stored ${cached.source} record rejected by current rules (zero outcome); re-resolving.`);
     }
 
     const coverage = coverageFor(context, fixture);
@@ -210,7 +237,12 @@ async function main() {
           const items = await apiFootballProvider.getPredictions({ fixtureId: fixture.providerFixtureId });
           const raw = Array.isArray(items) && items.length ? items[0] : null;
           provider = raw ? probability.normalizeProviderPrediction(raw, { providerUpdatedAt: new Date().toISOString() }) : null;
-          if (!provider) reasons[probability.SOURCES.PROVIDER] = raw ? "provider-percentages-unusable" : "provider-returned-empty";
+          if (!provider) {
+            const issue = raw ? probability.providerPercentIssue(raw.predictions && raw.predictions.percent) : null;
+            reasons[probability.SOURCES.PROVIDER] = raw
+              ? `provider-percentages-unusable:${issue || "unknown"}`
+              : "provider-returned-empty";
+          }
           if (raw) {
             // Ham yükü takvime de yaz: ikili rekabet ve h2h bloklarını
             // okuyan mevcut bölümler oradan besleniyor.
@@ -274,7 +306,9 @@ async function main() {
     // kota bitti) ötürü boş kaldıysa kayıt düşürülmez. Aksi hâlde
     // kotanın bittiği bir koşu, sağlayıcı tahminini modelle değiştirir ve
     // kullanıcı ertesi gün daha zayıf bir kaynağa bakar.
-    if (resolved && cached && isDowngrade(cached.source, resolved.source) && blockedByAccess(reasons, cached.source)) {
+    // Reddedilen kayıt korunmaz: düşüş koruması "elimizdeki daha iyi"
+    // içindir, "elimizdeki geçersiz" için değil.
+    if (resolved && cached && !cachedRejected && isDowngrade(cached.source, resolved.source) && blockedByAccess(reasons, cached.source)) {
       const refreshed = {
         ...cached,
         refreshStage: store.refreshStageFor(fixture.kickoff, now),
@@ -322,6 +356,7 @@ async function main() {
     `  futbolradar_model   : ${report.model}`,
     `  cached (fresh)      : ${report.cached}`,
     `  kept (upper source unreachable): ${report.kept}`,
+    `  rejected stored records: ${report.rejectedStored}`,
     `  unresolved          : ${report.unresolved.length}`,
     `  provider requests   : ${budget.summary().spent} (ceiling ${budget.summary().ceiling})`,
     ""
@@ -349,6 +384,7 @@ async function main() {
     model: report.model,
     cached: report.cached,
     kept: report.kept,
+    rejectedStored: report.rejectedStored,
     uncovered: report.unresolved.length,
     uncoveredReasons: report.unresolved.slice(0, 10).map((row) => ({ fixtureId: row.fixtureId, reasons: row.reasons })),
     providerRequests: budget.summary().spent,

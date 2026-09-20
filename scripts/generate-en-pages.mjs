@@ -2031,6 +2031,8 @@ ${sectionLinks()}`;
  * kaynaklılar, sonra çeviriler.
  */
 function newsPage() {
+  // main artık haberlerin TAMAMINI listeliyor; site haritasıyla hub aynı
+  // kümeyi taşıdığı için öksüz sayfa kalmıyor.
   const cardList = englishNewsList.map(englishNewsCard);
   // Ana sayfanın 3 kartlık önizlemesinden farklı olarak bu TAM liste; anket
   // vitrin kartı her 7 haberden sonra araya giriyor (gerekçe

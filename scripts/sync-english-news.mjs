@@ -24,7 +24,8 @@ const {
   isPublishableEnglish,
   isStillAcceptable,
   jaccard,
-  rankEnglishNews
+  rankEnglishNews,
+  withUniqueEnglishMetadata
 } = require("../services/englishNews.js");
 
 const ROOT = process.cwd();
@@ -166,7 +167,12 @@ export async function synchronizeEnglishNews(options = {}) {
   }
 
   const { articles, added, updated } = mergeEnglishNews(existing, candidates);
-  const ranked = rankEnglishNews(articles, { now: now.getTime() }).slice(0, MAX_ARTICLES);
+  // Kayıt DOSYAYA yazılırken benzersizleştirilir: sayfayı çizen taraf da
+  // aynı kuralı uygular ama akıştan sonra çalışan başka adımlar (paylaşılan
+  // düzen, meta normalleştirme) metni doğrudan bu dosyadan okuyor.
+  const ranked = withUniqueEnglishMetadata(
+    rankEnglishNews(articles, { now: now.getTime() }).slice(0, MAX_ARTICLES)
+  );
 
   if (!options.dryRun) atomicWrite(TARGET, ranked);
 

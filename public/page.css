@@ -23967,3 +23967,426 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   .match-column-callout-link { padding: 12px 14px; }
   .match-column-callout-text { font-size: 14px; }
 }
+
+/* ==================================================================== */
+/* AI MAÇ MERKEZİ                                                        */
+/*                                                                       */
+/* MOBİL ÖNCELİKLİ: aşağıdaki kuralların tamamı tek sütun içindir ve     */
+/* telefon genişliğinde geçerlidir. Masaüstü yalnızca `min-width` medya  */
+/* sorgusunda ızgarayı genişletir — hiçbir bileşen mobilde gizlenmez,    */
+/* yalnızca alt alta gelir. Ekrandan düşen tek şey, verisi olmayan       */
+/* bölümdür (o da hiç basılmaz, bkz. scripts/lib/aiMatchCenter.mjs).     */
+/*                                                                       */
+/* Sekmeler JS'siz çalışır: gizli radyo + `:checked ~` seçici. Bu blok   */
+/* canlı skor yoluna hiçbir şey eklemez; boyama dışında iş yapmaz.       */
+/* ==================================================================== */
+
+/* ---------- Sekmeler ---------- */
+.ai-tabs { display: block; min-width: 0; }
+.ai-tab-radio { position: absolute; opacity: 0; pointer-events: none; width: 1px; height: 1px; }
+
+.ai-tablist {
+  display: flex;
+  gap: var(--sp-2);
+  margin: var(--sp-4) 0 var(--sp-2);
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--line);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.ai-tablist::-webkit-scrollbar { display: none; }
+
+.ai-tab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  /* 44px: dokunma hedefi alt sınırı — mobilde sekme değiştirmek zor olmasın. */
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-4);
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ai-tab:hover { color: var(--text); }
+.ai-tab:focus-visible { outline: 2px solid var(--green); outline-offset: -3px; }
+
+.ai-tab-flag {
+  padding: 2px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--green-tint);
+  color: var(--green-deep);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+/* SEÇİLİ SEKME VE PANELİ.
+   Radyolar HTML'de hem sekme listesinden hem panellerden ÖNCE gelir,
+   bu yüzden `~` (sonraki kardeş) ile ikisine de erişilir.
+   `nth-of-type` ELEMENT TÜRÜNE göre sayar, sınıfa göre değil: bu yüzden
+   paneller <section>, sekme listesi <div> olarak basılır. İkisi de div
+   olsaydı `section:nth-of-type(1)` yerine liste eşleşir ve ilk panel
+   hiç açılmazdı. */
+.ai-tabs > input:nth-of-type(1):checked ~ .ai-tablist > label:nth-of-type(1),
+.ai-tabs > input:nth-of-type(2):checked ~ .ai-tablist > label:nth-of-type(2) {
+  color: var(--green);
+  border-color: var(--line-strong);
+  background: var(--green-tint);
+}
+.ai-tab-panel { display: none; padding-top: var(--sp-4); min-width: 0; }
+.ai-tabs > input:nth-of-type(1):checked ~ section.ai-tab-panel:nth-of-type(1),
+.ai-tabs > input:nth-of-type(2):checked ~ section.ai-tab-panel:nth-of-type(2) { display: block; }
+
+/* ---------- Panel başlığı ---------- */
+.ai-match-center { min-width: 0; }
+.ai-head { margin-bottom: var(--sp-4); }
+.ai-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2) var(--sp-3);
+}
+.ai-title { margin: 0; font-size: var(--fs-lg); font-weight: 800; }
+
+.ai-pro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--green-tint);
+  font-size: var(--fs-xs);
+}
+.ai-pro-badge b { color: var(--green-deep); font-weight: 800; letter-spacing: 0.04em; }
+.ai-pro-badge span { color: var(--text-soft); }
+
+.ai-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-1) var(--sp-3);
+  border-radius: var(--radius-pill);
+  background: rgba(200, 30, 45, 0.1);
+  color: var(--red);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.ai-intro { margin: var(--sp-3) 0 0; font-size: var(--fs-sm); }
+.ai-note { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }
+.ai-disclaimer { margin: var(--sp-4) 0 0; font-size: var(--fs-xs); }
+.ai-warn { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); color: var(--amber); font-weight: 600; }
+
+/* ---------- Izgara: mobilde tek sütun ---------- */
+.ai-grid { display: grid; gap: var(--sp-4); grid-template-columns: minmax(0, 1fr); }
+
+.ai-block {
+  min-width: 0;
+  padding: var(--sp-4);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+.ai-block-title { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); font-weight: 700; }
+
+/* İç ikili düzen de mobilde alt alta, masaüstünde yan yana. */
+.ai-two { display: grid; gap: var(--sp-3); grid-template-columns: minmax(0, 1fr); }
+
+/* ---------- 1-X-2 ---------- */
+.ai-outcome-bar {
+  display: flex;
+  height: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  background: var(--surface-sunken);
+}
+.ai-outcome-bar span { display: block; height: 100%; }
+.ai-outcome-bar .is-home { background: var(--green-deep); }
+.ai-outcome-bar .is-draw { background: var(--muted); }
+.ai-outcome-bar .is-away { background: var(--cyan); }
+
+.ai-outcome-legend {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin-top: var(--sp-3);
+}
+.ai-outcome-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ai-outcome-cell span {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-outcome-cell b { font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
+.ai-outcome-cell.is-top b { color: var(--green); }
+.ai-outcome-cell:nth-child(2) { text-align: center; }
+.ai-outcome-cell:last-child { text-align: right; }
+.ai-source { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }
+
+/* ---------- Açıklama (neye dayanıyor) ---------- */
+.ai-why-lead { margin: 0 0 var(--sp-3); font-size: var(--fs-sm); line-height: 1.55; }
+.ai-why-list { list-style: none; margin: 0; padding: 0; display: grid; }
+
+/* Mobilde üç satırlık yığın, masaüstünde tek satırlık ızgara.
+   Ad + değerler + eğilim hiçbir genişlikte kırpılmaz. */
+.ai-why-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name values" "lean lean";
+  gap: var(--sp-1) var(--sp-3);
+  padding-block: var(--sp-3);
+  border-bottom: 1px solid var(--line);
+}
+.ai-why-row:last-child { border-bottom: 0; }
+.ai-why-row.is-head { display: none; }
+.ai-why-name { grid-area: name; min-width: 0; font-size: var(--fs-sm); font-weight: 600; }
+.ai-why-name small { display: block; color: var(--muted); font-size: var(--fs-xs); font-weight: 400; }
+.ai-why-values {
+  grid-area: values;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--sp-2);
+  font-variant-numeric: tabular-nums;
+}
+.ai-why-values b { font-size: var(--fs-sm); }
+.ai-why-values i { color: var(--muted); font-style: normal; }
+.ai-why-lean { grid-area: lean; font-size: var(--fs-xs); color: var(--muted); }
+.ai-why-row.is-home .ai-why-lean { color: var(--green); }
+.ai-why-row.is-away .ai-why-lean { color: var(--cyan); }
+
+/* ---------- Güven ---------- */
+.ai-confidence-head { display: flex; align-items: baseline; gap: var(--sp-3); margin: 0 0 var(--sp-2); }
+.ai-confidence-head b { font-size: var(--fs-md); }
+.ai-confidence.is-high .ai-confidence-head b { color: var(--green); }
+.ai-confidence.is-low .ai-confidence-head b { color: var(--amber); }
+.ai-confidence-meter {
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.ai-confidence-meter span { display: block; height: 100%; background: var(--green); }
+.ai-confidence.is-low .ai-confidence-meter span { background: var(--amber); }
+.ai-confidence-basis { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); }
+
+/* ---------- Form ---------- */
+.ai-form-side { min-width: 0; }
+.ai-form-side h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); font-weight: 700; }
+/* Form yuvarlakları sitenin ortak `.form-dots` görünümünü kullanır;
+   burada yalnızca üstteki başlıkla arasındaki boşluk ayarlanır. AI
+   sekmesine özel bir renk şeması kurmak, aynı bilgiyi sitenin geri
+   kalanından farklı gösterirdi. */
+.ai-form-dots { margin-block: 0 var(--sp-2); }
+.ai-form-meter {
+  height: 6px;
+  margin-top: var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.ai-form-meter span { display: block; height: 100%; background: var(--green); }
+.ai-form-points { margin: var(--sp-2) 0 0; font-size: var(--fs-xs); color: var(--muted); }
+
+/* ---------- Hücum - savunma ---------- */
+.ai-ad-row {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr) 3.25rem;
+  align-items: center;
+  gap: var(--sp-2);
+}
+/* Başlık satırı VERİ satırı değildir: dar sayı sütunlarına sıkıştırılınca
+   takım adları "Erzur…" diye kırpılıyordu. Kendi düzeninde, adların
+   ihtiyacı kadar yer alarak durur ve uzun adlar alta sarar. */
+.ai-ad-head {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+.ai-ad-head span { min-width: 0; }
+.ai-ad-head span:empty { display: none; }
+.ai-ad-head span:last-child { text-align: right; }
+.ai-ad-row { min-height: 44px; border-bottom: 1px solid var(--line); }
+.ai-ad-row:last-of-type { border-bottom: 0; }
+.ai-ad-row > b { font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
+.ai-ad-row > b:last-child { text-align: right; }
+.ai-ad-row > b.is-better { color: var(--green); font-weight: 800; }
+.ai-ad-label { min-width: 0; text-align: center; font-size: var(--fs-xs); }
+.ai-ad-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--sp-1);
+}
+.ai-ad-bars em { display: block; height: 4px; border-radius: var(--radius-pill); }
+.ai-ad-bars .is-home { background: var(--green-deep); }
+.ai-ad-bars .is-away { background: var(--cyan); }
+
+/* ---------- Eksikler ---------- */
+.ai-absence-side { min-width: 0; }
+.ai-absence-side h4 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.ai-absence-count { color: var(--muted); font-size: var(--fs-xs); font-weight: 400; }
+.ai-absence-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.ai-absence-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  min-height: 32px;
+  padding-block: var(--sp-1);
+  font-size: var(--fs-sm);
+}
+.ai-absence-list small {
+  padding: 1px var(--sp-2);
+  border-radius: var(--radius-pill);
+  background: var(--surface-sunken);
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
+.ai-absence-list small.is-injured { background: rgba(200, 30, 45, 0.1); color: var(--red); }
+.ai-absence-list small.is-suspended { background: rgba(176, 116, 16, 0.12); color: var(--amber); }
+.ai-absence-none { margin: 0; font-size: var(--fs-xs); }
+
+/* ---------- Muhtemel 11 ---------- */
+.ai-lineup-side { min-width: 0; }
+.ai-lineup-side h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); font-weight: 700; }
+.ai-lineup-status { margin: 0 0 var(--sp-2); font-size: var(--fs-xs); font-weight: 700; }
+.ai-lineup-status.is-official { color: var(--green); }
+.ai-lineup-status.is-predicted { color: var(--amber); }
+.ai-lineup-formation { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); }
+.ai-lineup-missing > span { display: block; margin-bottom: var(--sp-2); font-size: var(--fs-xs); color: var(--muted); }
+.ai-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); }
+.ai-chip {
+  padding: var(--sp-1) var(--sp-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+}
+.ai-chip.is-missing { background: rgba(200, 30, 45, 0.08); border-color: transparent; color: var(--red); }
+
+/* ---------- İkili rekabet ---------- */
+.ai-h2h-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin: 0 0 var(--sp-3);
+  font-size: var(--fs-xs);
+}
+.ai-h2h-summary span { display: flex; flex-direction: column; gap: 2px; min-width: 0; color: var(--muted); }
+.ai-h2h-summary b { color: var(--text); font-size: var(--fs-md); }
+.ai-h2h-summary span:nth-child(2) { text-align: center; }
+.ai-h2h-summary span:last-child { text-align: right; }
+.ai-h2h-list { list-style: none; margin: 0; padding: 0; display: grid; }
+.ai-h2h-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--sp-2);
+  min-height: 32px;
+  padding-block: var(--sp-1);
+  border-bottom: 1px solid var(--line);
+  font-size: var(--fs-sm);
+}
+.ai-h2h-list li:last-child { border-bottom: 0; }
+.ai-h2h-list time { color: var(--muted); font-size: var(--fs-xs); }
+
+/* ---------- Özet ---------- */
+.ai-summary p { margin: 0; font-size: var(--fs-base); line-height: 1.6; }
+
+/* ---------- Canlı veri okuması ----------
+   Gövdesini ai-match-center.js doldurur; sunucu yalnızca kabuğu basar.
+   İçerideki satırlar hücum-savunma bloğuyla AYNI ızgarayı kullanır, bu
+   yüzden burada yeni bir düzen kuralı yok — sadece canlı olasılık başlığı. */
+.ai-live-prob { margin-bottom: var(--sp-4); }
+.ai-live-prob h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); font-weight: 700; }
+
+/* ==================================================================== */
+/* MASAÜSTÜ — YALNIZCA DÜZEN GENİŞLER                                    */
+/*                                                                       */
+/* Burada hiçbir bileşen eklenmez ya da gizlenmez: mobilde görünen her   */
+/* kutu masaüstünde de aynı içerikle durur, sadece yan yana dizilir.     */
+/* ==================================================================== */
+@media (min-width: 720px) {
+  .ai-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* Okumanın omurgası tam genişlik ister: yüzdeler, gerekçe ve özet. */
+  .ai-outcome,
+  .ai-why,
+  .ai-summary,
+  .ai-live { grid-column: 1 / -1; }
+
+  .ai-two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-4); }
+
+  /* Gerekçe satırı masaüstünde tek satıra açılır; mobildeki yığın düzeni
+     üç bölgeyi alt alta taşıyordu, burada yan yana gelir. */
+  .ai-why-row {
+    grid-template-columns: minmax(0, 1fr) 7rem minmax(0, 15rem);
+    grid-template-areas: "name values lean";
+    align-items: center;
+  }
+  .ai-why-values { justify-content: center; }
+  .ai-why-lean { text-align: right; }
+  .ai-why-row.is-head {
+    display: grid;
+    padding-block: var(--sp-2);
+    color: var(--muted);
+    font-size: var(--fs-xs);
+  }
+  .ai-why-row.is-head .ai-why-values b { font-size: var(--fs-xs); font-weight: 600; }
+
+  .ai-title { font-size: var(--fs-xl); }
+}
+
+@media (min-width: 1024px) {
+  .ai-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ai-outcome { grid-column: span 2; }
+  .ai-why { grid-column: 1 / -1; }
+  .ai-summary { grid-column: 1 / -1; }
+}
+
+/* Hareket azaltma tercihi: sekme geçişinde animasyon yok — zaten yok,
+   ama ileride eklenirse bu kural onu kapatır. */
+@media (prefers-reduced-motion: reduce) {
+  .ai-tab,
+  .ai-tab-panel { transition: none; }
+}
+
+/* ====================================================================== */
+/* AI SEKME ŞERİDİ — ALT GEZİNME ÇUBUĞUNUN ALTINDA KALMASIN               */
+/*                                                                        */
+/* `.bottom-nav` 900px altında ekranın altına yapışıyor (position: fixed, */
+/* z-index 70). Sekme şeridi kaydırılarak görünür kılındığında tam o      */
+/* çubuğun altına denk gelebiliyordu: dokunuş sekmeye değil çubuğa        */
+/* gidiyordu. Ölçüldü — elementFromPoint sekmenin ortasında               */
+/* `.bottom-nav__label` döndürüyordu ve JS kapalı sınamada tıklama hiç    */
+/* ulaşamıyordu. Kaydırma payı şeridi her zaman çubuğun ÜSTÜNDE durdurur; */
+/* görünümü değiştirmez, yalnızca kaydırmanın nerede duracağını söyler.   */
+/* ====================================================================== */
+@media (max-width: 900px) {
+  .ai-tablist,
+  .ai-tab {
+    scroll-margin-bottom: 96px;
+  }
+}
