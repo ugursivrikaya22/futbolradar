@@ -1980,7 +1980,11 @@ function archivePage() {
  * Türkçe başlıkla görünmez, Türkçe tarafta olduğu gibi kalır.
  */
 function columnsPage() {
-  const cards = englishColumnList().slice(0, 24).map((column) => {
+  // Liste KIRPILMAZ. Sabit bir üst sınır (eski hâli: 24), yeni yazı
+  // eklendikçe en eski yazıyı sessizce bağlantısız bırakıyor: sayfa
+  // sitemap'te kalıyor ama hiçbir yerden erişilemiyordu. Türkçe liste de
+  // yayımlanmış yazıların tamamını gösteriyor.
+  const cards = englishColumnList().map((column) => {
     const english = englishColumn(column);
     const href = escapeHtml(english
       ? english.href
