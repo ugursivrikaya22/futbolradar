@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-import { mergeCalendarMatches, selectDetailTargets } from "./sync-live-fixtures.mjs";
+import { mergeCalendarMatches, selectDetailTargets, datesForTarget } from "./sync-live-fixtures.mjs";
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
@@ -64,6 +64,58 @@ const targets = selectDetailTargets([
   { id: "far", homeTeam: "Galatasaray", awayTeam: "Konyaspor", kickoff: "2026-08-09T18:00:00Z", status: "SCHEDULED" }
 ], { nowMs: targetNow, limit: 5 });
 assert.deepEqual(targets.map((item) => item.id), ["tr", "eu"]);
+
+// YAŞ PENCERESİ DIŞINDA KALAN MAÇIN DÖKÜMÜ HÂLÂ İSTENEBİLMELİ. Bitmiş maçın
+// dökümü normalde ilk düdükten sonraki 8 saat içinde isteniyor; koşucular
+// saatlerce düştüğünde maç o pencerenin dışına düşüyor ve olay akışı,
+// istatistik ve kadro BİR DAHA HİÇ sorulmuyordu (19 Eylül Trabzonspor-
+// Galatasaray). --match verilen maç yaşına bakılmaksızın listenin başına
+// alınır; kimlik ya da sağlayıcı kimliği üzerinden eşleşir.
+const agedOut = [
+  { id: "ts-gs", providerId: "1584420", homeTeam: "Trabzonspor", awayTeam: "Galatasaray", kickoff: "2026-09-19T17:00:00Z", status: "FINISHED", league: "Süper Lig" },
+  { id: "fresh", homeTeam: "Samsunspor", awayTeam: "Rizespor", kickoff: "2026-09-20T06:00:00Z", status: "FINISHED", league: "Süper Lig" }
+];
+const agedNow = Date.parse("2026-09-20T09:30:00Z");
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5 }).map((item) => item.id),
+  ["fresh"],
+  "8 saati geçen bitmiş maç varsayılanda döküm istemez"
+);
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5, match: "ts-gs" }).map((item) => item.id),
+  ["ts-gs", "fresh"],
+  "--match verilen maç yaş penceresini deler ve listenin başına geçer"
+);
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5, match: "1584420" }).map((item) => item.id),
+  ["ts-gs", "fresh"],
+  "--match sağlayıcı kimliğiyle de eşleşir"
+);
+
+// GERÇEK SAĞLAYICI SATIRINDA TAKVİM KİMLİĞİ YOK. selectDetailTargets'e gelen
+// satırlar API-Football'un ham çıktısı: id ve providerId sayısal fikstür
+// kimliği, slug yok. İş akışının verdiği kimlik ise takvimdeki
+// takım-takım-tarih biçimi. Eşleşme bu biçimi de tanımazsa bayrak sessizce
+// etkisiz kalır.
+const providerShaped = [
+  { id: "1584420", providerId: "1584420", homeTeam: "Trabzonspor", awayTeam: "Galatasaray", kickoff: "2026-09-19T17:00:00Z", status: "FINISHED", league: "Süper Lig" },
+  { id: "1584421", providerId: "1584421", homeTeam: "Samsunspor", awayTeam: "Rizespor", kickoff: "2026-09-20T06:00:00Z", status: "FINISHED", league: "Süper Lig" }
+];
+assert.deepEqual(
+  selectDetailTargets(providerShaped, { nowMs: agedNow, limit: 5, match: "trabzonspor-galatasaray-2026-09-19" }).map((item) => item.id),
+  ["1584420", "1584421"],
+  "takvim kimliği ham sağlayıcı satırıyla doğal kimlik üzerinden eşleşir"
+);
+
+// YAŞ FİLTRESİNİ DELMEK TEK BAŞINA YETMEZ: saatlik mod yalnızca dünü ve
+// bugünü soruyor, hedef maç o günlerin dışındaysa listeye hiç girmiyor.
+const calendar = { matches: [
+  { id: "trabzonspor-galatasaray-2026-09-19", providerId: "1584420", kickoff: "2026-09-19T20:00:00+03:00" }
+] };
+assert.deepEqual(datesForTarget(calendar, "trabzonspor-galatasaray-2026-09-19"), ["2026-09-19"]);
+assert.deepEqual(datesForTarget(calendar, "1584420"), ["2026-09-19"]);
+assert.deepEqual(datesForTarget(calendar, "bilinmeyen"), [], "tanınmayan kimlik getirme davranışını değiştirmez");
+assert.deepEqual(datesForTarget(calendar, null), [], "kimlik yoksa ek gün istenmez");
 
 // Standings update only changed fields; a later check with identical football
 // data does not rewrite timestamps or records.

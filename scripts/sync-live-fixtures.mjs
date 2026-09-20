@@ -17,11 +17,12 @@ const ISTANBUL_TIME_ZONE = "Europe/Istanbul";
 const TURKISH_PRIORITY = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
 
 function parseArgs(argv) {
-  const args = { apply: false, mode: "hourly" };
+  const args = { apply: false, mode: "hourly", match: null };
   for (const raw of argv) {
     if (raw === "--apply") args.apply = true;
     else if (raw === "--dry-run") args.apply = false;
     else if (raw.startsWith("--mode=")) args.mode = raw.slice("--mode=".length);
+    else if (raw.startsWith("--match=")) args.match = raw.slice("--match=".length).trim() || null;
   }
   if (!new Set(["full", "hourly"]).has(args.mode)) {
     throw new Error(`Unsupported mode: ${args.mode}`);
@@ -321,11 +322,45 @@ function priorityScore(match) {
   return 50;
 }
 
+/**
+ * Hedeflenen maçın gününü mevcut takvimden çözer. Kimlik takvim kimliği,
+ * sağlayıcı kimliği ya da doğal kimlik olabilir; hiçbiri tutmazsa boş liste
+ * döner ve getirme davranışı değişmez.
+ */
+export function datesForTarget(calendar, match) {
+  const target = normalizeKey(match || "");
+  if (!target) return [];
+  const rows = Array.isArray(calendar) ? calendar : (calendar && calendar.matches) || [];
+  const hit = rows.find((row) => row
+    && [row.id, row.providerId, row.slug].some((value) => normalizeKey(String(value ?? "")) === target));
+  const day = hit ? dateOnly(hit) : null;
+  return day ? [day] : [];
+}
+
 export function selectDetailTargets(matches, options = {}) {
   const nowMs = options.nowMs ?? Date.now();
   const limit = options.limit ?? 8;
+  // ADI GEÇEN MAÇ YAŞ PENCERESİNİ DELER. Aşağıdaki filtre bitmiş bir maçın
+  // dökümünü yalnızca ilk düdüğün üstünden 8 saat geçmeden istiyor. Bu,
+  // kotayı koruyan makul bir varsayılan; ama koşucular saatlerce düştüğünde
+  // ya da yazı sonradan elle istendiğinde maç o pencerenin dışına düşüyor ve
+  // dökümü BİR DAHA HİÇ istenmiyor: 19 Eylül Trabzonspor-Galatasaray maçı
+  // ertesi sabah FINISHED 4-0 göründüğü hâlde olay akışı, istatistik ve
+  // kadro olmadan kaldı. `--match` verildiğinde o tek maç, yaşı ne olursa
+  // olsun listenin başına alınır.
+  const forced = normalizeKey(options.match || "");
+  // TAKVİM KİMLİĞİ SAĞLAYICI KİMLİĞİ DEĞİL. Buraya gelen satırlar sağlayıcının
+  // ham çıktısı: `id` ve `providerId` ikisi de sayısal fikstür kimliği
+  // (1584420), `slug` yok. İş akışının verdiği kimlik ise takvimdeki
+  // `trabzonspor-galatasaray-2026-09-19`. naturalId(match) tam o biçimi
+  // üretiyor (takım-takım-tarih); anahtarlara eklenmezse bayrak sessizce
+  // etkisiz kalır ve maç yine 8 saatlik filtreden elenir.
+  const isForced = (match) => Boolean(forced)
+    && [match.id, match.providerId, match.slug, naturalId(match)]
+      .some((value) => normalizeKey(String(value ?? "")) === forced);
   return (matches || [])
     .filter((match) => {
+      if (isForced(match)) return true;
       const kickoff = Date.parse(match.kickoff);
       if (Number.isNaN(kickoff)) return false;
       const state = canonicalStatus(match.status || match.providerStatus);
@@ -333,15 +368,24 @@ export function selectDetailTargets(matches, options = {}) {
       if (state === "FINISHED") return nowMs - kickoff >= 0 && nowMs - kickoff <= 8 * 60 * 60 * 1000;
       return state === "SCHEDULED" && kickoff - nowMs >= -30 * 60 * 1000 && kickoff - nowMs <= 2 * 60 * 60 * 1000;
     })
-    .sort((left, right) => priorityScore(left) - priorityScore(right) || String(left.kickoff).localeCompare(String(right.kickoff)))
+    .sort((left, right) => (isForced(right) ? 1 : 0) - (isForced(left) ? 1 : 0)
+      || priorityScore(left) - priorityScore(right)
+      || String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit);
 }
 
-async function fetchFixtures(provider, mode, now) {
+async function fetchFixtures(provider, mode, now, options = {}) {
   const today = istanbulDate(now);
   const dates = mode === "full"
     ? [addDays(today, -1), today, addDays(today, 1)]
     : [addDays(today, -1), today];
+  // HEDEF MAÇ GETİRİLEN GÜNLERİN İÇİNDE OLMAK ZORUNDA. Yaş filtresini delmek
+  // tek başına yetmiyor: saatlik mod yalnızca dünü ve bugünü soruyor, dünden
+  // eski bir maç listeye hiç girmediği için --match sessizce etkisiz kalırdı.
+  // Hedefin kendi günü — takvimden okunuyor — listeye ekleniyor.
+  for (const extra of (options.dates || [])) {
+    if (extra && !dates.includes(extra)) dates.push(extra);
+  }
   const byProviderId = new Map();
   const errors = [];
   let successfulRequests = 0;
@@ -367,8 +411,12 @@ export async function synchronizeLiveFixtures(options = {}) {
   const mode = options.mode || "hourly";
   const now = options.now || new Date();
   const previous = options.previous || readJson(CALENDAR_PATH, { matches: [] });
-  const fetched = await fetchFixtures(provider, mode, now);
-  const detailTargets = selectDetailTargets(fetched.matches, { nowMs: now.getTime(), limit: mode === "full" ? 12 : 8 });
+  const fetched = await fetchFixtures(provider, mode, now, { dates: datesForTarget(previous, options.match) });
+  const detailTargets = selectDetailTargets(fetched.matches, {
+    nowMs: now.getTime(),
+    limit: mode === "full" ? 12 : 8,
+    match: options.match || null
+  });
   const details = new Map();
   const detailErrors = [];
 
@@ -413,7 +461,7 @@ async function main() {
     throw new Error("APIFOOTBALL_API_KEY is not configured; live fixture synchronization cannot run.");
   }
 
-  const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode });
+  const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode, match: args.match });
   const changed = summary.added > 0 || summary.updated > 0 || summary.deduped > 0;
   if (args.apply && changed) {
     atomicWrite(CALENDAR_PATH, output);

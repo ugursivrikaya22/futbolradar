@@ -41,6 +41,22 @@ const require = createRequire(import.meta.url);
 const root = process.cwd();
 
 /**
+ * Maç sonu analizlerinin kapakları ÜRETİLMİŞ dosyalar: adları maçtan doğuyor
+ * ve bu listeye elle yazılamaz. Bu yüzden `assets/columns/` dizinindeki her
+ * SVG otomatik olarak kapsama alınıyor (bkz. `columnCovers`); aksi hâlde yeni
+ * üretilen her kapak PNG eşi olmadan kalır ve paylaşımda yine görselsiz
+ * çıkardı — bu betiğin var oluş sebebi olan sessiz hatanın tıpatıp aynısı.
+ */
+function columnCovers() {
+  const dir = path.join(root, "assets", "columns");
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter((file) => file.endsWith(".svg"))
+    .map((file) => `assets/columns/${file}`)
+    .sort();
+}
+
+/**
  * Rasterlenecek görseller. Hepsi 1200×630 — Open Graph'ın büyük kart için
  * beklediği oran ve sayfaların `og:image:width`/`og:image:height` ile
  * bildirdiği ölçü.
@@ -55,8 +71,7 @@ const IMAGES = [
   "assets/og-poll.svg",
   // Köşe yazılarının kendi kapak görselleri de aynı kaptaydı ve aynı
   // sebeple önizlemesizdi (bkz. data/columns.json → featuredImage).
-  "assets/columns/kasimpasa-trabzonspor-cevap-verme-vakti.svg",
-  "assets/columns/osimhen-galatasaray-sampiyonluk-sinyalleri-taktik-analiz.svg"
+  ...columnCovers()
 ];
 
 const WIDTH = 1200;

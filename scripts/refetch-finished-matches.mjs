@@ -17,6 +17,7 @@
  *   node scripts/refetch-finished-matches.mjs --apply --limit=25
  *   node scripts/refetch-finished-matches.mjs --apply --days=4
  *   node scripts/refetch-finished-matches.mjs --apply --force
+ *   node scripts/refetch-finished-matches.mjs --apply --match=<id>
  *
  * Kota koruması: `--limit` tek koşuda gönderilecek istek sayısını sınırlar
  * (varsayılan 15). `--force` olmadan yalnızca dökümü EKSİK maçlar sorulur.
@@ -45,13 +46,17 @@ const MATCHES_PATH = path.join(root, "data", "matches.json");
 const PUBLIC_MATCHES_PATH = path.join(root, "public", "data", "matches.json");
 
 function parseArgs(argv) {
-  const args = { apply: false, limit: 15, force: false, days: null, budget: SAFE_RUN_LIMIT };
+  const args = { apply: false, limit: 15, force: false, days: null, budget: SAFE_RUN_LIMIT, match: null };
   for (const raw of argv) {
     if (raw === "--apply") args.apply = true;
     else if (raw === "--force") args.force = true;
     else if (raw.startsWith("--limit=")) args.limit = Math.max(1, Number(raw.slice(8)) || 15);
     else if (raw.startsWith("--days=")) args.days = Math.max(1, Number(raw.slice(7)) || null);
     else if (raw.startsWith("--budget=")) args.budget = Math.max(1, Number(raw.slice(9)) || SAFE_RUN_LIMIT);
+    // TEK MAÇ. Maç biter bitmez yayımlanan analiz zinciri yalnızca O maçın
+    // dökümünü istiyor; bütün pencereyi taramak hem gereksiz gecikme hem
+    // boşa giden kota demek olurdu.
+    else if (raw.startsWith("--match=")) args.match = raw.slice("--match=".length).trim() || null;
   }
   return args;
 }
@@ -88,7 +93,13 @@ const withinWindow = args.days
   : finished;
 
 // Dökümü zaten tam olan maç yeniden sorulmaz — kota koruması.
-const candidates = withinWindow.filter((match) => args.force || !hasCompleteMatchData(match));
+const candidates = withinWindow
+  .filter((match) => !args.match || match.id === args.match)
+  .filter((match) => args.force || !hasCompleteMatchData(match));
+
+if (args.match && !candidates.length) {
+  console.log(`[refetch] --match=${args.match}: bu kimlikle eksik dökümlü bitmiş maç bulunamadı.`);
+}
 
 // Oyuncu verisi zaten duran maçlar ayrıca raporlanır: aday listesinde
 // görünüyorlarsa eksik olan başka bir alandır.
