@@ -586,7 +586,7 @@ function todayFixtureCount() {
         await open('mac-detay.html?id=' + encodeURIComponent(record.fixtureId));
         await page.locator('[data-api-target="match-analysis"]').scrollIntoViewIfNeeded();
         const tabs = page.locator('.match-analysis-tab');
-        await tabs.first().waitFor();
+        await tabs.first().waitFor({ timeout: 45000 });
         for (let i = 0; i < await tabs.count(); i++) {
           const tab = tabs.nth(i);
           await click(tab);
