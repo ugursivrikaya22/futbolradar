@@ -21,7 +21,14 @@ permissions:
   contents: write
 
 concurrency:
-  group: futbolradar-daily-health-check
+  # main'e YAZAN HER İŞ AYNI KUYRUKTA. Ayrı gruplardayken bu iş ile saatlik
+  # güncelleme aynı anda koşuyor, ikisi de üretilmiş dosyaları yazıyor ve
+  # sonra gelen push çakışmaya düşüyordu; ci-commit-push.mjs çakışmada taraf
+  # seçmediği için o koşunun çıktısı DÜŞÜYOR. 19 Eylül 20:40'tan 20 Eylül
+  # öğlene kadar saatlik koşuların tamamı bu yüzden sessizce yazılamadı ve
+  # site bitmiş maçları "oynanacak" göstermeye devam etti. Ortak grup, işleri
+  # iptal etmeden sıraya koyar.
+  group: futbolradar-production-update
   cancel-in-progress: false
 
 jobs:
@@ -35,7 +42,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # SIĞ KLON. Bu depo ~14.000 üretilmiş dosya taşıyor ve her saatlik CI
+          # commit'i bunların büyük kısmına dokunuyor; tam geçmişi çekmek koşu
+          # başına dakikalar sürüyordu ve private depoda o dakikalar
+          # faturalanıyor. Bu işin geçmişe ihtiyacı yok: yalnızca güncel veriyi
+          # okuyup üstüne yazıyor.
+          #
+          # 1 DEĞİL 20: scripts/ci-commit-push.mjs itme reddedilirse
+          # `git fetch` + `git rebase origin/<dal>` yapıyor. Derinlik 1'de ortak
+          # ata bulunamaz ve rebase düşer. 20 commit, otomatik koşuların arasına
+          # giren sürüklenme için fazlasıyla yeterli bir tampon.
+          fetch-depth: 20
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-import { mergeCalendarMatches, selectDetailTargets, datesForTarget } from "./sync-live-fixtures.mjs";
+import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete } from "./sync-live-fixtures.mjs";
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
@@ -76,6 +76,56 @@ const agedOut = [
   { id: "fresh", homeTeam: "Samsunspor", awayTeam: "Rizespor", kickoff: "2026-09-20T06:00:00Z", status: "FINISHED", league: "Süper Lig" }
 ];
 const agedNow = Date.parse("2026-09-20T09:30:00Z");
+// EKSİK DÖKÜM İKİNCİ ŞANS ALIR, TAM DÖKÜM ALMAZ.
+//
+// 8 saatlik pencere kotayı koruyordu ama tek denemeyi nihai yapıyordu: o
+// pencerede sağlayıcının olay çağrısı düşerse (getMatchDetail her alanı
+// `.catch(() => [])` ile yutuyor) maç sonsuza dek olaysız kalıyordu.
+// Ölçüldü: 383 bitmiş maçın 381'inde olay akışı boştu.
+const tam = { events: [{}], lineups: [{}], statistics: [{}], players: [{}] };
+const olaysiz = { events: [], lineups: [{}], statistics: [{}], players: [{}] };
+
+assert.equal(detailIncomplete(olaysiz), true, "olay akışı boşsa döküm eksiktir");
+assert.equal(detailIncomplete(tam), false, "dört alan da doluysa döküm tamdır");
+assert.equal(detailIncomplete(null), true, "depoda kayıt yoksa döküm eksiktir");
+
+// Yaş penceresinin dışında (16,5 saat), depoda olay akışı boş → yeniden sorulur.
+assert.deepEqual(
+  selectDetailTargets(agedOut, {
+    nowMs: agedNow,
+    limit: 5,
+    storedFor: (match) => (match.id === "ts-gs" ? olaysiz : tam)
+  }).map((item) => item.id),
+  ["fresh", "ts-gs"],
+  "dökümü eksik, penceresi geçmiş maç yeniden sorulur — ama yeni bitmiş maçtan SONRA"
+);
+
+// Aynı maçın dökümü tamsa bir daha hiç sorulmaz: kotayı koruyan asıl kural.
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5, storedFor: () => tam }).map((item) => item.id),
+  ["fresh"],
+  "dökümü tam olan maç yaş penceresi dışında yeniden sorulmaz"
+);
+
+// Pencere de sınırsız değil: getirilen gün aralığından eski maç seçilmez.
+assert.deepEqual(
+  selectDetailTargets(agedOut, {
+    nowMs: agedNow,
+    limit: 5,
+    retryWindowMs: 10 * 60 * 60 * 1000,
+    storedFor: () => olaysiz
+  }).map((item) => item.id),
+  ["fresh"],
+  "yeniden deneme penceresinden de eski maç seçilmez"
+);
+
+// Depo bilgisi verilmezse davranış ESKİSİ GİBİ: yalnızca 8 saatlik pencere.
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5 }).map((item) => item.id),
+  ["fresh"],
+  "storedFor verilmediğinde eski davranış korunur"
+);
+
 assert.deepEqual(
   selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5 }).map((item) => item.id),
   ["fresh"],
@@ -186,7 +236,26 @@ const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-
 // 4-8 saat gecikmeli başlıyordu (03.09.2026'da tam koşu hiç tetiklenmedi).
 // Dakikayı kaydırmak GitHub'ın önerdiği düzeltme — bkz. docs/scheduled-updates.md.
 assert.match(workflow, /cron: "7 2 \* \* \*"/);
-assert.match(workflow, /cron: "7 0-1,3-23 \* \* \*"/);
+// Saatlik nöbet 20.09.2026'da İKİYE AYRILDI: gündüz saatlik, gece iki saatte
+// bir. Gerekçe ölçümdü — koşu ~13 dakika sürüyor, depo private, yani gecenin
+// altı saatinde neredeyse hiçbir şey değişmezken saatlik tazeleme doğrudan
+// faturaya yazılıyordu. Kapsam daralmadı: gündüzün tamamı hâlâ saatlik.
+assert.match(workflow, /cron: "7 4-21 \* \* \*"/);
+assert.match(workflow, /cron: "7 0,3,22 \* \* \*"/);
+// İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 0,3,22): orası
+// tam tazelemenin saati, iki iş aynı dosyalara yazmak için sıraya giremez.
+// Saatleri tek tek çözüp doğruluyoruz ki ilerideki bir düzenleme 2'yi sessizce
+// geri sokamasın.
+{
+  const hoursOf = (expr) =>
+    expr.split(",").flatMap((part) => {
+      const [from, to] = part.split("-").map(Number);
+      return Number.isInteger(to) ? Array.from({ length: to - from + 1 }, (_, i) => from + i) : [from];
+    });
+  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0,3,22")];
+  assert.ok(!shortRunHours.includes(2), "kısa koşu 02:00 UTC'ye girmemeli — tam tazeleme orada");
+  assert.equal(new Set(shortRunHours).size, shortRunHours.length, "aynı saat iki kez tetiklenmemeli");
+}
 // Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
 // bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
 // Yalnızca dakika 7 değil, HERHANGİ bir dakikada saatte-bir joker de

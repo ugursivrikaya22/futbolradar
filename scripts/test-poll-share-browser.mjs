@@ -28,6 +28,7 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
+import { homePollBlock } from "./lib/homePoll.mjs";
 
 const require = createRequire(import.meta.url);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -58,11 +59,69 @@ const sources = {
   polls: JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8")),
   teams: JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"))
 };
-const live = listHomePolls(sources).entries.find((entry) => entry.status === "open");
-assert.ok(live, "açık bir anket olmadan paylaşım akışı denenemez");
+/**
+ * HANGİ ANKETİN SAYFASINDA DENENİR.
+ *
+ * Tercih AÇIK anket: okuyucunun o an gördüğü sayfa budur. Ama takvimde her
+ * an açık bir anket OLMAK ZORUNDA DEĞİL (bir anket kaldırıldığında ya da
+ * sıradaki henüz başlamadığında arada pencere kalır) — ve paylaşım akışı o
+ * günlerde de çalışır durumda olmalı. Bu yüzden açık anket yoksa test
+ * takvimdeki bir sonraki, o da yoksa en son kapanmış anketin sayfasına
+ * düşer: uç nokta zaten sahtelendiği için ekran "açık anket" yanıtını alır.
+ * Denenen şey anketin kendisi değil, İSTEMCİ akışıdır; testi takvimin o
+ * günkü hâline bağlamak, kapıyı aylarca sessizce kapalı tutardı.
+ */
+const { entries } = listHomePolls(sources);
+const live = entries.find((entry) => entry.status === "open")
+  || entries.find((entry) => entry.status === "upcoming")
+  || entries.find((entry) => entry.status === "closed");
+assert.ok(live, "takvimde hiç anket yok: paylaşım akışı denenemez");
 
 const pollTr = localizePoll(live.poll, "tr");
 const pageUrl = `${BASE}/anket/${pollTr.slug}.html`;
+
+/**
+ * AÇIK ANKET YOKKEN SAYFA TESTİN İÇİNDE KURULUR.
+ *
+ * Başlamamış (ya da kapanmış) bir anketin sayfasında oy formu BASILMAZ ve
+ * basılmamalı: oy alamayan bir form, oyu sessizce kaybetmek olurdu. Ama o
+ * form paylaşım akışının giriş kapısı — diskteki sayfayı kullanmak, takvimde
+ * açık anket olmayan her gün bu kapıyı sessizce kapatırdı.
+ *
+ * Bu yüzden açık anket yokken sayfa, ana sayfayla AYNI üreticiden
+ * (`homePollBlock`) "açık" durumla kuruluyor ve isteğe yanıt olarak
+ * veriliyor. Üretilmiş bir çıktıyı taklit etmek değil, aynı işaretlemeyi
+ * aynı yerden üretmek: blok değişirse test de onunla değişir. Stil ve
+ * istemci gerçek sunucudan (`/page.css`, `/site.js`) geliyor — denenen şey
+ * zaten İSTEMCİ akışı.
+ */
+const stagedPageHtml = live.status === "open" ? null : `<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${pollTr.question}</title>
+    <link rel="stylesheet" href="/page.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <main class="poll-page">
+        <div class="container">
+${homePollBlock(pollTr, {
+  locale: "tr",
+  status: "open",
+  heading: "h1",
+  pinned: true,
+  containerClass: "poll-page__poll",
+  regionLabel: pollTr.question
+})}
+        </div>
+      </main>
+    </div>
+    <script src="/site.js" defer></script>
+  </body>
+</html>
+`;
 
 /**
  * Sahte sayım. Sayılar GERÇEKÇİ ama uydurma DEĞİL bir iddia taşımıyor:
@@ -156,6 +215,11 @@ try {
         body: JSON.stringify({ data: tallyFor(lastChoice) })
       });
     });
+
+    if (stagedPageHtml) {
+      await page.route(pageUrl, (route) =>
+        route.fulfill({ status: 200, contentType: "text/html; charset=utf-8", body: stagedPageHtml }));
+    }
 
     await page.goto(pageUrl, { waitUntil: "domcontentloaded" });
     await page.waitForSelector("[data-home-poll]:not([hidden])");

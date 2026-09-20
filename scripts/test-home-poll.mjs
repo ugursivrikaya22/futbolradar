@@ -219,33 +219,24 @@ console.log("home-poll");
   // Örnek kayıt YAYINA ÇIKMAZ: ayrım anahtarda (`_sample`), bir bayrakta değil.
   assert.ok(!polls.some((entry) => /ornek|sample/i.test(entry.id)), "örnek kayıt yayına çıkmış");
 
-  // İstenen şampiyonluk anketi gerçekten yayında ve tüm kulüpleri taşıyor.
-  const champion = polls.find((entry) => entry.type === "champion");
-  assert.ok(champion, "şampiyonluk anketi takvimde olmalı");
-  assert.ok(champion.options.length >= 18, "tüm Süper Lig kulüpleri seçenek olmalı");
-  // BAŞLIK GEREKSİNİMDE BİREBİR VERİLDİ; serbest bir yeniden yazım değil.
-  assert.equal(localizePoll(champion, "tr").question,
-    "Sence 2026–27 Süper Lig şampiyonu kim olacak?",
-    "Türkçe başlık gereksinimde verilen cümlenin birebir aynısı olmalı");
-  assert.equal(localizePoll(champion, "en").question,
-    "Who will win the 2026–27 Turkish Süper Lig?",
-    "İngilizce başlık gereksinimde verilen cümlenin birebir aynısı olmalı");
+  // ŞAMPİYONLUK ANKETİ KALDIRILDI. Kayıt veriden silindi; bir gün geri
+  // eklenirse bu satır sessizce değil, kırmızı bir testle fark edilsin.
+  assert.ok(!polls.some((entry) => entry.type === "champion"),
+    "şampiyonluk anketi kaldırıldı, takvimde olmamalı");
 
-  // ADRES VERİDEN GELİR VE İKİ DİLDE DE VAR: paylaşılan bağlantı bu.
-  assert.equal(localizePoll(champion, "tr").path, "/anket/super-lig-sampiyonu-2026-27");
-  assert.equal(localizePoll(champion, "en").path, "/en/poll/super-lig-champion-2026-27");
-
-  // "DİĞER" SEÇENEĞİ YOK. Bir kulüp listesinde "diğer", ankete girmeyen
-  // kulüplerin varlığını ima eder; liste eksiksiz olduğu için yanlış olurdu.
-  const labels = champion.options.map((option) => localized(option.label, "tr").toLocaleLowerCase("tr"));
-  assert.ok(!labels.some((label) => label === "diğer" || label === "other"),
-    "şampiyonluk anketinde \"diğer\" seçeneği olmamalı");
-
-  // Seçenekler kulüp veritabanıyla BİREBİR eşleşmeli: elle yazılmış tek bir
-  // ad, lig kadrosu değiştiğinde sessizce yanlışa dönerdi.
+  // Kulüp listesinden beslenen anketler kulüp veritabanıyla BİREBİR eşleşmeli:
+  // elle yazılmış tek bir ad, lig kadrosu değiştiğinde sessizce yanlışa dönerdi.
   const expected = superLigOptions(teams).map((option) => option.id).sort();
-  assert.deepEqual(champion.options.map((option) => option.id).sort(), expected,
-    "seçenek listesi güncel Süper Lig kulüpleriyle birebir aynı olmalı");
+  for (const entry of polls.filter((item) => item.options.length >= 18)) {
+    assert.deepEqual(entry.options.map((option) => option.id).sort(), expected,
+      `"${entry.id}" seçenek listesi güncel Süper Lig kulüpleriyle birebir aynı olmalı`);
+
+    // "DİĞER" SEÇENEĞİ YOK. Bir kulüp listesinde "diğer", ankete girmeyen
+    // kulüplerin varlığını ima eder; liste eksiksiz olduğu için yanlış olurdu.
+    const labels = entry.options.map((option) => localized(option.label, "tr").toLocaleLowerCase("tr"));
+    assert.ok(!labels.some((label) => label === "diğer" || label === "other"),
+      `"${entry.id}" anketinde "diğer" seçeneği olmamalı`);
+  }
 }
 
 // ── 8. UÇ NOKTA: doğrulama, pencere ve tek oy ─────────────────────────────
@@ -619,9 +610,20 @@ console.log("home-poll");
     polls: JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8")),
     teams
   });
-  assert.ok(live.poll, "ana sayfada gösterilecek anket olmalı (takvim boş)");
+  // TAKVİMDE AÇIK YA DA KAPANMIŞ ANKET YOKSA BLOK HİÇ BASILMAZ; bu bir
+  // eksiklik değil, kuralın kendisi (gerekçe `selectHomePoll` başlığında):
+  // boş bir anket kutusu yer tutucu uydurmanın sessiz biçimidir. O durumda
+  // test tersini doğrular — sayfada anketten İZ KALMAMALI.
+  if (!live.poll) {
+    for (const page of pages) {
+      for (const hook of HOOKS) {
+        assert.ok(!page.html.includes(hook),
+          `${page.label}: yayında anket yokken "${hook}" kancası basılmış`);
+      }
+    }
+  }
 
-  for (const page of pages) {
+  for (const page of live.poll ? pages : []) {
     const { html } = page;
 
     for (const hook of HOOKS) {
@@ -1021,7 +1023,13 @@ console.log("home-poll");
 // aynı cümleyi paylaştırırdı.
 {
   const payload = JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8"));
-  const { poll } = selectHomePoll({ polls: payload, teams });
+  const selection = selectHomePoll({ polls: payload, teams });
+  // Takvimde o an açık/kapanmış anket olmayabilir (bir anket kaldırıldığında
+  // ya da sıradaki henüz başlamadığında). Paylaşım kuralları ANKETTEN
+  // bağımsızdır, bu yüzden test takvimdeki ilk kayda düşer — yoksa kurallar
+  // sessizce denetlenmeden kalırdı.
+  const poll = selection.poll || scheduleFrom({ polls: payload, teams }).polls[0];
+  assert.ok(poll, "takvimde en az bir anket olmalı");
 
   for (const locale of ["tr", "en"]) {
     const share = localizePoll(poll, locale).share;
@@ -1124,7 +1132,7 @@ console.log("home-poll");
   const payload = JSON.parse(fs.readFileSync(path.join(root, "data", "home-polls.json"), "utf8"));
   const sources = { polls: { polls: [...payload.polls, record] }, teams, matches };
   const home = selectHomePoll(sources, { now: Date.parse("2026-09-20T19:00:00+03:00") });
-  assert.equal(home.poll && home.poll.surface, "home", "ana sayfada maç anketi gösterilmemeli");
+  assert.ok(!home.poll || home.poll.surface === "home", "ana sayfada maç anketi gösterilmemeli");
 
   const forMatch = selectMatchPoll(sources, sample.id, { now: Date.parse("2026-09-20T19:00:00+03:00") });
   assert.equal(forMatch.status, "open", "maçın anketi o saatte açık olmalı");
@@ -1133,9 +1141,12 @@ console.log("home-poll");
   // Adres de çalışır: maç anketi de kendi paylaşılabilir sayfasını alır.
   assert.equal(localizePoll(forMatch.poll, "tr").path, "/anket/mac-anketi-testi");
 
-  // Kimliğe göre arama kapanmış anketi de bulur (anket sayfasının ihtiyacı).
-  const found = findPoll(sources, { slug: "super-lig-sampiyonu-2026-27" });
-  assert.equal(found.poll && found.poll.id, "super-lig-2026-2027-sampiyon");
+  // Kimliğe göre arama takvimdeki anketi durumundan bağımsız bulur (anket
+  // sayfasının ihtiyacı). Slug veriden okunuyor: tek bir anket kaldırıldığında
+  // test, sabit bir adrese bağlı kalıp yanlış yere kırılmasın.
+  const sample7 = payload.polls[0];
+  const found = findPoll(sources, { slug: sample7.slug.tr });
+  assert.equal(found.poll && found.poll.id, sample7.id);
 }
 
 

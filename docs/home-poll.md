@@ -39,19 +39,19 @@ nesne eklemek yeterlidir:
 
 ```json
 {
-  "id": "super-lig-2026-2027-sampiyon",
-  "type": "champion",
+  "id": "super-lig-2026-2027-ilk-dort",
+  "type": "top-four",
   "surface": "home",
   "slug": {
-    "tr": "super-lig-sampiyonu-2026-27",
-    "en": "super-lig-champion-2026-27"
+    "tr": "super-lig-ilk-dort-2026-27",
+    "en": "super-lig-top-four-2026-27"
   },
-  "startsAt": "2026-08-14T00:00:00+03:00",
-  "endsAt": "2026-12-15T00:00:00+03:00",
+  "startsAt": "2026-12-15T00:00:00+03:00",
+  "endsAt": "2027-01-15T00:00:00+03:00",
   "optionSource": "super-lig-teams",
   "question": {
-    "tr": "Sence 2026–27 Süper Lig şampiyonu kim olacak?",
-    "en": "Who will win the 2026–27 Turkish Süper Lig?"
+    "tr": "Bu Sezon Süper Lig'i İlk 4'te Kim Bitirir?",
+    "en": "Who Will Finish in the Süper Lig Top 4 This Season?"
   },
   "subtitle": { "tr": "Okuyucu tahmini.", "en": "A reader prediction." }
 }
@@ -185,8 +185,8 @@ etmektir.
 Her anketin kendi adresi var:
 
 ```
-/anket/super-lig-sampiyonu-2026-27
-/en/poll/super-lig-champion-2026-27
+/anket/super-lig-ilk-dort-2026-27
+/en/poll/super-lig-top-four-2026-27
 ```
 
 Sayfayı `scripts/generate-poll-pages.mjs` üretiyor (zincirde `poll-pages`
@@ -259,7 +259,7 @@ Her kanal AYRI bir adres alır, yoksa hangi ağdan kaç okuyucunun geldiği
 ölçülemez:
 
 ```
-/anket/super-lig-sampiyonu-2026-27?utm_source=whatsapp&utm_medium=social&utm_campaign=poll_super_lig_2026_2027_sampiyon
+/anket/super-lig-ilk-dort-2026-27?utm_source=whatsapp&utm_medium=social&utm_campaign=poll_super_lig_2026_2027_ilk_dort
 ```
 
 Kampanya etiketi **anket kimliğinden türer**: yeni anket eklendiğinde ölçüm

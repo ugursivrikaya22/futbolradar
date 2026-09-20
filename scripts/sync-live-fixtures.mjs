@@ -337,9 +337,54 @@ export function datesForTarget(calendar, match) {
   return day ? [day] : [];
 }
 
+/**
+ * Depodaki dökümü eksik mi?
+ *
+ * "Eksik" sağlayıcının o maç için gerçekten bir şey döndürmediği anlamına
+ * gelmez — çoğu zaman İSTEK BAŞARISIZ olmuştur. getMatchDetail beş çağrıyı
+ * paralel yapıyor ve her birinde `.catch(() => [])` var; biri düşerse alan
+ * sessizce boş diziye döner. compactDetail yalnızca DOLU dizileri yazdığı
+ * için depoda eski (boş) hâl kalır ve 8 saatlik pencere kapandığında bu
+ * eksiklik KALICI olur.
+ */
+export function detailIncomplete(stored) {
+  if (!stored) return true;
+  return ["events", "lineups", "statistics", "players"]
+    .some((field) => !Array.isArray(stored[field]) || stored[field].length === 0);
+}
+
+/** Yaş penceresi dışında kalıp yalnızca eksik döküm yüzünden seçilen maç 1, diğerleri 0. */
+function backfillRank(match, nowMs) {
+  const kickoff = Date.parse(match.kickoff);
+  if (Number.isNaN(kickoff)) return 0;
+  // Durumu ne olursa olsun: sekiz saati geçmiş bir maç "bugünün maçı"
+  // değildir. Hayalet LIVE satırları da buraya düşer ve gerçek canlı
+  // yayının önüne geçemez.
+  return nowMs - kickoff > 8 * 60 * 60 * 1000 ? 1 : 0;
+}
+
 export function selectDetailTargets(matches, options = {}) {
   const nowMs = options.nowMs ?? Date.now();
   const limit = options.limit ?? 8;
+  // EKSİK DÖKÜM İKİNCİ BİR ŞANS ALIR.
+  //
+  // 8 saatlik pencere kotayı koruyor ama tek denemeyi de nihai yapıyordu:
+  // o pencerede sağlayıcının olay çağrısı düşerse maç sonsuza dek olaysız
+  // kalıyordu. Ölçüldü: takvimdeki 383 bitmiş maçın 381'inde olay akışı
+  // boştu; 19 Eylül Trabzonspor-Galatasaray kadro, oyuncu ve istatistikle
+  // birlikte gelmiş ama olaylar boş kalmıştı.
+  //
+  // Artık pencere dışındaki bitmiş bir maç da, DEPODAKİ DÖKÜMÜ EKSİKSE,
+  // getirilen gün aralığı içinde yeniden sorulabiliyor. Dökümü tam olan
+  // maç bir daha hiç sorulmuyor — kotayı koruyan asıl kural bu. Sıralama
+  // değişmediği için canlı ve yeni bitmiş maçlar önceliğini koruyor;
+  // eksik döküm tamamlayıcısı yalnızca `limit` içinde yer kalırsa koşar.
+  // DEPO BİLGİSİ YOKSA YENİDEN DENEME DE YOK. `storedFor` verilmediğinde
+  // "eksik mi?" sorusunun dürüst cevabı yoktur; `null`u eksik saymak
+  // pencere dışındaki HER bitmiş maçı kuyruğa sokar ve kotayı boşa harcar.
+  // Bu yüzden bayrak yokken davranış eskisiyle birebir aynı kalır.
+  const storedFor = typeof options.storedFor === "function" ? options.storedFor : null;
+  const retryWindowMs = options.retryWindowMs ?? 48 * 60 * 60 * 1000;
   // ADI GEÇEN MAÇ YAŞ PENCERESİNİ DELER. Aşağıdaki filtre bitmiş bir maçın
   // dökümünü yalnızca ilk düdüğün üstünden 8 saat geçmeden istiyor. Bu,
   // kotayı koruyan makul bir varsayılan; ama koşucular saatlerce düştüğünde
@@ -358,20 +403,71 @@ export function selectDetailTargets(matches, options = {}) {
   const isForced = (match) => Boolean(forced)
     && [match.id, match.providerId, match.slug, naturalId(match)]
       .some((value) => normalizeKey(String(value ?? "")) === forced);
-  return (matches || [])
+  const ordered = (matches || [])
     .filter((match) => {
       if (isForced(match)) return true;
       const kickoff = Date.parse(match.kickoff);
       if (Number.isNaN(kickoff)) return false;
       const state = canonicalStatus(match.status || match.providerStatus);
-      if (["LIVE", "HALFTIME", "INTERRUPTED"].includes(state)) return true;
-      if (state === "FINISHED") return nowMs - kickoff >= 0 && nowMs - kickoff <= 8 * 60 * 60 * 1000;
+      // HAYALET "CANLI" MAÇLAR BÜTÇEYİ YİYORDU.
+      //
+      // Canlı sayılan her satır koşulsuz seçiliyordu. Ama takvimde ilk
+      // düdüğün üstünden GÜNLER geçmiş, hâlâ LIVE/HALFTIME görünen satırlar
+      // birikiyor (sağlayıcının kapatmadığı küçük ligler; bir de hattın
+      // çıktısını yazamadığı saatlerde donan kayıtlar). Ölçüldü: 8-48 saat
+      // önce başlamış 451 satırın 287'si LIVE, 69'u HALFTIME'dı ve bunlar
+      // HER koşuda sekiz döküm yuvasının SEKİZİNİ birden dolduruyordu —
+      // yani o gün oynanan maçlara sıra hiç gelmiyordu.
+      //
+      // Bir futbol maçı uzatma ve gecikmeyle bile sekiz saat sürmez. O yaşı
+      // geçen "canlı" satır artık koşulsuz geçmiyor; aşağıdaki bitmiş maç
+      // kuralına düşüyor: dökümü eksikse yeniden sorulur, tamsa sorulmaz.
+      const liveAge = nowMs - kickoff;
+      if (["LIVE", "HALFTIME", "INTERRUPTED"].includes(state)) {
+        if (liveAge <= 8 * 60 * 60 * 1000) return true;
+        if (!storedFor) return true;
+        return liveAge <= retryWindowMs && detailIncomplete(storedFor(match));
+      }
+      if (state === "FINISHED") {
+        const age = nowMs - kickoff;
+        if (age < 0) return false;
+        if (age <= 8 * 60 * 60 * 1000) return true;
+        if (!storedFor) return false;
+        return age <= retryWindowMs && detailIncomplete(storedFor(match));
+      }
       return state === "SCHEDULED" && kickoff - nowMs >= -30 * 60 * 1000 && kickoff - nowMs <= 2 * 60 * 60 * 1000;
     })
     .sort((left, right) => (isForced(right) ? 1 : 0) - (isForced(left) ? 1 : 0)
+      // Gecikmiş tamamlayıcı, canlı ve yeni bitmiş maçlardan SONRA gelir:
+      // sınırlı istek bütçesi önce bugünün maçına harcanır.
+      || (backfillRank(left, nowMs) - backfillRank(right, nowMs))
       || priorityScore(left) - priorityScore(right)
-      || String(left.kickoff).localeCompare(String(right.kickoff)))
-    .slice(0, limit);
+      || String(left.kickoff).localeCompare(String(right.kickoff)));
+
+  return reserveBackfillSlot(ordered, limit, nowMs);
+}
+
+/**
+ * Sıralı listeyi bütçeye indirir ve GERİ DOLDURUMA EN AZ BİR YUVA AYIRIR.
+ *
+ * Yalnızca sıralama yetmiyor: ölçüldüğünde sekiz yuvanın sekizi de o günün
+ * maçlarıyla doluyor ve gecikmiş tamamlayıcıya hiç sıra gelmiyordu — yani
+ * "yeniden denenebilir" olmak pratikte "hiç denenmez" demekti. 20 Eylül
+ * 09:00 koşusu birebir böyleydi: bir önceki akşamın Trabzonspor-Galatasaray
+ * maçı uygun olduğu hâlde listeye giremedi.
+ *
+ * Bu yüzden geri doldurum adayı varsa, son SIRADAKİ taze maçın yeri ona
+ * bırakılır. Maliyet sabit ve küçük (sekiz yuvanın biri), kazanç kalıcı:
+ * her koşuda eksik dökümlü bir maç tamamlanır. `--match` ile zorlanan maç
+ * bu takastan hiç etkilenmez.
+ */
+function reserveBackfillSlot(ordered, limit, nowMs) {
+  const head = ordered.slice(0, limit);
+  if (head.length < limit) return head;
+  if (head.some((match) => backfillRank(match, nowMs) === 1)) return head;
+  const waiting = ordered.slice(limit).find((match) => backfillRank(match, nowMs) === 1);
+  if (!waiting) return head;
+  return [...head.slice(0, limit - 1), waiting];
 }
 
 async function fetchFixtures(provider, mode, now, options = {}) {
@@ -412,10 +508,33 @@ export async function synchronizeLiveFixtures(options = {}) {
   const now = options.now || new Date();
   const previous = options.previous || readJson(CALENDAR_PATH, { matches: [] });
   const fetched = await fetchFixtures(provider, mode, now, { dates: datesForTarget(previous, options.match) });
+  // DEPODAKİ KAYIT SEÇİCİYE VERİLİR. Eksik döküm ikinci şansı ancak depodaki
+  // hâl görülebilirse alabilir; seçiciye gelen satırlar sağlayıcının ham
+  // çıktısı, yani orada "bizde ne var" bilgisi yok.
+  const previousRows = Array.isArray(previous) ? previous : (previous && previous.matches) || [];
+  const previousByKey = new Map();
+  for (const row of previousRows) {
+    for (const key of [row.id, row.providerId, (row.providerIds || {}).apiFootball, naturalId(row)]) {
+      const normalized = normalizeKey(String(key ?? ""));
+      if (normalized && !previousByKey.has(normalized)) previousByKey.set(normalized, row);
+    }
+  }
+  const storedFor = (match) => {
+    for (const key of [match.id, match.providerId, (match.providerIds || {}).apiFootball, naturalId(match)]) {
+      const normalized = normalizeKey(String(key ?? ""));
+      const hit = normalized ? previousByKey.get(normalized) : null;
+      if (hit) return hit;
+    }
+    return null;
+  };
   const detailTargets = selectDetailTargets(fetched.matches, {
     nowMs: now.getTime(),
     limit: mode === "full" ? 12 : 8,
-    match: options.match || null
+    match: options.match || null,
+    storedFor,
+    // Getirilen gün aralığından geniş bir pencere anlamsız: listede olmayan
+    // maç zaten seçilemez. Saatlik mod dünü ve bugünü soruyor.
+    retryWindowMs: (mode === "full" ? 72 : 48) * 60 * 60 * 1000
   });
   const details = new Map();
   const detailErrors = [];

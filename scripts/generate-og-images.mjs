@@ -79,6 +79,24 @@ const HEIGHT = 630;
 /** Sosyal ağların önizleme getirici sınırlarına göre rahat bir tavan. */
 const MAX_BYTES = 300 * 1024;
 
+// TARAYICIYI ÖNCE PLAYWRIGHT'IN KENDİSİ BULSUN.
+//
+// Bu işlev yalnızca iki SABİT yola bakıyordu (/opt/pw-browsers/...). O yollar
+// geliştirme kabında var, GitHub runner'ında YOK: `playwright install` orada
+// tarayıcıyı ~/.cache/ms-playwright/chromium-<yapı> altına indiriyor. Sonuç,
+// runner'da betiğin tarayıcıyı ASLA bulamaması ve şu satırla düşmesiydi:
+//
+//     generate-og-images: tarayıcı yok
+//       playwright: var | chromium: yok
+//
+// 20 Eylül'de köşe yazısı iş akışı tam bu yüzden paylaşım görselini
+// üretemedi; sayfa og:image hedefi olmadan yayımlandı ve `qa.mjs` kapısı
+// bütün üretim derlemesini durdurdu.
+//
+// Doğru kaynak, tarayıcıyı kuran paketin kendisi: `launch()` yol verilmezse
+// kendi kayıt defterinden çözüyor ve kurulum nereye yapıldıysa oraya bakıyor.
+// Sabit yollar yalnızca YEDEK olarak duruyor (kabın hazır tarayıcısı,
+// CHROMIUM_PATH ile elle verilen yol).
 function resolveChromium() {
   const explicit = process.env.CHROMIUM_PATH;
   if (explicit && fs.existsSync(explicit)) return explicit;
@@ -87,6 +105,18 @@ function resolveChromium() {
     "/opt/pw-browsers/chromium/chrome-linux/chrome"
   ];
   return candidates.find((candidate) => fs.existsSync(candidate)) || null;
+}
+
+/** Yolu verilmişse onunla, verilmemişse Playwright'ın çözümüyle açar. */
+async function launchChromium(runtime, executablePath) {
+  try {
+    return await runtime.chromium.launch(executablePath ? { executablePath } : {});
+  } catch (error) {
+    if (!executablePath) throw error;
+    // Sabit yol bayatlamış olabilir (yapı numarası değişmiş bir kap gibi);
+    // paketin kendi çözümü hâlâ çalışıyor olabilir.
+    return runtime.chromium.launch();
+  }
 }
 
 function loadPlaywright() {
@@ -107,15 +137,23 @@ function loadPlaywright() {
 const playwright = loadPlaywright();
 const chromiumPath = resolveChromium();
 
-if (!playwright || !chromiumPath) {
-  console.error("generate-og-images: tarayıcı yok — bu betik yalnızca görselleri YENİDEN üretmek için.");
+if (!playwright) {
+  console.error("generate-og-images: playwright paketi yok — bu betik yalnızca görselleri YENİDEN üretmek için.");
   console.error("  Yayınlanan dosyalar depoda işli; derleme bu betiği çalıştırmıyor.");
-  console.error(`  playwright: ${playwright ? "var" : "yok"} | chromium: ${chromiumPath || "yok"}`);
-  console.error("  Kurulum: npm i --no-save playwright-core");
+  console.error("  Kurulum: npm ci --include=dev && npx --no-install playwright install chromium");
   process.exit(1);
 }
 
-const browser = await playwright.chromium.launch({ executablePath: chromiumPath });
+let browser;
+try {
+  browser = await launchChromium(playwright, chromiumPath);
+} catch (error) {
+  console.error("generate-og-images: chromium açılamadı — paylaşım görselleri üretilemedi.");
+  console.error(`  aranan sabit yol: ${chromiumPath || "yok"}`);
+  console.error(`  playwright hatası: ${error && error.message ? error.message.split("\n")[0] : error}`);
+  console.error("  Kurulum: npx --no-install playwright install --with-deps chromium");
+  process.exit(1);
+}
 const page = await browser.newPage();
 
 /**
