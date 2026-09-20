@@ -335,20 +335,25 @@ function todayFixtureCount() {
         await test(locale + ' primary navigation routes and footer', async () => {
           await open(home);
           const links = await page.locator('.nav-links a').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')));
+          // ÇEKMECE TUR BAŞINA DEĞİL, SAYFA BAŞINA AÇILIR.
+          //
+          // Gezinti yapılan genişlikte her tur YENİ BİR SAYFAYA düşüyor, o
+          // yüzden çekmece her turda yeniden açılmak zorunda. Gezinti
+          // yapılmayan genişlikte ise sayfa hiç değişmiyor: bir kez açmak
+          // yetiyor. İlk sürüm orada da her tur açıp kapatıyordu ve koşu
+          // 35528543454'te üç senaryo "Click target did not settle" ile
+          // düştü — düğme, arka arkaya gelen aç/kapa animasyonunun ortasında
+          // ölçülüyordu. Fazladan tıklama iddiaya hiçbir şey katmıyordu.
+          if (viewport.width < 1366 && !sweepsRoutes) await click(page.locator('.nav-toggle'));
           for (const href of [...new Set(links)]) {
-            if (viewport.width < 1366) await click(page.locator('.nav-toggle'));
+            if (viewport.width < 1366 && sweepsRoutes) await click(page.locator('.nav-toggle'));
             const target = page.locator('.nav-links a[href=' + JSON.stringify(href) + ']');
             // Secondary navigation is intentionally in the mobile drawer;
             // desktop visitors reach those same routes through the footer.
             const inMenu = await target.isVisible();
             const footer = page.locator('footer a[href=' + JSON.stringify(href) + ']').first();
             if (!inMenu) assert.ok(await footer.count(), 'Hidden menu item has no accessible alternative: ' + href);
-            if (!sweepsRoutes) {
-              // Çekmece açık kaldıysa kapat: sonraki tur onu yeniden açacak ve
-              // açık bir çekmecede ikinci tıklama onu KAPATIRDI.
-              if (viewport.width < 1366) await click(page.locator('.nav-toggle'));
-              continue;
-            }
+            if (!sweepsRoutes) continue;
             await navigate(inMenu ? target : footer);
           }
           for (const suffix of en ? [] : ['hakkinda.html', 'iletisim.html', 'gizlilik.html', 'kullanim-sartlari.html']) {
