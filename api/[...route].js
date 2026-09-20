@@ -14,6 +14,7 @@ const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
 const { handleMatchWinnerVote } = require("../server/matchWinnerVoteRoute");
 const { handleMatchPoll } = require("../server/matchPollRoute");
+const { handleMatchComments, handleMatchRatings } = require("../server/matchSocialRoute");
 const { handleMatchLineup } = require("../server/matchLineupRoute");
 const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
@@ -352,6 +353,18 @@ module.exports = async function handler(req, res) {
   // seçmene özel — alttaki tek politikalı okuma kapısına girmez.
   if (routeName(req) === "match-poll") {
     return handleMatchPoll(req, res);
+  }
+
+  // MAÇ SAYFASI TOPLULUK KATMANI: yorumlar ve okuyucu oyuncu puanları.
+  // İkisi de seçmene özel yanıt döndürüyor ("benim beğenim", "benim
+  // puanım") ve kendi no-store politikasını taşıyor; alttaki tek
+  // politikalı okuma kapısına sokulmuyorlar.
+  if (routeName(req) === "match-comments") {
+    return handleMatchComments(req, res);
+  }
+
+  if (routeName(req) === "match-ratings") {
+    return handleMatchRatings(req, res);
   }
 
   // Maç dosyası ilk 11 + canlı skor: kendi önbellek politikasını maçın

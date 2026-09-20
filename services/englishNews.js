@@ -69,7 +69,63 @@ const ENGLISH_FEEDS = Object.freeze([
    * Türkçe basından ÇEVRİLMEZ. TFF'nin ve kulüplerin İngilizce sayfaları
    * ile uluslararası basının Türkiye kapsaması kullanılır.
    */
-  { id: "turkish-football-en", name: "International coverage", requireClub: true, url: googleNewsFeed('"Super Lig" OR Galatasaray OR Fenerbahce OR Besiktas OR Trabzonspor football'), competition: "Süper Lig", priority: 6, trusted: false }
+  /*
+   * AÇIK UÇLU SORGU İZİNLİ LİSTEYLE SINIRLANIR.
+   *
+   * Diğer beslemeler `site:` ile tek bir kuruma daraltılabiliyor; bu
+   * besleme daraltılamıyor ve Türk kulübü ANAN her sayfayı getiriyor.
+   * Süzgeçleri sırayla denedik ve her biri bir sonrakini açıkta bıraktı:
+   *   - `requireClub` Valencia Üniversitesi'ni eledi, ama...
+   *   - yazı kuralı (Latin alfabesi) Suriye ajansı "سانا"yı eledi, ama...
+   *   - engel listesi bahis/skor sitelerini eledi, ama...
+   *   - Endonezya yerel gazetesi "SuaraGarut.ID" üçünden de geçti:
+   *     Latin alfabesi, haber sitesi, başlıkta kulüp adı var. Yalnızca
+   *     İNGİLİZCE DEĞİL.
+   *
+   * Dilin kendisini metinden güvenilir biçimde çıkarmak (künye "SuaraGarut"
+   * gibi bir özel isimken) mümkün değil. Bu yüzden kural tersine çevrildi:
+   * bu beslemede yayıncı, İngilizce yayın yapan TANINAN kurumlar
+   * listesinde olmak zorunda. Kapalı liste, açık uçlu sorgunun tek
+   * yapısal karşılığı — engellenecek siteyi saymak yerine kabul edileni
+   * saymak, çünkü dünyadaki yerel gazetelerin sayısı sonsuz.
+   */
+  {
+    id: "turkish-football-en",
+    name: "International coverage",
+    requireClub: true,
+    url: googleNewsFeed('"Super Lig" OR Galatasaray OR Fenerbahce OR Besiktas OR Trabzonspor football'),
+    competition: "Süper Lig",
+    priority: 6,
+    trusted: false,
+    expectDomains: [
+      // Türk futbolunu İngilizce yayımlayan kurumlar
+      "turkish-football.com",
+      "turkiyetoday.com",
+      "dailysabah.com",
+      "hurriyetdailynews.com",
+      "trtworld.com",
+      // Uluslararası ajans ve yayıncılar
+      "bbc.co.uk",
+      "bbc.com",
+      "theguardian.com",
+      "espn.com",
+      "espn.co.uk",
+      "reuters.com",
+      "apnews.com",
+      "aljazeera.com",
+      "france24.com",
+      "nytimes.com",
+      "yahoo.com",
+      "cnn.com",
+      "skysports.com",
+      "goal.com",
+      "si.com",
+      // Kurumlar
+      "uefa.com",
+      "fifa.com",
+      "beinsports.com"
+    ]
+  }
 ]);
 
 /** Öncelikli turnuvalar — /en ana akışında üste çıkarlar. */
@@ -540,6 +596,43 @@ function extractPersonName(rawTitle) {
  * yayıncı o listeden değilse kayıt DÜŞER: yanlış künyeli haber, eksik
  * haberden daha kötüdür.
  */
+/**
+ * İNGİLİZCE SAYFADA KÜNYE DE İNGİLİZCE OKUNABİLMELİ.
+ *
+ * Gövde metni kalıplardan üretildiği için her zaman İngilizce. Künye ise
+ * DOĞRUDAN yayıncıdan geliyor ve o denetimin dışında kalıyordu: canlı
+ * koşuda Suriye devlet ajansı "سانا" adıyla /en kartlarına düştü. Metin
+ * İngilizceydi, kartın altındaki ad Arap alfabesiyleydi.
+ *
+ * Türkçe sızıntı denetimi (`containsTurkish`) bunu yakalayamaz — yakalaması
+ * da beklenmez, o Türkçeye bakar. Bu yüzden kural dile değil YAZIYA bakar:
+ * künye ağırlıklı olarak Latin alfabesi olmalı. Böylece Arapça, Kiril,
+ * Yunan, CJK künyeler tek kuralla elenir ve her yeni örnek için engel
+ * listesine satır eklemek gerekmez.
+ *
+ * Eşik %100 DEĞİL: "Beşiktaş JK", "Fenerbahçe", "Türkiye Today" gibi meşru
+ * künyeler Latin dışı görünen harfler taşıyabilir. Ölçüt, harflerin
+ * çoğunluğunun Latin olması.
+ */
+const LATIN_LETTER = /\p{Script=Latin}/u;
+const ANY_LETTER = /\p{L}/u;
+const LATIN_MAJORITY_THRESHOLD = 0.6;
+
+function hasLatinPublisherName(name) {
+  const value = text(name).trim();
+  if (!value) return false;
+  let letters = 0;
+  let latin = 0;
+  for (const ch of value) {
+    if (!ANY_LETTER.test(ch)) continue;
+    letters += 1;
+    if (LATIN_LETTER.test(ch)) latin += 1;
+  }
+  // Harf içermeyen künye (yalnızca rakam/işaret) bir yayın adı değildir.
+  if (letters === 0) return false;
+  return latin / letters >= LATIN_MAJORITY_THRESHOLD;
+}
+
 function matchesExpectedDomain(publisherUrl, feed) {
   let host;
   try {
@@ -572,7 +665,25 @@ const DEFAULT_BLOCKED_DOMAINS = Object.freeze([
   "legal.fifa.com",
   "publications.fifa.com",
   // Açık uçlu sorgunun getirdiği futbol dışı alan adları (ölçüldü).
-  "uv.es"
+  "uv.es",
+
+  /*
+   * SKOR SERVİSİ VE BAHİS SİTESİ GAZETECİLİK DEĞİLDİR.
+   *
+   * Canlı koşuda ölçüldü: `turkish-football-en` beslemesi kulüp adı geçtiği
+   * için oddsscanner.com ve flashscore.com sayfalarını akışa soktu. İkisi
+   * de meşru site ama haber ÜRETMİYOR — biri oran karşılaştırıyor, diğeri
+   * skor tablosu yayımlıyor. Künyede "Odds Scanner" yazan bir kart, okura
+   * bir yayın kurulunun arkasında durduğu izlenimini verir.
+   */
+  "oddsscanner.com",
+  "flashscore.com",
+  "sofascore.com",
+  "livescore.com",
+  "footystats.org",
+  "betting.com",
+  "oddspedia.com",
+  "forebet.com"
 ]);
 
 /**
@@ -612,6 +723,8 @@ function buildEnglishArticle({ item, feed = {}, now = new Date() }) {
    */
   const publisherUrl = text(item.sourceUrl);
   if (!matchesExpectedDomain(publisherUrl, feed)) return null;
+  // Künye Latin alfabesi değilse kayıt /en akışına giremez (bkz. yukarısı).
+  if (!hasLatinPublisherName(publisher)) return null;
   /*
    * AÇIK UÇLU SORGU KENDİNİ SINIRLAMAZ. Türk futbolunu İngilizce tarayan
    * besleme `site:` ile daraltılamıyor; sorgu kulüp adı geçen HER sayfayı
@@ -676,6 +789,50 @@ function buildEnglishArticle({ item, feed = {}, now = new Date() }) {
 }
 
 /**
+ * KURALLAR DEĞİŞİNCE ESKİ KAYITLAR DA YENİDEN DENETLENİR.
+ *
+ * PROBLEM. `sync` mevcut dosyayı okuyup üzerine ekliyor; eski kayıtlara
+ * bir daha bakmıyordu. Bunun bedeli ölçüldü: künye kuralı eklendikten
+ * sonra YENİ kayıtlara "سانا" giremedi ama daha önce girmiş olanlar
+ * dosyada kaldı ve /en kartlarında görünmeye devam etti. Yani her kural
+ * düzeltmesi, elle veri temizliği gerektiriyordu.
+ *
+ * ÇÖZÜM. Kabul edilebilirlik bir KAPI değil, SÜREKLİ BİR KOŞUL. Her
+ * koşuda dosyadaki her kayıt güncel kurallardan yeniden geçer; geçemeyen
+ * düşer. Böylece bir kuralı sıkılaştırmak, bir sonraki koşuda geçmişi de
+ * kendiliğinden temizler.
+ *
+ * Kayıt RSS öğesi değil, depolanmış haber nesnesi olduğu için künye
+ * bilgisi `sourceName`/`publisherUrl` alanlarından okunur.
+ */
+function isStillAcceptable(article) {
+  if (!isPublishableEnglish(article)) return false;
+  if (!hasLatinPublisherName(article && article.sourceName)) return false;
+  // Yayıncı alan adı bilinmiyorsa kayıt korunur: eksik üstveri, kusur değil.
+  const publisherUrl = text(article && article.publisherUrl);
+  if (!publisherUrl) return true;
+
+  /*
+   * KAYDIN KENDİ BESLEMESİNİN KURALLARI UYGULANIR.
+   *
+   * Burası boş bir besleme nesnesiyle (`{}`) çağrılıyordu; sonuç olarak
+   * yalnızca genel engel listesi işliyor, beslemeye ÖZGÜ izinli liste
+   * (`expectDomains`) hiç bakılmıyordu. Ölçüldü: açık uçlu beslemeye
+   * izinli liste eklendikten sonra YENİ kayıtlarda SuaraGarut.ID
+   * engellendi ama dosyadaki eski kaydı ayakta kaldı.
+   *
+   * Kayıt hangi beslemeden geldiğini `discovery.source` alanında taşıyor;
+   * o besleme bulunup kendi kurallarıyla denetlenir. Besleme artık
+   * tanımlı değilse (listeden çıkarılmışsa) yalnızca genel kurallar kalır.
+   */
+  const feedId = text(article && article.discovery && article.discovery.source);
+  const feed = ENGLISH_FEEDS.find((entry) => entry.id === feedId) || {};
+  if (!matchesExpectedDomain(publisherUrl, feed)) return false;
+  return true;
+}
+
+/**
+ * YAYINLANABİLİR Mİ?/**
  * YAYINLANABİLİR Mİ?
  *
  * Üç koşul: metin İngilizce, künye var, başlık bir şey söylüyor. Türkçe
@@ -745,8 +902,10 @@ module.exports = {
   DEFAULT_BLOCKED_DOMAINS,
   detectEventType,
   extractPersonName,
+  hasLatinPublisherName,
   internalLinksFor,
   isPublishableEnglish,
+  isStillAcceptable,
   jaccard,
   matchesExpectedDomain,
   rankEnglishNews,

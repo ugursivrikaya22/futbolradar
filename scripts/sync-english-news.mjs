@@ -22,6 +22,7 @@ const {
   ENGLISH_FEEDS,
   buildEnglishArticle,
   isPublishableEnglish,
+  isStillAcceptable,
   jaccard,
   rankEnglishNews
 } = require("../services/englishNews.js");
@@ -133,7 +134,16 @@ export async function synchronizeEnglishNews(options = {}) {
   const now = options.now ? new Date(options.now) : new Date();
   const feeds = options.feeds || ENGLISH_FEEDS;
   const read = options.fetchText || fetchText;
-  const existing = options.existing || readExisting();
+  /*
+   * ESKİ KAYITLAR DA GÜNCEL KURALLARDAN GEÇER.
+   *
+   * Dosyayı olduğu gibi devralmak, bir kural sıkılaştırıldığında geçmişi
+   * dokunulmaz kılıyordu; düzeltme yalnızca yeni kayıtlara işliyordu.
+   * Süzgeç burada, birleştirmeden ÖNCE çalışır.
+   */
+  const stored = options.existing || readExisting();
+  const existing = stored.filter(isStillAcceptable);
+  const purged = stored.length - existing.length;
 
   const candidates = [];
   const failures = [];
@@ -164,6 +174,7 @@ export async function synchronizeEnglishNews(options = {}) {
     total: ranked.length,
     added,
     updated,
+    purged,
     fetched: candidates.length,
     failures,
     feeds: feeds.length
@@ -174,7 +185,8 @@ const invokedDirectly = process.argv[1] && process.argv[1].endsWith("sync-englis
 if (invokedDirectly) {
   const report = await synchronizeEnglishNews({ dryRun: process.argv.includes("--dry-run") });
   console.log(
-    `english-news: ${report.total} kayıt (${report.added} yeni, ${report.updated} güncellendi) — ` +
+    `english-news: ${report.total} kayıt (${report.added} yeni, ${report.updated} güncellendi` +
+      `${report.purged ? `, ${report.purged} kural dışı kalarak düştü` : ""}) — ` +
       `${report.feeds} beslemeden ${report.fetched} aday`
   );
   for (const failure of report.failures) {
