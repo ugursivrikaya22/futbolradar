@@ -261,11 +261,17 @@ function subsFrom(match) {
     for (const event of Array.isArray(match.events) ? match.events : []) {
       if (!isType(event, "subst", "oyuncu değişikliği", "substitution")) continue;
       const key = isTrabzonspor(eventTeamName(event)) ? "us" : "them";
-      rows[key].push({
-        minute: minuteOf(event),
-        in: text(event.player) || playerFromEvent(event) || "",
-        out: text(event.assist) || ""
-      });
+      // SAĞLAYICI SATIRINDA `player` OYUNDAN ÇIKAN, `assist` OYUNA GİRENDİR.
+      // Biçim: "M. Salah · Asist: A. Simsir · Substitution 5". Ters eşlendiği
+      // için 89'da oyundan çıkan Salah "sonradan giren" sayılıyor ve onun üç
+      // golü yedeklere yazılıyordu: yayımlanmış yazıda "4 gol sonradan oyuna
+      // dahil olan isimlerden geldi" cümlesi böyle kuruldu — aynı sayfada o
+      // isimler ilk 11'de dururken.
+      const value = String(event.value || "");
+      const assistMatch = value.match(/Asist:\s*([^·]+)/i) || value.match(/Assist:\s*([^·]+)/i);
+      const camein = text(event.assist) || (assistMatch ? text(assistMatch[1]) : "");
+      const wentoff = text(event.player) || playerFromEvent(event) || "";
+      rows[key].push({ minute: minuteOf(event), in: camein, out: wentoff });
     }
   }
 

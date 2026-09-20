@@ -63,6 +63,7 @@ const SLUGS_PATH = path.join(root, "data", "player-url-slugs.json");
 const ROUTE_MAP_PATH = path.join(root, "data", "en-route-map.json");
 const HISTORY_PATH = path.join(root, "data", "player-match-history.json");
 const TRANSFERS_PATH = path.join(root, "data", "transfers.json");
+const REMOVED_PATH = path.join(root, "data", "removed-columns.json");
 
 const GENERATOR = "scripts/generate-trabzonspor-post-match-column.mjs";
 
@@ -292,10 +293,34 @@ const built = buildColumnEntry(match, {
 
 const { entry, assessment, verdict, social, cover } = built;
 
-// An explicit editorial removal must survive scheduled regeneration.
-const removedColumns = JSON.parse(fs.readFileSync(path.join(root, "data", "removed-columns.json"), "utf8"));
-if (removedColumns.includes(entry.id)) {
-  console.log(`[ts-column] editorial removal: ${entry.id}; skipped.`);
+/**
+ * ELLE KALDIRILMIŞ YAZI GERİ GETİRİLMEZ.
+ *
+ * 20 Eylül'de yayımlanan maç sonu analizi elle silindi; bu liste o kararı
+ * zamanlanmış yeniden üretime karşı korur.
+ *
+ * İki sağlamlaştırma:
+ *
+ * 1) DOSYA OKUMASI ARTIK ÜRETİCİYİ ÇÖKERTMEZ. Çıplak readFileSync, dosya
+ *    silindiğinde ya da bozulduğunda bütün koşuyu 1 ile düşürüyordu —
+ *    kaldırma listesi olmayan bir depoda maç sonu zinciri hiç çalışmazdı.
+ *    Liste okunamıyorsa boş sayılır ve yayın kararı eskisi gibi verilir.
+ *
+ * 2) SONUÇ SATIRI. İş akışının yoklama döngüsü `sonuc=` satırını okuyor;
+ *    kaldırılmış yazı için hiçbir şey basılmadığından döngü pencere dolana
+ *    kadar aynı kararı boşuna tekrar ölçüyordu. `sonuc=kaldirildi` döngüyü
+ *    ilk yoklamada durduruyor.
+ *
+ * Karar hem Türkçe hem İngilizce adresi kapatır: slug ikisinde de aranır.
+ */
+const removedColumns = (() => {
+  const raw = readJson(REMOVED_PATH, []);
+  const rows = Array.isArray(raw) ? raw : Array.isArray(raw && raw.slugs) ? raw.slugs : [];
+  return new Set(rows.map((row) => normalize(String(row || ""))).filter(Boolean));
+})();
+if (removedColumns.has(normalize(entry.id)) || removedColumns.has(normalize(entry.en && entry.en.slug))) {
+  console.log(`[ts-column] ${entry.id} elle kaldırılmış (data/removed-columns.json) — yeniden yayımlanmayacak.`);
+  console.log("[ts-column] sonuc=kaldirildi");
   process.exit(0);
 }
 

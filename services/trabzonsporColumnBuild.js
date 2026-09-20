@@ -551,6 +551,18 @@ function buildColumnEntry(match, context = {}) {
       metaDescription: metaDescriptionEn(model),
       excerpt: excerptEn(model),
       spot: spotEn(model),
+      // ETİKETLER DE İNGİLİZCE OLMAK ZORUNDA. `en.tags` verilmezse kayıt
+      // Türkçe listeye düşüyor ve /en sayfasının altında "Maç Analizi",
+      // "Galatasaray Transferleri" yazıyordu — dil saflığı denetimi ilk
+      // yayımlanmış yazıda bunu yakaladı.
+      tags: [
+        "Trabzonspor",
+        model.opponent,
+        enCompetition(model.competition),
+        "Match analysis",
+        model.opponentFocus && model.opponentFocus.manager ? model.opponentFocus.manager : "",
+        model.opponentFocus && (model.opponentFocus.signings || []).length ? `${model.opponentFocus.team} signings` : ""
+      ].filter(Boolean),
       body: bodyEn
     },
     // Maç sayfasından yazıya köprü (bkz. scripts/inject-match-column-link.mjs).

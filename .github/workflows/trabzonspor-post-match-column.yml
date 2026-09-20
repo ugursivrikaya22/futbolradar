@@ -178,6 +178,13 @@ jobs:
             if grep -q "sonuc=draft" detect.log; then
               echo "[poll] maç bulundu ama kapılar henüz açık değil; yoklamaya devam."
             fi
+            # ELLE KALDIRILMIŞ YAZI İÇİN YOKLAMA SÜRDÜRÜLMEZ. Karar veriye
+            # bağlı değil, editöre bağlı: pencere dolana kadar aynı kararı
+            # tekrar ölçmek yalnızca koşucu dakikası harcar.
+            if grep -q "sonuc=kaldirildi" detect.log; then
+              echo "[poll] bu yazı elle kaldırılmış; yoklama durduruldu."
+              break
+            fi
             if [ "${attempt}" -lt "${POLLS:-1}" ]; then sleep 60; fi
           done
           echo "found=${found}" >> "${GITHUB_OUTPUT}"
