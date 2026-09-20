@@ -183,8 +183,8 @@ function hasLocale(field, locale) {
  * havuz açmak, aynı soruya iki farklı "topluluk kararı" üretirdi.
  *
  * Slug VERİDEN gelir çünkü adres bir yayın kararıdır: kimlik
- * (`super-lig-2026-2027-sampiyon`) bir depo anahtarıdır ve değişmemesi
- * gerekir; adres ise okunabilir olmalı (`super-lig-sampiyonu-2026-27`).
+ * (`super-lig-2026-2027-ilk-dort`) bir depo anahtarıdır ve değişmemesi
+ * gerekir; adres ise okunabilir olmalı (`super-lig-ilk-dort-2026-27`).
  * İkisini aynı dizeye bağlamak, adresi güzelleştirmek istediğimizde
  * toplanmış oyları kaybettirirdi.
  *
