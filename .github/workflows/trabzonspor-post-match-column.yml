@@ -176,9 +176,22 @@ jobs:
       # gerçekten yayımlanacakken kuruluyor; boş günlerde dakika harcamaz.
       - name: Install rasterizer browser
         if: steps.poll.outputs.found == 'true' && inputs.dry_run != 'true'
+        # SÜRÜMLER EŞLEŞMEK ZORUNDA. Önceki hâli `npm i --no-save
+        # playwright-core` ile bir sürümü, `npx --yes playwright install`
+        # ile BAŞKA (en güncel) bir sürümün tarayıcı yapısını kuruyordu.
+        # playwright-core indirdiği chromium'u yapı numarasıyla arıyor;
+        # numara tutmayınca tarayıcıyı bulamıyor. 20 Eylül 13:29 koşusunda
+        # tam olarak bu oldu:
+        #
+        #     generate-og-images: tarayıcı yok
+        #       playwright: var | chromium: yok
+        #
+        # Depo `playwright`i zaten devDependency olarak sabitliyor; kurulum
+        # artık interaction-checks ile aynı yoldan yapılıyor, böylece
+        # sürümler tanım gereği eşleşiyor.
         run: |
-          npm i --no-save playwright-core
-          npx --yes playwright install --with-deps chromium
+          npm ci --include=dev
+          npx --no-install playwright install --with-deps chromium
 
       # Oyuncu–maç zaman serisi: transfer performansı karşılaştırmasının
       # tek kaynağı. Her bitmiş maçtan sonra biraz daha doluyor.
@@ -206,7 +219,15 @@ jobs:
           # kapağın `.png` eşine çeviriyor (generate-column-pages.mjs);
           # o dosya üretilmezse ilk yazının paylaşım önizlemesi görselsiz
           # çıkar — bu betiğin var oluş sebebi olan sessiz hatanın aynısı.
-          node scripts/generate-og-images.mjs || echo "[column] OG rasterlemesi atlandı; paylaşım görseli eksik kalabilir"
+          node scripts/generate-og-images.mjs
+          # KAPI: PNG gerçekten yazıldı mı? Bu satır "|| echo ..." idi ve
+          # rasterleme sessizce atlanınca yazı yine de yayımlandı. Sonuç
+          # sadece görselsiz bir paylaşım önizlemesi olmadı: og:image
+          # hedefi olmayan sayfa `qa.mjs` kapısını düşürüyor, yani ÜRETİM
+          # DERLEMESİNİN TAMAMI kırmızıya dönüyor ve Vercel dağıtımı dahil
+          # hiçbir şey yayına çıkmıyor. 20 Eylül'de site bu yüzden saatlerce
+          # güncellenemedi. Eksik görsel artık burada, yayımdan önce durur.
+          node scripts/test-og-image.mjs
           # public/ aynası: page.css ve diğer varlıklar deponun kendi
           # senkron adımıyla tazeleniyor, yoksa public sayfalar bayat
           # stille (ve stilsiz köprü kutusuyla) yayımlanır.
