@@ -33,9 +33,16 @@
  *
  * ÇIKIŞ KODU 0. Ertelenen bir koşu çökmüş bir koşu değildir; kendi kendini
  * onaran geçici bir yarış için CI'ı kırmızıya boyamak, düzeltmeye çalıştığı
- * sorunun ta kendisi olurdu. Ama SESSİZ de kalmaz: erteleme her seferinde
- * `[ci-push] ERTELENDİ` satırıyla günlüğe düşer, böylece tekrar eden bir
- * çakışma aranabilir bir iz bırakır.
+ * sorunun ta kendisi olurdu.
+ *
+ * AMA "GEÇİCİ" VARSAYIMI BİR KEZ TUTMADI. 19 Eylül 20:40'tan 20 Eylül öğlene
+ * kadar saatlik koşuların HEPSİ ertelendi: her koşu veriyi tazeledi, 16 bin
+ * dosya üretti ve çakışma yüzünden hiçbirini yazamadı. İz yalnızca koşu
+ * günlüğünün içindeki bir satırdı; iş akışı yeşil göründüğü için kimse fark
+ * etmedi ve site 17 saat boyunca bitmiş maçları "oynanacak" gösterdi.
+ * Sebep ayrıca giderildi (main'e yazan bütün işler artık tek bir eşzamanlılık
+ * kuyruğunda), ama erteleme artık GitHub'ın kendi uyarı akışına da düşüyor:
+ * koşu özetinde görünür, aranabilir ve tekrar ederse gözden kaçmaz.
  *
  * Kullanım:
  *   node scripts/ci-commit-push.mjs "ci(matches): ..."
@@ -78,6 +85,17 @@ function tryGit(args) {
 
 function log(message) {
   console.log(`[ci-push] ${message}`);
+}
+
+/**
+ * Ertelemeyi GitHub'ın uyarı akışına düşürür: koşu özetinin başında görünür
+ * ve iş akışı listesinden aranabilir. Actions dışında (yerelde) sıradan bir
+ * satır olarak yazılır — kontrol dizisi kullanıcıya çöp göstermesin.
+ */
+function annotate(message) {
+  const oneLine = String(message).replace(/\r?\n/g, " ");
+  if (process.env.GITHUB_ACTIONS === "true") console.log(`::warning title=ci-push ertelendi::${oneLine}`);
+  else console.warn(`[ci-push] UYARI: ${oneLine}`);
 }
 
 const message = process.argv[2];
@@ -139,6 +157,7 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
 
   // ÇAKIŞMA. Üretilmiş dosyada taraf seçmek uydurma bir durum yaratır.
   tryGit(["rebase", "--abort"]);
+  annotate("Üretilmiş dosyada çakışma: bu koşunun tazelenmiş çıktısı yazılmadı.");
   console.warn(
     `[ci-push] ERTELENDİ: ${branch} dalında çakışma var, bu koşunun çıktısı yazılmadı.\n` +
     "[ci-push] Üretilmiş dosyada taraf seçilmez; doğru çıktı en güncel girdilerden\n" +
@@ -148,6 +167,7 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
   process.exit(0);
 }
 
+annotate(`${MAX_ATTEMPTS} denemede itilemedi: bu koşunun tazelenmiş çıktısı yazılmadı.`);
 console.warn(
   `[ci-push] ERTELENDİ: ${MAX_ATTEMPTS} denemede itilemedi (${branch} sürekli güncelleniyor).\n` +
   "[ci-push] Veri türetilmiş olduğu için kayıp kalıcı değil; sonraki koşu yeniden üretecek."

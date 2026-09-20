@@ -38,8 +38,14 @@ permissions:
   contents: write
 
 concurrency:
-  # Gün içi koşu sabah koşusuna yetişirse ikisi aynı dosyayı yazmasın.
-  group: broadcast-schedule
+  # main'e YAZAN HER İŞ AYNI KUYRUKTA. Ayrı gruplardayken bu iş ile saatlik
+  # güncelleme aynı anda koşuyor, ikisi de üretilmiş dosyaları yazıyor ve
+  # sonra gelen push çakışmaya düşüyordu; ci-commit-push.mjs çakışmada taraf
+  # seçmediği için o koşunun çıktısı DÜŞÜYOR. 19 Eylül 20:40'tan 20 Eylül
+  # öğlene kadar saatlik koşuların tamamı bu yüzden sessizce yazılamadı ve
+  # site bitmiş maçları "oynanacak" göstermeye devam etti. Ortak grup, işleri
+  # iptal etmeden sıraya koyar.
+  group: futbolradar-production-update
   cancel-in-progress: false
 
 jobs:
