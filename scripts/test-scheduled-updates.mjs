@@ -186,7 +186,26 @@ const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-
 // 4-8 saat gecikmeli başlıyordu (03.09.2026'da tam koşu hiç tetiklenmedi).
 // Dakikayı kaydırmak GitHub'ın önerdiği düzeltme — bkz. docs/scheduled-updates.md.
 assert.match(workflow, /cron: "7 2 \* \* \*"/);
-assert.match(workflow, /cron: "7 0-1,3-23 \* \* \*"/);
+// Saatlik nöbet 20.09.2026'da İKİYE AYRILDI: gündüz saatlik, gece iki saatte
+// bir. Gerekçe ölçümdü — koşu ~13 dakika sürüyor, depo private, yani gecenin
+// altı saatinde neredeyse hiçbir şey değişmezken saatlik tazeleme doğrudan
+// faturaya yazılıyordu. Kapsam daralmadı: gündüzün tamamı hâlâ saatlik.
+assert.match(workflow, /cron: "7 4-21 \* \* \*"/);
+assert.match(workflow, /cron: "7 0,3,22 \* \* \*"/);
+// İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 0,3,22): orası
+// tam tazelemenin saati, iki iş aynı dosyalara yazmak için sıraya giremez.
+// Saatleri tek tek çözüp doğruluyoruz ki ilerideki bir düzenleme 2'yi sessizce
+// geri sokamasın.
+{
+  const hoursOf = (expr) =>
+    expr.split(",").flatMap((part) => {
+      const [from, to] = part.split("-").map(Number);
+      return Number.isInteger(to) ? Array.from({ length: to - from + 1 }, (_, i) => from + i) : [from];
+    });
+  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0,3,22")];
+  assert.ok(!shortRunHours.includes(2), "kısa koşu 02:00 UTC'ye girmemeli — tam tazeleme orada");
+  assert.equal(new Set(shortRunHours).size, shortRunHours.length, "aynı saat iki kez tetiklenmemeli");
+}
 // Tam koşu ile saatlik koşu ÇAKIŞMAZ: saatlik ifade 02:00'ı dışarıda
 // bırakıyor. Aksi hâlde iki iş aynı dosyalara yazmak için sıraya girerdi.
 // Yalnızca dakika 7 değil, HERHANGİ bir dakikada saatte-bir joker de

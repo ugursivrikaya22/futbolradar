@@ -1,7 +1,7 @@
 # Sporx Haber Keşif Hattı
 
-FutbolRadar'ın 15 dakikada bir Sporx'i tarayıp özgün, doğrulama seviyesi
-işaretlenmiş haberler yayımlayan otomatik hattı. Görev tanımı şu sıralamayı
+FutbolRadar'ın gündüz yarım saatte bir (gece saatlik) Sporx'i tarayıp özgün,
+doğrulama seviyesi işaretlenmiş haberler yayımlayan otomatik hattı. Görev tanımı şu sıralamayı
 istiyor: Galatasaray → Fenerbahçe → Beşiktaş → Trabzonspor → Süper Lig →
 Türkiye Milli Takımı → önemli transfer gelişmeleri → Avrupa futbolundaki çok
 önemli gelişmeler.
