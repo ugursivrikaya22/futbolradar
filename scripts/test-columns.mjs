@@ -302,8 +302,12 @@ function column(overrides = {}) {
   assert.match(detail, /class="column-standfirst">Kısa özet\./, "detay sayfasında özet görünmeli");
   assert.match(detail, /"@type":"Person","name":"Yazar Adı","url":/, "detay şeması yazarı bağlamalı");
   assert.match(detail, /src="\.\.\/site\.js" defer/, "detay sayfası ortak etkileşim betiğini yüklemeli");
-  assert.match(detail, /Facebook'ta Paylaş/, "detay sayfası Facebook paylaşım eylemi taşımalı");
-  assert.match(detail, /X'te Paylaş/, "detay sayfası X paylaşım eylemi taşımalı");
+  // KESME İŞARETİ ARTIK KAÇIRILIYOR. Paylaşım etiketleri sabit şablon metni
+  // olmaktan çıkıp dile göre seçilen bir tablodan geliyor ve `escapeHtml`ten
+  // geçiyor; yani `'` çıktıda `&#39;`. Ekranda görünen metin aynı, işaretleme
+  // daha güvenli. Denetim bu yüzden iki biçimi de kabul ediyor.
+  assert.match(detail, /Facebook(?:'|&#39;)ta Paylaş/, "detay sayfası Facebook paylaşım eylemi taşımalı");
+  assert.match(detail, /X(?:'|&#39;)te Paylaş/, "detay sayfası X paylaşım eylemi taşımalı");
   assert.match(detail, /https:\/\/twitter\.com\/intent\/tweet\?text=/, "X Web Intent kullanılmalı");
   assert.match(detail, /FutbolRadar%20%7C%20futbolradar\.com/, "X metni FutbolRadar markasını taşımalı");
   assert.match(detail, /https%3A%2F%2Fwww\.futbolradar\.com%2Fkose-yazilari%2Fornek-yazi/, "X kanonik adresi taşımalı");

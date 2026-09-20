@@ -149,9 +149,14 @@ function languageSwitch(base, locale, altHref) {
   const target = current === "en" ? "tr" : "en";
   const fallback = target === "en" ? "en/index.html" : "index.html";
   const href = `${base}${String(altHref || fallback).replace(/^\.?\//, "")}`;
-  // Etiket HEDEF dilin sözlüğünden değil, MEVCUT dilin sözlüğünden gelir:
-  // Türkçe sayfada "ENG" yazar ve aria etiketi İngilizcedir ("Switch to
-  // English"), çünkü etiket kullanıcıyı GİDECEĞİ yere çağırır.
+  // GÖRÜNEN ETİKET HEDEF DİLİ GÖSTERİR, ERİŞİLEBİLİR AD SAYFANIN DİLİNDEDİR.
+  //
+  // Görünen "TR"/"ENG" bir dil KODUDUR: hedefi işaret eder ve hangi dili
+  // okursa okusun herkes tanır. `aria-label` ise ekran okuyucusunun SESLİ
+  // OKUDUĞU cümledir ve sayfanın diliyle seslendirilir — İngilizce sayfada
+  // Türkçe bir cümle ("Türkçeye geç") İngilizce sentezleyiciden anlaşılmaz
+  // çıkar. Bu yüzden iki alan farklı dillerden beslenir: kod hedeften,
+  // cümle sayfadan.
   const text = t("lang.switchText", current);
   const label = t("lang.switchLabel", current);
 
@@ -166,16 +171,18 @@ export function siteHeader(options = {}) {
   const secondary = secondaryItems.length
     ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base, locale, { showBadges: true })}</div>`
     : "";
-  // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE VAR.
+  // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE KENDİ SAYFASINA GİDER.
   //
-  // Sayfanın İngilizce sürümü henüz üretilmiyor ve düğme bu yüzden İngilizce
-  // başlıkta hiç çizilmiyordu — ama sonuç, İngilizce okuyucunun sitenin en
-  // kapsamlı maç ekranına üst çubuktan hiç ulaşamaması oldu. Düğme artık
-  // İngilizce tarafta da var; hedefi Türkçe olduğu için menü bağlantılarıyla
-  // aynı biçimde işaretleniyor (`hreflang="tr"`, etikette "(TR)").
-  const ctaTrOnly = locale !== "tr";
-  const cta = `<a class="cta" href="${base}mac-merkezi.html"${ctaTrOnly ? ' hreflang="tr" lang="tr"' : ""}>` +
-    `${escapeHtml(t("nav.matchCentre", locale))}${ctaTrOnly ? " (TR)" : ""}</a>`;
+  // Düğme bir süre İngilizce tarafta da Türkçe `mac-merkezi.html`e
+  // bağlanıyordu ve etiketinde "(TR)" taşıyordu: o sırada sayfanın
+  // İngilizcesi üretilmiyordu ve düğmeyi hiç çizmemek, İngilizce okuyucuyu
+  // sitenin en kapsamlı maç ekranından tamamen mahrum bırakıyordu.
+  //
+  // `en/match-centre.html` artık üretiliyor, dolayısıyla o gerekçe ortadan
+  // kalktı: İngilizce başlıktaki düğme İngilizce sayfaya gider, "(TR)" eki
+  // ve `lang="tr"` işareti kalkar.
+  const matchCentreHref = locale === "en" ? "en/match-centre.html" : "mac-merkezi.html";
+  const cta = `<a class="cta" href="${base}${matchCentreHref}">${escapeHtml(t("nav.matchCentre", locale))}</a>`;
 
   // ARAMA KUTUSU İKİ DİLDE DE VAR.
   //

@@ -46,6 +46,9 @@ export const POSTPROCESS_CHAIN = [
   // dizini. İkisi de kaynağından üretiliyor ve varlık damgasından ÖNCE
   // kesinleşmek zorunda (bkz. build-match-hub-client.mjs).
   { id: "match-hub-core", script: "build-match-hub-client.mjs", args: [], timeoutMinutes: 2 },
+  // Maç anlatımı çekirdeği de aynı gerekçeyle burada: `/mac/<slug>`
+  // sayfaları bu dosyayı yüklüyor ve damgadan önce kesinleşmeli.
+  { id: "match-timeline-core", script: "build-match-timeline-client.mjs", args: [], timeoutMinutes: 2 },
   { id: "match-news-index", script: "build-match-news-index.mjs", args: [], timeoutMinutes: 2 },
   // Resolve English links after match registries and Turkish pages exist.
   // Scheduled postprocessing must refresh these links as well as full builds.
@@ -73,6 +76,13 @@ export const POSTPROCESS_CHAIN = [
   // kendiliğinden düşsün diye her derlemede yeniden değerlendirilir.
   { id: "match-special", script: "inject-match-special.mjs", args: [], timeoutMinutes: 5 },
   { id: "match-focus-ticker", script: "inject-match-focus-ticker.mjs", args: [], timeoutMinutes: 5 },
+  // Ana sayfa maç vitrini. Saate bağlı: kutu maçtan 48 saat önce açılır ve
+  // GERÇEK bitiş düdüğünden 2 saat sonra kendiliğinden düşer, bu yüzden her
+  // koşuda yeniden değerlendirilmek ZORUNDA. Maç sayfasına dokunmaz;
+  // yalnızca ana sayfadaki geçici öne çıkarmayı ve takım/lig sayfasındaki
+  // iç bağlantı şeridini yazar. `match-special`den SONRA: ikisi de hero'nun
+  // ardına yazıyor ve vitrin en üstte kalmalı.
+  { id: "featured-match-spotlight", script: "generate-featured-match-spotlight.mjs", args: [], timeoutMinutes: 5 },
   // Favicon bildirimi kök-mutlak ve tek biçimli olmalı: 16 üretici kendi
   // göreli satırını basıyor, bu adım onları söküp tek bloğu koyuyor.
   { id: "favicon", script: "inject-favicon.mjs", args: [], timeoutMinutes: 8 },

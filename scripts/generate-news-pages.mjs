@@ -11,6 +11,7 @@ const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks
 // Haber durumu rozeti — İngilizce tarafla aynı servis, aynı ölçü.
 const { editorialStatusOf } = createRequire(import.meta.url)("../services/editorialStatus.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
+import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
@@ -54,17 +55,92 @@ function articleSlug(article) {
   return slugify(article.slug || article.id || article.title);
 }
 
-function articleFile(article) {
-  return `haber/${articleSlug(article)}.html`;
+/**
+ * SAYFA ÇERÇEVESİ İKİ DİLDE — ŞABLON TEK.
+ *
+ * İngilizce haber sayfası için ikinci bir şablon yazmak, aynı işaretlemeyi
+ * iki yerde bakımda tutmak olurdu. Değişen yalnızca çerçeve metinleri ve
+ * göreli yollar; gövde zaten `article.en` üzerinden geliyor.
+ */
+const PAGE_COPY = {
+  tr: {
+    lang: "tr", ogLocale: "tr_TR", inLanguage: "tr-TR",
+    breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
+    indexLabel: "Haberler", indexPath: "haberler.html",
+    sources: "Kaynaklar", internalLinks: "İlgili bağlantılar",
+    updateNote: "Güncellenecek", updatedPrefix: "Güncelleme",
+    defaultCategory: "Futbol Gündemi", noDate: "Tarih bekleniyor",
+    stripAgenda: "Gündem", stripAll: "Tüm haberler",
+    stripTeam: "Takım", stripTeamFallback: "Takım sayfası",
+    stripLive: "Canlı", stripLiveLabel: "Canlı skor", livePath: "canli-skor.html",
+    timeSuffix: " TSİ"
+  },
+  en: {
+    lang: "en", ogLocale: "en_GB", inLanguage: "en-GB",
+    breadcrumbLabel: "Breadcrumb", home: "Home",
+    indexLabel: "News", indexPath: "en/news.html",
+    sources: "Sources", internalLinks: "Related pages",
+    updateNote: "To be updated", updatedPrefix: "Updated",
+    defaultCategory: "Football Agenda", noDate: "Date to be confirmed",
+    stripAgenda: "Agenda", stripAll: "All news",
+    stripTeam: "Team", stripTeamFallback: "Team page",
+    stripLive: "Live", stripLiveLabel: "Live scores", livePath: "en/live-football-scores.html",
+    timeSuffix: " Türkiye time"
+  }
+};
+
+function copyFor(locale) {
+  return PAGE_COPY[locale === "en" ? "en" : "tr"];
 }
 
-function articleUrl(article) {
-  return `${domain}/haber/${articleSlug(article)}`;
+function articleFile(article, locale = "tr") {
+  const slug = articleSlug(article);
+  return locale === "en" ? `en/news/${slug}.html` : `haber/${slug}.html`;
+}
+
+function articleUrl(article, locale = "tr") {
+  const slug = articleSlug(article);
+  return locale === "en" ? `${domain}/en/news/${slug}.html` : `${domain}/haber/${slug}`;
 }
 
 function articleSources(article) {
   return (Array.isArray(article.sources) ? article.sources : [])
     .filter((source) => source && source.name && /^https?:\/\//i.test(String(source.url || "")));
+}
+
+/**
+ * KÜNYE ADI — İNGİLİZCE SAYFADA YAYINCI ADI, ORİJİNAL BAŞLIK DEĞİL.
+ *
+ * Künye "Sporx — <Sporx'in Türkçe başlığı>" olarak saklanıyor. Türkçe
+ * sayfada bu doğru: okuyucu hangi habere bakıldığını görüyor. İngilizce
+ * sayfada ise sayfanın tek Türkçe cümlesi bu oluyordu.
+ *
+ * Başlık ATILIYOR, bağlantı KALIYOR: atıf kaybolmuyor, okuyucu tek tıkla
+ * orijinal habere gidiyor. Okunamayan bir başlığı basmak atfı
+ * güçlendirmiyor; bağlantı zaten kaynağın kendisi.
+ */
+function sourceLabel(source, locale) {
+  const name = String((source && source.name) || "").trim();
+  if (locale !== "en") return name;
+
+  // 1) Çevirisi elle verilmişse o kullanılır.
+  const explicit = String((source && source.nameEn) || "").trim();
+  if (explicit) return explicit;
+
+  // 2) "Sporx — <Türkçe başlık>" biçiminde yayıncı adı ayıklanır.
+  const publisher = name.split(/\s+[—–-]\s+/)[0].trim();
+
+  // 3) Ayıklanan ad HÂLÂ Türkçe bir tamlamaysa ("Yüksek Divan Kurulu canlı
+  //    yayını") künye olarak adresin ALAN ADINA düşülür. Alan adı dilden
+  //    bağımsızdır ve okuyucuyu yine doğru kaynağa götürür; okunamayan bir
+  //    Türkçe künye basmaktan iyidir.
+  if (publisher && !findTurkish(publisher, { limit: 1 }).length) return publisher;
+
+  try {
+    return new URL(String(source.url)).hostname.replace(/^www\./, "");
+  } catch {
+    return publisher || name;
+  }
 }
 
 function articleInternalLinks(article) {
@@ -75,6 +151,15 @@ function articleInternalLinks(article) {
       typeof link.href === "string" &&
       !/^https?:\/\//i.test(link.href) &&
       !/^javascript:/i.test(link.href));
+}
+
+/** İngilizce takım sayfası; yoksa İngilizce takım listesi. */
+function teamPageEn(article) {
+  const slug = slugify(article.team || "");
+  if (slug && fs.existsSync(path.join(root, "en", "team", `${slug}.html`))) {
+    return `en/team/${slug}.html`;
+  }
+  return "en/teams.html";
 }
 
 function teamPage(article) {
@@ -88,27 +173,26 @@ function teamPage(article) {
   return pages[article.team] || `takimlar.html?team=${encodeURIComponent(article.team || "")}`;
 }
 
-function formatDate(value) {
+function formatDate(value, locale = "tr") {
+  const copy = copyFor(locale);
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    return "Tarih bekleniyor";
-  }
+  if (Number.isNaN(date.getTime())) return copy.noDate;
 
-  return new Intl.DateTimeFormat("tr-TR", {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
     timeZone: "Europe/Istanbul",
     day: "numeric",
     month: "long",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit"
-  }).format(date) + " TSİ";
+  }).format(date) + copy.timeSuffix;
 }
 
 function publishableArticles() {
   return publishableNews(news);
 }
 
-function jsonLd(article) {
+function jsonLd(article, locale = "tr") {
   const sources = articleSources(article);
   const newsArticle = {
     "@type": "NewsArticle",
@@ -116,8 +200,10 @@ function jsonLd(article) {
     description: article.spot || article.summary || "",
     datePublished: article.publishedAt || null,
     dateModified: article.updatedAt || article.publishedAt || null,
-    inLanguage: "tr-TR",
-    mainEntityOfPage: articleUrl(article),
+    // `headline` ve `description` yapısal veride de GÖRÜNEN metindir: arama
+    // sonucunda bu alanlar basılır. Dil etiketi metnin diliyle uyuşmalı.
+    inLanguage: copyFor(locale).inLanguage,
+    mainEntityOfPage: articleUrl(article, locale),
     image: `${domain}/assets/og-image.png`,
     author: { "@type": "Organization", name: "FutbolRadar" },
     publisher: {
@@ -155,30 +241,46 @@ function jsonLd(article) {
 /**
  * DURUM ROZETİ. Okur haberin ne kadar kesin olduğunu başlıkla birlikte
  * görür; "Son Dakika" ayrı rozettir, durumun yerine geçmez.
+ *
+ * Rozet SAYFANIN DİLİNDE basılır. `label` ve `breakingLabel` zaten
+ * `{tr, en}` taşıyor; dile bağlanmasaydı İngilizce haber sayfası
+ * "İddia" / "Son Dakika" yazardı ve dil denetimi haklı olarak düşerdi.
  */
-function statusBadges(article) {
+function statusBadges(article, locale = "tr") {
+  const lang = locale === "en" ? "en" : "tr";
   const verdict = editorialStatusOf(article);
   const badges = [
-    `<span class="mega-badge mega-badge--status" data-status="${escapeHtml(verdict.status)}">${escapeHtml(verdict.label.tr)}</span>`
+    `<span class="mega-badge mega-badge--status" data-status="${escapeHtml(verdict.status)}">${escapeHtml(verdict.label[lang])}</span>`
   ];
   if (verdict.isBreaking) {
-    badges.push(`<span class="mega-badge mega-badge--breaking">${escapeHtml(verdict.breakingLabel.tr)}</span>`);
+    badges.push(`<span class="mega-badge mega-badge--breaking">${escapeHtml(verdict.breakingLabel[lang])}</span>`);
   }
   return badges.join("");
 }
 
-function pageHtml(article) {
+function pageHtml(article, locale = "tr") {
+  const copy = copyFor(locale);
+  const base = locale === "en" ? "../../" : "../";
   const seo = article && typeof article.seo === "object" && article.seo ? article.seo : {};
-  const url = /^https?:\/\//i.test(String(seo.canonical || "")) ? String(seo.canonical) : articleUrl(article);
+  // İngilizce sayfada Türkçe `canonical` kullanılamaz: kayıttaki canonical
+  // her zaman Türkçe `haber/` yolunu gösteriyor ve İngilizce sürümü kendi
+  // Türkçe eşine kanonikleştirmek onu indeksten düşürürdü.
+  const url = locale === "en"
+    ? articleUrl(article, "en")
+    : (/^https?:\/\//i.test(String(seo.canonical || "")) ? String(seo.canonical) : articleUrl(article));
   const title = String(seo.metaTitle || `${article.title} | FutbolRadar`).trim();
   const description = String(seo.metaDescription || article.spot || article.summary || article.title).trim();
-  const dateLabel = formatDate(article.publishedAt);
+  const dateLabel = formatDate(article.publishedAt, locale);
   const updatedLabel = article.updatedAt && article.updatedAt !== article.publishedAt
-    ? formatDate(article.updatedAt)
+    ? formatDate(article.updatedAt, locale)
     : "";
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
-  const internalLinks = articleInternalLinks(article);
+  // `internalLinks` etiketleri ve hedefleri Türkçe ("Galatasaray transfer
+  // radarı" → `galatasaray-transfer-radar.html`). İngilizce sayfada hem
+  // metin hem varış Türkçe olacağı için bu blok basılmaz; alt şeritteki
+  // İngilizce rotalar okuyucuyu zaten devam ettiriyor.
+  const internalLinks = locale === "en" ? [] : articleInternalLinks(article);
   const bodyAnchors = Array.isArray(article.bodyAnchors) ? article.bodyAnchors : [];
   const body = article.body
     .map((paragraph, index) => ({
@@ -194,19 +296,24 @@ function pageHtml(article) {
   const tagHtml = tags.length
     ? `<div class="column-tags">${tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>`
     : "";
-  const updateNote = String(article.updateNote || "").trim();
+  // GÜNCELLEME NOTU EDİTORYAL TÜRKÇE METİNDİR ("… güncellenecektir.").
+  // Kutunun başlığı çevrildi ama içindeki cümle Türkçe kalıyordu. İngilizce
+  // karşılığı (`updateNoteEn`) varsa basılır, yoksa kutu hiç çizilmez.
+  const updateNote = locale === "en"
+    ? String(article.updateNoteEn || "").trim()
+    : String(article.updateNote || "").trim();
   const updateNoteHtml = updateNote
-    ? `<aside class="article-update-note" role="note"><strong>Güncellenecek</strong><p>${escapeHtml(updateNote)}</p></aside>`
+    ? `<aside class="article-update-note" role="note"><strong>${escapeHtml(copy.updateNote)}</strong><p>${escapeHtml(updateNote)}</p></aside>`
     : "";
   const sourceHtml = sources.length
-    ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">Kaynaklar</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(source.name)}</a></li>`).join("")}</ul></section>`
+    ? `<section class="article-sources" aria-labelledby="article-sources-title"><h2 id="article-sources-title">${escapeHtml(copy.sources)}</h2><ul>${sources.map((source) => `<li><a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(sourceLabel(source, locale))}</a></li>`).join("")}</ul></section>`
     : "";
   const internalLinksHtml = internalLinks.length
-    ? `<section class="article-sources" aria-labelledby="article-internal-links-title"><h2 id="article-internal-links-title">İlgili bağlantılar</h2><ul>${internalLinks.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`).join("")}</ul></section>`
+    ? `<section class="article-sources" aria-labelledby="article-internal-links-title"><h2 id="article-internal-links-title">${escapeHtml(copy.internalLinks)}</h2><ul>${internalLinks.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a></li>`).join("")}</ul></section>`
     : "";
 
   return `<!doctype html>
-<html lang="tr">
+<html lang="${copy.lang}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -215,7 +322,7 @@ function pageHtml(article) {
     <link rel="canonical" href="${escapeHtml(url)}" />
     <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
-    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:locale" content="${copy.ogLocale}" />
     <meta property="og:site_name" content="FutbolRadar" />
     <meta property="og:url" content="${escapeHtml(url)}" />
     <meta property="og:title" content="${escapeHtml(title)}" />
@@ -225,18 +332,18 @@ function pageHtml(article) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${domain}/assets/og-image.png" />
-    <script type="application/ld+json">${JSON.stringify(jsonLd(article))}</script>
-    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../page.css" />
+    <script type="application/ld+json">${JSON.stringify(jsonLd(article, locale))}</script>
+    <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="${base}site.webmanifest" />
+    <link rel="stylesheet" href="${base}page.css" />
   </head>
   <body class="subpage">
-${siteHeader({ base: "../" })}
+${siteHeader({ base, locale })}
     <main class="container">
-      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../haberler.html">Haberler</a><span>${escapeHtml(article.title)}</span></nav>
+      <nav class="breadcrumb" aria-label="${escapeHtml(copy.breadcrumbLabel)}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(copy.home)}</a><span>/</span><a href="${base}${copy.indexPath}">${escapeHtml(copy.indexLabel)}</a><span>${escapeHtml(article.title)}</span></nav>
       <article class="column-article">
         <header class="column-article-head">
-          <div class="column-article-meta">${statusBadges(article)}<span>${escapeHtml(article.category || "Futbol Gündemi")}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">Güncelleme: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
+          <div class="column-article-meta">${statusBadges(article, locale)}<span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
           <p class="lead">${escapeHtml(description)}</p>
           ${tagHtml}
@@ -248,23 +355,23 @@ ${siteHeader({ base: "../" })}
         ${internalLinksHtml}
         ${sourceHtml}
       </article>
-      <section class="source-strip" aria-label="Haberden devam rotası">
-        <div><span>Gündem</span><b><a href="../haberler.html">Tüm haberler</a></b></div>
-        <div><span>Takım</span><b><a href="../${escapeHtml(teamPage(article))}">${escapeHtml(article.team || "Takım sayfası")}</a></b></div>
-        <div><span>Canlı</span><b><a href="../canli-skor.html">Canlı skor</a></b></div>
+      <section class="source-strip" aria-label="${escapeHtml(copy.breadcrumbLabel)}">
+        <div><span>${escapeHtml(copy.stripAgenda)}</span><b><a href="${base}${copy.indexPath}">${escapeHtml(copy.stripAll)}</a></b></div>
+        <div><span>${escapeHtml(copy.stripTeam)}</span><b><a href="${base}${escapeHtml(locale === "en" ? teamPageEn(article) : teamPage(article))}">${escapeHtml(article.team || copy.stripTeamFallback)}</a></b></div>
+        <div><span>${escapeHtml(copy.stripLive)}</span><b><a href="${base}${copy.livePath}">${escapeHtml(copy.stripLiveLabel)}</a></b></div>
       </section>
     </main>
-${siteFooter({ base: "../" })}
-    <script src="../site.js" defer></script>
-    <script src="../app.js" defer></script>
+${siteFooter({ base, locale })}
+    <script src="${base}site.js" defer></script>
+    <script src="${base}app.js" defer></script>
   </body>
 </html>
 `;
 }
 
-function writeArticle(article) {
-  const file = articleFile(article);
-  const html = pageHtml(article);
+function writeArticle(article, locale = "tr") {
+  const file = articleFile(article, locale);
+  const html = pageHtml(article, locale);
   for (const targetRoot of [root, path.join(root, "public")]) {
     const target = path.join(targetRoot, file);
     fs.mkdirSync(path.dirname(target), { recursive: true });
@@ -327,9 +434,21 @@ ${entries}
 
 const articles = publishableArticles();
 for (const article of articles) {
-  writeArticle(article);
+  writeArticle(article, "tr");
 }
+
+// ── İNGİLİZCE HABER SAYFALARI ──────────────────────────────────────────────
+//
+// Yalnızca İngilizce sürümü olan haberler. `publishableNews` zaten eliyor;
+// burada ayrıca sayfa yazılmayan bir habere İngilizce kart bağlanmasının
+// önüne geçilmiş oluyor — İngilizce liste ile İngilizce sayfa kümesi
+// TANIM GEREĞİ aynı süzgeçten geçiyor.
+const englishArticles = publishableNews(news, { locale: "en" });
+for (const article of englishArticles) {
+  writeArticle(article, "en");
+}
+
 updateSitemap(articles);
 const freshCount = updateNewsSitemap(articles);
 
-console.log(`Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"} (news-sitemap: ${freshCount} taze haber)`);
+console.log(`Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"} + ${englishArticles.length} English (news-sitemap: ${freshCount} taze haber)`);

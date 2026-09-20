@@ -33,7 +33,7 @@ import { readJsonFile } from "./lib/readJsonFile.mjs";
 import { fetchSporxCandidates, fetchArticlePublishedAt } from "./lib/sporxFeed.mjs";
 
 const require = createRequire(import.meta.url);
-const { classifyCandidate, buildArticle, dedupeArticleSeo, isGenericArticle, jaccard } = require("../services/sporxNews.js");
+const { classifyCandidate, buildArticle, dedupeArticleSeo, dedupeEnglishSeo, isGenericArticle, jaccard } = require("../services/sporxNews.js");
 const { asList } = require("../services/newsFeed.js");
 
 const root = process.cwd();
@@ -163,7 +163,11 @@ async function main() {
 
   // Başlık/açıklama tekilliği depo genelinde garanti edilir (SEO denetimi
   // yinelenen başlığı reddeder); kural tek yerde: dedupeArticleSeo.
-  const updatedNews = dedupeArticleSeo([...newArticles, ...news]);
+  // Tekilleştirme İKİ DİL İÇİN DE. İngilizce şablon özne düştüğünde aynı
+  // cümleyi üretebiliyor ("Claim of a statement in European Football on the
+  // current agenda"); Türkçe başlığı ayrıştırıp İngilizcesini kopya
+  // bırakmak, kopyayı yalnızca göz önünden kaldırmak olurdu.
+  const updatedNews = dedupeEnglishSeo(dedupeArticleSeo([...newArticles, ...news]));
   fs.writeFileSync(NEWS_PATH, `${JSON.stringify(updatedNews, null, 2)}\n`, "utf8");
 
   const updatedSeen = pruneSeen([...seen, ...newlySeen], now);
