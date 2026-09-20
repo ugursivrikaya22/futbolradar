@@ -142,7 +142,17 @@ jobs:
           found=false
           for attempt in $(seq 1 "${POLLS:-1}"); do
             echo "::group::yoklama ${attempt}/${POLLS}"
-            node scripts/sync-live-fixtures.mjs --apply || echo "[poll] sağlayıcı senkronu başarısız; depodaki veriyle denenecek"
+            # DÖKÜM YAŞ PENCERESİNE TAKILIYOR. sync-live-fixtures bitmiş bir
+            # maçın olay akışını, istatistiğini ve kadrosunu yalnızca ilk
+            # düdüğün üstünden 8 saat geçmeden istiyor. Koşucular düştüğünde
+            # ya da yazı sonradan istendiğinde maç o pencerenin dışına düşüyor
+            # ve dökümü bir daha hiç sorulmuyor: 19 Eylül Trabzonspor-
+            # Galatasaray maçı ertesi sabah FINISHED 4-0 göründüğü hâlde
+            # "eksik veri: events, statistics, lineups" diyerek taslakta
+            # kaldı. --match o tek maçı yaşına bakmadan döküm listesine alır.
+            SYNC_ARGS="--apply"
+            [ -n "${MATCH_ID}" ] && SYNC_ARGS="${SYNC_ARGS} --match=${MATCH_ID}"
+            node scripts/sync-live-fixtures.mjs ${SYNC_ARGS} || echo "[poll] sağlayıcı senkronu başarısız; depodaki veriyle denenecek"
             node scripts/generate-trabzonspor-post-match-column.mjs ${ARGS} 2>&1 | tee detect.log
             echo "::endgroup::"
             # AÇIK SİNYAL. Üretici her koşuda `sonuc=published|draft|yok`

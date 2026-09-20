@@ -65,6 +65,33 @@ const targets = selectDetailTargets([
 ], { nowMs: targetNow, limit: 5 });
 assert.deepEqual(targets.map((item) => item.id), ["tr", "eu"]);
 
+// YAŞ PENCERESİ DIŞINDA KALAN MAÇIN DÖKÜMÜ HÂLÂ İSTENEBİLMELİ. Bitmiş maçın
+// dökümü normalde ilk düdükten sonraki 8 saat içinde isteniyor; koşucular
+// saatlerce düştüğünde maç o pencerenin dışına düşüyor ve olay akışı,
+// istatistik ve kadro BİR DAHA HİÇ sorulmuyordu (19 Eylül Trabzonspor-
+// Galatasaray). --match verilen maç yaşına bakılmaksızın listenin başına
+// alınır; kimlik ya da sağlayıcı kimliği üzerinden eşleşir.
+const agedOut = [
+  { id: "ts-gs", providerId: "1584420", homeTeam: "Trabzonspor", awayTeam: "Galatasaray", kickoff: "2026-09-19T17:00:00Z", status: "FINISHED", league: "Süper Lig" },
+  { id: "fresh", homeTeam: "Samsunspor", awayTeam: "Rizespor", kickoff: "2026-09-20T06:00:00Z", status: "FINISHED", league: "Süper Lig" }
+];
+const agedNow = Date.parse("2026-09-20T09:30:00Z");
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5 }).map((item) => item.id),
+  ["fresh"],
+  "8 saati geçen bitmiş maç varsayılanda döküm istemez"
+);
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5, match: "ts-gs" }).map((item) => item.id),
+  ["ts-gs", "fresh"],
+  "--match verilen maç yaş penceresini deler ve listenin başına geçer"
+);
+assert.deepEqual(
+  selectDetailTargets(agedOut, { nowMs: agedNow, limit: 5, match: "1584420" }).map((item) => item.id),
+  ["ts-gs", "fresh"],
+  "--match sağlayıcı kimliğiyle de eşleşir"
+);
+
 // Standings update only changed fields; a later check with identical football
 // data does not rewrite timestamps or records.
 const teams = [{ id: "galatasaray", providerId: "645", name: "Galatasaray", rank: 2, played: 1, points: 3, standingsStatus: "live" }];
