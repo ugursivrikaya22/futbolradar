@@ -54,6 +54,8 @@ import {
   istanbulIso,
   leadersSectionHtml,
   lineupsSectionHtml,
+  matchCenterPlusPayloadHtml,
+  matchCenterPlusSectionsHtml,
   longDate,
   nextMatchesSectionHtml,
   matchFollowHtml,
@@ -639,6 +641,29 @@ function sameMatch(entry, record) {
   return record && isSameFixture(entry, record) && sameClub(entry.homeTeam, record.homeTeam) && sameClub(entry.awayTeam, record.awayTeam);
 }
 
+/**
+ * UNDERSTAT ŞUT DEPOSU — ŞUT HARİTASI VE xG EĞRİSİNİN KAYNAĞI.
+ *
+ * Ana sağlayıcı şut koordinatı vermiyor; beş büyük ligdeki maçlar için
+ * koordinatlar `scripts/sync-understat-shots.mjs` ile önceden çekilip
+ * depoya yazılıyor. Depo yoksa ya da maç kapsam dışıysa alan boş kalır
+ * ve şut haritası bölümü GİZLİ doğar — uydurma koordinat üretilmez.
+ */
+const understatShots = (() => {
+  try {
+    const raw = fs.readFileSync(path.join(root, "data", "understat-shots.json"), "utf8");
+    const parsed = JSON.parse(raw);
+    return parsed && parsed.matches && typeof parsed.matches === "object" ? parsed.matches : {};
+  } catch {
+    return {};
+  }
+})();
+
+function shotsFor(entry) {
+  const record = entry && entry.slug ? understatShots[entry.slug] : null;
+  return record && Array.isArray(record.shots) && record.shots.length ? record.shots : [];
+}
+
 function detailFor(entry) {
   const ids = entry.providerIds || {};
   const fromCalendar = calendarMatches.find((match) => (ids.apiFootball && match.providerIds && String(match.providerIds.apiFootball) === String(ids.apiFootball)) || sameMatch(entry, match)) || null;
@@ -662,6 +687,13 @@ function detailFor(entry) {
     events,
     substitutions,
     lineups: pickArray("lineups"),
+    // Maç merkezi zenginleştirmesi (oyuncu puanları, ısı haritası, şut
+    // haritası) bu iki alandan besleniyor. Depoda yoksa boş dizi kalır ve
+    // ilgili bölümler hiç açılmaz — uydurma yok.
+    players: pickArray("players"),
+    // Şut koordinatı ana sağlayıcıda yok; varsa Understat deposundan gelir
+    // (beş büyük lig). Kapsam dışı maçta boş kalır ve bölüm açılmaz.
+    shots: pickArray("shots").length ? pickArray("shots") : shotsFor(entry),
     statistics: pickArray("statistics", twoSided),
     coaches: (fromEditorial && fromEditorial.coaches) || null,
     summary: (fromEditorial && fromEditorial.summary) || null,
@@ -1108,6 +1140,7 @@ function pageHtml(entry, locale, options) {
       // hemen yukarıda duruyor, okuyucu neyi paylaştığını görmüş oluyor.
       shareCardSectionHtml(detail, entry, ctx),
       matchPollSectionHtml(ctx),
+      matchCenterPlusSectionsHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       // Puanlama YALNIZCA bitmiş maçta açılır ve kadro kaydı yoksa hiç
       // basılmaz; kararı bölümün kendisi veriyor (matchSeoPage.mjs).
@@ -1133,6 +1166,7 @@ function pageHtml(entry, locale, options) {
       matchPollSectionHtml(ctx),
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
+      matchCenterPlusSectionsHtml(ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       // Maça sonradan katılan okuyucu "kim yok" diye de soruyor; blok
       // kendi verisi yoksa zaten hiç basılmıyor.
@@ -1162,6 +1196,7 @@ function pageHtml(entry, locale, options) {
       radarPulseSectionHtml(ctx),
       eventsSectionHtml([], ctx),
       statsSectionHtml([], ctx),
+      matchCenterPlusSectionsHtml(ctx),
       commentsSectionHtml(ctx)
     ];
   }
@@ -1255,7 +1290,9 @@ function pageHtml(entry, locale, options) {
     <script src="${base}radar-fan.js" defer></script>
     <script src="${base}match-timeline.js" defer></script>
     <script src="${base}match-center.js" defer></script>
+    <script src="${base}match-center-plus.js" defer></script>
     <script src="${base}ai-match-center.js" defer></script>
+    ${matchCenterPlusPayloadHtml(detail, entry, state)}
   </body>
 </html>
 `;
