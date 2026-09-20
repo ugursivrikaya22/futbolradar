@@ -352,9 +352,31 @@ function renderTurkish(model) {
           : `Trabzonspor'un golleri kayıtlı bir asist taşımıyor; bitiriciler pozisyonları büyük ölçüde kendileri üretti.`
       );
     }
-    const late = model.goals.filter((goal) => Number(String(goal.minute).split("+")[0]) >= 75);
+    const minuteNumber = (goal) => Number(String(goal.minute).split("+")[0]) || 0;
+    const late = model.goals.filter((goal) => minuteNumber(goal) >= 75);
     if (late.length) {
-      closing.push(`Son çeyrekte (75. dakika ve sonrası) ${late.length} gol düştü; maçın tabelası geç şekillendi.`);
+      // TABELANIN GEÇ ŞEKİLLENMESİ GOL SAYMAKLA ÖLÇÜLMEZ. Önceki sürüm son
+      // çeyrekte tek gol görünce "tabela geç şekillendi" diyordu; 4-0'lık
+      // maçta dört golün üçü 44. dakikada bitmişken bu, yazının kendi
+      // verisiyle çelişen bir cümleydi. Ölçü artık BELİRLEYİCİ gol: kazanan
+      // tarafın bir daha kaybetmediği üstünlüğü kurduğu an.
+      let us = 0;
+      let them = 0;
+      let decisive = null;
+      for (const goal of model.goals) {
+        if (goal.forUs) us += 1; else them += 1;
+        if (decisive === null && us !== them) decisive = { minute: minuteNumber(goal), forUs: us > them };
+        else if (decisive && ((decisive.forUs && us <= them) || (!decisive.forUs && them <= us))) {
+          decisive = us === them ? null : { minute: minuteNumber(goal), forUs: us > them };
+        }
+      }
+      closing.push(
+        decisive && decisive.minute >= 75
+          ? `Son çeyrekte (75. dakika ve sonrası) ${late.length} gol düştü ve sonucu belirleyen an da oradaydı: maçın tabelası geç şekillendi.`
+          : decisive
+            ? `Son çeyrekte (75. dakika ve sonrası) ${late.length} gol düştü; ancak sonucu belirleyen üstünlük ${decisive.minute}. dakikada kurulmuştu — bu goller tabelayı değiştirmedi, büyüttü.`
+            : `Son çeyrekte (75. dakika ve sonrası) ${late.length} gol düştü.`
+      );
     }
     if (closing.length) body.push(closing.join(" "));
   }
@@ -385,7 +407,7 @@ function renderTurkish(model) {
         ? `Üstünlük ${leadChanges} kez el değiştirdi; iki takım da maçın hiçbir bölümünde sonucu güvenceye alamadı.`
         : leadChanges === 2
           ? `Durum iki kez değişti: maçın yönü tek bir anda değil, iki ayrı kırılmada belirlendi.`
-          : `Skor çizgisi bir kez yön değiştirdi ve sonrasında iki takım da o çizgiyi kabul ederek oynadı.`)
+          : `Skor çizgisi hiç el değiştirmedi: öne geçen taraf önde kalmayı sürdürdü ve maç tek yönde ilerledi.`)
     );
   }
 
@@ -672,7 +694,13 @@ function renderTurkish(model) {
     const assistingSubs = model.goals.filter((goal) => goal.forUs && goal.assist && inNames.has(normalize(goal.assist)));
     coaching.push(
       scoringSubs.length || assistingSubs.length
-        ? `Yedekten girenlerin katkısı ölçülebilir düzeyde: ${scoringSubs.length} gol ve ${assistingSubs.length} asist doğrudan sonradan oyuna dahil olan isimlerden geldi. Değişiklikler, kadro tazelemenin ötesinde skora dokunan müdahalelerdi.`
+        // SIFIRI SAYMA. Önceki sürüm her iki kalemi de yazıyordu ve "0 gol ve
+        // 1 asist" gibi bir cümle kuruyor, ardından da değişiklikleri "skora
+        // dokunan müdahaleler" diye niteliyordu — biri boşken abartılı.
+        ? `Yedekten girenlerin katkısı ölçülebilir düzeyde: ${[
+            scoringSubs.length ? `${scoringSubs.length} gol` : "",
+            assistingSubs.length ? `${assistingSubs.length} asist` : ""
+          ].filter(Boolean).join(" ve ")} doğrudan sonradan oyuna dahil olan isimlerden geldi.${scoringSubs.length ? " Değişiklikler, kadro tazelemenin ötesinde skora dokunan müdahalelerdi." : ""}`
         : `Sonradan oyuna giren isimler gol ya da asist kalemine yansımadı; değişikliklerin etkisi tabelada değil, oyunun dengesinde aranmalı.`
     );
   }
@@ -790,9 +818,18 @@ function renderTurkish(model) {
   if (dueller) production.push(`İkili mücadelede öne çıkan ${playerLink(dueller.name, links)} oldu (${num(dueller.duelsWon)} kazanılan mücadele).`);
   const passer = ours.filter((row) => num(row.passes) >= 30)
     .sort((left, right) => num(right.passes) - num(left.passes))[0];
-  if (passer) production.push(`Oyunun dağıtım merkezi ${playerLink(passer.name, links)}: ${num(passer.passes)} pas${playerPassRate(passer) !== null ? `, %${playerPassRate(passer)} isabet` : ""}.`);
   const keeper = ours.filter((row) => num(row.saves) > 0)
     .sort((left, right) => num(right.saves) - num(left.saves))[0];
+  // EN ÇOK PAS ATAN KALECİYSE BU BİR ÖVGÜ DEĞİL, BULGUDUR. "Oyunun dağıtım
+  // merkezi" cümlesi orta saha için kurulmuştu; kaleci o listenin başına
+  // çıktığında aynı cümle topun neden geriden çevrildiğini övgüye dönüştürüyor.
+  const passerIsKeeper = passer && keeper && normalize(passer.name) === normalize(keeper.name);
+  if (passer) {
+    const rate = playerPassRate(passer) !== null ? `, %${playerPassRate(passer)} isabet` : "";
+    production.push(passerIsKeeper
+      ? `Takımın en çok pas atan ismi kaleci ${playerLink(passer.name, links)} oldu: ${num(passer.passes)} pas${rate}. Topun en çok geriden çevrildiği bir gecede bu, oyun kurmanın nerede düğümlendiğini de söyler.`
+      : `Oyunun dağıtım merkezi ${playerLink(passer.name, links)}: ${num(passer.passes)} pas${rate}.`);
+  }
   if (keeper) production.push(`Kalede ${playerLink(keeper.name, links)} ${num(keeper.saves)} kurtarışla kaydını tamamladı.`);
   if (production.length >= 3) {
     body.push("## Sayılarla bireysel üretim");

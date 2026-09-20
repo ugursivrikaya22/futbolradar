@@ -34,8 +34,9 @@ const {
   passRateFrom,
   playerKey
 } = require("../services/playerMatchHistory.js");
-const { readiness: readinessGate, selectMatch: selectMatchGate } = require("../services/trabzonsporMatchColumn.js");
+const { readiness: readinessGate, selectMatch: selectMatchGate, buildModel: buildModelGate } = require("../services/trabzonsporMatchColumn.js");
 const { buildOpponentFocus, isCompetitive, signingsFor } = require("../services/opponentFocus.js");
+const { renderTurkish } = require("../services/trabzonsporColumnWriter.js");
 
 let failures = 0;
 function check(label, condition, detail) {
@@ -587,6 +588,44 @@ console.log("\n[14] İnceleme bulgularına karşı korumalar");
     "kimliksiz satır ad/takım anahtarı alır",
     playerKey({ name: "P. Sörloth", team: "Trabzonspor" }).startsWith("n:")
   );
+}
+
+console.log("\n[15] Yayımlanmış yazıda yakalanan hatalar");
+{
+  // (a) OYUNCU DEĞİŞİKLİĞİ YÖNÜ. Sağlayıcı satırında `player` oyundan ÇIKAN,
+  //     `assist` oyuna GİRENDİR. Ters eşlendiği için 19 Eylül yazısında
+  //     "4 gol sonradan oyuna dahil olan isimlerden geldi" yazıyordu; oysa
+  //     o goller ilk 11'deki isimlerindi ve aynı sayfa onları ilk 11'de
+  //     listeliyordu.
+  const swapped = buildModelGate(fullMatch({
+    events: [
+      { time: "4'", team: { name: "Trabzonspor" }, type: "Goal", detail: "Normal Goal", value: "M. Salah · Asist: M. Eskihellac · Normal Goal" },
+      { time: "89'", team: { name: "Trabzonspor" }, type: "subst", detail: "Substitution 5", value: "M. Salah · Asist: A. Simsir · Substitution 5" }
+    ],
+    substitutions: []
+  }));
+  const row = swapped.subs.us[0];
+  check("oyuna giren `assist` alanından okunur", row && row.in === "A. Simsir", JSON.stringify(row));
+  check("oyundan çıkan `player` alanından okunur", row && row.out === "M. Salah", JSON.stringify(row));
+  check("golcü yedekten girenler listesine düşmez", row && row.in !== "M. Salah");
+
+  // (b) TABELA GEÇ ŞEKİLLENDİ, GOL SAYMAKLA ÖLÇÜLMEZ. Dört golün üçü 44'te
+  //     bitmişken son çeyrekteki tek gol "tabela geç şekillendi" demeye
+  //     yetmemeli.
+  const earlyBlocks = renderTurkish(buildModelGate(fullMatch({
+    score: { home: 4, away: 0 },
+    events: [
+      { time: "4'", team: { name: "Trabzonspor" }, type: "Goal", detail: "Normal Goal", value: "M. Salah · Normal Goal" },
+      { time: "39'", team: { name: "Trabzonspor" }, type: "Goal", detail: "Normal Goal", value: "N. Saviolo · Normal Goal" },
+      { time: "44'", team: { name: "Trabzonspor" }, type: "Goal", detail: "Normal Goal", value: "M. Salah · Normal Goal" },
+      { time: "80'", team: { name: "Trabzonspor" }, type: "Goal", detail: "Normal Goal", value: "M. Salah · Normal Goal" }
+    ]
+  })));
+  const early = (Array.isArray(earlyBlocks) ? earlyBlocks.join("\n") : String(earlyBlocks));
+  check("erken biten maçta 'tabela geç şekillendi' denmez", !early.includes("tabelası geç şekillendi"));
+  check("belirleyici anın dakikası yazılır", early.includes("dakikada kurulmuştu"));
+  check("tek yönlü maçta skor çizgisi 'yön değiştirdi' denmez", !early.includes("Skor çizgisi bir kez yön değiştirdi"));
+  check("tek yönlü maç böyle anlatılır", early.includes("Skor çizgisi hiç el değiştirmedi"));
 }
 
 console.log(
