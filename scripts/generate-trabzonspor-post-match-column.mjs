@@ -292,6 +292,13 @@ const built = buildColumnEntry(match, {
 
 const { entry, assessment, verdict, social, cover } = built;
 
+// An explicit editorial removal must survive scheduled regeneration.
+const removedColumns = JSON.parse(fs.readFileSync(path.join(root, "data", "removed-columns.json"), "utf8"));
+if (removedColumns.includes(entry.id)) {
+  console.log(`[ts-column] editorial removal: ${entry.id}; skipped.`);
+  process.exit(0);
+}
+
 console.log(`[ts-column] veri kapsamı: ${verdict.ready ? "tam" : `eksik (${verdict.missing.join(", ")})`}`);
 console.log(`[ts-column] uzunluk: ${assessment.words} kelime (TR), ${assessment.wordsEn} kelime (EN)`);
 console.log(`[ts-column] durum: ${entry.status}${assessment.reasons.length ? ` — ${assessment.reasons.join("; ")}` : ""}`);
