@@ -586,7 +586,14 @@ function todayFixtureCount() {
         await open('mac-detay.html?id=' + encodeURIComponent(record.fixtureId));
         await page.locator('[data-api-target="match-analysis"]').scrollIntoViewIfNeeded();
         const tabs = page.locator('.match-analysis-tab');
-        await tabs.first().waitFor({ timeout: 45000 });
+        // SEKMELER AĞDAN GELİYOR, ÇİZİMDEN DEĞİL. mac-detay sayfası analizi
+        // /api/match-analysis'ten istiyor; denetim statik sunucuda koştuğu
+        // için o uç yok ve istemci 681 KB'lık data/match-analyses.json'a
+        // düşüyor. Bu dosyanın indirilip ayrıştırılması, aynı anda birkaç
+        // tarayıcı koşarken varsayılan 15 saniyeyi aşabiliyor: senaryo aynı
+        // commit'te yedi genişlikte geçip ikisinde bu yüzden düştü. Süre
+        // sekmelerin varlığını gevşetmiyor, yalnızca ağ payını tanıyor.
+        await tabs.first().waitFor({ timeout: 60000 });
         for (let i = 0; i < await tabs.count(); i++) {
           const tab = tabs.nth(i);
           await click(tab);
