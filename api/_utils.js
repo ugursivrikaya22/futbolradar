@@ -44,6 +44,10 @@ const CACHE_POLICIES = Object.freeze({
   // Ana sayfa anketi yanıtı seçmene özel alan taşıyor (`alreadyVoted`,
   // `choice`); oy uç noktasıyla aynı gerekçeyle önbelleğe alınmaz.
   "home-poll": { noStore: true },
+  // Yorum ve oyuncu puanı yanıtı SEÇMENE ÖZEL: "benim beğenim", "benim
+  // puanım" alanları var. Önbelleğe alınsa bir okuyucunun durumu
+  // başkasına servis edilirdi.
+  "match-social": { noStore: true },
   // Fenerbahçe-Beşiktaş "kim kazanır" anketi: aynı gerekçe, seçmene özel alan.
   "match-winner-vote": { noStore: true },
   // Maç dosyası ilk 11'i: kadro açıklandığı an sayfada görünmeli, o yüzden
