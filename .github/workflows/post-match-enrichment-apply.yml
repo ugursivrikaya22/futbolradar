@@ -51,7 +51,17 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          fetch-depth: 0
+          # SIĞ KLON. Bu depo ~14.000 üretilmiş dosya taşıyor ve her saatlik CI
+          # commit'i bunların büyük kısmına dokunuyor; tam geçmişi çekmek koşu
+          # başına dakikalar sürüyordu ve private depoda o dakikalar
+          # faturalanıyor. Bu işin geçmişe ihtiyacı yok: yalnızca güncel veriyi
+          # okuyup üstüne yazıyor.
+          #
+          # 1 DEĞİL 20: scripts/ci-commit-push.mjs itme reddedilirse
+          # `git fetch` + `git rebase origin/<dal>` yapıyor. Derinlik 1'de ortak
+          # ata bulunamaz ve rebase düşer. 20 commit, otomatik koşuların arasına
+          # giren sürüklenme için fazlasıyla yeterli bir tampon.
+          fetch-depth: 20
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

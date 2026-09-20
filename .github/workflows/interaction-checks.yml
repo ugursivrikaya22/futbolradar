@@ -26,9 +26,30 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # TARAYICI ÖNBELLEĞİ. Chromium indirmesi her koşuda sıfırdan yapılıyordu
+      # (~1-2 dakika × koşu başına). Sürüm anahtarı package-lock.json'dan
+      # geliyor, yani Playwright yükseltilince önbellek kendiliğinden
+      # tazeleniyor; --with-deps'in kurduğu sistem kütüphaneleri önbelleğe
+      # girmediği için o adım her koşuda yine çalışıyor.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium
       # postbuild gates success on lint, types, all routes and real clicks.
+      #
+      # GENİŞLİK KÜMESİ DALA GÖRE. Tıklanabilirlik denetimi dokuz genişlikte
+      # 365 senaryo koşuyor ve koşu ~50 dakika sürüyor; private depoda her PR
+      # push'u bunu baştan ödüyor. PR'da üç temsili genişlik koşuyor (mobil
+      # 390, tablet 768, masaüstü 1440), main'e push'ta dokuzunun tamamı.
+      #
+      # Hiçbir senaryo atlanmıyor, gevşetilmiyor ya da karantinaya alınmıyor:
+      # değişen tek şey PR'da kaç genişlikte tekrarlandığı. Bir dal tam taramayı
+      # merge'den önce koşmak isterse "Run workflow" ile elle tetiklenen koşu
+      # dokuz genişliği de koşar.
       - run: npm run build
+        env:
+          AUDIT_WIDTH: ${{ github.event_name == 'pull_request' && '390,768,1440' || '' }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

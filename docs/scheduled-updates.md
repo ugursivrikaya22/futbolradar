@@ -19,7 +19,12 @@ repository, and the short-lived `${{ github.token }}` context before it writes.
 GitHub cron is UTC. Istanbul is UTC+3 throughout the year.
 
 - Full update: `7 2 * * *` = ~05:00 Europe/Istanbul.
-- Hourly update: `7 0-1,3-23 * * *` = every UTC hour except 02:00.
+- Hourly update, daytime: `7 4-21 * * *` = every UTC hour from 04:00 to 21:00
+  (07:00-00:59 Istanbul), when fixtures, scores and the news feed actually move.
+- Overnight update: `7 0,3,22 * * *` = every second UTC hour through the quiet
+  window (01:00-06:59 Istanbul), skipping 02:00 UTC where the full job runs.
+  The run costs ~13 billable minutes on a private repository and almost nothing
+  changes overnight, so the hourly cadence was not worth its price there.
 
 Both crons fire at minute 7, not minute 0. GitHub's own scheduling docs name
 the start of every hour as the `schedule` event queue's highest-load window;

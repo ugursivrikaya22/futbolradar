@@ -13,7 +13,15 @@ on:
     - cron: "7 2 * * *"
     # ~Every hour except 02:00 UTC, when the full job owns the lock. Same
     # :07 offset for the same reason.
-    - cron: "7 0-1,3-23 * * *"
+    #
+    # Gündüz (TSİ 07:00–00:59 = UTC 04–21) saatlik kalıyor: maçlar, skorlar ve
+    # haber akışı o saatlerde değişiyor.
+    - cron: "7 4-21 * * *"
+    # Gece (TSİ 01:00–06:59 = UTC 22–03) iki saatte bir. Bu pencerede
+    # değişecek veri yok denecek kadar az; koşu ~13 dakika sürdüğü ve depo
+    # private olduğu için o dakikalar doğrudan faturaya yazılıyordu.
+    # 02:00 UTC bu listede yok — orası tam tazelemenin saati.
+    - cron: "7 0,3,22 * * *"
   workflow_dispatch:
     inputs:
       update_type:
@@ -65,7 +73,17 @@ jobs:
       - name: Checkout current production data
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # SIĞ KLON. Bu depo ~14.000 üretilmiş dosya taşıyor ve her saatlik CI
+          # commit'i bunların büyük kısmına dokunuyor; tam geçmişi çekmek koşu
+          # başına dakikalar sürüyordu ve private depoda o dakikalar
+          # faturalanıyor. Bu işin geçmişe ihtiyacı yok: yalnızca güncel veriyi
+          # okuyup üstüne yazıyor.
+          #
+          # 1 DEĞİL 20: scripts/ci-commit-push.mjs itme reddedilirse
+          # `git fetch` + `git rebase origin/<dal>` yapıyor. Derinlik 1'de ortak
+          # ata bulunamaz ve rebase düşer. 20 commit, otomatik koşuların arasına
+          # giren sürüklenme için fazlasıyla yeterli bir tampon.
+          fetch-depth: 20
 
       - name: Setup Node.js
         uses: actions/setup-node@v4

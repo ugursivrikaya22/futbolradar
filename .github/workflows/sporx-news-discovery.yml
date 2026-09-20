@@ -4,8 +4,8 @@ name: FutbolRadar Sporx News Discovery
 # yalnızca yeni Sporx başlıklarını tarar, mükerrer olmayanlardan özgün
 # FutbolRadar haberleri üretir ve mevcut, test edilmiş sayfa/bant hattını
 # çalıştırır. Ayrı bir iş akışı olmasının nedeni sıklık: ana güncelleme
-# (match-analysis.yml) saatlik çalışır, görev tanımı burada 15 dakikada bir
-# istiyor.
+# (match-analysis.yml) saatlik çalışır, keşif taraması ondan daha sık
+# istiyor (aşağıdaki cron notuna bakın).
 #
 # Dakika :00/:15/:30/:45 DEĞİL, :07/:22/:37/:52 kullanılıyor. Bu repo bunu
 # zaten match-analysis.yml'de biliyor (bkz. docs/scheduled-updates.md):
@@ -16,7 +16,19 @@ name: FutbolRadar Sporx News Discovery
 # GitHub'ın belgelediği düzeltme.
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    # SIKLIK MALİYETİ: bu iş günde 96 kez koşuyordu ve koşu başına ~10 dakika
+    # harcıyordu — ayda ~29.700 dakika, deponun Actions faturasının en büyük
+    # tek kalemi. Keşifte 15 dakika ile 30 dakika arasındaki fark okuyucuya
+    # görünmüyor (haber zaten bir sonraki taramada yakalanıyor), bu yüzden
+    # gündüz yarım saatte bire, gecenin ölü saatlerinde saatte bire indirildi.
+    # Günde 96 → 41 koşu.
+    #
+    # Dakika :07/:37 — saat başı GitHub'ın belgelediği en yoğun `schedule`
+    # kuyruk penceresi (bkz. yukarıdaki not).
+    # Gündüz (TSİ 07:00–23:59 = UTC 04–20): yarım saatte bir.
+    - cron: "7,37 4-20 * * *"
+    # Gece (TSİ 00:00–06:59 = UTC 21–03): saatte bir.
+    - cron: "7 0-3,21-23 * * *"
   workflow_dispatch:
     inputs:
       limit:
@@ -27,8 +39,8 @@ on:
 permissions:
   contents: write
 
-# Aynı anda iki koşu data/news.json'a yazamaz. Bir sonraki 15 dakikalık
-# tetikleyici zaten yakında geleceği için bekleyen koşu iptal edilebilir.
+# Aynı anda iki koşu data/news.json'a yazamaz. Bir sonraki tetikleyici zaten
+# yakında geleceği için bekleyen koşu iptal edilebilir.
 concurrency:
   group: futbolradar-sporx-discovery
   cancel-in-progress: true
@@ -41,7 +53,17 @@ jobs:
       - name: Checkout current production data
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          # SIĞ KLON. Bu depo ~14.000 üretilmiş dosya taşıyor ve her saatlik CI
+          # commit'i bunların büyük kısmına dokunuyor; tam geçmişi çekmek koşu
+          # başına dakikalar sürüyordu ve private depoda o dakikalar
+          # faturalanıyor. Bu işin geçmişe ihtiyacı yok: yalnızca güncel veriyi
+          # okuyup üstüne yazıyor.
+          #
+          # 1 DEĞİL 20: scripts/ci-commit-push.mjs itme reddedilirse
+          # `git fetch` + `git rebase origin/<dal>` yapıyor. Derinlik 1'de ortak
+          # ata bulunamaz ve rebase düşer. 20 commit, otomatik koşuların arasına
+          # giren sürüklenme için fazlasıyla yeterli bir tampon.
+          fetch-depth: 20
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
