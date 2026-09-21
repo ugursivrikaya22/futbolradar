@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete } from "./sync-live-fixtures.mjs";
+import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete, backfillDates } from "./sync-live-fixtures.mjs";
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
@@ -91,6 +91,49 @@ const zorlanan = sourceSteps("hourly", true, "trabzonspor-galatasaray-2026-09-19
 assert.ok(zorlanan.args.includes("--match=trabzonspor-galatasaray-2026-09-19"));
 const zorlanmayan = sourceSteps("hourly", true).find((step) => step.id === "live-fixtures");
 assert.ok(!zorlanmayan.args.some((arg) => String(arg).startsWith("--match=")));
+
+// BİRİKMİŞ EKSİK DÖKÜM GERÇEKTEN SIRAYA GİRMELİ.
+//
+// Pencereyi genişletmek tek başına yetmiyordu: saatlik koşu sağlayıcıdan
+// yalnızca dünü ve bugünü istiyor, daha eski maç listeye hiç girmiyordu.
+// Ölçüldü (21 Eylül): 420 bitmiş maçın 403'ünde olay yoktu, 251'i pencere
+// dışındaydı. backfillDates o günleri getirilen listeye ekliyor.
+const backfillNow = Date.parse("2026-09-21T10:00:00Z");
+const backfillTakvim = [
+  // Dökümü eksik, üç günlük: sıraya girmeli.
+  { id: "eski-eksik", homeTeam: "A", awayTeam: "B", kickoff: "2026-09-18T18:00:00Z", status: "FINISHED", events: [] },
+  // Dökümü tam: bir daha hiç sorulmamalı.
+  { id: "eski-tam", homeTeam: "C", awayTeam: "D", kickoff: "2026-09-17T18:00:00Z", status: "FINISHED",
+    events: [{ type: "Goal" }], lineups: [{}, {}], statistics: [{}], players: [{}] },
+  // Pencereden eski: sıra sonsuza kadar açık kalmasın.
+  { id: "cok-eski", homeTeam: "E", awayTeam: "F", kickoff: "2026-09-01T18:00:00Z", status: "FINISHED", events: [] },
+  // Dün/bugün zaten getiriliyor, tekrar eklenmemeli.
+  { id: "dun", homeTeam: "G", awayTeam: "H", kickoff: "2026-09-21T02:00:00Z", status: "FINISHED", events: [] }
+];
+const gunler = backfillDates(backfillTakvim, backfillNow, 5);
+assert.deepEqual(gunler, ["2026-09-18"], "yalnızca dökümü eksik ve pencere içindeki eski gün istenmeli");
+assert.equal(backfillDates(backfillTakvim, backfillNow, 0).length, 0, "sınır sıfırsa hiç gün eklenmemeli");
+
+// Geri doldurum tek yuvayla sınırlı kalmamalı: bir hafta sonunda yüzlerce
+// maç bitiyor, yuva başına bir maç birikmiş sırayı asla eritemiyordu.
+const cokEksik = Array.from({ length: 12 }, (_, index) => ({
+  id: "eksik-" + index, homeTeam: "H" + index, awayTeam: "A" + index,
+  kickoff: "2026-09-19T18:00:00Z", status: "FINISHED", events: []
+}));
+const tazeler = Array.from({ length: 8 }, (_, index) => ({
+  id: "taze-" + index, homeTeam: "T" + index, awayTeam: "Z" + index,
+  kickoff: "2026-09-21T08:00:00Z", status: "FINISHED", events: []
+}));
+const depo = new Map([...cokEksik, ...tazeler].map((row) => [row.id, row]));
+const secim = selectDetailTargets([...tazeler, ...cokEksik], {
+  nowMs: backfillNow, limit: 8, storedFor: (match) => depo.get(match.id) || null,
+  retryWindowMs: 7 * 24 * 60 * 60 * 1000
+});
+assert.equal(secim.length, 8);
+assert.equal(secim.filter((match) => match.id.startsWith("eksik-")).length, 3,
+  "koşu başına üç yuva geri doldurmaya ayrılmalı");
+assert.equal(secim.filter((match) => match.id.startsWith("taze-")).length, 5,
+  "kalan yuvalar günün maçlarında kalmalı");
 
 const targetNow = Date.parse("2026-08-08T18:30:00Z");
 const targets = selectDetailTargets([

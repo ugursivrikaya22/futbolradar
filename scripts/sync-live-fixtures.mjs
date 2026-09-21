@@ -350,6 +350,50 @@ export function datesForTarget(calendar, match) {
 }
 
 /**
+ * GERİ DOLDURUM GÜNLERİ — eksik dökümlü bitmiş maçların günleri.
+ *
+ * Pencereyi genişletmek TEK BAŞINA işe yaramıyor: saatlik koşu sağlayıcıdan
+ * yalnızca dünü ve bugünü istiyor, dolayısıyla daha eski bir maç listeye hiç
+ * girmiyor ve seçilemiyor. Ölçüldü (21 Eylül): 420 bitmiş maçın 403'ünde
+ * olay akışı boştu ve bunların 251'i 72 saatten eskiydi — yani o sayfalar
+ * hiçbir koşuda sıraya giremeyecekti.
+ *
+ * Burada, dökümü eksik olan günlerden EN ESKİ birkaçı getirilen gün listesine
+ * ekleniyor. Maliyet sınırlı ve öngörülebilir: koşu başına en fazla `limit`
+ * adet ek `/fixtures?date=` çağrısı. Döküm bütçesi (yuva sayısı) değişmiyor.
+ */
+// YENİDEN SORMA PENCERESİ. Eksik dökümlü bitmiş bir maç bu yaşa kadar
+// yeniden sorulabilir. 48/72 saatlik eski pencere, biriken maçlara sıra
+// gelmeden kapanıyordu: 21 Eylül ölçümünde 403 olaysız maçın 251'i zaten
+// pencerenin dışına düşmüştü, yani kalıcı olarak boştu.
+const RETRY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
+
+// Koşu başına geri doldurmaya AYRILAN yuva. Bu bir ek maliyet değil, takas:
+// yuvalar mevcut döküm bütçesinden ayrılıyor, toplam sağlayıcı çağrısı sabit.
+// Tek yuva günde ~18 maç demekti; bir hafta sonu 150'den fazla maç bitiyor.
+const BACKFILL_SLOTS = 3;
+
+export function backfillDates(calendar, nowMs = Date.now(), limit = 2, windowMs = 7 * 24 * 60 * 60 * 1000) {
+  const rows = Array.isArray(calendar) ? calendar : (calendar && calendar.matches) || [];
+  const gunler = new Map();
+  for (const row of rows) {
+    if (canonicalStatus(row.status) !== "FINISHED") continue;
+    if (!detailIncomplete(row)) continue;
+    const kickoff = Date.parse(row.kickoff || "");
+    if (!Number.isFinite(kickoff)) continue;
+    const age = nowMs - kickoff;
+    // Bugün ve dün zaten getiriliyor; pencere dışı maç ise umutsuz değil ama
+    // sırası sonsuza kadar gelmesin diye üst sınır var.
+    if (age <= 24 * 60 * 60 * 1000 || age > windowMs) continue;
+    const day = dateOnly(row);
+    if (!day) continue;
+    if (!gunler.has(day)) gunler.set(day, 0);
+    gunler.set(day, gunler.get(day) + 1);
+  }
+  return [...gunler.keys()].sort().slice(0, Math.max(0, limit));
+}
+
+/**
  * Depodaki dökümü eksik mi?
  *
  * "Eksik" sağlayıcının o maç için gerçekten bir şey döndürmediği anlamına
@@ -456,7 +500,7 @@ export function selectDetailTargets(matches, options = {}) {
       || priorityScore(left) - priorityScore(right)
       || String(left.kickoff).localeCompare(String(right.kickoff)));
 
-  return reserveBackfillSlot(ordered, limit, nowMs);
+  return reserveBackfillSlot(ordered, limit, nowMs, isForced);
 }
 
 /**
@@ -473,13 +517,25 @@ export function selectDetailTargets(matches, options = {}) {
  * her koşuda eksik dökümlü bir maç tamamlanır. `--match` ile zorlanan maç
  * bu takastan hiç etkilenmez.
  */
-function reserveBackfillSlot(ordered, limit, nowMs) {
+function reserveBackfillSlot(ordered, limit, nowMs, isForced = () => false) {
   const head = ordered.slice(0, limit);
   if (head.length < limit) return head;
-  if (head.some((match) => backfillRank(match, nowMs) === 1)) return head;
-  const waiting = ordered.slice(limit).find((match) => backfillRank(match, nowMs) === 1);
-  if (!waiting) return head;
-  return [...head.slice(0, limit - 1), waiting];
+  const isBackfill = (match) => backfillRank(match, nowMs) === 1;
+  // Zorlanan maç (--match) her zaman başta kalır ve takastan etkilenmez.
+  const korunan = head.filter((match) => isForced(match)).length;
+  const hedef = Math.min(BACKFILL_SLOTS, Math.max(0, limit - korunan));
+  const mevcut = head.filter(isBackfill).length;
+  if (mevcut >= hedef) return head;
+  const bekleyenler = ordered.slice(limit).filter(isBackfill);
+  if (!bekleyenler.length) return head;
+  const eklenecek = bekleyenler.slice(0, Math.min(hedef - mevcut, bekleyenler.length));
+  // Sondaki taze maçların yeri bırakılır; zorlanan maç ve mevcut geri
+  // doldurumlar korunur. Sıralama bozulmuyor: seçilenler özgün sıralarıyla
+  // döndürülüyor, yani bütçe önce günün maçına harcanmaya devam ediyor.
+  const tazeler = head.filter((match) => !isForced(match) && !isBackfill(match));
+  const dusecek = new Set(tazeler.slice(Math.max(0, tazeler.length - eklenecek.length)));
+  const secilen = new Set([...head.filter((match) => !dusecek.has(match)), ...eklenecek]);
+  return ordered.filter((match) => secilen.has(match)).slice(0, limit);
 }
 
 async function fetchFixtures(provider, mode, now, options = {}) {
@@ -519,7 +575,13 @@ export async function synchronizeLiveFixtures(options = {}) {
   const mode = options.mode || "hourly";
   const now = options.now || new Date();
   const previous = options.previous || readJson(CALENDAR_PATH, { matches: [] });
-  const fetched = await fetchFixtures(provider, mode, now, { dates: datesForTarget(previous, options.match) });
+  const fetched = await fetchFixtures(provider, mode, now, {
+    dates: [
+      ...datesForTarget(previous, options.match),
+      // Birikmiş eksik döküm sırası: her koşu en eski birkaç günü de soruyor.
+      ...backfillDates(previous, now.getTime(), mode === "full" ? 3 : 2, RETRY_WINDOW_MS)
+    ]
+  });
   // DEPODAKİ KAYIT SEÇİCİYE VERİLİR. Eksik döküm ikinci şansı ancak depodaki
   // hâl görülebilirse alabilir; seçiciye gelen satırlar sağlayıcının ham
   // çıktısı, yani orada "bizde ne var" bilgisi yok.
@@ -544,9 +606,10 @@ export async function synchronizeLiveFixtures(options = {}) {
     limit: mode === "full" ? 12 : 8,
     match: options.match || null,
     storedFor,
-    // Getirilen gün aralığından geniş bir pencere anlamsız: listede olmayan
-    // maç zaten seçilemez. Saatlik mod dünü ve bugünü soruyor.
-    retryWindowMs: (mode === "full" ? 72 : 48) * 60 * 60 * 1000
+    // Pencere artık getirilen gün aralığıyla uyumlu: backfillDates eksik
+    // dökümlü eski günleri listeye eklediği için bu maçlar gerçekten
+    // seçilebiliyor. Dökümü tam olan maç yine hiç sorulmuyor.
+    retryWindowMs: RETRY_WINDOW_MS
   });
   const details = new Map();
   const detailErrors = [];
