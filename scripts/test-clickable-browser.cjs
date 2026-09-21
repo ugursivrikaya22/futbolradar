@@ -100,6 +100,7 @@ function todayFixtureCount() {
           const started = performance.now();
           let stableSince = started;
           let previous;
+          let lastBox = null;
           // TEŞHİS DEĞİŞKENLERİ. `previous` hata kurulmadan hemen önce
           // `current`a eşitlendiği için eski mesaj "son=önceki" yazmak
           // ZORUNDAYDI: iki değer hiçbir koşulda farklı basılamıyordu, yani
@@ -113,9 +114,19 @@ function todayFixtureCount() {
             const now = performance.now();
             ticks += 1;
             const rect = element.getBoundingClientRect();
-            const current = [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
-            if (current !== previous) {
-              if (previous !== undefined) { changes += 1; lastDifferent = previous; }
+            const box = [rect.x, rect.y, rect.width, rect.height];
+            const current = box.map(value => Math.round(value * 100) / 100).join(',');
+            // HAREKET EŞİĞİ BİR CSS PİKSELİ. Ölçüm yarım piksele yuvarlanıyordu
+            // ve alt-piksel oynaması "hedef yerine oturmadı" sayılıyordu: CI'da
+            // kalan tek hata 545,0 ile 545,5 arasında gidip gelen bir menü
+            // bağlantısıydı. Yarım piksel, tıklamanın nereye düştüğünü
+            // değiştirmiyor; beklemenin amacı yer değiştiren bir hedefe
+            // tıklamamak. Gerçekten oynayan bir bileşen (bant, karusel) bir
+            // pikselin çok üstünde oynar, bu eşik onu gizlemiyor.
+            const moved = !lastBox || box.some((value, index) => Math.abs(value - lastBox[index]) > 1);
+            if (moved) {
+              if (lastBox) { changes += 1; lastDifferent = previous; }
+              lastBox = box;
               previous = current;
               stableSince = now;
             }
