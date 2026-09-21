@@ -27,6 +27,8 @@
  * "bugünün akışı" saymamak.
  */
 
+const { promotedNewsId } = require('./newsPriority.js');
+
 const OWN_ORIGIN = "https://www.futbolradar.com/";
 
 function text(value) {
@@ -126,10 +128,11 @@ function presentNews(article, locale) {
  */
 function publishableNews(payload, options = {}) {
   const locale = String(options.locale || "tr").toLowerCase() === "en" ? "en" : "tr";
+  const lead = promotedNewsId(asList(payload).filter(hasOwnPage), options.now);
   return asList(payload)
     .filter(hasOwnPage)
     .filter((article) => locale !== "en" || hasEnglish(article))
-    .sort((left, right) => text(right.publishedAt).localeCompare(text(left.publishedAt)))
+    .sort((left, right) => Number(right.id === lead) - Number(left.id === lead) || text(right.publishedAt).localeCompare(text(left.publishedAt)))
     .map((article) => presentNews(article, locale));
 }
 

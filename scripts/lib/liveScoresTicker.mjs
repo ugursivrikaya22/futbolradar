@@ -24,7 +24,6 @@ export const LIVE_TICKER_PAGES = [
   "mac-sonuclari.html",
   "super-lig-fikstur.html",
   "mac-merkezi.html",
-  "transfer-radari.html",
   "takimlar.html",
   "puan-durumu.html",
   "analizler.html",

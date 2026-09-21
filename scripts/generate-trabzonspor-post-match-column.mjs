@@ -235,8 +235,8 @@ const opponentSlug = slugify(opponentName);
 const links = {
   opponentTeam: pageIfExists(`${opponentSlug}-maclari.html`),
   opponentStandings: pageIfExists(`${opponentSlug}-puan-durumu.html`),
-  opponentTransfers: pageIfExists(`${opponentSlug}-transfer-radar.html`) || pageIfExists("transfer-radari.html"),
-  transfers: pageIfExists("transfer-radari.html"),
+  opponentTransfers: pageIfExists("super-lig-transferleri-2026-2027.html"),
+  transfers: pageIfExists("super-lig-transferleri-2026-2027.html"),
   fixtures: pageIfExists("super-lig-fikstur.html"),
   report: reportPathFor(match.id),
   team: pageIfExists("trabzonspor-maclari.html"),
@@ -248,8 +248,8 @@ const links = {
 const linksEn = {
   opponentTeam: pageIfExists(`en/team/${opponentSlug}.html`),
   opponentStandings: pageIfExists("en/super-lig-standings.html"),
-  opponentTransfers: pageIfExists("en/transfer-radar.html"),
-  transfers: pageIfExists("en/transfer-radar.html"),
+  opponentTransfers: null,
+  transfers: null,
   report: englishCounterpart(links.report),
   team: pageIfExists("en/team/trabzonspor.html"),
   standings: pageIfExists("en/super-lig-standings.html") || pageIfExists("en/standings.html"),

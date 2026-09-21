@@ -108,23 +108,6 @@ function playerCard(player, rootPrefix = "../") {
   </article>`;
 }
 
-function transferCard(transfer) {
-  const fee = transfer.fee || (Number(transfer.feeEur) > 0 ? formatMarketValueEur(transfer.feeEur) : Number(transfer.feeEur) === 0 ? "Bedelsiz" : "Açıklanmadı");
-  const date = new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(`${transfer.date}T12:00:00Z`));
-  const sourceAction = transfer.sourceUrl
-    ? `<a class="detail-link" href="${escapeHtml(transfer.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">Transfer detayını aç</a>`
-    : "";
-
-  return `<article class="transfer-radar-card" data-card="transfer-record" data-transfer="${escapeHtml(transfer.id || transfer.playerId)}">
-    <header><div class="player-card-title"><div><span class="card-kicker">${escapeHtml(transfer.league || "Lig bilgisi yakında")} · Kesinleşti</span><h2>${escapeHtml(transfer.playerName)}</h2></div></div><strong>${escapeHtml(date)}</strong></header>
-    <div class="transfer-route transfer-route-large"><b>${escapeHtml(transfer.fromTeam || "Önceki kulüp bilinmiyor")}</b><em>→</em><b>${escapeHtml(transfer.toTeam || "Yeni kulüp bilinmiyor")}</b></div>
-    <div class="transfer-radar-meta"><article><span>Mevki</span><b>${escapeHtml(transfer.position || "Bilinmiyor")}</b></article><article><span>Transfer tipi</span><b>${escapeHtml(transfer.type || "Açıklanmadı")}</b></article><article><span>Bonservis</span><b>${escapeHtml(fee)}</b></article><article><span>Sezon</span><b>${escapeHtml(transfer.season || "Yakında")}</b></article></div>
-    ${transfer.note ? `<p class="transfer-note">${escapeHtml(transfer.note)}</p>` : ""}
-    <p class="transfer-verification">Son kontrol: ${escapeHtml(new Intl.DateTimeFormat("tr-TR", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(transfer.lastVerifiedAt || `${transfer.date}T12:00:00Z`)))}</p>
-    <div class="player-status-row"><span class="status-badge verified">Kesinleşti</span></div>
-    <div class="player-actions">${sourceAction}<a class="detail-link ghost" href="./takimlar.html?team=${encodeURIComponent(transfer.toTeam || "")}">Takımı incele</a></div>
-  </article>`;
-}
 
 /**
  * Oyuncu profilinin sunucu tarafında basılmış hâli.
@@ -210,8 +193,7 @@ function rootLandingConfig(slug) {
       // (serbest oyuncu, sözleşmesi biten) bayat form verisi yanıltıcı olur.
       return hasActiveClub(player);
     },
-    "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23 && hasActiveClub(player),
-    "transfer-radari": (player) => Array.isArray(player.transferHistory) && player.transferHistory.length > 0
+    "genc-yetenekler": (player) => Number(player.computedAge || player.age || 99) < 23 && hasActiveClub(player)
   };
   return configs[slug];
 }
@@ -281,14 +263,5 @@ for (const slug of [
   updateSitemapIndexability(`${slug}.html`, shouldIndex);
 }
 
-const sortedTransfers = transfers.slice().sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
-const transferContent = sortedTransfers.length
-  ? sortedTransfers.map(transferCard).join("\n")
-  : `<article class="data-empty"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>`;
-
-replaceFile("transfer-radari.html", (html) => html
-  .replace(/<span data-landing-count>[^<]*<\/span>/, `<span data-landing-count>${sortedTransfers.length} transfer kaydı</span>`)
-  .replace(/<section class="grid" data-api-section="player-landing"[\s\S]*?<\/section>/, `<section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="transfer-radari">${transferContent}</section>`));
-updateSitemapIndexability("transfer-radari.html", sortedTransfers.length >= 2);
 
 console.log(`Prerendered ${players.length} player profiles and SEO landing lists`);

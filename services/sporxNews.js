@@ -598,12 +598,12 @@ function buildEnglishArticle({ team, player, eventType, confidence, amount, sour
 
 const TEAM_INTERNAL_LINKS = {
   "Galatasaray": [
-    { label: "Galatasaray transfer radarı", href: "../galatasaray-transfer-radar.html" },
+    { label: "Galatasaray oyuncu radarı", href: "../galatasaray-oyuncu-radari.html" },
     { label: "Galatasaray form durumu", href: "../galatasaray-form-durumu.html" },
     { label: "Galatasaray puan durumu", href: "../galatasaray-puan-durumu.html" }
   ],
   "Fenerbahçe": [
-    { label: "Fenerbahçe transfer radarı", href: "../fenerbahce-transfer-radar.html" },
+    { label: "Fenerbahçe oyuncu radarı", href: "../fenerbahce-oyuncu-radari.html" },
     { label: "Fenerbahçe form durumu", href: "../fenerbahce-form-durumu.html" },
     { label: "Fenerbahçe puan durumu", href: "../fenerbahce-puan-durumu.html" }
   ],
@@ -621,7 +621,7 @@ const TEAM_INTERNAL_LINKS = {
 
 const DEFAULT_INTERNAL_LINKS = [
   { label: "Süper Lig puan durumu", href: "../super-lig-puan-durumu.html" },
-  { label: "Transfer radarı", href: "../transfer-radari.html" },
+  { label: "Süper Lig transferleri", href: "../super-lig-transferleri-2026-2027.html" },
   { label: "Tüm haberler", href: "../haberler.html" }
 ];
 

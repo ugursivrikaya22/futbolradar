@@ -231,15 +231,6 @@ const playerSeoPages = [
     cards: ["Form artisi", "Trend", "Potansiyel"]
   },
   {
-    file: "transfer-radari.html",
-    landing: "transfer-radari",
-    title: "Transfer Radarı | Güncel Gelen ve Giden Oyuncular | FutbolRadar",
-    description: "Transfer Radarı ile Süper Lig takımlarına gelen ve giden oyuncuları, bonservis bilgilerini ve doğrulama tarihlerini takip edin.",
-    h1: "Transfer Radarı",
-    lead: "Süper Lig'e gelen ve ligden ayrılan oyuncuları; tarih, kulüp ve bonservis ayrımıyla takip et.",
-    cards: ["Güncel takım", "Transfer geçmişi", "Veri güveni"]
-  },
-  {
     file: "genc-yetenekler.html",
     landing: "genc-yetenekler",
     title: "Genc Yetenekler | Potansiyel ve AI Rating | FutbolRadar",
@@ -317,55 +308,7 @@ function cardsHtml(cards) {
   return cards.map((card) => `<article class="card"><span class="card-kicker">Radar</span><h2>${card}</h2><p>${cardDescription(card)}</p></article>`).join("");
 }
 
-function landingControlsHtml(page) {
-  if (page.landing !== "transfer-radari") {
-    return "";
-  }
 
-  return `<section class="transfer-toolbar" aria-label="Transfer Radarı filtreleri">
-        <div class="transfer-filter-chips" role="group" aria-label="Hızlı transfer filtreleri">
-          <button type="button" data-transfer-filter="all" class="is-active" aria-pressed="true">Tüm transferler</button>
-          <button type="button" data-transfer-filter="son-hareket" aria-pressed="false">Son hareket</button>
-          <button type="button" data-transfer-filter="eski-kulup" aria-pressed="false">Eski kulüp ayrımı</button>
-          <button type="button" data-transfer-filter="riskli-transfer" aria-pressed="false">Riskli takip</button>
-          <button type="button" data-transfer-filter="yukselen-deger" aria-pressed="false">Yükselen değer</button>
-        </div>
-        <div class="filter-group">
-          <label for="transfer-team-filter">Takım</label>
-          <select id="transfer-team-filter" data-transfer-team-filter></select>
-        </div>
-        <div class="filter-group">
-          <label for="transfer-direction-filter">Hareket yönü</label>
-          <select id="transfer-direction-filter" data-transfer-direction-filter disabled>
-            <option value="">Tüm hareketler</option>
-            <option value="in">Gelenler</option>
-            <option value="out">Gidenler</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="transfer-status-filter">Transfer durumu</label>
-          <select id="transfer-status-filter" data-transfer-status-filter></select>
-        </div>
-        <div class="filter-group">
-          <label for="transfer-sort">Sırala</label>
-          <select id="transfer-sort" data-transfer-sort>
-            <option value="updated">En yeni</option>
-            <option value="market">Bonservis bedeli</option>
-            <option value="rating">Oyuncu adı</option>
-            <option value="team">Takım</option>
-          </select>
-        </div>
-      </section>
-      <section class="transfer-radar-summary" data-transfer-summary aria-label="Transfer Radarı özeti"></section>`;
-}
-
-function landingDescriptionHtml(page) {
-  if (page.landing !== "transfer-radari") {
-    return "";
-  }
-
-  return `\n      <section class="player-filter-note" data-transfer-filter-description>${page.lead}</section>`;
-}
 
 function landingExtraLinksHtml(page) {
   if (page.landing !== "en-iyi-super-lig-oyunculari") {
@@ -482,7 +425,7 @@ ${nav}
           <span class="hero-meta">Veriler periyodik olarak güncellenir</span>
         </div>
       </section>
-      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>${landingControlsHtml(page)}${landingDescriptionHtml(page)}
+      ${page.landing ? `<section class="grid three">${cardsHtml(page.cards)}</section>
       <section class="player-filter-note"><span data-landing-count>Oyuncu listesi hazırlanıyor</span></section>
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
@@ -599,8 +542,6 @@ function sitemapXml(files) {
     "takim-trendleri.html",
     "futbol-radar-rehberi.html",
     "gunun-radar-bulteni.html",
-    // Indexable and linked from four pages, but was never listed here.
-    "transfer-izleme.html",
     ...files,
     // İngilizce sürüm ayrı, indekslenebilir sayfalardan oluşuyor; site
     // haritasında görünmezlerse yalnızca dil kutusundan keşfedilirler.

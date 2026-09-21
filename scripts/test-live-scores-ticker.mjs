@@ -325,11 +325,9 @@ console.log(`Canlı skorlar bandı testleri geçti (yalnızca canlı maç, taraf
   const BAND = 'data-component="LiveScoresTicker"';
   // Eski, ayrı bir enjeksiyon mekanizmasıyla basılan transfer bandının
   // işareti — apply-shared-layout.mjs'in LEGACY_TRANSFER_TICKER_RE ile
-  // temizlediği aynı yorum bloğu. Bilerek `data-component="TransferRadarTicker"`
-  // DEĞİL: güncel Transfer Radarı bandı (prerender-core-pages.mjs
-  // transferRadarTicker(), ana sayfanın TEPESİNDE, üçüncü bant) aynı
-  // bileşen özniteliğini taşıyor ve bu ayrı, kasıtlı bir yüzey — o bant
-  // burada "eski" sayılmamalı.
+  // temizlediği aynı yorum bloğu. Transfer Radarı bandının kendisi
+  // kaldırıldı; bu denetim, eski enjeksiyonun hiçbir sayfada geri
+  // sızmadığını doğrulamak için duruyor.
   const OLD_BAND = "<!-- shared-layout:transfer-ticker:start -->";
   const hasBand = (file) => {
     const full = path.join(root, file);

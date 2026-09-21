@@ -264,9 +264,9 @@ export function trendCard(options) {
 }
 
 /**
- * Ana sayfa transfer paneli (.home-transfer-watch-shell içeriği).
- * Satır bağlantı hedefleri çağırandan gelir; Türkçe taraf transfer-radari
- * sayfasına, İngilizce taraf kaynağa ya da kendi köküne bağlar.
+ * Transfer paneli (.home-transfer-watch-shell içeriği).
+ * Satır bağlantı hedefleri çağırandan gelir ve ZORUNLU DEĞİL: hedef
+ * verilmezse satırlar bağlantı değil düz kayıt olarak çizilir.
  */
 /**
  * Bölüm başlığı — `.section-head` düzeni Türkçe ve İngilizce sayfalarda
@@ -396,22 +396,29 @@ export function transferWatchShell(options) {
   const sideRows = (options.rows || []).map((row) => {
     const rowStatusClass = transferStatusClass(row.status);
     const rowBadge = rowStatusClass === "confirmed" ? t("transfer.badge.transfer", locale) : t("transfer.badge.radar", locale);
-    return `<a class="home-transfer-row" href="${escapeHtml(row.href)}">` +
-      `<span class="home-transfer-row-badge status-${escapeHtml(rowStatusClass)}">${escapeHtml(rowBadge)}</span>` +
-      `<strong>${escapeHtml(row.playerName)}</strong><b>${escapeHtml(row.toTeam)}</b></a>`;
+    // Hedef sayfası olmayan satır bağlantı DEĞİL: boş bir `href` okuyucuyu
+    // hiçbir yere götürmeyen bir bağlantı gibi görünürdü.
+    const inner = `<span class="home-transfer-row-badge status-${escapeHtml(rowStatusClass)}">${escapeHtml(rowBadge)}</span>` +
+      `<strong>${escapeHtml(row.playerName)}</strong><b>${escapeHtml(row.toTeam)}</b>`;
+    return row.href
+      ? `<a class="home-transfer-row" href="${escapeHtml(row.href)}">${inner}</a>`
+      : `<div class="home-transfer-row">${inner}</div>`;
   }).join("");
 
   // Kaynak bağlantısı, tam kart tıklanabilirliğinin ÜSTÜNDE kalması
-  // gereken TEK öğe: kartın tamamı iç sayfaya (transfer-radari.html)
-  // giderken, kaynağa gitmek isteyen okuyucu dış habere ayrı tıklamalı.
+  // gereken TEK öğe: kartın tamamı bir iç sayfaya giderken, kaynağa gitmek
+  // isteyen okuyucu dış habere ayrı tıklamalı.
   // İki bağlantıyı iç içe geçirmek geçersiz HTML olurdu; çözüm CSS'te
   // (.home-transfer-feature-cover z-index altta, .detail-link üstte).
   const sourceAction = leader.sourceUrl
     ? `<a class="detail-link home-transfer-source-link" href="${escapeHtml(leader.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(t("transfer.openDetail", locale))}</a>`
     : "";
 
-  const allHref = options.allHref || (locale === "en" ? "/en/transfer-radar.html" : "/transfer-radari.html");
-  const coverHref = `${allHref}${allHref.includes("?") ? "&" : "?"}team=${encodeURIComponent(leader.toTeam || "")}`;
+  // Tüm kaydı gösteren bir liste sayfası YOKSA kartın tamamını tıklanabilir
+  // yapan örtü de basılmaz; hedefi olmayan bir örtü tıklamayı yutardı.
+  const coverHref = options.allHref
+    ? `${options.allHref}${options.allHref.includes("?") ? "&" : "?"}team=${encodeURIComponent(leader.toTeam || "")}`
+    : "";
 
   return `<article class="home-transfer-feature home-transfer-feature-big" data-card="home-transfer-watch" data-transfer-status="${escapeHtml(statusClass)}">` +
     `<div class="transfer-badge-row">` +
@@ -427,7 +434,7 @@ export function transferWatchShell(options) {
     `<span class="home-transfer-source">${escapeHtml(t("transfer.source.label", locale))}: ${escapeHtml(leader.sourceName || t("transfer.source.unverified", locale))}</span>` +
     `</div>` +
     `<div class="home-transfer-actions">${sourceAction}${options.allHref ? `<a class="detail-link ghost" href="${escapeHtml(options.allHref)}">${escapeHtml(t("transfer.all", locale))}</a>` : ""}</div>` +
-    `<a class="home-transfer-feature-cover" href="${escapeHtml(coverHref)}" aria-label="${escapeHtml(leader.playerName)} — ${escapeHtml(t("transfer.all", locale))}"></a>` +
+    (coverHref ? `<a class="home-transfer-feature-cover" href="${escapeHtml(coverHref)}" aria-label="${escapeHtml(leader.playerName)} — ${escapeHtml(t("transfer.all", locale))}"></a>` : "") +
     `</article><aside class="home-transfer-side" aria-label="${escapeHtml(t("transfer.recentAside.label", locale))}"><div class="home-transfer-metrics">` +
     compactMetricHtml(t("transfer.confirmedCount.label", locale), confirmedCount) +
     compactMetricHtml(t("transfer.clubCount.label", locale), clubCount) +

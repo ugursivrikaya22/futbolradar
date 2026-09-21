@@ -190,13 +190,6 @@ const ROUTES = Object.freeze([
     priority: "0.7"
   },
   {
-    key: "transferRadar",
-    tr: "transfer-radari.html",
-    en: "en/transfer-radar.html",
-    changefreq: "daily",
-    priority: "0.7"
-  },
-  {
     key: "statsHub",
     tr: "istatistik-merkezi.html",
     en: "en/stats-hub.html",
@@ -375,16 +368,6 @@ const ROUTE_META = Object.freeze({
       description: "Which Süper Lig clubs are trending up and which are falling away, measured from recent form, attack and defence signals."
     }
   },
-  transferRadar: {
-    tr: {
-      title: "Transfer Radarı | FutbolRadar",
-      description: "Doğrulanmış transfer hareketleri; kaynak ve durum bilgisiyle."
-    },
-    en: {
-      title: "Turkish Süper Lig Transfer Radar | FutbolRadar",
-      description: "Verified transfers in and out of Turkish clubs, each one carrying its source and confirmation status."
-    }
-  },
   statsHub: {
     tr: {
       title: "İstatistik Merkezi | FutbolRadar",
@@ -461,7 +444,6 @@ const NAV_KEYS = Object.freeze({
       { href: "mac-takvimi.html", key: "nav.matchCalendar" },
       { href: "oyuncu-radari.html", key: "nav.playerRadar" },
       { href: "istatistik-merkezi.html", key: "nav.statsHub" },
-      { href: "transfer-radari.html", key: "nav.transferRadar" },
       { href: "momentum.html", key: "nav.momentum" },
       { href: "gol-kralligi.html", key: "nav.topScorers" },
       { href: "haberler.html", key: "nav.news" },
@@ -494,7 +476,6 @@ const NAV_KEYS = Object.freeze({
       { href: "en/matches.html", key: "nav.matchCalendar" },
       { href: "en/player-radar.html", key: "nav.playerRadar" },
       { href: "en/stats-hub.html", key: "nav.statsHub" },
-      { href: "en/transfer-radar.html", key: "nav.transferRadar" },
       { href: "en/momentum.html", key: "nav.momentum" },
       { href: "en/top-scorers.html", key: "nav.topScorers" },
       { href: "en/news.html", key: "nav.news" },
