@@ -11,6 +11,7 @@
  * `base` her sayfanın köke göre önekidir: kökte "./", alt klasörde "../".
  */
 import { createRequire } from "node:module";
+import path from "node:path";
 
 const require = createRequire(import.meta.url);
 // Dış bağlantı politikası tek yerde: services/sourceLinks.js.
@@ -97,7 +98,11 @@ function normalizeTickerHref(href, base) {
   if (isExternalUrl(value)) return value;
   try {
     const url = new URL(value);
-    return `${base}${url.pathname.replace(/^\/+/, "")}${url.search}${url.hash}`;
+    const combined = path.posix.normalize(`${base}${url.pathname.replace(/^\/+/, "")}`);
+    const localPath = base.startsWith("./") && !combined.startsWith("./") && !combined.startsWith("../")
+      ? `./${combined}`
+      : combined;
+    return `${localPath}${url.search}${url.hash}`;
   } catch {
     return value;
   }

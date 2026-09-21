@@ -399,6 +399,27 @@ function item(overrides = {}) {
     /href="https:\/\/example\.com\/dis-kunye" target="_blank" rel="nofollow noopener noreferrer"/,
     "gerçek dış künye mutlak kalmalı ve dış bağlantı özniteliklerini korumalı"
   );
+
+  const normalized = newsTicker({
+    base: "../",
+    badge: "Gündem",
+    items: [
+      {
+        text: "Normalize",
+        href: "https://www.futbolradar.com/spor/../haber/guvenli-yol.html"
+      }
+    ]
+  });
+  assert.match(
+    normalized,
+    /href="\.\.\/haber\/guvenli-yol\.html"/,
+    "kendi alanımızdaki iç yol birleştirilirken nokta segmentleri temizlenmeli"
+  );
+  assert.doesNotMatch(
+    normalized,
+    /\/\.\.\//,
+    "üretilen iç ticker bağlantısı dizin traversal benzeri segment taşımamalı"
+  );
 }
 
 // ── 12. Çekince YALNIZCA rozette kalamaz ───────────────────────────────────
