@@ -144,8 +144,12 @@ function todayFixtureCount(gun) {
         let previous = await rectOf();
         iz.push(previous);
         let stable = false;
+        // Döngüyü SÜRE bağlar, sabit deneme sayısı değil: 24 × 120 ms ≈ 2,9 sn
+        // olduğu için eski hâli 5 saniyelik pencereye hiç ulaşmıyordu ve
+        // 2,9-5 sn arasında yerleşen hedef gereksiz yere düşüyordu. Üst sınır
+        // yalnızca sonsuz döngüye karşı duruyor.
         const sonKarar = Date.now() + 5000;
-        for (let deneme = 0; deneme < 24; deneme += 1) {
+        for (let deneme = 0; deneme < 500; deneme += 1) {
           await delay(120);
           const current = await rectOf();
           if (current === previous) { stable = true; break; }
