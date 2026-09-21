@@ -345,7 +345,7 @@ ${siteHeader({ base, locale })}
         <header class="column-article-head">
           <div class="column-article-meta">${statusBadges(article, locale)}<span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
-          <p class="lead">${escapeHtml(description)}</p>
+          <p class="lead">${escapeHtml(article.spot || article.summary || description)}</p>
           ${tagHtml}
         </header>
         ${updateNoteHtml}

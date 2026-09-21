@@ -19,6 +19,7 @@
  * `sources` alanında hem gövde metninde açıkça durur.
  */
 
+const { promotedNewsId } = require('./newsPriority.js');
 const { editorialStatusOf, STATUS } = require("./editorialStatus.js");
 
 /**
@@ -932,6 +933,7 @@ function rankEnglishNews(articles, options = {}) {
   const now = options.now ? new Date(options.now).getTime() : Date.now();
   const staleAfterHours = Number.isFinite(options.staleAfterHours) ? options.staleAfterHours : 48;
 
+  const lead = promotedNewsId(articles, new Date(now));
   return [...articles]
     .map((article) => {
       const published = Date.parse(text(article.publishedAt));
@@ -955,7 +957,7 @@ function rankEnglishNews(articles, options = {}) {
       if (ageHours > staleAfterHours) score -= Math.min(60, ((ageHours - staleAfterHours) / 12) * 10);
       return { article, score, published: Number.isFinite(published) ? published : 0 };
     })
-    .sort((left, right) => right.score - left.score || right.published - left.published)
+    .sort((left, right) => Number(right.article.id === lead) - Number(left.article.id === lead) || right.score - left.score || right.published - left.published)
     .map((entry) => entry.article);
 }
 
