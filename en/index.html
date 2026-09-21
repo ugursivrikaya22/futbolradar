@@ -105,13 +105,12 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+    <div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track" style="--live-ticker-duration:15s" data-live-scores-track data-live-rendered-at="2026-09-21T21:06:53.797Z">
-            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639819&amp;date=2026-09-21" data-live-until="2026-09-21T21:30:00.000Z" aria-label="Liga Pro | Manta FC 2 - 1 Orense SC | 90&#039;"><span class="live-scores-ticker__league">Liga Pro</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Manta FC</span><span class="live-scores-ticker__score">2 - 1</span><span class="live-scores-ticker__team">Orense SC</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>90&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1636660&amp;date=2026-09-21" data-live-until="2026-09-21T22:00:00.000Z" aria-label="Division Intermedia | Benjamín Aceval 1 - 1 Atlético Tembetary | 73&#039;"><span class="live-scores-ticker__league">Division Intermedia</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Benjamín Aceval</span><span class="live-scores-ticker__score">1 - 1</span><span class="live-scores-ticker__team">Atlético Tembetary</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>73&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1549636&amp;date=2026-09-21" data-live-until="2026-09-21T23:00:00.000Z" aria-label="Primera B | Bogota FC 0 - 0 Barranquilla | 29&#039;"><span class="live-scores-ticker__league">Primera B</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Bogota FC</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Barranquilla</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>29&#039;</span></a></div>
-            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639819&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T21:30:00.000Z" aria-label="Liga Pro | Manta FC 2 - 1 Orense SC | 90&#039;"><span class="live-scores-ticker__league">Liga Pro</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Manta FC</span><span class="live-scores-ticker__score">2 - 1</span><span class="live-scores-ticker__team">Orense SC</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>90&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1636660&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T22:00:00.000Z" aria-label="Division Intermedia | Benjamín Aceval 1 - 1 Atlético Tembetary | 73&#039;"><span class="live-scores-ticker__league">Division Intermedia</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Benjamín Aceval</span><span class="live-scores-ticker__score">1 - 1</span><span class="live-scores-ticker__team">Atlético Tembetary</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>73&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1549636&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T23:00:00.000Z" aria-label="Primera B | Bogota FC 0 - 0 Barranquilla | 29&#039;"><span class="live-scores-ticker__league">Primera B</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Bogota FC</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Barranquilla</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>29&#039;</span></a></div>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
           </div>
         </div>
       </div>
@@ -134,56 +133,13 @@
             </div>
           </div>
           <div class="hero-featured" id="featured-radar-match" aria-label="Today's match centre summary">
-            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-09-21T21:06:49.349Z" data-featured-interval="10000" data-featured-count="3" aria-roledescription="carousel" aria-label="Featured matches">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="manta-fc-orense-sc-2026-09-21" role="group" aria-roledescription="slide" aria-label="1 / 3"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T22:00:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-2" aria-hidden="true">LP</i>Liga Pro</span><span>21 September 2026 · Estadio Jocay</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">MF</span>
-        <strong>Manta FC</strong>
-      </div>
-        <div class="featured-fixture-score"><b>2 - 1</b><span>Live 90&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">OS</span>
-        <strong>Orense SC</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=manta-fc-orense-sc-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="benjamin-aceval-atletico-tembetary-2026-09-21" role="group" aria-roledescription="slide" aria-label="2 / 3" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T22:30:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">DI</i>Division Intermedia</span><span>21 September 2026 · Estadio Arsenio Erico</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">BA</span>
-        <strong>Benjamín Aceval</strong>
-      </div>
-        <div class="featured-fixture-score"><b>1 - 1</b><span>Live 73&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">AT</span>
-        <strong>Atlético Tembetary</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=benjamin-aceval-atletico-tembetary-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="bogota-fc-barranquilla-2026-09-21" role="group" aria-roledescription="slide" aria-label="3 / 3" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T23:30:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">PB</i>Primera B</span><span>21 September 2026 · Estadio Metropolitano de Techo</span></div>
-      <div class="featured-fixture-board">
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">BF</span>
-        <strong>Bogota FC</strong>
-      </div>
-        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 29&#039;</span></div>
-        <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">B</span>
-        <strong>Barranquilla</strong>
-      </div>
-      </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=bogota-fc-barranquilla-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+            <div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="10000" data-featured-count="1" aria-roledescription="carousel" aria-label="Featured matches">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" role="group" aria-roledescription="slide" aria-label="1 / 1">
+      <div class="featured-fixture">
+      <div class="featured-fixture-head"><span class="featured-fixture-league">Live score board</span><span>Checking the schedule</span></div>
+      <div class="home-match-command-empty"><strong>The match schedule is loading.</strong><span>Today's verified fixtures will be listed here.</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
     </div></div></div>
-      <div class="featured-carousel-nav">
-      <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Previous match"><span aria-hidden="true">&lsaquo;</span></button>
-      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Manta FC - Orense SC"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Benjamín Aceval - Atlético Tembetary"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Bogota FC - Barranquilla"><span aria-hidden="true"></span></button></div>
-      <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Next match"><span aria-hidden="true">&rsaquo;</span></button>
-      <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
-    </div>
     </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>2</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>2</b></a></div>
           </div>
         </section>
@@ -238,26 +194,19 @@
         </section>
       <section class="container section section-daily-headlines" id="gunun-basliklari" aria-labelledby="gunun-basliklari-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Today in brief</span><h2 id="gunun-basliklari-title">Three headlines to start with</h2><p>Ordered by relevance: matches in play, then finished games, then today&#039;s schedule. Nothing unverified goes in here.</p></div><a class="section-link" href="./analysis.html">All analysis</a></div>
-          <div class="daily-headlines"><a data-headline-rank="1" class="daily-headline is-live" href="./live-football-scores.html" data-headline-match="manta-fc-orense-sc-2026-09-21" data-headline-state="live">
+          <div class="daily-headlines"><a data-headline-rank="1" class="daily-headline" href="./todays-matches.html" data-headline-match="barracas-central-independ-rivadavia-2026-09-22" data-headline-state="upcoming">
       <span class="daily-headline-index" aria-hidden="true">1</span>
       <span class="daily-headline-body">
-        <span class="daily-headline-kicker">Live</span>
-        <strong class="daily-headline-title">Manta FC 2-1 Orense SC</strong>
-        <span class="daily-headline-hook">Liga Pro · Estadio Jocay</span>
+        <span class="daily-headline-kicker">Today</span>
+        <strong class="daily-headline-title">Barracas Central 0-0 Independ. Rivadavia</strong>
+        <span class="daily-headline-hook">01:00 (Türkiye time) · Argentina Primera División · Estadio Claudio Chiqui Tapia</span>
       </span>
-    </a><a data-headline-rank="2" class="daily-headline is-live" href="./live-football-scores.html" data-headline-match="benjamin-aceval-atletico-tembetary-2026-09-21" data-headline-state="live">
+    </a><a data-headline-rank="2" class="daily-headline" href="./todays-matches.html" data-headline-match="lanus-estudiantes-l-p-2026-09-22" data-headline-state="upcoming">
       <span class="daily-headline-index" aria-hidden="true">2</span>
       <span class="daily-headline-body">
-        <span class="daily-headline-kicker">Live</span>
-        <strong class="daily-headline-title">Benjamín Aceval 1-1 Atlético Tembetary</strong>
-        <span class="daily-headline-hook">Division Intermedia · Estadio Arsenio Erico</span>
-      </span>
-    </a><a data-headline-rank="3" class="daily-headline is-live" href="./live-football-scores.html" data-headline-match="bogota-fc-barranquilla-2026-09-21" data-headline-state="live">
-      <span class="daily-headline-index" aria-hidden="true">3</span>
-      <span class="daily-headline-body">
-        <span class="daily-headline-kicker">Live</span>
-        <strong class="daily-headline-title">Bogota FC 0-0 Barranquilla</strong>
-        <span class="daily-headline-hook">Primera B · Estadio Metropolitano de Techo</span>
+        <span class="daily-headline-kicker">Today</span>
+        <strong class="daily-headline-title">Lanus 0-0 Estudiantes L.P.</strong>
+        <span class="daily-headline-hook">03:15 (Türkiye time) · Argentina Primera División · Estadio Ciudad de Lanus</span>
       </span>
     </a></div>
         </section>
