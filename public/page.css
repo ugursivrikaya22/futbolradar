@@ -5978,24 +5978,13 @@ a.home-transfer-row:focus-visible {
         overflow: hidden;
       }
 
-      .transfer-summary-grid,
-.transfer-radar-summary {
+      .transfer-summary-grid {
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 10px;
         margin: 0 0 14px;
       }
 
-      .transfer-freshness-warning {
-        grid-column: 1 / -1;
-        margin: 0 0 10px;
-        padding: 10px 14px;
-        border-radius: 10px;
-        background: rgba(176, 116, 16, 0.12);
-        color: var(--warn);
-        font-weight: 700;
-        font-size: 0.92rem;
-      }
 
       .transfer-timeline {
         position: relative;
@@ -6120,39 +6109,6 @@ a.home-transfer-row:focus-visible {
         background: rgba(var(--surface-rgb), 0.052);
         font-size: 0.8rem;
         font-weight: 850;
-      }
-
-      .transfer-toolbar {
-        display: grid;
-        grid-template-columns: 1.5fr repeat(4, minmax(0, 1fr));
-        gap: 10px;
-        align-items: end;
-        margin: 18px 0;
-      }
-
-      .transfer-filter-chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-
-      .transfer-filter-chips button {
-        min-height: 38px;
-        border: 1px solid rgba(11, 143, 90, 0.076);
-        border-radius: 999px;
-        padding: 0 12px;
-        color: #e2ece7;
-        background: rgba(var(--surface-rgb), 0.052);
-        font: inherit;
-        font-size: 0.82rem;
-        font-weight: 850;
-        cursor: pointer;
-      }
-
-      .transfer-filter-chips button.is-active {
-        border-color: rgba(11, 143, 90, 0.242);
-        color: #f7faf9;
-        background: linear-gradient(135deg, var(--green), var(--cyan));
       }
 
       /* Örtük tek sütun `auto` boyutlanıyordu: başlığın min-content genişliği
@@ -7014,21 +6970,12 @@ a.home-transfer-row:focus-visible {
 .match-radar-snapshot,
 .match-action-grid,
 .match-signal-grid,
-.transfer-summary-grid,
-.transfer-radar-summary {
+.transfer-summary-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
         .team-player-spotlight-grid {
           grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .transfer-toolbar {
-          grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .transfer-filter-chips {
-          grid-column: 1 / -1;
         }
 
         .reliability-grid {
@@ -7364,8 +7311,6 @@ main.container {
 .match-signal-grid,
 .match-team-links,
 .transfer-summary-grid,
-.transfer-radar-summary,
-.transfer-toolbar,
 .transfer-radar-meta {
           grid-template-columns: 1fr;
         }

@@ -152,43 +152,38 @@ function testAtLeastOneSuperLigTeamHasBothDirections() {
 }
 
 /**
- * Transfer izleme dönem sınırı.
+ * ESKİ TRANSFER KAYITLARI SİLİNMEZ.
  *
- * Sınır eskiden İKİ yerde yaşıyordu — istemci (app.js) ve ana sayfanın
- * transfer bölümünü basan statik ön render. İkisi ayrışırsa sayfa önce eski
- * listeyi gösterip JS yüklendiğinde kendini düzeltirdi; okuyucu için bu bir
- * arıza görüntüsüydü. Ana sayfadaki bölüm kaldırıldığında ön renderdaki
- * kopya da gitti: sınır artık YALNIZCA app.js'te, transfer izleme listesi
- * için yaşıyor. Test tek tanımın durduğunu ve verinin ona uyduğunu
- * doğruluyor; ikinci bir tanım geri gelirse bu testin yeniden
- * eşitlik denetlemesi gerekir.
+ * Ana sayfanın transfer bölümü ve transfer izleme listesi bir sezon
+ * penceresine ("bu yaz kim geldi") göre süzülüyordu; sınır app.js ile ön
+ * render arasında paylaşılıyordu ve bu testin eski hâli ikisinin aynı
+ * tarihi kullandığını doğruluyordu. Her iki yüzey de kaldırıldı, dolayısıyla
+ * pencerenin kendisi artık hiçbir yerde yok.
+ *
+ * Pencereyle birlikte kaybolmaması gereken ASIL güvence buradaki: pencere
+ * yalnızca bir GÖRÜNÜM süzgeciydi, kayıtları SİLMİYORDU. Eski doğrulanmış
+ * transferler oyuncu profillerinin transfer geçmişinde ve takım
+ * sayfalarında görünmeye devam eder. Bu test onu doğruluyor; bir gün
+ * süzgeç veri katmanına kayarsa burada yakalanır.
  */
-function testTransferWatchWindowIsConsistent() {
-  const fs = require("node:fs");
-  const app = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
-
-  const appMatch = app.match(/TRANSFER_WATCH_SINCE\s*=\s*"([\d-]+)"/);
-  assert.ok(appMatch, "app.js dönem sınırını tanımlamalı");
-
-  // Sınır Haziran 2026'dan sonrasını kapsamalı.
-  assert.ok(appMatch[1] > "2026-06-30", `sınır Haziran 2026 sonrası olmalı, bulunan: ${appMatch[1]}`);
-
-  // Gerçek veriyle sayım: sınırın üstündekiler kalmalı, altındakiler izleme
-  // listesinden düşmeli — ama veri dosyasından SİLİNMEMELİ.
+function testOldTransfersAreNotDropped() {
+  // Sezon sınırı SADECE bu denetimin "eski kayıt" tanımı; üretimde böyle bir
+  // sınır artık yok. 1 Temmuz 2026, bir önceki sezonun kapanışını ve devre
+  // arasını bu tarafta bırakır.
+  const SEASON_START = "2026-07-01";
   const all = require("../data/transfers.json");
-  const kept = all.filter((transfer) => String(transfer.date).slice(0, 10) >= appMatch[1]);
-  const dropped = all.filter((transfer) => String(transfer.date).slice(0, 10) < appMatch[1]);
+  const older = all.filter((transfer) => String(transfer.date).slice(0, 10) < SEASON_START);
+  const newer = all.filter((transfer) => String(transfer.date).slice(0, 10) >= SEASON_START);
 
-  assert.ok(kept.length, "izleme penceresinde en az bir transfer kalmalı");
-  assert.ok(dropped.length, "ön koşul: sınırın altında kayıt bulunmalı ki filtre anlamlı olsun");
-  assert.equal(kept.length + dropped.length, all.length, "hiçbir kayıt sayımdan düşmemeli");
+  assert.ok(newer.length, "bu sezondan en az bir transfer bulunmalı");
+  assert.ok(older.length, "ön koşul: sınırın altında kayıt bulunmalı ki denetim anlamlı olsun");
+  assert.equal(older.length + newer.length, all.length, "hiçbir kayıt sayımdan düşmemeli");
 
-  // Silinmediklerinin kanıtı: eski kayıtlar hâlâ doğrulanmış veri olarak
-  // hattan geçebiliyor (oyuncu geçmişi ve takım sayfaları için).
+  // Asıl iddia: eski kayıtlar hâlâ doğrulanmış veri olarak hattan geçiyor.
   const publishable = service.publishableTransfers().transfers;
   assert.ok(
-    dropped.some((old) => publishable.some((item) => item.id === old.id)),
-    "sınırın altındaki doğrulanmış kayıtlar silinmemeli, yalnızca izleme listesinden çıkmalı"
+    older.some((old) => publishable.some((item) => item.id === old.id)),
+    "eski doğrulanmış kayıtlar yayın hattından düşürülmemeli"
   );
 }
 
@@ -236,7 +231,7 @@ async function testTickerCarriesAConfirmedTransfer() {
 const tests = [
   testOnlyConfirmedIsPublished,
   testSuperLigRelevance,
-  testTransferWatchWindowIsConsistent,
+  testOldTransfersAreNotDropped,
   testTraceableSourceIsMandatory,
   testRequiredFieldsAreEnforced,
   testDeduplication,
@@ -251,4 +246,4 @@ for (const test of tests) {
 }
 
 console.log(`Transfer pipeline tests passed (${tests.length} senaryo: yalnızca onaylı, Süper Lig ilgisi, izlenebilir kaynak, ` +
-  "zorunlu alanlar, tekilleştirme, gelen/giden ayrımı, gerçek veri, takım bağlantısı, bant bağlantısı, izleme dönem sınırı).");
+  "zorunlu alanlar, tekilleştirme, gelen/giden ayrımı, gerçek veri, takım bağlantısı, bant bağlantısı, eski kayıtların korunması).");

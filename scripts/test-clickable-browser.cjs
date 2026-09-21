@@ -806,21 +806,6 @@ function todayFixtureCount() {
         await click(next);
         await until(async () => await page.locator('[data-api-target="super-lig-fixtures"]').textContent() !== before, 'Fixture week did not change');
       });
-      await test('Turkish transfer filters update results and recover', async () => {
-        await open('transfer-izleme.html');
-        const club = page.locator('[data-transfer-team-filter]');
-        await club.locator('option').nth(1).waitFor({ state: 'attached' });
-        const value = await club.locator('option').nth(1).getAttribute('value');
-        await club.selectOption(value);
-        await until(() => new URL(page.url()).searchParams.get('team') === value, 'Club filter did not update');
-        await club.selectOption('');
-        for (const filter of ['son-hareket', 'izleme-listesi']) {
-          const button = page.locator('[data-transfer-filter="' + filter + '"]');
-          await click(button);
-          assert.equal(await button.getAttribute('aria-pressed'), 'true');
-        }
-        assert.ok(await page.locator('.transfer-radar-card').count(), 'Transfer results did not recover');
-      });
       await test('player search filters actual profile cards', async () => {
         await open('oyuncu-radari.html');
         await page.locator('[data-player-page-next]').waitFor();

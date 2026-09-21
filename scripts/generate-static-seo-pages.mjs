@@ -542,8 +542,6 @@ function sitemapXml(files) {
     "takim-trendleri.html",
     "futbol-radar-rehberi.html",
     "gunun-radar-bulteni.html",
-    // Indexable and linked from four pages, but was never listed here.
-    "transfer-izleme.html",
     ...files,
     // İngilizce sürüm ayrı, indekslenebilir sayfalardan oluşuyor; site
     // haritasında görünmezlerse yalnızca dil kutusundan keşfedilirler.
