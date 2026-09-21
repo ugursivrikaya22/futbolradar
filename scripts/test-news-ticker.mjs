@@ -11,6 +11,7 @@
  * kategoriyle, kesinlik fiili taşıyan metinle ya da rozetsiz şablonla.
  */
 import assert from "node:assert/strict";
+import { selfNewsHref, newsPageExists } from "./lib/tickerFeed.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -540,6 +541,39 @@ function item(overrides = {}) {
     { id: "resmi", text: "Galatasaray, Jamal Musiala iddialarını resmen yalanladı", confidence: "confirmed", category: "official", priority: 0 }
   ]);
   assert.equal(byConfidence.items[0].id, "resmi", "doğrulanmış sürüm iddia sürümünü elemeli");
+}
+
+// SON DAKİKA MANŞETİ ASLA 404'E GÖTÜRMEZ.
+//
+// data/news.json ve data/news-ticker.json kendi haberlerimize MUTLAK adres
+// yazıyor. Bant bunu olduğu gibi kullandığında künye ile sayfa farklı
+// dağıtımlarda gidebiliyordu: 21 Eylül 16:17'de banda giren "Dursun
+// Özbek'ten Okan Buruk açıklaması" manşeti canlıda 404 veriyordu. Ayrıca
+// mutlak adres, sayfanın kendi dağıtımını değil üretim sitesini çağırıyordu.
+{
+  assert.deepEqual(
+    selfNewsHref("https://www.futbolradar.com/haber/abc-def"),
+    { slug: "abc-def", href: "haber/abc-def.html" },
+    "kendi haberimiz göreli yola çevrilmeli"
+  );
+  assert.deepEqual(
+    selfNewsHref("https://futbolradar.com/haber/abc-def/"),
+    { slug: "abc-def", href: "haber/abc-def.html" },
+    "www'suz ve sondaki eğik çizgili biçim de tanınmalı"
+  );
+  assert.equal(
+    selfNewsHref("https://news.google.com/rss/articles/xyz"),
+    null,
+    "dış kaynak künyesi dokunulmadan kalmalı"
+  );
+  assert.equal(selfNewsHref("haber/abc.html"), null, "zaten göreli adres yeniden çevrilmemeli");
+
+  // Hedef sayfa bu üretimde yoksa künye banda hiç girmemeli.
+  assert.equal(
+    newsPageExists("bu-slug-hicbir-uretimde-yok-2026"),
+    false,
+    "olmayan sayfa var sayılmamalı"
+  );
 }
 
 console.log("Küratörlü ticker testleri geçti (eksik güven reddi, kategori çelişkisi, rozet-cümle çelişkisi, çekince zorunluluğu, kaynak zorunluluğu, raf ömrü, son dakika penceresi, expiresAt, editoryal sıra, tekleştirme, şablon rozeti).");
