@@ -637,7 +637,6 @@ function comparisonIndexHtml(pairs) {
         <a href="./oyuncu-radari.html">Oyuncu Radarı</a>
         <a href="./oyuncu-karsilastir.html">İnteraktif kıyas</a>
         <a href="./oyuncular/en-iyi-oyuncular.html">En iyi oyuncular</a>
-        <a href="./transfer-radari.html">Transfer Radar</a>
       </section>
     </main>
     ${siteFooter({ base: "./" })}

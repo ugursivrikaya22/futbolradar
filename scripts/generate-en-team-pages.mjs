@@ -288,7 +288,7 @@ function pageHtml(team, slugValue) {
       const leader = teamMoves[0];
       const incoming = sameClub(leader.toTeam, team.name);
       return `<section class="container section" aria-labelledby="en-team-transfers-title">
-        ${sectionHead({ locale: LOCALE, kicker: "Transfer Radar", titleId: "en-team-transfers-title", title: "Confirmed transfers", linkHref: "../teams.html", linkText: label("common.viewAll") })}
+        ${sectionHead({ locale: LOCALE, kicker: "Transfers", titleId: "en-team-transfers-title", title: "Confirmed transfers", linkHref: "../teams.html", linkText: label("common.viewAll") })}
         <div class="home-transfer-watch-shell">${transferWatchShell({
           locale: LOCALE,
           leader: {
@@ -299,12 +299,10 @@ function pageHtml(team, slugValue) {
             sourceUrl: leader.sourceUrl,
             typeLabel: `${incoming ? "In" : "Out"} · ${transferTypeEn(leader.type) || label("transfer.fallbackType")}`
           },
-          allHref: "../transfer-radar.html",
           rows: teamMoves.slice(1).map((row) => ({
             ...row,
             fromTeam: transferTeamEn(row.fromTeam),
-            toTeam: transferTeamEn(row.toTeam),
-            href: "../transfer-radar.html?team=" + encodeURIComponent(row.toTeam || "")
+            toTeam: transferTeamEn(row.toTeam)
           }))
         })}</div>
       </section>`;

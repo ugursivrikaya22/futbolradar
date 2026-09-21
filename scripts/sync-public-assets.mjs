@@ -55,8 +55,6 @@ for (const file of [
   "uefa-ulke-puani-siralamasi.html",
   "sampiyonlar-ligi-on-eleme-maclari.html",
   "fenerbahce-avrupa-maclari.html",
-  "galatasaray-transfer-radar.html",
-  "fenerbahce-transfer-radar.html",
   "en-iyi-super-lig-oyunculari.html"
 ]) {
   copyGeneratedFile(path.join(root, file), path.join(publicDir, file));

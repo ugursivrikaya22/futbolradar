@@ -2,14 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
-import { transferTickerBlock } from "./lib/transferTicker.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
   fixtureRow as sharedFixtureRow,
   leagueMatchGroup as sharedLeagueMatchGroup,
   trendCard as sharedTrendCard,
-  transferWatchShell,
   superLigTodayStripHtml,
   officialLineupAlertHtml,
   isLineupAlertStale
@@ -65,7 +63,6 @@ const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // aynı servisi kullanıyor.
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { latestQuotes, RECENT_QUOTE_WINDOW_HOURS } = require("../services/managerQuotes.js");
-const { selectRecentTickerRecords } = require("../services/transferRadarTicker.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -1654,38 +1651,6 @@ function liveScoresTrack() {
 }
 
 /**
- * ANA SAYFANIN ÜÇÜNCÜ KAYAN BANDI — TRANSFER RADARI.
- *
- * Ana sayfanın tepesinde, haber bandı (1.) ve Canlı Skorlar bandından (2.)
- * hemen sonra basılır — index.html'de sırasıyla `<!-- shared-layout:ticker:start -->`,
- * `<!-- prerender:live-scores-ticker:start -->` ve bu fonksiyonun ürettiği
- * `<!-- prerender:transfer-radar-ticker:start -->` işaretleri art arda
- * durur. Daha önce ana sayfanın en altında, footer'ın ardında duruyordu —
- * orası okuyucunun neredeyse hiç görmediği bir yerdi. Editör kararıyla
- * üçüncü bant olarak ilk ikisinin hemen altına taşındı; bu konum artık
- * kalıcı.
- *
- * TFF tescil dönemine göre KOŞULLU BASILMIYOR — eski hâli pencere
- * kapandığında ya da son 3 günde "SON DAKİKA" sayılacak kayıt olmadığında
- * bandı sayfadan TAMAMEN kaldırıyordu; okuyucu "Transfer Radarı"
- * bölümünün var olduğunu bile bilmiyordu. Bant artık her derlemede basılır
- * ve diğer sayfa güncellemeleri (haber/skor tazeleme, SEO sayfa üretimi
- * vb.) bu markerlara dokunmaz — yalnızca aralarındaki içerik değişir.
- *
- * Seçim kuralı hâlâ services/transferRadarTicker.js'te. Önce son 3 günün
- * "SON DAKİKA" hareketleri denenir; sakin bir haftada bunlardan hiçbiri
- * yoksa `selectRecentTickerRecords` 21 günlük pencereden yalnızca
- * `status: "confirmed"` kayıtları SON DAKİKA rozeti OLMADAN, tarih
- * etiketiyle gösterir (bkz. o dosyadaki "UYDURMA YOK" kuralı — söylenti
- * hiçbir pencereden banda giremez). Her iki liste de boşsa (ya da pencere
- * kapalıyken) bant KAYBOLMAK yerine kendi yer tutucusunu gösterir
- * (transferTickerTrack → "Transfer güncellemeleri hazırlanıyor.") —
- * `keepEmpty: true` bunu sağlıyor.
- *
- * Canlı Skorlar bandından bilerek ayrı ve bağımsız: farklı veri, farklı
- * görünme kuralı. Onun kodu/CSS'i burada değiştirilmez, yalnızca komşusu.
- */
-/**
  * Alıntı deposu — SALT OKUNUR. Dosya yoksa ya da bozuksa şerit "bekleniyor"
  * gösterir; ön derleme çökmez ve uydurma üretmez.
  */
@@ -1714,10 +1679,6 @@ function postMatchReportRecords() {
   }
 }
 
-function transferRadarTicker() {
-  const records = selectRecentTickerRecords(transfers);
-  return transferTickerBlock(records, { locale: "tr", sourceRel: SOURCE_LINK_REL, keepEmpty: true });
-}
 
 /**
  * MAÇ SONU AÇIKLAMALARI ŞERİDİ (ana sayfa, canlı maç alanının altında).
@@ -1770,34 +1731,6 @@ function matchQuotesTicker() {
   });
 }
 
-/**
- * Transfer radarı bu sezonun hareketlerini gösteriyor; sınır app.js'teki
- * TRANSFER_RADAR_SINCE ile aynı olmalı. Statik ön render eski kayıtları
- * gösterip JS yüklendiğinde liste değişseydi, okuyucu sayfanın kendi
- * kendini düzelttiğini görürdü.
- */
-const TRANSFER_RADAR_SINCE = "2026-07-01";
-
-function transferWatch() {
-  const selected = transfers
-    .filter((transfer) => !HOMEPAGE_EXCLUDED_PLAYER_IDS.has(String(transfer && transfer.playerId || "")))
-    .filter((transfer) => String(transfer && transfer.date || "").slice(0, 10) >= TRANSFER_RADAR_SINCE)
-    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || ""))).slice(0, 5);
-  if (!selected.length) {
-    return '<article class="data-empty"><strong>Kesinleşen transfer bulunamadı</strong><span>Yeni kulüp açıklamaları geldiğinde bu alan güncellenir.</span></article>';
-  }
-
-  const leader = selected[0];
-  return transferWatchShell({
-    locale: "tr",
-    leader: { ...leader, typeLabel: leader.type || "Transfer" },
-    allHref: "./transfer-radari.html",
-    rows: selected.slice(1).map((transfer) => ({
-      ...transfer,
-      href: `./transfer-radari.html?team=${encodeURIComponent(transfer.toTeam || "")}`
-    }))
-  });
-}
 
 function replaceSlot(html, target, content) {
   if (!html.includes(`data-api-target="${target}"`)) {
@@ -2005,7 +1938,6 @@ writePage("index.html", {
   "featured-match": staticFeaturedFixture(),
   "daily-headlines": dailyHeadlineCards(),
   "home-trend-teams": trendTeamCards(),
-  "home-transfer-watch": transferWatch(),
   "today-superlig-matches": todaySuperLigStrip(),
   "today-matches": matchProgramState("today"),
   "league-directory": leagueDirectoryHtml(),
@@ -2023,7 +1955,6 @@ writePage("index.html", {
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
-  "transfer-radar-ticker": transferRadarTicker(),
   "match-quotes": matchQuotesTicker(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci

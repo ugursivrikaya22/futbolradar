@@ -57,6 +57,7 @@ const {
 } = require("../../services/newsTicker.js");
 
 const { promotedNewsId } = require('../../services/newsPriority.js');
+const { newsHref } = require('../../services/newsFeed.js');
 const root = process.cwd();
 
 /** "Son Dakika" rozetinin geçerli sayıldığı pencere. */
@@ -256,7 +257,17 @@ function newsItems(now) {
       label: item.category || "Gündem",
       id: item.id,
       text: item.ticker?.text || item.title,
-      href: item.url,
+      // BANTTAKİ KENDİ HABERİMİZ SİTE İÇİNDE KALIR.
+      //
+      // `item.url` kendi haberimizde mutlak üretim adresi tutuyor
+      // (https://www.futbolradar.com/haber/...). Bant bunu ham basınca
+      // bağlantı İÇ sayılıp yeni sekme almıyor ama tıklayan kişiyi
+      // bulunduğu kopyadan çıkarıp canlı siteye atıyordu: önizleme ve
+      // denetim ortamlarında henüz yayınlanmamış haber 404 veriyor.
+      // `newsHref` kendi kaynağımızdan gelen adresi göreli yola çevirir,
+      // dış kaynağın adresini olduğu gibi bırakır — kaynak künyesi
+      // mutlak kalmaya devam eder.
+      href: newsHref(item, ""),
       at: item.publishedAt,
       source: "news",
       // `category` tekleştirmede EDİTORYAL işareti: aynı olayın hem çıplak

@@ -67,8 +67,6 @@ const pages = [
   "uefa-ulke-puani-siralamasi.html",
   "sampiyonlar-ligi-on-eleme-maclari.html",
   "fenerbahce-avrupa-maclari.html",
-  "galatasaray-transfer-radar.html",
-  "fenerbahce-transfer-radar.html",
   "takim-detay.html",
   "super-lig-fikstur.html",
   "super-lig-form-durumu.html",
@@ -81,7 +79,6 @@ const pages = [
   "en-iyi-defanslar.html",
   "en-iyi-kaleciler.html",
   "yukselen-oyuncular.html",
-  "transfer-radari.html",
   "genc-yetenekler.html",
   "gol-kralligi.html",
   "asist-kralligi.html",
@@ -618,7 +615,6 @@ function checkSeoAndLinks() {
       expect(html.includes('data-api-target="featured-match"'), `${page}: missing featured match`);
       expect(html.includes('data-api-target="today-matches"'), `${page}: missing today matches`);
       expect(html.includes('data-api-target="player-radar"'), `${page}: missing player radar`);
-      expect(html.includes('data-api-target="home-transfer-watch"'), `${page}: missing transfer watch`);
       expect(html.includes("istatistik-merkezi.html"), `${page}: missing statistics center route`);
       expect(html.includes("gol-kralligi.html"), `${page}: missing goal ranking route`);
       expect(html.includes("oyuncu-karsilastirmalari.html"), `${page}: missing comparison traffic link`);
@@ -711,8 +707,6 @@ function checkSeoAndLinks() {
       "uefa-ulke-puani-siralamasi.html",
       "sampiyonlar-ligi-on-eleme-maclari.html",
       "fenerbahce-avrupa-maclari.html",
-      "galatasaray-transfer-radar.html",
-      "fenerbahce-transfer-radar.html",
       "en-iyi-super-lig-oyunculari.html"
     ].includes(page)) {
       expect(html.includes('class="breadcrumb"'), `${page}: missing visible breadcrumb`);
@@ -780,16 +774,10 @@ function checkSeoAndLinks() {
       "en-iyi-defanslar.html",
       "en-iyi-kaleciler.html",
       "yukselen-oyuncular.html",
-      "genc-yetenekler.html",
-      "transfer-radari.html"
+      "genc-yetenekler.html"
     ].includes(page)) {
-      const expectedCard = page === "transfer-radari.html" ? 'data-card="transfer-record"' : 'data-card="player"';
-      expect(html.includes(expectedCard), `${page}: missing prerendered content cards`);
+      expect(html.includes('data-card="player"'), `${page}: missing prerendered content cards`);
       expect(!html.includes("Oyuncular yukleniyor"), `${page}: client-only loading placeholder must not be indexed`);
-      if (page === "transfer-radari.html") {
-        expect(html.includes("data-transfer-direction-filter"), `${page}: missing incoming/outgoing transfer filter`);
-        expect(html.includes("transfer-verification"), `${page}: missing transfer verification timestamp`);
-      }
     }
   }
 

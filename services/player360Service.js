@@ -52,7 +52,6 @@ const DEFAULT_ROUTES = Object.freeze({
   comparePickerHref: (playerId) => `oyuncu-karsilastir.html?player=${encodeURIComponent(playerId)}`,
   topScorers: "gol-kralligi.html",
   topAssists: "asist-kralligi.html",
-  transferRadar: "transfer-radari.html",
   matchCentre: "mac-merkezi.html",
   playerRadar: "oyuncu-radari.html"
 });
@@ -561,7 +560,7 @@ function buildCompare(player, players, options) {
 function buildInternalLinks(identity, options) {
   const links = [];
   if (identity.teamHref) links.push({ key: "teamSquad", href: identity.teamHref, label: identity.team });
-  for (const key of ["topScorers", "topAssists", "transferRadar", "matchCentre", "playerRadar"]) {
+  for (const key of ["topScorers", "topAssists", "matchCentre", "playerRadar"]) {
     const href = withBase(options.basePrefix, options.routes[key]);
     if (href) links.push({ key, href });
   }
