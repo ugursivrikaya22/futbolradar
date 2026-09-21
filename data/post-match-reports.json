@@ -1,9 +1,785 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-20T21:17:24.705Z",
-  "matchCount": 1523,
+  "updatedAt": "2026-09-21T00:13:10.885Z",
+  "matchCount": 1527,
   "records": [
+    {
+      "matchId": "flamengo-rb-bragantino-2026-09-21",
+      "fixtureId": "1492383",
+      "provider": "api-football",
+      "slug": "flamengo-rb-bragantino-2026-09-21",
+      "kickoff": "2026-09-21T00:30:00+03:00",
+      "kickoffUtc": "2026-09-20T21:30:00.000Z",
+      "kickoffLocal": "2026-09-21T00:30",
+      "date": "2026-09-21",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Brazil Série A",
+      "competition": "Brazil Série A",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Flamengo",
+      "awayTeam": "RB Bragantino",
+      "venue": "Estádio do Maracanã",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Flamengo",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "f85b2b4e0e91f663",
+      "fingerprint": "f85b2b4e0e91f663",
+      "analysisGeneratedAt": "2026-09-21T00:13:10.719Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Flamengo 2-1 RB Bragantino maç raporu: Brazil Série A istatistikleri | FutbolRadar",
+        "description": "Estádio do Maracanã'da oynanan Brazil Série A maçını Flamengo 2-1 kazandı; RB Bragantino sahadan puansız ayrıldı.",
+        "path": "mac-raporu/flamengo-rb-bragantino-2026-09-21.html",
+        "competition": "Brazil Série A"
+      },
+      "reportUrl": "./mac-raporu/flamengo-rb-bragantino-2026-09-21.html",
+      "digest": {
+        "headline": "Flamengo, RB Bragantino'yu 2-1 yendi",
+        "paragraph": "Estádio do Maracanã'da oynanan Brazil Série A maçını Flamengo 2-1 kazandı; RB Bragantino sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Flamengo",
+          "loser": "RB Bragantino",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Flamengo, RB Bragantino'yu 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Flamengo sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "platense-newells-old-boys-2026-09-20",
+      "fixtureId": "1493145",
+      "provider": "api-football",
+      "slug": "platense-newells-old-boys-2026-09-20",
+      "kickoff": "2026-09-20T23:00:00+03:00",
+      "kickoffUtc": "2026-09-20T20:00:00.000Z",
+      "kickoffLocal": "2026-09-20T23:00",
+      "date": "2026-09-20",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Argentina Primera División",
+      "competition": "Argentina Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Platense",
+      "awayTeam": "Newells Old Boys",
+      "venue": "Estadio Ciudad de Vicente Lopez",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Newells Old Boys",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "3b792f29d4a209f5",
+      "fingerprint": "3b792f29d4a209f5",
+      "analysisGeneratedAt": "2026-09-21T00:13:10.719Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Platense 0-1 Newells Old Boys maç raporu: Argentina Primera División istatistikleri | FutbolRadar",
+        "description": "Estadio Ciudad de Vicente Lopez'de oynanan Argentina Primera División maçını Newells Old Boys 1-0 kazandı; Platense sahadan puansız ayrıldı.",
+        "path": "mac-raporu/platense-newells-old-boys-2026-09-20.html",
+        "competition": "Argentina Primera División"
+      },
+      "reportUrl": "./mac-raporu/platense-newells-old-boys-2026-09-20.html",
+      "digest": {
+        "headline": "Newells Old Boys, Platense'yi 1-0 yendi",
+        "paragraph": "Estadio Ciudad de Vicente Lopez'de oynanan Argentina Primera División maçını Newells Old Boys 1-0 kazandı; Platense sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Newells Old Boys",
+          "loser": "Platense",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Newells Old Boys, Platense'yi 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Newells Old Boys sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "rosario-central-argentinos-jrs-2026-09-20",
+      "fixtureId": "1493148",
+      "provider": "api-football",
+      "slug": "rosario-central-argentinos-jrs-2026-09-20",
+      "kickoff": "2026-09-20T23:00:00+03:00",
+      "kickoffUtc": "2026-09-20T20:00:00.000Z",
+      "kickoffLocal": "2026-09-20T23:00",
+      "date": "2026-09-20",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Argentina Primera División",
+      "competition": "Argentina Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Rosario Central",
+      "awayTeam": "Argentinos JRS",
+      "venue": "Gigante de Arroyito",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Rosario Central",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "e5c8be18d5b6a205",
+      "fingerprint": "e5c8be18d5b6a205",
+      "analysisGeneratedAt": "2026-09-21T00:13:10.719Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Rosario Central 1-0 Argentinos JRS maç raporu: Argentina Primera División istatistikleri | FutbolRadar",
+        "description": "Rosario Central, Gigante de Arroyito'da oynanan Argentina Primera División karşılaşmasında Argentinos JRS'u 1-0 mağlup etti.",
+        "path": "mac-raporu/rosario-central-argentinos-jrs-2026-09-20.html",
+        "competition": "Argentina Primera División"
+      },
+      "reportUrl": "./mac-raporu/rosario-central-argentinos-jrs-2026-09-20.html",
+      "digest": {
+        "headline": "Rosario Central, Argentinos JRS'u 1-0 yendi",
+        "paragraph": "Rosario Central, Gigante de Arroyito'da oynanan Argentina Primera División karşılaşmasında Argentinos JRS'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Rosario Central",
+          "loser": "Argentinos JRS",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Rosario Central, Argentinos JRS'u 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Rosario Central sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "fc-porto-benfica-2026-09-20",
+      "fixtureId": "1575503",
+      "provider": "api-football",
+      "slug": "fc-porto-benfica-2026-09-20",
+      "kickoff": "2026-09-20T22:30:00+03:00",
+      "kickoffUtc": "2026-09-20T19:30:00.000Z",
+      "kickoffLocal": "2026-09-20T22:30",
+      "date": "2026-09-20",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primeira Liga",
+      "competition": "Primeira Liga",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "FC Porto",
+      "awayTeam": "Benfica",
+      "venue": "Estádio do Dragão",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "FC Porto",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "3627ce3c468301b7",
+      "fingerprint": "3627ce3c468301b7",
+      "analysisGeneratedAt": "2026-09-21T00:13:10.719Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "FC Porto 3-1 Benfica maç raporu: Primeira Liga istatistikleri | FutbolRadar",
+        "description": "Estádio do Dragão'da oynanan Primeira Liga maçını FC Porto 3-1 kazandı; Benfica sahadan puansız ayrıldı.",
+        "path": "mac-raporu/fc-porto-benfica-2026-09-20.html",
+        "competition": "Primeira Liga"
+      },
+      "reportUrl": "./mac-raporu/fc-porto-benfica-2026-09-20.html",
+      "digest": {
+        "headline": "FC Porto, Benfica'yı 3-1 yendi",
+        "paragraph": "Estádio do Dragão'da oynanan Primeira Liga maçını FC Porto 3-1 kazandı; Benfica sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "FC Porto",
+          "loser": "Benfica",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "FC Porto, Benfica'yı 3-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "FC Porto sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "corinthians-fluminense-2026-09-20",
       "fixtureId": "1492382",
@@ -1584,10 +2360,10 @@
       "winner": "Casa Pia",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -1595,9 +2371,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 19
         },
         "statistics": {
           "present": false,
@@ -1605,53 +2381,41 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 19,
         "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "728f01e964de1732",
-      "fingerprint": "728f01e964de1732",
+      "analysisSourceHash": "224ff143decc1b4c",
+      "fingerprint": "224ff143decc1b4c",
       "analysisGeneratedAt": "2026-09-20T20:38:40.950Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1663,7 +2427,7 @@
       "reportUrl": "./mac-raporu/estoril-casa-pia-2026-09-20.html",
       "digest": {
         "headline": "Casa Pia, Estoril'i 2-1 yendi",
-        "paragraph": "Casa Pia, Estádio António Coimbra da Mota'da oynanan Primeira Liga karşılaşmasında Estoril'i 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Casa Pia, Estádio António Coimbra da Mota'da oynanan Primeira Liga karşılaşmasında Estoril'i 2-1 mağlup etti. Golleri 27. dakikada Henrique Araújo (Casa Pia), 70. dakikada Ricard Sanchez Sendra (Estoril), 72. dakikada Selvi Clua (Casa Pia), 89. dakikada Benjamin Pauwels (Casa Pia) kaydetti.",
         "result": {
           "winner": "Casa Pia",
           "loser": "Estoril",
@@ -1676,42 +2440,157 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "27'",
+              "team": "Casa Pia",
+              "type": "Kaçan penaltı",
+              "detail": "Henrique Araújo",
+              "pivotal": true
+            },
+            {
+              "minute": "70'",
+              "team": "Estoril",
+              "type": "Gol",
+              "detail": "Ricard Sanchez Sendra",
+              "pivotal": true
+            },
+            {
+              "minute": "72'",
+              "team": "Casa Pia",
+              "type": "Gol",
+              "detail": "Selvi Clua",
+              "pivotal": true
+            },
+            {
+              "minute": "89'",
+              "team": "Casa Pia",
+              "type": "Gol",
+              "detail": "Benjamin Pauwels",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (Benjamin Pauwels), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Estoril",
+              "type": "Oyuncu değişikliği",
+              "detail": "Xavier Sintes Egea",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Estoril",
+              "type": "Oyuncu değişikliği",
+              "detail": "João Carvalho",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Estoril",
+              "type": "Sarı kart",
+              "detail": "Yanis Begraoui",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Estoril",
+              "type": "Sarı kart",
+              "detail": "Jordan Arnolin",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Benjamin Pauwels",
+              "team": "Casa Pia",
+              "contribution": "89' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Henrique Araújo",
+              "team": "Casa Pia",
+              "contribution": "27' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Ricard Sanchez Sendra",
+              "team": "Estoril",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Selvi Clua",
+              "team": "Casa Pia",
+              "contribution": "72' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Estoril sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Casa Pia sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "27' Casa Pia — Henrique Araújo: kaçan penaltı",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "70' Estoril — Ricard Sanchez Sendra: gol",
+            "72' Casa Pia — Selvi Clua: gol",
+            "89' Casa Pia — Benjamin Pauwels: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Estoril maça 4-2-3-1 dizilişiyle başladı.",
+            "Casa Pia maça 4-2-3-1 dizilişiyle başladı.",
+            "45' Estoril değişikliği (Substitution 1). Değişiklikten sonra Estoril adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Casa Pia değişikliği (Substitution 1). Değişiklikten sonra Casa Pia adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Estoril değişikliği (Substitution 2). Değişiklikten sonra Estoril adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Estoril değişikliği (Substitution 3). Değişiklikten sonra Estoril adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Estoril",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Casa Pia",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1719,7 +2598,9 @@
             "Casa Pia, Estoril'i 1-2 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Estoril son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Casa Pia sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -1743,10 +2624,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -1778,10 +2666,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1789,63 +2677,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 16,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "8ec279acdf90e9e7",
-      "fingerprint": "8ec279acdf90e9e7",
+      "analysisSourceHash": "358812d4b32e905c",
+      "fingerprint": "358812d4b32e905c",
       "analysisGeneratedAt": "2026-09-20T20:38:40.950Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1870,65 +2741,236 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "29'",
+              "team": "Santa Clara",
+              "type": "Sarı kart",
+              "detail": "Tiago Ribeiro",
+              "pivotal": false
+            },
+            {
+              "minute": "36'",
+              "team": "SC Braga",
+              "type": "Sarı kart",
+              "detail": "Adrian Bajrami",
+              "pivotal": false
+            },
+            {
+              "minute": "55'",
+              "team": "SC Braga",
+              "type": "Oyuncu değişikliği",
+              "detail": "Gabriel Martínez Aguilera",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 4 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Santa Clara",
+              "type": "Sarı kart",
+              "detail": "Dani Borges",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "SC Braga",
+              "type": "Sarı kart",
+              "detail": "Jean-Baptiste Gorby",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "SC Braga",
+              "type": "Oyuncu değişikliği",
+              "detail": "Ricardo Horta",
+              "decisive": false
+            },
+            {
+              "minute": "90+2'",
+              "team": "Santa Clara",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 4",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Adrian Bajrami",
+              "team": "SC Braga",
+              "contribution": "36' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Dani Borges",
+              "team": "Santa Clara",
+              "contribution": "77' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Jean-Baptiste Gorby",
+              "team": "SC Braga",
+              "contribution": "81' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "João Moutinho",
+              "team": "SC Braga",
+              "contribution": "56' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Santa Clara sahaya 4-3-3 dizilişiyle çıktı.",
+            "SC Braga sahaya 3-4-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay)."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Santa Clara maça 4-3-3 dizilişiyle başladı.",
+            "SC Braga maça 3-4-3 dizilişiyle başladı.",
+            "55' SC Braga değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "55' SC Braga değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Santa Clara değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' SC Braga değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Santa Clara",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "SC Braga",
+              "formation": "3-4-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 0-0 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "SC Braga topa daha çok sahip oldu (%52).",
+            "Santa Clara daha çok şut denedi (10-8)."
+          ],
+          "improvements": [
+            "Santa Clara şut isabetinde geride kaldı (%10); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Santa Clara",
+            "score": 46
+          },
+          "away": {
+            "team": "SC Braga",
+            "score": 44
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Santa Clara %10, SC Braga %12.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Santa Clara 43.3, SC Braga 59.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -1937,11 +2979,20 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 79,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -2364,10 +3415,10 @@
       "winner": "draw",
       "turkish": true,
       "turkishTeam": "Göztepe & Çaykur Rizespor",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -2375,9 +3426,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 21
         },
         "statistics": {
           "present": true,
@@ -2397,41 +3448,36 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 21,
         "statistics": 17,
         "lineups": 2,
         "players": 38
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "0f51b1dc985df15a",
-      "fingerprint": "0f51b1dc985df15a",
+      "analysisSourceHash": "00fac72a4deb6722",
+      "fingerprint": "00fac72a4deb6722",
       "analysisGeneratedAt": "2026-09-20T20:38:40.950Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Göztepe 2-2 Çaykur Rizespor maç raporu: Süper Lig istatistikleri | FutbolRadar",
-        "description": "Gursel Aksel Stadium'da oynanan Süper Lig maçında Göztepe ile Çaykur Rizespor birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından...",
+        "description": "Gursel Aksel Stadium'da oynanan Süper Lig maçında Göztepe ile Çaykur Rizespor birbirini geçemedi: 2-2. Golleri 2. dakikada A.",
         "path": "mac-raporu/goztepe-caykur-rizespor-2026-09-20.html",
         "competition": "Süper Lig"
       },
       "reportUrl": "./mac-raporu/goztepe-caykur-rizespor-2026-09-20.html",
       "digest": {
         "headline": "Göztepe ile Çaykur Rizespor 2-2 berabere kaldı",
-        "paragraph": "Gursel Aksel Stadium'da oynanan Süper Lig maçında Göztepe ile Çaykur Rizespor birbirini geçemedi: 2-2. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Gursel Aksel Stadium'da oynanan Süper Lig maçında Göztepe ile Çaykur Rizespor birbirini geçemedi: 2-2. Golleri 2. dakikada A. Kurtulan (Göztepe), 70. dakikada I. Olawoyin (Rizespor), 81. dakikada I. Doicaru (Rizespor), 90+3. dakikada E. Bekiroglu (Göztepe) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -2444,22 +3490,115 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "90+3'",
+              "team": "Göztepe",
+              "type": "Penaltı",
+              "detail": "E. Bekiroglu",
+              "pivotal": true
+            },
+            {
+              "minute": "2'",
+              "team": "Göztepe",
+              "type": "Gol",
+              "detail": "A. Kurtulan",
+              "pivotal": true
+            },
+            {
+              "minute": "64'",
+              "team": "Göztepe",
+              "type": "Gol",
+              "detail": "Goal Disallowed",
+              "pivotal": true
+            },
+            {
+              "minute": "70'",
+              "team": "Rizespor",
+              "type": "Gol",
+              "detail": "I. Olawoyin",
+              "pivotal": true
+            },
+            {
+              "minute": "81'",
+              "team": "Rizespor",
+              "type": "Gol",
+              "detail": "I. Doicaru",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 2 gol kaydedildi, (I. Doicaru, E. Bekiroglu).",
+          "goals": {
+            "home": 1,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Göztepe",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 4",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Göztepe",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Göztepe",
+              "type": "Sarı kart",
+              "detail": "B. Boke",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Rizespor",
+              "type": "Gol",
+              "detail": "I. Doicaru",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "E. Bekiroglu",
+              "team": "Göztepe",
+              "contribution": "90+3' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Goal Disallowed",
+              "team": "Göztepe",
+              "contribution": "64' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "I. Doicaru",
+              "team": "Rizespor",
+              "contribution": "81' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "I. Olawoyin",
+              "team": "Rizespor",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "ready",
@@ -2470,20 +3609,33 @@
           ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "2' Göztepe — A. Kurtulan: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "70' Rizespor — I. Olawoyin: gol",
+            "81' Rizespor — I. Doicaru: gol",
+            "90+3' Göztepe — E. Bekiroglu: penaltı",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "coaching": {
           "status": "ready",
           "notes": [
             "Göztepe maça 3-4-1-2 dizilişiyle başladı.",
-            "Rizespor maça 5-3-2 dizilişiyle başladı."
+            "Rizespor maça 5-3-2 dizilişiyle başladı.",
+            "58' Rizespor değişikliği (Substitution 1). Değişiklikten sonra Rizespor adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' Rizespor değişikliği (Substitution 2). Değişiklikten sonra Rizespor adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' Rizespor değişikliği (Substitution 3). Değişiklikten sonra Rizespor adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' Göztepe değişikliği (Substitution 1). Değişiklikten sonra Göztepe adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
           ],
           "formations": [
             {
@@ -2495,7 +3647,7 @@
               "formation": "5-3-2"
             }
           ],
-          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2606,15 +3758,21 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
         "signals",
         "statistics",
         "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
         "coaching",
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
+      "coverage": 93,
+      "dataStatus": "complete",
       "intelligenceCoverage": 70,
       "publishState": "page"
     },
@@ -3034,10 +4192,10 @@
       "winner": "Club Brugge KV",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 80,
       "dataSources": {
         "score": {
           "present": true,
@@ -3045,14 +4203,14 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": false,
@@ -3060,48 +4218,36 @@
           "count": 0
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
+        "events": 17,
+        "statistics": 15,
         "lineups": 0,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
           "field": "lineups",
           "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "247db24936be5775",
-      "fingerprint": "247db24936be5775",
+      "analysisSourceHash": "5cbc06d758786478",
+      "fingerprint": "5cbc06d758786478",
       "analysisGeneratedAt": "2026-09-20T20:38:40.950Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3113,7 +4259,7 @@
       "reportUrl": "./mac-raporu/club-brugge-kv-genk-2026-09-20.html",
       "digest": {
         "headline": "Club Brugge KV, Genk'i 3-0 yendi",
-        "paragraph": "Jan Breydel Stadium'da oynanan Belgian Pro League maçını Club Brugge KV 3-0 kazandı; Genk sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Jan Breydel Stadium'da oynanan Belgian Pro League maçını Club Brugge KV 3-0 kazandı; Genk sahadan puansız ayrıldı. Golleri 15. dakikada Carlos Forbs (Club Brugge KV), 58. dakikada Lee Han-beom (Club Brugge KV), 63. dakikada Brandon Mechele (Club Brugge KV) kaydetti.",
         "result": {
           "winner": "Club Brugge KV",
           "loser": "Genk",
@@ -3129,62 +4275,234 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "15'",
+              "team": "Club Brugge KV",
+              "type": "Gol",
+              "detail": "Carlos Forbs",
+              "pivotal": true
+            },
+            {
+              "minute": "52'",
+              "team": "Club Brugge KV",
+              "type": "Gol",
+              "detail": "Nicolo Tresoldi",
+              "pivotal": true
+            },
+            {
+              "minute": "58'",
+              "team": "Club Brugge KV",
+              "type": "Gol",
+              "detail": "Lee Han-beom",
+              "pivotal": true
+            },
+            {
+              "minute": "63'",
+              "team": "Club Brugge KV",
+              "type": "Gol",
+              "detail": "Brandon Mechele",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 7 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Genk",
+              "type": "Oyuncu değişikliği",
+              "detail": "Noah Adedeji-Sternberg",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Genk",
+              "type": "Oyuncu değişikliği",
+              "detail": "Benjamin Tahirovic",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Club Brugge KV",
+              "type": "Oyuncu değişikliği",
+              "detail": "Hugo Vetlesen",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Club Brugge KV",
+              "type": "Oyuncu değişikliği",
+              "detail": "Nicolo Tresoldi",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Brandon Mechele",
+              "team": "Club Brugge KV",
+              "contribution": "63' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Lee Han-beom",
+              "team": "Club Brugge KV",
+              "contribution": "58' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Nicolo Tresoldi",
+              "team": "Club Brugge KV",
+              "contribution": "52' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Carlos Forbs",
+              "team": "Club Brugge KV",
+              "contribution": "15' gol · 45' sarı kart",
+              "impact": "orta"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Club Brugge KV topu elinde tutarken Genk derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "15' Club Brugge KV — Carlos Forbs: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "58' Club Brugge KV — Lee Han-beom: gol",
+            "63' Club Brugge KV — Brandon Mechele: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "64' Genk değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Genk değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Club Brugge KV değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "76' Genk değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "76' Genk değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "79' Club Brugge KV değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Club Brugge KV, Genk'i 3-0 yendi."
+            "Club Brugge KV, Genk'i 3-0 yendi.",
+            "İsabetli şutta da öndeydi (7-2); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Club Brugge KV topa daha çok sahip oldu (%61).",
+            "Club Brugge KV daha çok şut denedi (24-19)."
+          ],
+          "improvements": [
+            "Genk şut isabetinde geride kaldı (%11); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Club Brugge KV sahadan 3 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Club Brugge KV",
+            "score": 95
+          },
+          "away": {
+            "team": "Genk",
+            "score": 39
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Club Brugge KV %29.2, Genk %10.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Club Brugge KV 24.3, Genk 19.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -3193,11 +4511,21 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -3228,10 +4556,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -3244,58 +4572,46 @@
           "count": 0
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "events",
           "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c95961ea4a7eb3fe",
-      "fingerprint": "c95961ea4a7eb3fe",
+      "analysisSourceHash": "cdd08c58437cad4c",
+      "fingerprint": "cdd08c58437cad4c",
       "analysisGeneratedAt": "2026-09-20T20:38:40.950Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3338,8 +4654,11 @@
           "players": []
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Deportivo La Coruna sahaya 4-4-2 dizilişiyle çıktı.",
+            "Real Betis sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "unavailable",
@@ -3352,33 +4671,113 @@
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Deportivo La Coruna maça 4-4-2 dizilişiyle başladı.",
+            "Real Betis maça 4-3-3 dizilişiyle başladı."
+          ],
+          "formations": [
+            {
+              "team": "Deportivo La Coruna",
+              "formation": "4-4-2"
+            },
+            {
+              "team": "Real Betis",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Diziliş bilgisi doğrulandı; değişiklik akışı sağlayıcıdan gelmediği için hamle değerlendirmesi yapılmadı."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Real Betis topa daha çok sahip oldu (%57).",
+            "Deportivo La Coruna daha çok şut denedi (24-11)."
+          ],
+          "improvements": [
+            "Deportivo La Coruna şut isabetinde geride kaldı (%29); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Deportivo La Coruna",
+            "score": 74
+          },
+          "away": {
+            "team": "Real Betis",
+            "score": 59
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Deportivo La Coruna %29.2, Real Betis %36.4."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Deportivo La Coruna 17.5, Real Betis 52.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -3387,11 +4786,15 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "signals",
+        "statistics",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -3422,10 +4825,10 @@
       "winner": "Villarreal",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 70,
       "dataSources": {
         "score": {
           "present": true,
@@ -3433,9 +4836,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "statistics": {
           "present": false,
@@ -3443,53 +4846,41 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 17,
         "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "d783b645b9dfda11",
-      "fingerprint": "d783b645b9dfda11",
+      "analysisSourceHash": "d153216303f502b9",
+      "fingerprint": "d153216303f502b9",
       "analysisGeneratedAt": "2026-09-20T20:38:40.950Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3501,7 +4892,7 @@
       "reportUrl": "./mac-raporu/villarreal-levante-2026-09-20.html",
       "digest": {
         "headline": "Villarreal, Levante'yi 3-1 yendi",
-        "paragraph": "Villarreal, Estadio de la Cerámica'da oynanan La Liga karşılaşmasında Levante'yi 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Villarreal, Estadio de la Cerámica'da oynanan La Liga karşılaşmasında Levante'yi 3-1 mağlup etti. Golleri 41. dakikada Ayoze Pérez (Villarreal), 42. dakikada Iván Romero (Levante), 54. dakikada Alberto Moleiro (Villarreal), 86. dakikada Georges Mikautadze (Villarreal) kaydetti.",
         "result": {
           "winner": "Villarreal",
           "loser": "Levante",
@@ -3517,39 +4908,153 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "41'",
+              "team": "Villarreal",
+              "type": "Gol",
+              "detail": "Ayoze Pérez",
+              "pivotal": true
+            },
+            {
+              "minute": "42'",
+              "team": "Levante",
+              "type": "Gol",
+              "detail": "Iván Romero",
+              "pivotal": true
+            },
+            {
+              "minute": "54'",
+              "team": "Villarreal",
+              "type": "Gol",
+              "detail": "Alberto Moleiro",
+              "pivotal": true
+            },
+            {
+              "minute": "86'",
+              "team": "Villarreal",
+              "type": "Gol",
+              "detail": "Georges Mikautadze",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (Georges Mikautadze).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Villarreal",
+              "type": "Sarı kart",
+              "detail": "Tajon Buchanan",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Villarreal",
+              "type": "Oyuncu değişikliği",
+              "detail": "Tajon Buchanan",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Villarreal",
+              "type": "Oyuncu değişikliği",
+              "detail": "Pau Navarro",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Levante",
+              "type": "Oyuncu değişikliği",
+              "detail": "Oriol Rey",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Alberto Moleiro",
+              "team": "Villarreal",
+              "contribution": "54' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Ayoze Pérez",
+              "team": "Villarreal",
+              "contribution": "41' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Georges Mikautadze",
+              "team": "Villarreal",
+              "contribution": "86' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Iván Romero",
+              "team": "Levante",
+              "contribution": "42' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Villarreal sahaya 4-1-2-1-2 dizilişiyle çıktı.",
+            "Levante sahaya 4-3-3 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "41' Villarreal — Ayoze Pérez: gol",
+            "42' Levante — Iván Romero: gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "54' Villarreal — Alberto Moleiro: gol",
+            "86' Villarreal — Georges Mikautadze: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Villarreal maça 4-1-2-1-2 dizilişiyle başladı.",
+            "Levante maça 4-3-3 dizilişiyle başladı.",
+            "63' Levante değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Levante değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Levante değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Villarreal değişikliği (Substitution 1). Değişiklikten sonra Villarreal adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Villarreal",
+              "formation": "4-1-2-1-2"
+            },
+            {
+              "team": "Levante",
+              "formation": "4-3-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -3557,7 +5062,9 @@
             "Villarreal, Levante'yi 3-1 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Levante son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Villarreal sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -3581,10 +5088,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -16470,10 +17984,10 @@
       "winner": "Huracan",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -16481,63 +17995,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 17
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 15,
+        "statistics": 17,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "0a1ba929eb1daa49",
-      "fingerprint": "0a1ba929eb1daa49",
+      "analysisSourceHash": "09c77b706f8fc626",
+      "fingerprint": "09c77b706f8fc626",
       "analysisGeneratedAt": "2026-09-20T16:02:30.908Z",
-      "analysisUpdatedAt": "2026-09-20T21:17:01.053Z",
-      "generatedAt": "2026-09-20T21:17:01.053Z",
+      "analysisUpdatedAt": "2026-09-21T00:13:10.719Z",
+      "generatedAt": "2026-09-21T00:13:10.719Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -16549,7 +18046,7 @@
       "reportUrl": "./mac-raporu/river-plate-huracan-2026-09-20.html",
       "digest": {
         "headline": "Huracan, River Plate'yi 2-1 yendi",
-        "paragraph": "Huracan, Estadio Monumental'da oynanan Argentina Primera División karşılaşmasında River Plate'yi 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Huracan, Estadio Monumental'da oynanan Argentina Primera División karşılaşmasında River Plate'yi 2-1 mağlup etti. Golleri 9. dakikada O. Cortes (Huracan), 65. dakikada T. Galvan (River Plate), 80. dakikada L. Blondel (Huracan) kaydetti.",
         "result": {
           "winner": "Huracan",
           "loser": "River Plate",
@@ -16562,66 +18059,255 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "9'",
+              "team": "Huracan",
+              "type": "Gol",
+              "detail": "O. Cortes",
+              "pivotal": true
+            },
+            {
+              "minute": "65'",
+              "team": "River Plate",
+              "type": "Gol",
+              "detail": "T. Galvan",
+              "pivotal": true
+            },
+            {
+              "minute": "80'",
+              "team": "Huracan",
+              "type": "Gol",
+              "detail": "L. Blondel",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (L. Blondel), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Huracan",
+              "type": "Oyuncu değişikliği",
+              "detail": "L. Gil",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Huracan",
+              "type": "Gol",
+              "detail": "L. Blondel",
+              "decisive": true
+            },
+            {
+              "minute": "81'",
+              "team": "River Plate",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Acuna",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "Huracan",
+              "type": "Sarı kart",
+              "detail": "Juan Bisanz",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "L. Blondel",
+              "team": "Huracan",
+              "contribution": "80' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "O. Cortes",
+              "team": "Huracan",
+              "contribution": "9' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "T. Galvan",
+              "team": "River Plate",
+              "contribution": "65' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "César Ibáñez",
+              "team": "Huracan",
+              "contribution": "67' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "River Plate sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Huracan sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "River Plate topu elinde tutarken Huracan derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "9' Huracan — O. Cortes: gol",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "65' River Plate — T. Galvan: gol",
+            "80' Huracan — L. Blondel: gol",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "River Plate maça 4-2-3-1 dizilişiyle başladı.",
+            "Huracan maça 4-2-3-1 dizilişiyle başladı.",
+            "6' River Plate değişikliği (Substitution 1). Değişiklikten sonra River Plate adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "36' River Plate değişikliği (Substitution 2). Değişiklikten sonra River Plate adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Huracan değişikliği (Substitution 1). Değişiklikten sonra Huracan adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "75' Huracan değişikliği (Substitution 2). Değişiklikten sonra Huracan adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "River Plate",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Huracan",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Huracan, River Plate'yi 1-2 yendi."
+            "Huracan, River Plate'yi 1-2 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (2-3); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
+            "Huracan, gol beklentisinin 1,77 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "River Plate topa daha çok sahip oldu (%75).",
+            "River Plate daha çok şut denedi (20-7)."
+          ],
+          "improvements": [
+            "River Plate şut isabetinde geride kaldı (%15); bitiricilik geliştirilmesi gereken alan.",
+            "River Plate son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Huracan sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "River Plate",
+            "score": 65
+          },
+          "away": {
+            "team": "Huracan",
+            "score": 39
+          },
+          "confidence": 100
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti River Plate %15, Huracan %28.6."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.75
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için River Plate 31.9, Huracan 31.6 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG River Plate 0.081, Huracan 0.033. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -16629,11 +18315,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
