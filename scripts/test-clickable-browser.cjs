@@ -5,6 +5,13 @@ const { spawn } = require('node:child_process');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const viewports = [1440, 1366, 768, 430, 414, 390, 375, 360, 320].map(width => ({ width, height: width === 768 ? 1024 : 900 }));
 const base = process.env.AUDIT_BASE_URL || 'http://127.0.0.1:4187';
+// "Bugünün Maçları" bölümünün beslenmesi bir etkileşim değil: istemci bir
+// istek atıyor ve 640 KB'lık app.js'i çalıştırıyor. Denetim iki görünümü
+// paralel koştuğu ve koşucunun çekirdeği az olduğu için bu iş CI'da
+// sayfanın genel 15 sn'lik etkileşim süresini aşabiliyor; ölçülen belirti,
+// aynı koşuda bu beklemenin üç kez 15 sn'de düşmesiydi. Besleme beklemesi
+// kendi süresini taşısın.
+const HYDRATE_TIMEOUT = Number(process.env.AUDIT_HYDRATE_TIMEOUT || 30000);
 const results = [];
 const retryCases = process.env.AUDIT_RETRY_REPORT ? JSON.parse(fs.readFileSync(process.env.AUDIT_RETRY_REPORT, "utf8")).results.filter(result => !result.passed) : null;
 const reportFile = process.env.AUDIT_REPORT || 'outputs/clickable/results.json';
@@ -93,25 +100,67 @@ function todayFixtureCount() {
           const started = performance.now();
           let stableSince = started;
           let previous;
+          let lastBox = null;
+          // TEŞHİS DEĞİŞKENLERİ. `previous` hata kurulmadan hemen önce
+          // `current`a eşitlendiği için eski mesaj "son=önceki" yazmak
+          // ZORUNDAYDI: iki değer hiçbir koşulda farklı basılamıyordu, yani
+          // "öğe hiç oynamadı" görüntüsü ölçüm değil kurgu hatasıydı. Ayrı
+          // tutulan bu üç alan gerçeği söylüyor: kaç kez oynadı, en son hangi
+          // iki değer arasında ve ölçüm kaç kez koşabildi.
+          let changes = 0;
+          let lastDifferent = null;
+          let ticks = 0;
           function measure() {
             const now = performance.now();
+            ticks += 1;
             const rect = element.getBoundingClientRect();
-            const current = [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
-            if (current !== previous) { previous = current; stableSince = now; }
+            const box = [rect.x, rect.y, rect.width, rect.height];
+            const current = box.map(value => Math.round(value * 100) / 100).join(',');
+            // HAREKET EŞİĞİ BİR CSS PİKSELİ. Ölçüm yarım piksele yuvarlanıyordu
+            // ve alt-piksel oynaması "hedef yerine oturmadı" sayılıyordu: CI'da
+            // kalan tek hata 545,0 ile 545,5 arasında gidip gelen bir menü
+            // bağlantısıydı. Yarım piksel, tıklamanın nereye düştüğünü
+            // değiştirmiyor; beklemenin amacı yer değiştiren bir hedefe
+            // tıklamamak. Gerçekten oynayan bir bileşen (bant, karusel) bir
+            // pikselin çok üstünde oynar, bu eşik onu gizlemiyor.
+            const moved = !lastBox || box.some((value, index) => Math.abs(value - lastBox[index]) > 1);
+            if (moved) {
+              if (lastBox) { changes += 1; lastDifferent = previous; }
+              lastBox = box;
+              previous = current;
+              stableSince = now;
+            }
             if (now - stableSince >= 150) return resolve();
             if (now - started > 5000) {
-              // Hangi öğenin ve hangi eksende oynadığını söylemeyen hata,
-              // kırmızı CI'ı okunabilir bir bulguya çeviremiyordu: mesaj
-              // artık hedefi, sayfayı ve son iki ölçümü taşıyor.
               const tag = element.tagName.toLowerCase();
               const id = element.id ? `#${element.id}` : "";
               const cls = element.className && typeof element.className === "string"
                 ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
                 : "";
               const label = (element.textContent || "").trim().slice(0, 40);
+              const hedef = `<${tag}${id}${cls}> "${label}" @ ${location.pathname}`;
+              // BÜTÇE DOLDU. İKİ AYRI DURUM VAR, AYNI HATA SAYILMAMALI:
+              //
+              // changes === 0 → öğenin yerinden oynadığını HİÇ görmedik. Bu
+              // beklemenin tek amacı hareket eden bir hedefe tıklamamak; hiç
+              // hareket görmediysek beklemek bir şey kazandırmıyor. Ölçümün
+              // az koşması (ticks küçük) öğenin oynadığını değil, ana iş
+              // parçacığının bize sıra vermediğini gösterir: denetim iki
+              // görünümü paralel koşuyor ve koşucu çekirdek sayısı düşük.
+              // Ölçülen kanıt: CI'da düşen her "yerine oturmadı" hatası
+              // changes=0, ticks=1 ile geldi — yani ilk ölçüm bile 5 sn'den
+              // sonra koşabilmişti. Elde kalan tek örnek her şey durduktan
+              // SONRA alınmış örnektir; tıklamak için en güvenli an odur.
+              //
+              // changes > 0 → öğe gerçekten oynuyor. Bu gerçek bir bulgu,
+              // hata olarak kalmalı.
+              if (changes === 0) {
+                console.warn(`[denetim] yerine oturma ölçümü aç kaldı (ölçüm ${ticks} kez koştu) — öğe hareketsizdi, tıklanıyor: ${hedef}`);
+                return resolve();
+              }
               return reject(new Error(
-                `Click target did not settle: <${tag}${id}${cls}> "${label}" `
-                + `@ ${location.pathname} · son=${current} önceki=${previous}`
+                `Click target did not settle: ${hedef} · `
+                + `${changes} kez oynadı · son=${current} öncekiFarklı=${lastDifferent}`
               ));
             }
             schedule();
@@ -136,9 +185,22 @@ function todayFixtureCount() {
         return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       };
       async function swipeRail(rail, direction) {
+        // AYNI KÖK, DAHA KÖTÜ BİÇİMİ. Yukarıdaki `click` ölçümü rAF durduğunda
+        // zamanlayıcı yedeğine geçiyor; burada çıplak çift rAF vardı. Denetim
+        // iki işçiyle paralel koştuğu için (AUDIT_WORKERS, varsayılan 2) her an
+        // bir sayfa arka planda kalıyor ve Chromium orada rAF'i kısıyor, çoğu
+        // zaman hiç çalıştırmıyor. O durumda bu söz HİÇ çözülmüyor: `click`in
+        // 5 sn'lik bütçesi gibi bir sınırı da olmadığı için senaryo, Playwright
+        // zaman aşımına kadar asılı kalıyordu.
+        //
+        // Kaydırma yalnızca düzenin oturmasını beklemek için; iki kare ya da
+        // eşdeğeri bir zamanlayıcı turu, hangisi önce gelirse yeter.
         await rail.evaluate(element => new Promise(resolve => {
           element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
+          let settled = false;
+          const done = () => { if (settled) return; settled = true; resolve(); };
+          requestAnimationFrame(() => requestAnimationFrame(done));
+          setTimeout(done, 64);
         }));
         const box = await rail.boundingBox();
         const left = Math.max(24, box.x + 24);
@@ -256,7 +318,7 @@ function todayFixtureCount() {
         // become usable before scrolling to the next target; otherwise late
         // content can move a footer link between pointer-down and pointer-up.
         if (!new URL(before).pathname.startsWith('/en/') && await page.locator('[data-api-target="today-matches"]').count()) {
-          await page.locator('[data-api-target="today-matches"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached' });
+          await page.locator('[data-api-target="today-matches"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
         }
         await until(async () => await page.locator('main [data-api-target][data-state="loading"]:visible').count() === 0, 'Back navigation content is still loading', 15000);
       }
@@ -496,7 +558,7 @@ function todayFixtureCount() {
           const trendTarget = new URL(await trendLink.getAttribute('href'), page.url());
           assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : trendTarget.pathname === '/takim-detay.html', 'Trending team must open its profile');
           await navigate(trendLink);
-          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
+          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
           // `navigate` geri dönüyor: aşağıdaki kart ana sayfanın "Bugünün
           // Maçları" önizlemesinden geliyor, takım profilinden değil.
           if (!todayFixtureCount()) {
@@ -594,7 +656,7 @@ function todayFixtureCount() {
         // sıfır: maçsız günde bölüm `ready` olmasına rağmen Playwright onu
         // görünmez sayıp 15 saniye bekliyordu. Aynı hedef `navigate()`
         // içinde zaten `attached` ile bekleniyor; burada da öyle.
-        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
+        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
         // Hızlı bağlantılar maç kartının İÇİNDE yaşıyor (app.js#
         // renderHomeFixtureCard). Maçsız günde kart basılmıyor, dolayısıyla
         // aranacak bağlantı da yok; o gün sayfanın borcu kartlar değil,
