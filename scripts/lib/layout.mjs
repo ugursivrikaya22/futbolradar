@@ -92,9 +92,19 @@ function normalizeBase(base) {
   return value.endsWith("/") ? value : `${value}/`;
 }
 
+function normalizeRelativeBase(base) {
+  const value = normalizeBase(base);
+  let normalized = path.posix.normalize(value);
+  if (!normalized.endsWith("/")) normalized = `${normalized}/`;
+  if (value.startsWith("./") && !normalized.startsWith("./") && !normalized.startsWith("../")) {
+    normalized = `./${normalized}`;
+  }
+  return normalized;
+}
+
 function normalizeTickerHref(href, base) {
   const value = String(href || "").trim();
-  const normalizedBase = normalizeBase(base);
+  const normalizedBase = normalizeRelativeBase(base);
   if (!value || !/^https?:/i.test(value)) return value;
   if (isExternalUrl(value)) return value;
   try {

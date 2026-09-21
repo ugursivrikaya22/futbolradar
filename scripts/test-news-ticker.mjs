@@ -438,6 +438,22 @@ function item(overrides = {}) {
     "desteklenen owned İngilizce haber yolu da sayfa derinliğine göre göreli yazılmalı"
   );
 
+  const normalizedBase = newsTicker({
+    base: "./foo/../",
+    badge: "Gündem",
+    items: [
+      {
+        text: "Base normalize",
+        href: "https://www.futbolradar.com/haber/base-test.html"
+      }
+    ]
+  });
+  assert.match(
+    normalizedBase,
+    /href="\.\/haber\/base-test\.html"/,
+    "nokta segmenti içeren göreli base temizlenip iç yol doğru birleşmeli"
+  );
+
   const suspicious = newsTicker({
     base: "../",
     badge: "Gündem",
