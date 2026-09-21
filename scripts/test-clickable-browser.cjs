@@ -93,25 +93,47 @@ function todayFixtureCount() {
           const started = performance.now();
           let stableSince = started;
           let previous;
+          // TEŞHİS DEĞİŞKENLERİ. `previous` hata kurulmadan hemen önce
+          // `current`a eşitlendiği için eski mesaj "son=önceki" yazmak
+          // ZORUNDAYDI: iki değer hiçbir koşulda farklı basılamıyordu, yani
+          // "öğe hiç oynamadı" görüntüsü ölçüm değil kurgu hatasıydı. Ayrı
+          // tutulan bu üç alan gerçeği söylüyor: kaç kez oynadı, en son hangi
+          // iki değer arasında ve ölçüm kaç kez koşabildi.
+          let changes = 0;
+          let lastDifferent = null;
+          let ticks = 0;
           function measure() {
             const now = performance.now();
+            ticks += 1;
             const rect = element.getBoundingClientRect();
             const current = [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
-            if (current !== previous) { previous = current; stableSince = now; }
+            if (current !== previous) {
+              if (previous !== undefined) { changes += 1; lastDifferent = previous; }
+              previous = current;
+              stableSince = now;
+            }
             if (now - stableSince >= 150) return resolve();
             if (now - started > 5000) {
               // Hangi öğenin ve hangi eksende oynadığını söylemeyen hata,
               // kırmızı CI'ı okunabilir bir bulguya çeviremiyordu: mesaj
-              // artık hedefi, sayfayı ve son iki ölçümü taşıyor.
+              // artık hedefi, sayfayı ve gerçek hareket kaydını taşıyor.
               const tag = element.tagName.toLowerCase();
               const id = element.id ? `#${element.id}` : "";
               const cls = element.className && typeof element.className === "string"
                 ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
                 : "";
               const label = (element.textContent || "").trim().slice(0, 40);
+              // İKİ AYRI ARIZAYI AYIRT ET:
+              //   değişim=0 ve ölçüm sayısı düşük → ölçüm aç kaldı (rAF/timer
+              //     kısıtlaması), öğe hareketsizdi.
+              //   değişim>0 → öğe gerçekten oynuyor; hangi iki değer arasında
+              //     oynadığı yazılı.
+              const teşhis = changes === 0
+                ? `HAREKETSİZ (ölçüm ${ticks} kez koştu — döngü aç kalmış olabilir)`
+                : `${changes} kez oynadı · son=${current} öncekiFarklı=${lastDifferent}`;
               return reject(new Error(
                 `Click target did not settle: <${tag}${id}${cls}> "${label}" `
-                + `@ ${location.pathname} · son=${current} önceki=${previous}`
+                + `@ ${location.pathname} · ${teşhis}`
               ));
             }
             schedule();
