@@ -105,13 +105,20 @@ function todayFixtureCount() {
           return [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
         });
         const started = Date.now();
+        // İZ KAYDI. Önceki hata mesajı "son" ve "önceki" ölçümü rapor ANINDA
+        // okuyordu; oysa döngü karşılaştırmadan sonra previous = current
+        // atıyor, yani ikisi her zaman eşit görünüyordu ve hareketsiz bir öğe
+        // izlenimi veriyordu. Artık ayrı ölçümler saklanıyor: mesaj öğenin
+        // gerçek yörüngesini gösteriyor.
+        const iz = [];
         let previous = await rectOf();
-        let current = previous;
+        iz.push(previous);
         let stable = false;
         while (Date.now() - started <= 5000) {
           await delay(120);
-          current = await rectOf();
+          const current = await rectOf();
           if (current === previous) { stable = true; break; }
+          if (iz[iz.length - 1] !== current) iz.push(current);
           previous = current;
         }
         if (!stable) {
@@ -123,7 +130,12 @@ function todayFixtureCount() {
               : '';
             return `<${tag}${id}${cls}> "${(element.textContent || '').trim().slice(0, 40)}" @ ${location.pathname}`;
           });
-          throw new Error(`Click target did not settle: ${kimlik} · son=${current} önceki=${previous}`);
+          const yorunge = iz.length > 4
+            ? [iz[0], "…", ...iz.slice(-3)].join(" → ")
+            : iz.join(" → ");
+          throw new Error(
+            `Click target did not settle: ${kimlik} · ${iz.length} farklı ölçüm: ${yorunge}`
+          );
         }
         return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       };
