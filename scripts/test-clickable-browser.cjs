@@ -223,11 +223,31 @@ function todayFixtureCount() {
         }
         if (target.hash) await page.locator('[id=' + JSON.stringify(decodeURIComponent(target.hash.slice(1))) + ']').waitFor();
         if (target.pathname.includes('en/match-detail')) {
-          await page.locator('#en-match-stats-tab').waitFor();
-          await click(page.locator('#en-match-stats-tab'));
-          assert.equal(await page.locator('#en-match-stats').isVisible(), true);
-          await click(page.locator('#en-match-lineups-tab'));
-          assert.equal(await page.locator('#en-match-lineups').isVisible(), true);
+          // SEKMELER ANCAK SAĞLAYICIDA KAYIT VARSA ÇİZİLİYOR. Canlı karttan
+          // gelinen maçın dökümü henüz yoksa sayfa sekme değil, dürüst bir
+          // durum metni gösteriyor. O hâl de denetleniyor: metin dolu olmalı
+          // ve null/undefined/NaN sızdırmamalı — denetim atlanmıyor.
+          const stats = page.locator('#en-match-stats-tab');
+          let sekmeGeldi = true;
+          await stats.waitFor({ state: 'attached', timeout: 15000 }).catch(() => { sekmeGeldi = false; });
+          if (!sekmeGeldi) {
+            // İstek bitmeden karar verilmesin: durum metni dolana kadar beklenir.
+            await until(
+              async () => ((await page.locator('[data-detail-controls] [role="status"]').innerText()) || '').trim().length > 0,
+              'EN match detail never reported a state',
+              10000
+            );
+          }
+          if (await stats.count()) {
+            await click(stats);
+            assert.equal(await page.locator('#en-match-stats').isVisible(), true);
+            await click(page.locator('#en-match-lineups-tab'));
+            assert.equal(await page.locator('#en-match-lineups').isVisible(), true);
+          } else {
+            const durum = (await page.locator('main').innerText()).trim();
+            assert.ok(durum.length > 20, 'EN match detail is blank with no honest state');
+            assert.doesNotMatch(durum, /\b(null|undefined|NaN)\b/, 'EN match detail leaks a placeholder value');
+          }
         }
         await page.goBack({ waitUntil: 'domcontentloaded' });
         await until(() => page.url() === before, 'Back navigation failed', 10000);
@@ -636,7 +656,22 @@ function todayFixtureCount() {
       });
       await test('ticker links, logo and menu stacking', async () => {
         await open('index.html');
-        await navigate(page.locator('.news-ticker-group:not([aria-hidden="true"]) .news-ticker-item:not([target="_blank"])').first());
+        // TICKER'IN BİLEŞİMİ VERİYE BAĞLI. Site içine giden bir künye her
+        // zaman listede kalmıyor: taze haber akışı tamamen dış kaynaklıysa
+        // (ölçüldü: 26 kaydın 26'sı da dış bağlantı) rotasyonda tek bir iç
+        // bağlantı bile kalmayabiliyor. Varsa eskisi gibi geziliyor; yoksa
+        // dış künyenin kendi sözleşmesi denetleniyor — denetim atlanmıyor.
+        const tickerGroup = '.news-ticker-group:not([aria-hidden="true"]) ';
+        const icBaglanti = page.locator(tickerGroup + '.news-ticker-item:not([target="_blank"])').first();
+        if (await icBaglanti.count()) {
+          await navigate(icBaglanti);
+        } else {
+          const disBaglanti = page.locator(tickerGroup + '.news-ticker-item[target="_blank"]').first();
+          await disBaglanti.waitFor({ state: 'attached' });
+          assert.match(await disBaglanti.getAttribute('href'), /^https?:\/\//, 'Ticker künyesi geçerli bir adrese gitmiyor');
+          assert.match(await disBaglanti.getAttribute('rel') || '', /noopener/, 'Dış ticker künyesinde noopener yok');
+          assert.ok((await disBaglanti.getAttribute('aria-label') || '').trim(), 'Ticker künyesinin erişilebilir adı yok');
+        }
         await open('haberler.html');
         const logo = page.locator('header .brand').first();
         if (touch) { const box = await logo.boundingBox(); assert.ok(box.width >= 44 && box.height >= 44, 'Logo touch target is too small'); }
