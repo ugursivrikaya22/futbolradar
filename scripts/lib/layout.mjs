@@ -101,7 +101,7 @@ function normalizeRelativeBase(base) {
     if (segment !== "..") break;
     parents++;
   }
-  return parents ? "../".repeat(parents) : "./";
+  return "../".repeat(parents);
 }
 
 function normalizeTickerHref(href, base) {

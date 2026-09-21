@@ -450,7 +450,7 @@ function item(overrides = {}) {
   });
   assert.match(
     normalizedBase,
-    /href="\.\/haber\/base-test\.html"/,
+    /href="haber\/base-test\.html"/,
     "nokta segmenti içeren göreli base temizlenip iç yol doğru birleşmeli"
   );
 
