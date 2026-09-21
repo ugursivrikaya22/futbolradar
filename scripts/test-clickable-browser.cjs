@@ -194,7 +194,16 @@ function todayFixtureCount() {
         page.on('console', m => { if (m.type() === 'error') consoleErrors.push({ kind: 'console', message: m.text(), url: m.location().url }); });
         try {
           await run();
-          assert.deepEqual(consoleErrors, [], 'Browser errors');
+          if (consoleErrors.length) {
+            // Node'un dizi karşılaştırması uzun kaydı kırpıyordu: kırmızı CI'da
+            // yalnızca "404 ()" görünüyor, HANGİ adres olduğu görünmüyordu.
+            // Hata artık adresleri tek satırda taşıyor.
+            const ozet = consoleErrors
+              .slice(0, 4)
+              .map(item => `${item.kind}: ${item.message} @ ${item.url || '?'}`)
+              .join(' | ');
+            assert.fail(`Browser errors (${consoleErrors.length}): ${ozet}`);
+          }
           results.push({ viewport, name, passed: true, durationMs: Date.now() - startedAt });
           console.log('PASS', viewport.width, name);
         } catch (e) {
