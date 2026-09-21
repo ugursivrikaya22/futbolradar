@@ -136,9 +136,22 @@ function todayFixtureCount() {
         return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       };
       async function swipeRail(rail, direction) {
+        // AYNI KÖK, DAHA KÖTÜ BİÇİMİ. Yukarıdaki `click` ölçümü rAF durduğunda
+        // zamanlayıcı yedeğine geçiyor; burada çıplak çift rAF vardı. Denetim
+        // iki işçiyle paralel koştuğu için (AUDIT_WORKERS, varsayılan 2) her an
+        // bir sayfa arka planda kalıyor ve Chromium orada rAF'i kısıyor, çoğu
+        // zaman hiç çalıştırmıyor. O durumda bu söz HİÇ çözülmüyor: `click`in
+        // 5 sn'lik bütçesi gibi bir sınırı da olmadığı için senaryo, Playwright
+        // zaman aşımına kadar asılı kalıyordu.
+        //
+        // Kaydırma yalnızca düzenin oturmasını beklemek için; iki kare ya da
+        // eşdeğeri bir zamanlayıcı turu, hangisi önce gelirse yeter.
         await rail.evaluate(element => new Promise(resolve => {
           element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
+          let settled = false;
+          const done = () => { if (settled) return; settled = true; resolve(); };
+          requestAnimationFrame(() => requestAnimationFrame(done));
+          setTimeout(done, 64);
         }));
         const box = await rail.boundingBox();
         const left = Math.max(24, box.x + 24);
