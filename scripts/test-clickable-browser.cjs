@@ -99,7 +99,21 @@ function todayFixtureCount() {
             const current = [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
             if (current !== previous) { previous = current; stableSince = now; }
             if (now - stableSince >= 150) return resolve();
-            if (now - started > 5000) return reject(new Error('Click target did not settle'));
+            if (now - started > 5000) {
+              // Hangi öğenin ve hangi eksende oynadığını söylemeyen hata,
+              // kırmızı CI'ı okunabilir bir bulguya çeviremiyordu: mesaj
+              // artık hedefi, sayfayı ve son iki ölçümü taşıyor.
+              const tag = element.tagName.toLowerCase();
+              const id = element.id ? `#${element.id}` : "";
+              const cls = element.className && typeof element.className === "string"
+                ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
+                : "";
+              const label = (element.textContent || "").trim().slice(0, 40);
+              return reject(new Error(
+                `Click target did not settle: <${tag}${id}${cls}> "${label}" `
+                + `@ ${location.pathname} · son=${current} önceki=${previous}`
+              ));
+            }
             requestAnimationFrame(measure);
           }
           requestAnimationFrame(measure);
