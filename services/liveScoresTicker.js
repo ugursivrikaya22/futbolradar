@@ -1,8 +1,7 @@
 /**
  * CANLI SKORLAR BANDI — HANGİ MAÇ, HANGİ SIRADA, HANGİ ETİKETLE.
  *
- * Transfer Radarı bandının yerini alır (bkz. services/transferRadarTicker.js,
- * artık kullanılmıyor). Kural TEK ve MUTLAK: yalnızca ŞU AN OYNANAN maçlar
+ * Kural TEK ve MUTLAK: yalnızca ŞU AN OYNANAN maçlar
  * banda girer. Başlamamış, bitmiş, ertelenen ya da iptal edilen hiçbir
  * kayıt buraya düşmez — "canlı" iddiası bir zaman iddiasıdır ve veri
  * katmanında, çizim katmanında değil, burada kesilir.

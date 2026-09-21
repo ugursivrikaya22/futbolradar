@@ -787,19 +787,6 @@ function todayFixtureCount() {
           await navigate(page.locator('a[href="./lig/' + league + '.html"]').first());
         }
       });
-      await test('English transfer club dropdown and reset', async () => {
-        await open('en/transfer-radar.html');
-        const select = page.locator('[data-en-transfer-filter] select');
-        const value = await select.locator('option').nth(1).getAttribute('value');
-        await select.selectOption(value);
-        assert.ok(new URL(page.url()).searchParams.get('team'));
-        const rows = page.locator('tr[data-transfer-team]:visible');
-        assert.ok(await rows.count(), 'Selected club has no transfer results');
-        const count = await rows.count();
-        await click(page.locator('[data-en-transfer-filter] button[type="reset"]'));
-        assert.equal(await select.inputValue(), '');
-        assert.ok(await rows.count() >= count);
-      });
       await test('unknown team has an honest state and a working return route', async () => {
         await open('takim-detay.html?team=__audit_missing_team__');
         const panel = page.locator('[data-api-target="team-detail"]');
@@ -820,15 +807,14 @@ function todayFixtureCount() {
         await until(async () => await page.locator('[data-api-target="super-lig-fixtures"]').textContent() !== before, 'Fixture week did not change');
       });
       await test('Turkish transfer filters update results and recover', async () => {
-        await open('transfer-radari.html');
+        await open('transfer-izleme.html');
         const club = page.locator('[data-transfer-team-filter]');
         await club.locator('option').nth(1).waitFor({ state: 'attached' });
         const value = await club.locator('option').nth(1).getAttribute('value');
         await club.selectOption(value);
         await until(() => new URL(page.url()).searchParams.get('team') === value, 'Club filter did not update');
-        assert.equal(await page.locator('[data-transfer-direction-filter]').isDisabled(), false);
         await club.selectOption('');
-        for (const filter of ['son-hareket', 'all']) {
+        for (const filter of ['son-hareket', 'izleme-listesi']) {
           const button = page.locator('[data-transfer-filter="' + filter + '"]');
           await click(button);
           assert.equal(await button.getAttribute('aria-pressed'), 'true');

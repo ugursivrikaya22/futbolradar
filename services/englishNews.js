@@ -416,7 +416,7 @@ const COMPETITION_INTERNAL_LINKS = Object.freeze({
   ],
   "Süper Lig": [
     { label: "Süper Lig standings", href: "../super-lig-standings.html" },
-    { label: "Transfer radar", href: "../transfer-radar.html" },
+    { label: "Match centre", href: "../match-centre.html" },
     { label: "All football news", href: "../news.html" }
   ]
 });

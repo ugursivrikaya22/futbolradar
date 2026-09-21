@@ -28,12 +28,10 @@ import {
   leagueMarkHtml,
   sectionHead as sharedSectionHead,
   trendCard as sharedTrendCard,
-  transferWatchShell,
   superLigTodayStripHtml,
   officialLineupAlertHtml,
   isLineupAlertStale
 } from "./lib/matchCards.mjs";
-import { transferTypeEn } from "./lib/enTicker.mjs";
 import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
@@ -677,8 +675,8 @@ function foldText(value) {
 /**
  * Kulüp adı ÇEVRİLMEZ — "Fiorentina" her dilde Fiorentina'dır. Çevrilen tek
  * şey kulüp OLMAYAN yer tutucu: kadrosuz oyuncu için veri "Serbest oyuncu"
- * yazıyor ve bu bir isim değil, bir durum. "Transfer Takibi" paneli
- * (transferWatchSection) bunu kullanır — bant ayrı bir bileşen.
+ * yazıyor ve bu bir isim değil, bir durum. Oyuncu ve kadro yüzeyleri
+ * bunu kullanır.
  */
 function clubLabelEn(value) {
   const name = String(value || "").trim();
@@ -1147,32 +1145,6 @@ ${cards}
         </section>`;
 }
 
-/** Transfer radarı — Türkçe .home-transfer-watch ile aynı yapı; yapısal veriden. */
-function transferWatchSection() {
-  const doc = readJson("transfers.json", {});
-  const rows = (Array.isArray(doc) ? doc : (doc.transfers || []))
-    .filter((row) => String(row.status || "").toLowerCase() === "confirmed")
-    .filter((row) => row.playerName && row.toTeam)
-    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
-  if (!rows.length) return "";
-  const featured = rows[0];
-  // Transfer türünün İngilizce karşılığı bant beslemesiyle AYNI eşlemeden.
-  const shell = transferWatchShell({
-    locale: LOCALE,
-    leader: {
-      ...featured,
-      fromTeam: clubLabelEn(featured.fromTeam),
-      toTeam: clubLabelEn(featured.toTeam),
-      typeLabel: transferTypeEn(featured.type) || label("transfer.fallbackType")
-    },
-    allHref: "./transfer-radar.html",
-    rows: rows.slice(1, 5).map((row) => ({ ...row, toTeam: clubLabelEn(row.toTeam), href: "./transfer-radar.html?team=" + encodeURIComponent(row.toTeam || "") }))
-  });
-  return `<section class="container section home-transfer-watch" aria-labelledby="transfer-title">
-          ${sectionHead("Transfer Radar", "transfer-title", "Confirmed transfers", "Only moves verified through official club sources.", null, "")}
-          <div class="home-transfer-watch-shell">${shell}</div>
-        </section>`;
-}
 
 /**
  * HIZLI GEZİNME — Türkçe .home-statistics-entry ile aynı ızgara, aynı sekiz kutu.
@@ -1362,7 +1334,6 @@ function homePage() {
       ${playerRadarSection()}
       ${trendTeamsSection()}
       ${quickNavSection()}
-      ${transferWatchSection()}
       ${newsSection()}
       ${archiveSection()}
       ${pollStickySection()}`;
@@ -1842,47 +1813,6 @@ ${sectionLinks()}`;
   });
 }
 
-function transferRadarPage() {
-  const doc = readJson("transfers.json", {});
-  const rows = (Array.isArray(doc) ? doc : (doc.transfers || []))
-    .filter((row) => String(row.status || "").toLowerCase() === "confirmed")
-    .filter((row) => row.playerName && row.toTeam)
-    .sort((left, right) => String(right.date || "").localeCompare(String(left.date || "")));
-
-  const table = rows.map((row) => `<tr data-transfer-team="${escapeHtml(row.toTeam)}" data-transfer-from="${escapeHtml(row.fromTeam)}">
-              <th scope="row">${escapeHtml(row.playerName || "")}</th>
-              <td>${escapeHtml(clubLabelEn(row.fromTeam) || "—")}</td>
-              <td>${escapeHtml(clubLabelEn(row.toTeam) || "—")}</td>
-              <td>${escapeHtml(transferTypeEn(row.type) || label("transfer.fallbackType"))}</td>
-              <td>${escapeHtml(row.date ? formatDate(row.date, LOCALE) : "—")}</td>
-            </tr>`).join("");
-
-  const body = `      <section class="data-panel" aria-labelledby="en-transfers-title">
-        <h2 class="panel-title" id="en-transfers-title">Confirmed transfers</h2>
-        <form data-en-transfer-filter><label>Club <select name="team" aria-label="Filter transfers by club"><option value="">All clubs</option>${[...new Set(rows.flatMap(row => [row.toTeam, row.fromTeam]).filter(Boolean))].sort().map(team => `<option value="${escapeHtml(team)}">${escapeHtml(clubLabelEn(team))}</option>`).join("")}</select></label><button type="reset">Clear filter</button></form>
-        <p data-transfer-filter-status role="status"></p>
-        ${table
-          ? `<div class="standings-table-wrap"><table class="en-table">
-          <thead><tr><th scope="col">Player</th><th scope="col">From</th><th scope="col">To</th><th scope="col">Type</th><th scope="col">Date</th></tr></thead>
-          <tbody>${table}</tbody>
-        </table></div>`
-          : `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}
-        <p class="muted-copy">Only moves confirmed through an official club or federation statement are listed. Rumours are never promoted to this table.</p>
-      </section>
-${sectionLinks()}`;
-
-  return pageShell({
-    routeKey: "transferRadar",
-    trPath: "transfer-radari.html",
-    enPath: "en/transfer-radar.html",
-    heroKicker: "Transfers",
-    heroTitle: "Turkish Süper Lig Transfer Radar",
-    heroLead: "Verified transfers in and out of Turkish clubs, each carrying the source it was confirmed against.",
-    heroMeta: `${rows.length} confirmed moves`,
-    body,
-    schema: schemaFor("transferRadar", "en/transfer-radar.html", "CollectionPage")
-  });
-}
 
 function statsHubPage() {
   // İngilizce karşılığı OLAN ekranlar İngilizce sürüme; olmayan iki ekran
@@ -1893,8 +1823,7 @@ function statsHubPage() {
     { href: "./top-assists.html", kicker: "Assists", title: "Top Assists", copy: "The Süper Lig assist charts, league assists only." },
     { href: "./momentum.html", kicker: "Form", title: "Team Momentum", copy: "Which clubs are trending up and which are falling away." },
     { href: "./standings.html", kicker: "Table", title: "Standings", copy: "The full Trendyol Süper Lig table." },
-    { href: "./teams.html", kicker: "Clubs", title: "Teams", copy: "All 18 clubs with position and form." },
-    { href: "./transfer-radar.html", kicker: "Transfers", title: "Transfer Radar", copy: "Confirmed moves with their sources." }
+    { href: "./teams.html", kicker: "Clubs", title: "Teams", copy: "All 18 clubs with position and form." }
   ];
   const cards = screens.map((screen) => `<article class="card">
             <span class="card-kicker">${escapeHtml(screen.kicker)}</span>
@@ -2132,7 +2061,6 @@ const PAGE_BUILDERS = {
   topScorers: topScorersPage,
   topAssists: topAssistsPage,
   momentum: momentumPage,
-  transferRadar: transferRadarPage,
   statsHub: statsHubPage,
   archive: archivePage,
   columns: columnsPage,

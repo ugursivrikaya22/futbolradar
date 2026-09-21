@@ -62,7 +62,7 @@ const PAGES = {
   "super-lig-fikstur.html": { section: { name: "Maç Merkezi", href: "mac-merkezi.html" }, kind: "fixtures" },
   "takim-trendleri.html": { section: { name: "Takımlar", href: "takimlar.html" }, kind: "collection" },
   "takimlar.html": { section: null, kind: "collection" },
-  "transfer-izleme.html": { section: { name: "Transfer Radarı", href: "transfer-radari.html" }, kind: "collection" }
+  "transfer-izleme.html": { section: { name: "Oyuncu Radarı", href: "oyuncu-radari.html" }, kind: "collection" }
 };
 
 function readPage(file) {

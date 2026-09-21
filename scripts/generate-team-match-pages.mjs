@@ -46,8 +46,8 @@ const DOMAIN = "https://www.futbolradar.com";
 const MIN_CONTENT_ROWS = 6;
 
 const TEAMS = [
-  { slug: "galatasaray", name: "Galatasaray", radar: "galatasaray-oyuncu-radari.html", transfer: "galatasaray-transfer-radar.html", form: "galatasaray-form-durumu.html" },
-  { slug: "fenerbahce", name: "Fenerbahçe", radar: "fenerbahce-oyuncu-radari.html", transfer: "fenerbahce-transfer-radar.html", form: "fenerbahce-form-durumu.html" },
+  { slug: "galatasaray", name: "Galatasaray", radar: "galatasaray-oyuncu-radari.html", form: "galatasaray-form-durumu.html" },
+  { slug: "fenerbahce", name: "Fenerbahçe", radar: "fenerbahce-oyuncu-radari.html", form: "fenerbahce-form-durumu.html" },
   { slug: "besiktas", name: "Beşiktaş", radar: "besiktas-oyuncu-radari.html", form: "besiktas-form-durumu.html" },
   { slug: "trabzonspor", name: "Trabzonspor", radar: "trabzonspor-oyuncu-radari.html", form: "trabzonspor-form-durumu.html" }
 ];
@@ -495,7 +495,6 @@ function relatedLinks(team) {
   ];
   if (team.radar) links.push({ href: `./${team.radar}`, kicker: "Kadro", title: `${team.name} oyuncu radarı`, text: "Kadro, form ve rol sinyalleri." });
   if (team.form) links.push({ href: `./${team.form}`, kicker: "Form", title: `${team.name} form durumu`, text: "Son maçların form okuması." });
-  if (team.transfer) links.push({ href: `./${team.transfer}`, kicker: "Transfer", title: `${team.name} transfer radar`, text: "Doğrulanmış gelen ve giden oyuncular." });
   return `<div class="trend-link-grid">${links.map((link) => `<a class="" href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
 }
 

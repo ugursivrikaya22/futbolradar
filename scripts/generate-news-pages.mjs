@@ -276,8 +276,8 @@ function pageHtml(article, locale = "tr") {
     : "";
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
-  // `internalLinks` etiketleri ve hedefleri Türkçe ("Galatasaray transfer
-  // radarı" → `galatasaray-transfer-radar.html`). İngilizce sayfada hem
+  // `internalLinks` etiketleri ve hedefleri Türkçe ("Galatasaray oyuncu
+  // radarı" → `galatasaray-oyuncu-radari.html`). İngilizce sayfada hem
   // metin hem varış Türkçe olacağı için bu blok basılmaz; alt şeritteki
   // İngilizce rotalar okuyucuyu zaten devam ettiriyor.
   const internalLinks = locale === "en" ? [] : articleInternalLinks(article);

@@ -152,35 +152,34 @@ function testAtLeastOneSuperLigTeamHasBothDirections() {
 }
 
 /**
- * Transfer radarı dönem sınırı.
+ * Transfer izleme dönem sınırı.
  *
- * Sınır iki yerde yaşıyor — istemci (app.js) ve statik ön render
- * (prerender-core-pages.mjs). İkisi ayrışırsa sayfa önce eski listeyi
- * gösterip JS yüklendiğinde kendini düzeltir; okuyucu için bu bir arıza
- * görüntüsüdür. Test ikisinin aynı tarihi kullandığını doğruluyor.
+ * Sınır eskiden İKİ yerde yaşıyordu — istemci (app.js) ve ana sayfanın
+ * transfer bölümünü basan statik ön render. İkisi ayrışırsa sayfa önce eski
+ * listeyi gösterip JS yüklendiğinde kendini düzeltirdi; okuyucu için bu bir
+ * arıza görüntüsüydü. Ana sayfadaki bölüm kaldırıldığında ön renderdaki
+ * kopya da gitti: sınır artık YALNIZCA app.js'te, transfer izleme listesi
+ * için yaşıyor. Test tek tanımın durduğunu ve verinin ona uyduğunu
+ * doğruluyor; ikinci bir tanım geri gelirse bu testin yeniden
+ * eşitlik denetlemesi gerekir.
  */
-function testTransferRadarWindowIsConsistent() {
+function testTransferWatchWindowIsConsistent() {
   const fs = require("node:fs");
   const app = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
-  const prerender = fs.readFileSync(new URL("../scripts/prerender-core-pages.mjs", import.meta.url), "utf8");
 
-  const appMatch = app.match(/TRANSFER_RADAR_SINCE\s*=\s*"([\d-]+)"/);
-  const preMatch = prerender.match(/TRANSFER_RADAR_SINCE\s*=\s*"([\d-]+)"/);
-
+  const appMatch = app.match(/TRANSFER_WATCH_SINCE\s*=\s*"([\d-]+)"/);
   assert.ok(appMatch, "app.js dönem sınırını tanımlamalı");
-  assert.ok(preMatch, "ön render dönem sınırını tanımlamalı");
-  assert.equal(appMatch[1], preMatch[1], "istemci ve ön render aynı sınırı kullanmalı");
 
   // Sınır Haziran 2026'dan sonrasını kapsamalı.
   assert.ok(appMatch[1] > "2026-06-30", `sınır Haziran 2026 sonrası olmalı, bulunan: ${appMatch[1]}`);
 
-  // Gerçek veriyle sayım: sınırın üstündekiler kalmalı, altındakiler radardan
-  // düşmeli — ama veri dosyasından SİLİNMEMELİ.
+  // Gerçek veriyle sayım: sınırın üstündekiler kalmalı, altındakiler izleme
+  // listesinden düşmeli — ama veri dosyasından SİLİNMEMELİ.
   const all = require("../data/transfers.json");
   const kept = all.filter((transfer) => String(transfer.date).slice(0, 10) >= appMatch[1]);
   const dropped = all.filter((transfer) => String(transfer.date).slice(0, 10) < appMatch[1]);
 
-  assert.ok(kept.length, "radar penceresinde en az bir transfer kalmalı");
+  assert.ok(kept.length, "izleme penceresinde en az bir transfer kalmalı");
   assert.ok(dropped.length, "ön koşul: sınırın altında kayıt bulunmalı ki filtre anlamlı olsun");
   assert.equal(kept.length + dropped.length, all.length, "hiçbir kayıt sayımdan düşmemeli");
 
@@ -189,7 +188,7 @@ function testTransferRadarWindowIsConsistent() {
   const publishable = service.publishableTransfers().transfers;
   assert.ok(
     dropped.some((old) => publishable.some((item) => item.id === old.id)),
-    "sınırın altındaki doğrulanmış kayıtlar silinmemeli, yalnızca radardan çıkmalı"
+    "sınırın altındaki doğrulanmış kayıtlar silinmemeli, yalnızca izleme listesinden çıkmalı"
   );
 }
 
@@ -237,7 +236,7 @@ async function testTickerCarriesAConfirmedTransfer() {
 const tests = [
   testOnlyConfirmedIsPublished,
   testSuperLigRelevance,
-  testTransferRadarWindowIsConsistent,
+  testTransferWatchWindowIsConsistent,
   testTraceableSourceIsMandatory,
   testRequiredFieldsAreEnforced,
   testDeduplication,
@@ -252,4 +251,4 @@ for (const test of tests) {
 }
 
 console.log(`Transfer pipeline tests passed (${tests.length} senaryo: yalnızca onaylı, Süper Lig ilgisi, izlenebilir kaynak, ` +
-  "zorunlu alanlar, tekilleştirme, gelen/giden ayrımı, gerçek veri, takım bağlantısı, bant bağlantısı, radar dönem sınırı).");
+  "zorunlu alanlar, tekilleştirme, gelen/giden ayrımı, gerçek veri, takım bağlantısı, bant bağlantısı, izleme dönem sınırı).");
