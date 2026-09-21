@@ -111,14 +111,15 @@ function normalizeTickerHref(href, base) {
   if (isExternalUrl(value)) return value;
   try {
     const url = new URL(value);
-    if (/^\/{2,}/.test(url.pathname) || !/^\/(?:haber|en\/news)(?:\/|$)/.test(url.pathname)) {
+    const rawPath = value.match(/^https?:\/\/[^/]+([^?#]*)/i)?.[1] || url.pathname;
+    if (
+      /^\/{2,}/.test(rawPath)
+      || /\/(?:\.{1,2})(?:\/|$)/.test(rawPath)
+      || !/^\/(?:haber|en\/news)(?:\/|$)/.test(rawPath)
+    ) {
       return value;
     }
-    const normalizedPath = path.posix.normalize(url.pathname);
-    if (!/^\/(?:haber|en\/news)(?:\/|$)/.test(normalizedPath)) {
-      return value;
-    }
-    return `${normalizedBase}${normalizedPath.replace(/^\/+/, "")}${url.search}${url.hash}`;
+    return `${normalizedBase}${rawPath.replace(/^\/+/, "")}${url.search}${url.hash}`;
   } catch {
     return value;
   }

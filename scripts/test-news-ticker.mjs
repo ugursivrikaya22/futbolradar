@@ -400,7 +400,7 @@ function item(overrides = {}) {
     "gerçek dış künye mutlak kalmalı ve dış bağlantı özniteliklerini korumalı"
   );
 
-  const normalized = newsTicker({
+  const dotted = newsTicker({
     base: "../",
     badge: "Gündem",
     items: [
@@ -410,15 +410,15 @@ function item(overrides = {}) {
       }
     ]
   });
-  assert.match(
-    normalized,
-    /href="\.\.\/haber\/guvenli-yol\.html"/,
-    "kendi alanımızdaki iç yol birleştirilirken nokta segmentleri temizlenmeli"
-  );
   assert.doesNotMatch(
-    normalized,
-    /\/\.\.\//,
-    "üretilen iç ticker bağlantısı dizin traversal benzeri segment taşımamalı"
+    dotted,
+    /href="\.\.\/haber\/guvenli-yol\.html"/,
+    "nokta segmenti taşıyan owned mutlak yol içeride yeniden yazılmamalı"
+  );
+  assert.match(
+    dotted,
+    /href="https:\/\/www\.futbolradar\.com\/haber\/\.\.\/haber\/guvenli-yol\.html"/,
+    "nokta segmenti taşıyan owned mutlak yol olduğu gibi bırakılmalı"
   );
 
   const english = newsTicker({
