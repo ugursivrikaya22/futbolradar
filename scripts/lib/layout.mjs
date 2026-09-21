@@ -101,11 +101,11 @@ function normalizeTickerHref(href, base) {
     if (/^\/{2,}/.test(url.pathname) || !/^\/(?:haber|en\/news)(?:\/|$)/.test(url.pathname)) {
       return value;
     }
-    const combined = path.posix.normalize(`${base}${url.pathname.replace(/^\/+/, "")}`);
-    const localPath = base.startsWith("./") && !combined.startsWith("./") && !combined.startsWith("../")
-      ? `./${combined}`
-      : combined;
-    return `${localPath}${url.search}${url.hash}`;
+    const normalizedPath = path.posix.normalize(url.pathname);
+    if (!/^\/(?:haber|en\/news)(?:\/|$)/.test(normalizedPath)) {
+      return value;
+    }
+    return `${base}${normalizedPath.replace(/^\/+/, "")}${url.search}${url.hash}`;
   } catch {
     return value;
   }

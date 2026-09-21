@@ -436,6 +436,27 @@ function item(overrides = {}) {
     /href="https:\/\/www\.futbolradar\.com\/\/cdn\.example\.com\/file"/,
     "desteklenmeyen ya da şüpheli owned mutlak yollar göreli iç bağlantıya çevrilmemeli"
   );
+
+  const escaped = newsTicker({
+    base: "../",
+    badge: "Gündem",
+    items: [
+      {
+        text: "Kaçış",
+        href: "https://www.futbolradar.com/haber/../../kacis"
+      }
+    ]
+  });
+  assert.match(
+    escaped,
+    /href="https:\/\/www\.futbolradar\.com\/haber\/\.\.\/\.\.\/kacis"/,
+    "haber kökünden kaçan owned mutlak yol göreli iç bağlantıya çevrilmemeli"
+  );
+  assert.doesNotMatch(
+    escaped,
+    /href="\.\.\/kacis"/,
+    "haber kökünden kaçan yol sayfa derinliğine göre yeniden yazılmamalı"
+  );
 }
 
 // ── 12. Çekince YALNIZCA rozette kalamaz ───────────────────────────────────
