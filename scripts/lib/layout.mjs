@@ -267,11 +267,22 @@ export function newsTicker(options = {}) {
   }
 
   const renderItem = (item) => {
-    const href = item.href ? item.href : allHref;
+    const rawHref = item.href ? item.href : allHref;
     // Mutlak bir futbolradar.com bağlantısı (news.json'dan gelen haber
     // URL'i gibi) İÇ sayılır: göreli yol gibi yeni sekme/nofollow almaz.
     // Yalnızca gerçekten sitenin dışına çıkan bağlantı kaynak künyesidir.
-    const external = /^https?:/i.test(href) && isExternalUrl(href);
+    const external = /^https?:/i.test(rawHref) && isExternalUrl(rawHref);
+    // İÇ ADRES MUTLAK YAZILMAZ. Kendi haberimizin künyesi
+    // `https://www.futbolradar.com/haber/<slug>` biçiminde üretiliyor;
+    // bant bunu olduğu gibi yazınca bağlantı, sayfanın sunulduğu kopyadan
+    // ÇIKIP üretime gidiyordu. Önizlemede ya da CI'ın yerel sunucusunda
+    // henüz dağıtılmamış taze bir haber bu yüzden 404 veriyor ve
+    // tıklanabilirlik denetimi dokuz görünümde birden düşüyordu. Kök
+    // dizinden göreli yol her kopyada o kopyanın sayfasını açar; temiz
+    // adres hem vercel.json'da hem yerel önizleme sunucusunda çözülüyor.
+    const href = !external && /^https?:/i.test(rawHref)
+      ? (() => { const parsed = new URL(rawHref); return `${parsed.pathname}${parsed.search}${parsed.hash}`; })()
+      : rawHref;
     // Banttaki dış bağlantı bir kaynak künyesidir: alıntı, tavsiye değil.
     const rel = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
     const label = item.label ? `<span class="news-ticker-tag">${escapeHtml(item.label)}</span>` : "";
