@@ -94,6 +94,7 @@ function normalizeBase(base) {
 
 function normalizeTickerHref(href, base) {
   const value = String(href || "").trim();
+  const normalizedBase = normalizeBase(base);
   if (!value || !/^https?:/i.test(value)) return value;
   if (isExternalUrl(value)) return value;
   try {
@@ -105,7 +106,7 @@ function normalizeTickerHref(href, base) {
     if (!/^\/(?:haber|en\/news)(?:\/|$)/.test(normalizedPath)) {
       return value;
     }
-    return `${base}${normalizedPath.replace(/^\/+/, "")}${url.search}${url.hash}`;
+    return `${normalizedBase}${normalizedPath.replace(/^\/+/, "")}${url.search}${url.hash}`;
   } catch {
     return value;
   }
