@@ -114,9 +114,24 @@ function todayFixtureCount() {
                 + `@ ${location.pathname} · son=${current} önceki=${previous}`
               ));
             }
-            requestAnimationFrame(measure);
+            schedule();
           }
-          requestAnimationFrame(measure);
+          // rAF TEK BAŞINA YETMİYOR. Denetim birden çok görünümü paralel
+          // koşuyor; arka plandaki bağlamlarda tarayıcı rAF'i kısıyor, hatta
+          // durduruyor. O zaman `measure` 150 ms'lik sabitlik penceresini hiç
+          // ölçemeden doğrudan 5 sn sınırına çarpıyor ve HAREKETSİZ bir öğe
+          // "yerine oturmadı" diye raporlanıyordu (ölçülen kanıt: son ve
+          // önceki dikdörtgen birebir aynıyken hata düşüyordu).
+          // Zamanlayıcı yedeği, rAF durduğunda da ölçümü sürdürüyor.
+          let pending = false;
+          function schedule() {
+            if (pending) return;
+            pending = true;
+            const run = () => { if (!pending) return; pending = false; measure(); };
+            requestAnimationFrame(run);
+            setTimeout(run, 32);
+          }
+          schedule();
         }));
         return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       };
