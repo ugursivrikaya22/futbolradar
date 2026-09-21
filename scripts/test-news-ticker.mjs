@@ -421,6 +421,23 @@ function item(overrides = {}) {
     "üretilen iç ticker bağlantısı dizin traversal benzeri segment taşımamalı"
   );
 
+  const english = newsTicker({
+    base: "../../",
+    locale: "en",
+    badge: "Agenda",
+    items: [
+      {
+        text: "English own news",
+        href: "https://www.futbolradar.com/en/news/example-story.html"
+      }
+    ]
+  });
+  assert.match(
+    english,
+    /href="\.\.\/\.\.\/en\/news\/example-story\.html"/,
+    "desteklenen owned İngilizce haber yolu da sayfa derinliğine göre göreli yazılmalı"
+  );
+
   const suspicious = newsTicker({
     base: "../",
     badge: "Gündem",
