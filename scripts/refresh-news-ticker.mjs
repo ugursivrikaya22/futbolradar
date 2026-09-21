@@ -57,6 +57,35 @@ const {
   shelfLifeVerdict,
   validateTickerItem
 } = require("../services/newsTicker.js");
+const { TRUST_TIER, trustTierOf } = require("../services/sourceTrust.js");
+
+/**
+ * RESMÎ AĞIZ, ADIYLA DEĞİL ADRESİYLE DOĞRULANIR.
+ *
+ * Kural (services/newsTicker.js) `source.publisher` alanını ALAN ADI sanıp
+ * `https://<publisher>` diye deniyor; yazıcı ise oraya kulübün ADINI
+ * koyuyordu ("Galatasaray SK"). Sonuç: "official" kategorili her ayna kaydı
+ * kapıda düşüyor ve bant verisi geçersiz hâle geliyordu — kayıt bir kez
+ * elle temizlense bile bir sonraki otomatik tazeleme aynısını geri yazıyor.
+ *
+ * Haber kaydı kurumun gerçek adresini zaten taşıyor (`sources[]`). Resmî
+ * kategori için o adres aranır; bulunursa publisher alanına KURUMUN ALAN ADI
+ * yazılır. Bulunamazsa haber "official" diye aynalanmaz — uydurma yerine
+ * eksik bırakmak kuralın kendi mantığı.
+ */
+function resmiAlanAdi(entry) {
+  const list = Array.isArray(entry && entry.sources) ? entry.sources : [];
+  for (const source of list) {
+    const url = text(source && source.url);
+    if (!url || trustTierOf(url) !== TRUST_TIER.OFFICIAL) continue;
+    try {
+      return new URL(url).hostname.replace(/^www\./i, "");
+    } catch {
+      /* okunamayan adres atlanır */
+    }
+  }
+  return "";
+}
 
 const TICKER_PATH = path.join(root, "data", "news-ticker.json");
 const PUBLIC_TICKER_PATH = path.join(root, "public", "data", "news-ticker.json");
@@ -141,7 +170,16 @@ function mirrorFromNews(entry) {
   // kulübün/UEFA'nın kendi ağzı" dediği durumda ikinci, bağımsız yolu açar
   // (services/newsTicker.js → validateTickerItem zaten publisher'ı da kabul
   // ediyordu, yalnızca haber kaydından buraya taşınmıyordu).
-  if (text(hint.publisher)) mirrored.source.publisher = text(hint.publisher);
+  // Resmî kategoride publisher ALAN ADI olmalı (kuralın beklediği biçim).
+  // Editörün yazdığı serbest metin ad ("Galatasaray SK") yalnızca resmî
+  // olmayan kategorilerde atıf olarak kalır.
+  const alanAdi = resmiAlanAdi(entry);
+  if (mirrored.category === "official") {
+    if (!alanAdi) return null;
+    mirrored.source.publisher = alanAdi;
+  } else if (text(hint.publisher)) {
+    mirrored.source.publisher = text(hint.publisher);
+  }
   if (text(hint.expiresAt)) mirrored.expiresAt = text(hint.expiresAt);
   if (text(entry.updatedAt)) mirrored.updatedAt = text(entry.updatedAt);
   if (hint.breaking === true) mirrored.breaking = true;
