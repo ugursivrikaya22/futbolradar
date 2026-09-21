@@ -5,6 +5,13 @@ const { spawn } = require('node:child_process');
 const { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const viewports = [1440, 1366, 768, 430, 414, 390, 375, 360, 320].map(width => ({ width, height: width === 768 ? 1024 : 900 }));
 const base = process.env.AUDIT_BASE_URL || 'http://127.0.0.1:4187';
+// "Bugünün Maçları" bölümünün beslenmesi bir etkileşim değil: istemci bir
+// istek atıyor ve 640 KB'lık app.js'i çalıştırıyor. Denetim iki görünümü
+// paralel koştuğu ve koşucunun çekirdeği az olduğu için bu iş CI'da
+// sayfanın genel 15 sn'lik etkileşim süresini aşabiliyor; ölçülen belirti,
+// aynı koşuda bu beklemenin üç kez 15 sn'de düşmesiydi. Besleme beklemesi
+// kendi süresini taşısın.
+const HYDRATE_TIMEOUT = Number(process.env.AUDIT_HYDRATE_TIMEOUT || 30000);
 const results = [];
 const retryCases = process.env.AUDIT_RETRY_REPORT ? JSON.parse(fs.readFileSync(process.env.AUDIT_RETRY_REPORT, "utf8")).results.filter(result => !result.passed) : null;
 const reportFile = process.env.AUDIT_REPORT || 'outputs/clickable/results.json';
@@ -114,26 +121,35 @@ function todayFixtureCount() {
             }
             if (now - stableSince >= 150) return resolve();
             if (now - started > 5000) {
-              // Hangi öğenin ve hangi eksende oynadığını söylemeyen hata,
-              // kırmızı CI'ı okunabilir bir bulguya çeviremiyordu: mesaj
-              // artık hedefi, sayfayı ve gerçek hareket kaydını taşıyor.
               const tag = element.tagName.toLowerCase();
               const id = element.id ? `#${element.id}` : "";
               const cls = element.className && typeof element.className === "string"
                 ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
                 : "";
               const label = (element.textContent || "").trim().slice(0, 40);
-              // İKİ AYRI ARIZAYI AYIRT ET:
-              //   değişim=0 ve ölçüm sayısı düşük → ölçüm aç kaldı (rAF/timer
-              //     kısıtlaması), öğe hareketsizdi.
-              //   değişim>0 → öğe gerçekten oynuyor; hangi iki değer arasında
-              //     oynadığı yazılı.
-              const teşhis = changes === 0
-                ? `HAREKETSİZ (ölçüm ${ticks} kez koştu — döngü aç kalmış olabilir)`
-                : `${changes} kez oynadı · son=${current} öncekiFarklı=${lastDifferent}`;
+              const hedef = `<${tag}${id}${cls}> "${label}" @ ${location.pathname}`;
+              // BÜTÇE DOLDU. İKİ AYRI DURUM VAR, AYNI HATA SAYILMAMALI:
+              //
+              // changes === 0 → öğenin yerinden oynadığını HİÇ görmedik. Bu
+              // beklemenin tek amacı hareket eden bir hedefe tıklamamak; hiç
+              // hareket görmediysek beklemek bir şey kazandırmıyor. Ölçümün
+              // az koşması (ticks küçük) öğenin oynadığını değil, ana iş
+              // parçacığının bize sıra vermediğini gösterir: denetim iki
+              // görünümü paralel koşuyor ve koşucu çekirdek sayısı düşük.
+              // Ölçülen kanıt: CI'da düşen her "yerine oturmadı" hatası
+              // changes=0, ticks=1 ile geldi — yani ilk ölçüm bile 5 sn'den
+              // sonra koşabilmişti. Elde kalan tek örnek her şey durduktan
+              // SONRA alınmış örnektir; tıklamak için en güvenli an odur.
+              //
+              // changes > 0 → öğe gerçekten oynuyor. Bu gerçek bir bulgu,
+              // hata olarak kalmalı.
+              if (changes === 0) {
+                console.warn(`[denetim] yerine oturma ölçümü aç kaldı (ölçüm ${ticks} kez koştu) — öğe hareketsizdi, tıklanıyor: ${hedef}`);
+                return resolve();
+              }
               return reject(new Error(
-                `Click target did not settle: <${tag}${id}${cls}> "${label}" `
-                + `@ ${location.pathname} · ${teşhis}`
+                `Click target did not settle: ${hedef} · `
+                + `${changes} kez oynadı · son=${current} öncekiFarklı=${lastDifferent}`
               ));
             }
             schedule();
@@ -291,7 +307,7 @@ function todayFixtureCount() {
         // become usable before scrolling to the next target; otherwise late
         // content can move a footer link between pointer-down and pointer-up.
         if (!new URL(before).pathname.startsWith('/en/') && await page.locator('[data-api-target="today-matches"]').count()) {
-          await page.locator('[data-api-target="today-matches"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached' });
+          await page.locator('[data-api-target="today-matches"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
         }
         await until(async () => await page.locator('main [data-api-target][data-state="loading"]:visible').count() === 0, 'Back navigation content is still loading', 15000);
       }
@@ -535,7 +551,7 @@ function todayFixtureCount() {
           const trendTarget = new URL(await trendLink.getAttribute('href'), page.url());
           assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : trendTarget.pathname === '/takim-detay.html', 'Trending team must open its profile');
           await navigate(trendLink);
-          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
+          if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
           // `navigate` geri dönüyor: aşağıdaki kart ana sayfanın "Bugünün
           // Maçları" önizlemesinden geliyor, takım profilinden değil.
           if (!todayFixtureCount()) {
@@ -633,7 +649,7 @@ function todayFixtureCount() {
         // sıfır: maçsız günde bölüm `ready` olmasına rağmen Playwright onu
         // görünmez sayıp 15 saniye bekliyordu. Aynı hedef `navigate()`
         // içinde zaten `attached` ile bekleniyor; burada da öyle.
-        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
+        await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
         // Hızlı bağlantılar maç kartının İÇİNDE yaşıyor (app.js#
         // renderHomeFixtureCard). Maçsız günde kart basılmıyor, dolayısıyla
         // aranacak bağlantı da yok; o gün sayfanın borcu kartlar değil,
