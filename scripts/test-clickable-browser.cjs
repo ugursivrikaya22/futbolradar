@@ -104,7 +104,18 @@ function todayFixtureCount() {
           const rect = element.getBoundingClientRect();
           return [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
         });
-        const started = Date.now();
+        // BÜTÇE İLK ÖLÇÜMDEN SONRA BAŞLAR VE EN AZ İKİ ÖRNEK ALINIR.
+        //
+        // Önce bütçe ilk ölçümü de kapsıyordu: yüklü runner'da tek bir
+        // locator.evaluate 5 saniyeyi tüketince while koşulu daha baştan
+        // yanlış oluyor, döngü hiç çalışmıyor ve HAREKETSİZ öğe tek örnekle
+        // "yerine oturmadı" diye raporlanıyordu. Kanıt hata mesajının
+        // kendisiydi: "1 farklı ölçüm" — yani karşılaştırılacak ikinci
+        // ölçüm hiç alınmamıştı.
+        //
+        // Sabitlik tanımı aynı: arka arkaya iki ölçümde değişmemek. Değişen
+        // yalnızca ölçümün gerçekten yapılabilmesi.
+        //
         // İZ KAYDI. Önceki hata mesajı "son" ve "önceki" ölçümü rapor ANINDA
         // okuyordu; oysa döngü karşılaştırmadan sonra previous = current
         // atıyor, yani ikisi her zaman eşit görünüyordu ve hareketsiz bir öğe
@@ -114,12 +125,15 @@ function todayFixtureCount() {
         let previous = await rectOf();
         iz.push(previous);
         let stable = false;
-        while (Date.now() - started <= 5000) {
+        const sonKarar = Date.now() + 5000;
+        for (let deneme = 0; deneme < 24; deneme += 1) {
           await delay(120);
           const current = await rectOf();
           if (current === previous) { stable = true; break; }
           if (iz[iz.length - 1] !== current) iz.push(current);
           previous = current;
+          // İlk iki örnek her koşulda alınır; sonrası süreye bakar.
+          if (deneme >= 1 && Date.now() > sonKarar) break;
         }
         if (!stable) {
           const kimlik = await locator.evaluate(element => {
