@@ -364,7 +364,44 @@ function item(overrides = {}) {
   );
 }
 
-// ── 11. Çekince YALNIZCA rozette kalamaz ───────────────────────────────────
+// ── 11. Kendi haberimiz build dışına çıkmamalı ───────────────────────────────
+{
+  const { newsTicker } = await import("./lib/layout.mjs");
+  const html = newsTicker({
+    base: "../",
+    badge: "Gündem",
+    items: [
+      {
+        label: "Son Dakika",
+        text: "Kendi haberimiz",
+        href: "https://www.futbolradar.com/haber/ornek-gelisme.html?ref=ana-sayfa#ozet"
+      },
+      {
+        label: "Resmî açıklama",
+        text: "Dış kaynak",
+        href: "https://example.com/dis-kunye"
+      }
+    ]
+  });
+
+  assert.match(
+    html,
+    /href="\.\.\/haber\/ornek-gelisme\.html\?ref=ana-sayfa#ozet"/,
+    "kendi alanımızdaki mutlak ticker bağlantısı sayfa derinliğine göre göreli yazılmalı"
+  );
+  assert.doesNotMatch(
+    html,
+    /href="https:\/\/www\.futbolradar\.com\/haber\/ornek-gelisme\.html\?ref=ana-sayfa#ozet"/,
+    "kendi haber ticker'da mutlak canlı adresle basılmamalı"
+  );
+  assert.match(
+    html,
+    /href="https:\/\/example\.com\/dis-kunye" target="_blank" rel="nofollow noopener noreferrer"/,
+    "gerçek dış künye mutlak kalmalı ve dış bağlantı özniteliklerini korumalı"
+  );
+}
+
+// ── 12. Çekince YALNIZCA rozette kalamaz ───────────────────────────────────
 //
 // Rozet on piksellik bir etiket, cümle ise bandın taşıdığı asıl bilgi.
 // "X, Beşiktaş'a geliyor" cümlesi yanında "SÖYLENTİ" yazsa bile okuyucunun

@@ -91,6 +91,18 @@ function normalizeBase(base) {
   return value.endsWith("/") ? value : `${value}/`;
 }
 
+function normalizeTickerHref(href, base) {
+  const value = String(href || "").trim();
+  if (!value || !/^https?:/i.test(value)) return value;
+  if (isExternalUrl(value)) return value;
+  try {
+    const url = new URL(value);
+    return `${base}${url.pathname.replace(/^\/+/, "")}${url.search}${url.hash}`;
+  } catch {
+    return value;
+  }
+}
+
 /**
  * ANKETLER MENÜSÜNDEKİ "YENİ" RÖZETİ — yayından itibaren yalnızca 7 gün.
  *
@@ -267,7 +279,7 @@ export function newsTicker(options = {}) {
   }
 
   const renderItem = (item) => {
-    const href = item.href ? item.href : allHref;
+    const href = normalizeTickerHref(item.href ? item.href : allHref, base);
     // Mutlak bir futbolradar.com bağlantısı (news.json'dan gelen haber
     // URL'i gibi) İÇ sayılır: göreli yol gibi yeni sekme/nofollow almaz.
     // Yalnızca gerçekten sitenin dışına çıkan bağlantı kaynak künyesidir.
