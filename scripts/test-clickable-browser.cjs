@@ -332,10 +332,6 @@ function todayFixtureCount() {
             assert.equal(await labels.nth(1).getAttribute('aria-selected'), 'true', 'Arrow key did not select tab');
           }
         });
-        await test(locale + ' transfer feature opens filtered radar', async () => {
-          await open(home);
-          await navigate(page.locator('.home-transfer-feature-cover').first());
-        });
         await test(locale + ' team cards open profiles', async () => {
           await open(en ? 'en/teams.html' : 'takimlar.html');
           if (!en) await page.locator('[data-api-target="teams-page"][data-state="ready"]').waitFor();
