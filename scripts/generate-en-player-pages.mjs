@@ -133,7 +133,6 @@ const EN_ROUTES = {
   comparePickerHref: (playerId) => `oyuncu-karsilastir.html?player=${encodeURIComponent(playerId)}`,
   topScorers: "en/top-scorers.html",
   topAssists: "en/top-assists.html",
-  transferRadar: "en/transfer-radar.html",
   matchCentre: "en/match-centre.html",
   playerRadar: "en/player-radar.html"
 };

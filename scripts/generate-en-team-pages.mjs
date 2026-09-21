@@ -37,6 +37,7 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
+const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const {
   DOMAIN,
   absoluteUrl,
@@ -260,6 +261,13 @@ function schemaFor(team, canonical, trUrl) {
   };
 }
 
+function englishTeamNews(team) {
+  const rows = publishableNews(readJson("news.json", []), { locale: "en" })
+    .filter(row => row.team === team.name).slice(0, 3);
+  if (!rows.length) return "";
+  return `<section class="team-news-section"><h2>${escapeHtml(team.name)} news</h2><div class="news-grid">${rows.map(row => `<a class="news-card" data-card="news" href="${escapeHtml(newsHref(row, BASE, "en"))}"><h3>${escapeHtml(row.title)}</h3><p>${escapeHtml(row.summary)}</p><span>Read the story</span></a>`).join("")}</div></section>`;
+}
+
 function pageHtml(team, slugValue) {
   const trPath = null; // takim-detay.html?team=X JS-hidrasyonlu; statik karşılığı yok.
   const enPath = `en/team/${slugValue}.html`;
@@ -280,7 +288,7 @@ function pageHtml(team, slugValue) {
       const leader = teamMoves[0];
       const incoming = sameClub(leader.toTeam, team.name);
       return `<section class="container section" aria-labelledby="en-team-transfers-title">
-        ${sectionHead({ locale: LOCALE, kicker: "Transfer Radar", titleId: "en-team-transfers-title", title: "Confirmed transfers", linkHref: "../teams.html", linkText: label("common.viewAll") })}
+        ${sectionHead({ locale: LOCALE, kicker: "Transfers", titleId: "en-team-transfers-title", title: "Confirmed transfers", linkHref: "../teams.html", linkText: label("common.viewAll") })}
         <div class="home-transfer-watch-shell">${transferWatchShell({
           locale: LOCALE,
           leader: {
@@ -291,12 +299,10 @@ function pageHtml(team, slugValue) {
             sourceUrl: leader.sourceUrl,
             typeLabel: `${incoming ? "In" : "Out"} · ${transferTypeEn(leader.type) || label("transfer.fallbackType")}`
           },
-          allHref: "../transfer-radar.html",
           rows: teamMoves.slice(1).map((row) => ({
             ...row,
             fromTeam: transferTeamEn(row.fromTeam),
-            toTeam: transferTeamEn(row.toTeam),
-            href: "../transfer-radar.html?team=" + encodeURIComponent(row.toTeam || "")
+            toTeam: transferTeamEn(row.toTeam)
           }))
         })}</div>
       </section>`;
@@ -373,6 +379,7 @@ ${body}
         <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
         <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
       </section>
+      ${englishTeamNews(team)}
     </main>
     ${siteFooter({ base: BASE, locale: LOCALE })}
     <script src="${BASE}site.js" defer></script>

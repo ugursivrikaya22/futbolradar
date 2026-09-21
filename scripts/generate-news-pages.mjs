@@ -276,8 +276,8 @@ function pageHtml(article, locale = "tr") {
     : "";
   const tags = Array.isArray(article.tags) ? article.tags.filter(Boolean) : [];
   const sources = articleSources(article);
-  // `internalLinks` etiketleri ve hedefleri Türkçe ("Galatasaray transfer
-  // radarı" → `galatasaray-transfer-radar.html`). İngilizce sayfada hem
+  // `internalLinks` etiketleri ve hedefleri Türkçe ("Galatasaray oyuncu
+  // radarı" → `galatasaray-oyuncu-radari.html`). İngilizce sayfada hem
   // metin hem varış Türkçe olacağı için bu blok basılmaz; alt şeritteki
   // İngilizce rotalar okuyucuyu zaten devam ettiriyor.
   const internalLinks = locale === "en" ? [] : articleInternalLinks(article);
@@ -345,7 +345,7 @@ ${siteHeader({ base, locale })}
         <header class="column-article-head">
           <div class="column-article-meta">${statusBadges(article, locale)}<span>${escapeHtml(article.category || copy.defaultCategory)}</span><time datetime="${escapeHtml(article.publishedAt || "")}">${escapeHtml(dateLabel)}</time>${updatedLabel ? `<time datetime="${escapeHtml(article.updatedAt || "")}">${escapeHtml(copy.updatedPrefix)}: ${escapeHtml(updatedLabel)}</time>` : ""}<span>${escapeHtml(article.sourceName || "FutbolRadar")}</span></div>
           <h1>${escapeHtml(article.title)}</h1>
-          <p class="lead">${escapeHtml(description)}</p>
+          <p class="lead">${escapeHtml(article.spot || article.summary || description)}</p>
           ${tagHtml}
         </header>
         ${updateNoteHtml}

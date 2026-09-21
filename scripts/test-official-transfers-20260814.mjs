@@ -6,7 +6,6 @@ import { transferTeamEn, transferTypeEn } from "./lib/enTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const { hasOfficialSource } = require("../services/sourceTrust.js");
-const { selectTickerRecords } = require("../services/transferRadarTicker.js");
 const root = process.cwd();
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 
@@ -32,17 +31,6 @@ for (const [playerName, fields] of expected) {
   }
 }
 
-const now = Date.parse("2026-08-14T18:00:00+03:00");
-const ticker = selectTickerRecords(transfers, { now });
-const tickerNames = new Set(ticker.map((row) => row.playerName));
-for (const playerName of expected.keys()) {
-  if (playerName === "Mohamed Salah") {
-    assert.equal(tickerNames.has(playerName), false, "Mohamed Salah 6 Ağustos tarihli olduğu için son üç gün bandına girmemeli");
-  } else {
-    assert.equal(tickerNames.has(playerName), true, `${playerName}: son üç gün bandında görünmeli`);
-  }
-}
-
 const salah = transfers.find((row) => row.playerName === "Mohamed Salah");
 assert.ok(
   salah.sourceUrls?.some((url) => url.includes("reuters.com/")),
@@ -52,4 +40,4 @@ assert.ok(
 assert.equal(transferTeamEn("Serbest oyuncu"), "Free agent", "İngilizce sürümde serbest oyuncu etiketi çevrilmeli");
 assert.equal(transferTypeEn("Sözleşme feshi"), "Contract termination", "İngilizce sürümde sözleşme feshi çevrilmeli");
 
-console.log("14 Ağustos 2026 resmî transfer doğrulamaları geçti (7 ana kayıt, 6 güncel ticker kaydı). ");
+console.log("14 Ağustos 2026 resmî transfer doğrulamaları geçti (7 ana kayıt).");

@@ -23,6 +23,8 @@ const require = createRequire(import.meta.url);
 const { canonicalStatus, istanbulDay } = require("../../services/matchStatus.js");
 const { formatTime, formatWeekday } = require("../../services/i18n.js");
 
+const { publishableNews, newsHref } = require('../../services/newsFeed.js');
+const { editorialStatusOf } = require('../../services/editorialStatus.js');
 const root = process.cwd();
 const MAX_ITEMS = 8;
 
@@ -66,7 +68,9 @@ function todayIstanbul() {
 }
 
 export function buildEnTickerItems() {
-  const items = [];
+  const items = publishableNews(readJson('news.json', []), { locale: 'en' })
+    .filter(row => row.includeInTicker !== false && row.ticker && Date.now() - Date.parse(row.publishedAt) < 72 * 3600000 && Date.parse(row.publishedAt) <= Date.now())
+    .slice(0, 3).map(row => ({ label: editorialStatusOf(row).isBreaking ? 'Breaking' : 'News', text: row.ticker.text || row.title, href: newsHref(row, '', 'en') }));
   const today = todayIstanbul();
 
   // 1) Kesinleşen transferler — yalnızca status=confirmed ve alanları tam olanlar.

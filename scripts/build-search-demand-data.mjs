@@ -125,7 +125,7 @@ const items = [
     player: "Mohamed Salah",
     transferStatus: "rumour",
     publishWindow: "2026-08-03 (gündem sıcak)",
-    linkTargets: ["haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html", "trabzonspor-form-durumu.html", "transfer-radari.html", "haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html"],
+    linkTargets: ["haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html", "trabzonspor-form-durumu.html", "super-lig-transferleri-2026-2027.html", "haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html"],
     evidence: [
       SERP("https://www.hurriyet.com.tr/sporarena/ertugrul-dogandan-salah-aciklamasi-su-anda-bir-anlasma-yok-43259784", "Hürriyet, Fanatik, A Haber, Sözcü ve beIN aynı dosyayı art arda işledi — ulusal gündemin en görünür transfer sorgusu."),
       NEWS("trabzonspor-salah-transfer-iddiasi-son-durum", "Sitede iddia + yalanlama haberleri yayında; tek merkez sayfa eksik."),
@@ -145,7 +145,7 @@ const items = [
     player: "Victor Osimhen",
     transferStatus: "reported",
     publishWindow: "2026-08-03",
-    linkTargets: ["haber/galatasaray-osimhen-premier-league-ilgisi-iddialari.html", "galatasaray-form-durumu.html", "transfer-radari.html", "haber/galatasaray-rennes-hazirlik-maci-3-3.html"],
+    linkTargets: ["haber/galatasaray-osimhen-premier-league-ilgisi-iddialari.html", "galatasaray-form-durumu.html", "super-lig-transferleri-2026-2027.html", "haber/galatasaray-rennes-hazirlik-maci-3-3.html"],
     evidence: [
       SERP("https://www.fanatik.com.tr/galatasaray/galeri-galatasarayda-osimhen-alarmi-transferde-pesini-birakmiyorlar-2632780", "Fanatik, Sporx (BBC aktarımı) ve Nijerya basını 48 saatte art arda yayın yaptı."),
       NEWS("galatasaray-osimhen-premier-league-ilgisi-iddialari", "Sitede günün haberi yayında; iddiaları tek tabloda izleyen merkez sayfa eksik.")
@@ -200,7 +200,7 @@ const items = [
     player: "Dusan Vlahovic",
     transferStatus: "rumour",
     publishWindow: "2026-08-03",
-    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "besiktas-form-durumu.html", "transfer-radari.html", "super-lig-transferleri-2026-2027.html"],
+    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "besiktas-form-durumu.html", "super-lig-transferleri-2026-2027.html"],
     evidence: [
       SERP("https://www.fanatik.com.tr/transfer/live-teklifin-detaylari-belli-oldu-besiktastan-dusan-vlahovic-icin-dev-harekat-2632834", "Fanatik canlı transfer akışında dosyayı işliyor; Beşiktaş basını art arda iddia yayımlıyor."),
       NEWS("besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari", "Sitede hedef listesi haberi yayında; oyuncu bazlı merkez sayfa eksik.")
@@ -236,7 +236,7 @@ const items = [
     team: "Beşiktaş",
     transferStatus: "confirmed",
     publishWindow: "2026-08-03",
-    linkTargets: ["super-lig-transferleri-2026-2027.html", "besiktas-oyuncu-radari.html", "haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "transfer-radari.html"],
+    linkTargets: ["super-lig-transferleri-2026-2027.html", "besiktas-oyuncu-radari.html", "haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html"],
     evidence: [
       TRF("Doğrulanmış kayıtlar: Trossard, Nübel, Salih Özcan, Doğan Alemdar geldi; Sanuç ayrıldı."),
       SERP("https://www.fotospor.com.tr/besiktas/besktas-agustosta-yakacak-123-yetmez-45-olsun-709613", "'Beşiktaş transfer' kalıbı yoğun işleniyor; doğrulanmış liste + gündem ayrımı sunan sayfa eksik.")
@@ -452,7 +452,7 @@ const items = [
     player: "Patrick Schick",
     transferStatus: "rumour",
     publishWindow: "gelişme olursa",
-    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "transfer-radari.html", "besiktas-oyuncu-radari.html"],
+    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "super-lig-transferleri-2026-2027.html", "besiktas-oyuncu-radari.html"],
     evidence: [
       SERP("https://www.sporx.com/besiktas-in-santrfor-hedefi-yeniden-patrick-schick-SXHBQ1171198SXQ", "Sporx 3 Ağustos'ta dosyayı yeniden açtı; yeni sayfa yerine mevcut haber güncellenir.")
     ],
@@ -470,7 +470,7 @@ const items = [
     player: "Darwin Núñez",
     transferStatus: "rumour",
     publishWindow: "gelişme olursa",
-    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "transfer-radari.html", "besiktas-form-durumu.html"],
+    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "super-lig-transferleri-2026-2027.html", "besiktas-form-durumu.html"],
     evidence: [
       SERP("https://www.sporx.com/besiktas-ta-darwin-nunez-gelismesi-SXHBQ1171174SXQ", "Tavolieri kaynaklı kiralık iddiası Sporx üzerinden aktarıldı.")
     ],
@@ -488,7 +488,7 @@ const items = [
     player: "Matías Soulé",
     transferStatus: "rumour",
     publishWindow: "gelişme olursa",
-    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "transfer-radari.html", "besiktas-oyuncu-radari.html"],
+    linkTargets: ["haber/besiktas-transfer-listesi-schick-vlahovic-nunez-iddialari.html", "super-lig-transferleri-2026-2027.html", "besiktas-oyuncu-radari.html"],
     evidence: [
       SERP("https://www.takvim.com.tr/spor/besiktas/2026/08/02/besiktasa-tangocu-kanat-transfer-icin-rota-roma", "Takvim 2 Ağustos'ta rota haberini yayımladı.")
     ],
@@ -505,7 +505,7 @@ const items = [
     player: "Randal Kolo Muani",
     transferStatus: "reported",
     publishWindow: "resmî açıklama gelince haber",
-    linkTargets: ["haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html", "haberler.html", "transfer-radari.html"],
+    linkTargets: ["haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html", "haberler.html", "super-lig-transferleri-2026-2027.html"],
     evidence: [
       SERP("https://www.sporx.com/randal-kolo-muani-icin-juventus-ta-geri-sayim-SXHBQ1171120SXQ", "Sporx sağlık kontrolü/imza aşamasını aktardı; resmî açıklama bekleniyor.")
     ],
@@ -522,7 +522,7 @@ const items = [
     player: "Edin Džeko",
     transferStatus: "reported",
     publishWindow: "resmî açıklama gelince haber",
-    linkTargets: ["haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html", "haberler.html", "transfer-radari.html"],
+    linkTargets: ["haber/avrupa-futbolundan-kisa-kisa-3-agustos-2026.html", "haberler.html", "super-lig-transferleri-2026-2027.html"],
     evidence: [
       SERP("https://www.sporx.com/edin-dzeko-imza-atmaya-gitti-SXHBQ1171133SXQ", "Sporx imza yolculuğunu aktardı; eski Fenerbahçeli olduğu için TR ilgisi yüksek.")
     ],
@@ -538,7 +538,7 @@ const items = [
     existingPage: "transfer-sezonu-ne-zaman-bitiyor.html",
     team: "Süper Lig",
     publishWindow: "2026-08-04 (mevcut sayfa tazelenecek)",
-    linkTargets: ["transfer-sezonu-ne-zaman-bitiyor.html", "transfer-radari.html", "super-lig-transferleri-2026-2027.html"],
+    linkTargets: ["transfer-sezonu-ne-zaman-bitiyor.html", "super-lig-transferleri-2026-2027.html", "super-lig-fikstur.html"],
     evidence: [
       SITE("transfer-sezonu-ne-zaman-bitiyor.html sayfası mevcut — yeni sayfa açmak kanibalizasyon olur; güncelleme kararı."),
       MR("https://www.espn.com/soccer/story/_/id/48944912/premier-league-efl-summer-transfer-window-2026-dates-does-open-deadline-day", "Premier Lig penceresi 1 Eylül'de kapanıyor (ESPN).")
@@ -556,7 +556,7 @@ const items = [
     player: "Mohamed Salah",
     transferStatus: "rumour",
     publishWindow: "merkez sayfada bölüm",
-    linkTargets: ["haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html", "transfer-radari.html", "trabzonspor-form-durumu.html"],
+    linkTargets: ["haber/mohamed-salah-trabzonspor-transferi-resmen-aciklandi.html", "super-lig-transferleri-2026-2027.html", "trabzonspor-form-durumu.html"],
     evidence: [
       SERP("https://www.hurriyet.com.tr/sporarena/ertugrul-dogandan-salah-aciklamasi-su-anda-bir-anlasma-yok-43259784", "Maaş rakamı iddiası (17M€) tüm büyük yayınlarda dolaşıyor; kaynağı ve doğrulanmadığı merkez sayfada açıklanır.")
     ],
@@ -590,7 +590,7 @@ const items = [
     player: "Leandro Trossard",
     transferStatus: "confirmed",
     publishWindow: "mevcut sayfada bölüm güçlendirme",
-    linkTargets: ["super-lig-transferleri-2026-2027.html", "besiktas-oyuncu-radari.html", "transfer-radari.html"],
+    linkTargets: ["super-lig-transferleri-2026-2027.html", "besiktas-oyuncu-radari.html", "besiktas-form-durumu.html"],
     evidence: [
       TRF("Doğrulanmış kayıt: Arsenal → Beşiktaş, 15 Temmuz, bonservis.")
     ],
@@ -608,7 +608,7 @@ const items = [
     player: "Andre Onana",
     transferStatus: "confirmed",
     publishWindow: "mevcut sayfada bölüm güçlendirme",
-    linkTargets: ["super-lig-transferleri-2026-2027.html", "trabzonspor-oyuncu-radari.html", "transfer-radari.html"],
+    linkTargets: ["super-lig-transferleri-2026-2027.html", "trabzonspor-oyuncu-radari.html", "trabzonspor-form-durumu.html"],
     evidence: [
       TRF("Doğrulanmış kayıt: Manchester United → Trabzonspor, 3 Temmuz, kiralık.")
     ],
@@ -626,7 +626,7 @@ const items = [
     player: "Mason Greenwood",
     transferStatus: "confirmed",
     publishWindow: "mevcut sayfada bölüm güçlendirme",
-    linkTargets: ["super-lig-transferleri-2026-2027.html", "fenerbahce-oyuncu-radari.html", "transfer-radari.html"],
+    linkTargets: ["super-lig-transferleri-2026-2027.html", "fenerbahce-oyuncu-radari.html", "fenerbahce-form-durumu.html"],
     evidence: [
       TRF("Doğrulanmış kayıt: Olympique Marsilya → Fenerbahçe, 14 Temmuz, bonservis.")
     ],
@@ -644,7 +644,7 @@ const items = [
     player: "Chibuike Nwaiwu",
     transferStatus: "denied",
     publishWindow: "gelişme olursa",
-    linkTargets: ["haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html", "trabzonspor-oyuncu-radari.html", "transfer-radari.html"],
+    linkTargets: ["haber/trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi.html", "trabzonspor-oyuncu-radari.html", "super-lig-transferleri-2026-2027.html"],
     evidence: [
       NEWS("trabzonspor-ertugrul-dogan-salah-transfer-aciklamasi", "Doğan: beklenen seviyede teklif gelmedi, satış düşünülmüyor — kayıtlı açıklama.")
     ],
@@ -761,7 +761,7 @@ const items = [
     decision: "new",
     team: "Süper Lig",
     publishWindow: "2026-08-05",
-    linkTargets: ["kose-yazilari.html", "haber/alanyaspor-joao-pereira-super-lig-makas-aciklamasi.html", "transfer-radari.html"],
+    linkTargets: ["kose-yazilari.html", "haber/alanyaspor-joao-pereira-super-lig-makas-aciklamasi.html", "super-lig-transferleri-2026-2027.html"],
     evidence: [
       NEWS("alanyaspor-joao-pereira-super-lig-makas-aciklamasi", "Pereira'nın 'makas çok fazla' açıklaması tez için kaynaklı zemin."),
       TRF("Doğrulanmış transfer hareketleri bütçe analizine veri sağlıyor.")
@@ -892,7 +892,7 @@ const items = [
     player: "Mauro Icardi",
     transferStatus: "confirmed",
     publishWindow: "2026-08-08",
-    linkTargets: ["super-lig-transferleri-2026-2027.html", "galatasaray-form-durumu.html", "transfer-radari.html"],
+    linkTargets: ["super-lig-transferleri-2026-2027.html", "galatasaray-form-durumu.html", "galatasaray-oyuncu-radari.html"],
     evidence: [
       TRF("Doğrulanmış kayıt: Icardi'nin Galatasaray sözleşmesi 16 Temmuz'da sona erdi (serbest oyuncu)."),
       SITE("Oyuncu profili sayfası mevcut; 'hangi takımda' cevabı doğrulanmış kayıtla verilebilir.")
