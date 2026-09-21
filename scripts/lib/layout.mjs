@@ -94,12 +94,14 @@ function normalizeBase(base) {
 
 function normalizeRelativeBase(base) {
   const value = normalizeBase(base);
-  let normalized = path.posix.normalize(value);
-  if (!normalized.endsWith("/")) normalized = `${normalized}/`;
-  if (value.startsWith("./") && !normalized.startsWith("./") && !normalized.startsWith("../")) {
-    normalized = `./${normalized}`;
+  const normalized = path.posix.normalize(value);
+  const segments = normalized.split("/").filter(Boolean);
+  let parents = 0;
+  for (const segment of segments) {
+    if (segment !== "..") break;
+    parents++;
   }
-  return normalized;
+  return parents ? "../".repeat(parents) : "./";
 }
 
 function normalizeTickerHref(href, base) {

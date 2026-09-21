@@ -454,6 +454,22 @@ function item(overrides = {}) {
     "nokta segmenti içeren göreli base temizlenip iç yol doğru birleşmeli"
   );
 
+  const trimmedBase = newsTicker({
+    base: "../../section/",
+    badge: "Gündem",
+    items: [
+      {
+        text: "Base trim",
+        href: "https://www.futbolradar.com/haber/base-trim.html"
+      }
+    ]
+  });
+  assert.match(
+    trimmedBase,
+    /href="\.\.\/\.\.\/haber\/base-trim\.html"/,
+    "göreli base içindeki kök dışı dizin segmentleri iç bağlantıya taşınmamalı"
+  );
+
   const suspicious = newsTicker({
     base: "../",
     badge: "Gündem",
