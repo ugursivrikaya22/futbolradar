@@ -56,6 +56,7 @@ const {
   normalizeTickerItems
 } = require("../../services/newsTicker.js");
 
+const { promotedNewsId } = require('../../services/newsPriority.js');
 const root = process.cwd();
 
 /** "Son Dakika" rozetinin geçerli sayıldığı pencere. */
@@ -242,6 +243,7 @@ function transferItems(now) {
 function newsItems(now) {
   const news = asArray(readJson("news.json", []), "news", "items");
 
+  const lead = promotedNewsId(news.filter(item => item.status === "verified"), now);
   return news
     .filter((item) =>
       item &&
@@ -252,14 +254,15 @@ function newsItems(now) {
     .filter((item) => hoursSince(item.publishedAt, now) <= MAX_AGE_HOURS)
     .map((item) => ({
       label: item.category || "Gündem",
-      text: item.title,
+      id: item.id,
+      text: item.ticker?.text || item.title,
       href: item.url,
       at: item.publishedAt,
       source: "news",
       // `category` tekleştirmede EDİTORYAL işareti: aynı olayın hem çıplak
       // skor satırı hem de yazılmış başlığı varsa başlık kazanır.
       category: item.category || "Gündem",
-      priority: 3 + editorialRank({ team: item.team, competition: item.competition || item.category }) / 10
+      priority: item.id === lead ? -1 : 3 + editorialRank({ team: item.team, competition: item.competition || item.category }) / 10
     }));
 }
 
@@ -408,7 +411,8 @@ export function buildTickerFeed(options = {}) {
   // Bant kendi içinde de önceliğe göre dizilir: kota hangi öğelerin
   // gireceğini belirler, SIRAYI belirlemez. Kota olmasaydı canlı skor bir
   // transfer duyurusunun altına düşebilirdi.
-  const items = [...picked, ...rest].slice(0, MAX_ITEMS).sort(byImportance);
+  const promoted = pool.filter(item => item.priority === -1);
+  const items = [...promoted, ...picked.filter(item => !promoted.includes(item)), ...rest.filter(item => !promoted.includes(item))].slice(0, MAX_ITEMS).sort(byImportance);
   const previous = readState();
 
   // Doğrulanmış hiçbir öğe kalmadıysa son bilinen liste korunur. Bant boş
