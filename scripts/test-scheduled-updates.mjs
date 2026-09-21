@@ -83,6 +83,15 @@ const replaced = mergeCalendarMatches(calendarMerge.matches, [{
 }]);
 assert.equal(replaced.matches[0].events.length, 2, "gerçek döküm geldiğinde yazılmalı");
 
+// `--match` orkestratörden alt betiğe geçmeli: tek bir maçın eksik dökümünü
+// elle tamamlayabilmenin tek yolu bu (geri doldurum sırası koşu başına bir
+// maç ilerliyor). Bayrak verilmediğinde komut satırı birebir eskisi gibi.
+const zorlanan = sourceSteps("hourly", true, "trabzonspor-galatasaray-2026-09-19")
+  .find((step) => step.id === "live-fixtures");
+assert.ok(zorlanan.args.includes("--match=trabzonspor-galatasaray-2026-09-19"));
+const zorlanmayan = sourceSteps("hourly", true).find((step) => step.id === "live-fixtures");
+assert.ok(!zorlanmayan.args.some((arg) => String(arg).startsWith("--match=")));
+
 const targetNow = Date.parse("2026-08-08T18:30:00Z");
 const targets = selectDetailTargets([
   { id: "eu", homeTeam: "Liverpool", awayTeam: "Arsenal", kickoff: "2026-08-08T18:00:00Z", status: "LIVE" },

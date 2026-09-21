@@ -50,14 +50,19 @@ const WATCHED_COLLECTIONS = {
 };
 
 function parseArgs(argv) {
-  const args = { type: "", force: false, ciGuard: false };
+  const args = { type: "", force: false, ciGuard: false, match: "" };
   for (const raw of argv) {
     if (raw.startsWith("--type=")) args.type = raw.slice("--type=".length);
     else if (raw === "--force") args.force = true;
     else if (raw === "--ci-guard") args.ciGuard = true;
+    // Tek bir maçın dökümünü elle tamamlamak için: geri doldurum sırası
+    // günde bir maç ilerlediğinden, gözle görülür bir eksik (boş zaman
+    // çizgisi) haftalarca bekleyebiliyordu. Bayrak sync-live-fixtures'ın
+    // kendi --match desteğine geçiriliyor; verilmezse hiçbir şey değişmiyor.
+    else if (raw.startsWith("--match=")) args.match = raw.slice("--match=".length).trim();
   }
   if (!new Set(["full", "hourly"]).has(args.type)) {
-    throw new Error("Usage: node scripts/run-scheduled-update.mjs --type=full|hourly [--force] [--ci-guard]");
+    throw new Error("Usage: node scripts/run-scheduled-update.mjs --type=full|hourly [--force] [--ci-guard] [--match=<id>]");
   }
   return args;
 }
@@ -295,7 +300,7 @@ function providerKeyConfigured() {
     .some((name) => String(process.env[name] || "").trim());
 }
 
-function sourceSteps(type, providerReady) {
+function sourceSteps(type, providerReady, match = "") {
   const full = type === "full";
   const noProvider = providerReady ? false : "API-Football preflight/configuration is unavailable; last valid provider cache is preserved.";
   return [
@@ -304,7 +309,7 @@ function sourceSteps(type, providerReady) {
     // Sağlayıcıya istek atmaz; yalnızca iki dosyayı hizalar, bu yüzden
     // fixture-calendar başarısız olsa bile çalışması güvenli.
     ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
-    nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
+    nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`, ...(match ? [`--match=${match}`] : [])], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider }),
     // YAKLAŞAN MAÇLARIN TAHMİNİ — lig ayrımı yok, üç kaynaklı zincir:
     // sağlayıcı /predictions → /odds 1X2 konsensüsü → FutbolRadar modeli.
     //
@@ -615,7 +620,7 @@ async function main() {
     steps.push({ id: "api-football-preflight", source: "api-football", kind: "source", status: "skipped", reason: "APIFOOTBALL_API_KEY is not configured.", attempts: 0, durationMs: 0 });
   }
 
-  for (const spec of [...sourceSteps(args.type, providerReady), ...(args.type === "full" ? fullMaintenanceSteps(providerReady) : [])]) {
+  for (const spec of [...sourceSteps(args.type, providerReady, args.match), ...(args.type === "full" ? fullMaintenanceSteps(providerReady) : [])]) {
     await runStep(spec, steps);
   }
 
