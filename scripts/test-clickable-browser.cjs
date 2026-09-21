@@ -50,8 +50,16 @@ const istanbulDay = value => {
   return Number.isNaN(time.getTime()) ? '' : time.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
 };
 let matchDayCache = null;
-function todayFixtureCount() {
-  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+function todayFixtureCount(gun) {
+  // GÜN SAYFANIN KENDİ BEYANINDAN GELİR, KOŞUCUNUN SAATİNDEN DEĞİL.
+  //
+  // Denetim bir saatten uzun sürüyor ve gece yarısını (TSİ) geçebiliyor:
+  // sayfa 21 Eylül'ün maçlarıyla üretilmişken test "bugün 22 Eylül, maç
+  // yok" diyerek "maç yok ama kart basılıyor" hatası veriyordu. Sayfa
+  // hangi güne ait olduğunu zaten söylüyor (data-matches-day), o yüzden
+  // sayım o güne yapılır. Kural gevşemiyor: sayfa maçsız bir gün beyan
+  // edip kart basarsa denetim yine düşer.
+  const today = gun || new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
   if (matchDayCache && matchDayCache.day === today) return matchDayCache.count;
   let count = 0;
   for (const name of MATCH_SOURCES) {
@@ -97,6 +105,17 @@ function todayFixtureCount() {
         // (<button.nav-toggle> 740,14,88,88 · <a.button.primary> 79,981,201,80).
         // Node tarafındaki yoklama bu dondurmadan etkilenmiyor: sabitlik artık
         // "arka arkaya iki ölçümde değişmedi" olarak tanımlı.
+        // ÖNCE SAYFA DURULUR, SONRA ÖLÇÜLÜR.
+        //
+        // Ölçülen yörünge gerçek kaymayı gösterdi (54,770 → 54,747 → 54,746):
+        // öğe, API bölümleri yüklenirken yer değiştiriyor. Bekleme bunu
+        // "oynuyor" diye raporlamak yerine kaynağını bekliyor: görünür
+        // alandaki yüklenen bölüm kalmayana kadar (en çok 10 sn) durulur.
+        await until(
+          async () => await page.locator('main [data-api-target][data-state="loading"]:visible').count() === 0,
+          'Sayfa hâlâ yükleniyor',
+          10000
+        ).catch(() => { /* duruldu sayılmasa da ölçüm yine yapılır */ });
         await locator.evaluate(element => {
           element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
         });
@@ -530,7 +549,9 @@ function todayFixtureCount() {
           if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached' });
           // `navigate` geri dönüyor: aşağıdaki kart ana sayfanın "Bugünün
           // Maçları" önizlemesinden geliyor, takım profilinden değil.
-          if (!todayFixtureCount()) {
+          const gun = await page.locator('[data-api-target="today-matches"]').first()
+            .getAttribute('data-matches-day').catch(() => null);
+          if (!todayFixtureCount(gun)) {
             await navigate(await assertHonestEmptyMatchDay());
             return;
           }
@@ -630,7 +651,9 @@ function todayFixtureCount() {
         // renderHomeFixtureCard). Maçsız günde kart basılmıyor, dolayısıyla
         // aranacak bağlantı da yok; o gün sayfanın borcu kartlar değil,
         // durumu söyleyen dürüst bir kahraman alan ve çalışan bir çıkış.
-        const matchDay = todayFixtureCount() > 0;
+        const sayfaninGunu = await page.locator('[data-api-target="today-matches"]').first()
+          .getAttribute('data-matches-day').catch(() => null);
+        const matchDay = todayFixtureCount(sayfaninGunu) > 0;
         if (!matchDay) await navigate(await assertHonestEmptyMatchDay());
         for (const selector of matchDay
           ? ['.news-ticker-all', '.fixture-card-action', '.fixture-card-quicklinks a']
