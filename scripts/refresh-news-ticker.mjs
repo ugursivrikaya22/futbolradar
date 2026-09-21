@@ -142,6 +142,27 @@ function mirrorFromNews(entry) {
   // (services/newsTicker.js → validateTickerItem zaten publisher'ı da kabul
   // ediyordu, yalnızca haber kaydından buraya taşınmıyordu).
   if (text(hint.publisher)) mirrored.source.publisher = text(hint.publisher);
+
+  // "OFFICIAL" ROZETİNİN KANITI HABER KAYDINDA VARDI, BANDA GEÇMİYORDU.
+  //
+  // Kapı (services/newsTicker.js → validateTickerItem) `publisher` alanını
+  // bir ALAN ADI gibi okuyor: `https://<publisher>` kurup güven katmanına
+  // bakıyor. Editör oraya kurumun adını yazdığında ("Galatasaray SK")
+  // denetim kaçınılmaz olarak düşüyordu — oysa haber kaydı kurumun kendi
+  // duyurusunu `sources[]` içinde taşıyor.
+  //
+  // Kurumun adresi varsa `publisher` onun ALAN ADI olur; kapı böylece
+  // rozeti gerçekten doğrulayabilir ve okuyucu da atfı alan adıyla görür.
+  // Adres YOKSA hiçbir şey uydurulmaz: alan editörün yazdığı gibi kalır ve
+  // kapı onu reddeder.
+  if (text(mirrored.category) === "official") {
+    const officialHost = (Array.isArray(entry.sources) ? entry.sources : [])
+      .map((row) => text(row && row.url))
+      .filter((row) => /^https?:\/\//i.test(row))
+      .map((row) => new URL(row).hostname.replace(/^www\./i, ""))
+      .find((host) => !/(^|\.)futbolradar\.com$/i.test(host));
+    if (officialHost) mirrored.source.publisher = officialHost;
+  }
   if (text(hint.expiresAt)) mirrored.expiresAt = text(hint.expiresAt);
   if (text(entry.updatedAt)) mirrored.updatedAt = text(entry.updatedAt);
   if (hint.breaking === true) mirrored.breaking = true;
