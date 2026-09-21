@@ -98,6 +98,9 @@ function normalizeTickerHref(href, base) {
   if (isExternalUrl(value)) return value;
   try {
     const url = new URL(value);
+    if (/^\/{2,}/.test(url.pathname) || !/^\/(?:haber|en\/news)(?:\/|$)/.test(url.pathname)) {
+      return value;
+    }
     const combined = path.posix.normalize(`${base}${url.pathname.replace(/^\/+/, "")}`);
     const localPath = base.startsWith("./") && !combined.startsWith("./") && !combined.startsWith("../")
       ? `./${combined}`

@@ -406,7 +406,7 @@ function item(overrides = {}) {
     items: [
       {
         text: "Normalize",
-        href: "https://www.futbolradar.com/spor/../haber/guvenli-yol.html"
+        href: "https://www.futbolradar.com/haber/../haber/guvenli-yol.html"
       }
     ]
   });
@@ -419,6 +419,22 @@ function item(overrides = {}) {
     normalized,
     /\/\.\.\//,
     "üretilen iç ticker bağlantısı dizin traversal benzeri segment taşımamalı"
+  );
+
+  const suspicious = newsTicker({
+    base: "../",
+    badge: "Gündem",
+    items: [
+      {
+        text: "Şüpheli",
+        href: "https://www.futbolradar.com//cdn.example.com/file"
+      }
+    ]
+  });
+  assert.match(
+    suspicious,
+    /href="https:\/\/www\.futbolradar\.com\/\/cdn\.example\.com\/file"/,
+    "desteklenmeyen ya da şüpheli owned mutlak yollar göreli iç bağlantıya çevrilmemeli"
   );
 }
 
