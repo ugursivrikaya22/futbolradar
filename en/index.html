@@ -25,10 +25,43 @@
     <meta name="twitter:title" content="FutbolRadar | Turkish Süper Lig Live Scores, Standings and Analysis" />
     <meta name="twitter:description" content="Live scores, fixtures, standings and verified transfer news from the Turkish Süper Lig, plus Turkish clubs in European competitions." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
-    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../page.css" />
+    <link rel="stylesheet" href="../page.css?v=7f683c94" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.futbolradar.com/en","url":"https://www.futbolradar.com/en","name":"FutbolRadar | Turkish Süper Lig Live Scores, Standings and Analysis","description":"Live scores, fixtures, standings and verified transfer news from the Turkish Süper Lig, plus Turkish clubs in European competitions.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"}]}]}</script>
+  <!-- favicon:start -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<!-- favicon:end -->
+  <!-- pwa:start -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="FutbolRadar" />
+<meta name="fr-vapid-public-key" content="" />
+<script defer src="/pwa.js?v=156a309d"></script>
+<!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="home-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -60,12 +93,25 @@
         </nav>
       </div>
     </header>
-    <div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+      <!-- shared-layout:ticker:start --><div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="Breaking football headlines">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge">Headlines</span>
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track" style="--ticker-duration:70s">
+            <div class="news-ticker-group"><a class="news-ticker-item" href="https://www.ntvspor.net/futbol/trabzonsporda-ayrilik-goktan-gurpuz-imzayi-atti-428705" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Göktan Gürpüz joins Çorum FK (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.galatasaray.org/haber/futbol/galatasaraya-hos-geldin-rafael-leao/60849" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Rafael Leão joins Galatasaray (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.hurriyet.com.tr/sporarena/besiktas-fabio-miretti-transferini-resmen-acikladi-43286815" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Fabio Miretti joins Beşiktaş (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.aa.com.tr/tr/spor/fenerbahce-yeni-transferi-oppong-icin-imza-toreni-duzenledi/4040921" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Kojo Peprah Oppong joins Fenerbahçe (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Amed Sportif Faaliyetler 3–2 Beşiktaş</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Göztepe 2–2 Çaykur Rizespor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Erzurumspor FK 1–0 Samsunspor</span></a></div>
+            <div class="news-ticker-group" aria-hidden="true"><a class="news-ticker-item" href="https://www.ntvspor.net/futbol/trabzonsporda-ayrilik-goktan-gurpuz-imzayi-atti-428705" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Göktan Gürpüz joins Çorum FK (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.galatasaray.org/haber/futbol/galatasaraya-hos-geldin-rafael-leao/60849" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Rafael Leão joins Galatasaray (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.hurriyet.com.tr/sporarena/besiktas-fabio-miretti-transferini-resmen-acikladi-43286815" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Fabio Miretti joins Beşiktaş (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.aa.com.tr/tr/spor/fenerbahce-yeni-transferi-oppong-icin-imza-toreni-duzenledi/4040921" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Kojo Peprah Oppong joins Fenerbahçe (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Amed Sportif Faaliyetler 3–2 Beşiktaş</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Göztepe 2–2 Çaykur Rizespor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Erzurumspor FK 1–0 Samsunspor</span></a></div>
+          </div>
+        </div>
+        <a class="news-ticker-all" href="../en/news.html">View all</a>
+      </div>
+    </div><!-- shared-layout:ticker:end -->
+    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
-            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
+          <div class="live-scores-ticker__track" style="--live-ticker-duration:29.166666666666668s" data-live-scores-track data-live-rendered-at="2026-09-21T08:46:47.603Z">
+            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639557&amp;date=2026-09-21" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | Bangladesh W 0 - 0 Myanmar W | 84&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Bangladesh W</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Myanmar W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>84&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639558&amp;date=2026-09-21" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | China W 4 - 1 Philippines W | 81&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">China W</span><span class="live-scores-ticker__score">4 - 1</span><span class="live-scores-ticker__team">Philippines W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>81&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639559&amp;date=2026-09-21" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | South Korea W 1 - 1 Korea DPR W | 83&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">South Korea W</span><span class="live-scores-ticker__score">1 - 1</span><span class="live-scores-ticker__team">Korea DPR W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>83&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639560&amp;date=2026-09-21" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | Uzbekistan W 1 - 1 Hong Kong W | 84&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Uzbekistan W</span><span class="live-scores-ticker__score">1 - 1</span><span class="live-scores-ticker__team">Hong Kong W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>84&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640500&amp;date=2026-09-21" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Hazırlık Maçı | Fiji 0 - 1 Vanuatu | 81&#039;"><span class="live-scores-ticker__league">Hazırlık Maçı</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Fiji</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Vanuatu</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>81&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1581912&amp;date=2026-09-21" data-live-until="2026-09-21T10:30:00.000Z" aria-label="Persha Liga | Viktoriya Mykolaivka 0 - 1 Nyva Ternopil | 10&#039;"><span class="live-scores-ticker__league">Persha Liga</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Viktoriya Mykolaivka</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Nyva Ternopil</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>10&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640433&amp;date=2026-09-21" data-live-until="2026-09-21T10:30:00.000Z" aria-label="Premier League | Khovd Western 0 - 1 Erchim | 40&#039;"><span class="live-scores-ticker__league">Premier League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Khovd Western</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Erchim</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>40&#039;</span></a></div>
+            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639557&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | Bangladesh W 0 - 0 Myanmar W | 84&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Bangladesh W</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Myanmar W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>84&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639558&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | China W 4 - 1 Philippines W | 81&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">China W</span><span class="live-scores-ticker__score">4 - 1</span><span class="live-scores-ticker__team">Philippines W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>81&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639559&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | South Korea W 1 - 1 Korea DPR W | 83&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">South Korea W</span><span class="live-scores-ticker__score">1 - 1</span><span class="live-scores-ticker__team">Korea DPR W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>83&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1639560&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Asian Games Women | Uzbekistan W 1 - 1 Hong Kong W | 84&#039;"><span class="live-scores-ticker__league">Asian Games Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Uzbekistan W</span><span class="live-scores-ticker__score">1 - 1</span><span class="live-scores-ticker__team">Hong Kong W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>84&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640500&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T09:30:00.000Z" aria-label="Hazırlık Maçı | Fiji 0 - 1 Vanuatu | 81&#039;"><span class="live-scores-ticker__league">Hazırlık Maçı</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Fiji</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Vanuatu</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>81&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1581912&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T10:30:00.000Z" aria-label="Persha Liga | Viktoriya Mykolaivka 0 - 1 Nyva Ternopil | 10&#039;"><span class="live-scores-ticker__league">Persha Liga</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Viktoriya Mykolaivka</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Nyva Ternopil</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>10&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640433&amp;date=2026-09-21" tabindex="-1" data-live-until="2026-09-21T10:30:00.000Z" aria-label="Premier League | Khovd Western 0 - 1 Erchim | 40&#039;"><span class="live-scores-ticker__league">Premier League</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Khovd Western</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Erchim</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>40&#039;</span></a></div>
           </div>
         </div>
       </div>
@@ -74,8 +120,8 @@
       <section class="container rp-home" data-radar-home-card data-radar-locale="en" hidden aria-label="Live Match Pulse">
         <div data-radar-home-body></div>
       </section>
-      <script src="../radar-pulse.js" defer></script>
-      <script src="../radar-home-card.js" defer></script>
+      <script src="../radar-pulse.js?v=48273418" defer></script>
+      <script src="../radar-home-card.js?v=4c890f95" defer></script>
       <section class="container hero" id="hero-canli-skor">
           <div>
             <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Live match centre</span>
@@ -88,14 +134,99 @@
             </div>
           </div>
           <div class="hero-featured" id="featured-radar-match" aria-label="Today's match centre summary">
-            <div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="10000" data-featured-count="1" aria-roledescription="carousel" aria-label="Featured matches">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" role="group" aria-roledescription="slide" aria-label="1 / 1">
-      <div class="featured-fixture">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">Live score board</span><span>Checking the schedule</span></div>
-      <div class="home-match-command-empty"><strong>The match schedule is loading.</strong><span>Today's verified fixtures will be listed here.</span></div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-09-21T08:46:43.187Z" data-featured-interval="10000" data-featured-count="6" aria-roledescription="carousel" aria-label="Featured matches">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="khovd-western-erchim-2026-09-21" role="group" aria-roledescription="slide" aria-label="1 / 6"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T11:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span>Today · Venue to be confirmed</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">KW</span>
+        <strong>Khovd Western</strong>
+      </div>
+        <div class="featured-fixture-score"><b>0 - 1</b><span>Live 40&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">E</span>
+        <strong>Erchim</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=khovd-western-erchim-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="bangladesh-w-myanmar-w-2026-09-21" role="group" aria-roledescription="slide" aria-label="2 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T10:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span>Today · Yanmar Stadium Nagai</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">BW</span>
+        <strong>Bangladesh W</strong>
+      </div>
+        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 84&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">MW</span>
+        <strong>Myanmar W</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=bangladesh-w-myanmar-w-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="china-w-philippines-w-2026-09-21" role="group" aria-roledescription="slide" aria-label="3 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T10:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span>Today · Nagaragawa Stadium</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">CW</span>
+        <strong>China W</strong>
+      </div>
+        <div class="featured-fixture-score"><b>4 - 1</b><span>Live 81&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">PW</span>
+        <strong>Philippines W</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=china-w-philippines-w-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="3" data-featured-match="fiji-vanuatu-2026-09-21" role="group" aria-roledescription="slide" aria-label="4 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T10:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span>Today · Venue to be confirmed</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">F</span>
+        <strong>Fiji</strong>
+      </div>
+        <div class="featured-fixture-score"><b>0 - 1</b><span>Live 81&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">V</span>
+        <strong>Vanuatu</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=fiji-vanuatu-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="4" data-featured-match="south-korea-w-korea-dpr-w-2026-09-21" role="group" aria-roledescription="slide" aria-label="5 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T10:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span>Today · Shizuoka Stadium Ecopa</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">SK</span>
+        <strong>South Korea W</strong>
+      </div>
+        <div class="featured-fixture-score"><b>1 - 1</b><span>Live 83&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">KD</span>
+        <strong>Korea DPR W</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=south-korea-w-korea-dpr-w-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="5" data-featured-match="uzbekistan-w-hong-kong-w-2026-09-21" role="group" aria-roledescription="slide" aria-label="6 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-21T10:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span>Today · Wave Stadium Kariya</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">UW</span>
+        <strong>Uzbekistan W</strong>
+      </div>
+        <div class="featured-fixture-score"><b>1 - 1</b><span>Live 84&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">HK</span>
+        <strong>Hong Kong W</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=uzbekistan-w-hong-kong-w-2026-09-21&amp;date=2026-09-21">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
     </div></div></div>
-    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>2</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>1</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>1</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>40</b></a></div>
+      <div class="featured-carousel-nav">
+      <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Previous match"><span aria-hidden="true">&lsaquo;</span></button>
+      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Khovd Western - Erchim"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Bangladesh W - Myanmar W"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="China W - Philippines W"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="3" role="tab" aria-selected="false" aria-label="Fiji - Vanuatu"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="4" role="tab" aria-selected="false" aria-label="South Korea W - Korea DPR W"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="5" role="tab" aria-selected="false" aria-label="Uzbekistan W - Hong Kong W"><span aria-hidden="true"></span></button></div>
+      <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Next match"><span aria-hidden="true">&rsaquo;</span></button>
+      <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
+    </div>
+    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat is-live" href="./live-football-scores.html"><span>Live</span><b class="live-number">7</b></a><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>1</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>5</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>5</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>47</b></a></div>
           </div>
         </section>
       
@@ -149,26 +280,26 @@
         </section>
       <section class="container section section-daily-headlines" id="gunun-basliklari" aria-labelledby="gunun-basliklari-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Today in brief</span><h2 id="gunun-basliklari-title">Three headlines to start with</h2><p>Ordered by relevance: matches in play, then finished games, then today&#039;s schedule. Nothing unverified goes in here.</p></div><a class="section-link" href="./analysis.html">All analysis</a></div>
-          <div class="daily-headlines"><a data-headline-rank="1" class="daily-headline" href="./todays-matches.html" data-headline-match="flamengo-rb-bragantino-2026-09-21" data-headline-state="finished">
+          <div class="daily-headlines"><a data-headline-rank="1" class="daily-headline is-live" href="./live-football-scores.html" data-headline-match="khovd-western-erchim-2026-09-21" data-headline-state="live">
       <span class="daily-headline-index" aria-hidden="true">1</span>
+      <span class="daily-headline-body">
+        <span class="daily-headline-kicker">Live</span>
+        <strong class="daily-headline-title">Khovd Western 0-1 Erchim</strong>
+        <span class="daily-headline-hook">Premier League</span>
+      </span>
+    </a><a data-headline-rank="2" class="daily-headline" href="./todays-matches.html" data-headline-match="flamengo-rb-bragantino-2026-09-21" data-headline-state="finished">
+      <span class="daily-headline-index" aria-hidden="true">2</span>
       <span class="daily-headline-body">
         <span class="daily-headline-kicker">Full time</span>
         <strong class="daily-headline-title">Flamengo 2-1 RB Bragantino</strong>
         <span class="daily-headline-hook">Brazil Série A · Estádio do Maracanã</span>
       </span>
-    </a><a data-headline-rank="2" class="daily-headline" href="./todays-matches.html" data-headline-match="aldosivi-atletico-tucuman-2026-09-21" data-headline-state="upcoming">
-      <span class="daily-headline-index" aria-hidden="true">2</span>
-      <span class="daily-headline-body">
-        <span class="daily-headline-kicker">Today</span>
-        <strong class="daily-headline-title">Aldosivi 0-0 Atletico Tucuman</strong>
-        <span class="daily-headline-hook">20:30 (Türkiye time) · Argentina Primera División · Estadio Jose Maria Minella</span>
-      </span>
-    </a><a data-headline-rank="3" class="daily-headline" href="./todays-matches.html" data-headline-match="velez-sarsfield-tigre-2026-09-21" data-headline-state="upcoming">
+    </a><a data-headline-rank="3" class="daily-headline" href="./todays-matches.html" data-headline-match="inter-miami-san-diego-2026-09-21" data-headline-state="finished">
       <span class="daily-headline-index" aria-hidden="true">3</span>
       <span class="daily-headline-body">
-        <span class="daily-headline-kicker">Today</span>
-        <strong class="daily-headline-title">Velez Sarsfield 0-0 Tigre</strong>
-        <span class="daily-headline-hook">03:30 (Türkiye time) · Argentina Primera División · Jose Amalfitani</span>
+        <span class="daily-headline-kicker">Full time</span>
+        <strong class="daily-headline-title">Inter Miami 2-2 San Diego</strong>
+        <span class="daily-headline-hook">MLS · Nu Stadium</span>
       </span>
     </a></div>
         </section>
@@ -176,10 +307,17 @@
           <div class="section-head"><div class="section-title"><span class="section-kicker">Today&#039;s fixtures</span><h2 id="today-title">Matches and live scores</h2><p>Matches in play come first, followed by kick-offs still to come and finished games.</p></div><a class="section-link" href="./todays-matches.html">View All</a></div>
           
           <div class="matches-grid" data-match-list="today-matches">
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">M</i>MLS</span><span class="fixture-card-state ">Half Time</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IM</span><span class="fixture-row-name">Inter Miami</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SD</span><span class="fixture-row-name">San Diego</span><span class="fixture-row-score">1</span></div></div>
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Premier League</span><span class="fixture-card-state is-live">Live 40&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">KW</span><span class="fixture-row-name">Khovd Western</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">E</span><span class="fixture-row-name">Erchim</span><span class="fixture-row-score">1</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=khovd-western-erchim-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
+<article class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">M</i>MLS</span><span class="fixture-card-state is-final">FT</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IM</span><span class="fixture-row-name">Inter Miami</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SD</span><span class="fixture-row-name">San Diego</span><span class="fixture-row-score">2</span></div></div>
+    
     
     <a class="fixture-card-action" href="./match-detail.html?id=inter-miami-san-diego-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
@@ -190,6 +328,41 @@
     
     <a class="fixture-card-action" href="./match-detail.html?id=flamengo-rb-bragantino-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">PL</i>Persha Liga</span><span class="fixture-card-state is-live">Live 10&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">VM</span><span class="fixture-row-name">Viktoriya Mykolaivka</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">NT</span><span class="fixture-row-name">Nyva Ternopil</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=viktoriya-mykolaivka-nyva-ternopil-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span class="fixture-card-state is-live">Live 84&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BW</span><span class="fixture-row-name">Bangladesh W</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MW</span><span class="fixture-row-name">Myanmar W</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=bangladesh-w-myanmar-w-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span class="fixture-card-state is-live">Live 81&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">CW</span><span class="fixture-row-name">China W</span><span class="fixture-row-score">4</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PW</span><span class="fixture-row-name">Philippines W</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=china-w-philippines-w-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span class="fixture-card-state is-live">Live 83&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SK</span><span class="fixture-row-name">South Korea W</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">KD</span><span class="fixture-row-name">Korea DPR W</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=south-korea-w-korea-dpr-w-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">AG</i>Asian Games Women</span><span class="fixture-card-state is-live">Live 84&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UW</span><span class="fixture-row-name">Uzbekistan W</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">HK</span><span class="fixture-row-name">Hong Kong W</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=uzbekistan-w-hong-kong-w-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
 <article class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">AP</i>Argentina Primera División</span><span class="fixture-card-state ">20:30</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Aldosivi</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AT</span><span class="fixture-row-name">Atletico Tucuman</span><span class="fixture-row-score">–</span></div></div>
@@ -198,9 +371,9 @@
     <a class="fixture-card-action" href="./match-detail.html?id=aldosivi-atletico-tucuman-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
 <article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">AP</i>Argentina Primera División</span><span class="fixture-card-state ">03:30</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">VS</span><span class="fixture-row-name">Velez Sarsfield</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Tigre</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">AP</i>Argentina Primera División</span><span class="fixture-card-state is-final">FT</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">VS</span><span class="fixture-row-name">Velez Sarsfield</span><span class="fixture-row-score">3</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Tigre</span><span class="fixture-row-score">2</span></div></div>
+    
     
     <a class="fixture-card-action" href="./match-detail.html?id=velez-sarsfield-tigre-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
@@ -218,42 +391,42 @@
     
     <a class="fixture-card-action" href="./match-detail.html?id=toluca-santos-laguna-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">PD</i>Primera Division</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Firpo</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">AB</span><span class="fixture-row-name">Atletico Balboa</span><span class="fixture-row-score">1</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=firpo-atletico-balboa-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">LP</i>Liga Pro</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">LD</span><span class="fixture-row-name">LDU de Quito</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">UC</span><span class="fixture-row-name">Universidad Catolica</span><span class="fixture-row-score">1</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=ldu-de-quito-universidad-catolica-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">LF</i>Liga Femenina</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MW</span><span class="fixture-row-name">Millonarios W</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">SF</span><span class="fixture-row-name">Santa Fe W</span><span class="fixture-row-score">1</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=millonarios-w-santa-fe-w-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-1" aria-hidden="true">CD</i>Copa de la División Profesional</span><span class="fixture-card-state ">Live</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">OP</span><span class="fixture-row-name">Oriente Petrolero</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Blooming</span><span class="fixture-row-score">0</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=oriente-petrolero-blooming-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">LN</i>Liga Nacional</span><span class="fixture-card-state ">Half Time</span></div>
     <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">CO</span><span class="fixture-row-name">CD Olimpia</span><span class="fixture-row-score">3</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AI</span><span class="fixture-row-name">Atletico Independiente</span><span class="fixture-row-score">0</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=cd-olimpia-atletico-independiente-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">LP</i>Liga Panameña de Fútbol</span><span class="fixture-card-state ">Half Time</span></div>
     <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">ID</span><span class="fixture-row-name">Independiente de La Chorrera</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SS</span><span class="fixture-row-name">Sporting San Miguelito</span><span class="fixture-row-score">0</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
@@ -324,16 +497,16 @@
     <a class="fixture-card-action" href="./match-detail.html?id=tapatio-tlaxcala-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">BS</i>Brazil Série A</span><span class="fixture-card-state ">Live</span></div>
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">BS</i>Brazil Série A</span><span class="fixture-card-state is-final">FT</span></div>
     <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">AP</span><span class="fixture-row-name">Atletico Paranaense</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Bahia</span><span class="fixture-row-score">1</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
     
     <a class="fixture-card-action" href="./match-detail.html?id=atletico-paranaense-bahia-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">AP</i>Argentina Primera División</span><span class="fixture-card-state ">Live</span></div>
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">AP</i>Argentina Primera División</span><span class="fixture-card-state is-final">FT</span></div>
     <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">BC</span><span class="fixture-row-name">Belgrano Cordoba</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">ED</span><span class="fixture-row-name">Estudiantes de Rio Cuarto</span><span class="fixture-row-score">1</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
     
     <a class="fixture-card-action" href="./match-detail.html?id=belgrano-cordoba-estudiantes-de-rio-cuarto-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
@@ -456,7 +629,14 @@
     
     <a class="fixture-card-action" href="./match-detail.html?id=vancouver-whitecaps-ii-the-town-2026-09-21&amp;date=2026-09-21">Open match details</a>
   </article>
-          <div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false"><span class="match-more-label" data-match-more-label="collapsed">Show more (+28 matches)</span><span class="match-more-label" data-match-more-label="expanded" hidden>Show less</span></button></div>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state is-live">Live 81&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">F</span><span class="fixture-row-name">Fiji</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">V</span><span class="fixture-row-name">Vanuatu</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=fiji-vanuatu-2026-09-21&amp;date=2026-09-21">Open match details</a>
+  </article>
+          <div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false"><span class="match-more-label" data-match-more-label="collapsed">Show more (+35 matches)</span><span class="match-more-label" data-match-more-label="expanded" hidden>Show less</span></button></div>
           </div>
         </section>
       <section class="container section home-radar-matches" id="gunun-radar-maci" aria-labelledby="gunun-radar-maci-title" hidden>
@@ -604,6 +784,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js" defer></script>
+    <script src="../site.js?v=bda97e24" defer></script>
+    <script src="../app-lite.js?v=ef347d80" defer></script>
   </body>
 </html>

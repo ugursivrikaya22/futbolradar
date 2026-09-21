@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-21T04:47:01.426Z",
+  "updatedAt": "2026-09-21T08:46:48.697Z",
   "items": [
+    {
+      "id": "auto-news-6436b06ac695714d8713",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Başkanımız Serdal Adalı'dan Açıklamalar",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-20T19:47:49.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE4tMVNSRU5yNXRhQ0x2YXpmdVl1OFhIRGl6akFUYUlBV3J3d0xaWTVZZ1pjRHZkN2VjOEtucFZXMUtDdVFTLUpVVUtYWkhoei00LWZTY3RCSFEwclYzUWE3SQ?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-70968395837b7074289e",
       "category": "official",
@@ -249,26 +269,6 @@
       }
     },
     {
-      "id": "auto-news-9d8dcbca4f1ed76e8802",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Valencia Basket Maç Biletleri Satışta",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-18T15:47:55.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFBIWkk5ZXZOUzBMSWpldWVZTlFEc3FubklFRkhWTEYwN2lTOUltWHhrY2taM20zQmV4cGM4X1ZpYzl5REJzZ250NjA5ZUVOM2JpbDY3Q2JiOEMyMkE?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "news-besiktas-fabio-miretti-dc5fb584",
       "origin": "news.json",
       "category": "club-agenda",
@@ -401,6 +401,26 @@
       "important": true
     },
     {
+      "id": "auto-news-1471d50940b6e101e4d4",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe'nin tarihi 8-0'lık Eyüpspor zaferini yazdı: İçine Dzeko kaçmış!",
+      "team": "Eyüpspor",
+      "timestamp": "2026-09-21T04:53:00.000Z",
+      "source": {
+        "name": "hurriyet-spor",
+        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahcenin-tarihi-8-0lik-eyupspor-zaferini-yazdi-icine-dzeko-kacmis-43313885",
+        "publisher": "hurriyet.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "hurriyet-spor",
+        "priority": 7,
+        "status": "REPORTED"
+      }
+    },
+    {
       "id": "auto-news-0a7bc67ca527a21d888f",
       "category": "official",
       "confidence": "confirmed",
@@ -421,16 +441,16 @@
       }
     },
     {
-      "id": "auto-news-b752fefb1da3d6b186e7",
+      "id": "auto-news-ada04da1a61549efb088",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "UEFA Nations League: Zinédine Zidane, Jürgen Klopp, Xavi and Roberto Mancini make first impressions",
+      "text": "UEFA Women's Champions League Matchday 1 preview: Bayern vs Manchester City, Barcelona vs Paris FC",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-18T08:23:02.000Z",
+      "timestamp": "2026-09-18T14:52:29.000Z",
       "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPS0taNkl0WWNKLWMyR2czTmF6UEFURnNRSHk5ZXFYSkdWcjVEbjlwZUxHLUN0eGlMQi1SSHk0SlBkTUphOHB4Q2gwNnRBSlJmUWplenlmelRCY0ZUZ3ZLeG85emgyZ3Q2NGlXYXFDcmJzMERJYXhrMXU4SVRWM3V3QWpZOTBlN2tpcVJ1RldHT3ZLQ1JFWUlsemdqdEk0RUJYZHJLS25qSkVlcldKMXctMmVLX2VVOXR6Rm1uUk9GdWUzelpTYlhtX0tEMDM2aU4zTnZlNw?oc=5",
+        "name": "uefa.com",
+        "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPb2hxVUEzU2pXOGJQWEFfWDlSY1F2YTFlYnRNQlhVcVhEUXRaX1RONFA3ckI4Y1h5R3J5dnhvdWNuWHd2ajhtVjlaWmo1czJOMFg2SjRqSTlGekpFMXExOUFfTGplVFFiSVJuVnJQM1JtZUJPTTN1RDd0bVdfd0hZWmlMSjJLc2M2UngxalV4c2dfYTZkM1NIRGNBaFVOeGhVa01XaTZ5eTl5amVZM0JhdHpDLWlzcnZYQk1namN5NGFwd2xrYzFzT1BXcUNjZ0lmYVc0Y1VBYVV3Zw?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -446,16 +466,16 @@
       "confidence": "confirmed",
       "section": "news",
       "text": "A Millî Takımımızın UEFA Uluslar A Ligi Maçları Aday Kadrosu Açıklandı",
-      "team": "Milli Takım",
+      "team": "Süper Lig",
       "timestamp": "2026-09-18T13:03:34.000Z",
       "source": {
-        "name": "tff.org",
+        "name": "TFF",
         "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBmeGJ3OWF3ckVSV215ejFodlNVTFJRVEJOdkk4Zl9DLV95aVdRM0FYSVJoczdua0kyeWJXWWllbjR3Ri1QS0ktRlJZOC1qUzRiZ1hCWU1oZFJpSlVpWWdwZldLRTRMN3c?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "milli-takim",
+        "feed": "super-lig",
         "priority": 5,
         "status": "OFFICIAL"
       }
