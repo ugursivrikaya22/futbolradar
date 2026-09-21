@@ -88,51 +88,43 @@ function todayFixtureCount() {
       const click = async locator => {
         // Finish scrolling before pointer input. Smooth document scrolling can
         // otherwise oscillate between the fixed header and bottom navigation.
-        await locator.evaluate(element => new Promise((resolve, reject) => {
+        //
+        // ÖLÇÜM SAYFANIN DIŞINDAN YAPILIYOR. Önce sayfa içinde bir rAF/zamanlayıcı
+        // döngüsü vardı; denetim sekiz görünümü paralel koştuğu için arka plandaki
+        // bağlamları tarayıcı kısıyor, hatta tamamen donduruyor. O zaman döngü
+        // ilerlemiyor ve HAREKETSİZ bir öğe "yerine oturmadı" diye raporlanıyordu.
+        // Ölçülen kanıt: hata mesajındaki son ve önceki dikdörtgen birebir aynıydı
+        // (<button.nav-toggle> 740,14,88,88 · <a.button.primary> 79,981,201,80).
+        // Node tarafındaki yoklama bu dondurmadan etkilenmiyor: sabitlik artık
+        // "arka arkaya iki ölçümde değişmedi" olarak tanımlı.
+        await locator.evaluate(element => {
           element.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
-          const started = performance.now();
-          let stableSince = started;
-          let previous;
-          function measure() {
-            const now = performance.now();
-            const rect = element.getBoundingClientRect();
-            const current = [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
-            if (current !== previous) { previous = current; stableSince = now; }
-            if (now - stableSince >= 150) return resolve();
-            if (now - started > 5000) {
-              // Hangi öğenin ve hangi eksende oynadığını söylemeyen hata,
-              // kırmızı CI'ı okunabilir bir bulguya çeviremiyordu: mesaj
-              // artık hedefi, sayfayı ve son iki ölçümü taşıyor.
-              const tag = element.tagName.toLowerCase();
-              const id = element.id ? `#${element.id}` : "";
-              const cls = element.className && typeof element.className === "string"
-                ? `.${element.className.trim().split(/\s+/).slice(0, 3).join(".")}`
-                : "";
-              const label = (element.textContent || "").trim().slice(0, 40);
-              return reject(new Error(
-                `Click target did not settle: <${tag}${id}${cls}> "${label}" `
-                + `@ ${location.pathname} · son=${current} önceki=${previous}`
-              ));
-            }
-            schedule();
-          }
-          // rAF TEK BAŞINA YETMİYOR. Denetim birden çok görünümü paralel
-          // koşuyor; arka plandaki bağlamlarda tarayıcı rAF'i kısıyor, hatta
-          // durduruyor. O zaman `measure` 150 ms'lik sabitlik penceresini hiç
-          // ölçemeden doğrudan 5 sn sınırına çarpıyor ve HAREKETSİZ bir öğe
-          // "yerine oturmadı" diye raporlanıyordu (ölçülen kanıt: son ve
-          // önceki dikdörtgen birebir aynıyken hata düşüyordu).
-          // Zamanlayıcı yedeği, rAF durduğunda da ölçümü sürdürüyor.
-          let pending = false;
-          function schedule() {
-            if (pending) return;
-            pending = true;
-            const run = () => { if (!pending) return; pending = false; measure(); };
-            requestAnimationFrame(run);
-            setTimeout(run, 32);
-          }
-          schedule();
-        }));
+        });
+        const rectOf = () => locator.evaluate(element => {
+          const rect = element.getBoundingClientRect();
+          return [rect.x, rect.y, rect.width, rect.height].map(value => Math.round(value * 2)).join(',');
+        });
+        const started = Date.now();
+        let previous = await rectOf();
+        let current = previous;
+        let stable = false;
+        while (Date.now() - started <= 5000) {
+          await delay(120);
+          current = await rectOf();
+          if (current === previous) { stable = true; break; }
+          previous = current;
+        }
+        if (!stable) {
+          const kimlik = await locator.evaluate(element => {
+            const tag = element.tagName.toLowerCase();
+            const id = element.id ? `#${element.id}` : '';
+            const cls = element.className && typeof element.className === 'string'
+              ? `.${element.className.trim().split(/\s+/).slice(0, 3).join('.')}`
+              : '';
+            return `<${tag}${id}${cls}> "${(element.textContent || '').trim().slice(0, 40)}" @ ${location.pathname}`;
+          });
+          throw new Error(`Click target did not settle: ${kimlik} · son=${current} önceki=${previous}`);
+        }
         return touch ? locator.tap({ noWaitAfter: true }) : locator.click({ noWaitAfter: true });
       };
       async function swipeRail(rail, direction) {
