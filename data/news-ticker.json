@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-21T16:56:29.609Z",
+  "updatedAt": "2026-09-21T20:32:29.877Z",
   "items": [
     {
       "id": "auto-news-6436b06ac695714d8713",
@@ -249,37 +249,17 @@
       }
     },
     {
-      "id": "auto-news-b8566fd4e6848d58cca1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray maçı hazırlıklarımız tamamlandı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-18T19:29:28.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPZU5KYnJwejc3WUx0OHdITUREeUtSUFVyMjVoZzJZVUQtbXNDcVVGX1NkY2xDZzFOazZOcGhkbjAwTUtPS2tIMzZrQlg0dllzRUF2Z0JlNmxQMmN3MG9RbEVidWFjNG5DM012eDVqd3U0M3kzMUNjM2R5QXE1OHFWTS1DUUF5SzZBWVZTT0huVmVMU3Nyb1dB?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "news-besiktas-fabio-miretti-dc5fb584",
+      "id": "news-galatasaray-aleksey-batrakov-d61aaff5",
       "origin": "news.json",
       "category": "club-agenda",
       "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Beşiktaş çevresinde Fabio Miretti'ye dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-20T20:55:00.000Z",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Aleksey Batrakov'a dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-21T16:30:38.000Z",
       "source": {
         "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/besiktas-fabio-miretti-dc5fb584"
+        "url": "https://www.futbolradar.com/haber/galatasaray-aleksey-batrakov-d61aaff5"
       },
-      "team": "Beşiktaş",
+      "team": "Galatasaray",
       "important": true
     },
     {
@@ -331,6 +311,20 @@
       "important": true
     },
     {
+      "id": "news-besiktas-amed-sportif-faaliyetler-00ff227f",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Beşiktaş çevresinde Amed Sportif Faaliyetler'e dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-19T21:54:08.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-amed-sportif-faaliyetler-00ff227f"
+      },
+      "team": "Beşiktaş",
+      "important": true
+    },
+    {
       "id": "news-trabzonspor-nwaiwu-thomas-reis-a67ab265",
       "origin": "news.json",
       "category": "club-agenda",
@@ -370,20 +364,6 @@
         "url": "https://www.futbolradar.com/haber/fenerbahce-departure-d253de3f"
       },
       "team": "Fenerbahçe",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-victor-osimhen-nijerya-afccb7e7",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Galatasaray çevresinde Victor Osimhen Nijerya'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-17T18:42:40.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-victor-osimhen-nijerya-afccb7e7"
-      },
-      "team": "Galatasaray",
       "important": true
     },
     {
