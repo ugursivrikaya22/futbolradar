@@ -206,9 +206,15 @@ function maskProperNouns(value) {
 /**
  * İNGİLİZCE EŞSESLİLER.
  *
- * Listedeki iki sözcük aynı zamanda düpedüz İngilizcedir: "son" (oğul) ve
- * "stat" (istatistik). Guardian başlığındaki "Bill Belichick's son resigns"
- * bu yüzden Türkçe sayılıp İngilizce haber sayfasını düşürüyordu.
+ * Listedeki üç sözcük aynı zamanda düpedüz İngilizcedir: "son" (oğul),
+ * "stat" (istatistik) ve "her" (ona/onun). Guardian başlığındaki
+ * "Bill Belichick's son resigns" bu yüzden Türkçe sayılıp İngilizce haber
+ * sayfasını düşürüyordu. "her" ile aynısı oldu: Guardian'ın
+ * "'We miss her the same every day': Olivia Cusack on her late footballer
+ * sister" başlığı, içinde tek bir Türkçe sözcük olmadığı hâlde iki kez
+ * Türkçe sayıldı. "her" İngilizcede sayılamayacak kadar sık geçen bir
+ * zamirdir; kaynak künyesi taşıyan her İngilizce sayfa bu yüzden risk
+ * altındaydı.
  *
  * Listeden çıkarmak da doğru değil: "maçın son dakikasında" gerçek Türkçe
  * ve o cümlede başka hiçbir liste sözcüğü yok (çekimli biçimler listede
@@ -220,7 +226,7 @@ function maskProperNouns(value) {
  * Özel adlar bu noktada zaten maskelenmiş durumda, yani "Beşiktaş" gibi bir
  * kulüp adı yanlışlıkla kanıt yerine geçmiyor.
  */
-const AMBIGUOUS_WITH_ENGLISH = new Set(["son", "stat"]);
+const AMBIGUOUS_WITH_ENGLISH = new Set(["son", "stat", "her"]);
 const TURKISH_ONLY_LETTER = /[ıİşŞğĞ]/;
 
 export function findTurkish(text, options = {}) {
