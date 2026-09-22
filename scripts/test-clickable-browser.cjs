@@ -432,23 +432,59 @@ function todayFixtureCount(gun) {
             '.player-card a[href*="futbolcu/"]'
           ].join(', ')).first());
         });
+        // ERİŞİLEBİLİRLİK GENİŞLİĞE BAĞLI, HEDEFİN SAĞLAMLIĞI DEĞİL.
+        //
+        // Bu senaryo iki AYRI şey doğruluyor ve ikisinin genişlikle ilişkisi
+        // aynı değil:
+        //
+        //   1. Menü yolu o genişlikte OKUYUCUYA ULAŞIYOR mu — çekmece açılıyor
+        //      mu, açılmıyorsa aynı yol altbilgide var mı. Tamamen genişliğe
+        //      bağlı; DOKUZ GENİŞLİKTE DE sorulmaya devam ediyor.
+        //   2. Yolun ucundaki SAYFA sağlam mı — açılıyor mu, doğru adrese mi
+        //      gidiyor, boş mu değil mi. Bu statik HTML her genişliğe BİREBİR
+        //      aynı gidiyor; 21 hedefi dokuz kez gezmek aynı baytı dokuz kez
+        //      doğruluyordu.
+        //
+        // ÖLÇÜM (koşu 35525361626, satır zaman damgaları): bu tek senaryo
+        // tıklanabilirlik denetiminin 37,3 dakikasının 13,3'ünü yiyordu —
+        // genişlik başına 21 tam sayfa yüklemesi, her biri 3,4-6,8 sn. Hedef
+        // gezintisi üç temsilî genişliğe indirildikten sonra aynı senaryo
+        // 1,7 dakikaya düştü (koşu 35528543454) ve derleme 44,4 → 36,3 dk
+        // oldu (koşu 35531368472).
+        //
+        // Bu, kapıyı AUDIT_WIDTH ile daraltmak DEĞİL: verify-production.mjs o
+        // değişkeni bilerek siliyor ve silmeye devam ediyor. Buradaki karar
+        // kapının kendi içinde, gerekçesi yazılı.
+        const routeSweepWidths = [1440, 768, 390];
+        const sweepsRoutes = routeSweepWidths.includes(viewport.width);
         await test(locale + ' primary navigation routes and footer', async () => {
           await open(home);
           const links = await page.locator('.nav-links a').evaluateAll(nodes => nodes.map(a => a.getAttribute('href')));
+          // ÇEKMECE TUR BAŞINA DEĞİL, SAYFA BAŞINA AÇILIR. Gezinti yapılan
+          // genişlikte her tur YENİ BİR SAYFAYA düşüyor, o yüzden çekmece her
+          // turda yeniden açılmak zorunda. Gezinti yapılmayanda sayfa hiç
+          // değişmiyor: bir kez açmak yetiyor. Her turda açıp kapatmak, düğmeyi
+          // aç/kapa animasyonunun ortasında ölçtürüp "yerine oturmadı"
+          // hatası veriyordu (koşu 35528543454) ve hiçbir iddiaya katkısı yoktu.
+          if (viewport.width < 1366 && !sweepsRoutes) await click(page.locator('.nav-toggle'));
           for (const href of [...new Set(links)]) {
-            if (viewport.width < 1366) await click(page.locator('.nav-toggle'));
+            if (viewport.width < 1366 && sweepsRoutes) await click(page.locator('.nav-toggle'));
             const target = page.locator('.nav-links a[href=' + JSON.stringify(href) + ']');
             // Secondary navigation is intentionally in the mobile drawer;
             // desktop visitors reach those same routes through the footer.
-            if (await target.isVisible()) await navigate(target);
-            else {
-              const footer = page.locator('footer a[href=' + JSON.stringify(href) + ']').first();
-              assert.ok(await footer.count(), 'Hidden menu item has no accessible alternative: ' + href);
-              await navigate(footer);
-            }
+            const inMenu = await target.isVisible();
+            const footer = page.locator('footer a[href=' + JSON.stringify(href) + ']').first();
+            if (!inMenu) assert.ok(await footer.count(), 'Hidden menu item has no accessible alternative: ' + href);
+            if (!sweepsRoutes) continue;
+            await navigate(inMenu ? target : footer);
           }
           for (const suffix of en ? [] : ['hakkinda.html', 'iletisim.html', 'gizlilik.html', 'kullanim-sartlari.html']) {
-            await navigate(page.locator('footer a[href$=' + JSON.stringify(suffix) + ']').first());
+            const link = page.locator('footer a[href$=' + JSON.stringify(suffix) + ']').first();
+            if (!sweepsRoutes) {
+              assert.ok(await link.count(), 'Footer link missing: ' + suffix);
+              continue;
+            }
+            await navigate(link);
           }
         });
         await test(locale + ' featured carousel, pause and card', async () => {
