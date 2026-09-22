@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-22T00:48:07.216Z",
+  "updatedAt": "2026-09-22T08:30:57.778Z",
   "items": [
     {
       "id": "news-dursun-ozbek-okan-buruk-aciklamasi-21-eylul-2026",
@@ -263,6 +263,26 @@
       }
     },
     {
+      "id": "auto-news-24e55c7e70e8da9642a2",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Fenerbahçe'de Dorgeles Nene için ayrılık iddiası!",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-22T06:21:17.000Z",
+      "source": {
+        "name": "sabah-spor",
+        "url": "https://www.sabah.com.tr/spor/futbol/2026/09/22/fenerbahcede-dorgeles-nene-icin-ayrilik-iddiasi",
+        "publisher": "sabah.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "sabah-spor",
+        "priority": 8,
+        "status": "RUMOUR"
+      }
+    },
+    {
       "id": "news-galatasaray-aleksey-batrakov-d61aaff5",
       "origin": "news.json",
       "category": "club-agenda",
@@ -275,26 +295,6 @@
       },
       "team": "Galatasaray",
       "important": true
-    },
-    {
-      "id": "auto-news-81b328cfdabef50c869b",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Hakan Çalhanoğlu için gündemi sarsacak iddia! Fenerbahçe ve Galatasaray derken...",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-21T11:29:40.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/fenerbahce/2026/09/21/hakan-calhanoglu-icin-gundemi-sarsacak-iddia-fenerbahce-ve-galatasaray-derken",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "RUMOUR"
-      }
     },
     {
       "id": "auto-news-63f8ce68a34f41abfeeb",
@@ -435,26 +435,6 @@
       "important": true
     },
     {
-      "id": "auto-news-1471d50940b6e101e4d4",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Fenerbahçe'nin tarihi 8-0'lık Eyüpspor zaferini yazdı: İçine Dzeko kaçmış!",
-      "team": "Eyüpspor",
-      "timestamp": "2026-09-21T04:53:00.000Z",
-      "source": {
-        "name": "hurriyet-spor",
-        "url": "https://www.hurriyet.com.tr/sporarena/fenerbahcenin-tarihi-8-0lik-eyupspor-zaferini-yazdi-icine-dzeko-kacmis-43313885",
-        "publisher": "hurriyet.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "hurriyet-spor",
-        "priority": 7,
-        "status": "REPORTED"
-      }
-    },
-    {
       "id": "auto-news-ada04da1a61549efb088",
       "category": "official",
       "confidence": "confirmed",
@@ -463,7 +443,7 @@
       "team": "Avrupa futbolu",
       "timestamp": "2026-09-21T23:57:32.000Z",
       "source": {
-        "name": "uefa.com",
+        "name": "UEFA.com",
         "url": "https://news.google.com/rss/articles/CBMi2gFBVV95cUxPb2hxVUEzU2pXOGJQWEFfWDlSY1F2YTFlYnRNQlhVcVhEUXRaX1RONFA3ckI4Y1h5R3J5dnhvdWNuWHd2ajhtVjlaWmo1czJOMFg2SjRqSTlGekpFMXExOUFfTGplVFFiSVJuVnJQM1JtZUJPTTN1RDd0bVdfd0hZWmlMSjJLc2M2UngxalV4c2dfYTZkM1NIRGNBaFVOeGhVa01XaTZ5eTl5amVZM0JhdHpDLWlzcnZYQk1namN5NGFwd2xrYzFzT1BXcUNjZ0lmYVc0Y1VBYVV3Zw?oc=5",
         "publisher": "uefa.com"
       },
@@ -471,6 +451,46 @@
         "source": "rss",
         "feed": "uefa",
         "priority": 9,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-1a906c38698f89e2782e",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "2026 - 2027 SEZONU PROFESYONELLİĞE GEÇİŞ LİGİ MÜSABAKALARI STATÜSÜ MADDE 1 - AMAÇ ve KAPSAM Bu statü",
+      "team": "TFF",
+      "timestamp": "2026-09-21T18:04:26.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxPaWtyTUFQTGJwU3VtV1ZjWnFTVGdmRVoyX3dNa1BWQ1c0Ymotb0REclFFQUtjQ3F2VHl3YkRKc3cyT21fSjVHRW1PQVI0M25LOXNQbjJMTG5qUGJlV09YOTg4YjVQUFFlNFM1R1o2RHNDZVlLTDV2Z09ZVlY2SHdRcA?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "tff-kurumsal",
+        "priority": 6,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-52e67c4a3278cd27d8cc",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "A Millî Takımımızın UEFA Uluslar A Ligi Maçları Aday Kadrosu Açıklandı",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-22T07:30:58.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBmeGJ3OWF3ckVSV215ejFodlNVTFJRVEJOdkk4Zl9DLV95aVdRM0FYSVJoczdua0kyeWJXWWllbjR3Ri1QS0ktRlJZOC1qUzRiZ1hCWU1oZFJpSlVpWWdwZldLRTRMN3c?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
         "status": "OFFICIAL"
       }
     }
