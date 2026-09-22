@@ -240,6 +240,37 @@ function transferItems(now) {
     }));
 }
 
+/**
+ * BANTTAKİ KENDİ HABERİMİZ GÖRELİ ADRESLE VERİLİR VE SAYFASI OLMADAN GİRMEZ.
+ *
+ * data/news.json kayıtları `url` alanını MUTLAK yazıyor
+ * (https://www.futbolradar.com/haber/<slug>). Bant bunu olduğu gibi
+ * kullandığında iki sorun çıkıyordu:
+ *
+ *   1. Künye ile sayfa AYNI dağıtımda gitmiyordu. 21 Eylül 16:17'de banda
+ *      giren "Dursun Özbek'ten Okan Buruk açıklaması" son dakika manşeti
+ *      canlıda 404 veriyordu: kayıt eklenmişti, sayfası henüz yayında
+ *      değildi. Son dakika manşetine tıklayan okuyucu boş sayfa görüyordu.
+ *   2. Mutlak adres, sayfanın kendi dağıtımını değil canlı siteyi çağırıyor;
+ *      önizleme ve denetim ortamları da üretim sunucusuna gidiyordu.
+ *
+ * Artık kendi alan adımıza giden künye göreli yola çevriliyor ve HEDEF SAYFA
+ * BU ÜRETİMDE YOKSA künye banda hiç girmiyor. "Veri yoksa gösterme" kuralı:
+ * bir manşet asla 404'e götürmez.
+ */
+const SELF_NEWS_PATH = /^https?:\/\/(?:www\.)?futbolradar\.com\/haber\/([^/?#]+)\/?$/i;
+
+export function selfNewsHref(url) {
+  const match = SELF_NEWS_PATH.exec(String(url || "").trim());
+  if (!match) return null;
+  const slug = match[1].replace(/\.html$/i, "");
+  return { slug, href: `haber/${slug}.html` };
+}
+
+export function newsPageExists(slug) {
+  return fs.existsSync(path.join(root, "haber", `${slug}.html`));
+}
+
 /** Editoryal haberler; yalnızca doğrulanmış ve kaynaklı olanlar. */
 function newsItems(now) {
   const news = asArray(readJson("news.json", []), "news", "items");
@@ -253,6 +284,11 @@ function newsItems(now) {
       item.includeInTicker !== false &&
       item.url)
     .filter((item) => hoursSince(item.publishedAt, now) <= MAX_AGE_HOURS)
+    // Kendi haberimizse sayfası bu üretimde olmalı; yoksa banda girmez.
+    .filter((item) => {
+      const kendi = selfNewsHref(item.url);
+      return !kendi || newsPageExists(kendi.slug);
+    })
     .map((item) => ({
       label: item.category || "Gündem",
       id: item.id,
@@ -302,11 +338,21 @@ function curatedItems(now) {
   // İkisinin içinde de sıra: editoryal rütbe (dört büyükler önce), sonra
   // kategori. Kesinleşmemiş öğeler kendi rozetlerini taşıdıkları için öne
   // çıkmaları yanıltıcı olmuyor.
-  return items.map((item) => ({
-    ...item,
-    source: "curated",
-    priority: (item.breaking ? 0.5 : 1.5) + item.rank / 10 + item.priority / 100
-  }));
+  return items
+    // Küratörlü künye de kendi haberimize mutlak adresle bağlanabiliyor
+    // (news-ticker.json'daki source.url). Aynı kural: göreli yola çevrilir,
+    // sayfası bu üretimde yoksa banda girmez. Kural katmanı (services/
+    // newsTicker.js) saf kalsın diye dosya sistemi kontrolü burada.
+    .filter((item) => {
+      const kendi = selfNewsHref(item.href);
+      return !kendi || newsPageExists(kendi.slug);
+    })
+    .map((item) => ({
+      ...item,
+      href: (selfNewsHref(item.href) || {}).href || item.href,
+      source: "curated",
+      priority: (item.breaking ? 0.5 : 1.5) + item.rank / 10 + item.priority / 100
+    }));
 }
 
 /**
