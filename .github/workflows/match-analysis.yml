@@ -42,6 +42,11 @@ on:
         required: false
         default: ""
         type: string
+      backfill:
+        description: "Tek seferlik toplu doldurma: kaç eksik dökümlü maç tamamlansın (boş = rutin davranış)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: write
@@ -112,6 +117,7 @@ jobs:
           MANUAL_TYPE: ${{ inputs.update_type }}
           MANUAL_FORCE: ${{ inputs.force }}
           MANUAL_MATCH: ${{ inputs.match }}
+          MANUAL_BACKFILL: ${{ inputs.backfill }}
         run: |
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
             update_type="${MANUAL_TYPE}"
@@ -131,6 +137,11 @@ jobs:
           else
             echo "match=" >> "${GITHUB_OUTPUT}"
           fi
+          if [[ -n "${MANUAL_BACKFILL}" ]]; then
+            echo "backfill=--backfill=${MANUAL_BACKFILL}" >> "${GITHUB_OUTPUT}"
+          else
+            echo "backfill=" >> "${GITHUB_OUTPUT}"
+          fi
 
       - name: Run monitored update pipeline
         id: update
@@ -140,9 +151,10 @@ jobs:
           UPDATE_TYPE: ${{ steps.update_type.outputs.type }}
           FORCE_FLAG: ${{ steps.update_type.outputs.force }}
           MATCH_FLAG: ${{ steps.update_type.outputs.match }}
+          BACKFILL_FLAG: ${{ steps.update_type.outputs.backfill }}
         run: |
           set -o pipefail
-          node scripts/run-scheduled-update.mjs --type="${UPDATE_TYPE}" --ci-guard ${FORCE_FLAG} ${MATCH_FLAG} 2>&1 | tee scheduled-update.log
+          node scripts/run-scheduled-update.mjs --type="${UPDATE_TYPE}" --ci-guard ${FORCE_FLAG} ${MATCH_FLAG} ${BACKFILL_FLAG} 2>&1 | tee scheduled-update.log
 
       - name: Commit valid changes and monitoring status
         if: steps.update.outcome == 'success'

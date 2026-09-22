@@ -130,10 +130,25 @@ const secim = selectDetailTargets([...tazeler, ...cokEksik], {
   retryWindowMs: 7 * 24 * 60 * 60 * 1000
 });
 assert.equal(secim.length, 8);
-assert.equal(secim.filter((match) => match.id.startsWith("eksik-")).length, 3,
-  "koşu başına üç yuva geri doldurmaya ayrılmalı");
-assert.equal(secim.filter((match) => match.id.startsWith("taze-")).length, 5,
+assert.equal(secim.filter((match) => match.id.startsWith("eksik-")).length, 5,
+  "koşu başına beş yuva geri doldurmaya ayrılmalı");
+assert.equal(secim.filter((match) => match.id.startsWith("taze-")).length, 3,
   "kalan yuvalar günün maçlarında kalmalı");
+
+// TOPLU DOLDURMA. Rutin yuva sayısı biriken arşivi eritmiyor: 21 Eylül
+// ölçümünde 421 bitmiş maçın 402'si olaysızdı ve koşu başına birkaç maç
+// ilerlemek aylar alırdı. `--backfill=<n>` yuvayı ve döküm bütçesini tek
+// seferlik büyütür; bu denetim bütçe büyüdüğünde gerçekten eski maçların
+// seçildiğini ölçüyor.
+const topluSecim = selectDetailTargets([...tazeler, ...cokEksik], {
+  nowMs: backfillNow, limit: 20, backfillSlots: 12,
+  storedFor: (match) => depo.get(match.id) || null,
+  retryWindowMs: 7 * 24 * 60 * 60 * 1000
+});
+assert.equal(topluSecim.filter((match) => match.id.startsWith("eksik-")).length, 12,
+  "toplu doldurmada yuva sayısı kadar eski maç seçilmeli");
+assert.equal(topluSecim.filter((match) => match.id.startsWith("taze-")).length, 8,
+  "toplu doldurma günün maçlarını listeden düşürmemeli");
 
 const targetNow = Date.parse("2026-08-08T18:30:00Z");
 const targets = selectDetailTargets([
