@@ -193,6 +193,7 @@ function publishableArticles() {
 }
 
 function jsonLd(article, locale = "tr") {
+  const copy = copyFor(locale);
   const sources = articleSources(article);
   const newsArticle = {
     "@type": "NewsArticle",
@@ -202,7 +203,7 @@ function jsonLd(article, locale = "tr") {
     dateModified: article.updatedAt || article.publishedAt || null,
     // `headline` ve `description` yapısal veride de GÖRÜNEN metindir: arama
     // sonucunda bu alanlar basılır. Dil etiketi metnin diliyle uyuşmalı.
-    inLanguage: copyFor(locale).inLanguage,
+    inLanguage: copy.inLanguage,
     mainEntityOfPage: articleUrl(article, locale),
     image: `${domain}/assets/og-image.png`,
     author: { "@type": "Organization", name: "FutbolRadar" },
@@ -217,7 +218,16 @@ function jsonLd(article, locale = "tr") {
   const breadcrumb = {
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: domain },
+      // BASAMAK, SAYFANIN KENDİ DİLİNDE KALIR.
+      //
+      // Bu üç basamak Türkçe sabit kodluydu: İngilizce haber sayfası da
+      // "Ana Sayfa → Haberler" diyor ve Türkçe sayfalara bağlanıyordu.
+      // Breadcrumb arama sonucunda BASILAN metindir; İngilizce sonucun
+      // altında Türkçe bir yol görünüyor ve tıklayan okuyucu Türkçe
+      // sayfaya düşüyordu. Çerçeve metinleri ve yollar zaten `PAGE_COPY`
+      // içinde dile göre duruyor — görünür breadcrumb onları kullanıyordu,
+      // yalnızca yapısal veri kullanmıyordu.
+      { "@type": "ListItem", position: 1, name: copy.home, item: locale === "en" ? `${domain}/en/index.html` : domain },
       // BASAMAK, LİSTE SAYFASININ CANONICAL'INA GİTMEK ZORUNDA.
       //
       // Burada uzantısız `/haberler` yazılıydı ve o adres canlıda 404
@@ -231,8 +241,15 @@ function jsonLd(article, locale = "tr") {
       // olan sayfa için yinelenen içerik üretirdi. Doğrusu basamağı
       // sayfanın KENDİ canonical'ına hizalamak — site haritası ve üst menü
       // de zaten oraya bakıyor.
-      { "@type": "ListItem", position: 2, name: "Haberler", item: `${domain}/haberler.html` },
-      { "@type": "ListItem", position: 3, name: article.title, item: articleUrl(article) }
+      { "@type": "ListItem", position: 2, name: copy.indexLabel, item: `${domain}/${copy.indexPath}` },
+      // SON BASAMAK SAYFANIN KENDİSİDİR — KARDEŞİ DEĞİL.
+      //
+      // `articleUrl` locale'siz çağrılıyordu, yani İngilizce sayfa kendi
+      // adresi yerine Türkçe `/haber/<slug>` adresini bildiriyordu. Çevrilmiş
+      // slug'ı olan haberde o adresin karşılığı yok: sayfa arama motorlarına
+      // var olmayan bir basamak veriyordu. Slug'ı Türkçesiyle aynı kalan
+      // haberlerde 404 çıkmıyordu ama basamak yine yanlış sayfayı gösteriyordu.
+      { "@type": "ListItem", position: 3, name: article.title, item: articleUrl(article, locale) }
     ]
   };
   return { "@context": "https://schema.org", "@graph": [newsArticle, breadcrumb] };
