@@ -335,7 +335,42 @@ function todayFixtureCount(gun) {
         if (!new URL(before).pathname.startsWith('/en/') && await page.locator('[data-api-target="today-matches"]').count()) {
           await page.locator('[data-api-target="today-matches"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
         }
-        await until(async () => await page.locator('main [data-api-target][data-state="loading"]:visible').count() === 0, 'Back navigation content is still loading', 15000);
+        // BU BEKLEME AĞI BEKLİYOR, ÇİZİMİ DEĞİL — BÜTÇESİ DE ONA GÖRE OLMALI.
+        //
+        // Geri dönülen sayfanın panelleri yeniden istek atıyor; hepsi
+        // `loading` durumundan çıkana kadar sayfa kullanılabilir sayılmıyor.
+        // Bir üstteki satır (today-matches) bu gerçeği zaten kabul edip
+        // HYDRATE_TIMEOUT kullanıyor; bu satır 15 sn'de kalmıştı ve CI'da tek
+        // başına kırmızı üretti: koşu 35700429339, "FAIL 360 tr team cards
+        // open profiles — Back navigation content is still loading".
+        //
+        // Panelin TAKILI KALMADIĞI ölçüldü: aynı akış bu depoda 360 px'te
+        // geri navigasyondan 4,3 saniye sonra bütün panelleri hazır ediyor.
+        // Yani kusur sayfada değil, iki görünümü paralel koşturan iki
+        // çekirdekli runner'da 15 saniyenin dar kalmasında.
+        //
+        // İDDİA GEVŞEMİYOR: her panelin `loading` durumundan ÇIKMASI hâlâ
+        // şart. Değişen tek şey bütçe — ve hangi panelin geride kaldığı artık
+        // hata mesajında yazıyor, böylece bir dahaki sefere "yavaş mı, takılı
+        // mı" sorusu log okumadan cevaplanabiliyor.
+        // ADLAR, KARARI VEREN OKUMANIN KENDİSİNDEN GELİR. Önce sayıp sonra ad
+        // listesini ayrı bir sorguyla almak yarış üretiyordu: bütçe dolduğunda
+        // panel bir sonraki ölçümde hazır olabiliyor ve mesaj "hâlâ yükleniyor:
+        // <boş>" diye çıkıyordu (negatif test bunu gösterdi). Tek okuma hem
+        // kararı hem mesajı veriyor.
+        {
+          const hazirOlmayanlar = () => page.locator('main [data-api-target][data-state="loading"]:visible')
+            .evaluateAll(nodes => nodes.map(node => node.getAttribute('data-api-target') || '(adsız panel)'));
+          const sinir = Date.now() + HYDRATE_TIMEOUT;
+          let kalan = await hazirOlmayanlar();
+          while (kalan.length && Date.now() < sinir) {
+            await delay(100);
+            kalan = await hazirOlmayanlar();
+          }
+          if (kalan.length) {
+            assert.fail('Back navigation content is still loading after ' + HYDRATE_TIMEOUT + 'ms: ' + kalan.join(', '));
+          }
+        }
       }
       // Maçsız günün dürüst ana sayfası. Doğrulanan üç şey var: kart
       // UYDURULMAMIŞ, kahraman alan durumu SÖYLÜYOR ve okuyucuya en az bir
