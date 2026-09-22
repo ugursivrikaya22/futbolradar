@@ -17,12 +17,23 @@ const ISTANBUL_TIME_ZONE = "Europe/Istanbul";
 const TURKISH_PRIORITY = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
 
 function parseArgs(argv) {
-  const args = { apply: false, mode: "hourly", match: null };
+  const args = { apply: false, mode: "hourly", match: null, backfill: 0 };
   for (const raw of argv) {
     if (raw === "--apply") args.apply = true;
     else if (raw === "--dry-run") args.apply = false;
     else if (raw.startsWith("--mode=")) args.mode = raw.slice("--mode=".length);
     else if (raw.startsWith("--match=")) args.match = raw.slice("--match=".length).trim() || null;
+    // TOPLU DOLDURMA. Rutin koşu geri doldurmaya koşu başına birkaç yuva
+    // ayırır; biriken arşiv (21 Eylül: 400'den fazla olaysız bitmiş maç) bu
+    // hızla kapanmaz. `--backfill=<n>` tek seferlik bir yakalama koşusudur:
+    // yuva sayısı n olur, döküm bütçesi buna göre büyür ve pencere içindeki
+    // TÜM eksik günler sorulur. Kota tabanı (MIN_RATE_LIMIT_REMAINING)
+    // koşuyu kendiliğinden durdurur, yani n bir üst sınır, bir söz değil.
+    else if (raw.startsWith("--backfill=")) {
+      const value = Number(raw.slice("--backfill=".length));
+      if (!Number.isFinite(value) || value < 0) throw new Error(`Unsupported --backfill value: ${raw}`);
+      args.backfill = Math.floor(value);
+    }
   }
   if (!new Set(["full", "hourly"]).has(args.mode)) {
     throw new Error(`Unsupported mode: ${args.mode}`);
@@ -371,7 +382,14 @@ const RETRY_WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 // Koşu başına geri doldurmaya AYRILAN yuva. Bu bir ek maliyet değil, takas:
 // yuvalar mevcut döküm bütçesinden ayrılıyor, toplam sağlayıcı çağrısı sabit.
 // Tek yuva günde ~18 maç demekti; bir hafta sonu 150'den fazla maç bitiyor.
-const BACKFILL_SLOTS = 3;
+const BACKFILL_SLOTS = 5;
+
+// Toplu doldurma koşusunda sağlayıcı kotası ne kadar kalınca durulur.
+// Kota GÜNLÜK ve hesap genelindedir; bu koşu günün tek tüketicisi değil,
+// canlı skor ve puan tablosu adımları da aynı kotadan yiyor. Sağlayıcı
+// kotayı henüz bildirmediyse (null) durum BİLİNMİYOR demektir ve
+// bilinmeyen "bitti" sayılmaz.
+const MIN_RATE_LIMIT_REMAINING = 40;
 
 export function backfillDates(calendar, nowMs = Date.now(), limit = 2, windowMs = 7 * 24 * 60 * 60 * 1000) {
   const rows = Array.isArray(calendar) ? calendar : (calendar && calendar.matches) || [];
@@ -500,7 +518,7 @@ export function selectDetailTargets(matches, options = {}) {
       || priorityScore(left) - priorityScore(right)
       || String(left.kickoff).localeCompare(String(right.kickoff)));
 
-  return reserveBackfillSlot(ordered, limit, nowMs, isForced);
+  return reserveBackfillSlot(ordered, limit, nowMs, isForced, options.backfillSlots);
 }
 
 /**
@@ -517,13 +535,13 @@ export function selectDetailTargets(matches, options = {}) {
  * her koşuda eksik dökümlü bir maç tamamlanır. `--match` ile zorlanan maç
  * bu takastan hiç etkilenmez.
  */
-function reserveBackfillSlot(ordered, limit, nowMs, isForced = () => false) {
+function reserveBackfillSlot(ordered, limit, nowMs, isForced = () => false, slots = BACKFILL_SLOTS) {
   const head = ordered.slice(0, limit);
   if (head.length < limit) return head;
   const isBackfill = (match) => backfillRank(match, nowMs) === 1;
   // Zorlanan maç (--match) her zaman başta kalır ve takastan etkilenmez.
   const korunan = head.filter((match) => isForced(match)).length;
-  const hedef = Math.min(BACKFILL_SLOTS, Math.max(0, limit - korunan));
+  const hedef = Math.min(slots, Math.max(0, limit - korunan));
   const mevcut = head.filter(isBackfill).length;
   if (mevcut >= hedef) return head;
   const bekleyenler = ordered.slice(limit).filter(isBackfill);
@@ -570,16 +588,27 @@ async function fetchFixtures(provider, mode, now, options = {}) {
   return { matches: [...byProviderId.values()], errors, successfulRequests };
 }
 
+/** Sağlayıcı günlük kotası eşiğe geldi mi? null = bilinmiyor = durma. */
+function quotaExhausted(provider) {
+  if (!provider || typeof provider.getProviderRateLimit !== "function") return false;
+  const rate = provider.getProviderRateLimit() || {};
+  return rate.remaining !== null && rate.remaining !== undefined && rate.remaining <= MIN_RATE_LIMIT_REMAINING;
+}
+
 export async function synchronizeLiveFixtures(options = {}) {
   const provider = options.provider || apiFootballProvider;
   const mode = options.mode || "hourly";
   const now = options.now || new Date();
   const previous = options.previous || readJson(CALENDAR_PATH, { matches: [] });
+  // Toplu doldurma: yuva sayısı ve döküm bütçesi n'e göre büyür, pencere
+  // içindeki tüm eksik günler sorulur (rutin koşuda 2-3 gün).
+  const bulk = Math.max(0, Math.floor(options.backfill || 0));
+  const backfillGunSiniri = bulk ? Number.MAX_SAFE_INTEGER : (mode === "full" ? 3 : 2);
   const fetched = await fetchFixtures(provider, mode, now, {
     dates: [
       ...datesForTarget(previous, options.match),
       // Birikmiş eksik döküm sırası: her koşu en eski birkaç günü de soruyor.
-      ...backfillDates(previous, now.getTime(), mode === "full" ? 3 : 2, RETRY_WINDOW_MS)
+      ...backfillDates(previous, now.getTime(), backfillGunSiniri, RETRY_WINDOW_MS)
     ]
   });
   // DEPODAKİ KAYIT SEÇİCİYE VERİLİR. Eksik döküm ikinci şansı ancak depodaki
@@ -603,7 +632,8 @@ export async function synchronizeLiveFixtures(options = {}) {
   };
   const detailTargets = selectDetailTargets(fetched.matches, {
     nowMs: now.getTime(),
-    limit: mode === "full" ? 12 : 8,
+    limit: (mode === "full" ? 12 : 8) + bulk,
+    backfillSlots: bulk || BACKFILL_SLOTS,
     match: options.match || null,
     storedFor,
     // Pencere artık getirilen gün aralığıyla uyumlu: backfillDates eksik
@@ -614,7 +644,11 @@ export async function synchronizeLiveFixtures(options = {}) {
   const details = new Map();
   const detailErrors = [];
 
+  let quotaStopped = false;
   for (const match of detailTargets) {
+    // Kota tabanı toplu koşuyu kendiliğinden durdurur; elde edilen döküm
+    // yazılır, ne kadarının kaldığı özete düşer.
+    if (bulk && quotaExhausted(provider)) { quotaStopped = true; break; }
     try {
       const detail = await provider.getMatchDetail({ fixtureId: match.providerId || match.id, date: dateOnly(match) });
       if (detail) details.set(String(match.providerId || match.id), detail);
@@ -638,6 +672,9 @@ export async function synchronizeLiveFixtures(options = {}) {
     },
     summary: {
       source: "api-football",
+      backfillRequested: bulk || 0,
+      backfillTargets: detailTargets.filter((match) => backfillRank(match, now.getTime()) === 1).length,
+      quotaStopped,
       checked: fetched.matches.length,
       detailsChecked: detailTargets.length,
       added: merged.added,
@@ -655,7 +692,7 @@ async function main() {
     throw new Error("APIFOOTBALL_API_KEY is not configured; live fixture synchronization cannot run.");
   }
 
-  const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode, match: args.match });
+  const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode, match: args.match, backfill: args.backfill });
   const changed = summary.added > 0 || summary.updated > 0 || summary.deduped > 0;
   if (args.apply && changed) {
     atomicWrite(CALENDAR_PATH, output);
