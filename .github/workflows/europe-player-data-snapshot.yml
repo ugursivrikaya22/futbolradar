@@ -1,0 +1,39 @@
+name: European player data snapshot
+on:
+  push:
+    branches: [codex/europe-player-data-snapshot]
+    paths:
+      - .github/workflows/europe-player-data-snapshot.yml
+      - scripts/collect-europe-player-snapshot.mjs
+  workflow_dispatch:
+    inputs:
+      league:
+        type: choice
+        options: [premier-league, la-liga, serie-a, bundesliga, ligue-1]
+        default: premier-league
+permissions:
+  contents: read
+concurrency:
+  group: futbolradar-production-update
+  cancel-in-progress: false
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+      SNAPSHOT_LEAGUE: ${{ inputs.league || 'premier-league' }}
+      SNAPSHOT_SEASON: 2026
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Collect one current-season league
+        run: node scripts/collect-europe-player-snapshot.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: europe-provider-snapshot
+          path: outputs/europe-provider-snapshot/
+          retention-days: 3
