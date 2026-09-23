@@ -3,17 +3,19 @@ import fs from "node:fs";
 import { setTimeout as delay } from "node:timers/promises";
 const leagues = { "premier-league": [39, 20], "la-liga": [140, 20], "serie-a": [135, 20], bundesliga: [78, 18], "ligue-1": [61, 18] };
 const league = process.env.SNAPSHOT_LEAGUE || "premier-league";
+const scope = process.env.SNAPSHOT_SCOPE || "all";
+if (!["all", "recent"].includes(scope)) throw new Error("Invalid snapshot scope");
 const season = Number(process.env.SNAPSHOT_SEASON || new Date().getUTCFullYear());
 if (!leagues[league] || !Number.isInteger(season)) throw new Error("Invalid league or season");
 const [leagueId, teamCount] = leagues[league];
 const apiKey = process.env.APIFOOTBALL_API_KEY;
 if (!apiKey) throw new Error("Provider credential is unavailable in CI");
-const snapshot = { schemaVersion: 1, source: "api-football", league, season, startedAt: new Date().toISOString(), runUrl: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`, complete: false, responses: {} };
+const snapshot = { schemaVersion: 1, source: "api-football", league, season, scope, startedAt: new Date().toISOString(), runUrl: `https://github.com/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`, complete: false, responses: {} };
 let requests = 0;
 let remaining = null;
 function keyFor(url) { url.searchParams.sort(); return url.pathname + url.search; }
 async function request(endpoint, params) {
-  if (requests >= 160 || (remaining !== null && remaining <= 25)) throw new Error("Provider quota safety stop");
+  if (requests >= 220 || (remaining !== null && remaining <= 25)) throw new Error("Provider quota safety stop");
   const url = new URL(endpoint, "https://v3.football.api-sports.io");
   for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
   const key = keyFor(url);
@@ -37,8 +39,8 @@ try {
   const meta = await request("/leagues", { id: leagueId, season });
   const current = meta.response.find((r) => r.league.id === leagueId)?.seasons.find((s) => s.year === season && s.current);
   if (!current) throw new Error(`${league}: provider does not confirm the ${season}/${season + 1} current season`);
-  const teams = await request("/teams", { league: leagueId, season });
-  if (teams.response.length !== teamCount) throw new Error(`Expected ${teamCount} teams, received ${teams.response.length}`);
+  const teams = scope === "all" ? await request("/teams", { league: leagueId, season }) : { response: [] };
+  if (scope === "all" && teams.response.length !== teamCount) throw new Error(`Expected ${teamCount} teams, received ${teams.response.length}`);
   for (const row of teams.response) {
     const squad = await request("/players/squads", { team: row.team.id });
     if (squad.response[0]?.players?.length < 11) throw new Error(`Incomplete squad: ${row.team.id}`);
@@ -51,8 +53,11 @@ try {
     }
   }
   for (const row of teams.response) await request("/transfers", { team: row.team.id });
-  if (current.coverage.injuries !== false) await request("/injuries", { league: leagueId, season });
-  if (current.coverage.standings !== false) await request("/standings", { league: leagueId, season });
+  if (scope === "all" && current.coverage.injuries !== false) await request("/injuries", { league: leagueId, season });
+  if (scope === "all" && current.coverage.standings !== false) await request("/standings", { league: leagueId, season });
+  const fixtures = await request("/fixtures", { league: leagueId, season });
+  const finished = fixtures.response.filter((m) => ["FT", "AET", "PEN"].includes(m.fixture.status.short) && Date.parse(m.fixture.date) <= Date.now()).sort((a, b) => b.fixture.date.localeCompare(a.fixture.date)).slice(0, 50);
+  for (const match of finished) await request("/fixtures/players", { fixture: match.fixture.id });
   snapshot.complete = true;
 } catch (error) {
   snapshot.error = error.message;

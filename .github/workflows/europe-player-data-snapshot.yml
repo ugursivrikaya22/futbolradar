@@ -11,6 +11,10 @@ on:
         type: choice
         options: [premier-league, la-liga, serie-a, bundesliga, ligue-1]
         default: premier-league
+      scope:
+        type: choice
+        options: [all, recent]
+        default: all
 permissions:
   contents: read
 concurrency:
@@ -24,6 +28,7 @@ jobs:
       APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
       SNAPSHOT_LEAGUE: ${{ inputs.league || 'premier-league' }}
       SNAPSHOT_SEASON: 2026
+      SNAPSHOT_SCOPE: ${{ inputs.scope || 'recent' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
