@@ -105,12 +105,13 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-    <div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
-            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
+          <div class="live-scores-ticker__track" style="--live-ticker-duration:15s" data-live-scores-track data-live-rendered-at="2026-09-25T08:48:14.837Z">
+            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640058&amp;date=2026-09-25" data-live-until="2026-09-25T10:30:00.000Z" aria-label="Hazırlık Maçı | Finland U17 1 - 0 France U17 | 45&#039;"><span class="live-scores-ticker__league">Hazırlık Maçı</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Finland U17</span><span class="live-scores-ticker__score">1 - 0</span><span class="live-scores-ticker__team">France U17</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>45&#039;</span></a></div>
+            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640058&amp;date=2026-09-25" tabindex="-1" data-live-until="2026-09-25T10:30:00.000Z" aria-label="Hazırlık Maçı | Finland U17 1 - 0 France U17 | 45&#039;"><span class="live-scores-ticker__league">Hazırlık Maçı</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Finland U17</span><span class="live-scores-ticker__score">1 - 0</span><span class="live-scores-ticker__team">France U17</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>45&#039;</span></a></div>
           </div>
         </div>
       </div>
@@ -133,14 +134,24 @@
             </div>
           </div>
           <div class="hero-featured" id="featured-radar-match" aria-label="Today's match centre summary">
-            <div class="featured-carousel is-compact-mode" data-featured-carousel data-featured-interval="10000" data-featured-count="1" aria-roledescription="carousel" aria-label="Featured matches">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" role="group" aria-roledescription="slide" aria-label="1 / 1">
-      <div class="featured-fixture">
-      <div class="featured-fixture-head"><span class="featured-fixture-league">Live score board</span><span>Checking the schedule</span></div>
-      <div class="home-match-command-empty"><strong>The match schedule is loading.</strong><span>Today's verified fixtures will be listed here.</span></div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./live-football-scores.html">Live Scores</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-09-25T08:48:10.114Z" data-featured-interval="10000" data-featured-count="1" aria-roledescription="carousel" aria-label="Featured matches">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="finland-u17-france-u17-2026-09-25" role="group" aria-roledescription="slide" aria-label="1 / 1"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-09-25T11:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span>Today · Venue to be confirmed</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">FU</span>
+        <strong>Finland U17</strong>
+      </div>
+        <div class="featured-fixture-score"><b>1 - 0</b><span>Live 45&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">FU</span>
+        <strong>France U17</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=finland-u17-france-u17-2026-09-25&amp;date=2026-09-25">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
     </div></div></div>
-    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>1</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>12</b></a></div>
+      
+    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat is-live" href="./live-football-scores.html"><span>Live</span><b class="live-number">1</b></a><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>1</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>13</b></a></div>
           </div>
         </section>
       
@@ -194,8 +205,15 @@
         </section>
       <section class="container section section-daily-headlines" id="gunun-basliklari" aria-labelledby="gunun-basliklari-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Today in brief</span><h2 id="gunun-basliklari-title">Three headlines to start with</h2><p>Ordered by relevance: matches in play, then finished games, then today&#039;s schedule. Nothing unverified goes in here.</p></div><a class="section-link" href="./analysis.html">All analysis</a></div>
-          <div class="daily-headlines"><a data-headline-rank="1" class="daily-headline" href="./todays-matches.html" data-headline-match="vfb-stuttgart-1-fc-heidenheim-2026-09-25" data-headline-state="upcoming">
+          <div class="daily-headlines"><a data-headline-rank="1" class="daily-headline is-live" href="./live-football-scores.html" data-headline-match="finland-u17-france-u17-2026-09-25" data-headline-state="live">
       <span class="daily-headline-index" aria-hidden="true">1</span>
+      <span class="daily-headline-body">
+        <span class="daily-headline-kicker">Live</span>
+        <strong class="daily-headline-title">Finland U17 1-0 France U17</strong>
+        <span class="daily-headline-hook">Club Friendlies</span>
+      </span>
+    </a><a data-headline-rank="2" class="daily-headline" href="./todays-matches.html" data-headline-match="vfb-stuttgart-1-fc-heidenheim-2026-09-25" data-headline-state="upcoming">
+      <span class="daily-headline-index" aria-hidden="true">2</span>
       <span class="daily-headline-body">
         <span class="daily-headline-kicker">Today</span>
         <strong class="daily-headline-title">VfB Stuttgart 0-0 1. FC Heidenheim</strong>
@@ -284,14 +302,21 @@
     
     <a class="fixture-card-action" href="./match-detail.html?id=o-higgins-deportes-santa-cruz-2026-09-25&amp;date=2026-09-25">Open match details</a>
   </article>
-<article class="fixture-card" data-card="fixture">
+<article class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state is-live">Live 45&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">FU</span><span class="fixture-row-name">Finland U17</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">FU</span><span class="fixture-row-name">France U17</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=finland-u17-france-u17-2026-09-25&amp;date=2026-09-25">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state ">17:30</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">VS</span><span class="fixture-row-name">VfB Stuttgart</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">1F</span><span class="fixture-row-name">1. FC Heidenheim</span><span class="fixture-row-score">–</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=vfb-stuttgart-1-fc-heidenheim-2026-09-25&amp;date=2026-09-25">Open match details</a>
   </article>
-          
+          <div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false"><span class="match-more-label" data-match-more-label="collapsed">Show more (+1 matches)</span><span class="match-more-label" data-match-more-label="expanded" hidden>Show less</span></button></div>
           </div>
         </section>
       <section class="container section home-radar-matches" id="gunun-radar-maci" aria-labelledby="gunun-radar-maci-title" hidden>

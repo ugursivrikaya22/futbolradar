@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-25T07:35:10.611Z",
+  "updatedAt": "2026-09-25T08:48:16.213Z",
   "items": [
+    {
+      "id": "auto-news-f8367581666c9d6ad634",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Vedat Muriqi gollerine millî takımında da devam ediyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-25T07:50:41.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQaVNFeEtVbGM4R0RVUnhlNjhIb1dFd0JZZjBCVzZDeFpxN2RNdy1PcVVfTkN1RWdmNDJwN3FQZTM5b2J5aS0tM0hKd3dlMzBaTXdJU041WWtjUFZ5blNPX0syRmpBaWlyc1BaaGIyZHR5cHR3VmJkVmJQYlloNzJ3MFFYRUFId0IzWEw2Qm9GODVLa2QtZGNUTWhtUExRYkxxV0k4RDdZTQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-f33b143331fbf4691879",
       "category": "official",
@@ -33,26 +53,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPRUtZZGZvUmpLSFNOdzZONjZ4TkdMVl9nRFpEeU9wU3lBS1UycVhBMWlZRlI0MjJsZVRsT1Z6TmRaWDZpOEJ4cV9rWGU3dWZSTXV2R0pBeS14Q2hRaldhcmdxMVk5NldZcHVXU0lzcWx2U2JJREtmUVdXOERFOFd3dFo5UXMxWUdCZ0M1bUdKZ3hsUmlvNXFpOE5iZWNQYXJDNlhlZTFDWkVqVDFYMXc?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-aa44bd825a1e5c6ef9df",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başantrenörümüz Sarunas Jasikevicius ve oyuncumuz Nicolo Melli’den maç önü açıklamaları",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-24T13:29:36.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQRjZtT2xsM012YUtKRFdQUDNHczB3RDNXZmZCeTBNU3JKdFhXTjR0Y21DUW0tTnBYVDMtaFRTV3NMb0I0WGo1aW9HTXByQ3JKTGFpb1BHVkJ3WlVNQS1CdHlnamlSNTFhZlAwaXQ0ekhOSG5hVFZkSEVobXRWbmpMbU01UFVPU0VNeUJaQ1F5TDhvZElqOHo5alVqeFplczlGbmtfeDlKaWtPNVdPTnRmZ19IS0NIbm9MRFVWMU1jeklBNFZ2T3BwbXcwMTRJU2k2LW5nNFVKcEU3TmFxR3hN?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -276,16 +276,16 @@
       "important": true
     },
     {
-      "id": "auto-news-c3abba8ad82f9b9bd73c",
+      "id": "auto-news-690667ef8acb80f7e20a",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "2026/27 UEFA Nations League: All the league phase fixtures and results",
+      "text": "Nations League highlights: Portugal 1-0 Wales",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-25T00:25:43.000Z",
+      "timestamp": "2026-09-25T08:14:59.000Z",
       "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxObklRenJfenBOYjN2VjJxRUFKZjhjdWw5YVB1TE5HZkxybk5hXzJGM1NKMVFoaXRDUDJwOGFVRnZoY0pqa1ltZHdHckNyVm9xU1JEYWd1eE9ZVnB2ZTBuSkFTQzJKUHB6UE05aDB2Z01FRUY4NlhVRlpfNDFEX25Qc0gyRFZlYmtpZ0UtdWlUT1pFYjVJWExQbDdVcTN3OE03cjFWY1ktQ21tOUdlRmd2cFM4MUtSb2lyYl9rSTgwVS1wYXkwNHBmM25Wb0s5ZXRmbUwwM1l5Z1I?oc=5",
+        "name": "uefa.com",
+        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQNVpfMTFsOHM1NlQ5dlZyLVdSMXZjQlpXMTRpaXd6Y0NvUGlmRWlJakNlZXJQR25MOFhOZmdNSVJ6Tm9YemdxU1l5MWcweHV0enNWR0U4SlVuSGdjaDEySTFMNFpDbmtZR1dHeUtkcGwwbTFmWDdoUnh5RTZsbHJ5aEZfUE1sZFVGQTdVY1BKSHNLSnI1MTFEOHZMdTItYjZMX2h5bXZPUjE5LXE5c2g0TVBiQ29kdGx0ZkVOaUpKR2tBcW9vMFdzNXlOY3o4bnhzZ1ZYaA?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -293,7 +293,7 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 5,
+        "mergedReports": 8,
         "firstSeenAt": "2026-09-22T21:45:01.000Z"
       }
     },
@@ -326,7 +326,7 @@
       "team": "Milli Takım",
       "timestamp": "2026-09-24T12:05:09.000Z",
       "source": {
-        "name": "TFF",
+        "name": "tff.org",
         "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFByS19fWVlVbjNBZUZ2VXZYUUZza3VSa3RZSU9wS3ZuMHNVOVpjSUhjXzlyaTR3eHZ1NEh0a3pWQXNnN3k1bTZPdEJyZUYwZ1NFWHFMb195TnZqdkVyNjJNZEJSMUZ1SWM?oc=5",
         "publisher": "tff.org"
       },
@@ -414,6 +414,26 @@
         "source": "rss",
         "feed": "uefa",
         "priority": 9,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-a029438b5f32ceea74b3",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Türkiye - İtalya Maçının Öncelikli Bilet Satışları Başladı",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-22T14:05:24.000Z",
+      "source": {
+        "name": "tff.org",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9tR1VEZ3NXazdrbEQzNU41Y3VRY0JXTkJYZ2dVN0s3WVZJeW9nTWdCaU51MVJad0pVY2RSMGdpcEQzdzdVMlJxTWx5emtoU2FCZUZ6eWhoVjhmNmtlRXlwVldMQjBkTU0?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
         "status": "OFFICIAL"
       }
     }
