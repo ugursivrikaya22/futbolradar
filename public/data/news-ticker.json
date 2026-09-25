@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-24T22:23:48.619Z",
+  "updatedAt": "2026-09-25T00:36:58.629Z",
   "items": [
     {
       "id": "auto-news-f33b143331fbf4691879",
@@ -193,7 +193,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-09-22T06:15:43.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMif0FVX3lxTE53Y1p1Qnk1SUlUS25XeHlTQk0xeVNUZWprT0RnSS0zNmFHclA4SFhoLUtHRFYyNzZ6RC1VUWRpYVVwRFhIRW5PcmFBbHBNWjhEZ0pmNmpYUWM1TjJKeTlXNDdsYzVDSFo5ZHRLTEJISWJpWTFFUWpPckpMSkVsNDA?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -296,16 +296,16 @@
       "important": true
     },
     {
-      "id": "auto-news-3fb1722dc5bc88ef395e",
+      "id": "auto-news-c3abba8ad82f9b9bd73c",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Where to watch the Nations League: TV broadcast partners, live streams",
+      "text": "2026/27 UEFA Nations League: All the league phase fixtures and results",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-24T21:59:54.000Z",
+      "timestamp": "2026-09-25T00:25:43.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOUU5LMUpGZTRtQzNhMnBweXIwaUpBNXcxWC1yb0tGNnNOQWcyMEk4OVFyeWFXbDZnVHU0MFBUajRvT3FoTldwUG54OFI5RWppRHpuS0VkWlZSNUpheExTT1RFVzJ1ZHBGa1dLanVkLUhSeTF2ZE1vV1pCVTZPZURVR2RUUXowSHFIcWp4bWR0YVJtbkJIQ1M1andSX0tFV1pxM0FLTnlkcGJFT3BNZjV6YS0yTU5SR21paWVYMHk4M2hrQ0FMbmg3U2FJWFdNMlJxX0NFWnFqaw?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxObklRenJfenBOYjN2VjJxRUFKZjhjdWw5YVB1TE5HZkxybk5hXzJGM1NKMVFoaXRDUDJwOGFVRnZoY0pqa1ltZHdHckNyVm9xU1JEYWd1eE9ZVnB2ZTBuSkFTQzJKUHB6UE05aDB2Z01FRUY4NlhVRlpfNDFEX25Qc0gyRFZlYmtpZ0UtdWlUT1pFYjVJWExQbDdVcTN3OE03cjFWY1ktQ21tOUdlRmd2cFM4MUtSb2lyYl9rSTgwVS1wYXkwNHBmM25Wb0s5ZXRmbUwwM1l5Z1I?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -313,8 +313,28 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 6,
+        "mergedReports": 5,
         "firstSeenAt": "2026-09-22T21:45:01.000Z"
+      }
+    },
+    {
+      "id": "auto-news-094cc646cecd5e34e7e9",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Eylül-Ekim Dönemi Antrenör Kursları Başladı",
+      "team": "1. Lig",
+      "timestamp": "2026-09-24T19:20:27.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9JZ0RhOU5uZmp5UlVvYWxOeWJKTW1tNzBQeDRpZmF2djYtYndMbWJ2cXpsZWREblAzWFNCZWhSTzBSZ0hCTjFWTGZlWkQwVGNwZ2xjRzh3alFIWFpIYWEyR3VQLXh0YVk?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "bir-lig",
+        "priority": 6,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -398,42 +418,22 @@
       }
     },
     {
-      "id": "auto-news-a029438b5f32ceea74b3",
+      "id": "auto-news-0232afea3814e4a80673",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Türkiye - İtalya Maçının Öncelikli Bilet Satışları Başladı",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-22T14:05:24.000Z",
+      "text": "UEFA Grassroots Week 2026: Getting Europe active through football",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-09-22T15:18:55.000Z",
       "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9tR1VEZ3NXazdrbEQzNU41Y3VRY0JXTkJYZ2dVN0s3WVZJeW9nTWdCaU51MVJad0pVY2RSMGdpcEQzdzdVMlJxTWx5emtoU2FCZUZ6eWhoVjhmNmtlRXlwVldMQjBkTU0?oc=5",
-        "publisher": "tff.org"
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxNdUxuY2dCLWRvWDZHREM5aDRrcW83Q1lIcFotSHRNcUMzdFR5UlZYRUM4Z2dGMEpVMXM4Z1VWeW9YSFF2NnlUek1FemNnazk0WjQtbmlNR1ZJOUdHd2R2bVlhWUZaUWtBVDhtaGg3Y0QyU1I4a0dpTDRFMVZSVjRqX2NoQjg2Q3NYWUlQT1ZSZEZ4S2toMTB1UGNrZlNrLV92cWhaSE9vUXp3dWExUU45SEtMbFZ4SlNoUVE4eC1KRkhkWnBENF8zMnRRcU5QS0U?oc=5",
+        "publisher": "uefa.com"
       },
       "automation": {
         "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-a994a33966f48ebf7b4e",
-      "category": "squad-update",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Mustafa Eskihellaç Aday Kadroya Dâhil Edildi",
-      "team": "TFF",
-      "timestamp": "2026-09-22T21:23:40.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9vY0pkd2R3MVdUN1cwaDRrSURNaWdMa0hFSUtxZWZnR1dqcHBmUWcxdkEydDZRU0llTVZCTGM3N2VxOTFhLU45azdqUkZIakpFSGMyVEozUXpFSlVRczdfdmNPa0hWQ1k?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "tff-kurumsal",
-        "priority": 6,
+        "feed": "uefa",
+        "priority": 9,
         "status": "OFFICIAL"
       }
     }
