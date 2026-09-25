@@ -1,7 +1,47 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-25T19:14:26.517Z",
+  "updatedAt": "2026-09-25T20:03:23.804Z",
   "items": [
+    {
+      "id": "auto-news-25032bab3699d544593a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe Medicana hazırlık maçı yaptı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-25T19:06:08.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxQS3lTX0ZzbHJCb1RvaDVSWFhKMnRqS2hJQUpEekdnREwzYU1BV3h3alVLd2xEVWpNSDIzLV9oajR3enpPdklOTzlYa2tMUTkxbVY1djE4YURMb3Bkd0gtck9wLVo5V0hFRHJaN28wOUJTSTFFOHVUM3FEQW4tUC1JMVB1LUxsZEFjZU9JSFRYZHRZWWpsd1NJUHZ5VjVDQQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-dd4f6969f09ef787e2cf",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Maça Doğru | Galatasaray - Amed Sportif Faaliyetler",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-25T16:06:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxPc05HRmppdUstd0hCNDgzX0NUOGxVOVlickMyamdpeEVTZnJDdXkxVFBUTGU0eXJTbHNyNXVaUngtc3lPaDVMM3hNNHJ1ZlBoQ09WRl9lM1ZrX0twbEFzV1ktUGg3WUgyZ2ZjdFpEVGdjdk5mNEpCMnYwaHk1aHJGamRsaDFra1NFSXRyc2JXRlJBb2dCdm0zdFdzSDlISkVPNWRCMWZ6a1M0VUU?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-c4357e481a8b1e1be4a5",
       "category": "official",
@@ -23,16 +63,16 @@
       }
     },
     {
-      "id": "auto-news-4e2b0697336ef0f198dc",
+      "id": "auto-news-0ccc56da3db7b3a7ac93",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
       "text": "Futbol Akademi Takımlarımız ile Kadın Futbol Takımımızın Teknik Ekipleri ve Sporcuları, 'TFF ...",
       "team": "Beşiktaş",
-      "timestamp": "2026-09-25T12:21:50.000Z",
+      "timestamp": "2026-09-25T13:02:45.000Z",
       "source": {
         "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE5ZUEppb0J4SkVuTlcybndiVWZuekZXT2ZEb0EwcW11Y0k1NlQtS1dlU0ZOZEtTRVc3TWhzV05HM284dnNXb2tVdFh0bl9rbVNfRXdIeW90dmpidHVlSEc5UjVKcGVrUQ?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9FZ2tGZl9YSlRyTUdpakFhTDFTeDNWc1UxWHBLYXFxTmxoNk9zbExqdzJYWkJhcWdFeTFDU0pOaC16X1ZqVEdHNTMtT3lrY0dOb0VEZUVwU19KMlZDc3Rtb0lB?oc=5",
         "publisher": "bjk.com.tr"
       },
       "automation": {
@@ -41,7 +81,7 @@
         "priority": 3,
         "status": "OFFICIAL",
         "mergedReports": 2,
-        "firstSeenAt": "2026-09-23T12:34:22.000Z"
+        "firstSeenAt": "2026-09-25T12:21:50.000Z"
       }
     },
     {
@@ -97,26 +137,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxQaVNFeEtVbGM4R0RVUnhlNjhIb1dFd0JZZjBCVzZDeFpxN2RNdy1PcVVfTkN1RWdmNDJwN3FQZTM5b2J5aS0tM0hKd3dlMzBaTXdJU041WWtjUFZ5blNPX0syRmpBaWlyc1BaaGIyZHR5cHR3VmJkVmJQYlloNzJ3MFFYRUFId0IzWEw2Qm9GODVLa2QtZGNUTWhtUExRYkxxV0k4RDdZTQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-f33b143331fbf4691879",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kamuoyuna Duyuru",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-24T16:05:12.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE9FUEd6Y3FZc0VJMGM3VWRUWWlLRHpTeDRzNkJEcVY5NFBFSWxJeEQ0eEJFRUJZYWZyYmJwSlpNcFRpVklFZGlkODJ5LVVxYlF0QXRnSFN2TGpBbWtyWTVGSENoLURJc2hadG1xcG5oakpPTTZEMmc?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -246,26 +266,6 @@
       "important": true
     },
     {
-      "id": "auto-news-f5d04f2e4c7079c12318",
-      "category": "transfer-rumour",
-      "confidence": "reported",
-      "section": "transfer",
-      "text": "Galatasaray'da flaş transfer iddiası! Lucas Torreira…",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-24T12:01:55.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/galatasaray/2026/09/24/galatasarayda-flas-transfer-iddiasi-lucas-torreira",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "RUMOUR"
-      }
-    },
-    {
       "id": "news-galatasaray-wilfried-singo-3a06c31c",
       "origin": "news.json",
       "category": "transfer-rumour",
@@ -284,9 +284,9 @@
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Where to watch the Nations League: TV broadcast partners, live streams | UEFA Nations League",
+      "text": "Where to watch the Nations League: TV broadcast partners, live streams",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-25T13:03:40.000Z",
+      "timestamp": "2026-09-25T19:04:36.000Z",
       "source": {
         "name": "UEFA.com",
         "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOUU5LMUpGZTRtQzNhMnBweXIwaUpBNXcxWC1yb0tGNnNOQWcyMEk4OVFyeWFXbDZnVHU0MFBUajRvT3FoTldwUG54OFI5RWppRHpuS0VkWlZSNUpheExTT1RFVzJ1ZHBGa1dLanVkLUhSeTF2ZE1vV1pCVTZPZURVR2RUUXowSHFIcWp4bWR0YVJtbkJIQ1M1andSX0tFV1pxM0FLTnlkcGJFT3BNZjV6YS0yTU5SR21paWVYMHk4M2hrQ0FMbmg3U2FJWFdNMlJxX0NFWnFqaw?oc=5",
@@ -297,26 +297,46 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 8,
-        "firstSeenAt": "2026-09-23T07:11:54.000Z"
+        "mergedReports": 7,
+        "firstSeenAt": "2026-09-23T12:27:55.000Z"
       }
     },
     {
-      "id": "auto-news-8ab83f5756957626fb66",
+      "id": "auto-news-35cea2abd8df54b07f6c",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "A Millî Takımımız, UEFA Uluslar A Ligi'ndeki İlk Maçında Fransa Karşısında",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-25T05:46:19.000Z",
+      "text": "The key trends at the heart of European club football",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-09-25T08:32:40.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPMUtKNzlVRVBwRWRLWGRseXU4dEcwei0ydXVPb1RlX294QVJzVUdyUnpYZlRTVEd3TnM5a0ExRTUtNThBMU5SNTlqRHd2RU5DdVNNQ1NvYk5LSXYzU1NwblBUWXZxT3lTYVJPaUlJTUoxbk9CWXdacmRxLUVKUmoxV1RxOWFUT050cThkMnhBM256YXhKM0RJQTFCNTRKTWRqM3JMR0RZMkpKR2pKT0JHVWFHWVk0NU1WakgzYTJyTmpXdlBfNF80?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-31654dbca4438acb06f6",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Vincenzo Montella: \"Daha Güzel Günler Yaşayacağımızı Biliyorum\"",
+      "team": "Milli Takım",
+      "timestamp": "2026-09-24T20:15:30.000Z",
       "source": {
         "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ZUVg5eEdzQ3YyejRDc2FJTWVfVnJGek4tRHJGWmVVdmM1N3RrcFlITElpYjhSeVRKOVZLZDc1bTVHemk5OTdibXZSSWk2d3NsOHFTMWlwdFZud1JERzZJbXIxM1VMalk?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5pemRsVk9HTllZOGVfeGcwaVN4NWlUdVY4ODh6M0k3djVpbVZ3WkVFZmZ4U2pCU0QzM19Sb3E2ZlU5MHlxTUQyV3VGR2VxS2dMeGFkLVZMdkRWVy01ZFhyejlEb1N4ck0?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "super-lig",
+        "feed": "milli-takim",
         "priority": 5,
         "status": "OFFICIAL"
       }
@@ -347,7 +367,7 @@
       "confidence": "confirmed",
       "section": "news",
       "text": "Ümit Millî Takımımız, İstanbul'daki Hazırlıklarını Tamamladı",
-      "team": "TFF",
+      "team": "Milli Takım",
       "timestamp": "2026-09-24T12:05:09.000Z",
       "source": {
         "name": "TFF",
@@ -356,11 +376,9 @@
       },
       "automation": {
         "source": "rss",
-        "feed": "tff-kurumsal",
-        "priority": 6,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-23T21:04:19.000Z"
+        "feed": "milli-takim",
+        "priority": 5,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -384,26 +402,6 @@
       }
     },
     {
-      "id": "auto-news-147974c39d2dfefa6ed2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Türkiye - Fransa Maçı Medya Programı",
-      "team": "Milli Takım",
-      "timestamp": "2026-09-23T10:27:16.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE8zM2FSMXJXWXhvbjVyekEtazNmNjZtQXYya3R3Yzg0Nm1KZVVmdDdTSWdkNm5pZGlCc011NTVlV1ZsZnoxV09CSG5hY2lxRWhKZzh0MjE4OEw4cWt4bWlkYjluY25YWlE?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "milli-takim",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-f0159ddee123ab59e3aa",
       "category": "official",
       "confidence": "confirmed",
@@ -414,6 +412,26 @@
       "source": {
         "name": "TFF",
         "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5jSjF6MWd2NFgtNXNlYm1kMWl4TVFPaG5xNkI1N3VUQm1TYjZBeXdqUEJRbVo4Rm9UU1VzbVJOWVRmVVhKUEpGMm9QNERqVnp1VlNlUFJJMlkzM25Ic3VjMDFNWEtEa2M?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-8ab83f5756957626fb66",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Türkiye - Fransa İlk 11'ler Belli Oldu",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-25T17:42:08.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9ZUVg5eEdzQ3YyejRDc2FJTWVfVnJGek4tRHJGWmVVdmM1N3RrcFlITElpYjhSeVRKOVZLZDc1bTVHemk5OTdibXZSSWk2d3NsOHFTMWlwdFZud1JERzZJbXIxM1VMalk?oc=5",
         "publisher": "tff.org"
       },
       "automation": {

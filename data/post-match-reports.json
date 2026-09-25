@@ -1,9 +1,266 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-25T15:13:01.970Z",
-  "matchCount": 1537,
+  "updatedAt": "2026-09-25T20:01:27.524Z",
+  "matchCount": 1538,
   "records": [
+    {
+      "matchId": "vfb-stuttgart-1-fc-heidenheim-2026-09-25",
+      "fixtureId": "1640045",
+      "provider": "api-football",
+      "slug": "vfb-stuttgart-1-fc-heidenheim-2026-09-25",
+      "kickoff": "2026-09-25T17:30:00+03:00",
+      "kickoffUtc": "2026-09-25T14:30:00.000Z",
+      "kickoffLocal": "2026-09-25T17:30",
+      "date": "2026-09-25",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "VfB Stuttgart",
+      "awayTeam": "1. FC Heidenheim",
+      "venue": "MHP Arena",
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "finalScore": "3-0",
+      "winner": "VfB Stuttgart",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "cc0f681c8ed2cfd3",
+      "fingerprint": "cc0f681c8ed2cfd3",
+      "analysisGeneratedAt": "2026-09-25T20:01:27.447Z",
+      "analysisUpdatedAt": "2026-09-25T20:01:27.447Z",
+      "generatedAt": "2026-09-25T20:01:27.447Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "VfB Stuttgart 3-0 1. FC Heidenheim maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "MHP Arena'da oynanan hazırlık maçını VfB Stuttgart 3-0 kazandı; 1. FC Heidenheim sahadan puansız ayrıldı.",
+        "path": "mac-raporu/vfb-stuttgart-1-fc-heidenheim-2026-09-25.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/vfb-stuttgart-1-fc-heidenheim-2026-09-25.html",
+      "digest": {
+        "headline": "VfB Stuttgart, 1. FC Heidenheim'i 3-0 yendi",
+        "paragraph": "MHP Arena'da oynanan hazırlık maçını VfB Stuttgart 3-0 kazandı; 1. FC Heidenheim sahadan puansız ayrıldı. Golleri 42. dakikada A. Karazor (VfB Stuttgart), 72. dakikada L. Assignon (VfB Stuttgart), 86. dakikada J. Chabot (VfB Stuttgart) kaydetti.",
+        "result": {
+          "winner": "VfB Stuttgart",
+          "loser": "1. FC Heidenheim",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "42'",
+              "team": "VfB Stuttgart",
+              "type": "Gol",
+              "detail": "A. Karazor",
+              "pivotal": true
+            },
+            {
+              "minute": "72'",
+              "team": "VfB Stuttgart",
+              "type": "Gol",
+              "detail": "L. Assignon",
+              "pivotal": true
+            },
+            {
+              "minute": "86'",
+              "team": "VfB Stuttgart",
+              "type": "Gol",
+              "detail": "J. Chabot",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (J. Chabot).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "86'",
+              "team": "VfB Stuttgart",
+              "type": "Gol",
+              "detail": "J. Chabot",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Karazor",
+              "team": "VfB Stuttgart",
+              "contribution": "42' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. Chabot",
+              "team": "VfB Stuttgart",
+              "contribution": "86' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Assignon",
+              "team": "VfB Stuttgart",
+              "contribution": "72' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "42' VfB Stuttgart — A. Karazor: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "72' VfB Stuttgart — L. Assignon: gol",
+            "86' VfB Stuttgart — J. Chabot: gol"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "VfB Stuttgart, 1. FC Heidenheim'i 3-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "1. FC Heidenheim son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "VfB Stuttgart sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "seattle-sounders-real-salt-lake-2026-09-24",
       "fixtureId": "1490209",
