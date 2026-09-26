@@ -25,10 +25,43 @@
     <meta name="twitter:title" content="Live Football Scores | FutbolRadar" />
     <meta name="twitter:description" content="Live football scores and live soccer scores for the Turkish Süper Lig and European competitions — never shown as live without verification." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
-    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../page.css" />
+    <link rel="stylesheet" href="../page.css?v=9baa0342" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"CollectionPage","@id":"https://www.futbolradar.com/en/live-football-scores.html","url":"https://www.futbolradar.com/en/live-football-scores.html","name":"Live Football Scores | FutbolRadar","description":"Live football scores and live soccer scores for the Turkish Süper Lig and European competitions — never shown as live without verification.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"},{"@type":"ListItem","position":2,"name":"Live Football Scores","item":"https://www.futbolradar.com/en/live-football-scores.html"}]}]}</script>
+  <!-- favicon:start -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<!-- favicon:end -->
+  <!-- pwa:start -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="FutbolRadar" />
+<meta name="fr-vapid-public-key" content="" />
+<script defer src="/pwa.js?v=156a309d"></script>
+<!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -60,6 +93,27 @@
         </nav>
       </div>
     </header>
+      <!-- shared-layout:ticker:start --><div class="news-ticker news-ticker-compact" data-shared-layout="ticker" data-ticker-source="ticker-feed" data-ticker-mode="compact" aria-label="Breaking football headlines">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge">Headlines</span>
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track">
+            <div class="news-ticker-group"><a class="news-ticker-item" href="../en/news/fenerbahce-avrupa-93ecd8b2.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding Avrupa has been relayed around Fenerbahçe.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/news/fenerbahce-ismail-kartal-b419bd42.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding İsmail Kartal has been relayed around Fenerbahçe.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/news/besiktas-ghezzal-554c642c.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding Ghezzal has been relayed around Beşiktaş.</span></a></div>
+          </div>
+        </div>
+        <a class="news-ticker-all" href="../en/news.html">View all</a>
+      </div>
+    </div><!-- shared-layout:ticker:end -->
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+      <div class="container-wide live-scores-ticker__inner">
+        <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
+        <div class="live-scores-ticker__viewport" aria-live="polite">
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
+          </div>
+        </div>
+      </div>
+    </div><!-- shared-layout:live-ticker:end -->
     <main class="container">
       <section class="hero">
         <div class="hero-row">
@@ -68,7 +122,7 @@
             <h1>Live Football Scores</h1>
             <p class="lead">Live football scores and live soccer scores for the Turkish Süper Lig and European competitions — match states and minutes, in Türkiye time.</p>
           </div>
-          <span class="hero-meta">Saturday, 26 September 2026</span>
+          <span class="hero-meta">Sunday, 27 September 2026</span>
         </div>
       </section>
       <section class="data-panel" aria-labelledby="en-live-title">
@@ -78,48 +132,7 @@
       </section>
       <section class="data-panel" aria-labelledby="en-ft-title">
         <h2 class="panel-title" id="en-ft-title">Full time today</h2>
-        <div class="matches-grid"><article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">TS</i>TFF Second League</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">YO</span><span class="fixture-row-name">Yeni Orduspor</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">Kİ</span><span class="fixture-row-name">Kahramanmaraş İstiklal Spor</span><span class="fixture-row-score">1</span></div></div>
-    
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=yeni-orduspor-kahramanmaras-istiklal-spor-2026-09-26&amp;date=2026-09-26">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">TS</i>TFF Second League</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">BY</span><span class="fixture-row-name">Beyoğlu Yeni Çarşı</span><span class="fixture-row-score">5</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">İ</span><span class="fixture-row-name">İskenderunspor</span><span class="fixture-row-score">0</span></div></div>
-    
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=beyoglu-yeni-carsi-iskenderunspor-2026-09-26&amp;date=2026-09-26">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">TS</i>TFF Second League</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">İK</span><span class="fixture-row-name">İnegöl Kafkas Gençlik</span><span class="fixture-row-score">4</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Kastamonuspor</span><span class="fixture-row-score">1</span></div></div>
-    
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=inegol-kafkas-genclik-kastamonuspor-2026-09-26&amp;date=2026-09-26">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">TS</i>TFF Second League</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Ankaraspor</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">S</span><span class="fixture-row-name">Somaspor</span><span class="fixture-row-score">1</span></div></div>
-    
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=ankaraspor-somaspor-2026-09-26&amp;date=2026-09-26">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PS</span><span class="fixture-row-name">Pogon Szczecin</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">U</span><span class="fixture-row-name">Udinese</span><span class="fixture-row-score">1</span></div></div>
-    
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=pogon-szczecin-udinese-2026-09-26&amp;date=2026-09-26">Open match details</a>
-  </article>
-<article class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state is-final">FT</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Bohemians</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B1</span><span class="fixture-row-name">Bohemians 1905</span><span class="fixture-row-score">0</span></div></div>
-    
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=bohemians-bohemians-1905-2026-09-26&amp;date=2026-09-26">Open match details</a>
-  </article></div>
+        <p class="muted-copy">Update pending.</p>
         <p class="muted-copy">Looking for fixtures that have not kicked off yet? See <a href="./todays-matches.html">today's matches</a> for the full schedule.</p>
       </section>
 <section class="trend-section" aria-labelledby="en-sections-title">
@@ -182,6 +195,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js" defer></script>
+    <script src="../site.js?v=bda97e24" defer></script>
+    <script src="../app-lite.js?v=8e582a6c" defer></script>
   </body>
 </html>
