@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-26T08:34:21.278Z",
+  "updatedAt": "2026-09-26T13:51:40.505Z",
   "items": [
     {
       "id": "auto-news-69c1f56a6b47b1171837",
@@ -226,6 +226,20 @@
       "important": true
     },
     {
+      "id": "news-galatasaray-batrakov-6bb9229f",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Batrakov'a dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-26T12:32:39.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-batrakov-6bb9229f"
+      },
+      "team": "Galatasaray",
+      "important": true
+    },
+    {
       "id": "auto-news-8375258f6c00cac7aa90",
       "category": "club-agenda",
       "confidence": "reported",
@@ -244,20 +258,6 @@
         "priority": 8,
         "status": "REPORTED"
       }
-    },
-    {
-      "id": "news-trabzonspor-salah-83cf497f",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Trabzonspor çevresinde Salah'a dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-24T11:56:23.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/trabzonspor-salah-83cf497f"
-      },
-      "team": "Trabzonspor",
-      "important": true
     },
     {
       "id": "news-trabzonspor-gedson-fernandes-cff9fd8d",
@@ -419,26 +419,6 @@
       "automation": {
         "source": "rss",
         "feed": "milli-takim",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-4e03a2c71b8281a42c56",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Nesine 2. ve 3. Lig'de Haftanın Canlı Yayınlanacak Maçları Belirlendi",
-      "team": "Süper Lig",
-      "timestamp": "2026-09-23T11:22:17.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE84emxta1h5Yk15NGk4TFRBRjlOVUY4ZHdiYjVqMDh5b0RRMnU3Z01mdW5wTU1tTThnc2ViaGFfUTlMLVVWZHRrUEIwbzAydzVXLVIyN3R4NVRoekNYcWVVV1B5b2syb1k?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
         "priority": 5,
         "status": "OFFICIAL"
       }
