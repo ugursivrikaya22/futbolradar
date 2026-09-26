@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-historical-match-archive",
   "version": 1,
-  "updatedAt": "2026-09-26T18:34:20.912Z",
+  "updatedAt": "2026-09-26T21:58:32.095Z",
   "matchCount": 1544,
   "records": [
     {
@@ -25,18 +25,155 @@
         },
         "venue": "Stadion Miejski im. Floriana Krygiera",
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "31'",
+            "team": {
+              "name": "Udinese"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "I. Gueye · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "36'",
+            "team": {
+              "name": "Pogon Szczecin"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "J. Bieganski · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "45+1'",
+            "team": {
+              "name": "Udinese"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "I. Gueye · Asist: N. Popov · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "56'",
+            "team": {
+              "name": "Udinese"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "A. Zanoli · Asist: O. Solet · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "63'",
+            "team": {
+              "name": "Pogon Szczecin"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "B. Mendy · Asist: L. Willen · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "63'",
+            "team": {
+              "name": "Pogon Szczecin"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "J. Czaplinski · Asist: F. Cuic · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "70'",
+            "team": {
+              "name": "Pogon Szczecin"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "J. Nsame · Asist: P. Mukairu · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "83'",
+            "team": {
+              "name": "Udinese"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "L. Jovanovic · Asist: P. Carrillo · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/pogon-szczecin-udinese-2026-09-26.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 36' J. Bieganski tarafından kaydedildi. Kulübeler oyuna müdahale etti; 6 oyuncu değişikliği kayda geçti.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "36'",
+              "text": "Son gol 36' J. Bieganski tarafından kaydedildi."
+            },
+            {
+              "label": "Teknik hamleler",
+              "value": "6 değişiklik",
+              "text": "Kulübeler oyuna müdahale etti; 6 oyuncu değişikliği kayda geçti."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "1-1",
+              "text": "Skor dengede."
+            }
+          ],
+          "eventCount": 8,
+          "dataPoints": 3,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+        "lastVerifiedAt": "2026-09-26T21:57:28.965Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 36' J. Bieganski tarafından kaydedildi. Kulübeler oyuna müdahale etti; 6 oyuncu değişikliği kayda geçti.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "36'",
+            "text": "Son gol 36' J. Bieganski tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "6 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 6 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-1",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 8,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -47,7 +184,7 @@
         "venue": true,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -63,10 +200,15 @@
         {
           "name": "fixture-calendar",
           "id": "pogon-szczecin-udinese-2026-09-26",
-          "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+          "lastVerifiedAt": "2026-09-26T21:57:28.965Z"
+        },
+        {
+          "name": "report",
+          "id": "pogon-szczecin-udinese-2026-09-26",
+          "lastVerifiedAt": "2026-09-26T18:34:24.557Z"
         }
       ],
-      "lastVerifiedAt": "2026-09-26T18:33:29.276Z",
+      "lastVerifiedAt": "2026-09-26T21:57:28.965Z",
       "archivedAt": "2026-09-26T18:34:20.912Z"
     },
     {
@@ -90,18 +232,68 @@
         },
         "venue": null,
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "21'",
+            "team": {
+              "name": " Kahramanmaraş İstiklal Spor"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Y. Abdioglu · Asist: G. Bitin · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/yeni-orduspor-kahramanmaras-istiklal-spor-2026-09-26.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 21' Y. Abdioglu tarafından kaydedildi.  Kahramanmaraş İstiklal Spor skor üstünlüğünü elinde tutuyor. Skor üstünlüğü  Kahramanmaraş İstiklal Spor tarafında.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "21'",
+              "text": "Son gol 21' Y. Abdioglu tarafından kaydedildi."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "0-1",
+              "text": " Kahramanmaraş İstiklal Spor skor üstünlüğünü elinde tutuyor."
+            }
+          ],
+          "eventCount": 1,
+          "dataPoints": 2,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+        "lastVerifiedAt": "2026-09-26T21:57:28.965Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 21' Y. Abdioglu tarafından kaydedildi.  Kahramanmaraş İstiklal Spor skor üstünlüğünü elinde tutuyor. Skor üstünlüğü  Kahramanmaraş İstiklal Spor tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "21'",
+            "text": "Son gol 21' Y. Abdioglu tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-1",
+            "text": " Kahramanmaraş İstiklal Spor skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -112,7 +304,7 @@
         "venue": false,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -128,10 +320,15 @@
         {
           "name": "fixture-calendar",
           "id": "yeni-orduspor-kahramanmaras-istiklal-spor-2026-09-26",
-          "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+          "lastVerifiedAt": "2026-09-26T21:57:28.965Z"
+        },
+        {
+          "name": "report",
+          "id": "yeni-orduspor-kahramanmaras-istiklal-spor-2026-09-26",
+          "lastVerifiedAt": "2026-09-26T18:34:24.557Z"
         }
       ],
-      "lastVerifiedAt": "2026-09-26T18:33:29.276Z",
+      "lastVerifiedAt": "2026-09-26T21:57:28.965Z",
       "archivedAt": "2026-09-26T18:34:20.912Z"
     },
     {
@@ -155,18 +352,58 @@
         },
         "venue": "Dalymount Park",
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "46'",
+            "team": {
+              "name": "Bohemians"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "J. Flores · Asist: L. Rossi · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/bohemians-bohemians-1905-2026-09-26.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Skor dengede.",
+          "confidence": "Sınırlı",
+          "signals": [
+            {
+              "label": "Canlı skor",
+              "value": "0-0",
+              "text": "Skor dengede."
+            }
+          ],
+          "eventCount": 1,
+          "dataPoints": 1,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+        "lastVerifiedAt": "2026-09-26T21:57:28.965Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Skor dengede.",
+        "confidence": "Sınırlı",
+        "signals": [
+          {
+            "label": "Canlı skor",
+            "value": "0-0",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 1,
+        "dataPoints": 1,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -177,7 +414,7 @@
         "venue": true,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -193,10 +430,15 @@
         {
           "name": "fixture-calendar",
           "id": "bohemians-bohemians-1905-2026-09-26",
-          "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+          "lastVerifiedAt": "2026-09-26T21:57:28.965Z"
+        },
+        {
+          "name": "report",
+          "id": "bohemians-bohemians-1905-2026-09-26",
+          "lastVerifiedAt": "2026-09-26T18:34:24.557Z"
         }
       ],
-      "lastVerifiedAt": "2026-09-26T18:33:29.276Z",
+      "lastVerifiedAt": "2026-09-26T21:57:28.965Z",
       "archivedAt": "2026-09-26T18:34:20.912Z"
     },
     {
@@ -353,9 +595,14 @@
           "name": "fixture-calendar",
           "id": "beyoglu-yeni-carsi-iskenderunspor-2026-09-26",
           "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+        },
+        {
+          "name": "report",
+          "id": "beyoglu-yeni-carsi-iskenderunspor-2026-09-26",
+          "lastVerifiedAt": "2026-09-26T18:34:24.557Z"
         }
       ],
-      "lastVerifiedAt": "2026-09-26T18:33:29.276Z",
+      "lastVerifiedAt": "2026-09-26T18:34:24.557Z",
       "archivedAt": "2026-09-26T18:34:20.912Z"
     },
     {
@@ -512,9 +759,14 @@
           "name": "fixture-calendar",
           "id": "inegol-kafkas-genclik-kastamonuspor-2026-09-26",
           "lastVerifiedAt": "2026-09-26T18:33:29.276Z"
+        },
+        {
+          "name": "report",
+          "id": "inegol-kafkas-genclik-kastamonuspor-2026-09-26",
+          "lastVerifiedAt": "2026-09-26T18:34:24.557Z"
         }
       ],
-      "lastVerifiedAt": "2026-09-26T18:33:29.276Z",
+      "lastVerifiedAt": "2026-09-26T18:34:24.557Z",
       "archivedAt": "2026-09-26T18:34:20.912Z"
     },
     {
@@ -631,10 +883,10 @@
         {
           "name": "report",
           "id": "ankaraspor-somaspor-2026-09-26",
-          "lastVerifiedAt": "2026-09-26T14:26:17.919Z"
+          "lastVerifiedAt": "2026-09-26T18:34:24.557Z"
         }
       ],
-      "lastVerifiedAt": "2026-09-26T18:33:29.276Z",
+      "lastVerifiedAt": "2026-09-26T18:34:24.557Z",
       "archivedAt": "2026-09-26T14:26:14.363Z"
     },
     {

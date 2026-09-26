@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-26T18:34:24.696Z",
+  "updatedAt": "2026-09-26T21:58:35.840Z",
   "matchCount": 1544,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,9 +43,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 8
         },
         "statistics": {
           "present": false,
@@ -65,19 +65,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 8,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -95,23 +91,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "1e20ccd8b4f18046",
-      "fingerprint": "1e20ccd8b4f18046",
+      "analysisSourceHash": "5e47ae54755d0ce3",
+      "fingerprint": "5e47ae54755d0ce3",
       "analysisGeneratedAt": "2026-09-26T18:34:24.557Z",
-      "analysisUpdatedAt": "2026-09-26T18:34:24.557Z",
-      "generatedAt": "2026-09-26T18:34:24.557Z",
+      "analysisUpdatedAt": "2026-09-26T21:58:35.737Z",
+      "generatedAt": "2026-09-26T21:58:35.737Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Pogon Szczecin 1-1 Udinese maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
-        "description": "Pogon Szczecin 1-1 Udinese maç raporu, goller, olaylar ve sonraki maç.",
+        "description": "Pogon Szczecin 1-1 Udinese maç raporu, goller: I. Gueye, J. Bieganski, goller, olaylar ve sonraki maç.",
         "path": "mac-raporu/pogon-szczecin-udinese-2026-09-26.html",
         "competition": "Hazırlık Maçı"
       },
       "reportUrl": "./mac-raporu/pogon-szczecin-udinese-2026-09-26.html",
       "digest": {
         "headline": "Pogon Szczecin ile Udinese 1-1 berabere kaldı",
-        "paragraph": "Stadion Miejski im. Floriana Krygiera'da oynanan hazırlık maçında Pogon Szczecin ile Udinese birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Stadion Miejski im. Floriana Krygiera'da oynanan hazırlık maçında Pogon Szczecin ile Udinese birbirini geçemedi: 1-1. Golleri 31. dakikada I. Gueye (Udinese), 36. dakikada J. Bieganski (Pogon Szczecin) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -127,39 +123,93 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "31'",
+              "team": "Udinese",
+              "type": "Gol",
+              "detail": "I. Gueye",
+              "pivotal": true
+            },
+            {
+              "minute": "36'",
+              "team": "Pogon Szczecin",
+              "type": "Gol",
+              "detail": "J. Bieganski",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "83'",
+              "team": "Udinese",
+              "type": "Oyuncu değişikliği",
+              "detail": "L. Jovanovic",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "I. Gueye",
+              "team": "Udinese",
+              "contribution": "31' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. Bieganski",
+              "team": "Pogon Szczecin",
+              "contribution": "36' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "31' Udinese — I. Gueye: gol",
+            "36' Pogon Szczecin — J. Bieganski: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (5 olay).",
+            "İkinci yarı içinde 5 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "45+1' Udinese değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "56' Udinese değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Pogon Szczecin değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "63' Pogon Szczecin değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "70' Pogon Szczecin değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "83' Udinese değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -191,10 +241,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -226,10 +283,10 @@
       "winner": "Kahramanmaraş İstiklal Spor",
       "turkish": true,
       "turkishTeam": "Yeni Orduspor",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -237,9 +294,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 1
         },
         "statistics": {
           "present": false,
@@ -259,19 +316,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 1,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -289,11 +342,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "4dc461ad1aaa6d61",
-      "fingerprint": "4dc461ad1aaa6d61",
+      "analysisSourceHash": "9a40c425017fae4e",
+      "fingerprint": "9a40c425017fae4e",
       "analysisGeneratedAt": "2026-09-26T18:34:24.557Z",
-      "analysisUpdatedAt": "2026-09-26T18:34:24.557Z",
-      "generatedAt": "2026-09-26T18:34:24.557Z",
+      "analysisUpdatedAt": "2026-09-26T21:58:35.737Z",
+      "generatedAt": "2026-09-26T21:58:35.737Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -305,7 +358,7 @@
       "reportUrl": "./mac-raporu/yeni-orduspor-kahramanmaras-istiklal-spor-2026-09-26.html",
       "digest": {
         "headline": "Kahramanmaraş İstiklal Spor, Yeni Orduspor'u 1-0 yendi",
-        "paragraph": "TFF 2. Lig maçını Kahramanmaraş İstiklal Spor 1-0 kazandı; Yeni Orduspor sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "TFF 2. Lig maçını Kahramanmaraş İstiklal Spor 1-0 kazandı; Yeni Orduspor sahadan puansız ayrıldı. Tek golü 21. dakikada Y. Abdioglu ( Kahramanmaraş İstiklal Spor) kaydetti.",
         "result": {
           "winner": "Kahramanmaraş İstiklal Spor",
           "loser": "Yeni Orduspor",
@@ -321,28 +374,49 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "21'",
+              "team": " Kahramanmaraş İstiklal Spor",
+              "type": "Gol",
+              "detail": "Y. Abdioglu",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
           "moments": []
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Y. Abdioglu",
+              "team": " Kahramanmaraş İstiklal Spor",
+              "contribution": "21' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "21'  Kahramanmaraş İstiklal Spor — Y. Abdioglu: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
           "status": "unavailable",
@@ -385,10 +459,14 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 43,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -420,10 +498,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -431,9 +509,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 1
         },
         "statistics": {
           "present": false,
@@ -453,19 +531,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 1,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -483,11 +557,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7c07dfe5073ad4d0",
-      "fingerprint": "7c07dfe5073ad4d0",
+      "analysisSourceHash": "d1be3fac28500008",
+      "fingerprint": "d1be3fac28500008",
       "analysisGeneratedAt": "2026-09-26T18:34:24.557Z",
-      "analysisUpdatedAt": "2026-09-26T18:34:24.557Z",
-      "generatedAt": "2026-09-26T18:34:24.557Z",
+      "analysisUpdatedAt": "2026-09-26T21:58:35.737Z",
+      "generatedAt": "2026-09-26T21:58:35.737Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -515,14 +589,25 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "46'",
+              "team": "Bohemians",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Flores",
+              "pivotal": false
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
           "moments": []
         },
         "keyPlayers": {
@@ -539,15 +624,20 @@
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "İkinci yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Bohemians değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -579,10 +669,13 @@
       },
       "readySections": [
         "summary",
+        "secondHalf",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 36,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
