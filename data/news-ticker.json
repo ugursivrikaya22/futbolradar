@@ -1,7 +1,89 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-26T13:51:40.505Z",
+  "updatedAt": "2026-09-26T14:28:26.027Z",
   "items": [
+    {
+      "id": "auto-news-aeaadc58497f2267d4be",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Mert Cuci ile sözleşme yenilendi",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-26T14:01:21.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPaWtoeUdhWXFYN1BsVkNvWWJhRlU0UXI5bjFHcGZ5eXdBMTY0UlFyZzhwVV9FOG5Bd3lqYlRjMkxEMTFiVzRQMUxEdVdDdHZEYm5JWFFjLWdvdmtxVkNpaFRONFVoX0VaLXByajNFRjllRlZDUlp0Zm0xams5OFpUTFJid1h0dnQxc0JULTJGMWg3aEpX?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-e869fa164f00e7785aa2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "U-16 Akademi Takımımız, U16 Gelişim Ligi ilk hafta maçında deplasmanda Bursaspor'u 2-1 mağlup etti. - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-26T12:31:35.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMieEFVX3lxTE1GSVRla1lGR1pkSXI1c1BBaWFrSmFBZTVVb2FMVVNaTGNmdG9jQzg5NDZkN09zRjlkY2V0V0J3aVE0OGt3RkRYa1NwMTdwOTl5MlUxS3pZd1lLNnA5V2QzbDN5WG1kUm5pWGszV2Z6Zlk4V3VzTUdrXw?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-25T13:02:45.000Z"
+      }
+    },
+    {
+      "id": "auto-news-9d7c3aae691f2c240135",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kadın Futbol Takımımızın Sporcularına Milli Davet - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-26T11:01:07.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9LUlk3dmhoZ2Z3YVpvSkU1M1JwNGg0bG9ldFZDRVJoQ1N4MkYyQ1pCZjViLVJyWHd5LWlsWDY1bG13UF91M3FoMG9Ib2lOZG5sWjF6Sk0tckk4ckVjNUV3?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-417590e4a854fd1365fc",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "U19 Takımımız sabah antrenmanını tamamladı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-26T10:23:46.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxPa25ZMTlQRGFTR01kcHJRV1c2RXFXSGIzSXN4SzlUNGx6VnlqUmFLbEtvRjJ0MFdxZk8wa2ZfU0k3REI0dWs3RTZmb3pyVGNwbmh4eXpGajlfd1JxcFd3ajJCQ2FwNFRsZWNlTVFaY1lvZVNOUGw0TjBvU01uTngwazNfOWtFbHJPd3d2bVJTNFI4ZFU?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-69c1f56a6b47b1171837",
       "category": "official",
@@ -59,28 +141,6 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-24T13:29:36.000Z"
-      }
-    },
-    {
-      "id": "auto-news-b63780f79b1aaa7ff6f0",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe Tarfin, EuroLeague’de yeni sezona galibiyetle başladı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-25T20:21:08.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMivwFBVV95cUxQVUk3TW5TTVRNRk5ldUdjeGtWSmRXUlNGNENQdWJKT2V3MENQUzAyNDRvOHU4c3RjOFBaM1QzOWZxLXkxZmxCRTE0Z0htbDJPSWlfSlZ4b2NudjFpTGhMZmNBQ25TNjJSR1NoaXVwOG9rZmhUTy1GUDIyVThtMjJ4dl9VX3c4UTM2UWhDX3huQ1dMRWVmMWFmUTNPS0o4eGozZURfckpfUVNHeFFkclh2QWdEeG05RjN6TlhNV1hmcw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
@@ -102,28 +162,6 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-0ccc56da3db7b3a7ac93",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbol Akademi Takımlarımız ile Kadın Futbol Takımımızın Teknik Ekipleri ve Sporcuları, 'TFF ...",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-25T13:02:45.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiYkFVX3lxTE9FZ2tGZl9YSlRyTUdpakFhTDFTeDNWc1UxWHBLYXFxTmxoNk9zbExqdzJYWkJhcWdFeTFDU0pOaC16X1ZqVEdHNTMtT3lrY0dOb0VEZUVwU19KMlZDc3Rtb0lB?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-25T12:21:51.000Z"
       }
     },
     {
@@ -187,26 +225,6 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-22a073bbbe5cd55a3b52",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kulübümüz, TS EN ISO/IEC 27001:2022 Bilgi Güvenliği Yönetim Sistemi Belgesi Aldı",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-23T14:21:12.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5QcFY3Ny1lM1dhaEFKcEtyLVhzQTNjZlYzMV9kQ21YcW5PUlM1SVpsa1dmckNYb3hVUDNQQVgwdHI4WmI4TExLYUtSa28xdUVWcHZ4d09Ea1JNMWc?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -302,16 +320,16 @@
       "important": true
     },
     {
-      "id": "auto-news-3fb1722dc5bc88ef395e",
+      "id": "auto-news-8c739394df9557c1d44b",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Where to watch the Nations League: TV broadcast partners, live streams",
+      "text": "Nations League highlights: Italy 0-2 Belgium",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-26T07:09:05.000Z",
+      "timestamp": "2026-09-26T11:35:01.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOUU5LMUpGZTRtQzNhMnBweXIwaUpBNXcxWC1yb0tGNnNOQWcyMEk4OVFyeWFXbDZnVHU0MFBUajRvT3FoTldwUG54OFI5RWppRHpuS0VkWlZSNUpheExTT1RFVzJ1ZHBGa1dLanVkLUhSeTF2ZE1vV1pCVTZPZURVR2RUUXowSHFIcWp4bWR0YVJtbkJIQ1M1andSX0tFV1pxM0FLTnlkcGJFT3BNZjV6YS0yTU5SR21paWVYMHk4M2hrQ0FMbmg3U2FJWFdNMlJxX0NFWnFqaw?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQMW01eTc1enpnMzFpUHhWSktVS3dDN051ZmlHU2dLcnJFQ0lVOE43bVhhTGVQYmpENW1ZVXdSVnhQOXJDTDFjaGlYMVFKY09pZ2JJbjFqTDg2MWNLaXhselJ5eXRpdGk4aGZlWmUyNHJTYnRfSG5EYTIyMDE4UDlBNHQybDQ0Ql9uTE5xakNvYmFmbkFBUk5KRENEcDVITVoyQUJpam9vUzkxdE1tR3hDRDBvSXYwQ1BsZ0RwN3VDeHU4RmxsekZQM3dDVXZmWmFvcjI4?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -319,8 +337,30 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 7,
-        "firstSeenAt": "2026-09-23T12:27:55.000Z"
+        "mergedReports": 6,
+        "firstSeenAt": "2026-09-24T22:47:39.000Z"
+      }
+    },
+    {
+      "id": "auto-news-f49d58693b6ca475e5f7",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Ümit Millî Takımımız, Ukrayna Karşısında",
+      "team": "Milli Takım",
+      "timestamp": "2026-09-26T06:23:35.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1OOXA3bHo4WjkzNlc4UF9rT0Rfc1JIX0xBQmRoVlRuNUZKQWVpbmszNThYSEZ4bW5HVDJRcHVKbm54UmZjdE40ejhZY083Q1JjemxNVS1HY1pacjBUNzF4OWxWZ21BWWc?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "milli-takim",
+        "priority": 5,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-25T18:32:08.000Z"
       }
     },
     {
@@ -339,26 +379,6 @@
       "automation": {
         "source": "rss",
         "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-bac15354d55f141e04f5",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Ümit Millî Takımımız, Ukrayna Maçı Hazırlıklarını Tamamladı",
-      "team": "Milli Takım",
-      "timestamp": "2026-09-25T18:32:08.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5IRUVBS2RuV2tYdnhtVnRNTkRNWkFxX3dzQ1ZlcWE2endUeFA4Tk1IMFpSVTNHTE9LQ0ZjV2tBYlFtcUlFbXAzQjQ2X3Jka2FQT196bThVYzRFdVZWYkJocnVHRkUwZ1E?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "milli-takim",
         "priority": 5,
         "status": "OFFICIAL"
       }
