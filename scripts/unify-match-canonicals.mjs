@@ -307,6 +307,28 @@ function stripSportsEvent(html) {
   });
 }
 
+function hrefFromSelf(selfRelative, targetPath) {
+  const segments = selfRelative.split("/").slice(0, -1);
+  return `${"../".repeat(segments.length)}${targetPath}`;
+}
+
+function injectRoundHandoff(html, selfPath) {
+  const selfRelative = selfPath.replace(/^public\//, "");
+  const targetSlug = duplicates.get(selfRelative);
+  if (!targetSlug || !ROUND_SLUG_RE.test(selfRelative) || html.includes("match-centre-handoff")) return html;
+  const event = sportsEventOf(html);
+  const home = teamName(event && event.homeTeam);
+  const away = teamName(event && event.awayTeam);
+  if (!home || !away) return html;
+  const bannerHref = hrefFromSelf(selfRelative, `mac/${targetSlug}`);
+  const banner = `<p class="match-centre-handoff"><a href="${bannerHref}">${home} - ${away} maç merkezi: saat, yayın kanalı, canlı skor ve maç sonucu →</a></p>`;
+  let next = html.replace(/(<nav class="breadcrumb"[^>]*>[\s\S]*?<\/nav>)/, `$1\n      ${banner}`);
+  if (next !== html) return next;
+  next = html.replace(/(<main\b[^>]*>)/, `$1\n      ${banner}`);
+  if (next !== html) return next;
+  return html.replace(/(<body\b[^>]*>)/, `$1\n      ${banner}`);
+}
+
 function rewrite(html, selfPath) {
   // `public/` bir AYNA: `public/mac/x.html` ile `mac/x.html` aynı sayfa.
   // Karşılaştırma ham yolla yapılınca koruma yalnızca kökte çalışıyor,
@@ -349,7 +371,10 @@ function rewrite(html, selfPath) {
   // düğümüyle birlikte birleştirilmiş durumda ve hiçbir kapı itiraz
   // etmiyor. Onları da kapsamak bu düzeltmeyi 4 dosyadan ~700 dosyaya
   // çıkarır; ayrı bir karar, ayrı bir değişiklik.
-  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) next = stripSportsEvent(next);
+  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) {
+    next = injectRoundHandoff(next, selfRelative);
+    next = stripSportsEvent(next);
+  }
 
   return next;
 }

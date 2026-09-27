@@ -57,7 +57,7 @@ const breadcrumb = {
 };
 
 /** Üreticilerin bastığı biçim: tek satır, `JSON.stringify` (boşluksuz). */
-function page({ slug, nodes }) {
+function page({ slug, nodes, breadcrumb = true }) {
   const graph = nodes.map((node) => (node === sportsEvent ? { ...node, url: `${DOMAIN}/mac/${slug}` } : node));
   return [
     "<!doctype html>",
@@ -65,12 +65,18 @@ function page({ slug, nodes }) {
     `    <link rel="canonical" href="${DOMAIN}/mac/${slug}.html" />`,
     `    <meta property="og:url" content="${DOMAIN}/mac/${slug}.html" />`,
     `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
-    "</head><body><h1>test</h1></body></html>",
+    '</head><body class="subpage match-analysis-page"><main class="container">',
+    ...(breadcrumb
+      ? ['      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>test</span></nav>']
+      : []),
+    '      <section class="hero match-analysis-hero"><h1>test</h1></section>',
+    "</main></body></html>",
     ""
   ].join("\n");
 }
 
 const roundSlug = "besiktas-amed-sportif-faaliyetler-2026-2027-r06";
+const fallbackRoundSlug = "besiktas-amed-sportif-faaliyetler-2026-2027-r07";
 // Kontrol grubu: hedefi OLMAYAN tur sayfası. Ona dokunulmamalı; aksi hâlde
 // düzeltme, tarihi henüz kesinleşmemiş maçı şemasız bırakırdı.
 const lonelySlug = "goztepe-konyaspor-2026-2027-r09";
@@ -82,11 +88,13 @@ fs.mkdirSync(path.join(dir, "data"), { recursive: true });
 const files = {
   target: path.join(dir, "mac", `${targetSlug}.html`),
   round: path.join(dir, "mac", `${roundSlug}.html`),
+  fallbackRound: path.join(dir, "mac", `${fallbackRoundSlug}.html`),
   lonely: path.join(dir, "mac", `${lonelySlug}.html`)
 };
 
 fs.writeFileSync(files.target, page({ slug: targetSlug, nodes: [breadcrumb, sportsEvent] }), "utf8");
 fs.writeFileSync(files.round, page({ slug: roundSlug, nodes: [breadcrumb, sportsEvent] }), "utf8");
+fs.writeFileSync(files.fallbackRound, page({ slug: fallbackRoundSlug, nodes: [breadcrumb, sportsEvent], breadcrumb: false }), "utf8");
 fs.writeFileSync(files.lonely, page({
   slug: lonelySlug,
   nodes: [breadcrumb, { ...sportsEvent, name: "Göztepe - Konyaspor", homeTeam: { "@type": "SportsTeam", name: "Göztepe" }, awayTeam: { "@type": "SportsTeam", name: "Konyaspor" } }]
@@ -95,7 +103,7 @@ fs.writeFileSync(files.lonely, page({
 const sitemapUrl = (slug) => `  <url><loc>${DOMAIN}/mac/${slug}.html</loc></url>`;
 fs.writeFileSync(
   path.join(dir, "sitemap.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset>\n${[targetSlug, roundSlug, lonelySlug].map(sitemapUrl).join("\n")}\n</urlset>\n`,
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset>\n${[targetSlug, roundSlug, fallbackRoundSlug, lonelySlug].map(sitemapUrl).join("\n")}\n</urlset>\n`,
   "utf8"
 );
 
@@ -118,6 +126,7 @@ console.log("match-canonical-round-schema");
 run();
 
 const roundAfter = read(files.round);
+const fallbackRoundAfter = read(files.fallbackRound);
 
 check("devredilmiş tur sayfasında SportsEvent kalmaz", () => {
   assert.ok(!roundAfter.includes("SportsEvent"), "tur sayfasında SportsEvent hâlâ duruyor");
@@ -125,6 +134,16 @@ check("devredilmiş tur sayfasında SportsEvent kalmaz", () => {
 
 check("kanonik Maç Merkezi'ni gösterir", () => {
   assert.match(roundAfter, new RegExp(`rel="canonical" href="${DOMAIN}/mac/${targetSlug}"`));
+});
+
+check("kullanıcıya görünen devir şeridi eklenir", () => {
+  assert.ok(roundAfter.includes('class="match-centre-handoff"'), "devir şeridi eklenmedi");
+  assert.ok(roundAfter.includes(`href="../mac/${targetSlug}"`), "devir şeridi hedefe bağlanmadı");
+});
+
+check("breadcrumb olmasa da devir şeridi eklenir", () => {
+  assert.ok(fallbackRoundAfter.includes('class="match-centre-handoff"'), "fallback devir şeridi eklenmedi");
+  assert.ok(fallbackRoundAfter.includes(`href="../mac/${targetSlug}"`), "fallback devir şeridi hedefe bağlanmadı");
 });
 
 check("sayfanın kendi düğümleri korunur (BreadcrumbList)", () => {
@@ -153,6 +172,7 @@ check("hedefi olmayan tur sayfasına dokunulmaz", () => {
 check("takma ad site haritasından düşer, hedef kalır", () => {
   const sitemap = read(path.join(dir, "sitemap.xml"));
   assert.ok(!sitemap.includes(`/mac/${roundSlug}.html`), "takma ad haritada kalmış");
+  assert.ok(!sitemap.includes(`/mac/${fallbackRoundSlug}.html`), "fallback takma ad haritada kalmış");
   assert.ok(sitemap.includes(`/mac/${targetSlug}.html`), "hedef haritadan düşmüş");
   assert.ok(sitemap.includes(`/mac/${lonelySlug}.html`), "hedefsiz sayfa haritadan düşmüş");
 });
