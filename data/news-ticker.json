@@ -1,24 +1,46 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-26T22:00:45.529Z",
+  "updatedAt": "2026-09-27T09:15:59.822Z",
   "items": [
     {
-      "id": "auto-news-30cf3ab86a0e37d95fe7",
+      "id": "auto-news-a8bb48339c64a2867a36",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Yöneticilerimiz, Olağan Genel Kurul öncesinde camiamızı bilgilendirdi",
+      "text": "Kulübümüzün Olağan Genel Kurul Toplantısı başladı",
       "team": "Fenerbahçe",
-      "timestamp": "2026-09-26T20:01:52.000Z",
+      "timestamp": "2026-09-27T07:51:53.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxQc21XaXhqZ3JneThGeE9yeVJxam5SWTZUT1RuTlpGRXEyeG1PNUUzWWFsSjgxSVQ0dVBMMDlDTlFXdjlrN3UxbjBsUGFyT2ttaU5ZbFVsV1JTejVwcjM2T0l3VDA2Q2FwWnpsTlRiakZuVTNyMkNtNXc2QUFEb1lCQXFYdXlaa3BDMWt0YkdnSHVOTFZ4Qm9ZeWw5aFQwZm95bmdWbzlfVzBWZGxVMEhxOHpOdXg2ZHJm?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxNUk16QTY5NjM0aF9aRV9yU09BZFM0Y2NqWHROOE5kem5YRXpQa3hiYndOd2hFYmNWTEtGRGVhMFhNWkNxOFRpQ0RaMGE3bmEwelM3SFQtZjBQYVZVeDJUWDJVa2l3LXVxTVFlSW9IOG9CTjc1OTZUQ3dsUnJzYWFPZWh2WG5XalR5T3JoeWRJRUFLdHNFTlg3THEyTlRvN2c?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-26T20:01:52.000Z"
+      }
+    },
+    {
+      "id": "auto-news-8f5327fd0c1bf2c74bb9",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Metin Keçeli Vefat Etti - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-26T18:46:44.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9Xc2lDUEtsX3hxaFIwcmo0WERtazk3UFVkVGF2S1RpTHZLazQwaUVWQUpSSGFFeGd4a2M3eXJid1RMMlhlVFZIUVhpMUNaQktXYjVYamFBLXZYaDA?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -113,7 +135,7 @@
       "team": "Trabzonspor",
       "timestamp": "2026-09-26T16:07:57.000Z",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "name": "trabzonspor.org.tr",
         "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPY1FsMnBnRlR3alpyWHk3VjBxeW9fNEZoZDNtWFRTZHpDeUJldzlHajd3bWpLVmlaUVZMdTdnSHQ1VVhUWDZUUG84N0oxM01ZU0dhcHBQV29yb1dzWDdjbzlBeWVZaDBaWm1UbDdPdGxkeXZzUVd1QzVESi1FeUJocDlMZ0VKNE1EczBaT1kyU1hmZ3pXcmc?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
@@ -185,27 +207,7 @@
         "priority": 3,
         "status": "OFFICIAL",
         "mergedReports": 2,
-        "firstSeenAt": "2026-09-25T12:21:51.000Z"
-      }
-    },
-    {
-      "id": "auto-news-9d7c3aae691f2c240135",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kadın Futbol Takımımızın Sporcularına Milli Davet - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-26T11:01:07.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE9LUlk3dmhoZ2Z3YVpvSkU1M1JwNGg0bG9ldFZDRVJoQ1N4MkYyQ1pCZjViLVJyWHd5LWlsWDY1bG13UF91M3FoMG9Ib2lOZG5sWjF6Sk0tckk4ckVjNUV3?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
+        "firstSeenAt": "2026-09-25T12:43:23.000Z"
       }
     },
     {
@@ -225,9 +227,7 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-24T08:00:00.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -263,26 +263,6 @@
       },
       "team": "Galatasaray",
       "important": true
-    },
-    {
-      "id": "auto-news-8375258f6c00cac7aa90",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Trabzonspor'da en golcü üçlü geleneği sürüyor!",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-26T07:37:44.000Z",
-      "source": {
-        "name": "sabah-spor",
-        "url": "https://www.sabah.com.tr/spor/futbol/2026/09/26/trabzonsporda-en-golcu-uclu-gelenegi-suruyor",
-        "publisher": "sabah.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "sabah-spor",
-        "priority": 8,
-        "status": "REPORTED"
-      }
     },
     {
       "id": "news-trabzonspor-gedson-fernandes-cff9fd8d",
@@ -327,16 +307,16 @@
       "important": true
     },
     {
-      "id": "auto-news-8c739394df9557c1d44b",
+      "id": "auto-news-0e2f66cf060aaa797cb2",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Nations League highlights: Italy 0-2 Belgium",
+      "text": "Nations League highlights: Czechia 1-2 Croatia",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-26T17:42:12.000Z",
+      "timestamp": "2026-09-27T05:54:20.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxQMW01eTc1enpnMzFpUHhWSktVS3dDN051ZmlHU2dLcnJFQ0lVOE43bVhhTGVQYmpENW1ZVXdSVnhQOXJDTDFjaGlYMVFKY09pZ2JJbjFqTDg2MWNLaXhselJ5eXRpdGk4aGZlWmUyNHJTYnRfSG5EYTIyMDE4UDlBNHQybDQ0Ql9uTE5xakNvYmFmbkFBUk5KRENEcDVITVoyQUJpam9vUzkxdE1tR3hDRDBvSXYwQ1BsZ0RwN3VDeHU4RmxsekZQM3dDVXZmWmFvcjI4?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxON3F1U2VWcUVvNjlZNjF3OGtWakoyQnZMYjAyOE5kRHRJcDhkZHBXNHN0ZnRIdVFqMFAycDNMVVpITFBMSTN0TlhWOHNVSTNHNXFZX2w2aVl2T3gzcDg4VHpudXRyZE0wcHhncWN6ekt1aklYOEZqRGxtTklvRW1rQnNFTG9ybXZfTGxrSGVDUnh4SjFkZlpuZVEtRUNvSTZiV3VuSW1EZDhCaGNjNFRQRm4zZ3lZY2d5OWpRWVBOSDBNa3hQcVpKa1BHQzVBazZZcElVdlVn?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -345,7 +325,7 @@
         "priority": 9,
         "status": "OFFICIAL",
         "mergedReports": 7,
-        "firstSeenAt": "2026-09-24T21:53:34.000Z"
+        "firstSeenAt": "2026-09-24T23:51:10.000Z"
       }
     },
     {
@@ -407,6 +387,26 @@
         "source": "rss",
         "feed": "super-lig",
         "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-35cea2abd8df54b07f6c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "The key trends at the heart of European club football",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-09-25T08:32:40.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPMUtKNzlVRVBwRWRLWGRseXU4dEcwei0ydXVPb1RlX294QVJzVUdyUnpYZlRTVEd3TnM5a0ExRTUtNThBMU5SNTlqRHd2RU5DdVNNQ1NvYk5LSXYzU1NwblBUWXZxT3lTYVJPaUlJTUoxbk9CWXdacmRxLUVKUmoxV1RxOWFUT050cThkMnhBM256YXhKM0RJQTFCNTRKTWRqM3JMR0RZMkpKR2pKT0JHVWFHWVk0NU1WakgzYTJyTmpXdlBfNF80?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
         "status": "OFFICIAL"
       }
     },
