@@ -56,6 +56,34 @@ const EN_MONTHS = Object.freeze(["january", "february", "march", "april", "may",
 
 const NATIONAL_TEAM_NAMES = new Set(["turkiye", "turkey", "turkiye a milli takimi", "turkiye milli takimi"]);
 
+/**
+ * A TAKIMI OLMAYAN MİLLÎ TAKIM YARIŞMALARI.
+ *
+ * Millî takım kaydı yarışmadan BAĞIMSIZ olarak sicile kabul ediliyor
+ * (aşağıdaki `evaluateEligibility`). Bu muafiyet A takımı için doğru ama
+ * tek başına bırakıldığında bir kadın ya da U21 karşılaşmasını da içine
+ * alır: sağlayıcı o takımları çoğu zaman "Turkey W" / "Turkey U21" diye
+ * adlandırdığı için ad kümesi genelde tutmaz — ama "Türkiye" yazımıyla
+ * gelen tek bir U21 kaydı, A Millî Takım maçı gibi kalıcı sayfa açardı.
+ *
+ * Bu yüzden yarışma adı da denetlenir. "Kupa" BİLEREK listede değil: millî
+ * takım Dünya Kupası ve Avrupa Şampiyonası oynar, kupa bir alt seviye
+ * işareti değildir (services/leagueResolver.js#NON_SENIOR_MENS_MARKERS bu
+ * ayrımı yapmıyor, çünkü orada kulüp ligi aranıyor).
+ */
+const NON_SENIOR_NATIONAL_MARKERS = Object.freeze([
+  "kadin", "kadinlar", "women", "womens", "feminin", "female",
+  "u15", "u16", "u17", "u18", "u19", "u20", "u21", "u23",
+  "genc", "gencler", "youth", "junior", "olympic", "olimpik", "futsal", "beach"
+]);
+
+function isNonSeniorCompetition(match) {
+  const haystack = [match && match.league, match && match.competition, match && match.competitionId, match && match.stage]
+    .map((value) => normalizeText(value))
+    .join(" ");
+  return NON_SENIOR_NATIONAL_MARKERS.some((marker) => haystack.includes(marker));
+}
+
 /** "Fenerbahçe" → "fenerbahce"; "Çaykur Rizespor" → "caykur-rizespor". */
 function slugify(value) {
   return normalizeText(value)
@@ -129,6 +157,7 @@ function identityOf(match) {
 
 function isTurkiyeNationalMatch(match) {
   if (!match) return false;
+  if (isNonSeniorCompetition(match)) return false;
   return [match.homeTeam, match.awayTeam].some((name) => NATIONAL_TEAM_NAMES.has(normalizeText(name)));
 }
 
@@ -376,6 +405,7 @@ function competitionNameFor(competitionId, fallback) {
 }
 
 module.exports = {
+  NON_SENIOR_NATIONAL_MARKERS,
   resetEnSlugTable,
   DOMAIN,
   EN_MONTHS,

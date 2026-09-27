@@ -130,6 +130,7 @@ export const STR = {
     venue: "Stadyum",
     channel: "Yayın kanalı",
     referee: "Hakem",
+    varReferee: "VAR",
     status: "Maç durumu",
     round: "Hafta",
     state: { pre: "Başlamadı", live: "Canlı", post: "Tamamlandı", pending: "Sonuç doğrulanıyor", postponed: "Ertelendi", cancelled: "İptal edildi", halftime: "Devre arası" },
@@ -306,6 +307,7 @@ export const STR = {
     venue: "Venue",
     channel: "TV channel",
     referee: "Referee",
+    varReferee: "VAR",
     status: "Status",
     round: "Matchweek",
     state: { pre: "Not started", live: "Live", post: "Full time", pending: "Result pending", postponed: "Postponed", cancelled: "Cancelled", halftime: "Half time" },
@@ -1680,6 +1682,7 @@ export function heroHtml(entry, ctx) {
           <div><dt>${escapeHtml(text.venue)}</dt><dd>${escapeHtml(entry.venue ? venueLabel(entry.venue, locale) : text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.referee)}</dt><dd>${escapeHtml(entry.referee || text.notAnnounced)}</dd></div>
+          ${entry.varReferee ? `<div><dt>${escapeHtml(text.varReferee)}</dt><dd>${escapeHtml(entry.varReferee)}</dd></div>` : ""}
         </dl>
       </section>`;
 }

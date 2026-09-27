@@ -125,7 +125,8 @@ function testUnknownProviderValues() {
 }
 
 function testCompetitionCatalog() {
-  assert.equal(competitionCatalog.competitions.length, 23);
+  // Sürüklenme kapısı; 24. kayıt UEFA Uluslar Ligi (docs/milli-takim.md).
+  assert.equal(competitionCatalog.competitions.length, 24);
   assert.equal(competitionCatalog.providerLeagueValue("premier-league", "api-football"), 39);
   assert.equal(competitionCatalog.providerLeagueValue("sampiyonlar-ligi", "football-data"), "CL");
   assert.equal(competitionCatalog.providerLeagueValue("avrupa-ligi", "api-football"), 3);

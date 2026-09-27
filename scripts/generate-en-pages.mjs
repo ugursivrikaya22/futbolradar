@@ -2068,13 +2068,43 @@ const PAGE_BUILDERS = {
   polls: pollsPage
 };
 
+/**
+ * BAŞKA BİR ÜRETİCİYE AİT İNGİLİZCE ROTALAR.
+ *
+ * Aşağıdaki döngü, eşlemedeki her rotanın burada bir kurucusu olmasını
+ * ŞART KOŞUYOR — ve bu doğru bir kapı: karşılığı yazılmamış bir rota
+ * eklendiğinde dil kutusu 404'e bağlanır, hreflang çifti tek yönlü kalır.
+ *
+ * Ama her İngilizce sayfa bu dosyada doğmak zorunda değil. Millî takım
+ * merkezi kendi üreticisinde (`generate-national-team-pages.mjs`) doğuyor,
+ * çünkü iki dili aynı veriden, aynı bölüm sırasıyla basıyor; ikinci bir
+ * kopya tutmak iki sayfanın sessizce ayrışmasıyla biterdi (aynı gerekçe
+ * scripts/lib/featuredMatchSpotlight.mjs başında da yazılı).
+ *
+ * Kapı bu yüzden KALDIRILMIYOR, yalnızca sahibi bilinen rotalar muaf
+ * tutuluyor — ve muafiyet bedava değil: dosyanın gerçekten üretilmiş
+ * olduğu aşağıda DENETLENİYOR.
+ */
+const EXTERNAL_PAGE_OWNERS = {
+  nationalTeam: "scripts/generate-national-team-pages.mjs"
+};
+
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;
 for (const route of ROUTES) {
   const build = PAGE_BUILDERS[route.key];
   if (!build) {
-    throw new Error(`Route "${route.key}" has no English page builder; the route map and the generator disagree.`);
+    const owner = EXTERNAL_PAGE_OWNERS[route.key];
+    if (!owner) {
+      throw new Error(`Route "${route.key}" has no English page builder; the route map and the generator disagree.`);
+    }
+    // Sahibi bilinen rota: sayfa başka bir üreticiden gelmek ZORUNDA.
+    // Gelmediyse sessizce geçmek, dil kutusunu 404'e bağlamak olurdu.
+    if (!fs.existsSync(path.join(root, route.en))) {
+      throw new Error(`Route "${route.key}" is owned by ${owner} but ${route.en} was not generated.`);
+    }
+    continue;
   }
   const target = path.join(root, route.en);
   const html = build();

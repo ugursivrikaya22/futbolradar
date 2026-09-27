@@ -1,0 +1,56 @@
+{
+  "_comment": "TÜRKİYE A MİLLÎ TAKIM YÜZEYİ — YAPILANDIRMA VE HENÜZ SAATİ AÇIKLANMAMIŞ PROGRAM. Üretici: scripts/generate-national-team-pages.mjs, belge: docs/milli-takim.md. BURAYA OLGU UYDURULMAZ: maç saati, kadro ve puan durumu ancak doğrulanmış kaynaktan geldiğinde yazılır; yazılmayan alan sayfada 'Henüz açıklanmadı' olarak görünür. Maçların kendisi bu dosyada TUTULMAZ — maç kayıtları data/matches.json ve data/fixture-calendar.json'dan, sayfa adresleri data/match-seo-pages.json sicilinden okunur; ikinci bir maç listesi tutmak iki listenin ayrışmasıyla biterdi.",
+  "enabled": true,
+  "team": {
+    "tr": "Türkiye",
+    "en": "Türkiye",
+    "aliases": ["Türkiye", "Turkey", "Türkiye A Millî Takımı", "Türkiye Milli Takımı"]
+  },
+  "competition": {
+    "id": "uefa-uluslar-ligi",
+    "league": "UEFA Uluslar Ligi",
+    "stage": { "tr": "A Ligi, 1. Grup", "en": "League A, Group 1" }
+  },
+  "_programComment": "YALNIZCA RESMÎ PROGRAMDA AÇIKLANMIŞ AMA BAŞLAMA SAATİ HENÜZ DOĞRULANMAMIŞ karşılaşmalar. Saati doğrulanan maç data/matches.json'a (ya da sağlayıcı takvimine) geçer ve kalıcı maç sayfasını kendiliğinden açar; o gün için saatli bir kayıt göründüğü anda bu satır sayfada listelenmez. `kickoff: null` bilinçlidir — uydurma bir saat yazmak yerine 'Saat henüz açıklanmadı' gösterilir.",
+  "announcedProgram": [
+    {
+      "date": "2026-10-02",
+      "homeTeam": "Belçika",
+      "awayTeam": "Türkiye",
+      "competitionId": "uefa-uluslar-ligi",
+      "league": "UEFA Uluslar Ligi",
+      "stage": { "tr": "A Ligi, 1. Grup", "en": "League A, Group 1" },
+      "kickoff": null,
+      "venue": null,
+      "source": "manual_verified",
+      "sourceUrl": "https://www.tff.org/default.aspx?pageID=202"
+    },
+    {
+      "date": "2026-10-05",
+      "homeTeam": "İtalya",
+      "awayTeam": "Türkiye",
+      "competitionId": "uefa-uluslar-ligi",
+      "league": "UEFA Uluslar Ligi",
+      "stage": { "tr": "A Ligi, 1. Grup", "en": "League A, Group 1" },
+      "kickoff": null,
+      "venue": null,
+      "source": "manual_verified",
+      "sourceUrl": "https://www.tff.org/default.aspx?pageID=202"
+    }
+  ],
+  "_squadComment": "TFF kadroyu duyurduğunda `announcedAt` ve `players` doldurulur (ad + kulüp + mevki). Doldurulmadıkça sayfa kadro bölümünü 'Henüz açıklanmadı' olarak gösterir; tahmin edilmiş bir kadro ASLA yazılmaz.",
+  "squad": {
+    "announcedAt": null,
+    "sourceUrl": null,
+    "players": []
+  },
+  "_standingsComment": "UEFA Uluslar Ligi 1. Grup puan durumu. Sağlayıcı /standings yanıtı geldiğinde data/league-standings.json'a düşer ve sayfa oradan okur; burada yalnızca doğrulanmış bir elle giriş varsa kullanılır. İkisi de yoksa bölüm 'Henüz açıklanmadı' gösterir.",
+  "groupStandings": {
+    "verifiedAt": null,
+    "sourceUrl": null,
+    "rows": []
+  },
+  "sources": [
+    { "label": "Türkiye Futbol Federasyonu", "url": "https://www.tff.org/default.aspx?pageID=202" }
+  ]
+}

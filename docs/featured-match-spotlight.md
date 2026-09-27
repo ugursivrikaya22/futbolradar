@@ -1,6 +1,8 @@
 # Ana sayfa maç vitrini (featured match spotlight)
 
-> **DURUM (2026-09-16):** Sistem açık ve yapılandırmadaki kulüp **Beşiktaş**.
+> **DURUM (2026-09-27):** Sistem açık. Yapılandırmadaki takımlar
+> **Türkiye A Millî Takım** ve **Beşiktaş**; millî maç `priorityTeams` ve
+> `majorTeams` listelerinde (bkz. [docs/milli-takim.md](./milli-takim.md)).
 > `featured-match-spotlight` adımı `scripts/lib/postprocessChain.mjs`
 > içindeki `POSTPROCESS_CHAIN`e eklendi; saatlik güncelleme de tam derleme
 > de aynı zinciri koştuğu için kutu kendiliğinden açılır ve kapanır.
@@ -33,19 +35,46 @@ ne `noindex` yapar, ne de yönlendirir** — yalnızca ana sayfadaki *geçici
 ```json
 {
   "enabled": true,
-  "teams": ["Beşiktaş"],
+  "teams": ["Türkiye", "Beşiktaş"],
+  "priorityTeams": ["Türkiye"],
+  "majorTeams": ["Türkiye"],
   "openBeforeHours": 48,
   "dwellAfterFinishMinutes": 120,
   "assumedDurationMinutes": 150
 }
 ```
 
-`teams` listesi değiştirilerek sistem **başka bir kulübe** (ya da birden çok
-kulübe) çevrilir; kod hiçbir yerde kulüp adına bağlı değildir. Aynı anda
+`teams` listesi değiştirilerek sistem **başka bir takıma** (ya da birden çok
+takıma) çevrilir; kod hiçbir yerde takım adına bağlı değildir. Aynı anda
 birden çok aday varsa sıra: canlı → başlıyor → yaklaşan → ertelenmiş →
-biten; eşitlikte başlama saatine yakınlık kazanır.
+biten; eşitlikte önce `priorityTeams`, sonra başlama saatine yakınlık
+kazanır.
+
+`priorityTeams` **yalnızca aynı evredeki** adaylar arasında uygulanır. Evre
+sırası bilerek bozulmaz: gerçekten canlı bir kulüp maçı, yaklaşan bir millî
+maçın önünde kalır — okuyucunun o an aradığı şey canlı skordur.
+
+`majorTeams` listesindeki takımın maçı, maç öncesi ve maç sırasında
+**büyük kart** (`fms--major`) olarak çizilir ve maç öncesi evrede
+**geri sayım** taşır. Bitiş düdüğünden sonra sınıf kendiliğinden düşer:
+kutu normal boyuta döner, 2 saatlik sayaç normal boyutta işler. Geri sayım
+tamamen yerel çalışır (tarayıcı saati) ve **tek bir ağ isteği atmaz**.
 
 `enabled: false` yapıldığında blok bir sonraki koşuda sökülür.
+
+## Bayat "canlı" kaydı vitrine girmez
+
+`phaseOf`, ham durumu okumak yerine kararı
+`services/matchStatus.js#liveVerdict` kapısından geçirir (gün, başlama saati
+ve veri tazeliği). Gerekçe depoda ölçüldü: sağlayıcı 25 Eylül
+Türkiye–France maçını canlıya çevirip bir daha güncellemedi ve kayıt iki gün
+boyunca `LIVE 0-0` kaldı. Ham durum okunduğunda o kayıt ana sayfanın en
+üstünde "CANLI 0-0 53'" diye görünüyordu — yanlış veri değil, **yanlış
+iddia** — ve üstelik gerçekten yaklaşan maçın yerini kapıyordu.
+
+Kapıdan geçmeyen kayıt, maç süresi penceresinin içindeyse "başlıyor"
+bandında kalır (**skor yazılmaz**), pencere kapandıysa bitmiş sayılır ve
+bekleme süresi dolduğu için kutu kendiliğinden düşer.
 
 ## 2 saatlik sayaç gerçek düdükten başlar
 

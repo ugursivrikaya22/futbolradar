@@ -52,6 +52,14 @@ const spotlight = require("../services/featuredMatchSpotlight.js");
 const { istanbulDay, matchState } = require("../services/matchStatus.js");
 const { identityOf } = require("../services/matchSeoPages.js");
 const { competitionLabel } = require("../services/i18n.js");
+const { nationLabel } = require("../services/displayLabels.js");
+
+/**
+ * A Millî Takım adları — `services/matchSeoPages.js` ile AYNI küme.
+ * Kutuya millî takım merkezinin bağlantısını yalnızca gerçekten millî bir
+ * maçta basmak için kullanılır; seçim kuralına karışmaz.
+ */
+const NATIONAL_TEAM_NAMES = ["Türkiye", "Turkey"];
 
 const CONFIG_PATH = "data/featured-match-spotlight.json";
 const STATE_PATH = "data/featured-match-spotlight-state.json";
@@ -241,9 +249,35 @@ function viewFor(entry, locale, base) {
     ? `id=${encodeURIComponent(entry.providerMatchId)}&date=${encodeURIComponent(day)}`
     : "";
 
+  const phase = spotlight.phaseOf(entry, now, config);
+
+  // A MİLLÎ TAKIM SAYFASINA BAĞLANTI, YALNIZCA SAYFA GERÇEKTEN VARSA.
+  // Millî maçta okuyucu kadro, grup durumu ve son gelişmeler için tek bir
+  // merkez arıyor; kulüp maçında böyle bir merkez yok, o yüzden bağlantı
+  // koşullu. Adres diskte doğrulanıyor: olmayan bir sayfaya bağlanmak
+  // hiç bağlanmamaktan kötüdür.
+  const hubRelative = locale === "en" ? "en/turkey-national-team.html" : "milli-takim.html";
+  const hubExists = fs.existsSync(path.join(root, hubRelative));
+  const isNational = spotlight.involvesTeam(entry, NATIONAL_TEAM_NAMES);
+  const extraLinks = isNational && hubExists
+    ? [{ href: `${base}${hubRelative.replace(/\.html$/, "")}`, label: locale === "en" ? "Türkiye national team hub" : "A Millî Takım sayfası" }]
+    : [];
+
   return {
-    homeTeam: entry.homeTeam,
-    awayTeam: entry.awayTeam,
+    // GÖRÜNEN AD: İngilizce yüzeyde ülke adı İngilizce ("İtalya" → "Italy"),
+    // tıpkı kutunun bağlandığı maç sayfasının tabelası gibi. Kulüp adına
+    // dokunulmaz (services/displayLabels.js#nationLabel).
+    homeTeam: nationLabel(entry.homeTeam, locale),
+    awayTeam: nationLabel(entry.awayTeam, locale),
+    // EŞLEŞME ANAHTARI: ham ad. İstemci sağlayıcı kaydını bu adla bu maça
+    // bağlıyor; çevrilse canlı skor kutuya hiç yazılamazdı.
+    matchHome: entry.homeTeam,
+    matchAway: entry.awayTeam,
+    major: spotlight.isMajorSpotlight(entry, config, phase),
+    extraLinks,
+    // Geri sayımın sunucu tarafı başlangıç değeri bu ana göre hesaplanır;
+    // saniyeyi istemci sayar (ek istek yok).
+    renderedAt: new Date(now).toISOString(),
     // Lig adı iki dilde ayrı: İngilizce yüzeyde "Avrupa Ligi" yazmak,
     // maç sayfasının kendi başlığıyla ("Europa League") çelişirdi.
     league: entry.league ? competitionLabel(entry.league, locale) : "",
@@ -253,7 +287,7 @@ function viewFor(entry, locale, base) {
     kickoff: entry.kickoff,
     score: entry.score,
     minute: entry.minute,
-    phase: spotlight.phaseOf(entry, now, config),
+    phase,
     href: `${base}${target}`,
     query,
     expiresAt: expiry.at ? new Date(expiry.at).toISOString() : "",

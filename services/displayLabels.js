@@ -227,8 +227,87 @@ function sourceNoteLabel(value, locale) {
   });
 }
 
+
+/**
+ * MİLLÎ TAKIM ADININ SUNUM DİLİ.
+ *
+ * Millî maç kayıtları ülke adlarını TÜRKÇE saklıyor ("İtalya", "Belçika") —
+ * doğru olan da bu: Türkçe yüzey sitenin ana yüzeyi ve slug'lar o yazımdan
+ * kuruluyor (`/mac/turkiye-italya-28-eylul-2026`). Ama İngilizce sayfada
+ * "Türkiye vs İtalya" yazmak, o sayfanın kendi başlığındaki İngilizce
+ * arama niyetiyle ("Turkey Italy live score") çelişiyordu.
+ *
+ * Ülke adı bir OLGU, o adın İngilizcesi ise SUNUM — bu yüzden burada, bu
+ * dosyanın sözleşmesine uygun şekilde çözülüyor (dosya başındaki nota bkz.).
+ *
+ * KULÜP ADI BU EŞLEMEYE GİRMEZ. "Beşiktaş" İngilizce sayfada da
+ * Beşiktaş'tır; eşleme yalnızca millî takım karşılaşmalarında görünen ülke
+ * adlarını taşır ve tanınmayan ad OLDUĞU GİBİ döner — uydurma bir çeviri
+ * üretmektense kaynağın yazdığını göstermek dürüsttür.
+ *
+ * "Türkiye" bilerek çevrilmiyor: ülkenin BM'de tescilli İngilizce adı da
+ * "Türkiye" ve site bu yazımı iki dilde de kullanıyor.
+ */
+const NATION_LABELS_EN = {
+  "türkiye": "Türkiye",
+  "turkiye": "Türkiye",
+  "italya": "Italy",
+  "belçika": "Belgium",
+  "belcika": "Belgium",
+  "fransa": "France",
+  "ispanya": "Spain",
+  "almanya": "Germany",
+  "hollanda": "Netherlands",
+  "portekiz": "Portugal",
+  "i̇ngiltere": "England",
+  "ingiltere": "England",
+  "yunanistan": "Greece",
+  "hırvatistan": "Croatia",
+  "hirvatistan": "Croatia",
+  "sırbistan": "Serbia",
+  "sirbistan": "Serbia",
+  "i̇sviçre": "Switzerland",
+  "isviçre": "Switzerland",
+  "isvicre": "Switzerland",
+  "i̇sveç": "Sweden",
+  "isveç": "Sweden",
+  "isvec": "Sweden",
+  "danimarka": "Denmark",
+  "norveç": "Norway",
+  "norvec": "Norway",
+  "polonya": "Poland",
+  "macaristan": "Hungary",
+  "avusturya": "Austria",
+  "çekya": "Czechia",
+  "cekya": "Czechia",
+  "romanya": "Romania",
+  "bulgaristan": "Bulgaria",
+  "ukrayna": "Ukraine",
+  "i̇zlanda": "Iceland",
+  "izlanda": "Iceland",
+  "gürcistan": "Georgia",
+  "gurcistan": "Georgia",
+  "galler": "Wales",
+  "i̇skoçya": "Scotland",
+  "iskoçya": "Scotland",
+  "iskocya": "Scotland",
+  "i̇rlanda": "Ireland",
+  "irlanda": "Ireland"
+};
+
+/**
+ * @param {string} name   kayıttaki takım adı
+ * @param {string} locale "tr" | "en"
+ */
+function nationLabel(name, locale) {
+  const value = String(name === null || name === undefined ? "" : name).trim();
+  if (!value || !isEnglish(locale)) return value;
+  return NATION_LABELS_EN[fold(value)] || value;
+}
+
 module.exports = {
   broadcastLabel,
+  nationLabel,
   sourceNoteLabel,
   dateRangeLabel,
   dateTimeLabel,

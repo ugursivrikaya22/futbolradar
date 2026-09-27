@@ -223,6 +223,17 @@ const ROUTES = Object.freeze([
     en: "en/polls.html",
     changefreq: "daily",
     priority: "0.6"
+  },
+  // TÜRKİYE A MİLLÎ TAKIM MERKEZİ. Kalıcı bir yüzey: millî takımın arama
+  // talebi maç günleriyle sınırlı değil ("milli takım maçları", "milli
+  // takım kadrosu", "Türkiye grup durumu"). İçerik her koşuda yeniden
+  // basılır, adres hiç değişmez (scripts/generate-national-team-pages.mjs).
+  {
+    key: "nationalTeam",
+    tr: "milli-takim.html",
+    en: "en/turkey-national-team.html",
+    changefreq: "daily",
+    priority: "0.8"
   }
 ]);
 
@@ -408,6 +419,16 @@ const ROUTE_META = Object.freeze({
       description: "Verified Turkish football news, each story published with the source it was confirmed against."
     }
   },
+  nationalTeam: {
+    tr: {
+      title: "Türkiye A Millî Takım: Maç Programı, Canlı Skor ve Kadro | FutbolRadar",
+      description: "Türkiye A Millî Takımı'nın yaklaşan maçları, canlı skoru, son sonuçları, UEFA Uluslar Ligi grup durumu, kadrosu ve son gelişmeleri."
+    },
+    en: {
+      title: "Türkiye National Team: Fixtures, Live Scores and Squad | FutbolRadar",
+      description: "Upcoming fixtures, live scores, recent results, the UEFA Nations League group table, the squad and the latest news for the Türkiye men's national football team."
+    }
+  },
   polls: {
     tr: {
       title: "Anketler | FutbolRadar",
@@ -447,7 +468,8 @@ const NAV_KEYS = Object.freeze({
       { href: "momentum.html", key: "nav.momentum" },
       { href: "gol-kralligi.html", key: "nav.topScorers" },
       { href: "haberler.html", key: "nav.news" },
-      { href: "anketler.html", key: "nav.polls" }
+      { href: "anketler.html", key: "nav.polls" },
+      { href: "milli-takim.html", key: "nav.nationalTeam" }
     ]
   },
   // İNGİLİZCE MENÜ TÜRKÇEYLE AYNI YÜZEYİ, AYNI SIRAYLA AÇAR.
@@ -479,7 +501,8 @@ const NAV_KEYS = Object.freeze({
       { href: "en/momentum.html", key: "nav.momentum" },
       { href: "en/top-scorers.html", key: "nav.topScorers" },
       { href: "en/news.html", key: "nav.news" },
-      { href: "en/polls.html", key: "nav.polls" }
+      { href: "en/polls.html", key: "nav.polls" },
+      { href: "en/turkey-national-team.html", key: "nav.nationalTeam" }
     ]
   }
 });
@@ -730,6 +753,14 @@ const COMPETITION_KEYS = Object.freeze({
   "uefa konferans ligi": "conference-league",
   "uefa europa conference league": "conference-league",
   "conference league": "conference-league",
+  // MİLLÎ TAKIM YARIŞMASI. Sağlayıcı "UEFA Nations League" der, TFF
+  // "UEFA Uluslar Ligi"; iki yazım da aynı yarışmadır ve grup eki
+  // ("A Ligi 1. Grup") turnuva adının parçası DEĞİL, kaydın `stage`
+  // alanıdır — o yüzden burada eşlenmez.
+  "uefa uluslar ligi": "nations-league",
+  "uluslar ligi": "nations-league",
+  "uefa nations league": "nations-league",
+  "nations league": "nations-league",
   "premier league": "premier-league",
   "premier lig": "premier-league",
   bundesliga: "bundesliga",

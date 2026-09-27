@@ -69,6 +69,15 @@ export const POSTPROCESS_CHAIN = [
   // zorunda. Ayrıca takvime bağlı: anket kapanınca sayfanın durumu ve site
   // haritası kaydı saatlik koşuda kendiliğinden güncelleniyor.
   { id: "poll-pages", script: "generate-poll-pages.mjs", args: [], timeoutMinutes: 4 },
+  // Türkiye A Millî Takım merkezi (`/milli-takim`, `/en/turkey-national-team`).
+  // ZİNCİRDE OLMAK ZORUNDA, derleme kuyruğunda değil: sayfa saate bağlı —
+  // yaklaşan maç yaklaşır, maç canlıya döner, sonuç sayfaya düşer — ve
+  // ortak yerleşim, favicon, tema, hreflang ve varlık damgası adımlarının
+  // hepsini görmesi gerekiyor. Maç sicili (`generate-match-seo-pages.mjs`)
+  // zincirden ÖNCE koşuyor, dolayısıyla adresler her koşuda taze.
+  // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir onu
+  // normalleştiriyor.
+  { id: "national-team-pages", script: "generate-national-team-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },

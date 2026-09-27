@@ -99,7 +99,7 @@ const {
   trSlugFor
 } = require("../services/matchSeoPages.js");
 const { canonicalStatus, istanbulDay, kickoffMs } = require("../services/matchStatus.js");
-const { venueLabel } = require("../services/displayLabels.js");
+const { nationLabel, venueLabel } = require("../services/displayLabels.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { teamHubHref } = require("../services/teamHubLinks.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
@@ -418,6 +418,10 @@ function toCandidate(record, source) {
     round: record.round ?? null,
     venue: realVenue(record.venue),
     referee: record.referee || null,
+    // VAR HAKEMİ AYRI BİR ALAN. Orta hakemle aynı satıra yazmak iki
+    // farklı görevi tek olgu gibi göstermek olurdu; alan yoksa satır
+    // sayfada HİÇ basılmaz (uydurma bir "açıklanmadı" iddiası da yok).
+    varReferee: record.varReferee || record.var || null,
     broadcast: record.broadcast || null,
     status: canonicalStatus(record.status || record.providerStatus),
     providerStatus: record.providerStatus || null,
@@ -493,6 +497,7 @@ function mergeCandidate(entry, candidate) {
   if (!entry.venue && candidate.venue) entry.venue = candidate.venue;
   else if (candidate.venue && priority >= entryPriority && candidate.source !== "fixture") entry.venue = candidate.venue;
   if (candidate.referee && (priority >= entryPriority || !entry.referee)) entry.referee = candidate.referee;
+  if (candidate.varReferee && (priority >= entryPriority || !entry.varReferee)) entry.varReferee = candidate.varReferee;
   if (candidate.broadcast && (priority >= entryPriority || !entry.broadcast)) entry.broadcast = candidate.broadcast;
   if (!entry.competitionId && candidate.competitionId) entry.competitionId = candidate.competitionId;
   if (!entry.league && candidate.league) entry.league = candidate.league;
@@ -544,6 +549,7 @@ function newEntry(candidate) {
     round: candidate.round,
     venue: candidate.venue,
     referee: candidate.referee,
+    varReferee: candidate.varReferee,
     broadcast: candidate.broadcast,
     status: candidate.status,
     providerStatus: candidate.providerStatus,
@@ -878,8 +884,13 @@ function leagueLinks(entry, locale, base) {
 /* ------------------------------------------------------------------ */
 
 function pageTitles(entry, state, locale, disambiguate) {
-  const home = entry.homeTeam;
-  const away = entry.awayTeam;
+  // BAŞLIKTAKİ AD SUNUMDUR. Millî maç kayıtları ülke adlarını Türkçe
+  // saklıyor ("İtalya"); İngilizce başlıkta "Türkiye vs İtalya" yazmak, o
+  // sayfanın kendi arama niyetiyle ("Turkey Italy live score") çelişirdi.
+  // `nationLabel` yalnızca ülke adlarını çevirir, kulüp adına dokunmaz ve
+  // tanımadığı adı olduğu gibi döndürür (services/displayLabels.js).
+  const home = nationLabel(entry.homeTeam, locale);
+  const away = nationLabel(entry.awayTeam, locale);
   const score = hasScore(entry.score) ? `${entry.score.home}-${entry.score.away}` : "";
   const day = shortDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
@@ -971,9 +982,14 @@ function schemaFor(entry, state, locale, ctx, urls) {
     : state === "cancelled"
       ? "https://schema.org/EventCancelled"
       : "https://schema.org/EventScheduled";
+  // İŞARETLEME SAYFADA GÖRÜNENLE AYNI ADI TAŞIR. Görünen tabelada "Italy"
+  // yazıp şemaya "İtalya" yazmak, Google'ın "yapılandırılmış veri sayfayla
+  // eşleşmiyor" ihlali olurdu; iki taraf da `ctx` içindeki görünen adı okur.
+  const homeName = ctx.homeTeam;
+  const awayName = ctx.awayTeam;
   const name = state === "post" && hasScore(entry.score)
-    ? `${entry.homeTeam} ${entry.score.home}-${entry.score.away} ${entry.awayTeam}`
-    : `${entry.homeTeam} ${locale === "en" ? "vs" : "-"} ${entry.awayTeam}`;
+    ? `${homeName} ${entry.score.home}-${entry.score.away} ${awayName}`
+    : `${homeName} ${locale === "en" ? "vs" : "-"} ${awayName}`;
   const team = (teamName, href) => ({ "@type": "SportsTeam", name: teamName, ...(href ? { url: href } : {}) });
   const competitionName = ctx.competitionName ? competitionLabel(ctx.competitionName, locale) : null;
   const graph = [];
@@ -988,9 +1004,9 @@ function schemaFor(entry, state, locale, ctx, urls) {
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Football",
       ...(entry.venue ? { location: { "@type": "Place", name: venueLabel(entry.venue, locale) } } : {}),
-      homeTeam: team(entry.homeTeam, ctx.homeAbsolute),
-      awayTeam: team(entry.awayTeam, ctx.awayAbsolute),
-      competitor: [team(entry.homeTeam, ctx.homeAbsolute), team(entry.awayTeam, ctx.awayAbsolute)],
+      homeTeam: team(homeName, ctx.homeAbsolute),
+      awayTeam: team(awayName, ctx.awayAbsolute),
+      competitor: [team(homeName, ctx.homeAbsolute), team(awayName, ctx.awayAbsolute)],
       ...(competitionName ? { superEvent: { "@type": "SportsOrganization", name: competitionName } } : {}),
       ...(ctx.channel ? { publication: { "@type": "BroadcastEvent", name: ctx.channel, isLiveBroadcast: true } } : {}),
       inLanguage: locale === "en" ? "en" : "tr"
@@ -1061,8 +1077,12 @@ function pageHtml(entry, locale, options) {
     // maçta takip düğmesi hiç basılmaz.
     followFixtureId: (entry.providerIds && entry.providerIds.apiFootball) ? String(entry.providerIds.apiFootball) : "",
     playerIndex,
-    homeTeam: entry.homeTeam,
-    awayTeam: entry.awayTeam,
+    // GÖRÜNEN AD (tabela, bölüm başlıkları). ARAMA ANAHTARI DEĞİL: form,
+    // ikili rekabet, kadro ve canlı yoklama eşleşmeleri `entry.homeTeam`
+    // ham adını kullanmayı sürdürüyor — `data-msp-home` da öyle, yoksa
+    // istemci sağlayıcı kaydını bu maça bağlayamazdı.
+    homeTeam: nationLabel(entry.homeTeam, locale),
+    awayTeam: nationLabel(entry.awayTeam, locale),
     predictedLineup: predictedLineupFor(detail.naturalId),
     predictedLineupSources: predictedLineupsStore.sources || {},
     predictedLineupAsOf: predictedLineupsStore.asOf || null,
@@ -1275,7 +1295,7 @@ function pageHtml(entry, locale, options) {
   <body class="subpage match-seo-page">
     ${siteHeader({ base, locale, altHref })}
     <main class="container msp" data-match-center data-msp-slug="${escapeHtml(slugValue)}" data-msp-locale="${locale}" data-msp-state="${escapeHtml(state)}" data-msp-kickoff="${escapeHtml(istanbulIso(entry.kickoff) || "")}" data-msp-query="${escapeHtml(detailQuery)}" data-msp-home="${escapeHtml(entry.homeTeam)}" data-msp-away="${escapeHtml(entry.awayTeam)}" data-msp-title-live="${escapeHtml(liveTitles.live)}" data-msp-title-post="${escapeHtml(liveTitles.post)}" data-msp-poll-live="${POLL_SECONDS.live}" data-msp-poll-pre="${POLL_SECONDS.pre}">
-      <nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><a href="${base}${locale === "en" ? HUB_EN : HUB_TR}">${escapeHtml(text.allMatches)}</a><span>/</span>${breadcrumbCompetition}<span>${escapeHtml(entry.homeTeam)} ${locale === "en" ? "vs" : "-"} ${escapeHtml(entry.awayTeam)}</span></nav>
+      <nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><a href="${base}${locale === "en" ? HUB_EN : HUB_TR}">${escapeHtml(text.allMatches)}</a><span>/</span>${breadcrumbCompetition}<span>${escapeHtml(ctx.homeTeam)} ${locale === "en" ? "vs" : "-"} ${escapeHtml(ctx.awayTeam)}</span></nav>
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
       ${matchFollowHtml(ctx)}
       ${countdownHtml(entry, ctx)}

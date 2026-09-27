@@ -22,6 +22,7 @@ const spotlight = require("../services/featuredMatchSpotlight.js");
 
 const MINUTE = 60 * 1000;
 const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
 
 const CONFIG = { teams: ["Beşiktaş"], openBeforeHours: 48, dwellAfterFinishMinutes: 120, assumedDurationMinutes: 150 };
 const KICKOFF = "2026-09-17T22:00:00+03:00";
@@ -56,8 +57,38 @@ assert.equal(spotlight.involvesTeam({ homeTeam: "Galatasaray", awayTeam: "Liverp
 /* ── 2. Evreler ───────────────────────────────────────────────────────── */
 
 assert.equal(spotlight.phaseOf(match({}), KICKOFF_MS - HOUR, CONFIG), "pre");
-assert.equal(spotlight.phaseOf(match({ status: "LIVE" }), KICKOFF_MS + 20 * MINUTE, CONFIG), "live");
-assert.equal(spotlight.phaseOf(match({ status: "HALFTIME" }), KICKOFF_MS + 50 * MINUTE, CONFIG), "live");
+
+// CANLI EVRESİ SKOR İSTER.
+//
+// Bu iki satır eskiden skorsuz bir `LIVE` kaydını da "live" sayıyordu ve
+// kutu, arkasında hiçbir skor olmadan "CANLI" rozetiyle çiziliyordu — tam
+// olarak `services/matchStatus.js#liveVerdict`in 4. kapısının ("skorsuz
+// canlı iddiası yapılmaz") engellemek için var olduğu durum. `phaseOf`
+// artık kararı o kapıdan geçiriyor; skoru okunabilen canlı kayıt "live",
+// okunamayan "in-progress" (skor değil, "maç başladı" der).
+assert.equal(
+  spotlight.phaseOf(match({ status: "LIVE", score: { home: 1, away: 0 } }), KICKOFF_MS + 20 * MINUTE, CONFIG),
+  "live"
+);
+assert.equal(
+  spotlight.phaseOf(match({ status: "HALFTIME", score: { home: 1, away: 1 } }), KICKOFF_MS + 50 * MINUTE, CONFIG),
+  "live"
+);
+assert.equal(
+  spotlight.phaseOf(match({ status: "LIVE" }), KICKOFF_MS + 20 * MINUTE, CONFIG),
+  "in-progress",
+  "Skorsuz canlı iddiası kutuda 'CANLI' rozetine dönmemeli"
+);
+
+// BAYAT CANLI KAYDI CANLI DEĞİLDİR. Sağlayıcı maçı canlıya çevirip
+// güncellemeyi bıraktığında kayıt depoda donuyor; maç süresi penceresi
+// kapandığında kutu bitmiş sayar ve bekleme süresiyle kendiliğinden düşer.
+assert.equal(
+  spotlight.phaseOf(match({ status: "LIVE", minute: 53, score: { home: 0, away: 0 } }), KICKOFF_MS + 2 * DAY, CONFIG),
+  "post",
+  "İki gün önce canlıya dönmüş donmuş kayıt ana sayfada canlı kalmamalı"
+);
+
 assert.equal(spotlight.phaseOf(match({ status: "FINISHED" }), KICKOFF_MS + 2 * HOUR, CONFIG), "post");
 assert.equal(spotlight.phaseOf(match({ status: "POSTPONED" }), KICKOFF_MS - HOUR, CONFIG), "postponed");
 assert.equal(

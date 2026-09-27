@@ -537,6 +537,11 @@ function sitemapXml(files) {
     "derbi-radari.html",
     "haftanin-maclari.html",
     "mac-merkezi.html",
+    // Türkiye A Millî Takım merkezi. Çekirdek TR sayfaları bu listede ELLE
+    // sayılıyor (İngilizce karşılıkları aşağıda I18N_ROUTES'tan geliyor);
+    // liste dışı kalan sayfa site haritasında yalnızca alternate olarak
+    // görünür, kendi `<loc>` satırını hiç almaz.
+    "milli-takim.html",
     "istatistik-merkezi.html",
     "oyuncu-liderleri.html",
     "takim-trendleri.html",
