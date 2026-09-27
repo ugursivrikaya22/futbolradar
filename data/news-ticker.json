@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-27T09:15:59.822Z",
+  "updatedAt": "2026-09-27T15:06:48.413Z",
   "items": [
     {
       "id": "auto-news-a8bb48339c64a2867a36",
@@ -231,24 +231,18 @@
       }
     },
     {
-      "id": "auto-news-b7508c6de8b1bfa6b2f5",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Zorunlu Açıklama",
-      "team": "Galatasaray",
-      "timestamp": "2026-09-24T10:46:00.000Z",
+      "id": "news-fenerbahce-ismail-kartal-mert-dc72ef4c",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Fenerbahçe çevresinde İsmail Kartal Mert'e dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-26T13:21:22.000Z",
       "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMib0FVX3lxTFBWaWFVcGtFa3lxemRKX1BUb19TVGhRNTdOaFZEdnZMREFSdjBUZzVJWGJPaURxRVh6YTdKR055bTJFaTBZRl9LZG55eDZLR0ZOenQ3NklkNlBVQjhDVXczQW1pLUg4WjRqNnVrOVpnSQ?oc=5",
-        "publisher": "galatasaray.org"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-ismail-kartal-mert-dc72ef4c"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
+      "team": "Fenerbahçe",
+      "important": true
     },
     {
       "id": "news-galatasaray-batrakov-6bb9229f",
