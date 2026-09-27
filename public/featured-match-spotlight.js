@@ -10,7 +10,14 @@
  *      bayat bir "canlı" kutusu kalmasın diye damga (`data-fms-expires-at`)
  *      istemcide de uygulanır. Sunucu bir sonraki koşuda bloğu zaten söker.
  *
- *   2. CANLI SKOR. Maç saatinden bitişe kadar `/api/match-detail` yoklanır
+ *   2. GERİ SAYIM. Maç öncesi kutuda "maça kalan süre" saniye saniye işler.
+ *      TAMAMEN YEREL: tek bir ağ isteği atmaz, yalnızca `data-fms-countdown`
+ *      damgasıyla tarayıcı saatini karşılaştırır. Sunucu okunabilir bir
+ *      başlangıç değeri bastığı için JavaScript hiç çalışmasa da kutuda boş
+ *      bir iskelet kalmaz. Maç saati gelince sayaç yerini "maç başlıyor"
+ *      ibaresine bırakır ve durur.
+ *
+ *   3. CANLI SKOR. Maç saatinden bitişe kadar `/api/match-detail` yoklanır
  *      ve skor, dakika, rozet ve başlık güncellenir. Maç sayfasındaki
  *      `match-center.js` ile AYNI sözleşme: sağlayıcı DAHA İLERİ bir durum
  *      bildirmedikçe DOM'a dokunulmaz, skorsuz bir "canlı" iddiası
@@ -33,8 +40,15 @@
   var HALFTIME_CODES = { HALFTIME: 1, HT: 1, BT: 1, PAUSED: 1 };
 
   var locale = root.getAttribute("data-fms-locale") === "en" ? "en" : "tr";
+  // EŞLEŞME ANAHTARI ile GÖRÜNEN AD ayrı okunur. `data-fms-home` sağlayıcı
+  // kaydını bu maça bağlamak için kullanılan HAM addır; `-label` ise kutuda
+  // yazılan addır ve İngilizce yüzeyde ülke adı İngilizce olur ("Italy").
+  // Canlı skor geldiğinde başlık yeniden kurulduğu için ikisini karıştırmak,
+  // İngilizce kutunun maç başlayınca Türkçe ada dönmesi demekti.
   var homeName = root.getAttribute("data-fms-home") || "";
   var awayName = root.getAttribute("data-fms-away") || "";
+  var homeLabel = root.getAttribute("data-fms-home-label") || homeName;
+  var awayLabel = root.getAttribute("data-fms-away-label") || awayName;
   var query = root.getAttribute("data-fms-query") || "";
   var kickoffMs = Date.parse(root.getAttribute("data-fms-kickoff") || "");
   var expiresAt = Date.parse(root.getAttribute("data-fms-expires-at") || "");
@@ -68,8 +82,79 @@
   }
 
   if (scheduleExpiry()) return;
+
+  // 2) Geri sayım. Sunucudan gelen hedef ana göre her saniye yalnızca dört
+  // sayının METNİ değişir; düğüm eklenip çıkarılmadığı için düzen yeniden
+  // hesaplanmaz. Sekme gizliyken tik durur (gereksiz iş yok), geri
+  // dönüldüğünde anında tazelenir.
+  (function countdown() {
+    var box = root && root.querySelector("[data-fms-countdown]");
+    if (!box) return;
+    var target = Date.parse(box.getAttribute("data-fms-countdown") || "");
+    if (!isFinite(target)) return;
+
+    var grid = box.querySelector("[data-fms-countdown-grid]");
+    var started = box.querySelector("[data-fms-countdown-started]");
+    var cells = {};
+    var nodes = box.querySelectorAll("[data-fms-count]");
+    for (var i = 0; i < nodes.length; i += 1) {
+      cells[nodes[i].getAttribute("data-fms-count")] = nodes[i].querySelector("[data-fms-count-value]");
+    }
+    var ticker = null;
+
+    function two(value) {
+      return value < 10 ? "0" + value : String(value);
+    }
+
+    function set(key, value) {
+      var node = cells[key];
+      var text = two(value);
+      // Aynı metni yeniden yazmak bile ekran okuyucularında gereksiz
+      // bildirim üretebiliyor; yalnızca gerçekten değişen hücre güncellenir.
+      if (node && node.textContent !== text) node.textContent = text;
+    }
+
+    function stopTicker() {
+      if (ticker) {
+        window.clearInterval(ticker);
+        ticker = null;
+      }
+    }
+
+    function tick() {
+      var remaining = target - Date.now();
+      if (remaining <= 0) {
+        // Maç saati geldi: "kalan süre" diye bir olgu kalmadı. Sayaç yerini
+        // kısa bir ibareye bırakır; skoru canlı yoklama yazar.
+        if (grid) grid.hidden = true;
+        if (started) started.hidden = false;
+        stopTicker();
+        return;
+      }
+      var total = Math.floor(remaining / 1000);
+      set("days", Math.floor(total / 86400));
+      set("hours", Math.floor((total % 86400) / 3600));
+      set("minutes", Math.floor((total % 3600) / 60));
+      set("seconds", total % 60);
+    }
+
+    function resume() {
+      stopTicker();
+      tick();
+      if (target - Date.now() > 0) ticker = window.setInterval(tick, 1000);
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) stopTicker();
+      else resume();
+    });
+
+    resume();
+  })();
+
   if (!window.fetch || !query || isNaN(kickoffMs)) return;
 
+  // 3) Canlı skor yoklaması.
   var phase = root.getAttribute("data-fms-phase") || "pre";
   if (phase === "post" || phase === "postponed") return;
 
@@ -123,6 +208,10 @@
     lastSignature = signature;
 
     var text = Number(home) + "-" + Number(away);
+    // Maç gerçekten başladı: geri sayım kutusu tamamen düşer. Skor varken
+    // "maça kalan süre" göstermek iki çelişkili olgu basmak olurdu.
+    var countdownBox = root.querySelector("[data-fms-countdown]");
+    if (countdownBox && countdownBox.parentNode) countdownBox.parentNode.removeChild(countdownBox);
     if (scoreBox) {
       scoreBox.hidden = false;
       scoreBox.classList.remove("is-empty");
@@ -136,7 +225,7 @@
       if (badge) badge.textContent = COPY.post;
       root.className = root.className.replace(/fms--[a-z-]+/, "fms--post");
       root.setAttribute("data-fms-phase", "post");
-      if (titleLink) titleLink.textContent = homeName + " " + text + " " + awayName + COPY.postTitle;
+      if (titleLink) titleLink.textContent = homeLabel + " " + text + " " + awayLabel + COPY.postTitle;
       if (minuteBox) minuteBox.textContent = "";
       stop();
       return;
@@ -145,7 +234,7 @@
     if (badge) badge.textContent = state === "halftime" ? COPY.halftime : COPY.live;
     root.className = root.className.replace(/fms--[a-z-]+/, "fms--live");
     root.setAttribute("data-fms-phase", "live");
-    if (titleLink) titleLink.textContent = homeName + " " + text + " " + awayName + COPY.liveTitle;
+    if (titleLink) titleLink.textContent = homeLabel + " " + text + " " + awayLabel + COPY.liveTitle;
   }
 
   function stop() {

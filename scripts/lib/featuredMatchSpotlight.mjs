@@ -31,6 +31,7 @@ const STRINGS = {
       { anchor: "puan-durumu", label: "Puan durumu" }
     ],
     facts: { time: "Saat", venue: "Stadyum", referee: "Hakem", channel: "Yayın", competition: "Turnuva" },
+    countdown: { label: "Maça kalan süre", days: "gün", hours: "saat", minutes: "dakika", seconds: "saniye", started: "Maç başlıyor" },
     tsi: "TSİ",
     today: "bugün",
     tomorrow: "yarın",
@@ -61,6 +62,7 @@ const STRINGS = {
       { anchor: "puan-durumu", label: "Standings" }
     ],
     facts: { time: "Kick-off", venue: "Stadium", referee: "Referee", channel: "TV", competition: "Competition" },
+    countdown: { label: "Time to kick-off", days: "days", hours: "hours", minutes: "minutes", seconds: "seconds", started: "Kick-off" },
     tsi: "(UTC+3)",
     today: "today",
     tomorrow: "tomorrow",
@@ -168,11 +170,58 @@ export function spotlightTitle(view, locale) {
   return copy.title.pre(home, away, whenPhrase({ kickoff: view.kickoff, locale, nowIstanbulDay: view.todayIstanbul }));
 }
 
+/**
+ * GERİ SAYIM — SUNUCUDA BAŞLANGIÇ DEĞERİ, İSTEMCİDE TİKLEME.
+ *
+ * Kutu maçtan 48 saat önce açılıyor ve sayfa saatlik derlemeyle basılıyor:
+ * sunucuda hesaplanan "kalan süre" yayına girdiği anda bayatlamaya başlar.
+ * Bu yüzden işaretleme HEDEF ANI (`data-fms-countdown="<ISO>"`) taşır ve
+ * saniyeyi `featured-match-spotlight.js` sayar — ek bir ağ isteği YOK,
+ * yalnızca yerel saat.
+ *
+ * Sunucu yine de okunabilir bir başlangıç değeri basar: JavaScript
+ * çalışmadığında ya da gelmeden önce kutu boş bir iskelet göstermez.
+ * Yalnızca maç öncesi evrede çizilir; maç başladığında yerini skor alır.
+ */
+function countdownHtml(view, copy) {
+  const target = Date.parse(view.kickoff || "");
+  if (!Number.isFinite(target)) return "";
+  const from = Date.parse(view.renderedAt || "") || target;
+  const remaining = Math.max(0, target - from);
+  const totalSeconds = Math.floor(remaining / 1000);
+  const parts = [
+    { key: "days", value: Math.floor(totalSeconds / 86400) },
+    { key: "hours", value: Math.floor((totalSeconds % 86400) / 3600) },
+    { key: "minutes", value: Math.floor((totalSeconds % 3600) / 60) },
+    { key: "seconds", value: totalSeconds % 60 }
+  ];
+
+  const cells = parts.map((part) => `<span class="fms__count" data-fms-count="${part.key}">` +
+    `<b data-fms-count-value>${String(part.value).padStart(2, "0")}</b>` +
+    `<span>${escapeHtml(copy.countdown[part.key])}</span></span>`).join("");
+
+  return `<div class="fms__countdown" data-fms-countdown="${escapeHtml(view.kickoff || "")}" aria-label="${escapeHtml(copy.countdown.label)}">` +
+    `<span class="fms__countdown-label">${escapeHtml(copy.countdown.label)}</span>` +
+    `<span class="fms__countdown-grid" data-fms-countdown-grid>${cells}</span>` +
+    `<span class="fms__countdown-started" data-fms-countdown-started hidden>${escapeHtml(copy.countdown.started)}</span>` +
+    `</div>`;
+}
+
 function factRow(label, value) {
   if (!value) return "";
   return `<div class="fms__fact"><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`;
 }
 
+/**
+ * GÖRÜNEN AD İLE EŞLEŞME ANAHTARI AYRI.
+ *
+ * `homeTeam`/`awayTeam` kutuda YAZILAN addır ve İngilizce yüzeyde ülke adı
+ * İngilizce olur ("İtalya" → "Italy"), böylece kutu bağlandığı maç
+ * sayfasının tabelasıyla aynı şeyi söyler. `matchHome`/`matchAway` ise
+ * sağlayıcı kaydını bu maça bağlamak için kullanılan HAM addır
+ * (`featured-match-spotlight.js#belongsToMatch`): çevrilse istemci canlı
+ * skoru bu kutuya hiç yazamazdı.
+ */
 /**
  * Ana sayfa vitrini. `href` üreticiden GELİR, burada slug kurulmaz: adresi
  * gerçekten yazan üretici `data/match-seo-pages.json` kaydını tutuyor ve
@@ -201,6 +250,14 @@ export function spotlightBlock(view, options) {
   const links = copy.links
     .filter((link) => PHASE_ANCHORS.includes(link.anchor))
     .map((link) => `<a class="fms__jump" href="${escapeHtml(view.href)}#${link.anchor}">${escapeHtml(link.label)}</a>`)
+    .concat(
+      // EK BAĞLANTI ÇAĞIRANDAN GELİR (ör. "/milli-takim" — son gelişmeler,
+      // kadro ve grup durumu). Burada adres KURULMAZ: hedefi gerçekten
+      // üreten taraf veriyor, yoksa bağlantı hiç basılmaz.
+      (Array.isArray(view.extraLinks) ? view.extraLinks : [])
+        .filter((link) => link && link.href && link.label)
+        .map((link) => `<a class="fms__jump" href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a>`)
+    )
     .join("");
 
   const scoreBoard = score
@@ -210,8 +267,12 @@ export function spotlightBlock(view, options) {
   // `data-fms-expires-at`: kutu, derlemeler arasında kendini kaldırır. Sunucu
   // bir sonraki koşuda bloğu zaten sökecek; damga aradaki boşlukta okuyucunun
   // ana sayfasında bayat bir "canlı" kutusu kalmasını önler.
+  // Geri sayım YALNIZCA maç öncesinde: maç başladıktan sonra "kalan süre"
+  // diye bir olgu yoktur ve kutunun o alanını skor devralır.
+  const countdown = phase === "pre" ? countdownHtml(view, copy) : "";
+
   return `
-<section class="container fms fms--${escapeHtml(phase)}" data-featured-match-spotlight data-fms-locale="${locale}" data-fms-phase="${escapeHtml(phase)}" data-fms-kickoff="${escapeHtml(view.kickoff || "")}" data-fms-home="${escapeHtml(view.homeTeam)}" data-fms-away="${escapeHtml(view.awayTeam)}" data-fms-href="${escapeHtml(view.href)}"${view.query ? ` data-fms-query="${escapeHtml(view.query)}"` : ""}${view.expiresAt ? ` data-fms-expires-at="${escapeHtml(view.expiresAt)}"` : ""} aria-labelledby="fms-title">
+<section class="container fms fms--${escapeHtml(phase)}${view.major ? " fms--major" : ""}" data-featured-match-spotlight data-fms-locale="${locale}" data-fms-phase="${escapeHtml(phase)}" data-fms-kickoff="${escapeHtml(view.kickoff || "")}" data-fms-home="${escapeHtml(view.matchHome || view.homeTeam)}" data-fms-away="${escapeHtml(view.matchAway || view.awayTeam)}" data-fms-home-label="${escapeHtml(view.homeTeam)}" data-fms-away-label="${escapeHtml(view.awayTeam)}" data-fms-href="${escapeHtml(view.href)}"${view.query ? ` data-fms-query="${escapeHtml(view.query)}"` : ""}${view.expiresAt ? ` data-fms-expires-at="${escapeHtml(view.expiresAt)}"` : ""} aria-labelledby="fms-title">
   <div class="fms__inner">
     <div class="fms__head">
       <span class="fms__badge" data-fms-badge>${escapeHtml(copy.badge[phase])}</span>
@@ -219,6 +280,7 @@ export function spotlightBlock(view, options) {
     </div>
     <h2 class="fms__title" id="fms-title"><a href="${escapeHtml(view.href)}" data-fms-title>${escapeHtml(title)}</a></h2>
     ${scoreBoard}
+    ${countdown}
     <p class="fms__lead" data-fms-lead>${escapeHtml(copy.lead[phase])}</p>
     ${facts ? `<dl class="fms__facts">${facts}</dl>` : ""}
     <a class="fms__cta" href="${escapeHtml(view.href)}" data-fms-cta>${escapeHtml(copy.cta[phase])} <span aria-hidden="true">→</span></a>

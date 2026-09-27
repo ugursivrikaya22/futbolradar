@@ -17,7 +17,13 @@ function fakeResponse() {
   };
 }
 
-assert.equal(competitions.length, 23, "13 genişleme ligi eklendikten sonra katalog 23 kayıt taşımalı.");
+// Katalog boyutu SÜRÜKLENME KAPISIDIR: kayıt eklendiğinde ya da elden
+// düştüğünde bu satır bilinçli olarak güncellenir. 24. kayıt UEFA Uluslar
+// Ligi (apiFootball 5) — Türkiye A Millî Takımı maçlarının sağlayıcı tarih
+// sorgusundan takvime girmesini sağlayan satır (docs/milli-takim.md).
+assert.equal(competitions.length, 24, "13 genişleme ligi + UEFA Uluslar Ligi eklendikten sonra katalog 24 kayıt taşımalı.");
+assert.equal(findCompetitionByProviderId(5)?.id, "uefa-uluslar-ligi",
+  "UEFA Uluslar Ligi sağlayıcı kimliğinden çözülmeli; yoksa millî maçlar tarih sorgusunda elenir");
 assert.equal(findCompetition("Champions League")?.id, "sampiyonlar-ligi");
 
 // `resolveHints` (services/leagueRegistry.js'in ülkeye göre süzülmüş

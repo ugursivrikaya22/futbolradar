@@ -218,3 +218,96 @@
   .fms-strip { gap: 6px; }
   .fms-strip__cta { width: 100%; }
 }
+
+/* ── GERİ SAYIM ─────────────────────────────────────────────────────────
+   Yalnızca maç öncesi evrede basılır. Sayılar `font-variant-numeric:
+   tabular-nums` ile sabit genişlikte: saniye tiklerken kutu titremez
+   (`featured-match-spotlight.js` her saniye yalnızca metni değiştirir,
+   düzeni yeniden hesaplamaz). */
+.fms__countdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin: 0 0 14px;
+}
+
+.fms__countdown-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+.fms__countdown-grid { display: flex; gap: 10px; }
+
+.fms__count {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 54px;
+  padding: 7px 10px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: var(--radius, 14px);
+  background: rgba(255, 255, 255, .08);
+}
+
+.fms__count b {
+  font-size: clamp(18px, 2.4vw, 24px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.fms__count span {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  opacity: .72;
+}
+
+.fms__countdown-started {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  color: var(--accent, #f3cf55);
+}
+
+.fms__countdown-started[hidden],
+.fms__countdown-grid[hidden] { display: none; }
+
+/* ── BÜYÜK KART ─────────────────────────────────────────────────────────
+   `majorTeams` yapılandırmasındaki maç (A Millî Takım) maç öncesi ve maç
+   sırasında ana sayfanın en üstünde daha geniş bir alan kaplar. Sınıf
+   maç bitince düşer ve kutu KENDİLİĞİNDEN normal boyuta döner — ayrı bir
+   temizleme adımı yok (bkz. services/featuredMatchSpotlight.js
+   #isMajorSpotlight).
+
+   Boyut bir OLGU İDDİASI DEĞİL: kutunun içindeki her satır veri
+   katmanından geliyor, büyük kart yalnızca editoryal önem sıralamasıdır. */
+.fms--major { margin: 24px auto 30px; }
+
+.fms--major .fms__inner {
+  padding: clamp(22px, 4vw, 44px);
+  border-color: var(--accent, #f3cf55);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, .26);
+}
+
+.fms--major .fms__inner::before { width: 8px; }
+
+.fms--major .fms__title { font-size: clamp(26px, 4.6vw, 50px); }
+
+.fms--major .fms__badge { font-size: 12px; padding: 5px 12px; }
+
+.fms--major .fms__score-value { font-size: clamp(34px, 6vw, 58px); }
+
+.fms--major .fms__count { min-width: 62px; }
+
+@media (max-width: 560px) {
+  .fms--major { margin: 16px auto 22px; }
+  .fms__countdown-grid { width: 100%; justify-content: space-between; gap: 6px; }
+  .fms__count { min-width: 0; flex: 1; padding: 6px 4px; }
+  .fms--major .fms__count { min-width: 0; }
+}

@@ -54,6 +54,27 @@ Serie A, Bundesliga, Ligue 1 ve Türkiye A Millî Takımı maçları
 kalır ama `noindex,follow` olur ve sitemap'ten düşer; yeni tarih gelirse aynı
 adres yeniden indekslenir.
 
+Türkiye A Millî Takımı maçı, **yarışmadan bağımsız** olarak kabul edilir
+(`isTurkiyeNationalMatch`) — millî takım her turnuvada oynar ve listeyi
+turnuva turnuva büyütmek, bir sonraki eleme grubunda yine elle müdahale
+demek olurdu. Muafiyet **A takımına özgüdür**: yarışma adı kadın ya da alt
+yaş işareti taşıyorsa (`NON_SENIOR_NATIONAL_MARKERS`) kayıt millî maç
+sayılmaz, çünkü sağlayıcı o takımları bazen "Türkiye" yazımıyla da gönderir
+ve tek bir U21 kaydı A Millî Takım maçı gibi kalıcı sayfa açardı. "Kupa"
+bilerek işaret listesinde **değil**: millî takım Dünya Kupası ve Avrupa
+Şampiyonası oynar. Ayrıntı: [docs/milli-takim.md](./milli-takim.md).
+
+Tabela künyesinde **VAR hakemi** ayrı bir satırdır (`varReferee`) ve
+yalnızca veri varsa basılır: orta hakemle aynı satıra yazmak iki farklı
+görevi tek olgu gibi göstermek olurdu, uydurma bir "açıklanmadı" iddiası da
+yapılmaz.
+
+İngilizce sayfada millî takım karşılaşmasının **ülke adı** İngilizce
+gösterilir ("İtalya" → "Italy", `services/displayLabels.js#nationLabel`).
+Değişen yalnızca GÖRÜNEN addır: slug, kimlik ve canlı eşleşme anahtarı
+(`data-msp-home`) ham adı korur — yoksa istemci sağlayıcı kaydını maça
+bağlayamazdı. Kulüp adı bu eşlemeye girmez.
+
 ## Üç hâl
 
 `pageStateOf(entry, now)`:

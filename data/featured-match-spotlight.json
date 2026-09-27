@@ -1,8 +1,17 @@
 {
-  "_comment": "ANA SAYFA MAÇ VİTRİNİ — YAPILANDIRMA. Üretici: scripts/generate-featured-match-spotlight.mjs, belge: docs/featured-match-spotlight.md. Buradaki kulüplerin maçı, maçtan 'openBeforeHours' saat önce ana sayfanın en üstünde açılır ve GERÇEK bitiş düdüğünden 'dwellAfterFinishMinutes' dakika sonra ana sayfadan düşer. Maç sayfası kalıcıdır: vitrin kapansa bile /mac/<slug> aynı adreste indekslenebilir kalır. Burada olgu iddiası yazılmaz — skor, kadro, hakem ve yayın verisi veri katmanından gelir.",
+  "_comment": "ANA SAYFA MAÇ VİTRİNİ — YAPILANDIRMA. Üretici: scripts/generate-featured-match-spotlight.mjs, belgeler: docs/featured-match-spotlight.md ve docs/milli-takim.md. `teams` listesindeki takımın maçı, maçtan 'openBeforeHours' saat önce ana sayfanın en üstünde açılır ve GERÇEK bitiş düdüğünden 'dwellAfterFinishMinutes' dakika sonra ana sayfadan düşer. `priorityTeams` aynı evrede hangi maçın kutuyu alacağına karar verir (evre sırası bozulmaz: canlı maç her zaman yaklaşan maçtan önce gelir). `majorTeams` maç öncesi ve maç sırasında büyük kart çizer; bitiş düdüğünden sonra kutu normal boyuta döner. Maç sayfası kalıcıdır: vitrin kapansa bile /mac/<slug> aynı adreste indekslenebilir kalır. Burada olgu iddiası yazılmaz — skor, kadro, hakem ve yayın verisi veri katmanından gelir.",
   "enabled": true,
-  "teams": ["Beşiktaş"],
+  "teams": [
+    "Türkiye",
+    "Beşiktaş"
+  ],
   "openBeforeHours": 48,
   "dwellAfterFinishMinutes": 120,
-  "assumedDurationMinutes": 150
+  "assumedDurationMinutes": 150,
+  "priorityTeams": [
+    "Türkiye"
+  ],
+  "majorTeams": [
+    "Türkiye"
+  ]
 }

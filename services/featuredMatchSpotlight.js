@@ -29,7 +29,7 @@
  * sonra gelir; uydurma bir bitiş anı gerçek olanı ezemez.
  */
 
-const { hasReadableScore, kickoffMs, matchState, updatedAtMs } = require("./matchStatus");
+const { hasReadableScore, kickoffMs, liveVerdict, matchState, updatedAtMs } = require("./matchStatus");
 
 /** Vitrin maçtan en fazla bu kadar önce açılır. */
 const DEFAULT_OPEN_BEFORE_HOURS = 48;
@@ -108,7 +108,26 @@ function phaseOf(match, nowMs, options) {
   const state = matchState(match);
   if (OFF_STATES.has(state)) return state === "POSTPONED" ? "postponed" : "cancelled";
   if (FINISHED_STATES.has(state)) return "post";
-  if (LIVE_STATES.has(state)) return "live";
+
+  if (LIVE_STATES.has(state)) {
+    // BAYAT "CANLI" KAYDI VİTRİNE CANLI DİYE GİRMEZ.
+    //
+    // Sağlayıcı bir maçı canlıya çevirip sonra hiç güncellemediğinde kayıt
+    // depoda LIVE olarak donuyor. Ham durumu okumak, iki gün önceki maçı
+    // ana sayfanın en üstünde "CANLI 0-0 53'" diye göstermek demekti
+    // (25 Eylül Türkiye - France kaydı tam bunu yaptı) — ve o donmuş kutu
+    // aynı zamanda gerçekten yaklaşan maçın yerini kapıyordu.
+    //
+    // `liveVerdict` sitenin tek canlı kapısı: gün, başlama saati ve veri
+    // tazeliği kapılarını birlikte uygular. Kapıdan geçmeyen kayıt maç
+    // süresi penceresinin içindeyse "başlıyor" bandında kalır (skor
+    // yazılmaz), pencere kapandıysa "bitmiş" sayılır ve bekleme süresi
+    // dolduğu için kutu kendiliğinden düşer.
+    if (liveVerdict(match, { nowMs }).live) return "live";
+    const liveKickoff = kickoffMs(match);
+    if (liveKickoff != null && nowMs >= liveKickoff + settings.assumedDurationMs) return "post";
+    return "in-progress";
+  }
 
   const kickoff = kickoffMs(match);
   if (kickoff == null) return "pre";
@@ -133,6 +152,25 @@ function withDefaults(options) {
 
   return {
     teams: Array.isArray(config.teams) ? config.teams : [],
+    // ÖNCELİKLİ TAKIM — AYNI EVREDE HANGİSİ VİTRİNE GİRER.
+    //
+    // Vitrin tek kutudur ve yapılandırmada birden çok takım olabilir
+    // (kulüpler + A Millî Takım). İki maç aynı anda pencerede olduğunda
+    // eskiden yalnızca başlama saatine yakınlık karar veriyordu: millî maç
+    // akşam 21:45'te, bir kulüp maçı 19:00'da oynanıyorsa kulüp maçı öne
+    // geçiyordu. Öncelik listesi bunu düzeltir.
+    //
+    // EVRE SIRASI BOZULMAZ: öncelik yalnızca AYNI evredeki adaylar arasında
+    // uygulanır. Oynanan bir maç varken "yaklaşan" bir maçı öne almak,
+    // okuyucunun o an aradığı canlı skoru kutudan silmek olurdu.
+    priorityTeams: Array.isArray(config.priorityTeams) ? config.priorityTeams : [],
+    // BÜYÜK KART — kutunun ana sayfada kapladığı alan.
+    //
+    // Maç öncesi ve maç sırasında bu takımların maçı büyük kartla çizilir;
+    // bitiş düdüğünden sonra kutu kendiliğinden normal boyuta döner
+    // (`generate-featured-match-spotlight.mjs#viewFor`). Boyut bir OLGU
+    // İDDİASI DEĞİL, yalnızca editoryal önem sıralamasıdır.
+    majorTeams: Array.isArray(config.majorTeams) ? config.majorTeams : [],
     openBeforeMs: Math.max(0, openBeforeHours) * HOUR,
     dwellMs: Math.max(0, dwellMinutes) * MINUTE,
     assumedDurationMs: Math.max(0, assumedMinutes) * MINUTE
@@ -244,9 +282,14 @@ function selectSpotlight(matches, options) {
     .map((match) => ({
       match,
       phase: phaseOf(match, now, settings),
+      // 0 = öncelikli takımın maçı. Liste boşsa her maç 1 alır ve sıralama
+      // eskisiyle birebir aynı kalır.
+      priority: settings.priorityTeams.length && involvesTeam(match, settings.priorityTeams) ? 0 : 1,
       distance: Math.abs((kickoffMs(match) || 0) - now)
     }))
-    .sort((left, right) => (PHASE_RANK[left.phase] - PHASE_RANK[right.phase]) || (left.distance - right.distance));
+    .sort((left, right) => (PHASE_RANK[left.phase] - PHASE_RANK[right.phase])
+      || (left.priority - right.priority)
+      || (left.distance - right.distance));
 
   return candidates.length ? candidates[0].match : null;
 }
@@ -315,8 +358,21 @@ function pruneObservedState(state, nowMs, maxAgeDays = 30) {
   return out;
 }
 
+/**
+ * Kutu büyük çizilsin mi? Maç bittiğinde (ya da ertelendiğinde) HAYIR:
+ * büyük alan maç öncesi ve maç sırasındaki ilgi içindir, sonuç sayfası
+ * ana sayfada normal boyutta yaşar ve kalıcı maç sayfası zaten yerinde.
+ */
+function isMajorSpotlight(match, options, phase) {
+  const settings = withDefaults(options);
+  if (!settings.majorTeams.length) return false;
+  if (phase === "post" || phase === "postponed" || phase === "cancelled") return false;
+  return involvesTeam(match, settings.majorTeams);
+}
+
 module.exports = {
   DEFAULT_ASSUMED_DURATION_MINUTES,
+  isMajorSpotlight,
   OBSERVATION_WINDOW_MS,
   DEFAULT_DWELL_AFTER_FINISH_MINUTES,
   DEFAULT_OPEN_BEFORE_HOURS,
