@@ -21428,36 +21428,62 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-09-28T18:45:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-09-28T00:38:58.637Z",
+    "generatedAt": "2026-09-28T09:41:19.522Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Türkiye",
       "recentForm": {
-        "sampleSize": 0,
+        "sampleSize": 1,
         "points": 0,
         "wins": 0,
         "draws": 0,
-        "losses": 0,
+        "losses": 1,
         "goalsFor": 0,
-        "goalsAgainst": 0,
-        "goalDifference": 0,
-        "weightedScore": null,
-        "results": [],
-        "dataStatus": "insufficient"
+        "goalsAgainst": 1,
+        "goalDifference": -1,
+        "weightedScore": 0,
+        "results": [
+          {
+            "matchId": "turkiye-france-2026-09-25",
+            "kickoff": "2026-09-25T21:45:00+03:00",
+            "opponent": "France",
+            "venue": "home",
+            "goalsFor": 0,
+            "goalsAgainst": 1,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          }
+        ],
+        "dataStatus": "limited"
       },
       "homeForm": {
-        "sampleSize": 0,
+        "sampleSize": 1,
         "points": 0,
         "wins": 0,
         "draws": 0,
-        "losses": 0,
+        "losses": 1,
         "goalsFor": 0,
-        "goalsAgainst": 0,
-        "goalDifference": 0,
-        "weightedScore": null,
-        "results": [],
-        "dataStatus": "insufficient"
+        "goalsAgainst": 1,
+        "goalDifference": -1,
+        "weightedScore": 0,
+        "results": [
+          {
+            "matchId": "turkiye-france-2026-09-25",
+            "kickoff": "2026-09-25T21:45:00+03:00",
+            "opponent": "France",
+            "venue": "home",
+            "goalsFor": 0,
+            "goalsAgainst": 1,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          }
+        ],
+        "dataStatus": "limited"
       },
       "awayForm": {
         "sampleSize": 0,
@@ -21473,27 +21499,27 @@
         "dataStatus": "insufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": null,
+        "averageGoalsFor": 0,
         "direction": "unknown",
-        "sampleSize": 0,
-        "score": null
+        "sampleSize": 1,
+        "score": 0
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": null,
+        "averageGoalsAgainst": 1,
         "direction": "unknown",
-        "sampleSize": 0,
-        "score": null
+        "sampleSize": 1,
+        "score": 60
       },
-      "restDays": null,
+      "restDays": 3,
       "scheduleLoad": {
-        "matchesInWindow": 0,
+        "matchesInWindow": 1,
         "windowDays": 14,
         "level": "low"
       },
-      "confidence": 0,
-      "dataStatus": "insufficient",
+      "confidence": 35,
+      "dataStatus": "limited",
       "warnings": [
-        "no-prior-verified-matches"
+        "limited-recent-match-sample"
       ],
       "leaguePosition": {
         "rank": null,
@@ -21625,7 +21651,7 @@
         "knownStarterCount": 0,
         "requiredStarterCount": 11,
         "coverage": 0,
-        "confidence": 0,
+        "confidence": 3,
         "starters": [],
         "availability": {
           "fixtureId": "turkiye-italya-2026-09-28",
@@ -21705,7 +21731,7 @@
         "away": null
       },
       "form": {
-        "home": null,
+        "home": 0,
         "away": null
       },
       "availability": {
@@ -21719,12 +21745,12 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-09-28T00:38:58.637Z",
+      "generatedAt": "2026-09-28T09:41:19.522Z",
       "asOf": "2026-09-28T18:45:00.000Z",
-      "predictionStatus": "unavailable",
-      "dataConfidence": 0,
+      "predictionStatus": "low-confidence",
+      "dataConfidence": 8,
       "teamStrength": {
-        "home": null,
+        "home": 44,
         "away": null
       },
       "probabilities": {
@@ -21733,26 +21759,25 @@
         "awayWin": 33
       },
       "prediction": {
-        "primary": "balanced",
-        "label": "Tahmin hazırlanıyor",
-        "confidence": 0
+        "primary": "draw",
+        "label": "Beraberlik ihtimali öne çıkıyor",
+        "confidence": 8
       },
       "goalPotential": {
-        "score": null,
-        "label": null
+        "score": 18,
+        "label": "low"
       },
       "upsetRisk": {
-        "score": 87,
+        "score": 85,
         "label": "high"
       },
       "matchBalance": {
         "score": null,
         "label": null
       },
-      "summary": "Maç öncesi tahmin için yeterli doğrulanmış veri oluşmadı; bu bölüm veri arttıkça güncellenecek.",
+      "summary": "Model, ev sahibi için %33, beraberlik için %34, deplasman için %33 ihtimal hesaplıyor. Bu okuma 8/100 veri güveniyle üretildi; düşük güven nedeniyle temkinli değerlendirilmeli.",
       "warnings": [
-        "insufficient-data-for-prediction",
-        "goal-potential-unavailable"
+        "low-confidence-prediction"
       ]
     },
     "coverage": {
@@ -21760,12 +21785,12 @@
       "awaySquadCoverage": 0,
       "homeStatsCoverage": 0,
       "awayStatsCoverage": 0,
-      "recentFormCoverage": 0,
+      "recentFormCoverage": 10,
       "teamAnalysisCoverage": 0,
       "probableLineupCoverage": 0,
       "officialLineupCoverage": 0,
-      "overallCoverage": 0,
-      "confidenceLevel": "unavailable",
+      "overallCoverage": 2,
+      "confidenceLevel": "low",
       "missingComponents": [
         "Ev sahibi kadro kapsamı yetersiz",
         "Deplasman kadro kapsamı yetersiz",
@@ -21777,11 +21802,10 @@
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 0,
-    "analysisStatus": "unavailable",
+    "dataConfidence": 8,
+    "analysisStatus": "partial",
     "warnings": [
-      "insufficient-data-for-prediction",
-      "goal-potential-unavailable",
+      "low-confidence-prediction",
       "home-squad-data-missing",
       "away-squad-data-missing"
     ]
