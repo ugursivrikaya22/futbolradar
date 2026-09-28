@@ -1,7 +1,7 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-09-27T23:01:09.081Z",
+  "updatedAt": "2026-09-28T00:39:04.573Z",
   "playerCount": 806,
   "ratedPlayerCount": 352,
   "summary": {
@@ -50,7 +50,7 @@
         "notApplicable": 0
       }
     },
-    "changed": 3
+    "changed": 1
   },
   "players": {
     "u-cakir-galatasaray": {
@@ -2406,7 +2406,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -3257,7 +3257,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -6078,7 +6078,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -7438,7 +7438,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -7666,7 +7666,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -7903,7 +7903,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -8371,7 +8371,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -8583,7 +8583,7 @@
       "status": "computed",
       "computedCategories": 6,
       "coverage": 0.75,
-      "updatedAt": "2026-09-20T20:38:43.337Z",
+      "updatedAt": "2026-09-28T00:39:04.573Z",
       "weights": {
         "defense": 40,
         "form": 20,
@@ -8595,54 +8595,54 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 69,
+          "value": 68,
           "status": "computed",
-          "display": "69",
+          "display": "68",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Savunma (ağırlık %40)",
-              "value": "62 / 100"
+              "value": "57 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "73 / 100"
+              "value": "69 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "67 / 100"
+              "value": "80 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "87 / 100"
+              "value": "89 / 100"
             },
             {
               "label": "Potansiyel (ağırlık %15)",
-              "value": "73 / 100"
+              "value": "71 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 73,
+          "value": 69,
           "status": "computed",
-          "display": "73",
-          "coverage": 0.4,
-          "window": 2,
+          "display": "69",
+          "coverage": 0.6,
+          "window": 3,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "2 resmî maç"
+              "value": "3 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "180 dk"
+              "value": "270 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "2 / 2"
+              "value": "3 / 3"
             },
             {
               "label": "Kurtarış",
@@ -8650,7 +8650,7 @@
             },
             {
               "label": "Son maç",
-              "value": "Süper Lig"
+              "value": "UEFA Uluslar Ligi"
             }
           ]
         },
@@ -8677,24 +8677,24 @@
         "defense": {
           "key": "defense",
           "label": "Kalecilik",
-          "value": 62,
+          "value": 57,
           "status": "computed",
-          "display": "62",
+          "display": "57",
           "coverage": 0.34,
           "window": null,
           "inputs": [
             {
               "label": "Kurtarış",
-              "value": "7 · 3.5 / 90 dk"
+              "value": "7 · 2.33 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 87,
+          "value": 89,
           "status": "computed",
-          "display": "87",
+          "display": "89",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -8711,32 +8711,36 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 67,
+          "value": 80,
           "status": "computed",
-          "display": "67",
-          "coverage": 0.667,
+          "display": "80",
+          "coverage": 0.826,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%40 (180 dk / 5 maç)"
+              "value": "%60 (270 dk / 5 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "2 / 5 maç"
+              "value": "3 / 5 maç"
             },
             {
               "label": "Maç başına dakika",
               "value": "90 dk"
+            },
+            {
+              "label": "Maçtan maça istikrar",
+              "value": "±0.28 puan sapma (3 maç)"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 73,
+          "value": 71,
           "status": "computed",
-          "display": "73",
+          "display": "71",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -8754,7 +8758,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+5 puan (form ↔ sezon)"
+              "value": "+1 puan (form ↔ sezon)"
             }
           ]
         }
@@ -8762,15 +8766,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (2 resmî maç)",
-          "verifiedAt": "2026-09-20T20:00:00+03:00"
+          "label": "Maç kayıtları (3 resmî maç)",
+          "verifiedAt": "2026-09-27T21:45:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 2,
-        "minutes": 180
+        "matches": 3,
+        "minutes": 270
       },
-      "fingerprint": "b1550ade41da43f3"
+      "fingerprint": "41db8f9382efd174"
     },
     "e-agbadou-besiktas": {
       "version": 1,
@@ -10341,7 +10345,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -10800,7 +10804,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -11260,7 +11264,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -13963,7 +13967,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -14183,7 +14187,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -17482,7 +17486,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -21660,7 +21664,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -27479,7 +27483,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -27711,7 +27715,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -28782,7 +28786,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -30907,7 +30911,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -34630,7 +34634,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -38728,7 +38732,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -43016,7 +43020,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -44935,7 +44939,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -50236,7 +50240,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -59616,7 +59620,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -60260,7 +60264,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -62347,7 +62351,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -62571,7 +62575,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -63700,7 +63704,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -67898,7 +67902,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -68122,7 +68126,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -68350,7 +68354,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {
@@ -72270,7 +72274,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-09-27T23:00:00.657Z"
+          "verifiedAt": "2026-09-28T00:38:23.975Z"
         }
       ],
       "sampleWindow": {

@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-27T23:01:05.942Z",
+  "updatedAt": "2026-09-28T00:39:01.875Z",
   "matchCount": 1581,
   "records": [
     {
@@ -32,10 +32,10 @@
       "winner": "Greece",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -43,63 +43,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 16,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "4f3fb2745c2710cf",
-      "fingerprint": "4f3fb2745c2710cf",
+      "analysisSourceHash": "6d9771c74013a0be",
+      "fingerprint": "6d9771c74013a0be",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -111,7 +94,7 @@
       "reportUrl": "./mac-raporu/germany-greece-2026-09-27.html",
       "digest": {
         "headline": "Greece, Germany'yı 1-0 yendi",
-        "paragraph": "Greece, WWK Arena'da oynanan UEFA Uluslar Ligi karşılaşmasında Germany'yı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Greece, WWK Arena'da oynanan UEFA Uluslar Ligi karşılaşmasında Germany'yı 1-0 mağlup etti. Tek golü 74. dakikada Dimitrios Kourbelis (Greece) kaydetti.",
         "result": {
           "winner": "Greece",
           "loser": "Germany",
@@ -127,62 +110,223 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "74'",
+              "team": "Greece",
+              "type": "Gol",
+              "detail": "Dimitrios Kourbelis",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Germany",
+              "type": "Oyuncu değişikliği",
+              "detail": "Karim Adeyemi",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Greece",
+              "type": "Oyuncu değişikliği",
+              "detail": "Christos Tzolis",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Germany",
+              "type": "Oyuncu değişikliği",
+              "detail": "Nathaniel Brown",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Germany",
+              "type": "Oyuncu değişikliği",
+              "detail": "Felix Nmecha",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Dimitrios Kourbelis",
+              "team": "Greece",
+              "contribution": "68' sarı kart · 74' gol",
+              "impact": "orta"
+            },
+            {
+              "name": "Georgios Vagiannidis",
+              "team": "Greece",
+              "contribution": "18' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Konstantinos Karetsas",
+              "team": "Greece",
+              "contribution": "22' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Panagiotis Retsos",
+              "team": "Greece",
+              "contribution": "57' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Germany sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Greece sahaya 4-4-2 dizilişiyle çıktı.",
+            "Germany topu elinde tutarken Greece derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "74' Greece — Dimitrios Kourbelis: gol",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Germany maça 4-2-3-1 dizilişiyle başladı.",
+            "Greece maça 4-4-2 dizilişiyle başladı.",
+            "45' Greece değişikliği (Substitution 1). Değişiklikten sonra Greece adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "59' Greece değişikliği (Substitution 2). Değişiklikten sonra Greece adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "59' Greece değişikliği (Substitution 3). Değişiklikten sonra Greece adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' Germany değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Germany",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Greece",
+              "formation": "4-4-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Greece, Germany'yı 0-1 yendi."
+            "Greece, Germany'yı 0-1 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (1-5); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Germany topa daha çok sahip oldu (%76).",
+            "Germany daha çok şut denedi (16-8)."
+          ],
+          "improvements": [
+            "Greece şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Greece sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Germany",
+            "score": 67
+          },
+          "away": {
+            "team": "Greece",
+            "score": 44
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Germany %31.3, Greece %12.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Germany 45.6, Greece 28.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -191,11 +335,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -226,10 +381,10 @@
       "winner": "Portugal",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -237,63 +392,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 22
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 22,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6306022f5669cd43",
-      "fingerprint": "6306022f5669cd43",
+      "analysisSourceHash": "1a1dec6e39ca53da",
+      "fingerprint": "1a1dec6e39ca53da",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -305,7 +443,7 @@
       "reportUrl": "./mac-raporu/norway-portugal-2026-09-27.html",
       "digest": {
         "headline": "Portugal, Norway'ı 2-1 yendi",
-        "paragraph": "Portugal, Ullevaal Stadion'da oynanan UEFA Uluslar Ligi karşılaşmasında Norway'ı 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Portugal, Ullevaal Stadion'da oynanan UEFA Uluslar Ligi karşılaşmasında Norway'ı 2-1 mağlup etti. Golleri 17. dakikada Joao Felix (Portugal), 51. dakikada Erling Haaland (Norway), 54. dakikada Gonçalo Ramos (Portugal) kaydetti.",
         "result": {
           "winner": "Portugal",
           "loser": "Norway",
@@ -318,65 +456,248 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "17'",
+              "team": "Portugal",
+              "type": "Gol",
+              "detail": "Joao Felix",
+              "pivotal": true
+            },
+            {
+              "minute": "51'",
+              "team": "Norway",
+              "type": "Gol",
+              "detail": "Erling Haaland",
+              "pivotal": true
+            },
+            {
+              "minute": "54'",
+              "team": "Portugal",
+              "type": "Gol",
+              "detail": "Gonçalo Ramos",
+              "pivotal": true
+            },
+            {
+              "minute": "58'",
+              "team": "Portugal",
+              "type": "Gol",
+              "detail": "Gonçalo Ramos",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 8 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Portugal",
+              "type": "Sarı kart",
+              "detail": "",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Portugal",
+              "type": "Sarı kart",
+              "detail": "João Cancelo",
+              "decisive": false
+            },
+            {
+              "minute": "80'",
+              "team": "Portugal",
+              "type": "Oyuncu değişikliği",
+              "detail": "João Palhinha",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Portugal",
+              "type": "Oyuncu değişikliği",
+              "detail": "Gonçalo Ramos",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Gonçalo Ramos",
+              "team": "Portugal",
+              "contribution": "54' gol · 58' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Erling Haaland",
+              "team": "Norway",
+              "contribution": "51' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Joao Felix",
+              "team": "Portugal",
+              "contribution": "17' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Bernardo Silva",
+              "team": "Portugal",
+              "contribution": "90+3' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Norway sahaya 4-3-3 dizilişiyle çıktı.",
+            "Portugal sahaya 4-1-3-2 dizilişiyle çıktı.",
+            "Norway topu elinde tutarken Portugal derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "17' Portugal — Joao Felix: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (19 olay).",
+            "51' Norway — Erling Haaland: gol",
+            "54' Portugal — Gonçalo Ramos: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Norway maça 4-3-3 dizilişiyle başladı.",
+            "Portugal maça 4-1-3-2 dizilişiyle başladı.",
+            "55' Portugal değişikliği (Substitution 1). Değişiklikten sonra Portugal adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "56' Portugal değişikliği (Substitution 2). Değişiklikten sonra Portugal adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "66' Norway değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Norway değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Norway",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Portugal",
+              "formation": "4-1-3-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Portugal, Norway'ı 1-2 yendi."
+            "Portugal, Norway'ı 1-2 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (4-6); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Norway topa daha çok sahip oldu (%62).",
+            "Norway daha çok şut denedi (22-12)."
+          ],
+          "improvements": [
+            "Norway şut isabetinde geride kaldı (%27); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Portugal sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Norway",
+            "score": 68
+          },
+          "away": {
+            "team": "Portugal",
+            "score": 63
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Norway %27.3, Portugal %33.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Norway 25.9, Portugal 29.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -385,11 +706,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -420,10 +752,10 @@
       "winner": "Rep. Of Ireland",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -431,75 +763,58 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 16,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a5eaad86674b61e4",
-      "fingerprint": "a5eaad86674b61e4",
+      "analysisSourceHash": "fbd6cdbcb1a5c958",
+      "fingerprint": "fbd6cdbcb1a5c958",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Israel 0-3 Rep. Of Ireland maç raporu: UEFA Uluslar Ligi istatistikleri | FutbolRadar",
-        "description": "Israel 0-3 Rep. Of Ireland maç raporu, goller, olaylar ve sonraki maç.",
+        "description": "Israel 0-3 Rep. Of Ireland maç raporu, goller: Troy Parrott, Adam Idah, Jack Moylan, xG, şut ve pas istatistikleri, goller, olaylar ve sonraki maç.",
         "path": "mac-raporu/israel-rep-of-ireland-2026-09-27.html",
         "competition": "UEFA Uluslar Ligi"
       },
       "reportUrl": "./mac-raporu/israel-rep-of-ireland-2026-09-27.html",
       "digest": {
         "headline": "Rep. Of Ireland, Israel'i 3-0 yendi",
-        "paragraph": "Nagyerdei Stadion'da oynanan UEFA Uluslar Ligi maçını Rep. Of Ireland 3-0 kazandı; Israel sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Nagyerdei Stadion'da oynanan UEFA Uluslar Ligi maçını Rep. Of Ireland 3-0 kazandı; Israel sahadan puansız ayrıldı. Golleri 13. dakikada Troy Parrott (Rep. Of Ireland), 16. dakikada Adam Idah (Rep. Of Ireland), 25. dakikada Jack Moylan (Rep. Of Ireland) kaydetti.",
         "result": {
           "winner": "Rep. Of Ireland",
           "loser": "Israel",
@@ -515,62 +830,239 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "13'",
+              "team": "Rep. Of Ireland",
+              "type": "Gol",
+              "detail": "Troy Parrott",
+              "pivotal": true
+            },
+            {
+              "minute": "16'",
+              "team": "Rep. Of Ireland",
+              "type": "Gol",
+              "detail": "Adam Idah",
+              "pivotal": true
+            },
+            {
+              "minute": "25'",
+              "team": "Rep. Of Ireland",
+              "type": "Gol",
+              "detail": "Jack Moylan",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Israel",
+              "type": "Oyuncu değişikliği",
+              "detail": "Anan Khalaili",
+              "decisive": false
+            },
+            {
+              "minute": "76'",
+              "team": "Rep. Of Ireland",
+              "type": "Oyuncu değişikliği",
+              "detail": "Troy Parrott",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Israel",
+              "type": "Oyuncu değişikliği",
+              "detail": "Roy Revivo",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "Rep. Of Ireland",
+              "type": "Oyuncu değişikliği",
+              "detail": "Jayson Molumby",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Jack Moylan",
+              "team": "Rep. Of Ireland",
+              "contribution": "25' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Troy Parrott",
+              "team": "Rep. Of Ireland",
+              "contribution": "13' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Adam Idah",
+              "team": "Rep. Of Ireland",
+              "contribution": "16' gol · 59' sarı kart",
+              "impact": "orta"
+            },
+            {
+              "name": "Conor Coventry",
+              "team": "Rep. Of Ireland",
+              "contribution": "89' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Israel sahaya 5-3-2 dizilişiyle çıktı.",
+            "Rep. Of Ireland sahaya 3-4-3 dizilişiyle çıktı.",
+            "Israel topu elinde tutarken Rep. Of Ireland derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "13' Rep. Of Ireland — Troy Parrott: gol",
+            "16' Rep. Of Ireland — Adam Idah: gol",
+            "25' Rep. Of Ireland — Jack Moylan: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Israel maça 5-3-2 dizilişiyle başladı.",
+            "Rep. Of Ireland maça 3-4-3 dizilişiyle başladı.",
+            "45' Israel değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Israel değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Israel değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "68' Rep. Of Ireland değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Israel",
+              "formation": "5-3-2"
+            },
+            {
+              "team": "Rep. Of Ireland",
+              "formation": "3-4-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Rep. Of Ireland, Israel'i 0-3 yendi."
+            "Rep. Of Ireland, Israel'i 0-3 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (3-4); eldeki veri sonucun verimlilikle geldiğini gösteriyor."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Israel topa daha çok sahip oldu (%64).",
+            "Rep. Of Ireland daha çok şut denedi (8-9)."
+          ],
+          "improvements": [
+            "Rep. Of Ireland şut isabetinde geride kaldı (%33); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Rep. Of Ireland sahadan 3 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Israel",
+            "score": 39
+          },
+          "away": {
+            "team": "Rep. Of Ireland",
+            "score": 66
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Israel %50, Rep. Of Ireland %33.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Israel 80.5, Rep. Of Ireland 39.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -579,11 +1071,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -1436,11 +1939,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c25b0372e2cf9cef",
-      "fingerprint": "c25b0372e2cf9cef",
+      "analysisSourceHash": "f69d47cfe9dc72f2",
+      "fingerprint": "f69d47cfe9dc72f2",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1794,11 +2297,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a91251f59881abe7",
-      "fingerprint": "a91251f59881abe7",
+      "analysisSourceHash": "a586d3df1a9484e1",
+      "fingerprint": "a586d3df1a9484e1",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2163,11 +2666,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "51b78601f40c443d",
-      "fingerprint": "51b78601f40c443d",
+      "analysisSourceHash": "bd94183d38c364e9",
+      "fingerprint": "bd94183d38c364e9",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2539,11 +3042,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "45c2d980773d9920",
-      "fingerprint": "45c2d980773d9920",
+      "analysisSourceHash": "fa644781060ba206",
+      "fingerprint": "fa644781060ba206",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3509,11 +4012,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "308364cde91c0b7d",
-      "fingerprint": "308364cde91c0b7d",
+      "analysisSourceHash": "b7ac96a79036c7de",
+      "fingerprint": "b7ac96a79036c7de",
       "analysisGeneratedAt": "2026-09-27T23:00:41.929Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7288,10 +7791,10 @@
       "winner": "Philadelphia Union",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -7309,9 +7812,9 @@
           "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": true,
@@ -7323,27 +7826,22 @@
       "availability": {
         "events": 21,
         "statistics": 15,
-        "lineups": 0,
+        "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "a5b6152f0aae47b7",
-      "fingerprint": "a5b6152f0aae47b7",
+      "analysisSourceHash": "2192719212156040",
+      "fingerprint": "2192719212156040",
       "analysisGeneratedAt": "2026-09-27T09:11:52.902Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7479,8 +7977,10 @@
           ]
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
+            "Philadelphia Union sahaya 4-4-2 dizilişiyle çıktı.",
+            "Orlando City SC sahaya 4-4-2 dizilişiyle çıktı.",
             "Orlando City SC topu elinde tutarken Philadelphia Union derin blokta savunma yapmayı tercih etti."
           ]
         },
@@ -7508,14 +8008,23 @@
         "coaching": {
           "status": "ready",
           "notes": [
+            "Philadelphia Union maça 4-4-2 dizilişiyle başladı.",
+            "Orlando City SC maça 4-4-2 dizilişiyle başladı.",
             "54' Orlando City SC değişikliği (Substitution 1). Değişiklikten sonra Orlando City SC adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "54' Orlando City SC değişikliği (Substitution 2). Değişiklikten sonra Orlando City SC adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "54' Orlando City SC değişikliği (Substitution 3). Değişiklikten sonra Orlando City SC adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "78' Philadelphia Union değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "78' Philadelphia Union değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "85' Philadelphia Union değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "78' Philadelphia Union değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Philadelphia Union",
+              "formation": "4-4-2"
+            },
+            {
+              "team": "Orlando City SC",
+              "formation": "4-4-2"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
@@ -7621,6 +8130,7 @@
         "momentum",
         "signals",
         "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "turningPoints",
@@ -7629,7 +8139,7 @@
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
+      "coverage": 93,
       "dataStatus": "complete",
       "intelligenceCoverage": 60,
       "publishState": "page"
@@ -7662,10 +8172,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 70,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -7678,9 +8188,9 @@
           "count": 13
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": true,
@@ -7696,28 +8206,23 @@
       "apiKeyPresent": true,
       "availability": {
         "events": 13,
-        "statistics": 0,
+        "statistics": 15,
         "lineups": 2,
         "players": 40
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6ad951ed2c3359f9",
-      "fingerprint": "6ad951ed2c3359f9",
+      "analysisSourceHash": "b3505c10d6cd4e18",
+      "fingerprint": "b3505c10d6cd4e18",
       "analysisGeneratedAt": "2026-09-27T09:11:52.902Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -7898,23 +8403,91 @@
           "verdict": [
             "Maç 2-2 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "New York City FC topa daha çok sahip oldu (%50).",
+            "New York City FC daha çok şut denedi (7-9)."
+          ],
+          "improvements": [
+            "New York City FC şut isabetinde geride kaldı (%33); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Atlanta United FC",
+            "score": 55
+          },
+          "away": {
+            "team": "New York City FC",
+            "score": 51
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Atlanta United FC %71.4, New York City FC %33.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Atlanta United FC 72.1, New York City FC 51.9 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -7925,16 +8498,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -7965,10 +8541,10 @@
       "winner": "CF Montreal",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -7976,63 +8552,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 36
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 15,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 36
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ebd1e64de910c0bc",
-      "fingerprint": "ebd1e64de910c0bc",
+      "analysisSourceHash": "14d7851112b941cb",
+      "fingerprint": "14d7851112b941cb",
       "analysisGeneratedAt": "2026-09-27T09:11:52.902Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -8044,7 +8603,7 @@
       "reportUrl": "./mac-raporu/cf-montreal-fc-cincinnati-2026-09-27.html",
       "digest": {
         "headline": "CF Montreal, FC Cincinnati'yi 3-1 yendi",
-        "paragraph": "CF Montreal, Saputo Stadium'da oynanan MLS karşılaşmasında FC Cincinnati'yi 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "CF Montreal, Saputo Stadium'da oynanan MLS karşılaşmasında FC Cincinnati'yi 3-1 mağlup etti. Golleri 25. dakikada Daniel Rios (CF Montreal), 64. dakikada Tom Barlow (FC Cincinnati), 72. dakikada Prince-Osei Owusu (CF Montreal), 75. dakikada Prince-Osei Owusu (CF Montreal) kaydetti.",
         "result": {
           "winner": "CF Montreal",
           "loser": "FC Cincinnati",
@@ -8060,62 +8619,247 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "25'",
+              "team": "CF Montreal",
+              "type": "Gol",
+              "detail": "Daniel Rios",
+              "pivotal": true
+            },
+            {
+              "minute": "64'",
+              "team": "FC Cincinnati",
+              "type": "Gol",
+              "detail": "Tom Barlow",
+              "pivotal": true
+            },
+            {
+              "minute": "72'",
+              "team": "CF Montreal",
+              "type": "Penaltı",
+              "detail": "Prince-Osei Owusu",
+              "pivotal": true
+            },
+            {
+              "minute": "75'",
+              "team": "CF Montreal",
+              "type": "Gol",
+              "detail": "Prince-Osei Owusu",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (Prince-Osei Owusu).",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "CF Montreal",
+              "type": "Gol",
+              "detail": "Prince-Osei Owusu",
+              "decisive": true
+            },
+            {
+              "minute": "77'",
+              "team": "FC Cincinnati",
+              "type": "Oyuncu değişikliği",
+              "detail": "Bryan Ramirez",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "FC Cincinnati",
+              "type": "Oyuncu değişikliği",
+              "detail": "Obinna Nwobodo",
+              "decisive": false
+            },
+            {
+              "minute": "86'",
+              "team": "FC Cincinnati",
+              "type": "Sarı kart",
+              "detail": "Teenage Hadebe",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Prince-Osei Owusu",
+              "team": "CF Montreal",
+              "contribution": "72' gol · 75' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Daniel Rios",
+              "team": "CF Montreal",
+              "contribution": "25' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Tom Barlow",
+              "team": "FC Cincinnati",
+              "contribution": "64' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Fabian Herbers",
+              "team": "CF Montreal",
+              "contribution": "47' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "CF Montreal sahaya 3-4-1-2 dizilişiyle çıktı.",
+            "FC Cincinnati sahaya 3-5-2 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "25' CF Montreal — Daniel Rios: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "64' FC Cincinnati — Tom Barlow: gol",
+            "72' CF Montreal — Prince-Osei Owusu: penaltı",
+            "75' CF Montreal — Prince-Osei Owusu: gol",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "CF Montreal maça 3-4-1-2 dizilişiyle başladı.",
+            "FC Cincinnati maça 3-5-2 dizilişiyle başladı.",
+            "11' CF Montreal değişikliği (Substitution 1). Değişiklikten sonra CF Montreal adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' FC Cincinnati değişikliği (Substitution 1). Değişiklikten sonra FC Cincinnati adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "77' FC Cincinnati değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "77' FC Cincinnati değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "CF Montreal",
+              "formation": "3-4-1-2"
+            },
+            {
+              "team": "FC Cincinnati",
+              "formation": "3-5-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "CF Montreal, FC Cincinnati'yi 3-1 yendi."
+            "CF Montreal, FC Cincinnati'yi 3-1 yendi.",
+            "İsabetli şutta da öndeydi (5-4); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "FC Cincinnati topa daha çok sahip oldu (%55).",
+            "FC Cincinnati daha çok şut denedi (15-18)."
+          ],
+          "improvements": [
+            "FC Cincinnati şut isabetinde geride kaldı (%22); bitiricilik geliştirilmesi gereken alan.",
+            "FC Cincinnati son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "CF Montreal sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "CF Montreal",
+            "score": 78
+          },
+          "away": {
+            "team": "FC Cincinnati",
+            "score": 54
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti CF Montreal %33.3, FC Cincinnati %22.2."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için CF Montreal 30.5, FC Cincinnati 30.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -8124,11 +8868,21 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
@@ -10651,7 +11405,7 @@
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -10669,9 +11423,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -10683,20 +11437,16 @@
       "availability": {
         "events": 3,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -10707,11 +11457,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "5b380e5e72eea2c5",
-      "fingerprint": "5b380e5e72eea2c5",
+      "analysisSourceHash": "5fac4284d7bfd39d",
+      "fingerprint": "5fac4284d7bfd39d",
       "analysisGeneratedAt": "2026-09-23T19:02:33.860Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -10886,10 +11636,10 @@
       "winner": "Lanus",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "partial",
-      "coverageLabel": "Kısmi analiz",
-      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
-      "coveragePercent": 80,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -10907,9 +11657,9 @@
           "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": true,
@@ -10921,27 +11671,22 @@
       "availability": {
         "events": 17,
         "statistics": 15,
-        "lineups": 0,
+        "lineups": 2,
         "players": 46
       },
-      "dataCompleteness": 0.8,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ef2ce87a4b19ab71",
-      "fingerprint": "ef2ce87a4b19ab71",
+      "analysisSourceHash": "4591e0ad623132d1",
+      "fingerprint": "4591e0ad623132d1",
       "analysisGeneratedAt": "2026-09-22T08:29:47.210Z",
-      "analysisUpdatedAt": "2026-09-27T23:00:41.929Z",
-      "generatedAt": "2026-09-27T23:00:41.929Z",
+      "analysisUpdatedAt": "2026-09-28T00:39:01.718Z",
+      "generatedAt": "2026-09-28T00:39:01.718Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -11063,8 +11808,10 @@
           ]
         },
         "tactical": {
-          "status": "partial",
+          "status": "ready",
           "notes": [
+            "Lanus sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Estudiantes L.P. sahaya 4-2-3-1 dizilişiyle çıktı.",
             "Estudiantes L.P. topu elinde tutarken Lanus derin blokta savunma yapmayı tercih etti."
           ]
         },
@@ -11090,14 +11837,23 @@
         "coaching": {
           "status": "ready",
           "notes": [
+            "Lanus maça 4-2-3-1 dizilişiyle başladı.",
+            "Estudiantes L.P. maça 4-2-3-1 dizilişiyle başladı.",
             "31' Lanus değişikliği (Substitution 1). Değişiklikten sonra Lanus adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "61' Estudiantes L.P. değişikliği (Substitution 1). Değişiklikten sonra Estudiantes L.P. adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "61' Estudiantes L.P. değişikliği (Substitution 2). Değişiklikten sonra Estudiantes L.P. adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "64' Lanus değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "64' Lanus değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "73' Estudiantes L.P. değişikliği (Substitution 3). Değişiklikten sonra Estudiantes L.P. adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+            "64' Lanus değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Lanus",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Estudiantes L.P.",
+              "formation": "4-2-3-1"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
@@ -11152,7 +11908,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için Lanus 65.7, Estudiantes L.P. 24 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için Lanus 65.8, Estudiantes L.P. 24 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -11203,6 +11959,7 @@
         "momentum",
         "signals",
         "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "turningPoints",
@@ -11211,7 +11968,7 @@
         "finalAssessment",
         "aiRating"
       ],
-      "coverage": 86,
+      "coverage": 93,
       "dataStatus": "complete",
       "intelligenceCoverage": 60,
       "publishState": "page"

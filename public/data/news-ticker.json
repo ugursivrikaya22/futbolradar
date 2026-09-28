@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-27T23:04:41.039Z",
+  "updatedAt": "2026-09-28T00:41:49.274Z",
   "items": [
+    {
+      "id": "auto-news-5514cd4db851faadb86f",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Samsunspor maçı hazırlıklarımız başladı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-27T17:57:16.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNOHZZSkF2SmdtWGIxZURjQkRiZFdZMHdLS25Sb21RQ3lnaXE2VkFZRWpReHhNbkp3cmxQZEhKb0daUWxLdXNFZWFLRHRTSXcwMGtCNHN3T0dMbTdYcm80cTR2aUtLRUJJNzU4blNISnVQTTI1eUROR1Uwd2dDT2ZqenVGcHZDQ3pTMjEtbG5n?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-72a650a0f438917518f2",
       "category": "official",
@@ -102,8 +122,8 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL",
-        "mergedReports": 4,
-        "firstSeenAt": "2026-09-27T07:51:53.000Z"
+        "mergedReports": 3,
+        "firstSeenAt": "2026-09-27T10:47:06.000Z"
       }
     },
     {
@@ -205,9 +225,7 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-26T11:39:05.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -380,8 +398,8 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 7,
-        "firstSeenAt": "2026-09-24T23:51:10.000Z"
+        "mergedReports": 6,
+        "firstSeenAt": "2026-09-25T07:00:00.000Z"
       }
     },
     {
@@ -421,26 +439,6 @@
         "source": "rss",
         "feed": "super-lig",
         "priority": 5,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-35cea2abd8df54b07f6c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "The key trends at the heart of European club football",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-09-25T08:32:40.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMixwFBVV95cUxPMUtKNzlVRVBwRWRLWGRseXU4dEcwei0ydXVPb1RlX294QVJzVUdyUnpYZlRTVEd3TnM5a0ExRTUtNThBMU5SNTlqRHd2RU5DdVNNQ1NvYk5LSXYzU1NwblBUWXZxT3lTYVJPaUlJTUoxbk9CWXdacmRxLUVKUmoxV1RxOWFUT050cThkMnhBM256YXhKM0RJQTFCNTRKTWRqM3JMR0RZMkpKR2pKT0JHVWFHWVk0NU1WakgzYTJyTmpXdlBfNF80?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
         "status": "OFFICIAL"
       }
     }
