@@ -1,18 +1,104 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-28T23:30:27.567Z",
+  "updatedAt": "2026-09-28T23:53:29.709Z",
   "items": [
     {
-      "id": "auto-news-297183b861355efd2386",
+      "id": "auto-news-b783e007753763932582",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Fenerbahçe arsaVev- FC Minsk maçı akreditasyonu hakkında bilgilendirme",
+      "text": "Başantrenörümüz Sarunas Jasikevicius ve oyuncumuz Talen Horton-Tucker’dan maç önü açıklamaları",
       "team": "Fenerbahçe",
-      "timestamp": "2026-09-28T09:08:04.000Z",
+      "timestamp": "2026-09-28T18:38:18.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiwwFBVV95cUxOZTJrMUM3RWI1UnpfcEZCeFZLZDZwT2ttc2lQUm8xUmZSamxFaFp6QTNYalJMcDFFYmNuVE1SOVFiZ21VN0hpRXpsRXRaUUI0eGxhQjNDNDF5aTFOQ0R6b21XZ29WZjJhb1FMblhQVGdHbXdvd2pyR0pZTjlGWXBYY0FfNFFSQ05VdW02QXY5NkZmSWhxWmdnYzd1TG1VN2EzNmlLSk9BLTltaXlySGxFSExrTGVaV0Q1SHlYSU91VGE3LUE?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxQUzBKbkhQMTJSM0FWaERXT2UwV0FwbHhET1QzZHgyYVRMbXZ1Vzd6a3hDYTRQT0gxMFJkMnZpYWl6aWQxbU5rME9aUi03WHI2cmxtM2tueDZNcXZVTXc5c044c25GQ2VPUXY1TE53MFFJdzQ5dEJVUGlna1Z3YnJZM1RTM2o0YmpUUkhsYW1sX2VvdzFoT3JTLUNwbHJDdHIzTmNiVHdBaDd3S0tyeWt6OUZFQUE3aUNtdlk0RFdaTi1HR1VBblVyYXBlUHBxWTJ6TFNrMTI5QVJSVjdPT1NCVFlCQ3VHbjVP?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-27T17:47:22.000Z"
+      }
+    },
+    {
+      "id": "auto-news-1673ffda735497d313e2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Antrenman Raporu | 28 Eylül Pazartesi",
+      "team": "Galatasaray",
+      "timestamp": "2026-09-28T17:40:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxNZW1fdS1oSm9iMldtN2pSekE3Q0ZuaVpFWkVMTG12NGFzOXNkUTRuSHpZNzlFUmd3M3dNZ3c4TTIxd0RXYk5Ybnl2d1R6YWJNWXVRVEV5YTRVQVRwQUFzVk1GeVhBOFd3dDNiT0x3aVdaOG5OV3VPaTV0cTZEc19XUUpCZ3ZZdEppV1E?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-9ee924eb58b50414ee76",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe arsaVev, FC Minsk ile oynayacağı rövanş maçının hazırlıklarına başladı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-28T16:43:35.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMi0gFBVV95cUxQVWZaa1FzcWdUcDNBT0FLTktObVZJOTVobm5MZ2lIZ1M0RmVqUU1FQkNNODV1dW96R1p3VnFrVWN1eFpsSzYySC1HaG0wVGw4UXNYd3RmVzVzaG9HQ0xiUVp2WGQ1Wm5McGJfMk1pdUNOMnBSaTRQc05lQXdraE5aV2UtNkktWmRJRGVDc0dkRHY0d1hhNDROcGhNS3M1enRrOWlYWXkyYVFhd2xGSkVFb3hwMGVEb0dNeXpHNlhqUG45ZGZvZXBTb0dXUWNkbl8wcHc?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-28T09:08:04.000Z"
+      }
+    },
+    {
+      "id": "auto-news-e54b18b8f2f08302f5d8",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Akşam antrenmanımız tamamlandı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-28T16:06:05.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNZkdoZDNBQVQ3bWxoRXRZcTgtdXFEWTEyc3ZLdXFWRjViZG5XMW1IOGcxQlhsUklkVTRGVVl0ZWFCbmRVNUo3NmxselNFQzMwQ1pPMjRkTW5HU19lcW1GNmtUVE1GZ1d0OFVZTm9fSHFTa1hDakZmbDkwQ0l5aGJtaHVrc085emc?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-26T16:07:57.000Z"
+      }
+    },
+    {
+      "id": "auto-news-422572254eba36ac5d35",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "'Kanaryalar Soruyor' programımızın yeni bölüm konuğu: Mert Albayrak",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-09-28T14:08:46.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMizgFBVV95cUxNYmJyejdBTEEtZ0RPV2p3SzVqbWl1d2t3NmlORFQ4Tnp5NWw2ZHBSaVNXVVpyMk5XUUFyVXZ2OEVmNnliNDFrNXhFdEtDRFRQX2FYYnR5S2F2LXJVa2xvOVRKdlBXcThlOTViYmRRRm5ad1VsbEVhd1RIbTl2eVVMREtmUGowTHVOdVlXQ1ViZDdJTUtPT2tPTGF2VnVQRXU5ZXFlcmc1WjBsaldaT2FZR3IwTWN2VXJVRXVZVTRXTzI0cWRoSmxXcU1jaUU5dw?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -23,16 +109,16 @@
       }
     },
     {
-      "id": "auto-news-5514cd4db851faadb86f",
+      "id": "auto-news-1ed57692fb6073d6c9dc",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Samsunspor maçı hazırlıklarımız başladı",
+      "text": "Futbolcumuz Ruslan Malinovskyi'nin sağlık durumuyla ilgili açıklama",
       "team": "Trabzonspor",
-      "timestamp": "2026-09-27T17:57:16.000Z",
+      "timestamp": "2026-09-28T12:44:41.000Z",
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNOHZZSkF2SmdtWGIxZURjQkRiZFdZMHdLS25Sb21RQ3lnaXE2VkFZRWpReHhNbkp3cmxQZEhKb0daUWxLdXNFZWFLRHRTSXcwMGtCNHN3T0dMbTdYcm80cTR2aUtLRUJJNzU4blNISnVQTTI1eUROR1Uwd2dDT2ZqenVGcHZDQ3pTMjEtbG5n?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMitgFBVV95cUxQeW9hZjZSUlljOUpyUUhXVlJJR2p6QTNlOXM1LVZ6UnBIZFA4NWxrRW9vbm5TS2NpSWJMSTdNdE1MUkxmRWhWclp6Vk0tZHRjaFF5ellZOTVUeG9zTlZqOGtxOTdXTW5HN0ZyZUtQV0c5SkRKU3ZCckRGTDlncldhenlzaHdJaWwtWjROTURrRUhyT1dmcmlrb2x1NVlMTHpBY0FlUTZ3b2JYU0lHT2hyaFlMWlZQZw?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
       "automation": {
@@ -43,42 +129,62 @@
       }
     },
     {
-      "id": "auto-news-72a650a0f438917518f2",
+      "id": "auto-news-0208e412bb740cb3667f",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Başantrenörümüz Sarunas Jasikevicius, Bahçeşehir Koleji maçı sonrası konuştu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-27T17:47:22.000Z",
+      "text": "Sabah antrenmanımız tamamlandı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-28T11:28:23.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMizwFBVV95cUxPWWw2cUJoNXhaZjNnQ0hxN1VRZWZkeXFKWmp4RXpza2lyUGtSa2g0NWV0ckgxUlV6VkQyZ2czMXpMNTAwVURUYjhtTGVrY0Q0WV9yLVFneS1MX0Jfb2ttTksxWGlDVmhGTTA3SkhDMTRwbVhKSVV6eDlRaE9SaUJZVVYwUTZrWDNYdE9KMUFMTmwybndzeTBDR0FlNXVxVDJ2WDNuVUNVTC1HWXE2VGIxM2o2blAtbXh1RnQ2OTZjWWdXd21EVE9sWXdEdC1wRWM?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMihwFBVV95cUxNVGVZcTNueFpMSlFuOTA2b18xcF84Y0FVV3NYR1VsVXk2bGk2ckdtMm1RU0w3VWZpdTdVLXZMQ3dqS0pLdHd5dTR3MDFwLTZrTk9sUG9BMHJobUo3Q3k5SWFiXzRrajVxOEdYT3FXTl9qYXFPN1hoY2JpNUFkM2haMm5EaDNjV0k?oc=5",
+        "publisher": "trabzonspor.org.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
+        "feed": "trabzonspor",
+        "priority": 4,
         "status": "OFFICIAL"
       }
     },
     {
-      "id": "auto-news-e9f3c6e0e077fc59de59",
+      "id": "auto-news-4a929cfcdd9b28e9e54e",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Kongre üyelerimize teşekkürlerimizle",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-27T15:52:37.000Z",
+      "text": "Kocaelispor Maçı Hazırlıkları Başladı - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-09-28T11:21:08.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNaXlvT29wZjY5MEwtUElSQUtYdkJqX3hZQWtvV1F4ODFoVnBDZG1rN0p2RS1qck10T1FXV1RfT180RkRWYnBBOUpQWWVtZ1RSV1lSRHI5VzUxMFVLcEctUndaMUxzZkR4dmViSjdDX2ZJSzZmS2UtVUJOWnI4OV9tdy0zbi1IQUZ5M0s2dTN3?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE02Wk1jSHN5aFg3dDZ5a09hRG05WTloODBqWWRjRmNuY0VPSTM1TWNmTERIbGxMYnNsS1ZFZmFYZ0ZoWGdBMEdWTmpYNjhaQlpjNy15bU42OVIyOWhXUThj?oc=5",
+        "publisher": "bjk.com.tr"
       },
       "automation": {
         "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-e33dbfa9da4ad022dc41",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Drogheda United maçı biletleri satışa çıktı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-09-28T08:28:44.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxNVjE4LUdTbUVGWVV1OFg5S3hOUk9PeVpPRFhTN1pIS2ItT3B5bTdCSmtxenBoWHZ6UzdUcTJhMWl4bmtyZm5hOURtUnNZVFNPcER6RjZvT1VONGo0OEtfUGdHWHhBcDVSXzNVUVJyck9oeVlKaDVaUkdoWDYtTDZFdG4wMVB3YU1SUWpCOTltUnItVWlm?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
         "status": "OFFICIAL"
       }
     },
@@ -102,26 +208,6 @@
         "status": "OFFICIAL",
         "mergedReports": 2,
         "firstSeenAt": "2026-09-27T13:56:40.000Z"
-      }
-    },
-    {
-      "id": "auto-news-2587d6d511c2b6049de2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Trabzonspor Kadın Futbol Takımı 2-1 Sultanbeyli Gücü",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-27T14:58:03.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPTC0tdjZmT3pwdlhOOGNCQmZxaUQyQ21mOWhYOGctRjVHWGt4WE9PejJJbmFLRUZjNmZ3VDV5VGtWcjZsenZ5MUZHcTZ4TmhRc2Y3czRwbjA1eWpTNUhQTkJtTHctb3I5VmxDQkNjNUVnMDBjMHV4dEVjbktGblNEY3V4a1loN2Z6WmZtR2dGZmNySzM1dVpCSmczVmdsYUE?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
       }
     },
     {
@@ -201,48 +287,6 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-25T16:06:00.000Z"
-      }
-    },
-    {
-      "id": "auto-news-9456ffed6d73bbd4ae87",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "U19 Takımımız akşam antrenmanını tamamladı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-26T16:07:57.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPY1FsMnBnRlR3alpyWHk3VjBxeW9fNEZoZDNtWFRTZHpDeUJldzlHajd3bWpLVmlaUVZMdTdnSHQ1VVhUWDZUUG84N0oxM01ZU0dhcHBQV29yb1dzWDdjbzlBeWVZaDBaWm1UbDdPdGxkeXZzUVd1QzVESi1FeUJocDlMZ0VKNE1EczBaT1kyU1hmZ3pXcmc?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-1353db8f9671ed0b93fa",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Bursaspor:1 Beşiktaş:1 (U17)",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-26T15:31:44.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1GRFZzTW80dGpBVklJUHBOOHA5cS1zVXkyMGl4YWpiMGdmVlgxUlpLVENqUmJ1azdjSWZFNng3Rk94ZDcwNU1ydWloZ0xTR3NuMFhjckJsS1MxV2E3RXFr?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -323,16 +367,16 @@
       "important": true
     },
     {
-      "id": "auto-news-b99287182d1d0c739187",
+      "id": "auto-news-a1e7c0ffbc932e54563c",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Nations League highlights: Germany 0-1 Greece",
+      "text": "UEFA Nations League Matchday 2 highlights: Italy impress as France leave it late",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-09-28T08:24:06.000Z",
+      "timestamp": "2026-09-28T22:07:11.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxQVkx5TkR0ek5qU0U1UGdyTVpiS2RWdElFMHZqUDNGMlFaZTF1RmRmVXA5WFhVY2gtRHJvWHd4Tk5wV2pVeWRHS1ZPOVI5dnVKTHdUZVZJX0NGOW15Si0tQmNJbmxSQ3VZOXRjX2FRLV84V2k4a1VocXhRc2FoUGdZNmU3eTNnSi16RXBLTjJJVlNveXBuOElrN05tOVlUVHItTHJTMDdGeTRDRkFUempNOWc4S0xoNmY5bWJWaWhaWXZRS2djeGphZEdkR3hpMENlQ2hhUQ?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQaHF1aUhjbnFQR3BoR3d1M2Y0d1F3SHB0T1Z2TFJ5Sko0N2kyaVVkblY0ZFNhSnNCaFlCSU1sT203aG9ONWNLZmU0MFhtaVpON0w1ZW9ZRHExSzN3ODZhNlhnb0hrRjd6OTdTLUF5U3ZDSXlSMkM2RVJETU14bEl6am9PQjRkX01WLTB5YTVzaE96OWgxbGF6OGlYcjM1LU93dmZETFhsMHNQVFZ1Unc1NnoweVdrQjZpcFBUZmVwWjJhMUY1c2EwMWxnMkFLVmthWGkyeFVObTE?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -345,25 +389,43 @@
       }
     },
     {
-      "id": "auto-news-c6ef5433fea39232801c",
+      "id": "auto-news-63b3dfec67d238767ac8",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "A Millî Takım, İtalya Maçının Hazırlıklarını Tamamladı",
-      "team": "Milli Takım",
-      "timestamp": "2026-09-27T19:33:50.000Z",
+      "text": "TÜRKİYE 1-4 İTALYA",
+      "team": "Süper Lig",
+      "timestamp": "2026-09-28T21:48:31.000Z",
       "source": {
         "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE02M2g3RmRLMFhpRHhtSU1lU1NLQlFrdTE4cTZaeFNmdWNiNjV0eTRHbFlYdXU5TW9pWWhUb0NncG9mMVd6V1F0QWFxSWJ5QkpoV0xYdTJXZXkxWUNzUHlfcm5iOEMybEk?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE1LNGM3YkprS3hvM1UzckdNYnRpV29qQm5jcktDQ1AwRWl6ZVV6Nm45d2R3QjM1N2Y0R3RLQ29hYTh0dGdkZGRZalZPQmp4RnpRTTZJYXFmUTljWVZMdzhUUTEzUDdxWVE?oc=5",
         "publisher": "tff.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "milli-takim",
+        "feed": "super-lig",
         "priority": 5,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-09-26T06:23:35.000Z"
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-e695911eb85eb1233cc6",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Grassroots Haftası Futbol Okulları Şenliği Düzenlendi",
+      "team": "1. Lig",
+      "timestamp": "2026-09-28T15:53:29.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5FS2NEaFk1VVFpbVA5ZTgxSzRjTy0zWjFGazA0amxnOUtDMWowcjZfNGJlbENnOEF5VHpQM2JraVFPWVB1OThiX0hDcDd4emNwYVFCUTdnTGM1dkpBZUZJSEo3d2hWQXc?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "bir-lig",
+        "priority": 6,
+        "status": "OFFICIAL"
       }
     }
   ]
