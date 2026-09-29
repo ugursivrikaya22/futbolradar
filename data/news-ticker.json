@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-29T09:47:36.132Z",
+  "updatedAt": "2026-09-29T16:39:28.020Z",
   "items": [
     {
       "id": "auto-news-b783e007753763932582",
@@ -269,44 +269,18 @@
       }
     },
     {
-      "id": "auto-news-47927f49a6a69f16f8fc",
-      "category": "official",
+      "id": "news-galatasaray-rafael-leao-b1063fa2",
+      "origin": "news.json",
+      "category": "club-agenda",
       "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray 4-1 Amed Sportif Faaliyetler",
+      "text": "Sporx'in haberine göre Galatasaray çevresinde Rafael Leao'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-29T14:39:00.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/galatasaray-rafael-leao-b1063fa2"
+      },
       "team": "Galatasaray",
-      "timestamp": "2026-09-26T16:25:00.000Z",
-      "source": {
-        "name": "galatasaray.org",
-        "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPaHlyTFNsVFRmSnVtR1BFTjZfRS1WNWcxQWZ0UjlMZGVTM0VFRmJmdHFTcWdYQWlpVjUtWjl5dG1mSWRtOTNxVS1xNWpyZzU4RTE5VEJucDg2SU9CWjdaaEFxSGpHX21IYWhfME9LZ016ME9vNHp3dGh2TG1xc25mWElzUlE3YW1GbVdXd3FtcHNrVHRiYkNIY3Q4dXJmTGRtZnc?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-aeaadc58497f2267d4be",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Mert Cuci ile sözleşme yenilendi",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-26T14:01:21.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMilAFBVV95cUxPaWtoeUdhWXFYN1BsVkNvWWJhRlU0UXI5bjFHcGZ5eXdBMTY0UlFyZzhwVV9FOG5Bd3lqYlRjMkxEMTFiVzRQMUxEdVdDdHZEYm5JWFFjLWdvdmtxVkNpaFRONFVoX0VaLXByajNFRjllRlZDUlp0Zm0xams5OFpUTFJid1h0dnQxc0JULTJGMWg3aEpX?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
+      "important": true
     },
     {
       "id": "news-trabzonspor-lamine-yamal-muhammed-607fdf5e",
@@ -320,20 +294,6 @@
         "url": "https://www.futbolradar.com/haber/trabzonspor-lamine-yamal-muhammed-607fdf5e"
       },
       "team": "Trabzonspor",
-      "important": true
-    },
-    {
-      "id": "news-fenerbahce-ismail-kartal-mert-dc72ef4c",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Fenerbahçe çevresinde İsmail Kartal Mert'e dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-26T13:21:22.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-ismail-kartal-mert-dc72ef4c"
-      },
-      "team": "Fenerbahçe",
       "important": true
     },
     {
