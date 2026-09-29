@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-09-29T01:52:36.754Z",
+  "fetchedAt": "2026-09-29T09:44:26.396Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -880247,8 +880247,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-29T01:52:37.815Z",
-      "staleAfter": "2026-09-29T01:57:37.815Z",
+      "fetchedAt": "2026-09-29T09:44:27.284Z",
+      "staleAfter": "2026-09-29T09:49:27.284Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -881564,7 +881564,17 @@
       },
       "providerIds": {
         "apiFootball": "1642875"
-      }
+      },
+      "lineups": [
+        {
+          "team": "Pogoń Szczecin II",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ]
     },
     {
       "id": "malawi-u20-comoros-u20-2026-09-23",
@@ -893108,8 +893118,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-29T01:52:38.065Z",
-      "staleAfter": "2026-09-29T01:57:38.065Z",
+      "fetchedAt": "2026-09-29T09:44:27.456Z",
+      "staleAfter": "2026-09-29T09:49:27.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -893865,7 +893875,25 @@
       },
       "providerIds": {
         "apiFootball": "1642885"
-      }
+      },
+      "lineups": [
+        {
+          "team": "Oakleigh Cannons",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        },
+        {
+          "team": "Melbourne City",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ]
     },
     {
       "id": "fc-zurich-neuchatel-xamax-fc-2026-09-25",
@@ -893909,24 +893937,29 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-29T01:52:38.065Z",
-      "staleAfter": "2026-09-29T01:57:38.065Z",
+      "fetchedAt": "2026-09-29T09:44:27.456Z",
+      "staleAfter": "2026-09-29T09:49:27.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "FC Zurich skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FC Zurich tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 56' D. Ramic tarafından kaydedildi. FC Zurich skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FC Zurich tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "56'",
+            "text": "Son gol 56' D. Ramic tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "3-1",
             "text": "FC Zurich skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 4,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -895226,7 +895259,71 @@
       },
       "providerIds": {
         "apiFootball": "1642886"
-      }
+      },
+      "lineups": [
+        {
+          "team": "FC Zurich",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        },
+        {
+          "team": "Neuchatel Xamax FC",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ],
+      "events": [
+        {
+          "time": "3'",
+          "team": {
+            "name": "FC Zurich"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "K. Spadanuda · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "28'",
+          "team": {
+            "name": "Neuchatel Xamax FC"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "N. Gjorgjev · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "32'",
+          "team": {
+            "name": "FC Zurich"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "N. Di Giusto · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "FC Zurich"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Ramic · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "smail-dhofar-2026-09-25",
@@ -897098,24 +897195,29 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-29T01:52:38.065Z",
-      "staleAfter": "2026-09-29T01:57:38.065Z",
+      "fetchedAt": "2026-09-29T09:44:27.456Z",
+      "staleAfter": "2026-09-29T09:49:27.456Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "FK Sarajevo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FK Sarajevo tarafında.",
-        "confidence": "Sınırlı",
+        "summary": "Son gol 82' I. Saric tarafından kaydedildi. FK Sarajevo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FK Sarajevo tarafında.",
+        "confidence": "Orta",
         "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "82'",
+            "text": "Son gol 82' I. Saric tarafından kaydedildi."
+          },
           {
             "label": "Canlı skor",
             "value": "0-3",
             "text": "FK Sarajevo skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 0,
-        "dataPoints": 1,
+        "eventCount": 3,
+        "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       },
       "prediction": {
@@ -897784,7 +897886,52 @@
       },
       "providerIds": {
         "apiFootball": "1642887"
-      }
+      },
+      "lineups": [
+        {
+          "team": "FK Sarajevo",
+          "formation": null,
+          "players": [],
+          "substitutes": [],
+          "startingDetails": [],
+          "substituteDetails": []
+        }
+      ],
+      "events": [
+        {
+          "time": "3'",
+          "team": {
+            "name": "FK Sarajevo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Caraballo · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "8'",
+          "team": {
+            "name": "FK Sarajevo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "R. Caraballo · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "82'",
+          "team": {
+            "name": "FK Sarajevo"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "I. Saric · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "tatran-bohunice-sparta-brno-2026-09-25",
@@ -1029900,6 +1030047,212 @@
       }
     },
     {
+      "id": "atk-mohun-bagan-northeast-united-2026-09-29",
+      "providerId": "1640263",
+      "league": "IFA Shield",
+      "competitionId": "ifa-shield",
+      "providerLeagueId": "1201",
+      "round": null,
+      "venue": "Vivekananda Yuba Bharati Krirangan",
+      "referee": null,
+      "kickoff": "2026-09-29T12:00:00+03:00",
+      "time": "12:00",
+      "homeTeam": "ATK Mohun Bagan",
+      "awayTeam": "NorthEast United",
+      "homeTeamId": "15516",
+      "awayTeamId": "3479",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/15516.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/3479.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 43,
+      "elapsed": 43,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-29T09:44:26.860Z",
+      "staleAfter": "2026-09-29T09:45:56.860Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1640263"
+      }
+    },
+    {
+      "id": "philippines-pakistan-2026-09-29",
+      "providerId": "1641710",
+      "league": "FIFA Asean Cup",
+      "competitionId": "fifa-asean-cup",
+      "providerLeagueId": "1247",
+      "round": 2,
+      "venue": "Jalak Harupat Soreang Stadium ",
+      "referee": null,
+      "kickoff": "2026-09-29T12:00:00+03:00",
+      "time": "12:00",
+      "homeTeam": "Philippines",
+      "awayTeam": "Pakistan",
+      "homeTeamId": "1555",
+      "awayTeamId": "5535",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/1555.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/5535.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 44,
+      "elapsed": 44,
+      "live": true,
+      "score": {
+        "home": 2,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "24'",
+          "team": {
+            "name": "Philippines"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Sandro Reyes · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "32'",
+          "team": {
+            "name": "Philippines"
+          },
+          "type": "Goal",
+          "detail": "Penalty",
+          "value": "Bjorn Martin Kristensen · Penalty",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "40'",
+          "team": {
+            "name": "Pakistan"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Ali Uzair · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-29T09:44:26.860Z",
+      "staleAfter": "2026-09-29T09:45:56.860Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1641710"
+      }
+    },
+    {
+      "id": "france-u20-england-u20-2026-09-29",
+      "providerId": "1632086",
+      "league": "U20 Elite League",
+      "competitionId": "u20-elite-league",
+      "providerLeagueId": "890",
+      "round": null,
+      "venue": "Estadi Olimpic Camilo Cano La Nucia",
+      "referee": null,
+      "kickoff": "2026-09-29T12:30:00+03:00",
+      "time": "12:30",
+      "homeTeam": "France U20",
+      "awayTeam": "England U20",
+      "homeTeamId": "10287",
+      "awayTeamId": "10309",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/10287.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/10309.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 9,
+      "elapsed": 9,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "8'",
+          "team": {
+            "name": "France U20"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "8'",
+          "team": {
+            "name": "England U20"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-29T09:44:26.860Z",
+      "staleAfter": "2026-09-29T09:45:56.860Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1632086"
+      }
+    },
+    {
       "id": "jagiellonia-suduva-marijampole-2026-09-29",
       "providerId": "1642892",
       "league": "Hazırlık Maçı",
@@ -1030613,7 +1030966,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-28T23:49:24.415Z"
+      "predictionFetchedAt": "2026-09-29T09:44:43.428Z"
     },
     {
       "id": "finland-belarus-2026-09-29",
