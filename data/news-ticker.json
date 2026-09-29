@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-29T16:56:15.072Z",
+  "updatedAt": "2026-09-29T21:22:50.554Z",
   "items": [
     {
       "id": "auto-news-124a0696c07c51447e1d",
@@ -293,24 +293,18 @@
       }
     },
     {
-      "id": "auto-news-8f5327fd0c1bf2c74bb9",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Metin Keçeli Vefat Etti - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-26T18:46:44.000Z",
+      "id": "news-fenerbahce-ali-sukru-ersoy-39cf0621",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Fenerbahçe çevresinde Ali Şükrü Ersoy'a dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-29T16:37:16.000Z",
       "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9Xc2lDUEtsX3hxaFIwcmo0WERtazk3UFVkVGF2S1RpTHZLazQwaUVWQUpSSGFFeGd4a2M3eXJid1RMMlhlVFZIUVhpMUNaQktXYjVYamFBLXZYaDA?oc=5",
-        "publisher": "bjk.com.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-ali-sukru-ersoy-39cf0621"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
+      "team": "Fenerbahçe",
+      "important": true
     },
     {
       "id": "news-galatasaray-rafael-leao-b1063fa2",
@@ -338,20 +332,6 @@
         "url": "https://www.futbolradar.com/haber/trabzonspor-lamine-yamal-muhammed-607fdf5e"
       },
       "team": "Trabzonspor",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-batrakov-6bb9229f",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Galatasaray çevresinde Batrakov'a dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-26T12:32:39.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-batrakov-6bb9229f"
-      },
-      "team": "Galatasaray",
       "important": true
     },
     {
