@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-09-30T10:27:36.653Z",
+  "updatedAt": "2026-09-30T16:30:55.618Z",
   "items": [
     {
       "id": "auto-news-87a776036e401c3bc9d5",
@@ -315,26 +315,18 @@
       }
     },
     {
-      "id": "auto-news-2838836e28dedbbf0763",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Idrissa Fadel Outtara Futbol Akademimize Dahil Oldu - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-27T15:41:36.000Z",
+      "id": "news-fenerbahce-ismail-kartal-asensio-54ea9d18",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "text": "Sporx'in haberine göre Fenerbahçe çevresinde İsmail Kartal Asensio'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-09-30T10:02:00.000Z",
       "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1jOU02NW9fbjFmWEFXazVVOHZWY0ZVNHBEN29qSGtmaV9Fdm14WE5iclZWSlBJd1hqcjhicGhudXhIeXpkSTVuQVFBUDAzd0RZM3c4XzlOWWgwWXM?oc=5",
-        "publisher": "bjk.com.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-ismail-kartal-asensio-54ea9d18"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-27T13:56:40.000Z"
-      }
+      "team": "Fenerbahçe",
+      "important": true
     },
     {
       "id": "news-galatasaray-aleksey-batrakov-94beb072",
@@ -376,20 +368,6 @@
         "url": "https://www.futbolradar.com/haber/trabzonspor-lamine-yamal-muhammed-607fdf5e"
       },
       "team": "Trabzonspor",
-      "important": true
-    },
-    {
-      "id": "news-galatasaray-batrakov-6bb9229f",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "confirmed",
-      "text": "Sporx'in haberine göre Galatasaray çevresinde Batrakov'a dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-26T12:32:39.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/galatasaray-batrakov-6bb9229f"
-      },
-      "team": "Galatasaray",
       "important": true
     },
     {
