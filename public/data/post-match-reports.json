@@ -1,9 +1,454 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-30T01:17:23.017Z",
-  "matchCount": 1619,
+  "updatedAt": "2026-09-30T09:37:55.060Z",
+  "matchCount": 1621,
   "records": [
+    {
+      "matchId": "arges-pitesti-cetate-deva-2026-09-30",
+      "fixtureId": "1642893",
+      "provider": "api-football",
+      "slug": "arges-pitesti-cetate-deva-2026-09-30",
+      "kickoff": "2026-09-30T10:30:00+03:00",
+      "kickoffUtc": "2026-09-30T07:30:00.000Z",
+      "kickoffLocal": "2026-09-30T10:30",
+      "date": "2026-09-30",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Arges Pitesti",
+      "awayTeam": "Cetate Deva",
+      "venue": null,
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Arges Pitesti",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "26032cc488a1c5dc",
+      "fingerprint": "26032cc488a1c5dc",
+      "analysisGeneratedAt": "2026-09-30T09:37:54.963Z",
+      "analysisUpdatedAt": "2026-09-30T09:37:54.963Z",
+      "generatedAt": "2026-09-30T09:37:54.963Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Arges Pitesti 2-1 Cetate Deva maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Arges Pitesti, hazırlık karşılaşmasında Cetate Deva'yı 2-1 mağlup etti.",
+        "path": "mac-raporu/arges-pitesti-cetate-deva-2026-09-30.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/arges-pitesti-cetate-deva-2026-09-30.html",
+      "digest": {
+        "headline": "Arges Pitesti, Cetate Deva'yı 2-1 yendi",
+        "paragraph": "Arges Pitesti, hazırlık karşılaşmasında Cetate Deva'yı 2-1 mağlup etti. Golleri 18. dakikada Normal Goal (Arges Pitesti), 50. dakikada Normal Goal (Cetate Deva), 79. dakikada Normal Goal (Arges Pitesti) kaydetti.",
+        "result": {
+          "winner": "Arges Pitesti",
+          "loser": "Cetate Deva",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "18'",
+              "team": "Arges Pitesti",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "50'",
+              "team": "Cetate Deva",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "79'",
+              "team": "Arges Pitesti",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Normal Goal), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Arges Pitesti",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Arges Pitesti",
+              "contribution": "18' gol · 79' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Normal Goal",
+              "team": "Cetate Deva",
+              "contribution": "50' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "18' Arges Pitesti — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "50' Cetate Deva — Normal Goal: gol",
+            "79' Arges Pitesti — Normal Goal: gol"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Arges Pitesti, Cetate Deva'yı 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Cetate Deva son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Arges Pitesti sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "san-antonio-sv-darmstadt-98-2026-09-30",
+      "fixtureId": "1550632",
+      "provider": "api-football",
+      "slug": "san-antonio-sv-darmstadt-98-2026-09-30",
+      "kickoff": "2026-09-30T03:30:00+03:00",
+      "kickoffUtc": "2026-09-30T00:30:00.000Z",
+      "kickoffLocal": "2026-09-30T03:30",
+      "date": "2026-09-30",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "San Antonio",
+      "awayTeam": "SV Darmstadt 98",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 7
+      },
+      "finalScore": "0-7",
+      "winner": "SV Darmstadt 98",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "7c12ec403bc8774e",
+      "fingerprint": "7c12ec403bc8774e",
+      "analysisGeneratedAt": "2026-09-30T09:37:54.963Z",
+      "analysisUpdatedAt": "2026-09-30T09:37:54.963Z",
+      "generatedAt": "2026-09-30T09:37:54.963Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "San Antonio 0-7 SV Darmstadt 98 maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Hazırlık maçını SV Darmstadt 98 7-0 kazandı; San Antonio sahadan puansız ayrıldı.",
+        "path": "mac-raporu/san-antonio-sv-darmstadt-98-2026-09-30.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/san-antonio-sv-darmstadt-98-2026-09-30.html",
+      "digest": {
+        "headline": "SV Darmstadt 98, San Antonio'yu 7-0 yendi",
+        "paragraph": "Hazırlık maçını SV Darmstadt 98 7-0 kazandı; San Antonio sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "SV Darmstadt 98",
+          "loser": "San Antonio",
+          "draw": false,
+          "margin": 7
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "SV Darmstadt 98, San Antonio'yu 0-7 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "SV Darmstadt 98 sahadan 7 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "spain-croatia-2026-09-29",
       "fixtureId": "1528909",

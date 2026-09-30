@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-09-30T01:16:23.462Z",
+  "fetchedAt": "2026-09-30T09:36:45.984Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -1047597,14 +1047597,16 @@
       "awayTeamId": "181",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4017.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/181.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null
+        "home": 0,
+        "away": 7,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -1047620,8 +1047622,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-30T01:16:24.359Z",
-      "staleAfter": "2026-09-30T01:21:24.359Z",
+      "fetchedAt": "2026-09-30T09:36:46.951Z",
+      "staleAfter": "2026-09-30T09:41:46.951Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -1047760,22 +1047762,24 @@
       "round": null,
       "venue": null,
       "referee": null,
-      "kickoff": "2026-09-30T11:00:00+03:00",
-      "time": "11:00",
+      "kickoff": "2026-09-30T10:30:00+03:00",
+      "time": "10:30",
       "homeTeam": "Arges Pitesti",
       "awayTeam": "Cetate Deva",
       "homeTeamId": "2592",
       "awayTeamId": "6853",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2592.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6853.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null
+        "home": 2,
+        "away": 1,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -1047791,8 +1047795,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-30T01:16:24.359Z",
-      "staleAfter": "2026-09-30T01:21:24.359Z",
+      "fetchedAt": "2026-09-30T09:36:46.951Z",
+      "staleAfter": "2026-09-30T09:41:46.951Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -1047835,8 +1047839,8 @@
             "last_5": {
               "played": 5,
               "form": "67%",
-              "att": "100%",
-              "def": "58%",
+              "att": "68%",
+              "def": "74%",
               "goals": {
                 "for": {
                   "total": 13,
@@ -1048463,7 +1048467,423 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-09-30T01:16:42.636Z"
+      "predictionFetchedAt": "2026-09-30T01:16:42.636Z",
+      "events": [
+        {
+          "time": "18'",
+          "team": {
+            "name": "Arges Pitesti"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "50'",
+          "team": {
+            "name": "Cetate Deva"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "79'",
+          "team": {
+            "name": "Arges Pitesti"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "analysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 79' Normal Goal tarafından kaydedildi. Arges Pitesti skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Arges Pitesti tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "79'",
+            "text": "Son gol 79' Normal Goal tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "2-1",
+            "text": "Arges Pitesti skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 3,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      }
+    },
+    {
+      "id": "khovd-ulaanbaatar-2026-09-30",
+      "providerId": "1640417",
+      "league": "Premier League",
+      "competitionId": "premier-league",
+      "providerLeagueId": "764",
+      "round": 5,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-30T11:00:00+03:00",
+      "time": "11:00",
+      "homeTeam": "Khovd",
+      "awayTeam": "Ulaanbaatar",
+      "homeTeamId": "18104",
+      "awayTeamId": "16854",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/18104.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/16854.png",
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 79,
+      "elapsed": 79,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "7'",
+          "team": {
+            "name": "Ulaanbaatar"
+          },
+          "type": "Goal",
+          "detail": "Missed Penalty",
+          "value": "Missed Penalty",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Ulaanbaatar"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "75'",
+          "team": {
+            "name": "Ulaanbaatar"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-30T09:36:46.466Z",
+      "staleAfter": "2026-09-30T09:38:16.466Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1640417"
+      }
+    },
+    {
+      "id": "east-bengal-ii-minerva-punjab-2026-09-30",
+      "providerId": "1640262",
+      "league": "IFA Shield",
+      "competitionId": "ifa-shield",
+      "providerLeagueId": "1201",
+      "round": null,
+      "venue": "Salt Lake Stadium",
+      "referee": null,
+      "kickoff": "2026-09-30T12:00:00+03:00",
+      "time": "12:00",
+      "homeTeam": "East Bengal II",
+      "awayTeam": "Minerva Punjab",
+      "homeTeamId": "21137",
+      "awayTeamId": "3466",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/21137.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/3466.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 34,
+      "elapsed": 34,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-30T09:36:46.466Z",
+      "staleAfter": "2026-09-30T09:38:16.466Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1640262"
+      }
+    },
+    {
+      "id": "timor-leste-cambodia-2026-09-30",
+      "providerId": "1641712",
+      "league": "FIFA Asean Cup",
+      "competitionId": "fifa-asean-cup",
+      "providerLeagueId": "1247",
+      "round": 3,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-30T12:00:00+03:00",
+      "time": "12:00",
+      "homeTeam": "Timor-Leste",
+      "awayTeam": "Cambodia",
+      "homeTeamId": "5537",
+      "awayTeamId": "1543",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/5537.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/1543.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 37,
+      "elapsed": 37,
+      "live": true,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "17'",
+          "team": {
+            "name": "Timor-Leste"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "João Pedro da Silva Freitas · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "22'",
+          "team": {
+            "name": "Cambodia"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Samuel Bong · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "28'",
+          "team": {
+            "name": "Cambodia"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Sokyuth Kim · Asist: Sieng Chanthea · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "28'",
+          "team": {
+            "name": "Cambodia"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Andres Nieto · Asist: Yudai Ogawa · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "34'",
+          "team": {
+            "name": "Timor-Leste"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Claudio osorio · Asist: Fretelian Dos Santos · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-30T09:36:46.466Z",
+      "staleAfter": "2026-09-30T09:38:16.466Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1641712"
+      }
+    },
+    {
+      "id": "scotland-u19-ukraine-u19-2026-09-30",
+      "providerId": "1642975",
+      "league": "Friendlies",
+      "competitionId": "hazirlik-maci",
+      "providerLeagueId": "10",
+      "round": null,
+      "venue": "Mini Estadi",
+      "referee": null,
+      "kickoff": "2026-09-30T12:00:00+03:00",
+      "time": "12:00",
+      "homeTeam": "Scotland U19",
+      "awayTeam": "Ukraine U19",
+      "homeTeamId": "10345",
+      "awayTeamId": "10352",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/10345.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/10352.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 35,
+      "elapsed": 35,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "events": [
+        {
+          "time": "9'",
+          "team": {
+            "name": "Ukraine U19"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "O. Tkachenko · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "21'",
+          "team": {
+            "name": "Ukraine U19"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Red Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ],
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-30T09:36:46.466Z",
+      "staleAfter": "2026-09-30T09:38:16.466Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1642975"
+      }
+    },
+    {
+      "id": "finland-u19-germany-u19-2026-09-30",
+      "providerId": "1642973",
+      "league": "Friendlies",
+      "competitionId": "hazirlik-maci",
+      "providerLeagueId": "10",
+      "round": null,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-30T12:15:00+03:00",
+      "time": "12:15",
+      "homeTeam": "Finland U19",
+      "awayTeam": "Germany U19",
+      "homeTeamId": "10333",
+      "awayTeamId": "10336",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/10333.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/10336.png",
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 19,
+      "elapsed": 19,
+      "live": true,
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-30T09:36:46.466Z",
+      "staleAfter": "2026-09-30T09:38:16.466Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1642973"
+      }
     },
     {
       "id": "kalsdorf-grazer-ak-2026-09-30",
@@ -1048489,7 +1048909,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -1048505,8 +1048927,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-09-30T01:16:24.359Z",
-      "staleAfter": "2026-09-30T01:21:24.359Z",
+      "fetchedAt": "2026-09-30T09:36:46.951Z",
+      "staleAfter": "2026-09-30T09:41:46.951Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -1049529,6 +1049951,720 @@
         ]
       },
       "predictionFetchedAt": "2026-09-30T01:16:42.882Z"
+    },
+    {
+      "id": "seuzach-fc-winterthur-2026-09-30",
+      "providerId": "1643203",
+      "league": "Hazırlık Maçı",
+      "competitionId": "hazirlik-maci",
+      "providerLeagueId": "667",
+      "round": null,
+      "venue": null,
+      "referee": null,
+      "kickoff": "2026-09-30T21:00:00+03:00",
+      "time": "21:00",
+      "homeTeam": "Seuzach",
+      "awayTeam": "FC Winterthur",
+      "homeTeamId": "16374",
+      "awayTeamId": "2180",
+      "homeTeamLogo": "https://media.api-sports.io/football/teams/16374.png",
+      "awayTeamLogo": "https://media.api-sports.io/football/teams/2180.png",
+      "status": "SCHEDULED",
+      "providerStatus": "NS",
+      "minute": null,
+      "elapsed": null,
+      "live": false,
+      "score": {
+        "home": null,
+        "away": null
+      },
+      "homeForm": null,
+      "awayForm": null,
+      "homeMomentum": null,
+      "awayMomentum": null,
+      "momentum": {
+        "side": "neutral",
+        "value": null
+      },
+      "aiPrediction": null,
+      "goalExpectation": null,
+      "goalPotential": null,
+      "risk": null,
+      "source": "api-football",
+      "providerName": "api-football",
+      "fetchedAt": "2026-09-30T09:36:46.951Z",
+      "staleAfter": "2026-09-30T09:41:46.951Z",
+      "dataStatus": "provider",
+      "needsReview": false,
+      "resource": "matches",
+      "providerIds": {
+        "apiFootball": "1643203"
+      },
+      "prediction": {
+        "predictions": {
+          "winner": {
+            "id": null,
+            "name": null,
+            "comment": null
+          },
+          "win_or_draw": false,
+          "under_over": null,
+          "goals": {
+            "home": null,
+            "away": null
+          },
+          "advice": "No predictions available",
+          "percent": {
+            "home": "33%",
+            "draw": "33%",
+            "away": "33%"
+          }
+        },
+        "league": {
+          "id": 667,
+          "name": "Friendlies Clubs",
+          "country": "World",
+          "logo": "https://media.api-sports.io/football/leagues/667.png",
+          "flag": null,
+          "season": 2026
+        },
+        "teams": {
+          "home": {
+            "id": 16374,
+            "name": "Seuzach",
+            "logo": "https://media.api-sports.io/football/teams/16374.png",
+            "last_5": {
+              "played": 0,
+              "form": "0%",
+              "att": "0%",
+              "def": "0%",
+              "goals": {
+                "for": {
+                  "total": 0,
+                  "average": "0.0"
+                },
+                "against": {
+                  "total": 0,
+                  "average": "0.0"
+                }
+              }
+            },
+            "league": {
+              "form": null,
+              "fixtures": {
+                "played": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "wins": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "draws": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                },
+                "loses": {
+                  "home": 0,
+                  "away": 0,
+                  "total": 0
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 0,
+                    "away": 0,
+                    "total": 0
+                  },
+                  "average": {
+                    "home": "0.0",
+                    "away": "0.0",
+                    "total": "0.0"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "16-30": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "31-45": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "46-60": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "61-75": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 0
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 0
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 0,
+                  "draws": 0,
+                  "loses": 0
+                },
+                "wins": {
+                  "home": null,
+                  "away": null
+                },
+                "loses": {
+                  "home": null,
+                  "away": null
+                },
+                "goals": {
+                  "for": {
+                    "home": 0,
+                    "away": 0
+                  },
+                  "against": {
+                    "home": 0,
+                    "away": 0
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "penalty": {
+                "scored": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 0
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          },
+          "away": {
+            "id": 2180,
+            "name": "FC Winterthur",
+            "logo": "https://media.api-sports.io/football/teams/2180.png",
+            "last_5": {
+              "played": 5,
+              "form": "20%",
+              "att": "32%",
+              "def": "58%",
+              "goals": {
+                "for": {
+                  "total": 6,
+                  "average": "1.2"
+                },
+                "against": {
+                  "total": 8,
+                  "average": "1.6"
+                }
+              }
+            },
+            "league": {
+              "form": "LLWLLDDD",
+              "fixtures": {
+                "played": {
+                  "home": 5,
+                  "away": 3,
+                  "total": 8
+                },
+                "wins": {
+                  "home": 1,
+                  "away": 0,
+                  "total": 1
+                },
+                "draws": {
+                  "home": 2,
+                  "away": 1,
+                  "total": 3
+                },
+                "loses": {
+                  "home": 2,
+                  "away": 2,
+                  "total": 4
+                }
+              },
+              "goals": {
+                "for": {
+                  "total": {
+                    "home": 5,
+                    "away": 5,
+                    "total": 10
+                  },
+                  "average": {
+                    "home": "1.0",
+                    "away": "1.7",
+                    "total": "1.3"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "16-30": {
+                      "total": 2,
+                      "percentage": "28.57%"
+                    },
+                    "31-45": {
+                      "total": 2,
+                      "percentage": "28.57%"
+                    },
+                    "46-60": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "14.29%"
+                    },
+                    "76-90": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": null,
+                      "percentage": null
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 7,
+                      "under": 1
+                    },
+                    "1.5": {
+                      "over": 3,
+                      "under": 5
+                    },
+                    "2.5": {
+                      "over": 0,
+                      "under": 8
+                    },
+                    "3.5": {
+                      "over": 0,
+                      "under": 8
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 8
+                    }
+                  }
+                },
+                "against": {
+                  "total": {
+                    "home": 8,
+                    "away": 7,
+                    "total": 15
+                  },
+                  "average": {
+                    "home": "1.6",
+                    "away": "2.3",
+                    "total": "1.9"
+                  },
+                  "minute": {
+                    "0-15": {
+                      "total": 3,
+                      "percentage": "27.27%"
+                    },
+                    "16-30": {
+                      "total": 1,
+                      "percentage": "9.09%"
+                    },
+                    "31-45": {
+                      "total": 1,
+                      "percentage": "9.09%"
+                    },
+                    "46-60": {
+                      "total": 2,
+                      "percentage": "18.18%"
+                    },
+                    "61-75": {
+                      "total": 1,
+                      "percentage": "9.09%"
+                    },
+                    "76-90": {
+                      "total": 2,
+                      "percentage": "18.18%"
+                    },
+                    "91-105": {
+                      "total": null,
+                      "percentage": null
+                    },
+                    "106-120": {
+                      "total": 1,
+                      "percentage": "9.09%"
+                    }
+                  },
+                  "under_over": {
+                    "0.5": {
+                      "over": 8,
+                      "under": 0
+                    },
+                    "1.5": {
+                      "over": 4,
+                      "under": 4
+                    },
+                    "2.5": {
+                      "over": 2,
+                      "under": 6
+                    },
+                    "3.5": {
+                      "over": 1,
+                      "under": 7
+                    },
+                    "4.5": {
+                      "over": 0,
+                      "under": 8
+                    }
+                  }
+                }
+              },
+              "biggest": {
+                "streak": {
+                  "wins": 1,
+                  "draws": 0,
+                  "loses": 2
+                },
+                "wins": {
+                  "home": "2-1",
+                  "away": null
+                },
+                "loses": {
+                  "home": "1-4",
+                  "away": "3-2"
+                },
+                "goals": {
+                  "for": {
+                    "home": 2,
+                    "away": 2
+                  },
+                  "against": {
+                    "home": 4,
+                    "away": 3
+                  }
+                }
+              },
+              "clean_sheet": {
+                "home": 0,
+                "away": 0,
+                "total": 0
+              },
+              "failed_to_score": {
+                "home": 1,
+                "away": 0,
+                "total": 1
+              },
+              "penalty": {
+                "scored": {
+                  "total": 1,
+                  "percentage": "100.00%"
+                },
+                "missed": {
+                  "total": 0,
+                  "percentage": "0%"
+                },
+                "total": 1
+              },
+              "lineups": [],
+              "cards": {
+                "yellow": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                },
+                "red": {
+                  "0-15": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "16-30": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "31-45": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "46-60": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "61-75": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "76-90": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "91-105": {
+                    "total": null,
+                    "percentage": null
+                  },
+                  "106-120": {
+                    "total": null,
+                    "percentage": null
+                  }
+                }
+              }
+            }
+          }
+        },
+        "comparison": {
+          "form": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "att": {
+            "home": "0%",
+            "away": "100%"
+          },
+          "def": {
+            "home": "100%",
+            "away": "0%"
+          },
+          "poisson_distribution": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "h2h": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "goals": {
+            "home": "0%",
+            "away": "0%"
+          },
+          "total": {
+            "home": "0%",
+            "away": "0%"
+          }
+        },
+        "h2h": []
+      },
+      "predictionFetchedAt": "2026-09-30T09:37:13.735Z"
     }
   ],
   "providers": [
