@@ -1,9 +1,483 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-09-30T16:50:07.680Z",
-  "matchCount": 1648,
+  "updatedAt": "2026-09-30T21:26:02.749Z",
+  "matchCount": 1650,
   "records": [
+    {
+      "matchId": "seuzach-fc-winterthur-2026-09-30",
+      "fixtureId": "1643203",
+      "provider": "api-football",
+      "slug": "seuzach-fc-winterthur-2026-09-30",
+      "kickoff": "2026-09-30T21:00:00+03:00",
+      "kickoffUtc": "2026-09-30T18:00:00.000Z",
+      "kickoffLocal": "2026-09-30T21:00",
+      "date": "2026-09-30",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Seuzach",
+      "awayTeam": "FC Winterthur",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 4
+      },
+      "finalScore": "1-4",
+      "winner": "FC Winterthur",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "1e9fbcf403d71c16",
+      "fingerprint": "1e9fbcf403d71c16",
+      "analysisGeneratedAt": "2026-09-30T21:26:02.378Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Seuzach 1-4 FC Winterthur maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Hazırlık maçını FC Winterthur 4-1 kazandı; Seuzach sahadan puansız ayrıldı.",
+        "path": "mac-raporu/seuzach-fc-winterthur-2026-09-30.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/seuzach-fc-winterthur-2026-09-30.html",
+      "digest": {
+        "headline": "FC Winterthur, Seuzach'ı 4-1 yendi",
+        "paragraph": "Hazırlık maçını FC Winterthur 4-1 kazandı; Seuzach sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "FC Winterthur",
+          "loser": "Seuzach",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "FC Winterthur, Seuzach'ı 1-4 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "FC Winterthur sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "kalsdorf-grazer-ak-2026-09-30",
+      "fixtureId": "1642894",
+      "provider": "api-football",
+      "slug": "kalsdorf-grazer-ak-2026-09-30",
+      "kickoff": "2026-09-30T19:00:00+03:00",
+      "kickoffUtc": "2026-09-30T16:00:00.000Z",
+      "kickoffLocal": "2026-09-30T19:00",
+      "date": "2026-09-30",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Hazırlık Maçı",
+      "competition": "Hazırlık Maçı",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Kalsdorf",
+      "awayTeam": "Grazer AK",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 5
+      },
+      "finalScore": "1-5",
+      "winner": "Grazer AK",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 6
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 6,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "78b7a78f91603cf6",
+      "fingerprint": "78b7a78f91603cf6",
+      "analysisGeneratedAt": "2026-09-30T21:26:02.378Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Kalsdorf 1-5 Grazer AK maç raporu: Hazırlık Maçı istatistikleri | FutbolRadar",
+        "description": "Grazer AK, hazırlık karşılaşmasında Kalsdorf'u 5-1 mağlup etti.",
+        "path": "mac-raporu/kalsdorf-grazer-ak-2026-09-30.html",
+        "competition": "Hazırlık Maçı"
+      },
+      "reportUrl": "./mac-raporu/kalsdorf-grazer-ak-2026-09-30.html",
+      "digest": {
+        "headline": "Grazer AK, Kalsdorf'u 5-1 yendi",
+        "paragraph": "Grazer AK, hazırlık karşılaşmasında Kalsdorf'u 5-1 mağlup etti. Golleri 6. dakikada L. Klassen (Grazer AK), 14. dakikada M. Grosse (Grazer AK), 40. dakikada S. Pigac (Kalsdorf), 59. dakikada J. Rumpl (Grazer AK), 65. dakikada P. Markovic (Grazer AK), 80. dakikada D. Maderner (Grazer AK) kaydetti.",
+        "result": {
+          "winner": "Grazer AK",
+          "loser": "Kalsdorf",
+          "draw": false,
+          "margin": 4
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "6'",
+              "team": "Grazer AK",
+              "type": "Gol",
+              "detail": "L. Klassen",
+              "pivotal": true
+            },
+            {
+              "minute": "14'",
+              "team": "Grazer AK",
+              "type": "Gol",
+              "detail": "M. Grosse",
+              "pivotal": true
+            },
+            {
+              "minute": "40'",
+              "team": "Kalsdorf",
+              "type": "Gol",
+              "detail": "S. Pigac",
+              "pivotal": true
+            },
+            {
+              "minute": "59'",
+              "team": "Grazer AK",
+              "type": "Gol",
+              "detail": "J. Rumpl",
+              "pivotal": true
+            },
+            {
+              "minute": "65'",
+              "team": "Grazer AK",
+              "type": "Gol",
+              "detail": "P. Markovic",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (D. Maderner).",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Grazer AK",
+              "type": "Gol",
+              "detail": "D. Maderner",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "D. Maderner",
+              "team": "Grazer AK",
+              "contribution": "80' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "J. Rumpl",
+              "team": "Grazer AK",
+              "contribution": "59' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "L. Klassen",
+              "team": "Grazer AK",
+              "contribution": "6' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Grosse",
+              "team": "Grazer AK",
+              "contribution": "14' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "6' Grazer AK — L. Klassen: gol",
+            "14' Grazer AK — M. Grosse: gol",
+            "40' Kalsdorf — S. Pigac: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (3 olay).",
+            "59' Grazer AK — J. Rumpl: gol",
+            "65' Grazer AK — P. Markovic: gol",
+            "80' Grazer AK — D. Maderner: gol"
+          ],
+          "goals": 3
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Grazer AK, Kalsdorf'u 1-5 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kalsdorf son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Grazer AK sahadan 4 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "arges-pitesti-cetate-deva-2026-09-30",
       "fixtureId": "1642893",
@@ -16205,11 +16679,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "24583003ed665971",
-      "fingerprint": "24583003ed665971",
+      "analysisSourceHash": "015d9162ce2f5821",
+      "fingerprint": "015d9162ce2f5821",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -16400,11 +16874,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "e849d2aa7629a672",
-      "fingerprint": "e849d2aa7629a672",
+      "analysisSourceHash": "46c2401fcc66290e",
+      "fingerprint": "46c2401fcc66290e",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -16595,11 +17069,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "e75d979658d7e01c",
-      "fingerprint": "e75d979658d7e01c",
+      "analysisSourceHash": "a73dff24d93ba6bb",
+      "fingerprint": "a73dff24d93ba6bb",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -16790,11 +17264,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b890907046128cfc",
-      "fingerprint": "b890907046128cfc",
+      "analysisSourceHash": "d5d727595a5222d1",
+      "fingerprint": "d5d727595a5222d1",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -16985,11 +17459,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "343bc94d30b22d02",
-      "fingerprint": "343bc94d30b22d02",
+      "analysisSourceHash": "2307980ea04066f1",
+      "fingerprint": "2307980ea04066f1",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -17180,11 +17654,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "69a9b0c778bc5622",
-      "fingerprint": "69a9b0c778bc5622",
+      "analysisSourceHash": "8bd1e7b50c3a8f70",
+      "fingerprint": "8bd1e7b50c3a8f70",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -17374,11 +17848,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "ce97b4c1fa3a7c57",
-      "fingerprint": "ce97b4c1fa3a7c57",
+      "analysisSourceHash": "c9ee4fbbc82c3940",
+      "fingerprint": "c9ee4fbbc82c3940",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -17569,11 +18043,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9de1267ad3aa4453",
-      "fingerprint": "9de1267ad3aa4453",
+      "analysisSourceHash": "a83c4d0d49980b98",
+      "fingerprint": "a83c4d0d49980b98",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -17764,11 +18238,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c6b83cda13e10e05",
-      "fingerprint": "c6b83cda13e10e05",
+      "analysisSourceHash": "a524982eb2fc68c2",
+      "fingerprint": "a524982eb2fc68c2",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -17959,11 +18433,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "aa63a16dffecab8c",
-      "fingerprint": "aa63a16dffecab8c",
+      "analysisSourceHash": "408fdf0576f21084",
+      "fingerprint": "408fdf0576f21084",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -18154,11 +18628,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9bbbe0e9281df647",
-      "fingerprint": "9bbbe0e9281df647",
+      "analysisSourceHash": "338bfc06df9770ea",
+      "fingerprint": "338bfc06df9770ea",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -19023,11 +19497,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6ddd934bfdc8c5fe",
-      "fingerprint": "6ddd934bfdc8c5fe",
+      "analysisSourceHash": "58bf19df0dd16c9f",
+      "fingerprint": "58bf19df0dd16c9f",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -19217,11 +19691,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "73cd09172c104a4f",
-      "fingerprint": "73cd09172c104a4f",
+      "analysisSourceHash": "a2c360a4404f9bc0",
+      "fingerprint": "a2c360a4404f9bc0",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -19411,11 +19885,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "10cf5ed221628f70",
-      "fingerprint": "10cf5ed221628f70",
+      "analysisSourceHash": "8bbcfa59f0f5b768",
+      "fingerprint": "8bbcfa59f0f5b768",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -19605,11 +20079,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c0781439b27983c3",
-      "fingerprint": "c0781439b27983c3",
+      "analysisSourceHash": "829c90b23ed97934",
+      "fingerprint": "829c90b23ed97934",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -20585,11 +21059,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "fd923b20fedf5ec3",
-      "fingerprint": "fd923b20fedf5ec3",
+      "analysisSourceHash": "15abe2f6be69bc76",
+      "fingerprint": "15abe2f6be69bc76",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -20779,11 +21253,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "2a8ff4729f8bc222",
-      "fingerprint": "2a8ff4729f8bc222",
+      "analysisSourceHash": "d41fe2f649888d13",
+      "fingerprint": "d41fe2f649888d13",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -21188,11 +21662,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "09ac1ae91324b1f7",
-      "fingerprint": "09ac1ae91324b1f7",
+      "analysisSourceHash": "e234c480dc223870",
+      "fingerprint": "e234c480dc223870",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -21382,11 +21856,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "3a61eda41b1d1984",
-      "fingerprint": "3a61eda41b1d1984",
+      "analysisSourceHash": "ce5ae2a12f933f26",
+      "fingerprint": "ce5ae2a12f933f26",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -21576,11 +22050,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "70959ccb81bef981",
-      "fingerprint": "70959ccb81bef981",
+      "analysisSourceHash": "4a5db91c9b0b8707",
+      "fingerprint": "4a5db91c9b0b8707",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -21770,11 +22244,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "4fb1c0bafeeba6e7",
-      "fingerprint": "4fb1c0bafeeba6e7",
+      "analysisSourceHash": "7b729825f9eabad6",
+      "fingerprint": "7b729825f9eabad6",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -21964,11 +22438,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "756daff72fb25b7a",
-      "fingerprint": "756daff72fb25b7a",
+      "analysisSourceHash": "8587b705ba319927",
+      "fingerprint": "8587b705ba319927",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -22158,11 +22632,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "f719d8acf68bf3ba",
-      "fingerprint": "f719d8acf68bf3ba",
+      "analysisSourceHash": "7b491bf31af09d34",
+      "fingerprint": "7b491bf31af09d34",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -22352,11 +22826,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "04f9f11d55e21c8f",
-      "fingerprint": "04f9f11d55e21c8f",
+      "analysisSourceHash": "d5f2960d791d8285",
+      "fingerprint": "d5f2960d791d8285",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -22546,11 +23020,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "18de5a0e99381d29",
-      "fingerprint": "18de5a0e99381d29",
+      "analysisSourceHash": "7cdf205cea99bfee",
+      "fingerprint": "7cdf205cea99bfee",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -22740,11 +23214,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "3d63a2c4e60b9520",
-      "fingerprint": "3d63a2c4e60b9520",
+      "analysisSourceHash": "e7b1f6bf10eb002a",
+      "fingerprint": "e7b1f6bf10eb002a",
       "analysisGeneratedAt": "2026-09-30T16:50:07.316Z",
-      "analysisUpdatedAt": "2026-09-30T16:50:07.316Z",
-      "generatedAt": "2026-09-30T16:50:07.316Z",
+      "analysisUpdatedAt": "2026-09-30T21:26:02.378Z",
+      "generatedAt": "2026-09-30T21:26:02.378Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
