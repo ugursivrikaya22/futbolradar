@@ -65,7 +65,7 @@ function page({ slug, nodes }) {
     `    <link rel="canonical" href="${DOMAIN}/mac/${slug}.html" />`,
     `    <meta property="og:url" content="${DOMAIN}/mac/${slug}.html" />`,
     `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
-    "</head><body><h1>test</h1></body></html>",
+    '</head><body><main class="container"><nav class="breadcrumb" aria-label="Breadcrumb"><span>test</span></nav><h1>test</h1></main></body></html>',
     ""
   ].join("\n");
 }
@@ -125,6 +125,11 @@ check("devredilmiş tur sayfasında SportsEvent kalmaz", () => {
 
 check("kanonik Maç Merkezi'ni gösterir", () => {
   assert.match(roundAfter, new RegExp(`rel="canonical" href="${DOMAIN}/mac/${targetSlug}"`));
+});
+
+check("devir şeridi kanonik Maç Merkezi'ne bağlanır", () => {
+  assert.ok(roundAfter.includes(`class="match-centre-handoff"><a href="${DOMAIN}/mac/${targetSlug}"`));
+  assert.ok(roundAfter.includes(`${HOME} - ${AWAY} maç merkezi`));
 });
 
 check("sayfanın kendi düğümleri korunur (BreadcrumbList)", () => {
