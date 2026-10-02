@@ -75,7 +75,7 @@
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
     news: { fallback: "news", reportSource: false },
     superLigFixtures: { api: "super-lig-fixtures", fallback: "super-lig-fixtures", reportSource: false },
-    matchAnalyses: { fallback: "match-analyses", reportSource: false, timeoutMs: 30000 },
+    matchAnalyses: { fallback: "match-analyses", reportSource: false },
     postMatchReports: { fallback: "post-match-reports", reportSource: false }
   };
 
@@ -530,7 +530,7 @@
       var fallback = function () {
         var source = name === "matches"
           ? loadStaticMatchSources()
-          : fetchJson(fallbackUrl, { timeoutMs: config.timeoutMs }).then(function (result) { return result.data; });
+          : fetchJson(fallbackUrl).then(function (result) { return result.data; });
 
         return source.then(function (data) {
           var filtered = markStaticFallback(filterFallbackData(name, data));
@@ -12613,8 +12613,9 @@
         }
       })
       .catch(function () {
-        return loadData("matchAnalyses")
-          .then(function (list) {
+        return fetchJson(DATA_ROOT + "match-analyses.json", { timeoutMs: 30000 })
+          .then(function (result) {
+            var list = result.data;
             var found = (Array.isArray(list) ? list : []).find(function (item) { return item && item.fixtureId === fixtureId; });
             return found || null;
           })
