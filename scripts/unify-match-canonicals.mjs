@@ -307,6 +307,33 @@ function stripSportsEvent(html) {
   });
 }
 
+function handoffBanner(html, selfPath, targetUrl) {
+  if (html.includes('class="match-centre-handoff"')) return html;
+
+  const event = sportsEventOf(html);
+  const home = teamName(event?.homeTeam);
+  const away = teamName(event?.awayTeam);
+  if (!home || !away) return html;
+
+  const escapeHtml = (value) => String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+  const isEnglish = selfPath.startsWith("en/match/");
+  const matchName = escapeHtml(`${home}${isEnglish ? " vs " : " - "}${away}`);
+  const copy = isEnglish
+    ? `${matchName} match centre: kick-off, TV channel, live score and result →`
+    : `${matchName} maç merkezi: saat, yayın kanalı, canlı skor ve maç sonucu →`;
+  const banner = `<p class="match-centre-handoff"><a href="${targetUrl}">${copy}</a></p>`;
+
+  return html.replace(
+    /(<nav\b[^>]*class="[^"]*\bbreadcrumb\b[^"]*"[^>]*>[\s\S]*?<\/nav>)/,
+    (breadcrumb) => `${breadcrumb}\n      ${banner}`
+  );
+}
+
 function rewrite(html, selfPath) {
   // `public/` bir AYNA: `public/mac/x.html` ile `mac/x.html` aynı sayfa.
   // Karşılaştırma ham yolla yapılınca koruma yalnızca kökte çalışıyor,
@@ -349,7 +376,10 @@ function rewrite(html, selfPath) {
   // düğümüyle birlikte birleştirilmiş durumda ve hiçbir kapı itiraz
   // etmiyor. Onları da kapsamak bu düzeltmeyi 4 dosyadan ~700 dosyaya
   // çıkarır; ayrı bir karar, ayrı bir değişiklik.
-  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) next = stripSportsEvent(next);
+  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) {
+    next = handoffBanner(next, selfRelative, targetUrlFor(selfRelative));
+    next = stripSportsEvent(next);
+  }
 
   return next;
 }

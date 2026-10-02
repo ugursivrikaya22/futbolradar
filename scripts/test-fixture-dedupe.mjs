@@ -384,6 +384,30 @@ const matchDate = (match) => String((match && (match.kickoff || match.date)) || 
   ], []);
   assert.equal(distinct.length, 2, "farklı maçlar yalnızca aynı gün oynandığı için birleşmemeli");
 
+  const swapped = client.mergeMatchCollections(providerMatches, [{
+    homeTeam: "Alanyaspor", awayTeam: "Rizespor", kickoff: "2026-09-07T17:00:00Z"
+  }]);
+  assert.equal(swapped.length, 1, "ters takım sırası ve farklı saat dilimi aynı maç olarak birleşmeli");
+  const nextDay = client.mergeMatchCollections(providerMatches, [{
+    ...providerMatches[0], id: "next-day", kickoff: "2026-09-08T20:00:00+03:00"
+  }]);
+  assert.equal(nextDay.length, 2, "aynı takımlar farklı günlerde ayrı maç olarak kalmalı");
+
+  // Cross-day fixtures must not trigger a quadratic scan during fallback hydration.
+  let dateReads = 0;
+  const calendar = Array.from({ length: 2000 }, (_, index) => {
+    const kickoff = new Date(Date.UTC(2026, 0, index + 1, 12)).toISOString();
+    return {
+      id: `fixture-${index}`,
+      homeTeam: `Home ${index}`,
+      awayTeam: `Away ${index}`,
+      get kickoff() { dateReads += 1; return kickoff; }
+    };
+  });
+  const scaled = client.mergeMatchCollections(calendar, []);
+  assert.equal(scaled.length, calendar.length, "large fallback calendars must retain every distinct fixture");
+  assert.ok(dateReads <= calendar.length * 2, `fallback date reads must scale linearly, got ${dateReads}`);
+
   console.log("  ok  app.js istemci birleştirmesi de kulüp adı takma eşleşmesini uyguluyor");
 }
 
