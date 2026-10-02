@@ -6,6 +6,22 @@ const compilerManifest = require.resolve('typescript/package.json');
 const compiler = path.resolve(path.dirname(compilerManifest), require(compilerManifest).bin.tsc);
 const env = { ...process.env };
 for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT', 'AUDIT_RETRY_REPORT']) delete env[key];
+// TARAYICI KAPILARI VERCEL DERLEMESİNDE KOŞMAZ.
+//
+// Ölçüm (main, 02.10.2026): `npm run build` ~10 dk; tıklama denetimi tek
+// başına 38,5 dk. Vercel derlemesi bu yüzden ~48 dk sürüyordu ve canlıya
+// 30 Eylül'den beri deploy çıkmıyordu. Kapılar KALDIRILMADI: GitHub
+// Actions'taki "Interaction checks" işi `VERCEL` tanımsız koşar ve dört
+// tarayıcı kapısının hepsini her PR'da ve main'e her push'ta çalıştırır.
+// Vercel ise yalnızca hızlı kapıları (qa, tsc, rota denetimi, veri
+// testleri) koşturur. Vercel derleme ortamında `VERCEL=1` tanımlıdır.
+const onVercel = Boolean(process.env.VERCEL);
+const browserGates = new Set([
+  'scripts/test-en-match-detail-client.mjs',
+  'scripts/test-live-standings-browser.cjs',
+  'scripts/test-poll-share-browser.mjs',
+  'scripts/test-clickable-browser.cjs'
+]);
 for (const args of [
   ['scripts/test-match-focus.mjs'],
   ['scripts/qa.mjs'],
@@ -32,6 +48,10 @@ for (const args of [
   ['scripts/test-poll-share-browser.mjs'],
   ['scripts/test-clickable-browser.cjs']
 ]) {
+  if (onVercel && browserGates.has(args[0])) {
+    console.log('[production gate] Vercel: atlandı (GitHub Actions koşturur)', args.join(' '));
+    continue;
+  }
   console.log('[production gate]', args.join(' '));
   const result = spawnSync(process.execPath, args, { stdio: 'inherit', windowsHide: true, env });
   if (result.error) throw result.error;
