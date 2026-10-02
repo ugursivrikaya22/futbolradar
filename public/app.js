@@ -12857,7 +12857,15 @@
           return (item.fixtureId || item.id || item.providerId) === fixtureId;
         }) || null;
 
-        if (record && !match) {
+        if (record) {
+          if (match) {
+            var hero = target.querySelector('[data-card="match-analysis-hero"]');
+            hero.querySelector(".big-value").textContent = matchScoreText(match.score) !== "-"
+              ? matchScoreText(match.score) : statusTr(match.status);
+            hero.querySelector(".tag.soft").innerHTML = heroHeadlineLabel(record, match, record.homeContext.teamName, record.awayContext.teamName);
+            target.querySelector("#panel-summary").insertAdjacentHTML("afterbegin", researchVerdictCardHtml(match));
+            target.insertAdjacentHTML("beforeend", deepAnalysisEditorialHtml(match));
+          }
           return;
         }
         if (!record && !(match && match.deepAnalysis)) {
@@ -12871,19 +12879,7 @@
         }
 
         var editorialHtml = deepAnalysisEditorialHtml(match);
-        var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record, match) : "";
-        var selectedTab = target.querySelector('.match-analysis-tab[aria-selected="true"]');
-        var selectedId = selectedTab && selectedTab.id;
-        var restoreFocus = selectedTab && document.activeElement === selectedTab;
-        setContent(target, recordHtml + editorialHtml);
-        if (record) {
-          initAnalysisTabs(target);
-          var activeTab = selectedId && target.querySelector("#" + selectedId);
-          if (activeTab) {
-            activeTab.click();
-            if (restoreFocus) activeTab.focus();
-          }
-        }
+        setContent(target, editorialHtml);
       });
     }).catch(function () {
       if (staticFallback) {

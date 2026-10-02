@@ -383,7 +383,16 @@ function analysisHarness(search = "?id=fixture", fallback = "") {
   const target = {
     dataset: { staticFallback: String(Boolean(fallback)) },
     innerHTML: fallback,
+    insertAdjacentHTML(position, html) { this.innerHTML = position === "afterbegin" ? html + this.innerHTML : this.innerHTML + html; },
     querySelector(selector) {
+      if (selector.includes("match-analysis-hero")) return {
+        querySelector(child) {
+          return child === ".big-value" ? {
+            set textContent(value) { target.innerHTML = target.innerHTML.replace(/<hero>.*?<\/hero>/, `<hero>${value}</hero>`); }
+          } : { innerHTML: "" };
+        }
+      };
+      if (selector === "#panel-summary") return this;
       if (selector.includes("aria-selected")) return this.selected || null;
       return tabs.find(tab => "#" + tab.id === selector) || null;
     }
@@ -396,6 +405,10 @@ function analysisHarness(search = "?id=fixture", fallback = "") {
     fetchMatchAnalysisRecord: () => analysis.promise,
     matchAnalysisHeroHtml: (record, match) => `<hero>${match ? match.score : record.status}</hero>`,
     matchAnalysisTabsHtml: () => "<tabs>",
+    matchScoreText: score => score,
+    statusTr: status => status,
+    heroHeadlineLabel: () => "headline",
+    researchVerdictCardHtml: match => match.deepAnalysis ? "<research>" : "",
     deepAnalysisEditorialHtml: match => match?.deepAnalysis ? "<editorial>" : "",
     setContent: (element, html) => {
       if (tabs.includes(context.document.activeElement)) context.document.activeElement = null;
@@ -412,8 +425,9 @@ function analysisHarness(search = "?id=fixture", fallback = "") {
 }
 
 try {
+  const record = { status: "scheduled", homeContext: { teamName: "Home" }, awayContext: { teamName: "Away" } };
   const pending = analysisHarness();
-  pending.analysis.resolve({ status: "scheduled" });
+  pending.analysis.resolve(record);
   await settle();
   assert.match(pending.target.innerHTML, /<tabs>/, "analysis tabs must render while optional fixtures are still pending");
   pending.tabs[1].click();
@@ -422,13 +436,14 @@ try {
   await settle();
   assert.match(pending.target.innerHTML, /2-1/, "late fixture data must enrich the analysis");
   assert.match(pending.target.innerHTML, /<editorial>/, "late editorial content must be retained");
+  assert.match(pending.target.innerHTML, /<research>/, "late research verdict must be retained");
   assert.equal(pending.target.selected.id, "tab-deep", "late fixture data must not reset the selected tab");
   assert.equal(pending.context.document.activeElement.id, "tab-deep", "late fixture data must restore keyboard focus");
 
   const fixturesFirst = analysisHarness();
   fixturesFirst.matches.resolve([{ providerId: "fixture", score: "1-0", deepAnalysis: {} }]);
   await settle();
-  fixturesFirst.analysis.resolve({ status: "scheduled" });
+  fixturesFirst.analysis.resolve(record);
   await settle();
   assert.match(fixturesFirst.target.innerHTML, /1-0/, "fixtures arriving first must still enrich the analysis");
   assert.equal(fixturesFirst.context.document.activeElement, null, "enrichment must not steal focus");
@@ -436,12 +451,21 @@ try {
   for (const fixturesFirst of [false, true]) {
     const failed = analysisHarness();
     if (fixturesFirst) { failed.matches.reject(new Error("fixture feed unavailable")); await settle(); }
-    failed.analysis.resolve({ status: "scheduled" });
+    failed.analysis.resolve(record);
     await settle();
     if (!fixturesFirst) { failed.matches.reject(new Error("fixture feed unavailable")); await settle(); }
     assert.match(failed.target.innerHTML, /<tabs>/, "optional fixture failures must not discard the analysis");
     assert.equal(failed.target.dataset.state, "ready");
   }
+
+  const otherTabFocused = analysisHarness();
+  otherTabFocused.analysis.resolve(record);
+  await settle();
+  otherTabFocused.tabs[1].focus();
+  otherTabFocused.matches.resolve([{ fixtureId: "fixture", score: "0-0" }]);
+  await settle();
+  assert.equal(otherTabFocused.target.selected.id, "tab-summary", "enrichment must not select a merely focused tab");
+  assert.equal(otherTabFocused.context.document.activeElement.id, "tab-deep", "enrichment must not replace other focused controls");
 
   const editorial = analysisHarness();
   editorial.analysis.resolve(null);
