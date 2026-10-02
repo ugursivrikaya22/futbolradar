@@ -6,7 +6,7 @@
     "test:team-hubs": "node scripts/test-team-traffic-hubs.mjs",
     "generate:og-images": "node scripts/generate-og-images.mjs",
     "test:match-focus": "node scripts/test-match-focus.mjs",
-    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/postprocess.mjs && node scripts/verify-production.mjs",
+    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/postprocess.mjs && node scripts/apply-brand-copy.mjs && node scripts/verify-production.mjs",
     "typecheck": "tsc --noEmit",
     "test:routes": "node scripts/audit-interaction-routes.mjs",
     "test:browser": "node scripts/test-clickable-browser.cjs",
@@ -130,7 +130,8 @@
     "build:match-center-plus": "node scripts/build-match-center-plus-client.mjs",
     "test:match-center-plus": "node scripts/test-match-center-plus.mjs",
     "test:understat-shots": "node scripts/test-understat-shots.mjs",
-    "sync:understat-shots": "node scripts/sync-understat-shots.mjs"
+    "sync:understat-shots": "node scripts/sync-understat-shots.mjs",
+    "build:brand-copy": "node scripts/apply-brand-copy.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

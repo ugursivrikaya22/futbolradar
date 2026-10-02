@@ -24134,3 +24134,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
     scroll-margin-bottom: 96px;
   }
 }
+
+/* FutbolRadar: free, ad-free brand promise. */
+.home-page #hero-canli-skor h1{font-size:clamp(2rem,4.2vw,3.75rem);line-height:1.1;overflow-wrap:normal}
+.brand-benefits{display:flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:18px 0 12px}
+.brand-benefits li{border:1px solid var(--line,#dbe7df);background:var(--surface,#fff);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:700;color:var(--text,#17392b)}
+.brand-promise{max-width:55ch;font-size:13px;line-height:1.65;color:var(--muted,#607468);margin:0 0 20px}
+:root[data-theme="dark"] .brand-benefits li{background:#162b23;color:#e4f4e9;border-color:#365143}
+:root[data-theme="dark"] .brand-promise{color:#bacbc1}
+@media(max-width:480px){.brand-benefits{gap:6px}.brand-benefits li{font-size:12px;padding:7px 10px}.home-page #hero-canli-skor h1{font-size:clamp(1.9rem,7.8vw,2.6rem)}}
