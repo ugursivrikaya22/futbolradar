@@ -75,7 +75,7 @@
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
     news: { fallback: "news", reportSource: false },
     superLigFixtures: { api: "super-lig-fixtures", fallback: "super-lig-fixtures", reportSource: false },
-    matchAnalyses: { fallback: "match-analyses", reportSource: false },
+    matchAnalyses: { fallback: "match-analyses", reportSource: false, timeoutMs: 30000 },
     postMatchReports: { fallback: "post-match-reports", reportSource: false }
   };
 
@@ -269,7 +269,7 @@
   function fetchJson(url, options) {
     var controller = window.AbortController ? new AbortController() : null;
     var timer = controller
-      ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
+      ? window.setTimeout(function () { controller.abort(); }, (options && options.timeoutMs) || FETCH_TIMEOUT_MS)
       : null;
     // Revalidate dynamic JSON so transfer and match updates do not remain stale
     // in the browser cache. Canlı uç noktalar (`noStore: true`) tarayıcı
@@ -530,7 +530,7 @@
       var fallback = function () {
         var source = name === "matches"
           ? loadStaticMatchSources()
-          : fetchJson(fallbackUrl).then(function (result) { return result.data; });
+          : fetchJson(fallbackUrl, { timeoutMs: config.timeoutMs }).then(function (result) { return result.data; });
 
         return source.then(function (data) {
           var filtered = markStaticFallback(filterFallbackData(name, data));
