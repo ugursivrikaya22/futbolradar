@@ -12581,7 +12581,20 @@
     }
 
     var url = API_ROOT + "match-analysis?fixtureId=" + encodeURIComponent(fixtureId) + "&optional=1";
-    return fetch(url, { cache: "no-cache" })
+    // ZAMAN AŞIMI ŞART. Diğer okumalar fetchJson üzerinden FETCH_TIMEOUT_MS
+    // ile sınırlı; bu istek çıplak fetch'ti ve sınırsızdı. API yanıt
+    // vermediğinde istek asılı kalıyor, aşağıdaki statik yedeğe hiç
+    // düşülmüyor ve panel "yükleniyor" durumunda takılıyordu. İptal edilen
+    // istek catch'e düşer ve data/match-analyses.json'dan okunur.
+    var controller = window.AbortController ? new AbortController() : null;
+    var timer = controller
+      ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
+      : null;
+    var options = { cache: "no-cache" };
+    if (controller) {
+      options.signal = controller.signal;
+    }
+    return fetch(url, options)
       .then(function (response) {
         return response.json().catch(function () { return null; });
       })
@@ -12593,6 +12606,11 @@
           return null;
         }
         throw new Error("match-analysis-fetch-failed");
+      })
+      .finally(function () {
+        if (timer) {
+          window.clearTimeout(timer);
+        }
       })
       .catch(function () {
         return loadData("matchAnalyses")
