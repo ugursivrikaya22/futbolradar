@@ -252,6 +252,17 @@ async function runProcess(command, args, options = {}) {
   });
 }
 
+/** Çıktıdaki en sık geçen PROVIDER_* hata kodu (yoksa null). */
+export function detectProviderCode(output) {
+  const counts = new Map();
+  for (const match of String(output || "").matchAll(/\bPROVIDER_[A-Z_]+\b/g)) {
+    counts.set(match[0], (counts.get(match[0]) || 0) + 1);
+  }
+  let best = null;
+  for (const [code, count] of counts) if (!best || count > best[1]) best = [code, count];
+  return best ? best[0] : null;
+}
+
 async function runStep(spec, records) {
   const startedAt = new Date().toISOString();
   if (spec.skip) {
@@ -275,6 +286,9 @@ async function runStep(spec, records) {
   }
 
   const finishedAt = new Date().toISOString();
+  // "Exited with code 1" tek başına kök nedeni gizler (kota mı, anahtar mı,
+  // abonelik mi?). Betiğin yazdığı PROVIDER_* kodu ledger'a taşınır.
+  const providerCode = result.ok ? null : detectProviderCode(result.output);
   const record = {
     id: spec.id,
     source: spec.source || null,
@@ -286,7 +300,8 @@ async function runStep(spec, records) {
     durationMs: result.durationMs,
     attempts,
     summary: result.summary,
-    error: result.error,
+    providerCode,
+    error: providerCode && result.error ? `${result.error} (${providerCode})` : result.error,
     logTail: result.ok ? undefined : result.output.slice(-2_000)
   };
   records.push(record);
@@ -717,7 +732,7 @@ async function main() {
       commit: process.env.GITHUB_SHA || null,
       runUrl: githubRunUrl()
     },
-    sourcesChecked: steps.filter((step) => step.kind === "source").map(({ id, source, status, durationMs, attempts, summary, error, reason }) => ({ id, source, status, durationMs, attempts, summary, error, reason })),
+    sourcesChecked: steps.filter((step) => step.kind === "source").map(({ id, source, status, durationMs, attempts, summary, providerCode, error, reason }) => ({ id, source, status, durationMs, attempts, summary, providerCode, error, reason })),
     counts: { ...counts, filesChanged: counts.changedFiles.length },
     changedDataFiles: counts.changedFiles.map((name) => WATCHED_COLLECTIONS[name].file),
     errors,
