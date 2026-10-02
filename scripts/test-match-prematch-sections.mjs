@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
+import vm from "node:vm";
 import { createRequire } from "node:module";
 import {
   pitchRows,
@@ -358,6 +359,123 @@ check("data-provider-fixture yalnızca DOĞRULANMIŞ API-Football kimliği taş�
     }
   }
 });
+
+// --- İstemci analiz yüklemesi ---
+
+const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
+const initStart = appSource.indexOf("  function initMatchAnalysis(");
+assert.ok(initStart >= 0);
+const initSource = appSource.slice(initStart, appSource.indexOf("\n  }", initStart) + 4);
+const settle = () => new Promise(resolve => setImmediate(resolve));
+function deferred() {
+  let resolve, reject;
+  const promise = new Promise((yes, no) => { resolve = yes; reject = no; });
+  return { promise, resolve, reject };
+}
+function analysisHarness(search = "?id=fixture", fallback = "") {
+  const matches = deferred();
+  const analysis = deferred();
+  const tabs = ["tab-summary", "tab-deep"].map(id => ({
+    id,
+    click() { target.selected = this; },
+    focus() { context.document.activeElement = this; }
+  }));
+  const target = {
+    dataset: { staticFallback: String(Boolean(fallback)) },
+    innerHTML: fallback,
+    querySelector(selector) {
+      if (selector.includes("aria-selected")) return this.selected || null;
+      return tabs.find(tab => "#" + tab.id === selector) || null;
+    }
+  };
+  const context = vm.createContext({
+    URLSearchParams,
+    window: { location: { search } },
+    document: { activeElement: null },
+    loadData: name => { assert.equal(name, "matches"); return matches.promise; },
+    fetchMatchAnalysisRecord: () => analysis.promise,
+    matchAnalysisHeroHtml: (record, match) => `<hero>${match ? match.score : record.status}</hero>`,
+    matchAnalysisTabsHtml: () => "<tabs>",
+    deepAnalysisEditorialHtml: match => match?.deepAnalysis ? "<editorial>" : "",
+    setContent: (element, html) => {
+      if (tabs.includes(context.document.activeElement)) context.document.activeElement = null;
+      element.innerHTML = html;
+      element.dataset.state = "ready";
+      element.selected = null;
+    },
+    initAnalysisTabs: element => { element.selected = tabs[0]; },
+    setEmpty: (element, title) => { element.innerHTML = title; element.dataset.state = "empty"; }
+  });
+  vm.runInContext(initSource, context);
+  context.initMatchAnalysis(target);
+  return { target, matches, analysis, context, tabs };
+}
+
+try {
+  const pending = analysisHarness();
+  pending.analysis.resolve({ status: "scheduled" });
+  await settle();
+  assert.match(pending.target.innerHTML, /<tabs>/, "analysis tabs must render while optional fixtures are still pending");
+  pending.tabs[1].click();
+  pending.tabs[1].focus();
+  pending.matches.resolve([{ fixtureId: "fixture", score: "2-1", deepAnalysis: {} }]);
+  await settle();
+  assert.match(pending.target.innerHTML, /2-1/, "late fixture data must enrich the analysis");
+  assert.match(pending.target.innerHTML, /<editorial>/, "late editorial content must be retained");
+  assert.equal(pending.target.selected.id, "tab-deep", "late fixture data must not reset the selected tab");
+  assert.equal(pending.context.document.activeElement.id, "tab-deep", "late fixture data must restore keyboard focus");
+
+  const fixturesFirst = analysisHarness();
+  fixturesFirst.matches.resolve([{ providerId: "fixture", score: "1-0", deepAnalysis: {} }]);
+  await settle();
+  fixturesFirst.analysis.resolve({ status: "scheduled" });
+  await settle();
+  assert.match(fixturesFirst.target.innerHTML, /1-0/, "fixtures arriving first must still enrich the analysis");
+  assert.equal(fixturesFirst.context.document.activeElement, null, "enrichment must not steal focus");
+
+  for (const fixturesFirst of [false, true]) {
+    const failed = analysisHarness();
+    if (fixturesFirst) { failed.matches.reject(new Error("fixture feed unavailable")); await settle(); }
+    failed.analysis.resolve({ status: "scheduled" });
+    await settle();
+    if (!fixturesFirst) { failed.matches.reject(new Error("fixture feed unavailable")); await settle(); }
+    assert.match(failed.target.innerHTML, /<tabs>/, "optional fixture failures must not discard the analysis");
+    assert.equal(failed.target.dataset.state, "ready");
+  }
+
+  const editorial = analysisHarness();
+  editorial.analysis.resolve(null);
+  editorial.matches.resolve([{ id: "fixture", deepAnalysis: {} }]);
+  await settle();
+  assert.equal(editorial.target.innerHTML, "<editorial>", "editorial-only analysis must still render");
+
+  const fallback = analysisHarness("?id=fixture", "<static-analysis>");
+  fallback.analysis.resolve(null);
+  fallback.matches.resolve([]);
+  await settle();
+  assert.equal(fallback.target.innerHTML, "<static-analysis>");
+  assert.equal(fallback.target.dataset.state, "fallback");
+
+  const empty = analysisHarness();
+  empty.analysis.resolve(null);
+  empty.matches.resolve([]);
+  await settle();
+  assert.equal(empty.target.dataset.state, "empty", "missing data must keep the honest empty state");
+
+  const missingId = analysisHarness("", "<static-analysis>");
+  assert.equal(missingId.target.dataset.state, "fallback");
+  assert.equal(missingId.target.innerHTML, "<static-analysis>");
+
+  const rejected = analysisHarness("?id=fixture", "<static-analysis>");
+  rejected.analysis.reject(new Error("analysis unavailable"));
+  await settle();
+  assert.equal(rejected.target.dataset.state, "fallback", "analysis failures must preserve static content");
+  assert.equal(rejected.target.innerHTML, "<static-analysis>");
+  console.log("  ok  istemci: analiz sekmeleri isteğe bağlı fikstürü beklemez, bağlam ve sekme seçimi korunur");
+} catch (error) {
+  failures += 1;
+  console.error(`  FAIL istemci analiz yüklemesi: ${error.message}`);
+}
 
 if (failures) {
   console.error(`\nmatch-prematch-sections: ${failures} test başarısız.`);

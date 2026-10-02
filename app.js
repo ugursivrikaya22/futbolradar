@@ -12845,29 +12845,46 @@
     }
 
     target.dataset.state = "loading";
-    Promise.all([loadData("matches"), fetchMatchAnalysisRecord(fixtureId)]).then(function (results) {
-      var matches = Array.isArray(results[0]) ? results[0] : [];
-      var record = results[1];
-      var match = matches.find(function (item) {
-        return (item.fixtureId || item.id || item.providerId) === fixtureId;
-      }) || null;
-
-      if (!record && !(match && match.deepAnalysis)) {
-        if (staticFallback) {
-          target.innerHTML = staticFallback;
-          target.dataset.state = "fallback";
-          return;
-        }
-        setEmpty(target, "Maç öncesi analiz bulunamadı", "Bu maç için henüz doğrulanmış analiz oluşturulmadı.");
-        return;
-      }
-
-      var editorialHtml = deepAnalysisEditorialHtml(match);
-      var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record, match) : "";
-      setContent(target, recordHtml + editorialHtml);
+    var matchesPromise = loadData("matches").catch(function () { return []; });
+    fetchMatchAnalysisRecord(fixtureId).then(function (record) {
       if (record) {
+        setContent(target, matchAnalysisHeroHtml(record, null) + matchAnalysisTabsHtml(record, null));
         initAnalysisTabs(target);
       }
+      return matchesPromise.then(function (data) {
+        var matches = Array.isArray(data) ? data : [];
+        var match = matches.find(function (item) {
+          return (item.fixtureId || item.id || item.providerId) === fixtureId;
+        }) || null;
+
+        if (record && !match) {
+          return;
+        }
+        if (!record && !(match && match.deepAnalysis)) {
+          if (staticFallback) {
+            target.innerHTML = staticFallback;
+            target.dataset.state = "fallback";
+            return;
+          }
+          setEmpty(target, "Maç öncesi analiz bulunamadı", "Bu maç için henüz doğrulanmış analiz oluşturulmadı.");
+          return;
+        }
+
+        var editorialHtml = deepAnalysisEditorialHtml(match);
+        var recordHtml = record ? matchAnalysisHeroHtml(record, match) + matchAnalysisTabsHtml(record, match) : "";
+        var selectedTab = target.querySelector('.match-analysis-tab[aria-selected="true"]');
+        var selectedId = selectedTab && selectedTab.id;
+        var restoreFocus = selectedTab && document.activeElement === selectedTab;
+        setContent(target, recordHtml + editorialHtml);
+        if (record) {
+          initAnalysisTabs(target);
+          var activeTab = selectedId && target.querySelector("#" + selectedId);
+          if (activeTab) {
+            activeTab.click();
+            if (restoreFocus) activeTab.focus();
+          }
+        }
+      });
     }).catch(function () {
       if (staticFallback) {
         target.innerHTML = staticFallback;
