@@ -679,6 +679,9 @@
     }
 
     target.innerHTML = html;
+    if (target.hasAttribute("data-matches-day")) {
+      target.dataset.matchesDay = todayInIstanbul();
+    }
     target.dataset.state = "ready";
     // innerHTML düğümleri değiştirdiği için karusel her çizimde yeniden
     // bağlanmalı; aksi halde canlı yoklamadan sonra kart dönmeyi bırakır.
@@ -13419,12 +13422,12 @@
             var html = renderTodaySuperLigStrip(matches, latestSuperLigTeams);
             if (superLigStripTarget) {
               applyEmptyHide(superLigStripTarget, Boolean(html));
-              if (html) setContent(superLigStripTarget, html);
+              setContent(superLigStripTarget, html);
             }
             if (todayMatchesTarget) {
               var remainingHtml = renderTodayMatchesPreview(matches, latestSuperLigTeams);
               applyEmptyHide(todayMatchesTarget, Boolean(remainingHtml));
-              if (remainingHtml) setContent(todayMatchesTarget, remainingHtml);
+              setContent(todayMatchesTarget, remainingHtml);
             }
           })
           .catch(function () {

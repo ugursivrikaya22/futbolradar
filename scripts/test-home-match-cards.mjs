@@ -49,4 +49,49 @@ assert.deepEqual(
 assert.ok(!selected.some((match) => match.id === "yesterday"), "dünün eski kartı ana sayfada kalmamalı");
 assert.ok(!selected.some((match) => match.id === "tomorrow"), "yarının maçı bugünün kartları arasına girmemeli");
 
+const setContentBlock = appSource.match(/  function setContent\(target, html\) \{([\s\S]*?)\n  \}/);
+assert.ok(setContentBlock, "setContent must be available for the midnight regression");
+let today = "2026-08-24";
+const setContent = new Function("todayInIstanbul", "initFeaturedCarousel", "document", "CustomEvent", `
+  return function (target, html) { ${setContentBlock[1]} };
+`)(() => today, () => {}, { dispatchEvent() {} }, class { constructor() {} });
+const target = {
+  innerHTML: "",
+  dataset: { matchesDay: "2026-08-23" },
+  hasAttribute: (name) => name === "data-matches-day"
+};
+setContent(target, "<article>Today's fixture</article>");
+assert.equal(target.dataset.matchesDay, today, "client-rendered cards must replace the build-time day");
+today = "2026-08-25";
+setContent(target, "");
+assert.equal(target.innerHTML, "", "a matchless day must clear yesterday's cards");
+assert.equal(target.dataset.matchesDay, today, "empty client panels must also declare the new day");
+assert.equal(target.dataset.state, "ready", "empty panels must finish hydration");
+const unrelatedTarget = { dataset: {}, hasAttribute: () => false };
+setContent(unrelatedTarget, "News");
+assert.equal(unrelatedTarget.dataset.matchesDay, undefined, "unrelated panels must not acquire a match date");
+assert.match(appSource, /setContent\(todayMatchesTarget, remainingHtml\);/, "initial hydration must render even an empty match list");
+assert.doesNotMatch(appSource, /if \(remainingHtml\) setContent\(todayMatchesTarget/, "empty initial hydration must not keep stale metadata");
+
+const enSource = fs.readFileSync(path.join(root, "scripts/generate-en-pages.mjs"), "utf8");
+const todaySectionBlock = enSource.match(/function todaySection\(\) \{([\s\S]*?)\n\}/);
+assert.ok(todaySectionBlock, "English fixture section must be available");
+const todaySection = new Function("TODAY", "todaysMatches", "isSuperLig", "fixtureCard", "MATCH_LIST_INITIAL",
+  "escapeHtml", "label", "superLigTodayStripHtml", "teams", "LOCALE", "sectionHead", `
+  ${todaySectionBlock[0]}
+  return todaySection();
+`);
+for (const day of ["2026-08-24", "2026-08-25"]) {
+  for (const fixtures of [[], [{ id: "fixture" }]]) {
+    const html = todaySection(day, fixtures, () => false, () => '<article class="fixture-card"></article>',
+      12, (value) => value, () => "No matches", () => "", [], "en", () => "");
+    assert.match(html, new RegExp(`id="todays-matches-preview" data-matches-day="${day}"`),
+      "English static fixtures must retain their build day even when audited after midnight");
+    assert.equal((html.match(/class="fixture-card"/g) || []).length, fixtures.length);
+  }
+}
+const auditSource = fs.readFileSync(path.join(root, "scripts/test-clickable-browser.cjs"), "utf8");
+assert.ok(auditSource.includes("en ? '#todays-matches-preview' : '[data-api-target=\"today-matches\"]'"),
+  "browser audit must read the English static section's day rather than the runner clock");
+
 console.log("home-match-cards OK (tarih filtresi + Türk takımı önceliği)");

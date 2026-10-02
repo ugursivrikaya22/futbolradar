@@ -647,8 +647,8 @@ function todayFixtureCount(gun) {
           if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
           // `navigate` geri dönüyor: aşağıdaki kart ana sayfanın "Bugünün
           // Maçları" önizlemesinden geliyor, takım profilinden değil.
-          const gun = await page.locator('[data-api-target="today-matches"]').first()
-            .getAttribute('data-matches-day').catch(() => null);
+          const gun = await page.locator(en ? '#todays-matches-preview' : '[data-api-target="today-matches"]').first()
+            .getAttribute('data-matches-day');
           if (!todayFixtureCount(gun)) {
             await navigate(await assertHonestEmptyMatchDay());
             return;

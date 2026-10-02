@@ -1026,7 +1026,7 @@ function todaySection() {
     cardFor: fixtureCard
   });
 
-  return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
+  return `<section class="container section section-matches" id="todays-matches-preview" data-matches-day="${TODAY}" aria-labelledby="today-title">
           ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
           ${superLigStrip ? `<div class="superlig-strip" aria-label="Today's Süper Lig matches">${superLigStrip}</div>` : ""}
           <div class="matches-grid" data-match-list="today-matches">
