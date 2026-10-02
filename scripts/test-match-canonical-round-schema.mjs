@@ -65,7 +65,9 @@ function page({ slug, nodes }) {
     `    <link rel="canonical" href="${DOMAIN}/mac/${slug}.html" />`,
     `    <meta property="og:url" content="${DOMAIN}/mac/${slug}.html" />`,
     `    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph })}</script>`,
-    "</head><body><h1>test</h1></body></html>",
+    '</head><body><main class="container">',
+    '      <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><span>test</span></nav>',
+    "      <h1>test</h1></main></body></html>",
     ""
   ].join("\n");
 }
@@ -155,6 +157,19 @@ check("takma ad site haritasından düşer, hedef kalır", () => {
   assert.ok(!sitemap.includes(`/mac/${roundSlug}.html`), "takma ad haritada kalmış");
   assert.ok(sitemap.includes(`/mac/${targetSlug}.html`), "hedef haritadan düşmüş");
   assert.ok(sitemap.includes(`/mac/${lonelySlug}.html`), "hedefsiz sayfa haritadan düşmüş");
+});
+
+check("devredilmiş tur sayfası Maç Merkezi devir şeridini taşır", () => {
+  assert.equal((roundAfter.match(/match-centre-handoff/g) || []).length, 1, "şerit tam bir kez olmalı");
+  assert.ok(roundAfter.includes(`href="../mac/${targetSlug}"`), "şerit hedef sayfaya bağlanmıyor");
+  assert.ok(roundAfter.includes(`${HOME} - ${AWAY} maç merkezi`), "şeritte takım adları yok");
+  // Üreticiyle aynı yer: breadcrumb'dan hemen sonra.
+  assert.match(roundAfter, /<\/nav>\s*<p class="match-centre-handoff">/);
+});
+
+check("hedef sayfaya ve hedefsiz tur sayfasına şerit basılmaz", () => {
+  assert.ok(!read(files.target).includes("match-centre-handoff"), "kanonik sayfaya şerit basılmış");
+  assert.ok(!read(files.lonely).includes("match-centre-handoff"), "hedefsiz sayfaya şerit basılmış");
 });
 
 check("ikinci koşu hiçbir şeyi değiştirmez (idempotent)", () => {

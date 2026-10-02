@@ -307,6 +307,39 @@ function stripSportsEvent(html) {
   });
 }
 
+const escapeHtml = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+/**
+ * Devredilmiş tur sayfasının üstüne Maç Merkezi yönlendirme şeridini basar.
+ *
+ * NEDEN BURADA. Şerit normalde `generate-match-pages.mjs` tarafından, hedef
+ * sicilde VARKEN basılıyor. Maça tarih yeni atandığı koşuda ise tur sayfası
+ * yazılırken sicilde kayıt yok: sayfa şeritsiz doğuyor, hedef sayfayı
+ * `generate-match-seo-pages.mjs` sonra üretiyor ve devri bu betik yapıyor.
+ * `stripSportsEvent` ile aynı sıralama açığı: canonical ve site haritası
+ * taşınıyor, şerit eksik kalıyordu. `test-match-seo-pages.mjs` kapısı
+ * "devir şeridi yok" diyerek tam sürümü düşürüyor ve commit atılmadığı için
+ * ertesi gün aynı yarış baştan kuruluyor.
+ *
+ * Şerit üreticinin biçimiyle AYNI yazılır ve breadcrumb'dan hemen sonra
+ * yerleştirilir. Zaten varsa (ikinci koşu, ya da üretici bastıysa) sayfa bit
+ * bit korunur — betik idempotent kalmak ZORUNDA (`--check` kapısı).
+ * Yer bulunamazsa sayfaya dokunulmaz: yanlış yere şerit basmaktan iyidir.
+ */
+function addCentreHandoff(html, targetSlug) {
+  if (html.includes("match-centre-handoff")) return html;
+  const event = sportsEventOf(html);
+  const home = event && teamName(event.homeTeam);
+  const away = event && teamName(event.awayTeam);
+  if (!home || !away) return html;
+
+  const banner = `<p class="match-centre-handoff"><a href="../mac/${targetSlug}">${escapeHtml(`${home} - ${away}`)} maç merkezi: saat, yayın kanalı, canlı skor ve maç sonucu →</a></p>`;
+  const anchor = html.match(/<nav class="breadcrumb"[^>]*>[\s\S]*?<\/nav>/);
+  if (!anchor) return html;
+  const at = anchor.index + anchor[0].length;
+  return `${html.slice(0, at)}\n      ${banner}${html.slice(at)}`;
+}
+
 function rewrite(html, selfPath) {
   // `public/` bir AYNA: `public/mac/x.html` ile `mac/x.html` aynı sayfa.
   // Karşılaştırma ham yolla yapılınca koruma yalnızca kökte çalışıyor,
@@ -349,7 +382,11 @@ function rewrite(html, selfPath) {
   // düğümüyle birlikte birleştirilmiş durumda ve hiçbir kapı itiraz
   // etmiyor. Onları da kapsamak bu düzeltmeyi 4 dosyadan ~700 dosyaya
   // çıkarır; ayrı bir karar, ayrı bir değişiklik.
-  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) next = stripSportsEvent(next);
+  if (ROUND_SLUG_RE.test(selfRelative) && duplicates.has(selfRelative)) {
+    // Şerit, olay düğümü silinmeden ÖNCE: takım adları o düğümden okunuyor.
+    next = addCentreHandoff(next, duplicates.get(selfRelative));
+    next = stripSportsEvent(next);
+  }
 
   return next;
 }
