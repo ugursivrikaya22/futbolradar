@@ -33,6 +33,8 @@ const {
   logRejected,
   publishedColumns
 } = require("../services/columnService.js");
+// Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
+const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 
 const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
@@ -191,6 +193,15 @@ function formatDate(value, locale = "tr") {
   }).format(parsed);
 }
 
+function formatDateTime(value, locale = "tr") {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return new Intl.DateTimeFormat(locale === "en" ? "en-GB" : "tr-TR", {
+    day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit",
+    timeZone: "Europe/Istanbul"
+  }).format(parsed);
+}
+
 /** Kart: liste sayfasında ve ana sayfada aynı işaretleme. */
 export function columnCard(column, base = "./", { showShareControls = false } = {}) {
   const tags = column.tags.slice(0, 3)
@@ -271,12 +282,14 @@ const PAGE_STRINGS = {
     lang: "tr", ogLocale: "tr_TR", inLanguage: "tr-TR",
     breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
     indexPath: "kose-yazilari.html", backAll: "Tüm Köşe Yazıları",
+    updateLabel: "Güncelleme", sources: "Kaynaklar",
     byline: (author, title) => `${author} yazdı: ${title}`
   },
   en: {
     lang: "en", ogLocale: "en_GB", inLanguage: "en-GB",
     breadcrumbLabel: "Breadcrumb", home: "Home",
     indexPath: "en/columns.html", backAll: "All columns",
+    updateLabel: "Update", sources: "Sources",
     byline: (author, title) => `${author} wrote: ${title}`
   }
 };
@@ -309,6 +322,12 @@ export function columnPageHtml(column, locale = "tr") {
     ? publicAssetUrl(column.featuredImage.replace(/\.svg$/i, ".png"))
     : SHARE_IMAGE;
   const badge = column.contentType || column.badge;
+  const updatesHtml = column.updates.length
+    ? `<aside class="article-update-note column-updates" role="note">${column.updates.map((row) => `<strong>${escapeHtml(copy.updateLabel)} · <time datetime="${escapeHtml(row.date)}">${escapeHtml(formatDateTime(row.date, column.locale))}</time></strong><p>${inlineText(row.text, base)}</p>`).join("")}</aside>`
+    : "";
+  const sourcesHtml = column.sources.length
+    ? `<section class="article-sources" aria-labelledby="column-sources-title"><h2 id="column-sources-title">${escapeHtml(copy.sources)}</h2><ul>${column.sources.map((row) => `<li><a href="${escapeHtml(row.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(row.label)}</a></li>`).join("")}</ul></section>`
+    : "";
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
   const body = column.body.map((paragraph) => {
@@ -326,11 +345,11 @@ export function columnPageHtml(column, locale = "tr") {
     additionalType: "https://schema.org/OpinionNewsArticle",
     headline: column.title,
     datePublished: column.date,
-    // Yazı yayımlandıktan sonra düzenlenmiyor ve depo bir düzenleme
-    // tarihi TUTMUYOR. Düzenlenmemiş bir yazının değişiklik tarihi
-    // yayım tarihidir; uydurulmuş bir "bugün" damgası tazelik sinyalini
-    // yalanlar.
-    dateModified: column.date,
+    // Depo ayrı bir düzenleme tarihi TUTMUYOR. Düzenlenmemiş bir yazının
+    // değişiklik tarihi yayım tarihidir; uydurulmuş bir "bugün" damgası
+    // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
+    // değişiklik tarihi en yeni notun tarihidir.
+    dateModified: column.updates.length ? column.updates[0].date : column.date,
     author: { "@type": "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",
@@ -396,10 +415,13 @@ export function columnPageHtml(column, locale = "tr") {
         ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}
         ${shareLinks(column)}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
+        ${updatesHtml}
 
         <div class="column-body">
         ${body}
         </div>
+
+        ${sourcesHtml}
 
         ${column.tags.length ? `<div class="column-tags">${column.tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       </article>
@@ -502,7 +524,9 @@ function writeBoth(relativePath, html) {
 }
 
 function sitemapEntry(column) {
-  const lastmod = String(column.date || "").slice(0, 10) || "2026-08-02";
+  // Güncelleme notu taşıyan yazının son değişikliği en yeni nottur.
+  const modified = (column.updates && column.updates.length) ? column.updates[0].date : column.date;
+  const lastmod = String(modified || "").slice(0, 10) || "2026-08-02";
   return `  <url>
     <loc>${publicUrl(column.path)}</loc>
     <lastmod>${lastmod}</lastmod>

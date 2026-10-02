@@ -279,6 +279,20 @@ function presentColumn(entry, locale) {
       : text(entry.featuredImageAlt),
     hideStandfirst: Boolean(entry.hideStandfirst),
     body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
+    // GÜNCELLEME NOTLARI — süren bir gündemi izleyen yazılar için.
+    //
+    // Gövde yayımlandığı gibi kalır; yeni gelişme gövdeyi yeniden yazmak
+    // yerine üstte tarihli bir notla eklenir. Okuyucu neyin sonradan
+    // eklendiğini görür. En yeni not en üstte.
+    updates: (Array.isArray(source.updates) ? source.updates : [])
+      .map((row) => ({ date: text(row && row.date), text: text(row && row.text) }))
+      .filter((row) => row.text && !Number.isNaN(Date.parse(row.date)))
+      .sort((left, right) => right.date.localeCompare(left.date)),
+    // Kaynak künyesi. Dış bağlantı politikası (services/sourceLinks.js)
+    // burada da geçerli: beyaz liste testi data/columns.json'u tarıyor.
+    sources: (Array.isArray(source.sources) ? source.sources : [])
+      .map((row) => ({ label: text(row && row.label), url: text(row && row.url) }))
+      .filter((row) => row.label && /^https:\/\//.test(row.url)),
     path: columnPath(entry, wanted),
     // Karşı dilin adresi: hreflang ve dil değiştirme bağlantısı bunu okur.
     counterpartPath: hasEnglish(entry)
