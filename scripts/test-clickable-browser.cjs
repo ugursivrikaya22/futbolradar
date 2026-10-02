@@ -758,7 +758,16 @@ function todayFixtureCount(gun) {
           : ['.news-ticker-all', '.fixture-card-action']) {
           const target = page.locator(selector).first();
           assert.ok(await target.isVisible(), selector + ' hidden');
-          if (touch) assert.ok((await target.boundingBox()).height >= 44, selector + ' small touch target');
+          if (touch) {
+            // Ana sayfa kartları periyodik yenileniyor: isVisible() ile
+            // boundingBox() arasında eleman bir an DOM'dan düşerse
+            // boundingBox() null döner ve `.height` okuması TypeError ile
+            // senaryoyu düşürürdü (günlük tam koşu bu yüzden commit
+            // atamadı). Kutu yeniden okunur; 44px eşiği AYNEN korunur.
+            let box = null;
+            await until(async () => { box = await target.boundingBox(); return box !== null; }, selector + ' has no layout box');
+            assert.ok(box.height >= 44, selector + ' small touch target');
+          }
           await navigate(target);
         }
         if (viewport.width < 1366) {
