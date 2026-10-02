@@ -1,18 +1,38 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-02T16:22:48.935Z",
+  "updatedAt": "2026-10-02T16:42:45.501Z",
   "items": [
     {
-      "id": "auto-news-496a28e7c9f10c86f110",
+      "id": "auto-news-be57383c7564480f9edc",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Fenerbahçe’mizin efsane isimlerinden Şükrü Ersoy, son yolculuğuna uğurlanıyor",
+      "text": "O. Y. Pendikspor 3-3 Galatasaray",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-02T16:27:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxNdjVOZnFNNVE0UDVpbHlseHMwNEI2N09ERUw2NWJ5THFSX1hWNmFNcWNsN3Bidm8yU0V4UHY4UHVfTHJKaU9fanVndloyY3lDNWo4S19vRjc0aExqbXJqdWIzNXpQVF9YTjg1X21leGZpakRyeUNnS2Ytc191OHhzaHpiRQ?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-6364d25ba9be46109875",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe’miz, hazırlık maçında Turan Tovuz’a konuk oluyor",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-02T09:15:54.000Z",
+      "timestamp": "2026-10-02T14:20:31.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNQ2tTeGtfclhpbzNyMzVsOTYxck8wU2RhTk90SzRMZmpxeENTRVlab2VCbGg5d0trOGlKTEpvNHFCV0g0NHV2RjVFbE85ZFpVaFZJUDFiU1lMTFBhSmM3TGYxQnc1QUs5ZmVzQzlVeElnUnFVVkQxSzlHS0FSWjJQTF80T3I0ODExZTBBVDh0bGNLZWVDUDBpUnhDVkRrblNPSkZBdHhVeWk5RzJJbkNLcnRRY0Z6dW5GMGxxeF81c0dxeVI3?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxNbXQtSG5OVTlqTVl6RW1mUWZRUG10azh5c2RObGx5Z0J4UklYNGNmNDR5QXhTUVlnY01ueWdRN09ZM19fSTRSMTItblh4Qk9Uc1Y4YWhaV1pyVjluNUJMeE93NUZQbW5Xd3ZEb1h1YkJ1bkdWMF9fZDk2NVVCelhXaDVaX0VOWnI5RGhsTWhyVFRrb2hWaHBybTVJQ2UwQlYzdUlpM0VoNG1NWWQzQUE?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -20,6 +40,70 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-b809bb74e0e0cf5be7d0",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe arsaVev’in, UEFA Kadınlar Avrupa Kupası son 16 turundaki rakibi belli oldu",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-02T13:05:59.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMi2AFBVV95cUxQQnQ4WVJrakNRb2Y2b2tacFNUWUpVX3VMOXZKZV9XWDFPNVF0Ry1QekZrbEViN2JJNXpHVTZQelhxVEFYYnI3dGgzeFE4TDFycjE4MlA2a1FuSkFWN0RCemtFZ1B4UkIxUWdycHU0ZW9QUWpVSm9YZ1VLYndGSUZwS3pNZmt5T2tUQ041ZjdhSGNkU2JqekJqVWRoNGFPZTdJVHFMNG1xLXlNZ0J6V2t4SVVoZzJ2NGxJbWt5eFV6a0FmeDROdjcyTGVkNk9YRlUxNnF4WHV6Y3M?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-30T19:45:01.000Z"
+      }
+    },
+    {
+      "id": "auto-news-0e72937a72820a7c1d82",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Derya Uluğ ve Asil Gök \"Kanaryalar Soruyor\" programımızın konuğu oldu",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-02T13:05:59.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxPYmt4d01qcG5iRXA1MzN6eXQtSl9DbmZQSkoxc2ZTbjRxQVlOVUVIOHBFQ2hTNVM4aHhKbmZsXy1qV1BZaVJCRDZKWHhUQWZNWTI4N1RLcmhCOW1mY2V0NU5lSUhBcW1Mbi1CODlpTXpySUQ5QTY2SG9Ob2hKcVNvVmlmd1N1aUtfS3F2bXJMMU9TRTRNYWk3SHVTbW5NR0tJeDRCS3hSYjc5RjF4bUFNX3ZNN21BWTEtREQ4cHZkWVR0YldWZ20yMy1EZHZRVDdjb0pR?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-9a43224edafb0146bae4",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Beşiktaş:82 Kuveyt Milli Takımı:56 (Hazırlık Maçı)",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-02T12:33:22.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9aNDgyT0YtbGNTOVAxMGZGak4xMXNtekQ1dXdycGZSODdaemVGSlMycG96VV9tRHRZRFB1ZnlzVlZZVzV0ZFliMzVod3dHWXVzUVNwVXpvdTZzZ1k?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 4,
+        "firstSeenAt": "2026-09-30T13:42:15.000Z"
       }
     },
     {
@@ -39,9 +123,7 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-01T16:26:21.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -62,8 +144,8 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-09-29T16:13:00.000Z"
+        "mergedReports": 2,
+        "firstSeenAt": "2026-09-30T11:41:00.000Z"
       }
     },
     {
@@ -77,26 +159,6 @@
       "source": {
         "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiigFBVV95cUxOMXFWaEg1UVE0SlhWdGF1Si1UQlgyTFFNOC1zaThJclF4bjVkWU5zQWFEX2lVVW1yTnZKaklUSnNuTGprcGNxOVhGM1FBTEJjTEROOXVEVHMxZVAzU1hMNGZtajh5c0hXUmMwM0lvVUVvcE1Fek1MTWJzQ29qNTFUcGNDTTdZX2pISGc?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-79d64d307eac8b035885",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kocaelispor Maçı Antrenman Notları - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-01T13:10:17.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5TSWdIX0F0OGd4aDlvQTl0a1AwSi03bWpES0JsSjdDWVV3TW9vVzI2U1VnNDAxNGNfNzg4bUlGcjNpT2dJd19ScFZxWjRFM256bDg5ajNVRTdQUm8?oc=5",
         "publisher": "bjk.com.tr"
       },
       "automation": {
@@ -165,88 +227,6 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-b4e832de446bdff16ab1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe arsaVev Kadın Futbol Takımımız, UEFA Avrupa Kupası’nda adını Son 16 Turuna yazdırdı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-30T19:45:01.000Z",
-      "source": {
-        "name": "Fenerbahce",
-        "url": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQSVMtM1RlR3c4Sk52Vms3WkRFOXliMmU2OW5ZMk4tekl4T3hnV0V6d3RXbjN1Z0dualg5dDNvWERNRDZvaXZWdmpPakhaaTBXaUh4RWN0QUhCZzdnZFZwNHZydVVWR1BLNTJ1cFdqTG9qemY3NzZjX3lwbkpYUXNNa2MyOHFhM2daRm9RTjhGeFBYaDZ1VS03QUNHZ2c0b0lJLU9fMjY3eEpuSzJ2Q3Q0eU5SMG02SDgyaTB5WG9KSXBvR2lISXZUOFJ4OTRScVFqcEx3NVlMYU9DaE5ael85WWZQdw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-21ccce4b7f4c5f0ec296",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Turkcell Süper Kupa Maç Tarihleri Belli Oldu",
-      "team": "Trabzonspor",
-      "timestamp": "2026-09-30T16:10:36.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxObThSRERzRFh6ZXJpMzB4c29wVk9vamJGY0dPYUFfVHZqQkk2WG10SXFMOGROdkRUd1ZiTS01V1BMRVl4SzU3NHJ4Mm9ocG5tSXpadG9GUkhVRjU5OFZ5d3FSZWI2SElQd3dwcHpHendIU2VtTG5FTE0yNjlSd3VYTEVYUUtYazZOMUZRdTdiWmoxRUJqLWJ5TkpQZy1nQQ?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-f41ef6114d6103d1be2a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kadın Futbol Takımımızın Yerli ve Yabancı Sporcularına Milli Davet - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-09-30T13:42:15.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9BNUVwc3VrVV9yMEVWYmJDcHY3LVl2WmRoeWtIUmxFcmpiWHdOREQxWDktOV9SR0RzeHYzUHdHSDRTUl9FaGJaMHkyMHBPNzRiOEdjWDVRMVFKdk0?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-09-30T13:16:07.000Z"
-      }
-    },
-    {
-      "id": "auto-news-df6f1492d99e57127393",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Teknik Direktörümüz İsmail Kartal, basın mensuplarına açıklamalarda bulundu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-09-30T10:44:37.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiwgFBVV95cUxQZkRQLWE2OXNEM0I3Sm1GdFAzcVh3aXZXNGgzdlNqTVd4VmR2TFhQNVVYejQtU1I3WEFwUFZQcXVHQ29TQ0p3MmFqRWJwMEFpWW96Q2YxbU5aZFczZC1RbmJHOTBXR1k5cnpnV21ZajFVTFRJMmJfc3dBVWpEWl8wc05ibENuMGJVcVhTX2x6ekV0YXRPUnlfd3VvQjVfRk1JQXhnMG9hRzk5czB1cVdqX1BmdHRGZlVyMXo4eGhILTZhdw?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
         "status": "OFFICIAL"
       }
     },
@@ -346,6 +326,48 @@
         "feed": "sabah-spor",
         "priority": 8,
         "status": "REPORTED"
+      }
+    },
+    {
+      "id": "auto-news-92274e4df85c3f5dd0d8",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "UEFA Women's Champions League Matchday 2 Thursday highlights, round-up: Inter leave it late, Man City deny Madrid, Paris SG and HB Køge in the goals",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-10-02T06:05:41.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxPSnV5Zml2Nlk1eVVoSE5VRVJleERYYXFXRHVITlg0djdldkNOd3F1LThiUnZ3LUZmY3VSdEVsczFOSFhsQ21XSHRfSDJpR283U3ZhMlZGMGFUSWxZRGZROGtkTEZYaFhyQkFvVV8xTTI0NzJTRkVIYUpUMG85T0JoVUFtbWUxbjVUVnNKOTgxXzdXVDBqQ0daU3lta2ZlWldOdFRWMGI2QzhvQWtPWHFlbkRDQ0xVbzdwMFZlVHFORWVITWZkUlNkdkNUZzBvVFpkcERZS3VWa1I0VGlFdnc?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL",
+        "mergedReports": 7,
+        "firstSeenAt": "2026-09-29T20:58:42.000Z"
+      }
+    },
+    {
+      "id": "auto-news-ee10d700b8cfb65c4d31",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "A Millî Takımımız, UEFA Uluslar A Ligi'nde Belçika Karşısında",
+      "team": "Milli Takım",
+      "timestamp": "2026-10-02T05:10:32.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBUN0laOFBCamZtVjdnS1FtSzE5ME12QnFGODBDbWZ5dlQ1VkZFNHE1Zk5HcXMtOHBrNzFUR09RNDFtWHhLOU41a182VlFWVFB0QnJONlhSdnhTcFc4V3FWTEVMZlJWS2M?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "milli-takim",
+        "priority": 5,
+        "status": "OFFICIAL"
       }
     },
     {
