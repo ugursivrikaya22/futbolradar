@@ -368,6 +368,7 @@
   function mergeMatchCollections(providerMatches, curatedMatches) {
     var seen = Object.create(null);
     var kept = [];
+    var keptByDate = Object.create(null);
     [].concat(providerMatches || [], curatedMatches || []).sort(function (left, right) {
       return (Date.parse(recordsUpdatedAt([right])) || 0) - (Date.parse(recordsUpdatedAt([left])) || 0);
     }).forEach(function (match) {
@@ -376,9 +377,9 @@
       if (!key || seen[key]) return;
 
       var date = matchDateValue(match);
-      for (var index = 0; index < kept.length; index += 1) {
-        var candidate = kept[index];
-        if (matchDateValue(candidate) !== date) continue;
+      var candidates = keptByDate[date] || [];
+      for (var index = 0; index < candidates.length; index += 1) {
+        var candidate = candidates[index];
         var straight = sameClubName(candidate.homeTeam, match.homeTeam) && sameClubName(candidate.awayTeam, match.awayTeam);
         var swapped = sameClubName(candidate.homeTeam, match.awayTeam) && sameClubName(candidate.awayTeam, match.homeTeam);
         if (straight || swapped) { seen[key] = true; return; }
@@ -386,6 +387,8 @@
 
       seen[key] = true;
       kept.push(match);
+      candidates.push(match);
+      keptByDate[date] = candidates;
     });
     return kept;
   }
