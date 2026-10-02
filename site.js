@@ -380,14 +380,49 @@
    */
   var matchesPromise = null;
 
+  /**
+   * ANA SAYFA OKUMALARI SÜRE SINIRLI.
+   *
+   * Bu üç istek çıplak fetch'ti ve sınırsızdı: API yanıt vermediğinde söz
+   * hiç çözülmüyor, bölümler ne çiziliyor ne de sessizce kapanıyordu.
+   * app.js'teki fetchJson ile aynı sınır (6,5 sn) uygulanıyor; süre dolunca
+   * istek iptal edilir ve `fallbackUrl` verilmişse statik kopyaya düşülür.
+   * Statik kopya düz dizi (`data/teams.json`), API ise `{ data: [...] }`.
+   */
+  var API_READ_TIMEOUT_MS = 6500;
+
+  function readJsonWithTimeout(url) {
+    var controller = window.AbortController ? new AbortController() : null;
+    var timer = controller
+      ? window.setTimeout(function () { controller.abort(); }, API_READ_TIMEOUT_MS)
+      : null;
+    var options = { headers: { Accept: "application/json" } };
+    if (controller) options.signal = controller.signal;
+    return window.fetch(url, options)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .finally(function () { if (timer) window.clearTimeout(timer); });
+  }
+
+  function readListOnce(url, fallbackUrl) {
+    return readJsonWithTimeout(url)
+      .then(function (payload) {
+        if (payload && Array.isArray(payload.data)) return payload.data;
+        throw new Error("api-read-empty");
+      })
+      .catch(function () {
+        if (!fallbackUrl) return null;
+        return readJsonWithTimeout(fallbackUrl)
+          .then(function (payload) {
+            if (Array.isArray(payload)) return payload;
+            return payload && Array.isArray(payload.data) ? payload.data : null;
+          })
+          .catch(function () { return null; });
+      });
+  }
+
   function matchesOnce() {
     if (matchesPromise) return matchesPromise;
-    matchesPromise = window.fetch("/api/matches", { headers: { Accept: "application/json" } })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (payload) {
-        return payload && Array.isArray(payload.data) ? payload.data : null;
-      })
-      .catch(function () { return null; });
+    matchesPromise = readListOnce("/api/matches");
     return matchesPromise;
   }
 
@@ -419,12 +454,7 @@
     if (standingsPromises[key]) return standingsPromises[key];
     var url = "/api/standings?league=" + encodeURIComponent(league) +
       (season ? "&season=" + encodeURIComponent(season) : "");
-    standingsPromises[key] = window.fetch(url, { headers: { Accept: "application/json" } })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (payload) {
-        return payload && Array.isArray(payload.data) ? payload.data : null;
-      })
-      .catch(function () { return null; });
+    standingsPromises[key] = readListOnce(url);
     return standingsPromises[key];
   }
 
@@ -444,12 +474,7 @@
 
   function teamsOnce() {
     if (teamsPromise) return teamsPromise;
-    teamsPromise = window.fetch("/api/teams", { headers: { Accept: "application/json" } })
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(function (payload) {
-        return payload && Array.isArray(payload.data) ? payload.data : null;
-      })
-      .catch(function () { return null; });
+    teamsPromise = readListOnce("/api/teams", "/data/teams.json");
     return teamsPromise;
   }
 
