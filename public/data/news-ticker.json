@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-04T10:32:02.761Z",
+  "updatedAt": "2026-10-04T15:29:23.568Z",
   "items": [
     {
       "id": "auto-news-00050517196c96f2b923",
@@ -209,26 +209,6 @@
       }
     },
     {
-      "id": "auto-news-fd9b34aff1bef0a712e9",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "EFC Yönetim Kurulu Üyeliği'ne seçilen Başkan Dursun Aydın Özbek'ten açıklamalar",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-01T12:46:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxPd3pmR3RHandCaDVTYjRFSnM1dGMzZWh2ZWZsTGJyaFE2SHBvbER5VEtPSlZfcmRnR1lSemlZTXgtQ2tTRVlsZ19Qc1BjOGQwN1hfQUEwdjhIV1Fmb2kyVXltVGhWSXVENk1HTWhKcWlYeFkxTUx3blp6NzJTVG5aRFlrYXotRUd0OERQUVlYNnF1ZnVWV2lVMzFzNllVMWxaVEFrYTVmamo5ZXh5TUpNcnREMHh0b09qX2FKcTZESkU?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "news-besiktas-luciano-spalletti-dusan-2051b1ec",
       "origin": "news.json",
       "category": "club-agenda",
@@ -291,6 +271,20 @@
       "important": true
     },
     {
+      "id": "news-fenerbahce-romelu-lukaku-a9225c9b",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Sporx'in haberine göre Fenerbahçe çevresinde Romelu Lukaku'ya dair bir açıklama aktarıldı.",
+      "timestamp": "2026-10-02T21:34:00.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-romelu-lukaku-a9225c9b"
+      },
+      "team": "Fenerbahçe",
+      "important": true
+    },
+    {
       "id": "news-galatasaray-pendik-0030d3e1",
       "origin": "news.json",
       "category": "club-agenda",
@@ -302,20 +296,6 @@
         "url": "https://www.futbolradar.com/haber/galatasaray-pendik-0030d3e1"
       },
       "team": "Galatasaray",
-      "important": true
-    },
-    {
-      "id": "news-fenerbahce-ismail-kartal-asensio-54ea9d18",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Fenerbahçe çevresinde İsmail Kartal Asensio'ya dair bir açıklama aktarıldı.",
-      "timestamp": "2026-09-30T10:02:00.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-ismail-kartal-asensio-54ea9d18"
-      },
-      "team": "Fenerbahçe",
       "important": true
     },
     {
