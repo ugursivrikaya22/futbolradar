@@ -368,7 +368,7 @@ function getProviderRateLimit() {
  */
 const payloadFetchedAt = new WeakMap();
 
-async function providerFetch(path, params) {
+async function providerFetch(path, params, options = {}) {
   const resource = cacheResourceFor(path, params);
   const fetchFresh = async () => {
     const payload = await providerFetchUncached(path, params);
@@ -376,7 +376,7 @@ async function providerFetch(path, params) {
     return payload;
   };
 
-  if (!resource) {
+  if (!resource || options.fresh) {
     return fetchFresh();
   }
 
@@ -386,6 +386,7 @@ async function providerFetch(path, params) {
     requestCounter.cacheHits += 1;
   }
 
+  if (path === "/fixtures" && result.cache === "stale" && !responseItems(result.data).length) throw result.error;
   return result.data;
 }
 
@@ -483,6 +484,7 @@ async function providerFetchOnce(path, params, apiKey, config) {
     // Kota başlıkları hata yanıtlarında da gelir; hatta asıl önemli oldukları
     // an odur. Bu yüzden `response.ok` denetiminden ÖNCE okunuyor.
     recordRateLimit(response.headers);
+    rateLimitState.httpStatus = response.status;
 
     let payload = null;
     try {
@@ -1168,16 +1170,16 @@ async function getFixtures(query) {
     date,
     timezone: "Europe/Istanbul",
     live: liveValue || undefined
-  });
+  }, { fresh: Boolean(query && query.fresh) });
+  if (!payload || !Array.isArray(payload.response)) throw new ProviderError("PROVIDER_RESPONSE_INVALID", "Fixture response is not an array.");
   const matches = responseItems(payload).map(normalizeFixture);
   // `live=all` gerçekten küresel canlı akıştır. Katalog filtresi burada
   // uygulanırsa sağlayıcı tüm maçları döndürse bile yalnızca FutbolRadar'ın
   // önceden tanıdığı ligler kalır. Editoryal öncelik sunum katmanının işi;
   // backend canlı kayıtlardan hiçbir ligi elemez.
-  const supportedMatches = liveValue ? matches : filterSupportedCompetitions(matches);
-  const filteredMatches = league && competition
-    && !liveValue
-    ? supportedMatches.filter((match) => competitionMatchesFixture(match, competition))
+  const supportedMatches = matches;
+  const filteredMatches = query && query.league && !liveValue
+    ? supportedMatches.filter((match) => competition ? competitionMatchesFixture(match, competition) : String(match.providerLeagueId) === String(query.league))
     : supportedMatches;
   return stampProviderData(filteredMatches, "matches", liveValue ? 90 * 1000 : 5 * 60 * 1000, payload);
 }

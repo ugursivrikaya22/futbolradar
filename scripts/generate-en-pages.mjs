@@ -1364,7 +1364,7 @@ function todaysMatchesPage() {
 
   const body = `      <section class="data-panel" aria-labelledby="en-fixtures-title">
         <h2 class="panel-title" id="en-fixtures-title">${escapeHtml(todayLabel)}</h2>
-        ${matchList(todaysMatches, "common.noMatchesToday")}
+        <div data-daily-fixtures-en>${matchList(todaysMatches, "common.noMatchesToday")}</div><script src="/daily-fixtures-en.js" defer></script>
       </section>${schemaScript}
 ${sectionLinks()}`;
 

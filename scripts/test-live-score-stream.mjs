@@ -127,7 +127,7 @@ const liveFixtureBranch = providerSource.match(/async function getFixtures\(quer
 assert.ok(liveFixtureBranch, "getFixtures bulunmalı");
 assert.match(liveFixtureBranch[0], /providerFetch\("\/fixtures",\s*\{[\s\S]*?live:\s*liveValue/,
   "ana canlı kaynak API-Football fixtures?live=all olmalı");
-assert.match(liveFixtureBranch[0], /liveValue \? matches : filterSupportedCompetitions\(matches\)/,
+assert.match(liveFixtureBranch[0], /const supportedMatches = matches/,
   "live=all katalogdaki büyük liglerle sınırlandırılmamalı");
 
 const { compareLiveMatchPriority, liveMatchPriority } = require("../services/liveMatchPriority.js");

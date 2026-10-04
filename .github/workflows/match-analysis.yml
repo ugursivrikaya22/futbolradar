@@ -6,22 +6,16 @@ name: FutbolRadar Scheduled Updates
 # cron HTTP endpoint for visitors to discover or invoke.
 on:
   schedule:
-    # ~05:00 Europe/Istanbul (UTC+3) - comprehensive daily refresh. Offset to
-    # minute 7 (not minute 0) because GitHub documents the top of every hour
-    # as its highest-load window for the `schedule` event queue; runs pinned
-    # to :00 were observed starting 4-8 hours late. See docs/scheduled-updates.md.
-    - cron: "7 2 * * *"
+    # 05:00 Europe/Istanbul. GitHub schedules may start late.
+    - cron: "0 2 * * *"
     # ~Every hour except 02:00 UTC, when the full job owns the lock. Same
     # :07 offset for the same reason.
     #
     # Gündüz (TSİ 07:00–00:59 = UTC 04–21) saatlik kalıyor: maçlar, skorlar ve
     # haber akışı o saatlerde değişiyor.
     - cron: "7 4-21 * * *"
-    # Gece (TSİ 01:00–06:59 = UTC 22–03) iki saatte bir. Bu pencerede
-    # değişecek veri yok denecek kadar az; koşu ~13 dakika sürdüğü ve depo
-    # private olduğu için o dakikalar doğrudan faturaya yazılıyordu.
-    # 02:00 UTC bu listede yok — orası tam tazelemenin saati.
-    - cron: "7 0,3,22 * * *"
+    # Worldwide fixtures also run overnight; all 24 hours are covered.
+    - cron: "7 0-1,3,22-23 * * *"
   workflow_dispatch:
     inputs:
       update_type:
@@ -121,7 +115,7 @@ jobs:
         run: |
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
             update_type="${MANUAL_TYPE}"
-          elif [[ "${SCHEDULE}" == "7 2 * * *" ]]; then
+          elif [[ "${SCHEDULE}" == "0 2 * * *" ]]; then
             update_type="full"
           else
             update_type="hourly"

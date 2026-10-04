@@ -1,3 +1,4 @@
+const { istanbulDay } = require('../matchStatus');
 const { filterPublishable, logExcluded, logDataGaps } = require("../matchEligibility.js");
 const { mergeSuperLigTeams, isFixtureOnly, sameClub, confirmedHomeVenue } = require("../superLigTeams.js");
 const matches = require("../../data/matches.json");
@@ -267,7 +268,7 @@ function matchDateOnly(match) {
     return "";
   }
 
-  return String(value).slice(0, 10);
+  return istanbulDay(value);
 }
 
 // Fikstür takvimi (scripts/sync-fixture-calendar.mjs çıktısı) opsiyoneldir:
@@ -610,13 +611,12 @@ function transferRecordKey(transfer) {
   ].join("|");
 }
 
-const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFTIME", "PAUSED"]);
+const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFTIME", "PAUSED", "INTERRUPTED", "SUSP", "P"]);
 
 async function getMatches(query) {
   const records = curatedMatches();
-  const currentDay = !query || !query.date || query.date === todayInTimeZone("Europe/Istanbul");
-  const normalized = (currentDay ? require("./apiFootballProvider").filterSupportedCompetitions(records) : records).map(normalizeMatch);
-  const byDate = byMatchDate(normalized, query && query.date);
+  const normalized = records.map(normalizeMatch);
+  const byDate = query && query.live ? normalized : byMatchDate(normalized, query && query.date);
   const data = byLeague(byDate, query && query.league);
 
   // "live" sorgusunun sözleşmesi kaynaktan bağımsız aynı olmalı: yalnızca
