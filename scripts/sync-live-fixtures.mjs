@@ -583,9 +583,37 @@ async function fetchFixtures(provider, mode, now, options = {}) {
   }
 
   if (!successfulRequests) {
+    // GÜNLÜK KOTA DOLU OLDUĞUNDA TAKVİMİ BOZMA.
+    //
+    // API-Football 429/rate-limit döndürürse aynı koşuda yeniden denemek
+    // kotayı geri getirmez. Önceki davranış exception atıp live-fixtures
+    // adımını "failed" yapıyordu; oysa elimizdeki TheSportsDB + son geçerli
+    // API-Football takvimi hâlâ güvenli bir fallback. Yalnızca TÜM istekler
+    // açıkça rate-limit ise kontrollü degraded sonuç dönüyoruz. Ağ, auth,
+    // plan veya bilinmeyen hatalar hâlâ exception olarak görünür; gerçek
+    // arızaları sessizce saklamıyoruz.
+    const allRateLimited = errors.length > 0
+      && errors.every((item) => item.code === "PROVIDER_RATE_LIMIT");
+    if (allRateLimited) {
+      return {
+        matches: [],
+        errors,
+        successfulRequests: 0,
+        degraded: true,
+        degradedCode: "PROVIDER_RATE_LIMIT",
+        fallback: "preserve-existing-calendar"
+      };
+    }
     throw new Error(`API-Football fixture requests all failed: ${errors.map((item) => item.code || item.message).join(", ")}`);
   }
-  return { matches: [...byProviderId.values()], errors, successfulRequests };
+  return {
+    matches: [...byProviderId.values()],
+    errors,
+    successfulRequests,
+    degraded: false,
+    degradedCode: null,
+    fallback: null
+  };
 }
 
 /** Sağlayıcı günlük kotası eşiğe geldi mi? null = bilinmiyor = durma. */
@@ -672,6 +700,9 @@ export async function synchronizeLiveFixtures(options = {}) {
     },
     summary: {
       source: "api-football",
+      degraded: Boolean(fetched.degraded),
+      degradedCode: fetched.degradedCode || null,
+      fallback: fetched.fallback || null,
       backfillRequested: bulk || 0,
       backfillTargets: detailTargets.filter((match) => backfillRank(match, now.getTime()) === 1).length,
       quotaStopped,
