@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 
-import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete, backfillDates } from "./sync-live-fixtures.mjs";
+import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete, backfillDates, synchronizeLiveFixtures } from "./sync-live-fixtures.mjs";
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
@@ -56,6 +56,45 @@ const unchangedCalendar = mergeCalendarMatches(calendarMerge.matches, [{
   detail: { events: [{ type: "Goal", minute: 61 }], lineups: [{ team: "Galatasaray" }], analysis: { signals: [], generatedAt: "2026-08-08T19:01:00Z" } }
 }]);
 assert.equal(unchangedCalendar.updated, 0, "volatile provider timestamps must not cause hourly rewrites");
+
+// RATE LIMIT FALLBACK. API-Football günlük kotası bittiyse canlı fikstür
+// senkronu mevcut takvimi silmemeli ve tüm pipeline'ı exception ile
+// düşürmemeli. Yalnızca açık PROVIDER_RATE_LIMIT bu kontrollü yolu kullanır.
+const rateLimitError = () => Object.assign(new Error("quota exhausted"), { code: "PROVIDER_RATE_LIMIT" });
+const fallbackPrevious = {
+  source: "TheSportsDB + API-Football",
+  providers: ["thesportsdb", "api-football"],
+  fetchedAt: "2026-10-04T08:00:00.000Z",
+  matches: [{
+    id: "galatasaray-fenerbahce-2026-10-04",
+    providerId: "sportsdb-rl",
+    providerIds: { theSportsDb: "sportsdb-rl" },
+    homeTeam: "Galatasaray",
+    awayTeam: "Fenerbahçe",
+    kickoff: "2026-10-04T20:00:00+03:00",
+    status: "SCHEDULED",
+    source: "thesportsdb"
+  }]
+};
+const rateLimitedProvider = {
+  async getFixtures() { throw rateLimitError(); },
+  async getMatchDetail() { throw new Error("detail must not be called when fixture lists are unavailable"); },
+  getProviderRateLimit() { return { remaining: 0 }; }
+};
+const rateLimitedSync = await synchronizeLiveFixtures({
+  provider: rateLimitedProvider,
+  mode: "hourly",
+  now: new Date("2026-10-05T01:00:00+03:00"),
+  previous: fallbackPrevious
+});
+assert.equal(rateLimitedSync.summary.degraded, true);
+assert.equal(rateLimitedSync.summary.degradedCode, "PROVIDER_RATE_LIMIT");
+assert.equal(rateLimitedSync.summary.fallback, "preserve-existing-calendar");
+assert.equal(rateLimitedSync.summary.checked, 0);
+assert.equal(rateLimitedSync.summary.added, 0);
+assert.equal(rateLimitedSync.summary.updated, 0);
+assert.deepEqual(rateLimitedSync.output.matches, fallbackPrevious.matches,
+  "rate limitte son geçerli takvim byte-anlamında korunmalı");
 
 // BOŞ DÖKÜM ALANI DEPODAKİ GERÇEK VERİYİ SİLMEMELİ. `/fixtures?date=` yanıtı
 // olay taşımadığı için sağlayıcı satırı `events: []` ile geliyor; bu boş dizi
