@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-04T00:33:26.950Z",
-  "predictionCount": 443,
+  "updatedAt": "2026-10-04T08:21:11.488Z",
+  "predictionCount": 456,
   "predictions": [
     {
       "fixtureId": "bahia-remo-2026-09-15",
@@ -30757,6 +30757,104 @@
       "frozenAt": "2026-10-04T00:33:24.881Z"
     },
     {
+      "fixtureId": "dynamo-rodina-moskva-2026-10-04",
+      "providerFixtureId": "1642961",
+      "competitionId": "hazirlik-maci",
+      "leagueId": "667",
+      "season": null,
+      "kickoff": "2026-10-04T13:00:00+03:00",
+      "homeTeam": "Dynamo",
+      "awayTeam": "Rodina Moskva",
+      "homeTeamId": "1088",
+      "awayTeamId": "6822",
+      "source": "futbolradar_model",
+      "homeProbability": 44,
+      "drawProbability": 22,
+      "awayProbability": 34,
+      "predictedWinner": {
+        "id": null,
+        "name": "Dynamo",
+        "side": "home",
+        "comment": null
+      },
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": {
+        "home": "1.97",
+        "away": "1.74"
+      },
+      "comparison": null,
+      "confidence": 26,
+      "dataBasis": "team-history",
+      "baselineScope": "competition",
+      "missingHistory": {
+        "home": false,
+        "away": false
+      },
+      "modelVersion": "futbolradar-probability-v1",
+      "expectedGoals": {
+        "home": 1.97,
+        "away": 1.74
+      },
+      "modelUnderOver": {
+        "line": 2.5,
+        "over": 72,
+        "under": 28
+      },
+      "bothTeamsScore": 71,
+      "marketConsensus": null,
+      "modelInputs": {
+        "dataBasis": "team-history",
+        "baselineStatus": "computed",
+        "baselinePull": 0.37,
+        "baselineSampleSize": 525,
+        "home": {
+          "matches": 2,
+          "venueMatches": 1,
+          "attackStrength": 1.18,
+          "defenseStrength": 1.02,
+          "formDelta": 0,
+          "rank": null,
+          "pointsPerGame": 1.5,
+          "cleanSheetRate": 0,
+          "winRate": 0.5,
+          "absences": null
+        },
+        "away": {
+          "matches": 2,
+          "venueMatches": 1,
+          "attackStrength": 1.23,
+          "defenseStrength": 1.02,
+          "formDelta": 0,
+          "rank": null,
+          "pointsPerGame": 2,
+          "cleanSheetRate": 0,
+          "winRate": 0.5,
+          "absences": null
+        },
+        "h2h": {
+          "sampleSize": 0,
+          "averageGoalDifference": null
+        },
+        "rankDelta": null
+      },
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-percentages-unusable:zero-outcome"
+        },
+        {
+          "source": "market_probability",
+          "reason": "no-usable-1x2-market"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T08:30:00.000Z",
+      "refreshStage": "T-6h",
+      "frozen": false
+    },
+    {
       "fixtureId": "kahramanmaras-istiklal-spor-ankara-demirspor-2026-10-04",
       "providerFixtureId": "1591630",
       "competitionId": "tff-2-lig",
@@ -30823,108 +30921,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-03T14:43:23.911Z",
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T04:00:00.000Z",
-      "refreshStage": "T-24h",
-      "frozen": false
-    },
-    {
-      "fixtureId": "dynamo-rodina-moskva-2026-10-04",
-      "providerFixtureId": "1642961",
-      "competitionId": "hazirlik-maci",
-      "leagueId": "667",
-      "season": null,
-      "kickoff": "2026-10-04T14:00:00+03:00",
-      "homeTeam": "Dynamo",
-      "awayTeam": "Rodina Moskva",
-      "homeTeamId": "1088",
-      "awayTeamId": "6822",
-      "source": "futbolradar_model",
-      "homeProbability": 45,
-      "drawProbability": 22,
-      "awayProbability": 33,
-      "predictedWinner": {
-        "id": null,
-        "name": "Dynamo",
-        "side": "home",
-        "comment": null
-      },
-      "advice": null,
-      "underOver": null,
-      "predictedGoals": {
-        "home": "1.99",
-        "away": "1.72"
-      },
-      "comparison": null,
-      "confidence": 26,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.99,
-        "away": 1.72
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 72,
-        "under": 28
-      },
-      "bothTeamsScore": 71,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "computed",
-        "baselinePull": 0.37,
-        "baselineSampleSize": 500,
-        "home": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 1.18,
-          "defenseStrength": 1.02,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.5,
-          "cleanSheetRate": 0,
-          "winRate": 0.5,
-          "absences": null
-        },
-        "away": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 1.23,
-          "defenseStrength": 1.02,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 2,
-          "cleanSheetRate": 0,
-          "winRate": 0.5,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "provider-percentages-unusable:zero-outcome"
-        },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T05:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-10-04T08:21:08.776Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T08:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -30994,10 +30994,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-03T14:43:24.424Z",
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T06:00:00.000Z",
-      "refreshStage": "T-24h",
+      "providerUpdatedAt": "2026-10-04T08:21:08.887Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T10:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31011,91 +31011,66 @@
       "awayTeam": "12 Bingölspor",
       "homeTeamId": "22009",
       "awayTeamId": "6504",
-      "source": "futbolradar_model",
-      "homeProbability": 47,
-      "drawProbability": 21,
-      "awayProbability": 32,
+      "source": "provider_prediction",
+      "homeProbability": 35,
+      "drawProbability": 35,
+      "awayProbability": 30,
       "predictedWinner": {
-        "id": null,
+        "id": "22009",
         "name": "Adana 01 FK",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : Adana 01 FK or draw and +1.5 goals",
+      "underOver": "+1.5",
       "predictedGoals": {
-        "home": "2.28",
-        "away": "1.86"
+        "home": "-3.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 42,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.28,
-        "away": 1.86
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 78,
-        "under": 22
-      },
-      "bothTeamsScore": 76,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "computed",
-        "baselinePull": 0.29,
-        "baselineSampleSize": 55,
-        "home": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 1.5,
-          "defenseStrength": 1.46,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.75,
-          "cleanSheetRate": 0,
-          "winRate": 0.5,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 58,
+          "away": 42
         },
-        "away": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 0.96,
-          "defenseStrength": 0.96,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.25,
-          "cleanSheetRate": 0.25,
-          "winRate": 0.25,
-          "absences": null
+        "att": {
+          "home": 67,
+          "away": 33
+        },
+        "def": {
+          "home": 33,
+          "away": 67
+        },
+        "poisson_distribution": {
+          "home": 54,
+          "away": 46
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 0,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 53,
+          "away": 47
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T06:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:08.989Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T10:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31109,91 +31084,66 @@
       "awayTeam": "Arsenal Tula",
       "homeTeamId": "555",
       "awayTeamId": "1077",
-      "source": "futbolradar_model",
-      "homeProbability": 34,
-      "drawProbability": 29,
-      "awayProbability": 37,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
+        "id": "1077",
         "name": "Arsenal Tula",
-        "side": "away",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : draw or Arsenal Tula and +1.5 goals",
+      "underOver": "+1.5",
       "predictedGoals": {
-        "home": "0.7",
-        "away": "0.99"
+        "home": "-2.5",
+        "away": "-3.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 0.7,
-        "away": 0.99
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 24,
-        "under": 76
-      },
-      "bothTeamsScore": 32,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "computed",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 500,
-        "home": {
-          "matches": 2,
-          "venueMatches": 2,
-          "attackStrength": 0.65,
-          "defenseStrength": 0.65,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 2,
-          "cleanSheetRate": 1,
-          "winRate": 0.5,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 14,
+          "away": 86
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 1.11,
-          "defenseStrength": 0.66,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
+        "att": {
+          "home": 33,
+          "away": 67
+        },
+        "def": {
+          "home": 37,
+          "away": 63
+        },
+        "poisson_distribution": {
+          "home": 33,
+          "away": 67
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 62,
+          "away": 38
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 57,
+          "away": 43
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 39.3,
+          "away": 60.7
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T06:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.100Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T10:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31207,91 +31157,66 @@
       "awayTeam": "24 Erzincanspor",
       "homeTeamId": "7403",
       "awayTeamId": "7392",
-      "source": "futbolradar_model",
-      "homeProbability": 26,
-      "drawProbability": 22,
-      "awayProbability": 52,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
+        "id": "7392",
         "name": "24 Erzincanspor",
-        "side": "away",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : draw or 24 Erzincanspor",
       "underOver": null,
       "predictedGoals": {
-        "home": "0.99",
-        "away": "2.05"
+        "home": "-1.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 37,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 0.99,
-        "away": 2.05
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 59,
-        "under": 41
-      },
-      "bothTeamsScore": 55,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "computed",
-        "baselinePull": 0.32,
-        "baselineSampleSize": 55,
-        "home": {
-          "matches": 3,
-          "venueMatches": 1,
-          "attackStrength": 0.65,
-          "defenseStrength": 1.38,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 0,
+          "away": 100
         },
-        "away": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 1.12,
-          "defenseStrength": 0.96,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.5,
-          "cleanSheetRate": 0.5,
-          "winRate": 0.25,
-          "absences": null
+        "att": {
+          "home": 14,
+          "away": 86
+        },
+        "def": {
+          "home": 33,
+          "away": 67
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 100
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 71,
+          "away": 29
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 59,
+          "away": 41
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 44.3,
+          "away": 55.8
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T06:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.200Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T10:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31305,91 +31230,66 @@
       "awayTeam": "Arnavutköy Belediyespor",
       "homeTeamId": "3594",
       "awayTeamId": "15101",
-      "source": "futbolradar_model",
-      "homeProbability": 38,
-      "drawProbability": 26,
-      "awayProbability": 36,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "3594",
         "name": "Kastamonuspor",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Kastamonuspor or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.27",
-        "away": "1.3"
+        "home": "-1.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 42,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.27,
-        "away": 1.3
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 48,
-        "under": 52
-      },
-      "bothTeamsScore": 52,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "computed",
-        "baselinePull": 0.29,
-        "baselineSampleSize": 55,
-        "home": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 0.65,
-          "defenseStrength": 1.5,
-          "formDelta": 0.75,
-          "rank": 16,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0.25,
-          "winRate": 0.25,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 100,
+          "away": 0
         },
-        "away": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 0.65,
-          "defenseStrength": 1.2,
-          "formDelta": 0,
-          "rank": 15,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 67,
+          "away": 33
+        },
+        "def": {
+          "home": 43,
+          "away": 57
+        },
+        "poisson_distribution": {
+          "home": 100,
+          "away": 0
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 80,
+          "away": 20
         },
-        "rankDelta": -0.06
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 63,
+          "away": 38
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 63.3,
+          "away": 37
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T06:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.306Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T10:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31403,91 +31303,66 @@
       "awayTeam": "Yeni Orduspor",
       "homeTeamId": "11092",
       "awayTeamId": "7426",
-      "source": "futbolradar_model",
-      "homeProbability": 40,
-      "drawProbability": 24,
-      "awayProbability": 36,
+      "source": "provider_prediction",
+      "homeProbability": 35,
+      "drawProbability": 35,
+      "awayProbability": 30,
       "predictedWinner": {
-        "id": null,
+        "id": "11092",
         "name": "Kütahyaspor",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Kütahyaspor or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.51",
-        "away": "1.49"
+        "home": "-2.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 42,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.51,
-        "away": 1.49
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 58,
-        "under": 42
-      },
-      "bothTeamsScore": 60,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "computed",
-        "baselinePull": 0.29,
-        "baselineSampleSize": 55,
-        "home": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 1.06,
-          "defenseStrength": 0.92,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0.75,
-          "cleanSheetRate": 0,
-          "winRate": 0.25,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 33,
+          "away": 67
         },
-        "away": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 1.22,
-          "defenseStrength": 0.9,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.5,
-          "cleanSheetRate": 0.5,
-          "winRate": 0.5,
-          "absences": null
+        "att": {
+          "home": 45,
+          "away": 55
+        },
+        "def": {
+          "home": 40,
+          "away": 60
+        },
+        "poisson_distribution": {
+          "home": 54,
+          "away": 46
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 80,
+          "away": 20
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 67,
+          "away": 33
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 53.2,
+          "away": 46.8
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T06:30:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.408Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T11:00:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31501,16 +31376,52 @@
       "awayTeam": "Lithuania",
       "homeTeamId": "1096",
       "awayTeamId": "1097",
-      "source": "market_probability",
-      "homeProbability": 40,
-      "drawProbability": 31,
-      "awayProbability": 29,
-      "predictedWinner": null,
-      "advice": null,
-      "underOver": null,
-      "predictedGoals": null,
-      "comparison": null,
-      "confidence": 90,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
+      "predictedWinner": {
+        "id": "1097",
+        "name": "Lithuania",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : draw or Lithuania and -3.5 goals",
+      "underOver": "-3.5",
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 33,
+          "away": 67
+        },
+        "att": {
+          "home": 25,
+          "away": 75
+        },
+        "def": {
+          "home": 50,
+          "away": 50
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
+        },
+        "h2h": {
+          "home": 50,
+          "away": 50
+        },
+        "goals": {
+          "home": 50,
+          "away": 50
+        },
+        "total": {
+          "home": 41.6,
+          "away": 58.4
+        }
+      },
+      "confidence": null,
       "dataBasis": null,
       "baselineScope": null,
       "missingHistory": null,
@@ -31518,33 +31429,13 @@
       "expectedGoals": null,
       "modelUnderOver": null,
       "bothTeamsScore": null,
-      "marketConsensus": {
-        "bookmakerCount": 9,
-        "bookmakers": [
-          "1xBet",
-          "Bet365",
-          "BetVictor",
-          "Betano",
-          "Betfair",
-          "Marathonbet",
-          "Pinnacle",
-          "SBO",
-          "William Hill"
-        ],
-        "method": "median",
-        "averageMargin": 0.0843
-      },
+      "marketConsensus": null,
       "modelInputs": null,
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T07:00:00.000Z",
-      "refreshStage": "T-24h",
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.517Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T11:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31558,91 +31449,66 @@
       "awayTeam": "FC Copenhagen",
       "homeTeamId": "175",
       "awayTeamId": "400",
-      "source": "futbolradar_model",
-      "homeProbability": 25,
-      "drawProbability": 22,
-      "awayProbability": 53,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
+        "id": "400",
         "name": "FC Copenhagen",
-        "side": "away",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : draw or FC Copenhagen and +1.5 goals",
+      "underOver": "+1.5",
       "predictedGoals": {
-        "home": "0.95",
-        "away": "2.03"
+        "home": "-2.5",
+        "away": "-3.5"
       },
-      "comparison": null,
-      "confidence": 39,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 0.95,
-        "away": 2.03
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 57,
-        "under": 43
-      },
-      "bothTeamsScore": 53,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "computed",
-        "baselinePull": 0.3,
-        "baselineSampleSize": 500,
-        "home": {
-          "matches": 5,
-          "venueMatches": 3,
-          "attackStrength": 0.88,
-          "defenseStrength": 1.5,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.4,
-          "cleanSheetRate": 0,
-          "winRate": 0.4,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 41,
+          "away": 59
         },
-        "away": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 0.99,
-          "defenseStrength": 0.65,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 2,
-          "cleanSheetRate": 0.5,
-          "winRate": 0.5,
-          "absences": null
+        "att": {
+          "home": 48,
+          "away": 52
+        },
+        "def": {
+          "home": 55,
+          "away": 45
+        },
+        "poisson_distribution": {
+          "home": 51,
+          "away": 49
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 0,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 48.8,
+          "away": 51.3
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T07:30:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.619Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T12:00:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -31656,91 +31522,66 @@
       "awayTeam": "Cherno More Varna",
       "homeTeamId": "566",
       "awayTeamId": "851",
-      "source": "futbolradar_model",
-      "homeProbability": 41,
-      "drawProbability": 25,
-      "awayProbability": 34,
+      "source": "provider_prediction",
+      "homeProbability": 35,
+      "drawProbability": 35,
+      "awayProbability": 30,
       "predictedWinner": {
-        "id": null,
+        "id": "566",
         "name": "Ludogorets",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Ludogorets or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.35",
-        "away": "1.29"
+        "home": "-2.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": true,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.35,
-        "away": 1.29
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 49,
-        "under": 51
-      },
-      "bothTeamsScore": 54,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "computed",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 500,
-        "home": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 54,
+          "away": 46
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.94,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
+        "att": {
+          "home": 70,
+          "away": 30
+        },
+        "def": {
+          "home": 33,
+          "away": 67
+        },
+        "poisson_distribution": {
+          "home": 15,
+          "away": 85
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 62,
+          "away": 38
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 56,
+          "away": 44
         },
-        {
-          "source": "market_probability",
-          "reason": "no-usable-1x2-market"
+        "total": {
+          "home": 48.3,
+          "away": 51.7
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-03T14:43:18.664Z",
-      "expiresAt": "2026-10-04T08:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.726Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T12:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -32731,6 +32572,907 @@
       "calculatedAt": "2026-10-04T00:33:24.881Z",
       "expiresAt": "2026-10-04T14:00:00.000Z",
       "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "argentinos-jrs-tigre-2026-10-05",
+      "providerFixtureId": "1493152",
+      "competitionId": "arjantin-primera",
+      "leagueId": "128",
+      "season": null,
+      "kickoff": "2026-10-05T01:15:00+03:00",
+      "homeTeam": "Argentinos JRS",
+      "awayTeam": "Tigre",
+      "homeTeamId": "458",
+      "awayTeamId": "452",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "458",
+        "name": "Argentinos JRS",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : Argentinos JRS or draw and -3.5 goals",
+      "underOver": "-3.5",
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 60,
+          "away": 40
+        },
+        "att": {
+          "home": 44,
+          "away": 56
+        },
+        "def": {
+          "home": 64,
+          "away": 36
+        },
+        "poisson_distribution": {
+          "home": 67,
+          "away": 33
+        },
+        "h2h": {
+          "home": 50,
+          "away": 50
+        },
+        "goals": {
+          "home": 44,
+          "away": 56
+        },
+        "total": {
+          "home": 54.8,
+          "away": 45.2
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.846Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T16:15:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "estudiantes-de-rio-cuarto-racing-club-2026-10-05",
+      "providerFixtureId": "1493159",
+      "competitionId": "arjantin-primera",
+      "leagueId": "128",
+      "season": null,
+      "kickoff": "2026-10-05T03:30:00+03:00",
+      "homeTeam": "Estudiantes de Rio Cuarto",
+      "awayTeam": "Racing Club",
+      "homeTeamId": "2424",
+      "awayTeamId": "436",
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
+      "predictedWinner": {
+        "id": "436",
+        "name": "Racing Club",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : draw or Racing Club",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 33,
+          "away": 67
+        },
+        "att": {
+          "home": 30,
+          "away": 70
+        },
+        "def": {
+          "home": 56,
+          "away": 44
+        },
+        "poisson_distribution": {
+          "home": 25,
+          "away": 75
+        },
+        "h2h": {
+          "home": 0,
+          "away": 100
+        },
+        "goals": {
+          "home": 0,
+          "away": 100
+        },
+        "total": {
+          "home": 36,
+          "away": 64
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:09.953Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:30:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "guadalajara-chivas-club-america-2026-10-05",
+      "providerFixtureId": "1643232",
+      "competitionId": "hazirlik-maci",
+      "leagueId": "667",
+      "season": null,
+      "kickoff": "2026-10-05T04:00:00+03:00",
+      "homeTeam": "Guadalajara Chivas",
+      "awayTeam": "Club America",
+      "homeTeamId": "2278",
+      "awayTeamId": "2287",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "2278",
+        "name": "Guadalajara Chivas",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : Guadalajara Chivas or draw and -2.5 goals",
+      "underOver": "-2.5",
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 56,
+          "away": 44
+        },
+        "att": {
+          "home": 25,
+          "away": 75
+        },
+        "def": {
+          "home": 100,
+          "away": 0
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
+        },
+        "h2h": {
+          "home": 62,
+          "away": 38
+        },
+        "goals": {
+          "home": 43,
+          "away": 57
+        },
+        "total": {
+          "home": 46.5,
+          "away": 53.5
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:10.068Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T19:00:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "cyprus-latvia-2026-10-05",
+      "providerFixtureId": "1545611",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T19:00:00+03:00",
+      "homeTeam": "Cyprus",
+      "awayTeam": "Latvia",
+      "homeTeamId": "1106",
+      "awayTeamId": "1092",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "1106",
+        "name": "Cyprus",
+        "comment": null
+      },
+      "advice": "Winner : Cyprus",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-3.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 80,
+          "away": 20
+        },
+        "att": {
+          "home": 75,
+          "away": 25
+        },
+        "def": {
+          "home": 67,
+          "away": 33
+        },
+        "poisson_distribution": {
+          "home": 100,
+          "away": 0
+        },
+        "h2h": {
+          "home": 50,
+          "away": 50
+        },
+        "goals": {
+          "home": 50,
+          "away": 50
+        },
+        "total": {
+          "home": 64.4,
+          "away": 35.6
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:10.213Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T16:00:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "sanliurfaspor-guzide-gebzespor-2026-10-05",
+      "providerFixtureId": "1591330",
+      "competitionId": "tff-2-lig",
+      "leagueId": "205",
+      "season": null,
+      "kickoff": "2026-10-05T19:00:00+03:00",
+      "homeTeam": "Şanlıurfaspor",
+      "awayTeam": "Güzide Gebzespor",
+      "homeTeamId": "3613",
+      "awayTeamId": "6511",
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
+      "predictedWinner": {
+        "id": "6511",
+        "name": "Güzide Gebzespor",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : draw or Güzide Gebzespor",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 38,
+          "away": 62
+        },
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 33,
+          "away": 67
+        },
+        "poisson_distribution": {
+          "home": 54,
+          "away": 46
+        },
+        "h2h": {
+          "home": 0,
+          "away": 0
+        },
+        "goals": {
+          "home": 0,
+          "away": 0
+        },
+        "total": {
+          "home": 43.8,
+          "away": 56.3
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:10.314Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T16:00:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "bosnia-herzegovina-poland-2026-10-05",
+      "providerFixtureId": "1528948",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "Bosnia & Herzegovina",
+      "awayTeam": "Poland",
+      "homeTeamId": "1113",
+      "awayTeamId": "24",
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
+      "predictedWinner": {
+        "id": "24",
+        "name": "Poland",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : draw or Poland",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-3.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 56,
+          "away": 44
+        },
+        "att": {
+          "home": 42,
+          "away": 58
+        },
+        "def": {
+          "home": 50,
+          "away": 50
+        },
+        "poisson_distribution": {
+          "home": 77,
+          "away": 23
+        },
+        "h2h": {
+          "home": 13,
+          "away": 88
+        },
+        "goals": {
+          "home": 17,
+          "away": 83
+        },
+        "total": {
+          "home": 42.5,
+          "away": 57.7
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:10.420Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "france-belgium-2026-10-05",
+      "providerFixtureId": "1528944",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "France",
+      "awayTeam": "Belgium",
+      "homeTeamId": "2",
+      "awayTeamId": "1",
+      "source": "provider_prediction",
+      "homeProbability": 35,
+      "drawProbability": 35,
+      "awayProbability": 30,
+      "predictedWinner": {
+        "id": "2",
+        "name": "France",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : France or draw and -3.5 goals",
+      "underOver": "-3.5",
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 54,
+          "away": 46
+        },
+        "att": {
+          "home": 38,
+          "away": 63
+        },
+        "def": {
+          "home": 50,
+          "away": 50
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 100
+        },
+        "h2h": {
+          "home": 100,
+          "away": 0
+        },
+        "goals": {
+          "home": 75,
+          "away": 25
+        },
+        "total": {
+          "home": 54.3,
+          "away": 46
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:10.520Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "italy-turkiye-2026-10-05",
+      "providerFixtureId": "1528945",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "Italy",
+      "awayTeam": "Türkiye",
+      "homeTeamId": "768",
+      "awayTeamId": "777",
+      "source": "market_probability",
+      "homeProbability": 66,
+      "drawProbability": 19,
+      "awayProbability": 15,
+      "predictedWinner": null,
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": null,
+      "comparison": null,
+      "confidence": 90,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": {
+        "bookmakerCount": 9,
+        "bookmakers": [
+          "1xBet",
+          "Bet365",
+          "BetVictor",
+          "Betano",
+          "Betfair",
+          "Marathonbet",
+          "Pinnacle",
+          "SBO",
+          "William Hill"
+        ],
+        "method": "median",
+        "averageMargin": 0.0716
+      },
+      "modelInputs": null,
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-percentages-unusable:zero-outcome"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "montenegro-armenia-2026-10-05",
+      "providerFixtureId": "1528950",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "Montenegro",
+      "awayTeam": "Armenia",
+      "homeTeamId": "1109",
+      "awayTeamId": "1094",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "1109",
+        "name": "Montenegro",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : Montenegro or draw",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-3.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 75,
+          "away": 25
+        },
+        "att": {
+          "home": 64,
+          "away": 36
+        },
+        "def": {
+          "home": 56,
+          "away": 44
+        },
+        "poisson_distribution": {
+          "home": 100,
+          "away": 0
+        },
+        "h2h": {
+          "home": 50,
+          "away": 50
+        },
+        "goals": {
+          "home": 55,
+          "away": 45
+        },
+        "total": {
+          "home": 60,
+          "away": 40
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:10.845Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "northern-ireland-georgia-2026-10-05",
+      "providerFixtureId": "1528947",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "Northern Ireland",
+      "awayTeam": "Georgia",
+      "homeTeamId": "771",
+      "awayTeamId": "1104",
+      "source": "market_probability",
+      "homeProbability": 38,
+      "drawProbability": 31,
+      "awayProbability": 31,
+      "predictedWinner": null,
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": null,
+      "comparison": null,
+      "confidence": 90,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": {
+        "bookmakerCount": 9,
+        "bookmakers": [
+          "1xBet",
+          "Bet365",
+          "BetVictor",
+          "Betano",
+          "Betfair",
+          "Marathonbet",
+          "Pinnacle",
+          "SBO",
+          "William Hill"
+        ],
+        "method": "median",
+        "averageMargin": 0.0709
+      },
+      "modelInputs": null,
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-percentages-unusable:zero-outcome"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "romania-sweden-2026-10-05",
+      "providerFixtureId": "1528949",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "Romania",
+      "awayTeam": "Sweden",
+      "homeTeamId": "774",
+      "awayTeamId": "5",
+      "source": "market_probability",
+      "homeProbability": 22,
+      "drawProbability": 24,
+      "awayProbability": 54,
+      "predictedWinner": null,
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": null,
+      "comparison": null,
+      "confidence": 90,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": {
+        "bookmakerCount": 9,
+        "bookmakers": [
+          "1xBet",
+          "Bet365",
+          "BetVictor",
+          "Betano",
+          "Betfair",
+          "Marathonbet",
+          "Pinnacle",
+          "SBO",
+          "William Hill"
+        ],
+        "method": "median",
+        "averageMargin": 0.0717
+      },
+      "modelInputs": null,
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-percentages-unusable:zero-outcome"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "ukraine-hungary-2026-10-05",
+      "providerFixtureId": "1528946",
+      "competitionId": "uefa-uluslar-ligi",
+      "leagueId": "5",
+      "season": null,
+      "kickoff": "2026-10-05T21:45:00+03:00",
+      "homeTeam": "Ukraine",
+      "awayTeam": "Hungary",
+      "homeTeamId": "772",
+      "awayTeamId": "769",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "772",
+        "name": "Ukraine",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : Ukraine or draw and -2.5 goals",
+      "underOver": "-2.5",
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 50,
+          "away": 50
+        },
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 25,
+          "away": 75
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
+        },
+        "h2h": {
+          "home": 100,
+          "away": 0
+        },
+        "goals": {
+          "home": 100,
+          "away": 0
+        },
+        "total": {
+          "home": 41.7,
+          "away": 58.3
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:11.379Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T18:45:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "deportivo-riestra-central-cordoba-de-santiago-2026-10-05",
+      "providerFixtureId": "1493157",
+      "competitionId": "arjantin-primera",
+      "leagueId": "128",
+      "season": null,
+      "kickoff": "2026-10-05T22:45:00+03:00",
+      "homeTeam": "Deportivo Riestra",
+      "awayTeam": "Central Cordoba de Santiago",
+      "homeTeamId": "476",
+      "awayTeamId": "1065",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "476",
+        "name": "Deportivo Riestra",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : Deportivo Riestra or draw and -3.5 goals",
+      "underOver": "-3.5",
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 67,
+          "away": 33
+        },
+        "att": {
+          "home": 33,
+          "away": 67
+        },
+        "def": {
+          "home": 62,
+          "away": 38
+        },
+        "poisson_distribution": {
+          "home": 77,
+          "away": 23
+        },
+        "h2h": {
+          "home": 64,
+          "away": 36
+        },
+        "goals": {
+          "home": 75,
+          "away": 25
+        },
+        "total": {
+          "home": 63,
+          "away": 37
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-04T08:21:11.479Z",
+      "calculatedAt": "2026-10-04T08:21:08.262Z",
+      "expiresAt": "2026-10-04T19:45:00.000Z",
+      "refreshStage": "T-72h",
       "frozen": false
     },
     {
