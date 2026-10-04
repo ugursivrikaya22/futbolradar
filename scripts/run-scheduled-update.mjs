@@ -263,6 +263,20 @@ export function detectProviderCode(output) {
   return best ? best[0] : null;
 }
 
+const NON_RETRYABLE_PROVIDER_CODES = new Set([
+  "PROVIDER_RATE_LIMIT",
+  "PROVIDER_AUTH_ERROR",
+  "PROVIDER_PLAN_ERROR",
+  "PROVIDER_ACCOUNT_SUSPENDED",
+  "PROVIDER_CREDENTIAL_NOT_SENT",
+  "PROVIDER_CONFIG_MISSING"
+]);
+
+export function nonRetryableProviderCode(output) {
+  const code = detectProviderCode(output);
+  return code && NON_RETRYABLE_PROVIDER_CODES.has(code) ? code : null;
+}
+
 async function runStep(spec, records) {
   const startedAt = new Date().toISOString();
   if (spec.skip) {
@@ -278,6 +292,11 @@ async function runStep(spec, records) {
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     result = await runProcess(spec.command || NODE, spec.args, { timeoutMs: spec.timeoutMs });
     if (result.ok) break;
+    const permanentProviderCode = nonRetryableProviderCode(result.output);
+    if (permanentProviderCode) {
+      console.warn(`[scheduled-update] NO-RETRY ${spec.id} code=${permanentProviderCode}`);
+      break;
+    }
     if (attempt < attempts) {
       const waitMs = 1_000 * attempt;
       console.warn(`[scheduled-update] RETRY ${spec.id} attempt=${attempt + 1}/${attempts} after=${waitMs}ms`);
@@ -638,8 +657,23 @@ async function main() {
     steps.push({ id: "api-football-preflight", source: "api-football", kind: "source", status: "skipped", reason: "APIFOOTBALL_API_KEY is not configured.", attempts: 0, durationMs: 0 });
   }
 
+  let providerCircuitCode = null;
   for (const spec of [...sourceSteps(args.type, providerReady, args.match, args.backfill), ...(args.type === "full" ? fullMaintenanceSteps(providerReady) : [])]) {
-    await runStep(spec, steps);
+    if (providerCircuitCode && spec.source === "api-football") {
+      await runStep({
+        ...spec,
+        skip: `API-Football circuit open (${providerCircuitCode}); remaining provider calls skipped to protect quota.`
+      }, steps);
+      continue;
+    }
+
+    const result = await runStep(spec, steps);
+    const observedProviderCode = result.providerCode || (result.summary && result.summary.degradedCode) || null;
+    if (observedProviderCode === "PROVIDER_RATE_LIMIT") {
+      providerCircuitCode = observedProviderCode;
+      providerReady = false;
+      console.warn("[scheduled-update] API-Football circuit opened after rate limit; remaining provider calls will be skipped.");
+    }
   }
 
   const afterSources = collectionSnapshot();
