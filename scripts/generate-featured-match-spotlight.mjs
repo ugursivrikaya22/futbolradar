@@ -66,28 +66,28 @@ const STATE_PATH = "data/featured-match-spotlight-state.json";
 
 const HOME_START = "<!-- featured-match-spotlight:start -->";
 const HOME_END = "<!-- featured-match-spotlight:end -->";
-const HOME_BLOCK_RE = /[\t ]*<!-- featured-match-spotlight:start -->[\s\S]*?<!-- featured-match-spotlight:end -->\n?/g;
+const HOME_BLOCK_RE = /[\t ]*<!-- featured-match-spotlight:start -->[\s\S]*?<!-- featured-match-spotlight:end -->\r?\n?/g;
 
 const STRIP_START = "<!-- featured-match-strip:start -->";
 const STRIP_END = "<!-- featured-match-strip:end -->";
-const STRIP_BLOCK_RE = /[\t ]*<!-- featured-match-strip:start -->[\s\S]*?<!-- featured-match-strip:end -->\n?/g;
+const STRIP_BLOCK_RE = /[\t ]*<!-- featured-match-strip:start -->[\s\S]*?<!-- featured-match-strip:end -->\r?\n?/g;
 
 const ASSETS_START = "<!-- featured-match-spotlight:assets:start -->";
 const ASSETS_END = "<!-- featured-match-spotlight:assets:end -->";
-const ASSETS_BLOCK_RE = /[\t ]*<!-- featured-match-spotlight:assets:start -->[\s\S]*?<!-- featured-match-spotlight:assets:end -->\n?/g;
+const ASSETS_BLOCK_RE = /[\t ]*<!-- featured-match-spotlight:assets:start -->[\s\S]*?<!-- featured-match-spotlight:assets:end -->\r?\n?/g;
 /** `.test()` için ayrı, genel olmayan kopya: genel bayrak `lastIndex` taşır. */
 const HAS_ASSETS_RE = /<!-- featured-match-spotlight:assets:start -->/;
 
 /** Ana sayfada kutu hero'nun hemen ardına girer; maç dosyası kutusundan önce. */
-const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\n)/;
+const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n)/;
 /**
  * Takım/lig sayfasında şerit sayfa yolunun (breadcrumb) hemen ardına girer.
  * Sayfa yolu taşımayan yüzeylerde (bazı İngilizce puan durumu sayfaları)
  * `<main>` açılışı yedek çapa: şerit yine de en üstte kalır.
  */
 const STRIP_ANCHORS = [
-  /(<nav class="breadcrumb"[\s\S]*?<\/nav>\n)/,
-  /(<main[^>]*>\n)/
+  /(<nav class="breadcrumb"[\s\S]*?<\/nav>\r?\n)/,
+  /(<main[^>]*>\r?\n)/
 ];
 
 /** İngilizce lig sayfası karşılıkları; karşılığı olmayan lig için şerit basılmaz. */

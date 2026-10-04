@@ -42,6 +42,7 @@ The existing GitHub Actions workflow remains the scheduler: 05:00 Istanbul full 
 - After merging and deduplicating with the saved pool, local API and browser checks showed **91 fixtures in both locales**, without JavaScript errors. Production still returned **0**; publication check correctly returned `PUBLICATION_FAILED`.
 - API resilience, fixture deduplication, match programme, scheduled updates, Supabase contract, live stream and timezone performance checks passed.
 - The complete test chain encountered existing English news language-purity failures in unmodified news pages. This is not reported as a passing full suite.
+- The full Windows production build reached postprocessing and failed because the existing featured-match spotlight anchors accepted LF but not CRLF. The anchors now accept both; rerunning that failed generator and its contract test passed. The complete build has not subsequently passed end to end; GitHub CI is tracked on PR #341.
 - Release requires deploying the corrected/current main build, restoring primary provider availability, configuring the existing Actions Supabase secrets and applying the migration. A local passing fixture test does not establish production deployment or database ingestion success.
 
 Operational commands:
