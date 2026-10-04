@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomplete, backfillDates, synchronizeLiveFixtures } from "./sync-live-fixtures.mjs";
+import { providerQueryPolicy } from "./sync-fixture-predictions.mjs";
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
@@ -10,6 +11,16 @@ import { dedupeKey, sourceSteps, fullMaintenanceSteps, transformSteps, nonRetrya
 import { POSTPROCESS_CHAIN } from "./lib/postprocessChain.mjs";
 
 const root = process.cwd();
+const predictionPolicyNow = new Date("2026-10-05T00:00:00Z");
+assert.deepEqual(providerQueryPolicy("2026-10-09T00:00:00Z", predictionPolicyNow), {
+  hoursUntilKickoff: 96, predictions: false, odds: false
+}, "96 saat uzaktaki maç yalnızca yerel modelle hazırlanmalı");
+assert.deepEqual(providerQueryPolicy("2026-10-08T00:00:00Z", predictionPolicyNow), {
+  hoursUntilKickoff: 72, predictions: true, odds: false
+}, "T-72h provider tahmini ilk kez açılmalı");
+assert.deepEqual(providerQueryPolicy("2026-10-06T00:00:00Z", predictionPolicyNow), {
+  hoursUntilKickoff: 24, predictions: true, odds: true
+}, "T-24h oran fallback penceresi açılmalı");
 
 assert.equal(nonRetryableProviderCode("PROVIDER_RATE_LIMIT"), "PROVIDER_RATE_LIMIT");
 assert.equal(nonRetryableProviderCode("PROVIDER_AUTH_ERROR"), "PROVIDER_AUTH_ERROR");
