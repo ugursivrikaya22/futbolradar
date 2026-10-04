@@ -52,6 +52,18 @@ const PUBLIC_CALENDAR_PATH = path.join(root, "public", "data", "fixture-calendar
 const WINDOW_DAYS = 7;
 /** Tek koşuda sağlayıcıya sorulabilecek en fazla fikstür. */
 const MAX_PROVIDER_TARGETS = 24;
+/**
+ * API-Football tahmini yalnızca maça 72 saat kala değerli hâle gelir.
+ * Daha uzaktaki maçlarda yerel FutbolRadar modeli hemen kayıt üretir; kayıt
+ * T-72h sınırında expire olur ve o zaman provider ilk kez sorulur.
+ */
+const PROVIDER_QUERY_WINDOW_HOURS = 72;
+/**
+ * Oran piyasası daha oynaktır ve uzak tarihte gereksiz kota yakar.
+ * Odds çağrısı yalnızca son 24 saatte provider tahmini yoksa fallback olur.
+ */
+const ODDS_QUERY_WINDOW_HOURS = 24;
+const HOUR_MS = 60 * 60 * 1000;
 /** Bu kadar günden eski kayıtlar depodan düşer; doğruluk ölçümü arşive bakar. */
 const RETENTION_DAYS = 120;
 
@@ -159,6 +171,22 @@ function logLine(message) {
   console.log(message);
 }
 
+export function hoursUntilKickoff(kickoff, now = new Date()) {
+  const kickoffMs = Date.parse(kickoff || "");
+  const nowMs = now instanceof Date ? now.getTime() : Date.parse(now);
+  if (!Number.isFinite(kickoffMs) || !Number.isFinite(nowMs)) return Infinity;
+  return Math.max(0, (kickoffMs - nowMs) / HOUR_MS);
+}
+
+export function providerQueryPolicy(kickoff, now = new Date()) {
+  const hours = hoursUntilKickoff(kickoff, now);
+  return {
+    hoursUntilKickoff: hours,
+    predictions: hours <= PROVIDER_QUERY_WINDOW_HOURS,
+    odds: hours <= ODDS_QUERY_WINDOW_HOURS
+  };
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const now = new Date();
@@ -214,6 +242,7 @@ async function main() {
     }
 
     const coverage = coverageFor(context, fixture);
+    const queryPolicy = providerQueryPolicy(fixture.kickoff, now);
     const reasons = {};
     let provider = null;
     let market = null;
@@ -221,12 +250,15 @@ async function main() {
     const canQueryProvider = providerReady &&
       Boolean(fixture.providerFixtureId) &&
       coverage.predictions !== false &&
+      queryPolicy.predictions &&
       providerTargets < args.limit;
 
     if (!fixture.providerFixtureId) reasons[probability.SOURCES.PROVIDER] = "no-verified-provider-fixture-id";
     else if (coverage.predictions === false) {
       reasons[probability.SOURCES.PROVIDER] = "league-coverage-has-no-predictions";
       report.skippedCoverage.predictions += 1;
+    } else if (!queryPolicy.predictions) {
+      reasons[probability.SOURCES.PROVIDER] = "outside-provider-refresh-window";
     } else if (!providerReady) reasons[probability.SOURCES.PROVIDER] = "provider-not-configured";
 
     if (canQueryProvider) {
@@ -267,11 +299,16 @@ async function main() {
     }
 
     if (!provider) {
-      const canQueryOdds = providerReady && Boolean(fixture.providerFixtureId) && coverage.odds !== false;
+      const canQueryOdds = providerReady &&
+        Boolean(fixture.providerFixtureId) &&
+        coverage.odds !== false &&
+        queryPolicy.odds;
       if (!fixture.providerFixtureId) reasons[probability.SOURCES.MARKET] = "no-verified-provider-fixture-id";
       else if (coverage.odds === false) {
         reasons[probability.SOURCES.MARKET] = "league-coverage-has-no-odds";
         report.skippedCoverage.odds += 1;
+      } else if (!queryPolicy.odds) {
+        reasons[probability.SOURCES.MARKET] = "outside-market-refresh-window";
       } else if (!providerReady) reasons[probability.SOURCES.MARKET] = "provider-not-configured";
 
       if (canQueryOdds) {
