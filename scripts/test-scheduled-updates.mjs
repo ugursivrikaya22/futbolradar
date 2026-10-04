@@ -6,10 +6,17 @@ import { mergeCalendarMatches, selectDetailTargets, datesForTarget, detailIncomp
 import { mergeStandings } from "./sync-standings.mjs";
 import { mergeSquadStatuses } from "./sync-squad-statuses.mjs";
 import { mergeNewsItems, parseRss, toTickerItem } from "./sync-football-news.mjs";
-import { dedupeKey, sourceSteps, fullMaintenanceSteps, transformSteps } from "./run-scheduled-update.mjs";
+import { dedupeKey, sourceSteps, fullMaintenanceSteps, transformSteps, nonRetryableProviderCode } from "./run-scheduled-update.mjs";
 import { POSTPROCESS_CHAIN } from "./lib/postprocessChain.mjs";
 
 const root = process.cwd();
+
+assert.equal(nonRetryableProviderCode("PROVIDER_RATE_LIMIT"), "PROVIDER_RATE_LIMIT");
+assert.equal(nonRetryableProviderCode("PROVIDER_AUTH_ERROR"), "PROVIDER_AUTH_ERROR");
+assert.equal(nonRetryableProviderCode("PROVIDER_PLAN_ERROR"), "PROVIDER_PLAN_ERROR");
+assert.equal(nonRetryableProviderCode("PROVIDER_NETWORK_ERROR"), null,
+  "geçici ağ hataları yeniden denenebilir kalmalı");
+assert.equal(nonRetryableProviderCode("plain failure"), null);
 
 // Live provider data upgrades the existing fixture without duplicating it and
 // preserves the original provider identity for traceability.
