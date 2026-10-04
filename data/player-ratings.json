@@ -1,56 +1,56 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-04T19:34:56.877Z",
+  "updatedAt": "2026-10-04T23:03:32.799Z",
   "playerCount": 821,
-  "ratedPlayerCount": 142,
+  "ratedPlayerCount": 144,
   "summary": {
     "total": 821,
-    "computed": 142,
-    "insufficient": 679,
+    "computed": 144,
+    "insufficient": 677,
     "categories": {
       "overall": {
-        "computed": 141,
-        "insufficient": 680,
+        "computed": 143,
+        "insufficient": 678,
         "notApplicable": 0
       },
       "form": {
-        "computed": 142,
-        "insufficient": 679,
+        "computed": 144,
+        "insufficient": 677,
         "notApplicable": 0
       },
       "attack": {
-        "computed": 120,
-        "insufficient": 614,
+        "computed": 122,
+        "insufficient": 612,
         "notApplicable": 87
       },
       "creativity": {
-        "computed": 120,
-        "insufficient": 614,
+        "computed": 122,
+        "insufficient": 612,
         "notApplicable": 87
       },
       "defense": {
-        "computed": 122,
-        "insufficient": 699,
+        "computed": 126,
+        "insufficient": 695,
         "notApplicable": 0
       },
       "discipline": {
-        "computed": 132,
-        "insufficient": 689,
+        "computed": 135,
+        "insufficient": 686,
         "notApplicable": 0
       },
       "durability": {
-        "computed": 142,
-        "insufficient": 679,
+        "computed": 144,
+        "insufficient": 677,
         "notApplicable": 0
       },
       "potential": {
-        "computed": 141,
-        "insufficient": 680,
+        "computed": 143,
+        "insufficient": 678,
         "notApplicable": 0
       }
     },
-    "changed": 0
+    "changed": 4
   },
   "players": {
     "u-cakir-galatasaray": {
@@ -879,7 +879,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -1309,7 +1309,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -1768,7 +1768,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -2652,7 +2652,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -2837,7 +2837,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -2851,9 +2851,9 @@
       "scheme": "outfield",
       "positionGroup": "forward",
       "status": "computed",
-      "computedCategories": 7,
-      "coverage": 0.875,
-      "updatedAt": "2026-10-02T17:04:02.769Z",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-04T23:03:32.799Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -2866,15 +2866,15 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 84,
+          "value": 75,
           "status": "computed",
-          "display": "84",
-          "coverage": 0.9,
+          "display": "75",
+          "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "92 / 100"
+              "value": "78 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
@@ -2882,7 +2882,7 @@
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "64 / 100"
+              "value": "59 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
@@ -2891,6 +2891,10 @@
             {
               "label": "Disiplin (ağırlık %5)",
               "value": "88 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %10)",
+              "value": "52 / 100"
             }
           ]
         },
@@ -2920,15 +2924,23 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 92,
+          "value": 78,
           "status": "computed",
-          "display": "92",
-          "coverage": 0.52,
+          "display": "78",
+          "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Gol",
               "value": "6 · 1.66 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
@@ -2939,27 +2951,40 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 64,
+          "value": 59,
           "status": "computed",
-          "display": "64",
-          "coverage": 0.32,
+          "display": "59",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "1 · 0.28 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": null,
-          "status": "insufficient",
-          "display": "Veri yetersiz",
-          "coverage": 0,
+          "value": 52,
+          "status": "computed",
+          "display": "52",
+          "coverage": 0.48,
           "window": null,
-          "inputs": []
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "2 · 2.69 / 90 dk"
+            }
+          ]
         },
         "discipline": {
           "key": "discipline",
@@ -3006,9 +3031,9 @@
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 88,
+          "value": 81,
           "status": "computed",
-          "display": "88",
+          "display": "81",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -3018,7 +3043,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "84 / 100"
+              "value": "75 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -3026,7 +3051,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+8 puan (form ↔ sezon)"
+              "value": "+12 puan (form ↔ sezon)"
             }
           ]
         }
@@ -3038,16 +3063,21 @@
           "verifiedAt": "2026-09-04T22:00:00+03:00"
         },
         {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-04T19:00:00+03:00"
+        },
+        {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
-        "matches": 6,
+        "matches": 1,
         "minutes": 325
       },
-      "fingerprint": "70a8d5950249cbe2"
+      "fingerprint": "82197665f3eb6e9f"
     },
     "c-under-fenerbahce": {
       "version": 1,
@@ -3281,7 +3311,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -3493,7 +3523,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -3948,7 +3978,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -4160,7 +4190,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -4395,6 +4425,233 @@
         "minutes": 93
       },
       "fingerprint": "47f07bec3f3203fe"
+    },
+    "m-rashica-besiktas": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-04T23:03:32.799Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 52,
+          "status": "computed",
+          "display": "52",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaratıcılık (ağırlık %25)",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "62 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %20)",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %15)",
+              "value": "54 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "25 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "82 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 62,
+          "status": "computed",
+          "display": "62",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "21 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "UEFA Uluslar Ligi"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "1 · 4.29 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 54,
+          "status": "computed",
+          "display": "54",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "1 · 4.29 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 82,
+          "status": "computed",
+          "display": "82",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 25,
+          "status": "computed",
+          "display": "25",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%3.9 (21 dk / 6 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 6 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "21 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 59,
+          "status": "computed",
+          "display": "59",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "30"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "52 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%7"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+10 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-04T19:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 21
+      },
+      "fingerprint": "8ac276fc072d4a21"
     },
     "l-trossard-besiktas": {
       "version": 1,
@@ -4817,7 +5074,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -5002,7 +5259,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -7215,7 +7472,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -9971,7 +10228,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -12587,7 +12844,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -12811,7 +13068,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -13219,7 +13476,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -13404,7 +13661,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -14035,7 +14292,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -14666,7 +14923,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -16236,7 +16493,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -16886,7 +17143,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -19732,7 +19989,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -24307,7 +24564,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -24715,7 +24972,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -25139,14 +25396,241 @@
       },
       "fingerprint": "4521d611a7d8fe8d"
     },
+    "l-dellova-amed": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "defender",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-04T23:03:32.799Z",
+      "weights": {
+        "defense": 35,
+        "form": 20,
+        "durability": 15,
+        "discipline": 10,
+        "attack": 10,
+        "creativity": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 57,
+          "status": "computed",
+          "display": "57",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Savunma (ağırlık %35)",
+              "value": "55 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "66 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %10)",
+              "value": "69 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %10)",
+              "value": "50 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %10)",
+              "value": "49 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 66,
+          "status": "computed",
+          "display": "66",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "90 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "UEFA Uluslar Ligi"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 50,
+          "status": "computed",
+          "display": "50",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "1 · 1 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "1 · 1 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 49,
+          "status": "computed",
+          "display": "49",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 55,
+          "status": "computed",
+          "display": "55",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "1 · 1 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "5 · 5 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 69,
+          "status": "computed",
+          "display": "69",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "1 · 1 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%16.7 (90 dk / 6 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 6 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "90 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 68,
+          "status": "computed",
+          "display": "68",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "27"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "57 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%22"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+9 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-04T19:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 90
+      },
+      "fingerprint": "8738ddc3ec4a8bad"
+    },
     "e-krasniqi-amed": {
       "version": 1,
       "scheme": "outfield",
       "positionGroup": "forward",
       "status": "computed",
-      "computedCategories": 6,
-      "coverage": 0.75,
-      "updatedAt": "2026-10-02T17:04:02.769Z",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-04T23:03:32.799Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -25159,15 +25643,15 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 60,
+          "value": 61,
           "status": "computed",
-          "display": "60",
-          "coverage": 0.85,
+          "display": "61",
+          "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "41 / 100"
+              "value": "46 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
@@ -25175,11 +25659,19 @@
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "71 / 100"
+              "value": "64 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
               "value": "96 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "81 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %10)",
+              "value": "54 / 100"
             }
           ]
         },
@@ -25209,14 +25701,22 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 41,
+          "value": 46,
           "status": "computed",
-          "display": "41",
-          "coverage": 0.52,
+          "display": "46",
+          "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "1 · 10 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
               "value": "0 · 0 / 90 dk"
             },
             {
@@ -25228,37 +25728,59 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 71,
+          "value": 64,
           "status": "computed",
-          "display": "71",
-          "coverage": 0.32,
+          "display": "64",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "2 · 0.34 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": null,
-          "status": "insufficient",
-          "display": "Veri yetersiz",
-          "coverage": 0,
+          "value": 54,
+          "status": "computed",
+          "display": "54",
+          "coverage": 0.48,
           "window": null,
-          "inputs": []
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": null,
-          "status": "insufficient",
-          "display": "Veri yetersiz",
-          "coverage": 0,
+          "value": 81,
+          "status": "computed",
+          "display": "81",
+          "coverage": 0.75,
           "window": null,
-          "inputs": []
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
         },
         "durability": {
           "key": "durability",
@@ -25286,9 +25808,9 @@
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 63,
+          "value": 64,
           "status": "computed",
-          "display": "63",
+          "display": "64",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -25298,7 +25820,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "60 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -25306,23 +25828,28 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-2 puan (form ↔ sezon)"
+              "value": "-3 puan (form ↔ sezon)"
             }
           ]
         }
       },
       "sources": [
         {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-04T19:00:00+03:00"
+        },
+        {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
-        "matches": 6,
+        "matches": 1,
         "minutes": 530
       },
-      "fingerprint": "35618dd05b35978d"
+      "fingerprint": "3c2e2ba1bade2d2f"
     },
     "g-orban-amed": {
       "version": 1,
@@ -25500,7 +26027,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -26380,7 +26907,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -27500,7 +28027,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -27724,7 +28251,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -27948,7 +28475,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
@@ -28648,7 +29175,7 @@
         {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
-          "verifiedAt": "2026-10-04T09:39:16.268Z"
+          "verifiedAt": "2026-10-04T23:02:55.995Z"
         }
       ],
       "sampleWindow": {
