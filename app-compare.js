@@ -492,6 +492,7 @@
     if (!cache[name]) {
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
+        if (name === "matches") resourceMeta.matches = { meta: { fixtureHealth: { state: "unavailable" } } };
         var source = name === "matches"
           ? loadStaticMatchSources()
           : fetchJson(fallbackUrl).then(function (result) { return result.data; });
@@ -4966,7 +4967,7 @@
     var hasScore = list.some(function (match) {
       return match && typeof match.relevance === "number" && isFinite(match.relevance);
     });
-    if (!hasScore) return orderMatchProgramByState(list, now);
+    if (!hasScore) return orderMatchProgramByState(list, now).sort(function (a, b) { return (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority); });
 
     var scored = list.map(function (match, index) {
       var score = match && match.relevance;
@@ -4981,6 +4982,8 @@
     });
 
     scored.sort(function (left, right) {
+      var priorityGap = (left.match.fixturePriority == null ? 19 : left.match.fixturePriority) - (right.match.fixturePriority == null ? 19 : right.match.fixturePriority);
+      if (priorityGap) return priorityGap;
       if (right.score !== left.score) {
         if (left.score === -Infinity) return 1;
         if (right.score === -Infinity) return -1;
@@ -5010,8 +5013,8 @@
       var params = new URLSearchParams(window.location.search);
       var selectedDate = params.get("date") || todayInIstanbul();
       return matchEmptyStateHtml(
-        "Bu ölçütlerde doğrulanmış maç yok",
-        formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+        resourceMeta.matches && resourceMeta.matches.meta && resourceMeta.matches.meta.fixtureHealth && resourceMeta.matches.meta.fixtureHealth.state === "empty-confirmed" ? "Bugün takip ettiğimiz liglerde maç bulunmuyor." : "Maç programı güncelleniyor",
+        formatMatchDate(selectedDate) + " programı için kısa süre sonra yeniden kontrol edebilirsin. Kayıtlı maçlar hazır olduğunda burada gösterilir."
       );
     }
 
@@ -5052,8 +5055,8 @@
       setContent(
         target,
         matchEmptyStateHtml(
-          "Bu tarihte doğrulanmış maç yok",
-          formatMatchDate(selectedDate) + " için maç bulunamadı. Sıradaki doğrulanmış maçlar aşağıda listelendi."
+          "Sıradaki kayıtlı maçlar",
+          "Güncel program hazırlanırken sıradaki kayıtlı maçlara göz atabilirsin."
         ) + renderMatchesByLeague(upcoming, function (match) {
           return renderMatchPageCard(match, analysesIndex);
         })

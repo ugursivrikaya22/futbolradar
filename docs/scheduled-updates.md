@@ -16,29 +16,13 @@ repository, and the short-lived `${{ github.token }}` context before it writes.
 
 ## Exact schedule
 
-GitHub cron is UTC. Istanbul is UTC+3 throughout the year.
+GitHub cron is UTC; the shared fixture day is Europe/Istanbul.
 
-- Full update: `7 2 * * *` = ~05:00 Europe/Istanbul.
-- Hourly update, daytime: `7 4-21 * * *` = every UTC hour from 04:00 to 21:00
-  (07:00-00:59 Istanbul), when fixtures, scores and the news feed actually move.
-- Overnight update: `7 0,3,22 * * *` = every second UTC hour through the quiet
-  window (01:00-06:59 Istanbul), skipping 02:00 UTC where the full job runs.
-  The run costs ~13 billable minutes on a private repository and almost nothing
-  changes overnight, so the hourly cadence was not worth its price there.
-
-Both crons fire at minute 7, not minute 0. GitHub's own scheduling docs name
-the start of every hour as the `schedule` event queue's highest-load window;
-runs pinned to `:00` on this repository were observed starting 4-8 hours late
-(e.g. the `05:00` full job landing past 09:00 Istanbul, some days not at all
-before the next day's run). Offsetting a few minutes off the hour is GitHub's
-documented mitigation and restored on-time starts. If the observed delay ever
-returns even off-peak, it is a GitHub Actions scheduler symptom, not a bug in
-this workflow — see "Detecting a missed or delayed run" below.
-
-There is deliberately no minute-20 reliability fallback: the two schedules
-above already trigger 25 runs/day, and each GitHub-hosted runner minute is
-billed against the account's Actions quota. A dropped top-of-hour event (rare)
-is simply picked up by the next scheduled run instead of a same-hour retry.
+- Full update: 05:00 Istanbul (02:00 UTC).
+- Other hours: minute 7, including overnight worldwide fixtures. There are 24 scheduled runs per day.
+- Live scores use the existing cached API/SSE flow; no second scheduler or extra deployment loop is introduced.
+- Daily fixtures are fetched before optional match details. Routine sync covers today, yesterday and tomorrow. Historical backfill is explicit.
+- GitHub schedules can be delayed. The existing daily health workflow now compares the repository fixture pool against the production API and fails when stored matches are not published.
 
 ### Detecting a missed or delayed run
 

@@ -212,6 +212,7 @@ module.exports = async function handler(req, res) {
   diagnostics.deployment = deploymentSection();
   diagnostics.homePollStorage = homePollStorageSection();
   diagnostics.pipeline = pipelineSection();
+  diagnostics.fixtureSync = require("../data/fixture-calendar.json").fixtureHealth || null;
 
   // `?probe=api-football` kimliği gerçek istekle sınar. Biçim kontrolü
   // "anahtar geçerli mi" sorusunu cevaplamıyor: doğru biçimde ama süresi

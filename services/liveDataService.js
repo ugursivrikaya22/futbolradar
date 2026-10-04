@@ -15,6 +15,7 @@ const MIN_PROVIDER_TIMEOUT_MS = 800;
 // should move on immediately. Everything else is treated as transient.
 const PERMANENT_ERROR_CODES = new Set([
   "PROVIDER_ACCOUNT_SUSPENDED",
+  "PROVIDER_RATE_LIMIT",
   "PROVIDER_AUTH_ERROR",
   "PROVIDER_CONFIG_MISSING",
   // Anahtar header'a hic konmamissa yeniden denemek de fayda etmez; ortam
@@ -103,6 +104,7 @@ async function resolveFromProviders({ resource, run, query, isUsable }) {
 
   for (const [index, provider] of chain.entries()) {
     const attempt = { provider: provider.name };
+    if (resource === "matches" && query && query.live && provider.partialCoverage) continue;
     // Zincirin son halkası kürasyonlu veridir: ağ isteği yapmaz, bu yüzden
     // zaman bütçesi gerekçesiyle atlanmamalı - atlanırsa sayfa elimizde
     // hazır veri dururken boş kalırdı.

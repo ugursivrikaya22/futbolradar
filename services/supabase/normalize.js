@@ -267,7 +267,7 @@ function match(record, sourceId) {
 
   return {
     id,
-    provider_fixture_id: text(record.fixtureId || record.providerId),
+    provider_fixture_id: text(record.providerIds?.apiFootball || record.providerIds?.theSportsDb || record.providerId || record.fixtureId),
     competition_id: text(record.competitionId),
     competition: text(record.competition || record.league),
     season: text(record.season),

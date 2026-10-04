@@ -25,7 +25,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
-const { canonicalStatus } = require("../services/matchStatus.js");
+const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
@@ -275,7 +275,7 @@ function addIstanbulDays(day, offset) {
 
 function withinWindow(match, today) {
   const start = new Date(`${today}T00:00:00+03:00`);
-  const matchDate = new Date(`${String(match.kickoff).slice(0, 10)}T00:00:00+03:00`);
+  const matchDate = new Date(`${istanbulDay(match.kickoff)}T00:00:00+03:00`);
   const diffDays = Math.round((matchDate.getTime() - start.getTime()) / 86400000);
   return diffDays >= -PAST_WINDOW_DAYS && diffDays <= FUTURE_WINDOW_DAYS;
 }
@@ -338,7 +338,7 @@ function ownsRow(match) {
 }
 
 function identityOf(match) {
-  return [slug(match && match.homeTeam), slug(match && match.awayTeam), String(match && match.kickoff || "").slice(0, 10)].join("|");
+  return [slug(match && match.homeTeam), slug(match && match.awayTeam), istanbulDay(match && match.kickoff || "")].join("|");
 }
 
 /**
@@ -495,7 +495,7 @@ async function main() {
   const kept = [];
   let pruned = 0;
   for (const row of merged.matches) {
-    const day = String(row.kickoff || "").slice(0, 10);
+    const day = istanbulDay(row.kickoff || "");
     if (day && day < addIstanbulDays(today, -PAST_WINDOW_DAYS)) {
       pruned += 1;
       continue;
@@ -516,8 +516,8 @@ async function main() {
     matches: kept
   };
 
-  const todayCount = kept.filter((match) => String(match.kickoff).slice(0, 10) === today).length;
-  const upcomingCount = kept.filter((match) => String(match.kickoff).slice(0, 10) > today).length;
+  const todayCount = kept.filter((match) => istanbulDay(match.kickoff) === today).length;
+  const upcomingCount = kept.filter((match) => istanbulDay(match.kickoff) > today).length;
   console.log(
     `Fixture calendar: ${windowed.length} TheSportsDB matches in window ` +
     `(+${merged.added} new, ${merged.updated} updated, ${pruned} pruned) -> ${kept.length} rows total ` +

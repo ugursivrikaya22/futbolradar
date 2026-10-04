@@ -1,3 +1,4 @@
+const sportsDbDailyProvider = require('./sportsDbDailyProvider');
 const footballProvider = require("./footballProvider");
 const apiFootballProvider = require("./apiFootballProvider");
 const mockProvider = require("./mockProvider");
@@ -25,7 +26,7 @@ function providerCandidates(resource) {
     // API-Football covers the multi-league live-score surface. Explicit env
     // choices still win; this default only prevents a configured API-Football
     // key from being ignored when routing variables are missing.
-    return [matchProvider, primary, "api-football", "football-data", "mock"];
+    return [matchProvider, primary, "api-football", "football-data", ...(resource === "matches" ? ["thesportsdb-daily"] : []), "mock"];
   }
 
   if (resource === "match-detail") {
@@ -69,6 +70,8 @@ function resolveProviderByName(name, resource) {
   if (["football-data", "football-data.org", "football"].includes(normalized)) {
     return hasLiveProviderConfig() && supportsFootballData(resource) ? footballProvider : null;
   }
+
+  if (normalized === "thesportsdb-daily" && resource === "matches") return sportsDbDailyProvider;
 
   if (normalized === "mock") {
     return mockProvider;

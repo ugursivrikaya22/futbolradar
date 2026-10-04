@@ -158,7 +158,7 @@ function testMissingKeyFallback() {
 
   try {
     envNames.forEach((name) => delete process.env[name]);
-    assert.equal(providers.getProvider("matches").name, "mock");
+    assert.equal(providers.getProvider("matches").name, "thesportsdb-daily");
     assert.equal(providers.getProvider("players").name, "mock");
   } finally {
     envNames.forEach((name) => {
@@ -297,17 +297,17 @@ function testProviderChainOrder() {
 
     assert.deepEqual(
       providers.getProviderChain("matches").map((provider) => provider.name),
-      ["api-football", "football-data", "mock"]
+      ["api-football", "football-data", "thesportsdb-daily", "mock"]
     );
 
     delete process.env.APIFOOTBALL_API_KEY;
     assert.deepEqual(
       providers.getProviderChain("matches").map((provider) => provider.name),
-      ["football-data", "mock"]
+      ["football-data", "thesportsdb-daily", "mock"]
     );
 
     delete process.env.FOOTBALL_API_KEY;
-    assert.deepEqual(providers.getProviderChain("matches").map((provider) => provider.name), ["mock"]);
+    assert.deepEqual(providers.getProviderChain("matches").map((provider) => provider.name), ["thesportsdb-daily", "mock"]);
   } finally {
     envNames.forEach((name) => {
       if (previous[name] === undefined) delete process.env[name];
@@ -700,9 +700,9 @@ async function testFootballDataCompetitionFallback() {
     assert.deepEqual(matches[0].score, { home: 2, away: 1 });
 
     // Turnuva belirtilmeyen istekte football-data abonelikteki her ligi
-    // döndürüyor; katalog dışı ligler günün maç listesine girmemeli.
+    // döndürüyor; katalog dışı ligler de günlük listede korunmalı.
     const unscoped = await footballData.getMatches({ date: "2026-05-24" });
-    assert.deepEqual(unscoped.map((match) => match.league), ["Premier League"]);
+    assert.deepEqual(unscoped.map((match) => match.league), ["Premier League", "Regional Test League"]);
   } finally {
     global.fetch = previousFetch;
     if (previousKey === undefined) delete process.env.FOOTBALL_API_KEY;

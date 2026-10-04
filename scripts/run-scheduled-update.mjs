@@ -165,7 +165,7 @@ function defaultStatus() {
   return {
     schemaVersion: 1,
     timezone: ISTANBUL_TIME_ZONE,
-    schedule: { fullUtc: "7 2 * * *", hourlyUtc: "7 0-1,3-23 * * *", fullLocal: "~05:00" },
+    schedule: { fullUtc: "0 2 * * *", hourlyUtc: "7 0-1,3-23 * * *", fullLocal: "~05:00" },
     updatedAt: null,
     lastUpdate: null,
     lastFull: null,
@@ -327,7 +327,7 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
     // Sağlayıcıya istek atmaz; yalnızca iki dosyayı hizalar, bu yüzden
     // fixture-calendar başarısız olsa bile çalışması güvenli.
     ...(full ? [nodeStep("super-lig-fixture-dates", "sync-super-lig-fixture-dates.mjs", ["--apply"], { kind: "transform", timeoutMs: 2 * 60 * 1000 })] : []),
-    nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`, ...(match ? [`--match=${match}`] : []), ...(backfill ? [`--backfill=${backfill}`] : [])], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 20 * 60 * 1000, skip: noProvider }),
+    nodeStep("live-fixtures", "sync-live-fixtures.mjs", ["--apply", `--mode=${type}`, ...(match ? [`--match=${match}`] : []), ...(backfill ? [`--backfill=${backfill}`] : [])], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 20 * 60 * 1000 }),
     // YAKLAŞAN MAÇLARIN TAHMİNİ — lig ayrımı yok, üç kaynaklı zincir:
     // sağlayıcı /predictions → /odds 1X2 konsensüsü → FutbolRadar modeli.
     //
