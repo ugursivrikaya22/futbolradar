@@ -67,6 +67,14 @@
           line.append(badge, name, goals); teams.appendChild(line);
         });
         card.append(info, teams, link);
+        var channel = typeof row.broadcast === 'string' ? row.broadcast : row.broadcast && (row.broadcast.turkey || row.broadcast.tr);
+        if (channel) {
+          var broadcast = document.createElement('p');
+          broadcast.className = 'fixture-card-meta';
+          broadcast.setAttribute('data-fixture-broadcast', '');
+          broadcast.textContent = 'TV: ' + channel;
+          card.insertBefore(broadcast, link);
+        }
         fragment.appendChild(card);
       });
       target.dataset.fixtureDate = date;
