@@ -346,7 +346,7 @@ const homePages = [
 
 for (const page of homePages) {
   const base = baseFor(page.relative);
-  const block = selected
+  const block = selected && !['FINISHED', 'AWARDED'].includes(matchState(selected))
     ? `${HOME_START}${spotlightBlock(viewFor(selected, page.locale, base), { locale: page.locale })}\n      ${HOME_END}`
     : "";
   applyBlock({

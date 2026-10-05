@@ -26,6 +26,7 @@ const selectTodayMatchCards = new Function("isTurkishMatch", `
     return ["LIVE", "IN_PLAY", "PAUSED", "HALFTIME", "1H", "HT", "2H", "ET", "BT", "P"].includes(status) &&
       score && Number.isFinite(Number(score.home)) && Number.isFinite(Number(score.away));
   }
+  function featuredIsLiveMatch(match) { return isLiveMatch(match); }
   ${block[1]}
   return selectTodayMatchCards;
 `)(isTurkishMatch);
@@ -40,10 +41,10 @@ const matches = [
   { id: "finished-today", kickoff: "2026-08-24T14:00:00+03:00", homeTeam: "A Takımı", awayTeam: "B Takımı", status: "FINISHED", score: { home: 1, away: 0 } }
 ];
 
-const selected = selectTodayMatchCards(matches, { today: "2026-08-24" });
+const selected = selectTodayMatchCards(matches, { today: "2026-08-24", nowMs: Date.parse('2026-08-24T19:40:00+03:00') });
 assert.deepEqual(
   selected.map((match) => match.id),
-  ["turkish-live", "foreign-live", "turkish-upcoming", "foreign-upcoming", "finished-today"],
+  ["turkish-live", "foreign-live", "turkish-upcoming", "foreign-upcoming"],
   "yalnızca bugünün kartları kalmalı; durum bandında Türk maçı önce gelmeli"
 );
 assert.ok(!selected.some((match) => match.id === "yesterday"), "dünün eski kartı ana sayfada kalmamalı");

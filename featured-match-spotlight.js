@@ -156,7 +156,8 @@
 
   // 3) Canlı skor yoklaması.
   var phase = root.getAttribute("data-fms-phase") || "pre";
-  if (phase === "post" || phase === "postponed") return;
+  if (phase === "post") { root.hidden = true; return; }
+  if (phase === "postponed") return;
 
   var scoreBox = root.querySelector("[data-fms-score]");
   var minuteBox = root.querySelector("[data-fms-minute]");
@@ -222,6 +223,7 @@
 
     if (state === "finished") {
       finished = true;
+      root.hidden = true;
       if (badge) badge.textContent = COPY.post;
       root.className = root.className.replace(/fms--[a-z-]+/, "fms--post");
       root.setAttribute("data-fms-phase", "post");

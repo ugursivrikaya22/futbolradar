@@ -3983,7 +3983,7 @@
       return true;
     }
 
-    return band === "played" && isFinishedMatch(match);
+    return false;
   }
 
   /** Karuselde dönecek maçlar, gösterim sırasıyla. */
@@ -4940,7 +4940,7 @@
    * bırakmak, bölümü hiç göstermemekten kötüdür.
    */
   function renderDailyHeadlinesSection(matches) {
-    return renderDailyHeadlines(buildDailyHeadlines(matches, {
+    return renderDailyHeadlines(buildDailyHeadlines((matches || []).filter(function (match) { return isHomeFixtureMatch(match); }), {
       today: todayInIstanbul(),
       reports: latestPostMatchReports
     }));
@@ -5402,7 +5402,7 @@
     var today = todayInIstanbul();
 
     var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return isTodaySuperLigMatch(match, teamList, today);
+      return isTodaySuperLigMatch(match, teamList, today) && isHomeFixtureMatch(match);
     });
 
     // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
@@ -5441,11 +5441,21 @@
   }
 
   // today-match-card-selection:start
+  function isHomeFixtureMatch(match, nowMs) {
+    if (!match) return false;
+    var now = typeof nowMs === "number" ? nowMs : Date.now();
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABD"].includes(status)) return false;
+    if (featuredIsLiveMatch(match, now)) return true;
+    var kickoff = Date.parse(match.kickoff);
+    return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
+  }
+
   function selectTodayMatchCards(matches, options) {
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
     var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today && isHomeFixtureMatch(match, settings.nowMs);
     });
 
     function rank(match) {
@@ -5875,7 +5885,7 @@
   function todayRadarMatchesHtml(matches, analysesIndex) {
     var today = todayInIstanbul();
     var todaysMatches = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return matchDateValue(match) === today;
+      return matchDateValue(match) === today && isHomeFixtureMatch(match);
     });
 
     if (!todaysMatches.length) {

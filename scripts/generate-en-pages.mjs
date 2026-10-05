@@ -63,6 +63,7 @@ const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/match
 // karar burada yeniden yazılmaz — yoksa iki dil sessizce ayrışır.
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
+const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { publishedColumns } = require("../services/columnService.js");
 const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
@@ -924,7 +925,7 @@ function dailyHeadlinesSection() {
   const pool = programMatches();
   const byId = new Map(pool.map((match) => [String(match.id || ""), match]));
   // Sıra Türkçe tarafla aynı serviste hesaplanır; ilgi puanı da aynı yerden.
-  const ordered = buildDailyHeadlines(withRelevance(pool), { today: TODAY, reports: postMatchRecords });
+  const ordered = buildDailyHeadlines(withRelevance(pool.filter(match => isHomeFixture(match))), { today: TODAY, reports: postMatchRecords });
 
   const cards = ordered.map((headline) => {
     const match = byId.get(String(headline.matchId || ""));
@@ -991,7 +992,7 @@ function dailyHeadlinesSection() {
  * düğmeyi `site.js` çeviriyor (app.js yoksa).
  */
 function todaySection() {
-  const list = todaysMatches;
+  const list = todaysMatches.filter(match => isHomeFixture(match));
   const remaining = list.filter((match) => !isSuperLig(match));
   const body = remaining.length
     ? remaining.map((match, index) => {
@@ -1027,12 +1028,14 @@ function todaySection() {
   });
 
   return `<section class="container section section-matches" id="todays-matches-preview" aria-labelledby="today-title">
-          ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Matches in play come first, followed by kick-offs still to come and finished games.", "./todays-matches.html", label("common.viewAll"))}
+          ${sectionHead("Today's fixtures", "today-title", "Matches and live scores", "Follow matches in play and today's upcoming kick-offs. Completed matches remain in the results archive.", "./todays-matches.html", label("common.viewAll"))}
+          <div data-daily-fixtures-en data-home-only>
           ${superLigStrip ? `<div class="superlig-strip" aria-label="Today's Süper Lig matches">${superLigStrip}</div>` : ""}
           <div class="matches-grid" data-match-list="today-matches">
 ${body}
           ${moreRow}
           </div>
+          </div><script src="/daily-fixtures-en.js" defer></script>
         </section>`;
 }
 
