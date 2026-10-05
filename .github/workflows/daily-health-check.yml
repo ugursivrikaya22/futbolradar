@@ -67,6 +67,11 @@ jobs:
         continue-on-error: true
         run: node scripts/daily-health-check.mjs --apply
 
+      - name: Verify published fixture pool
+        id: fixtures
+        continue-on-error: true
+        run: node scripts/check-fixture-publication.mjs
+
       - name: Commit cleanup and report if anything changed
         if: always()
         run: |
@@ -82,5 +87,5 @@ jobs:
           retention-days: 30
 
       - name: Fail the workflow if a real check failed
-        if: always() && steps.health.outcome == 'failure'
+        if: always() && (steps.health.outcome == 'failure' || steps.fixtures.outcome == 'failure')
         run: exit 1

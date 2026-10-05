@@ -48,7 +48,7 @@ function text(value) {
  * (services/matchListWindow.js).
  */
 function orderMatchProgram(matches, options = {}) {
-  return sortByRelevance(Array.isArray(matches) ? matches : [], options);
+  return sortByRelevance(Array.isArray(matches) ? matches : [], options).sort((a, b) => require("./dailyFixturePriority").fixturePriority(a) - require("./dailyFixturePriority").fixturePriority(b));
 }
 
 /**

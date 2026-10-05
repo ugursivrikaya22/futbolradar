@@ -1,3 +1,4 @@
+const { istanbulDay } = require('../matchStatus');
 const {
   API_KEY_ENV_NAMES,
   BASE_URL_ENV_NAMES,
@@ -99,7 +100,7 @@ function toDateOnly(value) {
     return todayInTimeZone("Europe/Istanbul");
   }
 
-  return String(value).slice(0, 10);
+  return istanbulDay(value);
 }
 
 function addDays(date, days) {
@@ -398,8 +399,10 @@ async function getMatches(query) {
   // dışarıda kalıyordu. football-data.org'un `status=LIVE` filtresi IN_PLAY/
   // PAUSED maçları tarihten bağımsız döndürür; canlı sorguda date yerine bu
   // kullanılır.
-  const dateFrom = query && query.date ? toDateOnly(query.date) : toDateOnly();
-  const dateTo = dateFrom;
+  const requestedDate = query && query.date ? toDateOnly(query.date) : toDateOnly();
+  // v4 dateTo is exclusive. Include both UTC days intersecting the Istanbul day.
+  const dateFrom = addDays(requestedDate, -1);
+  const dateTo = addDays(requestedDate, 1);
   const params = isLiveQuery ? { status: "LIVE" } : { dateFrom, dateTo };
   let payload;
 
@@ -416,16 +419,14 @@ async function getMatches(query) {
     payload = await providerFetch("/matches", params);
   }
 
-  const allMatches = (payload.matches || payload.data || []).map(normalizeLiveMatch);
-  // Belirli bir turnuva istenmediğinde football-data.org abonelikteki tüm
-  // turnuvaları döndürüyor. Editoryal kapsam dışı ligler (ör. Brasileirão)
-  // "Bugünkü Maçlar" listesine sızmasın diye api-football adaptöründeki
-  // katalog filtresinin aynısı burada da uygulanır.
+  if (!payload || !Array.isArray(payload.matches || payload.data)) throw new Error("Invalid football-data fixture response");
+  const allMatches = (payload.matches || payload.data).map(normalizeLiveMatch);
+  // Daily discovery includes every competition covered by this provider.
   const matches = competition
     ? allMatches.filter((match) => matchesCompetition(match.league, competition))
-    : allMatches.filter((match) => competitions.some((item) => matchesCompetition(match.league, item)));
+    : allMatches;
 
-  return stampProviderData(matches, "matches", 5 * 60 * 1000);
+  return stampProviderData(isLiveQuery ? matches : matches.filter(match => istanbulDay(match.kickoff) === requestedDate), "matches", 5 * 60 * 1000);
 }
 
 /**

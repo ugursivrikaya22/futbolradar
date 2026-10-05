@@ -48,7 +48,7 @@ module.exports = async function handler(req, res) {
   const result = await resolveFromProviders({
     resource: "matches",
     query,
-    isUsable: Array.isArray,
+    isUsable: query.live ? Array.isArray : undefined,
     run: (provider, providerQuery) => provider.getMatches(providerQuery)
   });
 
@@ -62,7 +62,12 @@ module.exports = async function handler(req, res) {
     );
   }
 
-  const rawData = Array.isArray(result.data) ? result.data : [];
+  let pool = Array.isArray(result.data) ? result.data : [];
+  if (!query.live && (result.degraded || result.provider.partialCoverage)) {
+    const saved = await require('../services/providers/mockProvider').getMatches(query);
+    pool = require('../services/dailyFixtureMerge').mergeDailyMatches(pool, saved);
+  }
+  const rawData = pool.map(match => ({ ...match, fixturePriority: require("../services/dailyFixturePriority").fixturePriority(match) }));
   if (!validateOrSend(res, rawData, validateMatches)) {
     return;
   }
@@ -90,5 +95,10 @@ module.exports = async function handler(req, res) {
     resource: query.live ? "matches-live" : "matches"
   });
 
-  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result, { freshness }));
+  return sendSuccess(res, data, result.provider.source, undefined, providerMeta(result, { freshness, fixtureHealth: {
+    date: query.date || require("../services/matchStatus").istanbulDay(new Date().toISOString()),
+    timezone: "Europe/Istanbul", visible: data.length,
+    state: data.length ? (result.degraded || result.provider.partialCoverage ? "degraded" : "ok")
+      : result.attempts.some(a => a.provider === "api-football" && a.status === "empty") ? "empty-confirmed" : "unavailable"
+  } }));
 };

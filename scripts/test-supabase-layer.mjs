@@ -55,6 +55,8 @@ const env = require("../services/supabase/env.js");
 // yeni bir tablo yalnızca en son göçte var olabilir ve tek dosya
 // okunduğunda test "tablo bulunamadı" diye YANLIŞ pozitif verir.
 const migrationsDir = path.join(root, "supabase", "migrations");
+const migrationVersions = fs.readdirSync(migrationsDir).filter(file => file.endsWith('.sql')).map(file => file.split('_')[0]);
+assert.equal(new Set(migrationVersions).size, migrationVersions.length, 'Supabase migration versions must be unique');
 const migrationSql = fs.readdirSync(migrationsDir)
   .filter((file) => file.endsWith(".sql"))
   .sort()

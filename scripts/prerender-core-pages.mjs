@@ -121,6 +121,7 @@ const {
 const { orderForDisplay } = require("../services/postMatchReportStore.js");
 const { renderQuickStats } = require("../services/homeQuickStats.js");
 const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
+const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
 const { fixtureTeamNames, sameClub } = require("../services/superLigTeams.js");
@@ -378,6 +379,7 @@ function isSuperLigProgramMatch(match) {
 
 function calendarProgramMatches(limit, options = {}) {
   return programMatchPool()
+    .filter((match) => !options.homeOnly || isHomeFixture(match))
     .filter((match) => !options.excludeSuperLig || !isSuperLigProgramMatch(match))
     .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
     .slice(0, limit || 6);
@@ -387,7 +389,7 @@ function calendarProgramCards(limit) {
   const today = istanbulToday();
   // Süper Lig maçları hemen üstte aynı boy kartlarla ayrı ve öncelikli
   // çizilir; genel listede ikinci kez gösterilmez.
-  const upcoming = calendarProgramMatches(limit, { excludeSuperLig: true });
+  const upcoming = calendarProgramMatches(limit, { excludeSuperLig: true, homeOnly: true });
 
   if (!upcoming.length) {
     return "";
@@ -749,7 +751,7 @@ function dailyHeadlineCards() {
   const today = istanbulToday();
   // İlgi puanı burada damgalanır; API de aynı servisi kullanıyor, böylece
   // ön derlenmiş sıra ile JavaScript yüklendikten sonraki sıra aynı olur.
-  const headlines = buildDailyHeadlines(withRelevance(currentMatches()), {
+  const headlines = buildDailyHeadlines(withRelevance(currentMatches().filter(match => isHomeFixture(match))), {
     today,
     reports: postMatchStore()
   });
@@ -1059,7 +1061,7 @@ function leagueDirectoryHtml() {
 
 function todaySuperLigStrip() {
   const today = istanbulToday();
-  const todays = currentMatches().filter((match) => istanbulDay(match.kickoff) === today);
+  const todays = currentMatches().filter((match) => istanbulDay(match.kickoff) === today && isHomeFixture(match));
   return superLigTodayStripHtml(todays, teams, "tr", {
     hrefFor: matchDetailPath,
     cardFor: (match) => programFixtureCard(match, today, { quickLinks: true })

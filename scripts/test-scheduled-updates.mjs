@@ -101,6 +101,7 @@ const rateLimitedProvider = {
 };
 const rateLimitedSync = await synchronizeLiveFixtures({
   provider: rateLimitedProvider,
+  backupProvider: { getMatches: async () => [] },
   mode: "hourly",
   now: new Date("2026-10-05T01:00:00+03:00"),
   previous: fallbackPrevious
@@ -111,8 +112,8 @@ assert.equal(rateLimitedSync.summary.fallback, "preserve-existing-calendar");
 assert.equal(rateLimitedSync.summary.checked, 0);
 assert.equal(rateLimitedSync.summary.added, 0);
 assert.equal(rateLimitedSync.summary.updated, 0);
-assert.deepEqual(rateLimitedSync.output.matches, fallbackPrevious.matches,
-  "rate limitte son geçerli takvim byte-anlamında korunmalı");
+assert.deepEqual(rateLimitedSync.output.matches.map(({fixturePriority, ...row}) => row), fallbackPrevious.matches,
+  "rate limitte son geçerli maç verisi korunmalı; yalnızca gösterim önceliği eklenebilir");
 
 // BOŞ DÖKÜM ALANI DEPODAKİ GERÇEK VERİYİ SİLMEMELİ. `/fixtures?date=` yanıtı
 // olay taşımadığı için sağlayıcı satırı `events: []` ile geliyor; bu boş dizi
@@ -385,13 +386,13 @@ const workflow = fs.readFileSync(path.join(root, ".github", "workflows", "match-
 // yoğun kuyruğu saat başında yaşıyor; `:00`'a sabitlenmiş koşular bu depoda
 // 4-8 saat gecikmeli başlıyordu (03.09.2026'da tam koşu hiç tetiklenmedi).
 // Dakikayı kaydırmak GitHub'ın önerdiği düzeltme — bkz. docs/scheduled-updates.md.
-assert.match(workflow, /cron: "7 2 \* \* \*"/);
+assert.match(workflow, /cron: "0 2 \* \* \*"/);
 // Saatlik nöbet 20.09.2026'da İKİYE AYRILDI: gündüz saatlik, gece iki saatte
 // bir. Gerekçe ölçümdü — koşu ~13 dakika sürüyor, depo private, yani gecenin
 // altı saatinde neredeyse hiçbir şey değişmezken saatlik tazeleme doğrudan
 // faturaya yazılıyordu. Kapsam daralmadı: gündüzün tamamı hâlâ saatlik.
 assert.match(workflow, /cron: "7 4-21 \* \* \*"/);
-assert.match(workflow, /cron: "7 0,3,22 \* \* \*"/);
+assert.match(workflow, /cron: "7 0-1,3,22-23 \* \* \*"/);
 // İki kısa ifade de 02:00 UTC'yi DIŞARIDA bırakıyor (4-21 ve 0,3,22): orası
 // tam tazelemenin saati, iki iş aynı dosyalara yazmak için sıraya giremez.
 // Saatleri tek tek çözüp doğruluyoruz ki ilerideki bir düzenleme 2'yi sessizce
@@ -402,7 +403,7 @@ assert.match(workflow, /cron: "7 0,3,22 \* \* \*"/);
       const [from, to] = part.split("-").map(Number);
       return Number.isInteger(to) ? Array.from({ length: to - from + 1 }, (_, i) => from + i) : [from];
     });
-  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0,3,22")];
+  const shortRunHours = [...hoursOf("4-21"), ...hoursOf("0-1,3,22-23")];
   assert.ok(!shortRunHours.includes(2), "kısa koşu 02:00 UTC'ye girmemeli — tam tazeleme orada");
   assert.equal(new Set(shortRunHours).size, shortRunHours.length, "aynı saat iki kez tetiklenmemeli");
 }
@@ -419,7 +420,7 @@ assert.match(workflow, /group: futbolradar-production-update/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
 // Koşu türü SCHEDULE değişkeninden okunuyor ve tam koşuyu yalnızca günlük
 // tetik seçiyor; geri kalan her tetik saatlik koşu demek.
-assert.match(workflow, /SCHEDULE.*"7 2 \* \* \*"/s);
+assert.match(workflow, /SCHEDULE.*"0 2 \* \* \*"/s);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);

@@ -492,6 +492,7 @@
     if (!cache[name]) {
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
+        if (name === "matches") resourceMeta.matches = { meta: { fixtureHealth: { state: "unavailable" } } };
         var source = name === "matches"
           ? loadStaticMatchSources()
           : fetchJson(fallbackUrl).then(function (result) { return result.data; });
@@ -3498,7 +3499,7 @@
       return true;
     }
 
-    return band === "played" && isFinishedMatch(match);
+    return false;
   }
 
   /** Karuselde dönecek maçlar, gösterim sırasıyla. */
@@ -4387,7 +4388,7 @@
    * bırakmak, bölümü hiç göstermemekten kötüdür.
    */
   function renderDailyHeadlinesSection(matches) {
-    return renderDailyHeadlines(buildDailyHeadlines(matches, {
+    return renderDailyHeadlines(buildDailyHeadlines((matches || []).filter(function (match) { return isHomeFixtureMatch(match); }), {
       today: todayInIstanbul(),
       reports: latestPostMatchReports
     }));
@@ -4791,7 +4792,7 @@
     var today = todayInIstanbul();
 
     var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return isTodaySuperLigMatch(match, teamList, today);
+      return isTodaySuperLigMatch(match, teamList, today) && isHomeFixtureMatch(match);
     });
 
     // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
@@ -4830,11 +4831,22 @@
   }
 
   // today-match-card-selection:start
+  function isHomeFixtureMatch(match, nowMs) {
+    if (!match) return false;
+    var now = typeof nowMs === "number" ? nowMs : Date.now();
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    var terminal = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABANDONED", "ABD"];
+    if (terminal.includes(status) || terminal.includes(String(match.providerStatus || "").toUpperCase())) return false;
+    if (featuredIsLiveMatch(match, now)) return true;
+    var kickoff = Date.parse(match.kickoff);
+    return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
+  }
+
   function selectTodayMatchCards(matches, options) {
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
     var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today && isHomeFixtureMatch(match, settings.nowMs);
     });
 
     function rank(match) {
@@ -4966,7 +4978,7 @@
     var hasScore = list.some(function (match) {
       return match && typeof match.relevance === "number" && isFinite(match.relevance);
     });
-    if (!hasScore) return orderMatchProgramByState(list, now);
+    if (!hasScore) return orderMatchProgramByState(list, now).sort(function (a, b) { return (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority); });
 
     var scored = list.map(function (match, index) {
       var score = match && match.relevance;
@@ -4981,6 +4993,8 @@
     });
 
     scored.sort(function (left, right) {
+      var priorityGap = (left.match.fixturePriority == null ? 19 : left.match.fixturePriority) - (right.match.fixturePriority == null ? 19 : right.match.fixturePriority);
+      if (priorityGap) return priorityGap;
       if (right.score !== left.score) {
         if (left.score === -Infinity) return 1;
         if (right.score === -Infinity) return -1;
@@ -5010,8 +5024,8 @@
       var params = new URLSearchParams(window.location.search);
       var selectedDate = params.get("date") || todayInIstanbul();
       return matchEmptyStateHtml(
-        "Bu ölçütlerde doğrulanmış maç yok",
-        formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+        resourceMeta.matches && resourceMeta.matches.meta && resourceMeta.matches.meta.fixtureHealth && resourceMeta.matches.meta.fixtureHealth.state === "empty-confirmed" ? "Bugün takip ettiğimiz liglerde maç bulunmuyor." : "Maç programı güncelleniyor",
+        formatMatchDate(selectedDate) + " programı için kısa süre sonra yeniden kontrol edebilirsin. Kayıtlı maçlar hazır olduğunda burada gösterilir."
       );
     }
 
@@ -5052,8 +5066,8 @@
       setContent(
         target,
         matchEmptyStateHtml(
-          "Bu tarihte doğrulanmış maç yok",
-          formatMatchDate(selectedDate) + " için maç bulunamadı. Sıradaki doğrulanmış maçlar aşağıda listelendi."
+          "Sıradaki kayıtlı maçlar",
+          "Güncel program hazırlanırken sıradaki kayıtlı maçlara göz atabilirsin."
         ) + renderMatchesByLeague(upcoming, function (match) {
           return renderMatchPageCard(match, analysesIndex);
         })
@@ -5239,6 +5253,57 @@
     });
   }
 
+  function todayRadarMatchCardHtml(match, analysesIndex) {
+    var analysis = findAnalysisForMatch(analysesIndex, match);
+    var prediction = analysis && analysis.prediction;
+    var live = LiveGuard.isLive(match);
+    var statusLabel = live ? (statusTr(match.status) + " · " + matchTimeLabel(match)) : matchTimeLabel(match) + " · " + statusTr(match.status);
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
+
+    return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
+      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.league) + '</span><span>' +
+      (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
+      '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
+      (analysis
+        ? '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
+          goalPotentialBadgeHtml(prediction && prediction.goalPotential) + "</div>"
+        : '<p class="muted-copy">Analiz için doğrulanmış veri bekleniyor.</p>') +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>' +
+      "</article>";
+  }
+
+  function todayRadarMatchesHtml(matches, analysesIndex) {
+    var today = todayInIstanbul();
+    var todaysMatches = (Array.isArray(matches) ? matches : []).filter(function (match) {
+      return matchDateValue(match) === today && isHomeFixtureMatch(match);
+    });
+
+    if (!todaysMatches.length) {
+      return "";
+    }
+
+    var sorted = todaysMatches.slice().sort(function (left, right) {
+      var leftAnalysis = findAnalysisForMatch(analysesIndex, left);
+      var rightAnalysis = findAnalysisForMatch(analysesIndex, right);
+      var leftScore = leftAnalysis ? (leftAnalysis.dataConfidence || 0) : -1;
+      var rightScore = rightAnalysis ? (rightAnalysis.dataConfidence || 0) : -1;
+      if (isLiveMatch(left) !== isLiveMatch(right)) {
+        return isLiveMatch(left) ? -1 : 1;
+      }
+      if (leftScore !== rightScore) {
+        return rightScore - leftScore;
+      }
+      return String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    }).slice(0, 6);
+
+    var cards = sorted.map(function (match) {
+      return todayRadarMatchCardHtml(match, analysesIndex);
+    }).join("");
+
+    return cards;
+  }
+
   function renderLiveScoreSection(matches) {
     var list = filterScoredMatches(matches);
     list = filterFallbackData("matches", list);
@@ -5304,6 +5369,7 @@
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    { selector: "today-radar-matches", renderer: function (matches) { return todayRadarMatchesHtml(matches, latestAnalysesIndex); } },
     {
       selector: "today-superlig-matches",
       renderer: function (matches) {

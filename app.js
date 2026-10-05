@@ -528,6 +528,7 @@
     if (!cache[name]) {
       var fallbackUrl = DATA_ROOT + config.fallback + ".json";
       var fallback = function () {
+        if (name === "matches") resourceMeta.matches = { meta: { fixtureHealth: { state: "unavailable" } } };
         var source = name === "matches"
           ? loadStaticMatchSources()
           : fetchJson(fallbackUrl).then(function (result) { return result.data; });
@@ -3982,7 +3983,7 @@
       return true;
     }
 
-    return band === "played" && isFinishedMatch(match);
+    return false;
   }
 
   /** Karuselde dönecek maçlar, gösterim sırasıyla. */
@@ -4939,7 +4940,7 @@
    * bırakmak, bölümü hiç göstermemekten kötüdür.
    */
   function renderDailyHeadlinesSection(matches) {
-    return renderDailyHeadlines(buildDailyHeadlines(matches, {
+    return renderDailyHeadlines(buildDailyHeadlines((matches || []).filter(function (match) { return isHomeFixtureMatch(match); }), {
       today: todayInIstanbul(),
       reports: latestPostMatchReports
     }));
@@ -5401,7 +5402,7 @@
     var today = todayInIstanbul();
 
     var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return isTodaySuperLigMatch(match, teamList, today);
+      return isTodaySuperLigMatch(match, teamList, today) && isHomeFixtureMatch(match);
     });
 
     // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
@@ -5440,11 +5441,22 @@
   }
 
   // today-match-card-selection:start
+  function isHomeFixtureMatch(match, nowMs) {
+    if (!match) return false;
+    var now = typeof nowMs === "number" ? nowMs : Date.now();
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    var terminal = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABANDONED", "ABD"];
+    if (terminal.includes(status) || terminal.includes(String(match.providerStatus || "").toUpperCase())) return false;
+    if (featuredIsLiveMatch(match, now)) return true;
+    var kickoff = Date.parse(match.kickoff);
+    return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
+  }
+
   function selectTodayMatchCards(matches, options) {
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
     var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today && isHomeFixtureMatch(match, settings.nowMs);
     });
 
     function rank(match) {
@@ -5576,7 +5588,7 @@
     var hasScore = list.some(function (match) {
       return match && typeof match.relevance === "number" && isFinite(match.relevance);
     });
-    if (!hasScore) return orderMatchProgramByState(list, now);
+    if (!hasScore) return orderMatchProgramByState(list, now).sort(function (a, b) { return (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority); });
 
     var scored = list.map(function (match, index) {
       var score = match && match.relevance;
@@ -5591,6 +5603,8 @@
     });
 
     scored.sort(function (left, right) {
+      var priorityGap = (left.match.fixturePriority == null ? 19 : left.match.fixturePriority) - (right.match.fixturePriority == null ? 19 : right.match.fixturePriority);
+      if (priorityGap) return priorityGap;
       if (right.score !== left.score) {
         if (left.score === -Infinity) return 1;
         if (right.score === -Infinity) return -1;
@@ -5620,8 +5634,8 @@
       var params = new URLSearchParams(window.location.search);
       var selectedDate = params.get("date") || todayInIstanbul();
       return matchEmptyStateHtml(
-        "Bu ölçütlerde doğrulanmış maç yok",
-        formatMatchDate(selectedDate) + " için seçilen lig ve durum filtresinde maç bulunamadı. Başka bir gün veya filtre seçebilirsin."
+        resourceMeta.matches && resourceMeta.matches.meta && resourceMeta.matches.meta.fixtureHealth && resourceMeta.matches.meta.fixtureHealth.state === "empty-confirmed" ? "Bugün takip ettiğimiz liglerde maç bulunmuyor." : "Maç programı güncelleniyor",
+        formatMatchDate(selectedDate) + " programı için kısa süre sonra yeniden kontrol edebilirsin. Kayıtlı maçlar hazır olduğunda burada gösterilir."
       );
     }
 
@@ -5662,8 +5676,8 @@
       setContent(
         target,
         matchEmptyStateHtml(
-          "Bu tarihte doğrulanmış maç yok",
-          formatMatchDate(selectedDate) + " için maç bulunamadı. Sıradaki doğrulanmış maçlar aşağıda listelendi."
+          "Sıradaki kayıtlı maçlar",
+          "Güncel program hazırlanırken sıradaki kayıtlı maçlara göz atabilirsin."
         ) + renderMatchesByLeague(upcoming, function (match) {
           return renderMatchPageCard(match, analysesIndex);
         })
@@ -5872,7 +5886,7 @@
   function todayRadarMatchesHtml(matches, analysesIndex) {
     var today = todayInIstanbul();
     var todaysMatches = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return matchDateValue(match) === today;
+      return matchDateValue(match) === today && isHomeFixtureMatch(match);
     });
 
     if (!todaysMatches.length) {
@@ -5907,23 +5921,19 @@
     }
 
     var wrapper = target.closest("section") || target;
+    wrapper.setAttribute("data-empty-hide", "");
     var staticFallback = wrapper.dataset.staticFallback === "true" ? target.innerHTML : "";
     target.dataset.state = "loading";
 
     Promise.all([loadData("matches"), loadData("matchAnalyses")]).then(function (results) {
       var matches = Array.isArray(results[0]) ? results[0] : [];
       var analyses = Array.isArray(results[1]) ? results[1] : [];
+      latestAnalysesIndex = buildAnalysesIndex(analyses);
       var html = todayRadarMatchesHtml(matches, buildAnalysesIndex(analyses));
 
       if (html) {
         wrapper.hidden = false;
         setContent(target, html);
-        return;
-      }
-      if (staticFallback) {
-        wrapper.hidden = false;
-        target.innerHTML = staticFallback;
-        target.dataset.state = "fallback";
         return;
       }
       wrapper.hidden = true;
@@ -6017,6 +6027,7 @@
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    { selector: "today-radar-matches", renderer: function (matches) { return todayRadarMatchesHtml(matches, latestAnalysesIndex); } },
     {
       selector: "today-superlig-matches",
       renderer: function (matches) {

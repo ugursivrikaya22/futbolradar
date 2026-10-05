@@ -72,6 +72,8 @@
     var selectedId = previousTab && previousTab.id;
     var focusedId = target.contains(document.activeElement) && document.activeElement.id;
     var title = match.homeTeam + ' – ' + match.awayTeam;
+    var kickoff = Date.parse(match.kickoff);
+    var kickoffLabel = Number.isFinite(kickoff) ? new Intl.DateTimeFormat('en-GB', { timeZone:'Europe/Istanbul', day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', hourCycle:'h23' }).format(new Date(kickoff)) + ' · Türkiye time (UTC+3)' : 'Kick-off time awaiting confirmation';
     document.querySelector('h1').textContent = title;
     document.title = title + ' | FutbolRadar';
     var score = match.score && match.score.home != null && match.score.away != null ? match.score.home + ' – ' + match.score.away : 'vs';
@@ -91,6 +93,7 @@
       '<section role="tabpanel" id="en-match-stats" aria-labelledby="en-match-stats-tab" hidden>' + (stats.length ? '<ul>' + stats.map(statisticHtml).join('') + '</ul>' : '<p>Match statistics are not available yet.</p>') + '</section>' +
       '<a class="detail-link" href="./todays-matches.html">View today’s matches</a>';
     target.querySelector('[role="tablist"]').insertAdjacentHTML('beforeend', '<button class="standings-tabs__label" type="button" role="tab" aria-selected="false" aria-controls="en-match-lineups" id="en-match-lineups-tab" tabindex="-1">Line-ups</button>');
+    target.querySelector('.match-scoreboard').insertAdjacentHTML('beforeend', '<p data-match-kickoff>' + escape(kickoffLabel) + '</p>' + (match.venue ? '<p>' + escape(typeof match.venue === 'string' ? match.venue : match.venue.name || '') + '</p>' : ''));
     target.insertAdjacentHTML('beforeend', '<section role="tabpanel" id="en-match-lineups" aria-labelledby="en-match-lineups-tab" hidden>' + (lineupHtml ? '<div class="md-lineup-grid">' + lineupHtml + '</div>' : '<p>Confirmed line-ups are not available yet.</p>') + '</section>');
     var broadcast = typeof match.broadcast === 'string' ? match.broadcast : match.broadcast && (match.broadcast.turkey || match.broadcast.tr);
     var sources = (Array.isArray(match.sourceUrls) ? match.sourceUrls : []).filter(function (source) { return /^https?:\/\//i.test(String(source)); });

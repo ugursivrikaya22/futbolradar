@@ -17,9 +17,10 @@ const ISTANBUL_TIME_ZONE = "Europe/Istanbul";
 const TURKISH_PRIORITY = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
 
 function parseArgs(argv) {
-  const args = { apply: false, mode: "hourly", match: null, backfill: 0 };
+  const args = { date: null, apply: false, mode: "hourly", match: null, backfill: 0 };
   for (const raw of argv) {
-    if (raw === "--apply") args.apply = true;
+    if (raw.startsWith("--date=")) args.date = raw.slice(7);
+    else if (raw === "--apply") args.apply = true;
     else if (raw === "--dry-run") args.apply = false;
     else if (raw.startsWith("--mode=")) args.mode = raw.slice("--mode=".length);
     else if (raw.startsWith("--match=")) args.match = raw.slice("--match=".length).trim() || null;
@@ -35,7 +36,7 @@ function parseArgs(argv) {
       args.backfill = Math.floor(value);
     }
   }
-  if (!new Set(["full", "hourly"]).has(args.mode)) {
+  if (!new Set(["full", "hourly", "live"]).has(args.mode)) {
     throw new Error(`Unsupported mode: ${args.mode}`);
   }
   return args;
@@ -234,6 +235,11 @@ export function dedupeCalendarMatches(list) {
     let matchIndex = -1;
     for (let index = 0; index < kept.length; index += 1) {
       const candidate = kept[index];
+      const leftId = providerIdOf(candidate), rightId = providerIdOf(match);
+      if (leftId && rightId) {
+        if (leftId === rightId) { matchIndex = index; break; }
+        continue;
+      }
       if (dateOnly(candidate) !== date) continue;
       const straight = sameClub(candidate.homeTeam, match.homeTeam) && sameClub(candidate.awayTeam, match.awayTeam);
       const swapped = sameClub(candidate.homeTeam, match.awayTeam) && sameClub(candidate.awayTeam, match.homeTeam);
@@ -290,9 +296,11 @@ export function mergeCalendarMatches(existingMatches, incomingMatches) {
     const incoming = normalizedIncoming(raw.match || raw, raw.detail || null);
     const providerId = providerIdOf(incoming);
     const identity = fixtureIdentity(incoming);
+    const identityIndex = byIdentity.get(identity);
+    const identityProviderId = identityIndex === undefined ? null : providerIdOf(output[identityIndex]);
     const index = (providerId && byProviderId.has(providerId))
       ? byProviderId.get(providerId)
-      : byIdentity.get(identity);
+      : identityProviderId && providerId && identityProviderId !== providerId ? undefined : identityIndex;
 
     if (index === undefined) {
       output.push(incoming);
@@ -557,10 +565,10 @@ function reserveBackfillSlot(ordered, limit, nowMs, isForced = () => false, slot
 }
 
 async function fetchFixtures(provider, mode, now, options = {}) {
-  const today = istanbulDate(now);
-  const dates = mode === "full"
-    ? [addDays(today, -1), today, addDays(today, 1)]
-    : [addDays(today, -1), today];
+  const today = options.date || istanbulDate(now);
+  const dates = mode === "live" ? [today] : mode === "full"
+    ? [today, addDays(today, -1), addDays(today, 1)]
+    : [today, addDays(today, -1), addDays(today, 1)];
   // HEDEF MAÇ GETİRİLEN GÜNLERİN İÇİNDE OLMAK ZORUNDA. Yaş filtresini delmek
   // tek başına yetmiyor: saatlik mod yalnızca dünü ve bugünü soruyor, dünden
   // eski bir maç listeye hiç girmediği için --match sessizce etkisiz kalırdı.
@@ -571,49 +579,36 @@ async function fetchFixtures(provider, mode, now, options = {}) {
   const byProviderId = new Map();
   const errors = [];
   let successfulRequests = 0;
+  const requests = [];
+  const backupMatches = [];
+  let blocked = false;
 
-  for (const query of [{ live: true }, ...dates.map((date) => ({ date }))]) {
+  for (const query of [...dates.map((date) => ({ date })), { live: true }]) {
     try {
-      const matches = await provider.getFixtures(query);
+      if (blocked) throw Object.assign(new Error("Provider quota/config unavailable"), { code: "PROVIDER_DISABLED" });
+      const matches = await provider.getFixtures({ ...query, fresh: true });
+      if (!Array.isArray(matches)) throw new Error("Invalid fixture response");
+      requests.push({ ...query, count: matches.length, status: "ok", httpStatus: provider.getProviderRateLimit?.().httpStatus ?? null });
       successfulRequests += 1;
       for (const match of matches || []) byProviderId.set(String(match.providerId || match.id), match);
     } catch (error) {
-      errors.push({ query, message: error.message, code: error.code || null });
+      if (error.code !== "PROVIDER_DISABLED") errors.push({ query, message: error.message, code: error.code || null });
+      requests.push({ ...query, status: error.code === "PROVIDER_DISABLED" ? "skipped" : "error", httpStatus: ["PROVIDER_DISABLED", "PROVIDER_CONFIG_MISSING"].includes(error.code) ? null : error.statusCode || null, code: error.code || null });
+      if (["PROVIDER_RATE_LIMIT", "PROVIDER_AUTH_ERROR", "PROVIDER_PLAN_ERROR", "PROVIDER_CONFIG_MISSING"].includes(error.code)) blocked = true;
+    }
+    if (query.date && ![...byProviderId.values()].some(match => dateOnly(match) === query.date)) {
+      try {
+        const rows = await (options.backupProvider || require('../services/providers/sportsDbDailyProvider')).getMatches(query);
+        backupMatches.push(...rows);
+        requests.push({ date: query.date, provider: 'thesportsdb', status: 'partial', count: rows.length });
+      } catch (error) { errors.push({ query, provider: 'thesportsdb', message: error.message, code: error.code || null }); }
     }
   }
+  return { matches: [...byProviderId.values()], backupMatches, requests, errors, successfulRequests,
+    degraded: errors.length > 0, degradedCode: errors[0]?.code || null,
+    fallback: errors.length ? 'preserve-existing-calendar' : null };
 
-  if (!successfulRequests) {
-    // GÜNLÜK KOTA DOLU OLDUĞUNDA TAKVİMİ BOZMA.
-    //
-    // API-Football 429/rate-limit döndürürse aynı koşuda yeniden denemek
-    // kotayı geri getirmez. Önceki davranış exception atıp live-fixtures
-    // adımını "failed" yapıyordu; oysa elimizdeki TheSportsDB + son geçerli
-    // API-Football takvimi hâlâ güvenli bir fallback. Yalnızca TÜM istekler
-    // açıkça rate-limit ise kontrollü degraded sonuç dönüyoruz. Ağ, auth,
-    // plan veya bilinmeyen hatalar hâlâ exception olarak görünür; gerçek
-    // arızaları sessizce saklamıyoruz.
-    const allRateLimited = errors.length > 0
-      && errors.every((item) => item.code === "PROVIDER_RATE_LIMIT");
-    if (allRateLimited) {
-      return {
-        matches: [],
-        errors,
-        successfulRequests: 0,
-        degraded: true,
-        degradedCode: "PROVIDER_RATE_LIMIT",
-        fallback: "preserve-existing-calendar"
-      };
-    }
-    throw new Error(`API-Football fixture requests all failed: ${errors.map((item) => item.code || item.message).join(", ")}`);
-  }
-  return {
-    matches: [...byProviderId.values()],
-    errors,
-    successfulRequests,
-    degraded: false,
-    degradedCode: null,
-    fallback: null
-  };
+
 }
 
 /** Sağlayıcı günlük kotası eşiğe geldi mi? null = bilinmiyor = durma. */
@@ -633,10 +628,12 @@ export async function synchronizeLiveFixtures(options = {}) {
   const bulk = Math.max(0, Math.floor(options.backfill || 0));
   const backfillGunSiniri = bulk ? Number.MAX_SAFE_INTEGER : (mode === "full" ? 3 : 2);
   const fetched = await fetchFixtures(provider, mode, now, {
+    backupProvider: options.backupProvider,
+    date: options.date,
     dates: [
       ...datesForTarget(previous, options.match),
       // Birikmiş eksik döküm sırası: her koşu en eski birkaç günü de soruyor.
-      ...backfillDates(previous, now.getTime(), backfillGunSiniri, RETRY_WINDOW_MS)
+      ...(bulk ? backfillDates(previous, now.getTime(), backfillGunSiniri, RETRY_WINDOW_MS) : [])
     ]
   });
   // DEPODAKİ KAYIT SEÇİCİYE VERİLİR. Eksik döküm ikinci şansı ancak depodaki
@@ -660,7 +657,7 @@ export async function synchronizeLiveFixtures(options = {}) {
   };
   const detailTargets = selectDetailTargets(fetched.matches, {
     nowMs: now.getTime(),
-    limit: (mode === "full" ? 12 : 8) + bulk,
+    limit: mode === "live" ? 0 : (mode === "full" ? 12 : 8) + bulk,
     backfillSlots: bulk || BACKFILL_SLOTS,
     match: options.match || null,
     storedFor,
@@ -672,11 +669,11 @@ export async function synchronizeLiveFixtures(options = {}) {
   const details = new Map();
   const detailErrors = [];
 
-  let quotaStopped = false;
+  let quotaStopped = fetched.errors.some(error => ["PROVIDER_RATE_LIMIT", "PROVIDER_AUTH_ERROR", "PROVIDER_PLAN_ERROR", "PROVIDER_CONFIG_MISSING"].includes(error.code));
   for (const match of detailTargets) {
     // Kota tabanı toplu koşuyu kendiliğinden durdurur; elde edilen döküm
     // yazılır, ne kadarının kaldığı özete düşer.
-    if (bulk && quotaExhausted(provider)) { quotaStopped = true; break; }
+    if (quotaStopped || quotaExhausted(provider)) { quotaStopped = true; break; }
     try {
       const detail = await provider.getMatchDetail({ fixtureId: match.providerId || match.id, date: dateOnly(match) });
       if (detail) details.set(String(match.providerId || match.id), detail);
@@ -690,15 +687,42 @@ export async function synchronizeLiveFixtures(options = {}) {
     detail: details.get(String(match.providerId || match.id)) || null
   }));
   const merged = mergeCalendarMatches(previous.matches || [], incoming);
+  // Backup identifiers belong to their own namespace. Never send them to API-Football.
+  for (const row of fetched.backupMatches) {
+    const index = merged.matches.findIndex(old => old.providerIds?.theSportsDb === row.providerId || fixtureIdentity(old) === fixtureIdentity(row));
+    if (index < 0) { merged.matches.push(row); merged.added++; }
+    else if (!providerIdOf(merged.matches[index])) {
+      merged.matches[index] = { ...merged.matches[index], ...row, id: merged.matches[index].id };
+      merged.updated++;
+    }
+  }
+  const today = options.date || istanbulDate(now);
+  const repaired = dedupeCalendarMatches(merged.matches);
+  merged.matches = repaired.matches;
+  merged.deduped += repaired.merges;
+  const dayRequest = fetched.requests.find(r => r.date === today && !r.provider);
+  const confirmed = dayRequest?.status === 'ok';
+  const health = {
+    date: today, timezone: ISTANBUL_TIME_ZONE, checkedAt: now.toISOString(),
+    lastSuccessfulSyncAt: confirmed ? now.toISOString() : previous.fixtureHealth?.lastSuccessfulSyncAt || null,
+    lastSuccessfulBackupSyncAt: fetched.backupMatches.some(row => dateOnly(row) === today) ? now.toISOString() : previous.fixtureHealth?.lastSuccessfulBackupSyncAt || null,
+    apiFixtures: fetched.matches.length, inserted: merged.added, updated: merged.updated,
+    frontendVisible: merged.matches.filter(row => dateOnly(row) === today).length,
+    status: confirmed && dayRequest.count > 0 ? 'ok' : confirmed && !merged.matches.some(row => dateOnly(row) === today) ? 'empty-confirmed' : 'degraded',
+    requests: fetched.requests, rateLimit: provider.getProviderRateLimit?.() || null,
+    errors: fetched.errors
+  };
   return {
     output: {
       ...previous,
       source: "TheSportsDB + API-Football",
       providers: ["thesportsdb", "api-football"],
       fetchedAt: (merged.added || merged.updated) ? now.toISOString() : previous.fetchedAt,
-      matches: merged.matches
+      fixtureHealth: health,
+      matches: merged.matches.map(row => ({ ...row, fixturePriority: require("../services/dailyFixturePriority").fixturePriority(row) }))
     },
     summary: {
+      ...health,
       source: "api-football",
       degraded: Boolean(fetched.degraded),
       degradedCode: fetched.degradedCode || null,
@@ -719,19 +743,24 @@ export async function synchronizeLiveFixtures(options = {}) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!apiFootballProvider.hasConfig()) {
-    throw new Error("APIFOOTBALL_API_KEY is not configured; live fixture synchronization cannot run.");
-  }
+  if (args.date && (!/^\d{4}-\d{2}-\d{2}$/.test(args.date) || !Number.isFinite(Date.parse(args.date)))) throw new Error("Invalid --date");
 
-  const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode, match: args.match, backfill: args.backfill });
+  if (args.mode === 'live') {
+    const rows = readJson(CALENDAR_PATH, { matches: [] }).matches;
+    if (!rows.some(row => { const delta = Date.parse(row.kickoff) - Date.now(); return delta >= -3 * 3600000 && delta <= 3600000; })) {
+      console.log('[live-fixtures] No fixtures near kickoff; quota preserved.');
+      return;
+    }
+  }
+  const { output, summary } = await synchronizeLiveFixtures({ mode: args.mode, date: args.date, match: args.match, backfill: args.backfill });
   const changed = summary.added > 0 || summary.updated > 0 || summary.deduped > 0;
-  if (args.apply && changed) {
+  if (args.apply) {
     atomicWrite(CALENDAR_PATH, output);
     if (fs.existsSync(path.dirname(PUBLIC_CALENDAR_PATH))) atomicWrite(PUBLIC_CALENDAR_PATH, output);
   }
 
   console.log(`[live-fixtures] checked=${summary.checked} details=${summary.detailsChecked} added=${summary.added} updated=${summary.updated} unchanged=${summary.unchanged} deduped=${summary.deduped} errors=${summary.errors.length}`);
-  if (!changed) console.log("[live-fixtures] No changed fixture data; existing calendar was left byte-for-byte unchanged.");
+  if (!changed) console.log("[live-fixtures] No fixture changes; synchronization health recorded.");
   else if (!args.apply) console.log("[live-fixtures] Dry run; use --apply to persist changes.");
   console.log(`FUTBOLRADAR_STEP_SUMMARY ${JSON.stringify(summary)}`);
 }

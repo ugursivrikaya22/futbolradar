@@ -152,8 +152,8 @@ const allFinished = selectFeaturedMatch(
   ],
   { now: new Date(Date.parse("2026-07-30T22:30:00+03:00")), today }
 );
-assert.equal(allFinished.match.id, "fc-midtjylland-besiktas", "Canlı yokken en son biten Türk maçı büyük kartta kalmalı");
-assert.equal(allFinished.reason, "turkish-played", "Biten maçın sebebi turkish-played olmalı");
+assert.equal(allFinished.match, null, "Biten maçlar ana sayfa vitrininde kalmamalı");
+assert.equal(allFinished.reason, "empty");
 
 // Türk takımı maçı yoksa kural devreye girmez; normal sıralama uygulanır.
 const noTurkish = selectFeaturedMatch([foreignFriendly, foreignLive], { now, today });

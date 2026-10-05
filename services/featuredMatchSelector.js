@@ -239,7 +239,7 @@ function isFallbackTurkishMatch(match, nowMs, today) {
     return true;
   }
 
-  return band === "played" && (isFinishedMatch(match) || isAwardedStatus(match));
+  return false;
 }
 
 /**

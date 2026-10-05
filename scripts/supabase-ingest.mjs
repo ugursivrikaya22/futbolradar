@@ -129,6 +129,7 @@ async function runStep(entity, sourceId, fn) {
 async function ingestSources() {
   const rows = [
     { id: "internal", name: "FutbolRadar Internal", kind: "internal", trust: "derived", note: "data/*.json üretim kütüğü" },
+    { id: "thesportsdb", name: "TheSportsDB", kind: "provider", trust: "provider", base_url: "https://www.thesportsdb.com" },
     { id: "api-football", name: "API-Football", kind: "provider", trust: "provider", base_url: "https://v3.football.api-sports.io" }
   ];
   const written = dryRun ? 0 : (await client.upsert(TABLES.dataSources.name, rows, TABLES.dataSources.conflict)).written;
@@ -167,6 +168,7 @@ async function ingestPlayers() {
 async function ingestMatches() {
   const curated = readJson("data/matches.json") || [];
   const reports = (readJson("data/post-match-reports.json") || {}).records || [];
+  const calendar = (readJson("data/fixture-calendar.json") || {}).matches || [];
 
   // İki kaynak aynı maçı taşıyabilir (kısa liste + arşiv raporu);
   // kimlik (id) üzerinden BİRLEŞTİRİLİR, tekrarlanmaz. Rapor kütüğü
@@ -174,7 +176,7 @@ async function ingestMatches() {
   // daha yüksek (saatlik).
   const byId = new Map();
   for (const record of curated) {
-    const row = normalize.match(record, "internal");
+    const row = normalize.match(record, record.providerIds?.apiFootball ? "api-football" : record.providerIds?.theSportsDb ? "thesportsdb" : "internal");
     if (row) byId.set(row.id, row);
   }
   for (const record of reports) {
@@ -188,9 +190,33 @@ async function ingestMatches() {
     if (row) byId.set(row.id, row);
   }
 
-  const rows = [...byId.values()];
-  const total = curated.length + reports.length;
+  // The daily calendar is the durable fixture pool, including lower leagues.
+  for (const record of calendar) {
+    const source = record.providerIds?.apiFootball || String(record.source).includes('api-football') ? 'api-football' : 'thesportsdb';
+    const row = normalize.match(record, source);
+    if (row) byId.set(row.id, row);
+  }
+  const unique = new Map();
+  for (const row of byId.values()) {
+    const key = row.provider_fixture_id ? row.source_id + ':' + row.provider_fixture_id : row.id;
+    unique.set(key, row);
+  }
+  const rows = [...unique.values()];
+  // Keep referenced DB/SEO ids stable even when a provider renames a club.
+  let inserted = 0, updated = 0;
+  if (!dryRun) {
+    for (const batch of client.chunk(rows, 100)) {
+      const ids = batch.map(row => row.provider_fixture_id).filter(Boolean);
+      const existing = ids.length ? await client.select('matches', { columns: 'id,provider_fixture_id,source_id', filters: { provider_fixture_id: 'in.(' + ids.join(',') + ')' }, limit: 1000 }) : [];
+      for (const row of batch) {
+        const old = existing.find(item => item.source_id === row.source_id && item.provider_fixture_id === row.provider_fixture_id);
+        if (old) { row.id = old.id; updated++; } else inserted++;
+      }
+    }
+  }
+  const total = curated.length + reports.length + calendar.length;
   const written = dryRun ? 0 : (await client.upsert(TABLES.matches.name, rows, TABLES.matches.conflict)).written;
+  log(JSON.stringify({ entity: "fixtures", rowsRead: total, rowsWritten: written, inserted: dryRun ? null : inserted, updated: dryRun ? null : updated, timezone: "Europe/Istanbul" }));
   return { read: total, written, skipped: total - rows.length };
 }
 
