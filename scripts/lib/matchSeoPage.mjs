@@ -38,7 +38,7 @@ const matchTimeline = require("../../services/matchTimeline.js");
  */
 const matchHub = require("../../services/matchHub.js");
 // Stat adının tür sözcüğü ("… Stadyumu") İngilizce sayfada çevrilir.
-const { broadcastLabel, venueLabel } = require("../../services/displayLabels.js");
+const { broadcastLabel, venueLabel, nationLabel } = require("../../services/displayLabels.js");
 
 /**
  * Oyuncu adresleri tek çözücüden. Maç SEO sayfaları hem Türkçe hem
@@ -934,12 +934,12 @@ export function formSectionHtml(forms, ctx) {
   const home = forms.home || [];
   const away = forms.away || [];
   if (!home.length && !away.length) return "";
-  const dots = (rows) => `<div class="form-dots msp-form-dots">${rows.map((row) => `<span class="${row.result === "W" ? "win" : row.result === "L" ? "loss" : "draw"}" title="${escapeHtml(row.label)}">${row.result === "W" ? (locale === "en" ? "W" : "G") : row.result === "L" ? (locale === "en" ? "L" : "M") : "B"}</span>`).join("")}</div>`;
+  const dots = (rows) => `<div class="form-dots msp-form-dots">${rows.map((row) => `<span class="${row.result === "W" ? "win" : row.result === "L" ? "loss" : "draw"}" title="${escapeHtml(row.label)}">${row.result === "W" ? (locale === "en" ? "W" : "G") : row.result === "L" ? (locale === "en" ? "L" : "M") : (locale === "en" ? "D" : "B")}</span>`).join("")}</div>`;
   const list = (rows, teamName) => {
     if (!rows.length) return `<article class="card data-empty"><strong>${escapeHtml(teamName)}</strong><span>${escapeHtml(text.formPending)}</span></article>`;
     return `<article class="card msp-form"><h3>${escapeHtml(teamName)}</h3>${dots(rows)}<ul class="msp-form-list">${rows.map((row) => {
       const href = pageHrefFor ? pageHrefFor(row.match) : null;
-      const line = `${escapeHtml(row.match.homeTeam)} ${escapeHtml(row.match.score.home)}-${escapeHtml(row.match.score.away)} ${escapeHtml(row.match.awayTeam)}`;
+      const line = `${escapeHtml(nationLabel(row.match.homeTeam, locale))} ${escapeHtml(row.match.score.home)}-${escapeHtml(row.match.score.away)} ${escapeHtml(nationLabel(row.match.awayTeam, locale))}`;
       return `<li><time datetime="${escapeHtml(row.match.kickoff)}">${escapeHtml(shortDate(row.match.kickoff, locale))}</time> ${href ? `<a href="${escapeHtml(href)}">${line}</a>` : line}${row.match.league ? ` <small>${escapeHtml(competitionLabel(row.match.league, locale))}</small>` : ""}</li>`;
     }).join("")}</ul></article>`;
   };
@@ -1176,7 +1176,7 @@ function predictionMetaRows(record, ctx, percent) {
   if (record.modelUnderOver && Number.isFinite(Number(record.modelUnderOver.over))) {
     rows.push({ label: text.predictionOver25, value: percent(record.modelUnderOver.over) });
   }
-  if (Number.isFinite(Number(record.bothTeamsScore))) {
+  if (record.bothTeamsScore !== null && record.bothTeamsScore !== undefined && record.bothTeamsScore !== "" && Number.isFinite(Number(record.bothTeamsScore))) {
     rows.push({ label: text.predictionBothScore, value: percent(record.bothTeamsScore) });
   }
   if (record.marketConsensus && Number(record.marketConsensus.bookmakerCount) > 0) {
