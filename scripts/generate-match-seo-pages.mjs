@@ -730,7 +730,7 @@ const finishedPool = (() => {
     if (!match || !match.homeTeam || !match.awayTeam || !match.kickoff) return;
     if (canonicalStatus(match.status || match.providerStatus) !== "FINISHED") return;
     if (!hasScore(match.score)) return;
-    const key = identityOf(match);
+    const key = identityOf({ ...match, homeTeam: nationLabel(match.homeTeam, "en"), awayTeam: nationLabel(match.awayTeam, "en") });
     if (!key || seen.has(key)) return;
     seen.add(key);
     pool.push({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff, league: match.league || match.competition || "", score: match.score });
@@ -757,7 +757,8 @@ const upcomingPool = (() => {
 })();
 
 function isTeamMatch(match, teamName) {
-  return sameClub(match.homeTeam, teamName) || sameClub(match.awayTeam, teamName);
+  const team = nationLabel(teamName, "en");
+  return sameClub(nationLabel(match.homeTeam, "en"), team) || sameClub(nationLabel(match.awayTeam, "en"), team);
 }
 
 function formFor(teamName, beforeKickoff) {
@@ -765,7 +766,7 @@ function formFor(teamName, beforeKickoff) {
     .filter((match) => isTeamMatch(match, teamName) && String(match.kickoff) < String(beforeKickoff))
     .slice(0, 5)
     .map((match) => {
-      const home = sameClub(match.homeTeam, teamName);
+      const home = sameClub(nationLabel(match.homeTeam, "en"), nationLabel(teamName, "en"));
       const goalsFor = home ? match.score.home : match.score.away;
       const goalsAgainst = home ? match.score.away : match.score.home;
       const result = goalsFor > goalsAgainst ? "W" : goalsFor < goalsAgainst ? "L" : "D";
