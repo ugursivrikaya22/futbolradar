@@ -30,6 +30,10 @@ try {
   await page.clock.fastForward(60001);
   await page.locator('[data-fixture-id]').first().waitFor({ state: 'detached' });
   assert.match(await page.locator('[data-home-only]').innerText(), /completed results/);
+  rows = Array.from({ length: 20 }, (_, i) => ({ ...base, id: 'future-' + i }));
+  await page.reload();
+  await page.locator('[data-fixture-id]').first().waitFor();
+  assert.equal(await page.locator('[data-fixture-id]').count(), 12, 'Home stays compact; the schedule retains every match');
   assert.deepEqual(errors, []);
   console.log('PASS: English homepage removes dual-status terminal rows and retires live cards after the final whistle.');
 } finally {

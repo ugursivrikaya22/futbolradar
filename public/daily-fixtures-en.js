@@ -40,7 +40,12 @@
         message.textContent = homeOnly ? 'View the match schedule for upcoming fixtures and completed results.' : result.confirmed ? 'No matches in the leagues we follow today.' : 'The match schedule is being updated. Please check again shortly.';
         fragment.appendChild(message);
       }
-      rows.sort(function (a, b) { return (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority) || Date.parse(a.kickoff) - Date.parse(b.kickoff); }).forEach(function (row) {
+      rows.sort(function (a, b) {
+        var live = function (row) { return ['LIVE','HALFTIME','1H','HT','2H','ET','P'].includes(String(row.status || row.providerStatus || '').toUpperCase()); };
+        return (homeOnly ? Number(live(b)) - Number(live(a)) : 0) || (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority) || Date.parse(a.kickoff) - Date.parse(b.kickoff);
+      });
+      if (homeOnly) rows = rows.slice(0, 12);
+      rows.forEach(function (row) {
         var card = document.createElement('article');
         card.className = 'fixture-card';
         card.setAttribute('data-fixture-id', row.id);
