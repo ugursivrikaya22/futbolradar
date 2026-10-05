@@ -45,7 +45,7 @@
     squad: { api: "squad", fallback: "players", reportSource: true },
     // Maç detayı canlı takip için açılır; taze kalması önbellekten daha
     // değerli — bkz. api/_utils.js "match-detail-live" no-store politikası.
-    matchDetail: { api: "match-detail", fallback: "matches", reportSource: true, noStore: true },
+    matchDetail: { api: "match-detail", fallback: "matches", reportSource: true, noStore: true, timeoutMs: 20000 },
     momentum: { api: "momentum", fallback: "momentum", reportSource: true },
     signals: { api: "signals", fallback: "signals", reportSource: true },
     analyses: { api: "analyses", fallback: "analyses", reportSource: true },
@@ -233,7 +233,7 @@
   function fetchJson(url, options) {
     var controller = window.AbortController ? new AbortController() : null;
     var timer = controller
-      ? window.setTimeout(function () { controller.abort(); }, FETCH_TIMEOUT_MS)
+      ? window.setTimeout(function () { controller.abort(); }, (options && options.timeoutMs) || FETCH_TIMEOUT_MS)
       : null;
     // Revalidate dynamic JSON so transfer and match updates do not remain stale
     // in the browser cache. Canlı uç noktalar (`noStore: true`) tarayıcı
@@ -512,7 +512,7 @@
       if (config.api && !apiUrl) {
         cache[name] = Promise.reject(new Error("standings-scope-missing"));
       } else if (config.api) {
-        cache[name] = fetchJson(apiUrl, { noStore: config.noStore })
+        cache[name] = fetchJson(apiUrl, { noStore: config.noStore, timeoutMs: config.timeoutMs })
           .then(function (result) {
             resourceMeta[name] = result;
             if (config.reportSource) {
@@ -3017,6 +3017,7 @@
 
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
+    var channel = typeof match.broadcast === "string" ? match.broadcast : match.broadcast && (match.broadcast.turkey || match.broadcast.tr);
     var metrics = fixtureFormHtml(match) + fixtureProbabilityHtml(match);
     var chips = fixtureLiveChipsHtml(match) + predictedLineupChipHtml(match);
 
@@ -3032,6 +3033,7 @@
       "</div>" +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
+      (channel ? '<p class="fixture-card-meta" data-fixture-broadcast>Yayın: ' + escapeHtml(channel) + '</p>' : '') +
       (metrics ? '<div class="fixture-card-meta">' + metrics + "</div>" : "") +
       '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
       "</article>"
@@ -9051,7 +9053,9 @@
       return;
     }
 
-    var staticFallback = target.dataset.staticFallback === "true" ? target.innerHTML : "";
+    var detailParams = new URLSearchParams(window.location.search);
+    var requestedMatch = detailParams.get("id") || detailParams.get("fixtureId");
+    var staticFallback = !requestedMatch && target.dataset.staticFallback === "true" ? target.innerHTML : "";
     var pollingStarted = false;
 
     /**
@@ -9078,22 +9082,19 @@
         forceReload("postMatchReports");
       }
 
-      // Saklanmış maç sonrası raporlar detayla BİRLİKTE yükleniyor: sonradan
-      // gelseydi bölüm ilk boyamadan sonra belirir ve sayfa zıplardı. Depo
-      // okunamazsa detay yine de çizilir, yalnızca bölüm açılmaz.
-      // withDeadline: sağlayıcı zinciri (istek + yedek istek) hiç yanıt
-      // vermezse "loading" PROVIDER_LOAD_DEADLINE_MS'in üstüne çıkmadan
-      // sonlanır — statik yedek yoksa okuyucu tek satırlık net bir duruma
-      // düşer, sonsuz "yükleniyor" görmez.
-      withDeadline(Promise.all([
-        loadData("matchDetail"),
-        loadData("postMatchReports").catch(function () { return null; }),
-        loadPredictedLineups()
-      ]), PROVIDER_LOAD_DEADLINE_MS).then(function (results) {
-        var data = results[0];
-        postMatchRecords(results[1]).forEach(function (record) {
+      if (requestedMatch && !latestMatchDetail) {
+        target.innerHTML = '<p role="status">Maç bilgileri yükleniyor…</p>';
+      }
+
+      // Optional reports and predicted lineups must never hold up the live score.
+      loadData("postMatchReports").then(function (reports) {
+        postMatchRecords(reports).forEach(function (record) {
           latestPostMatchIndex[String(record.matchId || "")] = record;
         });
+        if (latestMatchDetail) paintMatchDetail(target, latestMatchDetail);
+      }).catch(function () {});
+      loadPredictedLineups();
+      withDeadline(loadData("matchDetail"), 25000).then(function (data) {
         var detail = Array.isArray(data) ? data[0] : data;
         if (!detail) {
           if (staticFallback) {
@@ -9101,7 +9102,7 @@
             target.dataset.state = "fallback";
             return;
           }
-          setEmpty(target, "Maç bulunamadı", "Bu maç için detay verisi yok.");
+          setUnavailable(target, PROVIDER_NO_DATA_MESSAGE, function () { attemptLoad(true); });
           return;
         }
 
