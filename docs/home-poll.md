@@ -319,7 +319,7 @@ sorusunu yanıtlar.
 ile konuşuyor; `@supabase/supabase-js` paketine gerek yok.
 
 Tabloları bir kez oluşturun — göç dosyası hazır:
-`supabase/migrations/0004_poll_votes_and_shares.sql`.
+`supabase/migrations/0009_poll_votes_and_shares.sql`.
 
 ```sql
 create table if not exists home_poll_votes (
