@@ -3501,6 +3501,7 @@
 
   function renderFixtureCard(match) {
     var meta = fixtureStatusMeta(match);
+    var channel = typeof match.broadcast === "string" ? match.broadcast : match.broadcast && (match.broadcast.turkey || match.broadcast.tr);
     var metrics = fixtureFormHtml(match) + fixtureProbabilityHtml(match);
     var chips = fixtureLiveChipsHtml(match) + predictedLineupChipHtml(match);
 
@@ -3516,6 +3517,7 @@
       "</div>" +
       '<div class="fixture-card-rows">' + fixtureRowHtml(match, "home") + fixtureRowHtml(match, "away") + "</div>" +
       chips +
+      (channel ? '<p class="fixture-card-meta" data-fixture-broadcast>Yayın: ' + escapeHtml(channel) + '</p>' : '') +
       (metrics ? '<div class="fixture-card-meta">' + metrics + "</div>" : "") +
       '<a class="fixture-card-action" href="' + escapeHtml(matchDetailHref(match)) + '">Analizi İncele</a>' +
       "</article>"

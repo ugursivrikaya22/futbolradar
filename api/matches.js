@@ -67,7 +67,7 @@ module.exports = async function handler(req, res) {
     const saved = await require('../services/providers/mockProvider').getMatches(query);
     pool = require('../services/dailyFixtureMerge').mergeDailyMatches(pool, saved);
   }
-  const rawData = pool.map(match => ({ ...match, fixturePriority: require("../services/dailyFixturePriority").fixturePriority(match) }));
+  const rawData = pool.map(match => ({ ...require("../services/broadcastSchedule").applyVerifiedBroadcast(match), fixturePriority: require("../services/dailyFixturePriority").fixturePriority(match) }));
   if (!validateOrSend(res, rawData, validateMatches)) {
     return;
   }
