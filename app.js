@@ -5445,7 +5445,8 @@
     if (!match) return false;
     var now = typeof nowMs === "number" ? nowMs : Date.now();
     var status = String(match.status || match.providerStatus || "").toUpperCase();
-    if (["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABD"].includes(status)) return false;
+    var terminal = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABANDONED", "ABD"];
+    if (terminal.includes(status) || terminal.includes(String(match.providerStatus || "").toUpperCase())) return false;
     if (featuredIsLiveMatch(match, now)) return true;
     var kickoff = Date.parse(match.kickoff);
     return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
@@ -5920,23 +5921,19 @@
     }
 
     var wrapper = target.closest("section") || target;
+    wrapper.setAttribute("data-empty-hide", "");
     var staticFallback = wrapper.dataset.staticFallback === "true" ? target.innerHTML : "";
     target.dataset.state = "loading";
 
     Promise.all([loadData("matches"), loadData("matchAnalyses")]).then(function (results) {
       var matches = Array.isArray(results[0]) ? results[0] : [];
       var analyses = Array.isArray(results[1]) ? results[1] : [];
+      latestAnalysesIndex = buildAnalysesIndex(analyses);
       var html = todayRadarMatchesHtml(matches, buildAnalysesIndex(analyses));
 
       if (html) {
         wrapper.hidden = false;
         setContent(target, html);
-        return;
-      }
-      if (staticFallback) {
-        wrapper.hidden = false;
-        target.innerHTML = staticFallback;
-        target.dataset.state = "fallback";
         return;
       }
       wrapper.hidden = true;
@@ -6030,6 +6027,7 @@
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    { selector: "today-radar-matches", renderer: function (matches) { return todayRadarMatchesHtml(matches, latestAnalysesIndex); } },
     {
       selector: "today-superlig-matches",
       renderer: function (matches) {

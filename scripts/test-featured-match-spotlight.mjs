@@ -277,6 +277,10 @@ if (fs.existsSync(stateFile)) {
     const enHome = fs.readFileSync(path.join(root, "en/index.html"), "utf8");
 
     for (const [label, html] of [["index.html", home], ["en/index.html", enHome]]) {
+      if (stored.spotlight.phase === "post") {
+        assert.ok(!html.includes("<!-- featured-match-spotlight:start -->"), `${label}: finished fixture must leave home`);
+        continue;
+      }
       assert.ok(html.includes("<!-- featured-match-spotlight:start -->"), `${label}: vitrin bloğu basılmalı`);
       assert.ok(html.includes("featured-match-spotlight.css"), `${label}: vitrin stili bağlanmalı`);
       assert.ok(html.includes("featured-match-spotlight.js"), `${label}: vitrin istemcisi bağlanmalı`);

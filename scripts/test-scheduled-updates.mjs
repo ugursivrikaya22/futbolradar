@@ -101,6 +101,7 @@ const rateLimitedProvider = {
 };
 const rateLimitedSync = await synchronizeLiveFixtures({
   provider: rateLimitedProvider,
+  backupProvider: { getMatches: async () => [] },
   mode: "hourly",
   now: new Date("2026-10-05T01:00:00+03:00"),
   previous: fallbackPrevious
@@ -111,8 +112,8 @@ assert.equal(rateLimitedSync.summary.fallback, "preserve-existing-calendar");
 assert.equal(rateLimitedSync.summary.checked, 0);
 assert.equal(rateLimitedSync.summary.added, 0);
 assert.equal(rateLimitedSync.summary.updated, 0);
-assert.deepEqual(rateLimitedSync.output.matches, fallbackPrevious.matches,
-  "rate limitte son geçerli takvim byte-anlamında korunmalı");
+assert.deepEqual(rateLimitedSync.output.matches.map(({fixturePriority, ...row}) => row), fallbackPrevious.matches,
+  "rate limitte son geçerli maç verisi korunmalı; yalnızca gösterim önceliği eklenebilir");
 
 // BOŞ DÖKÜM ALANI DEPODAKİ GERÇEK VERİYİ SİLMEMELİ. `/fixtures?date=` yanıtı
 // olay taşımadığı için sağlayıcı satırı `events: []` ile geliyor; bu boş dizi

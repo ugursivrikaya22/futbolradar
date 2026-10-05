@@ -3499,7 +3499,7 @@
       return true;
     }
 
-    return band === "played" && isFinishedMatch(match);
+    return false;
   }
 
   /** Karuselde dönecek maçlar, gösterim sırasıyla. */
@@ -4388,7 +4388,7 @@
    * bırakmak, bölümü hiç göstermemekten kötüdür.
    */
   function renderDailyHeadlinesSection(matches) {
-    return renderDailyHeadlines(buildDailyHeadlines(matches, {
+    return renderDailyHeadlines(buildDailyHeadlines((matches || []).filter(function (match) { return isHomeFixtureMatch(match); }), {
       today: todayInIstanbul(),
       reports: latestPostMatchReports
     }));
@@ -4792,7 +4792,7 @@
     var today = todayInIstanbul();
 
     var scoped = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return isTodaySuperLigMatch(match, teamList, today);
+      return isTodaySuperLigMatch(match, teamList, today) && isHomeFixtureMatch(match);
     });
 
     // Aynı karşılaşma canlı yoklama + statik veri birleşiminde birden
@@ -4831,11 +4831,22 @@
   }
 
   // today-match-card-selection:start
+  function isHomeFixtureMatch(match, nowMs) {
+    if (!match) return false;
+    var now = typeof nowMs === "number" ? nowMs : Date.now();
+    var status = String(match.status || match.providerStatus || "").toUpperCase();
+    var terminal = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABANDONED", "ABD"];
+    if (terminal.includes(status) || terminal.includes(String(match.providerStatus || "").toUpperCase())) return false;
+    if (featuredIsLiveMatch(match, now)) return true;
+    var kickoff = Date.parse(match.kickoff);
+    return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
+  }
+
   function selectTodayMatchCards(matches, options) {
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
     var list = (Array.isArray(matches) ? matches : []).filter(function (match) {
-      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today;
+      return match && istanbulDayOf(match.kickoff || match.date || match.utcDate) === today && isHomeFixtureMatch(match, settings.nowMs);
     });
 
     function rank(match) {
@@ -5242,6 +5253,57 @@
     });
   }
 
+  function todayRadarMatchCardHtml(match, analysesIndex) {
+    var analysis = findAnalysisForMatch(analysesIndex, match);
+    var prediction = analysis && analysis.prediction;
+    var live = LiveGuard.isLive(match);
+    var statusLabel = live ? (statusTr(match.status) + " · " + matchTimeLabel(match)) : matchTimeLabel(match) + " · " + statusTr(match.status);
+    var homeTeam = matchTeam(match, "home");
+    var awayTeam = matchTeam(match, "away");
+
+    return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
+      '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.league) + '</span><span>' +
+      (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
+      '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
+      (analysis
+        ? '<div class="tag-row"><span class="tag soft">' + simpleBalanceLabel(prediction, match.homeTeam, match.awayTeam) + "</span>" +
+          goalPotentialBadgeHtml(prediction && prediction.goalPotential) + "</div>"
+        : '<p class="muted-copy">Analiz için doğrulanmış veri bekleniyor.</p>') +
+      '<a class="detail-link" href="' + escapeHtml(matchDetailHref(match)) + '">Derin Analiz</a>' +
+      "</article>";
+  }
+
+  function todayRadarMatchesHtml(matches, analysesIndex) {
+    var today = todayInIstanbul();
+    var todaysMatches = (Array.isArray(matches) ? matches : []).filter(function (match) {
+      return matchDateValue(match) === today && isHomeFixtureMatch(match);
+    });
+
+    if (!todaysMatches.length) {
+      return "";
+    }
+
+    var sorted = todaysMatches.slice().sort(function (left, right) {
+      var leftAnalysis = findAnalysisForMatch(analysesIndex, left);
+      var rightAnalysis = findAnalysisForMatch(analysesIndex, right);
+      var leftScore = leftAnalysis ? (leftAnalysis.dataConfidence || 0) : -1;
+      var rightScore = rightAnalysis ? (rightAnalysis.dataConfidence || 0) : -1;
+      if (isLiveMatch(left) !== isLiveMatch(right)) {
+        return isLiveMatch(left) ? -1 : 1;
+      }
+      if (leftScore !== rightScore) {
+        return rightScore - leftScore;
+      }
+      return String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    }).slice(0, 6);
+
+    var cards = sorted.map(function (match) {
+      return todayRadarMatchCardHtml(match, analysesIndex);
+    }).join("");
+
+    return cards;
+  }
+
   function renderLiveScoreSection(matches) {
     var list = filterScoredMatches(matches);
     list = filterFallbackData("matches", list);
@@ -5307,6 +5369,7 @@
     { selector: "featured-match", renderer: renderFeaturedMatch },
     { selector: "daily-headlines", renderer: renderDailyHeadlinesSection },
     { selector: "today-matches", renderer: renderTodayMatchesPreview },
+    { selector: "today-radar-matches", renderer: function (matches) { return todayRadarMatchesHtml(matches, latestAnalysesIndex); } },
     {
       selector: "today-superlig-matches",
       renderer: function (matches) {

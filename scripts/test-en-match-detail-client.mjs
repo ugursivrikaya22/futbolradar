@@ -4,7 +4,7 @@ import { chromium } from 'playwright';
 
 // Isolated API-contract fixture: canonical field names, zero/missing values,
 // percentage units and both current/legacy substitute lists.
-const fixture = { data: [{ id: 'contract', homeTeam: 'Home Club', awayTeam: 'Away Club', status: 'LIVE', score: { home: 1, away: 0 },
+const fixture = { data: [{ id: 'contract', homeTeam: 'Home Club', awayTeam: 'Away Club', kickoff: '2026-10-04T21:30:00Z', status: 'LIVE', score: { home: 1, away: 0 },
   statistics: [
     { type: 'Topla oynama', home: 76, away: 24, unit: '%' },
     { type: 'İsabetli pas', home: 316, away: 80 },
@@ -34,6 +34,7 @@ try {
   });
   await page.goto('http://detail.test/en/match-detail.html?id=contract');
   await page.locator('#en-match-stats-tab').click();
+  assert.match(await page.locator('[data-match-kickoff]').innerText(), /5 October 2026.*00:30.*UTC\+3/);
   const targets = await page.locator('[role="tab"]').evaluateAll(nodes => nodes.map(node => ({ width: node.getBoundingClientRect().width, height: node.getBoundingClientRect().height, left: node.getBoundingClientRect().left, right: node.getBoundingClientRect().right })));
   assert.equal(targets.length, 3);
   // Chromium's internal LayoutUnit snaps to 1/64px, so a `min-height: 44px`
