@@ -7,7 +7,11 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Invalid date');
 const calendar = JSON.parse(fs.readFileSync('data/fixture-calendar.json', 'utf8'));
 const repositoryRows = calendar.matches.filter(row => istanbulDay(row.kickoff) === date);
 const repositoryCount = repositoryRows.length;
-const identities = row => [row.id, row.providerIds?.apiFootball && `api-football:${row.providerIds.apiFootball}`].filter(Boolean).map(String);
+const identities = row => {
+  const provider = row.providerName || row.source;
+  const providerId = row.providerIds?.apiFootball || (provider === 'api-football' ? row.providerId || row.id : null);
+  return [row.id, providerId && `api-football:${providerId}`].filter(Boolean).map(String);
+};
 try {
   const origin = process.env.SITE_URL || 'https://www.futbolradar.com';
   const response = await fetch(`${origin}/api/matches?date=${date}`, { signal: AbortSignal.timeout(15000) });
