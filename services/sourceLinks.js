@@ -81,6 +81,8 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // açılıp harfi harfine karşılaştırılarak girildi.
     "ajansspor.com",
     "sporx.com",
+    // Dated starting-XI report cross-checked against beIN SPORTS.
+    "dunya.com",
     "sozcu.com.tr",
     "yenisafak.com",
     "sabah.com.tr",
