@@ -21,11 +21,23 @@
       return json('/data/fixture-calendar.json').then(function (calendar) { return { rows: calendar.matches || [], confirmed: false }; });
     }).then(function (result) {
       var rows = result.rows.filter(function (row) { return Number.isFinite(Date.parse(row.kickoff)) && day(row) === date; });
-      if (!rows.length && target.dataset.fixtureDate === date && target.querySelector('[data-fixture-id]')) return;
+      var homeOnly = target.hasAttribute('data-home-only');
+      if (homeOnly) rows = rows.filter(function (row) {
+        var status = String(row.status || row.providerStatus || '').toUpperCase();
+        var terminal = ['FINISHED','FT','AET','PEN','AWARDED','AWD','WO','CANCELLED','CANC','POSTPONED','PST','ABANDONED','ABD'];
+        if ([row.status,row.providerStatus,row.matchStatus].some(function (value) { return terminal.includes(String(value || '').toUpperCase()); })) return false;
+        var kickoff = Date.parse(row.kickoff);
+        if (['LIVE','HALFTIME','1H','HT','2H','ET','P'].includes(status)) {
+          var fetched = Date.parse(row.fetchedAt || row.updatedAt);
+          return Number.isFinite(fetched) && Date.now() - fetched < 150000 && Date.now() - kickoff < 150 * 60000;
+        }
+        return ['SCHEDULED','TIMED','NS','TBD'].includes(status) && kickoff >= Date.now();
+      });
+      if (!homeOnly && !rows.length && target.dataset.fixtureDate === date && target.querySelector('[data-fixture-id]')) return;
       var fragment = document.createDocumentFragment();
       if (!rows.length) {
         var message = document.createElement('p');
-        message.textContent = result.confirmed ? 'No matches in the leagues we follow today.' : 'The match schedule is being updated. Please check again shortly.';
+        message.textContent = homeOnly ? 'View the match schedule for upcoming fixtures and completed results.' : result.confirmed ? 'No matches in the leagues we follow today.' : 'The match schedule is being updated. Please check again shortly.';
         fragment.appendChild(message);
       }
       rows.sort(function (a, b) { return (a.fixturePriority == null ? 19 : a.fixturePriority) - (b.fixturePriority == null ? 19 : b.fixturePriority) || Date.parse(a.kickoff) - Date.parse(b.kickoff); }).forEach(function (row) {
