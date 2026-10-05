@@ -18,6 +18,7 @@ for (const key of ['AUDIT_WIDTH', 'AUDIT_CASE', 'AUDIT_BASE_URL', 'AUDIT_REPORT'
 const onVercel = Boolean(process.env.VERCEL);
 const browserGates = new Set([
   'scripts/test-en-match-detail-client.mjs',
+  'scripts/test-en-home-fixtures.mjs',
   'scripts/test-live-standings-browser.cjs',
   'scripts/test-poll-share-browser.mjs',
   'scripts/test-clickable-browser.cjs'
@@ -31,6 +32,7 @@ for (const args of [
   ['scripts/test-preview-stream.mjs'],
   ['scripts/test-live-score-rate-limit.mjs'],
   ['scripts/test-en-match-detail-client.mjs'],
+  ['scripts/test-en-home-fixtures.mjs'],
   ['scripts/test-broadcast-verifications.mjs'],
   ['scripts/test-source-links.mjs'],
   [compiler, '--noEmit'],

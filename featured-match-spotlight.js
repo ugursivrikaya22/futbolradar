@@ -156,8 +156,7 @@
 
   // 3) Canlı skor yoklaması.
   var phase = root.getAttribute("data-fms-phase") || "pre";
-  if (phase === "post") { root.hidden = true; return; }
-  if (phase === "postponed") return;
+  if (!["pre", "live"].includes(phase)) { root.hidden = true; return; }
 
   var scoreBox = root.querySelector("[data-fms-score]");
   var minuteBox = root.querySelector("[data-fms-minute]");
@@ -178,6 +177,7 @@
   function statusOf(detail) {
     var raw = String((detail && (detail.providerStatus || detail.status)) || "").toUpperCase();
     var plain = String((detail && detail.status) || "").toUpperCase();
+    if (["PST", "POSTPONED", "CANC", "CANCELLED", "ABD", "ABANDONED"].includes(raw) || ["POSTPONED", "CANCELLED", "ABANDONED"].includes(plain)) return "retired";
     if (FINISHED_CODES[raw] || FINISHED_CODES[plain]) return "finished";
     if (HALFTIME_CODES[raw]) return "halftime";
     if (LIVE_CODES[raw] || LIVE_CODES[plain]) return "live";
@@ -196,6 +196,7 @@
 
   function render(detail) {
     var state = statusOf(detail);
+    if (state === "finished" || state === "retired") { finished = true; root.hidden = true; stop(); return; }
     if (state === "scheduled") return;
 
     var score = detail && detail.score;

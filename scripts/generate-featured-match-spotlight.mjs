@@ -49,6 +49,7 @@ const DRY_RUN = process.argv.includes("--dry-run");
 const NOW_OVERRIDE = (process.argv.find((arg) => arg.startsWith("--now=")) || "").slice("--now=".length);
 
 const spotlight = require("../services/featuredMatchSpotlight.js");
+const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { istanbulDay, matchState } = require("../services/matchStatus.js");
 const { identityOf } = require("../services/matchSeoPages.js");
 const { competitionLabel } = require("../services/i18n.js");
@@ -346,7 +347,7 @@ const homePages = [
 
 for (const page of homePages) {
   const base = baseFor(page.relative);
-  const block = selected && !['FINISHED', 'AWARDED'].includes(matchState(selected))
+  const block = selected && isHomeFixture(selected, now) && ['pre', 'live'].includes(spotlight.phaseOf(selected, now, config))
     ? `${HOME_START}${spotlightBlock(viewFor(selected, page.locale, base), { locale: page.locale })}\n      ${HOME_END}`
     : "";
   applyBlock({

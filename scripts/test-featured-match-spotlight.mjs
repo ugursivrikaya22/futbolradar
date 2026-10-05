@@ -277,7 +277,7 @@ if (fs.existsSync(stateFile)) {
     const enHome = fs.readFileSync(path.join(root, "en/index.html"), "utf8");
 
     for (const [label, html] of [["index.html", home], ["en/index.html", enHome]]) {
-      if (stored.spotlight.phase === "post") {
+      if (!["pre", "live"].includes(stored.spotlight.phase)) {
         assert.ok(!html.includes("<!-- featured-match-spotlight:start -->"), `${label}: finished fixture must leave home`);
         continue;
       }

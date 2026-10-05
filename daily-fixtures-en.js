@@ -24,6 +24,8 @@
       var homeOnly = target.hasAttribute('data-home-only');
       if (homeOnly) rows = rows.filter(function (row) {
         var status = String(row.status || row.providerStatus || '').toUpperCase();
+        var terminal = ['FINISHED','FT','AET','PEN','AWARDED','AWD','WO','CANCELLED','CANC','POSTPONED','PST','ABANDONED','ABD'];
+        if ([row.status,row.providerStatus,row.matchStatus].some(function (value) { return terminal.includes(String(value || '').toUpperCase()); })) return false;
         var kickoff = Date.parse(row.kickoff);
         if (['LIVE','HALFTIME','1H','HT','2H','ET','P'].includes(status)) {
           var fetched = Date.parse(row.fetchedAt || row.updatedAt);
