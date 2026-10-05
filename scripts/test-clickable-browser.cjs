@@ -446,7 +446,9 @@ function todayFixtureCount(gun) {
         });
         await test(locale + ' team cards open profiles', async () => {
           await open(en ? 'en/teams.html' : 'takimlar.html');
-          if (!en) await page.locator('[data-api-target="teams-page"][data-state="ready"]').waitFor();
+          // Teams then squad can each fall back after a cold API timeout.
+          // Waiting for data uses the hydration budget, before testing the click.
+          if (!en) await page.locator('[data-api-target="teams-page"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
           const cards = page.locator('.team-card, .trend-card, [data-card="team"]');
           assert.ok(await cards.count(), 'No team cards');
           const link = cards.first().locator(en ? 'a' : '.team-card-actions a').first();
