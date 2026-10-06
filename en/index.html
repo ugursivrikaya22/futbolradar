@@ -25,10 +25,43 @@
     <meta name="twitter:title" content="FutbolRadar | Turkish Süper Lig Live Scores, Standings and Analysis" />
     <meta name="twitter:description" content="Live scores, fixtures, standings and verified transfer news from the Turkish Süper Lig, plus Turkish clubs in European competitions." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
-    <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
-    <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../page.css" />
+    <link rel="stylesheet" href="../page.css?v=7be371c8" />
     <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://www.futbolradar.com/en","url":"https://www.futbolradar.com/en","name":"FutbolRadar | Turkish Süper Lig Live Scores, Standings and Analysis","description":"Live scores, fixtures, standings and verified transfer news from the Turkish Süper Lig, plus Turkish clubs in European competitions.","inLanguage":"en","isPartOf":{"@type":"WebSite","name":"FutbolRadar","url":"https://www.futbolradar.com/"}},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.futbolradar.com/en"}]}]}</script>
+  <!-- favicon:start -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<!-- favicon:end -->
+  <!-- pwa:start -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="FutbolRadar" />
+<meta name="fr-vapid-public-key" content="" />
+<script defer src="/pwa.js?v=156a309d"></script>
+<!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="home-page">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -60,12 +93,25 @@
         </nav>
       </div>
     </header>
-    <div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+      <!-- shared-layout:ticker:start --><div class="news-ticker" data-shared-layout="ticker" data-ticker-source="ticker-feed" aria-label="Breaking football headlines">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge">Headlines</span>
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track" style="--ticker-duration:80s">
+            <div class="news-ticker-group"><a class="news-ticker-item" href="../en/news/galatasaray-burak-elmas-a67ea371.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding Burak Elmas has been relayed around Galatasaray.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/news/besiktas-vlahovic-10eef2a9.html"><span class="news-ticker-tag">News</span><span>Sporx report a squad-related development at Beşiktaş.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/news/trabzonspor-umut-nayir-2fe8e23a.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding Umut Nayir has been relayed around Trabzonspor.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.ntvspor.net/futbol/trabzonsporda-ayrilik-goktan-gurpuz-imzayi-atti-428705" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Göktan Gürpüz joins Çorum FK (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.galatasaray.org/haber/futbol/galatasaraya-hos-geldin-rafael-leao/60849" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Rafael Leão joins Galatasaray (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.hurriyet.com.tr/sporarena/besiktas-fabio-miretti-transferini-resmen-acikladi-43286815" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Fabio Miretti joins Beşiktaş (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.aa.com.tr/tr/spor/fenerbahce-yeni-transferi-oppong-icin-imza-toreni-duzenledi/4040921" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Kojo Peprah Oppong joins Fenerbahçe (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Turan 0–2 Fenerbahçe</span></a></div>
+            <div class="news-ticker-group" aria-hidden="true"><a class="news-ticker-item" href="../en/news/galatasaray-burak-elmas-a67ea371.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding Burak Elmas has been relayed around Galatasaray.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/news/besiktas-vlahovic-10eef2a9.html"><span class="news-ticker-tag">News</span><span>Sporx report a squad-related development at Beşiktaş.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/news/trabzonspor-umut-nayir-2fe8e23a.html"><span class="news-ticker-tag">News</span><span>Sporx report that a statement regarding Umut Nayir has been relayed around Trabzonspor.</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.ntvspor.net/futbol/trabzonsporda-ayrilik-goktan-gurpuz-imzayi-atti-428705" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Göktan Gürpüz joins Çorum FK (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.galatasaray.org/haber/futbol/galatasaraya-hos-geldin-rafael-leao/60849" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Rafael Leão joins Galatasaray (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.hurriyet.com.tr/sporarena/besiktas-fabio-miretti-transferini-resmen-acikladi-43286815" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Fabio Miretti joins Beşiktaş (Loan)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://www.aa.com.tr/tr/spor/fenerbahce-yeni-transferi-oppong-icin-imza-toreni-duzenledi/4040921" target="_blank" rel="nofollow noopener noreferrer"><span class="news-ticker-tag">Transfer</span><span>Kojo Peprah Oppong joins Fenerbahçe (Permanent transfer)</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="../en/analysis.html"><span class="news-ticker-tag">Full Time</span><span>Turan 0–2 Fenerbahçe</span></a></div>
+          </div>
+        </div>
+        <a class="news-ticker-all" href="../en/news.html">View all</a>
+      </div>
+    </div><!-- shared-layout:ticker:end -->
+    <div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
-            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">No live matches at the moment.</span></div>
+          <div class="live-scores-ticker__track" style="--live-ticker-duration:33.333333333333336s" data-live-scores-track data-live-rendered-at="2026-10-06T10:12:47.368Z">
+            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1635881&amp;date=2026-10-06" data-live-until="2026-10-06T10:30:00.000Z" aria-label="Cup | Trostianets 2 - 1 Chernihiv | 71&#039;"><span class="live-scores-ticker__league">Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Trostianets</span><span class="live-scores-ticker__score">2 - 1</span><span class="live-scores-ticker__team">Chernihiv</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>71&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1636359&amp;date=2026-10-06" data-live-until="2026-10-06T11:00:00.000Z" aria-label="Cup | Lam Dong 0 - 0 Song Lam Nghe An | 79&#039;"><span class="live-scores-ticker__league">Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Lam Dong</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Song Lam Nghe An</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>79&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1638512&amp;date=2026-10-06" data-live-until="2026-10-06T11:30:00.000Z" aria-label="League Two | Hubei Chufeng Heli 2 - 0 Rizhao Yuqi | 50&#039;"><span class="live-scores-ticker__league">League Two</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Hubei Chufeng Heli</span><span class="live-scores-ticker__score">2 - 0</span><span class="live-scores-ticker__team">Rizhao Yuqi</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>50&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640225&amp;date=2026-10-06" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Federation Cup | Mohammedan Dhaka 0 - 1 Arambagh | 47&#039;"><span class="live-scores-ticker__league">Federation Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Mohammedan Dhaka</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Arambagh</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>47&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640226&amp;date=2026-10-06" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Federation Cup | Dhaka Wanderers 0 - 1 Bashundhara Kings | 48&#039;"><span class="live-scores-ticker__league">Federation Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Dhaka Wanderers</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Bashundhara Kings</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>48&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640227&amp;date=2026-10-06" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Federation Cup | Bangladesh Police 0 - 0 City Club | 50&#039;"><span class="live-scores-ticker__league">Federation Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Bangladesh Police</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">City Club</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>50&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1644441&amp;date=2026-10-06" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Friendlies Women | Montenegro U19 W 1 - 0 Cyprus U19 W | 53&#039;"><span class="live-scores-ticker__league">Friendlies Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Montenegro U19 W</span><span class="live-scores-ticker__score">1 - 0</span><span class="live-scores-ticker__team">Cyprus U19 W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>53&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1598647&amp;date=2026-10-06" data-live-until="2026-10-06T12:30:00.000Z" aria-label="Liga Revelação U23 | União Leiria U23 0 - 0 Santa Clara U23 | 8&#039;"><span class="live-scores-ticker__league">Liga Revelação U23</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">União Leiria U23</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Santa Clara U23</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>8&#039;</span></a></div>
+            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1635881&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T10:30:00.000Z" aria-label="Cup | Trostianets 2 - 1 Chernihiv | 71&#039;"><span class="live-scores-ticker__league">Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Trostianets</span><span class="live-scores-ticker__score">2 - 1</span><span class="live-scores-ticker__team">Chernihiv</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>71&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1636359&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T11:00:00.000Z" aria-label="Cup | Lam Dong 0 - 0 Song Lam Nghe An | 79&#039;"><span class="live-scores-ticker__league">Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Lam Dong</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Song Lam Nghe An</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>79&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1638512&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T11:30:00.000Z" aria-label="League Two | Hubei Chufeng Heli 2 - 0 Rizhao Yuqi | 50&#039;"><span class="live-scores-ticker__league">League Two</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Hubei Chufeng Heli</span><span class="live-scores-ticker__score">2 - 0</span><span class="live-scores-ticker__team">Rizhao Yuqi</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>50&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640225&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Federation Cup | Mohammedan Dhaka 0 - 1 Arambagh | 47&#039;"><span class="live-scores-ticker__league">Federation Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Mohammedan Dhaka</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Arambagh</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>47&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640226&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Federation Cup | Dhaka Wanderers 0 - 1 Bashundhara Kings | 48&#039;"><span class="live-scores-ticker__league">Federation Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Dhaka Wanderers</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Bashundhara Kings</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>48&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1640227&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Federation Cup | Bangladesh Police 0 - 0 City Club | 50&#039;"><span class="live-scores-ticker__league">Federation Cup</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Bangladesh Police</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">City Club</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>50&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1644441&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T11:30:00.000Z" aria-label="Friendlies Women | Montenegro U19 W 1 - 0 Cyprus U19 W | 53&#039;"><span class="live-scores-ticker__league">Friendlies Women</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Montenegro U19 W</span><span class="live-scores-ticker__score">1 - 0</span><span class="live-scores-ticker__team">Cyprus U19 W</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>53&#039;</span></a><a class="live-scores-ticker__item" href="../en/match-detail.html?id=1598647&amp;date=2026-10-06" tabindex="-1" data-live-until="2026-10-06T12:30:00.000Z" aria-label="Liga Revelação U23 | União Leiria U23 0 - 0 Santa Clara U23 | 8&#039;"><span class="live-scores-ticker__league">Liga Revelação U23</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">União Leiria U23</span><span class="live-scores-ticker__score">0 - 0</span><span class="live-scores-ticker__team">Santa Clara U23</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>8&#039;</span></a></div>
           </div>
         </div>
       </div>
@@ -74,8 +120,8 @@
       <section class="container rp-home" data-radar-home-card data-radar-locale="en" hidden aria-label="Live Match Pulse">
         <div data-radar-home-body></div>
       </section>
-      <script src="../radar-pulse.js" defer></script>
-      <script src="../radar-home-card.js" defer></script>
+      <script src="../radar-pulse.js?v=48273418" defer></script>
+      <script src="../radar-home-card.js?v=4c890f95" defer></script>
       <section class="container hero" id="hero-canli-skor">
           <div>
             <span class="eyebrow"><i class="live-pulse" aria-hidden="true"></i> Live match centre</span>
@@ -88,71 +134,99 @@
             </div>
           </div>
           <div class="hero-featured" id="featured-radar-match" aria-label="Today's match centre summary">
-            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-10-06T09:37:55.242Z" data-featured-interval="10000" data-featured-count="4" aria-roledescription="carousel" aria-label="Featured matches">
-      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="bitlis-ozguzelderespor-silifke-belediyespor-2026-10-06" role="group" aria-roledescription="slide" aria-label="1 / 4"><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-10-06T14:00:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">TC</i>Turkish Cup</span><span>Today · Venue to be confirmed</span></div>
+            <div class="featured-carousel" data-featured-carousel data-live-rendered-at="2026-10-06T10:12:40.034Z" data-featured-interval="10000" data-featured-count="6" aria-roledescription="carousel" aria-label="Featured matches">
+      <div class="featured-carousel-viewport"><div class="featured-carousel-slide is-active" data-featured-slide="0" data-featured-match="trostianets-chernihiv-2026-10-06" role="group" aria-roledescription="slide" aria-label="1 / 6"><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-10-06T11:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-0" aria-hidden="true">C</i>Cup</span><span>Today · Venue to be confirmed</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">BÖ</span>
-        <strong>Bitlis Özgüzelderespor</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">T</span>
+        <strong>Trostianets</strong>
       </div>
-        <div class="featured-fixture-score"><b>14:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-score"><b>2 - 1</b><span>Live 71&#039;</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">SB</span>
-        <strong>Silifke Belediyespor</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">C</span>
+        <strong>Chernihiv</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/bitlis-ozguzelderespor-silifke-belediyespor-october-6-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="kirklarelispor-bayburtspor-2026-10-06" role="group" aria-roledescription="slide" aria-label="2 / 4" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-10-06T14:00:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">TC</i>Turkish Cup</span><span>Today · Venue to be confirmed</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=trostianets-chernihiv-2026-10-06&amp;date=2026-10-06">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="1" data-featured-match="lam-dong-song-lam-nghe-an-2026-10-06" role="group" aria-roledescription="slide" aria-label="2 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-10-06T11:30:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-0" aria-hidden="true">C</i>Cup</span><span>Today · Venue to be confirmed</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">K</span>
-        <strong>Kırklarelispor</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">LD</span>
+        <strong>Lam Dong</strong>
       </div>
-        <div class="featured-fixture-score"><b>14:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 79&#039;</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">B</span>
-        <strong>Bayburtspor</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">SL</span>
+        <strong>Song Lam Nghe An</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/kirklarelispor-bayburtspor-october-6-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="sakaryaspor-arit-kayadibi-2026-10-06" role="group" aria-roledescription="slide" aria-label="3 / 4" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-10-06T17:00:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">TC</i>Turkish Cup</span><span>Today · Venue to be confirmed</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=lam-dong-song-lam-nghe-an-2026-10-06&amp;date=2026-10-06">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="2" data-featured-match="bangladesh-police-city-club-2026-10-06" role="group" aria-roledescription="slide" aria-label="3 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-10-06T12:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">FC</i>Federation Cup</span><span>Today · Rafiq Uddin Bhuiyan Stadium</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">S</span>
-        <strong>Sakaryaspor</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">BP</span>
+        <strong>Bangladesh Police</strong>
       </div>
-        <div class="featured-fixture-score"><b>17:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-score"><b>0 - 0</b><span>Live 50&#039;</span></div>
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">AK</span>
-        <strong>Arit Kayadibi</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">CC</span>
+        <strong>City Club</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/sakaryaspor-arit-kayadibi-october-6-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
-    </div></div><div class="featured-carousel-slide" data-featured-slide="3" data-featured-match="karsiyaka-afyonkarahisarspor-2026-10-06" role="group" aria-roledescription="slide" aria-label="4 / 4" hidden><div class="featured-fixture" data-featured-reason="turkish-upcoming" data-featured-turkish="true" data-featured-reason-label="Next Turkish club match today" data-kickoff="2026-10-06T19:00:00+03:00">
-      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-4" aria-hidden="true">TC</i>Turkish Cup</span><span>Today · Venue to be confirmed</span></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=bangladesh-police-city-club-2026-10-06&amp;date=2026-10-06">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="3" data-featured-match="dhaka-wanderers-bashundhara-kings-2026-10-06" role="group" aria-roledescription="slide" aria-label="4 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-10-06T12:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">FC</i>Federation Cup</span><span>Today · Shahid Barkat Stadium</span></div>
       <div class="featured-fixture-board">
         <div class="featured-fixture-team">
-        <span class="fixture-row-fallback" aria-hidden="true">K</span>
-        <strong>Karsiyaka</strong>
+        <span class="fixture-row-fallback" aria-hidden="true">DW</span>
+        <strong>Dhaka Wanderers</strong>
       </div>
-        <div class="featured-fixture-score"><b>19:00</b><span>Kick-off</span></div>
+        <div class="featured-fixture-score"><b>0 - 1</b><span>Live 48&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">BK</span>
+        <strong>Bashundhara Kings</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=dhaka-wanderers-bashundhara-kings-2026-10-06&amp;date=2026-10-06">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="4" data-featured-match="hubei-chufeng-heli-rizhao-yuqi-2026-10-06" role="group" aria-roledescription="slide" aria-label="5 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-10-06T12:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">LT</i>League Two</span><span>Today · Hubei Football Management Center Training Base Cen</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">HC</span>
+        <strong>Hubei Chufeng Heli</strong>
+      </div>
+        <div class="featured-fixture-score"><b>2 - 0</b><span>Live 50&#039;</span></div>
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">RY</span>
+        <strong>Rizhao Yuqi</strong>
+      </div>
+      </div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=hubei-chufeng-heli-rizhao-yuqi-2026-10-06&amp;date=2026-10-06">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+    </div></div><div class="featured-carousel-slide" data-featured-slide="5" data-featured-match="mohammedan-dhaka-arambagh-2026-10-06" role="group" aria-roledescription="slide" aria-label="6 / 6" hidden><div class="featured-fixture is-live" data-featured-reason="live" data-featured-turkish="false" data-featured-reason-label="Live match" data-kickoff="2026-10-06T12:00:00+03:00">
+      <div class="featured-fixture-head"><span class="featured-fixture-league"><i class="league-mark league-mark-3" aria-hidden="true">FC</i>Federation Cup</span><span>Today · Rafiq Uddin Bhuiyan Stadium</span></div>
+      <div class="featured-fixture-board">
+        <div class="featured-fixture-team">
+        <span class="fixture-row-fallback" aria-hidden="true">MD</span>
+        <strong>Mohammedan Dhaka</strong>
+      </div>
+        <div class="featured-fixture-score"><b>0 - 1</b><span>Live 47&#039;</span></div>
         <div class="featured-fixture-team">
         <span class="fixture-row-fallback" aria-hidden="true">A</span>
-        <strong>Afyonkarahisarspor</strong>
+        <strong>Arambagh</strong>
       </div>
       </div>
-      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="../en/match/karsiyaka-afyonkarahisarspor-october-6-2026">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
+      <div class="home-match-command-actions featured-match-actions"><a class="button primary" href="./match-detail.html?id=mohammedan-dhaka-arambagh-2026-10-06&amp;date=2026-10-06">Match analysis</a><a class="button secondary" href="./todays-matches.html">Today&#039;s Matches</a></div>
     </div></div></div>
       <div class="featured-carousel-nav">
       <button type="button" class="featured-carousel-arrow" data-featured-prev aria-label="Previous match"><span aria-hidden="true">&lsaquo;</span></button>
-      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Bitlis Özgüzelderespor - Silifke Belediyespor"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Kırklarelispor - Bayburtspor"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Sakaryaspor - Arit Kayadibi"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="3" role="tab" aria-selected="false" aria-label="Karsiyaka - Afyonkarahisarspor"><span aria-hidden="true"></span></button></div>
+      <div class="featured-carousel-dots" role="tablist" aria-label="Featured matches"><button type="button" class="featured-carousel-dot is-active" data-featured-go="0" role="tab" aria-selected="true" aria-label="Trostianets - Chernihiv"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="1" role="tab" aria-selected="false" aria-label="Lam Dong - Song Lam Nghe An"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="2" role="tab" aria-selected="false" aria-label="Bangladesh Police - City Club"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="3" role="tab" aria-selected="false" aria-label="Dhaka Wanderers - Bashundhara Kings"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="4" role="tab" aria-selected="false" aria-label="Hubei Chufeng Heli - Rizhao Yuqi"><span aria-hidden="true"></span></button><button type="button" class="featured-carousel-dot" data-featured-go="5" role="tab" aria-selected="false" aria-label="Mohammedan Dhaka - Arambagh"><span aria-hidden="true"></span></button></div>
       <button type="button" class="featured-carousel-arrow" data-featured-next aria-label="Next match"><span aria-hidden="true">&rsaquo;</span></button>
       <button type="button" class="featured-carousel-arrow featured-carousel-pause" data-featured-pause aria-pressed="false" aria-label="Pause automatic rotation"><span class="featured-carousel-pause-icon" aria-hidden="true"></span></button>
     </div>
-    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>171</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>19</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>19</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>202</b></a></div>
+    </div><div class="quick-stats" aria-label="Today's match summary"><a class="quick-stat is-live" href="./live-football-scores.html"><span>Live</span><b class="live-number">8</b></a><a class="quick-stat" href="./todays-matches.html"><span>Upcoming</span><b>165</b></a><a class="quick-stat" href="./todays-matches.html"><span>Finished</span><b>30</b></a><a class="quick-stat is-ready" href="./analysis.html"><span>Analysis ready</span><b>30</b></a><a class="quick-stat" href="./todays-matches.html"><span>Total</span><b>209</b></a></div>
           </div>
         </section>
       
@@ -326,13 +400,6 @@
     <a class="fixture-card-action" href="./match-detail.html?id=mouna-yamoussoukro-2026-10-05&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">L1</i>Ligue 1</span><span class="fixture-card-state ">18:30</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">Z</span><span class="fixture-row-name">Zoman</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">K</span><span class="fixture-row-name">Korhogo</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=zoman-korhogo-2026-10-06&amp;date=2026-10-06">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">TC</i>Turkish Cup</span><span class="fixture-card-state ">14:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BÖ</span><span class="fixture-row-name">Bitlis Özgüzelderespor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SB</span><span class="fixture-row-name">Silifke Belediyespor</span><span class="fixture-row-score">–</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
@@ -360,12 +427,61 @@
     
     <a class="fixture-card-action" href="../en/match/karsiyaka-afyonkarahisarspor-october-6-2026">Open match details</a>
   </article>
-<article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">LR</i>Liga Revelação U23</span><span class="fixture-card-state ">13:00</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UL</span><span class="fixture-row-name">União Leiria U23</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SC</span><span class="fixture-row-name">Santa Clara U23</span><span class="fixture-row-score">–</span></div></div>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">LR</i>Liga Revelação U23</span><span class="fixture-card-state is-live">Live 8&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UL</span><span class="fixture-row-name">União Leiria U23</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SC</span><span class="fixture-row-name">Santa Clara U23</span><span class="fixture-row-score">0</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=uniao-leiria-u23-santa-clara-u23-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">FC</i>Federation Cup</span><span class="fixture-card-state is-live">Live 50&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BP</span><span class="fixture-row-name">Bangladesh Police</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CC</span><span class="fixture-row-name">City Club</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=bangladesh-police-city-club-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">FC</i>Federation Cup</span><span class="fixture-card-state is-live">Live 48&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">DW</span><span class="fixture-row-name">Dhaka Wanderers</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">BK</span><span class="fixture-row-name">Bashundhara Kings</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=dhaka-wanderers-bashundhara-kings-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">LT</i>League Two</span><span class="fixture-card-state is-live">Live 50&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">HC</span><span class="fixture-row-name">Hubei Chufeng Heli</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RY</span><span class="fixture-row-name">Rizhao Yuqi</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=hubei-chufeng-heli-rizhao-yuqi-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-3" aria-hidden="true">FC</i>Federation Cup</span><span class="fixture-card-state is-live">Live 47&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MD</span><span class="fixture-row-name">Mohammedan Dhaka</span><span class="fixture-row-score">0</span></div><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">A</span><span class="fixture-row-name">Arambagh</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=mohammedan-dhaka-arambagh-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">FW</i>Friendlies Women</span><span class="fixture-card-state is-live">Live 53&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">MU</span><span class="fixture-row-name">Montenegro U19 W</span><span class="fixture-row-score">1</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CU</span><span class="fixture-row-name">Cyprus U19 W</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=montenegro-u19-w-cyprus-u19-w-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">C</i>Cup</span><span class="fixture-card-state is-live">Live 79&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">LD</span><span class="fixture-row-name">Lam Dong</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SL</span><span class="fixture-row-name">Song Lam Nghe An</span><span class="fixture-row-score">0</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=lam-dong-song-lam-nghe-an-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card is-live" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">C</i>Cup</span><span class="fixture-card-state is-live">Live 71&#039;</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row is-winner"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Trostianets</span><span class="fixture-row-score">2</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">C</span><span class="fixture-row-name">Chernihiv</span><span class="fixture-row-score">1</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=trostianets-chernihiv-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-0" aria-hidden="true">C</i>Cup</span><span class="fixture-card-state ">14:00</span></div>
@@ -515,13 +631,6 @@
     <a class="fixture-card-action" href="./match-detail.html?id=werder-bremen-ii-hannover-96-ii-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
-    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">AC</i>Africa Cup of Nations U20</span><span class="fixture-card-state ">16:00</span></div>
-    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AU</span><span class="fixture-row-name">Algeria U20</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EU</span><span class="fixture-row-name">Egypt U20</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
-    
-    <a class="fixture-card-action" href="./match-detail.html?id=algeria-u20-egypt-u20-2026-10-06&amp;date=2026-10-06">Open match details</a>
-  </article>
-<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">PD</i>Professional Development League</span><span class="fixture-card-state ">16:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">CU</span><span class="fixture-row-name">Colchester United U21</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SC</span><span class="fixture-row-name">Swansea City U21</span><span class="fixture-row-score">–</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
@@ -569,6 +678,13 @@
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=tanzania-u23-kenya-u23-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">AC</i>Africa Cup of Nations U20</span><span class="fixture-card-state ">16:30</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AU</span><span class="fixture-row-name">Algeria U20</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EU</span><span class="fixture-row-name">Egypt U20</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=algeria-u20-egypt-u20-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">UU</i>UEFA U21 Championship - Qualification</span><span class="fixture-card-state ">16:45</span></div>
@@ -821,6 +937,13 @@
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=turkey-u21-hungary-u21-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">LA</i>Liga Alef</span><span class="fixture-card-state ">20:20</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">TU</span><span class="fixture-row-name">Tzeirei Umm al-Fahm</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">HU</span><span class="fixture-row-name">Hapoel Umm al-Fahm</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=tzeirei-umm-al-fahm-hapoel-umm-al-fahm-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CB</i>Carioca B2</span><span class="fixture-card-state ">21:00</span></div>
@@ -1236,6 +1359,20 @@
     <a class="fixture-card-action" href="./match-detail.html?id=real-oruro-real-tomayapo-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">CV</i>Copa Venezuela</span><span class="fixture-card-state ">22:30</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RF</span><span class="fixture-row-name">Real Frontera</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AE</span><span class="fixture-row-name">Atletico el Vigia FC</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=real-frontera-atletico-el-vigia-fc-2026-10-07&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CD</i>Copa De La Liga</span><span class="fixture-card-state ">23:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">AA</span><span class="fixture-row-name">Alianza Atletico</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">SB</span><span class="fixture-row-name">Sport Boys</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=alianza-atletico-sport-boys-2026-10-05&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">DI</i>Division Intermedia</span><span class="fixture-card-state ">23:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">BA</span><span class="fixture-row-name">Benjamín Aceval</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">IF</span><span class="fixture-row-name">Independiente F.b.c.</span><span class="fixture-row-score">–</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
@@ -1306,6 +1443,13 @@
     <a class="fixture-card-action" href="./match-detail.html?id=portugal-u19-netherlands-u19-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state ">15:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">UU</span><span class="fixture-row-name">Uzbekistan U20</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">RU</span><span class="fixture-row-name">Russia U20</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=uzbekistan-u20-russia-u20-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state ">17:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">I</span><span class="fixture-row-name">India</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">U</span><span class="fixture-row-name">Uruguay</span><span class="fixture-row-score">–</span></div></div>
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
@@ -1318,6 +1462,13 @@
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=portugal-u19-austria-u19-2026-10-06&amp;date=2026-10-06">Open match details</a>
+  </article>
+<article data-match-overflow hidden class="fixture-card" data-card="fixture">
+    <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state ">18:00</span></div>
+    <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">EU</span><span class="fixture-row-name">Ecuador U20</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">PU</span><span class="fixture-row-name">Peru U20</span><span class="fixture-row-score">–</span></div></div>
+    <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
+    
+    <a class="fixture-card-action" href="./match-detail.html?id=ecuador-u20-peru-u20-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
 <article data-match-overflow hidden class="fixture-card" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-4" aria-hidden="true">CF</i>Club Friendlies</span><span class="fixture-card-state ">19:00</span></div>
@@ -1340,9 +1491,9 @@
     
     <a class="fixture-card-action" href="./match-detail.html?id=jordan-venezuela-2026-10-06&amp;date=2026-10-06">Open match details</a>
   </article>
-          <div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false"><span class="match-more-label" data-match-more-label="collapsed">Show more (+146 matches)</span><span class="match-more-label" data-match-more-label="expanded" hidden>Show less</span></button></div>
+          <div class="match-more-row"><button class="match-more" type="button" data-match-more="today-matches" aria-expanded="false"><span class="match-more-label" data-match-more-label="collapsed">Show more (+157 matches)</span><span class="match-more-label" data-match-more-label="expanded" hidden>Show less</span></button></div>
           </div>
-          </div><script src="/daily-fixtures-en.js" defer></script>
+          </div><script src="/daily-fixtures-en.js?v=905ab2ac" defer></script>
         </section>
       <section class="container section home-radar-matches" id="gunun-radar-maci" aria-labelledby="gunun-radar-maci-title" hidden>
           <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar analysis</span><h2 id="gunun-radar-maci-title">Radar Match of the Day</h2><p>A rule-based pre-match read built from squad, form and data reliability.</p></div><a class="section-link" href="./todays-matches.html">Open the match centre</a></div>
@@ -1485,6 +1636,7 @@
       </nav>
     </footer>
     
-    <script src="../site.js" defer></script>
+    <script src="../site.js?v=358ea322" defer></script>
+    <script src="../app-lite.js?v=76716cfd" defer></script>
   </body>
 </html>
