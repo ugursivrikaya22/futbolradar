@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-07T07:12:19.259Z",
+  "updatedAt": "2026-10-07T10:15:40.506Z",
   "items": [
+    {
+      "id": "auto-news-1cfb680a5aee3fcdcf9f",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Vefat ve Başsağlığı: Ali Emre Ballı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-07T08:45:43.000Z",
+      "source": {
+        "name": "Fenerbahce",
+        "url": "https://news.google.com/rss/articles/CBMijAFBVV95cUxNaFY5U0NCQkFRZTI3MHlUYVRiUVZ0TzhTUkpXOEE5UFB0MlIyZTdjWVUwVlZWR2xhUnc0SnZVcHFPdmx5S2ZfOEM5RG5sZ3VCRDdOV2MxZUNZOFZqYkpQRkZLeV9mOHlBdjJJSzc3dkY0eE45YUJtNjdCNVc2U2FTSjhCX3g0MDRSSmlPWQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-e877d2d4b645f2f4dd53",
       "category": "official",
@@ -11,7 +31,7 @@
       "team": "Fenerbahçe",
       "timestamp": "2026-10-06T18:20:24.000Z",
       "source": {
-        "name": "Fenerbahce",
+        "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxPa2xzS3pPTk5VZUU0WjVDb2NYMDNucEdPM0ZkX0kybXJDNE9NcjFVRTZoYWduRXcybG1PSUxmbnh6Z3dRRTBvZ0ZNU2owNEx4X2FaWjQ0TXBKMnhkNmF0VjcxczNKdmNsaHRfbG5Sc19WdUdZRWlhOVEzbmZRVlBsNHgzUldab1MwTDJxZFdsT09lWDI2X0x5eEc4QzAtby10ZXJYMUZscjFxYU9JVDFSNlZldEtXZWREZnc?oc=5",
         "publisher": "fenerbahce.org"
       },
@@ -81,9 +101,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-06T14:00:13.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -104,6 +122,28 @@
         "feed": "besiktas",
         "priority": 3,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-4db29b31f5cdb0b4eb4d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Kocaelispor Maçı Antrenman Notları - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-06T11:53:41.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1qNnhLb010emdDdDZaV2dQeDc3MkJnT0wyVjhlTWpSbHMzTEFZRlNzLWVoRzMyTmpWc0xKb1lCZnVkUDllaUd1QjcwQ1pkb1p1b1lMVWN0YWs1NFE?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-05T12:45:32.000Z"
       }
     },
     {
@@ -337,16 +377,16 @@
       "important": true
     },
     {
-      "id": "auto-news-1a2ff4c0b3b1eacf8974",
+      "id": "auto-news-bdc572363c7c929b20f7",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Nations League highlights: France 4-1 Belgium",
+      "text": "2026/27 Nations League top scorers: Harry Kane leads Viktor Gyökeres, Michael Olise, Troy Parrott, Leo Walta and Lamine Yamal",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-10-06T22:57:30.000Z",
+      "timestamp": "2026-10-07T09:27:59.000Z",
       "source": {
         "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxOaTk4c0RpTUFHNzJYWmJ4MWFZM3JLdDBXb1BOZk0zSERtdmFBX19adkFvdDJfekNieUxNd1ZFcGdKalZJaS05TWlXcng2RFppdk5XRTVWVFkwQVVmUUhwQjhqZ3Fqd3Q0NEF0dnotMm5IcVZzZ25hdVd3WGlDQjNxUjFEb3kxWUtMZkNuTjhRdGVIQ0pSNEg1amQtT2pKVjEwMUx3dFNtMTU5NVFCWFBTQTBtVUQ0Ul9EdXUwcmxMUzR3MFBlVE80dEJwQ2ZLM0o0aWNzbQ?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMi1AFBVV95cUxPWVJ1VlFPUXdXdFlxQV9xWXhUckdFV0hyZlpPazZaVm9hZWQzZloyOWpoemRiekpRZTF0MTB6Q3R4VDd3cXE5TEdKd2ZkMjY4bXlHd2pxc0FaeFd2OEVLTEkyd2E0N1ZjV0NTM1dvVWpudGFnckJMWW43TkxfR0VKNk40NmZzX2NKOEZRazQ2Smk5OXZ4eFJGMV9nM0FHOUg3N1VaZjlyMlRFTXVUZXB6WS1mcFR0QlZNNUVDQndwVXItT0FZcWh3d1JhdGZVWlVOU2pLSA?oc=5",
         "publisher": "uefa.com"
       },
       "automation": {
@@ -354,8 +394,8 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 7,
-        "firstSeenAt": "2026-10-05T04:02:59.000Z"
+        "mergedReports": 6,
+        "firstSeenAt": "2026-10-05T08:19:56.000Z"
       }
     },
     {
@@ -375,9 +415,7 @@
         "source": "rss",
         "feed": "milli-takim",
         "priority": 5,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-05T19:10:45.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
