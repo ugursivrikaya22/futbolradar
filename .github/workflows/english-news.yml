@@ -1,19 +1,7 @@
-# İNGİLİZCE HABER AKIŞI — SAATLİK TAZELEME.
-#
-# Türkçe akış saatlik `run-scheduled-update` içinde tazeleniyor ve İngilizce
-# adım da oraya eklendi. Bu iş akışı ONA EK bir güvenlik ağı: saatlik koşu
-# herhangi bir nedenle düşerse (sağlayıcı kotası, uzun süren bir derleme)
-# /en tarafı gün boyu donmasın diye akış kendi başına da tazelenir.
-#
-# Yalnızca VERİYİ tazeler ve sayfaları üretir; tam derleme zincirini
-# çalıştırmaz — o, saatlik koşunun işi.
 name: english-news
 
+# Manual only: scheduled discovery disabled to reduce duplicate publishing/builds.
 on:
-  schedule:
-    # Saatlik koşudan kaymalı olsun diye :35'te; ikisi aynı anda push
-    # etmeye çalışıp çakışmasın.
-    - cron: "35 * * * *"
   workflow_dispatch:
 
 concurrency:

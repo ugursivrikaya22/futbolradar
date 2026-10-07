@@ -73,7 +73,7 @@ console.log("postprocess-chain");
 
   // Derleme, son işlemi gerçekten çağırıyor mu?
   assert.match(
-    pkg.scripts.build || "",
+    `${pkg.scripts.build} && ${pkg.scripts.postbuild}`,
     /(?:npm run postprocess|node scripts\/postprocess\.mjs)/,
     "build, postprocess'i çağırmalı"
   );
@@ -94,9 +94,10 @@ console.log("postprocess-chain");
   // yayına çıkıyordu — tam da bu dosyanın önlediği "unutulan ikinci liste"
   // hatasının üçüncü bir örneği.
   const postbuild = pkg.scripts.postbuild || "";
+  assert.equal((`${pkg.scripts.build} && ${postbuild}`.match(/node scripts\/postprocess\.mjs/g) || []).length, 1, "postprocess must run exactly once, after all generators");
   assert.match(
     postbuild,
-    /node scripts\/postprocess\.mjs && node scripts\/verify-production\.mjs$/,
+    /node scripts\/postprocess\.mjs && node scripts\/apply-brand-copy\.mjs && node scripts\/verify-production\.mjs$/,
     `postbuild, kendi üreticilerinden SONRA tam postprocess zincirini çağırmalı, tek bir enjektörü elle değil (mevcut: ${postbuild})`
   );
 }
