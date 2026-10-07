@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-07T01:37:27.438Z",
+  "updatedAt": "2026-10-07T07:12:19.259Z",
   "items": [
     {
       "id": "auto-news-e877d2d4b645f2f4dd53",
@@ -320,6 +320,20 @@
         "url": "https://www.futbolradar.com/haber/galatasaray-pendik-0030d3e1"
       },
       "team": "Galatasaray",
+      "important": true
+    },
+    {
+      "id": "news-besiktas-mert-komur-bc468492",
+      "origin": "news.json",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "text": "Sporx'in haberine göre Beşiktaş'ın Mert Kömür görüşmelerini sürdürdüğü öne sürüldü.",
+      "timestamp": "2026-10-07T06:53:42.000Z",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/besiktas-mert-komur-bc468492"
+      },
+      "team": "Beşiktaş",
       "important": true
     },
     {
