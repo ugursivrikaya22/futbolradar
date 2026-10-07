@@ -277,6 +277,13 @@ export function nonRetryableProviderCode(output) {
   return code && NON_RETRYABLE_PROVIDER_CODES.has(code) ? code : null;
 }
 
+export function stepAttemptLimit(spec) {
+  // Request-level retries already handle transient provider errors. Replaying a
+  // whole source step repeats successful requests and consumes quota twice.
+  if (spec.kind === "source") return 1;
+  return Number.isFinite(spec.attempts) ? Math.max(1, Math.min(2, Math.floor(spec.attempts))) : 1;
+}
+
 async function runStep(spec, records) {
   const startedAt = new Date().toISOString();
   if (spec.skip) {
@@ -286,10 +293,12 @@ async function runStep(spec, records) {
     return record;
   }
 
-  const attempts = Math.max(1, spec.attempts || 1);
+  const attempts = stepAttemptLimit(spec);
+  let actualAttempts = 0;
   let result;
   console.log(`\n[scheduled-update] START ${spec.id}`);
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    actualAttempts = attempt;
     result = await runProcess(spec.command || NODE, spec.args, { timeoutMs: spec.timeoutMs });
     if (result.ok) break;
     const permanentProviderCode = nonRetryableProviderCode(result.output);
@@ -317,7 +326,7 @@ async function runStep(spec, records) {
     startedAt,
     finishedAt,
     durationMs: result.durationMs,
-    attempts,
+    attempts: actualAttempts,
     summary: result.summary,
     providerCode,
     error: providerCode && result.error ? `${result.error} (${providerCode})` : result.error,

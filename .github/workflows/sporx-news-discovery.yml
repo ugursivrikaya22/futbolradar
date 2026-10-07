@@ -1,34 +1,7 @@
 name: FutbolRadar Sporx News Discovery
 
-# Sporx bir haber KEŞİF kaynağıdır (bkz. docs/sporx-news-pipeline.md). Bu iş
-# yalnızca yeni Sporx başlıklarını tarar, mükerrer olmayanlardan özgün
-# FutbolRadar haberleri üretir ve mevcut, test edilmiş sayfa/bant hattını
-# çalıştırır. Ayrı bir iş akışı olmasının nedeni sıklık: ana güncelleme
-# (match-analysis.yml) saatlik çalışır, keşif taraması ondan daha sık
-# istiyor (aşağıdaki cron notuna bakın).
-#
-# Dakika :00/:15/:30/:45 DEĞİL, :07/:22/:37/:52 kullanılıyor. Bu repo bunu
-# zaten match-analysis.yml'de biliyor (bkz. docs/scheduled-updates.md):
-# GitHub'ın kendi belgeleri saat başının `schedule` kuyruğunun en yoğun
-# penceresi olduğunu söylüyor; bu iş akışı ilk yayınlandığında saat
-# dakikasına sabitlenmiş halde ~26 dakika (birden fazla tetikleme penceresi)
-# boyunca HİÇ çalışmadı — gözlemlenen gecikme saatler sürebiliyor. Ofset,
-# GitHub'ın belgelediği düzeltme.
+# Manual only: scheduled discovery disabled to reduce duplicate publishing/builds.
 on:
-  schedule:
-    # SIKLIK MALİYETİ: bu iş günde 96 kez koşuyordu ve koşu başına ~10 dakika
-    # harcıyordu — ayda ~29.700 dakika, deponun Actions faturasının en büyük
-    # tek kalemi. Keşifte 15 dakika ile 30 dakika arasındaki fark okuyucuya
-    # görünmüyor (haber zaten bir sonraki taramada yakalanıyor), bu yüzden
-    # gündüz yarım saatte bire, gecenin ölü saatlerinde saatte bire indirildi.
-    # Günde 96 → 41 koşu.
-    #
-    # Dakika :07/:37 — saat başı GitHub'ın belgelediği en yoğun `schedule`
-    # kuyruk penceresi (bkz. yukarıdaki not).
-    # Gündüz (TSİ 07:00–23:59 = UTC 04–20): yarım saatte bir.
-    - cron: "7,37 4-20 * * *"
-    # Gece (TSİ 00:00–06:59 = UTC 21–03): saatte bir.
-    - cron: "7 0-3,21-23 * * *"
   workflow_dispatch:
     inputs:
       limit:

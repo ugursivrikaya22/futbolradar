@@ -441,7 +441,7 @@ function isRetryable(error) {
     return !error.statusCode || error.statusCode >= 500 || error.statusCode === 408;
   }
   // withTimeout ve fetch'in kendi hataları ProviderError olmayabilir.
-  return error.name === "AbortError" || /timeout|network|socket|ECONN|fetch failed/i.test(String(error.message || ""));
+  return error.name === "AbortError" || error.name === "TimeoutError" || /timeout|network|socket|ECONN|fetch failed/i.test(String(error.message || ""));
 }
 
 function delay(ms) {
@@ -475,7 +475,9 @@ async function providerFetchOnce(path, params, apiKey, config) {
     url.searchParams.set(key, value);
   });
 
+  const signal = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
   const request = fetch(url, {
+    signal,
     headers: {
       accept: "application/json",
       "x-apisports-key": apiKey
@@ -490,6 +492,7 @@ async function providerFetchOnce(path, params, apiKey, config) {
     try {
       payload = await response.json();
     } catch (error) {
+      if (signal.aborted) throw signal.reason;
       payload = null;
     }
 
