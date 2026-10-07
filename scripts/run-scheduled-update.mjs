@@ -678,11 +678,10 @@ async function main() {
 
     const result = await runStep(spec, steps);
     const observedProviderCode = result.providerCode || (result.summary && result.summary.degradedCode) || null;
-    // A plan restriction may affect only one endpoint; it must not stop scores.
-    if (spec.source === "api-football" && ["PROVIDER_RATE_LIMIT", "PROVIDER_AUTH_ERROR", "PROVIDER_ACCOUNT_SUSPENDED", "PROVIDER_CREDENTIAL_NOT_SENT", "PROVIDER_CONFIG_MISSING"].includes(observedProviderCode)) {
+    if (observedProviderCode === "PROVIDER_RATE_LIMIT") {
       providerCircuitCode = observedProviderCode;
       providerReady = false;
-      console.warn("[scheduled-update] API-Football circuit opened after a non-retryable provider error; remaining provider calls will be skipped.");
+      console.warn("[scheduled-update] API-Football circuit opened after rate limit; remaining provider calls will be skipped.");
     }
   }
 

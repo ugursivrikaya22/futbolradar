@@ -31,6 +31,11 @@ try {
   assert.equal(buildDecision({ ...env, VERCEL_GIT_PREVIOUS_SHA: "0".repeat(40) }, directory).build, true);
   assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: "automation/search-demand-123" }, directory).build, false);
   assert.equal(buildDecision({ VERCEL_ENV: "production", VERCEL_GIT_COMMIT_REF: "main" }, directory).build, true);
+  const beforeRename = git("rev-parse", "HEAD");
+  fs.mkdirSync(path.join(directory, "docs"));
+  git("mv", "index.html", "docs/index.html");
+  git("commit", "-m", "move public file into operations");
+  assert.equal(buildDecision({ VERCEL_GIT_PREVIOUS_SHA: beforeRename, VERCEL_GIT_COMMIT_SHA: git("rev-parse", "HEAD") }, directory).build, true, "removing the original public path needs a deployment");
 } finally {
   fs.rmSync(directory, { recursive: true, force: true });
 }

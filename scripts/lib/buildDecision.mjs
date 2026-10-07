@@ -23,7 +23,7 @@ export function buildDecision(env = process.env, cwd = process.cwd()) {
     return { build: true, reason: "deployment comparison unavailable" };
   }
   try {
-    const files = execFileSync("git", ["diff", "--name-only", "-z", previous, current, "--"], {
+    const files = execFileSync("git", ["diff", "--no-renames", "--name-only", "-z", previous, current, "--"], {
       cwd, encoding: "utf8", timeout: 15000, maxBuffer: 16 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"]
     }).split("\0").filter(Boolean);
     return files.every(isOperationalOnly)
