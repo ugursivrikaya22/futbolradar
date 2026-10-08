@@ -29,8 +29,9 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
     const status=github(`repos/${REPO}/commits/${commit.sha}/status`);
     deployment=status.statuses.find(s=>s.context==='Vercel') || null;
     checks.push({name:'deployment',state:deployment?.state||'unknown',commit:commit.sha,url:deployment?.target_url||null});
+    if(['failure','error'].includes(deployment?.state)) issues.push('deployment-failed');
   } catch { issues.push('github-observation-unavailable'); }
-  let liveCalendar=null;
+  let liveCalendar=null, calendarPublished=false;
   for(const file of ['fixture-calendar.json','matches.json']) {
     try {
       const expected=JSON.parse(fs.readFileSync(path.join(root,'data',file),'utf8'));
@@ -39,6 +40,7 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
       const rows=Array.isArray(live)?live:live.matches;
       if(!Array.isArray(rows)) throw new Error('Invalid data shape');
       const equal=policy.version(expected)===policy.version(live);
+      if(file==='fixture-calendar.json') calendarPublished=equal;
       const pending=deployment?.state==='pending' && now-Date.parse(deployment.created_at)<45*60000;
       checks.push({name:file,state:equal?'published':pending?'deployment-pending':'mismatch',version:policy.version(live),records:rows.length,sourceTime:live.fetchedAt||null});
       if(!equal&&!pending) issues.push(`publication-${file}`);
@@ -58,7 +60,7 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   checks.push({name:'writer-publication',state:publication?.state||'legacy-published',commit:publication?.commit||null});
   if(publication?.state==='failed') issues.push('writer-publication-failed');
   // Fresh provider data in an artifact is not proof that visitors received it.
-  const sourceTime=(observationPublished&&source?.summary?.lastSuccessfulSyncAt) || liveCalendar?.fixtureHealth?.lastSuccessfulSyncAt || liveCalendar?.fetchedAt;
+  const sourceTime=(observationPublished&&calendarPublished&&source?.summary?.lastSuccessfulSyncAt) || liveCalendar?.fixtureHealth?.lastSuccessfulSyncAt || liveCalendar?.fetchedAt;
   const age=now-Date.parse(sourceTime);
   checks.push({name:'fixture-freshness',sourceTime,ageMinutes:Number.isFinite(age)?Math.round(age/60000):null,state:age<=90*60000?'fresh':'delayed'});
   if(!Number.isFinite(age)||age>180*60000) issues.push('fixtures-stale');
