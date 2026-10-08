@@ -1400,6 +1400,17 @@ function trendPlayerSlot(limit) {
  * `homeLeadersSlot` bunu dürüst bir "veri bekleniyor" durumuna çevirir —
  * sayfayı doldurmak için sahte bir satır uydurulmaz.
  */
+const POSITION_TR = {
+  Goalkeeper: "Kaleci",
+  Defender: "Defans",
+  Midfielder: "Orta saha",
+  Attacker: "Forvet"
+};
+
+function turkishPosition(position) {
+  return POSITION_TR[position] || position || "";
+}
+
 function homeLeaderLeagueRow(rank, row, metric, unit) {
   const team = escapeHtml(row.team || "");
   const value = escapeHtml(String(row[metric] ?? 0));
@@ -1410,12 +1421,12 @@ function homeLeaderLeagueRow(rank, row, metric, unit) {
 }
 
 function homeLeaderFormRow(rank, player) {
-  const kicker = [player.currentTeam || player.team, player.position].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
+  const kicker = [player.currentTeam || player.team, turkishPosition(player.position)].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
   return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./${escapeHtml(playerUrls.playerPagePath(player.id))}"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
 }
 
 function homeLeaderTeamRow(rank, row) {
-  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./takim-detay.html?team=${encodeURIComponent(row.team)}"><strong>${escapeHtml(row.team)}</strong><span>Momentum</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
+  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./takim-detay.html?team=${encodeURIComponent(row.team)}"><strong>${escapeHtml(row.team)}</strong><span>Form</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
 }
 
 function homeLeadersSlot(rows, rowHtmlFor, emptyNote) {
@@ -1517,7 +1528,7 @@ function simplePlayerCard(player) {
     : (view.fields.marketValue || null);
   const clubValue = view.fields.currentTeam || view.fields.team;
 
-  const kicker = [clubValue, player.position].filter(Boolean).join(" · ");
+  const kicker = [clubValue, turkishPosition(player.position)].filter(Boolean).join(" · ");
   const badge = ratingValue
     ? `<strong class="big-value player-rating-badge">${escapeHtml(ratingValue)}</strong>`
     : "";
@@ -1549,11 +1560,11 @@ function playerSignals(pool) {
   const source = Array.isArray(pool) ? pool : players;
   const by = (field) => source.slice().sort((left, right) => Number(right[field] || 0) - Number(left[field] || 0))[0];
   const cards = [
-    ["AI rating", by("overallRating"), "overallRating"],
+    ["Derece", by("overallRating"), "overallRating"],
     ["Gol tehdidi", by("threatScore"), "threatScore"],
     ["Yaratıcılık", by("creativityScore"), "creativityScore"]
   ];
-  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(player.position)}</p><a href="./${escapeHtml(playerUrls.playerPagePath(player.id))}">Profili aç</a></article>`).join("");
+  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(turkishPosition(player.position))}</p><a href="./${escapeHtml(playerUrls.playerPagePath(player.id))}">Profili aç</a></article>`).join("");
 }
 
 function analysisCards() {
