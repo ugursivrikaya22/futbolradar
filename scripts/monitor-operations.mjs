@@ -49,7 +49,12 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const ledger=JSON.parse(fs.readFileSync(fs.existsSync(ledgerPath)?ledgerPath:path.join(root,'data/update-status.json'),'utf8'));
   const source=ledger.lastUpdate?.sourcesChecked?.find(s=>s.id==='live-fixtures');
   if(source?.status==='failed'||source?.summary?.degraded||policy.STOP_CODES.has(source?.providerCode)) issues.push('provider-'+(source.providerCode||source.summary?.degradedCode||'sync-failed'));
-  const sourceTime=source?.summary?.lastSuccessfulSyncAt || liveCalendar?.fixtureHealth?.lastSuccessfulSyncAt || liveCalendar?.fetchedAt;
+  const publication=ledger.lastUpdate?.publication;
+  const observationPublished=!publication||['committed','unchanged'].includes(publication.state);
+  checks.push({name:'writer-publication',state:publication?.state||'legacy-published',commit:publication?.commit||null});
+  if(publication?.state==='failed') issues.push('writer-publication-failed');
+  // Fresh provider data in an artifact is not proof that visitors received it.
+  const sourceTime=(observationPublished&&source?.summary?.lastSuccessfulSyncAt) || liveCalendar?.fixtureHealth?.lastSuccessfulSyncAt || liveCalendar?.fetchedAt;
   const age=now-Date.parse(sourceTime);
   checks.push({name:'fixture-freshness',sourceTime,ageMinutes:Number.isFinite(age)?Math.round(age/60000):null,state:age<=90*60000?'fresh':'delayed'});
   if(!Number.isFinite(age)||age>180*60000) issues.push('fixtures-stale');
