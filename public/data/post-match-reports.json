@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-08T08:32:54.997Z",
+  "updatedAt": "2026-10-08T10:27:49.763Z",
   "matchCount": 3176,
   "records": [
     {
@@ -45983,10 +45983,10 @@
       "winner": "Chicago Fire",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "partial",
+      "coverageLabel": "Kısmi analiz",
+      "coverageNote": "Olaylar ve takım istatistikleri var; kadro veya oyuncu verisi eksik.",
+      "coveragePercent": 80,
       "dataSources": {
         "score": {
           "present": true,
@@ -45999,9 +45999,9 @@
           "count": 3
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
           "present": false,
@@ -46009,44 +46009,36 @@
           "count": 0
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
         "events": 3,
-        "statistics": 0,
+        "statistics": 15,
         "lineups": 0,
-        "players": 0
+        "players": 40
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.8,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
           "field": "lineups",
           "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
         }
       ],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "1099e38cbc774f5f",
-      "fingerprint": "1099e38cbc774f5f",
+      "analysisSourceHash": "2adec92fbaca9c10",
+      "fingerprint": "2adec92fbaca9c10",
       "analysisGeneratedAt": "2026-10-07T10:11:08.153Z",
-      "analysisUpdatedAt": "2026-10-07T10:11:08.153Z",
-      "generatedAt": "2026-10-07T10:11:08.153Z",
+      "analysisUpdatedAt": "2026-10-08T10:27:49.691Z",
+      "generatedAt": "2026-10-08T10:27:49.691Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -46146,25 +46138,94 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Chicago Fire, Vancouver Whitecaps'ı 3-1 yendi."
+            "Chicago Fire, Vancouver Whitecaps'ı 3-1 yendi.",
+            "İsabetli şutta da öndeydi (7-2); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Vancouver Whitecaps topa daha çok sahip oldu (%52).",
+            "Chicago Fire daha çok şut denedi (22-15)."
+          ],
+          "improvements": [
+            "Vancouver Whitecaps şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Chicago Fire sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Chicago Fire",
+            "score": 88
+          },
+          "away": {
+            "team": "Vancouver Whitecaps",
+            "score": 44
+          },
+          "confidence": 60
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Chicago Fire %31.8, Vancouver Whitecaps %13.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.4
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Chicago Fire 20.2, Vancouver Whitecaps 31.5 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
           "sonuc",
           "gecis-oyunu",
           "pas-agi",
@@ -46175,14 +46236,17 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "turningPoints",
         "lateGame",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 71,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 60,
       "publishState": "page"
     },
     {
