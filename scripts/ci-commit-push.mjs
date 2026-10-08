@@ -65,6 +65,7 @@ const MAX_ATTEMPTS = 3;
 function git(args, options = {}) {
   return execFileSync("git", args, {
     encoding: "utf8",
+    maxBuffer: 32 * 1024 * 1024,
     stdio: options.inherit ? "inherit" : ["ignore", "pipe", "pipe"]
   });
 }

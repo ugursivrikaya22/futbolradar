@@ -10,6 +10,7 @@ import news from '../services/automatedNewsPolicy.js';
 import {captureData,retainUnchangedData} from '../scripts/lib/operationalData.mjs';
 import {boundedFetch,monitor} from '../scripts/monitor-operations.mjs';
 import {validateFixtures} from '../scripts/validate-operations-output.mjs';
+import {finalize} from '../scripts/finalize-operations-publication.mjs';
 import {synchronizeLiveFixtures} from '../scripts/sync-live-fixtures.mjs';
 const now=Date.parse('2026-10-08T01:00:00Z');
 function sandbox(){const dir=fs.mkdtempSync(path.join(os.tmpdir(),'fr-operations-test-'));for(const p of ['data','public/data','outputs/operations','mac'])fs.mkdirSync(path.join(dir,p),{recursive:true});return dir;}
@@ -59,6 +60,14 @@ test('missing, stuck, failed and healthy scheduled runs are distinct',()=>{
   assert.equal(policy.assessRun({status:'in_progress',created_at:new Date(now-100*60000).toISOString()},now),'stuck');
   assert.equal(policy.assessRun({status:'completed',conclusion:'success',created_at:new Date(now-4*3600000).toISOString()},now),'missed');
   assert.equal(policy.assessRun({status:'completed',conclusion:'failure',created_at:new Date(now).toISOString()},now),'failed');
+});
+test('a successful fetch cannot conceal a failed publication or block retry',()=>{
+  const record={id:'1',status:'success',publication:{required:true,state:'awaiting-deployment'}};
+  const ledger={lastUpdate:record,lastHourly:record,history:[record]};
+  const failed=finalize(ledger,{runId:'1',outcome:'failure',commit:'abc'});
+  assert.equal(failed.lastUpdate.status,'failed');assert.equal(failed.history[0].publication.state,'failed');assert.equal(failed.lastHourly.publication.commit,null);
+  const good=finalize(ledger,{runId:'1',outcome:'success',commit:'abc'});
+  assert.equal(good.lastUpdate.publication.state,'committed');assert.equal(good.lastUpdate.publication.commit,'abc');
 });
 test('critical invalid records are blocked; unknown score remains null',()=>{
   const row={id:'A',homeTeam:'A',awayTeam:'B',score:{home:null,away:null}};

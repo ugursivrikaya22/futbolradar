@@ -160,6 +160,7 @@ jobs:
           node scripts/run-scheduled-update.mjs --type="${UPDATE_TYPE}" --ci-guard ${FORCE_FLAG} ${MATCH_FLAG} ${BACKFILL_FLAG} 2>&1 | tee scheduled-update.log
 
       - name: Commit only validated public changes
+        id: publication
         if: steps.update.outcome == 'success'
         shell: bash
         env:
@@ -167,6 +168,12 @@ jobs:
         run: |
           node scripts/prepare-operations-publication.mjs
           node scripts/ci-commit-push.mjs "ci(update): ${UPDATE_TYPE} automatic FutbolRadar refresh"
+
+      - name: Record actual publication outcome
+        if: always()
+        env:
+          PUBLICATION_OUTCOME: ${{ steps.publication.outcome }}
+        run: node scripts/finalize-operations-publication.mjs
 
       - name: Preserve operational history without deployment
         if: always()

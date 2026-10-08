@@ -645,7 +645,7 @@ async function main() {
   const started = new Date();
   const key = dedupeKey(args.type, started);
   const statusBefore = readJson(STATUS_PATH, readJson(PUBLISHED_STATUS_PATH, defaultStatus()));
-  const duplicate = (statusBefore.history || []).find((record) => record.dedupeKey === key && ["success", "partial"].includes(record.status));
+  const duplicate = (statusBefore.history || []).find((record) => record.dedupeKey === key && ["success", "partial"].includes(record.status) && (!record.publication || ['committed','unchanged'].includes(record.publication.state)));
   if (duplicate && !args.force) {
     const finishedAt = new Date().toISOString();
     const record = {
