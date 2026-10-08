@@ -19,7 +19,7 @@ is introduced. SporX discovery and its enrichment remain disabled/manual.
 - The tactical Trabzonspor column workflow is manual only. Existing factual,
   deterministic pre-match and post-match generators continue inside the main job.
 - `.github/workflows/daily-health-check.yml`: a separate read-only monitor at :47
-  every hour, and after the writer finishes. It has its own concurrency group,
+  every hour (no duplicate completion trigger). It has its own concurrency group,
   no provider secret, no npm/browser install and no repository write permission.
 - Repository fixture freshness target: 90 minutes; intervention after 180 minutes.
   Stuck runs: 95 minutes. The monitor distinguishes delayed, missed, failed and

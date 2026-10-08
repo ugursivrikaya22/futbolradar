@@ -54,7 +54,7 @@
        YAŞINI bekleneni aşınca bağımsız olarak kırmızıya çevirir; veri yazılmasa da tetiklenir. -->
   <div id="freshness-banner" class="freshness-banner"></div>
   <section class="grid">
-    <article class="card"><h2>Son çalışma</h2><div id="latest" class="value">—</div><div id="latest-time" class="muted"></div></article>
+    <article class="card"><h2>Son yayımlanan çalışma</h2><div id="latest" class="value">—</div><div id="latest-time" class="muted"></div></article>
     <article class="card"><h2>Son tam güncelleme</h2><div id="full" class="value">—</div><div id="full-time" class="muted"></div></article>
     <article class="card"><h2>Son saatlik güncelleme</h2><div id="hourly" class="value">—</div><div id="hourly-time" class="muted"></div></article>
     <article class="card"><h2>Değişen dosya</h2><div id="files" class="value">0</div><div id="counts" class="muted"></div></article>
@@ -95,7 +95,7 @@
     return ms === null || ms > STALE_MS ? "failed" : (ms > FRESH_MS ? "partial" : "success");
   }
   function labelFor(level){
-    return level === "success" ? "Güncel" : (level === "partial" ? "Bayat" : "KRİTİK — otomatik güncelleme durmuş olabilir");
+    return level === "success" ? "Güncel" : (level === "partial" ? "Bayat" : "Yayımlanan kayıt eski");
   }
   // freshness-thresholds:end
   function renderFreshness(latest){
@@ -104,7 +104,7 @@
     var level = levelFor(ms);
     banner.className = "freshness-banner " + level;
     banner.textContent = labelFor(level) + " · en son kayıtlı çalışma " + fmtAge(ms) +
-      (level === "success" ? "" : " — GitHub Actions çalışma geçmişini kontrol edin (kota/faturalama veya kaynak hatası olabilir).");
+      (level === "success" ? "" : " — son deneme ve başarı için Actions operasyon raporunu kontrol edin. Değişmeyen veri yeniden yayımlanmaz.");
   }
   function render(data){
     var latest=data.lastUpdate||((data.history||[])[0])||null;
