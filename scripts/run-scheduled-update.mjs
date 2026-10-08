@@ -753,7 +753,9 @@ async function main() {
 
   if (shouldBuild && !criticalFailure) {
     const buildSpecs = args.type === "full"
-      ? [{ id: "full-static-build", command: NPM, args: ["run", "build"], kind: "build", required: true, timeoutMs: 30 * 60 * 1000 }]
+      // The measured full build (including browser gates) takes ~48 minutes.
+      // Keep those gates and leave headroom inside the existing 90-minute job.
+      ? [{ id: "full-static-build", command: NPM, args: ["run", "build"], kind: "build", required: true, timeoutMs: 65 * 60 * 1000 }]
       : hourlyBuildSteps(preBuildDiff);
     for (const spec of buildSpecs) {
       const result = await runStep(spec, steps);
