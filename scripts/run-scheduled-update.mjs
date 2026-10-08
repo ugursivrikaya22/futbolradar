@@ -645,7 +645,10 @@ async function main() {
   const started = new Date();
   const key = dedupeKey(args.type, started);
   const statusBefore = readJson(STATUS_PATH, readJson(PUBLISHED_STATUS_PATH, defaultStatus()));
-  const duplicate = (statusBefore.history || []).find((record) => record.dedupeKey === key && ["success", "partial"].includes(record.status) && (!record.publication || ['committed','unchanged'].includes(record.publication.state)));
+  // A "partial" run whose core fixture source, validation or build failed (or
+  // never published) is NOT a completed run for this window; only a verified
+  // one blocks a retry (services/operationsPolicy.js assessCompletion).
+  const duplicate = (statusBefore.history || []).find((record) => record.dedupeKey === key && operationsPolicy.assessCompletion(record).verified);
   if (duplicate && !args.force) {
     const finishedAt = new Date().toISOString();
     const record = {
@@ -804,6 +807,7 @@ async function main() {
     durationMs: finished.getTime() - started.getTime(),
     status: criticalFailure ? "failed" : (optionalSourceErrors.length || skippedSources.length || qaFailure) ? "partial" : "success",
     mode,
+    planned: { reason: process.env.UPDATE_PLAN_REASON || null, compensation: process.env.UPDATE_PLAN_COMPENSATION === 'true' },
     publication: { required: shouldBuild && !criticalFailure, state: criticalFailure ? 'blocked' : shouldBuild ? 'awaiting-deployment' : 'unchanged', contentFiles: transformedData.changed },
     sourceControl: {
       repository: process.env.GITHUB_REPOSITORY || null,
@@ -817,6 +821,9 @@ async function main() {
     steps: steps.map(({ id, kind, status, durationMs, error, reason }) => ({ id, kind, status, durationMs, error, reason }))
   };
   delete record.counts.changedFiles;
+  // Stage-by-stage truth: fetched/validated/built are known here; "published"
+  // is only added by finalize-operations-publication.mjs after the real push.
+  record.completion = operationsPolicy.assessCompletion({ ...record, publication: { state: 'committed' } });
   atomicWrite(path.join(root,'outputs','operations','observations.json'),{...sourceData.observations,...transformedData.observations});
   retainUnchangedData(dataBefore);
   writeStatus(record);

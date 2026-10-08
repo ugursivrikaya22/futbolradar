@@ -31,18 +31,13 @@
  * türetilmiş olduğu için kalıcı bir kayıp değil: sonraki koşu (en geç beş
  * dakika sonra) temiz bir checkout'tan yeniden üretir.
  *
- * ÇIKIŞ KODU 0. Ertelenen bir koşu çökmüş bir koşu değildir; kendi kendini
- * onaran geçici bir yarış için CI'ı kırmızıya boyamak, düzeltmeye çalıştığı
- * sorunun ta kendisi olurdu.
- *
- * AMA "GEÇİCİ" VARSAYIMI BİR KEZ TUTMADI. 19 Eylül 20:40'tan 20 Eylül öğlene
- * kadar saatlik koşuların HEPSİ ertelendi: her koşu veriyi tazeledi, 16 bin
- * dosya üretti ve çakışma yüzünden hiçbirini yazamadı. İz yalnızca koşu
- * günlüğünün içindeki bir satırdı; iş akışı yeşil göründüğü için kimse fark
- * etmedi ve site 17 saat boyunca bitmiş maçları "oynanacak" gösterdi.
- * Sebep ayrıca giderildi (main'e yazan bütün işler artık tek bir eşzamanlılık
- * kuyruğunda), ama erteleme artık GitHub'ın kendi uyarı akışına da düşüyor:
- * koşu özetinde görünür, aranabilir ve tekrar ederse gözden kaçmaz.
+ * ÇIKIŞ KODU 1 (çakışma / üç denemede itilemedi). Eskiden bu durum 0 ile
+ * "ertelendi" sayılıyordu; ama işlem tamamlanmış gibi kaydedilirse günün işi
+ * "yapıldı" görünür ve telafi mekanizması devreye girmez. Artık çıkış kodu 1,
+ * `finalize-operations-publication.mjs` defterde publication=failed yazar,
+ * sağlık kontrolü bunu "writer-publication-failed" olarak gösterir ve sonraki
+ * zamanlanmış koşu (sınırlı sayıda) yeniden üretir. Veri türetildiği için
+ * kayıp kalıcı değildir. Ertelemeler ayrıca GitHub uyarı akışına düşer.
  *
  * Kullanım:
  *   node scripts/ci-commit-push.mjs "ci(matches): ..."

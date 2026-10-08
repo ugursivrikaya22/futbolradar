@@ -159,7 +159,9 @@ function cleanup(world) {
   fs.writeFileSync(path.join(world.work, "data.json"), '{"deger": 4}\n');
   const result = runPushScript(world.work, "ci(test): çakışma");
 
-  assert.equal(result.code, 0, "çakışma koşuyu kırmızıya döndürmemeli");
+  // Yayınlanamayan çıktı artık "tamamlandı" sayılmaz: çıkış kodu 1, defter
+  // finalize-operations-publication.mjs ile publication=failed yazar.
+  assert.equal(result.code, 1, "yayınlanamayan çıktı koşuyu kırmızıya döndürmeli");
   assert.match(result.output, /ERTELENDİ/, "erteleme açıkça bildirilmeli");
   assert.match(result.output, /yeniden üret/, "gerekçe günlüğe düşmeli");
 

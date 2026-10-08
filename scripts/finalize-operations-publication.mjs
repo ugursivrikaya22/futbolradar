@@ -2,13 +2,21 @@ import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 import path from 'node:path';
+import {createRequire} from 'node:module';
+const policy=createRequire(import.meta.url)('../services/operationsPolicy.js');
 export function finalize(ledger,{runId,outcome,commit,now=new Date().toISOString()}) {
   const record=ledger.lastUpdate;
   if(!record||String(record.id)!==String(runId)) return {...ledger,lastInvocation:{runId,outcome,finishedAt:now,duplicate:true}};
   const publication={...record.publication,state:outcome==='success'?(record.publication?.required?'committed':'unchanged'):'failed',commit:outcome==='success'?commit:null,finishedAt:now};
   const updated={...record,publication,status:outcome==='success'?record.status:'failed'};
   if(outcome!=='success') updated.errors=[...(record.errors||[]),{step:'publication',message:'Update output was not published; last production version preserved.'}];
-  return {...ledger,lastUpdate:updated,lastFull:ledger.lastFull?.id===record.id?updated:ledger.lastFull,lastHourly:ledger.lastHourly?.id===record.id?updated:ledger.lastHourly,history:(ledger.history||[]).map(r=>r.id===record.id?updated:r)};
+  updated.completion=policy.assessCompletion(updated);
+  // lastVerifiedFull moves only after the real publication outcome is known:
+  // a failed push or a critical-step failure can never count as "today's job done".
+  const lastVerifiedFull=updated.type==='full'&&updated.completion.verified?updated:ledger.lastVerifiedFull===undefined?undefined:ledger.lastVerifiedFull?.id===record.id?null:ledger.lastVerifiedFull;
+  const result={...ledger,lastUpdate:updated,lastFull:ledger.lastFull?.id===record.id?updated:ledger.lastFull,lastHourly:ledger.lastHourly?.id===record.id?updated:ledger.lastHourly,history:(ledger.history||[]).map(r=>r.id===record.id?updated:r)};
+  if(lastVerifiedFull!==undefined) result.lastVerifiedFull=lastVerifiedFull;
+  return result;
 }
 if(process.argv[1]&&pathToFileURL(path.resolve(process.argv[1])).href===import.meta.url) {
   const file='outputs/operations/update-status.json';
