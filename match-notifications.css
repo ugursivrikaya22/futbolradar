@@ -332,15 +332,19 @@
 
 @media (max-width: 1365px) {
   .topbar-premium .nav {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) repeat(4, auto);
   }
 
   .topbar-premium .nav-toggle {
-    grid-column: 4;
+    grid-column: 5;
   }
 
-  .topbar-premium .nav-search-toggle {
+  .topbar-premium .nav-search-toggle-mobile {
     grid-column: 3;
+  }
+
+  .topbar-premium .nav .lang-switch {
+    grid-column: 4;
   }
 
   .follow-menu-mobile-toggle {
@@ -348,8 +352,8 @@
     grid-column: 2;
     grid-row: 1;
     grid-template-columns: auto auto;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     place-content: center;
     gap: 2px;
     border: 1px solid var(--line);

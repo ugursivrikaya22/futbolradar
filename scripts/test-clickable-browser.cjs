@@ -661,9 +661,18 @@ function todayFixtureCount(gun) {
           const primaryAction = card.locator('.fixture-card-action').first();
           const target = await (await primaryAction.count() ? primaryAction : card.locator('a').first()).getAttribute('href');
           const before = page.url();
-          // On touch layouts the card's native stretched link covers its rows.
-          // Click the complete card surface, which includes that valid target.
-          await click(card);
+          // The card also contains an independent notification button. Its
+          // centre can land on that control; test both behaviours explicitly.
+          const follow = card.locator('.match-follow-button');
+          if (await follow.count()) {
+            const initial = await follow.getAttribute('aria-pressed');
+            await click(follow);
+            await until(async () => await follow.getAttribute('aria-pressed') !== initial, 'Notification control is inert');
+            assert.equal(page.url(), before, 'Following a match must not navigate');
+            await click(follow);
+            await until(async () => await follow.getAttribute('aria-pressed') === initial, 'Notification preference did not restore');
+          }
+          await click(card.locator('.fixture-card-rows'));
           await until(() => page.url() !== before, 'Whole match card is inert');
           assert.equal(new URL(page.url()).pathname, new URL(target, before).pathname);
         });
@@ -839,7 +848,9 @@ function todayFixtureCount(gun) {
           await click(page.locator('.nav-toggle'));
           const menu = page.locator('.nav-menu');
           await menu.evaluate(e => { e.scrollTop = e.scrollHeight; });
-          const last = menu.locator('a').last();
+          // Closed notification panels can contain links to followed matches.
+          // Only the last visible menu link is a reachable stacking target.
+          const last = menu.locator('a:visible').last();
           await last.scrollIntoViewIfNeeded();
           assert.ok(await last.evaluate(e => { const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }), 'Menu item covered by floating content');
           await click(page.locator('.nav-toggle'));
