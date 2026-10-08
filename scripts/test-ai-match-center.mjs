@@ -133,7 +133,7 @@ check("motor: girdi yokken hiçbir bileşen üretilmez", () => {
 check("motor: tek taraflı ölçüm sürücü doğurmaz", () => {
   // Yalnızca ev sahibinin hücum gücü biliniyor: karşılaştırma yapılamaz.
   const model = buildAiMatchCenter({
-    modelPrediction: { inputs: { home: { attackStrength: 1.4 }, away: {} } }
+    modelPrediction: { inputs: { home: { matches: 5, attackStrength: 1.4 }, away: {} } }
   });
   assert.deepEqual(model.drivers.map((driver) => driver.key), [], "eksik tarafla sürücü üretilmemeli");
 });
@@ -147,8 +147,8 @@ check("motor: sürücü eşikleri belgelenen ölçekten okunur", () => {
   const strong = buildAiMatchCenter({
     modelPrediction: {
       inputs: {
-        home: { attackStrength: 1.4, defenseStrength: 0.8 },
-        away: { attackStrength: 1.4 - THRESHOLDS.strength.strong, defenseStrength: 0.8 }
+        home: { matches: 5, attackStrength: 1.4, defenseStrength: 0.8 },
+        away: { matches: 5, attackStrength: 1.4 - THRESHOLDS.strength.strong, defenseStrength: 0.8 }
       }
     }
   });
@@ -161,14 +161,14 @@ check("motor: sürücü eşikleri belgelenen ölçekten okunur", () => {
   assert.equal(defense.strength, "balanced", "iki savunma eşitken sürücü dengeli olmalı");
 
   const balanced = buildAiMatchCenter({
-    modelPrediction: { inputs: { home: { attackStrength: 1 }, away: { attackStrength: 1.01 } } }
+    modelPrediction: { inputs: { home: { matches: 5, attackStrength: 1 }, away: { matches: 5, attackStrength: 1.01 } } }
   });
   assert.equal(balanced.drivers.find((driver) => driver.key === "attack").strength, "balanced");
 });
 
 check("motor: savunmada düşük sayı üstünlük sayılır", () => {
   const model = buildAiMatchCenter({
-    modelPrediction: { inputs: { home: { defenseStrength: 0.7 }, away: { defenseStrength: 1.3 } } }
+    modelPrediction: { inputs: { home: { matches: 5, defenseStrength: 0.7 }, away: { matches: 5, defenseStrength: 1.3 } } }
   });
   const defense = model.drivers.find((driver) => driver.key === "defense");
   assert.equal(defense.lean, "home", "az gol yiyen taraf lehine okunmalı");
@@ -192,7 +192,7 @@ check("motor: hiç sürücü ölçülmediyse 'başa baş' iddia edilmez", () => 
 
   // Ölçüldü ve gerçekten fark yoksa, bunu söylemek veriye dayanır.
   const measured = buildAiMatchCenter({
-    modelPrediction: { inputs: { home: { attackStrength: 1 }, away: { attackStrength: 1.01 } } }
+    modelPrediction: { inputs: { home: { matches: 5, attackStrength: 1 }, away: { matches: 5, attackStrength: 1.01 } } }
   });
   assert.ok(measured.drivers.length > 0);
   assert.equal(measured.summary.balanced, true, "ölçülüp fark çıkmadıysa başa baş denebilir");

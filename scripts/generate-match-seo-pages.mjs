@@ -1131,6 +1131,8 @@ function pageHtml(entry, locale, options) {
   const aiModelPrediction = aiModelPredictionFor(entry, detail);
   const aiProbability = aiProbabilityFor(state, probability, aiModelPrediction);
   const aiModel = buildAiMatchCenter({
+    statistics: detail.statistics,
+    events: detail.events,
     probability: aiProbability,
     modelPrediction: aiModelPrediction,
     forms,

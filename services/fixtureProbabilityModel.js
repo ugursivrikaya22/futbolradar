@@ -36,7 +36,7 @@
  * bölüm, uydurma yüzdeden iyidir.
  */
 
-const MODEL_VERSION = "futbolradar-probability-v1";
+const MODEL_VERSION = "futbolradar-probability-v2";
 
 /**
  * Lig ortalaması bilinmiyorken kullanılan nötr başlangıç. Bunlar "uydurma
@@ -103,8 +103,8 @@ const LOW_CONFIDENCE_SHRINK = 0.5;
 const MAX_GOALS = 8;
 
 /** Model çalışması için gereken en az doğrulanmış veri. */
-const MIN_TOTAL_MATCHES = 4;
-const MIN_TEAM_MATCHES = 1;
+const MIN_TOTAL_MATCHES = 10;
+const MIN_TEAM_MATCHES = 5;
 
 /**
  * VERİ TEMELİ — tahminin neye dayandığını SAKLAMAYAN üç kademe.
@@ -136,7 +136,7 @@ const DATA_BASIS = Object.freeze({
 });
 
 /** Tek taraflı tahminde bilinen tarafta aranan en az maç. */
-const PARTIAL_MIN_MATCHES = 3;
+const PARTIAL_MIN_MATCHES = 5;
 
 /** Alt kademelerin güven tavanı: sayı görünür, iddiası küçülür. */
 const PARTIAL_MAX_CONFIDENCE = 35;

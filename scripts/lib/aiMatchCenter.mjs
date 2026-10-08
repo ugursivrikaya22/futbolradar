@@ -77,13 +77,13 @@ function pct(value, locale) {
 export const AI_STR = {
   tr: {
     tabMatch: "Maç",
-    tabAi: "AI Analiz",
+    tabAi: "Maç Analizi",
     tabsLabel: "Maç sayfası bölümleri",
-    title: "AI Maç Merkezi",
-    proBadge: "PRO",
-    proFree: "Tüm kullanıcılara şimdilik ücretsiz",
+    title: "Ücretsiz Maç Analizi",
+    proBadge: "Ücretsiz",
+    proFree: "Tüm kullanıcılar için ücretsiz",
     intro: "Aşağıdaki okuma, bu maç için doğrulanmış verilerden üretilir. Verisi olmayan bölüm hiç çizilmez; tahmin cümlesi yazılmaz.",
-    empty: "Bu maç için AI okuması üretecek doğrulanmış veri henüz oluşmadı. Form, kadro ve istatistik kayıtları geldiğinde bu sekme otomatik dolar.",
+    empty: "Güvenilir analiz için yeterli veri bulunmuyor.",
     outcomeTitle: "Maç sonucu ihtimalleri",
     drawLabel: "Beraberlik",
     sourceLabel: "Kaynak",
@@ -130,7 +130,7 @@ export const AI_STR = {
     lineupNote: "Muhtemel 11 doğrulanmış kadro verisinden derlenir; resmî kadro açıklandığında bu bölüm otomatik güncellenir.",
     h2hTitle: "İkili rekabet",
     h2hSummary: (played) => `Son ${played} karşılaşma`,
-    summaryTitle: "Kısa maç özeti",
+    summaryTitle: "Maçın Özeti",
     summaryLeanHome: (home, percent) => `Ölçülen veriler en yüksek ihtimali ${home} tarafına veriyor (${percent}).`,
     summaryLeanAway: (away, percent) => `Ölçülen veriler en yüksek ihtimali ${away} tarafına veriyor (${percent}).`,
     summaryLeanDraw: (percent) => `Ölçülen veriler en yüksek ihtimali beraberliğe veriyor (${percent}).`,
@@ -164,13 +164,13 @@ export const AI_STR = {
   },
   en: {
     tabMatch: "Match",
-    tabAi: "AI Analysis",
+    tabAi: "Match Analysis",
     tabsLabel: "Match page sections",
-    title: "AI Match Centre",
-    proBadge: "PRO",
-    proFree: "Free for every user for now",
+    title: "Free Match Analysis",
+    proBadge: "Free",
+    proFree: "Free for every user",
     intro: "The reading below is built from verified data for this match. Any section without data is not drawn at all, and no speculative sentence is written.",
-    empty: "There is not yet enough verified data to build an AI reading for this match. This tab fills automatically once form, squad and statistics records arrive.",
+    empty: "There is not enough data for a reliable analysis.",
     outcomeTitle: "Match result probabilities",
     drawLabel: "Draw",
     sourceLabel: "Source",
@@ -514,6 +514,12 @@ export function summaryHtml(summary, ctx) {
   const parts = [];
   if (summary.result) {
     parts.push(text.summaryResult(int(summary.result.home, locale), int(summary.result.away, locale)));
+    const statNames = locale === 'en' ? {'Topla oynama':'Possession','Toplam şut':'Total shots','İsabetli şut':'Shots on target'} : {};
+    for (const row of summary.statistics || []) {
+      const unit = row.type === 'Topla oynama' ? '%' : '';
+      parts.push(`${statNames[row.type] || row.type}: ${row.home}${unit} – ${row.away}${unit} (${homeTeam} / ${awayTeam}).`);
+    }
+    if (summary.redCards) parts.push(locale === 'en' ? `Verified red cards: ${summary.redCards}.` : `Doğrulanmış kırmızı kart: ${summary.redCards}.`);
   }
   if (summary.lean && summary.topPercent !== null && summary.topPercent !== undefined) {
     const percent = pct(summary.topPercent, locale);
@@ -573,6 +579,7 @@ export function aiMatchCenterPanelHtml(model, ctx) {
   const head = `<header class="ai-head">
         <div class="ai-head-row"><h2 class="ai-title">${escapeHtml(text.title)}</h2>${badge}${live ? `<span class="ai-live-badge"><i class="live-pulse" aria-hidden="true"></i>${escapeHtml(text.liveBadge)}</span>` : ""}</div>
         <p class="ai-intro muted-copy">${escapeHtml(text.intro)}</p>
+        <p class="ai-note muted-copy">${locale === 'en' ? 'Team strength and form comparisons require at least 5 verified matches per team; head-to-head interpretation requires at least 2 meetings.' : 'Takım gücü ve form karşılaştırması için takım başına en az 5 doğrulanmış maç; ikili rekabet yorumu için en az 2 karşılaşma gerekir.'}</p>
         ${live ? `<p class="ai-note muted-copy">${escapeHtml(text.liveNote)}</p>` : ""}
       </header>`;
 
@@ -581,6 +588,7 @@ export function aiMatchCenterPanelHtml(model, ctx) {
   }
 
   const blocks = [
+    model.insufficientAnalysis ? `<p class="ai-note">${locale === 'en' ? 'There is not enough data for a reliable analysis.' : 'Güvenilir analiz için yeterli veri bulunmuyor.'}</p>` : '',
     outcomeHtml(model.outcome, ctx),
     summaryHtml(model.summary, ctx),
     driversHtml(model.drivers, ctx),

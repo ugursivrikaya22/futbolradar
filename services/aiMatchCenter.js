@@ -208,6 +208,7 @@ function confidenceBlock(modelInputs, modelConfidence, probability) {
 function outcomeBlock(probability) {
   const probabilities = probability && probability.probabilities;
   if (!probabilities) return null;
+  if (![probabilities.home, probabilities.draw, probabilities.away].every(isFiniteNumber)) return null;
   const home = Number(probabilities.home);
   const draw = Number(probabilities.draw);
   const away = Number(probabilities.away);
@@ -245,10 +246,15 @@ function buildAiMatchCenter(input = {}) {
   const probability = input.probability || null;
   const modelPrediction = input.modelPrediction || null;
   const modelInputs = modelPrediction && modelPrediction.inputs ? modelPrediction.inputs : null;
-  const homeInputs = (modelInputs && modelInputs.home) || null;
-  const awayInputs = (modelInputs && modelInputs.away) || null;
+  // Five verified matches per side before interpreting team strength/form.
+  // A competition prior is descriptive population data, not team evidence.
+  const sufficientHistory = Boolean(modelInputs && Number(modelInputs.home && modelInputs.home.matches) >= 5 && Number(modelInputs.away && modelInputs.away.matches) >= 5);
+  const homeInputs = sufficientHistory ? modelInputs.home : null;
+  const awayInputs = sufficientHistory ? modelInputs.away : null;
+  const baselineOnly = probability && probability.dataBasis === 'competition-baseline';
+  const insufficientAnalysis = Boolean(modelPrediction && !sufficientHistory) || Boolean(baselineOnly);
 
-  const outcome = outcomeBlock(probability);
+  const outcome = insufficientAnalysis ? null : outcomeBlock(probability);
   const confidence = confidenceBlock(modelInputs, modelPrediction && modelPrediction.confidence, probability);
 
   const absences = {
@@ -290,7 +296,7 @@ function buildAiMatchCenter(input = {}) {
     ? Number(awayInputs.formDelta)
     : forms.away ? forms.away.pointsPerGame : null;
   const form = driverFrom("form", formHome, formAway, THRESHOLDS.form);
-  if (form) drivers.push(form);
+  if (form && sufficientHistory) drivers.push(form);
 
   // Eksikte ÇOK olan taraf dezavantajlıdır.
   const absenceHome = absences.home ? absences.home.count : (homeInputs && homeInputs.absences);
@@ -367,7 +373,7 @@ function buildAiMatchCenter(input = {}) {
   // dil sözlüğü seçer; burada yalnızca hangi olgunun anlatılacağı belli
   // olur. Bitmiş maçta özet, oynanmış skorun kendisidir.
   const decisive = drivers.filter((driver) => driver.strength !== "balanced");
-  const finalScore = input.result && isFiniteNumber(input.result.home) && isFiniteNumber(input.result.away)
+  const finalScore = input.state === 'post' && input.result && isFiniteNumber(input.result.home) && isFiniteNumber(input.result.away)
     ? { home: Number(input.result.home), away: Number(input.result.away) }
     : null;
   // Özet üç durumdan BİRİNDE doğar: gösterilecek yüzde var, ÖLÇÜLMÜŞ en
@@ -377,22 +383,27 @@ function buildAiMatchCenter(input = {}) {
   const summary = outcome || drivers.length || finalScore
     ? {
       state: input.state || "pre",
-      lean: outcome ? outcome.lean : null,
+      lean: outcome && !finalScore ? outcome.lean : null,
       margin: outcome ? outcome.margin : null,
       // Öne çıkan seçeneğin KENDİ yüzdesi. Özet cümlesi bunu yazar;
       // iki seçenek arasındaki farkı ("margin") yüzde diye sunmak,
       // olmayan bir büyüklüğü iddia etmek olurdu.
-      topPercent: outcome ? Math.max(outcome.home, outcome.draw, outcome.away) : null,
+      topPercent: outcome && !finalScore ? Math.max(outcome.home, outcome.draw, outcome.away) : null,
       // İlk iki seçenek 10 puandan yakınsa okuma "dar fark"tır; bu, gözle
       // değil sayıyla verilen bir karardır.
       narrow: outcome ? outcome.margin < 10 : null,
       confidenceLevel: confidence ? confidence.level : null,
-      topDrivers: decisive.slice(0, 2).map((driver) => ({ key: driver.key, lean: driver.lean, strength: driver.strength })),
+      topDrivers: finalScore ? [] : decisive.slice(0, 2).map((driver) => ({ key: driver.key, lean: driver.lean, strength: driver.strength })),
       // "Başa baş" ancak ÖLÇTÜĞÜMÜZ sürücüler varken ve hepsi dengeliyken
       // söylenebilir. Hiç sürücü yokken aynı cümleyi kurmak, ölçmediğimiz
       // bir şey hakkında hüküm vermek olurdu: o durumda özet susar.
-      balanced: drivers.length > 0 && decisive.length === 0,
-      result: finalScore
+      balanced: !finalScore && drivers.length > 0 && decisive.length === 0,
+      result: finalScore,
+      // Deterministic build-time facts; never infer causality or table impact.
+      statistics: finalScore ? require('./matchStatisticsSchema').canonicalizeStatistics(input.statistics).statistics.filter(row =>
+        ['Topla oynama', 'Toplam şut', 'İsabetli şut'].includes(row.type) && isFiniteNumber(row.home) && isFiniteNumber(row.away)
+      ).slice(0, 3).map(row => ({type: row.type, home: Number(row.home), away: Number(row.away)})) : [],
+      redCards: finalScore ? new Set(require('../match-notifications-core').events({id:'summary',events:input.events || []}).filter(event => event.type === 'red_card').map(event => event.id)).size : 0
     }
     : null;
 
@@ -415,6 +426,8 @@ function buildAiMatchCenter(input = {}) {
 
   return {
     available: present.length > 0,
+    insufficientAnalysis,
+    minimumTeamMatches: 5,
     outcome,
     confidence,
     drivers,
