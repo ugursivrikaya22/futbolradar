@@ -4837,6 +4837,10 @@
     if (!match) return false;
     var now = typeof nowMs === "number" ? nowMs : Date.now();
     var status = String(match.status || match.providerStatus || "").toUpperCase();
+    if (["FINISHED","FT","AET","PEN"].includes(status) || ["FT","AET","PEN"].includes(String(match.providerStatus||'').toUpperCase())) {
+      var end=Date.parse(match.finishedAt||match.endedAt);
+      return isFinite(end)&&end<=now&&now-end<2*3600000;
+    }
     var terminal = ["FINISHED", "FT", "AET", "PEN", "AWARDED", "AWD", "WO", "CANCELLED", "CANC", "POSTPONED", "PST", "ABANDONED", "ABD"];
     if (terminal.includes(status) || terminal.includes(String(match.providerStatus || "").toUpperCase())) return false;
     if (featuredIsLiveMatch(match, now)) return true;
