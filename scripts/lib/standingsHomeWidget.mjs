@@ -88,7 +88,9 @@ const COPY = {
     headRank: "#", headTeam: "Takım", headPlayed: "O", headWon: "G", headDrawn: "B", headLost: "M", headGd: "Av", headPoints: "P",
     cta: "Tüm Puan Durumunu Gör",
     emptyTitle: "Puan durumu bekleniyor",
-    emptyBody: "Bu yarışma için doğrulanmış tablo henüz senkronize edilmedi. Veri geldiğinde bu sekme otomatik dolacak."
+    emptyBody: "Bu yarışma için doğrulanmış tablo henüz senkronize edilmedi. Veri geldiğinde bu sekme otomatik dolacak.",
+    notStartedTitle: "Henüz maç oynanmadı",
+    notStartedBody: "Bu yarışmanın lig aşaması başlamadı. İlk sonuçlar geldikçe bu sekme dolacak."
   },
   en: {
     kicker: "9 Competitions",
@@ -98,14 +100,19 @@ const COPY = {
     headRank: "#", headTeam: "Team", headPlayed: "P", headWon: "W", headDrawn: "D", headLost: "L", headGd: "GD", headPoints: "Pts",
     cta: "View Full Standings",
     emptyTitle: "Standings pending",
-    emptyBody: "A verified table for this competition hasn't synced yet. This tab fills in automatically once data arrives."
+    emptyBody: "A verified table for this competition hasn't synced yet. This tab fills in automatically once data arrives.",
+    notStartedTitle: "No matches played yet",
+    notStartedBody: "This competition's league phase hasn't started. This tab fills in as the first results arrive."
   }
 };
 
 function panelBody(entry, locale, copy, base) {
-  const { rows, hasData } = getTopStandings(entry, 5);
+  const { rows, hasData, notStarted } = getTopStandings(entry, 5);
   if (!hasData) {
     return `<div class="standings-empty compact" data-card="standings-preseason"><strong>${escapeHtml(copy.emptyTitle)}</strong><p>${escapeHtml(copy.emptyBody)}</p></div>`;
+  }
+  if (notStarted) {
+    return `<div class="standings-empty compact" data-card="standings-not-started"><strong>${escapeHtml(copy.notStartedTitle)}</strong><p>${escapeHtml(copy.notStartedBody)}</p></div>`;
   }
   const head = `<div class="home-standing-row is-head"><span class="home-standing-rank">${escapeHtml(copy.headRank)}</span><span class="home-standing-team">${escapeHtml(copy.headTeam)}</span><span>${escapeHtml(copy.headPlayed)}</span><span>${escapeHtml(copy.headWon)}</span><span>${escapeHtml(copy.headDrawn)}</span><span>${escapeHtml(copy.headLost)}</span><span>${escapeHtml(copy.headGd)}</span><span class="home-standing-points">${escapeHtml(copy.headPoints)}</span></div>`;
   const body = rows.map((row) => rowHtml(row, entry, locale)).join("");

@@ -57,6 +57,12 @@ function normalizeRow(row) {
   };
 }
 
+function notStarted(rows) {
+  // Sıfır maçlı bir tablo gerçek sıralama değildir (ör. lig aşaması
+  // başlamadan gelen Konferans Ligi). Ana sayfa bunu boş durum olarak basar.
+  return rows.length > 0 && rows.every((row) => !(Number(row.played) > 0));
+}
+
 function fromTeams() {
   const teams = loadTeams().filter((team) =>
     team.isCurrentSuperLigTeam &&
@@ -65,14 +71,16 @@ function fromTeams() {
     team.rank !== null && team.rank !== undefined);
   const sorted = teams.slice().sort((a, b) => Number(a.rank || 0) - Number(b.rank || 0));
   const updatedAt = sorted.map((team) => team.lastStandingsSyncedAt).filter(Boolean).sort().at(-1) || null;
-  return { hasData: sorted.length > 0, updatedAt, rows: sorted.map(normalizeRow) };
+  const rows = sorted.map(normalizeRow);
+  return { hasData: rows.length > 0, notStarted: notStarted(rows), updatedAt, rows };
 }
 
 function fromLeagueStandings(competitionId) {
   const entry = loadLeagueStandings()[competitionId];
   const table = entry && Array.isArray(entry.table) ? entry.table : [];
   const sorted = table.slice().sort((a, b) => Number(a.rank || 0) - Number(b.rank || 0));
-  return { hasData: sorted.length > 0, updatedAt: (entry && entry.updatedAt) || null, rows: sorted.map(normalizeRow) };
+  const rows = sorted.map(normalizeRow);
+  return { hasData: rows.length > 0, notStarted: notStarted(rows), updatedAt: (entry && entry.updatedAt) || null, rows };
 }
 
 /** @returns {{hasData: boolean, updatedAt: string|null, rows: Array}} */
