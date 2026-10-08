@@ -24,6 +24,8 @@ is introduced. SporX discovery and its enrichment remain disabled/manual.
 - Repository fixture freshness target: 90 minutes; intervention after 180 minutes.
   Stuck runs: 95 minutes. The monitor distinguishes delayed, missed, failed and
   deployment-pending states. None of these are guarantees of GitHub start time.
+  A full daily update older than 36 hours is separately flagged even if hourly
+  jobs succeed. Runtime `/api/matches` is checked through the same canonical cache.
 - Live notifications poll the existing canonical `/api/matches` URL every 60 seconds
   while followed matches exist and the page is visible. It reuses CDN/provider
   caching; it does not query individual followed IDs or create another SSE stream.
@@ -58,6 +60,9 @@ verification changes are meaningful. New-day presentation refresh remains meanin
 The no-op publication guard operates only in a dedicated canonical Actions checkout.
 Push conflicts and exhausted push retries now fail visibly; they cannot look like a
 successful publication. No force-push or conflict-side guessing is used.
+The Git output buffer supports large generated change lists. Publication is
+finalized after the push in the private ledger; failed publication never satisfies
+the same-window duplicate guard and remains eligible for a bounded recovery run.
 
 ## Cost and failure modes
 

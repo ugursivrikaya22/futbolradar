@@ -84,7 +84,7 @@ test('publication monitoring detects semantic mismatch even when every URL retur
   write(dir,'data/fixture-calendar.json',calendar);write(dir,'data/matches.json',[]);write(dir,'data/update-status.json',{});write(dir,'data/match-seo-pages.json',{pages:[{path:'mac/example.html'}]});
   const github=url=>url.includes('/runs?')?{workflow_runs:[{id:1,status:'completed',conclusion:'success',event:'schedule',created_at:new Date(now).toISOString()}]}:url.endsWith('/status')?{statuses:[{context:'Vercel',state:'success'}]}:{sha:'a'.repeat(40)};
   const fetcher=async url=>({json:async()=>url.includes('fixture-calendar')?{...calendar,matches:[{id:'incorrect'}]}:[],text:async()=>'<html><link rel="canonical"><body>FutbolRadar</body></html>'});
-  const report=await monitor({root:dir,now,github,fetcher});assert(report.issues.includes('publication-fixture-calendar.json'));assert(report.checks.find(c=>c.name==='/en/todays-matches.html').state==='ok');
+  const report=await monitor({root:dir,now,github,fetcher});assert(report.issues.includes('publication-fixture-calendar.json'));assert(report.issues.includes('full-update-overdue'));assert(report.checks.find(c=>c.name==='/en/todays-matches.html').state==='ok');
 });
 test('production configuration has one writer schedule; disabled news stays disabled',()=>{
   assert(!/\n  schedule:/.test(fs.readFileSync('.github/workflows/broadcast-schedule.yml','utf8')));

@@ -47,6 +47,10 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const localCalendar=JSON.parse(fs.readFileSync(path.join(root,'data/fixture-calendar.json'),'utf8'));
   const ledgerPath=path.join(root,'outputs/operations/update-status.json');
   const ledger=JSON.parse(fs.readFileSync(fs.existsSync(ledgerPath)?ledgerPath:path.join(root,'data/update-status.json'),'utf8'));
+  const fullTime=Date.parse(ledger.lastFull?.finishedAt);
+  const fullHealthy=Number.isFinite(fullTime)&&now-fullTime<=36*3600000&&['success','partial'].includes(ledger.lastFull?.status);
+  checks.push({name:'daily-full-update',state:fullHealthy?'ok':'overdue',sourceTime:ledger.lastFull?.finishedAt||null});
+  if(!fullHealthy) issues.push('full-update-overdue');
   const source=ledger.lastUpdate?.sourcesChecked?.find(s=>s.id==='live-fixtures');
   if(source?.status==='failed'||source?.summary?.degraded||policy.STOP_CODES.has(source?.providerCode)) issues.push('provider-'+(source.providerCode||source.summary?.degradedCode||'sync-failed'));
   const publication=ledger.lastUpdate?.publication;
