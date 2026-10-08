@@ -332,15 +332,19 @@
 
 @media (max-width: 1365px) {
   .topbar-premium .nav {
-    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    grid-template-columns: minmax(0, 1fr) auto auto auto auto;
   }
 
   .topbar-premium .nav-toggle {
-    grid-column: 4;
+    grid-column: 5;
   }
 
   .topbar-premium .nav-search-toggle {
     grid-column: 3;
+  }
+
+  .topbar-premium .nav .lang-switch {
+    grid-column: 4;
   }
 
   .follow-menu-mobile-toggle {

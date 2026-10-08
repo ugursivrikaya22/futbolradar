@@ -661,9 +661,10 @@ function todayFixtureCount(gun) {
           const primaryAction = card.locator('.fixture-card-action').first();
           const target = await (await primaryAction.count() ? primaryAction : card.locator('a').first()).getAttribute('href');
           const before = page.url();
-          // On touch layouts the card's native stretched link covers its rows.
-          // Click the complete card surface, which includes that valid target.
-          await click(card);
+          // Exercise the non-link card surface, not an independent follow button.
+          const surface = card.locator('.fixture-card-rows');
+          assert.equal(await surface.locator('a, button').count(), 0, 'Card rows must remain a navigation surface');
+          await click(surface);
           await until(() => page.url() !== before, 'Whole match card is inert');
           assert.equal(new URL(page.url()).pathname, new URL(target, before).pathname);
         });
@@ -839,7 +840,7 @@ function todayFixtureCount(gun) {
           await click(page.locator('.nav-toggle'));
           const menu = page.locator('.nav-menu');
           await menu.evaluate(e => { e.scrollTop = e.scrollHeight; });
-          const last = menu.locator('a').last();
+          const last = menu.locator('a:visible').last();
           await last.scrollIntoViewIfNeeded();
           assert.ok(await last.evaluate(e => { const r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)); }), 'Menu item covered by floating content');
           await click(page.locator('.nav-toggle'));

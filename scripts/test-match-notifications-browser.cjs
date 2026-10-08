@@ -41,6 +41,26 @@ const server = http.createServer((req,res)=>{
     await page.goto(origin+'/qa?lang=en');await page.waitForTimeout(350);assert.equal(await button('B').innerText(),'Notifications on');assert.equal(await page.locator('.live-event-toast').count(),0);
     await page.setViewportSize({width:1280,height:900});goal('B',3);await poll();assert.ok((await page.locator('.live-event-toast').innerText()).includes('GOAL'));
     await page.screenshot({path:path.join(root,'outputs/match-notifications-qa/desktop.png')});
+    // Every mobile header control remains reachable after the bell is inserted.
+    for (const lang of ['tr', 'en']) {
+      await page.goto(origin+'/qa?lang='+lang);
+      await page.evaluate(() => {
+        const nav = document.querySelector('.nav');
+        nav.insertAdjacentHTML('afterbegin', '<a class="brand" href="/">Radar</a><button class="nav-search-toggle nav-search-toggle-mobile" type="button">Search</button><a class="lang-switch" href="/qa">TR</a><button class="nav-toggle" type="button">Menu</button>');
+      });
+      await page.locator('[data-follow-mobile-toggle]').waitFor();
+      for (const width of [320, 360, 375, 390, 414, 430, 768, 1365]) {
+        await page.setViewportSize({width,height:900});
+        for (const selector of ['[data-follow-mobile-toggle]', '.nav-search-toggle-mobile', '.lang-switch', '.nav-toggle']) {
+          assert.ok(await page.locator(selector).evaluate(element => {
+            const rect = element.getBoundingClientRect();
+            return rect.width > 0 && rect.left >= 0 && rect.right <= innerWidth &&
+              element.contains(document.elementFromPoint(rect.x+rect.width/2,rect.y+rect.height/2));
+          }), `${lang} ${width}px: header control covered: ${selector}`);
+        }
+      }
+    }
+    await page.goto(origin+'/qa?lang=en');
     // Existing page stream uses the same engine and never starts a new connection.
     await page.reload(); await page.waitForTimeout(350);
     await page.evaluate(() => document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:[{id:'B-provider',homeTeam:'Home B',awayTeam:'Away B',status:'1H',minute:20,score:{home:3,away:0},events:[],fetchedAt:new Date().toISOString()}]}})));
