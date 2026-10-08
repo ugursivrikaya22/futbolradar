@@ -101,7 +101,13 @@ jobs:
         run: npm ci --include=dev
 
       - name: Install validation browser
+        if: github.event.schedule == '0 2 * * *' || inputs.update_type == 'full'
         run: npx --no-install playwright install --with-deps chromium
+
+      - name: Restore private operational history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/restore-operations-ledger.mjs
 
       - name: Resolve update type
         id: update_type
@@ -150,13 +156,22 @@ jobs:
           set -o pipefail
           node scripts/run-scheduled-update.mjs --type="${UPDATE_TYPE}" --ci-guard ${FORCE_FLAG} ${MATCH_FLAG} ${BACKFILL_FLAG} 2>&1 | tee scheduled-update.log
 
-      - name: Commit valid changes and monitoring status
+      - name: Commit only validated public changes
         if: steps.update.outcome == 'success'
         shell: bash
         env:
           UPDATE_TYPE: ${{ steps.update_type.outputs.type }}
         run: |
+          node scripts/prepare-operations-publication.mjs
           node scripts/ci-commit-push.mjs "ci(update): ${UPDATE_TYPE} automatic FutbolRadar refresh"
+
+      - name: Preserve operational history without deployment
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: operations-ledger
+          path: outputs/operations/*.json
+          retention-days: 90
 
       - name: Preserve structured run log
         if: always()
@@ -166,6 +181,7 @@ jobs:
           path: |
             scheduled-update.log
             data/update-status.json
+            outputs/operations/*.json
           retention-days: 30
 
       - name: Fail workflow after status capture

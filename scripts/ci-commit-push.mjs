@@ -164,7 +164,7 @@ for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     "[ci-push] yeniden üretilendir. Sonraki koşu temiz bir checkout'tan üretecek.\n" +
     `[ci-push] Çakışan yol(lar): ${rebase.stdout.trim().split("\n").filter((line) => /CONFLICT/.test(line)).join(" | ") || "git bildirmedi"}`
   );
-  process.exit(0);
+  process.exit(1);
 }
 
 annotate(`${MAX_ATTEMPTS} denemede itilemedi: bu koşunun tazelenmiş çıktısı yazılmadı.`);
@@ -172,4 +172,4 @@ console.warn(
   `[ci-push] ERTELENDİ: ${MAX_ATTEMPTS} denemede itilemedi (${branch} sürekli güncelleniyor).\n` +
   "[ci-push] Veri türetilmiş olduğu için kayıp kalıcı değil; sonraki koşu yeniden üretecek."
 );
-process.exit(0);
+process.exit(1);

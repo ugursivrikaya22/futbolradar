@@ -26,6 +26,7 @@ for (const file of [
   "player-profile.js",
   "site.js",
   "live-follow.js",
+  "operations-dashboard.js",
   "match-notifications-core.js",
   "match-notifications.css",
   "match-detail-en.js",

@@ -13,9 +13,12 @@ import path from "node:path";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { POSTPROCESS_CHAIN } from "./lib/postprocessChain.mjs";
+import operationsPolicy from '../services/operationsPolicy.js';
+import { captureData, retainUnchangedData } from './lib/operationalData.mjs';
 
 const root = process.cwd();
-const STATUS_PATH = path.join(root, "data", "update-status.json");
+const STATUS_PATH = path.join(root, "outputs", "operations", "update-status.json");
+const PUBLISHED_STATUS_PATH = path.join(root, "data", "update-status.json");
 const PUBLIC_STATUS_PATH = path.join(root, "public", "data", "update-status.json");
 const LOCK_PATH = path.join(root, ".futbolradar-update.lock");
 const MAX_HISTORY = 40;
@@ -175,19 +178,30 @@ function defaultStatus() {
 }
 
 function writeStatus(record) {
-  const status = readJson(STATUS_PATH, defaultStatus());
+  const status = readJson(STATUS_PATH, readJson(PUBLISHED_STATUS_PATH, defaultStatus()));
+  const sources = {...status.sources};
+  for(const source of record.sourcesChecked||[]) {
+    const previous=sources[source.id]||{};
+    const ok=source.status==='success'&&!source.summary?.degraded&&source.summary?.status!=='degraded';
+    sources[source.id]={...source,lastAttemptAt:source.startedAt||record.startedAt,lastSuccessfulAt:ok?(source.finishedAt||record.finishedAt):previous.lastSuccessfulAt||null,sourceTime:source.summary?.lastSuccessfulSyncAt||source.summary?.checkedAt||previous.sourceTime||null,recordsProcessed:source.summary?.apiFixtures??source.summary?.checked??source.summary?.total??source.summary?.updated??null};
+  }
   const history = [record, ...(status.history || []).filter((item) => item.id !== record.id)].slice(0, MAX_HISTORY);
   const output = {
     ...defaultStatus(),
     ...status,
     updatedAt: record.finishedAt,
+    lastSuccessfulUpdate: ['success','partial'].includes(record.status) && record.sourcesChecked.some(s=>s.id==='live-fixtures'&&s.status==='success'&&!s.summary?.degraded) ? record : status.lastSuccessfulUpdate || null,
     lastUpdate: record,
     lastFull: record.type === "full" && record.status !== "skipped" ? record : status.lastFull || null,
     lastHourly: record.type === "hourly" && record.status !== "skipped" ? record : status.lastHourly || null,
-    history
+    history,
+    sources
   };
   atomicWrite(STATUS_PATH, output);
-  atomicWrite(PUBLIC_STATUS_PATH, output);
+  if (record.publication?.required && record.status !== 'failed') {
+    atomicWrite(PUBLISHED_STATUS_PATH, output);
+    atomicWrite(PUBLIC_STATUS_PATH, output);
+  }
   return output;
 }
 
@@ -350,6 +364,7 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
   const full = type === "full";
   const noProvider = providerReady ? false : "API-Football preflight/configuration is unavailable; last valid provider cache is preserved.";
   return [
+    ...((full || ['11','15','19'].includes(istanbulParts().hour)) ? [nodeStep('broadcast-schedule','scan-broadcast-schedule.mjs',['--apply','--days=2'],{kind:'source',source:'official-broadcasters',timeoutMs:4*60*1000})] : []),
     ...(full ? [nodeStep("fixture-calendar", "sync-fixture-calendar.mjs", ["--apply"], { kind: "source", source: "thesportsdb", attempts: 2, timeoutMs: 8 * 60 * 1000 })] : []),
     // Takvimden gelen kesinleşmiş gün/saatler TFF eşleşme listesine işlenir.
     // Sağlayıcıya istek atmaz; yalnızca iki dosyayı hizalar, bu yüzden
@@ -451,6 +466,7 @@ function supabaseConfigured() {
 function transformSteps(type, hasChanges, providerReady) {
   if (type === "hourly" && !hasChanges) return [];
   return [
+    ...(type==='full' ? [nodeStep('prune-stale-match-cards','prune-stale-match-analyses.mjs',['--apply'],{kind:'transform',timeoutMs:2*60*1000})] : []),
     // 7 gün: Süper Lig haftalık ritimde oynanıyor; 3 günlük pencere hafta
     // ortasında sıradaki turu görmüyor ve maç sayfaları analizsiz kalıyordu.
     // Motor çevrimdışı hesaplıyor (API çağrısı yok), genişletmenin maliyeti
@@ -511,6 +527,7 @@ function transformSteps(type, hasChanges, providerReady) {
 
 function validationSteps() {
   return [
+    nodeStep('validate-fixtures','validate-operations-output.mjs',[],{kind:'validation',required:true,timeoutMs:2*60*1000}),
     nodeStep("validate-transfers", "validate-transfer-data.mjs", [], { kind: "validation", required: true, timeoutMs: 3 * 60 * 1000 }),
     nodeStep("validate-coverage", "validate-football-coverage.mjs", [], { kind: "validation", required: true, timeoutMs: 3 * 60 * 1000 }),
     nodeStep("validate-analyses", "validate-match-analyses.mjs", [], { kind: "validation", required: true, timeoutMs: 4 * 60 * 1000 })
@@ -560,6 +577,7 @@ function hourlyBuildSteps(diff) {
     // sicil (data/match-seo-pages.json) commit'e girer. Çekirdek sayfalardan
     // ÖNCE koşar: ana sayfa/bugünün maçları bağlantıları dizini okur.
     nodeStep("render-match-seo-pages", "generate-match-seo-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    nodeStep('match-notification-identities','generate-match-notification-identities.cjs',[],{kind:'build',required:true,timeoutMs:2*60*1000}),
     nodeStep("render-update-admin", "generate-update-admin.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 }),
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-broadcast-schedule", "generate-broadcast-schedule-page.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
@@ -626,7 +644,7 @@ async function main() {
 
   const started = new Date();
   const key = dedupeKey(args.type, started);
-  const statusBefore = readJson(STATUS_PATH, defaultStatus());
+  const statusBefore = readJson(STATUS_PATH, readJson(PUBLISHED_STATUS_PATH, defaultStatus()));
   const duplicate = (statusBefore.history || []).find((record) => record.dedupeKey === key && ["success", "partial"].includes(record.status));
   if (duplicate && !args.force) {
     const finishedAt = new Date().toISOString();
@@ -652,12 +670,15 @@ async function main() {
   }
 
   const before = collectionSnapshot();
+  const dataBefore = captureData();
+  const policy = readJson(path.join(root,'data','operations-policy.json'),{});
+  let mode = operationsPolicy.modeFor({requested:policy.mode,rateLimit:readJson(path.join(root,'data','fixture-calendar.json'),{}).fixtureHealth?.rateLimit});
   const steps = [];
   let criticalFailure = false;
   let qaFailure = false;
   let providerReady = providerKeyConfigured();
 
-  if (args.type === "full" && providerReady) {
+  if (args.type === "full" && providerReady && mode !== 'protected') {
     const preflight = await runStep(nodeStep("api-football-preflight", "preflight-api-football.mjs", ["--resolve", "--probe"], {
       kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000
     }), steps);
@@ -666,8 +687,11 @@ async function main() {
     steps.push({ id: "api-football-preflight", source: "api-football", kind: "source", status: "skipped", reason: "APIFOOTBALL_API_KEY is not configured.", attempts: 0, durationMs: 0 });
   }
 
-  let providerCircuitCode = null;
+  let providerCircuitCode = steps.find(s=>operationsPolicy.STOP_CODES.has(s.providerCode))?.providerCode || null;
+  if(providerCircuitCode) mode='protected';
   for (const spec of [...sourceSteps(args.type, providerReady, args.match, args.backfill), ...(args.type === "full" ? fullMaintenanceSteps(providerReady) : [])]) {
+    const policySkip=operationsPolicy.skipReason(spec,mode,providerCircuitCode);
+    if(policySkip) { await runStep({...spec,skip:policySkip},steps); continue; }
     if (providerCircuitCode && spec.source === "api-football") {
       await runStep({
         ...spec,
@@ -678,13 +702,16 @@ async function main() {
 
     const result = await runStep(spec, steps);
     const observedProviderCode = result.providerCode || (result.summary && result.summary.degradedCode) || null;
-    if (observedProviderCode === "PROVIDER_RATE_LIMIT") {
+    if (operationsPolicy.STOP_CODES.has(observedProviderCode)) {
       providerCircuitCode = observedProviderCode;
       providerReady = false;
-      console.warn("[scheduled-update] API-Football circuit opened after rate limit; remaining provider calls will be skipped.");
+      mode = 'protected';
+      console.warn("[scheduled-update] Provider circuit opened; remaining provider calls stopped.");
     }
+    mode=operationsPolicy.modeFor({requested:mode,rateLimit:result.summary?.rateLimit,code:providerCircuitCode});
   }
 
+  const sourceData = retainUnchangedData(dataBefore);
   const afterSources = collectionSnapshot();
   const sourceDiff = snapshotDiff(before, afterSources);
   // ARŞİVLEME BAŞARISIZSA RAPOR DEPOSU YENİDEN ÜRETİLMEZ.
@@ -700,7 +727,9 @@ async function main() {
   // koşu `skipped` nedeniyle işaretlenir ve bir sonraki koşu tekrar dener.
   // Eski kayıt yerinde kalır — bayat bir depo, silinmiş bir maçtan iyidir.
   let archiveFailed = false;
-  for (const spec of transformSteps(args.type, sourceDiff.changedFiles.length > 0, providerReady)) {
+  for (const spec of transformSteps(args.type, sourceData.changed.length > 0, providerReady)) {
+    const policySkip=operationsPolicy.skipReason(spec,mode,providerCircuitCode);
+    if(policySkip) { await runStep({...spec,skip:policySkip},steps); continue; }
     if (spec.id === "post-match-store" && archiveFailed) {
       await runStep({ ...spec, skip: "match-archive başarısız oldu; kayıt kaybını önlemek için depo yeniden üretilmedi." }, steps);
       continue;
@@ -709,9 +738,11 @@ async function main() {
     if (spec.id === "match-archive" && result.status === "failed") archiveFailed = true;
   }
 
+  const transformedData = retainUnchangedData(dataBefore);
   const afterTransforms = collectionSnapshot();
   const preBuildDiff = snapshotDiff(before, afterTransforms);
-  const shouldBuild = args.type === "full" || preBuildDiff.changedFiles.length > 0;
+  const newDay = operationsPolicy.istanbulDay(statusBefore.lastUpdate?.finishedAt || 0) !== operationsPolicy.istanbulDay(started);
+  const shouldBuild = transformedData.changed.length > 0 || newDay;
 
   if (shouldBuild) {
     for (const spec of validationSteps()) {
@@ -744,7 +775,7 @@ async function main() {
       // zaten koruyor. QA hatası artık koşuyu "partial" yapar, hata
       // listesine ve GitHub özetine girer, günlük sağlık kontrolü (npm run
       // lint) ayrıca kırmızı gösterir — ama veri yayına çıkar.
-      const qa = await runStep({ id: "qa", command: NPM, args: ["run", "qa"], kind: "validation", required: false, timeoutMs: 12 * 60 * 1000 }, steps);
+      const qa = await runStep({ id: "qa", command: NODE, args: [path.join(root,'scripts',args.type==='full'?'qa.mjs':'validate-operations-output.mjs')], kind: "validation", required: false, timeoutMs: 12 * 60 * 1000 }, steps);
       if (qa.status === "failed") {
         qaFailure = true;
         console.warn("[scheduled-update] QA başarısız; veri ve sayfalar yine de yayımlanıyor, bulgular data/update-status.json içinde.");
@@ -770,18 +801,22 @@ async function main() {
     finishedAt: finished.toISOString(),
     durationMs: finished.getTime() - started.getTime(),
     status: criticalFailure ? "failed" : (optionalSourceErrors.length || skippedSources.length || qaFailure) ? "partial" : "success",
+    mode,
+    publication: { required: shouldBuild && !criticalFailure, state: criticalFailure ? 'blocked' : shouldBuild ? 'awaiting-deployment' : 'unchanged', contentFiles: transformedData.changed },
     sourceControl: {
       repository: process.env.GITHUB_REPOSITORY || null,
       commit: process.env.GITHUB_SHA || null,
       runUrl: githubRunUrl()
     },
-    sourcesChecked: steps.filter((step) => step.kind === "source").map(({ id, source, status, durationMs, attempts, summary, providerCode, error, reason }) => ({ id, source, status, durationMs, attempts, summary, providerCode, error, reason })),
+    sourcesChecked: steps.filter((step) => step.kind === "source").map(({ id, source, status, startedAt, finishedAt, durationMs, attempts, summary, providerCode, error, reason }) => ({ id, source, status, startedAt, finishedAt, durationMs, attempts, summary, providerCode, error, reason })),
     counts: { ...counts, filesChanged: counts.changedFiles.length },
     changedDataFiles: counts.changedFiles.map((name) => WATCHED_COLLECTIONS[name].file),
     errors,
     steps: steps.map(({ id, kind, status, durationMs, error, reason }) => ({ id, kind, status, durationMs, error, reason }))
   };
   delete record.counts.changedFiles;
+  atomicWrite(path.join(root,'outputs','operations','observations.json'),{...sourceData.observations,...transformedData.observations});
+  retainUnchangedData(dataBefore);
   writeStatus(record);
   appendGithubSummary(record);
   console.log(`FUTBOLRADAR_UPDATE_SUMMARY ${JSON.stringify(record)}`);
@@ -842,7 +877,7 @@ if (isMain) {
     console.error(`[scheduled-update] fatal: ${redact(error.stack || error.message)}`);
     process.exitCode = 1;
     try {
-      writeStatus(buildCrashRecord(error));
+      if(acquiredLockHandle!==null) writeStatus(buildCrashRecord(error));
     } catch (writeError) {
       console.error(`[scheduled-update] status write after crash also failed: ${redact(writeError.message || String(writeError))}`);
     }

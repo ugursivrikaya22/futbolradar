@@ -8,6 +8,7 @@ import { pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
 const { validateTickerItem, sameStory, tokenSet } = require("../services/newsTicker.js");
 const SOURCE_TRUST = require("../services/sourceTrust.js");
+const {allowAutomatedNews}=require('../services/automatedNewsPolicy.js');
 const { fixtureTeamNames } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
@@ -529,10 +530,11 @@ async function fetchText(url) {
         signal: controller.signal,
         headers: { accept: "application/rss+xml, application/atom+xml, application/xml, text/xml" }
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) throw Object.assign(new Error(`HTTP ${response.status}`),{permanent:[401,402,403,429].includes(response.status)});
       return await response.text();
     } catch (error) {
       lastError = error;
+      if(error.permanent) throw error;
       if (attempt <= REQUEST_RETRIES) await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
     } finally {
       clearTimeout(timer);
@@ -663,7 +665,7 @@ export async function synchronizeFootballNews(options = {}) {
   const accepted = [];
   const seen = new Set();
   for (const candidate of candidates
-    .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item) && isFootballTopic(item) && inScope(item) && hasUsableTitle(item.title))
+    .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item) && isFootballTopic(item) && inScope(item) && hasUsableTitle(item.title) && allowAutomatedNews(item.title,isOfficial(item)))
     .sort((left, right) => Number(left.feed.priority || 99) - Number(right.feed.priority || 99) || Date.parse(right.publishedAt) - Date.parse(left.publishedAt))) {
     const tickerItem = toTickerItem(candidate);
     const verdict = validateTickerItem(tickerItem);

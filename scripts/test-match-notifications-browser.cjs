@@ -2,12 +2,14 @@ const fs = require('node:fs'), path = require('node:path'), http = require('node
 const {chromium} = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(__dirname, '..');
 let enabled = true;
+const sharedApi=process.env.TEST_SHARED_API==='1';
 const m = id => ({id,homeTeam:'Home '+id,awayTeam:'Away '+id,status:'1H',minute:10,score:{home:0,away:0},events:[],updatedAt:new Date().toISOString()});
 let matches = [m('A'),m('B')], hits = [];
 const server = http.createServer((req,res)=>{
   const url = new URL(req.url,'http://localhost'); hits.push(url.pathname);
+  if(url.pathname==='/api/matches'){assert.equal(url.search,'');res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({ok:true,data:matches}));}
   if (url.pathname === '/qa') {res.setHeader('Content-Type','text/html; charset=utf-8'); return res.end(`<html lang="${url.searchParams.get('lang')||'tr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/page.css"><script src="/live-follow.js" defer></script></head><body><header class="topbar-premium"><nav class="nav"><div class="nav-menu"></div></nav></header><main>${['A','B'].map(id=>`<article class="fixture-card" data-match="${id}" data-home-team="Home ${id}" data-away-team="Away ${id}" data-match-href="/mac-detay.html?id=${id}"><h2>Match ${id}</h2></article>`).join('')}</main><div class="cookie-banner" style="position:fixed;bottom:0;height:65px;background:#eee;width:100%">Cookie banner test</div></body></html>`);}
-  if (url.pathname.startsWith('/data/')) {res.setHeader('Content-Type','application/json'); return res.end(JSON.stringify(url.pathname.endsWith('match-notifications.json')?{enabled}:url.pathname.endsWith('match-notification-identities.json')?{aliases:{B:'canonical-B','B-provider':'canonical-B'}}:url.pathname.endsWith('/matches.json')?matches:{matches:[]}));}
+  if (url.pathname.startsWith('/data/')) {res.setHeader('Content-Type','application/json'); return res.end(JSON.stringify(url.pathname.endsWith('match-notifications.json')?{enabled,mode:sharedApi?'shared-api-cache':'shared-static-cache'}:url.pathname.endsWith('match-notification-identities.json')?{aliases:{B:'canonical-B','B-provider':'canonical-B'}}:url.pathname.endsWith('/matches.json')?(sharedApi?[]:matches):{matches:[]}));}
   const file = path.join(root, url.pathname.slice(1));
   if (fs.existsSync(file) && fs.statSync(file).isFile()) {res.setHeader('Content-Type',url.pathname.endsWith('.css')?'text/css':'text/javascript'); return res.end(fs.readFileSync(file));}
   res.statusCode=404;res.end();
@@ -55,7 +57,7 @@ const server = http.createServer((req,res)=>{
     assert.equal(await button('A').getAttribute('aria-pressed'),'true'); assert.equal(await button('B').getAttribute('aria-pressed'),'false');
     const panelToggle=page.locator('[data-follow-mobile-toggle]'); if(await panelToggle.isVisible()) await panelToggle.click(); else await page.locator('[data-follow-panel-toggle]').click(); await page.locator('.follow-clear').click();
     assert.deepEqual(await page.evaluate(()=>window.FutbolRadarFollow.getState().matchIds),[]);
-    assert.ok(!hits.some(p=>p.startsWith('/api/'))); assert.deepEqual(errors,[]);
-    console.log('PASS: A/B filtering, independent subscriptions, persisted preference, reload/navigation baseline, queue purge, cancellation, 7s expiry, TR/EN, mobile obstruction, central off; no API requests.');
+    assert.ok(!hits.some(p=>p.startsWith('/api/')&&(!sharedApi||p!=='/api/matches'))); assert.deepEqual(errors,[]);
+    console.log('PASS: A/B filtering, independent subscriptions, persisted preference, reload/navigation baseline, queue purge, cancellation, 7s expiry, TR/EN, mobile obstruction, central off; canonical shared API only when enabled.');
   } finally { server.closeAllConnections(); await new Promise(r=>server.close(r)); await browser.close(); }
 })().catch(e=>{console.error(e);process.exitCode=1;server.close();});

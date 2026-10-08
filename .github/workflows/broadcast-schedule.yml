@@ -19,14 +19,7 @@
 name: broadcast-schedule
 
 on:
-  schedule:
-    # 05:00 Europe/Istanbul (UTC+3) — ilk kontrol, gün başlamadan.
-    # Dakika 0 yerine 6: GitHub saat başını en yoğun kuyruk penceresi
-    # olarak belgeliyor ve :00'a sabitlenmiş işler saatlerce gecikebiliyor
-    # (aynı gerekçe match-analysis.yml içinde de yazılı).
-    - cron: "6 2 * * *"
-    # Gün içi değişiklik kontrolleri: 11:00, 15:00, 19:00 TSİ.
-    - cron: "6 8,12,16 * * *"
+  # Scheduled scan now belongs to match-analysis.yml (05/11/15/19 Istanbul).
   workflow_dispatch:
     inputs:
       days:

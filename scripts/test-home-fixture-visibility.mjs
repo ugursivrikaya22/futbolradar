@@ -11,6 +11,8 @@ const future={kickoff:'2026-10-05T19:00:00+03:00',status:'SCHEDULED'};
 const cases=[
  [future,true], [{...future,status:'NS'},true],
  [{...future,status:'FINISHED',score:{home:2,away:1}},false],
+ [{...future,status:'FINISHED',finishedAt:new Date(now-3600000).toISOString()},true],
+ [{...future,status:'FINISHED',finishedAt:new Date(now-2*3600000).toISOString()},false],
  [{...future,providerStatus:'FT'},false],
  [{...future,status:'CANC'},false], [{...future,status:'PST'},false],
  [{...future,kickoff:'2026-10-04T10:00:00+03:00'},false],

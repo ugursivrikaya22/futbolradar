@@ -18,6 +18,7 @@ import { createRequire } from "node:module";
 import { parseRss } from "./sync-football-news.mjs";
 
 const require = createRequire(import.meta.url);
+const {allowAutomatedNews}=require('../services/automatedNewsPolicy.js');
 const {
   ENGLISH_FEEDS,
   buildEnglishArticle,
@@ -62,10 +63,11 @@ async function fetchText(url) {
           "user-agent": "Mozilla/5.0 (compatible; FutbolRadarBot/1.0; +https://www.futbolradar.com)"
         }
       });
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!response.ok) throw Object.assign(new Error(`HTTP ${response.status}`),{permanent:[401,402,403,429].includes(response.status)});
       return await response.text();
     } catch (error) {
       lastError = error;
+      if(error.permanent) throw error;
       if (attempt <= REQUEST_RETRIES) await new Promise((resolve) => setTimeout(resolve, 400 * attempt));
     } finally {
       clearTimeout(timer);
@@ -157,7 +159,7 @@ export async function synchronizeEnglishNews(options = {}) {
         const article = buildEnglishArticle({ item, feed, now });
         // Süzgeç ÜRETİMDEN SONRA çalışır: kaynak başlığı İngilizce olsa da
         // üretilen metnin İngilizce olduğu ayrıca doğrulanır.
-        if (article && isPublishableEnglish(article)) candidates.push(article);
+        if (article && isPublishableEnglish(article) && allowAutomatedNews(item.title,article.editorialStatus==='official')) candidates.push(article);
       }
     } catch (error) {
       // Tek beslemenin düşmesi akışı durdurmaz; hangi beslemenin

@@ -364,6 +364,18 @@
       return await response.json();
     } finally { clearTimeout(timeout); }
   }
+  async function readLiveShared() {
+    var controller=new AbortController(), timeout=setTimeout(function(){controller.abort();},10000);
+    try {
+      // One canonical CDN URL for all matches/users. Never add user, match or
+      // cache-busting parameters; the existing provider cache coalesces misses.
+      var response=await fetch(new URL('api/matches',moduleBase),{signal:controller.signal});
+      if(!response.ok) return {matches:[]};
+      var payload=await response.json();
+      return {matches:payload.ok&&Array.isArray(payload.data)?payload.data:[]};
+    } catch (_) { return {matches:[]}; }
+    finally {clearTimeout(timeout);}
+  }
   async function connect() {
     reconnectTimer = null;
     if (polling) return;
@@ -379,6 +391,7 @@
           identityAliases = identityData.aliases || {}; identitiesLoaded = true;
         }
         var sources = await Promise.all([readShared('matches.json'), readShared('fixture-calendar.json'), readShared('super-lig-fixtures.json')]);
+        if(config.mode==='shared-api-cache') sources.push(await readLiveShared());
         var rows = new Map();
         sources.forEach(function (source) {
           var matches = Array.isArray(source) ? source : source.matches || (source.rounds || []).flatMap(function (r) { return r.matches || []; });

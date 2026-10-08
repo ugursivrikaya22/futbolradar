@@ -39,9 +39,8 @@ name: Trabzonspor Post-Match Column
 # bu yüzden garanti değil, hedef. Elle tetikleme her zaman açık.
 
 on:
-  schedule:
-    # Saatte bir gözcü. Saat başındaki kuyruk yoğunluğundan kaçmak için :05.
-    - cron: "5 * * * *"
+  # Editorial/tactical generator is manual only. Scheduled factual summaries
+  # use the existing deterministic post-match report pipeline instead.
   workflow_dispatch:
     inputs:
       match_id:

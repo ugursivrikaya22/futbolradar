@@ -1193,10 +1193,11 @@ async function getMatches(query) {
   // The list and SSE stream read the same cached live provider response.
   const live = await getFixtures({ live: true }).catch(() => []);
   const byId = new Map(live.map(match => [match.providerId, match]));
+  const dailyIds = new Set(matches.map(match=>match.providerId));
   return matches.map(match => {
     const current = byId.get(match.providerId);
     return current && !(match.status === "FINISHED" && Date.parse(match.fetchedAt) > Date.parse(current.fetchedAt)) ? current : match;
-  });
+  }).concat(live.filter(match=>!dailyIds.has(match.providerId)));
 }
 
 /**
