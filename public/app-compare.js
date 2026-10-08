@@ -2134,214 +2134,10 @@
     return true;
   }
 
-  // ── Canlı maç bildirimleri: gol / kırmızı kart / sarı kart ────────────────
-  //
-  // Tarayıcı Notification API'si kullanılır, ayrı bir push altyapısı yok.
-  // İzin yalnızca bir kez istenir (localStorage bayrağı: reddedilse de bir
-  // daha sorulmaz). Her olay matchIdentityKey + olayın kendi imzasıyla
-  // tekilleştirilip yalnızca bir kez bildirilir; imzalar localStorage'da
-  // tutulur ki sayfa yenilense de aynı olay ikinci kez bildirilmesin.
-  var MATCH_NOTIFY_KIND_LABELS = {
-    goal: "GOL!",
-    red: "KIRMIZI KART!",
-    yellow: "SARI KART!"
-  };
-  var MATCH_NOTIFY_SEEN_KEY = "fr_notified_match_events_v1";
-  var MATCH_NOTIFY_ASKED_KEY = "fr_notify_permission_asked_v1";
-  var MATCH_NOTIFY_SEEN_LIMIT = 400;
-
-  var matchNotifySeenEvents = (function () {
-    try {
-      var raw = window.localStorage.getItem(MATCH_NOTIFY_SEEN_KEY);
-      var parsed = raw ? JSON.parse(raw) : [];
-      return new Set(Array.isArray(parsed) ? parsed : []);
-    } catch (err) {
-      return new Set();
-    }
-  })();
-
-  function persistMatchNotifySeenEvents() {
-    try {
-      var list = Array.from(matchNotifySeenEvents);
-      if (list.length > MATCH_NOTIFY_SEEN_LIMIT) {
-        list = list.slice(list.length - MATCH_NOTIFY_SEEN_LIMIT);
-        matchNotifySeenEvents = new Set(list);
-      }
-      window.localStorage.setItem(MATCH_NOTIFY_SEEN_KEY, JSON.stringify(list));
-    } catch (err) {
-      // localStorage kapalı olabilir; bildirim tekilleştirmesi bu durumda
-      // yalnızca bellek içi Set ile (sayfa yenilenene kadar) sürer.
-    }
-  }
-
-  function matchNotifySupported() {
-    return typeof window !== "undefined" && "Notification" in window;
-  }
-
-  function ensureMatchNotifyPermission() {
-    if (!matchNotifySupported() || Notification.permission !== "default") {
-      return;
-    }
-    var alreadyAsked = false;
-    try {
-      alreadyAsked = window.localStorage.getItem(MATCH_NOTIFY_ASKED_KEY) === "1";
-    } catch (err) {}
-    if (alreadyAsked) {
-      return;
-    }
-    try {
-      window.localStorage.setItem(MATCH_NOTIFY_ASKED_KEY, "1");
-    } catch (err) {}
-    try {
-      var result = Notification.requestPermission();
-      if (result && typeof result.catch === "function") {
-        result.catch(function () {});
-      }
-    } catch (err) {
-      try { Notification.requestPermission(function () {}); } catch (err2) {}
-    }
-  }
-
-  /**
-   * Olay türünü sınıflandırır. `mdEventKind` kürasyonlu Türkçe olay
-   * metinleri için yazılmıştı ("Gol", "Kırmızı kart"); canlı akışta
-   * sağlayıcıdan (API-Football) doğrudan gelen ham olaylar ise İngilizce
-   * `type`/`detail` taşır ("Goal"/"Normal Goal", "Card"/"Yellow Card") ve
-   * Türkçe anahtar kelimelerle eşleşmez. Bu yüzden önce mdEventKind
-   * denenir, eşleşmezse ham sağlayıcı alanlarına ayrıca bakılır.
-   */
-  function classifyMatchNotifyEvent(event) {
-    var kind = mdEventKind(event);
-    if (kind === "goal" || kind === "own-goal" || kind === "penalty") {
-      return "goal";
-    }
-    if (kind === "red" || kind === "yellow") {
-      return kind;
-    }
-
-    var type = normalizeSearchText(event && event.type);
-    var detail = normalizeSearchText(event && event.detail);
-    if (type === "card") {
-      if (detail.indexOf("red") !== -1) return "red";
-      if (detail.indexOf("yellow") !== -1) return "yellow";
-      return null;
-    }
-    if (type === "goal") {
-      // "Missed Penalty": kaçırılan penaltı, gol değil.
-      return detail.indexOf("missed") !== -1 ? null : "goal";
-    }
-    return null;
-  }
-
-  /**
-   * Oyuncu adını çıkarır. Kürasyonlu Türkçe metinlerde ad `detail` cümlesinin
-   * başında geçer (mdPlayerName). Ham sağlayıcı olaylarında `detail` yalnızca
-   * "Normal Goal"/"Yellow Card" gibi sabit bir alt tür taşır; oyuncu adı
-   * bunun yerine `value` alanının başındaki bölümdedir (normalizeFixtureEvents,
-   * services/providers/apiFootballProvider.js: "Ad · Asist: X · Normal Goal").
-   */
-  function matchNotifyPlayerName(event) {
-    var value = String((event && event.value) || "");
-    var detail = String((event && event.detail) || "").trim();
-    if (value) {
-      var segments = value.split("·").map(function (part) { return part.trim(); }).filter(Boolean);
-      var candidate = segments.filter(function (segment) {
-        return segment && segment !== detail && !/^asist:/i.test(segment);
-      })[0];
-      if (candidate) {
-        return candidate;
-      }
-    }
-    // Ham sağlayıcı olaylarında `detail` sabit bir alt tür metnidir ("Normal
-    // Goal", "Yellow Card") — cümle değildir, mdPlayerName burada yanlışlıkla
-    // bu sabit metni oyuncu adı sanabilir ("Normal Goal" iki büyük harfli
-    // sözcük). O yüzden yalnızca kürasyonlu Türkçe cümlelerde denenir.
-    var rawType = normalizeSearchText(event && event.type);
-    var isRawProviderFormat = ["goal", "card", "subst", "var"].indexOf(rawType) !== -1;
-    return isRawProviderFormat ? "" : (mdPlayerName(detail) || "");
-  }
-
-  function buildMatchNotifyBody(match, event) {
-    var homeTeam = (match && match.homeTeam) || "";
-    var awayTeam = (match && match.awayTeam) || "";
-    var score = (match && match.score) || {};
-    var scoreText = [score.home, score.away].every(function (value) {
-      return value === 0 || Boolean(value);
-    }) ? score.home + "-" + score.away : "";
-    var minute = liveMinuteLabel(match) || mdMinuteLabel(event && event.time) || "";
-    var player = matchNotifyPlayerName(event);
-    var head = [homeTeam, scoreText, awayTeam].filter(Boolean).join(" ");
-    var tail = [minute, player].filter(Boolean).join(" ");
-    return [head, tail].filter(Boolean).join(" — ");
-  }
-
-  function sendMatchNotifyEvent(match, event, kind) {
-    var label = MATCH_NOTIFY_KIND_LABELS[kind];
-    if (!label || !matchNotifySupported() || Notification.permission !== "granted") {
-      return;
-    }
-    try {
-      var notification = new Notification(label, {
-        body: buildMatchNotifyBody(match, event),
-        icon: "/favicon-192x192.png"
-      });
-      window.setTimeout(function () {
-        try { notification.close(); } catch (err) {}
-      }, 12000);
-    } catch (err) {
-      // Bazı tarayıcı/izin kombinasyonlarında Notification oluşturma
-      // sessizce reddedilebilir; sayfa akışını bozmasın diye yutulur.
-    }
-  }
-
-  function notifyNewMatchEvents(match) {
-    // İzin isteme kapısı ortak kapıya taşınmıştı ama BİLDİRİMİN KENDİSİ
-    // hâlâ ham kontrolü kullanıyordu: donmuş ya da statik yedekten gelen
-    // bir kayıt, üzerindeki eski olaylarla telefonda "GOL!" bildirimi
-    // doğurabilirdi. Bildirim, kartlardan daha yüksek sesli bir canlılık
-    // iddiasıdır; aynı kapıdan geçer.
-    if (!match || !LiveGuard.isLive(match)) {
-      return;
-    }
-    var events = Array.isArray(match.events) ? match.events : [];
-    if (!events.length) {
-      return;
-    }
-    var matchKey = matchIdentityKey(match);
-    events.forEach(function (event) {
-      var kind = classifyMatchNotifyEvent(event);
-      if (!MATCH_NOTIFY_KIND_LABELS[kind]) {
-        return;
-      }
-      var signature = [
-        matchKey,
-        String(event.time || ""),
-        String(event.type || ""),
-        String(event.detail || ""),
-        mdEventTeamName(event),
-        String(event.value || "")
-      ].join("|");
-      if (matchNotifySeenEvents.has(signature)) {
-        return;
-      }
-      matchNotifySeenEvents.add(signature);
-      persistMatchNotifySeenEvents();
-      sendMatchNotifyEvent(match, event, kind);
-    });
-  }
-
-  /** Canlı maç listesindeki yeni gol/kart olaylarını bildirir. */
+  // Opt-in alerts use the single shared notification engine.
   function notifyLiveMatchEvents(matches) {
-    if (!matchNotifySupported() || !Array.isArray(matches) || !matches.length) {
-      return;
-    }
-    if (matches.some(function (match) { return LiveGuard.isLive(match); })) {
-      ensureMatchNotifyPermission();
-    }
-    if (Notification.permission !== "granted") {
-      return;
-    }
-    matches.forEach(notifyNewMatchEvents);
+    // One opt-in engine owns event filtering and history baselines.
+    document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', { detail: { matches: matches } }));
   }
 
   function todayInIstanbul() {
@@ -5492,7 +5288,7 @@
       // okunabilirse ilerletilir; değilse elde olan korunur.
       var incomingTime = Date.parse(recordsUpdatedAt([liveMatch]));
       var existingTime = Date.parse(recordsUpdatedAt([base[existing]]));
-      if (Number.isFinite(incomingTime) && Number.isFinite(existingTime) && incomingTime < existingTime) return;
+      if (Number.isFinite(existingTime) && (!Number.isFinite(incomingTime) || incomingTime < existingTime)) return;
       base[existing] = Object.assign({}, base[existing], {
         status: liveMatch.status || base[existing].status,
         providerStatus: liveMatch.providerStatus || base[existing].providerStatus,
@@ -5738,7 +5534,7 @@
       try { packet = JSON.parse(message.data); } catch (error) { return; }
       document.dispatchEvent(new CustomEvent("futbolradar:score-snapshot", { detail: packet }));
       var live = Array.isArray(packet.matches) ? packet.matches : [];
-      lastLiveUpdateMs = Date.parse(packet.timing && (packet.timing.api_response_time || packet.timing.apiResponseAt)) || Date.now();
+      lastLiveUpdateMs = Date.parse(packet.timing && (packet.timing.backend_receive_time || packet.timing.serverReceivedAt)) || 0;
       mergeAndPaint(live, !live.length && hasLiveMatchNow).then(function () {
         reportRender(packet);
       });
@@ -5770,7 +5566,7 @@
       return fetchJson(API_ROOT + "matches?live=all", { noStore: true })
         .then(function (result) {
           var live = (result && result.data) || [];
-          lastLiveUpdateMs = Date.now();
+          lastLiveUpdateMs = Date.parse(result && result.updatedAt) || 0;
           return mergeAndPaint(live, !live.length && hasLiveMatchNow);
         })
         .catch(function () {

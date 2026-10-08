@@ -120,6 +120,11 @@ async function handlePushSubscription(req, res) {
   setCachePolicy(res, "push-subscription");
   if (enforceRateLimit(req, res, { windowMs: 60000, limit: method === "GET" ? 90 : 20 })) return undefined;
 
+  if (require('../data/match-notifications.json').backgroundPushEnabled !== true) {
+    if (method === 'GET') return sendSuccess(res, { configured: false, publicKey: null, reason: 'reliability-review' }, SOURCE);
+    return sendError(res, 503, 'Arka plan bildirimleri kapalı. Site içi maç takibi kullanılabilir.', 'PUSH_DISABLED', SOURCE);
+  }
+
   if (method === "GET") {
     const vapid = vapidConfig();
     if (!vapid.publicKey || !isConfigured()) {

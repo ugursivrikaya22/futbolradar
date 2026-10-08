@@ -222,7 +222,22 @@
     if (note) note.textContent = text;
   }
 
-  function subscribeToPush(slug, panel) {
+  async function subscribeToPush(slug, panel) {
+    var en = document.documentElement.lang.indexOf("en") === 0;
+    // Check the server before asking for permission; no prompt for a disabled service.
+    try {
+      var controller = new AbortController(), timeout = setTimeout(function () { controller.abort(); }, 8000);
+      var response = await fetch('/api/push-subscribe', {signal: controller.signal, cache: 'no-store'});
+      var config = response.ok ? await response.json() : null;
+      if (!config || !config.data || !config.data.configured) {
+        setPanelNote(panel, en ? 'Background notifications are unavailable. Match alerts work while the site is open.' : 'Arka plan bildirimleri kapalı. Maç uyarıları site açıkken çalışır.'); return;
+      }
+    } catch (_) { setPanelNote(panel, en ? 'Notification service unavailable.' : 'Bildirim servisine ulaşılamıyor.'); return; }
+    finally { clearTimeout(timeout); }
+    if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
+      setPanelNote(panel, en ? 'Notifications are blocked in browser settings.' : 'Bildirim izni tarayıcı ayarlarından engellenmiş.'); return;
+    }
+
     if (isIos() && !isStandalone()) {
       panel.remove();
       showIosInstallCard();
@@ -297,6 +312,7 @@
   }
 
   function buildFavoritePanel(teams) {
+    var en = document.documentElement.lang.indexOf('en') === 0;
     injectStyles();
     var panel = document.createElement("div");
     panel.className = "fr-pwa-panel";
@@ -309,13 +325,19 @@
     }).join("");
 
     panel.innerHTML =
-      "<strong>Favori Takımın</strong>" +
+      '<strong>' + (en ? 'Your favourite team' : 'Favori takımın') + '</strong>' +
       "<select>" + options + "</select>" +
-      '<button type="button" data-action="subscribe">Bildirimleri Aç</button>' +
-      (subscribedTeam ? '<button type="button" class="fr-pwa-unsubscribe" data-action="unsubscribe">Bildirimleri Kapat</button>' : "") +
-      '<p class="fr-pwa-note">' + (subscribedTeam ? "Bildirimler açık." : "Gol ve maç başı bildirimi almak için seç ve aç.") + "</p>";
+      '<button type="button" data-action="save">' + (en ? 'Save favourite team' : 'Favori takımı kaydet') + '</button>' +
+      '<button type="button" data-action="subscribe">' + (en ? 'Enable background notifications' : 'Arka plan bildirimlerini aç') + '</button>' +
+      (subscribedTeam ? '<button type="button" class="fr-pwa-unsubscribe" data-action="unsubscribe">' + (en ? 'Turn notifications off' : 'Bildirimleri kapat') + '</button>' : '') +
+      '<p class="fr-pwa-note">' + (en ? 'Select in-site match alerts on match cards. Background availability is checked before asking for permission; browser and operating system restrictions can prevent delivery.' : 'Site içi maç uyarılarını maç kartlarından seçebilirsiniz. İzin istemeden önce arka plan desteği kontrol edilir; tarayıcı ve işletim sistemi teslimatı engelleyebilir.') + '</p>';
 
     var select = panel.querySelector("select");
+    panel.querySelector('[data-action="save"]').addEventListener('click', function () {
+      if (!select.value) return;
+      writeLocal(LS_FAVORITE_TEAM, select.value); notifyServiceWorkerOfFavoriteTeam(select.value);
+      setPanelNote(panel, en ? 'Favourite saved.' : 'Favori takım kaydedildi.');
+    });
     panel.querySelector('[data-action="subscribe"]').addEventListener("click", function () {
       var slug = select.value;
       if (!slug) return;

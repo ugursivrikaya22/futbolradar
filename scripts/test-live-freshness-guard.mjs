@@ -313,8 +313,8 @@ const CASES = [
   // oynanıyor" diyen bir iddiadır ve donmuş kayıtla tetiklenebiliyordu.
   assert.match(appSource, /function liveMinuteLabel\(match\) \{[\s\S]{0,600}?if \(!LiveGuard\.isLive\(match\)\)/,
     "donmuş dakika etiketi ortak kapıdan geçmeli");
-  assert.match(appSource, /function notifyNewMatchEvents\(match\) \{[\s\S]{0,600}?if \(!match \|\| !LiveGuard\.isLive\(match\)\)/,
-    "bildirim ortak kapıdan geçmeli — donmuş kayıt \"GOL!\" bildirimi doğurmamalı");
+  assert.match(appSource, /futbolradar:score-snapshot/, 'page snapshots feed the opt-in notification engine');
+  assert.ok(!appSource.includes('Notification.requestPermission'), 'page rendering never prompts for notification permission');
   assert.match(appSource, /if \(LiveGuard\.isLive\(detail\)\) \{\s*\n\s*return \{ key: "live", label: "Canlı analiz"/,
     '"Canlı analiz" rozeti ortak kapıdan geçmeli');
   assert.match(appSource, /hasLiveMatchNow = lastKnownMatches\.some\(function \(match\) \{ return LiveGuard\.isLive\(match\); \}\);/,

@@ -20,6 +20,7 @@ const server = http.createServer((req,res)=>{
   try {
     const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}), errors=[];
     page.on('pageerror',e=>errors.push(e.message));
+    await page.addInitScript(() => { window.permissionRequests=0; Object.defineProperty(window,'Notification',{value:class { static get permission(){return 'denied';} static requestPermission(){window.permissionRequests++;return Promise.resolve('denied');} }}); });
     await page.goto(origin+'/qa');
     const button=id=>page.locator(`[data-follow-match="${id}"]`);
     await button('A').waitFor(); await page.waitForFunction(()=>!document.querySelector('[data-follow-match]').disabled);
@@ -36,10 +37,10 @@ const server = http.createServer((req,res)=>{
     await button('B').click();await page.waitForTimeout(250);goal('A',2);goal('B',2);await poll();assert.equal(await page.locator('.live-event-toast').count(),2);
     goal('A',3);await poll();await button('A').click();assert.equal(await page.locator('[data-toast-match="A"]').count(),0);
     await page.locator('.live-event-toast-close').click();assert.equal(await page.locator('[data-toast-match="A"]').count(),0);
-    let b=matches[1];b.events[1].detail='Goal cancelled';b.score.home=1;await poll();assert.ok((await page.locator('.live-event-toast').innerText()).includes('GOL İPTALİ'));
+    let b=matches[1];b.events[1].detail='Goal cancelled';b.score.home=1;b.updatedAt=new Date().toISOString();await poll();assert.ok((await page.locator('.live-event-toast').innerText()).includes('GOL İPTALİ'));
     await page.waitForTimeout(7300);assert.equal(await page.locator('.live-event-toast').count(),0);
     await page.goto(origin+'/qa?lang=en');await page.waitForTimeout(350);assert.equal(await button('B').innerText(),'Notifications on');assert.equal(await page.locator('.live-event-toast').count(),0);
-    await page.setViewportSize({width:1280,height:900});goal('B',3);await poll();assert.ok((await page.locator('.live-event-toast').innerText()).includes('GOAL'));
+    await page.setViewportSize({width:1440,height:900});goal('B',3);await poll();assert.ok((await page.locator('.live-event-toast').innerText()).includes('GOAL'));
     await page.screenshot({path:path.join(root,'outputs/match-notifications-qa/desktop.png')});
     // Existing page stream uses the same engine and never starts a new connection.
     await page.reload(); await page.waitForTimeout(350);
@@ -55,8 +56,21 @@ const server = http.createServer((req,res)=>{
     ])));
     await page.reload();await page.waitForTimeout(350);
     assert.equal(await button('A').getAttribute('aria-pressed'),'true'); assert.equal(await button('B').getAttribute('aria-pressed'),'false');
-    const panelToggle=page.locator('[data-follow-mobile-toggle]'); if(await panelToggle.isVisible()) await panelToggle.click(); else await page.locator('[data-follow-panel-toggle]').click(); await page.locator('.follow-clear').click();
+    const panelToggle=page.locator('[data-follow-mobile-toggle]'); if(await panelToggle.isVisible()) await panelToggle.click(); else if(await page.locator('[data-follow-mobile-toggle]').isVisible()) await page.locator('[data-follow-mobile-toggle]').click(); else await page.locator('[data-follow-panel-toggle]').click(); await page.locator('.follow-clear').click();
     assert.deepEqual(await page.evaluate(()=>window.FutbolRadarFollow.getState().matchIds),[]);
+    matches=[m('A'),m('B')]; await page.goto(origin+'/qa?lang=en'); await page.waitForFunction(()=>!document.querySelector('[data-follow-match]').disabled);
+    await button('A').click();await page.waitForTimeout(350);
+    if(await page.locator('[data-follow-mobile-toggle]').isVisible()) await page.locator('[data-follow-mobile-toggle]').click(); else await page.locator('[data-follow-panel-toggle]').click();
+    assert.equal(await page.locator('[data-notification-preference="sound"]').isChecked(),false);
+    await page.locator('[data-notification-preference="goal"]').uncheck();
+    goal('A',1); await poll(); assert.equal(await page.locator('.live-event-toast').count(),0);
+    matches[0].events.push({id:'red-1',type:'Card',detail:'Red Card',minute:12});matches[0].updatedAt=new Date().toISOString();
+    await poll();assert.equal(await page.locator('[data-event-type="red_card"]').count(),1);
+    await page.reload();await page.waitForTimeout(350);if(await page.locator('[data-follow-mobile-toggle]').isVisible()) await page.locator('[data-follow-mobile-toggle]').click(); else await page.locator('[data-follow-panel-toggle]').click();
+    assert.equal(await page.locator('[data-notification-preference="goal"]').isChecked(),false);
+    assert.equal(await page.evaluate(()=>window.permissionRequests),0);
+    await page.screenshot({path:path.join(root,'outputs/match-notifications-qa/preferences-desktop.png')});
+    await page.locator('.follow-clear').click();assert.deepEqual(await page.evaluate(()=>window.FutbolRadarFollow.getState().matchIds),[]);
     assert.ok(!hits.some(p=>p.startsWith('/api/')&&(!sharedApi||p!=='/api/matches'))); assert.deepEqual(errors,[]);
     console.log('PASS: A/B filtering, independent subscriptions, persisted preference, reload/navigation baseline, queue purge, cancellation, 7s expiry, TR/EN, mobile obstruction, central off; canonical shared API only when enabled.');
   } finally { server.closeAllConnections(); await new Promise(r=>server.close(r)); await browser.close(); }

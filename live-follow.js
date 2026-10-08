@@ -2,6 +2,19 @@
   "use strict";
 
   var FOLLOW_STORAGE_KEY = "futbolradar:followed-matches:v1";
+  var PREFERENCES_KEY = 'futbolradar:notification-preferences:v1';
+  var preferences = { goal: true, red_card: true, kickoff: true, halftime: true, fulltime: true, sound: false };
+  var audioContext = null;
+  function eventAllowed(event) {
+    var group = /^(goal|var|penalty_scored|score_update|score_correction)$/.test(event.type) ? 'goal' : event.type;
+    return preferences[group] === true;
+  }
+  function loadPreferences() {
+    try {
+      var saved = JSON.parse(localStorage.getItem(PREFERENCES_KEY) || '{}');
+      Object.keys(preferences).forEach(function (key) { if (typeof saved[key] === 'boolean') preferences[key] = saved[key]; });
+    } catch (_) {}
+  }
   var MAX_FOLLOWED_MATCHES = 20;
   var MAX_SEEN_EVENTS = 600;
   var TOAST_LIFETIME_MS = 7000;
@@ -15,7 +28,7 @@
   var identityAliases = {}, identitiesLoaded = false;
   var followed = new Map();
   var seenEvents = new Map();
-  var latestMatches = new Map();
+
   var reconnectTimer = null;
   var connectionState = "idle";
   var followPanel = null;
@@ -61,6 +74,7 @@
   }
 
   function loadState() {
+    loadPreferences();
     try {
       var storedMatches = safeJson(window.localStorage.getItem(FOLLOW_STORAGE_KEY), []);
       (Array.isArray(storedMatches) ? storedMatches : []).slice(0, MAX_FOLLOWED_MATCHES).forEach(function (record) {
@@ -234,7 +248,7 @@
     domSyncFrame = window.requestAnimationFrame(function () {
       domSyncFrame = null;
       syncMatchControls(scope || document);
-      latestMatches.forEach(updateScoreDom);
+      // Shared page data owns the score; remembered alerts cannot repaint it.
     });
   }
 
@@ -330,6 +344,30 @@
       list.appendChild(empty);
     }
     followPanel.appendChild(list);
+
+    var settings = document.createElement('fieldset');
+    settings.className = 'follow-event-settings';
+    var legend = document.createElement('legend'); legend.textContent = tr('Bildirim tercihleri', 'Notification preferences'); settings.appendChild(legend);
+    var choices = { goal: tr('Gol, gol iptali ve skor düzeltmeleri', 'Goals, disallowed goals and score corrections'), red_card: tr('Kırmızı kart', 'Red card'), kickoff: tr('Maç başlangıcı', 'Kickoff'), halftime: tr('Devre arası', 'Half time'), fulltime: tr('Maç sonu', 'Full time'), sound: tr('Bildirim sesi', 'Notification sound') };
+    Object.keys(choices).forEach(function (key) {
+      var label = document.createElement('label'), input = document.createElement('input');
+      input.type = 'checkbox'; input.checked = preferences[key]; input.setAttribute('data-notification-preference', key);
+      input.addEventListener('change', function () {
+        preferences[key] = input.checked;
+        try { localStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences)); } catch (_) {}
+        if (key === 'sound' && input.checked) {
+          var Audio = window.AudioContext || window.webkitAudioContext;
+          if (Audio) { audioContext = audioContext || new Audio(); audioContext.resume().catch(function () {}); }
+        }
+        queue = queue.filter(function (item) { return eventAllowed(item.event); });
+        if (toastRoot) Array.from(toastRoot.children).forEach(function (toast) { if (!eventAllowed({type: toast.getAttribute('data-event-type')})) toast.remove(); });
+      });
+      label.append(input, document.createTextNode(choices[key])); settings.appendChild(label);
+    });
+    followPanel.appendChild(settings);
+    var pushHelp = document.createElement('p'); pushHelp.className = 'follow-explanation';
+    pushHelp.textContent = tr('Arka plan bildirimi mevcut değil. Site kapalıyken bildirim gönderilmez.', 'Background notifications are unavailable. No notifications are sent while the site is closed.');
+    followPanel.appendChild(pushHelp);
 
     var help = document.createElement('p'); help.className = 'follow-explanation'; help.textContent = EXPLANATION; followPanel.appendChild(help);
     var state = document.createElement('p'); state.className = 'follow-feed-status'; state.setAttribute('data-follow-status', ''); state.textContent = feedLabel(); followPanel.appendChild(state);
@@ -427,7 +465,14 @@
         setConnectionState(allSourcesFresh() ? 'live' : 'stale');
       } else setConnectionState(followed.size ? 'unavailable' : 'idle');
     } catch (error) { if (!featureChecked) enabled = false; baselines.clear(); queue = []; if (toastRoot) toastRoot.replaceChildren(); setConnectionState('unavailable'); }
-    finally { polling = false; syncMatchControls(document); reconnectTimer = setTimeout(connect, 60000); }
+    finally {
+      polling = false; syncMatchControls(document);
+      var active = !document.hidden && followed.size && (!baselines.size || Array.from(baselines.values()).some(function (m) {
+        return /^(LIVE|IN_PLAY|1H|2H|ET|P|BT|HT|HALFTIME|PAUSED|INT|SUSP)$/.test(m.status) ||
+          (Date.parse(m.kickoff) > Date.now() && Date.parse(m.kickoff) - Date.now() < 600000);
+      }));
+      reconnectTimer = setTimeout(connect, active ? 60000 : 300000);
+    }
   }
 
   function eventKey(event) {
@@ -460,7 +505,10 @@
     return (event.homeTeam || "Ev sahibi") + " " + event.score.home + " - " + event.score.away + " " + (event.awayTeam || "Deplasman");
   }
 
-  function toastBody(event) { return [[event.playerName, minuteLabel(event)].filter(Boolean).join(' '), scoreLabel(event)].filter(Boolean); }
+  function toastBody(event) {
+    var correction = event.previousScore && event.score ? tr('Önceki skor: ', 'Previous score: ') + event.previousScore.home + ' - ' + event.previousScore.away : '';
+    return [[event.playerName, minuteLabel(event)].filter(Boolean).join(' '), correction, scoreLabel(event)].filter(Boolean);
+  }
   function ensureToastRoot() {
     if (toastRoot && document.body.contains(toastRoot)) return toastRoot;
     toastRoot = document.createElement("div");
@@ -481,7 +529,7 @@
   }
   function showToast(event) {
     var ui = EVENT_UI[event.type];
-    if (!ui || document.hidden) return;
+    if (!ui || document.hidden || !eventAllowed(event)) return;
     var root = ensureToastRoot();
     if (root.children.length >= 2) { queue.push({event: event, at: Date.now()}); queue = queue.slice(-4); return; }
     updateObstruction();
@@ -526,36 +574,23 @@
     toast.appendChild(content);
     toast.appendChild(close);
     root.appendChild(toast);
+    if (preferences.sound && audioContext && audioContext.state === 'running') {
+      var oscillator = audioContext.createOscillator(), gain = audioContext.createGain();
+      oscillator.connect(gain); gain.connect(audioContext.destination); gain.gain.setValueAtTime(0.06, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+      oscillator.frequency.value = 660; oscillator.start(); oscillator.stop(audioContext.currentTime + 0.15);
+    }
     function expire() { if (!toast.isConnected) return; if (toast.contains(document.activeElement)) { window.setTimeout(expire, 1000); return; } removeToast(toast); }
     window.setTimeout(expire, TOAST_LIFETIME_MS);
-  }
-
-  function updateScoreDom(match) {
-    if (!match || !followed.has(String(match.id || match.providerId)) || !match.score || document.hidden) return;
-    var id = String(match.id || match.providerId);
-    document.querySelectorAll('[data-match="' + cssEscape(id) + '"]').forEach(function (root) {
-      var fixtureScores = root.querySelectorAll(".fixture-row-score");
-      if (fixtureScores[0]) fixtureScores[0].textContent = String(match.score.home);
-      if (fixtureScores[1]) fixtureScores[1].textContent = String(match.score.away);
-      var liveScore = root.querySelector(".live-score-result strong");
-      if (liveScore) liveScore.textContent = match.score.home + " - " + match.score.away;
-      var detailScore = root.querySelector(".md-score");
-      if (detailScore) detailScore.textContent = match.score.home + " - " + match.score.away;
-    });
   }
 
   function ingestEvent(event) {
     if (!enabled || !event || !followed.has(String(event.matchId || "")) || !EVENT_UI[event.type]) return false;
     if (!rememberEvent(event)) return false;
 
-    if (event.score) {
-      var match = Object.assign({}, latestMatches.get(String(event.matchId)) || {}, event, { id: String(event.matchId) });
-      latestMatches.set(String(event.matchId), match);
-      if (!document.hidden) updateScoreDom(match);
-    }
 
     document.dispatchEvent(new CustomEvent("futbolradar:live-event", { detail: event }));
-    showToast(event);
+    if (eventAllowed(event)) showToast(event);
     return true;
   }
 
@@ -583,7 +618,7 @@
   function unfollow(id) {
     id = subscriptionId(cleanText(id));
     if (!followed.delete(id)) return false;
-    latestMatches.delete(id); baselines.delete(id);
+    baselines.delete(id);
     queue = queue.filter(function (item) { return String(item.event.matchId) !== id; });
     if (toastRoot) Array.from(toastRoot.children).forEach(function (toast) { if (toast.getAttribute('data-toast-match') === id) toast.remove(); });
     drainQueue();
@@ -609,12 +644,16 @@
     (matches || []).forEach(function (m) {
       var id = sharedId(m); if (!followed.has(id)) return; m = Object.assign({}, m, {id: id});
       var now = Date.now(), time = Date.parse(m.fetchedAt || m.updatedAt || stamp || '');
-      if (!Number.isFinite(time) || now - time > 120000 || time > now + 60000) { baselines.delete(id); setConnectionState('stale'); return; }
+      var previous = baselines.get(id);
+      // The shared stream and static refresh can complete in either order.
+      // Equal timestamps are duplicates; only newer evidence can correct a score.
+      if (previous && Number.isFinite(previous.sourceAt) && (!Number.isFinite(time) || time <= previous.sourceAt)) return;
+      if (!Number.isFinite(time) || now - time > 120000 || time > now + 60000) { freshMatches.delete(id); setConnectionState('stale'); return; }
       var record = followed.get(id);
       var completed = window.FutbolRadarNotificationCore.isFinished(m);
       if (completed && !record.finishedAt) { record.finishedAt = now; persistState(); }
       else if (!completed && record.finishedAt) { record.finishedAt = null; persistState(); }
-      var previous = baselines.get(id), result = window.FutbolRadarNotificationCore.diff(previous, m, now);
+      var result = window.FutbolRadarNotificationCore.diff(previous, m, now);
       if (previous && previous.fresh) result.events.forEach(ingestEvent);
       result.next.fresh = true; result.next.sourceAt = time; baselines.set(id, result.next); freshMatches.add(id);
       setConnectionState(freshMatches.size === followed.size ? 'live' : 'stale');
@@ -678,11 +717,12 @@
       if (!document.hidden) {
         scheduleDomSync(document);
         baselines.clear(); queue = []; if (toastRoot) toastRoot.replaceChildren();
-        scheduleReconnect(true);
+        restartConnection();
       }
     });
 
     window.addEventListener("storage", function (event) {
+      if (event.key === PREFERENCES_KEY) { loadPreferences(); queue = []; if (toastRoot) toastRoot.replaceChildren(); renderFollowPanel(); return; }
       if (event.key !== FOLLOW_STORAGE_KEY) return;
       queue = []; baselines.clear(); if (toastRoot) toastRoot.replaceChildren();
       followed.clear();

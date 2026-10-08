@@ -44,6 +44,9 @@ function vapidConfig() {
 }
 
 function isConfigured() {
+  // Fail closed until subscription ownership, durable event claims and
+  // background delivery have been verified. Existing preferences are retained.
+  if (require('../data/match-notifications.json').backgroundPushEnabled !== true) return false;
   const vapid = vapidConfig();
   return Boolean(vapid.publicKey && vapid.privateKey && vapid.subject) && pushSubscriptionStore.isConfigured();
 }

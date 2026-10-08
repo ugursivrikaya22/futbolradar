@@ -1,8 +1,8 @@
 /* Shared-cache notification diff. No network, credentials, timers or DOM. */
 (function (root) {
   'use strict';
-  var terminal = /^(FINISHED|FT|AET|PEN)$/;
-  var live = /^(LIVE|IN_PLAY|1H|2H|ET|HT|HALFTIME)$/;
+  var terminal = /^(FINISHED|FT|AET|PEN|FULL_TIME|AFTER_EXTRA_TIME|PENALTIES|AWD|WO|AWARDED)$/;
+  var live = /^(LIVE|IN_PLAY|1H|2H|ET|P|BT|HT|HALFTIME|PAUSED)$/;
   function status(m) { return String(m.providerStatus || m.status || '').toUpperCase(); }
   function score(m) {
     var s = m.score || {};
@@ -33,23 +33,35 @@
     }).filter(Boolean);
   }
   function snapshot(m, now) {
-    return { minute: m.minute ?? m.elapsed ?? null, score: score(m), status: status(m), observedAt: now,
-      events: Object.fromEntries(events(m).map(function (e) { return [e.id, e.type]; })) };
+    return { minute: m.minute ?? m.elapsed ?? null, score: score(m), status: status(m), observedAt: now, kickoff: m.kickoff || null,
+      sourceAt: Date.parse(m.fetchedAt || m.updatedAt || m.lastVerifiedAt || ''),
+      events: Object.fromEntries(events(m).map(function (e) { return [e.id, e.type]; })),
+      eventDetails: Object.fromEntries(events(m).map(function (e) { return [e.id, e]; })) };
   }
   function diff(previous, m, now) {
     var next = snapshot(m, now), result = [];
+    if (previous && Number.isFinite(previous.sourceAt) && Number.isFinite(next.sourceAt) && next.sourceAt <= previous.sourceAt) return { next: previous, events: result };
     if (!previous || now - previous.observedAt > 120000) return { next: next, events: result };
-    function add(e) { result.push(Object.assign({ matchId: String(m.id), homeTeam: m.homeTeam, awayTeam: m.awayTeam, score: next.score, minute: m.minute ?? m.elapsed ?? null }, e)); }
+    if (!next.score) { next.score = previous.score; next.scoreUnavailable = true; }
+    function add(e) { result.push(Object.assign({ matchId: String(m.id), homeTeam: m.homeTeam, awayTeam: m.awayTeam, score: next.scoreUnavailable ? null : next.score, minute: m.minute ?? m.elapsed ?? null }, e)); }
     var cancelled = false;
     events(m).forEach(function (e) {
       var old = previous.events[e.id];
       if (old === e.type) return;
       if (!old && e.type !== 'var' && previous.minute != null && e.minute != null && parseInt(e.minute, 10) < Number(previous.minute)) return;
-      if (e.type === 'var') cancelled = true;
-      add(Object.assign({}, e, { correction: !!old }));
+      if (e.type === 'var') {
+        cancelled = true;
+        var candidates = Object.values(previous.eventDetails || {}).filter(function (goal) {
+          return /^(goal|penalty_scored)$/.test(goal.type) && (goal.id === e.id ||
+            (e.minute != null && String(goal.minute) === String(e.minute) && e.playerName && goal.playerName === e.playerName && goal.teamName === e.teamName));
+        });
+        e = Object.assign({}, e, {previousScore: previous.score, replacesEventId: candidates.length === 1 ? candidates[0].id : null});
+      }
+      add(Object.assign({}, e, { correction: !!old || e.type === 'var' }));
     });
     // Retain previously observed events even when a provider returns partial lists.
     next.events = Object.assign({}, previous.events, next.events);
+    next.eventDetails = Object.assign({}, previous.eventDetails, next.eventDetails);
     var a = previous.score, b = next.score;
     if (a && b && (a.home !== b.home || a.away !== b.away) && !cancelled) {
       var down = b.home < a.home || b.away < a.away;
@@ -60,7 +72,7 @@
     }
     if (previous.status !== next.status) {
       var kind = terminal.test(next.status) && !terminal.test(previous.status) ? 'fulltime'
-        : /^(HT|HALFTIME)$/.test(next.status) && !/^(HT|HALFTIME)$/.test(previous.status) ? 'halftime'
+        : /^(HT|HALFTIME|BT|PAUSED)$/.test(next.status) && !/^(HT|HALFTIME|BT|PAUSED)$/.test(previous.status) ? 'halftime'
         : /^(NS|SCHEDULED|TIMED|NOT_STARTED)$/.test(previous.status) && live.test(next.status) ? 'kickoff' : null;
       if (kind) add({ id: m.id + ':status:' + kind, type: kind });
     }
