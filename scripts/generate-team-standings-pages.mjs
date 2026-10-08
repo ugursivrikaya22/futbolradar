@@ -158,12 +158,15 @@ function buildPage(team, sorted, total) {
   // tek adres olmalı: iki adres aynı sayfayı gösterirse arama motoru ikisini
   // ayrı sayfa sayıp ikisini de zayıflatır.
   const url = `${DOMAIN}/${team.slug}-puan-durumu`;
-  const title = `${team.name} Puan Durumu | Süper Lig Sıralaması ve Averaj | FutbolRadar`;
-  const description = `${team.name} Süper Lig puan durumu: güncel sıra, puan, averaj ve momentum. Tam 18 takımlı tabloda ${team.name} satırı öne çıkarılmış.`;
   // `team` yalnızca slug/id/name taşır (TEAMS sabiti); sıra/puan/averaj gibi
   // gerçek veri `sorted` içindeki zenginleştirilmiş kayıtta.
   const fullTeam = sorted.find((t) => t.id === team.id);
   if (!fullTeam) return null;
+  const rank = Number(fullTeam.rank);
+  const points = Number(fullTeam.points);
+  const played = displayValue(fullTeam.played);
+  const title = `${fullTeam.name} ${points} puan, ${rank}. sıra | Süper Lig`;
+  const description = `${fullTeam.name}, 2026/27 Süper Lig'de ${played} maç sonunda ${points} puanla ${rank}. sırada.`;
   const intro = standingsNarrative(fullTeam, sorted, total);
   const rowsHtml = sorted.map((t) => fullStandingRowHtml(t, team.id)).join("");
 
