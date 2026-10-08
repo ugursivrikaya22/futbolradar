@@ -72,12 +72,17 @@ function escapeHtml(value) {
  * ile biter. `base` derinliğe göre önekleniyor — aynı `base` her <a> için
  * zaten kullanılıyor. Eşleşmeyen köşeli parantez metni olduğu gibi kalır.
  */
-function inlineText(value, base = "") {
+function inlineText(value, base = "", sources = []) {
   const bold = escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-  return bold.replace(
+  const linked = bold.replace(
     /\[([^\]]+)\]\(([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
     (match, label, href) => `<a href="${base}${href}">${label}</a>`
   );
+  return linked.replace(/\[(\d+)\](?!\()/g, (marker, number) => {
+    const source = sources[Number(number) - 1];
+    if (!source || !/^https:\/\//.test(source.url)) return marker;
+    return `<a href="${escapeHtml(source.url)}" target="_blank" rel="${SOURCE_LINK_REL}" aria-label="${escapeHtml(source.label)}">${marker}</a>`;
+  });
 }
 
 function writeGeneratedFile(file, contents) {
@@ -335,7 +340,7 @@ export function columnPageHtml(column, locale = "tr") {
     if (line.startsWith("## ")) {
       return `<h2>${inlineText(line.slice(3).trim(), base)}</h2>`;
     }
-    return `<p>${inlineText(line, base)}</p>`;
+    return `<p>${inlineText(line, base, column.sources)}</p>`;
   }).join("\n        ");
 
   // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.
@@ -350,7 +355,7 @@ export function columnPageHtml(column, locale = "tr") {
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
-    author: { "@type": "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
+    author: { "@type": column.author === "FutbolRadar" ? "Organization" : "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",
       name: "FutbolRadar",
@@ -448,7 +453,7 @@ export function authorPageHtml(author) {
     name: `${author.name} Yazıları`,
     inLanguage: "tr-TR",
     mainEntity: {
-      "@type": "Person",
+      "@type": author.name === "FutbolRadar" ? "Organization" : "Person",
       name: author.name,
       url
     }
@@ -562,7 +567,7 @@ function updateSitemap(columns) {
     if (!fs.existsSync(sitemapPath)) continue;
     let xml = fs.readFileSync(sitemapPath, "utf8");
     // İki dizin de temizlenir: Türkçe yazı ve İngilizce karşılığı.
-    xml = xml.replace(/  <url>\n    <loc>https:\/\/www\.futbolradar\.com\/(?:kose-yazilari|en\/columns)\/[^<]+(?:\.html)?<\/loc>[\s\S]*?  <\/url>\n?/g, "");
+    xml = xml.replace(/  <url>\r?\n    <loc>https:\/\/www\.futbolradar\.com\/(?:kose-yazilari|en\/columns)\/[^<]+(?:\.html)?<\/loc>[\s\S]*?  <\/url>\r?\n?/g, "");
     xml = xml.replace("</urlset>", `${entries.join("\n")}\n</urlset>`);
     writeGeneratedFile(sitemapPath, xml);
   }

@@ -365,3 +365,12 @@ function column(overrides = {}) {
 }
 
 console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, yazar sayfaları, son üç yazı, temiz rotalar, elle yayın).");
+
+// Kaynak numaraları yalnızca kayıtlı HTTPS kaynaklarına bağlanır.
+{
+  const rendered = columnPageHtml(presentColumn(column({author:'FutbolRadar',body:['**Doğrulanan bilgi** [1]. Bilinmeyen [9]. <script>alert(1)</script>'],sources:[{label:'Resmî kaynak',url:'https://www.tff.org/default.aspx?a=1&b=2'}]})));
+  assert.match(rendered, /href="https:\/\/www\.tff\.org\/default\.aspx\?a=1&amp;b=2"[^>]*>\[1\]<\/a>/);
+  assert.match(rendered, /Bilinmeyen \[9\]/);
+  assert.ok(!rendered.includes('<script>alert(1)</script>'));
+  assert.match(rendered, /"author":\{"@type":"Organization","name":"FutbolRadar"/);
+}
