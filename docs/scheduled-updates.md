@@ -21,7 +21,7 @@ is introduced. SporX discovery and its enrichment remain disabled/manual.
 - `.github/workflows/daily-health-check.yml`: a separate read-only monitor at :47
   every hour (no duplicate completion trigger). It has its own concurrency group,
   no provider secret, no npm/browser install and no repository write permission.
-- Repository fixture freshness target: 90 minutes; intervention after 180 minutes.
+- Repository fixture freshness target: 90 minutes; warning after 180 minutes (critical after 12 h, or after 180 minutes when the live API is not fresh either).
   Stuck runs: 95 minutes. The monitor distinguishes delayed, missed, failed and
   deployment-pending states. None of these are guarantees of GitHub start time.
   A full daily update older than 36 hours is separately flagged even if hourly
@@ -31,6 +31,42 @@ is introduced. SporX discovery and its enrichment remain disabled/manual.
   caching; it does not query individual followed IDs or create another SSE stream.
   Existing live-score API/SSE cadence remains quota-aware. Daily/hourly refreshes
   never depend on a visitor. Live freshness acceptance is 120 seconds.
+
+## Daily full update: planning, compensation, health levels
+
+The cron string is no longer the source of truth for what a run does. After the
+ledger is restored, `scripts/plan-scheduled-update.mjs` (rules in
+`services/operationsPolicy.js`) resolves the real type from the persisted ledger
+and the Istanbul clock, *before* `npm ci` and Playwright, which are installed
+according to that resolved type.
+
+- Before 05:00 Istanbul no full update starts.
+- The daily cron (or, when GitHub delays/drops it, the first later scheduled run)
+  becomes the full update while the Istanbul day has no **verified** full.
+  Verified = status success/partial, no failed build/validation step, core
+  `live-fixtures` source succeeded and not degraded, and the output was
+  committed or provably unchanged. A partial caused only by optional sources or
+  QA still counts; a partial with a failed critical step, a skipped provider
+  step or a failed push never does.
+- Compensation is bounded: at most 2 full attempts per Istanbul day, a 3 h
+  cool-down after the last attempt, no start after 22:59 Istanbul. A manual
+  `workflow_dispatch` keeps the operator's choice.
+- An hourly slot that already succeeded in the same Istanbul hour is skipped
+  before any dependency install.
+- Concurrency is one shared group with `cancel-in-progress: false` (no parallel
+  writers). GitHub keeps one pending run per group and replaces older pending
+  runs, which prevents a stale hourly backlog; a displaced daily cron is recovered
+  by the planner on the next run.
+
+Health levels (`monitor.json`, Actions summary): `issues` are critical and fail the
+job; `warnings` (delayed schedules, late daily full within its retry budget, stale
+static fixtures while the live API is fresh) never turn the check red; `info` is
+normal waiting; `codeChecks` (Interaction checks workflow) is reported separately
+from operations health. Thresholds come from 90 scheduled runs measured between
+2026-09-24 and 2026-10-08 (median gap 3.5 h, p90 7.1 h, max 9.1 h): scheduler
+delayed >3 h (warning), missed >12 h (critical); static fixtures >3 h warning,
+>12 h critical, or >3 h critical when the live API is also not fresh; daily full
+critical when no verified full for 36 h or 2 failed attempts today.
 
 ## Write, validation, publication
 

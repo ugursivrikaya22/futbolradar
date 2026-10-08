@@ -418,9 +418,12 @@ assert.doesNotMatch(workflow, /cron: "\d+ \* \* \* \*"/);
 assert.doesNotMatch(workflow, /\*\/5/);
 assert.match(workflow, /group: futbolradar-production-update/);
 assert.match(workflow, /FUTBOLRADAR_AUTOMATION_TOKEN/);
-// Koşu türü SCHEDULE değişkeninden okunuyor ve tam koşuyu yalnızca günlük
-// tetik seçiyor; geri kalan her tetik saatlik koşu demek.
-assert.match(workflow, /SCHEDULE.*"0 2 \* \* \*"/s);
+// Koşu türü artık "Plan" adımında, kalıcı defter ve gerçek saatten karara
+// bağlanıyor (scripts/plan-scheduled-update.mjs → services/operationsPolicy.js).
+// İş akışı yalnızca tetik bilgisini (SCHEDULE) iletir; günlük tetik tanımı
+// politika dosyasında tek yerde durur.
+assert.match(workflow, /id: plan[\s\S]*SCHEDULE: \$\{\{ github\.event\.schedule \}\}/);
+assert.match(fs.readFileSync(path.join(root, "services", "operationsPolicy.js"), "utf8"), /schedule==='0 2 \* \* \*'/);
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);

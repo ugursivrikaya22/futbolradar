@@ -46,8 +46,17 @@ permissions:
   contents: write
   actions: read
 
-# One shared group covers both schedules and authorized manual runs. A full job
-# is never cancelled by an hourly run, and no two jobs can write the same files.
+# One shared group covers both schedules and authorized manual runs. A running
+# job is never cancelled (cancel-in-progress: false), so no two jobs can write
+# the same generated files.
+#
+# GitHub keeps at most ONE pending run per group and replaces an older pending
+# run with a newer one. That protects the queue from piling up stale hourly
+# runs, but it also means a queued daily-full cron can be displaced by a later
+# hourly cron. The daily job therefore does not depend on its own queue slot:
+# the "Plan" step below decides the real type from the persisted ledger, so the
+# next scheduled run after 05:00 Istanbul becomes a bounded compensation full
+# whenever today's full has no verified success.
 concurrency:
   group: futbolradar-production-update
   cancel-in-progress: false
@@ -95,41 +104,45 @@ jobs:
           node-version: 22
           cache: npm
 
-      # Full updates invoke npm run build, including the production gate.
-      # Keep its compiler and browser available just as in interaction-checks.
-      - name: Install build and validation dependencies
-        run: npm ci --include=dev
-
-      - name: Install validation browser
-        if: github.event.schedule == '0 2 * * *' || inputs.update_type == 'full'
-        run: npx --no-install playwright install --with-deps chromium
-
+      # Ledger first, dependencies later: the real update type (and therefore
+      # whether Playwright is needed) is decided from the persisted ledger and
+      # the actual clock, not from the cron string that happened to fire.
       - name: Restore private operational history
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/restore-operations-ledger.mjs
 
-      - name: Verify operational safeguards offline
-        run: node --test tests/operations.test.mjs
-
-      - name: Resolve update type
-        id: update_type
-        shell: bash
+      - name: Plan update type from persisted state
+        id: plan
         env:
           SCHEDULE: ${{ github.event.schedule }}
           MANUAL_TYPE: ${{ inputs.update_type }}
           MANUAL_FORCE: ${{ inputs.force }}
+        run: node scripts/plan-scheduled-update.mjs
+
+      # Full updates invoke npm run build, including the production gate.
+      # Keep its compiler and browser available just as in interaction-checks.
+      - name: Install build and validation dependencies
+        if: steps.plan.outputs.run == 'true'
+        run: npm ci --include=dev
+
+      - name: Install validation browser
+        if: steps.plan.outputs.run == 'true' && steps.plan.outputs.type == 'full'
+        run: npx --no-install playwright install --with-deps chromium
+
+      - name: Verify operational safeguards offline
+        if: steps.plan.outputs.run == 'true'
+        run: node --test tests/operations.test.mjs tests/scheduling.test.mjs
+
+      - name: Resolve manual flags
+        id: flags
+        if: steps.plan.outputs.run == 'true'
+        shell: bash
+        env:
+          MANUAL_FORCE: ${{ inputs.force }}
           MANUAL_MATCH: ${{ inputs.match }}
           MANUAL_BACKFILL: ${{ inputs.backfill }}
         run: |
-          if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
-            update_type="${MANUAL_TYPE}"
-          elif [[ "${SCHEDULE}" == "0 2 * * *" ]]; then
-            update_type="full"
-          else
-            update_type="hourly"
-          fi
-          echo "type=${update_type}" >> "${GITHUB_OUTPUT}"
           if [[ "${MANUAL_FORCE}" == "true" ]]; then
             echo "force=--force" >> "${GITHUB_OUTPUT}"
           else
@@ -148,13 +161,16 @@ jobs:
 
       - name: Run monitored update pipeline
         id: update
+        if: steps.plan.outputs.run == 'true'
         continue-on-error: true
         shell: bash
         env:
-          UPDATE_TYPE: ${{ steps.update_type.outputs.type }}
-          FORCE_FLAG: ${{ steps.update_type.outputs.force }}
-          MATCH_FLAG: ${{ steps.update_type.outputs.match }}
-          BACKFILL_FLAG: ${{ steps.update_type.outputs.backfill }}
+          UPDATE_TYPE: ${{ steps.plan.outputs.type }}
+          UPDATE_PLAN_REASON: ${{ steps.plan.outputs.reason }}
+          UPDATE_PLAN_COMPENSATION: ${{ steps.plan.outputs.compensation }}
+          FORCE_FLAG: ${{ steps.flags.outputs.force }}
+          MATCH_FLAG: ${{ steps.flags.outputs.match }}
+          BACKFILL_FLAG: ${{ steps.flags.outputs.backfill }}
         run: |
           set -o pipefail
           node scripts/run-scheduled-update.mjs --type="${UPDATE_TYPE}" --ci-guard ${FORCE_FLAG} ${MATCH_FLAG} ${BACKFILL_FLAG} 2>&1 | tee scheduled-update.log
@@ -164,19 +180,19 @@ jobs:
         if: steps.update.outcome == 'success'
         shell: bash
         env:
-          UPDATE_TYPE: ${{ steps.update_type.outputs.type }}
+          UPDATE_TYPE: ${{ steps.plan.outputs.type }}
         run: |
           node scripts/prepare-operations-publication.mjs
           node scripts/ci-commit-push.mjs "ci(update): ${UPDATE_TYPE} automatic FutbolRadar refresh"
 
       - name: Record actual publication outcome
-        if: always()
+        if: always() && steps.plan.outputs.run == 'true'
         env:
           PUBLICATION_OUTCOME: ${{ steps.publication.outcome }}
         run: node scripts/finalize-operations-publication.mjs
 
       - name: Preserve operational history without deployment
-        if: always()
+        if: always() && steps.plan.outputs.run == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: operations-ledger
@@ -184,10 +200,10 @@ jobs:
           retention-days: 90
 
       - name: Preserve structured run log
-        if: always()
+        if: always() && steps.plan.outputs.run == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: futbolradar-${{ steps.update_type.outputs.type }}-${{ github.run_id }}
+          name: futbolradar-${{ steps.plan.outputs.type }}-${{ github.run_id }}
           path: |
             scheduled-update.log
             data/update-status.json
