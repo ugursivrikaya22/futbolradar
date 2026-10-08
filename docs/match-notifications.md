@@ -25,7 +25,9 @@ Eski statik görüntü yeni canlı görüntünün üzerine yazılmaz.
 ## Kimlik, tekrar ve kapsam
 
 Seçimler maç kimliğiyle tutulur; aynı takımların farklı maçları eşleştirilmez.
-Kaynak açık API-Football fixture kimliği sağlarsa, onunla kayıt kimliği arasında
+Mevcut kalıcı maç sayfası sicilinden derlemede üretilen kimlik eşlemeleri,
+fikstür ve detay kimliklerini birleştirir; yalnızca takip varken sayfada bir kez
+okunur. Belirsiz eşlemeler atılır. Kaynak açık API-Football fixture kimliği sağlarsa, onunla kayıt kimliği arasında
 takım adlarına bakmadan eşleme yapılır. Fikstür ve detay üreticileri maç
 kimliğini HTML'e yazar. İngilizce dinamik kartlar da aynı alanları yayınlar.
 

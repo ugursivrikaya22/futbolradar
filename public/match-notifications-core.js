@@ -9,8 +9,9 @@
     return Number.isFinite(s.home) && Number.isFinite(s.away) ? { home: s.home, away: s.away } : null;
   }
   function type(e) {
-    var t = String(e.type || '').toLowerCase();
-    var d = String(e.detail || '').toLowerCase();
+    var fold = value => String(value || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
+    var t = fold(e.type);
+    var d = fold(e.detail);
     if (/goal cancel|goal disallow|gol iptal/.test(t + ' ' + d)) return 'var';
     if (/missed penalty|penalty missed|penaltı kaç|penalti kac/.test(t + ' ' + d)) return 'penalty_missed';
     if (/penalty awarded|penalty confirmed|penaltı kararı|penalti karari/.test(t + ' ' + d)) return 'penalty_awarded';

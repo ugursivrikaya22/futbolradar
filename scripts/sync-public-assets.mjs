@@ -70,6 +70,7 @@ for (const file of [
   "match-analyses.json",
   "matches.json",
   "match-notifications.json",
+  "match-notification-identities.json",
   "momentum.json",
   "news.json",
   "match-news-index.json",

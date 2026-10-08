@@ -12,6 +12,7 @@
   var EXPLANATION = tr('Bu maçın gol ve önemli gelişmeleri, site açıkken ekranın altında gösterilecek.', 'Goals and important events for this match will appear at the bottom while the site is open.');
   var enabled = false, polling = false, queue = [], baselines = new Map(), freshMatches = new Set();
   var moduleBase = new URL('.', document.currentScript.src);
+  var identityAliases = {}, identitiesLoaded = false;
   var followed = new Map();
   var seenEvents = new Map();
   var latestMatches = new Map();
@@ -85,7 +86,7 @@
   function subscriptionId(id) {
     id = String(id || '');
     if (followed.has(id)) return id;
-    for (var record of followed.values()) if ((record.aliases || []).includes(id)) return record.id;
+    for (var record of followed.values()) if ((record.aliases || []).includes(id) || (identityAliases[id] && identityAliases[id] === identityAliases[record.id])) return record.id;
     return id;
   }
   function sharedId(m) {
@@ -373,6 +374,10 @@
       enabled = config.enabled === true; featureChecked = true;
       if (!enabled) { queue = []; baselines.clear(); if (toastRoot) toastRoot.replaceChildren(); }
       if (enabled && followed.size && !document.hidden) {
+        if (!identitiesLoaded) {
+          var identityData = await readShared('match-notification-identities.json');
+          identityAliases = identityData.aliases || {}; identitiesLoaded = true;
+        }
         var sources = await Promise.all([readShared('matches.json'), readShared('fixture-calendar.json'), readShared('super-lig-fixtures.json')]);
         var rows = new Map();
         sources.forEach(function (source) {
@@ -544,7 +549,7 @@
   function follow(record) {
     var normalized = normalizeRecord(record);
     if (!enabled || !normalized) return false;
-    if (followed.has(normalized.id)) return true;
+    if (followed.has(subscriptionId(normalized.id))) return true;
     if (!followed.has(normalized.id) && followed.size >= MAX_FOLLOWED_MATCHES) return false;
     baselines.delete(normalized.id);
     followed.set(normalized.id, Object.assign({}, followed.get(normalized.id) || {}, normalized));

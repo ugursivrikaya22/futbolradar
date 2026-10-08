@@ -44,3 +44,14 @@ test('a provider without event IDs can cancel an earlier goal', () => {
  const result = core.diff(previous,match({minute:61,events:[{type:'Var',detail:'Goal cancelled',minute:55,playerName:'Player'}]}),2000);
  assert.deepEqual(result.events.map(e=>e.type),['var']);
 });
+
+test('source ID aliases use the established dated match-page ID',()=>{
+ const {buildAliases}=require('../scripts/generate-match-notification-identities.cjs');
+ const fixture={homeTeam:'Konyaspor',awayTeam:'Başakşehir',kickoff:'2026-10-11T13:30:00+03:00'};
+ const {aliases}=buildAliases([{...fixture,id:'tff-1'},{...fixture,id:'provider-1',providerIds:{apiFootball:'123'}},{...fixture,id:'other-date',kickoff:'2026-10-18T13:30:00+03:00'}]);
+ assert.equal(aliases['tff-1'],aliases['123']);assert.equal(aliases['provider-1'],aliases['tff-1']);assert.notEqual(aliases['other-date'],aliases['tff-1']);
+});
+
+test('Turkish uppercase cancellation is explicit evidence',()=>{
+ assert.equal(core.events(match({events:[{type:'VAR',detail:'GOL İPTALİ',minute:12}]}))[0].type,'var');
+});

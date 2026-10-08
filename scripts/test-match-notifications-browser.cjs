@@ -7,7 +7,7 @@ let matches = [m('A'),m('B')], hits = [];
 const server = http.createServer((req,res)=>{
   const url = new URL(req.url,'http://localhost'); hits.push(url.pathname);
   if (url.pathname === '/qa') {res.setHeader('Content-Type','text/html; charset=utf-8'); return res.end(`<html lang="${url.searchParams.get('lang')||'tr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/page.css"><script src="/live-follow.js" defer></script></head><body><header class="topbar-premium"><nav class="nav"><div class="nav-menu"></div></nav></header><main>${['A','B'].map(id=>`<article class="fixture-card" data-match="${id}" data-home-team="Home ${id}" data-away-team="Away ${id}" data-match-href="/mac-detay.html?id=${id}"><h2>Match ${id}</h2></article>`).join('')}</main><div class="cookie-banner" style="position:fixed;bottom:0;height:65px;background:#eee;width:100%">Cookie banner test</div></body></html>`);}
-  if (url.pathname.startsWith('/data/')) {res.setHeader('Content-Type','application/json'); return res.end(JSON.stringify(url.pathname.endsWith('match-notifications.json')?{enabled}:url.pathname.endsWith('/matches.json')?matches:{matches:[]}));}
+  if (url.pathname.startsWith('/data/')) {res.setHeader('Content-Type','application/json'); return res.end(JSON.stringify(url.pathname.endsWith('match-notifications.json')?{enabled}:url.pathname.endsWith('match-notification-identities.json')?{aliases:{B:'canonical-B','B-provider':'canonical-B'}}:url.pathname.endsWith('/matches.json')?matches:{matches:[]}));}
   const file = path.join(root, url.pathname.slice(1));
   if (fs.existsSync(file) && fs.statSync(file).isFile()) {res.setHeader('Content-Type',url.pathname.endsWith('.css')?'text/css':'text/javascript'); return res.end(fs.readFileSync(file));}
   res.statusCode=404;res.end();
@@ -41,10 +41,10 @@ const server = http.createServer((req,res)=>{
     await page.screenshot({path:path.join(root,'outputs/match-notifications-qa/desktop.png')});
     // Existing page stream uses the same engine and never starts a new connection.
     await page.reload(); await page.waitForTimeout(350);
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:[{id:'B',homeTeam:'Home B',awayTeam:'Away B',status:'1H',minute:20,score:{home:3,away:0},events:[],fetchedAt:new Date().toISOString()}]}})));
-    await page.evaluate(() => document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:[{id:'B',homeTeam:'Home B',awayTeam:'Away B',status:'1H',minute:21,score:{home:4,away:0},events:[{id:'stream-goal',type:'Goal',minute:21}],fetchedAt:new Date().toISOString()}]}})));
+    await page.evaluate(() => document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:[{id:'B-provider',homeTeam:'Home B',awayTeam:'Away B',status:'1H',minute:20,score:{home:3,away:0},events:[],fetchedAt:new Date().toISOString()}]}})));
+    await page.evaluate(() => document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:[{id:'B-provider',homeTeam:'Home B',awayTeam:'Away B',status:'1H',minute:21,score:{home:4,away:0},events:[{id:'stream-goal',type:'Goal',minute:21}],fetchedAt:new Date().toISOString()}]}})));
     assert.ok((await page.locator('.live-event-toast').innerText()).includes('GOAL'));
-    enabled=false;await poll();assert.equal(await page.locator('.live-event-toast').count(),0);assert.equal(await button('A').isDisabled(),true); await button('B').click(); assert.equal(await button('B').getAttribute('aria-pressed'),'false');
+    enabled=false;await poll();assert.equal(await page.locator('.live-event-toast').count(),0);assert.equal(await button('A').isDisabled(),true); await button('B').click(); await page.waitForFunction(()=>document.querySelector('[data-follow-match="B"]').getAttribute('aria-pressed')==='false'); assert.equal(await button('B').getAttribute('aria-pressed'),'false');
     console.log('Checking finished-match expiry, postponed retention and clear-all');
     enabled=true; matches=[{...m('A'),status:'POSTPONED'}, {...m('B'),status:'FT'}];
     await page.evaluate(()=>localStorage.setItem('futbolradar:followed-matches:v1',JSON.stringify([
