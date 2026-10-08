@@ -48,6 +48,7 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const ledgerPath=path.join(root,'outputs/operations/update-status.json');
   const ledger=JSON.parse(fs.readFileSync(fs.existsSync(ledgerPath)?ledgerPath:path.join(root,'data/update-status.json'),'utf8'));
   const source=ledger.lastUpdate?.sourcesChecked?.find(s=>s.id==='live-fixtures');
+  if(source?.status==='failed'||source?.summary?.degraded||policy.STOP_CODES.has(source?.providerCode)) issues.push('provider-'+(source.providerCode||source.summary?.degradedCode||'sync-failed'));
   const sourceTime=source?.summary?.lastSuccessfulSyncAt || liveCalendar?.fixtureHealth?.lastSuccessfulSyncAt || liveCalendar?.fetchedAt;
   const age=now-Date.parse(sourceTime);
   checks.push({name:'fixture-freshness',sourceTime,ageMinutes:Number.isFinite(age)?Math.round(age/60000):null,state:age<=90*60000?'fresh':'delayed'});
@@ -55,6 +56,15 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const today=policy.istanbulDay(now);
   checks.push({name:'istanbul-day',expected:today,sourceDay:localCalendar.fixtureHealth?.date||null});
   if(localCalendar.fixtureHealth?.date && localCalendar.fixtureHealth.date!==today) issues.push('wrong-fixture-day');
+  try {
+    // Same canonical cache as visitors/notifications; one bounded read, no
+    // match-specific requests, query cache busters or extra provider resource.
+    const api=await (await fetcher(ORIGIN+'/api/matches')).json();
+    const valid=api.ok===true&&Array.isArray(api.data)&&!api.meta?.degraded&&
+      (api.meta?.freshness?.stale===false||api.meta?.fixtureHealth?.state==='empty-confirmed');
+    checks.push({name:'runtime-matches-api',state:valid?'fresh':'degraded',records:api.data?.length||0,source:api.source||null,sourceTime:api.updatedAt||null,errorCode:api.error?.code||null});
+    if(!valid) issues.push('runtime-api-degraded');
+  } catch { issues.push('runtime-api-unavailable'); }
   const registry=JSON.parse(fs.readFileSync(path.join(root,'data/match-seo-pages.json'),'utf8'));
   const entries=Array.isArray(registry)?registry:registry.pages||registry.records||[];
   const recent=entries.find(r=>r.path&&/^(?:\/)?mac\//.test(r.path));
