@@ -149,8 +149,14 @@ function relatedLinksHtml(entry) {
 function competitionPage(entry) {
   const { rows, hasData, updatedAt } = getStandings(entry);
   const dataDate = (updatedAt || "").slice(0, 10) || today;
-  const title = `${entry.nameTr} Puan Durumu | FutbolRadar`;
-  const description = `${entry.nameTr} güncel puan durumu; oynanan maç, galibiyet, beraberlik, mağlubiyet, averaj ve puan bilgileriyle sıralama.`;
+  const leader = rows[0];
+  const leaderPlayed = leader && Number(leader.played) > 0;
+  const title = leaderPlayed
+    ? `${entry.nameTr}: ${leader.name} ${leader.points} puan | FutbolRadar`
+    : `${entry.nameTr} Puan Durumu | FutbolRadar`;
+  const description = leaderPlayed
+    ? `${entry.nameTr} puan durumu: ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla ${leader.rank}. sırada.`
+    : `${entry.nameTr} güncel puan durumu; oynanan maç, galibiyet, beraberlik, mağlubiyet, averaj ve puan bilgileriyle sıralama.`;
   const canonicalPath = `/${entry.slugTr}`;
   const breadcrumbs = [
     { name: "Ana Sayfa", href: "./", url: `${siteUrl}/` },

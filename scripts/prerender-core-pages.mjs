@@ -1232,6 +1232,33 @@ function standingsSeasonRows() {
     team.rank !== null && team.rank !== undefined);
 }
 
+function standingsDocumentMeta() {
+  const rows = standingsSeasonRows()
+    .slice()
+    .sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
+  const leader = rows[0];
+  const second = rows[1];
+  if (!leader || !(Number(leader.played) > 0)) return null;
+  const title = `Süper Lig: ${leader.name} ${leader.points} puan | FutbolRadar`;
+  const chase = second ? `, ${second.name} ${second.points} puanla takipte` : "";
+  const description = `2026/27 Süper Lig puan durumu. ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla ${leader.rank}. sırada${chase}.`;
+  return { title, description };
+}
+
+function applyStandingsDocumentMeta(html) {
+  const meta = standingsDocumentMeta();
+  if (!meta) return html;
+  const title = escapeHtml(meta.title);
+  const description = escapeHtml(meta.description);
+  return html
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${title}</title>`)
+    .replace(/(<meta name="description" content=")[^"]*(")/, `$1${description}$2`)
+    .replace(/(<meta property="og:title" content=")[^"]*(")/, `$1${title}$2`)
+    .replace(/(<meta property="og:description" content=")[^"]*(")/, `$1${description}$2`)
+    .replace(/(<meta name="twitter:title" content=")[^"]*(")/, `$1${title}$2`)
+    .replace(/(<meta name="twitter:description" content=")[^"]*(")/, `$1${description}$2`);
+}
+
 function staticStandingRows() {
   const rows = standingsSeasonRows();
   if (!rows.length) {
@@ -1927,6 +1954,7 @@ function writePage(file, slots, freshness, staticSlots = {}) {
   html = html.replace(/(<[^>]+data-api-target="(?:featured-match|today-matches|today-superlig-matches|matches-page|live-score|daily-headlines)"[^>]*?)(?: data-matches-day="[^"]*")?>/g,
     (tag) => tag.replace(/ data-matches-day="[^"]*"/g, "").replace(/>$/, ` data-matches-day="${istanbulDay(new Date().toISOString())}">`));
   html = updateRobotsDirective(html, file);
+  if (file === "puan-durumu.html") html = applyStandingsDocumentMeta(html);
   writeGeneratedFile(sourcePath, html);
   writeGeneratedFile(path.join(root, "public", file), html);
 }
