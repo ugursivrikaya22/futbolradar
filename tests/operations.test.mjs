@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {createRequire} from 'node:module';
 import policy from '../services/operationsPolicy.js';
 import news from '../services/automatedNewsPolicy.js';
 import {captureData,retainUnchangedData} from '../scripts/lib/operationalData.mjs';
@@ -19,6 +20,13 @@ test('Istanbul midnight and cost prioritisation preserve core fixtures',()=>{
   assert.equal(policy.skipReason({id:'live-fixtures',source:'api-football'},'saving'),null);
   assert.match(policy.skipReason({id:'weekly-photo-validation'},'saving'),/deferred/);
   for(const code of policy.STOP_CODES){assert.equal(policy.modeFor({code}),'protected');assert.match(policy.skipReason({source:'api-football'},'protected',code),/stopped/);}
+});
+test('runtime protected mode never reaches the paid provider',async()=>{
+  const require=createRequire(import.meta.url),config=require('../data/operations-policy.json'),provider=require('../services/providers/apiFootballProvider');
+  const previous=config.mode,oldFetch=global.fetch;let calls=0;
+  config.mode='protected';global.fetch=async()=>{calls++;throw Error('Network must not run');};
+  try {await assert.rejects(()=>provider.getFixtures({live:true}),e=>e.code==='PROVIDER_RATE_LIMIT');assert.equal(calls,0);}
+  finally {config.mode=previous;global.fetch=oldFetch;}
 });
 test('timestamps alone keep original public bytes; score/date/event changes count',()=>{
   const dir=sandbox(),old={fetchedAt:'2026-10-07',matches:[{id:'A',kickoff:'2026-10-08T20:00:00Z',score:{home:null,away:null},events:[]}]};

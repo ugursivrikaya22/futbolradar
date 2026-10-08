@@ -11,7 +11,9 @@ const {
 } = require("../../api/_utils");
 const { competitions, matchesCompetition, findCompetitionByProviderId } = require("../competitionCatalog");
 const { canonicalStatus } = require("../matchStatus");
-const { fetchWithCache } = require("../providerCache");
+const { fetchWithCache, ttlFor } = require("../providerCache");
+const { modeFor } = require('../operationsPolicy');
+const operationsConfig = require('../../data/operations-policy.json');
 // Bağımlılığı olmayan bir okuyucu; leagueResolver'ı require etmek sağlayıcı
 // ile resolver arasında döngü yaratırdı.
 const { readCachedLeague } = require("../leagueCache");
@@ -380,7 +382,9 @@ async function providerFetch(path, params, options = {}) {
     return fetchFresh();
   }
 
-  const result = await fetchWithCache(resource, { path, ...params }, fetchFresh);
+  const mode=modeFor({requested:operationsConfig.mode,rateLimit:rateLimitState});
+  const result = await fetchWithCache(resource, { path, ...params }, fetchFresh,
+    mode==='saving' ? {ttlMs:Math.max(60000,ttlFor(resource)*2)} : {});
 
   if (result.cache === "hit" || result.cache === "coalesced") {
     requestCounter.cacheHits += 1;
@@ -391,6 +395,9 @@ async function providerFetch(path, params, options = {}) {
 }
 
 async function providerFetchUncached(path, params) {
+  if(modeFor({requested:operationsConfig.mode,rateLimit:rateLimitState})==='protected') {
+    throw new ProviderError('PROVIDER_RATE_LIMIT','Korumalı çalışma: sağlayıcı çağrıları durduruldu; son doğrulanmış veri korunuyor.');
+  }
   countRequest(path);
   const config = assertConfig();
   const candidates = apiKeyCandidates();

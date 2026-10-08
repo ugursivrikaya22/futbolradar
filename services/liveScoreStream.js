@@ -200,11 +200,14 @@ function snapshotSignature(matches) {
 }
 
 function quotaAwareCadence(provider) {
+  const configured=require('../data/operations-policy.json').mode;
+  if(configured==='protected') return EXHAUSTED_QUOTA_CADENCE_MS;
+  if(configured==='saving') return LOW_QUOTA_CADENCE_MS;
   if (!provider || typeof provider.getProviderRateLimit !== "function") return PROVIDER_CADENCE_MS;
   const rate = provider.getProviderRateLimit();
   if (!rate || !Number.isFinite(rate.remaining)) return PROVIDER_CADENCE_MS;
   if (rate.remaining <= 0) return EXHAUSTED_QUOTA_CADENCE_MS;
-  if (rate.remaining <= 10) return LOW_QUOTA_CADENCE_MS;
+  if (rate.remaining <= 10 || (Number.isFinite(rate.limit)&&rate.limit>0&&rate.remaining/rate.limit<0.15)) return LOW_QUOTA_CADENCE_MS;
   return PROVIDER_CADENCE_MS;
 }
 

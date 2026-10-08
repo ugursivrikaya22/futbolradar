@@ -109,6 +109,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/restore-operations-ledger.mjs
 
+      - name: Verify operational safeguards offline
+        run: node --test tests/operations.test.mjs
+
       - name: Resolve update type
         id: update_type
         shell: bash
