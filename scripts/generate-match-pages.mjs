@@ -451,7 +451,7 @@ function pageHtml(match) {
   </head>
   <body class="subpage match-analysis-page">
     ${siteHeader({ base: "../" })}
-    <main class="container">
+    <main class="container" data-notification-detail data-match="${escapeHtml(match.id)}" data-home-team="${escapeHtml(match.homeTeam)}" data-away-team="${escapeHtml(match.awayTeam)}" data-match-href="${escapeHtml(selfUrl)}">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       ${centreHandoffBanner(match)}
       <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>

@@ -49,6 +49,7 @@
         var card = document.createElement('article');
         card.className = 'fixture-card';
         card.setAttribute('data-fixture-id', row.id);
+        card.setAttribute('data-match', row.id);
         var link = document.createElement('a');
         link.href = row.matchPageEn && /^\/?en\//.test(row.matchPageEn) ? '/' + row.matchPageEn.replace(/^\//, '') : '/en/match-detail.html?fixtureId=' + encodeURIComponent(row.providerIds && row.providerIds.apiFootball || row.id);
         link.className = 'fixture-card-action';
@@ -80,6 +81,8 @@
       target.dataset.fixtureDate = date;
       target.classList.add('league-match-grid');
       target.replaceChildren(fragment);
+      document.dispatchEvent(new CustomEvent('futbolradar:rendered', {detail:{target:target}}));
+      document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:rows}}));
     }).catch(function () {
       if (target.dataset.fixtureDate && target.dataset.fixtureDate !== date) target.textContent = 'The match schedule is being updated. Please check again shortly.';
     }).finally(function () { setTimeout(refresh, 60000); });

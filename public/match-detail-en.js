@@ -64,6 +64,10 @@
     reloadButton.textContent = 'Refresh match details';
     message.textContent = 'Match details updated.';
     target.dataset.state = 'ready';
+    target.setAttribute('data-match', match.id || id);
+    target.setAttribute('data-home-team', match.homeTeam);
+    target.setAttribute('data-away-team', match.awayTeam);
+    target.setAttribute('data-match-href', location.href);
     hasContent = true;
     var signature = JSON.stringify(match);
     if (signature === lastSignature) return;
@@ -101,6 +105,8 @@
       '<footer class="md-source"><span>Source: ' + escape(match.sourceName || payload.source || 'Match data provider') + '</span>' +
       sources.slice(0, 3).map(function (source, index) { return '<a href="' + escape(source) + '" target="_blank" rel="nofollow noopener noreferrer">Source record ' + (index + 1) + '</a>'; }).join(' ') +
       (/^https?:\/\//i.test(match.broadcastSourceUrl || '') ? '<a href="' + escape(match.broadcastSourceUrl) + '" target="_blank" rel="nofollow noopener noreferrer">Broadcaster schedule</a>' : '') + '</footer>');
+    document.dispatchEvent(new CustomEvent('futbolradar:rendered', {detail:{target:target}}));
+    document.dispatchEvent(new CustomEvent('futbolradar:match-detail', {detail:match}));
     var tabs = Array.from(target.querySelectorAll('[role="tab"]'));
     function select(index) {
       tabs.forEach(function (tab, i) { var active = i === index; tab.setAttribute('aria-selected', String(active)); tab.classList.toggle('is-active', active); tab.tabIndex = active ? 0 : -1; document.getElementById(tab.getAttribute('aria-controls')).hidden = !active; });

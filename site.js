@@ -4902,3 +4902,9 @@
     document.head.appendChild(script);
   });
 }());
+
+// Match-specific in-site notifications. Reuses shared data; never requests push permission.
+(function () {
+  if (window.FutbolRadarFollow || document.querySelector('script[data-live-follow-module]')) return;
+  var script = document.createElement('script'); script.src = '/live-follow.js'; script.defer = true; script.setAttribute('data-live-follow-module', ''); document.head.appendChild(script);
+})();

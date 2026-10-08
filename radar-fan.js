@@ -485,90 +485,9 @@
   }
 
   function bootFollow() {
-    var host = document.querySelector("[data-match-follow]");
-    if (!host || !window.fetch) return;
-    var fixtureId = host.getAttribute("data-match-follow-id") || "";
-    var slug = host.getAttribute("data-match-follow-slug") || "";
-    var locale = host.getAttribute("data-match-follow-locale") === "en" ? "en" : "tr";
-    var text = t(locale);
-    if (!fixtureId || !pushAvailable()) return;
-
-    var storeKey = FOLLOW_STORE_PREFIX + fixtureId;
-    var followKey = "match:" + fixtureId;
-
-    function paint(following, note) {
-      host.innerHTML = '<button type="button" class="fan-follow' + (following ? " is-on" : "") + '"' +
-        ' data-fan-follow aria-pressed="' + (following ? "true" : "false") + '">' +
-        '<span aria-hidden="true">🔔</span> ' + esc(following ? text.following : text.follow) + "</button>" +
-        (following ? '<button type="button" class="fan-follow-off" data-fan-unfollow>' + esc(text.followOff) + "</button>" : "") +
-        '<p class="fan-follow-note muted-copy">' + esc(note || text.followTypes) + "</p>";
-      host.removeAttribute("hidden");
-    }
-
-    function subscribe() {
-      // İZİN YALNIZCA AÇIK TIKLAMADAN SONRA İSTENİR. Sayfa açılışında
-      // izin istemek, okuyucunun neden sorulduğunu bilmediği bir kutu
-      // göstermektir; tarayıcılar da o kalıbı cezalandırıyor.
-      return Notification.requestPermission().then(function (permission) {
-        track("notification_permission", { match_slug: slug, locale: locale, permission: permission });
-        if (permission !== "granted") {
-          paint(false, text.followDenied);
-          return null;
-        }
-        return navigator.serviceWorker.ready.then(function (registration) {
-          return registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey())
-          });
-        }).then(function (subscription) {
-          return fetch("/api/push-subscribe", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subscription: subscription.toJSON(), favoriteTeam: followKey })
-          });
-        }).then(function (response) {
-          if (!response.ok) throw new Error("subscribe-failed");
-          writeLocal(storeKey, "1");
-          paint(true);
-          track("notification_enabled", { match_slug: slug, locale: locale, scope: "match" });
-        });
-      }).catch(function () {
-        paint(false, text.followError);
-      });
-    }
-
-    function unsubscribe() {
-      return navigator.serviceWorker.ready
-        .then(function (registration) { return registration.pushManager.getSubscription(); })
-        .then(function (subscription) {
-          if (!subscription) return null;
-          return fetch("/api/push-subscribe", {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ endpoint: subscription.endpoint })
-          }).then(function () { return subscription.unsubscribe(); });
-        })
-        .then(function () { writeLocal(storeKey, null); paint(false); })
-        .catch(function () { paint(false, text.followError); });
-    }
-
-    host.addEventListener("click", function (event) {
-      var followButton = event.target.closest ? event.target.closest("[data-fan-follow]") : null;
-      if (followButton) {
-        event.preventDefault();
-        track("follow_match_click", { match_slug: slug, locale: locale });
-        if (readLocal(storeKey) === "1") return;
-        subscribe();
-        return;
-      }
-      var offButton = event.target.closest ? event.target.closest("[data-fan-unfollow]") : null;
-      if (offButton) {
-        event.preventDefault();
-        unsubscribe();
-      }
-    });
-
-    paint(readLocal(storeKey) === "1");
+    // Match notifications are in-site only. live-follow.js owns this slot,
+    // local preferences and the existing shared data stream; no push permission.
+    document.dispatchEvent(new CustomEvent('futbolradar:rendered', { detail: { target: document } }));
   }
 
   /* ================================================================== */

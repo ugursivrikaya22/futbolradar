@@ -1607,7 +1607,7 @@ function fixtureMatchRowHtml(match, round) {
     ? `<strong>${escapeHtml(displayScore(match.score))}</strong>`
     : `<span class="vs-pill">VS</span>`;
 
-  return `<a class="fixture-match-row" data-card="fixture-match" data-status="${statusSlug}" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html">` +
+  return `<a class="fixture-match-row" data-card="fixture-match" data-match="${escapeHtml(match.id)}" data-status="${statusSlug}" href="./mac/${escapeHtml(matchSlug({ ...match, round: round.round }))}.html">` +
     `<div class="fixture-match-time"><span class="fixture-time">${escapeHtml(timeLabel)}</span><span class="fixture-status-badge" data-status="${statusSlug}">${escapeHtml(FIXTURE_STATUS_TR[status] || "Planlandı")}</span></div>` +
     `<div class="fixture-match-team fixture-match-team-home">${fixtureTeamLogoHtml(match.homeTeam)}<span>${escapeHtml(match.homeTeam)}</span></div>` +
     `<div class="fixture-match-score">${scoreOrVs}</div>` +
