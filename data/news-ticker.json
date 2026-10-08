@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-08T01:44:50.884Z",
+  "updatedAt": "2026-10-08T08:38:02.635Z",
   "items": [
     {
       "id": "auto-news-f8bb54203230ccae3f49",
@@ -122,7 +122,7 @@
         "feed": "besiktas",
         "priority": 3,
         "status": "OFFICIAL",
-        "mergedReports": 4,
+        "mergedReports": 3,
         "firstSeenAt": "2026-10-07T10:27:02.000Z"
       }
     },
@@ -291,26 +291,6 @@
       }
     },
     {
-      "id": "auto-news-d4f817ad7326b2d253d5",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Galatasaray'da Kasımpaşa maçı hazırlıkları sürüyor!",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-07T17:01:03.000Z",
-      "source": {
-        "name": "sabah-spor",
-        "url": "https://www.sabah.com.tr/spor/futbol/2026/10/07/galatasarayda-kasimpasa-maci-hazirliklari-suruyor",
-        "publisher": "sabah.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "sabah-spor",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
       "id": "news-besiktas-vlahovic-10eef2a9",
       "origin": "news.json",
       "category": "club-agenda",
@@ -367,6 +347,26 @@
       "important": true
     },
     {
+      "id": "auto-news-28936ff93fc137a94585",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Ekim Ayı FIFA Dünya Sıralaması Açıklandı",
+      "team": "Milli Takım",
+      "timestamp": "2026-10-08T05:21:56.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE9CaEdaZlVGbC1vOU9SNXk2d2RCVW1lUkwyc1RiYllvQnRMMVRfcGFoLTNkUEJ2VmM1NTV3emlJOHZrdk9CTGtQd0pwMGY5ZFJZV3BiekR5X3pBLTM4cHJzdjktb005QVk?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "milli-takim",
+        "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-7bce5a28028b56f14fa4",
       "category": "official",
       "confidence": "confirmed",
@@ -383,6 +383,26 @@
         "source": "rss",
         "feed": "tff-kurumsal",
         "priority": 6,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-cf540a43e5fab81fa6cb",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "2027 Under 21 EURO: Meet the finalists so far",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-10-07T11:45:30.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMitwFBVV95cUxQYWRsTkJ6aGJQMW5jWlhkMW9FSllJYVp0MEV4SGVyZndKcm5kTl9kRWEtZkZtU0t2RWs3Y1lidkxMTXp6bFpCQUZhdDY3SnIyQ2R0OGtvN0ZEaWlmNnZCMmhuem9mOG9EN3FhRE5CRkh0d1pzcGdRWGt3cTJVZ1FidHVyNXRldC1Sa3I1bXJZQUIteHA1bnZOUi04c0MxSzZScnJ1LWgzbDQ2RjBqcVBQNGw4YzFwWEU?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
         "status": "OFFICIAL"
       }
     },
@@ -404,26 +424,6 @@
         "feed": "super-lig",
         "priority": 5,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-ec92d1b6ac828758f52a",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "TFF Genel Sekreteri Abdullah Ayaz, görevinden istifa etti",
-      "team": "TFF",
-      "timestamp": "2026-10-07T11:05:41.000Z",
-      "source": {
-        "name": "aa-spor",
-        "url": "https://www.aa.com.tr/tr/spor/tff-genel-sekreteri-abdullah-ayaz-gorevinden-istifa-etti/4080895",
-        "publisher": "aa.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "aa-spor",
-        "priority": 6,
-        "status": "REPORTED"
       }
     }
   ]
