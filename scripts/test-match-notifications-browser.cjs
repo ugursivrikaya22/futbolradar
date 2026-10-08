@@ -8,7 +8,7 @@ let matches = [m('A'),m('B')], hits = [];
 const server = http.createServer((req,res)=>{
   const url = new URL(req.url,'http://localhost'); hits.push(url.pathname);
   if(url.pathname==='/api/matches'){assert.equal(url.search,'');res.setHeader('Content-Type','application/json');return res.end(JSON.stringify({ok:true,data:matches}));}
-  if (url.pathname === '/qa') {res.setHeader('Content-Type','text/html; charset=utf-8'); return res.end(`<html lang="${url.searchParams.get('lang')||'tr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/page.css"><script src="/live-follow.js" defer></script></head><body><header class="topbar-premium"><nav class="nav"><div class="nav-menu"></div></nav></header><main>${['A','B'].map(id=>`<article class="fixture-card" data-match="${id}" data-home-team="Home ${id}" data-away-team="Away ${id}" data-match-href="/mac-detay.html?id=${id}"><h2>Match ${id}</h2></article>`).join('')}</main><div class="cookie-banner" style="position:fixed;bottom:0;height:65px;background:#eee;width:100%">Cookie banner test</div></body></html>`);}
+  if (url.pathname === '/qa') {res.setHeader('Content-Type','text/html; charset=utf-8'); return res.end(`<html lang="${url.searchParams.get('lang')||'tr'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="/page.css"><style>@media(min-width:1360px){.topbar-premium .nav-menu{margin-left:auto}}</style><script src="/live-follow.js" defer></script></head><body><header class="topbar-premium"><nav class="nav"><div class="nav-menu"></div></nav></header><main>${['A','B'].map(id=>`<article class="fixture-card" data-match="${id}" data-home-team="Home ${id}" data-away-team="Away ${id}" data-match-href="/mac-detay.html?id=${id}"><h2>Match ${id}</h2></article>`).join('')}</main><div class="cookie-banner" style="position:fixed;bottom:0;height:65px;background:#eee;width:100%">Cookie banner test</div></body></html>`);}
   if (url.pathname.startsWith('/data/')) {res.setHeader('Content-Type','application/json'); return res.end(JSON.stringify(url.pathname.endsWith('match-notifications.json')?{enabled,mode:sharedApi?'shared-api-cache':'shared-static-cache'}:url.pathname.endsWith('match-notification-identities.json')?{aliases:{B:'canonical-B','B-provider':'canonical-B'}}:url.pathname.endsWith('/matches.json')?(sharedApi?[]:matches):{matches:[]}));}
   const file = path.join(root, url.pathname.slice(1));
   if (fs.existsSync(file) && fs.statSync(file).isFile()) {res.setHeader('Content-Type',url.pathname.endsWith('.css')?'text/css':'text/javascript'); return res.end(fs.readFileSync(file));}
@@ -19,6 +19,7 @@ const server = http.createServer((req,res)=>{
   const origin='http://127.0.0.1:'+server.address().port, browser=await chromium.launch({headless:true,channel:process.platform==='win32'?'msedge':undefined});
   try {
     const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'}), errors=[];
+    page.setDefaultTimeout(15000);
     page.on('pageerror',e=>errors.push(e.message));
     await page.addInitScript(() => { window.permissionRequests=0; Object.defineProperty(window,'Notification',{value:class { static get permission(){return 'denied';} static requestPermission(){window.permissionRequests++;return Promise.resolve('denied');} }}); });
     await page.goto(origin+'/qa');
@@ -56,7 +57,7 @@ const server = http.createServer((req,res)=>{
     ])));
     await page.reload();await page.waitForTimeout(350);
     assert.equal(await button('A').getAttribute('aria-pressed'),'true'); assert.equal(await button('B').getAttribute('aria-pressed'),'false');
-    const panelToggle=page.locator('[data-follow-mobile-toggle]'); if(await panelToggle.isVisible()) await panelToggle.click(); else if(await page.locator('[data-follow-mobile-toggle]').isVisible()) await page.locator('[data-follow-mobile-toggle]').click(); else await page.locator('[data-follow-panel-toggle]').click(); await page.locator('.follow-clear').click();
+    const panelToggle=page.locator('[data-follow-mobile-toggle]'); if(await panelToggle.isVisible()) await panelToggle.click(); else await page.locator('[data-follow-panel-toggle]').click(); await page.locator('.follow-clear').click();
     assert.deepEqual(await page.evaluate(()=>window.FutbolRadarFollow.getState().matchIds),[]);
     matches=[m('A'),m('B')]; await page.goto(origin+'/qa?lang=en'); await page.waitForFunction(()=>!document.querySelector('[data-follow-match]').disabled);
     await button('A').click();await page.waitForTimeout(350);
