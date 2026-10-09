@@ -8,7 +8,7 @@ const base = process.env.AUDIT_BASE_URL || 'http://127.0.0.1:4187';
 // "Bugünün Maçları" bölümünün beslenmesi bir etkileşim değil: istemci bir
 // istek atıyor ve 640 KB'lık app.js'i çalıştırıyor. Denetim iki görünümü
 // paralel koştuğu ve koşucunun çekirdeği az olduğu için bu iş CI'da
-// sayfanın genel 15 sn'lik etkileşim süresini aşabiliyor; ölçülen belirti,
+// sayfanın eski 15 sn'lik etkileşim süresini aşabiliyor; ölçülen belirti,
 // aynı koşuda bu beklemenin üç kez 15 sn'de düşmesiydi. Besleme beklemesi
 // kendi süresini taşısın.
 const HYDRATE_TIMEOUT = Number(process.env.AUDIT_HYDRATE_TIMEOUT || 30000);
@@ -251,7 +251,7 @@ function todayFixtureCount(gun) {
           await context.setExtraHTTPHeaders({ 'x-forwarded-for': '192.0.2.' + (++scenarioNumber) });
         }
         page = await context.newPage();
-        page.setDefaultTimeout(15000);
+        page.setDefaultTimeout(HYDRATE_TIMEOUT);
         page.setDefaultNavigationTimeout(30000);
         consoleErrors = [];
         const startedAt = Date.now();
@@ -884,7 +884,7 @@ function todayFixtureCount(gun) {
         // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
         // olarak buradan düşüyordu.
         await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
-        const featured = page.locator('[data-featured-turkish="true"]').first();
+        const featuredCards = page.locator('[data-featured-turkish="true"]');
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();
         // TÜRK MAÇI KARTI YOKSA ŞERİT DE O SATIRI KURMAZ.
@@ -897,7 +897,7 @@ function todayFixtureCount(gun) {
         //
         // Dal maç SAYISINA değil kartın kendisine bakıyor, çünkü maçlarla
         // dolu bir günde de öne çıkan maç Türk takımının olmayabilir.
-        if (!(await featured.count())) {
+        if (!(await featuredCards.count())) {
           const labels = await page.locator('.now-football__label').allInnerTexts();
           assert.ok(
             !labels.some(label => /Türk takımı maçı|Turkish club match/i.test(label)),
@@ -911,7 +911,22 @@ function todayFixtureCount(gun) {
           await navigate(exit);
           return;
         }
+        const pinnedHref = await summary.getAttribute('href');
+        assert.ok(pinnedHref, 'Featured summary has no match route');
+        const featured = featuredCards.filter({ has: page.locator('a[href=' + JSON.stringify(pinnedHref) + ']') });
+        assert.equal(await featured.count(), 1, 'Summary must link to exactly one featured match');
+        // Hydration can reorder the cards; the summary must keep its pinned
+        // match, not follow whichever card happens to be first.
+        await featured.evaluate(card => {
+          const slide = card.closest('[data-featured-slide]');
+          if (slide) {
+            const parent = slide.parentElement;
+            parent.insertBefore(slide, slide === parent.firstElementChild ? null : parent.firstElementChild);
+          }
+        });
         await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
+        assert.equal(await summary.getAttribute('href'), pinnedHref, 'Reordering changed the pinned summary route');
+        assert.equal(await summary.locator('.now-football__value').innerText(), (await featured.locator('.featured-fixture-team strong').allTextContents()).map(text => text.trim()).join(' – '), 'Summary shows a different match');
         const score = featured.locator('.featured-fixture-score b');
         const status = featured.locator('.featured-fixture-score span');
         const original = [await score.innerText(), await status.innerText()];
