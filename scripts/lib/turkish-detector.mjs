@@ -229,6 +229,21 @@ function maskProperNouns(value) {
 const AMBIGUOUS_WITH_ENGLISH = new Set(["son", "stat", "her"]);
 const TURKISH_ONLY_LETTER = /[ıİşŞğĞ]/;
 
+/**
+ * İNGİLİZCE KISALTMA EKİ: "'ve".
+ *
+ * Sözcük sınırı kesme işaretini harf saymıyor; bu yüzden "you’ve", "we've",
+ * "I’ve" içindeki "ve" bağımsız Türkçe "ve" bağlacı gibi yakalanıyordu.
+ * Guardian başlığı "Ever feel you’ve been cheated? ..." tek bir Türkçe sözcük
+ * taşımadığı hâlde İngilizce haber sayfasını düşürdü.
+ *
+ * Türkçede "ve" bağlacı hiçbir zaman kesme işaretiyle bir sözcüğe bitişmez
+ * (kesmeden sonra gelen şey çekim ekidir: 'de, 'ye, 'den). Bu yüzden YALNIZCA
+ * "harf + kesme + ve" dizisi atlanıyor; boşlukla ayrılmış her "ve" hâlâ
+ * yakalanıyor.
+ */
+const ENGLISH_VE_CONTRACTION = /\p{L}['’]$/u;
+
 export function findTurkish(text, options = {}) {
   const limit = Number.isFinite(options.limit) ? options.limit : 12;
   const source = maskProperNouns(String(text || "").replace(/\s+/g, " "));
@@ -248,6 +263,7 @@ export function findTurkish(text, options = {}) {
     const context = source.slice(start, match.index + raw.length + 60).trim();
     const key = `${word}|${context.slice(0, 40)}`;
     if (seen.has(key)) continue;
+    if (word === "ve" && ENGLISH_VE_CONTRACTION.test(source.slice(Math.max(0, match.index - 2), match.index))) continue;
     if (AMBIGUOUS_WITH_ENGLISH.has(word)) {
       const around = source.slice(Math.max(0, match.index - 40), match.index + raw.length + 40);
       if (!TURKISH_ONLY_LETTER.test(around)) continue;
