@@ -41,6 +41,13 @@ function check(name, condition, detail) {
   console.log(`  FAIL ${name}${detail ? ` — ${detail}` : ""}`);
 }
 
+// Üretici (generate-national-team-pages.mjs) ile aynı kaçış.
+function escapeForHtml(value) {
+  return String(value === null || value === undefined ? "" : value)
+    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
 function read(relative) {
   const full = path.join(root, relative);
   return fs.existsSync(full) ? fs.readFileSync(full, "utf8") : null;
@@ -179,7 +186,24 @@ console.log("milli-takim");
       check("TR merkez yaklaşan maça bağlanıyor", tr.includes("mac/turkiye-italya-28-eylul-2026"));
       // Veri yoksa UYDURULMAZ: kadro ve grup durumu açıkça bekliyor.
       check("kadro açıklanmadıysa öyle söyleniyor", tr.includes("Aylık kadro henüz açıklanmadı"));
-      check("grup durumu yoksa öyle söyleniyor", tr.includes("grup durumu henüz açıklanmadı"));
+      // GRUP DURUMU VERİYE GÖRE DENETLENİR. Tablo yoksa sayfa bunu açıkça
+      // söyler; sağlayıcı tabloyu yazdıysa (data/league-standings.json) ya da
+      // doğrulanmış elle giriş varsa tablo basılır ve "henüz açıklanmadı"
+      // denmez. Eskiden test tablonun HİÇ gelmeyeceğini varsayıyordu; Uluslar
+      // Ligi tablosu sağlayıcıdan gelince sayfa doğru davrandığı hâlde kırıldı.
+      const ntConfig = readJson("data/national-team.json", {});
+      const ntCompetition = (ntConfig.competition && ntConfig.competition.id) || "uefa-uluslar-ligi";
+      const storeTable = ((readJson("data/league-standings.json", {})[ntCompetition] || {}).table) || [];
+      const manualRows = (ntConfig.groupStandings && Array.isArray(ntConfig.groupStandings.rows)) ? ntConfig.groupStandings.rows : [];
+      const standingRows = storeTable.length ? storeTable : manualRows;
+      if (standingRows.length) {
+        check("grup durumu varsa tablo basılıyor", /<table[\s\S]*?<\/table>/.test(tr)
+          && standingRows.every((row) => tr.includes(escapeForHtml(String(row.team || row.name || "")))),
+          `${standingRows.length} satır`);
+        check("grup durumu varsa 'henüz açıklanmadı' denmiyor", !tr.includes("grup durumu henüz açıklanmadı"));
+      } else {
+        check("grup durumu yoksa öyle söyleniyor", tr.includes("grup durumu henüz açıklanmadı"));
+      }
       check("TR merkezde CollectionPage işaretlemesi var", tr.includes('"@type":"CollectionPage"'));
     }
 
@@ -189,8 +213,17 @@ console.log("milli-takim");
     check("saati doğrulanmamış program satırı kickoff taşımıyor",
       pending.every((row) => row.kickoff === null || row.kickoff === undefined),
       JSON.stringify(pending.map((row) => row.kickoff)));
-    if (tr && pending.length) {
+    // Üretici saatsiz program satırını yalnızca YAKLAŞAN maçlar arasında
+    // gösterir (gün >= bugün, TSİ). Geçmiş bir saatsiz satır listelenmez;
+    // test eskiden tarihine bakmadan "Saat henüz açıklanmadı" bekliyordu ve
+    // program günleri geçince kırılıyordu.
+    const todayTsi = new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(new Date());
+    const upcomingPending = pending.filter((row) => row.date && row.date >= todayTsi);
+    if (tr && upcomingPending.length) {
       check("saat bilinmeyen maçta uydurma saat basılmıyor", tr.includes("Saat henüz açıklanmadı"));
+    }
+    if (tr && pending.length && !upcomingPending.length) {
+      check("geçmiş saatsiz program satırı yaklaşan maç gibi basılmıyor", !tr.includes("Saat henüz açıklanmadı"));
     }
   }
 }
@@ -290,10 +323,23 @@ console.log("milli-takim");
   const home = read("index.html");
   if (home && home.includes("data-featured-match-spotlight")) {
     const block = home.slice(home.indexOf("<!-- featured-match-spotlight:start -->"), home.indexOf("<!-- featured-match-spotlight:end -->"));
-    check("ana sayfa vitrini millî maça bağlı", block.includes("mac/turkiye-italya-28-eylul-2026"), "index.html");
-    check("vitrin büyük kart sınıfını taşıyor", block.includes("fms--major"));
+    // Vitrin O AN hangi maçı gösteriyorsa ona göre denetlenir. Test eskiden
+    // vitrinin her zaman 28 Eylül Türkiye – İtalya maçını göstereceğini
+    // varsayıyordu; maç bittikten sonra vitrin (doğru biçimde) sıradaki
+    // kulüp maçına geçti ve denetim kırıldı. Seçim kuralları (millî maç
+    // önceliği, büyük kart, yaşam döngüsü) yukarıda 7. bölümde zamandan
+    // bağımsız sınanıyor.
+    const shown = (block.match(/href="(?:\.\/)?mac\/([^"#?]+)/) || [])[1] || "";
+    check("vitrin bir maç sayfasına bağlı", Boolean(shown), "index.html");
     check("vitrinde geri sayım var", block.includes("data-fms-countdown"));
-    check("vitrinde millî takım merkezine bağlantı var", block.includes("milli-takim"));
+    if (/(^|-)turkiye-/.test(shown)) {
+      check("ana sayfa vitrini millî maça bağlı", shown.startsWith("turkiye-") || shown.includes("-turkiye-"), shown);
+      check("vitrin büyük kart sınıfını taşıyor", block.includes("fms--major"));
+      check("vitrinde millî takım merkezine bağlantı var", block.includes("milli-takim"));
+    } else {
+      check("kulüp maçı vitrininde millî takım merkezi bağlantısı yok", !block.includes("milli-takim"), shown);
+      console.log(`  --  vitrin şu an millî maç göstermiyor (${shown}); millî kart denetimi atlandı`);
+    }
     // Skor yoksa skor satırı GİZLİ doğar: uydurma "0-0" basılmaz.
     check("maç öncesi skor satırı gizli", /data-fms-score hidden/.test(block) || !block.includes("fms__score-value\">0"));
   } else {
