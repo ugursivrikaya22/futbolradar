@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-09T08:44:58.208Z",
+  "updatedAt": "2026-10-09T10:31:03.034Z",
   "items": [
     {
       "id": "auto-news-6f28487d2e51381e5c28",
@@ -117,6 +117,26 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNRU55SERLaXNjb1N4cWpndVJIQ1dsTzZ4Z2ZIemlsdDhmei1lcEZYZW9DQUhMOUpiOExkWEIydkdfTDNBaGJSTnU1Wm5IaERlWUZCaFJnajFmZEVPSUFDRTZBdDIwaGd1VndKN1drTUdHd0NKcHRDN2I5ejZDRUNySG5wX3NUNzY3THdVa3Q2MWh4MkhUVldPeQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-2b376e58da7c5ea62d18",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Çaykur Rizespor maçının hakemi; Ozan Ergün",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-08T12:21:52.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOUkwtYUdsbXp0cDVOQ1d4VEROQ2JrMXFKWFBrVm5Fa3lCQ3lWcmZrZFpxcmpZTy0xazQxZ2I1cFR1cm9VcmE3MjZfdENRc3pTSUQydUJaSEF5UF9naEpzVDd5VXdUVFFyQVd2OWVBVWRheVh3QmU0WkRwbThXWkZ0MUQzV0VhWTZDUWpCejdMWEVNTVNwRFp3?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -251,26 +271,6 @@
       }
     },
     {
-      "id": "auto-news-b42a3f3b274a7dd3fd06",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "transfer",
-      "text": "Ederson Moraes'in imza gününe gösterilen yoğun ilgi için teşekkür ederiz",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-06T09:41:01.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPb21SYzJDb2k2S2F4RU1VM2V6dF80a05teU54cmRnbjBRMnVYSWdsS0pIaWJzTk9Vd2VoSXdVY1dwTzM2aUtOS0FfSmdHaXlUZ1RwUU83S1BaUlc0VzhVeGdTTmREVl9JN0JhWmUtYlpYRkhhVE96RjI0QzRNUWdZbU9yYjZqUGJCUU82M1J3cW90YWE0TXgxaU1NQjZoTTEwV2JidHd3STBxTXNBWm1EUWVzVmx4T1p1bUVV?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "news-besiktas-vlahovic-10eef2a9",
       "origin": "news.json",
       "category": "club-agenda",
@@ -294,20 +294,6 @@
       "source": {
         "name": "FutbolRadar",
         "url": "https://www.futbolradar.com/haber/fenerbahce-kante-66a390c5"
-      },
-      "team": "Fenerbahçe",
-      "important": true
-    },
-    {
-      "id": "news-fenerbahce-nene-6df12a6b",
-      "origin": "news.json",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "text": "Sporx'in haberine göre Fenerbahçe ile Nene arasında yolların ayrıldığı aktarıldı.",
-      "timestamp": "2026-10-04T09:35:00.000Z",
-      "source": {
-        "name": "FutbolRadar",
-        "url": "https://www.futbolradar.com/haber/fenerbahce-nene-6df12a6b"
       },
       "team": "Fenerbahçe",
       "important": true
@@ -353,7 +339,7 @@
       "section": "news",
       "text": "Aleksander Čeferin accepts unanimous request from Europe’s 55 national associations to seek final term as UEFA President",
       "team": "Avrupa futbolu",
-      "timestamp": "2026-10-08T14:40:42.000Z",
+      "timestamp": "2026-10-08T14:58:18.000Z",
       "source": {
         "name": "UEFA.com",
         "url": "https://news.google.com/rss/articles/CBMi0AFBVV95cUxPLXRkNXgyTWc4eG1KY2UtUWVHaVhJdWk2SHBBN2FYZmc5Yjd3WHNnQlktc05uSEMzTXBKem1oUjBLWERvTm1vSi1Dcng0aUpkdU5kTVNlY0JCUXY0ZVNUMlVkR0RrWnlBdDhRV202WDRPSG9xMm1BS2VYOWN3WHRCMW1ZVXhQd2pYUldLcXV0V3F2OGJObkxpT3A4bWpaNTFGVTYzVDlrc2FXV1lRVzBENjhIbjhEX09oek5oMXBidzRtdFNUbVdWa09UVXdlcDRI?oc=5",
