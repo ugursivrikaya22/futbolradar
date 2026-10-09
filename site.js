@@ -420,9 +420,21 @@
       });
   }
 
+  function publishSharedMatches(list, meta) {
+    try {
+      window.FutbolRadarSharedMatches = { matches: list, meta: meta, receivedAt: Date.now() };
+      document.dispatchEvent(new CustomEvent("futbolradar:shared-matches", { detail: { matches: list, meta: meta } }));
+    } catch (_) { /* CustomEvent yoksa çubuk kendi tek isteğini atar */ }
+  }
+
   function matchesOnce() {
     if (matchesPromise) return matchesPromise;
-    matchesPromise = readListOnce("/api/matches");
+    matchesPromise = readListOnce("/api/matches").then(function (list) {
+      // Aynı yanıtı ekrandaki skor çubuğuyla (mini-match-bar.js) paylaş;
+      // çubuk bu sayfada ikinci kez istemez.
+      if (Array.isArray(list)) publishSharedMatches(list, null);
+      return list;
+    });
     return matchesPromise;
   }
 
@@ -4907,4 +4919,45 @@
 (function () {
   if (window.FutbolRadarFollow || document.querySelector('script[data-live-follow-module]')) return;
   var script = document.createElement('script'); script.src = '/live-follow.js'; script.defer = true; script.setAttribute('data-live-follow-module', ''); document.head.appendChild(script);
+})();
+
+// EKRANDA TAKİP ET (isteğe bağlı skor çubuğu). Modül yalnızca okuyucu bir
+// maçı seçmişse (ve çubuğu kapatmamışsa) ya da sayfada "Ekranda takip et"
+// düğmesi varsa yüklenir; diğer herkes için ek dosya da istek de yok.
+(function () {
+  if (window.FutbolRadarMiniBar || document.querySelector('script[data-mini-match-bar-module]')) return;
+  var wanted = false;
+  try {
+    var saved = JSON.parse(localStorage.getItem('futbolradar:screen-follow:v1') || 'null');
+    wanted = Boolean(saved && saved.id && saved.dismissed !== true);
+  } catch (_) { /* depolama kapalı: yalnızca düğmeli sayfada yükle */ }
+  function load() {
+    if (document.querySelector('script[data-mini-match-bar-module]')) return;
+    var script = document.createElement('script'); script.src = '/mini-match-bar.js'; script.defer = true; script.setAttribute('data-mini-match-bar-module', ''); document.head.appendChild(script);
+  }
+  if (wanted || document.querySelector('[data-screen-follow]')) load();
+  else if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { if (document.querySelector('[data-screen-follow]')) load(); }, { once: true });
+})();
+
+// İLGİLİ KART TIKLAMASI. Analitik yalnızca sitede zaten yüklüyse
+// (analytics.js; GPC/DNT altında hiç yüklenmez) ve gerçek bir tıklamada
+// TEK olay gönderir. Gösterim, sayfa görüntüleme, adres ya da sorgu
+// parametresi gönderilmez; yalnızca kartın kaba sınıflandırması.
+(function () {
+  document.addEventListener('click', function (event) {
+    var card = event.target && event.target.closest && event.target.closest('a[data-related-card]');
+    if (!card || typeof window.gtag !== 'function') return;
+    var nav = card.closest('[data-related-nav]');
+    var clean = function (value) { return String(value || '').replace(/[^a-z0-9_]/gi, '').slice(0, 40); };
+    try {
+      window.gtag('event', 'related_card_click', {
+        source_page_type: clean(nav && nav.getAttribute('data-related-source')),
+        slot_area: clean(nav && nav.getAttribute('data-related-slot')),
+        target_type: clean(card.getAttribute('data-related-target')),
+        position: Number(card.getAttribute('data-related-position')) || 0,
+        lang: document.documentElement.lang === 'en' ? 'en' : 'tr',
+        transport_type: 'beacon'
+      });
+    } catch (_) { /* analitik hatası gezinmeyi bozmaz */ }
+  });
 })();

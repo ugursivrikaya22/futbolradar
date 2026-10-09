@@ -24143,3 +24143,76 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 :root[data-theme="dark"] .brand-benefits li{background:#162b23;color:#e4f4e9;border-color:#365143}
 :root[data-theme="dark"] .brand-promise{color:#bacbc1}
 @media(max-width:480px){.brand-benefits{gap:6px}.brand-benefits li{font-size:12px;padding:7px 10px}.home-page #hero-canli-skor h1{font-size:clamp(1.9rem,7.8vw,2.6rem)}}
+
+/* ============================================================
+   İLGİLİ GEZİNME — "Bu maçla ilgili" (mac/*, en/match/*) ve yazı sonu
+   kartları (kose-yazilari/*, en/columns/*). Kartlar mevcut
+   .match-related-card görünümünü kullanır; yalnızca yükseklik ve aralık.
+   ============================================================ */
+.rel-nav[hidden], .rel-nav-grid[hidden] { display: none !important; }
+.rel-nav .match-related-card { min-height: 0; }
+.rel-nav .match-related-card strong { margin: 6px 0 4px; overflow-wrap: anywhere; }
+.rel-nav .match-related-card:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.column-related { margin: var(--sp-5) 0 var(--sp-4); }
+.column-related h2 { margin: 0 0 var(--sp-3); font-size: var(--fs-md); }
+
+/* ============================================================
+   EKRANDA TAKİP ET — maç sayfasındaki düğme + diğer sayfalardaki çubuk
+   (mini-match-bar.js). Animasyon yok; alt menü / çerez bandı / PWA
+   istemi üstünde durur (JS --mini-bar-offset verir), çentikli ekranda
+   güvenli alanı korur, dokunma hedefleri 44px.
+   ============================================================ */
+.screen-follow[aria-pressed="true"] { border-color: var(--green); background: var(--green-tint); color: var(--green-deep); }
+.screen-follow-hint { flex-basis: 100%; margin: 0; color: var(--muted); font-size: var(--fs-xs); }
+.mini-match-bar {
+  position: fixed;
+  z-index: 65; /* başlık 60, alt menü 70: menünün üstüne binmez, onun üstünde konumlanır */
+  left: max(8px, env(safe-area-inset-left, 0px));
+  right: max(8px, env(safe-area-inset-right, 0px));
+  bottom: calc(max(var(--mini-bar-offset, 0px), env(safe-area-inset-bottom, 0px)) + 8px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4px 6px 4px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 8px 24px rgba(14, 26, 22, 0.14);
+}
+.mini-match-bar__body {
+  flex: 1 1 200px;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+.mini-match-bar__actions { display: flex; gap: 4px; margin-left: auto; }
+.mini-match-bar__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--accent);
+  font: inherit;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.mini-match-bar__action[hidden] { display: none; }
+.mini-match-bar__action:hover { background: var(--surface-tint); }
+.mini-match-bar__action:focus-visible { outline: 2px solid var(--green); outline-offset: 1px; }
+.mini-match-bar__close { color: var(--muted); }
+.mini-match-bar-spacer { display: block; }
+@media print { .mini-match-bar, .mini-match-bar-spacer { display: none !important; } }

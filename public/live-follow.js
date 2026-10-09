@@ -372,6 +372,9 @@
       var response=await fetch(new URL('api/matches',moduleBase),{signal:controller.signal});
       if(!response.ok) return {matches:[]};
       var payload=await response.json();
+      // Aynı yanıtı ekrandaki skor çubuğuyla (mini-match-bar.js) paylaş:
+      // çubuk kendi isteğini atmak yerine bunu kullanır ve sayacını erteler.
+      if(payload.ok&&Array.isArray(payload.data)){try{window.FutbolRadarSharedMatches={matches:payload.data,meta:payload.meta||null,receivedAt:Date.now()};document.dispatchEvent(new CustomEvent('futbolradar:shared-matches',{detail:{matches:payload.data,meta:payload.meta||null}}));}catch(_){}}
       return {matches:payload.ok&&Array.isArray(payload.data)?payload.data:[]};
     } catch (_) { return {matches:[]}; }
     finally {clearTimeout(timeout);}
@@ -715,7 +718,7 @@
 
   function updateObstruction() {
     var bottom = 16;
-    document.querySelectorAll('[data-cookie-banner], .cookie-banner, .cookie-consent, #cookie-banner, .mobile-bottom-nav, .bottom-nav, [data-bottom-nav], .fr-pwa-toast, .fr-pwa-panel').forEach(function (node) {
+    document.querySelectorAll('[data-cookie-banner], .cookie-banner, .cookie-consent, #cookie-banner, .mobile-bottom-nav, .bottom-nav, [data-bottom-nav], .fr-pwa-toast, .fr-pwa-panel, [data-mini-match-bar]').forEach(function (node) {
       var box = node.getBoundingClientRect();
       if (box.height && box.bottom >= innerHeight - 5 && getComputedStyle(node).position === 'fixed') bottom = Math.max(bottom, innerHeight - box.top + 12);
     });

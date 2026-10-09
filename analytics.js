@@ -44,6 +44,9 @@
   document.addEventListener("click", function (event) {
     var link = event.target.closest ? event.target.closest("a[href]") : null;
     if (!link) return;
+    // İlgili kartlar kendi tek olayını gönderiyor (site.js related_card_click);
+    // maç sayfası `data-match` taşıdığı için burada ikinci olay doğmasın.
+    if (link.hasAttribute("data-related-card")) return;
 
     var matchContainer = link.closest("[data-match]");
     if (!matchContainer && !link.hasAttribute("data-match-click")) return;
