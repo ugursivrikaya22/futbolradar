@@ -25,7 +25,7 @@ test('live to final changes headline and exposes only measured analysis',()=>{
   assert.match(v.title,/maç sonucu/);
   const html=liveHtml(v);
   assert.match(html,/Teknik analiz/); assert.match(html,/8.2/); assert.ok(!html.includes('<td>xG</td>'));
-  assert.match(html,/Doğrulanmış maç sonu/);
+  assert.match(html,/Oyuncu açıklamaları/);
 });
 test('wrong identity and outage cannot invent current state',()=>{
   assert.equal(matchesFixture({...fixture,id:'7'}),false);

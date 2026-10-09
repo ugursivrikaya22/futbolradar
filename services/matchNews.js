@@ -46,7 +46,7 @@ function liveHtml(v) {
     html += section('oyuncular','Öne çıkan oyuncular — ilk değerlendirme',top.length?top.map(p=>`<p><strong>${e(p.name)}</strong> (${e(p.team)}): API-Football puanı ${e(p.providerRating)}, ${e(p.minutes)} dakika${number(p.goals)?`, ${e(p.goals)} gol`:''}${number(p.assists)?`, ${e(p.assists)} asist`:''}. Sağlayıcı puanına göre öne çıkan performans; FutbolRadar’ın bağımsız oyuncu notu değildir.</p>`).join(''):'<p>Oyuncu performans verileri bekleniyor; veri gelmeden oyuncu sıralaması yapılmıyor.</p>');
     if (list(editorial.postMatchAnalysis).length) html += section('editor-analizi','FutbolRadar maç sonu yorumu',editorial.postMatchAnalysis.map(p=>'<p>'+e(p)+'</p>').join(''));
     if (list(editorial.playerComments).length) html += section('oyuncu-yorumlari','Oyuncu performans yorumları',editorial.playerComments.map(p=>'<p>'+e(p)+'</p>').join(''));
-    html += section('oyuncu-aciklamalari','Oyuncu açıklamaları',editorial.playerQuotes.length?editorial.playerQuotes.filter(q=>/^https:\/\//.test(q.url)).map(q=>`<blockquote>${e(q.text)}<cite>${e(q.player)} · <a href="${e(q.url)}" rel="nofollow noopener">Kaynak</a></cite></blockquote>`).join(''):'<p>Doğrulanmış maç sonu oyuncu açıklaması henüz eklenmedi.</p>');
+    html += section('oyuncu-aciklamalari','Oyuncu açıklamaları',editorial.playerQuotes.length?editorial.playerQuotes.filter(q=>/^https:\/\//.test(q.url)).map(q=>`<blockquote>${e(q.text)}<cite>${e(q.player)} · <a href="${e(q.url)}" rel="nofollow noopener noreferrer">Kaynak</a></cite></blockquote>`).join(''):'<p>Doğrulanmış maç sonu oyuncu açıklaması henüz eklenmedi.</p>');
   }
   return html;
 }
