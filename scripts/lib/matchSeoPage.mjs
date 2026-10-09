@@ -1405,6 +1405,31 @@ export function matchFollowHtml(ctx) {
     `data-match-follow-locale="${locale}"></div>`;
 }
 
+/**
+ * "EKRANDA TAKİP ET" — sitenin diğer sayfalarında küçük skor çubuğu.
+ *
+ * Bildirim aboneliğinden (yukarıdaki `matchFollowHtml`, live-follow.js)
+ * TAMAMEN AYRI: bildirim tercihine dokunmaz, işletim sistemi izni istemez.
+ * Kap `hidden` doğar; düğmeyi mini-match-bar.js açar ve tarayıcıda yalnızca
+ * seçilen maç kimliğini (+ kapatıldı bayrağını) saklar.
+ *
+ * Kimlik, ortak canlı listede (`/api/matches`) kaydın `id`si olan sağlayıcı
+ * kimliğidir; kimliği olmayan maçta çubuk beslenemez, kap hiç basılmaz.
+ * Bitmiş, ertelenmiş ya da iptal edilmiş maçta takip edilecek bir şey yok.
+ */
+export function screenFollowHtml(ctx, kickoff) {
+  const { locale, followFixtureId, state } = ctx;
+  if (!followFixtureId || (state !== "pre" && state !== "live")) return "";
+  const kickoffMs = Date.parse(kickoff || "");
+  // Başlama saati istemcinin düğmeyi ne zaman göstereceğine karar verir:
+  // ortak canlı liste yalnızca bugünün maçlarını taşıyor; çok ileri bir
+  // maçı "ekranda takip etmek" boş bir çubuk demek olurdu.
+  return `<div class="fan-follow-wrap screen-follow-wrap" data-screen-follow hidden ` +
+    `data-screen-follow-id="${escapeHtml(followFixtureId)}" ` +
+    (Number.isFinite(kickoffMs) ? `data-screen-follow-kickoff="${new Date(kickoffMs).toISOString()}" ` : "") +
+    `data-screen-follow-locale="${locale === "en" ? "en" : "tr"}"></div>`;
+}
+
 export function matchPollSectionHtml(ctx) {
   const { locale, pollSlug } = ctx;
   const text = STR[locale];

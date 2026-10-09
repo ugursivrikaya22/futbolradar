@@ -38,6 +38,7 @@ import { aiMatchCenterPanelHtml, tabsHtml, AI_STR } from "./lib/aiMatchCenter.mj
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
+import { buildMatchRelatedSets, matchRelatedHtml, relatedText } from "./lib/relatedNavigation.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -59,6 +60,7 @@ import {
   longDate,
   nextMatchesSectionHtml,
   matchFollowHtml,
+  screenFollowHtml,
   matchPollSectionHtml,
   normalizeEvents,
   radarPulseSectionHtml,
@@ -111,6 +113,7 @@ const { resolveStandingsForMatch } = require("../services/standingsResolver.js")
 const { buildAiMatchCenter } = require("../services/aiMatchCenter.js");
 const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
+const { publishedColumns } = require("../services/columnService.js");
 
 const CHECK_ONLY = process.argv.includes("--check");
 const NOW = Date.now();
@@ -881,6 +884,165 @@ function leagueLinks(entry, locale, base) {
 }
 
 /* ------------------------------------------------------------------ */
+/* 4b. "BU MAÇLA İLGİLİ" ADAYLARI                                       */
+/* ------------------------------------------------------------------ */
+/*
+ * Kart ADAYLARI burada mevcut veriden kurulur; seçim kuralları (en fazla 3,
+ * farklı hedef, kendine bağlantı yok, durum sırası) scripts/lib/
+ * relatedNavigation.mjs içinde. Her aday diskte VAR OLAN bir sayfaya gider;
+ * yoksa aday hiç oluşmaz. Derleme anında hesaplanır, istemci ek istek atmaz.
+ */
+
+const columnStore = readJson("data/columns.json", { columns: [] });
+const relatedColumnsByLocale = {
+  tr: publishedColumns(columnStore).columns.filter((column) => column.path && column.matchSlug),
+  en: publishedColumns(columnStore, { locale: "en" }).columns.filter((column) => column.hasEnglish && column.path && column.matchSlug)
+};
+const specialPages = (() => {
+  const raw = readJson("data/match-special-pages.json", []);
+  return Array.isArray(raw) ? raw : [];
+})();
+
+/** UEFA kupalarında tablo yalnızca LİG AŞAMASI maçına aittir (ön eleme/play-off değil). */
+const LEAGUE_PHASE_ROUNDS = { "sampiyonlar-ligi": 8, "avrupa-ligi": 8, "konferans-ligi": 6 };
+
+function standingsMatchesFixture(entry, table) {
+  if (!table || table.status !== "ok") return false;
+  const maxRound = LEAGUE_PHASE_ROUNDS[entry.competitionId];
+  if (!maxRound) return true;
+  const round = Number(entry.round);
+  return Number.isInteger(round) && round >= 1 && round <= maxRound;
+}
+
+function relatedTeamTargets(teamName, locale, base) {
+  const text = relatedText(locale);
+  const slug = teamSlug(canonicalTeamName(teamName));
+  const display = nationLabel(teamName, locale);
+  if (locale === "en") {
+    const page = `en/team/${slug}.html`;
+    if (!fileExists(page)) return { fixtures: null, page: null };
+    const href = `${base}${page}`;
+    return {
+      fixtures: { type: "team_fixtures", href, ...text.teamFixtures(display) },
+      page: { type: "team_page", href, ...text.teamPage(display) }
+    };
+  }
+  const bigFour = BIG_FOUR.includes(slug);
+  const fixtures = bigFour && fileExists(`${slug}-maclari.html`)
+    ? { type: "team_fixtures", href: `${base}${slug}-maclari.html`, ...text.teamFixtures(display) }
+    : null;
+  let page = null;
+  if (bigFour && fileExists(`takimlar/${slug}.html`)) {
+    page = { type: "team_page", href: `${base}takimlar/${slug}`, ...text.teamPage(display) };
+  } else if (teams.find((team) => sameClub(team.name, teamName)) && fileExists("takim-detay.html")) {
+    page = { type: "team_page", href: `${base}takim-detay.html?team=${encodeURIComponent(teamName)}`, ...text.teamPage(display) };
+  }
+  return { fixtures, page };
+}
+
+function columnHref(column, locale, base) {
+  return `${base}${String(column.path).replace(/\.html$/, "")}`;
+}
+
+function matchColumns(entry, locale) {
+  const kickoff = kickoffMs(entry);
+  const rows = relatedColumnsByLocale[locale === "en" ? "en" : "tr"].filter((column) => column.matchSlug === entry.slug && fileExists(column.path));
+  const before = [];
+  const after = [];
+  for (const column of rows) {
+    const at = Date.parse(column.date);
+    if (Number.isFinite(at) && kickoff !== null && at < kickoff) before.push(column); else after.push(column);
+  }
+  return { before, after };
+}
+
+function previewsFor(entry, locale, base) {
+  const text = relatedText(locale);
+  const out = [];
+  for (const special of specialPages) {
+    if (!special || !special.locales || !isSameFixture(entry, special)) continue;
+    const copy = special.locales[locale === "en" ? "en" : "tr"];
+    if (copy && copy.hub && copy.title && fileExists(copy.hub)) out.push({ type: "preview", href: `${base}${copy.hub}`, ...text.preview(copy.title) });
+  }
+  if (locale === "tr") {
+    for (const record of editorialMatches) {
+      if (!record || !record.analysisPage || !sameMatch(entry, record)) continue;
+      const file = String(record.analysisPage).replace(/^\//, "");
+      if (fileExists(file)) out.push({ type: "preview", href: `${base}${file}`, ...text.preview(`${entry.homeTeam} - ${entry.awayTeam} maç analizi`) });
+    }
+  }
+  for (const column of matchColumns(entry, locale).before) {
+    out.push({ type: "preview_column", href: columnHref(column, locale, base), ...text.previewColumn(column.title) });
+  }
+  return out;
+}
+
+function reviewsFor(entry, locale, base, report) {
+  const text = relatedText(locale);
+  const out = [];
+  if (locale === "tr" && report && report.seo && report.seo.path) {
+    const score = hasScore(entry.score) ? `${entry.score.home}-${entry.score.away}` : "";
+    out.push({ type: "match_report", href: `${base}${String(report.seo.path).replace(/^\//, "")}`, ...text.matchReport(entry.homeTeam, entry.awayTeam, score) });
+  }
+  for (const column of matchColumns(entry, locale).after) {
+    out.push({ type: "review_column", href: columnHref(column, locale, base), ...text.reviewColumn(column.title) });
+  }
+  return out;
+}
+
+/** Aynı yarışmada aynı gün oynanan diğer kayıtlı maçlar (sicil sırasıyla). */
+function sameDayMatches(entry, locale, base) {
+  if (!entry.competitionId) return [];
+  const text = relatedText(locale);
+  const day = istanbulDay(entry.kickoff);
+  const competition = competitionLabel(competitionNameFor(entry.competitionId, entry.league) || entry.league || "", locale);
+  return registry.pages
+    .filter((other) => other !== entry && other.slug !== entry.slug && other.competitionId === entry.competitionId && istanbulDay(other.kickoff) === day)
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)))
+    .map((other) => {
+      const relativePath = locale === "en" ? enPagePath(other.enSlug) : trPagePath(other.slug);
+      if (!relativePath || !fileExists(relativePath)) return null;
+      return { type: "same_day_match", href: `${base}${relativePath.replace(/\.html$/, "")}`, ...text.sameDayMatch(competition, nationLabel(other.homeTeam, locale), nationLabel(other.awayTeam, locale)) };
+    })
+    .filter(Boolean);
+}
+
+function relatedSectionHtml(entry, locale, base, { state, report, league, table, next, competitionName, selfPath }) {
+  const text = relatedText(locale);
+  const competition = competitionLabel(competitionName, locale);
+  const homeTargets = relatedTeamTargets(entry.homeTeam, locale, base);
+  const awayTargets = relatedTeamTargets(entry.awayTeam, locale, base);
+  const standings = league.standings && standingsMatchesFixture(entry, table)
+    ? { type: "league_standings", href: league.standings, ...text.leagueStandings(competition) }
+    : null;
+  const leagueMatches = [
+    locale === "tr" && league.league ? { type: "league_matches", href: league.league, ...text.leagueMatches(competition) } : null,
+    ...sameDayMatches(entry, locale, base)
+  ];
+  const nextCard = (teamName, rows) => {
+    const row = (rows || []).find((item) => item && item.href);
+    if (!row) return null;
+    return {
+      type: "next_match",
+      href: row.href,
+      note: shortDate(row.match.kickoff, locale),
+      ...text.nextMatch(nationLabel(teamName, locale), nationLabel(row.match.homeTeam, locale), nationLabel(row.match.awayTeam, locale))
+    };
+  };
+  const slots = {
+    teamFixtures: [homeTargets.fixtures, awayTargets.fixtures],
+    teamPages: [homeTargets.page, awayTargets.page],
+    standings,
+    leagueMatches,
+    nextMatches: [nextCard(entry.homeTeam, next.home), nextCard(entry.awayTeam, next.away)],
+    previews: previewsFor(entry, locale, base),
+    reviews: reviewsFor(entry, locale, base, report)
+  };
+  const result = buildMatchRelatedSets(state, () => slots, { self: selfPath, exists: fileExists });
+  return matchRelatedHtml(result, locale);
+}
+
+/* ------------------------------------------------------------------ */
 /* 5. SAYFA ÜRETİMİ                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -1150,6 +1312,7 @@ function pageHtml(entry, locale, options) {
   // kimlik yoksa bölüm "veri yok" der, başka bir ligin tablosunu basmaz.
   const leaders = resolveMatchLeaders(entry);
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
+  const relatedHtml = relatedSectionHtml(entry, locale, base, { state, report, league, table, next, competitionName, selfPath: relative });
 
   let sections = [];
   if (state === "post" || state === "pending") {
@@ -1299,8 +1462,10 @@ function pageHtml(entry, locale, options) {
       <nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><a href="${base}${locale === "en" ? HUB_EN : HUB_TR}">${escapeHtml(text.allMatches)}</a><span>/</span>${breadcrumbCompetition}<span>${escapeHtml(ctx.homeTeam)} ${locale === "en" ? "vs" : "-"} ${escapeHtml(ctx.awayTeam)}</span></nav>
       <h1 class="msp-h1" data-msp-h1>${escapeHtml(titles.h1)}</h1>
       ${matchFollowHtml(ctx)}
+      ${screenFollowHtml(ctx, entry.kickoff)}
       ${countdownHtml(entry, ctx)}
       ${heroHtml(entry, ctx)}
+      ${relatedHtml}
       ${matchTabs}
       ${relatedLinksHtml(related, locale)}
       <p class="msp-source muted-copy"><b>${escapeHtml(text.dataSource)}:</b> ${escapeHtml(text.dataSourceNote)}</p>

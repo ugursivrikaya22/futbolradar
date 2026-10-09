@@ -264,6 +264,23 @@
       .replace("{as}", String(detail.score.away));
   }
 
+  // "BU MAÇLA İLGİLİ" SETİ. Kartlar derleme anında her ulaşılabilir durum
+  // için ayrı basıldı (scripts/lib/relatedNavigation.mjs); burada yalnızca
+  // görünür set değişir — ek istek yok. Yeni durumun seti yoksa ya da boşsa
+  // blok gizlenir: geçersiz kalmış kart (ör. bitmiş maçta "önizleme")
+  // gösterilmez.
+  function switchRelatedSet(key) {
+    var nav = document.querySelector("[data-related-nav][data-related-source='match']");
+    if (!nav) return;
+    var sets = nav.querySelectorAll("[data-related-set]");
+    var shown = false;
+    for (var i = 0; i < sets.length; i += 1) {
+      var match = sets[i].getAttribute("data-related-set") === key;
+      if (match) { sets[i].removeAttribute("hidden"); shown = true; } else sets[i].setAttribute("hidden", "");
+    }
+    if (shown) nav.removeAttribute("hidden"); else nav.setAttribute("hidden", "");
+  }
+
   function render(detail) {
     var status = statusOf(detail);
     var score = detail && detail.score;
@@ -310,6 +327,7 @@
       hero.setAttribute("data-msp-state", status === "finished" ? "post" : "live");
     }
     root.setAttribute("data-msp-state", status === "finished" ? "post" : "live");
+    switchRelatedSet(status === "finished" ? "post" : "live");
     setTitle(status === "finished" ? titlePost : titleLive, detail);
 
     renderTimeline(detail, status);
