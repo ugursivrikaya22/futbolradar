@@ -711,7 +711,8 @@ function todayFixtureCount(gun) {
           await open(home);
           const fab = page.locator('.fr-pwa-fab');
           await click(fab);
-          await page.locator('.fr-pwa-panel select').waitFor();
+          // Team options are fetched after opening the panel.
+          await page.locator('.fr-pwa-panel select').waitFor({ timeout: HYDRATE_TIMEOUT });
           assert.equal(await fab.getAttribute('aria-expanded'), 'true');
           await page.keyboard.press('Escape');
           assert.equal(await page.locator('.fr-pwa-panel').count(), 0);
@@ -884,7 +885,7 @@ function todayFixtureCount(gun) {
         // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
         // olarak buradan düşüyordu.
         await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
-        const featured = page.locator('[data-featured-turkish="true"]').first();
+        const featuredCards = page.locator('[data-featured-turkish="true"]');
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();
         // TÜRK MAÇI KARTI YOKSA ŞERİT DE O SATIRI KURMAZ.
@@ -897,7 +898,7 @@ function todayFixtureCount(gun) {
         //
         // Dal maç SAYISINA değil kartın kendisine bakıyor, çünkü maçlarla
         // dolu bir günde de öne çıkan maç Türk takımının olmayabilir.
-        if (!(await featured.count())) {
+        if (!(await featuredCards.count())) {
           const labels = await page.locator('.now-football__label').allInnerTexts();
           assert.ok(
             !labels.some(label => /Türk takımı maçı|Turkish club match/i.test(label)),
@@ -911,7 +912,15 @@ function todayFixtureCount(gun) {
           await navigate(exit);
           return;
         }
+        const summaryHref = await summary.getAttribute('href');
+        const featured = featuredCards.filter({ has: page.locator('a[href=' + JSON.stringify(summaryHref) + ']') }).first();
+        assert.ok(await featured.count(), 'Summary links to a match missing from the featured cards');
         await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
+        // Reorder the cards to exercise pinning even without a live refresh.
+        if (await featuredCards.count() > 1) {
+          await featured.evaluate(card => card.parentElement.appendChild(card));
+          assert.equal(await summary.getAttribute('href'), summaryHref, 'Summary lost its pinned match after reordering');
+        }
         const score = featured.locator('.featured-fixture-score b');
         const status = featured.locator('.featured-fixture-score span');
         const original = [await score.innerText(), await status.innerText()];
