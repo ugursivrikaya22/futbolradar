@@ -276,6 +276,9 @@ function statusBadges(article, locale = "tr") {
 }
 
 function pageHtml(article, locale = "tr") {
+  if (locale === "tr" && article.liveMatchNews === "1584424") {
+    return createRequire(import.meta.url)("../services/matchNews.js").renderPage();
+  }
   const copy = copyFor(locale);
   const base = locale === "en" ? "../../" : "../";
   const seo = article && typeof article.seo === "object" && article.seo ? article.seo : {};
