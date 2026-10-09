@@ -727,7 +727,7 @@ function todayFixtureCount(gun) {
         await test(locale + ' live score cards or empty-state route', async () => {
           await open(en ? 'en/live-football-scores.html' : 'canli-skor.html');
           if (!en) {
-            await page.locator('[data-api-target="live-score"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached' });
+            await page.locator('[data-api-target="live-score"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
           }
           const link = page.locator('main a.live-compact-card[href], main .fixture-card a[href]').first();
           if (await link.count()) {
