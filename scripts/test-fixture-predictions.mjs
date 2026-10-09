@@ -111,9 +111,20 @@ check("senaryo 1: kart 'Sağlayıcı Tahmini' başlığıyla çizilir", () => {
 });
 
 check("Gaziantep FK - Fenerbahçe: depodaki gerçek sağlayıcı verisi hâlâ çiziliyor", () => {
+  // FİKSTÜR TAKVİMİ KAYAN BİR PENCERE: maç oynanıp pencerenin gerisine
+  // düşünce satır siliniyor (2 Ekim 2026'da oldu) ve test, kodda hiçbir şey
+  // değişmediği hâlde "veri yok" diye kırılıyordu. Satır takvimde hâlâ
+  // varsa canlı kayıt kullanılır; yoksa scripts/fixtures/
+  // fixture-predictions-reference.json'daki ANLIK GÖRÜNTÜ — takvim
+  // dosyasının f6fa2959 sürümünden alınmış gerçek sağlayıcı kaydı, elle
+  // yazılmış değil. Denetlenen şey çizim kodu; kaydın hangi dosyadan
+  // geldiği bunu değiştirmiyor (bkz. test-match-special'daki aynı düzen).
   const calendar = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8"));
-  const record = (calendar.matches || []).find((match) => match.id === "gaziantep-fk-fenerbahce-2026-09-14");
-  assert.ok(record && record.prediction, "referans maçın sağlayıcı tahmini depoda olmalı");
+  const snapshot = JSON.parse(fs.readFileSync(path.join(root, "scripts", "fixtures", "fixture-predictions-reference.json"), "utf8"));
+  const id = "gaziantep-fk-fenerbahce-2026-09-14";
+  const record = (calendar.matches || []).find((match) => match.id === id)
+    || snapshot.find((match) => match.id === id);
+  assert.ok(record && record.prediction, "referans maçın sağlayıcı tahmini depoda ya da anlık görüntüde olmalı");
   const html = predictionCardHtml(record.prediction, { locale: "tr", homeTeam: record.homeTeam, awayTeam: record.awayTeam });
   assert.match(html, /Sağlayıcı Tahmini/);
   const percent = record.prediction.predictions.percent;

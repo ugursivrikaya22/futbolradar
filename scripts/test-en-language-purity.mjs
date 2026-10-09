@@ -184,6 +184,19 @@ const columnPages = pages.filter((file) => file.includes(`${path.sep}columns${pa
     marked.length === 0, marked.slice(0, 5).map((file) => path.relative(root, file)).join(", "));
 }
 
+// --- DEDEKTÖR: İngilizce "'ve" kısaltması Türkçe "ve" sayılmaz ----------
+// "you’ve" kesme işaretinden bölünüp Türkçe "ve" bağlacı sanılıyordu.
+// Boşlukla ayrılmış gerçek "ve" yakalanmaya devam etmeli.
+{
+  check("dedektör: \"you’ve\" / \"we've\" Türkçe sayılmaz",
+    findTurkish("Ever feel you’ve been cheated? We've seen it before.").length === 0,
+    JSON.stringify(findTurkish("Ever feel you’ve been cheated? We've seen it before.")));
+  check("dedektör: bağımsız \"ve\" hâlâ yakalanır",
+    findTurkish("Fenerbahçe ve Galatasaray derbiye hazır").some((hit) => hit.word === "ve"));
+  check("dedektör: kesmeden sonra gelen Türkçe ek sızıntısı hâlâ yakalanır",
+    findTurkish("Fenerbahçe'de görüşme yapıldı ve imza atıldı").length > 0);
+}
+
 if (failures.length) {
   console.error(`\nen-language-purity: ${failures.length} başarısız denetim.`);
   process.exit(1);
