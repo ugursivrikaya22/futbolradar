@@ -293,6 +293,14 @@ function presentColumn(entry, locale) {
     sources: (Array.isArray(source.sources) ? source.sources : [])
       .map((row) => ({ label: text(row && row.label), url: text(row && row.url) }))
       .filter((row) => row.label && /^https:\/\//.test(row.url)),
+    // YAZININ KONUSU OLAN MAÇ (isteğe bağlı, geriye uyumlu).
+    //
+    // `data/match-seo-pages.json` sicilindeki TÜRKÇE maç slug'ı
+    // ("fenerbahce-besiktas-5-eylul-2026"); sicilde slug bir kez yazılır ve
+    // değişmez. Alan yoksa ya da biçimi tutmuyorsa boş döner — yazı yine
+    // yayımlanır, yalnızca maç ilişkisi kurulmaz. İlgili kartlar
+    // (yazı sonu ve maç sayfasındaki "Bu maçla ilgili") bunu okur.
+    matchSlug: /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(text(entry.matchSlug)) ? text(entry.matchSlug) : "",
     path: columnPath(entry, wanted),
     // Karşı dilin adresi: hreflang ve dil değiştirme bağlantısı bunu okur.
     counterpartPath: hasEnglish(entry)

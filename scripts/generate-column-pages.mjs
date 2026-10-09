@@ -22,6 +22,8 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { columnRelatedHtml, pickRelatedCards, rankRelatedColumns, relatedText } from "./lib/relatedNavigation.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -35,6 +37,10 @@ const {
 } = require("../services/columnService.js");
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+const { normalizeText } = require("../api/_utils.js");
+const { canonicalTeamName, enPagePath, trPagePath } = require("../services/matchSeoPages.js");
+const { nationLabel } = require("../services/displayLabels.js");
+const { competitionLabel } = require("../services/i18n.js");
 
 const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
@@ -299,8 +305,150 @@ const PAGE_STRINGS = {
   }
 };
 
+/* ── YAZI SONU İLGİLİ KARTLAR ──────────────────────────────────────────────
+ *
+ * En fazla üç kart: yazının konusu olan maç, takım ya da turnuva sayfası,
+ * aynı konudaki başka bir yayımlanmış yazı. Eşleştirme sırası: kayıttaki
+ * `matchSlug` (maç sicili) → takım (kategori/etiket/maç tarafları) →
+ * etiketler. Yapay zekâ ya da metin taraması yok; yazının gövdesine
+ * dokunulmaz. Hedef diskte yoksa kart basılmaz; yazı kendine bağlanmaz;
+ * İngilizce sayfa yalnızca İngilizce hedeflere bağlanır. Kart "yeni/son
+ * dakika" demez, yalnızca yayım tarihini yazar.
+ */
+const BIG_FOUR_TEAMS = Object.freeze({
+  galatasaray: "Galatasaray",
+  fenerbahce: "Fenerbahçe",
+  besiktas: "Beşiktaş",
+  trabzonspor: "Trabzonspor"
+});
+
+/** Turnuva etiketi → sayfa. Yalnızca diskte gerçekten olan sayfalar kullanılır. */
+const COMPETITION_TAGS = [
+  { tags: ["a milli takim", "milli takim"], tr: "milli-takim.html", en: "en/turkey-national-team.html", name: { tr: "A Millî Takım", en: "Turkey national team" } },
+  { tags: ["super lig"], competitionId: "super-lig" },
+  { tags: ["sampiyonlar ligi", "uefa sampiyonlar ligi"], competitionId: "sampiyonlar-ligi" },
+  { tags: ["uefa avrupa ligi", "avrupa ligi"], competitionId: "avrupa-ligi" },
+  { tags: ["premier league", "premier lig"], competitionId: "premier-league" }
+];
+
+const fileExists = (relative) => Boolean(relative) && fs.existsSync(path.join(root, relative));
+const cleanHref = (base, relative) => `${base}${relative}`;
+
+function tagKey(value) {
+  return normalizeText(value).replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function teamSlugFor(name) {
+  return normalizeText(canonicalTeamName(name)).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function readRegistry() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(path.join(root, "data", "match-seo-pages.json"), "utf8"));
+    return new Map((Array.isArray(parsed.pages) ? parsed.pages : []).map((entry) => [entry.slug, entry]));
+  } catch {
+    return new Map();
+  }
+}
+
+/** Yazının takımları: maç tarafları, büyük dört kategori ya da birebir etiket. */
+function columnTeams(column, match) {
+  const teams = [];
+  const push = (name) => { if (name && !teams.some((team) => teamSlugFor(team) === teamSlugFor(name))) teams.push(name); };
+  const categoryTeam = BIG_FOUR_TEAMS[column.category];
+  if (match) {
+    // Kategori takımı maçın taraflarından biriyse önce o (ör. Beşiktaş yazısı → Beşiktaş).
+    if (categoryTeam && [match.homeTeam, match.awayTeam].some((name) => teamSlugFor(name) === teamSlugFor(categoryTeam))) push(categoryTeam);
+    push(match.homeTeam);
+    push(match.awayTeam);
+  }
+  if (categoryTeam) push(categoryTeam);
+  for (const tag of column.tags || []) {
+    const hit = Object.entries(BIG_FOUR_TEAMS).find(([, name]) => tagKey(name) === tagKey(tag));
+    if (hit) push(hit[1]);
+  }
+  return teams;
+}
+
+function teamPageCard(teamName, locale, base) {
+  const text = relatedText(locale);
+  const slug = teamSlugFor(teamName);
+  const display = nationLabel(teamName, locale);
+  if (locale === "en") {
+    const page = `en/team/${slug}.html`;
+    return fileExists(page) ? { type: "team_page", href: `${base}${page}`, ...text.teamPage(display) } : null;
+  }
+  const page = `takimlar/${slug}.html`;
+  return BIG_FOUR_TEAMS[slug] && fileExists(page) ? { type: "team_page", href: cleanHref(base, page), ...text.teamPage(display) } : null;
+}
+
+function competitionCard(column, match, locale, base) {
+  const text = relatedText(locale);
+  const fromCatalog = (competitionId) => {
+    const catalog = STANDINGS_LEAGUES[competitionId];
+    const relative = locale === "en"
+      ? (catalog ? `en/${catalog.slugEn}.html` : null)
+      : `lig/${competitionId}.html`;
+    if (!relative || !fileExists(relative)) return null;
+    const name = catalog ? (locale === "en" ? catalog.nameEn : catalog.nameTr) : competitionLabel(match && match.league, locale);
+    return name ? { type: "competition", href: cleanHref(base, relative), ...text.competition(name) } : null;
+  };
+  if (match && match.competitionId) {
+    const card = fromCatalog(match.competitionId);
+    if (card) return card;
+  }
+  const keys = (column.tags || []).map(tagKey);
+  for (const rule of COMPETITION_TAGS) {
+    if (!rule.tags.some((tag) => keys.includes(tag))) continue;
+    if (rule.competitionId) {
+      const card = fromCatalog(rule.competitionId);
+      if (card) return card;
+      continue;
+    }
+    const relative = rule[locale === "en" ? "en" : "tr"];
+    if (fileExists(relative)) return { type: "competition", href: cleanHref(base, relative), ...text.competition(rule.name[locale === "en" ? "en" : "tr"]) };
+  }
+  return null;
+}
+
+function matchCard(match, locale, base) {
+  if (!match) return null;
+  const relative = locale === "en" ? (match.enSlug ? enPagePath(match.enSlug) : null) : trPagePath(match.slug);
+  if (!relative || !fileExists(relative)) return null;
+  const home = nationLabel(match.homeTeam, locale);
+  const away = nationLabel(match.awayTeam, locale);
+  const score = match.score && Number.isFinite(match.score.home) && Number.isFinite(match.score.away) && ["FINISHED", "AWARDED"].includes(String(match.status || "").toUpperCase())
+    ? `${match.score.home}-${match.score.away}`
+    : "";
+  const title = score ? `${home} ${score} ${away}` : `${home} ${locale === "en" ? "vs" : "-"} ${away}`;
+  return { type: "match", href: cleanHref(base, relative), note: formatDate(match.kickoff, locale), ...relatedText(locale).columnMatch(title) };
+}
+
+/**
+ * @param column  yüzeye hazırlanmış yazı (presentColumn)
+ * @param pool    aynı dildeki yayımlanmış yazılar (presentColumn)
+ * @param topics  yazı kimliği → { tags, teams, matchSlug } (Türkçe kayıttan; dil bağımsız eşleşme)
+ */
+export function relatedCardsForColumn(column, locale, { pool, topics, registry }) {
+  const base = "../".repeat(column.path.split("/").length - 1);
+  const topic = topics.get(column.id) || { tags: column.tags, teams: [], matchSlug: column.matchSlug };
+  const match = topic.matchSlug ? registry.get(topic.matchSlug) || null : null;
+  const teamCard = topic.teams.map((name) => teamPageCard(name, locale, base)).find(Boolean) || null;
+  const ranked = rankRelatedColumns(
+    { id: column.id, path: column.path, date: column.date, ...topic },
+    pool.map((other) => ({ id: other.id, path: other.path, date: other.date, title: other.title, ...(topics.get(other.id) || { tags: other.tags, teams: [], matchSlug: other.matchSlug }) }))
+  );
+  const text = relatedText(locale);
+  const columnCards = ranked.map((other) => ({ type: "column", href: cleanHref(base, other.path), note: formatDate(other.date, locale), ...text.relatedColumn(other.title) }));
+  return pickRelatedCards([
+    matchCard(match, locale, base),
+    teamCard || competitionCard(column, match, locale, base),
+    ...columnCards
+  ], { self: column.path, exists: fileExists });
+}
+
 /** Tek yazı sayfası. */
-export function columnPageHtml(column, locale = "tr") {
+export function columnPageHtml(column, locale = "tr", relatedHtml = "") {
   const copy = PAGE_STRINGS[locale === "en" ? "en" : "tr"];
   const url = publicUrl(column.path);
   // İngilizce yazı iki kat derinlikte (`en/columns/`), Türkçe bir kat.
@@ -430,6 +578,8 @@ export function columnPageHtml(column, locale = "tr") {
 
         ${column.tags.length ? `<div class="column-tags">${column.tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       </article>
+
+      ${relatedHtml}
 
       <section class="column-back">
         <a class="detail-link" href="${base}${copy.indexPath}">${escapeHtml(copy.backAll)}</a>
@@ -584,8 +734,17 @@ export function generateColumnPages() {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.mkdirSync(AUTHOR_DIR, { recursive: true });
 
+  // İlgili kartların konu bilgisi Türkçe kayıttan kurulur: İngilizce sayfa da
+  // aynı maç/takım/etiket ilişkisiyle eşleşir, yalnızca hedefler İngilizcedir.
+  const registry = readRegistry();
+  const topics = new Map(columns.map((column) => {
+    const match = column.matchSlug ? registry.get(column.matchSlug) || null : null;
+    return [column.id, { tags: column.tags, teams: columnTeams(column, match), matchSlug: match ? column.matchSlug : "" }];
+  }));
+
   for (const column of columns) {
-    writeBoth(column.path, columnPageHtml(column, "tr"));
+    const related = relatedCardsForColumn(column, "tr", { pool: columns, topics, registry });
+    writeBoth(column.path, columnPageHtml(column, "tr", columnRelatedHtml(related, "tr")));
   }
 
   // ── İNGİLİZCE KARŞILIKLAR ────────────────────────────────────────────────
@@ -597,7 +756,8 @@ export function generateColumnPages() {
   const { columns: englishColumns } = publishedColumns(store, { locale: "en" });
   const translated = englishColumns.filter((column) => column.hasEnglish && column.path);
   for (const column of translated) {
-    writeBoth(column.path, columnPageHtml(column, "en"));
+    const related = relatedCardsForColumn(column, "en", { pool: translated, topics, registry });
+    writeBoth(column.path, columnPageHtml(column, "en", columnRelatedHtml(related, "en")));
   }
   writeRouteMap(translated);
 
