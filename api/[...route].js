@@ -315,6 +315,9 @@ async function handleMatchAnalysis(req, res, query) {
 }
 
 module.exports = async function handler(req, res) {
+  if (routeName(req) === "match-news" || /^\/haber\/galatasaray-kasimpasa-9-ekim-2026-canli-haber(?:\.html)?$/.test(new URL(req.url || "/", "http://localhost").pathname)) {
+    return require("../server/matchNewsRoute").handleMatchNews(req, res);
+  }
   // OY UÇ NOKTASI EN ÖNDE, ÇÜNKÜ ALTTAKİ KAPILAR ONA UYMUYOR.
   //
   // `rejectUnsupportedMethod` yalnızca okuma yöntemlerine izin veriyor ve

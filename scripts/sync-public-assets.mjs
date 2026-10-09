@@ -19,6 +19,8 @@ function copyGeneratedFile(source, target) {
 }
 
 for (const file of [
+  "match-news.js",
+  "match-news.css",
   "page.css",
   "app.js",
   "daily-fixtures-en.js",
