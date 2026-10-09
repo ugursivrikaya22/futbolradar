@@ -565,7 +565,7 @@ function todayFixtureCount(gun) {
             console.log('SKIP', viewport.width, locale + ' featured carousel: hidden by a homepage promo');
             return;
           }
-          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
+          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
           const pause = root.locator('[data-featured-pause]');
           if (await pause.count()) {
             // CANLI YENİLEME TIKLAMAYI YUTABİLİR. Karusel her veri
@@ -727,7 +727,7 @@ function todayFixtureCount(gun) {
         await test(locale + ' live score cards or empty-state route', async () => {
           await open(en ? 'en/live-football-scores.html' : 'canli-skor.html');
           if (!en) {
-            await page.locator('[data-api-target="live-score"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached' });
+            await page.locator('[data-api-target="live-score"][data-state]:not([data-state="loading"])').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
           }
           const link = page.locator('main a.live-compact-card[href], main .fixture-card a[href]').first();
           if (await link.count()) {
@@ -883,7 +883,7 @@ function todayFixtureCount(gun) {
         // Daha erken saymak, maçlarla DOLU bir günde bile kartı "yok"
         // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
         // olarak buradan düşüyordu.
-        await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
+        await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
         const featured = page.locator('[data-featured-turkish="true"]').first();
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();

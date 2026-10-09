@@ -221,17 +221,57 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function runProcess(command, args, options = {}) {
+// ZAMAN AŞIMI TÜM SÜREÇ AĞACINI DURDURUR.
+//
+// Eskiden sinyal yalnızca doğrudan çocuğa (`npm`) gidiyordu; `npm run build`
+// altında koşan torunlar (tarayıcı denetimi, Chromium, önizleme sunucusu)
+// yaşamaya ve stdout/stderr borularını açık tutmaya devam ediyordu. 'close'
+// olayı borular kapanınca geldiği için 65 dakikalık sınır kağıt üzerinde
+// kalıyordu: 9 Ekim koşusu (37872768808) 3.900.000 ms sınırına karşın
+// 4.814.429 ms sonra kaydedildi. POSIX'te çocuk kendi süreç grubunda
+// başlatılır ve zaman aşımında GRUP öldürülür (önce SIGTERM, ~5 sn sonra
+// hâlâ yaşayan varsa SIGKILL). Zaman aşımı sonucu çocuk çıkınca ('exit') ya
+// da SIGKILL anında kaydedilir; torunların tuttuğu borular beklenmez.
+// Zaman aşımı her zaman başarısızlıktır.
+const POSIX_GROUPS = process.platform !== "win32";
+const activeChildren = new Set();
+let exitHookInstalled = false;
+
+function signalTree(child, signal) {
+  try {
+    if (POSIX_GROUPS && child.pid) process.kill(-child.pid, signal);
+    else child.kill(signal);
+  } catch (error) {
+    if (error && error.code === "ESRCH") return; // grup zaten yok
+    try { child.kill(signal); } catch { /* no-op */ }
+  }
+}
+
+function installExitHook() {
+  if (exitHookInstalled) return;
+  exitHookInstalled = true;
+  // Ayrı grupta başlatılan çocuk, orkestratör ölünce kendiliğinden ölmez;
+  // çıkışta hâlâ koşanları da durdur.
+  process.once("exit", () => { for (const child of activeChildren) signalTree(child, "SIGKILL"); });
+}
+
+export async function runProcess(command, args, options = {}) {
   const timeoutMs = options.timeoutMs || 5 * 60 * 1000;
+  const killGraceMs = options.killGraceMs ?? 5_000;
   return await new Promise((resolve) => {
     const started = Date.now();
     const child = spawn(command, args, {
       cwd: root,
       env: process.env,
-      stdio: ["ignore", "pipe", "pipe"]
+      stdio: ["ignore", "pipe", "pipe"],
+      detached: POSIX_GROUPS
     });
+    activeChildren.add(child);
+    installExitHook();
     let output = "";
     let timedOut = false;
+    let settled = false;
+    let killTimer = null;
     const capture = (chunk, target) => {
       const safe = redact(chunk);
       output = `${output}${safe}`.slice(-16_000);
@@ -239,34 +279,56 @@ async function runProcess(command, args, options = {}) {
     };
     child.stdout.on("data", (chunk) => capture(chunk, process.stdout));
     child.stderr.on("data", (chunk) => capture(chunk, process.stderr));
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      activeChildren.delete(child);
+      resolve(result);
+    };
+    const finishTimedOut = (code) => {
+      // Torunların açık tuttuğu boruları bırak; sonuç beklemeden kaydedilsin.
+      try { child.stdout.destroy(); } catch { /* no-op */ }
+      try { child.stderr.destroy(); } catch { /* no-op */ }
+      finish({ ok: false, code, durationMs: Date.now() - started, output, summary: null, error: `Timed out after ${timeoutMs}ms`, timedOut: true });
+    };
     const timer = setTimeout(() => {
       timedOut = true;
-      child.kill("SIGTERM");
-      setTimeout(() => child.kill("SIGKILL"), 5_000).unref();
+      signalTree(child, "SIGTERM");
+      killTimer = setTimeout(() => {
+        signalTree(child, "SIGKILL");
+        finishTimedOut(null);
+      }, killGraceMs);
     }, timeoutMs);
     child.on("error", (error) => {
-      clearTimeout(timer);
-      resolve({ ok: false, code: null, durationMs: Date.now() - started, output, error: error.message, timedOut });
+      if (killTimer) clearTimeout(killTimer);
+      finish({ ok: false, code: null, durationMs: Date.now() - started, output, error: error.message, timedOut });
+    });
+    child.on("exit", (code) => {
+      // Doğrudan çocuk çıktı ama grupta SIGTERM'i yok sayan kalmış olabilir:
+      // SIGKILL zamanlayıcısı yine çalışır, sonuç hemen kaydedilir.
+      if (timedOut) finishTimedOut(code);
     });
     child.on("close", (code) => {
-      clearTimeout(timer);
+      // Zaman aşımında SIGKILL zamanlayıcısı bilerek iptal edilmez: SIGTERM'i
+      // yok sayan bir torun boruları bıraktıktan sonra da yaşayabilir.
+      if (timedOut) { finishTimedOut(code); return; }
       const marker = [...output.matchAll(/FUTBOLRADAR_STEP_SUMMARY\s+(\{[^\r\n]+\})/g)].at(-1);
       let summary = null;
       try { summary = marker ? JSON.parse(marker[1]) : null; } catch { summary = null; }
-      resolve({
-        ok: code === 0 && !timedOut,
+      finish({
+        ok: code === 0,
         code,
         durationMs: Date.now() - started,
         output,
         summary,
-        error: timedOut ? `Timed out after ${timeoutMs}ms` : code === 0 ? null : `Exited with code ${code}`,
-        timedOut
+        error: code === 0 ? null : `Exited with code ${code}`,
+        timedOut: false
       });
     });
   });
 }
 
-/** Çıktıdaki en sık geçen PROVIDER_* hata kodu (yoksa null). */
 export function detectProviderCode(output) {
   const counts = new Map();
   for (const match of String(output || "").matchAll(/\bPROVIDER_[A-Z_]+\b/g)) {
