@@ -565,7 +565,7 @@ function todayFixtureCount(gun) {
             console.log('SKIP', viewport.width, locale + ' featured carousel: hidden by a homepage promo');
             return;
           }
-          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
+          if (!en) await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
           const pause = root.locator('[data-featured-pause]');
           if (await pause.count()) {
             // CANLI YENİLEME TIKLAMAYI YUTABİLİR. Karusel her veri
@@ -883,7 +883,7 @@ function todayFixtureCount(gun) {
         // Daha erken saymak, maçlarla DOLU bir günde bile kartı "yok"
         // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
         // olarak buradan düşüyordu.
-        await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor();
+        await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
         const featured = page.locator('[data-featured-turkish="true"]').first();
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();
