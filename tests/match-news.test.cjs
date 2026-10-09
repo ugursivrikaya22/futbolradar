@@ -2,6 +2,16 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const {view,renderPage,liveHtml,editorial,matchesFixture}=require('../services/matchNews');
 const before=Date.parse('2026-10-09T13:00:00Z');
+test('SEO metadata follows site policy and points to existing assets',async()=>{
+  const fs=require('node:fs');
+  const {ROBOTS_INDEX}=await import('../scripts/lib/robots.mjs');
+  const html=renderPage(null,before);
+  assert.ok(html.includes(`name="robots" content="${ROBOTS_INDEX}"`));
+  assert.ok(html.includes('name="twitter:card" content="summary_large_image"'));
+  assert.ok(html.includes('rel="manifest" href="/site.webmanifest"'));
+  const image=html.match(/property="og:image" content="https:\/\/www.futbolradar.com([^\"]+)"/)[1];
+  assert.ok(fs.existsSync(require('node:path').join(__dirname,'..',image)));
+});
 const fixture={id:'1584424',homeTeam:'Galatasaray',awayTeam:'Kasımpaşa',kickoff:editorial.kickoff,fetchedAt:'2026-10-09T13:00:00Z',source:'api-football'};
 test('pregame has no invented score and all editorial sections',()=>{
   const html=renderPage({...fixture,status:'SCHEDULED',score:{home:null,away:null}},before);
