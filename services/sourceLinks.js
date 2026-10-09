@@ -153,6 +153,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "sahadan.com",
     "sofascore.com",
     "fotmob.com",
+    // Galatasaray–Kasımpaşa haberindeki geçmiş karşılaşma kayıtları için
+    // sayfası açılıp doğrulanan istatistik kaynağı (9 Ekim 2026).
+    "sporzip.com",
     "ssportplus.com"
   ]),
 
