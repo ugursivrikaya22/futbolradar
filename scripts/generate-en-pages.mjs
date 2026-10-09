@@ -35,6 +35,7 @@ import {
 import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidgetHtml } from "./lib/homePoll.mjs";
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
+import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
@@ -107,6 +108,7 @@ const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((
 })());
 
 const { filterPlayerCards, publicPlayerView } = require("../services/cardCredibility.js");
+const { computeTrendCategories } = require("../services/trendPlayerCategories.js");
 const { fixtureTeamNames, slug: teamSlug } = require("../services/superLigTeams.js");
 // "Başlangıçta kaç kart görünür?" sayısı TEK yerde durur; Türkçe ön derleme,
 // istemci ve bu üretici aynı sabiti okur (bkz. services/matchListWindow.js).
@@ -1098,7 +1100,35 @@ function playerRadarSection() {
           <div class="slider-shell">
             <div class="slider-rail" id="player-radar-grid">${body}</div>
           </div>
+          <div class="trend-category-shell" id="trend-player-categories">${trendPlayerCategoriesBlock()}</div>
         </section>`;
+}
+
+/**
+ * Trend oyuncu kategorileri — Türkçe ana sayfadaki sekmelerin İngilizcesi.
+ * Aynı hesap (services/trendPlayerCategories.js), aynı güvenilirlik kapısı;
+ * kart yalnızca İngilizce profil sayfası gerçekten üretilmişse basılır.
+ * Ana sayfa kara listesi Türkçe tarafla aynı (Mauro Icardi).
+ */
+function trendPlayerCategoriesBlock() {
+  const { kept } = filterPlayerCards(players.filter((player) => player && player.id !== "mauro-icardi"), {
+    trend: true,
+    leagueTeams: fixtureTeamNames()
+  });
+  let history = { rows: [] };
+  try {
+    history = JSON.parse(fs.readFileSync(path.join(root, "data", "player-match-history.json"), "utf8"));
+  } catch (error) {
+    console.warn(`[trend-categories:en] maç geçmişi okunamadı: ${error.message}`);
+  }
+  const result = computeTrendCategories({
+    players: kept,
+    history: history.rows || [],
+    now: new Date(),
+    hasProfile: (player) => fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id))),
+    viewOptions: { leagueTeams: fixtureTeamNames() }
+  });
+  return renderTrendCategoryTabs(result, "en", (card) => `./player/${playerUrls.slugFor(card.id)}.html`);
 }
 
 /**

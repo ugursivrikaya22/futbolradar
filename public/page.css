@@ -24143,3 +24143,45 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 :root[data-theme="dark"] .brand-benefits li{background:#162b23;color:#e4f4e9;border-color:#365143}
 :root[data-theme="dark"] .brand-promise{color:#bacbc1}
 @media(max-width:480px){.brand-benefits{gap:6px}.brand-benefits li{font-size:12px;padding:7px 10px}.home-page #hero-canli-skor h1{font-size:clamp(1.9rem,7.8vw,2.6rem)}}
+
+/* ─── Ana sayfa: trend oyuncu kategorileri (Genç / Sürpriz / Form) ───
+   Sekme mekaniği standings-tabs ile aynı (radyo + label[role=tab]);
+   yalnızca bu bileşenin kimlikleri için seçili/odak/panel kuralları. */
+.trend-category-shell { margin-top: 18px; }
+.trend-category-rule,
+.trend-category-source { margin: 0; color: var(--muted); font-size: var(--fs-sm, 0.86rem); }
+.trend-category-source { font-size: var(--fs-xs, 0.76rem); }
+.trend-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+.trend-category-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  overflow-wrap: anywhere;
+}
+.trend-category-card .player-card-title { display: flex; align-items: center; gap: 10px; min-width: 0; }
+#trend-player-tab-young:checked ~ .standings-tabs__list #trend-player-tablabel-young,
+#trend-player-tab-surprise:checked ~ .standings-tabs__list #trend-player-tablabel-surprise,
+#trend-player-tab-form:checked ~ .standings-tabs__list #trend-player-tablabel-form {
+  border-color: var(--green);
+  background: rgba(11, 143, 90, 0.1);
+  color: var(--green);
+}
+#trend-player-tab-young:focus-visible ~ .standings-tabs__list #trend-player-tablabel-young,
+#trend-player-tab-surprise:focus-visible ~ .standings-tabs__list #trend-player-tablabel-surprise,
+#trend-player-tab-form:focus-visible ~ .standings-tabs__list #trend-player-tablabel-form {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+#trend-player-tab-young:checked ~ .standings-tabs__panels #trend-player-panel-young,
+#trend-player-tab-surprise:checked ~ .standings-tabs__panels #trend-player-panel-surprise,
+#trend-player-tab-form:checked ~ .standings-tabs__panels #trend-player-panel-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+@media (max-width: 640px) {
+  .trend-category-card h3 { font-size: var(--fs-sm); }
+}
