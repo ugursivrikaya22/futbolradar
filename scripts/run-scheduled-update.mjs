@@ -508,6 +508,15 @@ function fullMaintenanceSteps(providerReady) {
     // (data/teams.json) o adımda güncellenmiş olur, rakip tespiti bu listeye
     // bakar. Kapsamı dar: onlarca değil, birkaç rakip takım.
     nodeStep("international-opponents", "sync-international-opponents.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000, skip: noProvider }),
+    // SÜPER LİG MAÇ BAŞI REYTİNG GERİ DOLDURMASI — SINIRLI.
+    //
+    // Takvim penceresinde oyuncu dökümü çekilmeden düşen bitmiş Süper Lig
+    // maçlarını `/fixtures/players` ile tamamlar (Trend Oyuncular sekmeleri
+    // bu depodan okur). Koşu başına en fazla 1 sezon listesi + 15 maç isteği;
+    // depoda duran maç sorulmaz, satır silinmez, değişiklik yoksa dosya
+    // yazılmaz. Yalnızca günlük full koşuda; `saving` modda ertelenir
+    // (operationsPolicy OPTIONAL), `protected` modda hiç koşmaz.
+    nodeStep("superlig-rating-backfill", "backfill-superlig-player-history.mjs", ["--apply", "--cap=15"], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 6 * 60 * 1000, skip: noProvider }),
     nodeStep("canonical-players", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--apply", "--offline", "--skip-squad-refresh"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("confirmed-transfers", "sync-confirmed-transfers.mjs", ["--apply"], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
     nodeStep("weekly-player-enrichment", "sync-turkish-player-profiles.mjs", ["--league=super-lig", "--incomplete-profiles", "--stale-days=14", "--request-budget=80", "--apply", "--skip-squad-refresh"], { kind: "source", source: "api-football", timeoutMs: 15 * 60 * 1000, skip: !monday ? "Deep player enrichment runs in the Monday full update only." : noProvider }),
