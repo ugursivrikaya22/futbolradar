@@ -239,8 +239,14 @@ function applyRows(store, rows) {
   return merged;
 }
 
+/**
+ * Satırlar `origin` işaretiyle yazılır: geri alma gerekirse yalnızca bu
+ * adımın eklediği satırlar seçilip çıkarılabilir.
+ */
+const ORIGIN = "superlig-rating-backfill";
+
 function rowsForMatch(match) {
-  return matchRowsFrom(match);
+  return matchRowsFrom(match).map((row) => ({ ...row, origin: ORIGIN }));
 }
 
 module.exports = {
@@ -250,6 +256,7 @@ module.exports = {
   DEFAULT_SEASON,
   DEFAULT_SEASON_START,
   HARD_CAP,
+  ORIGIN,
   SUPER_LIG_PROVIDER_LEAGUE_ID,
   applyRows,
   canonicalIdFor,

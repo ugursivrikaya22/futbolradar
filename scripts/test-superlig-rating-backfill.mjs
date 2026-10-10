@@ -101,6 +101,7 @@ function rawPlayers(fixtureId, home, away) {
   assert.equal(rows.find((row) => row.name === "Galatasaray Kaleci").started, true);
   assert.equal(rows.find((row) => row.name === "Galatasaray Kaleci").rating, 7.2);
   assert.ok(rows.every((row) => row.competition === "Süper Lig" && row.matchId === entry.matchId));
+  assert.ok(rows.every((row) => row.origin === backfill.ORIGIN), "geri alma için köken işareti");
 
   // ── 4-5. Tekrarlanabilirlik ve silmeme ──
   const first = backfill.applyRows({ rows: existingRows }, rows);
