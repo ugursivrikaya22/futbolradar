@@ -912,6 +912,14 @@ function todayFixtureCount(gun) {
           return;
         }
         await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
+        // Özet, kahramanın İLK kartındaki maçı yazmalı. Ön-render ile istemci
+        // listesi farklı sıralandığında (ör. istemci U19 maçını öne aldı)
+        // satır eski ön-render kartına kilitlenip başka maçı gösteriyordu —
+        // CI 37996238770. Takımlar aynı değilse aşağıdaki skor denetimi de
+        // tanım gereği yanlış kartı ölçer.
+        await until(async () => (await summary.locator('.now-football__value').innerText()).trim() ===
+          (await featured.locator('.featured-fixture-team strong').allTextContents()).map(text => text.trim()).join(' – '),
+          'Summary shows a different match than the main card');
         const score = featured.locator('.featured-fixture-score b');
         const status = featured.locator('.featured-fixture-score span');
         const original = [await score.innerText(), await status.innerText()];
