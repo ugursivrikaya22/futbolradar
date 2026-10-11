@@ -133,7 +133,7 @@ export const STR = {
     varReferee: "VAR",
     status: "Maç durumu",
     round: "Hafta",
-    state: { pre: "Başlamadı", live: "Canlı", post: "Tamamlandı", pending: "Sonuç doğrulanıyor", postponed: "Ertelendi", cancelled: "İptal edildi", halftime: "Devre arası" },
+    state: { pre: "Başlamadı", live: "Canlı", post: "Tamamlandı", pending: "Sonuç bekleniyor", postponed: "Ertelendi", cancelled: "İptal edildi", halftime: "Devre arası" },
     whenTitle: (h, a) => `${h} - ${a} maçı ne zaman?`,
     whenBody: (h, a, day, competition) => `${h} - ${a} maçı ${day} tarihinde${competition ? ` ${competition} kapsamında` : ""} oynanacak.`,
     whenBodyPast: (h, a, day, competition) => `${h} - ${a} maçı ${day} tarihinde${competition ? ` ${competition} kapsamında` : ""} oynandı.`,
