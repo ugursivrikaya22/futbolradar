@@ -54,9 +54,20 @@
   var expiresAt = Date.parse(root.getAttribute("data-fms-expires-at") || "");
 
   var COPY = locale === "en"
-    ? { live: "LIVE", halftime: "HALF TIME", post: "FULL TIME", liveTitle: " · live score", postTitle: " result", versus: "vs" }
-    : { live: "CANLI", halftime: "DEVRE ARASI", post: "MAÇ SONUCU", liveTitle: " · canlı skor", postTitle: " maç sonucu", versus: "-" };
+    ? { live: "LIVE", halftime: "HALF TIME", post: "FULL TIME", pending: "RESULT PENDING", liveTitle: " · live score", postTitle: " result", versus: "vs" }
+    : { live: "CANLI", halftime: "DEVRE ARASI", post: "MAÇ SONUCU", pending: "SONUÇ BEKLENİYOR", liveTitle: " · canlı skor", postTitle: " maç sonucu", versus: "-" };
 
+  // Başlama saati geçti, sağlayıcıdan canlı/sonuç verisi henüz yok: "MAÇ
+  // ÖNÜ" rozeti yerine "SONUÇ BEKLENİYOR". Skor uydurulmaz; canlı veri
+  // gelince render() rozeti yeniden yazar.
+  function markPending() {
+    if (!root || seenLive) return;
+    var current = root.querySelector("[data-fms-badge]");
+    if (current && (root.getAttribute("data-fms-phase") || "pre") === "pre") {
+      current.textContent = COPY.pending;
+      root.setAttribute("data-fms-pending", "true");
+    }
+  }
   function removeSpotlight() {
     if (root && root.parentNode) root.parentNode.removeChild(root);
     root = null;
@@ -82,6 +93,27 @@
   }
 
   if (scheduleExpiry()) return;
+
+  // 1b) GEÇ KALAN YENİLEME EMNİYETİ. Başlama saatinden GRACE (150 dk) sonra
+  // sağlayıcı maçı hâlâ canlı bildirmiyorsa kutu ana sayfadan düşer — derleme
+  // gecikse bile saatler önce oynanmış bir maç "bugün 19:00'da" diye
+  // tanıtılmaz. Son yoklama "canlı" dediyse (uzatma/penaltı) kalır; bitti
+  // denince render() zaten gizler. Maç sayfası kalıcıdır, yalnızca öne
+  // çıkarma kapanır.
+  var GRACE_MS_EARLY = 150 * 60 * 1000;
+  var seenLive = false;
+  function staleAfterKickoff() {
+    return isFinite(kickoffMs) && Date.now() >= kickoffMs + GRACE_MS_EARLY;
+  }
+  // Yoklama yapılamayan kutuda (sorgu/fetch yok) karar beklenmeden verilir.
+  var canPoll = !!(window.fetch && root.getAttribute("data-fms-query") && isFinite(kickoffMs));
+  if (staleAfterKickoff() && !canPoll) {
+    removeSpotlight();
+    return;
+  }
+  function dropIfStale() {
+    if (root && !finished && !seenLive && staleAfterKickoff()) removeSpotlight();
+  }
 
   // 2) Geri sayım. Sunucudan gelen hedef ana göre her saniye yalnızca dört
   // sayının METNİ değişir; düğüm eklenip çıkarılmadığı için düzen yeniden
@@ -128,6 +160,7 @@
         // kısa bir ibareye bırakır; skoru canlı yoklama yazar.
         if (grid) grid.hidden = true;
         if (started) started.hidden = false;
+        markPending();
         stopTicker();
         return;
       }
@@ -195,6 +228,7 @@
   }
 
   function render(detail) {
+    if (!root) return;
     var state = statusOf(detail);
     if (state === "finished" || state === "retired") { finished = true; root.hidden = true; stop(); return; }
     if (state === "scheduled") return;
@@ -234,6 +268,8 @@
       return;
     }
 
+    seenLive = true;
+    root.removeAttribute("data-fms-pending");
     if (badge) badge.textContent = state === "halftime" ? COPY.halftime : COPY.live;
     root.className = root.className.replace(/fms--[a-z-]+/, "fms--live");
     root.setAttribute("data-fms-phase", "live");
@@ -251,7 +287,7 @@
     var now = Date.now();
     if (now < kickoffMs - 60 * 60 * 1000) return 0; // Bir saatten çok varsa hiç istek atılmaz.
     if (now < kickoffMs) return PRE_POLL_MS;
-    if (now > kickoffMs + GRACE_MS) return 0;
+    if (now > kickoffMs + GRACE_MS) return seenLive ? LIVE_POLL_MS : 0;
     return LIVE_POLL_MS;
   }
 
@@ -264,6 +300,7 @@
   }
 
   function poll() {
+    if (!root) return;
     if (finished || document.hidden) {
       schedule();
       return;
@@ -272,15 +309,27 @@
       .then(function (response) { return response.ok ? response.json() : null; })
       .then(function (payload) {
         var detail = payload && (payload.match || payload.data || payload);
+        // `/api/match-detail` `data`yı DİZİ olarak döndürüyor; dizi
+        // açılmadan okunursa durum her zaman "programlandı" görünüyordu.
+        if (Array.isArray(detail)) detail = detail[0] || null;
         if (detail && belongsToMatch(detail)) render(detail);
       })
       .catch(function () { /* Ağ hatası sessiz: SSR anlık görüntüsü yerinde kalır. */ })
-      .then(schedule);
+      .then(function () {
+        // Başlama + 150 dk geçti ve sağlayıcı canlı/bitti demedi: kutu düşer.
+        dropIfStale();
+        if (root) schedule();
+      });
   }
 
   document.addEventListener("visibilitychange", function () {
     if (!document.hidden && !finished) poll();
   });
 
-  if (intervalFor()) poll();
+  if (intervalFor() || staleAfterKickoff()) poll();
+  else if (isFinite(kickoffMs) && kickoffMs + GRACE_MS - Date.now() > 0 && kickoffMs + GRACE_MS - Date.now() < 2147483000) {
+    // Sayfa uzun süre açık kalırsa pencere kapanınca son bir kez yoklanır.
+    window.setTimeout(poll, kickoffMs + GRACE_MS - Date.now() + 1000);
+  }
+  if (isFinite(kickoffMs) && Date.now() >= kickoffMs) markPending();
 })();
