@@ -3,7 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
-import { buildDecision } from "./lib/buildDecision.mjs";
+import { buildDecision, isOperationalOnly } from "./lib/buildDecision.mjs";
 import { stepAttemptLimit } from "./run-scheduled-update.mjs";
 import apiFootball from "../services/providers/apiFootballProvider.js";
 
@@ -30,6 +30,11 @@ try {
   assert.equal(buildDecision({}, directory).build, true);
   assert.equal(buildDecision({ ...env, VERCEL_GIT_PREVIOUS_SHA: "0".repeat(40) }, directory).build, true);
   assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: "automation/search-demand-123" }, directory).build, false);
+  for (const branch of ["codex/fix", "claude/fix", "feature/news", "fix/scores", "preview"]) {
+    assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: branch }, directory).build, false);
+  }
+  assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: "preview/release" }, directory).build, true);
+  assert.equal(buildDecision({ VERCEL_ENV: "preview" }, directory).build, true, "unknown metadata must not silently block a manual deployment");
   assert.equal(buildDecision({ VERCEL_ENV: "production", VERCEL_GIT_COMMIT_REF: "main" }, directory).build, true);
   const beforeRename = git("rev-parse", "HEAD");
   fs.mkdirSync(path.join(directory, "docs"));
@@ -39,6 +44,17 @@ try {
 } finally {
   fs.rmSync(directory, { recursive: true, force: true });
 }
+
+for (const file of ["editorial/social-review-queue.json", "outputs/operations/update-status.json", "docs/cost-report.md"]) {
+  assert.equal(isOperationalOnly(file), true);
+}
+for (const file of ["data/news.json", "public/data/fixture-calendar.json", "sitemap.xml", "api/matches.js", "vercel.json"]) {
+  assert.equal(isOperationalOnly(file), false, "public changes must still deploy");
+}
+const deployments = JSON.parse(fs.readFileSync("vercel.json", "utf8")).git.deploymentEnabled;
+assert.equal(deployments["**"], false);
+assert.equal(deployments.main, true);
+assert.equal(deployments["preview/**"], true);
 
 assert.equal(stepAttemptLimit({ kind: "source", attempts: 2 }), 1);
 assert.equal(stepAttemptLimit({ kind: "transform", attempts: 2 }), 2);

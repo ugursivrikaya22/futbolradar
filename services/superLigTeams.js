@@ -87,7 +87,24 @@ const MIN_CONTAINMENT_LENGTH = 4;
  */
 const AGE_GROUP_OR_RESERVE_SUFFIX = /(^|\s)(u1[3-9]|u2[0-3]|akademi|academy|youth|genc(ler)?|yedek|reserves?|b|ii)(\s|$)/;
 
+// SAF FONKSİYON ÖNBELLEĞİ. `sameClub` her çağrıda düzenli ifade kuruyor ve
+// /api/matches, yayın eşleştirme ve kanonik ad araması aynı ad çiftlerini
+// binlerce kez soruyor. Sonuç yalnızca iki dizeye bağlı (normalizeText de
+// String(value || "") üzerinden çalışıyor); sınırlı, dolunca boşalıyor.
+const SAME_CLUB_MEMO = new Map();
+const SAME_CLUB_MEMO_LIMIT = 50000;
+
 function sameClub(left, right) {
+  const memoKey = `${String(left || "")}\u0000${String(right || "")}`;
+  const memo = SAME_CLUB_MEMO.get(memoKey);
+  if (memo !== undefined) return memo;
+  const result = sameClubUncached(left, right);
+  if (SAME_CLUB_MEMO.size >= SAME_CLUB_MEMO_LIMIT) SAME_CLUB_MEMO.clear();
+  SAME_CLUB_MEMO.set(memoKey, result);
+  return result;
+}
+
+function sameClubUncached(left, right) {
   const a = normalizeText(left);
   const b = normalizeText(right);
   if (!a || !b) return false;

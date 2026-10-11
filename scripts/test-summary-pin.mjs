@@ -25,7 +25,7 @@ const block = source.match(/\/\/ summary-pin:start([\s\S]*?)\/\/ summary-pin:end
 assert.ok(block, "site.js içindeki summary-pin bloğu bulunamadı — işaret yorumları silinmiş olabilir");
 
 // eslint-disable-next-line no-new-func
-const pickSummaryCardIndex = new Function(`${block[1]}; return pickSummaryCardIndex;`)();
+const { pickSummaryCardIndex, summaryPinKey } = new Function(`${block[1]}; return { pickSummaryCardIndex, summaryPinKey };`)();
 
 let failures = 0;
 function check(name, run) {
@@ -66,6 +66,31 @@ check("kimlik tam eşleşir — benzer ad başka maçı devralmaz", () => {
     pickSummaryCardIndex(["Ankaragücü|Serik Spor|2026-09-19T19:00:00+03:00"], "Ankaragücü|Serik Spor|2026-09-19T19:00:00+03:00"),
     0
   );
+});
+
+check("İSTEMCİ ÇİZİMİNDEN ÖNCE sabitlenmez (ön-render kartı kilitlenmez)", () => {
+  // CI 37996238770: ön-render ilk kartı "Boluspor – Antalyaspor" idi,
+  // istemci U19 maçını öne aldı; özet ön-render kartında kilitli kalıp
+  // kahraman kartından ayrıştı.
+  assert.equal(summaryPinKey(["boluspor", "genclerbirligi"], 0, null, true), "");
+  assert.equal(summaryPinKey(["boluspor"], 0, "loading", true), "");
+  // Ön-render sonrası istemci listesi geldi: yeni ilk kart izlenir.
+  assert.equal(pickSummaryCardIndex(["alanyaspor-u19", "boluspor"], ""), 0);
+});
+
+check("istemci çizimi bitince ilk kart sabitlenir; sonraki yeniden sıralamada korunur", () => {
+  const keys = ["alanyaspor-u19", "boluspor"];
+  const pin = summaryPinKey(keys, pickSummaryCardIndex(keys, ""), "ready", true);
+  assert.equal(pin, "alanyaspor-u19");
+  assert.equal(pickSummaryCardIndex(["boluspor", "alanyaspor-u19"], pin), 1);
+  for (const state of ["fallback", "empty", "unavailable"]) {
+    assert.equal(summaryPinKey(keys, 0, state, true), "alanyaspor-u19", `${state} da yerleşmiş durumdur`);
+  }
+});
+
+check("istemcide çizilmeyen kahramanda hemen sabitlenir; kart yoksa sabit yok", () => {
+  assert.equal(summaryPinKey(["a"], 0, null, false), "a");
+  assert.equal(summaryPinKey([], -1, "ready", true), "");
 });
 
 if (failures) {

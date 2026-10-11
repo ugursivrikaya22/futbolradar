@@ -361,13 +361,21 @@ const ISTANBUL_DAY_FORMATTER = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit"
 });
 
+// Only a pure timestamp-to-day conversion is cached. Scores, live verdicts
+// and the current clock are never cached. Bound memory for arbitrary inputs.
+const ISTANBUL_DAY_MEMO = new Map();
+const ISTANBUL_DAY_MEMO_LIMIT = 8192;
 function istanbulDay(value) {
   const raw = String(value || "").trim();
   if (!raw) return "";
   if (!raw.includes("T")) return raw.slice(0, 10);
+  if (ISTANBUL_DAY_MEMO.has(raw)) return ISTANBUL_DAY_MEMO.get(raw);
   const parsed = new Date(raw);
   if (Number.isNaN(parsed.getTime())) return raw.slice(0, 10);
-  return ISTANBUL_DAY_FORMATTER.format(parsed);
+  const day = ISTANBUL_DAY_FORMATTER.format(parsed);
+  if (ISTANBUL_DAY_MEMO.size >= ISTANBUL_DAY_MEMO_LIMIT) ISTANBUL_DAY_MEMO.clear();
+  ISTANBUL_DAY_MEMO.set(raw, day);
+  return day;
 }
 
 /** Kaydın takvim günü (kickoff/date/utcDate sırasıyla). */
