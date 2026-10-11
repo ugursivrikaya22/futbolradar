@@ -28968,9 +28968,9 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-10-11T10:30:00.000Z",
-    "status": "scheduled",
+    "status": "live",
     "generatedAt": "2026-10-10T20:34:27.202Z",
-    "preMatchFrozenAt": null,
+    "preMatchFrozenAt": "2026-10-11T10:47:28.008Z",
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Konyaspor",
@@ -30571,7 +30571,9 @@
         "label": "balanced"
       },
       "summary": "Model, ev sahibi için %39, beraberlik için %35, deplasman için %26 ihtimal hesaplıyor. Takım güç puanları 37/100 - 35/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
-      "warnings": []
+      "warnings": [],
+      "frozenAt": "2026-10-11T10:47:28.008Z",
+      "frozenKickoff": "2026-10-11T10:30:00.000Z"
     },
     "coverage": {
       "homeSquadCoverage": 100,
@@ -30590,7 +30592,8 @@
     },
     "dataConfidence": 86,
     "analysisStatus": "complete",
-    "warnings": []
+    "warnings": [],
+    "updatedAt": "2026-10-11T10:47:28.008Z"
   },
   {
     "fixtureId": "gaziantep-fk-corum-fk-2026-10-11",
@@ -30602,7 +30605,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-11T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-10T20:34:27.368Z",
+    "generatedAt": "2026-10-11T10:47:28.177Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -31671,7 +31674,7 @@
               "note": "Red Card"
             }
           ],
-          "knownAvailabilityCoverage": 5,
+          "knownAvailabilityCoverage": 8,
           "rows": [
             {
               "playerId": "marcos-felipe-corum-fk",
@@ -31814,8 +31817,8 @@
             {
               "playerId": "m-thiam-corum-fk",
               "name": "M. Thiam",
-              "status": "unknown",
-              "note": null
+              "status": "doubtful",
+              "note": "Inactive"
             },
             {
               "playerId": "h-yesilyurt-corum-fk",
@@ -32148,7 +32151,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-10T20:34:27.368Z",
+      "generatedAt": "2026-10-11T10:47:28.177Z",
       "asOf": "2026-10-11T13:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -32210,7 +32213,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-11T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-10T20:34:27.539Z",
+    "generatedAt": "2026-10-11T10:47:28.323Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -32833,10 +32836,10 @@
               "note": "Inactive"
             },
             {
-              "playerId": "o-kokcu-besiktas",
-              "name": "O. Kökçü",
+              "playerId": "m-rashica-besiktas",
+              "name": "M. Rashica",
               "status": "injured",
-              "note": "Toe Injury"
+              "note": "Injury"
             },
             {
               "playerId": "l-trossard-besiktas",
@@ -33084,7 +33087,7 @@
             {
               "playerId": "o-kokcu-besiktas",
               "name": "O. Kökçü",
-              "status": "injured",
+              "status": "doubtful",
               "note": "Toe Injury"
             },
             {
@@ -33108,7 +33111,7 @@
             {
               "playerId": "m-rashica-besiktas",
               "name": "M. Rashica",
-              "status": "doubtful",
+              "status": "injured",
               "note": "Injury"
             },
             {
@@ -33281,9 +33284,9 @@
             "F. Uduokhai",
             "Fahri Kerem Ay",
             "K. Yılmaz",
+            "O. Kökçü",
             "W. Ndidi",
             "S. Özcan",
-            "M. Rashica",
             "Devrim Sahin",
             "Sami Bircan Ahmet",
             "M. Hekimoğlu",
@@ -33369,6 +33372,17 @@
             "profileUrl": "./oyuncular/u-yildiz-kocaelispor.html"
           },
           {
+            "id": "r-rivas-kocaelispor",
+            "name": "R. Rivas",
+            "position": "Midfielder",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./oyuncular/r-rivas-kocaelispor.html"
+          },
+          {
             "id": "mahamadou-susoho-sissoho-kocaelispor",
             "name": "Mahamadou Susoho Sissoho",
             "position": "Midfielder",
@@ -33394,9 +33408,9 @@
             "id": "show-kocaelispor",
             "name": "Show",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./oyuncular/show-kocaelispor.html"
@@ -33413,17 +33427,6 @@
             "profileUrl": "./oyuncular/b-kutlu-kocaelispor.html"
           },
           {
-            "id": "ege-bilim-kocaelispor",
-            "name": "Ege Bilim",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./oyuncular/ege-bilim-kocaelispor.html"
-          },
-          {
             "id": "arda-ozyar-kocaelispor",
             "name": "Arda Ozyar",
             "position": "Attacker",
@@ -33438,14 +33441,8 @@
         "availability": {
           "fixtureId": "besiktas-kocaelispor-2026-10-11",
           "totalKnownPlayers": 38,
-          "unavailableCount": 4,
+          "unavailableCount": 6,
           "unavailable": [
-            {
-              "playerId": "a-jovanovic-kocaelispor",
-              "name": "A. Jovanović",
-              "status": "injured",
-              "note": "Knee Injury"
-            },
             {
               "playerId": "t-bingol-kocaelispor",
               "name": "T. Bingöl",
@@ -33453,10 +33450,28 @@
               "note": "Inactive"
             },
             {
-              "playerId": "r-rivas-kocaelispor",
-              "name": "R. Rivas",
+              "playerId": "a-dijksteel-kocaelispor",
+              "name": "A. Dijksteel",
               "status": "injured",
-              "note": "Thigh Injury"
+              "note": "Muscle Injury"
+            },
+            {
+              "playerId": "m-haidara-kocaelispor",
+              "name": "M. Haïdara",
+              "status": "injured",
+              "note": "Muscle Injury"
+            },
+            {
+              "playerId": "t-zoukrou-kocaelispor",
+              "name": "T. Zoukrou",
+              "status": "injured",
+              "note": "Muscle Injury"
+            },
+            {
+              "playerId": "m-baku-kocaelispor",
+              "name": "M. Baku",
+              "status": "injured",
+              "note": "Inactive"
             },
             {
               "playerId": "b-petkovic-kocaelispor",
@@ -33465,12 +33480,12 @@
               "note": "Hamstring Injury"
             }
           ],
-          "knownAvailabilityCoverage": 16,
+          "knownAvailabilityCoverage": 26,
           "rows": [
             {
               "playerId": "a-jovanovic-kocaelispor",
               "name": "A. Jovanović",
-              "status": "injured",
+              "status": "doubtful",
               "note": "Knee Injury"
             },
             {
@@ -33506,13 +33521,13 @@
             {
               "playerId": "a-dijksteel-kocaelispor",
               "name": "A. Dijksteel",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Muscle Injury"
             },
             {
               "playerId": "m-haidara-kocaelispor",
               "name": "M. Haïdara",
-              "status": "doubtful",
+              "status": "injured",
               "note": "Muscle Injury"
             },
             {
@@ -33536,8 +33551,8 @@
             {
               "playerId": "t-zoukrou-kocaelispor",
               "name": "T. Zoukrou",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Muscle Injury"
             },
             {
               "playerId": "e-bilim-kocaelispor",
@@ -33572,7 +33587,7 @@
             {
               "playerId": "r-rivas-kocaelispor",
               "name": "R. Rivas",
-              "status": "injured",
+              "status": "doubtful",
               "note": "Thigh Injury"
             },
             {
@@ -33596,8 +33611,8 @@
             {
               "playerId": "m-baku-kocaelispor",
               "name": "M. Baku",
-              "status": "unknown",
-              "note": null
+              "status": "injured",
+              "note": "Inactive"
             },
             {
               "playerId": "d-churlinov-kocaelispor",
@@ -33662,8 +33677,8 @@
             {
               "playerId": "m-maglica-kocaelispor",
               "name": "M. Maglica",
-              "status": "unknown",
-              "note": null
+              "status": "doubtful",
+              "note": "Injury"
             },
             {
               "playerId": "f-aye-kocaelispor",
@@ -33707,7 +33722,7 @@
             "name": "T. Zoukrou",
             "position": "Defender",
             "overall": 29,
-            "reason": "rotation-or-unknown"
+            "reason": "injured"
           },
           {
             "playerId": "m-cinan-kocaelispor",
@@ -33721,19 +33736,17 @@
             "name": "A. Dijksteel",
             "position": "Defender",
             "overall": 28,
-            "reason": "rotation-or-unknown"
+            "reason": "injured"
           }
         ],
         "benchStrength": {
-          "score": 22,
+          "score": 21,
           "confidence": 100,
-          "sampleSize": 23,
+          "sampleSize": 21,
           "players": [
+            "A. Jovanović",
             "O. Piri",
             "M. Cinan",
-            "A. Dijksteel",
-            "M. Haïdara",
-            "T. Zoukrou",
             "E. Bilim",
             "H. Keïta",
             "K. Linetty",
@@ -33741,7 +33754,6 @@
             "J. Nonge Boende",
             "S. Yalçın",
             "D. Agyei",
-            "M. Baku",
             "D. Churlinov",
             "A. Sağat",
             "O. Öztonga",
@@ -33750,6 +33762,7 @@
             "M. Maglica",
             "F. Ayé",
             "G. Sousa",
+            "Ege Bilim",
             "T. Gulliksen",
             "Gonçalo Santos Sousa"
           ]
@@ -33778,7 +33791,7 @@
       },
       "bench": {
         "home": 13,
-        "away": 22
+        "away": 21
       },
       "form": {
         "home": 75,
@@ -33786,7 +33799,7 @@
       },
       "availability": {
         "home": 40,
-        "away": 40
+        "away": 10
       },
       "confidence": 75,
       "advantages": [
@@ -33818,10 +33831,10 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "balanced"
+          "advantage": "home"
         }
       ],
-      "summary": "Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok."
+      "summary": "Ev sahibi mevcut verilerde Orta saha ve Form alanlarında bir adım önde görünüyor."
     },
     "keyDuels": [
       {
@@ -33908,12 +33921,12 @@
           "profileUrl": "./oyuncular/j-olaitan-besiktas.html"
         },
         "awayPlayer": {
-          "id": "mahamadou-susoho-sissoho-kocaelispor",
-          "name": "Mahamadou Susoho Sissoho",
+          "id": "r-rivas-kocaelispor",
+          "name": "R. Rivas",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./oyuncular/mahamadou-susoho-sissoho-kocaelispor.html"
+          "profileUrl": "./oyuncular/r-rivas-kocaelispor.html"
         },
         "advantage": "home",
         "advantageScore": 53,
@@ -33947,18 +33960,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-10T20:34:27.539Z",
+      "generatedAt": "2026-10-11T10:47:28.323Z",
       "asOf": "2026-10-11T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
         "home": 59,
-        "away": 47
+        "away": 46
       },
       "probabilities": {
-        "homeWin": 51,
-        "draw": 32,
-        "awayWin": 17
+        "homeWin": 53,
+        "draw": 31,
+        "awayWin": 16
       },
       "prediction": {
         "primary": "home",
@@ -33970,14 +33983,14 @@
         "label": "high"
       },
       "upsetRisk": {
-        "score": 52,
+        "score": 50,
         "label": "medium"
       },
       "matchBalance": {
-        "score": 76,
+        "score": 74,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %51, beraberlik için %32, deplasman için %17 ihtimal hesaplıyor. Takım güç puanları 59/100 - 47/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %53, beraberlik için %31, deplasman için %16 ihtimal hesaplıyor. Takım güç puanları 59/100 - 46/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -34001,7 +34014,7 @@
   },
   {
     "fixtureId": "eyupspor-goztepe-2026-10-12",
-    "providerId": null,
+    "providerId": "1584423",
     "slug": "eyupspor-goztepe-2026-10-12",
     "competition": "Süper Lig",
     "competitionType": "league",
@@ -34009,7 +34022,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-12T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-10T20:34:27.708Z",
+    "generatedAt": "2026-10-11T10:47:28.503Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -35519,7 +35532,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-10T20:34:27.708Z",
+      "generatedAt": "2026-10-11T10:47:28.503Z",
       "asOf": "2026-10-12T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
