@@ -1,6 +1,24 @@
 const competitions = require("../data/competitions.json");
 
+// SAF FONKSİYON ÖNBELLEĞİ. `findCompetition` her çağrıda kataloğun bütün
+// ad/takma adlarını yeniden normalleştiriyor; /api/matches bunu binlerce maç
+// için yapıyordu (profil: istek başına ~0,4 sn yalnızca burada). Sonuç
+// yalnızca girdi dizesine bağlı, önbellek davranışı değiştirmez; sınırsız
+// büyümesin diye dolunca boşaltılır.
+const NORMALIZE_KEY_CACHE = new Map();
+const NORMALIZE_KEY_CACHE_LIMIT = 20000;
+
 function normalizeKey(value) {
+  const raw = String(value || "");
+  const cached = NORMALIZE_KEY_CACHE.get(raw);
+  if (cached !== undefined) return cached;
+  const key = normalizeKeyUncached(raw);
+  if (NORMALIZE_KEY_CACHE.size >= NORMALIZE_KEY_CACHE_LIMIT) NORMALIZE_KEY_CACHE.clear();
+  NORMALIZE_KEY_CACHE.set(raw, key);
+  return key;
+}
+
+function normalizeKeyUncached(value) {
   return String(value || "")
     .trim()
     .toLocaleLowerCase("tr-TR")
