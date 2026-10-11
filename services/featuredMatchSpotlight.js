@@ -89,11 +89,18 @@ function involvesTeam(match, teams) {
  * sağlayıcıdan gelir (sicil kaydı). Gün tutmazsa (maç ertelendi, sağlayıcı
  * başka gün dedi) kayıt hiçbir şey açmaz — tarih uydurulmaz.
  */
+// Yalnızca kulüp türü ekleri düşer ("FC Barcelona" = "Barcelona"). Önek/sonek
+// eşleşmesi BİLEREK yok: "Galatasaray U19 - Barcelona U19" (Gençlik Ligi,
+// aynı gün) A takım maçı sanılırdı.
+const CLUB_AFFIXES = new Set(["fc", "cf", "sk", "jk", "afc", "ac", "as", "sc"]);
+function clubKey(value) {
+  return normalizeName(value).split(" ").filter((token) => token && !CLUB_AFFIXES.has(token)).join(" ");
+}
+
 function sideMatches(side, team) {
-  const a = normalizeName(side);
-  const b = normalizeName(team);
-  if (!a || !b) return false;
-  return a === b || a.startsWith(`${b} `) || a.endsWith(` ${b}`) || b.startsWith(`${a} `) || b.endsWith(` ${a}`);
+  const a = clubKey(side);
+  const b = clubKey(team);
+  return Boolean(a && b && a === b);
 }
 
 function featuredFixtureFor(match, fixtures) {

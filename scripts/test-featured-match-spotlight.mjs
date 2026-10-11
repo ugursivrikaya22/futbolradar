@@ -318,6 +318,9 @@ if (fs.existsSync(stateFile)) {
   assert.ok(spotlight.featuredFixtureFor(gsb, FEATURED.featuredFixtures), "sağlayıcı adı 'FC Barcelona' da eşleşmeli");
   assert.equal(spotlight.featuredFixtureFor({ ...gsb, kickoff: "2026-10-14T22:00:00+03:00" }, FEATURED.featuredFixtures), null, "gün tutmazsa (ertelenme) kayıt hiçbir şey açmaz");
   assert.equal(spotlight.isSpotlightCandidate(otherGs, FEATURED), false, "kulübün öteki maçları vitrine girmez");
+  const youth = { ...gsb, id: "galatasaray-u19-barcelona-u19-2026-10-13", homeTeam: "Galatasaray U19", awayTeam: "Barcelona U19", kickoff: "2026-10-13T14:00:00+03:00" };
+  assert.equal(spotlight.featuredFixtureFor(youth, FEATURED.featuredFixtures), null, "aynı gün oynanan U19 maçı A takım maçı sayılmaz");
+  assert.equal(spotlight.selectSpotlight([youth, gsb], { ...FEATURED, teams: [], nowMs }).id, gsb.id);
   assert.equal(spotlight.selectSpotlight([bjk, gsb, otherGs], { ...FEATURED, nowMs }).id, gsb.id, "seçilmiş maç aynı evrede öncelikli takımın da önünde");
   // Evre sırası korunur: canlı bir kulüp maçı yaklaşan seçilmiş maçın önünde kalır.
   const liveBjk = { ...bjk, kickoff: "2026-10-12T02:30:00+03:00", status: "LIVE", score: { home: 1, away: 0 }, updatedAt: "2026-10-12T02:59:00+03:00", minute: 30 };
