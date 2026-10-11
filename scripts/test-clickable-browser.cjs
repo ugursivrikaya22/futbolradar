@@ -884,7 +884,7 @@ function todayFixtureCount(gun) {
         // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
         // olarak buradan düşüyordu.
         await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
-        const featured = page.locator('[data-featured-turkish="true"]').first();
+        let featured = page.locator('[data-featured-turkish="true"]').first();
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();
         // TÜRK MAÇI KARTI YOKSA ŞERİT DE O SATIRI KURMAZ.
@@ -911,6 +911,19 @@ function todayFixtureCount(gun) {
           await navigate(exit);
           return;
         }
+        // The summary pins a match across carousel reorderings. Prerendered
+        // order can differ from the hydrated order, so changing the first
+        // card may change a different match. Follow the summary's actual
+        // destination and still require a matching source card and teams.
+        const summaryHref = await summary.getAttribute('href');
+        assert.ok(summaryHref, 'Summary has no match destination');
+        featured = page.locator('[data-featured-turkish="true"]').filter({
+          has: page.locator('a[href=' + JSON.stringify(summaryHref) + ']')
+        }).first();
+        await featured.waitFor({ state: 'attached' });
+        assert.equal(await summary.locator('.now-football__value').innerText(),
+          (await featured.locator('.featured-fixture-team strong').allTextContents()).map(text => text.trim()).join(' – '),
+          'Summary teams do not match its destination card');
         await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
         const score = featured.locator('.featured-fixture-score b');
         const status = featured.locator('.featured-fixture-score span');
