@@ -183,6 +183,14 @@ function candidateFrom(entry) {
   // kimliğiyle sorgulanıyor ve o kimlik yalnızca takvim/kürasyon
   // kaydında var.
   if (fresh && fresh.id) merged.providerMatchId = fresh.id;
+  // API-FOOTBALL FİKSTÜR KİMLİĞİ ÖNCELİKLİ. `id=<doğal kimlik>` sorgusu
+  // `/api/match-detail`te sağlayıcıya gitmiyor, depodaki (derleme anı)
+  // kaydı döndürüyor: 11 Ekim Beşiktaş - Kocaelispor maçı bittikten saatler
+  // sonra bile vitrin "NS" okuyup "Maç önü"nde kaldı. Maç sayfası
+  // (generate-match-seo-pages) zaten `fixtureId=` ile yokluyor; vitrin de
+  // aynı sözleşmeyi kullanır.
+  const apiFootballId = fresh && ((fresh.providerIds && fresh.providerIds.apiFootball) || (/^\d+$/.test(String(fresh.providerId || "")) ? fresh.providerId : ""));
+  if (apiFootballId) merged.providerFixtureId = String(apiFootballId);
 
   if (fresh && spotlightRank(fresh) >= spotlightRank(entry)) {
     merged.status = fresh.status || merged.status;
@@ -246,9 +254,11 @@ function viewFor(entry, locale, base) {
   // Kimlik yoksa sorgu hiç yazılmaz: istemci o zaman yoklama yapmaz ve
   // kutu sunucunun bastığı anlık görüntüde kalır. Uydurma bir kimlikle
   // yanlış maçı çizmektense hiç çizmemek doğru davranış.
-  const query = entry.providerMatchId && day
-    ? `id=${encodeURIComponent(entry.providerMatchId)}&date=${encodeURIComponent(day)}`
-    : "";
+  const query = entry.providerFixtureId && day
+    ? `fixtureId=${encodeURIComponent(entry.providerFixtureId)}&date=${encodeURIComponent(day)}`
+    : entry.providerMatchId && day
+      ? `id=${encodeURIComponent(entry.providerMatchId)}&date=${encodeURIComponent(day)}`
+      : "";
 
   const phase = spotlight.phaseOf(entry, now, config);
 
