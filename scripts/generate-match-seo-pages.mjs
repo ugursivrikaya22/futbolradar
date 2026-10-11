@@ -49,6 +49,7 @@ import {
   eventsSectionHtml,
   formSectionHtml,
   h2hSectionHtml,
+  comparisonSectionHtml,
   hasScore,
   heroHtml,
   istanbulIso,
@@ -363,6 +364,22 @@ const reportStore = readJson("data/post-match-reports.json", { records: [] });
 const reports = Array.isArray(reportStore) ? reportStore : (reportStore.records || reportStore.reports || []);
 const internationalTeams = readJson("data/international-teams.json", []);
 const predictedLineupsStore = readJson("data/predicted-lineups.json", { matches: [], sources: {}, asOf: null });
+/**
+ * ÖNE ÇIKARILAN MAÇ BAĞLAMI (son 10 maç, ikili rekabet, hücum/savunma).
+ * Zamanlanmış güncellemede sınırlı istekle çekilir
+ * (`scripts/sync-featured-match-context.mjs`); burada yalnızca okunur.
+ * Kayıt yoksa sayfa eski davranışla (yerel form + arşiv h2h) çizilir.
+ */
+const featuredContextStore = readJson("data/featured-match-context.json", { fixtures: {} });
+const featuredContext = require("../services/featuredMatchContext.js");
+
+function providerFormRows(rows, teamId) {
+  return (rows || []).map((row) => {
+    const { result } = featuredContext.resultFor(row, teamId);
+    const match = { homeTeam: row.homeTeam, awayTeam: row.awayTeam, kickoff: row.date, league: row.competition || "", score: { home: row.homeGoals, away: row.awayGoals } };
+    return { result, match, label: `${row.homeTeam} ${row.homeGoals}-${row.awayGoals} ${row.awayTeam}` };
+  });
+}
 const predictedLineupsById = new Map(
   (Array.isArray(predictedLineupsStore.matches) ? predictedLineupsStore.matches : [])
     .filter((row) => row && row.matchId)
@@ -1118,8 +1135,15 @@ function pageHtml(entry, locale, options) {
     { locale, finished: state === "post" }
   );
   const radar = state === "pre" ? calculateMatchRadar({ homeTeam: entry.homeTeam, awayTeam: entry.awayTeam }, { teams, players, squadStatus }) : null;
-  const h2h = buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 5 });
-  const forms = { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
+  const focus = featuredContext.contextForEntry(featuredContextStore, entry);
+  const focusH2h = focus && Array.isArray(focus.h2h) && focus.h2h.length
+    ? focus.h2h.map((row) => ({ date: row.date, homeTeam: row.homeTeam, awayTeam: row.awayTeam, homeGoals: row.homeGoals, awayGoals: row.awayGoals, competition: row.competition }))
+    : null;
+  const h2h = focusH2h || buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 5 });
+  const focusForms = focus && focus.last10 && (focus.last10.home.length || focus.last10.away.length)
+    ? { home: providerFormRows(focus.last10.home, focus.homeTeamId), away: providerFormRows(focus.last10.away, focus.awayTeamId), source: "provider-last10" }
+    : null;
+  const forms = focusForms || { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
   const next = {
     home: nextFor(entry.homeTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) })),
     away: nextFor(entry.awayTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) }))
@@ -1207,6 +1231,7 @@ function pageHtml(entry, locale, options) {
       squadsSectionHtml(squads, ctx),
       absencesSectionHtml(squadStatus, ctx),
       formSectionHtml(forms, ctx),
+      comparisonSectionHtml(focus && focus.summary, ctx),
       h2hSectionHtml(h2h, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),

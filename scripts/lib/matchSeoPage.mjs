@@ -171,6 +171,11 @@ export const STR = {
     noAbsence: "Bildirilen sakat ya da cezalı oyuncu yok.",
     absencePending: "Sakat ve cezalı listesi doğrulanmış kaynaktan alındığında burada görünür.",
     form: "Son 5 maç formu",
+    form10: "Son 10 maç",
+    formSourceNote: "Son 10 maç ve ikili rekabet: API-Football kayıtları, yalnızca bitmiş maçlar.",
+    compare: "Hücum ve savunma karşılaştırması",
+    compareNote: (n, m) => `Sayılar her takımın son ${n} / ${m} bitmiş maçının sağlayıcı skorlarından hesaplandı; tüm turnuvalar dahil.`,
+    compareRows: { goalsFor: "Maç başı attığı gol", goalsAgainst: "Maç başı yediği gol", wins: "Galibiyet", cleanSheets: "Gol yemeden biten maç", failedToScore: "Gol atamadığı maç" },
     formPending: "Son maç formu için doğrulanmış sonuç bekleniyor.",
     h2h: "İki takım arasındaki son maçlar",
     h2hPending: "İki takım arasında doğrulanmış geçmiş karşılaşma kaydı bulunmuyor.",
@@ -346,6 +351,11 @@ export const STR = {
     noAbsence: "No reported injuries or suspensions.",
     absencePending: "Injury and suspension news appears here once a verified source reports it.",
     form: "Form (last 5)",
+    form10: "Last 10 matches",
+    formSourceNote: "Last 10 matches and head-to-head: API-Football records, finished matches only.",
+    compare: "Attack and defence comparison",
+    compareNote: (n, m) => `Figures are calculated from the provider scores of each team's last ${n} / ${m} finished matches, all competitions.`,
+    compareRows: { goalsFor: "Goals scored per match", goalsAgainst: "Goals conceded per match", wins: "Wins", cleanSheets: "Clean sheets", failedToScore: "Matches without scoring" },
     formPending: "Waiting for verified results to build recent form.",
     h2h: "Head-to-head",
     h2hPending: "No verified previous meeting is on record for these two teams.",
@@ -943,7 +953,40 @@ export function formSectionHtml(forms, ctx) {
       return `<li><time datetime="${escapeHtml(row.match.kickoff)}">${escapeHtml(shortDate(row.match.kickoff, locale))}</time> ${href ? `<a href="${escapeHtml(href)}">${line}</a>` : line}${row.match.league ? ` <small>${escapeHtml(competitionLabel(row.match.league, locale))}</small>` : ""}</li>`;
     }).join("")}</ul></article>`;
   };
-  return `<section class="msp-section" id="form" aria-labelledby="msp-form-title"><h2 id="msp-form-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.form, ctx))}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div></section>`;
+  const heading = forms.source === "provider-last10" ? text.form10 : text.form;
+  const note = forms.source === "provider-last10" ? `<p class="muted-copy">${escapeHtml(text.formSourceNote)}</p>` : "";
+  return `<section class="msp-section" id="form" aria-labelledby="msp-form-title"><h2 id="msp-form-title" class="msp-section-title">${escapeHtml(fixtureHeading(heading, ctx))}</h2><div class="msp-two-col">${list(home, homeTeam)}${list(away, awayTeam)}</div>${note}</section>`;
+}
+
+/**
+ * HÜCUM / SAVUNMA KARŞILAŞTIRMASI — basit CSS çubukları.
+ *
+ * Girdi `services/featuredMatchContext.js#summarize` çıktısıdır: her sayı
+ * sağlayıcının bitmiş maç skorlarından SAYILIR. İki taraftan biri yoksa
+ * bölüm hiç basılmaz (tek taraflı karşılaştırma yanıltır).
+ */
+export function comparisonSectionHtml(summary, ctx) {
+  const { locale, homeTeam, awayTeam } = ctx;
+  const text = STR[locale];
+  const home = summary && summary.home;
+  const away = summary && summary.away;
+  if (!home || !away || !home.played || !away.played) return "";
+  const number = (value, decimals) => {
+    const fixed = decimals ? Number(value).toFixed(decimals) : String(value);
+    return locale === "tr" ? fixed.replace(".", ",") : fixed;
+  };
+  const rows = [
+    ["goalsFor", home.goalsForPerMatch, away.goalsForPerMatch, 2],
+    ["goalsAgainst", home.goalsAgainstPerMatch, away.goalsAgainstPerMatch, 2],
+    ["wins", home.wins, away.wins, 0],
+    ["cleanSheets", home.cleanSheets, away.cleanSheets, 0],
+    ["failedToScore", home.failedToScore, away.failedToScore, 0]
+  ].map(([key, left, right, decimals]) => {
+    const total = Number(left) + Number(right);
+    const leftShare = total > 0 ? Math.round((Number(left) / total) * 100) : 50;
+    return `<li class="msp-compare-row"><span class="msp-compare-value">${escapeHtml(number(left, decimals))}</span><span class="msp-compare-label">${escapeHtml(text.compareRows[key])}</span><span class="msp-compare-value">${escapeHtml(number(right, decimals))}</span><span class="msp-compare-bar" aria-hidden="true"><span class="msp-compare-home" style="width:${leftShare}%"></span><span class="msp-compare-away" style="width:${100 - leftShare}%"></span></span></li>`;
+  }).join("");
+  return `<section class="msp-section" id="hucum-savunma" aria-labelledby="msp-compare-title"><h2 id="msp-compare-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.compare, ctx))}</h2><div class="card msp-compare"><p class="msp-compare-head"><b>${escapeHtml(homeTeam)}</b><b>${escapeHtml(awayTeam)}</b></p><ul class="msp-compare-list">${rows}</ul><p class="muted-copy">${escapeHtml(text.compareNote(home.played, away.played))}</p></div></section>`;
 }
 
 export function h2hSectionHtml(entries, ctx) {
