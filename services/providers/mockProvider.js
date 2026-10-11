@@ -10,6 +10,7 @@ const momentum = require("../../data/momentum.json");
 const signals = require("../../data/signals.json");
 const analyses = require("../../data/analyses.json");
 const { normalizeText } = require("../../api/_utils");
+const { createSameDayClubIndex } = require("../sameDayClubIndex.js");
 const { findCompetition, matchesCompetition, normalizeKey } = require("../competitionCatalog");
 const { normalizePlayer: normalizePlayerRecord } = require("../playerService");
 const { isFinishedStatus, isAwardedStatus, liveVerdict } = require("../matchStatus.js");
@@ -392,9 +393,15 @@ function withHomeGroundVenue(match) {
 
 function curatedMatches() {
   const merged = new Map();
+  // Aday araması günlük/kelime dizininden (services/sameDayClubIndex.js):
+  // aynı adaylar, aynı sırada; karar yine aşağıdaki `sameClub` denetiminde.
+  const sameDayIndex = createSameDayClubIndex({ dayOf: matchDateOnly, normalize: normalizeText });
+  const remember = (key, match) => { if (!merged.has(key)) sameDayIndex.remember(key, match); };
 
   for (const match of matches) {
-    merged.set(matchIdentity(match), match);
+    const key = matchIdentity(match);
+    remember(key, match);
+    merged.set(key, match);
   }
 
   for (const calendarMatch of fixtureCalendarMatches()) {
@@ -417,8 +424,8 @@ function curatedMatches() {
     // eşleştirmesiyle aranır.
     if (!existing) {
       const date = matchDateOnly(calendarMatch);
-      for (const [candidateKey, candidate] of merged) {
-        if (matchDateOnly(candidate) !== date) continue;
+      for (const candidateKey of sameDayIndex.candidates(date, calendarMatch)) {
+        const candidate = merged.get(candidateKey);
         const straight = sameClub(candidate.homeTeam, calendarMatch.homeTeam)
           && sameClub(candidate.awayTeam, calendarMatch.awayTeam);
         // Tarafsız sahada kaynaklar ev sahibini ters yazabiliyor; kimlik
@@ -430,6 +437,7 @@ function curatedMatches() {
     }
 
     if (!existing) {
+      remember(key, calendarMatch);
       merged.set(key, calendarMatch);
       continue;
     }
