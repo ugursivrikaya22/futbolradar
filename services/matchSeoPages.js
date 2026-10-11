@@ -108,14 +108,23 @@ function istanbulDateParts(value) {
  * yazımla iki sayfa açmaz.
  */
 let fixtureNameCache = null;
+// Sonuç yalnızca ada ve (süreç boyunca bir kez okunan) fikstür ad listesine
+// bağlı; aynı ad için listeyi her seferinde sameClub ile gezmek /api/matches
+// isteğinin yarısını yiyordu (profil: istek başına ~1 sn). Önbellek ad
+// listesiyle aynı ömre sahip ve dolunca boşaltılıyor.
+const canonicalNameMemo = new Map();
 function canonicalTeamName(name) {
   const value = String(name || "").trim();
   if (!value) return "";
   if (!fixtureNameCache) fixtureNameCache = fixtureTeamNames();
-  const exact = fixtureNameCache.find((candidate) => normalizeText(candidate) === normalizeText(value));
-  if (exact) return exact;
-  const similar = fixtureNameCache.find((candidate) => sameClub(candidate, value));
-  return similar || value;
+  const memo = canonicalNameMemo.get(value);
+  if (memo !== undefined) return memo;
+  const wanted = normalizeText(value);
+  const exact = fixtureNameCache.find((candidate) => normalizeText(candidate) === wanted);
+  const result = exact || fixtureNameCache.find((candidate) => sameClub(candidate, value)) || value;
+  if (canonicalNameMemo.size >= 20000) canonicalNameMemo.clear();
+  canonicalNameMemo.set(value, result);
+  return result;
 }
 
 function trSlugFor(homeTeam, awayTeam, kickoff) {
