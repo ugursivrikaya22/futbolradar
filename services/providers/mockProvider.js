@@ -532,7 +532,7 @@ function allCuratedMatchesUnfiltered() {
   return [...merged.values()];
 }
 
-function byMatchDate(items, date) {
+function byMatchDate(items, date, dayOf = matchDateOnly) {
   // "all" tarih filtresini kapatır. Takım radarındaki fikstür kartı takımın
   // tüm doğrulanmış maçlarını ister; varsayılan "bugün" filtresiyle bu kart
   // maçı olan takımlarda bile boş kalıyordu.
@@ -542,7 +542,7 @@ function byMatchDate(items, date) {
 
   const targetDate = date || todayInTimeZone("Europe/Istanbul");
 
-  return items.filter((item) => matchDateOnly(item) === targetDate);
+  return items.filter((item) => dayOf(item) === targetDate);
 }
 
 function byTeam(items, team) {
@@ -623,9 +623,11 @@ const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFT
 
 async function getMatches(query) {
   const records = curatedMatches();
-  const normalized = records.map(normalizeMatch);
-  const byDate = query && query.live ? normalized : byMatchDate(normalized, query && query.date);
-  const data = byLeague(byDate, query && query.league);
+  // Date/league selection needs no broadcast or logo work. Preserve the
+  // kickoff fallback from normalizeMatch before selecting the requested day.
+  const byDate = query && query.live ? records : byMatchDate(records, query && query.date,
+    row => matchDateOnly({ kickoff: row.kickoff || row.time || "", date: row.date, utcDate: row.utcDate }));
+  const data = byLeague(byDate, query && query.league).map(normalizeMatch);
 
   // "live" sorgusunun sözleşmesi kaynaktan bağımsız aynı olmalı: yalnızca
   // oynanmakta olan maçlar. Kürasyonlu yedeğe düşüldüğünde günün tamamı
@@ -649,17 +651,23 @@ async function getMatches(query) {
 
 async function getMatchDetail(query) {
   const id = query && (query.fixtureId || query.id);
-  const data = curatedMatches().map(normalizeMatchDetail);
+  const data = curatedMatches();
   if (!id) {
-    return data[0] || null;
+    return data[0] ? normalizeMatchDetail(data[0]) : null;
   }
 
   const wanted = normalizeText(id);
   // Sağlayıcı fikstür kimliği (`providerIds.apiFootball`) ile de bulunur:
   // maç sayfaları canlı yenilemeyi bu kimlikle sorar; canlı sağlayıcı
   // yapılandırılmamışken bile aynı sorgu kürasyonlu kayda düşebilmeli.
-  return data.find((match) => normalizeText(match.id) === wanted || normalizeText(match.fixtureId) === wanted ||
-    (match.providerIds && match.providerIds.apiFootball && normalizeText(match.providerIds.apiFootball) === wanted)) || null;
+  // Resolve the same normalized identifiers first; only the selected match
+  // needs broadcast, logo, statistics and detail normalization.
+  const match = data.find((row) => {
+    const normalizedId = row.id || `${slug(row.homeTeam)}-${slug(row.awayTeam)}`;
+    return normalizeText(normalizedId) === wanted || normalizeText(row.providerId || normalizedId) === wanted ||
+      (row.providerIds && row.providerIds.apiFootball && normalizeText(row.providerIds.apiFootball) === wanted);
+  });
+  return match ? normalizeMatchDetail(match) : null;
 }
 
 async function getStandings(query) {
