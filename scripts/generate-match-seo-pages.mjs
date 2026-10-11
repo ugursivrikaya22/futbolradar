@@ -372,6 +372,8 @@ const predictedLineupsStore = readJson("data/predicted-lineups.json", { matches:
  */
 const featuredContextStore = readJson("data/featured-match-context.json", { fixtures: {} });
 const featuredContext = require("../services/featuredMatchContext.js");
+const featuredSpotlight = require("../services/featuredMatchSpotlight.js");
+const featuredSpotlightSettings = featuredSpotlight.withDefaults(readJson("data/featured-match-spotlight.json", {}) || {});
 
 function providerFormRows(rows, teamId) {
   return (rows || []).map((row) => {
@@ -924,6 +926,9 @@ function pageTitles(entry, state, locale, disambiguate) {
   // bir kanal adı SERP'te doğrulanmış gibi okunurdu.
   const { broadcastChannel } = require("../services/broadcastSchedule.js");
   const channel = state === "pre" ? broadcastChannel(entry) : "";
+  // Öne çıkarılan maç (featuredFixtures): açıklama sayfadaki ek bölümleri
+  // (son 10 maç, analiz, tahmin) da söyler. Başlık kuralı herkes için aynı.
+  const featured = state === "pre" && Boolean(featuredSpotlight.featuredFixtureFor(entry, featuredSpotlightSettings.featuredFixtures));
   let title;
   let description;
   let h1;
@@ -951,7 +956,9 @@ function pageTitles(entry, state, locale, disambiguate) {
     } else {
       title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
-      description = channel
+      description = featured
+        ? `${home} - ${away} maçı ${day} ${hour} TSİ${channel ? `, ${channel}` : ""}. Muhtemel 11'ler, maç analizi, tahmin, son 10 maç ve canlı skor FutbolRadar'da.`
+        : channel
         ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
         : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
     }
@@ -978,7 +985,9 @@ function pageTitles(entry, state, locale, disambiguate) {
   } else {
     title = `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
     h1 = `${home} vs ${away}`;
-    description = channel
+    description = featured
+      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time${channel ? ` on ${channel}` : ""}. Probable line-ups, match analysis, prediction, last 10 matches and live score.`
+      : channel
       ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
       : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
   }
