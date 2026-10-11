@@ -7,7 +7,9 @@
   "outputDirectory": ".",
   "git": {
     "deploymentEnabled": {
+      "**": false,
       "main": true,
+      "preview/**": true,
       "automation/*": false
     }
   },
