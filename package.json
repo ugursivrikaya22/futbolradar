@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "test:cost": "node scripts/test-cost-controls.mjs && node scripts/test-runtime-cost.mjs",
     "test:fixtures": "node scripts/test-daily-fixture-reliability.mjs",
     "test:team-hubs": "node scripts/test-team-traffic-hubs.mjs",
     "generate:og-images": "node scripts/generate-og-images.mjs",
