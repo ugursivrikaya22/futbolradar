@@ -197,7 +197,7 @@ function candidateFrom(entry) {
 
 const candidates = registryPages
   .filter((entry) => entry && entry.slug && entry.homeTeam && entry.awayTeam && entry.kickoff)
-  .filter((entry) => spotlight.involvesTeam(entry, settings.teams))
+  .filter((entry) => spotlight.isSpotlightCandidate(entry, settings))
   .map(candidateFrom);
 
 /* ──────────────────────── SEÇİM VE BİTİŞ DAMGASI ─────────────────────── */
@@ -205,7 +205,7 @@ const candidates = registryPages
 const previousState = readJson(STATE_PATH, {});
 const observed = (previousState && previousState.finishedAt) || {};
 
-const enabled = config.enabled !== false && settings.teams.length > 0;
+const enabled = config.enabled !== false && (settings.teams.length > 0 || settings.featuredFixtures.length > 0);
 const selected = enabled ? spotlight.selectSpotlight(candidates, { ...config, nowMs: now, observed }) : null;
 
 let nextObserved = observed;
@@ -275,6 +275,11 @@ function viewFor(entry, locale, base) {
     matchHome: entry.homeTeam,
     matchAway: entry.awayTeam,
     major: spotlight.isMajorSpotlight(entry, config, phase),
+    // Elle yazılmış manşet yalnızca maç öncesinde (servis karar verir).
+    headline: spotlight.featuredHeadline(entry, config, phase, locale),
+    // Arma: sicil kaydının sağlayıcı arması; yoksa hiç basılmaz.
+    homeLogo: entry.homeTeamLogo || "",
+    awayLogo: entry.awayTeamLogo || "",
     extraLinks,
     // Geri sayımın sunucu tarafı başlangıç değeri bu ana göre hesaplanır;
     // saniyeyi istemci sayar (ek istek yok).

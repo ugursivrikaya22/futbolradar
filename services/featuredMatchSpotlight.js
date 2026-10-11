@@ -29,7 +29,7 @@
  * sonra gelir; uydurma bir bitiş anı gerçek olanı ezemez.
  */
 
-const { hasReadableScore, kickoffMs, liveVerdict, matchState, updatedAtMs } = require("./matchStatus");
+const { hasReadableScore, istanbulDay, kickoffMs, liveVerdict, matchState, updatedAtMs } = require("./matchStatus");
 
 /** Vitrin maçtan en fazla bu kadar önce açılır. */
 const DEFAULT_OPEN_BEFORE_HOURS = 48;
@@ -77,6 +77,41 @@ function involvesTeam(match, teams) {
 
   const sides = [match.homeTeam, match.awayTeam].map(normalizeName).filter(Boolean);
   return sides.some((side) => wanted.some((team) => side === team || side.startsWith(`${team} `) || side.endsWith(` ${team}`)));
+}
+
+/**
+ * TEK MAÇLIK ÖNE ÇIKARMA (`featuredFixtures`).
+ *
+ * `teams` bir kulübün BÜTÜN maçlarını vitrine açar. Bazen yalnızca TEK bir
+ * maç (ör. Şampiyonlar Ligi'nde Galatasaray - Barcelona) en üstte olmalı;
+ * kulübü listeye eklemek o kulübün her lig maçını da vitrine sokardı.
+ * Kayıt maçı TAKIM ÇİFTİ + TSİ GÜNÜ ile tanımlar; maçın kendisi yine
+ * sağlayıcıdan gelir (sicil kaydı). Gün tutmazsa (maç ertelendi, sağlayıcı
+ * başka gün dedi) kayıt hiçbir şey açmaz — tarih uydurulmaz.
+ */
+function sideMatches(side, team) {
+  const a = normalizeName(side);
+  const b = normalizeName(team);
+  if (!a || !b) return false;
+  return a === b || a.startsWith(`${b} `) || a.endsWith(` ${b}`) || b.startsWith(`${a} `) || b.endsWith(` ${a}`);
+}
+
+function featuredFixtureFor(match, fixtures) {
+  if (!match || !Array.isArray(fixtures) || !fixtures.length) return null;
+  const day = istanbulDay(match.kickoff || match.date || "");
+  if (!day) return null;
+  return fixtures.find((fixture) => {
+    if (!fixture || fixture.date !== day) return false;
+    const straight = sideMatches(match.homeTeam, fixture.homeTeam) && sideMatches(match.awayTeam, fixture.awayTeam);
+    const swapped = sideMatches(match.homeTeam, fixture.awayTeam) && sideMatches(match.awayTeam, fixture.homeTeam);
+    return straight || swapped;
+  }) || null;
+}
+
+/** Vitrine aday mı: yapılandırmadaki kulübün maçı ya da tek tek seçilmiş maç. */
+function isSpotlightCandidate(match, options) {
+  const settings = withDefaults(options);
+  return involvesTeam(match, settings.teams) || Boolean(featuredFixtureFor(match, settings.featuredFixtures));
 }
 
 /** Kayıttaki hangi taraf vitrinin kulübü? */
@@ -152,6 +187,9 @@ function withDefaults(options) {
 
   return {
     teams: Array.isArray(config.teams) ? config.teams : [],
+    featuredFixtures: Array.isArray(config.featuredFixtures)
+      ? config.featuredFixtures.filter((fixture) => fixture && fixture.homeTeam && fixture.awayTeam && /^\d{4}-\d{2}-\d{2}$/.test(String(fixture.date || "")))
+      : [],
     // ÖNCELİKLİ TAKIM — AYNI EVREDE HANGİSİ VİTRİNE GİRER.
     //
     // Vitrin tek kutudur ve yapılandırmada birden çok takım olabilir
@@ -268,7 +306,7 @@ function selectSpotlight(matches, options) {
 
   const byKey = new Map();
   for (const match of Array.isArray(matches) ? matches : []) {
-    if (!match || !involvesTeam(match, settings.teams)) continue;
+    if (!match || !isSpotlightCandidate(match, settings)) continue;
     const kickoff = kickoffMs(match);
     if (kickoff == null) continue;
 
@@ -284,7 +322,9 @@ function selectSpotlight(matches, options) {
       phase: phaseOf(match, now, settings),
       // 0 = öncelikli takımın maçı. Liste boşsa her maç 1 alır ve sıralama
       // eskisiyle birebir aynı kalır.
-      priority: settings.priorityTeams.length && involvesTeam(match, settings.priorityTeams) ? 0 : 1,
+      // Tek tek seçilmiş maç (`featuredFixtures`) aynı evrede herkesin önünde.
+      priority: featuredFixtureFor(match, settings.featuredFixtures) ? -1
+        : settings.priorityTeams.length && involvesTeam(match, settings.priorityTeams) ? 0 : 1,
       distance: Math.abs((kickoffMs(match) || 0) - now)
     }))
     .sort((left, right) => (PHASE_RANK[left.phase] - PHASE_RANK[right.phase])
@@ -365,9 +405,23 @@ function pruneObservedState(state, nowMs, maxAgeDays = 30) {
  */
 function isMajorSpotlight(match, options, phase) {
   const settings = withDefaults(options);
-  if (!settings.majorTeams.length) return false;
   if (phase === "post" || phase === "postponed" || phase === "cancelled") return false;
+  const featured = featuredFixtureFor(match, settings.featuredFixtures);
+  if (featured && featured.major) return true;
+  if (!settings.majorTeams.length) return false;
   return involvesTeam(match, settings.majorTeams);
+}
+
+/**
+ * Seçilmiş maçın elle yazılmış manşeti — YALNIZCA maç öncesinde. Canlı ve
+ * bitmiş evrede kutunun başlığı skor taşır ("X 1-0 Y · canlı skor"); bir
+ * "kim kazanacak?" manşeti o anda yanlış iddia olurdu.
+ */
+function featuredHeadline(match, options, phase, locale) {
+  if (phase !== "pre") return "";
+  const featured = featuredFixtureFor(match, withDefaults(options).featuredFixtures);
+  const headline = featured && featured.headline && featured.headline[locale === "en" ? "en" : "tr"];
+  return typeof headline === "string" ? headline.trim() : "";
 }
 
 module.exports = {
@@ -377,6 +431,9 @@ module.exports = {
   DEFAULT_DWELL_AFTER_FINISH_MINUTES,
   DEFAULT_OPEN_BEFORE_HOURS,
   clientExpiryAt,
+  featuredFixtureFor,
+  featuredHeadline,
+  isSpotlightCandidate,
   finalWhistleAt,
   involvesTeam,
   isOpen,

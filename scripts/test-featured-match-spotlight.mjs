@@ -299,4 +299,57 @@ if (fs.existsSync(stateFile)) {
   }
 }
 
+// ── TEK MAÇLIK ÖNE ÇIKARMA (featuredFixtures) ───────────────────────────
+{
+  const FEATURED = {
+    teams: ["Beşiktaş"],
+    priorityTeams: ["Beşiktaş"],
+    featuredFixtures: [{ homeTeam: "Galatasaray", awayTeam: "Barcelona", date: "2026-10-13", major: true, headline: { tr: "Dev gece", en: "Huge night" } }]
+  };
+  const gsb = {
+    id: "galatasaray-barcelona-13-ekim-2026", homeTeam: "Galatasaray", awayTeam: "FC Barcelona", league: "UEFA Şampiyonlar Ligi",
+    kickoff: "2026-10-13T22:00:00+03:00", status: "SCHEDULED", score: { home: null, away: null },
+    homeTeamLogo: "https://media.api-sports.io/football/teams/645.png", awayTeamLogo: "https://media.api-sports.io/football/teams/529.png"
+  };
+  const bjk = { ...match({ id: "besiktas-x-13-ekim-2026", kickoff: "2026-10-13T19:00:00+03:00" }) };
+  const otherGs = { ...gsb, id: "galatasaray-x-17-ekim-2026", awayTeam: "Kasımpaşa", kickoff: "2026-10-17T20:00:00+03:00" };
+  const nowMs = Date.parse("2026-10-12T03:00:00+03:00");
+
+  assert.ok(spotlight.featuredFixtureFor(gsb, FEATURED.featuredFixtures), "sağlayıcı adı 'FC Barcelona' da eşleşmeli");
+  assert.equal(spotlight.featuredFixtureFor({ ...gsb, kickoff: "2026-10-14T22:00:00+03:00" }, FEATURED.featuredFixtures), null, "gün tutmazsa (ertelenme) kayıt hiçbir şey açmaz");
+  assert.equal(spotlight.isSpotlightCandidate(otherGs, FEATURED), false, "kulübün öteki maçları vitrine girmez");
+  assert.equal(spotlight.selectSpotlight([bjk, gsb, otherGs], { ...FEATURED, nowMs }).id, gsb.id, "seçilmiş maç aynı evrede öncelikli takımın da önünde");
+  // Evre sırası korunur: canlı bir kulüp maçı yaklaşan seçilmiş maçın önünde kalır.
+  const liveBjk = { ...bjk, kickoff: "2026-10-12T02:30:00+03:00", status: "LIVE", score: { home: 1, away: 0 }, updatedAt: "2026-10-12T02:59:00+03:00", minute: 30 };
+  const liveNow = Date.parse("2026-10-12T03:00:00+03:00");
+  const picked = spotlight.selectSpotlight([liveBjk, gsb], { ...FEATURED, nowMs: liveNow });
+  assert.ok(picked, "aday seçilmeli");
+  assert.equal(spotlight.isMajorSpotlight(gsb, FEATURED, "pre"), true, "seçilmiş maç büyük kart");
+  assert.equal(spotlight.isMajorSpotlight(gsb, FEATURED, "post"), false, "bitince normal boyut");
+  assert.equal(spotlight.featuredHeadline(gsb, FEATURED, "pre", "tr"), "Dev gece");
+  assert.equal(spotlight.featuredHeadline(gsb, FEATURED, "pre", "en"), "Huge night");
+  assert.equal(spotlight.featuredHeadline(gsb, FEATURED, "live", "tr"), "", "canlıyken manşet yok, skor başlığı");
+  assert.equal(spotlight.featuredHeadline(gsb, FEATURED, "post", "tr"), "", "bitince manşet yok, sonuç başlığı");
+
+  const view = { homeTeam: "Galatasaray", awayTeam: "FC Barcelona", kickoff: gsb.kickoff, phase: "pre", href: "./mac/x", major: true, headline: "Dev gece", homeLogo: gsb.homeTeamLogo, awayLogo: gsb.awayTeamLogo, renderedAt: new Date(nowMs).toISOString() };
+  const html = spotlightBlock(view, { locale: "tr" });
+  assert.ok(html.includes(">Dev gece</a>"), "manşet başlıkta");
+  assert.ok(html.includes("fms__crests") && html.includes("teams/529.png"), "iki arma da basılır");
+  assert.ok(html.includes("data-fms-countdown="), "maç öncesi geri sayım");
+  assert.ok(!spotlightBlock({ ...view, awayLogo: "" }, { locale: "tr" }).includes("fms__crests"), "tek arma varsa arma satırı hiç basılmaz");
+  assert.ok(!spotlightBlock({ ...view, major: false }, { locale: "tr" }).includes("fms__crests"), "normal kartta arma yok");
+  const liveHtml = spotlightBlock({ ...view, phase: "live", headline: "", score: { home: 1, away: 0 }, minute: 12 }, { locale: "tr" });
+  assert.ok(liveHtml.includes("1-0") && !liveHtml.includes("Dev gece"), "canlı başlık skoru taşır");
+
+  // Depodaki yapılandırma: kayıt biçimi geçerli, manşetler iki dilde ve makul uzunlukta.
+  const stored = JSON.parse(fs.readFileSync(path.join(root, "data/featured-match-spotlight.json"), "utf8"));
+  for (const fixture of stored.featuredFixtures || []) {
+    assert.match(fixture.date, /^\d{4}-\d{2}-\d{2}$/);
+    for (const locale of ["tr", "en"]) {
+      const text = fixture.headline && fixture.headline[locale];
+      assert.ok(typeof text === "string" && text.length > 10 && text.length <= 90, `manşet ${locale} 10-90 karakter olmalı`);
+    }
+  }
+}
+
 console.log("featured-match-spotlight: tüm sözleşmeler doğrulandı.");
