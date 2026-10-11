@@ -287,6 +287,25 @@
       // izlenir; düştüyse listenin ilki devralır.
       return pinned >= 0 ? pinned : 0;
     }
+
+    // SABİTLEME YALNIZCA İSTEMCİ ÇİZİMİNDEN SONRA.
+    //
+    // Sunucu ön-render'ı (prerender-core-pages) ile istemci (app.js) öne
+    // çıkan maç listesini aynı sırayla kurmuyor: ön-render U19 maçlarını
+    // almıyor, istemci alıyor. Satır ön-render kartına sabitlenirse,
+    // istemci listeyi yeniden kurduğunda kahraman kartı başka maçı
+    // gösterirken özet eski maçta kalıyordu (CI denetimi 37996238770:
+    // kart "Alanyaspor U19 – Erzurumspor U19", özet "Boluspor –
+    // Antalyaspor"). Bölüm henüz istemcide çizilmediyse (`data-state` yok
+    // ya da "loading") satır ilk kartı izler ama SABİTLENMEZ; sabitleme
+    // canlı yoklamadaki yeniden sıralamaya karşıdır ve o noktadan sonra
+    // başlar. Kahraman istemcide çizilmeyen sayfalarda (kök yok) eskisi gibi
+    // hemen sabitlenir.
+    function summaryPinKey(keys, index, sectionState, hasClientSection) {
+      if (index < 0) return "";
+      var settled = !hasClientSection || (sectionState !== null && sectionState !== "" && sectionState !== "loading");
+      return settled ? keys[index] : "";
+    }
     // summary-pin:end
 
     function pinnedFeaturedCard() {
@@ -299,12 +318,9 @@
         keys.push(key);
       });
       var index = pickSummaryCardIndex(keys, summaryPinnedKey);
-      if (index < 0) {
-        summaryPinnedKey = "";
-        return null;
-      }
-      summaryPinnedKey = keys[index];
-      return cards[index];
+      var section = cards.length ? cards[0].closest("[data-api-target]") : null;
+      summaryPinnedKey = summaryPinKey(keys, index, section ? section.getAttribute("data-state") : null, Boolean(section));
+      return index < 0 ? null : cards[index];
     }
 
     function syncSummary() {
@@ -336,7 +352,7 @@
       var featured = document.querySelector('[data-featured-turkish="true"]');
       var roots = [featured && (featured.closest("[data-api-target]") || featured.parentElement), document.querySelector(".news-ticker")];
       roots.forEach(function (root) {
-        if (root) summaryObserver.observe(root, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["data-featured-reason-label"] });
+        if (root) summaryObserver.observe(root, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["data-featured-reason-label", "data-state"] });
       });
       syncSummary();
     }
