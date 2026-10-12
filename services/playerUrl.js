@@ -79,6 +79,23 @@ function createPlayerUrlResolver(table) {
   }
 
   /**
+   * KANONİK BAĞLANTI ADRESİ (uzantısız).
+   *
+   * `playerHref` dosya yolunu (`futbolcu/x.html`) döndürür; o adres
+   * vercel.json'da `/futbolcu/:slug.html → /futbolcu/:slug` ile 301'lenir.
+   * Bu fonksiyon doğrudan son adresi verir (`playerCanonicalUrl` ile aynı
+   * kural). Taşınmamış oyuncunun `oyuncular/<id>.html` adresi 301'li
+   * olmadığı için olduğu gibi kalır. Üreticiler sonraki aşamalarda buna
+   * geçecek; `playerHref` şimdilik değişmiyor (çıktı farkı yaratmamak için).
+   */
+  function playerCanonicalHref(player, basePrefix = "./") {
+    const id = typeof player === "string" ? player : (player && player.id);
+    if (!id) return null;
+    const pagePath = playerPagePath(id);
+    return `${basePrefix}${pagePath.startsWith(`${CANONICAL_DIR}/`) ? pagePath.replace(/\.html$/, "") : pagePath}`;
+  }
+
+  /**
    * SAYFADA GÖRÜNEN AD.
    *
    * Adres `/futbolcu/victor-osimhen` iken sayfanın "V. Osimhen" demesi
@@ -161,6 +178,7 @@ function createPlayerUrlResolver(table) {
     movedPaths,
     playerCanonicalUrl,
     playerDisplayName,
+    playerCanonicalHref,
     playerHref,
     playerPagePath,
     refreshPagePath,
