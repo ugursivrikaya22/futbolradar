@@ -21,7 +21,10 @@ function fileFor(urlPath) {
 }
 function resolves(urlPath, seen = new Set()) {
   if (fileFor(urlPath)) return true;
-  if (seen.has(urlPath)) return false;
+  // Rewrites such as /mac/:slug -> /mac/:slug.html match their own output, so a
+  // link to a page that does not exist would append .html forever and crash the
+  // gate with a stack overflow. Stop after a short chain and report it as missing.
+  if (seen.has(urlPath) || seen.size >= 20) return false;
   seen.add(urlPath);
   for (const rule of [...config.redirects, ...config.rewrites]) {
     if (rule.has || rule.source.includes('*')) continue;

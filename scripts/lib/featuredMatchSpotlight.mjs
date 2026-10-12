@@ -167,6 +167,7 @@ export function spotlightTitle(view, locale) {
   if (view.phase === "post") return copy.title["in-progress"](home, away);
   if (view.phase === "postponed") return copy.title.postponed(home, away);
   if (view.phase === "live" || view.phase === "in-progress") return copy.title["in-progress"](home, away);
+  if (view.headline) return view.headline;
   return copy.title.pre(home, away, whenPhrase({ kickoff: view.kickoff, locale, nowIstanbulDay: view.todayIstanbul }));
 }
 
@@ -205,6 +206,16 @@ function countdownHtml(view, copy) {
     `<span class="fms__countdown-grid" data-fms-countdown-grid>${cells}</span>` +
     `<span class="fms__countdown-started" data-fms-countdown-started hidden>${escapeHtml(copy.countdown.started)}</span>` +
     `</div>`;
+}
+
+/**
+ * ARMALAR — yalnızca büyük kartta ve iki arma da sağlayıcı kaydında varsa.
+ * Tek arma basmak tarafları dengesiz gösterir; arma yoksa satır hiç yok.
+ */
+function crestsHtml(view) {
+  if (!view.major || !view.homeLogo || !view.awayLogo) return "";
+  const crest = (src, name) => `<span class="fms__crest"><img src="${escapeHtml(src)}" alt="" width="56" height="56" loading="eager" decoding="async"><span>${escapeHtml(name)}</span></span>`;
+  return `<div class="fms__crests">${crest(view.homeLogo, view.homeTeam)}<span class="fms__crests-vs" aria-hidden="true">–</span>${crest(view.awayLogo, view.awayTeam)}</div>`;
 }
 
 function factRow(label, value) {
@@ -278,6 +289,7 @@ export function spotlightBlock(view, options) {
       <span class="fms__badge" data-fms-badge>${escapeHtml(copy.badge[phase])}</span>
       ${view.league ? `<span class="fms__league">${escapeHtml(view.league)}</span>` : ""}
     </div>
+    ${crestsHtml(view)}
     <h2 class="fms__title" id="fms-title"><a href="${escapeHtml(view.href)}" data-fms-title>${escapeHtml(title)}</a></h2>
     ${scoreBoard}
     ${countdown}

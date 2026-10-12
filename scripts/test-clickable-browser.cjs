@@ -57,17 +57,25 @@ const istanbulDay = value => {
   return Number.isNaN(time.getTime()) ? '' : time.toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
 };
 let matchDayCache = null;
-function todayFixtureCount(gun) {
-  // GÜN SAYFANIN KENDİ BEYANINDAN GELİR, KOŞUCUNUN SAATİNDEN DEĞİL.
-  //
-  // Denetim bir saatten uzun sürüyor ve TSİ gece yarısını geçebiliyor: sayfa
-  // 21 Eylül'ün maçlarıyla üretilmişken test "bugün 22 Eylül, maç yok" deyip
-  // "maç yok ama kart basılıyor" hatası veriyordu. Sayfa hangi güne ait
-  // olduğunu zaten söylüyor (data-matches-day), sayım o güne yapılır. Kural
-  // gevşemiyor: maçsız gün beyan edip kart basan sayfa yine düşer.
+// ANA SAYFANIN GÖSTERECEĞİ MAÇLAR, TAKVİMİN TAMAMI DEĞİL.
+//
+// Ana sayfa günün HER fikstürünü basmıyor: yalnızca başlamamış, canlı ya da
+// bitişi doğrulanmış ve son iki saat içinde bitmiş maçlar kart olur
+// (app.js#isHomeFixtureMatch ↔ services/homeFixtureVisibility.js#isHomeFixture,
+// test-home-fixture-visibility ikisinin eşliğini kanıtlıyor). Takvimde
+// günde ~4.000 fikstür varken "o gün fikstür var" saymak, gece 23:50'de
+// (günün bütün maçları bitmişken) kart beklemek demekti; sayfa doğru
+// davranıp kart basmayınca denetim 15 sn bekleyip düşüyordu (CI 38172835301,
+// 38172898349). Sayım artık ürünün kendi süzgeciyle ve okunduğu ANIN
+// saatiyle yapılıyor. Kart beklenen her durumda katılık aynı.
+const { isHomeFixture } = require('../services/homeFixtureVisibility');
+function matchDayCounts(gun) {
   const today = gun || new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
-  if (matchDayCache && matchDayCache.day === today) return matchDayCache.count;
-  let count = 0;
+  const now = Date.now();
+  const minute = Math.floor(now / 60000);
+  if (matchDayCache && matchDayCache.day === today && matchDayCache.minute === minute) return matchDayCache;
+  let all = 0;
+  let visible = 0;
   for (const name of MATCH_SOURCES) {
     let parsed = null;
     for (const root of ['data/', 'public/data/']) {
@@ -75,10 +83,22 @@ function todayFixtureCount(gun) {
     }
     if (!parsed) continue;
     const list = Array.isArray(parsed) ? parsed : (parsed.matches || parsed.fixtures || parsed.data || []);
-    count += list.filter(match => match && istanbulDay(match.kickoff || match.date || match.utcDate) === today).length;
+    for (const match of list) {
+      if (!match || istanbulDay(match.kickoff || match.date || match.utcDate) !== today) continue;
+      all += 1;
+      if (isHomeFixture(match, now)) visible += 1;
+    }
   }
-  matchDayCache = { day: today, count };
-  return count;
+  matchDayCache = { day: today, minute, all, visible };
+  return matchDayCache;
+}
+// Ana sayfanın kart basması BEKLENEN maç sayısı (gün sayfanın beyanından).
+function todayFixtureCount(gun) {
+  return matchDayCounts(gun).visible;
+}
+// Günün takvimindeki fikstür sayısı (gösterilsin gösterilmesin).
+function todayCalendarFixtureCount(gun) {
+  return matchDayCounts(gun).all;
 }
 (async () => {
   fs.mkdirSync('outputs/clickable', { recursive: true });
@@ -376,10 +396,15 @@ function todayFixtureCount(gun) {
       // UYDURULMAMIŞ, kahraman alan durumu SÖYLÜYOR ve okuyucuya en az bir
       // ÇIKIŞ bırakıyor. Üçü de sayfanın kendi vaadi; boş gün diye
       // gevşetilen tek şey "kart var mı" iddiası.
-      async function assertHonestEmptyMatchDay() {
+      async function assertHonestEmptyMatchDay(gun) {
         assert.equal(await page.locator('.fixture-card').count(), 0,
-          'No fixture for today, yet the homepage prints match cards');
-        await page.locator('#featured-radar-match .home-match-command-empty').first().waitFor();
+          'No fixture to show for today, yet the homepage prints match cards');
+        if (!todayCalendarFixtureCount(gun)) {
+          // Takvimde hiç maç yok: kahraman alan bunu açıkça söylemeli.
+          await page.locator('#featured-radar-match .home-match-command-empty').first().waitFor();
+        }
+        // Günün maçları bittiyse kahraman alan maç sonrası kartını ya da boş
+        // durumu gösterebilir; ikisinde de okuyucuya bir çıkış ZORUNLU.
         const exits = page.locator('#featured-radar-match .featured-match-actions a');
         assert.ok(await exits.count(), 'Empty match day offers no route out');
         return exits.first();
@@ -652,7 +677,7 @@ function todayFixtureCount(gun) {
           const gun = await page.locator('[data-api-target="today-matches"]').first()
             .getAttribute('data-matches-day').catch(() => null);
           if (!todayFixtureCount(gun)) {
-            await navigate(await assertHonestEmptyMatchDay());
+            await navigate(await assertHonestEmptyMatchDay(gun));
             return;
           }
           const firstCard = page.locator('.fixture-card').first();
@@ -763,7 +788,7 @@ function todayFixtureCount(gun) {
         const sayfaninGunu = await page.locator('[data-api-target="today-matches"]').first()
           .getAttribute('data-matches-day').catch(() => null);
         const matchDay = todayFixtureCount(sayfaninGunu) > 0;
-        if (!matchDay) await navigate(await assertHonestEmptyMatchDay());
+        if (!matchDay) await navigate(await assertHonestEmptyMatchDay(sayfaninGunu));
         for (const selector of matchDay
           ? ['.news-ticker-all', '.fixture-card-action', '.fixture-card-quicklinks a']
           : ['.news-ticker-all', '.fixture-card-action']) {
@@ -884,7 +909,7 @@ function todayFixtureCount(gun) {
         // sayıyordu — `main` koşusu 35003804655 takvimde 117 maç varken tam
         // olarak buradan düşüyordu.
         await page.locator('[data-api-target="featured-match"][data-state="ready"]').waitFor({ timeout: HYDRATE_TIMEOUT });
-        const featured = page.locator('[data-featured-turkish="true"]').first();
+        let featured = page.locator('[data-featured-turkish="true"]').first();
         const summary = page.locator('.now-football__row').first();
         await summary.waitFor();
         // TÜRK MAÇI KARTI YOKSA ŞERİT DE O SATIRI KURMAZ.
@@ -911,7 +936,28 @@ function todayFixtureCount(gun) {
           await navigate(exit);
           return;
         }
+        // The summary pins a match across carousel reorderings. Prerendered
+        // order can differ from the hydrated order, so changing the first
+        // card may change a different match. Follow the summary's actual
+        // destination and still require a matching source card and teams.
+        const summaryHref = await summary.getAttribute('href');
+        assert.ok(summaryHref, 'Summary has no match destination');
+        featured = page.locator('[data-featured-turkish="true"]').filter({
+          has: page.locator('a[href=' + JSON.stringify(summaryHref) + ']')
+        }).first();
+        await featured.waitFor({ state: 'attached' });
+        assert.equal(await summary.locator('.now-football__value').innerText(),
+          (await featured.locator('.featured-fixture-team strong').allTextContents()).map(text => text.trim()).join(' – '),
+          'Summary teams do not match its destination card');
         await until(async () => await summary.locator('.now-football__label').innerText() === await featured.getAttribute('data-featured-reason-label'), 'Summary mislabels the featured match');
+        // Özet, kahramanın İLK kartındaki maçı yazmalı. Ön-render ile istemci
+        // listesi farklı sıralandığında (ör. istemci U19 maçını öne aldı)
+        // satır eski ön-render kartına kilitlenip başka maçı gösteriyordu —
+        // CI 37996238770. Takımlar aynı değilse aşağıdaki skor denetimi de
+        // tanım gereği yanlış kartı ölçer.
+        await until(async () => (await summary.locator('.now-football__value').innerText()).trim() ===
+          (await featured.locator('.featured-fixture-team strong').allTextContents()).map(text => text.trim()).join(' – '),
+          'Summary shows a different match than the main card');
         const score = featured.locator('.featured-fixture-score b');
         const status = featured.locator('.featured-fixture-score span');
         const original = [await score.innerText(), await status.innerText()];

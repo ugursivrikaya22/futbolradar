@@ -319,3 +319,13 @@
   .fms__count { min-width: 0; flex: 1; padding: 6px 4px; }
   .fms--major .fms__count { min-width: 0; }
 }
+
+/* Armalar: yalnızca büyük kartta, iki arma da sağlayıcı kaydındaysa. */
+.fms__crests { display: flex; align-items: center; gap: 14px; margin: 4px 0 10px; flex-wrap: wrap; }
+.fms__crest { display: inline-flex; align-items: center; gap: 10px; font-weight: 800; font-size: 15px; }
+.fms__crest img { width: 56px; height: 56px; object-fit: contain; flex: none; }
+.fms__crests-vs { font-weight: 800; opacity: .6; }
+@media (max-width: 480px) {
+  .fms__crest img { width: 44px; height: 44px; }
+  .fms__crest { font-size: 14px; }
+}

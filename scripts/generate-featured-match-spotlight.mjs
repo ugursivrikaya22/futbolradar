@@ -183,6 +183,14 @@ function candidateFrom(entry) {
   // kimliğiyle sorgulanıyor ve o kimlik yalnızca takvim/kürasyon
   // kaydında var.
   if (fresh && fresh.id) merged.providerMatchId = fresh.id;
+  // API-FOOTBALL FİKSTÜR KİMLİĞİ ÖNCELİKLİ. `id=<doğal kimlik>` sorgusu
+  // `/api/match-detail`te sağlayıcıya gitmiyor, depodaki (derleme anı)
+  // kaydı döndürüyor: 11 Ekim Beşiktaş - Kocaelispor maçı bittikten saatler
+  // sonra bile vitrin "NS" okuyup "Maç önü"nde kaldı. Maç sayfası
+  // (generate-match-seo-pages) zaten `fixtureId=` ile yokluyor; vitrin de
+  // aynı sözleşmeyi kullanır.
+  const apiFootballId = fresh && ((fresh.providerIds && fresh.providerIds.apiFootball) || (/^\d+$/.test(String(fresh.providerId || "")) ? fresh.providerId : ""));
+  if (apiFootballId) merged.providerFixtureId = String(apiFootballId);
 
   if (fresh && spotlightRank(fresh) >= spotlightRank(entry)) {
     merged.status = fresh.status || merged.status;
@@ -197,7 +205,7 @@ function candidateFrom(entry) {
 
 const candidates = registryPages
   .filter((entry) => entry && entry.slug && entry.homeTeam && entry.awayTeam && entry.kickoff)
-  .filter((entry) => spotlight.involvesTeam(entry, settings.teams))
+  .filter((entry) => spotlight.isSpotlightCandidate(entry, settings))
   .map(candidateFrom);
 
 /* ──────────────────────── SEÇİM VE BİTİŞ DAMGASI ─────────────────────── */
@@ -205,7 +213,7 @@ const candidates = registryPages
 const previousState = readJson(STATE_PATH, {});
 const observed = (previousState && previousState.finishedAt) || {};
 
-const enabled = config.enabled !== false && settings.teams.length > 0;
+const enabled = config.enabled !== false && (settings.teams.length > 0 || settings.featuredFixtures.length > 0);
 const selected = enabled ? spotlight.selectSpotlight(candidates, { ...config, nowMs: now, observed }) : null;
 
 let nextObserved = observed;
@@ -246,9 +254,11 @@ function viewFor(entry, locale, base) {
   // Kimlik yoksa sorgu hiç yazılmaz: istemci o zaman yoklama yapmaz ve
   // kutu sunucunun bastığı anlık görüntüde kalır. Uydurma bir kimlikle
   // yanlış maçı çizmektense hiç çizmemek doğru davranış.
-  const query = entry.providerMatchId && day
-    ? `id=${encodeURIComponent(entry.providerMatchId)}&date=${encodeURIComponent(day)}`
-    : "";
+  const query = entry.providerFixtureId && day
+    ? `fixtureId=${encodeURIComponent(entry.providerFixtureId)}&date=${encodeURIComponent(day)}`
+    : entry.providerMatchId && day
+      ? `id=${encodeURIComponent(entry.providerMatchId)}&date=${encodeURIComponent(day)}`
+      : "";
 
   const phase = spotlight.phaseOf(entry, now, config);
 
@@ -275,6 +285,11 @@ function viewFor(entry, locale, base) {
     matchHome: entry.homeTeam,
     matchAway: entry.awayTeam,
     major: spotlight.isMajorSpotlight(entry, config, phase),
+    // Elle yazılmış manşet yalnızca maç öncesinde (servis karar verir).
+    headline: spotlight.featuredHeadline(entry, config, phase, locale),
+    // Arma: sicil kaydının sağlayıcı arması; yoksa hiç basılmaz.
+    homeLogo: entry.homeTeamLogo || "",
+    awayLogo: entry.awayTeamLogo || "",
     extraLinks,
     // Geri sayımın sunucu tarafı başlangıç değeri bu ana göre hesaplanır;
     // saniyeyi istemci sayar (ek istek yok).

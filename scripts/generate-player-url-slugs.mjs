@@ -95,6 +95,24 @@ const carried = ((previous && previous.entries) || [])
   .filter((entry) => entry && entry.id && entry.slug)
   .filter((entry) => canonicalIds.has(entry.id) && !slugs.has(entry.id));
 
+// AD DEĞİŞİNCE ESKİ ADRES KAYBOLMAZ.
+//
+// Sağlayıcı tam adı düzeltince (12 Ekim: "Abdullah Celik" → "Arda Cagan
+// Celik", "Mamadou Thiam" → "Mame Thiam") slug da değişiyor. Eski dosya
+// yeniden üretilmeden diskte kalıyor, artık üretilmeyen kıyas sayfalarına
+// bağlanıyor ve tam derlemeyi bağlantı denetiminde durduruyordu. Eski slug
+// `previousSlugs` olarak taşınır. Profil üreticisi o adrese yeni sayfaya
+// giden noindex yönlendirme yazar (404 yok, bayat içerik yok).
+const previousById = new Map(((previous && previous.entries) || [])
+  .filter((entry) => entry && entry.id)
+  .map((entry) => [entry.id, entry]));
+function previousSlugsFor(id, slug) {
+  const prior = previousById.get(id);
+  if (!prior) return undefined;
+  const list = [...new Set([...(prior.previousSlugs || []), prior.slug].filter((value) => value && value !== slug))].sort();
+  return list.length ? list : undefined;
+}
+
 const entries = canonical
   .filter((player) => slugs.has(player.id))
   .map((player) => ({
@@ -102,7 +120,8 @@ const entries = canonical
     name: player.name,
     fullName: fullNames.get(player.id).fullName,
     source: fullNames.get(player.id).source,
-    slug: slugs.get(player.id)
+    slug: slugs.get(player.id),
+    previousSlugs: previousSlugsFor(player.id, slugs.get(player.id))
   }))
   .concat(carried.map((entry) => ({ ...entry, source: "carried" })))
   .sort((left, right) => left.slug.localeCompare(right.slug));
