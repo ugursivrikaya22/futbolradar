@@ -164,6 +164,9 @@ function buildArchive({ sources, previous, now }) {
   for (const [key, prior] of priorByKey) {
     if (grouped.has(key)) continue;
     if (!prior || !prior.match) continue;
+    // Kimlik hesabı değiştiyse (ör. "Italy" → "italya") eski anahtarlı kayıt
+    // artık bu koşuda gruplanan bir maçın kopyasıdır; taşınmaz.
+    if (grouped.has(identity(prior.match))) continue;
     records.push({ ...prior, carriedForward: true });
   }
 
