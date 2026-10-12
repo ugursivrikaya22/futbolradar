@@ -1,3 +1,5 @@
+import { createRequire } from "node:module";
+const { teamProfileHref } = createRequire(import.meta.url)("../../services/teamHubLinks.js");
 /**
  * ANA SAYFA "PUAN DURUMLARI" SEKMELİ WIDGET'I — TR ve EN ana sayfası aynı
  * fonksiyonu çağırır (yalnızca `locale` değişir), böylece iki dil hep aynı
@@ -58,7 +60,7 @@ function teamCell(row, entry, locale) {
   const name = escapeHtml(row.name || "");
   const logo = logoOrFallback(row);
   if (locale === "tr" && entry.id === "super-lig") {
-    const href = `./takim-detay.html?team=${encodeURIComponent(row.name || "")}`;
+    const href = teamProfileHref(row.name || "");
     return `<a class="home-standing-team" href="${href}">${logo}<b>${name}</b></a>`;
   }
   return `<span class="home-standing-team">${logo}<b>${name}</b></span>`;
