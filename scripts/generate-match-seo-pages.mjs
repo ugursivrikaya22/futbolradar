@@ -775,9 +775,26 @@ const upcomingPool = (() => {
   return pool.sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 })();
 
+/**
+ * FARKLI TAKIM İŞARETİ. `sameClub` bulanık eşler; "Barcelona W" (kadın),
+ * "Barcelona SC" (Ekvador), "Barcelona B" ya da "Galatasaray U19" aynı
+ * kulübün A takımı sayılıp forma giriyordu (13 Ekim Galatasaray - Barcelona
+ * sayfasında görüldü). Aday adda bu işaretlerden biri olup sayfadaki adda
+ * yoksa eşleşme reddedilir.
+ */
+const OTHER_SIDE_MARKERS = new Set(["w", "women", "femenino", "feminino", "kadin", "b", "ii", "sc", "u17", "u18", "u19", "u20", "u21", "u23", "reserves", "youth"]);
+function markerTokens(name) {
+  return String(name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").toLowerCase().split(/[^a-z0-9]+/).filter((token) => OTHER_SIDE_MARKERS.has(token));
+}
+function sameSide(candidate, team) {
+  if (!sameClub(candidate, team)) return false;
+  const own = new Set(markerTokens(team));
+  return markerTokens(candidate).every((token) => own.has(token));
+}
+
 function isTeamMatch(match, teamName) {
   const team = nationLabel(teamName, "en");
-  return sameClub(nationLabel(match.homeTeam, "en"), team) || sameClub(nationLabel(match.awayTeam, "en"), team);
+  return sameSide(nationLabel(match.homeTeam, "en"), team) || sameSide(nationLabel(match.awayTeam, "en"), team);
 }
 
 function formFor(teamName, beforeKickoff) {
@@ -785,7 +802,7 @@ function formFor(teamName, beforeKickoff) {
     .filter((match) => isTeamMatch(match, teamName) && String(match.kickoff) < String(beforeKickoff))
     .slice(0, 5)
     .map((match) => {
-      const home = sameClub(nationLabel(match.homeTeam, "en"), nationLabel(teamName, "en"));
+      const home = sameSide(nationLabel(match.homeTeam, "en"), nationLabel(teamName, "en"));
       const goalsFor = home ? match.score.home : match.score.away;
       const goalsAgainst = home ? match.score.away : match.score.home;
       const result = goalsFor > goalsAgainst ? "W" : goalsFor < goalsAgainst ? "L" : "D";
@@ -929,6 +946,9 @@ function pageTitles(entry, state, locale, disambiguate) {
   // Öne çıkarılan maç (featuredFixtures): açıklama sayfadaki ek bölümleri
   // (son 10 maç, analiz, tahmin) da söyler. Başlık kuralı herkes için aynı.
   const featured = state === "pre" && Boolean(featuredSpotlight.featuredFixtureFor(entry, featuredSpotlightSettings.featuredFixtures));
+  // "Son 10 maç" yalnızca sayfada gerçekten varsa söylenir.
+  const focusForTitle = featured ? featuredContext.contextForEntry(featuredContextStore, entry) : null;
+  const hasLast10 = Boolean(focusForTitle && focusForTitle.last10 && (focusForTitle.last10.home.length || focusForTitle.last10.away.length));
   let title;
   let description;
   let h1;
@@ -957,7 +977,7 @@ function pageTitles(entry, state, locale, disambiguate) {
       title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
       description = featured
-        ? `${home} - ${away} maçı ${day} ${hour} TSİ${channel ? `, ${channel}` : ""}. Muhtemel 11'ler, maç analizi, tahmin, son 10 maç ve canlı skor FutbolRadar'da.`
+        ? `${home} - ${away} maçı ${day} ${hour} TSİ${channel ? `, ${channel}` : ""}. Muhtemel 11'ler, maç analizi, tahmin${hasLast10 ? ", son 10 maç" : ""} ve canlı skor FutbolRadar'da.`
         : channel
         ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
         : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
@@ -986,7 +1006,7 @@ function pageTitles(entry, state, locale, disambiguate) {
     title = `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
     h1 = `${home} vs ${away}`;
     description = featured
-      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time${channel ? ` on ${channel}` : ""}. Probable line-ups, match analysis, prediction, last 10 matches and live score.`
+      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time${channel ? ` on ${channel}` : ""}. Probable line-ups, match analysis, prediction${hasLast10 ? ", last 10 matches" : ""} and live score.`
       : channel
       ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
       : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
