@@ -44,7 +44,7 @@ const {
   istanbulDayOffset,
   selectBroadcastMatches
 } = require("../services/broadcastSchedule.js");
-const { broadcastersForCompetition, allBroadcasters } = require("../services/broadcastRights.js");
+const { broadcastersForCompetition, allBroadcasters, channelFromSchedule } = require("../services/broadcastRights.js");
 const { resolveCompetitionId } = require("../services/competitionCatalog.js");
 
 const OUTPUT = path.join(root, "data", "broadcast-schedule.json");
@@ -156,15 +156,6 @@ function plainText(html) {
  * kalıp numara yakalamazsa yayıncının dar etiketi kullanılır ("beIN
  * Sports"). Numara asla uydurulmaz.
  */
-function channelFromSchedule(broadcaster, rawHtml) {
-  const match = String(rawHtml || "").match(broadcaster.channelPattern);
-  if (!match) return broadcaster.label;
-  const captured = (match[1] || "").trim();
-  if (!captured) return broadcaster.label;
-  if (/^\d$/.test(captured)) return `${broadcaster.label} ${captured}`;
-  return `TRT ${captured.replace(/\s+/g, " ")}`.replace(/^TRT TRT/, "TRT");
-}
-
 async function main() {
   const days = Array.from({ length: DAY_COUNT }, (_, index) => istanbulDayOffset(index));
   const matches = allMatches();

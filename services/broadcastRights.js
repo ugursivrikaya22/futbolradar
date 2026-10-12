@@ -43,7 +43,9 @@ const BROADCASTERS = Object.freeze({
     key: "trt",
     label: "TRT 1",
     scheduleUrl: "https://www.trt1.com.tr/yayin-akisi",
-    channelPattern: /TRT\s*(1|SPOR(?:\s*YILDIZ)?)/i
+    // Akış "TRT SPOR" büyük harfle yazar; "Yıldız"daki noktasız ı /i ile
+    // "YILDIZ"a eşleşmediği için iki yazım da açıkça listelenir.
+    channelPattern: /TRT\s*(1|SPOR(?:\s*(?:YILDIZ|YıLDıZ|Yıldız))?)/i
   }),
   tabii: Object.freeze({
     key: "tabii",
@@ -102,7 +104,37 @@ function findBroadcaster(key) {
   return BROADCASTERS[String(key || "")] || null;
 }
 
+/**
+ * Akıştan yakalanan kanal parçasını okunur, tek biçimli bir etikete çevirir.
+ * - Rakam yakalandıysa ve etiket zaten o rakamla bitiyorsa ("TRT 1" + "1")
+ *   ikinci kez eklenmez; çift rakam böyle oluşuyordu.
+ * - TRT kanalları "TRT 1", "TRT Spor", "TRT Spor Yıldız" olarak yazılır.
+ */
+function normalizeChannelLabel(broadcaster, captured) {
+  const label = broadcaster && broadcaster.label ? broadcaster.label : "";
+  const part = String(captured || "").trim().replace(/\s+/g, " ");
+  if (!part) return label;
+  if (/^\d$/.test(part)) {
+    if (new RegExp(`\\b${part}$`).test(label)) return label;
+    return `${label.replace(/\s+\d$/, "")} ${part}`;
+  }
+  const lower = part.toLocaleLowerCase("tr-TR").replace(/^trt\s*/, "");
+  if (/^spor\s*y[ıi]ld[ıi]z$/.test(lower)) return "TRT Spor Yıldız";
+  if (lower === "spor") return "TRT Spor";
+  if (lower === "1") return "TRT 1";
+  return `TRT ${part}`.replace(/^TRT TRT/i, "TRT");
+}
+
+function channelFromSchedule(broadcaster, rawHtml) {
+  if (!broadcaster) return "";
+  const match = String(rawHtml || "").match(broadcaster.channelPattern);
+  if (!match) return broadcaster.label;
+  return normalizeChannelLabel(broadcaster, match[1]);
+}
+
 module.exports = {
+  channelFromSchedule,
+  normalizeChannelLabel,
   BROADCASTERS,
   COMPETITION_RIGHTS,
   allBroadcasters,

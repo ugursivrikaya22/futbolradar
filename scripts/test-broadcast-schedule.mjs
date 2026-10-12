@@ -29,7 +29,12 @@ const {
   selectBroadcastMatches,
   PRIORITY_COMPETITION_IDS
 } = require("../services/broadcastSchedule.js");
-const { COMPETITION_RIGHTS, broadcastersForCompetition } = require("../services/broadcastRights.js");
+const {
+  BROADCASTERS,
+  COMPETITION_RIGHTS,
+  broadcastersForCompetition,
+  channelFromSchedule
+} = require("../services/broadcastRights.js");
 
 console.log("broadcast-schedule");
 
@@ -192,4 +197,27 @@ console.log("broadcast-schedule");
   console.log("  ok  bugün ve yarın sayfaları üretiliyor");
 }
 
-console.log("broadcast-schedule OK (9 bölüm)");
+// ── 10. AKIŞTAN OKUNAN KANAL ADI ──────────────────────────────────────────
+//
+// "TRT 1" etiketi + yakalanan "1" eskiden çift rakamlı ("TRT 1" + " 1") oluyordu; noktasız ı
+// yüzünden "TRT Spor Yıldız" da "TRT Spor"a düşüyordu.
+{
+  const trt = BROADCASTERS.trt;
+  const bein = BROADCASTERS["bein-sports"];
+  assert.equal(channelFromSchedule(trt, "<li>22:00 TRT 1 Galatasaray</li>"), "TRT 1");
+  assert.equal(channelFromSchedule(trt, "<li>TRT SPOR canlı</li>"), "TRT Spor");
+  assert.equal(channelFromSchedule(trt, "<li>TRT Spor Yıldız canlı</li>"), "TRT Spor Yıldız");
+  assert.equal(channelFromSchedule(trt, "<li>TRT SPOR YILDIZ canlı</li>"), "TRT Spor Yıldız");
+  assert.equal(channelFromSchedule(trt, "<li>yayın yok</li>"), "TRT 1");
+  assert.equal(channelFromSchedule(bein, "<li>beIN SPORTS 1 HD</li>"), "beIN Sports 1");
+  assert.equal(channelFromSchedule(bein, "<li>beIN SPORTS</li>"), "beIN Sports");
+  for (const value of ["TRT 1", "TRT SPOR", "TRT Spor Yıldız", "beIN SPORTS 1"]) {
+    const broadcaster = /^TRT/.test(value) ? trt : bein;
+    assert.doesNotMatch(channelFromSchedule(broadcaster, value), /(\d) \1$/, `${value} çift rakam üretmemeli`);
+  }
+  const schedule = JSON.parse(fs.readFileSync(path.join(root, "data", "broadcast-schedule.json"), "utf8"));
+  assert.doesNotMatch(JSON.stringify(schedule), /TRT (\d) \1\b/, "broadcast-schedule.json içinde çift rakamlı TRT etiketi kalmamalı");
+  console.log("  ok  akış kanal adları tek biçimli (TRT 1, TRT Spor, TRT Spor Yıldız, beIN Sports 1)");
+}
+
+console.log("broadcast-schedule OK (10 bölüm)");
