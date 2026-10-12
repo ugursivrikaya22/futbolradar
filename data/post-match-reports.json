@@ -1,9 +1,700 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-12T10:40:47.675Z",
-  "matchCount": 6383,
+  "updatedAt": "2026-10-12T11:54:50.569Z",
+  "matchCount": 6386,
   "records": [
+    {
+      "matchId": "hapoel-yarka-beitar-nahariya-2026-10-12",
+      "fixtureId": "1640490",
+      "provider": "api-football",
+      "slug": "hapoel-yarka-beitar-nahariya-2026-10-12",
+      "kickoff": "2026-10-12T13:00:00+03:00",
+      "kickoffUtc": "2026-10-12T10:00:00.000Z",
+      "kickoffLocal": "2026-10-12T13:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "State Cup",
+      "competition": "State Cup",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Hapoel Yarka",
+      "awayTeam": "Beitar Nahariya",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Beitar Nahariya",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 2,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "702f5a7c2c0ef924",
+      "fingerprint": "702f5a7c2c0ef924",
+      "analysisGeneratedAt": "2026-10-12T11:54:50.417Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Hapoel Yarka 0-1 Beitar Nahariya maç raporu: State Cup istatistikleri | FutbolRadar",
+        "description": "State Cup maçını Beitar Nahariya 1-0 kazandı; Hapoel Yarka sahadan puansız ayrıldı.",
+        "path": "mac-raporu/hapoel-yarka-beitar-nahariya-2026-10-12.html",
+        "competition": "State Cup"
+      },
+      "reportUrl": "./mac-raporu/hapoel-yarka-beitar-nahariya-2026-10-12.html",
+      "digest": {
+        "headline": "Beitar Nahariya, Hapoel Yarka'yı 1-0 yendi",
+        "paragraph": "State Cup maçını Beitar Nahariya 1-0 kazandı; Hapoel Yarka sahadan puansız ayrıldı. Tek golü 33. dakikada Normal Goal (Beitar Nahariya) kaydetti.",
+        "result": {
+          "winner": "Beitar Nahariya",
+          "loser": "Hapoel Yarka",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "29'",
+              "team": "Hapoel Yarka",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "pivotal": true
+            },
+            {
+              "minute": "33'",
+              "team": "Beitar Nahariya",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Beitar Nahariya",
+              "contribution": "33' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Red Card",
+              "team": "Hapoel Yarka",
+              "contribution": "29' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "33' Beitar Nahariya — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Beitar Nahariya, Hapoel Yarka'yı 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (29' Hapoel Yarka)."
+          ],
+          "closing": "Beitar Nahariya sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "belarus-u19-w-russia-u19-w-2026-10-12",
+      "fixtureId": "1645459",
+      "provider": "api-football",
+      "slug": "belarus-u19-w-russia-u19-w-2026-10-12",
+      "kickoff": "2026-10-12T13:00:00+03:00",
+      "kickoffUtc": "2026-10-12T10:00:00.000Z",
+      "kickoffLocal": "2026-10-12T13:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Women",
+      "competition": "Friendlies Women",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Belarus U19 W",
+      "awayTeam": "Russia U19 W",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "99d0344fd4b53952",
+      "fingerprint": "99d0344fd4b53952",
+      "analysisGeneratedAt": "2026-10-12T11:54:50.417Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Belarus U19 W 1-1 Russia U19 W maç raporu: Friendlies Women istatistikleri | FutbolRadar",
+        "description": "Friendlies Women maçında Belarus U19 W ile Russia U19 W birbirini geçemedi: 1-1. Tek golü 11. dakikada E.",
+        "path": "mac-raporu/belarus-u19-w-russia-u19-w-2026-10-12.html",
+        "competition": "Friendlies Women"
+      },
+      "reportUrl": "./mac-raporu/belarus-u19-w-russia-u19-w-2026-10-12.html",
+      "digest": {
+        "headline": "Belarus U19 W ile Russia U19 W 1-1 berabere kaldı",
+        "paragraph": "Friendlies Women maçında Belarus U19 W ile Russia U19 W birbirini geçemedi: 1-1. Tek golü 11. dakikada E. Rabchenyuk (Russia U19 W) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "11'",
+              "team": "Russia U19 W",
+              "type": "Gol",
+              "detail": "E. Rabchenyuk",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "E. Rabchenyuk",
+              "team": "Russia U19 W",
+              "contribution": "11' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "11' Russia U19 W — E. Rabchenyuk: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "croatia-u19-w-poland-u19-w-2026-10-12",
+      "fixtureId": "1645229",
+      "provider": "api-football",
+      "slug": "croatia-u19-w-poland-u19-w-2026-10-12",
+      "kickoff": "2026-10-12T12:00:00+03:00",
+      "kickoffUtc": "2026-10-12T09:00:00.000Z",
+      "kickoffLocal": "2026-10-12T12:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Women",
+      "competition": "Friendlies Women",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Croatia U19 W",
+      "awayTeam": "Poland U19 W",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Poland U19 W",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "da093b9ffec4f8cc",
+      "fingerprint": "da093b9ffec4f8cc",
+      "analysisGeneratedAt": "2026-10-12T11:54:50.417Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Croatia U19 W 0-3 Poland U19 W maç raporu: Friendlies Women istatistikleri | FutbolRadar",
+        "description": "Friendlies Women maçını Poland U19 W 3-0 kazandı; Croatia U19 W sahadan puansız ayrıldı.",
+        "path": "mac-raporu/croatia-u19-w-poland-u19-w-2026-10-12.html",
+        "competition": "Friendlies Women"
+      },
+      "reportUrl": "./mac-raporu/croatia-u19-w-poland-u19-w-2026-10-12.html",
+      "digest": {
+        "headline": "Poland U19 W, Croatia U19 W'u 3-0 yendi",
+        "paragraph": "Friendlies Women maçını Poland U19 W 3-0 kazandı; Croatia U19 W sahadan puansız ayrıldı. Golleri 33. dakikada Normal Goal (Poland U19 W), 71. dakikada Normal Goal (Poland U19 W), 85. dakikada Normal Goal (Poland U19 W) kaydetti.",
+        "result": {
+          "winner": "Poland U19 W",
+          "loser": "Croatia U19 W",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "33'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "71'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "85'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Normal Goal).",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "85'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Poland U19 W",
+              "contribution": "33' gol · 71' gol · 85' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "33' Poland U19 W — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "71' Poland U19 W — Normal Goal: gol",
+            "85' Poland U19 W — Normal Goal: gol"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Poland U19 W, Croatia U19 W'u 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Croatia U19 W son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Poland U19 W sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "dalian-kewei-langfang-glory-city-2026-10-12",
       "fixtureId": "1638475",
@@ -10947,7 +11638,7 @@
       "season": null,
       "homeTeam": "Jaguares",
       "awayTeam": "Deportes Tolima",
-      "venue": "Estadio Jaragüay De Monteria",
+      "venue": "Estadio Jaraguay",
       "score": {
         "home": 3,
         "away": 2
@@ -11019,23 +11710,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c902d41598448c23",
-      "fingerprint": "c902d41598448c23",
+      "analysisSourceHash": "30b57215f434a0a2",
+      "fingerprint": "30b57215f434a0a2",
       "analysisGeneratedAt": "2026-10-11T23:43:25.541Z",
-      "analysisUpdatedAt": "2026-10-11T23:43:25.541Z",
-      "generatedAt": "2026-10-11T23:43:25.541Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Jaguares 3-2 Deportes Tolima maç raporu: Primera A istatistikleri | FutbolRadar",
-        "description": "Estadio Jaragüay De Monteria'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı.",
+        "description": "Estadio Jaraguay'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı.",
         "path": "mac-raporu/jaguares-deportes-tolima-2026-10-12.html",
         "competition": "Primera A"
       },
       "reportUrl": "./mac-raporu/jaguares-deportes-tolima-2026-10-12.html",
       "digest": {
         "headline": "Jaguares, Deportes Tolima'yı 3-2 yendi",
-        "paragraph": "Estadio Jaragüay De Monteria'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Estadio Jaraguay'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Jaguares",
           "loser": "Deportes Tolima",
