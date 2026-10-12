@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-12T08:50:51.839Z",
+  "updatedAt": "2026-10-12T10:43:50.179Z",
   "items": [
+    {
+      "id": "auto-news-f0814b13d2059987631d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Aston Villa-Fenerbahçe maçını yönetecek hakemler açıklandı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-12T08:43:01.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMirgFBVV95cUxOazhDRUtlNjhfSEJqUTJROVBSbE5QdVJVZjJBX1AxQkJ0bmZmeldFdWNNeHZ3T1NGdFB2a0Q4VE9qbnhNS2ExZjRNeGZ6STJIZG40VGJBZXBIZzFxRUNjZU8wS1FjdG1fQWtfbmg4dUNPOTFTOFFIVldpYi1Ma3NGVW03QVhNdDZHeWdlX3U3R0hBcXplRFA0TlIwOFpIaWxrQmwzY2taN29zdGllNmc?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-7a89f684d46c3259a24a",
       "category": "official",
@@ -63,26 +83,6 @@
       }
     },
     {
-      "id": "auto-news-10a7aa58067057f8e8a1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başantrenörümüz Stefano Lavarini ve oyuncumuz Kübra Akman’dan galibiyet değerlendirmesi",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-11T19:47:45.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi3wFBVV95cUxQLWRNNTZYUjFpcEIwdEUxTzV4aFJuVTZIMEVzbDBjR2w2SGhwODEtblBFMlFuYUlpQzVoX1BiOFQ4a2ZHdTlKWWFGVVJ6VXB2ZDQyblNhUHhSWVNjMzZmSTF0V3lldTJkS1llOEVKOVZHQU9jNTUtWEpUTXdIRXdWeHJnLWZnNGFxd1lJLTNoUUVYX2VRTkZzU0NERnFxeFRfYlBpaEM3UDFPdUlrYmtlSUZGN0FEc29iUGhzcUptM3FIbDJZbVhORVd6UHcxMW1EMEhVa0VyQzB6c2k2cFhV?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-89fdd16138ac37c24f1e",
       "category": "official",
       "confidence": "confirmed",
@@ -100,6 +100,28 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-71173d2832f938be3c7a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Beşiktaş:3 Kocaelispor:1 (U-19)",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-11T13:07:02.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE9qQjdUYWhlTXREeFBudXJIeHZuaTdPU1pWRmxUYWhWeUhvN3BrRmM1bjh3eWF2djIwN2VCbFFXazlqZEFaTXZlc0RiT1VGNDBXcXRCR0NIUEViOUsxc3V1dHZkX1lWYkJ5dWxFTjF1YkxQeUVkVEZrSkNWcUo?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-11T13:07:02.000Z"
       }
     },
     {
@@ -205,23 +227,23 @@
       }
     },
     {
-      "id": "auto-news-6ee8403a6bade7e86293",
-      "category": "club-agenda",
-      "confidence": "reported",
+      "id": "auto-news-7e085439197a20882161",
+      "category": "official",
+      "confidence": "confirmed",
       "section": "news",
-      "text": "Beşiktaş-Kocaelispor maçını yazdılar: Şiddetle ihtiyacı var! Nedeni anlaşılır gibi değil",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-12T04:36:00.000Z",
+      "text": "Champions League Matchday 2: Key stats and what to look out for in every game",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-10-12T10:26:47.000Z",
       "source": {
-        "name": "hurriyet-spor",
-        "url": "https://www.hurriyet.com.tr/sporarena/besiktas-kocaelispor-macini-yazdilar-siddetle-ihtiyaci-var-nedeni-anlasilir-gibi-degil-43338198",
-        "publisher": "hurriyet.com.tr"
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxPZmNZajJELVNFa3ktSEhrN2FCdzJuRk1IZkROTGJGOXZxbHYyeGdCVWJIYmtWMzdHV2k2OERMZlZRcHBEUm1OS2p3NnRDejZvLUhOWmpoWlVEQzZvQ0RnZWl2blJmc2RqWnRwVUF4NUYwSG5la3dZbTRMSmN5MWZBdUhQUFEwaE55OG5JWEdRRGdlUkJ6eFB4MkNEYW9MQmp2Uzc0VDU2QnFnbU1weXNMYlF6SXZhbGZncVdxU09lUl9DdjJaZkJJeWp0THAtRmZKRzliQVM5cw?oc=5",
+        "publisher": "uefa.com"
       },
       "automation": {
         "source": "rss",
-        "feed": "hurriyet-spor",
-        "priority": 7,
-        "status": "REPORTED"
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -230,7 +252,7 @@
       "confidence": "confirmed",
       "section": "news",
       "text": "Kamuoyuna Duyuru",
-      "team": "1. Lig",
+      "team": "TFF",
       "timestamp": "2026-10-09T18:37:54.000Z",
       "source": {
         "name": "TFF",
@@ -239,28 +261,8 @@
       },
       "automation": {
         "source": "rss",
-        "feed": "bir-lig",
+        "feed": "tff-kurumsal",
         "priority": 6,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-29e208ba9e711d61f165",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "2027 Under 21 EURO play-off ties",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-10-09T10:41:13.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxORUczcjJLelcwaFVoMnNrbDF1ZERMb1dwYUhvd2JCd09qZVRvWFk1LUx0d2J2QTFybm13V0xlNVIxT0laTWVvV29CS2RMNkNtMlA0YWFiWUxrZDdBZ1R0MGRpaUdiWFVuN0tVUXM3a19DZHV5alYwQjN3M3M2LTc2Q19vOE1HQktESkMtQmZNdXR0TkZ2YlVBeUZzNlR3MHpBLVhTMy1DSQ?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
         "status": "OFFICIAL"
       }
     }
