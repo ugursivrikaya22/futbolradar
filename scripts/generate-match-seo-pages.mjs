@@ -49,6 +49,7 @@ import {
   eventsSectionHtml,
   formSectionHtml,
   h2hSectionHtml,
+  comparisonSectionHtml,
   hasScore,
   heroHtml,
   istanbulIso,
@@ -363,6 +364,24 @@ const reportStore = readJson("data/post-match-reports.json", { records: [] });
 const reports = Array.isArray(reportStore) ? reportStore : (reportStore.records || reportStore.reports || []);
 const internationalTeams = readJson("data/international-teams.json", []);
 const predictedLineupsStore = readJson("data/predicted-lineups.json", { matches: [], sources: {}, asOf: null });
+/**
+ * ÖNE ÇIKARILAN MAÇ BAĞLAMI (son 10 maç, ikili rekabet, hücum/savunma).
+ * Zamanlanmış güncellemede sınırlı istekle çekilir
+ * (`scripts/sync-featured-match-context.mjs`); burada yalnızca okunur.
+ * Kayıt yoksa sayfa eski davranışla (yerel form + arşiv h2h) çizilir.
+ */
+const featuredContextStore = readJson("data/featured-match-context.json", { fixtures: {} });
+const featuredContext = require("../services/featuredMatchContext.js");
+const featuredSpotlight = require("../services/featuredMatchSpotlight.js");
+const featuredSpotlightSettings = featuredSpotlight.withDefaults(readJson("data/featured-match-spotlight.json", {}) || {});
+
+function providerFormRows(rows, teamId) {
+  return (rows || []).map((row) => {
+    const { result } = featuredContext.resultFor(row, teamId);
+    const match = { homeTeam: row.homeTeam, awayTeam: row.awayTeam, kickoff: row.date, league: row.competition || "", score: { home: row.homeGoals, away: row.awayGoals } };
+    return { result, match, label: `${row.homeTeam} ${row.homeGoals}-${row.awayGoals} ${row.awayTeam}` };
+  });
+}
 const predictedLineupsById = new Map(
   (Array.isArray(predictedLineupsStore.matches) ? predictedLineupsStore.matches : [])
     .filter((row) => row && row.matchId)
@@ -756,9 +775,26 @@ const upcomingPool = (() => {
   return pool.sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
 })();
 
+/**
+ * FARKLI TAKIM İŞARETİ. `sameClub` bulanık eşler; "Barcelona W" (kadın),
+ * "Barcelona SC" (Ekvador), "Barcelona B" ya da "Galatasaray U19" aynı
+ * kulübün A takımı sayılıp forma giriyordu (13 Ekim Galatasaray - Barcelona
+ * sayfasında görüldü). Aday adda bu işaretlerden biri olup sayfadaki adda
+ * yoksa eşleşme reddedilir.
+ */
+const OTHER_SIDE_MARKERS = new Set(["w", "women", "femenino", "feminino", "kadin", "b", "ii", "sc", "u17", "u18", "u19", "u20", "u21", "u23", "reserves", "youth"]);
+function markerTokens(name) {
+  return String(name || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").toLowerCase().split(/[^a-z0-9]+/).filter((token) => OTHER_SIDE_MARKERS.has(token));
+}
+function sameSide(candidate, team) {
+  if (!sameClub(candidate, team)) return false;
+  const own = new Set(markerTokens(team));
+  return markerTokens(candidate).every((token) => own.has(token));
+}
+
 function isTeamMatch(match, teamName) {
   const team = nationLabel(teamName, "en");
-  return sameClub(nationLabel(match.homeTeam, "en"), team) || sameClub(nationLabel(match.awayTeam, "en"), team);
+  return sameSide(nationLabel(match.homeTeam, "en"), team) || sameSide(nationLabel(match.awayTeam, "en"), team);
 }
 
 function formFor(teamName, beforeKickoff) {
@@ -766,7 +802,7 @@ function formFor(teamName, beforeKickoff) {
     .filter((match) => isTeamMatch(match, teamName) && String(match.kickoff) < String(beforeKickoff))
     .slice(0, 5)
     .map((match) => {
-      const home = sameClub(nationLabel(match.homeTeam, "en"), nationLabel(teamName, "en"));
+      const home = sameSide(nationLabel(match.homeTeam, "en"), nationLabel(teamName, "en"));
       const goalsFor = home ? match.score.home : match.score.away;
       const goalsAgainst = home ? match.score.away : match.score.home;
       const result = goalsFor > goalsAgainst ? "W" : goalsFor < goalsAgainst ? "L" : "D";
@@ -907,6 +943,12 @@ function pageTitles(entry, state, locale, disambiguate) {
   // bir kanal adı SERP'te doğrulanmış gibi okunurdu.
   const { broadcastChannel } = require("../services/broadcastSchedule.js");
   const channel = state === "pre" ? broadcastChannel(entry) : "";
+  // Öne çıkarılan maç (featuredFixtures): açıklama sayfadaki ek bölümleri
+  // (son 10 maç, analiz, tahmin) da söyler. Başlık kuralı herkes için aynı.
+  const featured = state === "pre" && Boolean(featuredSpotlight.featuredFixtureFor(entry, featuredSpotlightSettings.featuredFixtures));
+  // "Son 10 maç" yalnızca sayfada gerçekten varsa söylenir.
+  const focusForTitle = featured ? featuredContext.contextForEntry(featuredContextStore, entry) : null;
+  const hasLast10 = Boolean(focusForTitle && focusForTitle.last10 && (focusForTitle.last10.home.length || focusForTitle.last10.away.length));
   let title;
   let description;
   let h1;
@@ -934,7 +976,9 @@ function pageTitles(entry, state, locale, disambiguate) {
     } else {
       title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
-      description = channel
+      description = featured
+        ? `${home} - ${away} maçı ${day} ${hour} TSİ${channel ? `, ${channel}` : ""}. Muhtemel 11'ler, maç analizi, tahmin${hasLast10 ? ", son 10 maç" : ""} ve canlı skor FutbolRadar'da.`
+        : channel
         ? `${home} - ${away} maçı ${day} ${hour} TSİ, ${channel}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`
         : `${home} - ${away} maçı ne zaman, saat kaçta ve hangi kanalda? ${day} ${hour}. Muhtemel 11'ler, canlı skor, maç sonucu ve istatistikler FutbolRadar'da.`;
     }
@@ -961,7 +1005,9 @@ function pageTitles(entry, state, locale, disambiguate) {
   } else {
     title = `${home} vs ${away}: Kick-off Time, TV Channel & Line-ups`;
     h1 = `${home} vs ${away}`;
-    description = channel
+    description = featured
+      ? `${home} vs ${away}: ${day}, ${hour} Türkiye time${channel ? ` on ${channel}` : ""}. Probable line-ups, match analysis, prediction${hasLast10 ? ", last 10 matches" : ""} and live score.`
+      : channel
       ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
       : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
   }
@@ -1118,8 +1164,15 @@ function pageHtml(entry, locale, options) {
     { locale, finished: state === "post" }
   );
   const radar = state === "pre" ? calculateMatchRadar({ homeTeam: entry.homeTeam, awayTeam: entry.awayTeam }, { teams, players, squadStatus }) : null;
-  const h2h = buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 5 });
-  const forms = { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
+  const focus = featuredContext.contextForEntry(featuredContextStore, entry);
+  const focusH2h = focus && Array.isArray(focus.h2h) && focus.h2h.length
+    ? focus.h2h.map((row) => ({ date: row.date, homeTeam: row.homeTeam, awayTeam: row.awayTeam, homeGoals: row.homeGoals, awayGoals: row.awayGoals, competition: row.competition }))
+    : null;
+  const h2h = focusH2h || buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 5 });
+  const focusForms = focus && focus.last10 && (focus.last10.home.length || focus.last10.away.length)
+    ? { home: providerFormRows(focus.last10.home, focus.homeTeamId), away: providerFormRows(focus.last10.away, focus.awayTeamId), source: "provider-last10" }
+    : null;
+  const forms = focusForms || { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
   const next = {
     home: nextFor(entry.homeTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) })),
     away: nextFor(entry.awayTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) }))
@@ -1207,6 +1260,7 @@ function pageHtml(entry, locale, options) {
       squadsSectionHtml(squads, ctx),
       absencesSectionHtml(squadStatus, ctx),
       formSectionHtml(forms, ctx),
+      comparisonSectionHtml(focus && focus.summary, ctx),
       h2hSectionHtml(h2h, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),

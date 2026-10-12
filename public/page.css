@@ -24185,3 +24185,14 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 @media (max-width: 640px) {
   .trend-category-card h3 { font-size: var(--fs-sm); }
 }
+/* Maç sayfası: hücum/savunma karşılaştırması (öne çıkarılan maç bağlamı). */
+.msp-compare { padding: 16px; }
+.msp-compare-head { display: flex; justify-content: space-between; margin: 0 0 10px; }
+.msp-compare-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.msp-compare-row { display: grid; grid-template-columns: 3.5em 1fr 3.5em; align-items: center; gap: 4px 8px; font-size: var(--fs-sm); }
+.msp-compare-row .msp-compare-value { font-weight: 800; font-variant-numeric: tabular-nums; }
+.msp-compare-row .msp-compare-value:last-of-type { text-align: right; }
+.msp-compare-label { text-align: center; color: var(--muted); }
+.msp-compare-bar { grid-column: 1 / -1; display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--line, #e5e7eb); }
+.msp-compare-home { background: var(--accent, #c8102e); }
+.msp-compare-away { background: var(--accent-2, #1d4ed8); }
