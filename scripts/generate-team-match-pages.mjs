@@ -32,6 +32,7 @@ import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { playerLink } = require("../services/playerLinks.js");
 const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { applyVerifiedBroadcast } = require("../services/broadcastSchedule.js");
@@ -171,7 +172,7 @@ function leadersFor(team, key) {
 
 function playerHref(row) {
   const player = playerStore.find((item) => String(item.providerId || "") === String(row.providerId || "") && sameClub(item.currentTeam || item.team, row.team));
-  return player && player.id ? `./oyuncular/${encodeURIComponent(player.id)}.html` : null;
+  return player && player.id ? playerLink(player.id, "./") : null;
 }
 
 /**

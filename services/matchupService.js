@@ -1,3 +1,5 @@
+const { playerLink } = require("./playerLinks");
+
 const COMPONENT_WEIGHTS = Object.freeze({
   homeAttackVsAwayDefense: 16,
   awayAttackVsHomeDefense: 16,
@@ -282,7 +284,7 @@ function buildDuel(template, homeTeam, awayTeam, usedHome, usedAway) {
       position: homePlayer.position || null,
       overall: playerRating(homePlayer),
       form: playerForm(homePlayer),
-      profileUrl: homePlayer.id ? `./oyuncular/${homePlayer.id}.html` : null
+      profileUrl: homePlayer.id ? playerLink(homePlayer.id, "./") : null
     },
     awayPlayer: {
       id: awayPlayer.id || null,
@@ -290,7 +292,7 @@ function buildDuel(template, homeTeam, awayTeam, usedHome, usedAway) {
       position: awayPlayer.position || null,
       overall: playerRating(awayPlayer),
       form: playerForm(awayPlayer),
-      profileUrl: awayPlayer.id ? `./oyuncular/${awayPlayer.id}.html` : null
+      profileUrl: awayPlayer.id ? playerLink(awayPlayer.id, "./") : null
     },
     advantage,
     advantageScore,
