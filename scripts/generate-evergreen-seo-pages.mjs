@@ -4,6 +4,8 @@ import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { createRequire } from "node:module";
+const { playerLink } = createRequire(import.meta.url)("../services/playerLinks.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -185,7 +187,7 @@ function teamPage(featured) {
   if (!team) throw new Error(`Takım verisi bulunamadı: ${featured.slug}`);
   const squad = players.filter((player) => player.currentTeam === featured.name).sort((a, b) => a.name.localeCompare(b.name, "tr")).slice(0, 12);
   const teamPlayers = squad.length
-    ? `<ul class="evergreen-player-list">${squad.map((player) => `<li><a href="../oyuncular/${escapeHtml(player.id)}.html"><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.position || "Pozisyon kaydı yok")}</span></a></li>`).join("")}</ul>`
+    ? `<ul class="evergreen-player-list">${squad.map((player) => `<li><a href="${escapeHtml(playerLink(player.id, "../"))}"><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.position || "Pozisyon kaydı yok")}</span></a></li>`).join("")}</ul>`
     : "<p>Bu takım için güncel oyuncu kaydı bulunmuyor.</p>";
   const breadcrumbs = [
     { name: "Ana Sayfa", href: "../", url: `${siteUrl}/` },

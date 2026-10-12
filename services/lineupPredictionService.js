@@ -1,4 +1,5 @@
 const { positionGroup } = require("./ratingService");
+const { playerLink } = require("./playerLinks");
 
 const FORMATION_TEMPLATE = [
   { slot: "GK", group: "goalkeeper", count: 1 },
@@ -104,7 +105,7 @@ function toLeanStarter(player, slot, assignedGroup, outOfPosition) {
       const value = Number(player.radar && player.radar.form);
       return Number.isFinite(value) ? value : playerRating(player);
     })(),
-    profileUrl: player.id ? `./oyuncular/${player.id}.html` : null
+    profileUrl: player.id ? playerLink(player.id, "./") : null
   };
 }
 

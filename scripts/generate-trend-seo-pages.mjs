@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLinks.js");
+const { playerLink: playerProfileLink } = createRequire(import.meta.url)("../services/playerLinks.js");
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
@@ -43,7 +44,7 @@ function formatDate(value) {
 function playerLink(transfer) {
   const player = playerById.get(transfer.playerId);
   if (!player) return "";
-  return `<a class="detail-link" href="./oyuncular/${escapeHtml(player.id)}.html">Oyuncu profili</a>`;
+  return `<a class="detail-link" href="${escapeHtml(playerProfileLink(player.id, "./"))}">Oyuncu profili</a>`;
 }
 
 function transferCards(records) {

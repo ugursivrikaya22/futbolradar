@@ -23,6 +23,7 @@ import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robot
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { playerLink } = require("../services/playerLinks.js");
 const domain = "https://www.futbolradar.com";
 
 /**
@@ -294,7 +295,7 @@ function lineupHtml(match, depth) {
     <ol>${lineup.players.map((name) => {
       const record = resolvePlayerByName(name, lineup.team, squadPlayers);
       return record
-        ? `<li><a href="${escapeHtml(depth)}oyuncular/${escapeHtml(record.id)}.html">${escapeHtml(name)}</a></li>`
+        ? `<li><a href="${escapeHtml(playerLink(record.id, depth))}">${escapeHtml(name)}</a></li>`
         : `<li>${escapeHtml(name)}</li>`;
     }).join("")}</ol>
   </article>`).join("");

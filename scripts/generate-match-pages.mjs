@@ -22,6 +22,7 @@ import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { internalHref } = require("../services/siteLinks.js");
+const { playerLink } = require("../services/playerLinks.js");
 const domain = "https://www.futbolradar.com";
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
@@ -202,7 +203,7 @@ function keyPlayersHtml(name) {
 
   return `<ul class="match-key-player-list">${selected.map((player) => {
     const rating = player.overallRating || player.aiRating || player.rating || "-";
-    return `<li><a href="../oyuncular/${escapeHtml(player.id)}.html">${escapeHtml(player.name)}</a><span>Radar ${escapeHtml(rating)}</span></li>`;
+    return `<li><a href="${escapeHtml(playerLink(player.id, "../"))}">${escapeHtml(player.name)}</a><span>Radar ${escapeHtml(rating)}</span></li>`;
   }).join("")}</ul>`;
 }
 

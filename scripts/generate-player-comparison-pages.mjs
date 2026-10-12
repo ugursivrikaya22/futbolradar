@@ -8,6 +8,7 @@ import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { playerLink, playerAbsoluteUrl } = require("../services/playerLinks.js");
 const { getPlayers, formatMarketValueEur } = require("../services/playerService.js");
 const { publicPlayerView, sourceMetadata } = require("../services/cardCredibility.js");
 const { annotateDuplicates, sameCanonicalPlayer } = require("../services/duplicatePlayerService.js");
@@ -283,7 +284,7 @@ function playerMiniCard(player) {
     <dl>
       ${rows}
     </dl>
-    <a href="../oyuncular/${escapeHtml(player.id)}.html">Oyuncu profilini aç</a>
+    <a href="${escapeHtml(playerLink(player.id, "../"))}">Oyuncu profilini aç</a>
   </article>`;
 }
 
@@ -402,7 +403,7 @@ function pageHtml(pair) {
       return {
         "@type": "Person",
         name: player.name,
-        url: `${domain}/oyuncular/${player.id}.html`,
+        url: playerAbsoluteUrl(player.id, domain),
         additionalProperty: properties
       };
     })
@@ -514,8 +515,8 @@ function pageHtml(pair) {
 
       <section class="comparison-seo-links" aria-label="İlgili karşılaştırma bağlantıları">
         <span>Devam et</span>
-        <a href="../oyuncular/${escapeHtml(left.id)}.html">${escapeHtml(left.name)} profili</a>
-        <a href="../oyuncular/${escapeHtml(right.id)}.html">${escapeHtml(right.name)} profili</a>
+        <a href="${escapeHtml(playerLink(left.id, "../"))}">${escapeHtml(left.name)} profili</a>
+        <a href="${escapeHtml(playerLink(right.id, "../"))}">${escapeHtml(right.name)} profili</a>
         <a href="../oyuncu-radari.html">Oyuncu Radarı</a>
         <a href="../oyuncu-karsilastir.html?players=${escapeHtml(left.id)},${escapeHtml(right.id)}">İnteraktif kıyas</a>
       </section>
