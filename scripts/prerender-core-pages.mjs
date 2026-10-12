@@ -19,6 +19,7 @@ import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robot
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { internalHref } = require("../services/siteLinks.js");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function writeGeneratedFile(file, contents) {
@@ -339,7 +340,7 @@ function quickLinkTeamFor(match) {
 function quickLinkStandingsHref(match) {
   const team = quickLinkTeamFor(match);
   if (team) return `./${team.slug}-puan-durumu`;
-  return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+  return internalHref(match.league === "Süper Lig" ? "super-lig-puan-durumu.html" : "puan-durumu.html");
 }
 
 /** Takım formu hedefi: mevcut takım radarı sayfası (./takim-detay.html?team=...). */
