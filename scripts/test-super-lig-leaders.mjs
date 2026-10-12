@@ -3,7 +3,7 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const { normalizeLeagueLeaderEntry } = require("../services/providers/apiFootballProvider.js");
-const { buildLeagueLeaders } = require("./sync-super-lig-leaders.mjs");
+const { buildLeagueLeaders, relinkLeaderSlugs } = require("./sync-super-lig-leaders.mjs");
 
 function topscorersItem({ id, name, team, league = "Süper Lig", goals, assists, appearances = 10, minutes = 900, logo = null }) {
   return {
@@ -93,4 +93,24 @@ const resolvedLeague = { status: "resolved", leagueId: "203", source: "env", lea
   );
 }
 
-console.log("Süper Lig leaders tests passed: league filter, transfer merge, sort/tiebreak, no-fake-zero-row, local slug backfill, league-id guard.");
+// ── Çevrimdışı slug bağlama: kimlik + ad + takım tutmalı ──
+{
+  const payload = { topScorers: [
+    { rank: 1, providerId: "306", slug: null, name: "Mohamed Salah", team: "Trabzonspor" },
+    { rank: 2, providerId: "999", slug: null, name: "Ad Tutmaz", team: "Trabzonspor" }
+  ], topAssists: [] };
+  const players = [
+    { id: "mohamed-salah", providerId: "306", name: "Mohamed Salah", currentTeam: "Trabzonspor" },
+    { id: "baska", providerId: "999", name: "Bambaşka Oyuncu", currentTeam: "Trabzonspor" }
+  ];
+  const { payload: next } = relinkLeaderSlugs(payload, players);
+  assert.equal(next.topScorers[0].slug, "mohamed-salah");
+  assert.equal(next.topScorers[1].slug, null, "ad tutmayan satır bağlanmamalı");
+  const fs = require("node:fs");
+  const leaders = JSON.parse(fs.readFileSync("data/league-leaders.json", "utf8"));
+  for (const row of [...leaders.topScorers, ...leaders.topAssists].filter((r) => ["306", "80552"].includes(String(r.providerId)))) {
+    assert.ok(row.slug, `${row.name} lider satırı profile bağlı olmalı`);
+  }
+}
+
+console.log("Süper Lig leaders tests passed: league filter, transfer merge, sort/tiebreak, no-fake-zero-row, local slug backfill, league-id guard, offline relink.");

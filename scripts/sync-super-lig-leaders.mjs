@@ -168,8 +168,44 @@ export async function buildLeagueLeaders(options = {}) {
   };
 }
 
+/**
+ * ÇEVRİMDIŞI SLUG BAĞLAMA (`--relink-local`).
+ *
+ * Lider satırları yalnızca senkron anında yerel oyuncuya bağlanıyordu;
+ * players.json'a sonradan gerçek sağlayıcı kimliği bağlanan oyuncu (ör.
+ * `mock-…` → 306) bir sonraki API senkronuna kadar bağlantısız kalıyordu.
+ * Bu mod mevcut dosyadaki satırları API çağırmadan yeniden bağlar. Kimlik
+ * tek başına yetmez: ad ve takım da tutmalı, yoksa satıra dokunulmaz.
+ */
+export function relinkLeaderSlugs(payload, players) {
+  const byProviderId = localPlayerIndex(players);
+  const fold = (value) => String(value || "").toLocaleLowerCase("tr-TR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").trim();
+  const linked = [];
+  const relink = (rows) => (Array.isArray(rows) ? rows : []).map((row) => {
+    if (row.slug || !row.providerId) return row;
+    const local = byProviderId.get(String(row.providerId));
+    if (!local) return row;
+    if (fold(local.name) !== fold(row.name)) return row;
+    if (fold(local.currentTeam || local.team) !== fold(row.team)) return row;
+    linked.push(`${row.name} (${row.team}) → ${local.id}`);
+    return { ...row, slug: local.id };
+  });
+  return { payload: { ...payload, topScorers: relink(payload.topScorers), topAssists: relink(payload.topAssists) }, linked };
+}
+
 async function main() {
   const apply = process.argv.includes("--apply");
+  if (process.argv.includes("--relink-local")) {
+    const current = readJson(OUTPUT_PATH, null);
+    if (!current) throw new Error("data/league-leaders.json bulunamadı.");
+    const { payload, linked } = relinkLeaderSlugs(current, readJson(PLAYERS_PATH, []));
+    console.log(`[super-lig-leaders] çevrimdışı bağlama: ${linked.length} satır${linked.length ? ` — ${[...new Set(linked)].join(", ")}` : ""}`);
+    if (apply && linked.length) {
+      atomicWrite(OUTPUT_PATH, payload);
+      if (fs.existsSync(PUBLIC_OUTPUT_PATH)) atomicWrite(PUBLIC_OUTPUT_PATH, payload);
+    }
+    return;
+  }
   if (!apiFootballProvider.hasConfig()) {
     throw new Error("APIFOOTBALL_API_KEY is not configured; Süper Lig leaders synchronization cannot run.");
   }

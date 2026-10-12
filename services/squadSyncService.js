@@ -124,6 +124,23 @@ function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDat
     }
   }
 
+  // YER TUTUCU SAĞLAYICI KİMLİĞİ: kayıt elle girilmiş ve `mock-…` kimliği
+  // taşıyorsa, ad VE takım birebir tutuyor ve sağlayıcı kimliği başka bir
+  // kanonik oyuncuda kullanılmıyorsa aynı oyuncudur. Ad tek başına yetmez;
+  // takım uyuşmazsa ya da birden fazla aday varsa incelemeye düşer.
+  const providerTeam = providerPlayer.currentTeam || providerPlayer.team;
+  if (providerTeam && providerPlayer.providerId && /^\d+$/.test(String(providerPlayer.providerId))) {
+    const idTaken = canonicalPlayers.some((player) => String(player.providerId || "") === String(providerPlayer.providerId));
+    const placeholderMatches = canonicalPlayers.filter((player) => {
+      return /^mock-/.test(String(player.providerId || ""))
+        && normalizedName(player.name) === normalizedName(providerPlayer.name)
+        && normalizedName(player.currentTeam || player.team) === normalizedName(providerTeam);
+    });
+    if (!idTaken && placeholderMatches.length === 1) {
+      return { match: placeholderMatches[0], method: "name+team+placeholder-provider-id" };
+    }
+  }
+
   const nameOnlyCandidate = canonicalPlayers.find((player) => normalizedName(player.name) === normalizedName(providerPlayer.name));
   if (nameOnlyCandidate) {
     return { match: null, method: "name-only-review-required", reviewCandidate: nameOnlyCandidate };
