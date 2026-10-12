@@ -14,6 +14,7 @@ import {
 } from "./lib/matchCards.mjs";
 import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
+import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
 import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
@@ -124,6 +125,7 @@ const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
 const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { filterPlayerCards, logRemovedCards, publicPlayerView } = require("../services/cardCredibility.js");
+const { computeTrendCategories } = require("../services/trendPlayerCategories.js");
 const { fixtureTeamNames, sameClub } = require("../services/superLigTeams.js");
 const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // Statik yedeğin takvim günü, istemcinin kullandığı kuralla AYNI olmalı
@@ -1973,6 +1975,40 @@ function writePage(file, slots, freshness, staticSlots = {}) {
 const confirmed = allFixtures();
 const topFixtures = confirmed.slice(0, 3);
 const topTeams = teams.slice().sort((left, right) => Number(right.momentum) - Number(left.momentum));
+/**
+ * TREND OYUNCU KATEGORİLERİ (Genç yetenekler / Sürpriz / Formdakiler).
+ *
+ * Derleme anında, mevcut veriden: doğrulanmış trend havuzu (aynı
+ * filterPlayerCards kapısı) + data/player-match-history.json maç başı
+ * reytingleri. Sağlayıcıya istek atmaz. Tanımlar:
+ * services/trendPlayerCategories.js.
+ */
+function trendPlayerCategoriesSlot() {
+  const { kept } = filterPlayerCards(excludeHomepageBlockedPlayers(players), {
+    trend: true,
+    leagueTeams: fixtureTeamNames()
+  });
+  let history = { rows: [] };
+  try {
+    history = JSON.parse(fs.readFileSync(path.join(root, "data", "player-match-history.json"), "utf8"));
+  } catch (error) {
+    console.warn(`[trend-categories] maç geçmişi okunamadı: ${error.message}`);
+  }
+  const hasProfile = (player) => {
+    const pagePath = playerUrls.playerPagePath(player.id);
+    return pagePath.startsWith("futbolcu/") && fs.existsSync(path.join(root, pagePath));
+  };
+  const result = computeTrendCategories({
+    players: kept,
+    history: history.rows || [],
+    now: new Date(),
+    hasProfile,
+    viewOptions: { leagueTeams: fixtureTeamNames() }
+  });
+  console.log(`[trend-categories] havuz=${result.coverage.pool} sezon-reytingli=${result.coverage.withSeasonRating} son5=${result.coverage.withLastN} · genç=${result.categories.young.length} sürpriz=${result.categories.surprise.length} form=${result.categories.form.length}`);
+  return renderTrendCategoryTabs(result, "tr", (card) => `./${playerUrls.playerPagePath(card.id).replace(/\.html$/, "")}`);
+}
+
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
@@ -1996,6 +2032,7 @@ writePage("index.html", {
   "live-scores-ticker": liveScoresTrack()
 }, fixtureFreshness, {
   "official-lineup-alerts": officialLineupAlerts(),
+  "trend-player-categories": trendPlayerCategoriesSlot(),
   "match-quotes": matchQuotesTicker(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci

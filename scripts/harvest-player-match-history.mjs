@@ -16,6 +16,13 @@
  *   node scripts/harvest-player-match-history.mjs            # kuru koşu
  *   node scripts/harvest-player-match-history.mjs --apply
  *   node scripts/harvest-player-match-history.mjs --team=Galatasaray
+ *   node scripts/harvest-player-match-history.mjs --apply --snapshot=<dosya.json>
+ *
+ * `--snapshot`: havuza EK olarak bir JSON dosyasındaki maç kayıtlarını da
+ * işler (dizi ya da `{ matches: [...] }`). Geriye dönük doldurma içindir:
+ * kayan takvimin eski git sürümlerinde duran, sağlayıcıdan zaten çekilmiş
+ * oyuncu satırları yeniden istek atmadan depoya alınır. Satırlar aynı
+ * `matchRowsFrom` süzgecinden geçer (yalnızca bitmiş maç, oynanan dakika).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -35,10 +42,11 @@ const {
 const STORE = path.join(root, "data", "player-match-history.json");
 
 function parseArgs(argv) {
-  const args = { apply: false, team: null };
+  const args = { apply: false, team: null, snapshot: null };
   for (const raw of argv) {
     if (raw === "--apply") args.apply = true;
     else if (raw.startsWith("--team=")) args.team = raw.slice("--team=".length);
+    else if (raw.startsWith("--snapshot=")) args.snapshot = raw.slice("--snapshot=".length);
   }
   return args;
 }
@@ -62,6 +70,12 @@ function readStore() {
 const args = parseArgs(process.argv.slice(2));
 const store = readStore();
 const pool = curatedMatches();
+if (args.snapshot) {
+  const raw = JSON.parse(fs.readFileSync(path.resolve(args.snapshot), "utf8"));
+  const extra = Array.isArray(raw) ? raw : (Array.isArray(raw && raw.matches) ? raw.matches : []);
+  console.log(`[history] anlık görüntüden ${extra.length} maç kaydı eklendi (${args.snapshot}).`);
+  pool.push(...extra);
+}
 
 let scanned = 0;
 const harvested = [];
@@ -98,6 +112,14 @@ if (args.team) {
 
 if (!args.apply) {
   console.log("[history] kuru koşu — dosya yazılmadı. Yazmak için --apply.");
+  process.exit(0);
+}
+
+// Yeni ya da değişen satır yoksa dosya yeniden yazılmaz: saatlik hat bu
+// adımı her koşuda çalıştırıyor ve yalnızca `updatedAt` değişen bir yazım
+// her saat boşuna büyük bir commit farkı üretirdi.
+if (merged.added === 0 && merged.updated === 0) {
+  console.log("[history] değişiklik yok — dosya yazılmadı.");
   process.exit(0);
 }
 

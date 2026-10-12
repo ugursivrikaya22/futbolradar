@@ -575,6 +575,15 @@ function transformSteps(type, hasChanges, providerReady) {
     // Zaman damgası yalnızca puan gerçekten değiştiğinde yenilenir, bu
     // yüzden adım boş koşularda dosyayı kirletmez ve sahte bir
     // "playersUpdated" üretmez.
+    // OYUNCU–MAÇ ZAMAN SERİSİ — sağlayıcıya istek ATMAZ.
+    //
+    // Fikstür takvimindeki bitmiş maçların oyuncu satırları (API-Football
+    // /fixtures/players, zaten çekilmiş) kalıcı depoya eklenir. Takvim kayan
+    // bir pencere; bu adım yalnızca Trabzonspor yazı iş akışında koştuğu için
+    // 20 Eylül'den sonra depo hiç büyümemişti ve maç başı reytingler pencereden
+    // düşüp kayboluyordu. Ana sayfanın "Formdaki oyuncular" / "Sürpriz
+    // performanslar" sekmeleri bu depodan okur. Değişiklik yoksa dosya yazılmaz.
+    nodeStep("player-match-history", "harvest-player-match-history.mjs", ["--apply"], { kind: "transform", timeoutMs: 4 * 60 * 1000 }),
     nodeStep("player-ratings", "compute-player-ratings.mjs", [], { kind: "transform", timeoutMs: 6 * 60 * 1000 }),
     // SUPABASE ALIMI — SİTENİN BUİLD/DEPLOY'UNU HİÇBİR KOŞULDA ENGELLEMEZ.
     //
