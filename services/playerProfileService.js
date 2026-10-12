@@ -70,7 +70,7 @@ function withResolvedHrefs(block) {
   return {
     ...block,
     items: block.items.map((item) => (item && item.id
-      ? { ...item, href: resolver.playerPagePath(item.id) }
+      ? { ...item, href: resolver.playerCanonicalHref(item.id, "") }
       : item))
   };
 }

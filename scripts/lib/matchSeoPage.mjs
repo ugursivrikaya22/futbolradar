@@ -62,7 +62,9 @@ const playerUrls = require("../../services/playerUrl.js").createPlayerUrlResolve
  */
 function playerPageHref(base, locale, id) {
   const relative = locale === "en" ? playerUrls.enPlayerPagePath(id) : playerUrls.playerPagePath(id);
-  return fs.existsSync(path.join(process.cwd(), relative)) ? `${base}${relative}` : null;
+  if (!fs.existsSync(path.join(process.cwd(), relative))) return null;
+  // Dosya var; TR bağlantısı 301'siz kanonik (uzantısız) adrese verilir.
+  return locale === "en" ? `${base}${relative}` : playerUrls.playerCanonicalHref(id, base);
 }
 const { broadcastChannel } = require("../../services/broadcastSchedule.js");
 const probabilityService = require("../../services/fixtureProbabilityService.js");

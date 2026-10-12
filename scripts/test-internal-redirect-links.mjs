@@ -52,7 +52,7 @@ console.log("internal-redirect-links");
   assert.equal(resolver.playerCanonicalHref("k-akturkoglu", "../"), "../futbolcu/kerem-akturkoglu");
   assert.equal(resolver.playerCanonicalHref("kopya"), "./futbolcu/kerem-akturkoglu");
   assert.equal(resolver.playerCanonicalHref("tasinmamis"), "./oyuncular/tasinmamis.html");
-  assert.equal(resolver.playerHref("k-akturkoglu"), "./futbolcu/kerem-akturkoglu.html", "playerHref bu aşamada değişmez");
+  assert.equal(resolver.playerHref("k-akturkoglu"), "./futbolcu/kerem-akturkoglu", "playerHref kanonik (uzantısız) adresi verir — 301 kaynağı olan .html değil");
   console.log("  ok  playerCanonicalHref uzantısız kanonik adres veriyor");
 }
 
