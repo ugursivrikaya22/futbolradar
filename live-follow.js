@@ -238,11 +238,20 @@
     });
   }
 
+  // Aynı karede birden çok bölüm çizilebilir (ana sayfada canlı veri gelince
+  // today-matches, radar, Süper Lig ve öne çıkan maç arka arkaya). Kare
+  // beklerken gelen her kapsam biriktirilir; yalnızca ilki değil hepsi
+  // senkronlanır, yoksa sonradan çizilen kartlarda takip düğmesi kalmaz.
+  var pendingSyncScopes = new Set();
   function scheduleDomSync(scope) {
-    if (document.hidden || domSyncFrame) return;
+    if (document.hidden) return;
+    pendingSyncScopes.add(scope || document);
+    if (domSyncFrame) return;
     domSyncFrame = window.requestAnimationFrame(function () {
       domSyncFrame = null;
-      syncMatchControls(scope || document);
+      var scopes = pendingSyncScopes.has(document) ? [document] : Array.from(pendingSyncScopes);
+      pendingSyncScopes = new Set();
+      scopes.forEach(function (item) { if (item === document || item.isConnected) syncMatchControls(item); });
       latestMatches.forEach(updateScoreDom);
     });
   }

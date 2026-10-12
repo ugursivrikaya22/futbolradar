@@ -97,6 +97,20 @@ async function cardIds(page) {
     const again = await page.$$eval('.fixture-card[data-match]', (cards) => cards.map((c) => c.getAttribute('data-match')));
     assert.ok(fixtures.every((f) => again.includes(f.calendarId)), 'tekrar çizimde kimlik korunmalı');
 
+    // Yeniden çizilen her kartta takip düğmesi olmalı. Aynı karede birden çok
+    // bölüm çizildiğinde (canlı veri gelişi) yalnızca ilk bölüm senkronlanıp
+    // kartlar düğmesiz kalıyordu; bunu belirlenimli olarak canlandır.
+    await page.evaluate(() => {
+      document.querySelectorAll('.match-follow-button').forEach((b) => b.remove());
+      const cardSection = document.querySelector('.fixture-card').closest('[data-api-target]') || document.querySelector('.fixture-card').parentElement;
+      const other = document.createElement('div'); document.body.appendChild(other);
+      document.dispatchEvent(new CustomEvent('futbolradar:rendered', { detail: { target: other } }));
+      document.dispatchEvent(new CustomEvent('futbolradar:rendered', { detail: { target: cardSection } }));
+    });
+    await page.waitForTimeout(500);
+    const missing = await page.$$eval('.fixture-card[data-match]', (cards) => cards.filter((c) => !c.querySelector('.match-follow-button')).map((c) => c.getAttribute('data-match')));
+    assert.deepEqual(missing, [], 'aynı karede çizilen bölümlerde takip düğmesi eksik: ' + missing.join(','));
+
     const follow = page.locator(`.fixture-card[data-match="${fixtures[0].calendarId}"] .match-follow-button`);
     await follow.waitFor({ timeout: 15000 });
     await page.waitForFunction((id) => {
