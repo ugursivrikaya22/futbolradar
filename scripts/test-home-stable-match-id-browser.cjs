@@ -28,9 +28,13 @@ const iso = (ms) => new Date(ms).toISOString();
 // 3 saat, en az 1 dakika kala bir saat seçilir.
 const ISTANBUL_OFFSET_MS = 3 * 3600000;
 const istanbulDayEnd = Math.floor((now + ISTANBUL_OFFSET_MS) / 86400000) * 86400000 + 86400000 - ISTANBUL_OFFSET_MS;
+// Canlı maç da aynı İstanbul gününde başlamış olmalı: 00:00–00:55 TRT arası
+// "55 dk önce" önceki güne düşüyor ve kart çizilmiyordu.
+const istanbulDayStart = istanbulDayEnd - 86400000;
+const startedToday = Math.min(now - 60000, Math.max(now - 55 * 60000, istanbulDayStart + 60000));
 const laterToday = Math.max(now + 60000, Math.min(now + 3 * 3600000, istanbulDayEnd - 5 * 60000));
 const fixtures = [
-  { calendarId: 'qa-home-fc-qa-away-fc-2026-10-11', providerId: '9900001', home: 'QA Home FC', away: 'QA Away FC', status: 'LIVE', minute: 55, score: { home: 1, away: 0 }, kickoff: iso(now - 55 * 60000) },
+  { calendarId: 'qa-home-fc-qa-away-fc-2026-10-11', providerId: '9900001', home: 'QA Home FC', away: 'QA Away FC', status: 'LIVE', minute: 55, score: { home: 1, away: 0 }, kickoff: iso(startedToday) },
   { calendarId: 'qa-north-qa-south-2026-10-12', providerId: '9900002', home: 'QA North', away: 'QA South', status: 'SCHEDULED', minute: null, score: { home: null, away: null }, kickoff: iso(laterToday) }
 ];
 const apiMatch = (f) => ({
