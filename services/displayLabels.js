@@ -305,8 +305,39 @@ function nationLabel(name, locale) {
   return NATION_LABELS_EN[fold(value)] || value;
 }
 
+function asciiKey(value) {
+  return String(value || "").toLocaleLowerCase("tr-TR")
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/ı/g, "i").replace(/[^a-z0-9]+/g, "");
+}
+
+/**
+ * MİLLÎ TAKIM KİMLİK ANAHTARI — dilden bağımsız.
+ *
+ * Aynı millî maç bir kaynakta "İtalya", diğerinde "Italy" yazılınca iki ayrı
+ * maç kimliği (ve iki ayrı yayımlanmış slug) doğuyordu. Bu anahtar iki
+ * yazımı da Türkçe kayıt adının ASCII biçimine indirger ("italya").
+ * Tanınmayan ad için null döner; kulüp adları bu eşlemeye GİRMEZ.
+ */
+const NATION_KEY_BY_ALIAS = (() => {
+  const map = new Map();
+  for (const [trName, enName] of Object.entries(NATION_LABELS_EN)) {
+    const key = asciiKey(trName);
+    map.set(key, key);
+    map.set(asciiKey(enName), key);
+  }
+  map.set("turkey", "turkiye");
+  return map;
+})();
+
+function nationKey(name) {
+  const key = asciiKey(name);
+  return key ? NATION_KEY_BY_ALIAS.get(key) || null : null;
+}
+
 module.exports = {
   broadcastLabel,
+  nationKey,
   nationLabel,
   sourceNoteLabel,
   dateRangeLabel,
