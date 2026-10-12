@@ -18,9 +18,13 @@ const SQUADS_PATH = path.join(root, "data", "super-lig-squads.json");
 const REVIEW_QUEUE_PATH = path.join(root, "data", "player-sync-review-queue.json");
 
 function parseArgs(argv) {
-  const args = { apply: false };
+  const args = { apply: false, only: null };
   for (const raw of argv) {
     if (raw === "--apply") args.apply = true;
+    // --only=306,80552 → yalnızca bu sağlayıcı kimliklerini uzlaştırır;
+    // ayrılan oyuncu işaretlemesi ve kadro sayısı koruması bu dar modda
+    // çalışmaz (kimse çıkarılmaz, kadro sayısı değişmez).
+    else if (raw.startsWith("--only=")) args.only = new Set(raw.slice(7).split(",").map((v) => v.trim()).filter(Boolean));
     else if (raw === "--dry-run") args.apply = false;
   }
   return args;
@@ -60,6 +64,7 @@ function main() {
   for (const snapshot of squadSnapshots) {
     const team = { name: snapshot.teamName, providerId: snapshot.teamId };
     for (const squadPlayer of snapshot.players || []) {
+      if (args.only && !args.only.has(String(squadPlayer.providerId))) continue;
       const result = reconcileSquadPlayer(working, squadPlayer, team);
 
       if (result.action === "review") {
@@ -67,6 +72,11 @@ function main() {
         continue;
       }
 
+      if (result.action === "create" && args.only) {
+        // Dar mod yalnızca VAR OLAN kanonik kayda kimlik bağlar; yeni oyuncu açmaz.
+        reviewQueue.push({ action: "review", squadPlayer, team: team.name, reason: "only-mode-no-canonical-match" });
+        continue;
+      }
       if (result.action === "create") {
         working.push(result.player);
         created.push(result.player.name);
@@ -81,7 +91,7 @@ function main() {
     }
   }
 
-  working = markDepartedPlayers(working, activeSquadPlayerKeys);
+  if (!args.only) working = markDepartedPlayers(working, activeSquadPlayerKeys);
 
   const duplicates = detectCanonicalDuplicates(working);
   if (duplicates.length) {
@@ -92,7 +102,9 @@ function main() {
   }
 
   const newSuperLigCount = working.filter((player) => player.isCurrentSuperLigPlayer).length;
-  const guard = evaluatePlayerCountGuard(previousSuperLigCount, newSuperLigCount);
+  const guard = args.only
+    ? (newSuperLigCount >= previousSuperLigCount ? { safe: true } : { safe: false, reason: "only-mode-dropped-players" })
+    : evaluatePlayerCountGuard(previousSuperLigCount, newSuperLigCount);
   if (!guard.safe) {
     console.error(`Player count guard rejected the sync: ${guard.reason}. No write performed; canonical data preserved.`);
     process.exitCode = 1;
@@ -111,7 +123,26 @@ function main() {
     return;
   }
 
-  atomicWrite(PLAYERS_PATH, working);
+  if (args.only) {
+    // Dar mod: yalnızca dokunulan kayıtlar değişir; diğer 800+ ham kayıt
+    // normalize edilmeden olduğu gibi yazılır (gürültüsüz diff).
+    const touched = new Map(working.filter((player) => args.only.has(String(player.providerId))).map((player) => [player.id, player]));
+    const list = Array.isArray(rawPlayers) ? rawPlayers : rawPlayers.players;
+    // Dokunulan kayıtta da YALNIZCA kimlik alanları değişir: normalize
+    // edilmiş kayıt türetilmiş puanlar ve varsayılanlar taşıyor, ham
+    // kayda bunları yazmak veri uydurmak olurdu.
+    const patched = list.map((player) => {
+      const bound = touched.get(player.id);
+      if (!bound) return player;
+      const next = { ...player, providerId: String(bound.providerId) };
+      if (player.source && typeof player.source === "object") next.source = { ...player.source, providerId: String(bound.providerId) };
+      return next;
+    });
+    atomicWrite(PLAYERS_PATH, Array.isArray(rawPlayers) ? patched : { ...rawPlayers, players: patched });
+    console.log(`Bound provider ids for: ${[...touched.values()].map((p) => `${p.name} (${p.currentTeam}) → ${p.providerId}`).join(", ") || "none"}`);
+  } else {
+    atomicWrite(PLAYERS_PATH, working);
+  }
   if (reviewQueue.length || conflicts.length) {
     atomicWrite(REVIEW_QUEUE_PATH, { generatedAt: new Date().toISOString(), conflicts, nameCollisions: reviewQueue });
     console.log(`Wrote ${path.relative(root, REVIEW_QUEUE_PATH)} (internal only — never synced to public/).`);

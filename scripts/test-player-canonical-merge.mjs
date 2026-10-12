@@ -80,9 +80,33 @@ const canonicalPlayers = getPlayers(rawPlayers);
   expect(detectCanonicalDuplicates(duplicated).length === 1, "a duplicate providerId across two records must be detected");
 }
 
+// ── Yer tutucu (mock-…) kimlik: ad + takım + kimlik eşsizliği → bağlanır ──
+{
+  const pool = [
+    { id: "ornek-oyuncu", name: "Örnek Oyuncu", currentTeam: "Trabzonspor", team: "Trabzonspor", providerId: "mock-ornek-oyuncu", dataStatus: "manually_verified", isCurrentSuperLigPlayer: true },
+    { id: "baska-oyuncu", name: "Başka Oyuncu", currentTeam: "Galatasaray", team: "Galatasaray", providerId: "77", isCurrentSuperLigPlayer: true }
+  ];
+  const bound = reconcileSquadPlayer(pool, { providerId: "306", name: "Örnek Oyuncu" }, { name: "Trabzonspor" });
+  expect(bound.action === "update" && bound.player.id === "ornek-oyuncu" && bound.player.providerId === "306",
+    "mock- kimlikli kayıt ad+takım tutunca gerçek sağlayıcı kimliğine bağlanmalı");
+  const wrongTeam = reconcileSquadPlayer(pool, { providerId: "306", name: "Örnek Oyuncu" }, { name: "Galatasaray" });
+  expect(wrongTeam.action === "review", "takım tutmazsa kimlik bağlanmamalı, incelemeye düşmeli");
+  const taken = reconcileSquadPlayer(pool, { providerId: "77", name: "Örnek Oyuncu" }, { name: "Trabzonspor" });
+  expect(!(taken.player && taken.player.id === "ornek-oyuncu" && taken.player.providerId === "77"),
+    "başka oyuncuda kullanılan sağlayıcı kimliği yer tutuculu kayda bağlanmamalı");
+}
+
+// ── Gerçek veri: Mohamed Salah (306) ve Gabriel Sara (80552) bağlı ──
+{
+  const salah = rawPlayers.find((player) => player.id === "mohamed-salah");
+  const sara = rawPlayers.find((player) => player.id === "gabriel-sara");
+  expect(salah && salah.providerId === "306" && salah.currentTeam === "Trabzonspor", "Mohamed Salah API-Football 306'ya bağlı olmalı");
+  expect(sara && sara.providerId === "80552" && sara.currentTeam === "Galatasaray", "Gabriel Sara API-Football 80552'ye bağlı olmalı");
+}
+
 if (failures) {
   console.error(`\n${failures} player canonical merge check(s) failed.`);
   process.exitCode = 1;
 } else {
-  console.log("Player canonical merge checks passed (named-player protection, review routing, new-player creation, departed flagging, count-drop guard, duplicate detection).");
+  console.log("Player canonical merge checks passed (named-player protection, review routing, new-player creation, departed flagging, count-drop guard, duplicate detection, placeholder provider-id binding).");
 }

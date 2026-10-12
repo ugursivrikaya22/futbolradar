@@ -52,7 +52,7 @@ function providerProvenance(squadPlayer) {
 }
 
 function reconcileSquadPlayer(canonicalPlayers, squadPlayer, team) {
-  const resolution = matchCanonicalPlayer(canonicalPlayers, squadPlayer, squadPlayer.birthDate || null);
+  const resolution = matchCanonicalPlayer(canonicalPlayers, { ...squadPlayer, team: team && team.name }, squadPlayer.birthDate || null);
 
   if (resolution.method === "name-only-review-required") {
     return {
@@ -121,7 +121,17 @@ function reconcileSquadPlayer(canonicalPlayers, squadPlayer, team) {
   // alanlar mergePlayerWithProvider tarafından zaten korunuyor.
   Object.assign(merged, providerProvenance(squadPlayer));
 
-  return { action: "update", player: normalizePlayer(merged), conflict };
+  // Yer tutucu (`mock-…`) kimlik ad + takım + kimlik eşsizliğiyle doğrulandıysa
+  // gerçek API-Football kimliği bağlanır; diğer elle doğrulanmış alanlar
+  // korunur. Bu, lider tablosu satırlarının profile bağlanmasını sağlar.
+  if (resolution.method === "name+team+placeholder-provider-id" && squadPlayer.providerId) {
+    merged.providerId = String(squadPlayer.providerId);
+    if (merged.source && typeof merged.source === "object") {
+      merged.source = { ...merged.source, providerId: String(squadPlayer.providerId) };
+    }
+  }
+
+  return { action: "update", player: normalizePlayer(merged), conflict, method: resolution.method };
 }
 
 /**
