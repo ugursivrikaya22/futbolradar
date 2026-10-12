@@ -81,6 +81,9 @@ const { competitions } = require("../services/competitionCatalog.js");
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const momentum = JSON.parse(fs.readFileSync(path.join(root, "data", "momentum.json"), "utf8"));
+// Ana sayfa momentum yüzeyleri /api/momentum ile aynı hesaptan beslenir.
+const { liveTeamMomentum } = require("../services/trendTeams.js");
+const liveMomentumRows = liveTeamMomentum(teams, JSON.parse(fs.readFileSync(path.join(root, "data", "matches.json"), "utf8")));
 const signals = JSON.parse(fs.readFileSync(path.join(root, "data", "signals.json"), "utf8"));
 const analyses = JSON.parse(fs.readFileSync(path.join(root, "data", "analyses.json"), "utf8"));
 // Haber akışı kuralı servistedir (services/newsFeed.js); İngilizce üretici de
@@ -1181,22 +1184,23 @@ function staticTeamCard(team) {
  * gelir (momentum, form, hücum/savunma); hiçbir sayı burada üretilmez.
  */
 function trendTeamCards() {
-  return teams
-    .slice()
-    .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
+  const byName = new Map(teams.map((team) => [team.name, team]));
+  return liveMomentumRows
     .slice(0, 8)
-    .map((team) => sharedTrendCard({
-      locale: "tr",
-      id: team.id,
-      name: team.name,
-      leagueLabel: team.league,
-      momentum: team.momentum,
-      formDotsHtml: formDots(team.form),
-      attack: team.attack,
-      defense: team.defense,
-      formScore: team.formScore,
-      actionHref: `./takim-detay.html?team=${encodeURIComponent(team.name)}`
-    }))
+    .map((row) => {
+      const team = byName.get(row.team) || {};
+      return sharedTrendCard({
+        locale: "tr",
+        id: team.id || row.id,
+        name: row.team,
+        leagueLabel: team.league,
+        momentum: row.momentum,
+        formDotsHtml: formDots(team.form),
+        formScore: row.formScore,
+        liveStatsOnly: true,
+        actionHref: `./takim-detay.html?team=${encodeURIComponent(row.team)}`
+      });
+    })
     .join("");
 }
 
@@ -1508,7 +1512,7 @@ function homeLeadersFormSlot(limit) {
 }
 
 function homeLeadersTeamFormSlot(limit) {
-  const rows = momentum.slice().sort((left, right) => Number(left.rank) - Number(right.rank)).slice(0, limit);
+  const rows = liveMomentumRows.slice(0, limit);
   return homeLeadersSlot(rows, homeLeaderTeamRow, "Takım formu tablosu resmî maç sonuçlarıyla güncellenir.");
 }
 
