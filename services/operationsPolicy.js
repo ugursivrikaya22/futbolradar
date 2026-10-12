@@ -2,7 +2,7 @@
 const crypto = require('node:crypto');
 const OBSERVATION_KEYS = new Set(['fetchedAt','checkedAt','lastCheckedAt','lastAttemptAt','lastSuccessfulSyncAt','lastSuccessfulBackupSyncAt','syncedAt','generatedAt','updatedAt','observedAt','staleAfter','durationMs','requestCount','requestFailures','rateLimit','fixtureHealth','lastSync','lastFetchAt']);
 const STOP_CODES = new Set(['PROVIDER_RATE_LIMIT','PROVIDER_AUTH_ERROR','PROVIDER_PLAN_ERROR','PROVIDER_ACCOUNT_SUSPENDED','PROVIDER_CREDENTIAL_NOT_SENT','PROVIDER_CONFIG_MISSING']);
-const OPTIONAL = new Set(['fixture-predictions','competition-leaders','injuries-suspensions','football-news','english-news','manager-quotes','provider-identities','weekly-player-enrichment','weekly-photo-validation','international-opponents','refetch-finished']);
+const OPTIONAL = new Set(['fixture-predictions','competition-leaders','injuries-suspensions','football-news','english-news','manager-quotes','provider-identities','weekly-player-enrichment','weekly-photo-validation','international-opponents','refetch-finished','featured-match-context']);
 function semantic(value) {
   if (Array.isArray(value)) return value.map(semantic);
   if (!value || typeof value !== 'object') return value;

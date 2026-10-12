@@ -24143,3 +24143,15 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 :root[data-theme="dark"] .brand-benefits li{background:#162b23;color:#e4f4e9;border-color:#365143}
 :root[data-theme="dark"] .brand-promise{color:#bacbc1}
 @media(max-width:480px){.brand-benefits{gap:6px}.brand-benefits li{font-size:12px;padding:7px 10px}.home-page #hero-canli-skor h1{font-size:clamp(1.9rem,7.8vw,2.6rem)}}
+
+/* Maç sayfası: hücum/savunma karşılaştırması (öne çıkarılan maç bağlamı). */
+.msp-compare { padding: 16px; }
+.msp-compare-head { display: flex; justify-content: space-between; margin: 0 0 10px; }
+.msp-compare-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.msp-compare-row { display: grid; grid-template-columns: 3.5em 1fr 3.5em; align-items: center; gap: 4px 8px; font-size: var(--fs-sm); }
+.msp-compare-row .msp-compare-value { font-weight: 800; font-variant-numeric: tabular-nums; }
+.msp-compare-row .msp-compare-value:last-of-type { text-align: right; }
+.msp-compare-label { text-align: center; color: var(--muted); }
+.msp-compare-bar { grid-column: 1 / -1; display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--line, #e5e7eb); }
+.msp-compare-home { background: var(--accent, #c8102e); }
+.msp-compare-away { background: var(--accent-2, #1d4ed8); }

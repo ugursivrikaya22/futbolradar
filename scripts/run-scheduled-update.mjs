@@ -454,6 +454,10 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
     // durumu da sınıyor — adımın varlığını ve her adımın betiğinin
     // diskte GERÇEKTEN bulunduğunu.
     nodeStep("fixture-predictions", "sync-fixture-predictions.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 6 * 60 * 1000 }),
+    // Öne çıkarılan maç (featuredFixtures) bağlamı: maç başına en fazla 3
+    // istek, maçtan 72 saat önce açılır, en sık 12 saatte bir, maç
+    // başlayınca durur. Öne çıkarılan maç yoksa hiç istek atmaz.
+    nodeStep("featured-match-context", "sync-featured-match-context.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 1, timeoutMs: 2 * 60 * 1000, skip: noProvider }),
     nodeStep("standings", "sync-standings.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     // Gol/asist krallığı: `/players/topscorers` + `/players/topassists`
     // ligin kendisiyle sorgulandığı için players.json'un turnuva-toplamı
