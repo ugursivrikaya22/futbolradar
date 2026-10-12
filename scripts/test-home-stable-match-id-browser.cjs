@@ -22,9 +22,16 @@ const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '
 const now = Date.now();
 const iso = (ms) => new Date(ms).toISOString();
 // İki maç: biri canlı, biri ertelenmiş (kimlikte eski tarih, başlama bugün).
+// Ertelenmiş maçın başlaması İstanbul gününün İÇİNDE kalmalı: "+3 saat"
+// 21:00'den (TRT) sonra ertesi güne taşıyor, kart ana sayfada hiç çizilmiyor
+// ve kontrol adımı akşamları kırmızıya düşüyordu. Günün sonuna en fazla
+// 3 saat, en az 1 dakika kala bir saat seçilir.
+const ISTANBUL_OFFSET_MS = 3 * 3600000;
+const istanbulDayEnd = Math.floor((now + ISTANBUL_OFFSET_MS) / 86400000) * 86400000 + 86400000 - ISTANBUL_OFFSET_MS;
+const laterToday = Math.max(now + 60000, Math.min(now + 3 * 3600000, istanbulDayEnd - 5 * 60000));
 const fixtures = [
   { calendarId: 'qa-home-fc-qa-away-fc-2026-10-11', providerId: '9900001', home: 'QA Home FC', away: 'QA Away FC', status: 'LIVE', minute: 55, score: { home: 1, away: 0 }, kickoff: iso(now - 55 * 60000) },
-  { calendarId: 'qa-north-qa-south-2026-10-12', providerId: '9900002', home: 'QA North', away: 'QA South', status: 'SCHEDULED', minute: null, score: { home: null, away: null }, kickoff: iso(now + 3 * 3600000) }
+  { calendarId: 'qa-north-qa-south-2026-10-12', providerId: '9900002', home: 'QA North', away: 'QA South', status: 'SCHEDULED', minute: null, score: { home: null, away: null }, kickoff: iso(laterToday) }
 ];
 const apiMatch = (f) => ({
   id: f.providerId, providerId: f.providerId, source: 'api-football', homeTeam: f.home, awayTeam: f.away,
