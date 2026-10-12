@@ -258,7 +258,7 @@ export function trendCard(options) {
   return `<article class="trend-card" data-card="trend-team"${options.id ? ` data-team="${escapeHtml(options.id)}"` : ""}>
       <div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">${escapeHtml(fixtureTeamInitials(options.name))}</span><span><strong>${escapeHtml(options.name)}</strong><span>${escapeHtml(options.leagueLabel || t("card.teamFallback", locale))}</span></span><b class="trend-card-score">${escapeHtml(options.momentum ?? "–")}</b></div>
       ${options.formDotsHtml || ""}
-      <dl class="trend-card-stats"><div><dt>${escapeHtml(t("trend.attack", locale))}</dt><dd>${escapeHtml(options.attack ?? "–")}</dd></div><div><dt>${escapeHtml(t("trend.defence", locale))}</dt><dd>${escapeHtml(options.defense ?? "–")}</dd></div><div><dt>${escapeHtml(t("trend.form", locale))}</dt><dd>${escapeHtml(options.formScore ?? "–")}</dd></div></dl>
+      <dl class="trend-card-stats">${options.liveStatsOnly ? "" : `<div><dt>${escapeHtml(t("trend.attack", locale))}</dt><dd>${escapeHtml(options.attack ?? "–")}</dd></div><div><dt>${escapeHtml(t("trend.defence", locale))}</dt><dd>${escapeHtml(options.defense ?? "–")}</dd></div>`}<div><dt>${escapeHtml(t("trend.form", locale))}</dt><dd>${escapeHtml(options.formScore ?? "–")}</dd></div></dl>
       ${action}
     </article>`;
 }
