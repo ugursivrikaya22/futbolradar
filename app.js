@@ -495,6 +495,46 @@
     loadPredictedLineups();
   }
 
+  /**
+   * TEK MAÇ, TEK KİMLİK.
+   *
+   * Statik ön render kartları takvim kimliğiyle çiziyor
+   * (`eyupspor-goztepe-2026-10-12`); canlı /api/matches ise sağlayıcının
+   * sayısal kimliğini (`1584423`) taşıyor. Canlı yeniden çizimde aynı maç
+   * başka `data-match` ile çıkınca takvim kimliğiyle kaydedilmiş takip
+   * tercihi düşüyor, karta bağlı her şey kopuyordu. Derleme anında üretilen
+   * tablo (data/match-notification-identities.json → calendarIds) ile kart
+   * her zaman takvim kimliğiyle çizilir; tablo yoksa ya da maç tabloda
+   * değilse kimlik olduğu gibi kalır.
+   */
+  var calendarIdByProvider = Object.create(null);
+  var calendarIdsPromise = null;
+  function loadCalendarIds() {
+    if (!calendarIdsPromise) {
+      calendarIdsPromise = (window.location.protocol === "file:"
+        ? Promise.resolve(null)
+        : fetchJson(DATA_ROOT + "match-notification-identities.json").then(function (result) { return result.data; }))
+        .then(function (payload) {
+          if (payload && payload.calendarIds && typeof payload.calendarIds === "object") {
+            calendarIdByProvider = payload.calendarIds;
+          }
+          return calendarIdByProvider;
+        })
+        .catch(function () { return calendarIdByProvider; });
+    }
+    return calendarIdsPromise;
+  }
+  loadCalendarIds();
+  function stableMatchId(match) {
+    if (!match) return "";
+    var id = String(match.id || match.providerId || "");
+    var mapped = calendarIdByProvider[id] ||
+      (match.providerId && calendarIdByProvider[String(match.providerId)]) ||
+      (match.providerIds && match.providerIds.apiFootball && calendarIdByProvider[String(match.providerIds.apiFootball)]);
+    return mapped || id;
+  }
+  window.FutbolRadarStableMatchId = stableMatchId;
+
   function findPredictedLineup(matchId) {
     return (matchId && predictedLineupsIndex[matchId]) || null;
   }
@@ -561,7 +601,8 @@
             }
 
             // A successful provider response is authoritative, including an empty day.
-            return filterFallbackData("matches", result.data);
+            // Kimlik tablosu beklenir: ilk canlı çizim de takvim kimliğiyle yapılsın.
+            return loadCalendarIds().then(function () { return filterFallbackData("matches", result.data); });
           })
           .catch(fallback);
       } else {
@@ -3507,7 +3548,7 @@
 
     return (
       '<article class="fixture-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
-      '" data-card="fixture" data-match="' + escapeHtml(match.id) + '">' +
+      '" data-card="fixture" data-match="' + escapeHtml(stableMatchId(match)) + '">' +
       '<div class="fixture-card-top">' +
       '<span class="fixture-card-league">' + leagueMarkHtml(match.league) + escapeHtml(displayValue(match.league)) + "</span>" +
       '<span class="fixture-card-state ' + meta.className + '">' +
@@ -5310,7 +5351,7 @@
 
     return (
       '<a class="live-compact-card' + (meta.live ? " is-live" : "") + (meta.finished ? " is-final" : "") +
-      '" data-card="live-match" data-match="' + escapeHtml(match.id) + '"' +
+      '" data-card="live-match" data-match="' + escapeHtml(stableMatchId(match)) + '"' +
       (meta.live ? ' data-match-live="true"' : "") +
       ' href="' + escapeHtml(matchDetailHref(match)) + '">' +
       '<span class="live-compact-status ' + meta.className + '">' +
@@ -5877,7 +5918,7 @@
     var homeTeam = matchTeam(match, "home");
     var awayTeam = matchTeam(match, "away");
 
-    return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(match.id) + '">' +
+    return '<article class="match-intelligence-card" data-card="today-radar-match" data-match="' + escapeHtml(stableMatchId(match)) + '">' +
       '<div class="card-head"><span class="card-kicker">' + escapeHtml(match.league) + '</span><span>' +
       (live ? '<i class="live-pulse" aria-hidden="true"></i> ' : "") + escapeHtml(statusLabel) + "</span></div>" +
       '<h3 class="live-score-team-name-inline">' + teamLogoHtml(homeTeam) + escapeHtml(getTeamName(homeTeam)) + " - " + teamLogoHtml(awayTeam) + escapeHtml(getTeamName(awayTeam)) + "</h3>" +
@@ -6239,7 +6280,7 @@
         var away = numericScore(score.away);
         return (home !== null && old.home !== null && home > old.home) ||
           (away !== null && old.away !== null && away > old.away);
-      }).map(function (match) { return String(match.id || match.providerId || ""); }).filter(Boolean);
+      }).map(function (match) { return stableMatchId(match); }).filter(Boolean);
     }
 
     function updateLiveAges() {
