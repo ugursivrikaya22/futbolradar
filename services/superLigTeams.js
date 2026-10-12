@@ -23,6 +23,7 @@
 
 const fixtures = require("../data/super-lig-fixtures.json");
 const { normalizeText } = require("../api/_utils");
+const { nationKey } = require("./displayLabels");
 
 function slug(value) {
   return normalizeText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -109,6 +110,9 @@ function sameClubUncached(left, right) {
   const b = normalizeText(right);
   if (!a || !b) return false;
   if (a === b) return true;
+  // Millî takım: "Italy" ile "İtalya" aynı takımdır.
+  const nationA = nationKey(left);
+  if (nationA && nationA === nationKey(right)) return true;
 
   const [shorter, longer] = a.length <= b.length ? [a, b] : [b, a];
   if (shorter.length < MIN_CONTAINMENT_LENGTH) return false;

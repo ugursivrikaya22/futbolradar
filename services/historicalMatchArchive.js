@@ -1,4 +1,5 @@
 const { isAnalyzableMatch } = require("./matchStatus");
+const { nationKey } = require("./displayLabels");
 
 const COVERAGE = Object.freeze({ FULL: "FULL", STANDARD: "STANDARD", LIMITED: "LIMITED" });
 const WORKFLOW = Object.freeze({ COMPLETE: "complete", LIMITED: "limited_complete", REVIEW: "needs_manual_review" });
@@ -12,6 +13,10 @@ function number(value) {
 }
 
 function teamKey(value) {
+  // Millî takım "Italy" / "İtalya" gibi iki dilde gelebiliyor; aynı maç iki
+  // kimlik almasın diye ülke adı tek anahtara indirilir.
+  const nation = nationKey(value);
+  if (nation) return nation;
   return text(value).toLocaleLowerCase("tr-TR")
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/ı/g, "i").replace(/[^a-z0-9]+/g, "");
@@ -159,6 +164,9 @@ function buildArchive({ sources, previous, now }) {
   for (const [key, prior] of priorByKey) {
     if (grouped.has(key)) continue;
     if (!prior || !prior.match) continue;
+    // Kimlik hesabı değiştiyse (ör. "Italy" → "italya") eski anahtarlı kayıt
+    // artık bu koşuda gruplanan bir maçın kopyasıdır; taşınmaz.
+    if (grouped.has(identity(prior.match))) continue;
     records.push({ ...prior, carriedForward: true });
   }
 

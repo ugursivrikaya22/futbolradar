@@ -24,6 +24,7 @@ const { normalizeText } = require("../api/_utils");
 const { canonicalStatus, istanbulDay, kickoffMs, LIVE_GRACE_MS } = require("./matchStatus.js");
 const { resolveCompetitionId, findCompetition, isAmbiguousCompetitionName } = require("./competitionCatalog.js");
 const { sameClub, fixtureTeamNames } = require("./superLigTeams.js");
+const { nationKey } = require("./displayLabels.js");
 
 const DOMAIN = "https://www.futbolradar.com";
 const REGISTRY_PATH = path.join(__dirname, "..", "data", "match-seo-pages.json");
@@ -127,16 +128,25 @@ function canonicalTeamName(name) {
   return result;
 }
 
+/**
+ * Slug/kimlik parçası. Millî takımlar dilden bağımsız tek anahtara iner
+ * ("Italy" ve "İtalya" → "italya"); aksi hâlde aynı maç iki slug alıyordu
+ * (/mac/turkiye-italy-… ve /mac/turkiye-italya-…).
+ */
+function teamSlugPart(name) {
+  return nationKey(name) || slugify(canonicalTeamName(name));
+}
+
 function trSlugFor(homeTeam, awayTeam, kickoff) {
   const parts = istanbulDateParts(kickoff);
   if (!parts) return null;
-  return `${slugify(canonicalTeamName(homeTeam))}-${slugify(canonicalTeamName(awayTeam))}-${parts.day}-${TR_MONTHS[parts.month - 1]}-${parts.year}`;
+  return `${teamSlugPart(homeTeam)}-${teamSlugPart(awayTeam)}-${parts.day}-${TR_MONTHS[parts.month - 1]}-${parts.year}`;
 }
 
 function enSlugFor(homeTeam, awayTeam, kickoff) {
   const parts = istanbulDateParts(kickoff);
   if (!parts) return null;
-  return `${slugify(canonicalTeamName(homeTeam))}-${slugify(canonicalTeamName(awayTeam))}-${EN_MONTHS[parts.month - 1]}-${parts.day}-${parts.year}`;
+  return `${teamSlugPart(homeTeam)}-${teamSlugPart(awayTeam)}-${EN_MONTHS[parts.month - 1]}-${parts.day}-${parts.year}`;
 }
 
 function trPagePath(slug) {
@@ -161,7 +171,7 @@ function identityOf(match) {
   if (!match || !match.homeTeam || !match.awayTeam) return null;
   const day = istanbulDay(match.kickoff);
   if (!day) return null;
-  return `${slugify(canonicalTeamName(match.homeTeam))}|${slugify(canonicalTeamName(match.awayTeam))}|${day}`;
+  return `${teamSlugPart(match.homeTeam)}|${teamSlugPart(match.awayTeam)}|${day}`;
 }
 
 function isTurkiyeNationalMatch(match) {

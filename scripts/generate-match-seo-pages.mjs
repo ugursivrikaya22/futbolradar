@@ -585,7 +585,49 @@ function newEntry(candidate) {
   };
 }
 
+/**
+ * AYNI MAÇIN İKİ SİCİL KAYDI TEKE İNER.
+ *
+ * Millî maçta bir kaynak "İtalya", diğeri "Italy" yazınca eski kimlik
+ * hesabı iki kayıt (iki slug, iki indekslenebilir sayfa) üretmişti. Aynı
+ * kimlik (+ aynı başlama saati) ya da aynı API-Football fikstür kimliği
+ * taşıyan kayıtlardan İLK OLUŞTURULAN kalır (adresi en eski, bağlantısı en
+ * çok olan); diğerinin sağlayıcı kimlikleri ona taşınır, sayfası
+ * `pruneStalePages` ile silinir ve eski adres vercel.json'da 301'lenir.
+ */
+function collapseDuplicateEntries(registry) {
+  const keep = new Map();
+  const dropped = [];
+  const ordered = registry.pages.slice().sort((a, b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+  for (const entry of ordered) {
+    const keys = [];
+    const identity = identityOf(entry);
+    if (identity) keys.push(`id:${identity}|${entry.kickoff || ""}`);
+    if (entry.providerIds && entry.providerIds.apiFootball) keys.push(`af:${entry.providerIds.apiFootball}`);
+    const survivor = keys.map((key) => keep.get(key)).find(Boolean);
+    if (survivor && survivor !== entry) {
+      for (const [provider, id] of Object.entries(entry.providerIds || {})) {
+        if (id && !survivor.providerIds[provider]) survivor.providerIds[provider] = String(id);
+      }
+      for (const field of ["venue", "referee", "varReferee", "broadcast", "round", "competitionId", "league", "homeTeamLogo", "awayTeamLogo"]) {
+        if ((survivor[field] === null || survivor[field] === undefined || survivor[field] === "") && entry[field] !== null && entry[field] !== undefined) survivor[field] = entry[field];
+      }
+      dropped.push({ from: entry.slug, fromEn: entry.enSlug, to: survivor.slug, toEn: survivor.enSlug });
+      for (const key of keys) if (!keep.has(key)) keep.set(key, survivor);
+      continue;
+    }
+    for (const key of keys) if (!keep.has(key)) keep.set(key, entry);
+  }
+  if (dropped.length) {
+    const gone = new Set(dropped.map((item) => item.from));
+    registry.pages = registry.pages.filter((entry) => !gone.has(entry.slug));
+    for (const item of dropped) console.log(`[match-seo] yinelenen kayıt birleştirildi: ${item.from} → ${item.to}`);
+  }
+  return dropped;
+}
+
 function mergeRegistry(registry, candidates) {
+  collapseDuplicateEntries(registry);
   const lookup = { byApiFootball: new Map(), byTheSportsDb: new Map(), byIdentity: new Map() };
   const slugs = new Set();
   for (const entry of registry.pages) {
