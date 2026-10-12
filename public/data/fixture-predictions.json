@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-11T23:42:25.613Z",
+  "updatedAt": "2026-10-12T00:29:22.948Z",
   "predictionCount": 4701,
   "predictions": [
     {
@@ -382631,7 +382631,8 @@
       "calculatedAt": "2026-10-11T23:42:19.794Z",
       "expiresAt": "2026-10-12T00:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-12T00:29:21.521Z"
     },
     {
       "fixtureId": "the-town-tacoma-defiance-2026-10-12",
@@ -382704,7 +382705,8 @@
       "calculatedAt": "2026-10-11T23:42:19.794Z",
       "expiresAt": "2026-10-12T00:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-12T00:29:21.521Z"
     },
     {
       "fixtureId": "talleres-cordoba-independiente-2026-10-12",
@@ -382936,16 +382938,52 @@
       "awayTeam": "Independiente Medellin",
       "homeTeamId": "1138",
       "awayTeamId": "1128",
-      "source": "market_probability",
-      "homeProbability": 52,
-      "drawProbability": 27,
-      "awayProbability": 21,
-      "predictedWinner": null,
-      "advice": null,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "1138",
+        "name": "America de Cali",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : America de Cali or draw",
       "underOver": null,
-      "predictedGoals": null,
-      "comparison": null,
-      "confidence": 90,
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 67,
+          "away": 33
+        },
+        "att": {
+          "home": 54,
+          "away": 46
+        },
+        "def": {
+          "home": 73,
+          "away": 27
+        },
+        "poisson_distribution": {
+          "home": 75,
+          "away": 25
+        },
+        "h2h": {
+          "home": 38,
+          "away": 62
+        },
+        "goals": {
+          "home": 38,
+          "away": 62
+        },
+        "total": {
+          "home": 57.5,
+          "away": 42.5
+        }
+      },
+      "confidence": null,
       "dataBasis": null,
       "baselineScope": null,
       "missingHistory": null,
@@ -382953,34 +382991,13 @@
       "expectedGoals": null,
       "modelUnderOver": null,
       "bothTeamsScore": null,
-      "marketConsensus": {
-        "bookmakerCount": 10,
-        "bookmakers": [
-          "1xBet",
-          "Bet365",
-          "BetVictor",
-          "Betano",
-          "Betfair",
-          "Dafabet",
-          "Marathonbet",
-          "Pinnacle",
-          "SBO",
-          "William Hill"
-        ],
-        "method": "median",
-        "averageMargin": 0.0776
-      },
+      "marketConsensus": null,
       "modelInputs": null,
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-11T20:37:08.777Z",
-      "expiresAt": "2026-10-11T23:45:00.000Z",
-      "refreshStage": "T-6h",
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T00:29:21.999Z",
+      "calculatedAt": "2026-10-12T00:29:21.521Z",
+      "expiresAt": "2026-10-12T01:15:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -382994,16 +383011,52 @@
       "awayTeam": "Cruz Azul",
       "homeTeamId": "2286",
       "awayTeamId": "2295",
-      "source": "market_probability",
-      "homeProbability": 27,
-      "drawProbability": 26,
-      "awayProbability": 47,
-      "predictedWinner": null,
-      "advice": null,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
+      "predictedWinner": {
+        "id": "2295",
+        "name": "Cruz Azul",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : draw or Cruz Azul",
       "underOver": null,
-      "predictedGoals": null,
-      "comparison": null,
-      "confidence": 90,
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-3.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 29,
+          "away": 71
+        },
+        "att": {
+          "home": 35,
+          "away": 65
+        },
+        "def": {
+          "home": 44,
+          "away": 56
+        },
+        "poisson_distribution": {
+          "home": 36,
+          "away": 64
+        },
+        "h2h": {
+          "home": 38,
+          "away": 62
+        },
+        "goals": {
+          "home": 43,
+          "away": 57
+        },
+        "total": {
+          "home": 37.5,
+          "away": 62.5
+        }
+      },
+      "confidence": null,
       "dataBasis": null,
       "baselineScope": null,
       "missingHistory": null,
@@ -383011,34 +383064,13 @@
       "expectedGoals": null,
       "modelUnderOver": null,
       "bothTeamsScore": null,
-      "marketConsensus": {
-        "bookmakerCount": 10,
-        "bookmakers": [
-          "1xBet",
-          "Bet365",
-          "BetVictor",
-          "Betano",
-          "Betfair",
-          "Dafabet",
-          "Marathonbet",
-          "Pinnacle",
-          "SBO",
-          "William Hill"
-        ],
-        "method": "median",
-        "averageMargin": 0.0767
-      },
+      "marketConsensus": null,
       "modelInputs": null,
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-11T20:37:08.777Z",
-      "expiresAt": "2026-10-11T23:45:00.000Z",
-      "refreshStage": "T-6h",
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T00:29:22.188Z",
+      "calculatedAt": "2026-10-12T00:29:21.521Z",
+      "expiresAt": "2026-10-12T01:15:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -401879,10 +401911,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-11T23:42:22.591Z",
-      "calculatedAt": "2026-10-11T23:42:19.794Z",
-      "expiresAt": "2026-10-12T00:00:00.000Z",
-      "refreshStage": "T-72h",
+      "providerUpdatedAt": "2026-10-12T00:29:22.454Z",
+      "calculatedAt": "2026-10-12T00:29:21.521Z",
+      "expiresAt": "2026-10-12T18:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -401949,10 +401981,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-11T23:42:22.736Z",
-      "calculatedAt": "2026-10-11T23:42:19.794Z",
-      "expiresAt": "2026-10-12T00:00:00.000Z",
-      "refreshStage": "T-72h",
+      "providerUpdatedAt": "2026-10-12T00:29:22.602Z",
+      "calculatedAt": "2026-10-12T00:29:21.521Z",
+      "expiresAt": "2026-10-12T18:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -402022,10 +402054,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-11T23:42:22.884Z",
-      "calculatedAt": "2026-10-11T23:42:19.794Z",
-      "expiresAt": "2026-10-12T00:00:00.000Z",
-      "refreshStage": "T-72h",
+      "providerUpdatedAt": "2026-10-12T00:29:22.778Z",
+      "calculatedAt": "2026-10-12T00:29:21.521Z",
+      "expiresAt": "2026-10-12T18:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
