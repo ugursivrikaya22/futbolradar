@@ -48,6 +48,7 @@ import { createRequire } from "node:module";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const siteLinks = require("../services/siteLinks.js").defaultSiteLinks();
 
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { selectMatch, isTrabzonspor, normalize, slugify } = require("../services/trabzonsporMatchColumn.js");
@@ -96,7 +97,9 @@ function atomicWrite(filePath, contents) {
 
 /** Depoda gerçekten VAR OLAN sayfaya bağlanır; olmayan adrese link verilmez. */
 function pageIfExists(relativePath) {
-  return relativePath && fs.existsSync(path.join(root, relativePath)) ? relativePath : "";
+  if (!relativePath || !fs.existsSync(path.join(root, relativePath))) return "";
+  // Dosya var; bağlantı 301 zincirinin son (kanonik) adresine verilir.
+  return siteLinks.resolveFinalPath(`/${relativePath}`).replace(/^\//, "");
 }
 
 /* ------------------------------------------------------------------ *

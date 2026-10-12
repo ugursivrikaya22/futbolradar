@@ -335,8 +335,8 @@ function column(overrides = {}) {
   const linkedDetail = columnPageHtml(linked);
   assert.match(
     linkedDetail,
-    /<a href="\.\.\/super-lig-puan-durumu\.html">Süper Lig<\/a>&#39;de bir gelişme\./,
-    "gövdedeki [metin](hedef.html) iç bağlantıya çevrilmeli ve base ile önekli olmalı"
+    /<a href="\.\.\/super-lig-puan-durumu">Süper Lig<\/a>&#39;de bir gelişme\./,
+    "gövdedeki [metin](hedef.html) iç bağlantıya çevrilmeli, base ile önekli olmalı ve 301 kaynağı yerine kanonik adrese gitmeli"
   );
   assert.ok(!/href="[^"]*javascript:/.test(linkedDetail), "yalnızca .html ile biten göreli hedeflere izin verilmeli");
   assert.match(linkedDetail, /Eşleşmeyen \[köşeli parantez metni\./, "eşleşmeyen köşeli parantez metni olduğu gibi kalmalı");

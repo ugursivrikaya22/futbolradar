@@ -8,6 +8,7 @@ const { SOURCE_LINK_REL } = createRequire(import.meta.url)("../services/sourceLi
 // (canlıda 404 veren iki bağlantı) yapısal olarak imkânsız.
 const { publishableNews } = createRequire(import.meta.url)("../services/newsFeed.js");
 const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks.js");
+const { internalHref } = createRequire(import.meta.url)("../services/siteLinks.js");
 // Haber durumu rozeti — İngilizce tarafla aynı servis, aynı ölçü.
 const { editorialStatusOf } = createRequire(import.meta.url)("../services/editorialStatus.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
@@ -150,7 +151,12 @@ function articleInternalLinks(article) {
       link.label &&
       typeof link.href === "string" &&
       !/^https?:\/\//i.test(link.href) &&
-      !/^javascript:/i.test(link.href));
+      !/^javascript:/i.test(link.href))
+    // Kayıtlı hedef 301'liyse (ör. "../galatasaray-puan-durumu.html") zincirin
+    // son adresine bağlanır; haber sayfaları haber/ altında.
+    .map((link) => (link.href.startsWith("../")
+      ? { ...link, href: internalHref(link.href.slice(3), { from: "haber/_.html" }) }
+      : link));
 }
 
 /** İngilizce takım sayfası; yoksa İngilizce takım listesi. */

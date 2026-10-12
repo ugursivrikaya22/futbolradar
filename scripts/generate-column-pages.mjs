@@ -25,6 +25,7 @@ import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const siteLinks = require("../services/siteLinks.js").defaultSiteLinks();
 
 const {
   OPINION_BADGE,
@@ -72,11 +73,18 @@ function escapeHtml(value) {
  * ile biter. `base` derinliğe göre önekleniyor — aynı `base` her <a> için
  * zaten kullanılıyor. Eşleşmeyen köşeli parantez metni olduğu gibi kalır.
  */
+/** Kök göreli hedefi 301 zincirinin son adresine çevirir (#çapa korunur). */
+function canonicalTarget(href) {
+  const [file, hash] = href.split("#");
+  const final = siteLinks.resolveFinalPath(`/${file}`).replace(/^\//, "");
+  return hash ? `${final}#${hash}` : final;
+}
+
 function inlineText(value, base = "", sources = []) {
   const bold = escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   const linked = bold.replace(
     /\[([^\]]+)\]\(([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
-    (match, label, href) => `<a href="${base}${href}">${label}</a>`
+    (match, label, href) => `<a href="${base}${canonicalTarget(href)}">${label}</a>`
   );
   return linked.replace(/\[(\d+)\](?!\()/g, (marker, number) => {
     const source = sources[Number(number) - 1];

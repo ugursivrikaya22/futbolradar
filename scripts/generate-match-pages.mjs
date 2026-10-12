@@ -21,6 +21,7 @@ import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
+const { internalHref } = require("../services/siteLinks.js");
 const domain = "https://www.futbolradar.com";
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
@@ -61,7 +62,7 @@ function standingsForFixture(match) {
       { competitionId: "super-lig", league: fixtures.league, kickoff: match.kickoff },
       { store: leagueStandings }
     ),
-    fullHref: "../super-lig-puan-durumu.html"
+    fullHref: internalHref("super-lig-puan-durumu.html", { from: "mac/_.html" })
   };
 }
 
