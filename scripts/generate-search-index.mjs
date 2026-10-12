@@ -233,7 +233,7 @@ for (const player of asArray(readJson("players.json"), "players")) {
   if (!player || !player.id || !player.name) {
     continue;
   }
-  const href = playerUrls.playerPagePath(player.id);
+  const href = playerUrls.playerCanonicalHref(player.id, "");
   // Arama sonucu altyazısı da bir KULÜP İDDİASIDIR. Denetimde burada
   // "Serbest oyuncu · Santrfor" ve "Schalke 04 · Santrfor" yazıyordu —
   // doğrulanmamış kayıtlar için sonuç listesinde beyan edilmiş kulüpler.

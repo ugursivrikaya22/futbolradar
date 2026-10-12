@@ -74,8 +74,10 @@ function createPlayerUrlResolver(table) {
    */
   function playerHref(player, basePrefix = "./") {
     const id = typeof player === "string" ? player : (player && player.id);
-    if (!id) return null;
-    return `${basePrefix}${playerPagePath(id)}`;
+    // Görev 5, 4. aşama: bağlantı artık 301 kaynağı olan `futbolcu/x.html`
+    // yerine doğrudan kanonik (uzantısız) adrese verilir. Dosya yolu için
+    // `playerPagePath` kullanılmaya devam eder.
+    return playerCanonicalHref(player, basePrefix);
   }
 
   /**

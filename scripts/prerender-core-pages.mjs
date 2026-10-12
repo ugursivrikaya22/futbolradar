@@ -1422,14 +1422,14 @@ function homeLeaderLeagueRow(rank, row, metric, unit) {
   const team = escapeHtml(row.team || "");
   const value = escapeHtml(String(row[metric] ?? 0));
   const nameHtml = row.slug
-    ? `<a class="leaders-name" href="./${escapeHtml(playerUrls.playerPagePath(row.slug))}"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></a>`
+    ? `<a class="leaders-name" href="${escapeHtml(playerUrls.playerCanonicalHref(row.slug, "./"))}"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></a>`
     : `<span class="leaders-name"><strong>${escapeHtml(row.name)}</strong><span>${team}</span></span>`;
   return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span>${nameHtml}<span class="leaders-value">${value}<small>${escapeHtml(unit)}</small></span></li>`;
 }
 
 function homeLeaderFormRow(rank, player) {
   const kicker = [player.currentTeam || player.team, turkishPosition(player.position)].filter(Boolean).map((value) => escapeHtml(value)).join(" · ");
-  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./${escapeHtml(playerUrls.playerPagePath(player.id))}"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="${escapeHtml(playerUrls.playerCanonicalHref(player.id, "./"))}"><strong>${escapeHtml(player.name)}</strong><span>${kicker}</span></a></li>`;
 }
 
 function homeLeaderTeamRow(rank, row) {
@@ -1482,7 +1482,7 @@ function leagueLeaderLogoHtml(row) {
 
 function leagueLeaderNameHtml(row) {
   const name = escapeHtml(row.name || "");
-  return row.slug ? `<a href="./${escapeHtml(playerUrls.playerPagePath(row.slug))}">${name}</a>` : `<span>${name}</span>`;
+  return row.slug ? `<a href="${escapeHtml(playerUrls.playerCanonicalHref(row.slug, "./"))}">${name}</a>` : `<span>${name}</span>`;
 }
 
 function leagueLeaderTableHtml(rows, metric, metricLabel) {
@@ -1545,7 +1545,7 @@ function simplePlayerCard(player) {
   }
   if (marketValue) metrics.push(`<span>Piyasa <b>${escapeHtml(marketValue)}</b></span>`);
 
-  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="./${escapeHtml(playerUrls.playerPagePath(player.id))}">Oyuncu profilini aç</a></article>`;
+  return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>${escapeHtml(player.summary || "Profil metrikleri ve transfer geçmişi oyuncu sayfasında yer alır.")}</p><a class="detail-link" href="${escapeHtml(playerUrls.playerCanonicalHref(player.id, "./"))}">Oyuncu profilini aç</a></article>`;
 }
 
 /**
@@ -1571,7 +1571,7 @@ function playerSignals(pool) {
     ["Gol tehdidi", by("threatScore"), "threatScore"],
     ["Yaratıcılık", by("creativityScore"), "creativityScore"]
   ];
-  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(turkishPosition(player.position))}</p><a href="./${escapeHtml(playerUrls.playerPagePath(player.id))}">Profili aç</a></article>`).join("");
+  return cards.map(([label, player, field]) => `<article class="card player-signal-card"><span class="card-kicker">${escapeHtml(label)}</span><h3>${escapeHtml(player.name)}</h3><strong>${escapeHtml(player[field] || "-" )}</strong><p>${escapeHtml(player.currentTeam || player.team)} · ${escapeHtml(turkishPosition(player.position))}</p><a href="${escapeHtml(playerUrls.playerCanonicalHref(player.id, "./"))}">Profili aç</a></article>`).join("");
 }
 
 function analysisCards() {
