@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T22:39:57.081Z",
+  "updatedAt": "2026-10-12T23:32:12.733Z",
   "predictionCount": 4946,
   "predictions": [
     {
@@ -398863,10 +398863,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-12T21:14:32.356Z",
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:30:00.000Z",
-      "refreshStage": "T-6h",
+      "providerUpdatedAt": "2026-10-12T23:32:10.963Z",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T01:00:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -398936,10 +398936,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-12T21:14:32.540Z",
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:30:00.000Z",
-      "refreshStage": "T-6h",
+      "providerUpdatedAt": "2026-10-12T23:32:11.285Z",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T01:00:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -399108,9 +399108,9 @@
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:30:00.000Z",
-      "refreshStage": "T-6h",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T01:00:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -425135,91 +425135,66 @@
       "awayTeam": "Tepatitlán",
       "homeTeamId": "14278",
       "awayTeamId": "14279",
-      "source": "futbolradar_model",
+      "source": "provider_prediction",
       "homeProbability": 35,
-      "drawProbability": 23,
-      "awayProbability": 42,
+      "drawProbability": 35,
+      "awayProbability": 30,
       "predictedWinner": {
-        "id": null,
-        "name": "Tepatitlán",
-        "side": "away",
+        "id": "14278",
+        "name": "Tapatío",
         "comment": null
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Winner : Tapatío and +1.5 goals",
+      "underOver": "+1.5",
       "predictedGoals": {
-        "home": "1.48",
-        "away": "1.96"
+        "home": "-3.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.48,
-        "away": 1.96
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 67,
-        "under": 33
-      },
-      "bothTeamsScore": 66,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 8,
-        "home": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 0.97,
-          "defenseStrength": 1.46,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 43,
+          "away": 57
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.94,
-          "defenseStrength": 0.94,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 62,
+          "away": 38
+        },
+        "def": {
+          "home": 52,
+          "away": 48
+        },
+        "poisson_distribution": {
+          "home": 93,
+          "away": 7
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 15,
+          "away": 85
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 27,
+          "away": 73
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 48.7,
+          "away": 51.3
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:00:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T23:32:12.201Z",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T17:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -425233,91 +425208,66 @@
       "awayTeam": "Spain W",
       "homeTeamId": "1718",
       "awayTeamId": "1736",
-      "source": "futbolradar_model",
-      "homeProbability": 26,
-      "drawProbability": 23,
-      "awayProbability": 51,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
+        "id": "1736",
         "name": "Spain W",
-        "side": "away",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : draw or Spain W and -3.5 goals",
+      "underOver": "-3.5",
       "predictedGoals": {
-        "home": "0.7",
-        "away": "1.77"
+        "home": "-1.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 0.7,
-        "away": 1.77
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 45,
-        "under": 55
-      },
-      "bothTeamsScore": 42,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 33,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 0.66,
-          "defenseStrength": 1.1,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 50,
+          "away": 50
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 1.1,
-          "defenseStrength": 0.66,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 0,
+          "away": 100
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 100
         },
         "h2h": {
-          "sampleSize": 1,
-          "averageGoalDifference": null
+          "home": 33,
+          "away": 67
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 29,
+          "away": 71
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 40.5,
+          "away": 59.5
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:00:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T23:32:12.370Z",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T17:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -425331,91 +425281,66 @@
       "awayTeam": "Argentina W",
       "homeTeamId": "1726",
       "awayTeamId": "1782",
-      "source": "futbolradar_model",
-      "homeProbability": 59,
-      "drawProbability": 19,
-      "awayProbability": 22,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "1726",
         "name": "Brazil W",
-        "side": "home",
         "comment": null
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Winner : Brazil W and +1.5 goals",
+      "underOver": "+1.5",
       "predictedGoals": {
-        "home": "2.86",
-        "away": "1.13"
+        "home": "-4.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.86,
-        "away": 1.13
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 76,
-        "under": 24
-      },
-      "bothTeamsScore": 64,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 33,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 1.32,
-          "defenseStrength": 0.88,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 0,
-          "winRate": 1,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 100,
+          "away": 0
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 0.88,
-          "defenseStrength": 1.32,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 92,
+          "away": 8
+        },
+        "def": {
+          "home": 43,
+          "away": 57
+        },
+        "poisson_distribution": {
+          "home": 87,
+          "away": 13
         },
         "h2h": {
-          "sampleSize": 1,
-          "averageGoalDifference": null
+          "home": 100,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 83,
+          "away": 17
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 76.3,
+          "away": 23.8
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:30:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T23:32:12.543Z",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T17:30:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -425429,91 +425354,66 @@
       "awayTeam": "Águilas Doradas",
       "homeTeamId": "1131",
       "awayTeamId": "1144",
-      "source": "futbolradar_model",
-      "homeProbability": 53,
-      "drawProbability": 22,
-      "awayProbability": 25,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "1131",
         "name": "Bucaramanga",
-        "side": "home",
         "comment": null
       },
-      "advice": null,
+      "advice": "Winner : Bucaramanga",
       "underOver": null,
       "predictedGoals": {
-        "home": "2.41",
-        "away": "1.33"
+        "home": "-3.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.41,
-        "away": 1.33
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 72,
-        "under": 28
-      },
-      "bothTeamsScore": 67,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 9,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 1.39,
-          "defenseStrength": 0.9,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 0,
-          "winRate": 1,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 72,
+          "away": 28
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 1.15,
-          "defenseStrength": 1.15,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 68,
+          "away": 32
+        },
+        "def": {
+          "home": 58,
+          "away": 42
+        },
+        "poisson_distribution": {
+          "home": 72,
+          "away": 28
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 80,
+          "away": 20
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 77,
+          "away": 23
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 71.2,
+          "away": 28.8
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-12T23:30:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T23:32:12.720Z",
+      "calculatedAt": "2026-10-12T23:32:09.835Z",
+      "expiresAt": "2026-10-13T17:30:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
