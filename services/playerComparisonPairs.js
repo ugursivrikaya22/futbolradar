@@ -78,8 +78,9 @@ function canonicalPairKey(left, right) {
  * slug'a bağlanır ve o sayfa hiç üretilmediği için 404 verirdi.
  *
  * @param {object[]} allPlayerRecords kopya kayıtlar DAHİL tam liste
+ * @param {object[]} [pool] kıyas havuzu (kopyasız); verilirse üreticinin ilk-gelen slug'u döner
  */
-function createComparisonSlugResolver(allPlayerRecords) {
+function createComparisonSlugResolver(allPlayerRecords, pool) {
   const byId = new Map((Array.isArray(allPlayerRecords) ? allPlayerRecords : []).map((row) => [row.id, row]));
   const editorialSlugByPair = new Map();
 
@@ -90,9 +91,41 @@ function createComparisonSlugResolver(allPlayerRecords) {
     editorialSlugByPair.set(canonicalPairKey(left, right), comparisonSlug(leftId, rightId));
   }
 
-  return function slugForPair(left, right) {
+  const base = function baseSlugForPair(left, right) {
     return editorialSlugByPair.get(canonicalPairKey(left, right))
       || comparisonSlug(left.id, right.id);
+  };
+  if (!Array.isArray(pool)) return base;
+
+  // ÜRETİCİNİN İLK-GELEN KURALI.
+  //
+  // Kıyas üreticisi çifti KİMLİĞİYLE (kanonik çift anahtarı) tekilleştirir;
+  // aynı anahtara ikinci bir kayıt çiftiyle gelinirse ilk slug kazanır ve
+  // ikinci slug'da sayfa üretilmez. Taze veride iki havuz kaydı aynı
+  // canonicalId'yi taşıyınca profil, kendi kimliğinden türettiği ve hiç
+  // üretilmeyen slug'a bağlanıyordu (12 Ekim tam derlemesi: abdullah-celik,
+  // mamadou-thiam). Havuz verilirse çözücü, üreticinin gezme sırasını
+  // (editoryal çiftler, sonra havuzdaki her oyuncunun kıyas eşleri) aynen
+  // izleyip anahtar başına İLK slug'u döndürür.
+  const firstSlugByPair = new Map();
+  const claim = (left, right) => {
+    if (!left || !right || left.id === right.id || sameCanonicalPlayer(left, right)) return;
+    const key = canonicalPairKey(left, right);
+    if (!firstSlugByPair.has(key)) firstSlugByPair.set(key, base(left, right));
+  };
+  for (const [leftId, rightId] of EDITORIAL_PAIRS) {
+    const resolve = (id) => {
+      const record = byId.get(id);
+      if (!record) return null;
+      return pool.find((player) => player.id === (record.canonicalId || record.id)) || null;
+    };
+    claim(resolve(leftId), resolve(rightId));
+  }
+  for (const player of pool) {
+    for (const item of profileCompareCandidates(player, pool)) claim(player, item.player);
+  }
+  return function slugForPair(left, right) {
+    return firstSlugByPair.get(canonicalPairKey(left, right)) || base(left, right);
   };
 }
 
