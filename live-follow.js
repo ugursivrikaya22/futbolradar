@@ -13,6 +13,11 @@
   var enabled = false, polling = false, queue = [], baselines = new Map(), freshMatches = new Set();
   var moduleBase = new URL('.', document.currentScript.src);
   var identityAliases = {}, identitiesLoaded = false;
+  // Sağlayıcı kimliği → takvim kimliği (data/match-notification-identities.json
+  // → calendarIds). Ana sayfa kartları canlı yeniden çizimde de takvim
+  // kimliğiyle çiziliyor; takip kaydı da aynı kimlikte tutulur.
+  var calendarIds = {};
+  function toCalendarId(id) { id = String(id || ''); return calendarIds[id] || id; }
   var followed = new Map();
   var seenEvents = new Map();
   var latestMatches = new Map();
@@ -85,6 +90,7 @@
 
   function subscriptionId(id) {
     id = String(id || '');
+    if (!followed.has(id) && followed.has(toCalendarId(id))) return toCalendarId(id);
     if (followed.has(id)) return id;
     for (var record of followed.values()) if ((record.aliases || []).includes(id) || (identityAliases[id] && identityAliases[id] === identityAliases[record.id])) return record.id;
     return id;
@@ -102,6 +108,8 @@
     var root = node.matches && node.matches("[data-match]") ? node : node.closest("[data-match]");
     if (!id && root) id = cleanText(root.getAttribute("data-match"));
     if (!id) return null;
+    var providerAlias = calendarIds[id] ? id : null;
+    id = toCalendarId(id);
 
     var source = root || node;
     var home = cleanText(source.getAttribute("data-home-team"));
@@ -122,6 +130,7 @@
     var link = source.querySelector(".fixture-card-action, .match-actions a, .detail-link");
     return normalizeRecord({
       id: id,
+      aliases: providerAlias ? [providerAlias] : [],
       homeTeam: home,
       awayTeam: away,
       href: source.getAttribute("data-match-href") || (link && link.getAttribute("href")) || "/mac-detay.html?id=" + encodeURIComponent(id)
@@ -695,8 +704,35 @@
     window.addEventListener("pagehide", disconnect);
   }
 
+  // Eski kayıtlar: sağlayıcının sayısal kimliğiyle saklanmış takipler takvim
+  // kimliğine taşınır, sayısal kimlik takma ad olarak kalır (bildirim
+  // eşleşmesi kopmaz).
+  function migrateFollowedIds() {
+    var changed = false;
+    Array.from(followed.values()).forEach(function (record) {
+      var target = calendarIds[record.id];
+      if (!target || target === record.id) return;
+      followed.delete(record.id);
+      var existing = followed.get(target);
+      var aliases = (existing && existing.aliases || []).concat(record.aliases || [], [record.id]);
+      followed.set(target, Object.assign({}, existing || record, { id: target, aliases: Array.from(new Set(aliases)).slice(0, 8) }));
+      changed = true;
+    });
+    if (changed) persistState();
+    return changed;
+  }
+  function loadCalendarIds() {
+    return readShared('match-notification-identities.json').then(function (data) {
+      calendarIds = (data && data.calendarIds) || {};
+      if (!identitiesLoaded) { identityAliases = (data && data.aliases) || {}; identitiesLoaded = true; }
+      migrateFollowedIds();
+      syncMatchControls(document);
+    }).catch(function () {});
+  }
+
   function init() {
     loadState();
+    loadCalendarIds();
     try { seenEvents = new Map(safeJson(localStorage.getItem('futbolradar:notification-seen:v2'), [])); } catch (_) {}
     injectHeaderPanel();
     bindEvents();

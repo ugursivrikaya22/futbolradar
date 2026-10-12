@@ -21,6 +21,7 @@ const browserGates = new Set([
   'scripts/test-en-home-fixtures.mjs',
   'scripts/test-live-standings-browser.cjs',
   'scripts/test-poll-share-browser.mjs',
+  'scripts/test-home-stable-match-id-browser.cjs',
   'scripts/test-clickable-browser.cjs'
 ]);
 for (const args of [
@@ -48,6 +49,10 @@ for (const args of [
   // üretilmediği ancak bir tuval koşturarak bilinebilir; statik denetim
   // bunu göremez.
   ['scripts/test-poll-share-browser.mjs'],
+  // Ana sayfa kart kimliği: canlı yeniden çizim (sayısal sağlayıcı kimliği)
+  // sonrası kart takvim kimliğini korumalı. Geniş denetim kartı kimliğiyle
+  // izlediği için ondan ÖNCE koşar.
+  ['scripts/test-home-stable-match-id-browser.cjs'],
   ['scripts/test-clickable-browser.cjs']
 ]) {
   if (onVercel && browserGates.has(args[0])) {
