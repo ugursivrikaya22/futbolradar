@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T00:29:22.785Z",
+  "updatedAt": "2026-10-12T01:13:31.907Z",
   "predictionCount": 4701,
   "predictions": [
     {
@@ -382779,7 +382779,8 @@
       "calculatedAt": "2026-10-11T23:42:19.794Z",
       "expiresAt": "2026-10-12T00:30:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-12T01:13:30.556Z"
     },
     {
       "fixtureId": "rancho-santana-unan-managua-2026-10-12",
@@ -382852,7 +382853,8 @@
       "calculatedAt": "2026-10-11T23:42:19.794Z",
       "expiresAt": "2026-10-12T01:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-12T01:13:30.556Z"
     },
     {
       "fixtureId": "antigua-gfc-coban-imperial-2026-10-12",
@@ -382925,7 +382927,8 @@
       "calculatedAt": "2026-10-11T23:42:19.794Z",
       "expiresAt": "2026-10-12T01:10:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-12T01:13:30.556Z"
     },
     {
       "fixtureId": "america-de-cali-independiente-medellin-2026-10-12",
@@ -383084,91 +383087,66 @@
       "awayTeam": "Jiangxi Liansheng",
       "homeTeamId": "20674",
       "awayTeamId": "5665",
-      "source": "futbolradar_model",
-      "homeProbability": 38,
-      "drawProbability": 29,
-      "awayProbability": 33,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
-        "name": "Xi'an Ronghai",
-        "side": "home",
-        "comment": null
+        "id": "5665",
+        "name": "Jiangxi Liansheng",
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : draw or Jiangxi Liansheng and -3.5 goals",
+      "underOver": "-3.5",
       "predictedGoals": {
-        "home": "1.04",
-        "away": "0.9"
+        "home": "-1.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 11,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.04,
-        "away": 0.9
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 31,
-        "under": 69
-      },
-      "bothTeamsScore": 38,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.45,
-        "baselineSampleSize": 33,
-        "home": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.82,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 1,
-          "winRate": 0,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 45,
+          "away": 55
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.82,
-          "defenseStrength": 0.96,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 25,
+          "away": 75
+        },
+        "def": {
+          "home": 71,
+          "away": 29
+        },
+        "poisson_distribution": {
+          "home": 58,
+          "away": 42
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 20,
+          "away": 80
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 20,
+          "away": 80
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 39.8,
+          "away": 60.2
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-11T10:46:33.355Z",
-      "expiresAt": "2026-10-12T01:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-12T01:13:31.112Z",
+      "calculatedAt": "2026-10-12T01:13:30.556Z",
+      "expiresAt": "2026-10-12T05:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -402127,10 +402105,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-11T23:42:22.999Z",
-      "calculatedAt": "2026-10-11T23:42:19.794Z",
-      "expiresAt": "2026-10-12T01:00:00.000Z",
-      "refreshStage": "T-72h",
+      "providerUpdatedAt": "2026-10-12T01:13:31.311Z",
+      "calculatedAt": "2026-10-12T01:13:30.556Z",
+      "expiresAt": "2026-10-12T19:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -402200,10 +402178,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-11T23:42:23.114Z",
-      "calculatedAt": "2026-10-11T23:42:19.794Z",
-      "expiresAt": "2026-10-12T01:00:00.000Z",
-      "refreshStage": "T-72h",
+      "providerUpdatedAt": "2026-10-12T01:13:31.472Z",
+      "calculatedAt": "2026-10-12T01:13:30.556Z",
+      "expiresAt": "2026-10-12T19:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -402368,13 +402346,13 @@
         },
         {
           "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+          "reason": "no-usable-1x2-market"
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-11T23:42:19.794Z",
-      "expiresAt": "2026-10-12T01:00:00.000Z",
-      "refreshStage": "T-72h",
+      "calculatedAt": "2026-10-12T01:13:30.556Z",
+      "expiresAt": "2026-10-12T19:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
