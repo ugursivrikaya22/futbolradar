@@ -44,6 +44,10 @@ const calendar = readJson(CALENDAR_PATH, { matches: [] });
 const calendarMatches = Array.isArray(calendar) ? calendar : (calendar.matches || []);
 const store = readJson(STORE_PATH, null) || { version: 1, fixtures: {} };
 store.fixtures = store.fixtures || {};
+// Son DENEME damgası (başarılı, boş ya da hatalı). 12 saat kuralı buna da
+// bakar: boş/başarısız yanıt saatlik koşuda her seferinde 3 istek atmasın.
+store.attempts = store.attempts || {};
+const STOP_CODES = new Set(["PROVIDER_RATE_LIMIT", "PROVIDER_AUTH_ERROR", "PROVIDER_PLAN_ERROR", "PROVIDER_CREDENTIAL_NOT_SENT"]);
 
 function targetFixtures() {
   const out = [];
@@ -65,7 +69,11 @@ async function main() {
     console.log("featured-match-context: takvimde öne çıkarılan maç yok; istek atılmadı.");
     return;
   }
-  const due = targets.map((fixture) => ({ fixture, decision: context.needsFetch(store.fixtures[fixture.providerFixtureId], fixture, nowMs) }));
+  const lastTouch = (id) => {
+    const stamps = [store.fixtures[id] && store.fixtures[id].fetchedAt, store.attempts[id]].map((value) => Date.parse(value || "")).filter(Number.isFinite);
+    return stamps.length ? { fetchedAt: new Date(Math.max(...stamps)).toISOString() } : null;
+  };
+  const due = targets.map((fixture) => ({ fixture, decision: context.needsFetch(lastTouch(fixture.providerFixtureId), fixture, nowMs) }));
   for (const { fixture, decision } of due) console.log(`featured-match-context: ${fixture.id} (${fixture.providerFixtureId}) → ${decision.fetch ? "çekilecek" : "atlandı"} [${decision.reason}]`);
   const toFetch = due.filter((item) => item.decision.fetch).map((item) => item.fixture);
   if (!toFetch.length) return;
@@ -80,7 +88,10 @@ async function main() {
 
   let requests = 0;
   let changed = false;
+  let stopError = null;
   for (const fixture of toFetch) {
+    store.attempts[fixture.providerFixtureId] = new Date(nowMs).toISOString();
+    changed = true;
     try {
       const h2hPayload = await provider.providerFetch("/fixtures/headtohead", { h2h: `${fixture.homeTeamId}-${fixture.awayTeamId}`, last: 10 }); requests += 1;
       const homeLastPayload = await provider.providerFetch("/fixtures", { team: fixture.homeTeamId, last: 10, timezone: "Europe/Istanbul" }); requests += 1;
@@ -99,7 +110,7 @@ async function main() {
       console.log(`featured-match-context: ${fixture.id} — h2h ${next.h2h.length}, son maçlar ${next.last10.home.length}/${next.last10.away.length}.`);
     } catch (error) {
       console.log(`featured-match-context: ${fixture.id} çekilemedi (${error.code || error.message}) — kayıt korunuyor.`);
-      if (error.code === "PROVIDER_RATE_LIMIT") break;
+      if (STOP_CODES.has(error.code)) { stopError = error; break; }
     }
   }
   console.log(`featured-match-context: ${requests} sağlayıcı isteği.`);
@@ -110,9 +121,14 @@ async function main() {
   const temp = `${STORE_PATH}.tmp-${process.pid}`;
   fs.writeFileSync(temp, `${JSON.stringify(store, null, 2)}\n`);
   fs.renameSync(temp, STORE_PATH);
+  // Sağlayıcı durdurma hatası orkestratöre iletilir (devre kesici açılsın);
+  // adım isteğe bağlı olduğu için güncelleme düşmez.
+  if (stopError) throw stopError;
 }
 
 main().catch((error) => {
-  // Bu adım isteğe bağlıdır: hata güncellemeyi düşürmez, kayıt korunur.
-  console.log(`featured-match-context: beklenmeyen hata (${error.message}) — kayıt korunuyor.`);
+  // Bu adım isteğe bağlıdır (operationsPolicy OPTIONAL): sıfırdan farklı
+  // çıkış orkestratöre hatayı bildirir, güncellemenin geri kalanı sürer.
+  console.error(`featured-match-context: ${error.code || "ERROR"} — ${error.message}; kayıt korunuyor.`);
+  process.exitCode = 1;
 });

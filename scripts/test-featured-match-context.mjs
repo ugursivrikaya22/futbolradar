@@ -101,6 +101,18 @@ assert.ok(stored.fixtures["999"] && stored.fixtures["999"].h2h.length === 0, "bo
 // İkinci koşu 12 saat dolmadan istek atmaz.
 run(["--now=2026-10-12T05:00:00+03:00", "--apply"], { FAKE_KEY: "1" });
 assert.equal(fs.readFileSync(path.join(temp, "requests.log"), "utf8").trim().split("\n").length, 3, "12 saat kuralı");
+// Boş yanıt sonrası 12 saat dolmadan yeniden deneme yok (son deneme damgası).
+fs.writeFileSync(path.join(temp, "data/featured-match-context.json"), JSON.stringify({ fixtures: {}, attempts: { "999": "2026-10-12T00:00:00.000Z" } }));
+fs.writeFileSync(path.join(temp, "requests.log"), "");
+run(["--now=2026-10-12T05:00:00+03:00", "--apply"], { FAKE_KEY: "1" });
+assert.equal(fs.readFileSync(path.join(temp, "requests.log"), "utf8").trim(), "", "son denemeden 12 saat geçmeden istek yok");
+// Durdurma hatası (kota) sıfırdan farklı çıkış verir, deneme damgası yazılır.
+const failing = path.join(temp, "failing-provider.cjs");
+fs.writeFileSync(failing, `module.exports = { hasConfig: () => true, providerFetch: async () => { const e = new Error("limit"); e.code = "PROVIDER_RATE_LIMIT"; throw e; } };`);
+fs.writeFileSync(path.join(temp, "data/featured-match-context.json"), JSON.stringify({ fixtures: {} }));
+const stopped = run(["--now=2026-10-12T05:00:00+03:00", "--apply"], { FEATURED_CONTEXT_PROVIDER: failing });
+assert.notEqual(stopped.status, 0, "kota hatası orkestratöre iletilir");
+assert.ok(JSON.parse(fs.readFileSync(path.join(temp, "data/featured-match-context.json"), "utf8")).attempts["999"], "deneme damgası yazıldı");
 fs.rmSync(temp, { recursive: true, force: true });
 
 console.log("featured-match-context: tüm sözleşmeler doğrulandı.");

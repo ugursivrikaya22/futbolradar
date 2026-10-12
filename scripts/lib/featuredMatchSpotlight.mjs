@@ -214,7 +214,7 @@ function countdownHtml(view, copy) {
  */
 function crestsHtml(view) {
   if (!view.major || !view.homeLogo || !view.awayLogo) return "";
-  const crest = (src, name) => `<span class="fms__crest"><img src="${escapeHtml(src)}" alt="${escapeHtml(name)}" width="56" height="56" loading="eager" decoding="async"><span>${escapeHtml(name)}</span></span>`;
+  const crest = (src, name) => `<span class="fms__crest"><img src="${escapeHtml(src)}" alt="" width="56" height="56" loading="eager" decoding="async"><span>${escapeHtml(name)}</span></span>`;
   return `<div class="fms__crests">${crest(view.homeLogo, view.homeTeam)}<span class="fms__crests-vs" aria-hidden="true">–</span>${crest(view.awayLogo, view.awayTeam)}</div>`;
 }
 
