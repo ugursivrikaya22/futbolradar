@@ -668,6 +668,12 @@ function writeBoth(relativePath, html) {
   }
 }
 
+const slugTable = readJson("data/player-url-slugs.json", { entries: [] });
+const previousSlugsById = new Map((slugTable.entries || [])
+  .filter((entry) => Array.isArray(entry.previousSlugs) && entry.previousSlugs.length)
+  .map((entry) => [entry.id, entry.previousSlugs]));
+const currentSlugs = new Set((slugTable.entries || []).map((entry) => entry.slug));
+
 let movedPages = 0;
 let legacyPages = 0;
 let redirectPages = 0;
@@ -709,6 +715,15 @@ for (const player of players) {
   for (const alias of player.aliases || []) {
     const html = redirectHtml(player, pagePath, `../${pagePath}`);
     writeBoth(path.join("oyuncular", `${alias}.html`), html);
+    redirectPages += 1;
+  }
+
+  // Ad düzeltmesiyle slug'ı değişen oyuncunun eski adresi yönlendirme olur
+  // (scripts/generate-player-url-slugs.mjs → previousSlugs). Başka bir
+  // oyuncunun güncel adresiyse dokunulmaz.
+  for (const oldSlug of previousSlugsById.get(player.id) || []) {
+    if (currentSlugs.has(oldSlug)) continue;
+    writeBoth(path.join("futbolcu", `${oldSlug}.html`), redirectHtml(player, pagePath, `../${pagePath}`));
     redirectPages += 1;
   }
 }
