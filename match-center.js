@@ -70,8 +70,8 @@
   var HALFTIME_CODES = { HALFTIME: 1, HT: 1, BT: 1, PAUSED: 1 };
 
   var T = locale === "en"
-    ? { live: "Live", halftime: "Half time", finished: "Full time", halftimeLabel: "Half-time", updated: "Last updated" }
-    : { live: "Canlı", halftime: "Devre arası", finished: "Tamamlandı", halftimeLabel: "İlk yarı", updated: "Son güncelleme" };
+    ? { live: "Live", halftime: "Half time", finished: "Full time", pending: "Result pending", halftimeLabel: "Half-time", updated: "Last updated" }
+    : { live: "Canlı", halftime: "Devre arası", finished: "Tamamlandı", pending: "Sonuç bekleniyor", halftimeLabel: "İlk yarı", updated: "Son güncelleme" };
 
   var STAT_EN = { "topla oynama": "Possession", "toplam sut": "Total shots", "isabetli sut": "Shots on target", "isabetsiz sut": "Shots off target", "engellenen sut": "Blocked shots", korner: "Corners", ofsayt: "Offsides", faul: "Fouls", "sari kart": "Yellow cards", "kirmizi kart": "Red cards", "toplam pas": "Total passes", "isabetli pas": "Accurate passes", "pas isabeti": "Pass accuracy", kurtaris: "Saves", "gol beklentisi (xg)": "Expected goals (xG)" };
   var STAT_ORDER = ["topla oynama", "toplam sut", "isabetli sut", "isabetsiz sut", "engellenen sut", "korner", "ofsayt", "faul", "sari kart", "kirmizi kart", "toplam pas", "isabetli pas", "pas isabeti", "kurtaris", "gol beklentisi (xg)"];
@@ -369,6 +369,28 @@
     }
   }
 
+  /**
+   * BAŞLAMA SAATİ GEÇTİ, VERİ YOK: "Başlamadı" YAZILMAZ.
+   *
+   * Statik sayfa maç öncesi basılmışsa ve sonraki derleme gecikmişse (11
+   * Ekim Beşiktaş - Kocaelispor: maç 2-1 bitti, sayfa saatler sonra hâlâ
+   * "Başlamadı" diyordu) rozet saatin geçtiğini kabul eder: "Sonuç
+   * bekleniyor". Skor uydurulmaz; canlı/bitti verisi gelince render() rozeti
+   * yeniden yazar. Yalnızca maç öncesi ("pre") durumundaki sayfaya dokunur.
+   */
+  function markPendingIfPastKickoff() {
+    if (isNaN(kickoffMs) || Date.now() < kickoffMs || lastSignature) return;
+    if ((root.getAttribute("data-msp-state") || "pre") !== "pre") return;
+    var hero = root.querySelector("[data-msp-hero]");
+    var statusEl = root.querySelector("[data-msp-status]");
+    if (statusEl) statusEl.textContent = T.pending;
+    if (hero) {
+      hero.classList.remove("is-pre");
+      hero.classList.add("is-pending");
+      hero.setAttribute("data-msp-state", "pending");
+    }
+  }
+
   function schedule(delay) {
     if (timer) clearTimeout(timer);
     if (finished) return;
@@ -392,6 +414,7 @@
         if (detail) render(detail);
         var status = detail ? statusOf(detail) : "scheduled";
         if (status === "finished") { finished = true; return; }
+        if (status === "scheduled") markPendingIfPastKickoff();
         // Başlama saati çok geçti ve sağlayıcı canlı demiyor: nadir yokla.
         var stale = status === "scheduled" && now - kickoffMs > GRACE_MS;
         schedule(stale ? 15 * 60 * 1000 : status === "scheduled" ? PRE_POLL_MS : LIVE_POLL_MS);
@@ -467,6 +490,7 @@
   }
 
   try { bootCountdown(); } catch (error) { /* sayaç çökerse sayfanın kalanı çalışmaya devam eder */ }
+  try { markPendingIfPastKickoff(); } catch (error) { /* rozet güncellenemezse sayfa çalışmaya devam eder */ }
 
   // SUNUCUNUN BASTIĞI AKIŞ DA FİLTRELENEBİLİR OLMALI. Bitmiş maç sayfası
   // hiç yoklama yapmıyor (`state === "post"` girişte dönülüyor); filtre
