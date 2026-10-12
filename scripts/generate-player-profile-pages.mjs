@@ -99,7 +99,7 @@ const playerUrls = createPlayerUrlResolver(readJson("data/player-url-slugs.json"
  */
 const comparablePlayers = players.filter((player) => !player.isDuplicate);
 /** Kıyas adresi, sayfaları üreten scriptle AYNI kaynaktan. */
-const slugForPair = createComparisonSlugResolver(players);
+const slugForPair = createComparisonSlugResolver(players, comparablePlayers);
 
 const matchReportSlugs = generatedSlugs("mac-raporu");
 const newsSlugs = generatedSlugs("haber");
