@@ -81,4 +81,13 @@ function standingsPageIndexable(record) {
     && record.points !== null && record.points !== undefined;
 }
 
-module.exports = { TEAM_PAGE_TABLE, MIN_PLAYED, superLigTeamPages, teamPageSlug, standingsPageIndexable };
+/**
+ * Takım profili (hub) eşiği: puan durumu eşiğine ek olarak en az
+ * MIN_SQUAD kayıtlı oyuncu. Altındaysa `noindex,follow`, site haritası dışı.
+ */
+const MIN_SQUAD = 15;
+function teamHubIndexable(record, squadCount) {
+  return standingsPageIndexable(record) && Number(squadCount) >= MIN_SQUAD;
+}
+
+module.exports = { TEAM_PAGE_TABLE, MIN_PLAYED, MIN_SQUAD, superLigTeamPages, teamPageSlug, standingsPageIndexable, teamHubIndexable };
