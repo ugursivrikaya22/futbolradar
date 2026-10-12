@@ -1,9 +1,4448 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-12T01:14:27.742Z",
-  "matchCount": 6363,
+  "updatedAt": "2026-10-12T11:54:50.569Z",
+  "matchCount": 6386,
   "records": [
+    {
+      "matchId": "hapoel-yarka-beitar-nahariya-2026-10-12",
+      "fixtureId": "1640490",
+      "provider": "api-football",
+      "slug": "hapoel-yarka-beitar-nahariya-2026-10-12",
+      "kickoff": "2026-10-12T13:00:00+03:00",
+      "kickoffUtc": "2026-10-12T10:00:00.000Z",
+      "kickoffLocal": "2026-10-12T13:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "State Cup",
+      "competition": "State Cup",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Hapoel Yarka",
+      "awayTeam": "Beitar Nahariya",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Beitar Nahariya",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 2,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "702f5a7c2c0ef924",
+      "fingerprint": "702f5a7c2c0ef924",
+      "analysisGeneratedAt": "2026-10-12T11:54:50.417Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Hapoel Yarka 0-1 Beitar Nahariya maç raporu: State Cup istatistikleri | FutbolRadar",
+        "description": "State Cup maçını Beitar Nahariya 1-0 kazandı; Hapoel Yarka sahadan puansız ayrıldı.",
+        "path": "mac-raporu/hapoel-yarka-beitar-nahariya-2026-10-12.html",
+        "competition": "State Cup"
+      },
+      "reportUrl": "./mac-raporu/hapoel-yarka-beitar-nahariya-2026-10-12.html",
+      "digest": {
+        "headline": "Beitar Nahariya, Hapoel Yarka'yı 1-0 yendi",
+        "paragraph": "State Cup maçını Beitar Nahariya 1-0 kazandı; Hapoel Yarka sahadan puansız ayrıldı. Tek golü 33. dakikada Normal Goal (Beitar Nahariya) kaydetti.",
+        "result": {
+          "winner": "Beitar Nahariya",
+          "loser": "Hapoel Yarka",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "29'",
+              "team": "Hapoel Yarka",
+              "type": "Kırmızı kart",
+              "detail": "Red Card",
+              "pivotal": true
+            },
+            {
+              "minute": "33'",
+              "team": "Beitar Nahariya",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Beitar Nahariya",
+              "contribution": "33' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Red Card",
+              "team": "Hapoel Yarka",
+              "contribution": "29' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "33' Beitar Nahariya — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Beitar Nahariya, Hapoel Yarka'yı 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (29' Hapoel Yarka)."
+          ],
+          "closing": "Beitar Nahariya sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "belarus-u19-w-russia-u19-w-2026-10-12",
+      "fixtureId": "1645459",
+      "provider": "api-football",
+      "slug": "belarus-u19-w-russia-u19-w-2026-10-12",
+      "kickoff": "2026-10-12T13:00:00+03:00",
+      "kickoffUtc": "2026-10-12T10:00:00.000Z",
+      "kickoffLocal": "2026-10-12T13:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Women",
+      "competition": "Friendlies Women",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Belarus U19 W",
+      "awayTeam": "Russia U19 W",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "99d0344fd4b53952",
+      "fingerprint": "99d0344fd4b53952",
+      "analysisGeneratedAt": "2026-10-12T11:54:50.417Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Belarus U19 W 1-1 Russia U19 W maç raporu: Friendlies Women istatistikleri | FutbolRadar",
+        "description": "Friendlies Women maçında Belarus U19 W ile Russia U19 W birbirini geçemedi: 1-1. Tek golü 11. dakikada E.",
+        "path": "mac-raporu/belarus-u19-w-russia-u19-w-2026-10-12.html",
+        "competition": "Friendlies Women"
+      },
+      "reportUrl": "./mac-raporu/belarus-u19-w-russia-u19-w-2026-10-12.html",
+      "digest": {
+        "headline": "Belarus U19 W ile Russia U19 W 1-1 berabere kaldı",
+        "paragraph": "Friendlies Women maçında Belarus U19 W ile Russia U19 W birbirini geçemedi: 1-1. Tek golü 11. dakikada E. Rabchenyuk (Russia U19 W) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "11'",
+              "team": "Russia U19 W",
+              "type": "Gol",
+              "detail": "E. Rabchenyuk",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "E. Rabchenyuk",
+              "team": "Russia U19 W",
+              "contribution": "11' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "11' Russia U19 W — E. Rabchenyuk: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "croatia-u19-w-poland-u19-w-2026-10-12",
+      "fixtureId": "1645229",
+      "provider": "api-football",
+      "slug": "croatia-u19-w-poland-u19-w-2026-10-12",
+      "kickoff": "2026-10-12T12:00:00+03:00",
+      "kickoffUtc": "2026-10-12T09:00:00.000Z",
+      "kickoffLocal": "2026-10-12T12:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Women",
+      "competition": "Friendlies Women",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Croatia U19 W",
+      "awayTeam": "Poland U19 W",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Poland U19 W",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "da093b9ffec4f8cc",
+      "fingerprint": "da093b9ffec4f8cc",
+      "analysisGeneratedAt": "2026-10-12T11:54:50.417Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Croatia U19 W 0-3 Poland U19 W maç raporu: Friendlies Women istatistikleri | FutbolRadar",
+        "description": "Friendlies Women maçını Poland U19 W 3-0 kazandı; Croatia U19 W sahadan puansız ayrıldı.",
+        "path": "mac-raporu/croatia-u19-w-poland-u19-w-2026-10-12.html",
+        "competition": "Friendlies Women"
+      },
+      "reportUrl": "./mac-raporu/croatia-u19-w-poland-u19-w-2026-10-12.html",
+      "digest": {
+        "headline": "Poland U19 W, Croatia U19 W'u 3-0 yendi",
+        "paragraph": "Friendlies Women maçını Poland U19 W 3-0 kazandı; Croatia U19 W sahadan puansız ayrıldı. Golleri 33. dakikada Normal Goal (Poland U19 W), 71. dakikada Normal Goal (Poland U19 W), 85. dakikada Normal Goal (Poland U19 W) kaydetti.",
+        "result": {
+          "winner": "Poland U19 W",
+          "loser": "Croatia U19 W",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "33'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "71'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            },
+            {
+              "minute": "85'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Normal Goal).",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "85'",
+              "team": "Poland U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Poland U19 W",
+              "contribution": "33' gol · 71' gol · 85' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "33' Poland U19 W — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "71' Poland U19 W — Normal Goal: gol",
+            "85' Poland U19 W — Normal Goal: gol"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Poland U19 W, Croatia U19 W'u 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Croatia U19 W son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
+          "closing": "Poland U19 W sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "dalian-kewei-langfang-glory-city-2026-10-12",
+      "fixtureId": "1638475",
+      "provider": "api-football",
+      "slug": "dalian-kewei-langfang-glory-city-2026-10-12",
+      "kickoff": "2026-10-12T11:00:00+03:00",
+      "kickoffUtc": "2026-10-12T08:00:00.000Z",
+      "kickoffLocal": "2026-10-12T11:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "League Two",
+      "competition": "League Two",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Dalian Kewei",
+      "awayTeam": "Langfang Glory City",
+      "venue": "Dalian Football Youth Training Base Stadium",
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 24
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 24,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.6,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "a4d40da95d6c42f8",
+      "fingerprint": "a4d40da95d6c42f8",
+      "analysisGeneratedAt": "2026-10-12T10:40:47.509Z",
+      "analysisUpdatedAt": "2026-10-12T10:40:47.509Z",
+      "generatedAt": "2026-10-12T10:40:47.509Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Dalian Kewei 2-2 Langfang Glory City maç raporu: League Two istatistikleri | FutbolRadar",
+        "description": "Dalian Football Youth Training Base Stadium'da oynanan League Two maçında Dalian Kewei ile Langfang Glory City birbirini geçemedi: 2-2. Golleri 45. dakikad...",
+        "path": "mac-raporu/dalian-kewei-langfang-glory-city-2026-10-12.html",
+        "competition": "League Two"
+      },
+      "reportUrl": "./mac-raporu/dalian-kewei-langfang-glory-city-2026-10-12.html",
+      "digest": {
+        "headline": "Dalian Kewei ile Langfang Glory City 2-2 berabere kaldı",
+        "paragraph": "Dalian Football Youth Training Base Stadium'da oynanan League Two maçında Dalian Kewei ile Langfang Glory City birbirini geçemedi: 2-2. Golleri 45. dakikada Li Yang (Langfang Glory City), 46. dakikada Ge Yuxiang (Dalian Kewei), 82. dakikada Liu Zhizhi (Dalian Kewei), 86. dakikada Jin Minyu (Langfang Glory City) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 2
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "45'",
+              "team": "Langfang Glory City",
+              "type": "Kendi kalesine gol",
+              "detail": "Li Yang",
+              "pivotal": true
+            },
+            {
+              "minute": "46'",
+              "team": "Dalian Kewei",
+              "type": "Gol",
+              "detail": "Ge Yuxiang",
+              "pivotal": true
+            },
+            {
+              "minute": "82'",
+              "team": "Dalian Kewei",
+              "type": "Gol",
+              "detail": "Liu Zhizhi",
+              "pivotal": true
+            },
+            {
+              "minute": "86'",
+              "team": "Langfang Glory City",
+              "type": "Gol",
+              "detail": "Jin Minyu",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 2 gol kaydedildi, (Liu Zhizhi, Jin Minyu).",
+          "goals": {
+            "home": 1,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Langfang Glory City",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Zhang",
+              "decisive": false
+            },
+            {
+              "minute": "75'",
+              "team": "Langfang Glory City",
+              "type": "Oyuncu değişikliği",
+              "detail": "Yin Jie",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Dalian Kewei",
+              "type": "Gol",
+              "detail": "Liu Zhizhi",
+              "decisive": true
+            },
+            {
+              "minute": "82'",
+              "team": "Dalian Kewei",
+              "type": "Oyuncu değişikliği",
+              "detail": "Ablimit Dilshat",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Ge Yuxiang",
+              "team": "Dalian Kewei",
+              "contribution": "46' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Jin Minyu",
+              "team": "Langfang Glory City",
+              "contribution": "86' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Li Yang",
+              "team": "Langfang Glory City",
+              "contribution": "45' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Liu Zhizhi",
+              "team": "Dalian Kewei",
+              "contribution": "82' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Dalian Kewei sahaya 4-4-2 dizilişiyle çıktı.",
+            "Langfang Glory City sahaya 3-4-3 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "45' Langfang Glory City — Li Yang: kendi kalesine gol",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "46' Dalian Kewei — Ge Yuxiang: gol",
+            "82' Dalian Kewei — Liu Zhizhi: gol",
+            "86' Langfang Glory City — Jin Minyu: gol",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Dalian Kewei maça 4-4-2 dizilişiyle başladı.",
+            "Langfang Glory City maça 3-4-3 dizilişiyle başladı.",
+            "42' Dalian Kewei değişikliği (Substitution 1). Değişiklikten sonra Dalian Kewei adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "42' Dalian Kewei değişikliği (Substitution 2). Değişiklikten sonra Dalian Kewei adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' Dalian Kewei değişikliği (Substitution 3). Değişiklikten sonra Dalian Kewei adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' Dalian Kewei değişikliği (Substitution 4). Değişiklikten sonra Dalian Kewei adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Dalian Kewei",
+              "formation": "4-4-2"
+            },
+            {
+              "team": "Langfang Glory City",
+              "formation": "3-4-3"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "guangzhou-dandelion-shanghai-second-2026-10-12",
+      "fixtureId": "1638521",
+      "provider": "api-football",
+      "slug": "guangzhou-dandelion-shanghai-second-2026-10-12",
+      "kickoff": "2026-10-12T11:00:00+03:00",
+      "kickoffUtc": "2026-10-12T08:00:00.000Z",
+      "kickoffLocal": "2026-10-12T11:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "League Two",
+      "competition": "League Two",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Guangzhou Dandelion",
+      "awayTeam": "Shanghai Second",
+      "venue": "Zengcheng Stadium",
+      "score": {
+        "home": 3,
+        "away": 1
+      },
+      "finalScore": "3-1",
+      "winner": "Guangzhou Dandelion",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 60,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 23
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 23,
+        "statistics": 0,
+        "lineups": 2,
+        "players": 0
+      },
+      "dataCompleteness": 0.6,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "d80a9e796a4c0a9c",
+      "fingerprint": "d80a9e796a4c0a9c",
+      "analysisGeneratedAt": "2026-10-12T10:40:47.509Z",
+      "analysisUpdatedAt": "2026-10-12T10:40:47.509Z",
+      "generatedAt": "2026-10-12T10:40:47.509Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Guangzhou Dandelion 3-1 Shanghai Second maç raporu: League Two istatistikleri | FutbolRadar",
+        "description": "Zengcheng Stadium'da oynanan League Two maçını Guangzhou Dandelion 3-1 kazandı; Shanghai Second sahadan puansız ayrıldı.",
+        "path": "mac-raporu/guangzhou-dandelion-shanghai-second-2026-10-12.html",
+        "competition": "League Two"
+      },
+      "reportUrl": "./mac-raporu/guangzhou-dandelion-shanghai-second-2026-10-12.html",
+      "digest": {
+        "headline": "Guangzhou Dandelion, Shanghai Second'u 3-1 yendi",
+        "paragraph": "Zengcheng Stadium'da oynanan League Two maçını Guangzhou Dandelion 3-1 kazandı; Shanghai Second sahadan puansız ayrıldı. Golleri 2. dakikada Zhang Hao (Guangzhou Dandelion), 5. dakikada Li Haoyu (Guangzhou Dandelion), 39. dakikada Wang Jiaqi (Shanghai Second), 70. dakikada Xu Hong (Guangzhou Dandelion) kaydetti.",
+        "result": {
+          "winner": "Guangzhou Dandelion",
+          "loser": "Shanghai Second",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "2'",
+              "team": "Guangzhou Dandelion",
+              "type": "Gol",
+              "detail": "Zhang Hao",
+              "pivotal": true
+            },
+            {
+              "minute": "5'",
+              "team": "Guangzhou Dandelion",
+              "type": "Gol",
+              "detail": "Li Haoyu",
+              "pivotal": true
+            },
+            {
+              "minute": "39'",
+              "team": "Shanghai Second",
+              "type": "Gol",
+              "detail": "Wang Jiaqi",
+              "pivotal": true
+            },
+            {
+              "minute": "54'",
+              "team": "Guangzhou Dandelion",
+              "type": "Gol",
+              "detail": "Dilyar Alamas",
+              "pivotal": true
+            },
+            {
+              "minute": "88'",
+              "team": "Shanghai Second",
+              "type": "Kırmızı kart",
+              "detail": "Shi Yiyi",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Shanghai Second",
+              "type": "Oyuncu değişikliği",
+              "detail": "He Linhan",
+              "decisive": false
+            },
+            {
+              "minute": "75'",
+              "team": "Shanghai Second",
+              "type": "Oyuncu değişikliği",
+              "detail": "K. He",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Shanghai Second",
+              "type": "Sarı kart",
+              "detail": "Shen Chenji",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Guangzhou Dandelion",
+              "type": "Sarı kart",
+              "detail": "K. Gao",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Li Haoyu",
+              "team": "Guangzhou Dandelion",
+              "contribution": "5' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Wang Jiaqi",
+              "team": "Shanghai Second",
+              "contribution": "39' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Xu Hong",
+              "team": "Guangzhou Dandelion",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Zhang Hao",
+              "team": "Guangzhou Dandelion",
+              "contribution": "2' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "Guangzhou Dandelion sahaya 4-4-2 dizilişiyle çıktı.",
+            "Shanghai Second sahaya 3-5-2 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "2' Guangzhou Dandelion — Zhang Hao: gol",
+            "5' Guangzhou Dandelion — Li Haoyu: gol",
+            "39' Shanghai Second — Wang Jiaqi: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "70' Guangzhou Dandelion — Xu Hong: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "Guangzhou Dandelion maça 4-4-2 dizilişiyle başladı.",
+            "Shanghai Second maça 3-5-2 dizilişiyle başladı.",
+            "46' Guangzhou Dandelion değişikliği (Substitution 1). Değişiklikten sonra Guangzhou Dandelion adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "57' Guangzhou Dandelion değişikliği (Substitution 2). Değişiklikten sonra Guangzhou Dandelion adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Shanghai Second değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "62' Guangzhou Dandelion değişikliği (Substitution 3). Değişiklikten sonra Guangzhou Dandelion adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Guangzhou Dandelion",
+              "formation": "4-4-2"
+            },
+            {
+              "team": "Shanghai Second",
+              "formation": "3-5-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Guangzhou Dandelion, Shanghai Second'u 3-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (88' Shanghai Second)."
+          ],
+          "closing": "Guangzhou Dandelion sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "finland-u19-w-belgium-u19-w-2026-10-12",
+      "fixtureId": "1645151",
+      "provider": "api-football",
+      "slug": "finland-u19-w-belgium-u19-w-2026-10-12",
+      "kickoff": "2026-10-12T11:00:00+03:00",
+      "kickoffUtc": "2026-10-12T08:00:00.000Z",
+      "kickoffLocal": "2026-10-12T11:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Women",
+      "competition": "Friendlies Women",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Finland U19 W",
+      "awayTeam": "Belgium U19 W",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "c05984fa607a72f7",
+      "fingerprint": "c05984fa607a72f7",
+      "analysisGeneratedAt": "2026-10-12T10:40:47.509Z",
+      "analysisUpdatedAt": "2026-10-12T10:40:47.509Z",
+      "generatedAt": "2026-10-12T10:40:47.509Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Finland U19 W 1-1 Belgium U19 W maç raporu: Friendlies Women istatistikleri | FutbolRadar",
+        "description": "Friendlies Women maçında Finland U19 W ile Belgium U19 W birbirini geçemedi: 1-1. Tek golü 20. dakikada Normal Goal (Belgium U19 W) kaydetti.",
+        "path": "mac-raporu/finland-u19-w-belgium-u19-w-2026-10-12.html",
+        "competition": "Friendlies Women"
+      },
+      "reportUrl": "./mac-raporu/finland-u19-w-belgium-u19-w-2026-10-12.html",
+      "digest": {
+        "headline": "Finland U19 W ile Belgium U19 W 1-1 berabere kaldı",
+        "paragraph": "Friendlies Women maçında Finland U19 W ile Belgium U19 W birbirini geçemedi: 1-1. Tek golü 20. dakikada Normal Goal (Belgium U19 W) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "20'",
+              "team": "Belgium U19 W",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Belgium U19 W",
+              "contribution": "20' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "20' Belgium U19 W — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "xi-an-ronghai-jiangxi-liansheng-2026-10-12",
+      "fixtureId": "1638474",
+      "provider": "api-football",
+      "slug": "xi-an-ronghai-jiangxi-liansheng-2026-10-12",
+      "kickoff": "2026-10-12T10:00:00+03:00",
+      "kickoffUtc": "2026-10-12T07:00:00.000Z",
+      "kickoffLocal": "2026-10-12T10:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "League Two",
+      "competition": "League Two",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Xi'an Ronghai",
+      "awayTeam": "Jiangxi Liansheng",
+      "venue": "Taiyuan University Football Stadium - Artificial grass",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Xi'an Ronghai",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 16
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 16,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "b12678b6f365d47b",
+      "fingerprint": "b12678b6f365d47b",
+      "analysisGeneratedAt": "2026-10-12T10:40:47.509Z",
+      "analysisUpdatedAt": "2026-10-12T10:40:47.509Z",
+      "generatedAt": "2026-10-12T10:40:47.509Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Xi'an Ronghai 2-1 Jiangxi Liansheng maç raporu: League Two istatistikleri | FutbolRadar",
+        "description": "Xi'an Ronghai, Taiyuan University Football Stadium - Artificial grass'ta oynanan League Two karşılaşmasında Jiangxi Liansheng'i 2-1 mağlup etti.",
+        "path": "mac-raporu/xi-an-ronghai-jiangxi-liansheng-2026-10-12.html",
+        "competition": "League Two"
+      },
+      "reportUrl": "./mac-raporu/xi-an-ronghai-jiangxi-liansheng-2026-10-12.html",
+      "digest": {
+        "headline": "Xi'an Ronghai, Jiangxi Liansheng'i 2-1 yendi",
+        "paragraph": "Xi'an Ronghai, Taiyuan University Football Stadium - Artificial grass'ta oynanan League Two karşılaşmasında Jiangxi Liansheng'i 2-1 mağlup etti. Golleri 33. dakikada Ding Yunfeng (Xi'an Ronghai), 45+4. dakikada Zhang Yanjun (Jiangxi Liansheng), 70. dakikada B. Iskandar (Xi'an Ronghai) kaydetti.",
+        "result": {
+          "winner": "Xi'an Ronghai",
+          "loser": "Jiangxi Liansheng",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "33'",
+              "team": "Xi'an Ronghai",
+              "type": "Gol",
+              "detail": "Ding Yunfeng",
+              "pivotal": true
+            },
+            {
+              "minute": "45+4'",
+              "team": "Jiangxi Liansheng",
+              "type": "Gol",
+              "detail": "Zhang Yanjun",
+              "pivotal": true
+            },
+            {
+              "minute": "70'",
+              "team": "Xi'an Ronghai",
+              "type": "Gol",
+              "detail": "B. Iskandar",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Jiangxi Liansheng",
+              "type": "Sarı kart",
+              "detail": "Cao Enze",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Jiangxi Liansheng",
+              "type": "Oyuncu değişikliği",
+              "detail": "Guo Song",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Jiangxi Liansheng",
+              "type": "Oyuncu değişikliği",
+              "detail": "Sun Yue",
+              "decisive": false
+            },
+            {
+              "minute": "87'",
+              "team": "Xi'an Ronghai",
+              "type": "Oyuncu değişikliği",
+              "detail": "B. Iskandar",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "B. Iskandar",
+              "team": "Xi'an Ronghai",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Ding Yunfeng",
+              "team": "Xi'an Ronghai",
+              "contribution": "33' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Zhang Yanjun",
+              "team": "Jiangxi Liansheng",
+              "contribution": "45+4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Cao Enze",
+              "team": "Jiangxi Liansheng",
+              "contribution": "77' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "33' Xi'an Ronghai — Ding Yunfeng: gol",
+            "45+4' Jiangxi Liansheng — Zhang Yanjun: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "70' Xi'an Ronghai — B. Iskandar: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "16' Xi'an Ronghai değişikliği (Substitution 1). Değişiklikten sonra Xi'an Ronghai adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' Xi'an Ronghai değişikliği (Substitution 2). Değişiklikten sonra Xi'an Ronghai adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "59' Jiangxi Liansheng değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Jiangxi Liansheng değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Jiangxi Liansheng değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Jiangxi Liansheng değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Xi'an Ronghai, Jiangxi Liansheng'i 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Xi'an Ronghai sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "america-de-cali-independiente-medellin-2026-10-12",
+      "fixtureId": "1549814",
+      "provider": "api-football",
+      "slug": "america-de-cali-independiente-medellin-2026-10-12",
+      "kickoff": "2026-10-12T04:15:00+03:00",
+      "kickoffUtc": "2026-10-12T01:15:00.000Z",
+      "kickoffLocal": "2026-10-12T04:15",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera A",
+      "competition": "Primera A",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "America de Cali",
+      "awayTeam": "Independiente Medellin",
+      "venue": "Olímpico Pascual Guerrero",
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Independiente Medellin",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 20
+        },
+        "statistics": {
+          "present": true,
+          "source": "curated",
+          "count": 16
+        },
+        "lineups": {
+          "present": true,
+          "source": "curated",
+          "count": 2
+        },
+        "players": {
+          "present": true,
+          "source": "curated",
+          "count": 40
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 20,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 40
+      },
+      "dataCompleteness": 1,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "completed",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "fdfa46eaf096cada",
+      "fingerprint": "fdfa46eaf096cada",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "America de Cali 1-2 Independiente Medellin maç raporu: Primera A istatistikleri | FutbolRadar",
+        "description": "Olímpico Pascual Guerrero'da oynanan Primera A maçını Independiente Medellin 2-1 kazandı; America de Cali sahadan puansız ayrıldı.",
+        "path": "mac-raporu/america-de-cali-independiente-medellin-2026-10-12.html",
+        "competition": "Primera A"
+      },
+      "reportUrl": "./mac-raporu/america-de-cali-independiente-medellin-2026-10-12.html",
+      "digest": {
+        "headline": "Independiente Medellin, America de Cali'yi 2-1 yendi",
+        "paragraph": "Olímpico Pascual Guerrero'da oynanan Primera A maçını Independiente Medellin 2-1 kazandı; America de Cali sahadan puansız ayrıldı. Golleri 7. dakikada Luis Quiñones (America de Cali), 24. dakikada Luis Escorcia (Independiente Medellin), 84. dakikada Carlos Alberto Lucumi Gonzalez (Independiente Medellin) kaydetti.",
+        "result": {
+          "winner": "Independiente Medellin",
+          "loser": "America de Cali",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "45+2'",
+              "team": "America de Cali",
+              "type": "Kırmızı kart",
+              "detail": "Dany Rosero",
+              "pivotal": true
+            },
+            {
+              "minute": "7'",
+              "team": "America de Cali",
+              "type": "Gol",
+              "detail": "Luis Quiñones",
+              "pivotal": true
+            },
+            {
+              "minute": "11'",
+              "team": "America de Cali",
+              "type": "Gol",
+              "detail": "Jhon Palacios",
+              "pivotal": true
+            },
+            {
+              "minute": "24'",
+              "team": "Independiente Medellin",
+              "type": "Gol",
+              "detail": "Luis Escorcia",
+              "pivotal": true
+            },
+            {
+              "minute": "52'",
+              "team": "America de Cali",
+              "type": "Penaltı",
+              "detail": "Yeison Guzmán",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (Carlos Alberto Lucumi Gonzalez), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "80'",
+              "team": "Independiente Medellin",
+              "type": "Sarı kart",
+              "detail": "John Montano",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "America de Cali",
+              "type": "Oyuncu değişikliği",
+              "detail": "Yeison Guzmán",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Independiente Medellin",
+              "type": "Gol",
+              "detail": "Carlos Alberto Lucumi Gonzalez",
+              "decisive": true
+            },
+            {
+              "minute": "85'",
+              "team": "Independiente Medellin",
+              "type": "Oyuncu değişikliği",
+              "detail": "Luis Escorcia",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Carlos Alberto Lucumi Gonzalez",
+              "team": "Independiente Medellin",
+              "contribution": "84' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Jhon Palacios",
+              "team": "America de Cali",
+              "contribution": "11' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Luis Escorcia",
+              "team": "Independiente Medellin",
+              "contribution": "24' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Luis Quiñones",
+              "team": "America de Cali",
+              "contribution": "7' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "partial",
+          "notes": [
+            "America de Cali sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Independiente Medellin sahaya 4-4-2 dizilişiyle çıktı."
+          ]
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
+            "7' America de Cali — Luis Quiñones: gol",
+            "24' Independiente Medellin — Luis Escorcia: gol",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "84' Independiente Medellin — Carlos Alberto Lucumi Gonzalez: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "America de Cali maça 4-2-3-1 dizilişiyle başladı.",
+            "Independiente Medellin maça 4-4-2 dizilişiyle başladı.",
+            "37' America de Cali değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "45' America de Cali değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Independiente Medellin değişikliği (Substitution 1). Değişiklikten sonra Independiente Medellin adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "70' Independiente Medellin değişikliği (Substitution 2). Değişiklikten sonra Independiente Medellin adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "America de Cali",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Independiente Medellin",
+              "formation": "4-4-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Independiente Medellin, America de Cali'yi 1-2 yendi.",
+            "İsabetli şutta da öndeydi (4-3); sonuç üretilen pozisyonla uyumlu.",
+            "Independiente Medellin, gol beklentisinin 1,04 üzerinde skor üretti."
+          ],
+          "strengths": [
+            "America de Cali topa daha çok sahip oldu (%51).",
+            "Independiente Medellin daha çok şut denedi (12-14)."
+          ],
+          "improvements": [
+            "America de Cali şut isabetinde geride kaldı (%25); bitiricilik geliştirilmesi gereken alan.",
+            "America de Cali son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (45+2' America de Cali)."
+          ],
+          "closing": "Independiente Medellin sahadan 1 farkla ayrıldı.",
+          "basis": "statistics+events"
+        },
+        "aiRating": {
+          "home": {
+            "team": "America de Cali",
+            "score": 44
+          },
+          "away": {
+            "team": "Independiente Medellin",
+            "score": 62
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti America de Cali %25, Independiente Medellin %28.6."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için America de Cali 34, Independiente Medellin 26.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG America de Cali 0.053, Independiente Medellin 0.069. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
+        "analysisOmitted": [
+          "savunma",
+          "pres",
+          "performans",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
+      ],
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
+      "publishState": "page"
+    },
+    {
+      "matchId": "u-n-a-m-pumas-cruz-azul-2026-10-12",
+      "fixtureId": "1550992",
+      "provider": "api-football",
+      "slug": "u-n-a-m-pumas-cruz-azul-2026-10-12",
+      "kickoff": "2026-10-12T04:15:00+03:00",
+      "kickoffUtc": "2026-10-12T01:15:00.000Z",
+      "kickoffLocal": "2026-10-12T04:15",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga MX",
+      "competition": "Liga MX",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "U.N.A.M. - Pumas",
+      "awayTeam": "Cruz Azul",
+      "venue": "Estadio Olímpico Universitario",
+      "score": {
+        "home": 3,
+        "away": 3
+      },
+      "finalScore": "3-3",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "fa5abab11c29b32a",
+      "fingerprint": "fa5abab11c29b32a",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "U.N.A.M. - Pumas 3-3 Cruz Azul maç raporu: Liga MX istatistikleri | FutbolRadar",
+        "description": "U.N.A.M. - Pumas 3-3 Cruz Azul maç raporu, goller, olaylar ve sonraki maç.",
+        "path": "mac-raporu/u-n-a-m-pumas-cruz-azul-2026-10-12.html",
+        "competition": "Liga MX"
+      },
+      "reportUrl": "./mac-raporu/u-n-a-m-pumas-cruz-azul-2026-10-12.html",
+      "digest": {
+        "headline": "U.N.A.M. - Pumas ile Cruz Azul 3-3 berabere kaldı",
+        "paragraph": "U.N.A.M. - Pumas ile Cruz Azul, Estadio Olímpico Universitario'da oynanan Liga MX karşılaşmasında 3-3 berabere kaldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 3-3 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "3-3 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "antigua-gfc-coban-imperial-2026-10-12",
+      "fixtureId": "1559661",
+      "provider": "api-football",
+      "slug": "antigua-gfc-coban-imperial-2026-10-12",
+      "kickoff": "2026-10-12T04:10:00+03:00",
+      "kickoffUtc": "2026-10-12T01:10:00.000Z",
+      "kickoffLocal": "2026-10-12T04:10",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga Nacional",
+      "competition": "Liga Nacional",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Antigua GFC",
+      "awayTeam": "Cobán Imperial",
+      "venue": "Estadio Pensativo",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Antigua GFC",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 16
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 16,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "347d8111ac4b9d16",
+      "fingerprint": "347d8111ac4b9d16",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Antigua GFC 2-1 Cobán Imperial maç raporu: Liga Nacional istatistikleri | FutbolRadar",
+        "description": "Estadio Pensativo'da oynanan Liga Nacional maçını Antigua GFC 2-1 kazandı; Cobán Imperial sahadan puansız ayrıldı.",
+        "path": "mac-raporu/antigua-gfc-coban-imperial-2026-10-12.html",
+        "competition": "Liga Nacional"
+      },
+      "reportUrl": "./mac-raporu/antigua-gfc-coban-imperial-2026-10-12.html",
+      "digest": {
+        "headline": "Antigua GFC, Cobán Imperial'ı 2-1 yendi",
+        "paragraph": "Estadio Pensativo'da oynanan Liga Nacional maçını Antigua GFC 2-1 kazandı; Cobán Imperial sahadan puansız ayrıldı. Golleri 39. dakikada K. J. Lopez (Antigua GFC), 72. dakikada M. Moreira (Cobán Imperial), 85. dakikada A. Maziero (Antigua GFC) kaydetti.",
+        "result": {
+          "winner": "Antigua GFC",
+          "loser": "Cobán Imperial",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 3
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "39'",
+              "team": "Antigua GFC",
+              "type": "Gol",
+              "detail": "K. J. Lopez",
+              "pivotal": true
+            },
+            {
+              "minute": "72'",
+              "team": "Cobán Imperial",
+              "type": "Gol",
+              "detail": "M. Moreira",
+              "pivotal": true
+            },
+            {
+              "minute": "81'",
+              "team": "Cobán Imperial",
+              "type": "Kırmızı kart",
+              "detail": "D. Torres",
+              "pivotal": true
+            },
+            {
+              "minute": "85'",
+              "team": "Antigua GFC",
+              "type": "Gol",
+              "detail": "A. Maziero",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (A. Maziero), 1 kırmızı kart bu bölümde görüldü, sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Antigua GFC",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Garcia",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Cobán Imperial",
+              "type": "Kırmızı kart",
+              "detail": "D. Torres",
+              "decisive": true
+            },
+            {
+              "minute": "85'",
+              "team": "Antigua GFC",
+              "type": "Gol",
+              "detail": "A. Maziero",
+              "decisive": true
+            },
+            {
+              "minute": "90+1'",
+              "team": "Cobán Imperial",
+              "type": "Oyuncu değişikliği",
+              "detail": "M. Moreira",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Maziero",
+              "team": "Antigua GFC",
+              "contribution": "85' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "K. J. Lopez",
+              "team": "Antigua GFC",
+              "contribution": "39' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Moreira",
+              "team": "Cobán Imperial",
+              "contribution": "72' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Garcia",
+              "team": "Antigua GFC",
+              "contribution": "71' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "39' Antigua GFC — K. J. Lopez: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "72' Cobán Imperial — M. Moreira: gol",
+            "85' Antigua GFC — A. Maziero: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' Cobán Imperial değişikliği (Substitution 1). Değişiklikten sonra Cobán Imperial adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "56' Antigua GFC değişikliği (Substitution 1). Değişiklikten sonra Antigua GFC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "56' Antigua GFC değişikliği (Substitution 2). Değişiklikten sonra Antigua GFC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "59' Cobán Imperial değişikliği (Substitution 2). Değişiklikten sonra Cobán Imperial adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "70' Antigua GFC değişikliği (Substitution 3). Değişiklikten sonra Antigua GFC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "70' Antigua GFC değişikliği (Substitution 4). Değişiklikten sonra Antigua GFC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Antigua GFC, Cobán Imperial'ı 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Cobán Imperial son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (81' Cobán Imperial)."
+          ],
+          "closing": "Antigua GFC sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "rancho-santana-unan-managua-2026-10-12",
+      "fixtureId": "1638968",
+      "provider": "api-football",
+      "slug": "rancho-santana-unan-managua-2026-10-12",
+      "kickoff": "2026-10-12T04:00:00+03:00",
+      "kickoffUtc": "2026-10-12T01:00:00.000Z",
+      "kickoffLocal": "2026-10-12T04:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera Division",
+      "competition": "Primera Division",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Rancho Santana",
+      "awayTeam": "UNAN Managua",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "b8f458c769fd8107",
+      "fingerprint": "b8f458c769fd8107",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Rancho Santana 1-1 UNAN Managua maç raporu: Primera Division istatistikleri | FutbolRadar",
+        "description": "Primera Division maçında Rancho Santana ile UNAN Managua birbirini geçemedi: 1-1. Golleri 70. dakikada M.",
+        "path": "mac-raporu/rancho-santana-unan-managua-2026-10-12.html",
+        "competition": "Primera Division"
+      },
+      "reportUrl": "./mac-raporu/rancho-santana-unan-managua-2026-10-12.html",
+      "digest": {
+        "headline": "Rancho Santana ile UNAN Managua 1-1 berabere kaldı",
+        "paragraph": "Primera Division maçında Rancho Santana ile UNAN Managua birbirini geçemedi: 1-1. Golleri 70. dakikada M. Santana (UNAN Managua), 90+6. dakikada J. Amador (Rancho Santana) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 2
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "90+12'",
+              "team": "Rancho Santana",
+              "type": "Kırmızı kart",
+              "detail": "N. Jiron",
+              "pivotal": true
+            },
+            {
+              "minute": "70'",
+              "team": "UNAN Managua",
+              "type": "Gol",
+              "detail": "M. Santana",
+              "pivotal": true
+            },
+            {
+              "minute": "90+6'",
+              "team": "Rancho Santana",
+              "type": "Gol",
+              "detail": "J. Amador",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 1 gol kaydedildi, (J. Amador), 1 kırmızı kart bu bölümde görüldü.",
+          "goals": {
+            "home": 1,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "90+6'",
+              "team": "Rancho Santana",
+              "type": "Gol",
+              "detail": "J. Amador",
+              "decisive": true
+            },
+            {
+              "minute": "90+12'",
+              "team": "Rancho Santana",
+              "type": "Kırmızı kart",
+              "detail": "N. Jiron",
+              "decisive": true
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "J. Amador",
+              "team": "Rancho Santana",
+              "contribution": "90+6' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Santana",
+              "team": "UNAN Managua",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "N. Jiron",
+              "team": "Rancho Santana",
+              "contribution": "90+12' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (3 olay).",
+            "70' UNAN Managua — M. Santana: gol",
+            "90+6' Rancho Santana — J. Amador: gol"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (90+12' Rancho Santana)."
+          ],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "talleres-cordoba-independiente-2026-10-12",
+      "fixtureId": "1493179",
+      "provider": "api-football",
+      "slug": "talleres-cordoba-independiente-2026-10-12",
+      "kickoff": "2026-10-12T03:30:00+03:00",
+      "kickoffUtc": "2026-10-12T00:30:00.000Z",
+      "kickoffLocal": "2026-10-12T03:30",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Argentina Primera División",
+      "competition": "Argentina Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Talleres Cordoba",
+      "awayTeam": "Independiente",
+      "venue": "Estadio Mario Alberto Kempes",
+      "score": {
+        "home": 0,
+        "away": 0
+      },
+      "finalScore": "0-0",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "2e30ed8028a90492",
+      "fingerprint": "2e30ed8028a90492",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Talleres Cordoba 0-0 Independiente maç raporu: Argentina Primera División istatistikleri | FutbolRadar",
+        "description": "Estadio Mario Alberto Kempes'te oynanan Argentina Primera División maçında Talleres Cordoba ile Independiente birbirini geçemedi: 0-0. İki takım da gol bul...",
+        "path": "mac-raporu/talleres-cordoba-independiente-2026-10-12.html",
+        "competition": "Argentina Primera División"
+      },
+      "reportUrl": "./mac-raporu/talleres-cordoba-independiente-2026-10-12.html",
+      "digest": {
+        "headline": "Talleres Cordoba ile Independiente 0-0 berabere kaldı",
+        "paragraph": "Estadio Mario Alberto Kempes'te oynanan Argentina Primera División maçında Talleres Cordoba ile Independiente birbirini geçemedi: 0-0. İki takım da gol bulamadı.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "partial",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Independiente",
+              "type": "Sarı kart",
+              "detail": "Nahuel Banegas",
+              "pivotal": false
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Nahuel Banegas",
+              "team": "Independiente",
+              "contribution": "8' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 0-0 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 36,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "municipal-grecia-aserri-fc-2026-10-12",
+      "fixtureId": "1601460",
+      "provider": "api-football",
+      "slug": "municipal-grecia-aserri-fc-2026-10-12",
+      "kickoff": "2026-10-12T03:00:00+03:00",
+      "kickoffUtc": "2026-10-12T00:00:00.000Z",
+      "kickoffLocal": "2026-10-12T03:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga de Ascenso",
+      "competition": "Liga de Ascenso",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Municipal Grecia",
+      "awayTeam": "Aserri FC",
+      "venue": null,
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "db4e72d01615be90",
+      "fingerprint": "db4e72d01615be90",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Municipal Grecia 2-2 Aserri FC maç raporu: Liga de Ascenso istatistikleri | FutbolRadar",
+        "description": "Municipal Grecia ile Aserri FC, Liga de Ascenso karşılaşmasında 2-2 berabere kaldı.",
+        "path": "mac-raporu/municipal-grecia-aserri-fc-2026-10-12.html",
+        "competition": "Liga de Ascenso"
+      },
+      "reportUrl": "./mac-raporu/municipal-grecia-aserri-fc-2026-10-12.html",
+      "digest": {
+        "headline": "Municipal Grecia ile Aserri FC 2-2 berabere kaldı",
+        "paragraph": "Municipal Grecia ile Aserri FC, Liga de Ascenso karşılaşmasında 2-2 berabere kaldı. Tek golü 9. dakikada Normal Goal (Aserri FC) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "9'",
+              "team": "Aserri FC",
+              "type": "Gol",
+              "detail": "Normal Goal",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Normal Goal",
+              "team": "Aserri FC",
+              "contribution": "9' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "9' Aserri FC — Normal Goal: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "the-town-tacoma-defiance-2026-10-12",
+      "fixtureId": "1641610",
+      "provider": "api-football",
+      "slug": "the-town-tacoma-defiance-2026-10-12",
+      "kickoff": "2026-10-12T03:00:00+03:00",
+      "kickoffUtc": "2026-10-12T00:00:00.000Z",
+      "kickoffLocal": "2026-10-12T03:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "PEN",
+      "finishType": "penalties",
+      "finishLabel": "Penaltı atışlarıyla belirlendi",
+      "league": "MLS Next Pro",
+      "competition": "MLS Next Pro",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "The Town",
+      "awayTeam": "Tacoma Defiance",
+      "venue": "PayPal Park",
+      "score": {
+        "home": 4,
+        "away": 4
+      },
+      "finalScore": "4-4",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 7
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 7,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "b29852fba07eace0",
+      "fingerprint": "b29852fba07eace0",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "The Town 4-4 Tacoma Defiance maç raporu: MLS Next Pro istatistikleri | FutbolRadar",
+        "description": "PayPal Park'ta oynanan MLS Next Pro maçında The Town ile Tacoma Defiance birbirini geçemedi: 4-4. Golleri 6. dakikada T.",
+        "path": "mac-raporu/the-town-tacoma-defiance-2026-10-12.html",
+        "competition": "MLS Next Pro"
+      },
+      "reportUrl": "./mac-raporu/the-town-tacoma-defiance-2026-10-12.html",
+      "digest": {
+        "headline": "The Town ile Tacoma Defiance 4-4 berabere kaldı",
+        "paragraph": "PayPal Park'ta oynanan MLS Next Pro maçında The Town ile Tacoma Defiance birbirini geçemedi: 4-4. Golleri 6. dakikada T. Allen (The Town), 11. dakikada Z. Bohane (The Town), 37. dakikada R. Jauregui (Tacoma Defiance) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "penalties",
+          "label": "Penaltı atışlarıyla belirlendi",
+          "wentToExtraTime": true,
+          "decidedOnPenalties": true,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "6'",
+              "team": "The Town",
+              "type": "Gol",
+              "detail": "T. Allen",
+              "pivotal": true
+            },
+            {
+              "minute": "11'",
+              "team": "The Town",
+              "type": "Penaltı",
+              "detail": "Z. Bohane",
+              "pivotal": true
+            },
+            {
+              "minute": "37'",
+              "team": "Tacoma Defiance",
+              "type": "Gol",
+              "detail": "R. Jauregui",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "R. Jauregui",
+              "team": "Tacoma Defiance",
+              "contribution": "37' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "T. Allen",
+              "team": "The Town",
+              "contribution": "6' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Z. Bohane",
+              "team": "The Town",
+              "contribution": "11' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "D. Alvarez",
+              "team": "Tacoma Defiance",
+              "contribution": "1' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
+            "6' The Town — T. Allen: gol",
+            "11' The Town — Z. Bohane: penaltı",
+            "37' Tacoma Defiance — R. Jauregui: gol"
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "İkinci yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' Tacoma Defiance değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Tacoma Defiance değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 4-4 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "4-4 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "cusco-alianza-lima-2026-10-12",
+      "fixtureId": "1549503",
+      "provider": "api-football",
+      "slug": "cusco-alianza-lima-2026-10-12",
+      "kickoff": "2026-10-12T02:30:00+03:00",
+      "kickoffUtc": "2026-10-11T23:30:00.000Z",
+      "kickoffLocal": "2026-10-12T02:30",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera División",
+      "competition": "Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Cusco",
+      "awayTeam": "Alianza Lima",
+      "venue": "Estadio Inca Garcilaso de la Vega",
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Alianza Lima",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 13
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 13,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "d8dada570c263f66",
+      "fingerprint": "d8dada570c263f66",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Cusco 1-2 Alianza Lima maç raporu: Primera División istatistikleri | FutbolRadar",
+        "description": "Estadio Inca Garcilaso de la Vega'da oynanan Primera División maçını Alianza Lima 2-1 kazandı; Cusco sahadan puansız ayrıldı.",
+        "path": "mac-raporu/cusco-alianza-lima-2026-10-12.html",
+        "competition": "Primera División"
+      },
+      "reportUrl": "./mac-raporu/cusco-alianza-lima-2026-10-12.html",
+      "digest": {
+        "headline": "Alianza Lima, Cusco'yu 2-1 yendi",
+        "paragraph": "Estadio Inca Garcilaso de la Vega'da oynanan Primera División maçını Alianza Lima 2-1 kazandı; Cusco sahadan puansız ayrıldı. Golleri 38. dakikada Mateo Antoni Pavon (Alianza Lima), 56. dakikada Diego Soto (Cusco) kaydetti.",
+        "result": {
+          "winner": "Alianza Lima",
+          "loser": "Cusco",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "45+5'",
+              "team": "Cusco",
+              "type": "Kırmızı kart",
+              "detail": "Aldair Fuentes",
+              "pivotal": true
+            },
+            {
+              "minute": "38'",
+              "team": "Alianza Lima",
+              "type": "Gol",
+              "detail": "Mateo Antoni Pavon",
+              "pivotal": true
+            },
+            {
+              "minute": "56'",
+              "team": "Cusco",
+              "type": "Gol",
+              "detail": "Diego Soto",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Diego Soto",
+              "team": "Cusco",
+              "contribution": "56' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Mateo Antoni Pavon",
+              "team": "Alianza Lima",
+              "contribution": "38' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Jairo Vélez",
+              "team": "Alianza Lima",
+              "contribution": "45+5' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Aldair Fuentes",
+              "team": "Cusco",
+              "contribution": "45+5' kırmızı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
+            "38' Alianza Lima — Mateo Antoni Pavon: gol",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "56' Cusco — Diego Soto: gol",
+            "İkinci yarı içinde 5 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "45' Cusco değişikliği (Substitution 1). Değişiklikten sonra Cusco adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Cusco değişikliği (Substitution 2). Değişiklikten sonra Cusco adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Cusco değişikliği (Substitution 3). Değişiklikten sonra Cusco adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Alianza Lima değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "60' Alianza Lima değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "73' Cusco değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Alianza Lima, Cusco'yu 1-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (45+5' Cusco)."
+          ],
+          "closing": "Alianza Lima sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "alianza-inter-2026-10-12",
+      "fixtureId": "1600626",
+      "provider": "api-football",
+      "slug": "alianza-inter-2026-10-12",
+      "kickoff": "2026-10-12T02:30:00+03:00",
+      "kickoffUtc": "2026-10-11T23:30:00.000Z",
+      "kickoffLocal": "2026-10-12T02:30",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera Division",
+      "competition": "Primera Division",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Alianza",
+      "awayTeam": "Inter",
+      "venue": null,
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 3
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 3,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "59fa649ffde541b6",
+      "fingerprint": "59fa649ffde541b6",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Alianza 2-2 Inter maç raporu: Primera Division istatistikleri | FutbolRadar",
+        "description": "Alianza ile Inter, Primera Division karşılaşmasında 2-2 berabere kaldı.",
+        "path": "mac-raporu/alianza-inter-2026-10-12.html",
+        "competition": "Primera Division"
+      },
+      "reportUrl": "./mac-raporu/alianza-inter-2026-10-12.html",
+      "digest": {
+        "headline": "Alianza ile Inter 2-2 berabere kaldı",
+        "paragraph": "Alianza ile Inter, Primera Division karşılaşmasında 2-2 berabere kaldı. Golleri 8. dakikada H. Osorio (Alianza), 51. dakikada M. Mier (Alianza), 53. dakikada K. Molina (Inter) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Alianza",
+              "type": "Gol",
+              "detail": "H. Osorio",
+              "pivotal": true
+            },
+            {
+              "minute": "51'",
+              "team": "Alianza",
+              "type": "Gol",
+              "detail": "M. Mier",
+              "pivotal": true
+            },
+            {
+              "minute": "53'",
+              "team": "Inter",
+              "type": "Gol",
+              "detail": "K. Molina",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "H. Osorio",
+              "team": "Alianza",
+              "contribution": "8' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "K. Molina",
+              "team": "Inter",
+              "contribution": "53' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Mier",
+              "team": "Alianza",
+              "contribution": "51' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "8' Alianza — H. Osorio: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "51' Alianza — M. Mier: gol",
+            "53' Inter — K. Molina: gol"
+          ],
+          "goals": 2
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "bolivar-blooming-2026-10-12",
+      "fixtureId": "1619325",
+      "provider": "api-football",
+      "slug": "bolivar-blooming-2026-10-12",
+      "kickoff": "2026-10-12T02:30:00+03:00",
+      "kickoffUtc": "2026-10-11T23:30:00.000Z",
+      "kickoffLocal": "2026-10-12T02:30",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera División",
+      "competition": "Primera División",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Bolívar",
+      "awayTeam": "Blooming",
+      "venue": "Estadio Hernando Siles",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Bolívar",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 13
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 13,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "25fb868f01fa3523",
+      "fingerprint": "25fb868f01fa3523",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Bolívar 1-0 Blooming maç raporu: Primera División istatistikleri | FutbolRadar",
+        "description": "Bolívar, Estadio Hernando Siles'te oynanan Primera División karşılaşmasında Blooming'i 1-0 mağlup etti.",
+        "path": "mac-raporu/bolivar-blooming-2026-10-12.html",
+        "competition": "Primera División"
+      },
+      "reportUrl": "./mac-raporu/bolivar-blooming-2026-10-12.html",
+      "digest": {
+        "headline": "Bolívar, Blooming'i 1-0 yendi",
+        "paragraph": "Bolívar, Estadio Hernando Siles'te oynanan Primera División karşılaşmasında Blooming'i 1-0 mağlup etti. Tek golü 10. dakikada Dairon Asprilla (Bolívar) kaydetti.",
+        "result": {
+          "winner": "Bolívar",
+          "loser": "Blooming",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "10'",
+              "team": "Bolívar",
+              "type": "Gol",
+              "detail": "Dairon Asprilla",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Blooming",
+              "type": "Oyuncu değişikliği",
+              "detail": "Guilmar Centella Bazan",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Blooming",
+              "type": "Oyuncu değişikliği",
+              "detail": "Federico Ramos",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Blooming",
+              "type": "Oyuncu değişikliği",
+              "detail": "Roberto Hinojosa",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Bolívar",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 2",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Dairon Asprilla",
+              "team": "Bolívar",
+              "contribution": "10' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Guilmar Centella Bazan",
+              "team": "Blooming",
+              "contribution": "70' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "José Sagredo",
+              "team": "Bolívar",
+              "contribution": "57' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Julio Demian Vila",
+              "team": "Blooming",
+              "contribution": "73' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "10' Bolívar — Dairon Asprilla: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "62' Blooming değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Bolívar değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "76' Blooming değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "84' Blooming değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "84' Blooming değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "85' Bolívar değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Bolívar, Blooming'i 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Bolívar sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "olancho-atletico-independiente-2026-10-12",
       "fixtureId": "1636820",
@@ -237,6 +4676,558 @@
         "finalAssessment"
       ],
       "coverage": 57,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "chico-cucuta-2026-10-12",
+      "fixtureId": "1549816",
+      "provider": "api-football",
+      "slug": "chico-cucuta-2026-10-12",
+      "kickoff": "2026-10-12T02:10:00+03:00",
+      "kickoffUtc": "2026-10-11T23:10:00.000Z",
+      "kickoffLocal": "2026-10-12T02:10",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera A",
+      "competition": "Primera A",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Chico",
+      "awayTeam": "Cucuta",
+      "venue": "Estadio La Independencia",
+      "score": {
+        "home": 0,
+        "away": 1
+      },
+      "finalScore": "0-1",
+      "winner": "Cucuta",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 9
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 9,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "893efc8df12af40e",
+      "fingerprint": "893efc8df12af40e",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Chico 0-1 Cucuta maç raporu: Primera A istatistikleri | FutbolRadar",
+        "description": "Estadio La Independencia'da oynanan Primera A maçını Cucuta 1-0 kazandı; Chico sahadan puansız ayrıldı.",
+        "path": "mac-raporu/chico-cucuta-2026-10-12.html",
+        "competition": "Primera A"
+      },
+      "reportUrl": "./mac-raporu/chico-cucuta-2026-10-12.html",
+      "digest": {
+        "headline": "Cucuta, Chico'yu 1-0 yendi",
+        "paragraph": "Estadio La Independencia'da oynanan Primera A maçını Cucuta 1-0 kazandı; Chico sahadan puansız ayrıldı. Tek golü 70. dakikada Dayan Pérez (Cucuta) kaydetti.",
+        "result": {
+          "winner": "Cucuta",
+          "loser": "Chico",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "70'",
+              "team": "Cucuta",
+              "type": "Gol",
+              "detail": "Dayan Pérez",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Dayan Pérez",
+              "team": "Cucuta",
+              "contribution": "70' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Cristián Mosquera",
+              "team": "Chico",
+              "contribution": "9' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Jaime Peralta",
+              "team": "Cucuta",
+              "contribution": "61' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Jefferson Mena",
+              "team": "Chico",
+              "contribution": "43' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay)."
+          ],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "70' Cucuta — Dayan Pérez: gol",
+            "İkinci yarı içinde 3 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 1
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "64' Chico değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "64' Chico değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "67' Cucuta değişikliği (Substitution 1). Değişiklikten sonra Cucuta adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Cucuta, Chico'yu 0-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Cucuta sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "cf-pachuca-necaxa-2026-10-12",
+      "fixtureId": "1550991",
+      "provider": "api-football",
+      "slug": "cf-pachuca-necaxa-2026-10-12",
+      "kickoff": "2026-10-12T02:10:00+03:00",
+      "kickoffUtc": "2026-10-11T23:10:00.000Z",
+      "kickoffLocal": "2026-10-12T02:10",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga MX",
+      "competition": "Liga MX",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "CF Pachuca",
+      "awayTeam": "Necaxa",
+      "venue": "Estadio Hidalgo",
+      "score": {
+        "home": 3,
+        "away": 3
+      },
+      "finalScore": "3-3",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 24
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 24,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "d66e28dbc94b26e1",
+      "fingerprint": "d66e28dbc94b26e1",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "CF Pachuca 3-3 Necaxa maç raporu: Liga MX istatistikleri | FutbolRadar",
+        "description": "Estadio Hidalgo'da oynanan Liga MX maçında CF Pachuca ile Necaxa birbirini geçemedi: 3-3. Golleri 15. dakikada Matias Espindola (Necaxa), 41. dakikada Juli...",
+        "path": "mac-raporu/cf-pachuca-necaxa-2026-10-12.html",
+        "competition": "Liga MX"
+      },
+      "reportUrl": "./mac-raporu/cf-pachuca-necaxa-2026-10-12.html",
+      "digest": {
+        "headline": "CF Pachuca ile Necaxa 3-3 berabere kaldı",
+        "paragraph": "Estadio Hidalgo'da oynanan Liga MX maçında CF Pachuca ile Necaxa birbirini geçemedi: 3-3. Golleri 15. dakikada Matias Espindola (Necaxa), 41. dakikada Julián Carranza (Necaxa), 45+8. dakikada Eduardo Dos Santos (CF Pachuca), 79. dakikada Juan Valencia (Necaxa), 84. dakikada Salomón Rondón (CF Pachuca), 87. dakikada Salomón Rondón (CF Pachuca) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 1
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "15'",
+              "team": "Necaxa",
+              "type": "Gol",
+              "detail": "Matias Espindola",
+              "pivotal": true
+            },
+            {
+              "minute": "37'",
+              "team": "CF Pachuca",
+              "type": "Penaltı",
+              "detail": "Christian Rivera",
+              "pivotal": true
+            },
+            {
+              "minute": "41'",
+              "team": "Necaxa",
+              "type": "Gol",
+              "detail": "Julián Carranza",
+              "pivotal": true
+            },
+            {
+              "minute": "79'",
+              "team": "Necaxa",
+              "type": "Penaltı",
+              "detail": "Juan Valencia",
+              "pivotal": true
+            },
+            {
+              "minute": "45+8'",
+              "team": "CF Pachuca",
+              "type": "Gol",
+              "detail": "Eduardo Dos Santos",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Son bölümde 3 gol kaydedildi, (Juan Valencia, Salomón Rondón).",
+          "goals": {
+            "home": 2,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "CF Pachuca",
+              "type": "Sarı kart",
+              "detail": "Francisco Venegas",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "CF Pachuca",
+              "type": "Sarı kart",
+              "detail": "Javier Vallejo",
+              "decisive": false
+            },
+            {
+              "minute": "79'",
+              "team": "Necaxa",
+              "type": "Penaltı",
+              "detail": "Juan Valencia",
+              "decisive": true
+            },
+            {
+              "minute": "80'",
+              "team": "CF Pachuca",
+              "type": "Oyuncu değişikliği",
+              "detail": "Francisco Venegas",
+              "decisive": false
+            }
+          ]
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "Salomón Rondón",
+              "team": "CF Pachuca",
+              "contribution": "84' gol · 87' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Julián Carranza",
+              "team": "Necaxa",
+              "contribution": "41' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Eduardo Dos Santos",
+              "team": "CF Pachuca",
+              "contribution": "45+8' gol · 90+3' sarı kart",
+              "impact": "orta"
+            },
+            {
+              "name": "Juan Valencia",
+              "team": "Necaxa",
+              "contribution": "79' gol · 85' sarı kart",
+              "impact": "orta"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (7 olay).",
+            "15' Necaxa — Matias Espindola: gol",
+            "41' Necaxa — Julián Carranza: gol",
+            "45+8' CF Pachuca — Eduardo Dos Santos: gol",
+            "İlk yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (17 olay).",
+            "79' Necaxa — Juan Valencia: penaltı",
+            "84' CF Pachuca — Salomón Rondón: gol",
+            "87' CF Pachuca — Salomón Rondón: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "45' CF Pachuca değişikliği (Substitution 1). Değişiklikten sonra CF Pachuca adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' CF Pachuca değişikliği (Substitution 2). Değişiklikten sonra CF Pachuca adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "52' Necaxa değişikliği (Substitution 1). Değişiklikten sonra Necaxa adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Necaxa değişikliği (Substitution 2). Değişiklikten sonra Necaxa adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Necaxa değişikliği (Substitution 3). Değişiklikten sonra Necaxa adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "63' CF Pachuca değişikliği (Substitution 3). Değişiklikten sonra CF Pachuca adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 3-3 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "3-3 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
       "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
@@ -2211,6 +7202,200 @@
       ],
       "coverage": 43,
       "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "grenades-freemansville-2026-10-12",
+      "fixtureId": "1644221",
+      "provider": "api-football",
+      "slug": "grenades-freemansville-2026-10-12",
+      "kickoff": "2026-10-12T02:00:00+03:00",
+      "kickoffUtc": "2026-10-11T23:00:00.000Z",
+      "kickoffLocal": "2026-10-12T02:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier Division",
+      "competition": "Premier Division",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Grenades",
+      "awayTeam": "Freemansville",
+      "venue": null,
+      "score": {
+        "home": 3,
+        "away": 0
+      },
+      "finalScore": "3-0",
+      "winner": "Grenades",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "9da03921fc6fb75a",
+      "fingerprint": "9da03921fc6fb75a",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Grenades 3-0 Freemansville maç raporu: Premier Division istatistikleri | FutbolRadar",
+        "description": "Grenades, Premier Division karşılaşmasında Freemansville'yi 3-0 mağlup etti.",
+        "path": "mac-raporu/grenades-freemansville-2026-10-12.html",
+        "competition": "Premier Division"
+      },
+      "reportUrl": "./mac-raporu/grenades-freemansville-2026-10-12.html",
+      "digest": {
+        "headline": "Grenades, Freemansville'yi 3-0 yendi",
+        "paragraph": "Grenades, Premier Division karşılaşmasında Freemansville'yi 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Grenades",
+          "loser": "Freemansville",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Grenades, Freemansville'yi 3-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Grenades sahadan 3 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -5077,6 +10262,200 @@
       "publishState": "page"
     },
     {
+      "matchId": "robin-hood-fc-inter-wanica-2026-10-12",
+      "fixtureId": "1645241",
+      "provider": "api-football",
+      "slug": "robin-hood-fc-inter-wanica-2026-10-12",
+      "kickoff": "2026-10-12T01:00:00+03:00",
+      "kickoffUtc": "2026-10-11T22:00:00.000Z",
+      "kickoffLocal": "2026-10-12T01:00",
+      "date": "2026-10-12",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Eerste Divisie",
+      "competition": "Eerste Divisie",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Robin Hood",
+      "awayTeam": "FC Inter Wanica",
+      "venue": null,
+      "score": {
+        "home": 5,
+        "away": 1
+      },
+      "finalScore": "5-1",
+      "winner": "Robin Hood",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "41f0c6f0e81d7b3c",
+      "fingerprint": "41f0c6f0e81d7b3c",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Robin Hood 5-1 FC Inter Wanica maç raporu: Eerste Divisie istatistikleri | FutbolRadar",
+        "description": "Eerste Divisie maçını Robin Hood 5-1 kazandı; FC Inter Wanica sahadan puansız ayrıldı.",
+        "path": "mac-raporu/robin-hood-fc-inter-wanica-2026-10-12.html",
+        "competition": "Eerste Divisie"
+      },
+      "reportUrl": "./mac-raporu/robin-hood-fc-inter-wanica-2026-10-12.html",
+      "digest": {
+        "headline": "Robin Hood, FC Inter Wanica'yı 5-1 yendi",
+        "paragraph": "Eerste Divisie maçını Robin Hood 5-1 kazandı; FC Inter Wanica sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Robin Hood",
+          "loser": "FC Inter Wanica",
+          "draw": false,
+          "margin": 4
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Robin Hood, FC Inter Wanica'yı 5-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Robin Hood sahadan 4 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
       "matchId": "cuiaba-avai-2026-10-12",
       "fixtureId": "1520924",
       "provider": "api-football",
@@ -6259,7 +11638,7 @@
       "season": null,
       "homeTeam": "Jaguares",
       "awayTeam": "Deportes Tolima",
-      "venue": "Estadio Jaragüay De Monteria",
+      "venue": "Estadio Jaraguay",
       "score": {
         "home": 3,
         "away": 2
@@ -6331,23 +11710,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c902d41598448c23",
-      "fingerprint": "c902d41598448c23",
+      "analysisSourceHash": "30b57215f434a0a2",
+      "fingerprint": "30b57215f434a0a2",
       "analysisGeneratedAt": "2026-10-11T23:43:25.541Z",
-      "analysisUpdatedAt": "2026-10-11T23:43:25.541Z",
-      "generatedAt": "2026-10-11T23:43:25.541Z",
+      "analysisUpdatedAt": "2026-10-12T11:54:50.417Z",
+      "generatedAt": "2026-10-12T11:54:50.417Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Jaguares 3-2 Deportes Tolima maç raporu: Primera A istatistikleri | FutbolRadar",
-        "description": "Estadio Jaragüay De Monteria'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı.",
+        "description": "Estadio Jaraguay'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı.",
         "path": "mac-raporu/jaguares-deportes-tolima-2026-10-12.html",
         "competition": "Primera A"
       },
       "reportUrl": "./mac-raporu/jaguares-deportes-tolima-2026-10-12.html",
       "digest": {
         "headline": "Jaguares, Deportes Tolima'yı 3-2 yendi",
-        "paragraph": "Estadio Jaragüay De Monteria'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Estadio Jaraguay'da oynanan Primera A maçını Jaguares 3-2 kazandı; Deportes Tolima sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Jaguares",
           "loser": "Deportes Tolima",
@@ -11581,7 +16960,7 @@
       "season": null,
       "homeTeam": "Trujillanos FC",
       "awayTeam": "Puerto Cabello",
-      "venue": null,
+      "venue": "Estadio Jose Alberto Perez",
       "score": {
         "home": 0,
         "away": 1
@@ -11653,23 +17032,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "0a79d5670cfb2f51",
-      "fingerprint": "0a79d5670cfb2f51",
+      "analysisSourceHash": "1e9ef3ba59628111",
+      "fingerprint": "1e9ef3ba59628111",
       "analysisGeneratedAt": "2026-10-11T23:43:25.541Z",
-      "analysisUpdatedAt": "2026-10-11T23:43:25.541Z",
-      "generatedAt": "2026-10-11T23:43:25.541Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Trujillanos FC 0-1 Puerto Cabello maç raporu: Primera División istatistikleri | FutbolRadar",
-        "description": "Puerto Cabello, Primera División karşılaşmasında Trujillanos FC'u 1-0 mağlup etti.",
+        "description": "Puerto Cabello, Estadio Jose Alberto Perez'de oynanan Primera División karşılaşmasında Trujillanos FC'u 1-0 mağlup etti.",
         "path": "mac-raporu/trujillanos-fc-puerto-cabello-2026-10-11.html",
         "competition": "Primera División"
       },
       "reportUrl": "./mac-raporu/trujillanos-fc-puerto-cabello-2026-10-11.html",
       "digest": {
         "headline": "Puerto Cabello, Trujillanos FC'u 1-0 yendi",
-        "paragraph": "Puerto Cabello, Primera División karşılaşmasında Trujillanos FC'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Puerto Cabello, Estadio Jose Alberto Perez'de oynanan Primera División karşılaşmasında Trujillanos FC'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Puerto Cabello",
           "loser": "Trujillanos FC",
@@ -28723,6 +34102,200 @@
       "publishState": "page"
     },
     {
+      "matchId": "cardoso-moreira-paraty-2026-10-11",
+      "fixtureId": "1605285",
+      "provider": "api-football",
+      "slug": "cardoso-moreira-paraty-2026-10-11",
+      "kickoff": "2026-10-11T21:00:00+03:00",
+      "kickoffUtc": "2026-10-11T18:00:00.000Z",
+      "kickoffLocal": "2026-10-11T21:00",
+      "date": "2026-10-11",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Carioca B2",
+      "competition": "Carioca B2",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Cardoso Moreira",
+      "awayTeam": "Paraty",
+      "venue": null,
+      "score": {
+        "home": 6,
+        "away": 1
+      },
+      "finalScore": "6-1",
+      "winner": "Cardoso Moreira",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "18ba8bace467ae5c",
+      "fingerprint": "18ba8bace467ae5c",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Cardoso Moreira 6-1 Paraty maç raporu: Carioca B2 istatistikleri | FutbolRadar",
+        "description": "Carioca B2 maçını Cardoso Moreira 6-1 kazandı; Paraty sahadan puansız ayrıldı.",
+        "path": "mac-raporu/cardoso-moreira-paraty-2026-10-11.html",
+        "competition": "Carioca B2"
+      },
+      "reportUrl": "./mac-raporu/cardoso-moreira-paraty-2026-10-11.html",
+      "digest": {
+        "headline": "Cardoso Moreira, Paraty'yı 6-1 yendi",
+        "paragraph": "Carioca B2 maçını Cardoso Moreira 6-1 kazandı; Paraty sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Cardoso Moreira",
+          "loser": "Paraty",
+          "draw": false,
+          "margin": 5
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Cardoso Moreira, Paraty'yı 6-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Cardoso Moreira sahadan 5 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
       "matchId": "rio-de-janeiro-campos-aa-2026-10-11",
       "fixtureId": "1605286",
       "provider": "api-football",
@@ -43900,11 +49473,11 @@
       "awayTeam": "Yeni Malatyaspor",
       "venue": null,
       "score": {
-        "home": 0,
+        "home": 3,
         "away": 0
       },
-      "finalScore": "0-0",
-      "winner": "draw",
+      "finalScore": "3-0",
+      "winner": "Yeşilyurt Belediyespor",
       "turkish": true,
       "turkishTeam": "Yeşilyurt Belediyespor & Yeni Malatyaspor",
       "coverageGrade": "awaiting-provider",
@@ -43970,28 +49543,28 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "dfc9d7cd74195d8e",
-      "fingerprint": "dfc9d7cd74195d8e",
+      "analysisSourceHash": "52f3a50279fcbfb3",
+      "fingerprint": "52f3a50279fcbfb3",
       "analysisGeneratedAt": "2026-10-11T10:47:42.425Z",
-      "analysisUpdatedAt": "2026-10-11T10:47:42.425Z",
-      "generatedAt": "2026-10-11T10:47:42.425Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
-        "title": "Yeşilyurt Belediyespor 0-0 Yeni Malatyaspor maç raporu: 3. Lig - Group 3 istatistikleri | FutbolRadar",
-        "description": "Yeşilyurt Belediyespor ile Yeni Malatyaspor, 3. Lig - Group 3 karşılaşmasında 0-0 berabere kaldı.",
+        "title": "Yeşilyurt Belediyespor 3-0 Yeni Malatyaspor maç raporu: 3. Lig - Group 3 istatistikleri | FutbolRadar",
+        "description": "Yeşilyurt Belediyespor, 3. Lig - Group 3 karşılaşmasında Yeni Malatyaspor'u 3-0 mağlup etti.",
         "path": "mac-raporu/yesilyurt-belediyespor-yeni-malatyaspor-2026-10-11.html",
         "competition": "3. Lig - Group 3"
       },
       "reportUrl": "./mac-raporu/yesilyurt-belediyespor-yeni-malatyaspor-2026-10-11.html",
       "digest": {
-        "headline": "Yeşilyurt Belediyespor ile Yeni Malatyaspor 0-0 berabere kaldı",
-        "paragraph": "Yeşilyurt Belediyespor ile Yeni Malatyaspor, 3. Lig - Group 3 karşılaşmasında 0-0 berabere kaldı. İki takım da gol bulamadı.",
+        "headline": "Yeşilyurt Belediyespor, Yeni Malatyaspor'u 3-0 yendi",
+        "paragraph": "Yeşilyurt Belediyespor, 3. Lig - Group 3 karşılaşmasında Yeni Malatyaspor'u 3-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
-          "winner": null,
-          "loser": null,
-          "draw": true,
-          "margin": 0
+          "winner": "Yeşilyurt Belediyespor",
+          "loser": "Yeni Malatyaspor",
+          "draw": false,
+          "margin": 3
         },
         "finish": {
           "status": "ready",
@@ -44039,11 +49612,11 @@
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Maç 0-0 berabere bitti."
+            "Yeşilyurt Belediyespor, Yeni Malatyaspor'u 3-0 yendi."
           ],
           "strengths": [],
           "improvements": [],
-          "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "closing": "Yeşilyurt Belediyespor sahadan 3 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -199895,6 +205468,200 @@
       "publishState": "page"
     },
     {
+      "matchId": "slovenia-u19-w-scotland-u19-w-2026-10-11",
+      "fixtureId": "1645150",
+      "provider": "api-football",
+      "slug": "slovenia-u19-w-scotland-u19-w-2026-10-11",
+      "kickoff": "2026-10-11T13:00:00+03:00",
+      "kickoffUtc": "2026-10-11T10:00:00.000Z",
+      "kickoffLocal": "2026-10-11T13:00",
+      "date": "2026-10-11",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Friendlies Women",
+      "competition": "Friendlies Women",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Slovenia U19 W",
+      "awayTeam": "Scotland U19 W",
+      "venue": null,
+      "score": {
+        "home": 0,
+        "away": 2
+      },
+      "finalScore": "0-2",
+      "winner": "Scotland U19 W",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "f246dfcc22c5477a",
+      "fingerprint": "f246dfcc22c5477a",
+      "analysisGeneratedAt": "2026-10-12T08:46:26.497Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Slovenia U19 W 0-2 Scotland U19 W maç raporu: Friendlies Women istatistikleri | FutbolRadar",
+        "description": "Scotland U19 W, Friendlies Women karşılaşmasında Slovenia U19 W'u 2-0 mağlup etti.",
+        "path": "mac-raporu/slovenia-u19-w-scotland-u19-w-2026-10-11.html",
+        "competition": "Friendlies Women"
+      },
+      "reportUrl": "./mac-raporu/slovenia-u19-w-scotland-u19-w-2026-10-11.html",
+      "digest": {
+        "headline": "Scotland U19 W, Slovenia U19 W'u 2-0 yendi",
+        "paragraph": "Scotland U19 W, Friendlies Women karşılaşmasında Slovenia U19 W'u 2-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Scotland U19 W",
+          "loser": "Slovenia U19 W",
+          "draw": false,
+          "margin": 2
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Scotland U19 W, Slovenia U19 W'u 0-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Scotland U19 W sahadan 2 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
       "matchId": "grama-tona-2026-10-11",
       "fixtureId": "1613975",
       "provider": "api-football",
@@ -229922,7 +235689,7 @@
       "season": null,
       "homeTeam": "Oriente Petrolero",
       "awayTeam": "ABB",
-      "venue": "Estadio Ramon Tahuichi Aguilera",
+      "venue": "Estadio Ramon Tahuichi Aguilera Costas",
       "score": {
         "home": 1,
         "away": 0
@@ -229994,23 +235761,23 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "acd7f0ea76105451",
-      "fingerprint": "acd7f0ea76105451",
+      "analysisSourceHash": "32d8cda992c6d210",
+      "fingerprint": "32d8cda992c6d210",
       "analysisGeneratedAt": "2026-10-11T10:47:42.425Z",
-      "analysisUpdatedAt": "2026-10-11T10:47:42.425Z",
-      "generatedAt": "2026-10-11T10:47:42.425Z",
+      "analysisUpdatedAt": "2026-10-12T08:46:26.497Z",
+      "generatedAt": "2026-10-12T08:46:26.497Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Oriente Petrolero 1-0 ABB maç raporu: Primera División istatistikleri | FutbolRadar",
-        "description": "Estadio Ramon Tahuichi Aguilera'da oynanan Primera División maçını Oriente Petrolero 1-0 kazandı; ABB sahadan puansız ayrıldı.",
+        "description": "Estadio Ramon Tahuichi Aguilera Costas'ta oynanan Primera División maçını Oriente Petrolero 1-0 kazandı; ABB sahadan puansız ayrıldı.",
         "path": "mac-raporu/oriente-petrolero-abb-2026-10-11.html",
         "competition": "Primera División"
       },
       "reportUrl": "./mac-raporu/oriente-petrolero-abb-2026-10-11.html",
       "digest": {
         "headline": "Oriente Petrolero, ABB'ı 1-0 yendi",
-        "paragraph": "Estadio Ramon Tahuichi Aguilera'da oynanan Primera División maçını Oriente Petrolero 1-0 kazandı; ABB sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Estadio Ramon Tahuichi Aguilera Costas'ta oynanan Primera División maçını Oriente Petrolero 1-0 kazandı; ABB sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
         "result": {
           "winner": "Oriente Petrolero",
           "loser": "ABB",

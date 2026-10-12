@@ -99,7 +99,7 @@ const playerUrls = createPlayerUrlResolver(readJson("data/player-url-slugs.json"
  */
 const comparablePlayers = players.filter((player) => !player.isDuplicate);
 /** Kıyas adresi, sayfaları üreten scriptle AYNI kaynaktan. */
-const slugForPair = createComparisonSlugResolver(players);
+const slugForPair = createComparisonSlugResolver(players, comparablePlayers);
 
 const matchReportSlugs = generatedSlugs("mac-raporu");
 const newsSlugs = generatedSlugs("haber");
@@ -262,7 +262,17 @@ function playerDescription(player, view) {
   return `${player.name}; ${playerTeamMetaPhrase(player)}, mevki ${player.position}. Transfer geçmişi${ratingPhrase}${potentialPhrase} ve radar metrikleriyle FutbolRadar'da analiz edilir.`;
 }
 
+/**
+ * Kıyas sayfalarını üreten script (generate-player-comparison-pages.mjs)
+ * çiftleri yalnızca kopya OLMAYAN kayıtlardan kurar. Profil sayfası ise
+ * playerUrls'in kanonik saydığı her kayda basılıyor; taze veride
+ * annotateDuplicates bir kaydı kopya işaretleyip playerUrls hâlâ kanonik
+ * sayınca o profil, hiç üretilmeyen kıyas sayfalarına bağlanıyordu (tam
+ * derlemede bağlantı denetimi kırık hedef raporluyordu). İki taraf aynı
+ * havuzu görmeli: kopya kaydın profili kıyas bağlantısı basmaz.
+ */
 function staticCompareLinks(player) {
+  if (player.isDuplicate) return "";
   return profileCompareCandidates(player, comparablePlayers).map((item) => {
     const href = `../karsilastirma/${slugForPair(player, item.player)}.html`;
     return `<a class="static-profile-link-card" href="${escapeHtml(href)}"><span>${escapeHtml(item.label)}</span><strong>${escapeHtml(player.name)} vs ${escapeHtml(item.player.name)}</strong><em>${escapeHtml(item.note)}</em></a>`;
@@ -554,12 +564,12 @@ function pageHtml(player) {
           <span>${escapeHtml(view.verified ? "Oyuncu performans kartı yükleniyor." : "Doğrulanmış veri geldiğinde performans kartı burada yayımlanacak.")}</span>
         </article>
       </section>
-      <section class="static-profile-links" aria-label="Statik oyuncu karşılaştırma bağlantıları">
+      ${player.isDuplicate ? "" : `<section class="static-profile-links" aria-label="Statik oyuncu karşılaştırma bağlantıları">
         <div class="profile-section-head"><h2>Hazır Kıyas Linkleri</h2><span>Arama motorları ve hızlı gezinme için</span></div>
         <div class="static-profile-link-grid">
         ${staticCompareLinks(player)}
         </div>
-      </section>
+      </section>`}
       <section class="popular-links" aria-label="İlgili oyuncu bağlantıları">
         <span>İlgili oyuncu radarları</span>
         ${relatedLinks(player.id)}
@@ -658,6 +668,12 @@ function writeBoth(relativePath, html) {
   }
 }
 
+const slugTable = readJson("data/player-url-slugs.json", { entries: [] });
+const previousSlugsById = new Map((slugTable.entries || [])
+  .filter((entry) => Array.isArray(entry.previousSlugs) && entry.previousSlugs.length)
+  .map((entry) => [entry.id, entry.previousSlugs]));
+const currentSlugs = new Set((slugTable.entries || []).map((entry) => entry.slug));
+
 let movedPages = 0;
 let legacyPages = 0;
 let redirectPages = 0;
@@ -699,6 +715,15 @@ for (const player of players) {
   for (const alias of player.aliases || []) {
     const html = redirectHtml(player, pagePath, `../${pagePath}`);
     writeBoth(path.join("oyuncular", `${alias}.html`), html);
+    redirectPages += 1;
+  }
+
+  // Ad düzeltmesiyle slug'ı değişen oyuncunun eski adresi yönlendirme olur
+  // (scripts/generate-player-url-slugs.mjs → previousSlugs). Başka bir
+  // oyuncunun güncel adresiyse dokunulmaz.
+  for (const oldSlug of previousSlugsById.get(player.id) || []) {
+    if (currentSlugs.has(oldSlug)) continue;
+    writeBoth(path.join("futbolcu", `${oldSlug}.html`), redirectHtml(player, pagePath, `../${pagePath}`));
     redirectPages += 1;
   }
 }

@@ -146,7 +146,7 @@ const players = annotateDuplicates(getPlayers(rawPlayers));
  */
 const comparablePlayers = players.filter((player) => !player.isDuplicate);
 /** Kıyas adresi TR tarafıyla aynı kaynaktan; çözücü TAM listeyle kurulur. */
-const slugForPair = require("../services/playerComparisonPairs.js").createComparisonSlugResolver(players);
+const slugForPair = require("../services/playerComparisonPairs.js").createComparisonSlugResolver(players, comparablePlayers);
 
 function escapeHtml(value) {
   return String(value ?? "")
