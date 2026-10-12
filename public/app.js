@@ -4501,19 +4501,20 @@
       })
       .slice(0, 8)
       .map(function (team) {
+        // /api/momentum satırı: `team` adı taşır. Hücum/savunma canlı
+        // türetilmediği için gösterilmez (prerender ile aynı kart).
+        var name = team.team || team.name;
         return (
-          '<article class="trend-card" data-card="trend-team" data-team="' + escapeHtml(team.id || team.name) + '">' +
+          '<article class="trend-card" data-card="trend-team" data-team="' + escapeHtml(team.id || name) + '">' +
           '<div class="trend-card-head"><span class="trend-card-avatar" aria-hidden="true">' +
-          escapeHtml(teamInitials(team.name)) +
-          "</span><span><strong>" + escapeHtml(team.name) + "</strong><span>" +
-          escapeHtml(team.league || "Takım") + "</span></span>" +
+          escapeHtml(teamInitials(name)) +
+          "</span><span><strong>" + escapeHtml(name) + "</strong><span>" +
+          escapeHtml(team.league || "Süper Lig") + "</span></span>" +
           '<b class="trend-card-score">' + escapeHtml(displayValue(team.momentum)) + "</b></div>" +
           '<dl class="trend-card-stats">' +
-          "<div><dt>Hücum</dt><dd>" + escapeHtml(displayValue(team.attack)) + "</dd></div>" +
-          "<div><dt>Savunma</dt><dd>" + escapeHtml(displayValue(team.defense)) + "</dd></div>" +
           "<div><dt>Form</dt><dd>" + escapeHtml(displayValue(team.formScore)) + "</dd></div>" +
           "</dl>" +
-          '<a class="fixture-card-action" href="./takim-detay.html?team=' + encodeURIComponent(team.name || "") + '">Takım radarını aç</a>' +
+          '<a class="fixture-card-action" href="./takim-detay.html?team=' + encodeURIComponent(name || "") + '">Takım radarını aç</a>' +
           "</article>"
         );
       })
@@ -13493,7 +13494,7 @@
 
     renderInto(
       document.querySelector('[data-api-target="home-trend-teams"]'),
-      "teams",
+      "momentum",
       renderTrendTeams,
       "Trend takımlar yüklenemedi"
     );
