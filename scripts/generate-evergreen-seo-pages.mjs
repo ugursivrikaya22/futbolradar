@@ -3,9 +3,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
 import { createRequire } from "node:module";
-const { playerLink } = createRequire(import.meta.url)("../services/playerLinks.js");
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+
+const require = createRequire(import.meta.url);
+const { playerLink } = require("../services/playerLinks.js");
+const { superLigTeamPages, teamHubIndexable, standingsPageIndexable } = require("../services/superLigTeamPages.js");
+const { sameClub } = require("../services/superLigTeams.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -21,6 +25,13 @@ const featuredTeams = [
 ];
 
 const teamBySlug = new Map(teams.map((team) => [team.id, team]));
+// Görev 6: takım profili (hub) sayfaları 18 Süper Lig takımının hepsi için.
+// Karşılaştırma sayfaları bilerek büyük 4'te kalıyor (153 çift ince içerik olurdu).
+const hubTeams = superLigTeamPages({ root, teams }).map((entry) => {
+  const squadCount = players.filter((player) => sameClub(player.currentTeam, entry.record.name)).length;
+  return { slug: entry.slug, name: entry.name, record: entry.record, squadCount, indexable: teamHubIndexable(entry.record, squadCount) };
+});
+const hubBySlug = new Map(hubTeams.map((hub) => [hub.slug, hub]));
 const comparisonPairs = featuredTeams.flatMap((team, index) =>
   featuredTeams.slice(index + 1).map((opponent) => [team, opponent])
 );
@@ -63,7 +74,7 @@ function breadcrumbHtml(items) {
     .join("")}</nav>`;
 }
 
-function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content }) {
+function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true }) {
   const canonical = `${siteUrl}${canonicalPath}`;
   const graph = [schema, breadcrumbSchema(breadcrumbs.map(({ name, url }) => ({ name, url })))];
   return `<!doctype html>
@@ -73,7 +84,7 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <link rel="canonical" href="${canonical}" />
     <meta property="og:type" content="${schema["@type"] === "Article" ? "article" : "website"}" />
     <meta property="og:locale" content="tr_TR" />
@@ -130,9 +141,9 @@ function teamHref(slug, base = "./") {
 }
 
 function teamNameCell(team, base = "./") {
-  const hasProfile = featuredTeams.some((featured) => featured.slug === team.id);
-  return hasProfile
-    ? `<a href="${teamHref(team.id, base)}">${escapeHtml(team.name)}</a>`
+  const hub = hubTeams.find((item) => item.record.id === team.id && item.indexable);
+  return hub
+    ? `<a href="${teamHref(hub.slug, base)}">${escapeHtml(team.name)}</a>`
     : escapeHtml(team.name);
 }
 
@@ -183,9 +194,9 @@ function relatedLinks(title, base = "./") {
 }
 
 function teamPage(featured) {
-  const team = teamBySlug.get(featured.slug);
+  const team = featured.record || teamBySlug.get(featured.slug);
   if (!team) throw new Error(`Takım verisi bulunamadı: ${featured.slug}`);
-  const squad = players.filter((player) => player.currentTeam === featured.name).sort((a, b) => a.name.localeCompare(b.name, "tr")).slice(0, 12);
+  const squad = players.filter((player) => sameClub(player.currentTeam, team.name)).sort((a, b) => a.name.localeCompare(b.name, "tr")).slice(0, 12);
   const teamPlayers = squad.length
     ? `<ul class="evergreen-player-list">${squad.map((player) => `<li><a href="${escapeHtml(playerLink(player.id, "../"))}"><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.position || "Pozisyon kaydı yok")}</span></a></li>`).join("")}</ul>`
     : "<p>Bu takım için güncel oyuncu kaydı bulunmuyor.</p>";
@@ -199,6 +210,17 @@ function teamPage(featured) {
     ["Beraberlik", value(team.drawn)], ["Mağlubiyet", value(team.lost)], ["Attığı gol", value(team.goalsFor)],
     ["Yediği gol", value(team.goalsAgainst)], ["Averaj", value(team.goalDifference)], ["Puan", value(team.points)]
   ].map(([label, item]) => `<tr><th scope="row">${label}</th><td>${item}</td></tr>`);
+  const scores = [["Form skoru", team.formScore], ["Momentum", team.momentum], ["Hücum", team.attack], ["Savunma", team.defense]]
+    .filter(([, item]) => item !== null && item !== undefined && item !== "");
+  const formItems = (team.form || []).map((item) => `<i class="is-${escapeHtml(item.result)}">${escapeHtml(item.label)}</i>`).join("");
+  // Veri yoksa "—" kutuları basılmaz (ince içerik): bölüm yalnızca kayıt varsa.
+  const formSection = scores.length || formItems
+    ? `<section class="evergreen-section" aria-labelledby="team-form"><h2 id="team-form">Kayıtlı form</h2>${scores.length ? `<div class="evergreen-score-grid">${scores.map(([label, item]) => `<div><span>${label}</span><strong>${value(item)}</strong></div>`).join("")}</div>` : ""}${formItems ? `<div class="evergreen-form evergreen-form-large">${formItems}</div>` : ""}</section>`
+    : "";
+  const teamLinks = [
+    fs.existsSync(path.join(root, `${featured.slug}-maclari.html`)) ? `<a href="../${featured.slug}-maclari.html">${escapeHtml(featured.name)} maçları ve fikstür</a>` : "",
+    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : ""
+  ].join("");
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");
   return pageDocument({
@@ -211,7 +233,8 @@ function teamPage(featured) {
     intro: `${featured.name} için kayıtlı 2026/27 lig görünümü, takım formu ve doğrulanmış oyuncu kayıtlarına erişim sayfası.`,
     breadcrumbs,
     schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: { "@type": "SportsTeam", name: featured.name, sport: "Football", memberOf: { "@type": "SportsOrganization", name: team.league } } },
-    content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section><section class="evergreen-section" aria-labelledby="team-form"><h2 id="team-form">Kayıtlı form</h2><div class="evergreen-score-grid"><div><span>Form skoru</span><strong>${value(team.formScore)}</strong></div><div><span>Momentum</span><strong>${value(team.momentum)}</strong></div><div><span>Hücum</span><strong>${value(team.attack)}</strong></div><div><span>Savunma</span><strong>${value(team.defense)}</strong></div></div><div class="evergreen-form evergreen-form-large">${(team.form || []).map((item) => `<i class="is-${escapeHtml(item.result)}">${escapeHtml(item.label)}</i>`).join("") || "—"}</div></section></div><section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section><aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>${relatedLinks("Takım profilinden devam edin", "../")}`
+    indexable: featured.indexable !== false,
+    content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
   });
 }
 
@@ -272,7 +295,7 @@ function patchHomePage(file) {
   const block = `<!-- evergreen-seo-links:start -->
         <section class="container section evergreen-home-links" aria-labelledby="evergreen-home-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Futbol Rehberi</span><h2 id="evergreen-home-title">Puan, form, takım ve karşılaştırma sayfaları</h2><p>Bugünün programından takım profillerine uzanan kalıcı FutbolRadar rehberleri.</p></div></div>
-          <nav class="evergreen-link-grid" aria-label="Futbol rehberleri"><a href="./bugunun-maclari">Bugünün maçları</a><a href="./super-lig-puan-durumu">Süper Lig puan durumu</a><a href="./form-tablosu/super-lig">Süper Lig form tablosu</a><a href="./takimlar/galatasaray">Galatasaray</a><a href="./takimlar/fenerbahce">Fenerbahçe</a><a href="./takimlar/besiktas">Beşiktaş</a><a href="./takimlar/trabzonspor">Trabzonspor</a><a href="./takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="./oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a></nav>
+          <nav class="evergreen-link-grid" aria-label="Futbol rehberleri"><a href="./bugunun-maclari">Bugünün maçları</a><a href="./super-lig-puan-durumu">Süper Lig puan durumu</a><a href="./form-tablosu/super-lig">Süper Lig form tablosu</a>${featuredTeams.map((team) => `<a href="./takimlar/${team.slug}">${escapeHtml(team.name)}</a>`).join("")}<a href="./takimlar">Tüm takımlar</a><a href="./takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="./oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a></nav>
         </section>
         <!-- evergreen-seo-links:end -->`;
   const pattern = /\s*<!-- evergreen-seo-links:start -->[\s\S]*?<!-- evergreen-seo-links:end -->/;
@@ -285,7 +308,7 @@ function updateSitemap(file) {
   const xml = fs.readFileSync(file, "utf8");
   const newPaths = [
     "/super-lig-puan-durumu", "/form-tablosu/super-lig", "/takim-karsilastirmalari",
-    ...featuredTeams.map((team) => `/takimlar/${team.slug}`),
+    ...hubTeams.filter((team) => team.indexable).map((team) => `/takimlar/${team.slug}`),
     ...comparisonPairs.map(([left, right]) => `/karsilastirma/takimlar/${left.slug}-vs-${right.slug}`)
   ];
   const urls = new Set(newPaths.map((item) => `${siteUrl}${item}`));
@@ -297,11 +320,11 @@ function updateSitemap(file) {
 writePage("super-lig-puan-durumu.html", standingsPage());
 writePage(path.join("form-tablosu", "super-lig.html"), formPage());
 writePage("takim-karsilastirmalari.html", comparisonHub());
-for (const team of featuredTeams) writePage(path.join("takimlar", `${team.slug}.html`), teamPage(team));
+for (const team of hubTeams) writePage(path.join("takimlar", `${team.slug}.html`), teamPage(team));
 for (const [left, right] of comparisonPairs) writePage(path.join("karsilastirma", "takimlar", `${left.slug}-vs-${right.slug}.html`), comparisonPage(left, right));
 for (const outputRoot of [root, path.join(root, "public")]) {
   patchHomePage(path.join(outputRoot, "index.html"));
   updateSitemap(path.join(outputRoot, "sitemap.xml"));
 }
 
-console.log(`Evergreen SEO: 3 merkez, ${featuredTeams.length} takım profili ve ${comparisonPairs.length} takım karşılaştırması üretildi.`);
+console.log(`Evergreen SEO: 3 merkez, ${hubTeams.length} takım profili (${hubTeams.filter((team) => team.indexable).length} indekslenebilir) ve ${comparisonPairs.length} takım karşılaştırması üretildi.`);

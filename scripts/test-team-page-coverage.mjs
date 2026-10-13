@@ -58,3 +58,15 @@ ok("her puan durumu sayfası canlıda temiz adresle açılır", () => {
 });
 
 console.log("team-page-coverage OK");
+
+// Görev 6, 3. adım: takım profili (hub) eşiği.
+{
+  const { teamHubIndexable, MIN_SQUAD } = require("../services/superLigTeamPages.js");
+  ok("hub eşiği: puan satırı + en az MIN_SQUAD oyuncu", () => {
+    const row = { played: 7, rank: 3, points: 12 };
+    assert.equal(teamHubIndexable(row, MIN_SQUAD), true);
+    assert.equal(teamHubIndexable(row, MIN_SQUAD - 1), false);
+    assert.equal(teamHubIndexable({ played: 1, rank: 3, points: 3 }, 40), false);
+  });
+  console.log("team-page-coverage hub OK");
+}
