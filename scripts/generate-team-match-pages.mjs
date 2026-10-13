@@ -46,12 +46,22 @@ const DOMAIN = "https://www.futbolradar.com";
 /** Sayfa üretmek için gereken en az doğrulanmış satır sayısı. */
 const MIN_CONTENT_ROWS = 6;
 
-const TEAMS = [
-  { slug: "galatasaray", name: "Galatasaray", radar: "galatasaray-oyuncu-radari.html", form: "galatasaray-form-durumu.html" },
-  { slug: "fenerbahce", name: "Fenerbahçe", radar: "fenerbahce-oyuncu-radari.html", form: "fenerbahce-form-durumu.html" },
-  { slug: "besiktas", name: "Beşiktaş", radar: "besiktas-oyuncu-radari.html", form: "besiktas-form-durumu.html" },
-  { slug: "trabzonspor", name: "Trabzonspor", radar: "trabzonspor-oyuncu-radari.html", form: "trabzonspor-form-durumu.html" }
-];
+// Görev 6: büyük 4 sabiti yerine tüm Süper Lig takımları tek listeden
+// (services/superLigTeamPages.js). Oyuncu radarı / form sayfası yalnızca
+// dosyası varsa bağlanır (bugün yalnızca büyük 4'te var) — 404'e bağlantı yok.
+const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
+const TEAMS = superLigTeamPages({ root }).map(({ slug, name, record }) => {
+  const radar = `${slug}-oyuncu-radari.html`;
+  const form = `${slug}-form-durumu.html`;
+  return {
+    slug,
+    name,
+    radar: fs.existsSync(path.join(root, radar)) ? radar : null,
+    form: fs.existsSync(path.join(root, form)) ? form : null,
+    // Puan durumu sayfası (generate-team-standings-pages) indekslenebilir mi?
+    hasStandingsPage: standingsPageIndexable(record)
+  };
+});
 
 const calendarStore = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8"));
 const calendar = (calendarStore.matches || []).map((match) => applyVerifiedBroadcast(match));
@@ -347,7 +357,9 @@ function transferRows(rows) {
   return `<ul class="trend-mini-stats team-match-transfer-list">${rows.map((row) => `<li><span>${escapeHtml(row.date)}</span><strong>${escapeHtml(row.playerName)}</strong><span>${escapeHtml(row.fromTeam)} → ${escapeHtml(row.toTeam)}</span><span class="tag green">${escapeHtml(row.type || "Transfer")}</span><a href="${escapeHtml(row.sourceUrl)}" target="_blank" rel="${SOURCE_LINK_REL}">Resmî kaynak</a></li>`).join("")}</ul>`;
 }
 
-function standingCard(row, season) {
+// Bağlantı slug'ı sağlayıcı adından değil takım listesinden ("Erzurumspor FK" →
+// erzurumspor): addan türetmek yeni takımlarda var olmayan adrese gidiyordu.
+function standingCard(row, season, team) {
   if (!row) return "";
   const form = (row.form || []).slice(-5);
   const labels = { W: "G", D: "B", L: "M" };
@@ -358,7 +370,7 @@ function standingCard(row, season) {
       <div><dt>O</dt><dd>${escapeHtml(row.played)}</dd></div><div><dt>G</dt><dd>${escapeHtml(row.won)}</dd></div><div><dt>B</dt><dd>${escapeHtml(row.drawn)}</dd></div><div><dt>M</dt><dd>${escapeHtml(row.lost)}</dd></div><div><dt>P</dt><dd>${escapeHtml(row.points)}</dd></div>
     </dl>
     <div class="team-form"><span>Son ${form.length} lig maçı</span><div class="form-dots" aria-label="Son maç formu">${form.map((value) => `<span class="${classes[value] || ""}" title="${labels[value] || value}">${labels[value] || value}</span>`).join("")}</div></div>
-    <a class="detail-link" href="./${escapeHtml(String(row.team || row.name).normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""))}-puan-durumu">Tam puan durumunu aç</a>
+    ${team.hasStandingsPage ? `<a class="detail-link" href="./${escapeHtml(team.slug)}-puan-durumu">Tam puan durumunu aç</a>` : `<a class="detail-link" href="./super-lig-puan-durumu">Tam puan durumunu aç</a>`}
   </article>`;
 }
 
@@ -490,10 +502,10 @@ function relatedLinks(team) {
     { href: "./asist-kralligi.html", kicker: "Asist", title: "Süper Lig asist krallığı", text: "Güncel asist sıralaması ve oyuncu profilleri." },
     { href: "./haberler.html", kicker: "Haber", title: `${team.name} haberleri`, text: "Doğrulanmış son takım haberleri." },
     { href: "./analizler.html", kicker: "Analiz", title: "Maç analizleri", text: `${team.name} ile ilgili veri odaklı maç okumaları.` },
-    // `generate-team-standings-pages.mjs` bu 4 takım için AYNI slug'ı kullanır
-    // (`${slug}-puan-durumu.html`); TEAMS burada da yalnızca büyük 4'ü taşır.
-    { href: `./${team.slug}-puan-durumu`, kicker: "Puan durumu", title: `${team.name} puan durumu`, text: `${team.name} Süper Lig'de kaçıncı sırada, tam tabloda vurgulu.` }
   ];
+  // `generate-team-standings-pages.mjs` AYNI listeden ve AYNI slug'la üretir;
+  // eşiği geçmeyen (noindex) puan sayfasına bağlantı verilmez.
+  if (team.hasStandingsPage) links.push({ href: `./${team.slug}-puan-durumu`, kicker: "Puan durumu", title: `${team.name} puan durumu`, text: `${team.name} Süper Lig'de kaçıncı sırada, tam tabloda vurgulu.` });
   if (team.radar) links.push({ href: `./${team.radar}`, kicker: "Kadro", title: `${team.name} oyuncu radarı`, text: "Kadro, form ve rol sinyalleri." });
   if (team.form) links.push({ href: `./${team.form}`, kicker: "Form", title: `${team.name} form durumu`, text: "Son maçların form okuması." });
   return `<div class="trend-link-grid">${links.map((link) => `<a class="" href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
@@ -577,7 +589,7 @@ function buildPage(team, today) {
         ${nextMatchCard(next, team, today)}
       </section>
       ${currentMatchCard(todayGame, team)}
-      ${section(`${team.name} puan durumu ve son form`, `${seasonLabel} Süper Lig sıralaması; puan durumu sayfasıyla aynı sağlayıcı tablosundan.`, `<div class="team-overview-grid">${standingCard(standing, seasonLabel)}${lastMatchCard(lastGame)}</div>`, "Güncel durum")}
+      ${section(`${team.name} puan durumu ve son form`, `${seasonLabel} Süper Lig sıralaması; puan durumu sayfasıyla aynı sağlayıcı tablosundan.`, `<div class="team-overview-grid">${standingCard(standing, seasonLabel, team)}${lastMatchCard(lastGame)}</div>`, "Güncel durum")}
       ${section("Yaklaşan maçlar", "Gün ve saati doğrulanmış karşılaşmalar, en yakın tarih önde.", upcomingRows(upcoming, team), "Takvim")}
       ${section("İlgili maç analizleri", "Yalnızca doğrulanmış sonuçtan üretilmiş maç raporları ve analizler listelenir.", resultRows(results, team), "Analiz")}
       ${section(`${team.name} Süper Lig fikstürü`, `${fixtures.season || ""} sezonu eşleşmeleri. Tarihi atanmamış haftalar için gün uydurulmaz.`, seasonRows(season, team), "Sezon")}
