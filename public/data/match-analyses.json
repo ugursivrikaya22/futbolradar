@@ -32145,7 +32145,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-16T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:22.693Z",
+    "generatedAt": "2026-10-13T05:44:19.935Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -32783,22 +32783,9 @@
         "availability": {
           "fixtureId": "corum-fk-caykur-rizespor-2026-10-16",
           "totalKnownPlayers": 37,
-          "unavailableCount": 2,
-          "unavailable": [
-            {
-              "playerId": "s-osmanoglu-corum-fk",
-              "name": "S. Osmanoğlu",
-              "status": "injured",
-              "note": "Injury"
-            },
-            {
-              "playerId": "a-kyziridis-corum-fk",
-              "name": "A. Kyziridis",
-              "status": "injured",
-              "note": "Red Card"
-            }
-          ],
-          "knownAvailabilityCoverage": 5,
+          "unavailableCount": 0,
+          "unavailable": [],
+          "knownAvailabilityCoverage": 0,
           "rows": [
             {
               "playerId": "marcos-felipe-corum-fk",
@@ -32827,8 +32814,8 @@
             {
               "playerId": "s-osmanoglu-corum-fk",
               "name": "S. Osmanoğlu",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "s-saatci-corum-fk",
@@ -32983,8 +32970,8 @@
             {
               "playerId": "a-kyziridis-corum-fk",
               "name": "A. Kyziridis",
-              "status": "injured",
-              "note": "Red Card"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "c-ramirez-corum-fk",
@@ -33054,11 +33041,12 @@
         "benchStrength": {
           "score": 18,
           "confidence": 100,
-          "sampleSize": 24,
+          "sampleSize": 26,
           "players": [
             "I. Šehić",
             "K. Kalafat",
             "E. Kaş",
+            "S. Osmanoğlu",
             "H. Smolčić",
             "D. Aleksić",
             "B. Coban",
@@ -33076,6 +33064,7 @@
             "M. Diomandé",
             "M. Karlsbakk",
             "K. Fakılı",
+            "A. Kyziridis",
             "C. Ramírez",
             "Jesus Ramirez",
             "Markus Karlsbakk",
@@ -33182,7 +33171,7 @@
         "away": 43
       },
       "availability": {
-        "home": 70,
+        "home": 100,
         "away": 100
       },
       "confidence": 85,
@@ -33200,7 +33189,7 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "away"
+          "advantage": "balanced"
         }
       ],
       "summary": "Ev sahibi mevcut verilerde Kaleciler ve Form alanlarında bir adım önde görünüyor."
@@ -33281,22 +33270,22 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:22.693Z",
+      "generatedAt": "2026-10-13T05:44:19.935Z",
       "asOf": "2026-10-16T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
       "teamStrength": {
-        "home": 45,
+        "home": 44,
         "away": 55
       },
       "probabilities": {
-        "homeWin": 27,
-        "draw": 33,
-        "awayWin": 40
+        "homeWin": 26,
+        "draw": 32,
+        "awayWin": 42
       },
       "prediction": {
         "primary": "away",
-        "label": "Deplasman bir adım önde",
+        "label": "Deplasman net önde",
         "confidence": 80
       },
       "goalPotential": {
@@ -33304,14 +33293,14 @@
         "label": "high"
       },
       "upsetRisk": {
-        "score": 64,
+        "score": 62,
         "label": "high"
       },
       "matchBalance": {
-        "score": 80,
+        "score": 78,
         "label": "slight-away"
       },
-      "summary": "Model, ev sahibi için %27, beraberlik için %33, deplasman için %40 ihtimal hesaplıyor. Takım güç puanları 45/100 - 55/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %26, beraberlik için %32, deplasman için %42 ihtimal hesaplıyor. Takım güç puanları 44/100 - 55/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -33320,11 +33309,11 @@
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
       "recentFormCoverage": 100,
-      "teamAnalysisCoverage": 25,
+      "teamAnalysisCoverage": 17.5,
       "probableLineupCoverage": 59,
       "officialLineupCoverage": 0,
-      "overallCoverage": 65,
-      "confidenceLevel": "high",
+      "overallCoverage": 64,
+      "confidenceLevel": "medium",
       "missingComponents": [
         "Deplasman kadro kapsamı yetersiz",
         "Takım analizi hazırlanıyor",
@@ -33345,7 +33334,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-17T10:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:22.822Z",
+    "generatedAt": "2026-10-13T05:44:20.132Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -33959,16 +33948,9 @@
         "availability": {
           "fixtureId": "erzurumspor-fk-eyupspor-2026-10-17",
           "totalKnownPlayers": 38,
-          "unavailableCount": 1,
-          "unavailable": [
-            {
-              "playerId": "enes-yigit-erzurumspor-fk",
-              "name": "Enes Yigit",
-              "status": "suspended",
-              "note": "Suspended"
-            }
-          ],
-          "knownAvailabilityCoverage": 3,
+          "unavailableCount": 0,
+          "unavailable": [],
+          "knownAvailabilityCoverage": 0,
           "rows": [
             {
               "playerId": "e-anapa-erzurumspor-fk",
@@ -34033,8 +34015,8 @@
             {
               "playerId": "enes-yigit-erzurumspor-fk",
               "name": "Enes Yigit",
-              "status": "suspended",
-              "note": "Suspended"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "m-yumlu-erzurumspor-fk",
@@ -34230,7 +34212,7 @@
         "benchStrength": {
           "score": 22,
           "confidence": 100,
-          "sampleSize": 26,
+          "sampleSize": 27,
           "players": [
             "M. Orbanić",
             "C. Bayrak",
@@ -34238,6 +34220,7 @@
             "G. Giorbelidze",
             "O. Ovacıklı",
             "A. Ülgen",
+            "Enes Yigit",
             "M. Yumlu",
             "M. Akpınar",
             "S. Karakaş",
@@ -34329,6 +34312,17 @@
             "profileUrl": "./oyuncular/a-popov-eyupspor.html"
           },
           {
+            "id": "david-costa-eyupspor",
+            "name": "David Costa",
+            "position": "Midfielder",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./futbolcu/david-costa"
+          },
+          {
             "id": "c-raux-yao-eyupspor",
             "name": "C. Raux Yao",
             "position": "Midfielder",
@@ -34351,37 +34345,26 @@
             "profileUrl": "./futbolcu/christ-sadia"
           },
           {
+            "id": "t-ilter-eyupspor",
+            "name": "T. İlter",
+            "position": "Midfielder",
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./futbolcu/taskin-ilter"
+          },
+          {
             "id": "c-massanga-eyupspor",
             "name": "C. Massanga",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./futbolcu/chandrel-massanga"
-          },
-          {
-            "id": "omer-ay-eyupspor",
-            "name": "Ömer Ay",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 13,
-            "formRating": 15,
-            "profileUrl": "./futbolcu/omer-ay"
-          },
-          {
-            "id": "deniz-aydogdu-eyupspor",
-            "name": "Deniz Aydogdu",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 13,
-            "formRating": 15,
-            "profileUrl": "./futbolcu/deniz-aydogdu"
           },
           {
             "id": "a-k-sy-eyupspor",
@@ -34398,20 +34381,8 @@
         "availability": {
           "fixtureId": "erzurumspor-fk-eyupspor-2026-10-17",
           "totalKnownPlayers": 35,
-          "unavailableCount": 4,
+          "unavailableCount": 2,
           "unavailable": [
-            {
-              "playerId": "david-costa-eyupspor",
-              "name": "David Costa",
-              "status": "injured",
-              "note": "Red Card"
-            },
-            {
-              "playerId": "t-ilter-eyupspor",
-              "name": "T. İlter",
-              "status": "injured",
-              "note": "Injury"
-            },
             {
               "playerId": "j-el-yamiq-eyupspor",
               "name": "J. El Yamiq",
@@ -34425,7 +34396,7 @@
               "note": "Muscle Injury"
             }
           ],
-          "knownAvailabilityCoverage": 14,
+          "knownAvailabilityCoverage": 6,
           "rows": [
             {
               "playerId": "u-keseci-eyupspor",
@@ -34508,8 +34479,8 @@
             {
               "playerId": "david-costa-eyupspor",
               "name": "David Costa",
-              "status": "injured",
-              "note": "Red Card"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "bedri-kara-omer-eyupspor",
@@ -34532,8 +34503,8 @@
             {
               "playerId": "t-ilter-eyupspor",
               "name": "T. İlter",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "m-altunbas-eyupspor",
@@ -34604,8 +34575,8 @@
             {
               "playerId": "a-abdullahi-eyupspor",
               "name": "A. Abdullahi",
-              "status": "doubtful",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "b-boutobba-eyupspor",
@@ -34667,9 +34638,9 @@
           }
         ],
         "benchStrength": {
-          "score": 25,
+          "score": 24,
           "confidence": 100,
-          "sampleSize": 20,
+          "sampleSize": 22,
           "players": [
             "H. Moldovan",
             "Kerim Yerlikaya",
@@ -34677,6 +34648,8 @@
             "Z. Jules",
             "Calegari",
             "T. Ülvan",
+            "Ömer Ay",
+            "Deniz Aydogdu",
             "Bedri Kara Omer",
             "M. Altunbaş",
             "Eren Aydogdu",
@@ -34709,7 +34682,7 @@
       },
       "wideAreas": {
         "home": 15,
-        "away": 13
+        "away": 15
       },
       "goalkeepers": {
         "home": 42,
@@ -34717,17 +34690,17 @@
       },
       "bench": {
         "home": 22,
-        "away": 25
+        "away": 24
       },
       "form": {
         "home": 53,
         "away": 16
       },
       "availability": {
-        "home": 85,
-        "away": 40
+        "home": 100,
+        "away": 70
       },
-      "confidence": 74,
+      "confidence": 87,
       "advantages": [
         {
           "key": "midfield",
@@ -34847,17 +34820,17 @@
           "profileUrl": "./futbolcu/sefa-akgun"
         },
         "awayPlayer": {
-          "id": "c-raux-yao-eyupspor",
-          "name": "C. Raux Yao",
+          "id": "david-costa-eyupspor",
+          "name": "David Costa",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./futbolcu/charles-andre-raux-yao"
+          "profileUrl": "./futbolcu/david-costa"
         },
         "advantage": "balanced",
         "advantageScore": 50,
         "confidence": 83,
-        "summary": "S. Akgün ve C. Raux Yao arasındaki eşleşme mevcut verilerde dengeli görünüyor."
+        "summary": "S. Akgün ve David Costa arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
         "id": "goalkeepers",
@@ -34886,37 +34859,37 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:22.821Z",
+      "generatedAt": "2026-10-13T05:44:20.132Z",
       "asOf": "2026-10-17T10:30:00.000Z",
       "predictionStatus": "available",
-      "dataConfidence": 86,
+      "dataConfidence": 89,
       "teamStrength": {
-        "home": 48,
+        "home": 46,
         "away": 32
       },
       "probabilities": {
-        "homeWin": 56,
-        "draw": 30,
-        "awayWin": 14
+        "homeWin": 54,
+        "draw": 31,
+        "awayWin": 15
       },
       "prediction": {
         "primary": "home",
         "label": "Ev sahibi net önde",
-        "confidence": 86
+        "confidence": 89
       },
       "goalPotential": {
         "score": 59,
         "label": "medium"
       },
       "upsetRisk": {
-        "score": 47,
+        "score": 48,
         "label": "medium"
       },
       "matchBalance": {
-        "score": 68,
+        "score": 72,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %56, beraberlik için %30, deplasman için %14 ihtimal hesaplıyor. Takım güç puanları 48/100 - 32/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %54, beraberlik için %31, deplasman için %15 ihtimal hesaplıyor. Takım güç puanları 46/100 - 32/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 89/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -34925,16 +34898,16 @@
       "homeStatsCoverage": 100,
       "awayStatsCoverage": 100,
       "recentFormCoverage": 100,
-      "teamAnalysisCoverage": 50,
+      "teamAnalysisCoverage": 42.5,
       "probableLineupCoverage": 100,
       "officialLineupCoverage": 0,
-      "overallCoverage": 88,
+      "overallCoverage": 86,
       "confidenceLevel": "high",
       "missingComponents": [
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 86,
+    "dataConfidence": 89,
     "analysisStatus": "complete",
     "warnings": []
   },
@@ -34948,7 +34921,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-17T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:22.959Z",
+    "generatedAt": "2026-10-13T05:44:20.333Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -35513,6 +35486,17 @@
             "profileUrl": "./futbolcu/eric-konate"
           },
           {
+            "id": "e-bardhi-konyaspor",
+            "name": "E. Bardhi",
+            "position": "Midfielder",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./futbolcu/enis-bardhi"
+          },
+          {
             "id": "omer-cobanoglu-konyaspor",
             "name": "Omer Cobanoglu",
             "position": "Midfielder",
@@ -35538,9 +35522,9 @@
             "id": "diogo-goncalves-konyaspor",
             "name": "Diogo Gonçalves",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./futbolcu/diogo-goncalves"
@@ -35557,17 +35541,6 @@
             "profileUrl": "./futbolcu/deniz-turuc"
           },
           {
-            "id": "u-yazgili-konyaspor",
-            "name": "U. Yazğılı",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./futbolcu/ugurcan-yazgili"
-          },
-          {
             "id": "t-elgun-konyaspor",
             "name": "T. Elgun",
             "position": "Attacker",
@@ -35582,20 +35555,8 @@
         "availability": {
           "fixtureId": "amed-sportif-faaliyetler-konyaspor-2026-10-17",
           "totalKnownPlayers": 45,
-          "unavailableCount": 4,
+          "unavailableCount": 2,
           "unavailable": [
-            {
-              "playerId": "b-gungordu-konyaspor",
-              "name": "B. Güngördü",
-              "status": "injured",
-              "note": "Injury"
-            },
-            {
-              "playerId": "e-bardhi-konyaspor",
-              "name": "E. Bardhi",
-              "status": "injured",
-              "note": "Red Card"
-            },
             {
               "playerId": "m-ibrahimoglu-konyaspor",
               "name": "M. İbrahimoğlu",
@@ -35609,7 +35570,7 @@
               "note": "Knee Injury"
             }
           ],
-          "knownAvailabilityCoverage": 9,
+          "knownAvailabilityCoverage": 4,
           "rows": [
             {
               "playerId": "e-aydin-konyaspor",
@@ -35626,8 +35587,8 @@
             {
               "playerId": "b-gungordu-konyaspor",
               "name": "B. Güngördü",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "r-baniya-konyaspor",
@@ -35662,8 +35623,8 @@
             {
               "playerId": "e-bardhi-konyaspor",
               "name": "E. Bardhi",
-              "status": "injured",
-              "note": "Red Card"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "m-bj-rlo-konyaspor",
@@ -35913,14 +35874,16 @@
         "benchStrength": {
           "score": 22,
           "confidence": 100,
-          "sampleSize": 30,
+          "sampleSize": 32,
           "players": [
             "D. Ertaş",
+            "B. Güngördü",
             "R. Baniya",
             "A. Demirbağ",
             "M. Bjørlo",
             "A. K. Dagdevir",
             "Jo Jin-Ho",
+            "U. Yazğılı",
             "Y. Andzouana",
             "E. Bars",
             "M. Bostan",
@@ -35979,7 +35942,7 @@
       },
       "availability": {
         "home": null,
-        "away": 40
+        "away": 70
       },
       "confidence": 95,
       "advantages": [
@@ -35994,7 +35957,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:22.959Z",
+      "generatedAt": "2026-10-13T05:44:20.333Z",
       "asOf": "2026-10-17T13:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
@@ -36061,7 +36024,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-17T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:23.075Z",
+    "generatedAt": "2026-10-13T05:44:20.516Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -36732,6 +36695,17 @@
             "profileUrl": "./futbolcu/renato-nhaga"
           },
           {
+            "id": "rafael-leao",
+            "name": "Rafael Leão",
+            "position": "Sol kanat",
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": false,
+            "overallRating": 23,
+            "formRating": 24,
+            "profileUrl": "./futbolcu/rafael-leao"
+          },
+          {
             "id": "yunus-akgun",
             "name": "Yunus Akgün",
             "position": "Sağ kanat",
@@ -36743,32 +36717,21 @@
             "profileUrl": "./futbolcu/yunus-akgun"
           },
           {
-            "id": "roland-sallai",
-            "name": "Roland Sallai",
-            "position": "Sağ kanat",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": false,
-            "overallRating": 0,
-            "formRating": 0,
-            "profileUrl": "./futbolcu/roland-sallai"
-          },
-          {
-            "id": "c-guner-galatasaray",
-            "name": "C. Guner",
+            "id": "v-osimhen-galatasaray",
+            "name": "V. Osimhen",
             "position": "Attacker",
             "slot": "FWD",
             "assignedGroup": "forward",
             "outOfPosition": false,
-            "overallRating": 27,
-            "formRating": 29,
-            "profileUrl": "./futbolcu/can-armando-guner"
+            "overallRating": 36,
+            "formRating": 38,
+            "profileUrl": "./futbolcu/victor-osimhen"
           }
         ],
         "availability": {
           "fixtureId": "genclerbirligi-galatasaray-2026-10-17",
           "totalKnownPlayers": 62,
-          "unavailableCount": 6,
+          "unavailableCount": 3,
           "unavailable": [
             {
               "playerId": "g-guvenc-galatasaray",
@@ -36787,27 +36750,9 @@
               "name": "L. Ugochukwu",
               "status": "injured",
               "note": "Red Card"
-            },
-            {
-              "playerId": "v-osimhen-galatasaray",
-              "name": "V. Osimhen",
-              "status": "injured",
-              "note": "Groin Injury"
-            },
-            {
-              "playerId": "m-lemina-galatasaray",
-              "name": "M. Lemina",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
-            {
-              "playerId": "rafael-leao",
-              "name": "Rafael Leão",
-              "status": "injured",
-              "note": "Muscle Injury"
             }
           ],
-          "knownAvailabilityCoverage": 10,
+          "knownAvailabilityCoverage": 5,
           "rows": [
             {
               "playerId": "ugurcan-cakir",
@@ -37070,8 +37015,8 @@
             {
               "playerId": "v-osimhen-galatasaray",
               "name": "V. Osimhen",
-              "status": "injured",
-              "note": "Groin Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "l-sane-galatasaray",
@@ -37160,14 +37105,14 @@
             {
               "playerId": "m-lemina-galatasaray",
               "name": "M. Lemina",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "rafael-leao",
               "name": "Rafael Leão",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "e-bitshiabu-galatasaray",
@@ -37195,16 +37140,16 @@
             "reason": "rotation-or-unknown"
           },
           {
-            "playerId": "v-osimhen-galatasaray",
-            "name": "V. Osimhen",
-            "position": "Attacker",
-            "overall": 36,
-            "reason": "injured"
-          },
-          {
             "playerId": "a-yilmaz-galatasaray",
             "name": "A. Yilmaz",
             "position": "Goalkeeper",
+            "overall": 30,
+            "reason": "rotation-or-unknown"
+          },
+          {
+            "playerId": "e-bitshiabu-galatasaray",
+            "name": "E. Bitshiabu",
+            "position": "Defender",
             "overall": 30,
             "reason": "rotation-or-unknown"
           }
@@ -37212,7 +37157,7 @@
         "benchStrength": {
           "score": 16,
           "confidence": 100,
-          "sampleSize": 45,
+          "sampleSize": 48,
           "players": [
             "Günay Güvenç",
             "Davinson Sánchez",
@@ -37227,6 +37172,7 @@
             "Lucas Torreira",
             "Mario Lemina",
             "Lesley Ugochukwu",
+            "Roland Sallai",
             "Victor Osimhen",
             "Leroy Sané",
             "Barış Alper Yılmaz",
@@ -37242,6 +37188,7 @@
             "C. Akgun",
             "L. Torreira",
             "Y. Akgün",
+            "C. Guner",
             "F. Koçak",
             "A. Kutucu",
             "L. Sané",
@@ -37257,6 +37204,7 @@
             "E. E. Buyuk",
             "A. Batrakov",
             "E. C. Karasu",
+            "M. Lemina",
             "E. Bitshiabu",
             "D. Gül"
           ]
@@ -37277,7 +37225,7 @@
       },
       "wideAreas": {
         "home": null,
-        "away": 0
+        "away": 12
       },
       "goalkeepers": {
         "home": 0,
@@ -37293,7 +37241,7 @@
       },
       "availability": {
         "home": 100,
-        "away": 10
+        "away": 55
       },
       "confidence": 85,
       "advantages": [
@@ -37328,17 +37276,17 @@
           "profileUrl": "./futbolcu/salih-ucan"
         },
         "awayPlayer": {
-          "id": "c-guner-galatasaray",
-          "name": "C. Guner",
+          "id": "v-osimhen-galatasaray",
+          "name": "V. Osimhen",
           "position": "Attacker",
-          "overall": 27,
-          "form": 29,
-          "profileUrl": "./futbolcu/can-armando-guner"
+          "overall": 36,
+          "form": 38,
+          "profileUrl": "./futbolcu/victor-osimhen"
         },
         "advantage": "away",
-        "advantageScore": 36,
+        "advantageScore": 32,
         "confidence": 48,
-        "summary": "C. Guner, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
+        "summary": "V. Osimhen, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
         "id": "goalkeepers",
@@ -37367,18 +37315,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:23.075Z",
+      "generatedAt": "2026-10-13T05:44:20.516Z",
       "asOf": "2026-10-17T13:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
       "teamStrength": {
         "home": 36,
-        "away": 50
+        "away": 51
       },
       "probabilities": {
-        "homeWin": 24,
+        "homeWin": 23,
         "draw": 31,
-        "awayWin": 45
+        "awayWin": 46
       },
       "prediction": {
         "primary": "away",
@@ -37390,14 +37338,14 @@
         "label": "high"
       },
       "upsetRisk": {
-        "score": 59,
+        "score": 58,
         "label": "high"
       },
       "matchBalance": {
-        "score": 72,
+        "score": 70,
         "label": "strong-away"
       },
-      "summary": "Model, ev sahibi için %24, beraberlik için %31, deplasman için %45 ihtimal hesaplıyor. Takım güç puanları 36/100 - 50/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %23, beraberlik için %31, deplasman için %46 ihtimal hesaplıyor. Takım güç puanları 36/100 - 51/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -37430,7 +37378,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-17T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:23.189Z",
+    "generatedAt": "2026-10-13T05:44:20.681Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -38011,6 +37959,17 @@
             "profileUrl": "./futbolcu/yigit-fidan"
           },
           {
+            "id": "marco-asensio",
+            "name": "Marco Asensio",
+            "position": "10 numara",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 16,
+            "formRating": 19,
+            "profileUrl": "./futbolcu/marco-asensio"
+          },
+          {
             "id": "e-demir-fenerbahce",
             "name": "E. Demir",
             "position": "Midfielder",
@@ -38031,17 +37990,6 @@
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./futbolcu/alaettin-ekici"
-          },
-          {
-            "id": "b-elmaz-fenerbahce",
-            "name": "B. Elmaz",
-            "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./futbolcu/bartug-elmaz"
           },
           {
             "id": "kerem-akturkoglu",
@@ -38080,32 +38028,8 @@
         "availability": {
           "fixtureId": "fenerbahce-alanyaspor-2026-10-17",
           "totalKnownPlayers": 64,
-          "unavailableCount": 10,
+          "unavailableCount": 2,
           "unavailable": [
-            {
-              "playerId": "marco-asensio",
-              "name": "Marco Asensio",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
-            {
-              "playerId": "talisca",
-              "name": "Talisca",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "ederson-fenerbahce",
-              "name": "Ederson",
-              "status": "injured",
-              "note": "Illness"
-            },
-            {
-              "playerId": "m-gunok-fenerbahce",
-              "name": "M. Günok",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
             {
               "playerId": "m-muldur-fenerbahce",
               "name": "M. Müldür",
@@ -38117,33 +38041,9 @@
               "name": "J. Oosterwolde",
               "status": "injured",
               "note": "Achilles Tendon Injury"
-            },
-            {
-              "playerId": "c-soyuncu-fenerbahce",
-              "name": "Ç. Söyüncü",
-              "status": "injured",
-              "note": "Injury"
-            },
-            {
-              "playerId": "k-akturkoglu-fenerbahce",
-              "name": "K. Aktürkoğlu",
-              "status": "injured",
-              "note": "Concussion"
-            },
-            {
-              "playerId": "a-diouf-fenerbahce",
-              "name": "A. Diouf",
-              "status": "injured",
-              "note": "Lacking Match Fitness"
-            },
-            {
-              "playerId": "a-musaba-fenerbahce",
-              "name": "A. Musaba",
-              "status": "injured",
-              "note": "Injury"
             }
           ],
-          "knownAvailabilityCoverage": 16,
+          "knownAvailabilityCoverage": 3,
           "rows": [
             {
               "playerId": "kerem-akturkoglu",
@@ -38226,8 +38126,8 @@
             {
               "playerId": "marco-asensio",
               "name": "Marco Asensio",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "mert-hakan-yandas",
@@ -38256,8 +38156,8 @@
             {
               "playerId": "talisca",
               "name": "Talisca",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "dorgeles-nene",
@@ -38286,8 +38186,8 @@
             {
               "playerId": "ederson-fenerbahce",
               "name": "Ederson",
-              "status": "injured",
-              "note": "Illness"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "i-egribayat-fenerbahce",
@@ -38298,8 +38198,8 @@
             {
               "playerId": "m-gunok-fenerbahce",
               "name": "M. Günok",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "n-ake-fenerbahce",
@@ -38370,8 +38270,8 @@
             {
               "playerId": "c-soyuncu-fenerbahce",
               "name": "Ç. Söyüncü",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "kamil-efe-uregen-fenerbahce",
@@ -38436,8 +38336,8 @@
             {
               "playerId": "k-akturkoglu-fenerbahce",
               "name": "K. Aktürkoğlu",
-              "status": "injured",
-              "note": "Concussion"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "s-cherif-fenerbahce",
@@ -38448,8 +38348,8 @@
             {
               "playerId": "a-diouf-fenerbahce",
               "name": "A. Diouf",
-              "status": "injured",
-              "note": "Lacking Match Fitness"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "c-fedai-fenerbahce",
@@ -38478,8 +38378,8 @@
             {
               "playerId": "a-musaba-fenerbahce",
               "name": "A. Musaba",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "e-sayar-fenerbahce",
@@ -38558,9 +38458,9 @@
           }
         ],
         "benchStrength": {
-          "score": 14,
+          "score": 15,
           "confidence": 100,
-          "sampleSize": 43,
+          "sampleSize": 51,
           "players": [
             "Ederson Santana de Moraes",
             "Dominik Livaković",
@@ -38577,27 +38477,35 @@
             "Mert Hakan Yandaş",
             "Vedat Muriqi",
             "Amara Diouf",
+            "Talisca",
             "Dorgeles Nene",
             "E. Biterge",
             "T. Çetin",
             "Hulusi Efe Ceylan",
+            "Ederson",
             "İ. Eğribayat",
+            "M. Günok",
             "N. Aké",
             "L. Mercan",
             "O. Mimović",
             "Rodrigo Becão",
             "Y. Sen",
             "M. Škriniar",
+            "Ç. Söyüncü",
             "O. Aydın",
+            "B. Elmaz",
             "A. E. Fettahoglu",
             "M. Guendouzi",
             "N. Kanté",
             "N. Dorgeles",
             "İ. Yüksek",
+            "K. Aktürkoğlu",
             "S. Cherif",
+            "A. Diouf",
             "C. Fedai",
             "İ. Kahveci",
             "V. Muriqi",
+            "A. Musaba",
             "E. Sayar",
             "C. Ünder",
             "Romelu Lukaku",
@@ -39034,7 +38942,7 @@
         "away": 29
       },
       "bench": {
-        "home": 14,
+        "home": 15,
         "away": 23
       },
       "form": {
@@ -39042,7 +38950,7 @@
         "away": 55
       },
       "availability": {
-        "home": 0,
+        "home": 70,
         "away": 85
       },
       "confidence": 74,
@@ -39157,12 +39065,12 @@
         "id": "midfield-battle",
         "title": "Orta saha mücadelesi",
         "homePlayer": {
-          "id": "e-demir-fenerbahce",
-          "name": "E. Demir",
-          "position": "Midfielder",
-          "overall": 15,
-          "form": 18,
-          "profileUrl": "./oyuncular/e-demir-fenerbahce.html"
+          "id": "marco-asensio",
+          "name": "Marco Asensio",
+          "position": "10 numara",
+          "overall": 16,
+          "form": 19,
+          "profileUrl": "./futbolcu/marco-asensio"
         },
         "awayPlayer": {
           "id": "i-celik-alanyaspor",
@@ -39173,9 +39081,9 @@
           "profileUrl": "./futbolcu/izzet-celik"
         },
         "advantage": "balanced",
-        "advantageScore": 50,
+        "advantageScore": 51,
         "confidence": 83,
-        "summary": "E. Demir ve İ. Çelik arasındaki eşleşme mevcut verilerde dengeli görünüyor."
+        "summary": "Marco Asensio ve İ. Çelik arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
         "id": "goalkeepers",
@@ -39204,18 +39112,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:23.189Z",
+      "generatedAt": "2026-10-13T05:44:20.681Z",
       "asOf": "2026-10-17T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
-        "home": 54,
+        "home": 56,
         "away": 47
       },
       "probabilities": {
-        "homeWin": 45,
-        "draw": 34,
-        "awayWin": 21
+        "homeWin": 48,
+        "draw": 33,
+        "awayWin": 19
       },
       "prediction": {
         "primary": "home",
@@ -39227,14 +39135,14 @@
         "label": "medium"
       },
       "upsetRisk": {
-        "score": 58,
-        "label": "high"
+        "score": 55,
+        "label": "medium"
       },
       "matchBalance": {
-        "score": 86,
+        "score": 82,
         "label": "slight-home"
       },
-      "summary": "Model, ev sahibi için %45, beraberlik için %34, deplasman için %21 ihtimal hesaplıyor. Takım güç puanları 54/100 - 47/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %48, beraberlik için %33, deplasman için %19 ihtimal hesaplıyor. Takım güç puanları 56/100 - 47/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -39266,7 +39174,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-18T10:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:23.300Z",
+    "generatedAt": "2026-10-13T05:44:20.841Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -39879,6 +39787,17 @@
             "profileUrl": "./futbolcu/adem-arous"
           },
           {
+            "id": "a-baldursson-kasimpasa",
+            "name": "A. Baldursson",
+            "position": "Midfielder",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./futbolcu/andri-fannar-baldursson"
+          },
+          {
             "id": "e-boz-kasimpasa",
             "name": "E. Boz",
             "position": "Midfielder",
@@ -39904,9 +39823,9 @@
             "id": "m-deniz-kasimpasa",
             "name": "M. Deniz",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./futbolcu/mecit-deniz"
@@ -39923,17 +39842,6 @@
             "profileUrl": "./futbolcu/jakob-jessen"
           },
           {
-            "id": "elson-mendes-kasimpasa",
-            "name": "Elson Mendes",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./futbolcu/elson-mendes"
-          },
-          {
             "id": "a-benedyczak-kasimpasa",
             "name": "A. Benedyczak",
             "position": "Attacker",
@@ -39948,7 +39856,7 @@
         "availability": {
           "fixtureId": "kasimpasa-samsunspor-2026-10-18",
           "totalKnownPlayers": 41,
-          "unavailableCount": 5,
+          "unavailableCount": 2,
           "unavailable": [
             {
               "playerId": "k-corekci-kasimpasa",
@@ -39957,31 +39865,13 @@
               "note": "Achilles Tendon Injury"
             },
             {
-              "playerId": "a-baldursson-kasimpasa",
-              "name": "A. Baldursson",
-              "status": "injured",
-              "note": "Injury"
-            },
-            {
               "playerId": "m-ben-ouanes-kasimpasa",
               "name": "M. Ben Ouanes",
               "status": "injured",
               "note": "Muscle Injury"
-            },
-            {
-              "playerId": "t-diarra-kasimpasa",
-              "name": "T. Diarra",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "h-hajradinovic-kasimpasa",
-              "name": "H. Hajradinović",
-              "status": "injured",
-              "note": "Inactive"
             }
           ],
-          "knownAvailabilityCoverage": 12,
+          "knownAvailabilityCoverage": 5,
           "rows": [
             {
               "playerId": "e-albayrak-kasimpasa",
@@ -40052,8 +39942,8 @@
             {
               "playerId": "a-baldursson-kasimpasa",
               "name": "A. Baldursson",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "m-ben-ouanes-kasimpasa",
@@ -40160,14 +40050,14 @@
             {
               "playerId": "t-diarra-kasimpasa",
               "name": "T. Diarra",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "h-hajradinovic-kasimpasa",
               "name": "H. Hajradinović",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "a-benedyczak-kasimpasa",
@@ -40261,7 +40151,7 @@
         "benchStrength": {
           "score": 22,
           "confidence": 100,
-          "sampleSize": 25,
+          "sampleSize": 28,
           "players": [
             "A. Gianniotis",
             "A. Yanar",
@@ -40270,6 +40160,7 @@
             "A. Karapo",
             "Cláudio Winck",
             "Burak Gültekin",
+            "Elson Mendes",
             "A. Müjde",
             "M. Rafferty",
             "Y. Barası",
@@ -40280,6 +40171,8 @@
             "P. Guèye",
             "K. Kanatsızkuş",
             "A. Kol",
+            "T. Diarra",
+            "H. Hajradinović",
             "S. Alkas",
             "M. Bektas",
             "Muhammed Emin Bektaş",
@@ -40337,6 +40230,17 @@
             "profileUrl": "./futbolcu/haluk-mustafa-tan"
           },
           {
+            "id": "y-cift-samsunspor",
+            "name": "Y. Çift",
+            "position": "Defender",
+            "slot": "DEF",
+            "assignedGroup": "defender",
+            "outOfPosition": false,
+            "overallRating": 29,
+            "formRating": 31,
+            "profileUrl": "./futbolcu/yunus-emre-cift"
+          },
+          {
             "id": "badra-diabbate-ali-samsunspor",
             "name": "Badra Diabbate Ali",
             "position": "Defender",
@@ -40348,15 +40252,15 @@
             "profileUrl": "./futbolcu/badra-diabbate-ali"
           },
           {
-            "id": "j-mendes-samsunspor",
-            "name": "J. Mendes",
-            "position": "Defender",
-            "slot": "DEF",
-            "assignedGroup": "defender",
+            "id": "afonso-sousa",
+            "name": "Afonso Sousa",
+            "position": "10 numara",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
             "outOfPosition": false,
-            "overallRating": 29,
-            "formRating": 31,
-            "profileUrl": "./futbolcu/joe-mendes"
+            "overallRating": 16,
+            "formRating": 19,
+            "profileUrl": "./futbolcu/afonso-sousa"
           },
           {
             "id": "y-kayan-samsunspor",
@@ -40381,17 +40285,6 @@
             "profileUrl": "./futbolcu/emre-kilinc"
           },
           {
-            "id": "c-yuksel-samsunspor",
-            "name": "C. Yüksel",
-            "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./futbolcu/celil-yuksel"
-          },
-          {
             "id": "elayis-tavsan",
             "name": "Elayis Tavşan",
             "position": "Sol kanat",
@@ -40403,15 +40296,15 @@
             "profileUrl": "./futbolcu/elayis-tavsan"
           },
           {
-            "id": "y-sekongo-samsunspor",
-            "name": "Y. Sekongo",
+            "id": "c-yuksel-samsunspor",
+            "name": "C. Yüksel",
             "position": "Midfielder",
             "slot": "WING",
             "assignedGroup": "winger",
             "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
-            "profileUrl": "./oyuncular/y-sekongo-samsunspor.html"
+            "profileUrl": "./futbolcu/celil-yuksel"
           },
           {
             "id": "saikuba-jarju-samsunspor",
@@ -40428,76 +40321,16 @@
         "availability": {
           "fixtureId": "kasimpasa-samsunspor-2026-10-18",
           "totalKnownPlayers": 61,
-          "unavailableCount": 11,
+          "unavailableCount": 1,
           "unavailable": [
-            {
-              "playerId": "afonso-sousa",
-              "name": "Afonso Sousa",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
-            {
-              "playerId": "y-cift-samsunspor",
-              "name": "Y. Çift",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "a-makoumbou-samsunspor",
-              "name": "A. Makoumbou",
-              "status": "injured",
-              "note": "Inactive"
-            },
             {
               "playerId": "k-assoumou-samsunspor",
               "name": "K. Assoumou",
               "status": "injured",
               "note": "Muscle Injury"
-            },
-            {
-              "playerId": "t-coulibaly-samsunspor",
-              "name": "T. Coulibaly",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "f-kaya-samsunspor",
-              "name": "F. Kaya",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
-            {
-              "playerId": "marius-samsunspor",
-              "name": "Marius",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "e-tavsan-samsunspor",
-              "name": "E. Tavşan",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
-            {
-              "playerId": "e-watt-samsunspor",
-              "name": "E. Watt",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "i-drapinski-samsunspor",
-              "name": "I. Drapiński",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "o-hlenschl-ger-samsunspor",
-              "name": "O. Øhlenschlæger",
-              "status": "injured",
-              "note": "Knee Injury"
             }
           ],
-          "knownAvailabilityCoverage": 18,
+          "knownAvailabilityCoverage": 2,
           "rows": [
             {
               "playerId": "okan-kocuk",
@@ -40586,8 +40419,8 @@
             {
               "playerId": "afonso-sousa",
               "name": "Afonso Sousa",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "elliot-watt",
@@ -40670,8 +40503,8 @@
             {
               "playerId": "y-cift-samsunspor",
               "name": "Y. Çift",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "badra-diabbate-ali-samsunspor",
@@ -40724,8 +40557,8 @@
             {
               "playerId": "a-makoumbou-samsunspor",
               "name": "A. Makoumbou",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "c-yuksel-samsunspor",
@@ -40754,8 +40587,8 @@
             {
               "playerId": "t-coulibaly-samsunspor",
               "name": "T. Coulibaly",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "saikuba-jarju-samsunspor",
@@ -40766,14 +40599,14 @@
             {
               "playerId": "f-kaya-samsunspor",
               "name": "F. Kaya",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "marius-samsunspor",
               "name": "Marius",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "c-ndiaye-samsunspor",
@@ -40784,8 +40617,8 @@
             {
               "playerId": "e-tavsan-samsunspor",
               "name": "E. Tavşan",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "b-cetin-samsunspor",
@@ -40796,8 +40629,8 @@
             {
               "playerId": "e-watt-samsunspor",
               "name": "E. Watt",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "a-muja-samsunspor",
@@ -40814,8 +40647,8 @@
             {
               "playerId": "i-drapinski-samsunspor",
               "name": "I. Drapiński",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "g-guarino-samsunspor",
@@ -40850,8 +40683,8 @@
             {
               "playerId": "o-hlenschl-ger-samsunspor",
               "name": "O. Øhlenschlæger",
-              "status": "injured",
-              "note": "Knee Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "m-bayo-samsunspor",
@@ -40880,24 +40713,24 @@
             "reason": "rotation-or-unknown"
           },
           {
-            "playerId": "y-cift-samsunspor",
-            "name": "Y. Çift",
+            "playerId": "j-mendes-samsunspor",
+            "name": "J. Mendes",
             "position": "Defender",
             "overall": 29,
-            "reason": "injured"
+            "reason": "rotation-or-unknown"
           },
           {
             "playerId": "i-drapinski-samsunspor",
             "name": "I. Drapiński",
             "position": "Defender",
             "overall": 29,
-            "reason": "injured"
+            "reason": "rotation-or-unknown"
           }
         ],
         "benchStrength": {
-          "score": 11,
+          "score": 13,
           "confidence": 100,
-          "sampleSize": 39,
+          "sampleSize": 49,
           "players": [
             "Okan Kocuk",
             "Bilal Bayazıt",
@@ -40924,18 +40757,28 @@
             "O. Kocuk",
             "E. Albak",
             "T. Borevković",
+            "J. Mendes",
             "L. Tómasson",
             "R. van Drongelen",
             "Eyup Degirmenci",
             "C. Holse",
+            "A. Makoumbou",
             "Tahsin Bülbül ",
             "E. Ceesay",
+            "T. Coulibaly",
+            "F. Kaya",
+            "Marius",
             "C. Ndiaye",
+            "E. Tavşan",
+            "E. Watt",
             "A. Muja",
+            "Y. Sekongo",
+            "I. Drapiński",
             "G. Guarino",
             "Igor Drapinski",
             "Efe Berat Töruz",
             "Cheick Diabate",
+            "O. Øhlenschlæger",
             "M. Bayo",
             "S. Eraković"
           ]
@@ -40964,17 +40807,17 @@
       },
       "bench": {
         "home": 22,
-        "away": 11
+        "away": 13
       },
       "form": {
         "home": 39,
         "away": 0
       },
       "availability": {
-        "home": 25,
-        "away": 0
+        "home": 70,
+        "away": 85
       },
-      "confidence": 76,
+      "confidence": 74,
       "advantages": [
         {
           "key": "midfield",
@@ -41004,7 +40847,7 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "home"
+          "advantage": "away"
         }
       ],
       "summary": "Ev sahibi mevcut verilerde Kanat alanları ve Yedek kulübesi alanlarında bir adım önde görünüyor."
@@ -41038,12 +40881,12 @@
         "id": "wide-vs-fullback",
         "title": "Kanat - bek eşleşmesi",
         "homePlayer": {
-          "id": "j-jessen-kasimpasa",
-          "name": "J. Jessen",
+          "id": "m-deniz-kasimpasa",
+          "name": "M. Deniz",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./futbolcu/jakob-jessen"
+          "profileUrl": "./futbolcu/mecit-deniz"
         },
         "awayPlayer": {
           "id": "h-tan-samsunspor",
@@ -41086,25 +40929,25 @@
         "id": "midfield-battle",
         "title": "Orta saha mücadelesi",
         "homePlayer": {
-          "id": "e-boz-kasimpasa",
-          "name": "E. Boz",
+          "id": "a-baldursson-kasimpasa",
+          "name": "A. Baldursson",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./futbolcu/emirhan-boz"
+          "profileUrl": "./futbolcu/andri-fannar-baldursson"
         },
         "awayPlayer": {
-          "id": "y-kayan-samsunspor",
-          "name": "Y. Kayan",
-          "position": "Midfielder",
-          "overall": 15,
-          "form": 18,
-          "profileUrl": "./futbolcu/yalcin-kayan"
+          "id": "afonso-sousa",
+          "name": "Afonso Sousa",
+          "position": "10 numara",
+          "overall": 16,
+          "form": 19,
+          "profileUrl": "./futbolcu/afonso-sousa"
         },
         "advantage": "balanced",
         "advantageScore": 50,
         "confidence": 83,
-        "summary": "E. Boz ve Y. Kayan arasındaki eşleşme mevcut verilerde dengeli görünüyor."
+        "summary": "A. Baldursson ve Afonso Sousa arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
         "id": "goalkeepers",
@@ -41133,18 +40976,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:23.300Z",
+      "generatedAt": "2026-10-13T05:44:20.841Z",
       "asOf": "2026-10-18T10:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
         "home": 41,
-        "away": 32
+        "away": 34
       },
       "probabilities": {
-        "homeWin": 48,
-        "draw": 33,
-        "awayWin": 19
+        "homeWin": 45,
+        "draw": 34,
+        "awayWin": 21
       },
       "prediction": {
         "primary": "home",
@@ -41156,14 +40999,14 @@
         "label": "medium"
       },
       "upsetRisk": {
-        "score": 55,
-        "label": "medium"
+        "score": 58,
+        "label": "high"
       },
       "matchBalance": {
-        "score": 82,
+        "score": 86,
         "label": "slight-home"
       },
-      "summary": "Model, ev sahibi için %48, beraberlik için %33, deplasman için %19 ihtimal hesaplıyor. Takım güç puanları 41/100 - 32/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %45, beraberlik için %34, deplasman için %21 ihtimal hesaplıyor. Takım güç puanları 41/100 - 34/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -41195,7 +41038,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-18T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:23.412Z",
+    "generatedAt": "2026-10-13T05:44:21.002Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -41740,6 +41583,17 @@
             "profileUrl": "./futbolcu/ugur-kaan-yildiz"
           },
           {
+            "id": "r-rivas-kocaelispor",
+            "name": "R. Rivas",
+            "position": "Midfielder",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./futbolcu/rigoberto-rivas"
+          },
+          {
             "id": "mahamadou-susoho-sissoho-kocaelispor",
             "name": "Mahamadou Susoho Sissoho",
             "position": "Midfielder",
@@ -41765,9 +41619,9 @@
             "id": "show-kocaelispor",
             "name": "Show",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./oyuncular/show-kocaelispor.html"
@@ -41784,17 +41638,6 @@
             "profileUrl": "./futbolcu/berkan-kutlu"
           },
           {
-            "id": "ege-bilim-kocaelispor",
-            "name": "Ege Bilim",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 15,
-            "formRating": 18,
-            "profileUrl": "./futbolcu/ege-bilim"
-          },
-          {
             "id": "arda-ozyar-kocaelispor",
             "name": "Arda Ozyar",
             "position": "Attacker",
@@ -41809,19 +41652,13 @@
         "availability": {
           "fixtureId": "kocaelispor-goztepe-2026-10-18",
           "totalKnownPlayers": 38,
-          "unavailableCount": 9,
+          "unavailableCount": 6,
           "unavailable": [
             {
               "playerId": "a-jovanovic-kocaelispor",
               "name": "A. Jovanović",
               "status": "injured",
               "note": "Knee Injury"
-            },
-            {
-              "playerId": "t-bingol-kocaelispor",
-              "name": "T. Bingöl",
-              "status": "injured",
-              "note": "Inactive"
             },
             {
               "playerId": "a-dijksteel-kocaelispor",
@@ -41842,12 +41679,6 @@
               "note": "Muscle Injury"
             },
             {
-              "playerId": "r-rivas-kocaelispor",
-              "name": "R. Rivas",
-              "status": "injured",
-              "note": "Thigh Injury"
-            },
-            {
               "playerId": "b-petkovic-kocaelispor",
               "name": "B. Petković",
               "status": "injured",
@@ -41858,15 +41689,9 @@
               "name": "M. Maglica",
               "status": "injured",
               "note": "Injury"
-            },
-            {
-              "playerId": "t-gulliksen-kocaelispor",
-              "name": "T. Gulliksen",
-              "status": "injured",
-              "note": "Hamstring Injury"
             }
           ],
-          "knownAvailabilityCoverage": 24,
+          "knownAvailabilityCoverage": 16,
           "rows": [
             {
               "playerId": "a-jovanovic-kocaelispor",
@@ -41889,8 +41714,8 @@
             {
               "playerId": "t-bingol-kocaelispor",
               "name": "T. Bingöl",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "d-ceylan-kocaelispor",
@@ -41973,8 +41798,8 @@
             {
               "playerId": "r-rivas-kocaelispor",
               "name": "R. Rivas",
-              "status": "injured",
-              "note": "Thigh Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "mahamadou-susoho-sissoho-kocaelispor",
@@ -42087,8 +41912,8 @@
             {
               "playerId": "t-gulliksen-kocaelispor",
               "name": "T. Gulliksen",
-              "status": "injured",
-              "note": "Hamstring Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "goncalo-santos-sousa-kocaelispor",
@@ -42128,9 +41953,10 @@
         "benchStrength": {
           "score": 21,
           "confidence": 100,
-          "sampleSize": 18,
+          "sampleSize": 21,
           "players": [
             "O. Piri",
+            "T. Bingöl",
             "M. Cinan",
             "E. Bilim",
             "H. Keïta",
@@ -42147,6 +41973,8 @@
             "Talha Polat",
             "F. Ayé",
             "G. Sousa",
+            "Ege Bilim",
+            "T. Gulliksen",
             "Gonçalo Santos Sousa"
           ]
         }
@@ -42186,6 +42014,28 @@
             "profileUrl": "./futbolcu/ege-yildirim"
           },
           {
+            "id": "n-dismas-goztepe",
+            "name": "N. Dismas",
+            "position": "Defender",
+            "slot": "DEF",
+            "assignedGroup": "defender",
+            "outOfPosition": false,
+            "overallRating": 29,
+            "formRating": 31,
+            "profileUrl": "./oyuncular/n-dismas-goztepe.html"
+          },
+          {
+            "id": "o-bayrak-goztepe",
+            "name": "O. Bayrak",
+            "position": "Defender",
+            "slot": "DEF",
+            "assignedGroup": "defender",
+            "outOfPosition": false,
+            "overallRating": 28,
+            "formRating": 30,
+            "profileUrl": "./futbolcu/ogun-bayrak"
+          },
+          {
             "id": "m-bokele-goztepe",
             "name": "M. Bokele",
             "position": "Defender",
@@ -42197,26 +42047,26 @@
             "profileUrl": "./futbolcu/malcom-bokele"
           },
           {
-            "id": "a-cherni-goztepe",
-            "name": "A. Cherni",
-            "position": "Defender",
-            "slot": "DEF",
-            "assignedGroup": "defender",
-            "outOfPosition": false,
-            "overallRating": 26,
-            "formRating": 26,
-            "profileUrl": "./oyuncular/a-cherni-goztepe.html"
-          },
-          {
             "id": "t-altikardes-goztepe",
             "name": "T. Altıkardeş",
             "position": "Midfielder",
-            "slot": "DEF",
-            "assignedGroup": "defender",
-            "outOfPosition": true,
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./futbolcu/taha-altikardes"
+          },
+          {
+            "id": "a-antunes-goztepe",
+            "name": "A. Antunes",
+            "position": "Midfielder",
+            "slot": "MID",
+            "assignedGroup": "midfielder",
+            "outOfPosition": false,
+            "overallRating": 15,
+            "formRating": 18,
+            "profileUrl": "./futbolcu/alexis-antunes"
           },
           {
             "id": "e-bekiroglu-goztepe",
@@ -42233,9 +42083,9 @@
             "id": "rhaldney-goztepe",
             "name": "Rhaldney",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./oyuncular/rhaldney-goztepe.html"
@@ -42244,34 +42094,12 @@
             "id": "f-anjorin-goztepe",
             "name": "F. Anjorin",
             "position": "Midfielder",
-            "slot": "MID",
-            "assignedGroup": "midfielder",
-            "outOfPosition": false,
+            "slot": "WING",
+            "assignedGroup": "winger",
+            "outOfPosition": true,
             "overallRating": 15,
             "formRating": 18,
             "profileUrl": "./futbolcu/faustino-anjorin"
-          },
-          {
-            "id": "a-dennis-goztepe",
-            "name": "A. Dennis",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 13,
-            "formRating": 15,
-            "profileUrl": "./oyuncular/a-dennis-goztepe.html"
-          },
-          {
-            "id": "m-mohammed-goztepe",
-            "name": "M. Mohammed",
-            "position": "Midfielder",
-            "slot": "WING",
-            "assignedGroup": "winger",
-            "outOfPosition": true,
-            "overallRating": 13,
-            "formRating": 15,
-            "profileUrl": "./oyuncular/m-mohammed-goztepe.html"
           },
           {
             "id": "y-sirin-goztepe",
@@ -42288,41 +42116,11 @@
         "availability": {
           "fixtureId": "kocaelispor-goztepe-2026-10-18",
           "totalKnownPlayers": 31,
-          "unavailableCount": 9,
+          "unavailableCount": 3,
           "unavailable": [
-            {
-              "playerId": "allan-godoi-goztepe",
-              "name": "Allan Godói",
-              "status": "injured",
-              "note": "Injury"
-            },
             {
               "playerId": "f-bayir-goztepe",
               "name": "F. Bayır",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "o-bayrak-goztepe",
-              "name": "O. Bayrak",
-              "status": "injured",
-              "note": "Red Card"
-            },
-            {
-              "playerId": "n-dismas-goztepe",
-              "name": "N. Dismas",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "n-sonko-sundberg-goztepe",
-              "name": "N. Sonko-Sundberg",
-              "status": "injured",
-              "note": "Inactive"
-            },
-            {
-              "playerId": "a-antunes-goztepe",
-              "name": "A. Antunes",
               "status": "injured",
               "note": "Inactive"
             },
@@ -42336,16 +42134,10 @@
               "playerId": "l-gugeshashvili-goztepe",
               "name": "L. Gugeshashvili",
               "status": "injured",
-              "note": "Injury"
-            },
-            {
-              "playerId": "g-bayrakdar-goztepe",
-              "name": "G. Bayrakdar",
-              "status": "injured",
               "note": "Inactive"
             }
           ],
-          "knownAvailabilityCoverage": 29,
+          "knownAvailabilityCoverage": 10,
           "rows": [
             {
               "playerId": "a-ozcimen-goztepe",
@@ -42362,8 +42154,8 @@
             {
               "playerId": "allan-godoi-goztepe",
               "name": "Allan Godói",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "f-bayir-goztepe",
@@ -42374,8 +42166,8 @@
             {
               "playerId": "o-bayrak-goztepe",
               "name": "O. Bayrak",
-              "status": "injured",
-              "note": "Red Card"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "m-bokele-goztepe",
@@ -42392,14 +42184,14 @@
             {
               "playerId": "n-dismas-goztepe",
               "name": "N. Dismas",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "n-sonko-sundberg-goztepe",
               "name": "N. Sonko-Sundberg",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "ege-yildirim-goztepe",
@@ -42416,8 +42208,8 @@
             {
               "playerId": "a-antunes-goztepe",
               "name": "A. Antunes",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "e-bekiroglu-goztepe",
@@ -42507,13 +42299,13 @@
               "playerId": "l-gugeshashvili-goztepe",
               "name": "L. Gugeshashvili",
               "status": "injured",
-              "note": "Injury"
+              "note": "Inactive"
             },
             {
               "playerId": "g-bayrakdar-goztepe",
               "name": "G. Bayrakdar",
-              "status": "injured",
-              "note": "Inactive"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "t-boke-goztepe",
@@ -42548,27 +42340,32 @@
             "reason": "rotation-or-unknown"
           },
           {
-            "playerId": "n-dismas-goztepe",
-            "name": "N. Dismas",
+            "playerId": "f-bayir-goztepe",
+            "name": "F. Bayır",
             "position": "Defender",
-            "overall": 29,
+            "overall": 27,
             "reason": "injured"
           },
           {
-            "playerId": "o-bayrak-goztepe",
-            "name": "O. Bayrak",
-            "position": "Defender",
-            "overall": 28,
+            "playerId": "l-gugeshashvili-goztepe",
+            "name": "L. Gugeshashvili",
+            "position": "Goalkeeper",
+            "overall": 27,
             "reason": "injured"
           }
         ],
         "benchStrength": {
           "score": 22,
           "confidence": 100,
-          "sampleSize": 11,
+          "sampleSize": 17,
           "players": [
             "Ş. Öztürk",
+            "Allan Godói",
+            "A. Cherni",
+            "N. Sonko-Sundberg",
+            "A. Dennis",
             "Guilherme Luiz",
+            "M. Mohammed",
             "B. Sarigul",
             "André Henrique",
             "S. Armstrong",
@@ -42576,6 +42373,7 @@
             "Juan",
             "A. Kurtulan",
             "Alex Matos",
+            "G. Bayrakdar",
             "T. Böke",
             "R. Akonnor"
           ]
@@ -42596,7 +42394,7 @@
       },
       "wideAreas": {
         "home": 15,
-        "away": 13
+        "away": 15
       },
       "goalkeepers": {
         "home": 29,
@@ -42611,10 +42409,10 @@
         "away": 38
       },
       "availability": {
-        "home": 0,
-        "away": 0
+        "home": 10,
+        "away": 55
       },
-      "confidence": 77,
+      "confidence": 75,
       "advantages": [
         {
           "key": "midfield",
@@ -42644,10 +42442,10 @@
         {
           "key": "availability",
           "label": "Kadro devamlılığı",
-          "advantage": "balanced"
+          "advantage": "away"
         }
       ],
-      "summary": "Ev sahibi mevcut verilerde Form alanlarında bir adım önde görünüyor."
+      "summary": "Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok."
     },
     "keyDuels": [
       {
@@ -42678,25 +42476,25 @@
         "id": "wide-vs-fullback",
         "title": "Kanat - bek eşleşmesi",
         "homePlayer": {
-          "id": "b-kutlu-kocaelispor",
-          "name": "B. Kutlu",
+          "id": "show-kocaelispor",
+          "name": "Show",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./futbolcu/berkan-kutlu"
+          "profileUrl": "./oyuncular/show-kocaelispor.html"
         },
         "awayPlayer": {
-          "id": "m-bokele-goztepe",
-          "name": "M. Bokele",
+          "id": "n-dismas-goztepe",
+          "name": "N. Dismas",
           "position": "Defender",
-          "overall": 28,
-          "form": 30,
-          "profileUrl": "./futbolcu/malcom-bokele"
+          "overall": 29,
+          "form": 31,
+          "profileUrl": "./oyuncular/n-dismas-goztepe.html"
         },
         "advantage": "away",
-        "advantageScore": 44,
+        "advantageScore": 43,
         "confidence": 68,
-        "summary": "M. Bokele, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
+        "summary": "N. Dismas, mevcut form ve genel seviyesiyle bu eşleşmede bir adım önde görünüyor."
       },
       {
         "id": "away-forward-vs-defense",
@@ -42726,25 +42524,25 @@
         "id": "midfield-battle",
         "title": "Orta saha mücadelesi",
         "homePlayer": {
-          "id": "mahamadou-susoho-sissoho-kocaelispor",
-          "name": "Mahamadou Susoho Sissoho",
+          "id": "r-rivas-kocaelispor",
+          "name": "R. Rivas",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./futbolcu/mahamadou-susoho-sissoho"
+          "profileUrl": "./futbolcu/rigoberto-rivas"
         },
         "awayPlayer": {
-          "id": "e-bekiroglu-goztepe",
-          "name": "E. Bekiroğlu",
+          "id": "t-altikardes-goztepe",
+          "name": "T. Altıkardeş",
           "position": "Midfielder",
           "overall": 15,
           "form": 18,
-          "profileUrl": "./futbolcu/efkan-bekiroglu"
+          "profileUrl": "./futbolcu/taha-altikardes"
         },
         "advantage": "balanced",
         "advantageScore": 50,
         "confidence": 83,
-        "summary": "Mahamadou Susoho Sissoho ve E. Bekiroğlu arasındaki eşleşme mevcut verilerde dengeli görünüyor."
+        "summary": "R. Rivas ve T. Altıkardeş arasındaki eşleşme mevcut verilerde dengeli görünüyor."
       },
       {
         "id": "goalkeepers",
@@ -42773,37 +42571,37 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:23.412Z",
+      "generatedAt": "2026-10-13T05:44:21.002Z",
       "asOf": "2026-10-18T13:00:00.000Z",
       "predictionStatus": "available",
-      "dataConfidence": 87,
+      "dataConfidence": 86,
       "teamStrength": {
-        "home": 48,
-        "away": 39
+        "home": 49,
+        "away": 41
       },
       "probabilities": {
-        "homeWin": 48,
+        "homeWin": 47,
         "draw": 33,
-        "awayWin": 19
+        "awayWin": 20
       },
       "prediction": {
         "primary": "home",
         "label": "Ev sahibi net önde",
-        "confidence": 87
+        "confidence": 86
       },
       "goalPotential": {
         "score": 76,
         "label": "high"
       },
       "upsetRisk": {
-        "score": 55,
-        "label": "medium"
+        "score": 56,
+        "label": "high"
       },
       "matchBalance": {
-        "score": 82,
+        "score": 84,
         "label": "slight-home"
       },
-      "summary": "Model, ev sahibi için %48, beraberlik için %33, deplasman için %19 ihtimal hesaplıyor. Takım güç puanları 48/100 - 39/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 87/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %47, beraberlik için %33, deplasman için %20 ihtimal hesaplıyor. Takım güç puanları 49/100 - 41/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -42821,7 +42619,7 @@
         "Resmî ilk 11 henüz açıklanmadı"
       ]
     },
-    "dataConfidence": 87,
+    "dataConfidence": 86,
     "analysisStatus": "complete",
     "warnings": []
   },
@@ -42835,7 +42633,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-18T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-13T03:26:23.521Z",
+    "generatedAt": "2026-10-13T05:44:21.164Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -43461,22 +43259,16 @@
         "availability": {
           "fixtureId": "basaksehir-gaziantep-fk-2026-10-18",
           "totalKnownPlayers": 33,
-          "unavailableCount": 2,
+          "unavailableCount": 1,
           "unavailable": [
             {
               "playerId": "e-visca-basaksehir",
               "name": "E. Višća",
               "status": "injured",
               "note": "Injury"
-            },
-            {
-              "playerId": "u-bozok-basaksehir",
-              "name": "U. Bozok",
-              "status": "injured",
-              "note": "Red Card"
             }
           ],
-          "knownAvailabilityCoverage": 6,
+          "knownAvailabilityCoverage": 3,
           "rows": [
             {
               "playerId": "d-dilmen-basaksehir",
@@ -43661,8 +43453,8 @@
             {
               "playerId": "u-bozok-basaksehir",
               "name": "U. Bozok",
-              "status": "injured",
-              "note": "Red Card"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "a-skov-olsen-basaksehir",
@@ -43708,7 +43500,7 @@
         "benchStrength": {
           "score": 21,
           "confidence": 100,
-          "sampleSize": 20,
+          "sampleSize": 21,
           "players": [
             "M. Şengezer",
             "O. Ba",
@@ -43728,6 +43520,7 @@
             "V. Babacan",
             "O. Ergün",
             "Ö. Şahiner",
+            "U. Bozok",
             "A. Skov Olsen",
             "Ege Ozturk"
           ]
@@ -43870,20 +43663,8 @@
         "availability": {
           "fixtureId": "basaksehir-gaziantep-fk-2026-10-18",
           "totalKnownPlayers": 38,
-          "unavailableCount": 6,
+          "unavailableCount": 2,
           "unavailable": [
-            {
-              "playerId": "a-o-kalin-gaziantep-fk",
-              "name": "A. O. Kalin",
-              "status": "injured",
-              "note": "Muscle Injury"
-            },
-            {
-              "playerId": "j-bacuna-gaziantep-fk",
-              "name": "J. Bacuna",
-              "status": "injured",
-              "note": "Red Card"
-            },
             {
               "playerId": "f-bavuk-gaziantep-fk",
               "name": "F. Bavuk",
@@ -43895,21 +43676,9 @@
               "name": "N. Sangaré",
               "status": "injured",
               "note": "Back Injury"
-            },
-            {
-              "playerId": "s-hansen-gaziantep-fk",
-              "name": "S. Hansen",
-              "status": "injured",
-              "note": "Injury"
-            },
-            {
-              "playerId": "ali-osman-kalin-gaziantep-fk",
-              "name": "Ali Osman Kalın",
-              "status": "injured",
-              "note": "Muscle Injury"
             }
           ],
-          "knownAvailabilityCoverage": 16,
+          "knownAvailabilityCoverage": 5,
           "rows": [
             {
               "playerId": "c-aslan-gaziantep-fk",
@@ -44004,8 +43773,8 @@
             {
               "playerId": "a-o-kalin-gaziantep-fk",
               "name": "A. O. Kalin",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "ibrahim-kagan-alkis-gaziantep-fk",
@@ -44016,8 +43785,8 @@
             {
               "playerId": "j-bacuna-gaziantep-fk",
               "name": "J. Bacuna",
-              "status": "injured",
-              "note": "Red Card"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "e-kulasin-gaziantep-fk",
@@ -44112,8 +43881,8 @@
             {
               "playerId": "s-hansen-gaziantep-fk",
               "name": "S. Hansen",
-              "status": "injured",
-              "note": "Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "e-sarikaya-gaziantep-fk",
@@ -44130,8 +43899,8 @@
             {
               "playerId": "ali-osman-kalin-gaziantep-fk",
               "name": "Ali Osman Kalın",
-              "status": "injured",
-              "note": "Muscle Injury"
+              "status": "unknown",
+              "note": null
             },
             {
               "playerId": "a-dadakdeniz-gaziantep-fk",
@@ -44171,7 +43940,7 @@
         "benchStrength": {
           "score": 23,
           "confidence": 100,
-          "sampleSize": 21,
+          "sampleSize": 25,
           "players": [
             "Yusuf Nazar",
             "M. Abena",
@@ -44180,7 +43949,9 @@
             "A. Ablak",
             "V. Gidado",
             "O. Özçiçek",
+            "A. O. Kalin",
             "Ibrahim Kagan Alkis",
+            "J. Bacuna",
             "E. Kulašin",
             "K. Tobiasz",
             "Sabahattin Destici",
@@ -44192,7 +43963,9 @@
             "S. Dursun",
             "Serdar Dursun",
             "Kadir Gumus",
+            "S. Hansen",
             "A. Sylla",
+            "Ali Osman Kalın",
             "A. Dadakdeniz"
           ]
         }
@@ -44227,10 +44000,10 @@
         "away": 25
       },
       "availability": {
-        "home": 70,
-        "away": 10
+        "home": 85,
+        "away": 70
       },
-      "confidence": 75,
+      "confidence": 74,
       "advantages": [
         {
           "key": "midfield",
@@ -44389,17 +44162,17 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-13T03:26:23.521Z",
+      "generatedAt": "2026-10-13T05:44:21.164Z",
       "asOf": "2026-10-18T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
         "home": 42,
-        "away": 40
+        "away": 41
       },
       "probabilities": {
-        "homeWin": 39,
-        "draw": 35,
+        "homeWin": 38,
+        "draw": 36,
         "awayWin": 26
       },
       "prediction": {
@@ -44412,14 +44185,14 @@
         "label": "medium"
       },
       "upsetRisk": {
-        "score": 64,
+        "score": 65,
         "label": "high"
       },
       "matchBalance": {
-        "score": 96,
+        "score": 98,
         "label": "balanced"
       },
-      "summary": "Model, ev sahibi için %39, beraberlik için %35, deplasman için %26 ihtimal hesaplıyor. Takım güç puanları 42/100 - 40/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %38, beraberlik için %36, deplasman için %26 ihtimal hesaplıyor. Takım güç puanları 42/100 - 41/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {

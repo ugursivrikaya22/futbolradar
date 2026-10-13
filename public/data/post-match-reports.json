@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-13T04:48:01.083Z",
+  "updatedAt": "2026-10-13T05:44:28.156Z",
   "matchCount": 6590,
   "records": [
     {
@@ -3207,7 +3207,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 5
+          "count": 7
         },
         "statistics": {
           "present": false,
@@ -3227,7 +3227,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 5,
+        "events": 7,
         "statistics": 0,
         "lineups": 0,
         "players": 0
@@ -3253,11 +3253,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "9922a7b5915c088b",
-      "fingerprint": "9922a7b5915c088b",
+      "analysisSourceHash": "346295ea01b8fbba",
+      "fingerprint": "346295ea01b8fbba",
       "analysisGeneratedAt": "2026-10-13T00:18:13.120Z",
-      "analysisUpdatedAt": "2026-10-13T00:18:13.120Z",
-      "generatedAt": "2026-10-13T00:18:13.120Z",
+      "analysisUpdatedAt": "2026-10-13T05:44:28.016Z",
+      "generatedAt": "2026-10-13T05:44:28.016Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -3269,7 +3269,7 @@
       "reportUrl": "./mac-raporu/tivoli-gardens-racing-united-2026-10-13.html",
       "digest": {
         "headline": "Racing United, Tivoli Gardens'i 4-3 yendi",
-        "paragraph": "Premier League maçını Racing United 4-3 kazandı; Tivoli Gardens sahadan puansız ayrıldı. Golleri 14. dakikada N. Ellis (Racing United), 16. dakikada S. Clarke (Tivoli Gardens), 18. dakikada N. Ellis (Racing United), 35. dakikada L. Williams (Tivoli Gardens), 45+3. dakikada J. Cole (Racing United) kaydetti.",
+        "paragraph": "Premier League maçını Racing United 4-3 kazandı; Tivoli Gardens sahadan puansız ayrıldı. Golleri 14. dakikada N. Ellis (Racing United), 16. dakikada S. Clarke (Tivoli Gardens), 18. dakikada N. Ellis (Racing United), 35. dakikada L. Williams (Tivoli Gardens), 45+3. dakikada J. Cole (Racing United), 78. dakikada C. Taylor (Racing United), 89. dakikada J. Dewar (Tivoli Gardens) kaydetti.",
         "result": {
           "winner": "Racing United",
           "loser": "Tivoli Gardens",
@@ -3327,12 +3327,27 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 2 gol kaydedildi, (C. Taylor, J. Dewar), sonucu belirleyen fark bu bölümde oluştu.",
           "goals": {
-            "home": 0,
-            "away": 0
+            "home": 1,
+            "away": 1
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Racing United",
+              "type": "Gol",
+              "detail": "C. Taylor",
+              "decisive": true
+            },
+            {
+              "minute": "89'",
+              "team": "Tivoli Gardens",
+              "type": "Gol",
+              "detail": "J. Dewar",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -3344,21 +3359,21 @@
               "impact": "yüksek"
             },
             {
+              "name": "C. Taylor",
+              "team": "Racing United",
+              "contribution": "78' gol",
+              "impact": "yüksek"
+            },
+            {
               "name": "J. Cole",
               "team": "Racing United",
               "contribution": "45+3' gol",
               "impact": "yüksek"
             },
             {
-              "name": "L. Williams",
+              "name": "J. Dewar",
               "team": "Tivoli Gardens",
-              "contribution": "35' gol",
-              "impact": "yüksek"
-            },
-            {
-              "name": "S. Clarke",
-              "team": "Tivoli Gardens",
-              "contribution": "16' gol",
+              "contribution": "89' gol",
               "impact": "yüksek"
             }
           ]
@@ -3380,9 +3395,13 @@
           "goals": 5
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "78' Racing United — C. Taylor: gol",
+            "89' Tivoli Gardens — J. Dewar: gol"
+          ],
+          "goals": 2
         },
         "coaching": {
           "status": "unavailable",
@@ -3396,7 +3415,9 @@
             "Racing United, Tivoli Gardens'i 3-4 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Tivoli Gardens son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Racing United sahadan 1 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -3423,11 +3444,12 @@
         "standoutPlayers",
         "momentum",
         "firstHalf",
+        "secondHalf",
         "turningPoints",
         "lateGame",
         "finalAssessment"
       ],
-      "coverage": 50,
+      "coverage": 57,
       "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
@@ -3460,10 +3482,10 @@
       "winner": "Novorizontino",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -3473,69 +3495,56 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 15
+          "count": 26
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 44
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 15,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 26,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 44
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "66e90830908d835f",
-      "fingerprint": "66e90830908d835f",
+      "analysisSourceHash": "8aedd6fbac482e1e",
+      "fingerprint": "8aedd6fbac482e1e",
       "analysisGeneratedAt": "2026-10-13T00:18:13.120Z",
-      "analysisUpdatedAt": "2026-10-13T00:18:13.120Z",
-      "generatedAt": "2026-10-13T00:18:13.120Z",
+      "analysisUpdatedAt": "2026-10-13T05:44:28.016Z",
+      "generatedAt": "2026-10-13T05:44:28.016Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Novorizontino 5-1 Ponte Preta maç raporu: Serie B istatistikleri | FutbolRadar",
-        "description": "Novorizontino 5-1 Ponte Preta maç raporu, goller: Ronald Barcellos Arantes, Romulo Azevedo Simão, goller, olaylar ve sonraki maç.",
+        "description": "Novorizontino 5-1 Ponte Preta maç raporu, goller: Ronald Barcellos Arantes, Romulo Azevedo Simão, Carlos Henrique, Eduardo Brock, xG, şut ve pas istatistik...",
         "path": "mac-raporu/novorizontino-ponte-preta-2026-10-13.html",
         "competition": "Serie B"
       },
       "reportUrl": "./mac-raporu/novorizontino-ponte-preta-2026-10-13.html",
       "digest": {
         "headline": "Novorizontino, Ponte Preta'yı 5-1 yendi",
-        "paragraph": "Novorizontino, Dr. Jorge Ismael de Biase'de oynanan Serie B karşılaşmasında Ponte Preta'yı 5-1 mağlup etti. Golleri 11. dakikada Ronald Barcellos Arantes (Novorizontino), 25. dakikada Novorizontino, 45+8. dakikada Romulo Azevedo Simão (Novorizontino), 45. dakikada Ponte Preta kaydetti.",
+        "paragraph": "Novorizontino, Dr. Jorge Ismael de Biase'de oynanan Serie B karşılaşmasında Ponte Preta'yı 5-1 mağlup etti. Golleri 11. dakikada Ronald Barcellos Arantes (Novorizontino), 25. dakikada Novorizontino, 45. dakikada Ponte Preta, 45+8. dakikada Romulo Azevedo Simão (Novorizontino), 81. dakikada Carlos Henrique (Novorizontino), 90. dakikada Eduardo Brock (Novorizontino) kaydetti.",
         "result": {
           "winner": "Novorizontino",
           "loser": "Ponte Preta",
@@ -3548,7 +3557,7 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
           "status": "ready",
@@ -3568,10 +3577,10 @@
               "pivotal": true
             },
             {
-              "minute": "45+8'",
-              "team": "Novorizontino",
-              "type": "Penaltı",
-              "detail": "Romulo Azevedo Simão",
+              "minute": "88'",
+              "team": "Ponte Preta",
+              "type": "Kırmızı kart",
+              "detail": "",
               "pivotal": true
             },
             {
@@ -3582,10 +3591,10 @@
               "pivotal": true
             },
             {
-              "minute": "11'",
+              "minute": "45+8'",
               "team": "Novorizontino",
-              "type": "Gol",
-              "detail": "Ronald Barcellos Arantes",
+              "type": "Penaltı",
+              "detail": "Romulo Azevedo Simão",
               "pivotal": true
             }
           ]
@@ -3593,16 +3602,57 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 2 gol kaydedildi, (Carlos Henrique, Eduardo Brock), 1 kırmızı kart bu bölümde görüldü.",
           "goals": {
-            "home": 0,
+            "home": 2,
             "away": 0
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Novorizontino",
+              "type": "Oyuncu değişikliği",
+              "detail": "Madson Ferreira",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "Novorizontino",
+              "type": "Gol",
+              "detail": "Carlos Henrique",
+              "decisive": true
+            },
+            {
+              "minute": "82'",
+              "team": "Novorizontino",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 5",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "Ponte Preta",
+              "type": "Sarı kart",
+              "detail": "Gustavo Lopes Teles",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
           "players": [
+            {
+              "name": "Carlos Henrique",
+              "team": "Novorizontino",
+              "contribution": "81' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Eduardo Brock",
+              "team": "Novorizontino",
+              "contribution": "90' gol",
+              "impact": "yüksek"
+            },
             {
               "name": "Romulo Azevedo Simão",
               "team": "Novorizontino",
@@ -3614,24 +3664,15 @@
               "team": "Novorizontino",
               "contribution": "11' gol",
               "impact": "yüksek"
-            },
-            {
-              "name": "Madson Ferreira",
-              "team": "Novorizontino",
-              "contribution": "51' sarı kart",
-              "impact": "olumsuz"
-            },
-            {
-              "name": "Patrick Marcos",
-              "team": "Novorizontino",
-              "contribution": "43' kırmızı kart",
-              "impact": "olumsuz"
             }
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Novorizontino sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Ponte Preta sahaya 3-4-2-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -3639,8 +3680,8 @@
             "İlk yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
             "11' Novorizontino — Ronald Barcellos Arantes: gol",
             "25' Novorizontino: gol",
-            "45+8' Novorizontino — Romulo Azevedo Simão: penaltı",
             "45' Ponte Preta: gol",
+            "45+8' Novorizontino — Romulo Azevedo Simão: penaltı",
             "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
           ],
           "goals": 4
@@ -3648,48 +3689,140 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı dengeli bir olay akışı üretti (4 olay).",
-            "İkinci yarı içinde 2 oyuncu değişikliği kaydedildi."
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (15 olay).",
+            "81' Novorizontino — Carlos Henrique: gol",
+            "90' Novorizontino — Eduardo Brock: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 0
+          "goals": 2
         },
         "coaching": {
           "status": "ready",
           "notes": [
+            "Novorizontino maça 4-2-3-1 dizilişiyle başladı.",
+            "Ponte Preta maça 3-4-2-1 dizilişiyle başladı.",
             "45' Ponte Preta değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "45' Novorizontino değişikliği (Substitution 1). Değişiklikten sonra Novorizontino adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
             "45' Ponte Preta değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "45' Novorizontino değişikliği (Substitution 1). Değişiklikten sonra Novorizontino adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
-            "67' Novorizontino değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "67' Novorizontino değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "67' Novorizontino değişikliği (Substitution 2). Değişiklikten sonra Novorizontino adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Novorizontino",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Ponte Preta",
+              "formation": "3-4-2-1"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Novorizontino, Ponte Preta'yı 5-1 yendi."
+            "Novorizontino, Ponte Preta'yı 5-1 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (7-7); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
+            "Novorizontino, gol beklentisinin 3,27 üzerinde skor üretti."
           ],
-          "strengths": [],
+          "strengths": [
+            "Ponte Preta topa daha çok sahip oldu (%57).",
+            "Ponte Preta daha çok şut denedi (13-13)."
+          ],
           "improvements": [
-            "Kırmızı kart maçın seyrini etkiledi (43' Novorizontino, 62' Ponte Preta)."
+            "Ponte Preta şut isabetinde geride kaldı (%54); bitiricilik geliştirilmesi gereken alan.",
+            "Ponte Preta son bölümde 2 gol yedi; maç sonu konsantrasyonu öne çıkan sorun.",
+            "Kırmızı kart maçın seyrini etkiledi (43' Novorizontino, 62' Ponte Preta, 88' Ponte Preta)."
           ],
           "closing": "Novorizontino sahadan 4 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Novorizontino",
+            "score": 83
+          },
+          "away": {
+            "team": "Ponte Preta",
+            "score": 53
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Novorizontino %53.8, Ponte Preta %53.8."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Novorizontino 24.2, Ponte Preta 32.8 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Novorizontino 0.133, Ponte Preta 0.092. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -3699,16 +3832,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
