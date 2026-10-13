@@ -22,17 +22,18 @@
 import fs from "node:fs";
 import path from "node:path";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { createRequire } from "node:module";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+
+const require = createRequire(import.meta.url);
+const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
 
 const root = process.cwd();
 const DOMAIN = "https://www.futbolradar.com";
 
-const TEAMS = [
-  { slug: "galatasaray", name: "Galatasaray", id: "galatasaray" },
-  { slug: "fenerbahce", name: "Fenerbahçe", id: "fenerbahce" },
-  { slug: "besiktas", name: "Beşiktaş", id: "besiktas" },
-  { slug: "trabzonspor", name: "Trabzonspor", id: "trabzonspor" }
-];
+// Görev 6: büyük 4 sabiti yerine tüm Süper Lig takımları tek listeden
+// (services/superLigTeamPages.js — elle onaylı, değişmeyen slug'lar).
+const TEAMS = superLigTeamPages({ root }).map(({ slug, id, name }) => ({ slug, id, name }));
 
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 
@@ -113,13 +114,18 @@ function standingsNarrative(team, sorted, total) {
 function relatedStandingsLinks(team) {
   const links = [
     { href: "./puan-durumu.html", kicker: "Tablo", title: "Süper Lig puan durumu (tam tablo)", text: "18 takımın tamamı, güncel averaj ve momentum." },
-    { href: `./${team.slug}-maclari.html`, kicker: "Fikstür", title: `${team.name} maçları`, text: "Sıradaki maç, yaklaşan karşılaşmalar ve sonuçlar." },
+    // Maçları sayfası yalnızca üretilmişse bağlanır (404'e bağlantı verilmez).
+    ...(fs.existsSync(path.join(root, `${team.slug}-maclari.html`))
+      ? [{ href: `./${team.slug}-maclari.html`, kicker: "Fikstür", title: `${team.name} maçları`, text: "Sıradaki maç, yaklaşan karşılaşmalar ve sonuçlar." }]
+      : []),
     { href: "./canli-skor.html", kicker: "Canlı", title: "Canlı skor", text: "Oynanan maçların dakikası ve skoru." },
     { href: "./mac-sonuclari.html", kicker: "Sonuç", title: "Maç sonuçları", text: "Doğrulanmış Süper Lig ve Avrupa sonuçları." },
     { href: "./gol-kralligi.html", kicker: "Gol", title: "Gol krallığı radarı", text: "Gol tehdidi ve bitiricilikle okunan sıralama." }
   ];
   for (const other of TEAMS) {
     if (other.slug === team.slug) continue;
+    // Yalnızca indekslenebilir (ince içerik eşiğini geçen) sayfalara bağlanır.
+    if (!indexableIds.has(other.id)) continue;
     links.push({ href: `./${other.slug}-puan-durumu`, kicker: "Puan durumu", title: `${other.name} puan durumu`, text: `${other.name} Süper Lig'de kaçıncı sırada.` });
   }
   return `<div class="trend-link-grid">${links.map((link) => `<a href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
@@ -168,6 +174,7 @@ function buildPage(team, sorted, total) {
   const title = `${fullTeam.name} ${points} puan, ${rank}. sıra | Süper Lig`;
   const description = `${fullTeam.name}, 2026/27 Süper Lig'de ${played} maç sonunda ${points} puanla ${rank}. sırada.`;
   const intro = standingsNarrative(fullTeam, sorted, total);
+  const indexable = standingsPageIndexable(fullTeam);
   const rowsHtml = sorted.map((t) => fullStandingRowHtml(t, team.id)).join("");
 
   const html = `<!doctype html>
@@ -178,7 +185,7 @@ function buildPage(team, sorted, total) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${url}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -223,11 +230,14 @@ ${rowsHtml}
   </body>
 </html>`;
 
-  return { file, html };
+  return { file, html, indexable };
 }
 
 const sorted = standingsWithResults().slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0));
 const total = sorted.length;
+const indexableIds = new Set(TEAMS
+  .filter((team) => standingsPageIndexable(sorted.find((row) => row.id === team.id)))
+  .map((team) => team.id));
 
 if (!total) {
   console.warn("[team-standings-pages] atlandı — henüz sonuçlanmış maç yok (sezon başlamadı).");
@@ -244,7 +254,8 @@ for (const team of TEAMS) {
   fs.writeFileSync(path.join(root, page.file), page.html, "utf8");
   const mirror = path.join(root, "public", page.file);
   if (fs.existsSync(path.dirname(mirror))) fs.writeFileSync(mirror, page.html, "utf8");
-  written.push(page.file);
+  // noindex sayfa site haritasına girmez (ince içerik koruması).
+  if (page.indexable) written.push(page.file);
   console.log(`[team-standings-pages] ${page.file} üretildi.`);
 }
 
