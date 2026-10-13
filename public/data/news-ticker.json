@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-12T22:44:39.166Z",
+  "updatedAt": "2026-10-13T00:22:16.904Z",
   "items": [
     {
       "id": "auto-news-9ef37c42ae76a19ac321",
@@ -215,6 +215,26 @@
       "source": {
         "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9XVlZiRi0yNXJWRW81YmNCalVlcWtJUi1HUkpKZVdvUUlPclZIeWFjX0dWekVQOGU5clpRZXNYcWt4XzNFYTZwZ3RLcmNHaHJMSWRKV0NvWWVfUXM?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-c59e9417c82a44769f83",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Dusan Vlahovic: “Kazanarak devam etmek istiyoruz” - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-11T19:31:36.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE4yQUVvUkRHcjl1aWZkMXJXUHphWXJFV3FuODBmR3R5YnMtYXN2Z3BUa05JeHBIWElhNlVGMXFfNXpuLTE1bENOaVZMVGgyaFNod3VKdnFfQ1EwSEk?oc=5",
         "publisher": "bjk.com.tr"
       },
       "automation": {
