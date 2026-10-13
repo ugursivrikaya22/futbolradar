@@ -13,6 +13,7 @@
  * Hiçbir bölümün verisi yoksa sayfa; skor başlığı, paylaşım ve gezinme
  * bağlantılarından oluşan kısa bir sonuç kartına küçülür.
  */
+import { dropProviderDuplicates } from "./lib/postMatchDedupe.mjs";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -183,8 +184,11 @@ const fixturePool = curatedMatches();
  * Çaykur Rizespor'un üç maçı) hiç rapor almıyordu. Tespit de artık
  * services/matchStatus.js üzerinden: FT/AET/PEN de bitmiş sayılır.
  */
-const finished = fixturePool
-  .filter(isAnalyzableMatch)
+const finishedDedupe = dropProviderDuplicates(fixturePool.filter(isAnalyzableMatch));
+for (const item of finishedDedupe.dropped) {
+  console.log(`[post-match] rapor atlandı (${item.reason}): ${item.id} (fikstür ${item.providerId})${item.keptId ? ` = ${item.keptId}` : ""}`);
+}
+const finished = finishedDedupe.matches
   .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")));
 
 /** Depodaki analiz kaydı: sayfa, üretilmiş kaydın eksik veri listesini kullanır. */
