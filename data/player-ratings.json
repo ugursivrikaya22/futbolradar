@@ -1,56 +1,56 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-13T09:37:01.608Z",
+  "updatedAt": "2026-10-13T19:15:09.185Z",
   "playerCount": 821,
-  "ratedPlayerCount": 288,
+  "ratedPlayerCount": 292,
   "summary": {
     "total": 821,
-    "computed": 288,
-    "insufficient": 533,
+    "computed": 292,
+    "insufficient": 529,
     "categories": {
       "overall": {
-        "computed": 285,
-        "insufficient": 536,
+        "computed": 289,
+        "insufficient": 532,
         "notApplicable": 0
       },
       "form": {
-        "computed": 284,
-        "insufficient": 537,
+        "computed": 288,
+        "insufficient": 533,
         "notApplicable": 0
       },
       "attack": {
-        "computed": 127,
-        "insufficient": 607,
+        "computed": 131,
+        "insufficient": 603,
         "notApplicable": 87
       },
       "creativity": {
-        "computed": 242,
-        "insufficient": 492,
+        "computed": 246,
+        "insufficient": 488,
         "notApplicable": 87
       },
       "defense": {
-        "computed": 257,
-        "insufficient": 564,
+        "computed": 261,
+        "insufficient": 560,
         "notApplicable": 0
       },
       "discipline": {
-        "computed": 284,
-        "insufficient": 537,
+        "computed": 288,
+        "insufficient": 533,
         "notApplicable": 0
       },
       "durability": {
-        "computed": 287,
-        "insufficient": 534,
+        "computed": 291,
+        "insufficient": 530,
         "notApplicable": 0
       },
       "potential": {
-        "computed": 285,
-        "insufficient": 536,
+        "computed": 289,
+        "insufficient": 532,
         "notApplicable": 0
       }
     },
-    "changed": 0
+    "changed": 4
   },
   "players": {
     "gabriel-sara": {
@@ -13452,6 +13452,233 @@
       },
       "fingerprint": "2494677e150e05ca"
     },
+    "e-ceesay-samsunspor": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "forward",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-13T19:15:09.185Z",
+      "weights": {
+        "attack": 35,
+        "form": 20,
+        "creativity": 15,
+        "durability": 15,
+        "discipline": 5,
+        "defense": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Hücum (ağırlık %35)",
+              "value": "49 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "61 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %15)",
+              "value": "50 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "38 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "67 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %10)",
+              "value": "55 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 61,
+          "status": "computed",
+          "display": "61",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "62 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Trendyol 1. Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 49,
+          "status": "computed",
+          "display": "49",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 50,
+          "status": "computed",
+          "display": "50",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 55,
+          "status": "computed",
+          "display": "55",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "1 · 1.45 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "3 · 4.35 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 67,
+          "status": "computed",
+          "display": "67",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "1 · 1.45 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 38,
+          "status": "computed",
+          "display": "38",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%9.8 (62 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "62 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 90,
+          "status": "computed",
+          "display": "90",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "19"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%90"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+10 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-13T14:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 62
+      },
+      "fingerprint": "aafc4767830c5195"
+    },
     "t-coulibaly-samsunspor": {
       "version": 1,
       "scheme": "outfield",
@@ -22390,6 +22617,233 @@
         "minutes": 171
       },
       "fingerprint": "315b36450a2b255f"
+    },
+    "m-mohammed-goztepe": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-13T19:15:09.185Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaratıcılık (ağırlık %25)",
+              "value": "49 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "50 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %20)",
+              "value": "48 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %15)",
+              "value": "59 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "84 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 50,
+          "status": "computed",
+          "display": "50",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "90 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Trendyol 1. Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 48,
+          "status": "computed",
+          "display": "48",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 49,
+          "status": "computed",
+          "display": "49",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 59,
+          "status": "computed",
+          "display": "59",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "2 · 2 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "8 · 8 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 84,
+          "status": "computed",
+          "display": "84",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%14.3 (90 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "90 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 66,
+          "status": "computed",
+          "display": "66",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "24"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%48"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "-3 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-13T14:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 90
+      },
+      "fingerprint": "5a3c72307374d026"
     },
     "andre-henrique-goztepe": {
       "version": 1,
@@ -31528,6 +31982,233 @@
         "minutes": 90
       },
       "fingerprint": "59c9266292c49314"
+    },
+    "a-ulgen-erzurumspor-fk": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "defender",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-13T19:15:09.185Z",
+      "weights": {
+        "defense": 35,
+        "form": 20,
+        "durability": 15,
+        "discipline": 10,
+        "attack": 10,
+        "creativity": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Savunma (ağırlık %35)",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "50 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "26 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %10)",
+              "value": "82 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %10)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %10)",
+              "value": "52 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 50,
+          "status": "computed",
+          "display": "50",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "26 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Trendyol 1. Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 52,
+          "status": "computed",
+          "display": "52",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 82,
+          "status": "computed",
+          "display": "82",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 26,
+          "status": "computed",
+          "display": "26",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%4.1 (26 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "26 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 60,
+          "status": "computed",
+          "display": "60",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "26"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%29"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "-1 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-13T14:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 26
+      },
+      "fingerprint": "76eabe1d84e8f562"
     },
     "m-yumlu-erzurumspor-fk": {
       "version": 1,
@@ -41848,6 +42529,233 @@
         "minutes": 35
       },
       "fingerprint": "ed07f1a481259da8"
+    },
+    "recep-yalin-dilek-galatasaray": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "forward",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-13T19:15:09.185Z",
+      "weights": {
+        "attack": 35,
+        "form": 20,
+        "creativity": 15,
+        "durability": 15,
+        "discipline": 5,
+        "defense": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 54,
+          "status": "computed",
+          "display": "54",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Hücum (ağırlık %35)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "60 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %15)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "84 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %10)",
+              "value": "51 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 60,
+          "status": "computed",
+          "display": "60",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "90 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Trendyol 1. Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "2 · 2 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "1 · 1 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 1 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "3 · 3 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 84,
+          "status": "computed",
+          "display": "84",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%14.3 (90 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "90 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 88,
+          "status": "computed",
+          "display": "88",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "19"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "54 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%90"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+6 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-13T14:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 90
+      },
+      "fingerprint": "92f36a1caa777c79"
     },
     "c-ozkacar-trabzonspor": {
       "version": 1,
