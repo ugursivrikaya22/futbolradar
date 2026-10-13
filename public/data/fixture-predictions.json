@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-13T00:16:33.885Z",
+  "updatedAt": "2026-10-13T01:24:30.483Z",
   "predictionCount": 4946,
   "predictions": [
     {
@@ -398870,7 +398870,8 @@
       "calculatedAt": "2026-10-12T23:32:09.835Z",
       "expiresAt": "2026-10-13T01:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-13T01:24:29.555Z"
     },
     {
       "fixtureId": "pitbulls-santa-barbara-fc-aserri-fc-2026-10-13",
@@ -398943,7 +398944,8 @@
       "calculatedAt": "2026-10-12T23:32:09.835Z",
       "expiresAt": "2026-10-13T01:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-13T01:24:29.555Z"
     },
     {
       "fixtureId": "sporting-san-miguelito-tauro-fc-2026-10-13",
@@ -399016,7 +399018,8 @@
       "calculatedAt": "2026-10-11T23:42:19.794Z",
       "expiresAt": "2026-10-12T01:00:00.000Z",
       "refreshStage": "T-72h",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-13T01:24:29.555Z"
     },
     {
       "fixtureId": "waterhouse-tru-juice-2026-10-13",
@@ -399114,7 +399117,8 @@
       "calculatedAt": "2026-10-12T23:32:09.835Z",
       "expiresAt": "2026-10-13T01:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-13T01:24:29.555Z"
     },
     {
       "fixtureId": "el-salvador-w-paraguay-w-2026-10-13",
@@ -399183,10 +399187,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-12T21:14:33.098Z",
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-13T00:30:00.000Z",
-      "refreshStage": "T-6h",
+      "providerUpdatedAt": "2026-10-13T01:24:29.987Z",
+      "calculatedAt": "2026-10-13T01:24:29.555Z",
+      "expiresAt": "2026-10-13T02:00:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -399256,10 +399260,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-10-12T21:14:33.280Z",
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-13T00:35:00.000Z",
-      "refreshStage": "T-6h",
+      "providerUpdatedAt": "2026-10-13T01:24:30.168Z",
+      "calculatedAt": "2026-10-13T01:24:29.555Z",
+      "expiresAt": "2026-10-13T02:05:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -425576,91 +425580,66 @@
       "awayTeam": "Vasco DA Gama",
       "homeTeamId": "451",
       "awayTeamId": "133",
-      "source": "futbolradar_model",
-      "homeProbability": 53,
-      "drawProbability": 25,
-      "awayProbability": 22,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "451",
         "name": "Boca Juniors",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Boca Juniors or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.6",
-        "away": "0.81"
+        "home": "-2.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 54,
-      "dataBasis": "team-history",
-      "baselineScope": "pool",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.6,
-        "away": 0.81
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 43,
-        "under": 57
-      },
-      "bothTeamsScore": 44,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "inherited",
-        "baselinePull": 0.23,
-        "baselineSampleSize": 0,
-        "home": {
-          "matches": 6,
-          "venueMatches": 2,
-          "attackStrength": 1.5,
-          "defenseStrength": 0.67,
-          "formDelta": 0.2,
-          "rank": null,
-          "pointsPerGame": 2,
-          "cleanSheetRate": 0.33,
-          "winRate": 0.5,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 50,
+          "away": 50
         },
-        "away": {
-          "matches": 8,
-          "venueMatches": 4,
-          "attackStrength": 0.89,
-          "defenseStrength": 0.65,
-          "formDelta": 0.25,
-          "rank": null,
-          "pointsPerGame": 1.75,
-          "cleanSheetRate": 0.38,
-          "winRate": 0.5,
-          "absences": null
+        "att": {
+          "home": 59,
+          "away": 41
+        },
+        "def": {
+          "home": 25,
+          "away": 75
+        },
+        "poisson_distribution": {
+          "home": 73,
+          "away": 27
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 0,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 51.8,
+          "away": 48.3
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-12T21:14:29.356Z",
-      "expiresAt": "2026-10-13T00:30:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-13T01:24:30.428Z",
+      "calculatedAt": "2026-10-13T01:24:29.555Z",
+      "expiresAt": "2026-10-13T18:30:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
