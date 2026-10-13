@@ -1,8 +1,8 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-13T05:44:28.156Z",
-  "matchCount": 6590,
+  "updatedAt": "2026-10-13T06:45:31.859Z",
+  "matchCount": 6591,
   "records": [
     {
       "matchId": "morocco-w-congo-w-2026-10-13",
@@ -169,6 +169,200 @@
           "strengths": [],
           "improvements": [],
           "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "shabab-al-sahel-safa-2026-10-13",
+      "fixtureId": "1642041",
+      "provider": "api-football",
+      "slug": "shabab-al-sahel-safa-2026-10-13",
+      "kickoff": "2026-10-13T15:00:00+03:00",
+      "kickoffUtc": "2026-10-13T12:00:00.000Z",
+      "kickoffLocal": "2026-10-13T15:00",
+      "date": "2026-10-13",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Shabab Al Sahel",
+      "awayTeam": "Safa",
+      "venue": "Beirut Municipal Stadium",
+      "score": {
+        "home": 0,
+        "away": 3
+      },
+      "finalScore": "0-3",
+      "winner": "Safa",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "87d9d1b522e8a850",
+      "fingerprint": "87d9d1b522e8a850",
+      "analysisGeneratedAt": "2026-10-13T06:45:31.744Z",
+      "analysisUpdatedAt": "2026-10-13T06:45:31.744Z",
+      "generatedAt": "2026-10-13T06:45:31.744Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Shabab Al Sahel 0-3 Safa maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Beirut Municipal Stadium'da oynanan Premier League maçını Safa 3-0 kazandı; Shabab Al Sahel sahadan puansız ayrıldı.",
+        "path": "mac-raporu/shabab-al-sahel-safa-2026-10-13.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/shabab-al-sahel-safa-2026-10-13.html",
+      "digest": {
+        "headline": "Safa, Shabab Al Sahel'i 3-0 yendi",
+        "paragraph": "Beirut Municipal Stadium'da oynanan Premier League maçını Safa 3-0 kazandı; Shabab Al Sahel sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Safa",
+          "loser": "Shabab Al Sahel",
+          "draw": false,
+          "margin": 3
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Safa, Shabab Al Sahel'i 0-3 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Safa sahadan 3 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -1430,10 +1624,10 @@
       "winner": "RB Bragantino",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1443,57 +1637,44 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 10
+          "count": 21
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 10,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 21,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "347b7411dc0f65c1",
-      "fingerprint": "347b7411dc0f65c1",
+      "analysisSourceHash": "3b706c03415d71cc",
+      "fingerprint": "3b706c03415d71cc",
       "analysisGeneratedAt": "2026-10-13T02:27:02.867Z",
-      "analysisUpdatedAt": "2026-10-13T02:27:02.867Z",
-      "generatedAt": "2026-10-13T02:27:02.867Z",
+      "analysisUpdatedAt": "2026-10-13T06:45:31.744Z",
+      "generatedAt": "2026-10-13T06:45:31.744Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1505,7 +1686,7 @@
       "reportUrl": "./mac-raporu/rb-bragantino-cruzeiro-2026-10-13.html",
       "digest": {
         "headline": "RB Bragantino, Cruzeiro'yu 4-2 yendi",
-        "paragraph": "RB Bragantino, Estadio Cicero de Souza Marques'te oynanan Brazil Série A karşılaşmasında Cruzeiro'yu 4-2 mağlup etti. Golleri 13. dakikada Lucas Henrique Barbosa (RB Bragantino), 20. dakikada Kaio Jorge (RB Bragantino), 30. dakikada Eric Ramires (RB Bragantino), 43. dakikada Zé Lucas (Cruzeiro) kaydetti.",
+        "paragraph": "RB Bragantino, Estadio Cicero de Souza Marques'te oynanan Brazil Série A karşılaşmasında Cruzeiro'yu 4-2 mağlup etti. Golleri 13. dakikada Lucas Henrique Barbosa (RB Bragantino), 20. dakikada Kaio Jorge (RB Bragantino), 30. dakikada Eric Ramires (RB Bragantino), 43. dakikada Zé Lucas (Cruzeiro), 89. dakikada Matheus Henrique (Cruzeiro), 90+1. dakikada Jose Herrera (RB Bragantino) kaydetti.",
         "result": {
           "winner": "RB Bragantino",
           "loser": "Cruzeiro",
@@ -1518,7 +1699,7 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
           "status": "ready",
@@ -1550,18 +1731,54 @@
               "type": "Gol",
               "detail": "Zé Lucas",
               "pivotal": true
+            },
+            {
+              "minute": "88'",
+              "team": "RB Bragantino",
+              "type": "Gol",
+              "detail": "Goal cancelled",
+              "pivotal": true
             }
           ]
         },
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 2 gol kaydedildi, (Matheus Henrique, Jose Herrera), sonucu belirleyen fark bu bölümde oluştu.",
           "goals": {
-            "home": 0,
-            "away": 0
+            "home": 1,
+            "away": 1
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "77'",
+              "team": "Cruzeiro",
+              "type": "Sarı kart",
+              "detail": "Felipe Morais",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Cruzeiro",
+              "type": "Oyuncu değişikliği",
+              "detail": "Felipe Morais",
+              "decisive": false
+            },
+            {
+              "minute": "81'",
+              "team": "RB Bragantino",
+              "type": "Oyuncu değişikliği",
+              "detail": "Lucas Henrique Barbosa",
+              "decisive": false
+            },
+            {
+              "minute": "88'",
+              "team": "RB Bragantino",
+              "type": "Gol",
+              "detail": "Goal cancelled",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -1570,6 +1787,12 @@
               "name": "Eric Ramires",
               "team": "RB Bragantino",
               "contribution": "30' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Jose Herrera",
+              "team": "RB Bragantino",
+              "contribution": "90+1' gol",
               "impact": "yüksek"
             },
             {
@@ -1583,18 +1806,16 @@
               "team": "RB Bragantino",
               "contribution": "13' gol",
               "impact": "yüksek"
-            },
-            {
-              "name": "Zé Lucas",
-              "team": "Cruzeiro",
-              "contribution": "43' gol",
-              "impact": "yüksek"
             }
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "RB Bragantino sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Cruzeiro sahaya 4-2-3-1 dizilişiyle çıktı.",
+            "Cruzeiro topu elinde tutarken RB Bragantino derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -1611,44 +1832,139 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "İkinci yarı içinde 1 oyuncu değişikliği kaydedildi."
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "89' Cruzeiro — Matheus Henrique: gol",
+            "90+1' RB Bragantino — Jose Herrera: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 0
+          "goals": 2
         },
         "coaching": {
           "status": "ready",
           "notes": [
-            "45' Cruzeiro değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "45' Cruzeiro değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
-            "58' RB Bragantino değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "RB Bragantino maça 4-2-3-1 dizilişiyle başladı.",
+            "Cruzeiro maça 4-2-3-1 dizilişiyle başladı.",
+            "45' Cruzeiro değişikliği (Substitution 1). Değişiklikten sonra Cruzeiro adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' Cruzeiro değişikliği (Substitution 2). Değişiklikten sonra Cruzeiro adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' RB Bragantino değişikliği (Substitution 1). Değişiklikten sonra RB Bragantino adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "63' Cruzeiro değişikliği (Substitution 3). Değişiklikten sonra Cruzeiro adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "RB Bragantino",
+              "formation": "4-2-3-1"
+            },
+            {
+              "team": "Cruzeiro",
+              "formation": "4-2-3-1"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "RB Bragantino, Cruzeiro'yu 4-2 yendi."
+            "RB Bragantino, Cruzeiro'yu 4-2 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (10-13); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
+            "RB Bragantino, gol beklentisinin 1,32 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Cruzeiro topa daha çok sahip oldu (%69).",
+            "Cruzeiro daha çok şut denedi (20-25)."
+          ],
+          "improvements": [
+            "RB Bragantino şut isabetinde geride kaldı (%50); bitiricilik geliştirilmesi gereken alan.",
+            "Cruzeiro son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "RB Bragantino sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "RB Bragantino",
+            "score": 88
+          },
+          "away": {
+            "team": "Cruzeiro",
+            "score": 75
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti RB Bragantino %50, Cruzeiro %52."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için RB Bragantino 12.4, Cruzeiro 22.4 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG RB Bragantino 0.134, Cruzeiro 0.112. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -1658,16 +1974,20 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
+        "tactical",
         "firstHalf",
         "secondHalf",
         "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 64,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -1698,10 +2018,10 @@
       "winner": "Botafogo SP",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1711,57 +2031,44 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 2
+          "count": 14
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 46
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 2,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 14,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 46
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "46e0f0594e04d5b8",
-      "fingerprint": "46e0f0594e04d5b8",
+      "analysisSourceHash": "7ff4bf5b10346b90",
+      "fingerprint": "7ff4bf5b10346b90",
       "analysisGeneratedAt": "2026-10-13T02:27:02.867Z",
-      "analysisUpdatedAt": "2026-10-13T02:27:02.867Z",
-      "generatedAt": "2026-10-13T02:27:02.867Z",
+      "analysisUpdatedAt": "2026-10-13T06:45:31.744Z",
+      "generatedAt": "2026-10-13T06:45:31.744Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1773,7 +2080,7 @@
       "reportUrl": "./mac-raporu/botafogo-sp-ceara-2026-10-13.html",
       "digest": {
         "headline": "Botafogo SP, Ceara'yı 1-0 yendi",
-        "paragraph": "Botafogo SP, Estadio Santa Cruz'da oynanan Serie B karşılaşmasında Ceara'yı 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Botafogo SP, Estadio Santa Cruz'da oynanan Serie B karşılaşmasında Ceara'yı 1-0 mağlup etti. Tek golü 74. dakikada Botafogo SP kaydetti.",
         "result": {
           "winner": "Botafogo SP",
           "loser": "Ceara",
@@ -1786,44 +2093,82 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "partial",
+          "status": "ready",
           "moments": [
             {
-              "minute": "44'",
+              "minute": "74'",
               "team": "Botafogo SP",
-              "type": "Sarı kart",
+              "type": "Gol",
               "detail": "",
-              "pivotal": false
-            },
-            {
-              "minute": "59'",
-              "team": "Botafogo SP",
-              "type": "Oyuncu değişikliği",
-              "detail": "Matheus Sales",
-              "pivotal": false
+              "pivotal": true
             }
           ]
         },
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Ceara",
+              "type": "Oyuncu değişikliği",
+              "detail": "Matheus Araujo",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Ceara",
+              "type": "Oyuncu değişikliği",
+              "detail": "Julio Cesar",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Ceara",
+              "type": "Oyuncu değişikliği",
+              "detail": "Vinicius Zanocelo",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Botafogo SP",
+              "type": "Oyuncu değişikliği",
+              "detail": "Substitution 4",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "João Gabriel Santos Batista",
+              "team": "Ceara",
+              "contribution": "90+4' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "Luiz Otávio",
+              "team": "Ceara",
+              "contribution": "66' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Botafogo SP sahaya 3-4-3 dizilişiyle çıktı.",
+            "Ceara sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
@@ -1835,42 +2180,136 @@
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "İkinci yarı içinde 1 oyuncu değişikliği kaydedildi."
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (13 olay).",
+            "74' Botafogo SP: gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
           ],
-          "goals": 0
+          "goals": 1
         },
         "coaching": {
           "status": "ready",
           "notes": [
-            "59' Botafogo SP değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+            "Botafogo SP maça 3-4-3 dizilişiyle başladı.",
+            "Ceara maça 4-2-3-1 dizilişiyle başladı.",
+            "59' Botafogo SP değişikliği (Substitution 1). Değişiklikten sonra Botafogo SP adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "72' Ceara değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Ceara değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "73' Botafogo SP değişikliği (Substitution 2). Değişiklikten sonra Botafogo SP adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
           ],
-          "formations": [],
+          "formations": [
+            {
+              "team": "Botafogo SP",
+              "formation": "3-4-3"
+            },
+            {
+              "team": "Ceara",
+              "formation": "4-2-3-1"
+            }
+          ],
           "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Botafogo SP, Ceara'yı 1-0 yendi."
+            "Botafogo SP, Ceara'yı 1-0 yendi.",
+            "İsabetli şutta da öndeydi (4-3); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Botafogo SP topa daha çok sahip oldu (%52).",
+            "Botafogo SP daha çok şut denedi (15-11)."
+          ],
+          "improvements": [
+            "Botafogo SP şut isabetinde geride kaldı (%27); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Botafogo SP sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Botafogo SP",
+            "score": 62
+          },
+          "away": {
+            "team": "Ceara",
+            "score": 41
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Botafogo SP %26.7, Ceara %27.3."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Botafogo SP 22.5, Ceara 29.1 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Botafogo SP 0.057, Ceara 0.045. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -1878,16 +2317,21 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
         "secondHalf",
+        "turningPoints",
         "lateGame",
         "coaching",
-        "finalAssessment"
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
