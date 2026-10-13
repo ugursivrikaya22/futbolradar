@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-13T09:39:40.459Z",
+  "updatedAt": "2026-10-13T10:30:35.945Z",
   "items": [
+    {
+      "id": "auto-news-549a63a65bfeb3cdfcd2",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Hazırlıklar tamamlandı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-13T09:49:32.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMifkFVX3lxTE42WnJzb3RHdUFMYXRQMjVOMXZDOGJTYnBzV1RYWnExMWtzTkRFNmNReU5fZWx1QW1pcFI4d1pmdm10ak5aaEZ1N2RzalVKVUZMdWRyZXp5ZnU1bVgzcVN5SHRJOWdQdFNiWEVGODhGQTRVckVRWWljd2RRbE4tZw?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-afa82801579efb10121b",
       "category": "official",
@@ -103,26 +123,6 @@
       }
     },
     {
-      "id": "auto-news-6a24b785bc8249ffd1c2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe Tarfin, Zalgiris Kaunas’ı konuk ediyor",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-12T14:28:07.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPOGM0V2E5RlVEaC10elFqbTRpX2k3VTZyQzJidGd4bnU0MjZPMjJiMUlXWkJHVUFnVHhJZTVvZTNBc1dWYjFiUU5ZN1NYbUdScFRiZ2xteHphaFhfZjE3TlZ0VlN5ZmxiY2YxRVRIM3pkU2RmUEZrbWhha0pkbHY3ZFpfcl9wTDVkd1VybjlsMVAwLWVpUUZJTUQ0Q09GaHJTblVERVB5Vm1EUklf?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-fc0dec6bb942d362bf56",
       "category": "official",
       "confidence": "confirmed",
@@ -139,26 +139,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-a8e2ced189fee6a837ff",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Barcelona maçı hazırlıkları tamamlandı",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-12T12:55:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxPVFFtajVlVE1nSkhPdHdyd2V5eUZlVzluU1pWeWhKZF9vUWhJSS1KS3JIbG5NZS1RN3NqUVp6dmpKdjNuVjlqc3ZnU2ZDTUlPa2xqTU94MzJHNjMwRDZjclZEQlA4cFZuRURyTF9mb3QyMG5TbEJUZ0E4eXgxTlc1aGlmRVFCSklVdGNFeFFB?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
         "status": "OFFICIAL"
       }
     },
@@ -320,6 +300,28 @@
         "feed": "trabzonspor",
         "priority": 4,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-837e4633f4efef8c545c",
+      "category": "club-agenda",
+      "confidence": "reported",
+      "section": "news",
+      "text": "GS BARCELONA MUHTEMEL 11'LER: Şampiyonlar Ligi Galatasaray",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-13T11:03:26.000Z",
+      "source": {
+        "name": "cnnturk-spor",
+        "url": "https://www.cnnturk.com/spor/futbol/galatasaray-barcelona-maci-ne-zaman-sampiyonlar-ligi-galatasaray-barcelona-maci-saat-kacta-hangi-kanalda-rams-parkta-dev-gece-3477686",
+        "publisher": "cnnturk.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "cnnturk-spor",
+        "priority": 8,
+        "status": "REPORTED",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-13T04:00:00.000Z"
       }
     },
     {
