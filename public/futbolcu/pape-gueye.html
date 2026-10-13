@@ -60,19 +60,6 @@
 }
     </script>
     <link rel="stylesheet" href="../page.css?v=3e1b5bdf" />
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -91,6 +78,19 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
@@ -210,7 +210,7 @@
       <section class="p360" aria-labelledby="p360-compare-title" data-p360-section="compare">
         <div class="p360-head"><h2 id="p360-compare-title">Pape Gueye Karşılaştırma</h2><p>Bu oyuncuyu aynı mevkideki bir futbolcuyla yan yana, aynı sezon verisiyle karşılaştır.</p></div>
         <a class="button primary p360-compare-button" href="../oyuncu-karsilastir.html?player=p-gueye-kasimpasa">Karşılaştır</a>
-        <div class="p360-peer-grid"><a class="p360-peer" href="../karsilastirma/f-kocak-galatasaray-vs-p-gueye-kasimpasa.html"><strong>F. Koçak</strong></a><a class="p360-peer" href="../karsilastirma/p-gueye-kasimpasa-vs-v-osimhen-galatasaray.html"><strong>V. Osimhen</strong><span>Galatasaray</span></a><a class="p360-peer" href="../karsilastirma/kerem-akturkoglu-vs-p-gueye-kasimpasa.html"><strong>Kerem Aktürkoğlu</strong></a><a class="p360-peer" href="../karsilastirma/mauro-icardi-vs-p-gueye-kasimpasa.html"><strong>Mauro Icardi</strong></a></div>
+        <div class="p360-peer-grid"><a class="p360-peer" href="../karsilastirma/p-gueye-kasimpasa-vs-s-cherif-fenerbahce.html"><strong>S. Cherif</strong></a><a class="p360-peer" href="../karsilastirma/p-gueye-kasimpasa-vs-v-osimhen-galatasaray.html"><strong>V. Osimhen</strong><span>Galatasaray</span></a><a class="p360-peer" href="../karsilastirma/kerem-akturkoglu-vs-p-gueye-kasimpasa.html"><strong>Kerem Aktürkoğlu</strong></a><a class="p360-peer" href="../karsilastirma/mauro-icardi-vs-p-gueye-kasimpasa.html"><strong>Mauro Icardi</strong></a></div>
       </section>
       <section class="p360 p360-links" aria-label="İlgili Sayfalar" data-p360-section="links">
         <span>İlgili Sayfalar</span>
@@ -227,7 +227,7 @@
       <section class="static-profile-links" aria-label="Statik oyuncu karşılaştırma bağlantıları">
         <div class="profile-section-head"><h2>Hazır Kıyas Linkleri</h2><span>Arama motorları ve hızlı gezinme için</span></div>
         <div class="static-profile-link-grid">
-        <a class="static-profile-link-card" href="../karsilastirma/f-kocak-galatasaray-vs-p-gueye-kasimpasa.html"><span>Akilli eslesme</span><strong>P. Guèye vs F. Koçak</strong><em>Rol, rating ve piyasa yakinligi</em></a>
+        <a class="static-profile-link-card" href="../karsilastirma/p-gueye-kasimpasa-vs-s-cherif-fenerbahce.html"><span>Akilli eslesme</span><strong>P. Guèye vs S. Cherif</strong><em>Rol, rating ve piyasa yakinligi</em></a>
         <a class="static-profile-link-card" href="../karsilastirma/p-gueye-kasimpasa-vs-v-osimhen-galatasaray.html"><span>Aynı rol kıyası</span><strong>P. Guèye vs V. Osimhen</strong><em>diger profili</em></a>
         <a class="static-profile-link-card" href="../karsilastirma/kerem-akturkoglu-vs-p-gueye-kasimpasa.html"><span>Transfer okuma</span><strong>P. Guèye vs Kerem Aktürkoğlu</strong><em>Güncel takım ve piyasa değeri</em></a>
         <a class="static-profile-link-card" href="../karsilastirma/mauro-icardi-vs-p-gueye-kasimpasa.html"><span>Radar alternatifi</span><strong>P. Guèye vs Mauro Icardi</strong><em>Profil trafiği ve kıyas akışı</em></a>
@@ -295,6 +295,6 @@
     </footer>
     <script src="../player-profile.js?v=1f3f6c68" defer></script>
     <script src="../site.js?v=5bb6e7b2" defer></script>
-    <script src="../app.js?v=1417ee42" defer></script>
+    <script src="../app.js?v=52f7f5da" defer></script>
   </body>
 </html>
