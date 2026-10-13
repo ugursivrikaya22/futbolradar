@@ -64,6 +64,23 @@
 }
     </script>
     <link rel="stylesheet" href="../page.css?v=3e1b5bdf" />
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -82,23 +99,6 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=156a309d"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/oyuncular/e-karatas-alanyaspor.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/player/e-karatas-alanyaspor.html" />
@@ -140,7 +140,7 @@
         <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
         <div class="news-ticker-viewport">
           <div class="news-ticker-track">
-            <div class="news-ticker-group"><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMiswFBVV95cUxQd3F1WWJCcEdyaDVrNlBmZmN4Ui11a29lSGdFend1cU1SU3FPRDlaQmk0Zm5uUmpOdkJSSlNtbVh1dzZZN0xTVklBbEw3MDhoZGh3dGpra09RbURRQVc4UGNXcndqbWxmSkZGc2FjVWlBZFdJa0Z1VkN0Ti02WG9OQVBPQ290UUlzVEhuQjdCazVWM2tWc3lGaFBhcVQ2eUJfdzMwelpiLTIwR2V0ckwtbGg0SQ?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Fenerbahçe Tarfin, Valencia Basket Club&#039;a konuk oluyor — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Fenerbahçe Tarfin, Valencia Basket Club&#039;a konuk oluyor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMilAFBVV95cUxNZFFfUVNVbEhCVFJZbU5ybnJMa2xTeEkyZEtaVEpOa3NDZzNqb3ExS0VOd052MUYzbl9ZUG8zU1VNaEhUbE85MV9KckFWQ3JOazg5TkpzOE1oNUdGOWN2MkhaWlZkZ0poQU9oTE96bnlfX0tfME9MSlVLZWRlREsyZWVNMlFaOWJrbGdRanFLUWtQRVkz?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Galatasaray U19 0-1 Barcelona U19 — kaynak: galatasaray.org" title="Kaynak: galatasaray.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Galatasaray U19 0-1 Barcelona U19</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMimwFBVV95cUxQaDZIXzJrTy1FNlhQSld4Sm16UkpBLTR4ci0zQTdRNVd1R1piYnNtb2Q3WnVjTXBzV2tLM3FyRDFkWHVGa1hBWGRRODQ2Z0xyM1g5YlhrbW9lYVU2Qk5kTlZWaGt4aDJKOTdtSnNOWlBweHhEcHhhdmhNTFAtbWw1cmpGb1pjNDlTZEJ0M2NGZmgzR0VWSkxYWHFFOA?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="U19 Takımımız, Aston Villa karşısında — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>U19 Takımımız, Aston Villa karşısında</span></a></div>
+            <div class="news-ticker-group"><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMioAFBVV95cUxOUUFwMGJQNV9ua090cjZDdS1FTXlmWTE0MXFPYXJENENiOTFpWWxhY2wxREMxbzRHclFCYXRoT2dMTEFpYUs4WjdqN0ExMDl5TFFyZ3Q2X05qYllvS25WbGtQc05OSmxYMmQ5dXJ0eTlhWGllcWZlWHo0enp5YVdEZi1TcFJiMVE5WFJ4Y1VJUl9HREtrOF9TZW5Xb1VNVVVM?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Fenerbahçe Tarfin 99-80 Zalgiris Kaunas — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Fenerbahçe Tarfin 99-80 Zalgiris Kaunas</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMi1wFBVV95cUxQMTJUVHYzdnhLT3pFOFFoMnpOVnQ1ZHNfN2RmbVVfX2xuWXNfaGRtd0p6TTdaUnYxakd3UlBuSm1SMUw3emRTcDlMYmFGbVJzY2RUSXlqbFU2c2ktZ3A3UWE3UUJTbGozOTBxallYWlNwQjRCdlE3cW1tOFF5Nm1rclhuV0xsTFZxUnpKcDhLMXowdzA3eUVNZ2JXcjBCWjhxTGFpWk16UnZBNW5TdTBpdndjVXRvb2hTSXgwVTkxZGlEOFJQOThGOEh6MWdRRGMxQUMydUFQWQ?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Teknik Direktörümüz İsmail Kartal ve Archie Brown’dan Aston Villa maçı öncesi açıklamalar — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Teknik Direktörümüz İsmail Kartal ve Archie Brown’dan Aston Villa maçı öncesi açıklamalar</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMihwFBVV95cUxOT1ltN2Fpb01YUFZ0MnZYUm5rY2M2d1otZ09QeVJLSERJckVHMzZINmFPcG9vSjQ0SEEtNDZCNzRhd1Zud1lGeVVQV2xHa3VaaU1YUGdYS2drQ3VLVjQwTVhyR2dGbjJxUUVkSE1GdWxRbmgwOGxZZXdHci1JZXdQVWxTUzNhRFk?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Futbol Takımımız İngiltere’de — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Futbol Takımımız İngiltere’de</span></a></div>
           </div>
         </div>
         <a class="news-ticker-all" href="../haberler.html">Tümü</a>
