@@ -32,7 +32,7 @@ function atomicWrite(filePath, value) {
 
 function statusForInjury(item) {
   const text = normalizeText(`${item && item.player && item.player.type} ${item && item.player && item.player.reason}`);
-  if (text.includes("susp") || text.includes("ceza")) return "suspended";
+  if (text.includes("susp") || text.includes("ceza") || text.includes("card")) return "suspended";
   if (text.includes("doubt") || text.includes("question") || text.includes("supheli")) return "doubtful";
   return "injured";
 }
