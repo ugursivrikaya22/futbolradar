@@ -20,6 +20,7 @@ import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robot
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { internalHref } = require("../services/siteLinks.js");
+const { teamProfileHref } = require("../services/teamHubLinks.js");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function writeGeneratedFile(file, contents) {
@@ -343,11 +344,11 @@ function quickLinkStandingsHref(match) {
   return internalHref(match.league === "Süper Lig" ? "super-lig-puan-durumu.html" : "puan-durumu.html");
 }
 
-/** Takım formu hedefi: mevcut takım radarı sayfası (./takim-detay.html?team=...). */
+/** Takım formu hedefi: Süper Lig takımıysa takım profili, değilse takim-detay. */
 function quickLinkFormHref(match) {
   const team = quickLinkTeamFor(match);
   const name = (team && team.name) || match.homeTeam || match.awayTeam || "";
-  return `./takim-detay.html?team=${encodeURIComponent(name)}`;
+  return teamProfileHref(name);
 }
 
 /**
@@ -1199,7 +1200,7 @@ function trendTeamCards() {
         formDotsHtml: formDots(team.form),
         formScore: row.formScore,
         liveStatsOnly: true,
-        actionHref: `./takim-detay.html?team=${encodeURIComponent(row.team)}`
+        actionHref: teamProfileHref(row.team)
       });
     })
     .join("");
@@ -1323,7 +1324,7 @@ function homeStandingRowHtml(team, total) {
   const zoneClass = homeStandingZoneClass(team.rank, total);
   const gd = formatGoalDifference(team.goalDifference);
   const gdClass = gd.charAt(0) === "+" ? " is-positive" : (gd.charAt(0) === "-" ? " is-negative" : "");
-  const href = `./takim-detay.html?team=${encodeURIComponent(team.name || "")}`;
+  const href = teamProfileHref(team.name || "");
 
   return `<div class="home-standing-row${zoneClass}" data-card="standing-row" data-team="${escapeHtml(team.id || "")}">` +
     `<span class="home-standing-rank">${escapeHtml(homeStandingDisplay(team.rank))}</span>` +
@@ -1433,7 +1434,7 @@ function homeLeaderFormRow(rank, player) {
 }
 
 function homeLeaderTeamRow(rank, row) {
-  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="./takim-detay.html?team=${encodeURIComponent(row.team)}"><strong>${escapeHtml(row.team)}</strong><span>Form</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
+  return `<li class="leaders-row" data-card="leader-team"><span class="leaders-rank">${rank}</span><a class="leaders-name" href="${escapeHtml(teamProfileHref(row.team))}"><strong>${escapeHtml(row.team)}</strong><span>Form</span></a><span class="leaders-value">${escapeHtml(row.momentum)}</span></li>`;
 }
 
 function homeLeadersSlot(rows, rowHtmlFor, emptyNote) {

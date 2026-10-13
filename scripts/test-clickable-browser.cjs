@@ -315,6 +315,10 @@ function todayCalendarFixtureCount(gun) {
           const requested = target.searchParams.get('team');
           if (requested) assert.ok((await page.locator('.td-hero').innerText()).includes(requested), 'Wrong team detail content');
         }
+        if (/^\/takimlar\/[a-z0-9-]+$/.test(target.pathname.replace(/\.html$/, ''))) {
+          // Görev 6: Süper Lig takımı bağlantısı takım profiline gider; profil boş olmamalı.
+          assert.ok((await page.locator('main').innerText()).length > 200, 'Team profile has no substantive content');
+        }
         if (/\/(oyuncular|futbolcu|en\/player)\//.test(target.pathname)) {
           assert.ok((await page.locator('main').innerText()).length > 200, 'Player profile has no substantive content');
         }
@@ -669,7 +673,7 @@ function todayCalendarFixtureCount(gun) {
           const trendLink = page.locator('#home-trend-teams .trend-card a').first();
           assert.ok(await trendLink.count(), 'Trending team profile link missing');
           const trendTarget = new URL(await trendLink.getAttribute('href'), page.url());
-          assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : trendTarget.pathname === '/takim-detay.html', 'Trending team must open its profile');
+          assert.ok(en ? trendTarget.pathname.startsWith('/en/team/') : /^\/takimlar\/[a-z0-9-]+$/.test(trendTarget.pathname), 'Trending team must open its profile');
           await navigate(trendLink);
           if (!en) await page.locator('[data-api-target="today-matches"][data-state="ready"]').waitFor({ state: 'attached', timeout: HYDRATE_TIMEOUT });
           // `navigate` geri dönüyor: aşağıdaki kart ana sayfanın "Bugünün

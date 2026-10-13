@@ -2417,8 +2417,22 @@
     return "./mac-detay.html?" + params.toString();
   }
 
+  // Görev 6: Süper Lig takımı → takım profili (takimlar/<slug>); değilse
+  // noindex takim-detay. Tablo services/superLigTeamPages.js ile aynı olmalı
+  // (scripts/test-team-page-coverage.mjs denetler).
+  var TEAM_PAGE_SLUGS = {"galatasaray":"galatasaray","fenerbahce":"fenerbahce","besiktas":"besiktas","trabzonspor":"trabzonspor","samsunspor":"samsunspor","basaksehir":"basaksehir","istanbulbasaksehir":"basaksehir","ramsbasaksehir":"basaksehir","konyaspor":"konyaspor","goztepe":"goztepe","alanyaspor":"alanyaspor","genclerbirligi":"genclerbirligi","genclerbirligisk":"genclerbirligi","kasimpasa":"kasimpasa","rizespor":"rizespor","caykurrizespor":"rizespor","erzurumspor":"erzurumspor","erzurumsporfk":"erzurumspor","gaziantepfk":"gaziantep-fk","gaziantep":"gaziantep-fk","amed":"amed","amedsportiffaaliyetler":"amed","amedsfk":"amed","eyupspor":"eyupspor","corumfk":"corum-fk","kocaelispor":"kocaelispor"};
+  function teamPageSlug(name) {
+    var key = String(name || "").toLocaleLowerCase("tr-TR").normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").replace(/[^a-z0-9]+/g, "");
+    return TEAM_PAGE_SLUGS[key] || null;
+  }
+  function teamProfileHref(name) {
+    var slug = teamPageSlug(name);
+    return slug ? "./takimlar/" + slug : "./takim-detay.html?team=" + encodeURIComponent(name || "");
+  }
+
   function teamDetailHref(team) {
-    return "./takim-detay.html?team=" + encodeURIComponent(team.name || team.team || team.id || "");
+    return teamProfileHref(team.name || team.team || team.id || "");
   }
 
   function statusTr(status) {
@@ -4514,7 +4528,7 @@
           '<dl class="trend-card-stats">' +
           "<div><dt>Form</dt><dd>" + escapeHtml(displayValue(team.formScore)) + "</dd></div>" +
           "</dl>" +
-          '<a class="fixture-card-action" href="./takim-detay.html?team=' + encodeURIComponent(name || "") + '">Takım radarını aç</a>' +
+          '<a class="fixture-card-action" href="' + escapeHtml(teamProfileHref(name || "")) + '">Takım radarını aç</a>' +
           "</article>"
         );
       })
@@ -11878,8 +11892,8 @@
 
     return (
       '<section class="match-team-links">' +
-      '<a href="./takim-detay.html?team=' + encodeURIComponent(home) + '"><span>Ev sahibi radar</span><strong>' + escapeHtml(home) + '</strong></a>' +
-      '<a href="./takim-detay.html?team=' + encodeURIComponent(away) + '"><span>Deplasman radar</span><strong>' + escapeHtml(away) + '</strong></a>' +
+      '<a href="' + escapeHtml(teamProfileHref(home)) + '"><span>Ev sahibi radar</span><strong>' + escapeHtml(home) + '</strong></a>' +
+      '<a href="' + escapeHtml(teamProfileHref(away)) + '"><span>Deplasman radar</span><strong>' + escapeHtml(away) + '</strong></a>' +
       "</section>"
     );
   }
@@ -12986,7 +13000,7 @@
         ? displayValue(item.league)
         : displayValue(playerCurrentTeam(item)) + " · " + displayValue(item.position);
       var href = type === "team"
-        ? siteHref("takim-detay.html?team=" + encodeURIComponent(name))
+        ? siteHref(teamProfileHref(name).replace(/^\.\//, ""))
         : playerProfileHref(item.id || item.slug || "");
 
       return '<li><a href="' + escapeHtml(href) + '">' +

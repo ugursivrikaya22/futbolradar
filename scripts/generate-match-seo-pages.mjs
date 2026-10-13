@@ -102,7 +102,8 @@ const {
 const { canonicalStatus, istanbulDay, kickoffMs } = require("../services/matchStatus.js");
 const { nationLabel, venueLabel } = require("../services/displayLabels.js");
 const { sameClub } = require("../services/superLigTeams.js");
-const { teamHubHref } = require("../services/teamHubLinks.js");
+const { teamHubHref, teamProfileHref } = require("../services/teamHubLinks.js");
+const { teamPageSlug } = require("../services/superLigTeamPages.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { calculateMatchRadar } = require("../services/matchRadarService.js");
 const { resolveMatchLeaders } = require("../services/competitionLeaders.js");
@@ -916,6 +917,11 @@ function teamLinks(teamName, locale, base) {
     };
   }
   if (isSuperLig) {
+    // Görev 6: 18 takımın hepsinin profil/maçları/puan sayfası var.
+    const pageSlug = teamPageSlug(teamName);
+    if (pageSlug) {
+      return { page: teamProfileHref(teamName, base), fixtures: `${base}${pageSlug}-maclari.html`, standings: `${base}${pageSlug}-puan-durumu` };
+    }
     return { page: `${base}takim-detay.html?team=${encodeURIComponent(teamName)}`, fixtures: `${base}super-lig-fikstur.html`, standings: `${base}super-lig-puan-durumu` };
   }
   return { page: null, fixtures: null, standings: null };

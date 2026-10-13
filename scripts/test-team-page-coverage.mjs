@@ -70,3 +70,26 @@ console.log("team-page-coverage OK");
   });
   console.log("team-page-coverage hub OK");
 }
+
+// Görev 6, 4. adım: takim-detay geçişi — sunucu ve istemci aynı slug'ı verir.
+{
+  const { teamProfileHref } = require("../services/teamHubLinks.js");
+  const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
+  const mapMatch = /var TEAM_PAGE_SLUGS = (\{[^;]+\});/.exec(appSource);
+  ok("app.js slug tablosu sunucu listesiyle aynı", () => {
+    assert.ok(mapMatch, "app.js TEAM_PAGE_SLUGS bulunamadı");
+    const clientMap = JSON.parse(mapMatch[1]);
+    const key = (s) => String(s).toLocaleLowerCase("tr-TR").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/ı/g, "i").replace(/[^a-z0-9]+/g, "");
+    for (const entry of pages) {
+      for (const name of [entry.name, entry.record.name]) {
+        assert.equal(clientMap[key(name)], entry.slug, `istemci eşlemesi eksik/yanlış: ${name}`);
+        assert.equal(teamProfileHref(name), `./takimlar/${entry.slug}`);
+      }
+    }
+    assert.equal(new Set(Object.values(clientMap)).size, pages.length, "istemcide fazladan slug");
+  });
+  ok("Süper Lig dışı kulüp takim-detay'da kalır", () => {
+    assert.equal(teamProfileHref("Barcelona"), "./takim-detay.html?team=Barcelona");
+  });
+  console.log("team-page-coverage geçiş OK");
+}
