@@ -41,6 +41,8 @@ import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import {
   STR,
   absencesSectionHtml,
+  absenceStatus,
+  scopeAbsencesToCompetition,
   analysisSectionHtml,
   clock,
   commentsSectionHtml,
@@ -260,19 +262,19 @@ function aiModelPredictionFor(entry, detail) {
 }
 
 /** Sakat/cezalı bildirimleri → { home, away }. Bildirim yoksa taraf null. */
-function aiAbsencesFor(homeTeam, awayTeam) {
+function aiAbsencesFor(homeTeam, awayTeam, competitionLeagueId) {
   const rows = squadStatus && Array.isArray(squadStatus.teams) ? squadStatus.teams : [];
   const sideFor = (teamName) => {
     const row = rows.find((item) => item && sameClub(item.team || item.name, teamName));
     if (!row) return null;
     const seen = new Set();
-    const players = (Array.isArray(row.absences) ? row.absences : []).filter((item) => {
+    const players = scopeAbsencesToCompetition(row.absences, competitionLeagueId).filter((item) => {
       const key = normalizeText(item && item.playerName);
       if (!key || seen.has(key)) return false;
       seen.add(key);
       return true;
-    }).map((item) => ({ name: item.playerName, status: normalizeText(item.status) || "injured" }));
-    return { count: Number.isFinite(Number(row.absenceCount)) ? Number(row.absenceCount) : players.length, players };
+    }).map((item) => ({ name: item.playerName, status: absenceStatus(item) }));
+    return { count: players.length, players };
   };
   return { home: sideFor(homeTeam), away: sideFor(awayTeam) };
 }
@@ -359,6 +361,24 @@ const analyses = readJson("data/match-analyses.json", []);
 const standings = readJson("data/league-standings.json", {});
 const squads = readJson("data/super-lig-squads.json", []);
 const squadStatus = readJson("data/squad-statuses.json", { teams: [] });
+const competitionsStore = readJson("data/competitions.json", { competitions: [] });
+// Maçın turnuvası → API-Football lig kimliği (ceza satırlarını turnuvaya
+// göre süzmek için). Bulunamazsa null; o durumda ligli ceza satırı basılmaz.
+function scopedSquadStatusFor(entry) {
+  const leagueId = competitionLeagueIdFor(entry);
+  const rows = Array.isArray(squadStatus.teams) ? squadStatus.teams : [];
+  return { ...squadStatus, teams: rows.map((row) => {
+    const absences = scopeAbsencesToCompetition(row.absences, leagueId);
+    return { ...row, absences, absenceCount: absences.length };
+  }) };
+}
+function competitionLeagueIdFor(entry) {
+  const list = Array.isArray(competitionsStore) ? competitionsStore : (competitionsStore.competitions || []);
+  const id = entry && entry.competitionId;
+  const comp = id ? list.find((item) => item && item.id === id) : null;
+  const providerId = comp && comp.providers && comp.providers.apiFootball;
+  return providerId ? String(providerId) : null;
+}
 const teams = readJson("data/teams.json", []);
 const players = getPlayers(readJson("data/players.json", []));
 const reportStore = readJson("data/post-match-reports.json", { records: [] });
@@ -1164,6 +1184,7 @@ function pageHtml(entry, locale, options) {
   const ctx = {
     locale,
     base,
+    competitionLeagueId: competitionLeagueIdFor(entry),
     state,
     // Anket uç noktası hem Türkçe hem İngilizce slug'ı AYNI maça çözüyor,
     // böylece iki dildeki okuyucu tek bir sayımı paylaşıyor.
@@ -1211,7 +1232,7 @@ function pageHtml(entry, locale, options) {
     entry.awayTeam,
     { locale, finished: state === "post" }
   );
-  const radar = state === "pre" ? calculateMatchRadar({ homeTeam: entry.homeTeam, awayTeam: entry.awayTeam }, { teams, players, squadStatus }) : null;
+  const radar = state === "pre" ? calculateMatchRadar({ homeTeam: entry.homeTeam, awayTeam: entry.awayTeam }, { teams, players, squadStatus: scopedSquadStatusFor(entry) }) : null;
   const focus = featuredContext.contextForEntry(featuredContextStore, entry);
   const focusH2h = focus && Array.isArray(focus.h2h) && focus.h2h.length
     ? focus.h2h.map((row) => ({ date: row.date, homeTeam: row.homeTeam, awayTeam: row.awayTeam, homeGoals: row.homeGoals, awayGoals: row.awayGoals, competition: row.competition }))
@@ -1235,7 +1256,7 @@ function pageHtml(entry, locale, options) {
     probability: aiProbability,
     modelPrediction: aiModelPrediction,
     forms,
-    absences: aiAbsencesFor(entry.homeTeam, entry.awayTeam),
+    absences: aiAbsencesFor(entry.homeTeam, entry.awayTeam, competitionLeagueIdFor(entry)),
     lineups: aiLineupsFor(detail, analysis, predictedLineupFor(detail.naturalId), entry.homeTeam, entry.awayTeam),
     h2h: aiH2hFor(h2h, entry.homeTeam),
     state,
@@ -1292,7 +1313,7 @@ function pageHtml(entry, locale, options) {
       lineupsSectionHtml(detail, analysis, ctx),
       // Maça sonradan katılan okuyucu "kim yok" diye de soruyor; blok
       // kendi verisi yoksa zaten hiç basılmıyor.
-      absencesSectionHtml(squadStatus, ctx),
+      absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),
@@ -1306,7 +1327,7 @@ function pageHtml(entry, locale, options) {
       whenSectionHtml(entry, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       squadsSectionHtml(squads, ctx),
-      absencesSectionHtml(squadStatus, ctx),
+      absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
       formSectionHtml(forms, ctx),
       comparisonSectionHtml(focus && focus.summary, ctx),
       h2hSectionHtml(h2h, ctx),

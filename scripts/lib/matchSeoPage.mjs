@@ -911,6 +911,30 @@ export function squadsSectionHtml(squads, ctx) {
   return `<section class="msp-section" id="kadro" aria-labelledby="msp-squads-title"><h2 id="msp-squads-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.squads, ctx))}</h2><details class="msp-details"><summary>${escapeHtml(homeTeam)} · ${escapeHtml(awayTeam)}</summary><div class="msp-two-col">${groupHtml(home, homeTeam)}${groupHtml(away, awayTeam)}</div></details></section>`;
 }
 
+/**
+ * Sakat/cezalı satırını maçın turnuvasına göre süzer. Ceza (kırmızı/sarı
+ * kart) yalnızca alındığı turnuvada geçerli: Süper Lig'de cezalı bir oyuncu
+ * Şampiyonlar Ligi maçında oynayabilir. Sakatlıklar turnuvadan bağımsızdır
+ * ve olduğu gibi kalır. Satırda lig bilgisi varsa ve maçın sağlayıcı lig
+ * kimliği farklıysa (ya da bilinmiyorsa) ceza satırı gösterilmez.
+ */
+export function absenceStatus(item) {
+  const status = normalizeText(item && item.status);
+  const text = normalizeText(`${item && item.type || ""} ${item && item.reason || ""}`);
+  if (status === "suspended" || text.includes("card") || text.includes("susp") || text.includes("ceza")) return "suspended";
+  if (status === "doubtful") return "doubtful";
+  return "injured";
+}
+
+export function scopeAbsencesToCompetition(absences, competitionLeagueId) {
+  const matchLeague = competitionLeagueId === undefined || competitionLeagueId === null || competitionLeagueId === "" ? null : String(competitionLeagueId);
+  return (Array.isArray(absences) ? absences : []).filter((item) => {
+    if (absenceStatus(item) !== "suspended") return true;
+    if (!item || item.leagueId === undefined || item.leagueId === null || item.leagueId === "") return true;
+    return matchLeague !== null && String(item.leagueId) === matchLeague;
+  });
+}
+
 export function absencesSectionHtml(squadStatus, ctx) {
   const { locale, homeTeam, awayTeam } = ctx;
   const text = STR[locale];
@@ -928,10 +952,10 @@ export function absencesSectionHtml(squadStatus, ctx) {
   };
   const listHtml = (row, teamName) => {
     if (!row) return `<article class="card data-empty"><strong>${escapeHtml(teamName)}</strong><span>${escapeHtml(text.absencePending)}</span></article>`;
-    const absences = Array.isArray(row.absences) ? row.absences : [];
+    const absences = scopeAbsencesToCompetition(row.absences, ctx.competitionLeagueId);
     const seen = new Set();
     const unique = absences.filter((item) => { const key = normalizeText(item.playerName); if (!key || seen.has(key)) return false; seen.add(key); return true; });
-    return `<article class="card msp-absences"><h3>${escapeHtml(teamName)}</h3>${unique.length ? `<ul>${unique.map((item) => `<li><b>${escapeHtml(item.playerName)}</b> <span class="msp-tag is-${escapeHtml(normalizeText(item.status) || "injured")}">${escapeHtml(statusLabel(item.status))}</span>${item.reason && normalizeText(item.reason) !== "injury" ? ` <small>${escapeHtml(item.reason)}</small>` : ""}</li>`).join("")}</ul>` : `<p class="muted-copy">${escapeHtml(text.noAbsence)}</p>`}</article>`;
+    return `<article class="card msp-absences"><h3>${escapeHtml(teamName)}</h3>${unique.length ? `<ul>${unique.map((item) => `<li><b>${escapeHtml(item.playerName)}</b> <span class="msp-tag is-${escapeHtml(absenceStatus(item))}">${escapeHtml(statusLabel(absenceStatus(item)))}</span>${item.reason && normalizeText(item.reason) !== "injury" ? ` <small>${escapeHtml(item.reason)}</small>` : ""}</li>`).join("")}</ul>` : `<p class="muted-copy">${escapeHtml(text.noAbsence)}</p>`}</article>`;
   };
   return `<section class="msp-section" id="sakat-cezali" aria-labelledby="msp-absences-title"><h2 id="msp-absences-title" class="msp-section-title">${escapeHtml(text.absences)}</h2><div class="msp-two-col">${listHtml(home, homeTeam)}${listHtml(away, awayTeam)}</div></section>`;
 }
