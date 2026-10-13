@@ -56,6 +56,8 @@ function normalizeInjury(item, nowIso) {
     type: player.type || null,
     reason: player.reason || null,
     fixtureId: item && item.fixture && item.fixture.id ? String(item.fixture.id) : null,
+    fixtureDate: item && item.fixture && item.fixture.date ? String(item.fixture.date) : null,
+    leagueId: item && item.league && item.league.id ? String(item.league.id) : null,
     source: "api-football"
   };
 }
@@ -66,9 +68,46 @@ function manualAvailability(player) {
   return status && status !== "unknown" && source !== "api-football";
 }
 
+// API-Football /injuries?league&season sezonun TÜM maçları için "bu maçı
+// kaçırdı" satırlarını döndürür. Oyuncu bazında tekilleştirme tek başına,
+// haftalar önce iyileşmiş oyuncuları sonsuza dek "sakat" gösteriyordu.
+// Çözüm: her takım için yalnızca sağlayıcıdaki EN SON fikstür tarihine ait
+// satırlar tutulur ve o tarih maxAgeDays'ten eskiyse takım listesi boş kalır.
+// Tarihi olmayan satırlar (eski biçim) olduğu gibi geçer.
+export const MAX_ABSENCE_AGE_DAYS = 10;
+
+export function filterCurrentInjuries(rawInjuries, options = {}) {
+  const nowMs = Date.parse(options.nowIso || new Date().toISOString());
+  const maxAgeMs = (options.maxAgeDays ?? MAX_ABSENCE_AGE_DAYS) * 24 * 60 * 60 * 1000;
+  const rows = Array.isArray(rawInjuries) ? rawInjuries : [];
+  const dateOf = (item) => {
+    const ms = Date.parse(item && item.fixture && item.fixture.date);
+    return Number.isFinite(ms) ? ms : null;
+  };
+  const teamKey = (item) => {
+    const team = item && item.team || {};
+    return String(team.id || normalizeText(team.name));
+  };
+  const latestByTeam = new Map();
+  for (const item of rows) {
+    const ms = dateOf(item);
+    if (ms === null || ms > nowMs + maxAgeMs) continue;
+    const key = teamKey(item);
+    if (!latestByTeam.has(key) || ms > latestByTeam.get(key)) latestByTeam.set(key, ms);
+  }
+  return rows.filter((item) => {
+    const ms = dateOf(item);
+    if (ms === null) return true;
+    const latest = latestByTeam.get(teamKey(item));
+    if (latest === undefined || ms !== latest) return false;
+    return nowMs - latest <= maxAgeMs;
+  });
+}
+
 export function mergeSquadStatuses(players, previousStatus, rawInjuries, options = {}) {
   const nowIso = options.nowIso || new Date().toISOString();
-  const injuries = [...new Map((rawInjuries || []).map((item) => {
+  const currentInjuries = filterCurrentInjuries(rawInjuries, { nowIso, maxAgeDays: options.maxAgeDays });
+  const injuries = [...new Map(currentInjuries.map((item) => {
     const normalized = normalizeInjury(item, nowIso);
     return [normalized.id, normalized];
   })).values()].filter((item) => item.playerName && item.team);

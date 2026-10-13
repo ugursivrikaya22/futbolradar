@@ -351,6 +351,21 @@ const unchangedPlayers = mergeSquadStatuses(playerMerge.players, playerMerge.sta
 assert.equal(unchangedPlayers.playersUpdated, 0);
 assert.equal(unchangedPlayers.statusChanged, false);
 
+// Season-wide provider rows: only each team's latest fixture counts, and a
+// team whose latest provider fixture is too old shows no absences.
+const seasonRows = [
+  { player: { id: 11, name: "Old Injury", type: "Missing Fixture", reason: "Muscle Injury" }, team: { id: 645, name: "Galatasaray" }, fixture: { id: 1, date: "2026-09-19T17:00:00+00:00" }, league: { id: 203 } },
+  { player: { id: 12, name: "Current Ban", type: "Missing Fixture", reason: "Red Card" }, team: { id: 645, name: "Galatasaray" }, fixture: { id: 2, date: "2026-10-09T17:00:00+00:00" }, league: { id: 203 } },
+  { player: { id: 13, name: "Stale Team", type: "Missing Fixture", reason: "Knee Injury" }, team: { id: 99, name: "Stale FC" }, fixture: { id: 3, date: "2026-08-20T17:00:00+00:00" }, league: { id: 203 } }
+];
+const seasonMerge = mergeSquadStatuses([
+  { id: "old", providerId: "11", name: "Old Injury", currentTeam: "Galatasaray", availabilityStatus: "injured", availabilitySource: "api-football" }
+], { teams: [] }, seasonRows, { nowIso: "2026-10-13T05:00:00Z" });
+assert.equal(seasonMerge.players[0].availabilityStatus, undefined);
+assert.equal(seasonMerge.status.teams.length, 1);
+assert.deepEqual(seasonMerge.status.teams[0].absences.map((a) => a.playerName), ["Current Ban"]);
+assert.equal(seasonMerge.status.teams[0].absences[0].fixtureDate, "2026-10-09T17:00:00+00:00");
+
 const rss = `<?xml version="1.0"?><rss><channel><item>
   <title><![CDATA[Galatasaray yeni sezon hazırlıklarını sürdürdü - Galatasaray]]></title>
   <link>https://news.google.com/rss/articles/example</link>
