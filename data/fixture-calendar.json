@@ -1,7 +1,7 @@
 {
   "source": "TheSportsDB + API-Football",
   "provider": "thesportsdb",
-  "fetchedAt": "2026-10-13T10:26:58.804Z",
+  "fetchedAt": "2026-10-13T11:40:16.376Z",
   "windowDays": {
     "past": 3,
     "future": 35
@@ -300240,8 +300240,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T07:40:05.908Z",
-      "staleAfter": "2026-10-13T07:45:05.908Z",
+      "fetchedAt": "2026-10-13T11:40:17.380Z",
+      "staleAfter": "2026-10-13T11:45:17.380Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -301000,22 +301000,17 @@
       ],
       "analysis": {
         "title": "Maç Radar Analizi",
-        "summary": "Son gol 74' E. Medrano tarafından kaydedildi. FAS skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FAS tarafında.",
-        "confidence": "Orta",
+        "summary": "FAS skor üstünlüğünü elinde tutuyor. Skor üstünlüğü FAS tarafında.",
+        "confidence": "Sınırlı",
         "signals": [
-          {
-            "label": "Gol akışı",
-            "value": "74'",
-            "text": "Son gol 74' E. Medrano tarafından kaydedildi."
-          },
           {
             "label": "Canlı skor",
             "value": "0-1",
             "text": "FAS skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 1,
-        "dataPoints": 2,
+        "eventCount": 0,
+        "dataPoints": 1,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       }
     },
@@ -501545,8 +501540,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.148Z",
-      "staleAfter": "2026-10-13T10:31:59.148Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -502237,7 +502232,7 @@
           },
           "type": "Goal",
           "detail": "Normal Goal",
-          "value": "Nikos Vergos · Asist: Xavier Bertoncello · Normal Goal",
+          "value": "Nikos Vergos · Normal Goal",
           "comments": "",
           "providerEventAt": null
         },
@@ -502772,9 +502767,17 @@
       ],
       "statistics": [
         {
+          "category": "Genel",
+          "type": "Gol beklentisi (xG)",
+          "home": 0.88,
+          "away": 2.37,
+          "decimals": 2,
+          "higherIsBetter": true
+        },
+        {
           "category": "Pas",
           "type": "İsabetli pas",
-          "home": 266,
+          "home": 265,
           "away": 502,
           "higherIsBetter": true
         },
@@ -502866,14 +502869,6 @@
           "home": 38,
           "away": 62,
           "unit": "%",
-          "higherIsBetter": true
-        },
-        {
-          "category": "Genel",
-          "type": "Gol beklentisi (xG)",
-          "home": 0.88,
-          "away": 2.07,
-          "decimals": 2,
           "higherIsBetter": true
         }
       ],
@@ -503192,13 +503187,13 @@
           "providerRating": 6.52,
           "ratingSource": "api-football",
           "goals": 0,
-          "assists": 1,
+          "assists": 0,
           "saves": 0,
           "shots": 2,
           "shotsOnTarget": 0,
           "passes": 15,
-          "passAccuracy": 10,
-          "keyPasses": 1,
+          "passAccuracy": 9,
+          "keyPasses": 0,
           "tackles": 2,
           "duelsWon": 5,
           "yellowCards": 0,
@@ -503886,7 +503881,7 @@
           },
           {
             "label": "Gol beklentisi",
-            "value": "0.88-2.07",
+            "value": "0.88-2.37",
             "text": "Gamba Osaka daha yüksek pozisyon kalitesi üretti."
           },
           {
@@ -503927,13 +503922,13 @@
       "awayTeamId": "25416",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5013.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/25416.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 73,
-      "elapsed": 73,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
-        "home": 2,
+        "home": 4,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -503952,8 +503947,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -505010,25 +505005,47 @@
           "value": "S. A. Raza · Normal Goal",
           "comments": "",
           "providerEventAt": null
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Brothers Union"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Halim · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "80'",
+          "team": {
+            "name": "Brothers Union"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "M. Halim · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
         }
       ],
       "analysis": {
-        "title": "Canlı Radar Analizi",
-        "summary": "Son gol 63' S. A. Raza tarafından kaydedildi. Brothers Union skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Brothers Union tarafında.",
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 80' M. Halim tarafından kaydedildi. Brothers Union skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Brothers Union tarafında.",
         "confidence": "Orta",
         "signals": [
           {
             "label": "Gol akışı",
-            "value": "63'",
-            "text": "Son gol 63' S. A. Raza tarafından kaydedildi."
+            "value": "80'",
+            "text": "Son gol 80' M. Halim tarafından kaydedildi."
           },
           {
             "label": "Canlı skor",
-            "value": "2-1",
+            "value": "4-1",
             "text": "Brothers Union skor üstünlüğünü elinde tutuyor."
           }
         ],
-        "eventCount": 3,
+        "eventCount": 5,
         "dataPoints": 2,
         "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
       }
@@ -505050,11 +505067,11 @@
       "awayTeamId": "28428",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/5017.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/28428.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 79,
-      "elapsed": 79,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 3,
@@ -505075,8 +505092,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -505813,11 +505830,11 @@
       "awayTeamId": "19065",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/19064.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/19065.png",
-      "status": "LIVE",
-      "providerStatus": "2H",
-      "minute": 57,
-      "elapsed": 57,
-      "live": true,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
+      "live": false,
       "score": {
         "home": 1,
         "away": 3,
@@ -505838,8 +505855,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -506647,14 +506664,14 @@
       "awayTeamId": "19067",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/19066.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/19067.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "minute": 90,
+      "elapsed": 90,
       "live": false,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 5,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -506672,8 +506689,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-12T10:39:32.141Z",
-      "staleAfter": "2026-10-12T10:44:32.141Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -507576,12 +507593,12 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/15467.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/21718.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 25,
-      "elapsed": 25,
+      "providerStatus": "2H",
+      "minute": 79,
+      "elapsed": 79,
       "live": true,
       "score": {
-        "home": 0,
+        "home": 1,
         "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
@@ -507600,8 +507617,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -508566,6 +508583,17 @@
           "value": "Normal Goal",
           "comments": "",
           "providerEventAt": null
+        },
+        {
+          "time": "32'",
+          "team": {
+            "name": "Portimonense U23"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
         }
       ]
     },
@@ -508587,9 +508615,9 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/302.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2776.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 27,
-      "elapsed": 27,
+      "providerStatus": "2H",
+      "minute": 78,
+      "elapsed": 78,
       "live": true,
       "score": {
         "home": 0,
@@ -508611,8 +508639,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -509317,6 +509345,61 @@
           "value": "Ren Kato · Asist: Ryuma Nakano · Substitution 1",
           "comments": "",
           "providerEventAt": null
+        },
+        {
+          "time": "44'",
+          "team": {
+            "name": "Ratchaburi"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Pablo Insua · Asist: Daniel Ting · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45'",
+          "team": {
+            "name": "Kyoto Sanga"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Thiago Sousa Lima · Asist: Shimpei Fukuoka · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Kyoto Sanga"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Everton Maceió · Asist: Alex Souza · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "59'",
+          "team": {
+            "name": "Kyoto Sanga"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "Marco Túlio · Asist: Temma Matsuda · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Ratchaburi"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Bruno Mendes · Asist: Chotipat Poomkaew · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
         }
       ]
     },
@@ -509338,13 +509421,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2764.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2523.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 26,
-      "elapsed": 26,
+      "providerStatus": "2H",
+      "minute": 79,
+      "elapsed": 79,
       "live": true,
       "score": {
         "home": 0,
-        "away": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -509362,8 +509445,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -510268,6 +510351,138 @@
           "value": "Shahab Zahedi · Yellow Card",
           "comments": "",
           "providerEventAt": null
+        },
+        {
+          "time": "43'",
+          "team": {
+            "name": "Johor Darul Takzim FC"
+          },
+          "type": "Var",
+          "detail": "Penalty confirmed",
+          "value": "Carlos Akapo · Penalty confirmed",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+1'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "Var",
+          "detail": "Card upgrade confirmed",
+          "value": "Jeon Min-kwang · Card upgrade confirmed",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+1'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "Card",
+          "detail": "Red Card",
+          "value": "Jeon Min-kwang · Red Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Jakob Tranziska · Asist: Jin Si-woo · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Ki Sung-Yueng · Asist: Kim Seung-Ho · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+3'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Juninho Rocha · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "49'",
+          "team": {
+            "name": "Johor Darul Takzim FC"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Marcos Guilherme · Asist: Shahab Zahedi · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "56'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Kento Nishiya · Asist: Kim Ye-Sung · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "72'",
+          "team": {
+            "name": "Pohang Steelers"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "Kim Dong-Jin · Asist: Lee Chang-Woo · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Johor Darul Takzim FC"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Cristian Glauder · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Johor Darul Takzim FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Shahab Zahedi · Asist: Jairo de Macedo da Silva · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "74'",
+          "team": {
+            "name": "Johor Darul Takzim FC"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Oscar Arribas · Asist: Bergson Gustavo Silveira da Silva · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
         }
       ]
     },
@@ -510289,13 +510504,13 @@
       "homeTeamLogo": "https://media.api-sports.io/football/teams/836.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2750.png",
       "status": "LIVE",
-      "providerStatus": "1H",
-      "minute": 27,
-      "elapsed": 27,
+      "providerStatus": "2H",
+      "minute": 84,
+      "elapsed": 84,
       "live": true,
       "score": {
-        "home": 0,
-        "away": 0,
+        "home": 1,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -510313,8 +510528,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.622Z",
-      "staleAfter": "2026-10-13T10:28:29.622Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -510999,13 +511214,145 @@
       "predictionFetchedAt": "2026-10-13T09:35:36.826Z",
       "events": [
         {
-          "time": "25'",
+          "time": "45+2'",
+          "team": {
+            "name": "SHANGHAI SIPG"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Wei Zhen · Yellow Card",
+          "comments": "Argument",
+          "providerEventAt": null
+        },
+        {
+          "time": "45+2'",
+          "team": {
+            "name": "Daejeon Citizen"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "João Victor · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "49'",
+          "team": {
+            "name": "SHANGHAI SIPG"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Prince Ampem · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "54'",
           "team": {
             "name": "Daejeon Citizen"
           },
           "type": "Goal",
           "detail": "Normal Goal",
-          "value": "Normal Goal",
+          "value": "Diogo Oliveira · Asist: Jeong Jae-hee · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "60'",
+          "team": {
+            "name": "Daejeon Citizen"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Park Kyu-Hyun · Yellow Card",
+          "comments": "Foul",
+          "providerEventAt": null
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Daejeon Citizen"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Jeong Jae-hee · Asist: Gustav Ludwigson · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Daejeon Citizen"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "João Victor · Asist: Um Won-Sang · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "SHANGHAI SIPG"
+          },
+          "type": "subst",
+          "detail": "Substitution 1",
+          "value": "Mateus Vital · Asist: Liu Zhurun · Substitution 1",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "SHANGHAI SIPG"
+          },
+          "type": "subst",
+          "detail": "Substitution 2",
+          "value": "Wang Zhen’ao · Asist: Li Shuai · Substitution 2",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "SHANGHAI SIPG"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Wu Lei · Asist: Leonardo Nascimento Lopes de Souza · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "63'",
+          "team": {
+            "name": "Daejeon Citizen"
+          },
+          "type": "subst",
+          "detail": "Substitution 3",
+          "value": "Diogo Oliveira · Asist: Joo Min-Kyu · Substitution 3",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "76'",
+          "team": {
+            "name": "SHANGHAI SIPG"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "Zhang Linpeng · Asist: Umidjan Yusup · Substitution 4",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "78'",
+          "team": {
+            "name": "Daejeon Citizen"
+          },
+          "type": "subst",
+          "detail": "Substitution 4",
+          "value": "Seo Jin-Su  · Asist: Masatoshi Ishida · Substitution 4",
           "comments": "",
           "providerEventAt": null
         }
@@ -511028,14 +511375,14 @@
       "awayTeamId": "27584",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/27588.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/27584.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "2H",
+      "minute": 49,
+      "elapsed": 49,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -511053,8 +511400,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-12T00:29:17.409Z",
-      "staleAfter": "2026-10-12T00:34:17.409Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -512674,14 +513021,14 @@
       "awayTeamId": "4222",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/4214.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/4222.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 39,
+      "elapsed": 39,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -512699,8 +513046,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T05:42:40.703Z",
-      "staleAfter": "2026-10-13T05:47:40.703Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -514073,7 +514420,20 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T09:35:37.809Z"
+      "predictionFetchedAt": "2026-10-13T09:35:37.809Z",
+      "events": [
+        {
+          "time": "28'",
+          "team": {
+            "name": "Metalourg"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "D. Abdulkhaev · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "muangthong-united-phrae-united-2026-10-13",
@@ -514092,14 +514452,14 @@
       "awayTeamId": "6585",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/2786.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/6585.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 40,
+      "elapsed": 40,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -514117,8 +514477,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T05:42:40.703Z",
-      "staleAfter": "2026-10-13T05:47:40.703Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -514809,14 +515169,14 @@
       "awayTeamId": "7997",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/22372.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/7997.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 40,
+      "elapsed": 40,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -514834,8 +515194,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T05:42:40.703Z",
-      "staleAfter": "2026-10-13T05:47:40.703Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -515507,7 +515867,31 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T09:35:37.629Z"
+      "predictionFetchedAt": "2026-10-13T09:35:37.629Z",
+      "events": [
+        {
+          "time": "3'",
+          "team": {
+            "name": "Sporting CP U19"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "G. Silva · Asist: J. Mendes · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "39'",
+          "team": {
+            "name": "Lens U19"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "sabah-u19-slavia-praha-u19-2026-10-13",
@@ -515526,14 +515910,14 @@
       "awayTeamId": "7933",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/24986.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/7933.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 40,
+      "elapsed": 40,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 1,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -515551,8 +515935,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-12T00:29:17.409Z",
-      "staleAfter": "2026-10-12T00:34:17.409Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -516224,7 +516608,42 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T09:35:38.082Z"
+      "predictionFetchedAt": "2026-10-13T09:35:38.082Z",
+      "events": [
+        {
+          "time": "5'",
+          "team": {
+            "name": "Slavia Praha U19"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "B. Szywala · Asist: A. Rajnoha · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "20'",
+          "team": {
+            "name": "Sabah U19"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "U. Salimov · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "30'",
+          "team": {
+            "name": "Slavia Praha U19"
+          },
+          "type": "Card",
+          "detail": "Yellow Card",
+          "value": "M. Solarte · Yellow Card",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "viking-u19-bayern-munchen-u19-2026-10-13",
@@ -516243,14 +516662,14 @@
       "awayTeamId": "7887",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/16567.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/7887.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 37,
+      "elapsed": 37,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 1,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -516268,8 +516687,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-12T00:29:17.409Z",
-      "staleAfter": "2026-10-12T00:34:17.409Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -516941,7 +517360,20 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T09:35:38.386Z"
+      "predictionFetchedAt": "2026-10-13T09:35:38.386Z",
+      "events": [
+        {
+          "time": "36'",
+          "team": {
+            "name": "Viking U19"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "finland-u23-w-estonia-w-2026-10-13",
@@ -516960,14 +517392,14 @@
       "awayTeamId": "1753",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/27108.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1753.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 37,
+      "elapsed": 37,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 5,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -516985,8 +517417,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-12T00:29:17.409Z",
-      "staleAfter": "2026-10-12T00:34:17.409Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -517658,7 +518090,64 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T09:35:37.255Z"
+      "predictionFetchedAt": "2026-10-13T09:35:37.255Z",
+      "events": [
+        {
+          "time": "2'",
+          "team": {
+            "name": "Finland U23 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "W. Forsblom · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "6'",
+          "team": {
+            "name": "Finland U23 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "S. Jahnukainen · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "16'",
+          "team": {
+            "name": "Finland U23 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "W. Forsblom · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "30'",
+          "team": {
+            "name": "Finland U23 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "W. Forsblom · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        },
+        {
+          "time": "31'",
+          "team": {
+            "name": "Finland U23 W"
+          },
+          "type": "Goal",
+          "detail": "Normal Goal",
+          "value": "W. Forsblom · Normal Goal",
+          "comments": "",
+          "providerEventAt": null
+        }
+      ]
     },
     {
       "id": "lebanon-w-palestine-w-2026-10-13",
@@ -518745,14 +519234,14 @@
       "awayTeamId": "1002",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/3584.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/1002.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 11,
+      "elapsed": 11,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -518770,8 +519259,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T00:16:27.028Z",
-      "staleAfter": "2026-10-13T00:21:27.028Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -519851,14 +520340,14 @@
       "awayTeamId": "2775",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/18051.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/2775.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 10,
+      "elapsed": 10,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -519876,8 +520365,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T06:44:01.745Z",
-      "staleAfter": "2026-10-13T06:49:01.745Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -521566,14 +522055,14 @@
       "awayTeamId": "5679",
       "homeTeamLogo": "https://media.api-sports.io/football/teams/25839.png",
       "awayTeamLogo": "https://media.api-sports.io/football/teams/5679.png",
-      "status": "SCHEDULED",
-      "providerStatus": "NS",
-      "minute": null,
-      "elapsed": null,
-      "live": false,
+      "status": "LIVE",
+      "providerStatus": "1H",
+      "minute": 5,
+      "elapsed": 5,
+      "live": true,
       "score": {
-        "home": null,
-        "away": null,
+        "home": 0,
+        "away": 0,
         "halftimeHome": null,
         "halftimeAway": null
       },
@@ -521591,8 +522080,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T06:44:01.745Z",
-      "staleAfter": "2026-10-13T06:49:01.745Z",
+      "fetchedAt": "2026-10-13T11:40:17.922Z",
+      "staleAfter": "2026-10-13T11:41:47.922Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -523042,7 +523531,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T06:44:09.358Z",
+      "predictionFetchedAt": "2026-10-13T11:40:25.246Z",
       "analysis": {
         "title": "Maç Radar Analizi",
         "summary": "Maç dengede; ayrıntılı canlı istatistikler geldikçe analiz genişleyecek.",
@@ -523768,7 +524257,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T06:44:10.173Z"
+      "predictionFetchedAt": "2026-10-13T11:40:25.800Z"
     },
     {
       "id": "nakhon-ratchasima-fc-muang-loei-united-2026-10-13",
@@ -524485,7 +524974,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T06:44:10.352Z"
+      "predictionFetchedAt": "2026-10-13T11:40:25.971Z"
     },
     {
       "id": "willem-ii-u21-groningen-u21-2026-10-13",
@@ -525693,7 +526182,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:11.289Z"
+      "predictionFetchedAt": "2026-10-13T11:40:26.854Z"
     },
     {
       "id": "peterborough-united-u21-sheffield-united-u21-2026-10-13",
@@ -526971,7 +527460,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:10.886Z"
+      "predictionFetchedAt": "2026-10-13T11:40:26.481Z"
     },
     {
       "id": "arsenal-u19-lille-u19-2026-10-13",
@@ -527688,7 +528177,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T06:44:08.935Z"
+      "predictionFetchedAt": "2026-10-13T11:40:24.779Z"
     },
     {
       "id": "rb-leipzig-u19-psv-u19-2026-10-13",
@@ -528405,7 +528894,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T06:44:11.070Z"
+      "predictionFetchedAt": "2026-10-13T11:40:26.649Z"
     },
     {
       "id": "shabab-al-sahel-safa-2026-10-13",
@@ -529875,7 +530364,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:09.173Z"
+      "predictionFetchedAt": "2026-10-13T11:40:25.079Z"
     },
     {
       "id": "arsenal-tivat-grbalj-2026-10-13",
@@ -531223,7 +531712,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:08.479Z"
+      "predictionFetchedAt": "2026-10-13T11:40:24.247Z"
     },
     {
       "id": "lovcen-jezero-2026-10-13",
@@ -532221,7 +532710,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:09.572Z"
+      "predictionFetchedAt": "2026-10-13T11:40:25.461Z"
     },
     {
       "id": "otrant-olympic-mornar-2026-10-13",
@@ -533569,7 +534058,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:10.529Z"
+      "predictionFetchedAt": "2026-10-13T11:40:26.139Z"
     },
     {
       "id": "buriram-united-beijing-guoan-2026-10-13",
@@ -534437,7 +534926,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:11.707Z"
+      "predictionFetchedAt": "2026-10-13T11:40:27.249Z"
     },
     {
       "id": "cong-an-nhan-dan-kashima-2026-10-13",
@@ -535164,7 +535653,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T06:44:11.886Z"
+      "predictionFetchedAt": "2026-10-13T11:40:27.416Z"
     },
     {
       "id": "zob-ahan-sepahan-fc-2026-10-13",
@@ -536582,7 +537071,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T06:44:12.063Z"
+      "predictionFetchedAt": "2026-10-13T11:40:27.582Z"
     },
     {
       "id": "muzinga-young-star-2026-10-08",
@@ -537422,7 +537911,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T07:40:15.896Z"
+      "predictionFetchedAt": "2026-10-13T11:40:29.841Z"
     },
     {
       "id": "tabora-united-young-africans-2026-10-13",
@@ -539277,7 +539766,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T07:40:14.469Z"
+      "predictionFetchedAt": "2026-10-13T11:40:28.866Z"
     },
     {
       "id": "queens-park-rangers-u21-cardiff-city-u21-2026-10-13",
@@ -543688,7 +544177,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T09:35:38.696Z"
+      "predictionFetchedAt": "2026-10-13T11:40:28.257Z"
     },
     {
       "id": "lugazi-bul-2026-10-13",
@@ -544686,7 +545175,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T07:40:15.236Z"
+      "predictionFetchedAt": "2026-10-13T11:40:29.317Z"
     },
     {
       "id": "ntugasaze-kcca-2026-10-13",
@@ -545403,7 +545892,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T07:40:15.685Z"
+      "predictionFetchedAt": "2026-10-13T11:40:29.678Z"
     },
     {
       "id": "internazionale-u19-club-brugge-u19-2026-10-13",
@@ -546120,7 +546609,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T07:40:14.682Z"
+      "predictionFetchedAt": "2026-10-13T11:40:29.033Z"
     },
     {
       "id": "cadca-tatran-presov-2026-10-13",
@@ -546837,7 +547326,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T07:40:13.774Z"
+      "predictionFetchedAt": "2026-10-13T11:40:28.092Z"
     },
     {
       "id": "banik-lehota-p-vtacnikom-zemplin-michalovce-2026-10-13",
@@ -547554,7 +548043,7 @@
         },
         "h2h": []
       },
-      "predictionFetchedAt": "2026-10-13T07:40:13.562Z"
+      "predictionFetchedAt": "2026-10-13T11:40:27.924Z"
     },
     {
       "id": "svaty-jur-nove-zamky-2026-10-13",
@@ -552133,7 +552622,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T07:40:13.985Z"
+      "predictionFetchedAt": "2026-10-13T11:40:28.468Z"
     },
     {
       "id": "alga-muras-united-2026-10-13",
@@ -552159,7 +552648,9 @@
       "live": false,
       "score": {
         "home": null,
-        "away": null
+        "away": null,
+        "halftimeHome": null,
+        "halftimeAway": null
       },
       "homeForm": null,
       "awayForm": null,
@@ -552175,8 +552666,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-13T10:26:59.148Z",
-      "staleAfter": "2026-10-13T10:31:59.148Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -553479,7 +553970,7 @@
           }
         ]
       },
-      "predictionFetchedAt": "2026-10-13T10:27:04.673Z"
+      "predictionFetchedAt": "2026-10-13T11:40:27.749Z"
     },
     {
       "id": "cape-town-city-the-bees-2026-10-11",
@@ -591958,7 +592449,7 @@
       "providerLeagueId": "880",
       "round": null,
       "venue": null,
-      "referee": null,
+      "referee": "Olatz Rivera Olmedo",
       "kickoff": "2026-10-13T20:30:00+03:00",
       "time": "20:30",
       "homeTeam": "Iceland W",
@@ -591992,8 +592483,8 @@
       "risk": null,
       "source": "api-football",
       "providerName": "api-football",
-      "fetchedAt": "2026-10-12T00:29:17.409Z",
-      "staleAfter": "2026-10-12T00:34:17.409Z",
+      "fetchedAt": "2026-10-13T11:40:17.021Z",
+      "staleAfter": "2026-10-13T11:45:17.021Z",
       "dataStatus": "provider",
       "needsReview": false,
       "resource": "matches",
@@ -625038,12 +625529,12 @@
   "fixtureHealth": {
     "date": "2026-10-13",
     "timezone": "Europe/Istanbul",
-    "checkedAt": "2026-10-13T10:26:58.804Z",
-    "lastSuccessfulSyncAt": "2026-10-13T10:26:58.804Z",
+    "checkedAt": "2026-10-13T11:40:16.376Z",
+    "lastSuccessfulSyncAt": "2026-10-13T11:40:16.376Z",
     "lastSuccessfulBackupSyncAt": null,
     "apiFixtures": 773,
-    "inserted": 1,
-    "updated": 12,
+    "inserted": 0,
+    "updated": 22,
     "frontendVisible": 297,
     "status": "ok",
     "requests": [
@@ -625067,17 +625558,17 @@
       },
       {
         "live": true,
-        "count": 7,
+        "count": 14,
         "status": "ok",
         "httpStatus": 200
       }
     ],
     "rateLimit": {
       "limit": 150000,
-      "remaining": 146790,
+      "remaining": 146251,
       "minuteLimit": 900,
-      "minuteRemaining": 867,
-      "observedAt": "2026-10-13T10:27:02.099Z",
+      "minuteRemaining": 865,
+      "observedAt": "2026-10-13T11:40:22.028Z",
       "httpStatus": 200
     },
     "errors": []
