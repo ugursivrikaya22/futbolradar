@@ -657,6 +657,10 @@ function hourlyBuildSteps(diff) {
     // English pages are generated from the final match registry by POSTPROCESS_CHAIN.
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    // Sezon arşivi rapor bağlantılarını diskteki sayfalardan kurar; maç sonu
+    // üretimi geçersiz raporu söktüğünde arşiv de aynı saatte yenilenmeli,
+    // yoksa yayından kalkmış rapora kırık bağlantı kalır (#411 sonrası).
+    nodeStep("render-archive-pages", "generate-archive-pages.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
     // Kalıcı maç SEO sayfaları: her saat yeni skor/durumla yeniden üretilir,
     // sicil (data/match-seo-pages.json) commit'e girer. Çekirdek sayfalardan
     // ÖNCE koşar: ana sayfa/bugünün maçları bağlantıları dizini okur.
