@@ -1,22 +1,22 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-14T07:15:18.995Z",
+  "updatedAt": "2026-10-14T08:39:02.937Z",
   "playerCount": 824,
-  "ratedPlayerCount": 204,
+  "ratedPlayerCount": 205,
   "summary": {
     "total": 824,
-    "computed": 204,
-    "insufficient": 620,
+    "computed": 205,
+    "insufficient": 619,
     "categories": {
       "overall": {
-        "computed": 204,
-        "insufficient": 620,
+        "computed": 205,
+        "insufficient": 619,
         "notApplicable": 0
       },
       "form": {
-        "computed": 203,
-        "insufficient": 621,
+        "computed": 204,
+        "insufficient": 620,
         "notApplicable": 0
       },
       "attack": {
@@ -30,27 +30,27 @@
         "notApplicable": 88
       },
       "defense": {
-        "computed": 183,
-        "insufficient": 641,
+        "computed": 184,
+        "insufficient": 640,
         "notApplicable": 0
       },
       "discipline": {
-        "computed": 196,
-        "insufficient": 628,
+        "computed": 197,
+        "insufficient": 627,
         "notApplicable": 0
       },
       "durability": {
-        "computed": 203,
-        "insufficient": 621,
-        "notApplicable": 0
-      },
-      "potential": {
         "computed": 204,
         "insufficient": 620,
         "notApplicable": 0
+      },
+      "potential": {
+        "computed": 205,
+        "insufficient": 619,
+        "notApplicable": 0
       }
     },
-    "changed": 0
+    "changed": 1
   },
   "players": {
     "gabriel-sara": {
@@ -38278,6 +38278,198 @@
         "minutes": 74
       },
       "fingerprint": "5e660f81d7fbfbeb"
+    },
+    "paulo-victor-alanyaspor": {
+      "version": 1,
+      "scheme": "goalkeeper",
+      "positionGroup": "goalkeeper",
+      "status": "computed",
+      "computedCategories": 6,
+      "coverage": 0.75,
+      "updatedAt": "2026-10-14T08:39:02.937Z",
+      "weights": {
+        "defense": 40,
+        "form": 20,
+        "durability": 15,
+        "discipline": 10,
+        "potential": 15
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Savunma (ağırlık %40)",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "47 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "45 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %10)",
+              "value": "84 / 100"
+            },
+            {
+              "label": "Potansiyel (ağırlık %15)",
+              "value": "51 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 47,
+          "status": "computed",
+          "display": "47",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "77 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Serie B"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "not-applicable",
+          "display": "Mevki dışı",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "not-applicable",
+          "display": "Mevki dışı",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Kalecilik",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.34,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Kurtarış",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 84,
+          "status": "computed",
+          "display": "84",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 45,
+          "status": "computed",
+          "display": "45",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%12.2 (77 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "77 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 51,
+          "status": "computed",
+          "display": "51",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "39"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "54 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%0"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "-7 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-13T01:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 77
+      },
+      "fingerprint": "10a575b46b769d8e"
     },
     "h-dervisoglu-gaziantep-fk": {
       "version": 1,
