@@ -443,8 +443,11 @@
         label: labelFor(kind, locale)
       };
       if (kind === "sub") {
-        item.playerIn = names.player;
-        item.playerOut = names.assist;
+        // API-Football "subst" olayında `player` OYUNDAN ÇIKAN, `assist`
+        // OYUNA GİREN oyuncudur (GS–Barcelona 59': Gordon 53'te gol atmış
+        // ilk 11 oyuncusu, çıkan; Adeyemi kulübeden giren).
+        item.playerIn = names.assist;
+        item.playerOut = names.player;
       }
       items.push(item);
     }

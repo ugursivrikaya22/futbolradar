@@ -187,6 +187,15 @@ test("oyuncu ve asist üç kaynak biçiminden de okunur", () => {
   assert.ok(editorial.detail.includes("serbest vuruştan"));
 });
 
+test("API-Football subst olayında player çıkan, assist giren oyuncudur", () => {
+  const items = timeline.buildTimeline({
+    events: [{ time: "59'", team: { name: "Barcelona" }, type: "subst", detail: "Substitution 2", player: { name: "Anthony Gordon" }, assist: { name: "Karim Adeyemi" } }]
+  }, { homeTeam: "Galatasaray", awayTeam: "Barcelona" });
+  const sub = items.find((item) => item.kind === "sub");
+  assert.equal(sub.playerIn, "Karim Adeyemi");
+  assert.equal(sub.playerOut, "Anthony Gordon");
+});
+
 test("substitutions kaydı akışa girer ve giren/çıkan ayrı taşınır", () => {
   const items = timeline.buildTimeline({
     substitutions: [{ time: "60'", team: "Fenerbahçe", in: "Giren", out: "Çıkan" }]

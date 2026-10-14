@@ -138,7 +138,7 @@ check("E) kadro bilgisi yok → 'Kadrolar açıklandığında' notu, boş kutu d
 check("olay normalizasyonu: sağlayıcı ve editoryal kayıtlar tek biçime iner", () => {
   const events = normalizeEvents({ events: [
     { time: "45+2'", team: { name: "Fenerbahçe" }, type: "Goal", detail: "Penalty", value: "Talisca · Penalty" },
-    { time: "46'", team: { name: "Beşiktaş" }, type: "subst", detail: "Substitution 1", value: "In · Asist: Out · Substitution 1" },
+    { time: "46'", team: { name: "Beşiktaş" }, type: "subst", detail: "Substitution 1", value: "Out · Asist: In · Substitution 1" },
     { time: "70'", team: { name: "Beşiktaş" }, type: "Card", detail: "Red Card", value: "X · Red Card" },
     { time: "80'", team: { name: "Fenerbahçe" }, type: "Var", detail: "Goal cancelled", value: "Y · Goal cancelled" }
   ], substitutions: [{ time: "60'", team: "Fenerbahçe", in: "Giren", out: "Çıkan" }] }, "Fenerbahçe", "Beşiktaş");
