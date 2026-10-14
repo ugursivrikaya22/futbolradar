@@ -79,11 +79,12 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const observationPublished=!publication||['committed','unchanged'].includes(publication.state);
   checks.push({name:'writer-publication',state:publication?.state||'legacy-published',commit:publication?.commit||null});
   if(publication?.state==='failed') issues.push('writer-publication-failed');
-  let runtimeFresh=false, emptyConfirmed=false;
+  let runtimeFresh=false, emptyConfirmed=false, runtimeDay=null;
   try {
     // Same canonical cache as visitors/notifications; one bounded read, no
     // match-specific requests, query cache busters or extra provider resource.
     const api=await (await fetcher(ORIGIN+'/api/matches')).json();
+    runtimeDay=api.meta?.fixtureHealth?.date||null;
     emptyConfirmed=api.meta?.fixtureHealth?.state==='empty-confirmed';
     const valid=api.ok===true&&Array.isArray(api.data)&&!api.meta?.degraded&&(api.meta?.freshness?.stale===false||emptyConfirmed);
     runtimeFresh=valid;
@@ -96,8 +97,15 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const freshness=policy.assessFixtureFreshness({staticAgeMs:age,runtimeFresh,emptyConfirmed});
   checks.push({name:'fixture-freshness',sourceTime,ageMinutes:Number.isFinite(age)?Math.round(age/60000):null,...note(freshness),runtimeApi:runtimeFresh?'fresh':'not-fresh'});
   const today=policy.istanbulDay(now);
-  checks.push({name:'istanbul-day',expected:today,sourceDay:localCalendar.fixtureHealth?.date||null});
-  if(localCalendar.fixtureHealth?.date && localCalendar.fixtureHealth.date!==today) issues.push('wrong-fixture-day');
+  const sourceDay=localCalendar.fixtureHealth?.date||null;
+  checks.push({name:'istanbul-day',expected:today,sourceDay,runtimeDay});
+  if(sourceDay && sourceDay!==today) {
+    // A fresh runtime can bridge yesterday's snapshot only during the midnight grace window.
+    const rollover=sourceDay===policy.istanbulDay(now-24*3600000)
+      && policy.istanbulHour(now)<policy.limits.STATIC_FIXTURE_WARN_MS/3600000
+      && runtimeFresh && runtimeDay===today && freshness.level==='ok';
+    (rollover?warnings:issues).push('wrong-fixture-day');
+  }
   const registry=JSON.parse(fs.readFileSync(path.join(root,'data/match-seo-pages.json'),'utf8'));
   const entries=Array.isArray(registry)?registry:registry.pages||registry.records||[];
   const recent=entries.find(r=>r.path&&/^(?:\/)?mac\//.test(r.path));

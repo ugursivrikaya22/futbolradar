@@ -235,6 +235,52 @@ test('current but unchanged data: a successful private observation keeps freshne
   assert.deepEqual(report.issues, []); assert.deepEqual(report.warnings, []); assert.equal(report.status, 'ok');
 });
 
+test('Istanbul midnight rollover warns while a fresh runtime confirms the new day', async () => {
+  const now = at('2026-10-13T21:34:22Z'), {calendar, ledger, iso} = healthyWorld(now);
+  calendar.fetchedAt = calendar.fixtureHealth.lastSuccessfulSyncAt = '2026-10-13T20:42:43Z';
+  calendar.fixtureHealth.date = '2026-10-13';
+  const dir = sandbox({ledger, calendar});
+  try {
+    for (const empty of [false, true]) {
+      const api = {...goodApi, data: empty ? [] : goodApi.data, meta: {freshness: {stale: empty}, fixtureHealth: {date: '2026-10-14', state: empty ? 'empty-confirmed' : 'ok'}}};
+      const report = await monitor({root: dir, now, github: fakeGithub({runs: [run(1, 'completed', 'success', iso(20))], now}), fetcher: fakeFetcher({calendar, api})});
+      assert.deepEqual(report.issues, []);
+      assert.deepEqual(report.warnings, ['wrong-fixture-day']);
+      assert.equal(report.status, 'delayed');
+      assert.equal(report.checks.find(c => c.name === 'istanbul-day').runtimeDay, '2026-10-14');
+    }
+  } finally { fs.rmSync(dir, {recursive: true, force: true}); }
+});
+
+test('midnight rollover never hides wrong runtime dates, unhealthy data or an expired grace window', async () => {
+  const midnight = at('2026-10-13T21:34:22Z');
+  for (const scenario of [
+    {name: 'yesterday runtime', runtimeDay: '2026-10-13'},
+    {name: 'missing runtime date', runtimeDay: null},
+    {name: 'degraded runtime', degraded: true},
+    {name: 'unavailable runtime', unavailable: true},
+    {name: 'old snapshot', sourceDay: '2026-10-12'},
+    {name: 'future snapshot', sourceDay: '2026-10-15'},
+    {name: 'stale static data', stale: true},
+    {name: 'grace expired', now: at('2026-10-14T00:00:00Z')}
+  ]) {
+    const now = scenario.now || midnight, {calendar, ledger, iso} = healthyWorld(now);
+    calendar.fixtureHealth.date = scenario.sourceDay || '2026-10-13';
+    if (scenario.stale) ledger.lastUpdate.sourcesChecked[0].summary.lastSuccessfulSyncAt = iso(4 * 60);
+    const api = {...goodApi, meta: {degraded: !!scenario.degraded, freshness: {stale: false}, fixtureHealth: {date: 'runtimeDay' in scenario ? scenario.runtimeDay : '2026-10-14'}}};
+    const dir = sandbox({ledger, calendar});
+    const fetcher = fakeFetcher({calendar, api});
+    try {
+      const report = await monitor({root: dir, now, github: fakeGithub({runs: [run(1, 'completed', 'success', iso(20))], now}), fetcher: async url => {
+        if (scenario.unavailable && url.includes('/api/matches')) throw new Error('503');
+        return fetcher(url);
+      }});
+      assert(report.issues.includes('wrong-fixture-day'), scenario.name);
+      assert.equal(report.status, 'attention', scenario.name);
+    } finally { fs.rmSync(dir, {recursive: true, force: true}); }
+  }
+});
+
 test('GitHub dropping hourly schedules is a warning, not a red failure, while data is still live', async () => {
   const now = at('2026-10-08T08:30:00Z'), {calendar, ledger, iso} = healthyWorld(now);
   const dir = sandbox({ledger, calendar});
