@@ -1,13 +1,13 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-14T09:02:45.649Z",
+  "updatedAt": "2026-10-14T15:05:29.588Z",
   "playerCount": 824,
-  "ratedPlayerCount": 205,
+  "ratedPlayerCount": 207,
   "summary": {
     "total": 824,
-    "computed": 205,
-    "insufficient": 619,
+    "computed": 207,
+    "insufficient": 617,
     "categories": {
       "overall": {
         "computed": 205,
@@ -15,8 +15,8 @@
         "notApplicable": 0
       },
       "form": {
-        "computed": 204,
-        "insufficient": 620,
+        "computed": 206,
+        "insufficient": 618,
         "notApplicable": 0
       },
       "attack": {
@@ -50,7 +50,7 @@
         "notApplicable": 0
       }
     },
-    "changed": 0
+    "changed": 2
   },
   "players": {
     "gabriel-sara": {
@@ -4280,6 +4280,135 @@
       },
       "fingerprint": "4866dcb9d199191c"
     },
+    "a-e-fettahoglu-fenerbahce": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 1,
+      "coverage": 0.125,
+      "updatedAt": "2026-10-14T15:05:29.588Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0.2,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "62 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 62,
+          "status": "computed",
+          "display": "62",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Gol + asist",
+              "value": "0 gol · 1 asist"
+            },
+            {
+              "label": "Son maç",
+              "value": "UEFA Youth League"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-14T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": null
+      },
+      "fingerprint": "6eb560a7a4fc0e14"
+    },
     "i-yuksek-fenerbahce": {
       "version": 1,
       "scheme": "outfield",
@@ -5367,6 +5496,135 @@
         "minutes": 405
       },
       "fingerprint": "fa2c905147423cb3"
+    },
+    "e-sayar-fenerbahce": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "forward",
+      "status": "computed",
+      "computedCategories": 1,
+      "coverage": 0.125,
+      "updatedAt": "2026-10-14T15:05:29.588Z",
+      "weights": {
+        "attack": 35,
+        "form": 20,
+        "creativity": 15,
+        "durability": 15,
+        "discipline": 5,
+        "defense": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0.2,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "64 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 64,
+          "status": "computed",
+          "display": "64",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Gol + asist",
+              "value": "1 gol · 0 asist"
+            },
+            {
+              "label": "Son maç",
+              "value": "UEFA Youth League"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-14T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": null
+      },
+      "fingerprint": "e06cdf5e50017073"
     },
     "c-under-fenerbahce": {
       "version": 1,
