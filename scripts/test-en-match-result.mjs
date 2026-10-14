@@ -143,7 +143,10 @@ function calendarRow(overrides = {}) {
   const { createRequire } = await import("node:module");
   const require = createRequire(import.meta.url);
   const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
-  const calendar = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8")).matches || [];
+  const calendarOnly = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8")).matches || [];
+  // Sayfa üretimiyle AYNI sonuç havuzu: takvim + maç arşivi.
+  const { resultRowsFrom } = await import("./lib/enMatchResult.mjs");
+  const calendar = resultRowsFrom(calendarOnly, JSON.parse(fs.readFileSync(path.join(root, "data", "historical-match-archive.json"), "utf8")).records || []);
   const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
   const { normalizeText } = require("../services/matchRadarService.js");
   const slugOf = (value) => normalizeText(value).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");

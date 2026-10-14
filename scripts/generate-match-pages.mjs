@@ -18,6 +18,7 @@ import {
   buildH2hEntries
 } from "./lib/matchAnalysisSections.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
+import { findFinalResult, resultRowsFrom } from "./lib/enMatchResult.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -49,6 +50,8 @@ const {
 const players = getPlayers(rawPlayers);
 const calendarMatches = Array.isArray(fixtureCalendar.matches) ? fixtureCalendar.matches : [];
 const archiveRecords = Array.isArray(matchArchive.records) ? matchArchive.records : [];
+// Oynanmış hafta maçlarının sonucu: takvim + arşiv (bkz. lib/enMatchResult.mjs).
+const resultRows = resultRowsFrom(calendarMatches, archiveRecords);
 /**
  * Bu üretici YALNIZCA TFF Süper Lig fikstüründen sayfa basar
  * (data/super-lig-fixtures.json), bu yüzden tablo da Süper Lig tablosudur.
@@ -320,7 +323,11 @@ function pageHtml(match) {
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
   const homeTeam = getTeam(match.homeTeam);
   const awayTeam = getTeam(match.awayTeam);
-  const dateLabel = match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
+  // MAÇ OYNANDIYSA sayfa sonuca döner (EN sayfalarla aynı kaynak ve kapılar).
+  // Sonuç yoksa önizleme kalır; skor ya da tarih uydurulmaz.
+  const finalResult = findFinalResult(match, resultRows, { seasonStart: fixtures.seasonStart });
+  const resultKickoff = finalResult ? (finalResult.kickoff || match.kickoff || null) : null;
+  const dateLabel = resultKickoff ? formatFreshnessDate(resultKickoff) : match.kickoff ? formatFreshnessDate(match.kickoff) : (match.dateRange || "Tarih ve saat bekleniyor");
 
   // Maç öncesi bölümler (kullanıcı öncelik sırası): analiz kaydı ancak maç
   // haftası penceresinde üretilir; yokken tek dürüst bekleme notu basılır,
@@ -349,7 +356,7 @@ function pageHtml(match) {
     analysis ? formSection(analysis, match.homeTeam, match.awayTeam) : "",
     !analysis ? analysisPendingNote() : "",
     h2hStandingsSection(h2hEntries, standingsForFixture(match), match.homeTeam, match.awayTeam),
-    matchInfoSection(match, calendarRec, fixtureTeamRow && fixtureTeamRow.venue, fixtureTeamRow && fixtureTeamRow.city),
+    matchInfoSection(resultKickoff ? { ...match, kickoff: resultKickoff } : match, calendarRec, fixtureTeamRow && fixtureTeamRow.venue, fixtureTeamRow && fixtureTeamRow.city),
     liveStatsSection(match, providerFixtureId)
   ].filter(Boolean).join("\n      ");
 
@@ -367,7 +374,10 @@ function pageHtml(match) {
   // aynı sorgu için iki sayfa yarıştırmak ikisini de zayıflatır. Bu sayfa o
   // durumda maç önü ANALİZİ olarak konumlanır (radar, form, kadro).
   const permanentSlug = match.kickoff ? slugForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }) : null;
-  const title = match.kickoff && !permanentSlug
+  const resultDay = resultKickoff ? shortDateLabel(resultKickoff) : "";
+  const title = finalResult
+    ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam} Maç Sonucu${resultDay ? ` (${resultDay})` : ""} | FutbolRadar`
+    : match.kickoff && !permanentSlug
     ? `${match.homeTeam} - ${match.awayTeam} Maçı Ne Zaman, Saat Kaçta? ${kickoffDay} ${kickoffClock} | FutbolRadar`
     : match.kickoff
       ? `${match.homeTeam} - ${match.awayTeam} Maç Önü Analizi: Radar, Form ve Kadro (${kickoffDay}) | FutbolRadar`
@@ -376,7 +386,9 @@ function pageHtml(match) {
   // göre değişiyor ("Rams Park'ta", "Tüpraş Stadyumu'nda") ve stat adları
   // veriden geliyor. Tek bir ek kalıbı yazmak kaçınılmaz olarak yanlış
   // Türkçe üretir; cümle eki gerektirmeyecek biçimde kuruluyor.
-  const description = match.kickoff
+  const description = finalResult
+    ? `${match.homeTeam} - ${match.awayTeam} maçı${resultDay ? ` ${resultDay} tarihinde` : ""} ${finalResult.home}-${finalResult.away} sona erdi. Skor, maç bilgileri, ikili rekabet ve puan durumu FutbolRadar'da.`
+    : match.kickoff
     ? `${match.homeTeam} - ${match.awayTeam} maçı ${kickoffDay} saat ${kickoffClock} TSİ'de oynanacak.${match.venue ? ` Stat: ${match.venue}.` : ""} Maç öncesi form, radar puanı, kadro durumu ve kilit oyuncu etkisi FutbolRadar'da.`
     : `${match.homeTeam} - ${match.awayTeam} Süper Lig maç öncesi analizi; form, radar puanı, kadro durumu ve kilit oyuncu etkisiyle FutbolRadar'da.`;
   const schema = {
@@ -397,13 +409,13 @@ function pageHtml(match) {
       // skor) güncelleniyor. Burada ikinci bir düğüm bırakmak aynı gerçek
       // olayı iki ayrı adrese bağlar; bu sayfa artık yalnızca maç ÖNÜ
       // analizini taşıyan takma addır.
-      ...(match.kickoff && !isCentreAlias ? [{
+      ...((match.kickoff || resultKickoff) && !isCentreAlias ? [{
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
         url: canonical,
         description,
-        startDate: match.kickoff,
-        eventStatus: "https://schema.org/EventScheduled",
+        startDate: match.kickoff || resultKickoff,
+        ...(finalResult ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
@@ -456,8 +468,9 @@ function pageHtml(match) {
     <main class="container" data-notification-detail data-match="${escapeHtml(match.id)}" data-home-team="${escapeHtml(match.homeTeam)}" data-away-team="${escapeHtml(match.awayTeam)}" data-match-href="${escapeHtml(selfUrl)}">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="../index.html">Ana Sayfa</a><span>/</span><a href="../super-lig-fikstur.html">Süper Lig Fikstürü</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       ${centreHandoffBanner(match)}
-      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
+      <section class="hero match-analysis-hero"><div class="hero-row"><div><span class="eyebrow">${escapeHtml(match.roundLabel)} · ${escapeHtml(match.league)}</span><h1>${finalResult ? `${escapeHtml(match.homeTeam)} ${escapeHtml(finalResult.home)}-${escapeHtml(finalResult.away)} ${escapeHtml(match.awayTeam)}` : `${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}`}</h1><p class="lead">${escapeHtml(radar.lead)}</p></div><span class="hero-meta">${escapeHtml(dateLabel)}</span></div></section>
       <section class="match-freshness-strip" aria-label="Fikstür durumu"><div><span>Fikstür durumu</span><b>${escapeHtml(freshnessLabel(freshness))}</b></div><div><span>Son kontrol</span><b>${escapeHtml(formatFreshnessDate(freshness.verifiedAt || freshness.fetchedAt))}</b></div><div><span>Güven</span><b>${escapeHtml(confidenceLabel(freshness.confidence))}</b></div></section>
+      ${finalResult ? `<section class="match-final-result" aria-labelledby="tr-result-title"><h2 id="tr-result-title" class="match-section-title">Maç Sonucu</h2><div class="card metric-grid"><span>Skor <b>${escapeHtml(finalResult.home)}-${escapeHtml(finalResult.away)}</b></span>${finalResult.halftimeHome !== null && finalResult.halftimeAway !== null ? `<span>İlk yarı <b>${escapeHtml(finalResult.halftimeHome)}-${escapeHtml(finalResult.halftimeAway)}</b></span>` : ""}${resultKickoff ? `<span>Tarih <b>${escapeHtml(formatFreshnessDate(resultKickoff))}</b></span>` : ""}</div></section>` : ""}
       ${preMatchSections}
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>

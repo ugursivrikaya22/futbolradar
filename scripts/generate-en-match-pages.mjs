@@ -23,7 +23,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { sectionHead } from "./lib/matchCards.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { findFinalResult, resultTitle, resultDescription } from "./lib/enMatchResult.mjs";
+import { findFinalResult, resultRowsFrom, resultTitle, resultDescription } from "./lib/enMatchResult.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
@@ -73,6 +73,8 @@ const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.j
 const squadStatus = JSON.parse(fs.readFileSync(path.join(root, "data", "squad-statuses.json"), "utf8"));
 // Sağlayıcı sonuçları: maç bitince sayfayı önizlemeden sonuca çeviren kaynak.
 const calendarMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "fixture-calendar.json"), "utf8")).matches || [];
+// Oynanmış maçlar takvim penceresinden düşünce sonuç arşivden okunur.
+const resultRows = resultRowsFrom(calendarMatches, (JSON.parse(fs.readFileSync(path.join(root, "data", "historical-match-archive.json"), "utf8")).records) || []);
 const players = getPlayers(rawPlayers);
 
 function escapeHtml(value) {
@@ -231,7 +233,7 @@ function pageHtml(match) {
   // önizleme olarak kalır — skor uydurulmaz. Adım ayrı bir cron değil:
   // sayfa üretimi her derlemede koştuğu için maç bittikten sonraki ilk
   // (saatlik) derleme sayfayı kendiliğinden çevirir.
-  const finalResult = findFinalResult(match, calendarMatches, { seasonStart: fixtures.seasonStart });
+  const finalResult = findFinalResult(match, resultRows, { seasonStart: fixtures.seasonStart });
 
   const title = finalResult
     ? resultTitle(match, finalResult)
