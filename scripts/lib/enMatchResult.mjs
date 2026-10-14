@@ -107,6 +107,37 @@ export function findFinalResult(fixtureMatch, calendarMatches, options = {}) {
   };
 }
 
+/**
+ * SONUÇ HAVUZU = takvim + maç arşivi.
+ *
+ * data/fixture-calendar.json yalnızca yakın pencereyi tutuyor (en eski kayıt
+ * birkaç gün öncesi); Eylül'de oynanan hafta 1-7 maçları oradan düşünce
+ * fikstür sayfaları yeniden "Maç Önü Analizi"ne dönüyordu (ör. Trabzonspor
+ * 4-0 Galatasaray, r06). Oynanmış maçların doğrulanmış kaydı
+ * data/historical-match-archive.json'da duruyor; bu yardımcı arşiv
+ * kayıtlarını takvim satırı biçimine indirir. Skor ya da durum uydurulmaz:
+ * findFinalResult'ın dört kapısı (lig, sıra, tam skor, tarih) aynen geçerli.
+ */
+export function resultRowsFrom(calendarMatches, archiveRecords) {
+  const rows = Array.isArray(calendarMatches) ? calendarMatches.slice() : [];
+  for (const record of Array.isArray(archiveRecords) ? archiveRecords : []) {
+    const match = record && record.match;
+    if (!match) continue;
+    rows.push({
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      league: match.league || match.competition || "",
+      status: match.status,
+      providerStatus: match.providerStatus,
+      score: match.score,
+      kickoff: match.kickoff,
+      venue: match.venue || null,
+      fetchedAt: record.lastVerifiedAt || match.lastVerifiedAt || null
+    });
+  }
+  return rows;
+}
+
 /** "Galatasaray 2-1 Çorum FK – Result & Match Analysis | FutbolRadar" */
 export function resultTitle(fixtureMatch, result) {
   return `${fixtureMatch.homeTeam} ${result.home}-${result.away} ${fixtureMatch.awayTeam} – Result & Match Analysis | FutbolRadar`;
