@@ -242,6 +242,13 @@ const ok = (message) => { checks += 1; console.log(`  ok  ${message}`); };
   const sub = groups[1].items.find((item) => item.kind === "sub");
   assert.equal(sub.playerIn, "Yunus Akgün");
   assert.equal(sub.playerOut, "Sallai");
+  // Olay akışındaki subst: API-Football `player` = çıkan, `assist` = giren.
+  const evGroups = plus.timeline({ homeTeam: "Galatasaray", awayTeam: "Barcelona", score: { home: 0, away: 1 }, events: [
+    { time: "59'", team: { name: "Barcelona" }, type: "subst", detail: "Substitution 2", player: { name: "Anthony Gordon" }, assist: { name: "Karim Adeyemi" } }
+  ] }, { locale: "tr" });
+  const evSub = evGroups.flatMap((group) => group.items).find((item) => item.kind === "sub");
+  assert.equal(evSub.playerIn, "Karim Adeyemi");
+  assert.equal(evSub.playerOut, "Anthony Gordon");
 
   // Tabela olaylarla TUTMUYORSA hiçbir satıra skor yazılmaz.
   const mismatched = plus.timeline({ ...detail, score: { home: 4, away: 4 } }, { locale: "tr" });

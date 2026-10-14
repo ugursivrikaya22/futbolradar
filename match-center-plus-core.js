@@ -933,8 +933,9 @@
         side: sideOf(detail, team),
         player: isDisplayable(player) ? String(player) : null,
         assist: kind === "sub" ? null : (isDisplayable(assist) ? String(assist) : null),
-        playerIn: kind === "sub" ? (isDisplayable(player) ? String(player) : null) : null,
-        playerOut: kind === "sub" ? (isDisplayable(assist) ? String(assist) : null) : null,
+        // API-Football "subst": `player` = çıkan, `assist` = giren.
+        playerIn: kind === "sub" ? (isDisplayable(assist) ? String(assist) : null) : null,
+        playerOut: kind === "sub" ? (isDisplayable(player) ? String(player) : null) : null,
         note: isDisplayable(event.detail) ? String(event.detail) : null
       });
     });
