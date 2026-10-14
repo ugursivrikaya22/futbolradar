@@ -43,16 +43,51 @@ function teamKey(match, side) {
   return String(match && match[`${side}Team`] || "").toLocaleLowerCase("tr").replace(/\s+/g, " ").trim();
 }
 
+const UNPLAYED = new Set(["CANCELLED", "CANC", "POSTPONED", "PST", "ABANDONED", "ABD", "SUSPENDED", "SUSP"]);
+
+function statusTokens(match) {
+  return [match && match.status, match && match.providerStatus].map((value) => String(value || "").toUpperCase());
+}
+
+/**
+ * Hükmen (WO/AWD) sonuçlanan ve skoru 0-0 olan kayıt oynanmış bir maç
+ * değildir; rapor "0-0 berabere" diye yazıyordu (Morocco W–Congo W).
+ */
+export function isWalkoverWithoutScore(match) {
+  const tokens = statusTokens(match);
+  const awarded = tokens.some((token) => ["AWARDED", "AWD", "WO"].includes(token));
+  return awarded && scoreKey(match) === "0-0";
+}
+
 export function dropProviderDuplicates(matches, options = {}) {
   const nowMs = options.nowMs ?? Date.now();
   const list = Array.isArray(matches) ? matches : [];
+  const pool = Array.isArray(options.allMatches) ? options.allMatches : list;
   const dropped = [];
   const futureFinished = new Set();
   list.forEach((match, index) => {
     const ms = Date.parse(match && match.kickoff || "");
-    if (Number.isFinite(ms) && ms > nowMs) {
+    let reason = null;
+    if (Number.isFinite(ms) && ms > nowMs) reason = "future-kickoff";
+    else if (isWalkoverWithoutScore(match)) reason = "walkover-no-score";
+    else if (Number.isFinite(ms) && scoreKey(match)) {
+      // ÇELİŞEN SAĞLAYICI KAYDI: aynı eşleşmenin ≤72 saat içindeki bir
+      // kardeşi İPTAL/ERTELENDİ görünüyor ama AYNI skoru taşıyorsa sağlayıcı
+      // iki fikstürün verisini karıştırmıştır (Chile W–Bolivia W: oynanan
+      // 7-0 "iptal", iptal edilen maç "7-0 FT"). Hangisinin doğru olduğu
+      // veriden bilinemez; yanlış saha/tarihle rapor basmak yerine yazılmaz.
+      const contradicted = pool.some((other) => other !== match
+        && providerIdOf(other) !== providerIdOf(match)
+        && statusTokens(other).some((token) => UNPLAYED.has(token))
+        && teamKey(other, "home") === teamKey(match, "home")
+        && teamKey(other, "away") === teamKey(match, "away")
+        && scoreKey(other) === scoreKey(match)
+        && Math.abs(Date.parse(other.kickoff || "") - ms) <= WINDOW_MS);
+      if (contradicted) reason = "contradicted-by-cancelled";
+    }
+    if (reason) {
       futureFinished.add(index);
-      dropped.push({ id: match.id, providerId: providerIdOf(match), keptId: null, reason: "future-kickoff" });
+      dropped.push({ id: match.id, providerId: providerIdOf(match), keptId: null, reason, match });
     }
   });
   const candidates = list.map((match, index) => ({ match, index, ms: Date.parse(match && match.kickoff || ""), score: scoreKey(match) }))
@@ -75,7 +110,7 @@ export function dropProviderDuplicates(matches, options = {}) {
     for (const other of group) {
       if (other.index === keep.index || providerIdOf(other.match) === providerIdOf(keep.match)) continue;
       drop.add(other.index);
-      dropped.push({ id: other.match.id, providerId: providerIdOf(other.match), keptId: keep.match.id, reason: "provider-duplicate" });
+      dropped.push({ id: other.match.id, providerId: providerIdOf(other.match), keptId: keep.match.id, reason: "provider-duplicate", match: other.match });
     }
   }
   return { matches: list.filter((_, index) => !drop.has(index)), dropped };

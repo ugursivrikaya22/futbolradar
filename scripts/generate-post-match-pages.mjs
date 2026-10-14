@@ -184,7 +184,7 @@ const fixturePool = curatedMatches();
  * Çaykur Rizespor'un üç maçı) hiç rapor almıyordu. Tespit de artık
  * services/matchStatus.js üzerinden: FT/AET/PEN de bitmiş sayılır.
  */
-const finishedDedupe = dropProviderDuplicates(fixturePool.filter(isAnalyzableMatch));
+const finishedDedupe = dropProviderDuplicates(fixturePool.filter(isAnalyzableMatch), { allMatches: fixturePool });
 for (const item of finishedDedupe.dropped) {
   console.log(`[post-match] rapor atlandı (${item.reason}): ${item.id} (fikstür ${item.providerId})${item.keptId ? ` = ${item.keptId}` : ""}`);
 }
@@ -798,6 +798,43 @@ if (generated.length) {
 // problemin ASIL kütlesi orada. Kural yalnızca yeniden üretilenlere
 // uygulansaydı temizlik görünürde yapılır, etkisi olmazdı.
 applyCoverageRuleToExistingPages();
+
+// GEÇERSİZ KAYITTAN KALMIŞ SAYFALAR SÖKÜLÜR.
+//
+// Üretim döngüsü atlanan maçın sayfasını yazmıyor ama daha önceki bir
+// koşunun yazdığı dosya yayında kalıyordu (ör. sağlayıcının maçtan önce
+// "FT" dediği ya da hükmen 0-0'ı beraberlik gibi gösteren rapor). Atlanan
+// kaydın rapor yolu bu koşuda başka bir maç için YAZILMADIYSA dosya kök ve
+// public altından kaldırılır, site haritasından da düşer. Yalnızca bu
+// koşuda gerekçeli olarak atlanan kayıtlara dokunulur; toplu silme yok.
+pruneInvalidReportPages(finishedDedupe.dropped, generated);
+
+function pruneInvalidReportPages(dropped, written) {
+  const writtenPaths = new Set(written.map((entry) => entry.report.seo.path));
+  const removed = [];
+  for (const item of dropped || []) {
+    let relative = null;
+    try {
+      const report = item.match ? buildMatchReport(item.match, { fixtures: fixturePool }) : null;
+      relative = report && report.seo && report.seo.path;
+    } catch (error) {
+      relative = null;
+    }
+    const stored = reportStore.get(item.id);
+    const candidates = [relative, stored && stored.seo && stored.seo.path].filter(Boolean);
+    for (const candidate of new Set(candidates)) {
+      if (!candidate.startsWith("mac-raporu/") || writtenPaths.has(candidate)) continue;
+      let hit = false;
+      for (const base of [root, path.join(root, "public")]) {
+        const target = path.join(base, candidate);
+        if (fs.existsSync(target)) { fs.unlinkSync(target); hit = true; }
+      }
+      if (hit) removed.push(candidate);
+    }
+  }
+  if (removed.length) upsertSitemap([], removed);
+  for (const relative of removed) console.log(`[post-match] geçersiz kayıttan kalan sayfa kaldırıldı: ${relative}`);
+}
 
 
 const complete = generated.filter((entry) => entry.report.dataStatus === "complete").length;
