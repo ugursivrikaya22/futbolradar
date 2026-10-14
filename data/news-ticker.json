@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-14T12:08:33.377Z",
+  "updatedAt": "2026-10-14T13:07:33.427Z",
   "items": [
     {
       "id": "auto-news-ba97316e2b541120e30e",
@@ -307,6 +307,28 @@
       }
     },
     {
+      "id": "auto-news-61eda0c7178ec25a37d4",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "UEFA'dan Mehmet Türkmen'e Görev",
+      "team": "Süper Lig",
+      "timestamp": "2026-10-14T10:44:42.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5rTWw1M25iYlhFSVV6SFZPODlqMVk2d1EweVVIanlXTUc5dDU1MmJVUThKUTcxak9YdC1RLTI3clBQSnZUblF3dDNXT0NNa3QyVTFOYmtPMXVCeUdBZmpxS1dTTWZwNEE?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-13T10:23:05.000Z"
+      }
+    },
+    {
       "id": "auto-news-aeec41d70ea7aaecfddd",
       "category": "official",
       "confidence": "confirmed",
@@ -323,26 +345,6 @@
         "source": "rss",
         "feed": "tff-kurumsal",
         "priority": 6,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-957ec5252a5feb7386c9",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "UEFA'dan Kadir Sağlam'a Görev",
-      "team": "Süper Lig",
-      "timestamp": "2026-10-13T10:23:05.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTE5ja2ZINFdEQURJZW1wcUhiWG9Wd0psWXpQZ1ZJZm9jOWNCM2dsQnNqTzJIcG9TS2gwZmlueW93VGUzS2s1TE5NaGZBQ243RDJDMXA4SktiYUQweDY2a1JtVXZYeC1PZkE?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
         "status": "OFFICIAL"
       }
     },
