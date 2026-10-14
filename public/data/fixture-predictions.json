@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-14T08:37:39.070Z",
+  "updatedAt": "2026-10-14T09:01:27.348Z",
   "predictionCount": 5107,
   "predictions": [
     {
@@ -422470,7 +422470,8 @@
       "calculatedAt": "2026-10-14T08:37:32.581Z",
       "expiresAt": "2026-10-14T09:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-14T09:01:23.184Z"
     },
     {
       "fixtureId": "dynamo-kyiv-u19-karpaty-lviv-u19-2026-10-14",
@@ -422543,7 +422544,8 @@
       "calculatedAt": "2026-10-14T08:37:32.581Z",
       "expiresAt": "2026-10-14T09:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-10-14T09:01:23.184Z"
     },
     {
       "fixtureId": "yokohama-fc-urawa-2026-10-14",
@@ -424059,16 +424061,52 @@
       "awayTeam": "Veres Rivne U19",
       "homeTeamId": "23084",
       "awayTeamId": "23082",
-      "source": "market_probability",
-      "homeProbability": 42,
-      "drawProbability": 26,
-      "awayProbability": 32,
-      "predictedWinner": null,
-      "advice": null,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "23084",
+        "name": "Zhytomyr U19",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : Zhytomyr U19 or draw",
       "underOver": null,
-      "predictedGoals": null,
-      "comparison": null,
-      "confidence": 60,
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 60,
+          "away": 40
+        },
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 57,
+          "away": 43
+        },
+        "poisson_distribution": {
+          "home": 63,
+          "away": 37
+        },
+        "h2h": {
+          "home": 85,
+          "away": 15
+        },
+        "goals": {
+          "home": 73,
+          "away": 27
+        },
+        "total": {
+          "home": 64.7,
+          "away": 35.3
+        }
+      },
+      "confidence": null,
       "dataBasis": null,
       "baselineScope": null,
       "missingHistory": null,
@@ -424076,25 +424114,13 @@
       "expectedGoals": null,
       "modelUnderOver": null,
       "bothTeamsScore": null,
-      "marketConsensus": {
-        "bookmakerCount": 1,
-        "bookmakers": [
-          "1xBet"
-        ],
-        "method": "single",
-        "averageMargin": 0.1098
-      },
+      "marketConsensus": null,
       "modelInputs": null,
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-14T07:13:17.232Z",
-      "expiresAt": "2026-10-14T09:00:00.000Z",
-      "refreshStage": "T-6h",
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:23.782Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T10:30:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -430325,104 +430351,6 @@
       "frozen": false
     },
     {
-      "fixtureId": "ajman-erbil-2026-10-14",
-      "providerFixtureId": "1645599",
-      "competitionId": "agcff-gulf-champions-league",
-      "leagueId": "1162",
-      "season": null,
-      "kickoff": "2026-10-14T17:45:00+03:00",
-      "homeTeam": "Ajman",
-      "awayTeam": "Erbil",
-      "homeTeamId": "2879",
-      "awayTeamId": "11070",
-      "source": "futbolradar_model",
-      "homeProbability": 46,
-      "drawProbability": 27,
-      "awayProbability": 27,
-      "predictedWinner": {
-        "id": null,
-        "name": "Ajman",
-        "side": "home",
-        "comment": null
-      },
-      "advice": null,
-      "underOver": null,
-      "predictedGoals": {
-        "home": "1.28",
-        "away": "0.78"
-      },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.28,
-        "away": 0.78
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 34,
-        "under": 66
-      },
-      "bothTeamsScore": 39,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 1,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 0.89,
-          "defenseStrength": 0.66,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
-        },
-        "away": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 0.89,
-          "defenseStrength": 0.89,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:45:00.000Z",
-      "refreshStage": "T-24h",
-      "frozen": false
-    },
-    {
       "fixtureId": "al-duhail-sc-al-shabab-2026-10-14",
       "providerFixtureId": "1645600",
       "competitionId": "agcff-gulf-champions-league",
@@ -430433,189 +430361,59 @@
       "awayTeam": "Al-Shabab",
       "homeTeamId": "2904",
       "awayTeamId": "5329",
-      "source": "futbolradar_model",
-      "homeProbability": 53,
-      "drawProbability": 22,
-      "awayProbability": 25,
-      "predictedWinner": {
-        "id": null,
-        "name": "Al-Duhail SC",
-        "side": "home",
-        "comment": null
-      },
-      "advice": null,
+      "source": "provider_prediction",
+      "homeProbability": 34,
+      "drawProbability": 33,
+      "awayProbability": 33,
+      "predictedWinner": null,
+      "advice": "No predictions available",
       "underOver": null,
-      "predictedGoals": {
-        "home": "2.11",
-        "away": "1.09"
-      },
-      "comparison": null,
-      "confidence": 8,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": true
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.11,
-        "away": 1.09
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 62,
-        "under": 38
-      },
-      "bothTeamsScore": 58,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.46,
-        "baselineSampleSize": 1,
-        "home": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 1.31,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
+      "predictedGoals": null,
+      "comparison": {
+        "form": {
+          "home": 0,
+          "away": 0
         },
-        "away": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
+        "att": {
+          "home": 0,
+          "away": 0
+        },
+        "def": {
+          "home": 0,
+          "away": 0
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 0,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 0,
+          "away": 0
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:45:00.000Z",
-      "refreshStage": "T-24h",
-      "frozen": false
-    },
-    {
-      "fixtureId": "al-ettifaq-kazma-2026-10-14",
-      "providerFixtureId": "1645601",
-      "competitionId": "agcff-gulf-champions-league",
-      "leagueId": "1162",
-      "season": null,
-      "kickoff": "2026-10-14T17:45:00+03:00",
-      "homeTeam": "Al-Ettifaq",
-      "awayTeam": "Kazma",
-      "homeTeamId": "2934",
-      "awayTeamId": "3540",
-      "source": "futbolradar_model",
-      "homeProbability": 43,
-      "drawProbability": 26,
-      "awayProbability": 31,
-      "predictedWinner": {
-        "id": null,
-        "name": "Al-Ettifaq",
-        "side": "home",
-        "comment": null
       },
-      "advice": null,
-      "underOver": null,
-      "predictedGoals": {
-        "home": "1.35",
-        "away": "1.12"
-      },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.35,
-        "away": 1.12
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 45,
-        "under": 55
-      },
-      "bothTeamsScore": 50,
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
       "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 1,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 0.89,
-          "defenseStrength": 0.89,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
-        },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.94,
-          "defenseStrength": 0.94,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:45:00.000Z",
-      "refreshStage": "T-24h",
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:24.033Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:15:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -430630,9 +430428,9 @@
       "homeTeamId": "26631",
       "awayTeamId": "26629",
       "source": "futbolradar_model",
-      "homeProbability": 50,
+      "homeProbability": 48,
       "drawProbability": 25,
-      "awayProbability": 25,
+      "awayProbability": 27,
       "predictedWinner": {
         "id": null,
         "name": "Al Jazira",
@@ -430642,8 +430440,8 @@
       "advice": null,
       "underOver": null,
       "predictedGoals": {
-        "home": "1.56",
-        "away": "0.92"
+        "home": "1.51",
+        "away": "0.96"
       },
       "comparison": null,
       "confidence": 11,
@@ -430655,21 +430453,21 @@
       },
       "modelVersion": "futbolradar-probability-v1",
       "expectedGoals": {
-        "home": 1.56,
-        "away": 0.92
+        "home": 1.51,
+        "away": 0.96
       },
       "modelUnderOver": {
         "line": 2.5,
         "over": 45,
         "under": 55
       },
-      "bothTeamsScore": 47,
+      "bothTeamsScore": 48,
       "marketConsensus": null,
       "modelInputs": {
         "dataBasis": "competition-baseline",
         "baselineStatus": "blended",
         "baselinePull": 0.45,
-        "baselineSampleSize": 7,
+        "baselineSampleSize": 9,
         "home": {
           "matches": 1,
           "venueMatches": 0,
@@ -430703,17 +430501,17 @@
       "fallbackChain": [
         {
           "source": "provider_prediction",
-          "reason": "unavailable"
+          "reason": "provider-percentages-unusable:zero-outcome"
         },
         {
           "source": "market_probability",
-          "reason": "request-budget-exhausted"
+          "reason": "no-usable-1x2-market"
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:45:00.000Z",
-      "refreshStage": "T-24h",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:15:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -430727,91 +430525,66 @@
       "awayTeam": "Sporty",
       "homeTeamId": "28487",
       "awayTeamId": "26630",
-      "source": "futbolradar_model",
-      "homeProbability": 59,
-      "drawProbability": 20,
-      "awayProbability": 21,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "28487",
         "name": "Ittihad Al-Shorta",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : Ittihad Al-Shorta or draw and +1.5 goals",
+      "underOver": "+1.5",
       "predictedGoals": {
-        "home": "2.5",
-        "away": "1.04"
+        "home": "-1.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 11,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.5,
-        "away": 1.04
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 69,
-        "under": 31
-      },
-      "bothTeamsScore": 59,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.45,
-        "baselineSampleSize": 7,
-        "home": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.93,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 100,
+          "away": 0
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.93,
-          "defenseStrength": 1.5,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 100,
+          "away": 0
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 0,
+          "away": 0
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 50,
+          "away": 50
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:45:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:24.684Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:15:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -430825,91 +430598,48 @@
       "awayTeam": "Burgan",
       "homeTeamId": "3546",
       "awayTeamId": "3544",
-      "source": "futbolradar_model",
-      "homeProbability": 60,
-      "drawProbability": 20,
-      "awayProbability": 20,
-      "predictedWinner": {
-        "id": null,
-        "name": "Yarmouk",
-        "side": "home",
-        "comment": null
-      },
+      "source": "market_probability",
+      "homeProbability": 59,
+      "drawProbability": 24,
+      "awayProbability": 17,
+      "predictedWinner": null,
       "advice": null,
       "underOver": null,
-      "predictedGoals": {
-        "home": "2.5",
-        "away": "0.98"
-      },
+      "predictedGoals": null,
       "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
+      "confidence": 90,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": {
+        "bookmakerCount": 7,
+        "bookmakers": [
+          "1xBet",
+          "Bet365",
+          "BetVictor",
+          "Betano",
+          "Betfair",
+          "Marathonbet",
+          "Pinnacle"
+        ],
+        "method": "median",
+        "averageMargin": 0.1147
       },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.5,
-        "away": 0.98
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 67,
-        "under": 33
-      },
-      "bothTeamsScore": 57,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 7,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 1.5,
-          "defenseStrength": 0.88,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 0,
-          "winRate": 1,
-          "absences": null
-        },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.82,
-          "defenseStrength": 0.93,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
+      "modelInputs": null,
       "fallbackChain": [
         {
           "source": "provider_prediction",
-          "reason": "unavailable"
-        },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+          "reason": "provider-percentages-unusable:zero-outcome"
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:45:00.000Z",
-      "refreshStage": "T-24h",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:15:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -430923,91 +430653,66 @@
       "awayTeam": "Al Orubah",
       "homeTeamId": "2948",
       "awayTeamId": "2961",
-      "source": "futbolradar_model",
-      "homeProbability": 47,
-      "drawProbability": 23,
-      "awayProbability": 30,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
-        "name": "Hajer",
-        "side": "home",
-        "comment": null
+        "id": "2961",
+        "name": "Al Orubah",
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : draw or Al Orubah and -3.5 goals",
+      "underOver": "-3.5",
       "predictedGoals": {
-        "home": "1.78",
-        "away": "1.36"
+        "home": "-1.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 5,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": true,
-        "away": true
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.78,
-        "away": 1.36
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 61,
-        "under": 39
-      },
-      "bothTeamsScore": 62,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.47,
-        "baselineSampleSize": 7,
-        "home": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 46,
+          "away": 54
         },
-        "away": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 43,
+          "away": 57
+        },
+        "poisson_distribution": {
+          "home": 14,
+          "away": 86
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 38,
+          "away": 62
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 36,
+          "away": 64
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 37.8,
+          "away": 62.2
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T08:55:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:25.290Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:25:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -431021,91 +430726,66 @@
       "awayTeam": "Ajka",
       "homeTeamId": "2389",
       "awayTeamId": "4714",
-      "source": "futbolradar_model",
-      "homeProbability": 52,
-      "drawProbability": 21,
-      "awayProbability": 27,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "2389",
         "name": "Mezokovesd-zsory",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Mezokovesd-zsory or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "2.32",
-        "away": "1.55"
+        "home": "-3.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.32,
-        "away": 1.55
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 74,
-        "under": 26
-      },
-      "bothTeamsScore": 71,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 8,
-        "home": {
-          "matches": 1,
-          "venueMatches": 1,
-          "attackStrength": 0.88,
-          "defenseStrength": 0.88,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 53,
+          "away": 47
         },
-        "away": {
-          "matches": 2,
-          "venueMatches": 2,
-          "attackStrength": 1.34,
-          "defenseStrength": 1.5,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 61,
+          "away": 39
+        },
+        "def": {
+          "home": 50,
+          "away": 50
+        },
+        "poisson_distribution": {
+          "home": 62,
+          "away": 38
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 50,
+          "away": 50
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 50,
+          "away": 50
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 54.3,
+          "away": 45.7
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T09:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:25.557Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -431119,91 +430799,48 @@
       "awayTeam": "JK Tabasalu",
       "homeTeamId": "25403",
       "awayTeamId": "16718",
-      "source": "futbolradar_model",
-      "homeProbability": 42,
-      "drawProbability": 25,
-      "awayProbability": 33,
-      "predictedWinner": {
-        "id": null,
-        "name": "Parnu JK Vaprus U21",
-        "side": "home",
-        "comment": null
-      },
+      "source": "market_probability",
+      "homeProbability": 71,
+      "drawProbability": 15,
+      "awayProbability": 14,
+      "predictedWinner": null,
       "advice": null,
       "underOver": null,
-      "predictedGoals": {
-        "home": "1.5",
-        "away": "1.23"
-      },
+      "predictedGoals": null,
       "comparison": null,
-      "confidence": 11,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
+      "confidence": 90,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": {
+        "bookmakerCount": 7,
+        "bookmakers": [
+          "1xBet",
+          "Bet365",
+          "Betano",
+          "Betfair",
+          "Dafabet",
+          "Pinnacle",
+          "William Hill"
+        ],
+        "method": "median",
+        "averageMargin": 0.1102
       },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.5,
-        "away": 1.23
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 51,
-        "under": 49
-      },
-      "bothTeamsScore": 55,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.45,
-        "baselineSampleSize": 5,
-        "home": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.95,
-          "defenseStrength": 0.95,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
-        },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.95,
-          "defenseStrength": 1.07,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
+      "modelInputs": null,
       "fallbackChain": [
         {
           "source": "provider_prediction",
-          "reason": "unavailable"
-        },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+          "reason": "provider-percentages-unusable:zero-outcome"
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T09:00:00.000Z",
-      "refreshStage": "T-24h",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -431217,91 +430854,49 @@
       "awayTeam": "Digenis Ypsonas",
       "homeTeamId": "22127",
       "awayTeamId": "3424",
-      "source": "futbolradar_model",
-      "homeProbability": 36,
-      "drawProbability": 26,
-      "awayProbability": 38,
-      "predictedWinner": {
-        "id": null,
-        "name": "Digenis Ypsonas",
-        "side": "away",
-        "comment": null
-      },
+      "source": "market_probability",
+      "homeProbability": 21,
+      "drawProbability": 25,
+      "awayProbability": 54,
+      "predictedWinner": null,
       "advice": null,
       "underOver": null,
-      "predictedGoals": {
-        "home": "1.2",
-        "away": "1.25"
-      },
+      "predictedGoals": null,
       "comparison": null,
-      "confidence": 8,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": true
+      "confidence": 90,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": {
+        "bookmakerCount": 8,
+        "bookmakers": [
+          "1xBet",
+          "Bet365",
+          "Betano",
+          "Betfair",
+          "Dafabet",
+          "Marathonbet",
+          "Pinnacle",
+          "William Hill"
+        ],
+        "method": "median",
+        "averageMargin": 0.1092
       },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.2,
-        "away": 1.25
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 44,
-        "under": 56
-      },
-      "bothTeamsScore": 50,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.46,
-        "baselineSampleSize": 9,
-        "home": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.82,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 1,
-          "winRate": 0,
-          "absences": null
-        },
-        "away": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
+      "modelInputs": null,
       "fallbackChain": [
         {
           "source": "provider_prediction",
-          "reason": "unavailable"
-        },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+          "reason": "provider-percentages-unusable:zero-outcome"
         }
       ],
       "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T09:00:00.000Z",
-      "refreshStage": "T-24h",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -431315,91 +430910,59 @@
       "awayTeam": "Cliftonville U19",
       "homeTeamId": "28406",
       "awayTeamId": "24975",
-      "source": "futbolradar_model",
-      "homeProbability": 43,
-      "drawProbability": 23,
-      "awayProbability": 34,
-      "predictedWinner": {
-        "id": null,
-        "name": "Super Nova U19",
-        "side": "home",
-        "comment": null
-      },
-      "advice": null,
+      "source": "provider_prediction",
+      "homeProbability": 34,
+      "drawProbability": 33,
+      "awayProbability": 33,
+      "predictedWinner": null,
+      "advice": "No predictions available",
       "underOver": null,
-      "predictedGoals": {
-        "home": "1.72",
-        "away": "1.51"
-      },
-      "comparison": null,
-      "confidence": 5,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": true,
-        "away": true
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.72,
-        "away": 1.51
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 63,
-        "under": 37
-      },
-      "bothTeamsScore": 64,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.47,
-        "baselineSampleSize": 10,
-        "home": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
+      "predictedGoals": null,
+      "comparison": {
+        "form": {
+          "home": 50,
+          "away": 50
         },
-        "away": {
-          "matches": 0,
-          "venueMatches": 0,
-          "attackStrength": 1,
-          "defenseStrength": 1,
-          "formDelta": null,
-          "rank": null,
-          "pointsPerGame": null,
-          "cleanSheetRate": null,
-          "winRate": null,
-          "absences": null
+        "att": {
+          "home": 0,
+          "away": 0
+        },
+        "def": {
+          "home": 0,
+          "away": 0
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 50,
+          "away": 50
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 0,
+          "away": 0
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 50,
+          "away": 50
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-10-13T17:05:47.947Z",
-      "expiresAt": "2026-10-14T09:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:26.559Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T13:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -431693,6 +431256,72 @@
       "providerUpdatedAt": null,
       "calculatedAt": "2026-10-13T17:05:47.947Z",
       "expiresAt": "2026-10-14T09:30:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "ajman-erbil-2026-10-14",
+      "providerFixtureId": "1645599",
+      "competitionId": "agcff-gulf-champions-league",
+      "leagueId": "1162",
+      "season": null,
+      "kickoff": "2026-10-14T19:00:00+03:00",
+      "homeTeam": "Ajman",
+      "awayTeam": "Erbil",
+      "homeTeamId": "2879",
+      "awayTeamId": "11070",
+      "source": "provider_prediction",
+      "homeProbability": 34,
+      "drawProbability": 33,
+      "awayProbability": 33,
+      "predictedWinner": null,
+      "advice": "No predictions available",
+      "underOver": null,
+      "predictedGoals": null,
+      "comparison": {
+        "form": {
+          "home": 0,
+          "away": 0
+        },
+        "att": {
+          "home": 0,
+          "away": 0
+        },
+        "def": {
+          "home": 0,
+          "away": 0
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
+        },
+        "h2h": {
+          "home": 0,
+          "away": 0
+        },
+        "goals": {
+          "home": 0,
+          "away": 0
+        },
+        "total": {
+          "home": 0,
+          "away": 0
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:26.869Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T10:00:00.000Z",
       "refreshStage": "T-24h",
       "frozen": false
     },
@@ -436277,6 +435906,72 @@
       "providerUpdatedAt": "2026-10-13T18:52:42.507Z",
       "calculatedAt": "2026-10-13T18:52:36.769Z",
       "expiresAt": "2026-10-14T11:45:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "al-ettifaq-kazma-2026-10-14",
+      "providerFixtureId": "1645601",
+      "competitionId": "agcff-gulf-champions-league",
+      "leagueId": "1162",
+      "season": null,
+      "kickoff": "2026-10-14T21:00:00+03:00",
+      "homeTeam": "Al-Ettifaq",
+      "awayTeam": "Kazma",
+      "homeTeamId": "2934",
+      "awayTeamId": "3540",
+      "source": "provider_prediction",
+      "homeProbability": 34,
+      "drawProbability": 33,
+      "awayProbability": 33,
+      "predictedWinner": null,
+      "advice": "No predictions available",
+      "underOver": null,
+      "predictedGoals": null,
+      "comparison": {
+        "form": {
+          "home": 0,
+          "away": 0
+        },
+        "att": {
+          "home": 0,
+          "away": 0
+        },
+        "def": {
+          "home": 0,
+          "away": 0
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
+        },
+        "h2h": {
+          "home": 0,
+          "away": 0
+        },
+        "goals": {
+          "home": 0,
+          "away": 0
+        },
+        "total": {
+          "home": 0,
+          "away": 0
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-10-14T09:01:27.085Z",
+      "calculatedAt": "2026-10-14T09:01:23.184Z",
+      "expiresAt": "2026-10-14T12:00:00.000Z",
       "refreshStage": "T-24h",
       "frozen": false
     },
