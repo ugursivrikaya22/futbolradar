@@ -1,52 +1,52 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-14T15:05:29.588Z",
+  "updatedAt": "2026-10-14T19:21:34.436Z",
   "playerCount": 824,
-  "ratedPlayerCount": 207,
+  "ratedPlayerCount": 209,
   "summary": {
     "total": 824,
-    "computed": 207,
-    "insufficient": 617,
+    "computed": 209,
+    "insufficient": 615,
     "categories": {
       "overall": {
-        "computed": 205,
-        "insufficient": 619,
+        "computed": 207,
+        "insufficient": 617,
         "notApplicable": 0
       },
       "form": {
+        "computed": 208,
+        "insufficient": 616,
+        "notApplicable": 0
+      },
+      "attack": {
+        "computed": 137,
+        "insufficient": 599,
+        "notApplicable": 88
+      },
+      "creativity": {
+        "computed": 188,
+        "insufficient": 548,
+        "notApplicable": 88
+      },
+      "defense": {
+        "computed": 186,
+        "insufficient": 638,
+        "notApplicable": 0
+      },
+      "discipline": {
+        "computed": 199,
+        "insufficient": 625,
+        "notApplicable": 0
+      },
+      "durability": {
         "computed": 206,
         "insufficient": 618,
         "notApplicable": 0
       },
-      "attack": {
-        "computed": 135,
-        "insufficient": 601,
-        "notApplicable": 88
-      },
-      "creativity": {
-        "computed": 186,
-        "insufficient": 550,
-        "notApplicable": 88
-      },
-      "defense": {
-        "computed": 184,
-        "insufficient": 640,
-        "notApplicable": 0
-      },
-      "discipline": {
-        "computed": 197,
-        "insufficient": 627,
-        "notApplicable": 0
-      },
-      "durability": {
-        "computed": 204,
-        "insufficient": 620,
-        "notApplicable": 0
-      },
       "potential": {
-        "computed": 205,
-        "insufficient": 619,
+        "computed": 207,
+        "insufficient": 617,
         "notApplicable": 0
       }
     },
@@ -16870,6 +16870,233 @@
       },
       "fingerprint": "2ffbf413610b4aec"
     },
+    "jo-jin-ho-konyaspor": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-14T19:21:34.436Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaratıcılık (ağırlık %25)",
+              "value": "52 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "55 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %20)",
+              "value": "49 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %15)",
+              "value": "50 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "47 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "84 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 55,
+          "status": "computed",
+          "display": "55",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "80 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Trendyol 1. Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 49,
+          "status": "computed",
+          "display": "49",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "1 · 1.13 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 52,
+          "status": "computed",
+          "display": "52",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 1.13 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 50,
+          "status": "computed",
+          "display": "50",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "1 · 1.13 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 84,
+          "status": "computed",
+          "display": "84",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 47,
+          "status": "computed",
+          "display": "47",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%12.7 (80 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "80 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 73,
+          "status": "computed",
+          "display": "73",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "23"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%58"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+2 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-14T14:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 80
+      },
+      "fingerprint": "fd566c0132a63176"
+    },
     "d-turuc-konyaspor": {
       "version": 1,
       "scheme": "outfield",
@@ -22126,6 +22353,237 @@
         "minutes": 105
       },
       "fingerprint": "09e5f99eea3d4e1e"
+    },
+    "m-fall-kasimpasa": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "forward",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-14T19:21:34.436Z",
+      "weights": {
+        "attack": 35,
+        "form": 20,
+        "creativity": 15,
+        "durability": 15,
+        "discipline": 5,
+        "defense": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 65,
+          "status": "computed",
+          "display": "65",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Hücum (ağırlık %35)",
+              "value": "64 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "95 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %15)",
+              "value": "49 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "46 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "84 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %10)",
+              "value": "53 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 95,
+          "status": "computed",
+          "display": "95",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "78 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Gol + asist",
+              "value": "1 gol · 0 asist"
+            },
+            {
+              "label": "Son maç",
+              "value": "Trendyol 1. Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 64,
+          "status": "computed",
+          "display": "64",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "1 · 1.15 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "2 · 2.31 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "1 · 1.15 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "1 · 1.15 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 49,
+          "status": "computed",
+          "display": "49",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "4 · 4.62 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 84,
+          "status": "computed",
+          "display": "84",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 46,
+          "status": "computed",
+          "display": "46",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%12.4 (78 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "78 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 70,
+          "status": "computed",
+          "display": "70",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "34"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "65 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%1"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+12 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-14T14:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 78
+      },
+      "fingerprint": "9b02d08be7d25882"
     },
     "a-yasar-rizespor": {
       "version": 1,
