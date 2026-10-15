@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-15T07:04:40.158Z",
+  "updatedAt": "2026-10-15T09:08:11.845Z",
   "matchCount": 7113,
   "records": [
     {
@@ -1390,10 +1390,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1401,63 +1401,46 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 19
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 19,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "f1389d1e379c70f4",
-      "fingerprint": "f1389d1e379c70f4",
+      "analysisSourceHash": "64d39fd6b28a3600",
+      "fingerprint": "64d39fd6b28a3600",
       "analysisGeneratedAt": "2026-10-15T05:54:35.968Z",
-      "analysisUpdatedAt": "2026-10-15T05:54:35.968Z",
-      "generatedAt": "2026-10-15T05:54:35.968Z",
+      "analysisUpdatedAt": "2026-10-15T09:08:11.649Z",
+      "generatedAt": "2026-10-15T09:08:11.649Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1469,7 +1452,7 @@
       "reportUrl": "./mac-raporu/colorado-rapids-minnesota-united-fc-2026-10-15.html",
       "digest": {
         "headline": "Colorado Rapids ile Minnesota United FC 2-2 berabere kaldı",
-        "paragraph": "Colorado Rapids ile Minnesota United FC, Dick's Sporting Goods Park'ta oynanan MLS karşılaşmasında 2-2 berabere kaldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Colorado Rapids ile Minnesota United FC, Dick's Sporting Goods Park'ta oynanan MLS karşılaşmasında 2-2 berabere kaldı. Golleri 45+1. dakikada Darren Yapi (Colorado Rapids), 52. dakikada Kelvin Yeboah (Minnesota United FC), 74. dakikada Georgi Minoungou (Colorado Rapids), 83. dakikada Loïc Williams Ntambue Kayumba (Minnesota United FC) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -1482,66 +1465,267 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "68'",
+              "team": "Colorado Rapids",
+              "type": "Kırmızı kart",
+              "detail": "Sayed Abu Farkhi",
+              "pivotal": true
+            },
+            {
+              "minute": "45+1'",
+              "team": "Colorado Rapids",
+              "type": "Gol",
+              "detail": "Darren Yapi",
+              "pivotal": true
+            },
+            {
+              "minute": "52'",
+              "team": "Minnesota United FC",
+              "type": "Gol",
+              "detail": "Kelvin Yeboah",
+              "pivotal": true
+            },
+            {
+              "minute": "74'",
+              "team": "Colorado Rapids",
+              "type": "Gol",
+              "detail": "Georgi Minoungou",
+              "pivotal": true
+            },
+            {
+              "minute": "83'",
+              "team": "Minnesota United FC",
+              "type": "Kendi kalesine gol",
+              "detail": "Loïc Williams Ntambue Kayumba",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 1 gol kaydedildi, (Loïc Williams Ntambue Kayumba).",
+          "goals": {
+            "home": 0,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Colorado Rapids",
+              "type": "Sarı kart",
+              "detail": "Miguel Navarro",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Minnesota United FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "Tomás Chancalay",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Minnesota United FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "Wil Trapp",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Minnesota United FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "Bongokuhle Hlongwane",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Georgi Minoungou",
+              "team": "Colorado Rapids",
+              "contribution": "74' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Kelvin Yeboah",
+              "team": "Minnesota United FC",
+              "contribution": "52' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Loïc Williams Ntambue Kayumba",
+              "team": "Minnesota United FC",
+              "contribution": "83' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Darren Yapi",
+              "team": "Colorado Rapids",
+              "contribution": "11' sarı kart · 45+1' gol",
+              "impact": "orta"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "ready",
+          "notes": [
+            "Colorado Rapids sahaya 4-3-3 dizilişiyle çıktı.",
+            "Minnesota United FC sahaya 4-4-2 dizilişiyle çıktı.",
+            "Colorado Rapids topu elinde tutarken Minnesota United FC derin blokta savunma yapmayı tercih etti."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "45+1' Colorado Rapids — Darren Yapi: gol"
+          ],
+          "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (17 olay).",
+            "52' Minnesota United FC — Kelvin Yeboah: gol",
+            "74' Colorado Rapids — Georgi Minoungou: gol",
+            "83' Minnesota United FC — Loïc Williams Ntambue Kayumba: kendi kalesine gol",
+            "İkinci yarı içinde 10 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Colorado Rapids maça 4-3-3 dizilişiyle başladı.",
+            "Minnesota United FC maça 4-4-2 dizilişiyle başladı.",
+            "60' Colorado Rapids değişikliği (Substitution 1). Değişiklikten sonra Colorado Rapids adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Colorado Rapids değişikliği (Substitution 2). Değişiklikten sonra Colorado Rapids adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' Minnesota United FC değişikliği (Substitution 1). Değişiklikten sonra Minnesota United FC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "70' Colorado Rapids değişikliği (Substitution 3). Değişiklikten sonra Colorado Rapids adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Colorado Rapids",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "Minnesota United FC",
+              "formation": "4-4-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 2-2 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Colorado Rapids topa daha çok sahip oldu (%60).",
+            "Colorado Rapids daha çok şut denedi (15-11)."
+          ],
+          "improvements": [
+            "Minnesota United FC şut isabetinde geride kaldı (%18); bitiricilik geliştirilmesi gereken alan.",
+            "Kırmızı kart maçın seyrini etkiledi (68' Colorado Rapids)."
+          ],
           "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Colorado Rapids",
+            "score": 70
+          },
+          "away": {
+            "team": "Minnesota United FC",
+            "score": 52
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Colorado Rapids %26.7, Minnesota United FC %18.2."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Colorado Rapids 34.1, Minnesota United FC 30.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Colorado Rapids 0.139, Minnesota United FC 0.141. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -1549,11 +1733,22 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "tactical",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 93,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -1584,10 +1779,10 @@
       "winner": "draw",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -1595,75 +1790,58 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 12
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 12,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c713cb895f2fc7e8",
-      "fingerprint": "c713cb895f2fc7e8",
+      "analysisSourceHash": "3c57c5a4ed9211c5",
+      "fingerprint": "3c57c5a4ed9211c5",
       "analysisGeneratedAt": "2026-10-15T05:54:35.968Z",
-      "analysisUpdatedAt": "2026-10-15T05:54:35.968Z",
-      "generatedAt": "2026-10-15T05:54:35.968Z",
+      "analysisUpdatedAt": "2026-10-15T09:08:11.649Z",
+      "generatedAt": "2026-10-15T09:08:11.649Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
         "title": "Real Salt Lake 1-1 San Jose Earthquakes maç raporu: MLS istatistikleri | FutbolRadar",
-        "description": "Rio Tinto Stadium'da oynanan MLS maçında Real Salt Lake ile San Jose Earthquakes birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi sağlayıcı tarafın...",
+        "description": "Rio Tinto Stadium'da oynanan MLS maçında Real Salt Lake ile San Jose Earthquakes birbirini geçemedi: 1-1. Golleri 79. dakikada Luc De Fougerolles (Real Sal...",
         "path": "mac-raporu/real-salt-lake-san-jose-earthquakes-2026-10-15.html",
         "competition": "MLS"
       },
       "reportUrl": "./mac-raporu/real-salt-lake-san-jose-earthquakes-2026-10-15.html",
       "digest": {
         "headline": "Real Salt Lake ile San Jose Earthquakes 1-1 berabere kaldı",
-        "paragraph": "Rio Tinto Stadium'da oynanan MLS maçında Real Salt Lake ile San Jose Earthquakes birbirini geçemedi: 1-1. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Rio Tinto Stadium'da oynanan MLS maçında Real Salt Lake ile San Jose Earthquakes birbirini geçemedi: 1-1. Golleri 79. dakikada Luc De Fougerolles (Real Salt Lake), 90+4. dakikada Jack Jasinski (San Jose Earthquakes) kaydetti.",
         "result": {
           "winner": null,
           "loser": null,
@@ -1676,66 +1854,237 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 2
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Real Salt Lake",
+              "type": "Gol",
+              "detail": "Luc De Fougerolles",
+              "pivotal": true
+            },
+            {
+              "minute": "90+4'",
+              "team": "San Jose Earthquakes",
+              "type": "Gol",
+              "detail": "Jack Jasinski",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 2 gol kaydedildi, (Luc De Fougerolles, Jack Jasinski).",
+          "goals": {
+            "home": 1,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "79'",
+              "team": "Real Salt Lake",
+              "type": "Gol",
+              "detail": "Luc De Fougerolles",
+              "decisive": true
+            },
+            {
+              "minute": "82'",
+              "team": "Real Salt Lake",
+              "type": "Oyuncu değişikliği",
+              "detail": "Luc De Fougerolles",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "San Jose Earthquakes",
+              "type": "Oyuncu değişikliği",
+              "detail": "Max Floriani",
+              "decisive": false
+            },
+            {
+              "minute": "90+1'",
+              "team": "Real Salt Lake",
+              "type": "Sarı kart",
+              "detail": "Ariath Piol",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "Jack Jasinski",
+              "team": "San Jose Earthquakes",
+              "contribution": "90+4' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Luc De Fougerolles",
+              "team": "Real Salt Lake",
+              "contribution": "79' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Ariath Piol",
+              "team": "Real Salt Lake",
+              "contribution": "90+1' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Real Salt Lake sahaya 3-4-2-1 dizilişiyle çıktı.",
+            "San Jose Earthquakes sahaya 5-3-2 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "79' Real Salt Lake — Luc De Fougerolles: gol",
+            "90+4' San Jose Earthquakes — Jack Jasinski: gol",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Real Salt Lake maça 3-4-2-1 dizilişiyle başladı.",
+            "San Jose Earthquakes maça 5-3-2 dizilişiyle başladı.",
+            "45' San Jose Earthquakes değişikliği (Substitution 1). Değişiklikten sonra San Jose Earthquakes adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "57' Real Salt Lake değişikliği (Substitution 1). Değişiklikten sonra Real Salt Lake adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "59' San Jose Earthquakes değişikliği (Substitution 2). Değişiklikten sonra San Jose Earthquakes adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "59' San Jose Earthquakes değişikliği (Substitution 3). Değişiklikten sonra San Jose Earthquakes adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Real Salt Lake",
+              "formation": "3-4-2-1"
+            },
+            {
+              "team": "San Jose Earthquakes",
+              "formation": "5-3-2"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
             "Maç 1-1 berabere bitti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Real Salt Lake topa daha çok sahip oldu (%51).",
+            "Real Salt Lake daha çok şut denedi (22-16)."
+          ],
+          "improvements": [
+            "San Jose Earthquakes şut isabetinde geride kaldı (%13); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Real Salt Lake",
+            "score": 78
+          },
+          "away": {
+            "team": "San Jose Earthquakes",
+            "score": 54
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Real Salt Lake %36.4, San Jose Earthquakes %12.5."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Real Salt Lake 22, San Jose Earthquakes 29.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Real Salt Lake 0.092, San Jose Earthquakes 0.064. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -1743,11 +2092,21 @@
       },
       "readySections": [
         "summary",
-        "finalAssessment"
+        "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -1778,10 +2137,10 @@
       "winner": "Atletico Nacional",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -1789,9 +2148,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 18
         },
         "statistics": {
           "present": false,
@@ -1811,19 +2170,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 18,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -1841,11 +2196,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "6bdde54941f05b40",
-      "fingerprint": "6bdde54941f05b40",
+      "analysisSourceHash": "60d8f343053cff64",
+      "fingerprint": "60d8f343053cff64",
       "analysisGeneratedAt": "2026-10-15T05:54:35.968Z",
-      "analysisUpdatedAt": "2026-10-15T05:54:35.968Z",
-      "generatedAt": "2026-10-15T05:54:35.968Z",
+      "analysisUpdatedAt": "2026-10-15T09:08:11.649Z",
+      "generatedAt": "2026-10-15T09:08:11.649Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -1857,7 +2212,7 @@
       "reportUrl": "./mac-raporu/atletico-nacional-independiente-medellin-2026-10-15.html",
       "digest": {
         "headline": "Atletico Nacional, Independiente Medellin'i 3-2 yendi",
-        "paragraph": "Estadio Atanasio Girardot'ta oynanan Copa Colombia maçını Atletico Nacional 3-2 kazandı; Independiente Medellin sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Estadio Atanasio Girardot'ta oynanan Copa Colombia maçını Atletico Nacional 3-2 kazandı; Independiente Medellin sahadan puansız ayrıldı. Golleri 23. dakikada C. Haydar (Atletico Nacional), 42. dakikada F. Fabra (Atletico Nacional), 63. dakikada A. Martegani (Independiente Medellin), 65. dakikada A. Roman (Atletico Nacional), 71. dakikada A. Martegani (Independiente Medellin) kaydetti.",
         "result": {
           "winner": "Atletico Nacional",
           "loser": "Independiente Medellin",
@@ -1873,39 +2228,149 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "11'",
+              "team": "Atletico Nacional",
+              "type": "Gol",
+              "detail": "C. Haydar",
+              "pivotal": true
+            },
+            {
+              "minute": "23'",
+              "team": "Atletico Nacional",
+              "type": "Gol",
+              "detail": "C. Haydar",
+              "pivotal": true
+            },
+            {
+              "minute": "42'",
+              "team": "Atletico Nacional",
+              "type": "Kendi kalesine gol",
+              "detail": "F. Fabra",
+              "pivotal": true
+            },
+            {
+              "minute": "63'",
+              "team": "Independiente Medellin",
+              "type": "Penaltı",
+              "detail": "A. Martegani",
+              "pivotal": true
+            },
+            {
+              "minute": "65'",
+              "team": "Atletico Nacional",
+              "type": "Gol",
+              "detail": "A. Roman",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Independiente Medellin",
+              "type": "Oyuncu değişikliği",
+              "detail": "H. Loboa",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Independiente Medellin",
+              "type": "Oyuncu değişikliği",
+              "detail": "C. Lucumi",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Atletico Nacional",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Rodriguez",
+              "decisive": false
+            },
+            {
+              "minute": "82'",
+              "team": "Atletico Nacional",
+              "type": "Oyuncu değişikliği",
+              "detail": "S. Velasquez",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Martegani",
+              "team": "Independiente Medellin",
+              "contribution": "63' gol · 71' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "C. Haydar",
+              "team": "Atletico Nacional",
+              "contribution": "11' gol · 23' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Roman",
+              "team": "Atletico Nacional",
+              "contribution": "65' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "F. Fabra",
+              "team": "Atletico Nacional",
+              "contribution": "42' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "23' Atletico Nacional — C. Haydar: gol",
+            "42' Atletico Nacional — F. Fabra: kendi kalesine gol"
+          ],
+          "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (14 olay).",
+            "63' Independiente Medellin — A. Martegani: penaltı",
+            "65' Atletico Nacional — A. Roman: gol",
+            "71' Independiente Medellin — A. Martegani: gol",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 3
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "46' Independiente Medellin değişikliği (Substitution 1). Değişiklikten sonra Independiente Medellin adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "56' Atletico Nacional değişikliği (Substitution 1). Değişiklikten sonra Atletico Nacional adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "71' Atletico Nacional değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "72' Atletico Nacional değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Independiente Medellin değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "78' Independiente Medellin değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -1937,10 +2402,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
@@ -38149,7 +38621,7 @@
       "coverageGrade": "events-only",
       "coverageLabel": "Sadece olaylar",
       "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coveragePercent": 60,
       "dataSources": {
         "score": {
           "present": true,
@@ -38167,9 +38639,9 @@
           "count": 0
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
           "present": false,
@@ -38181,20 +38653,16 @@
       "availability": {
         "events": 15,
         "statistics": 0,
-        "lineups": 0,
+        "lineups": 2,
         "players": 0
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 0.6,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
         },
         {
           "field": "players",
@@ -38205,11 +38673,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "28ba1861b4b6ddd0",
-      "fingerprint": "28ba1861b4b6ddd0",
+      "analysisSourceHash": "3074af4bf480848c",
+      "fingerprint": "3074af4bf480848c",
       "analysisGeneratedAt": "2026-10-14T15:05:24.858Z",
-      "analysisUpdatedAt": "2026-10-14T15:05:24.858Z",
-      "generatedAt": "2026-10-14T15:05:24.858Z",
+      "analysisUpdatedAt": "2026-10-15T09:08:11.649Z",
+      "generatedAt": "2026-10-15T09:08:11.649Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {

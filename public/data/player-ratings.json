@@ -1,7 +1,7 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-15T05:54:51.540Z",
+  "updatedAt": "2026-10-15T09:08:15.596Z",
   "playerCount": 824,
   "ratedPlayerCount": 175,
   "summary": {
@@ -50,7 +50,7 @@
         "notApplicable": 0
       }
     },
-    "changed": 0
+    "changed": 1
   },
   "players": {
     "gabriel-sara": {
@@ -21860,7 +21860,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-14T07:15:10.649Z",
+      "updatedAt": "2026-10-15T09:08:15.596Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -21873,9 +21873,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 56,
+          "value": 54,
           "status": "computed",
-          "display": "56",
+          "display": "54",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -21893,11 +21893,11 @@
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "39 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "69 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
@@ -21911,12 +21911,12 @@
           "value": 70,
           "status": "computed",
           "display": "70",
-          "coverage": 0.2,
-          "window": 1,
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
@@ -21924,11 +21924,11 @@
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "1 / 2"
             },
             {
               "label": "Son maç",
-              "value": "Primera A"
+              "value": "Copa Colombia"
             }
           ]
         },
@@ -22000,15 +22000,15 @@
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 69,
           "status": "computed",
-          "display": "84",
+          "display": "69",
           "coverage": 0.75,
           "window": null,
           "inputs": [
             {
               "label": "Sarı kart",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 1 / 90 dk"
             },
             {
               "label": "Kırmızı kart",
@@ -22019,9 +22019,9 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 39,
           "status": "computed",
-          "display": "51",
+          "display": "39",
           "coverage": 0.667,
           "window": null,
           "inputs": [
@@ -22031,20 +22031,20 @@
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "45 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 63,
+          "value": 61,
           "status": "computed",
-          "display": "63",
+          "display": "61",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -22054,7 +22054,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "56 / 100"
+              "value": "54 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -22070,15 +22070,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-10-12T04:15:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-15T04:30:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
+        "matches": 2,
         "minutes": 90
       },
-      "fingerprint": "b5d6ef234b88ce74"
+      "fingerprint": "720ebc999c8260c7"
     },
     "h-moldovan-eyupspor": {
       "version": 1,
