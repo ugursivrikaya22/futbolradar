@@ -1,7 +1,67 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-15T09:15:44.344Z",
+  "updatedAt": "2026-10-15T14:19:08.667Z",
   "items": [
+    {
+      "id": "auto-news-b5cf47dd09b5ce2536ca",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "transfer",
+      "text": "SushiCo sponsorluk imza törenimiz ileri bir tarihe ertelenmiştir",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-15T12:56:15.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOdWxEMUR0aWJzRjUzMjNtTzhBaDVWeWprYVhKUm1JVHBkNmhMeERrWmdCVkdvQ053QlRNZzhHaHZ2eXBVU2c3Slc5UTFtYl9hNElPZHNfX2ZlR0YwWVR4Y3NjRVI5TDBWSEQyaGM1em5ZQ2NJVTBmdGRiWUc2d0NvU05aazJ3SnNKMFAzS0EzQUVIR3ZJN0swMWRBalhIQ3ZZWFdtb3N1a2VQUFZqRHEzcUhLYk9IUHdDZUlEdE1rd3c?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-949612befce952d35185",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Hoffenheim Maçını Deplasman Tribününden İzleyecek Taraftarlarımıza Önemli Duyuru",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-15T12:36:12.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9INFpCVEd5d2tmSFNFdGpLa3FGZ1E4RVVhR2cybGkyZU9QY25lcUprZUlrYVV2emp2cUhmTGNXYjBWNXAtTVJaWVlRUFRXNDNtanFhQTc5dHM0Wk0?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-cdab130a62ba9beca88a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Lille maçı medya programı belli oldu",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-15T12:06:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxNZkxOX09WdW9hNjRFbFJ4eFFHbU5xcE9ILThpS08yMVRiTWFDVURlYUNHQ0VwWk5aSE1jYjhjTm5NemYxTVdfMXEwVU56VVFrS3N3MVl6TGVUMDNHcUZiSFVSdnM0bkxOV3RqblRJcmVHR0g1Mnd5djNXQU85dkN1WTVZQUtXUGNsRFViYTFOdFF4MGNOeThJVUhxVy0ySzE4RWc?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-381268b5b465cd1d18d1",
       "category": "official",
@@ -9,7 +69,7 @@
       "section": "news",
       "text": "Vefat ve Başsağlığı: Hasan Ülker",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-15T08:59:22.000Z",
+      "timestamp": "2026-10-15T08:58:44.000Z",
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxQTWp0eXpRMXQxdGhWMFc1N2RlQ0hJNDljZHhmc3VZekY3aG16Qm5FdjgxLWVDS3EwaDRFTVJfUTZzeW9xUVY4UjVEcVVfUHdLUEpnVW1jQTdWNkh0V2pQZXpvazhKMW13WmlOUjNmbVhKR0R2Y0xyVWlwU25Kdjk3a3RGczkxMnNr?oc=5",
@@ -40,7 +100,7 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL",
-        "mergedReports": 6,
+        "mergedReports": 3,
         "firstSeenAt": "2026-10-13T20:03:59.000Z"
       }
     },
@@ -61,6 +121,26 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-fa3739516879b9aa241c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Yönetim Kurulu Üyelerimiz, Almanya'daki Beşiktaşlılarla Buluştu - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-14T20:43:20.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9sdUg2aEIxOGdqOHdfYzR3czNwMWZndE5VSnBqXzNhUW9Ec1FseEs0dHR5azVpUF9Zc2oxMklEeUhlWDdqbTVtTXQ3V0pkWlNQMWthSkhScTNzUVU?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -105,28 +185,6 @@
       }
     },
     {
-      "id": "auto-news-9ab2c0ad998eb59e279a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Başantrenörümüz Sarunas Jasikevicius ile oyuncumuz Trent Forrest, Partizan maçı öncesi konuştu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-14T18:31:09.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxOTTZrRjZxQXZhVThqaGFDRVl6NnEtd2hTZnRodU5sb3piemZWalJzN2Fyc1pLRnlzeE1oNFd6a0JpazNRQl9wM2dJQ2EtRUpZN2I0VFN1bmFoMExwcG5hU1gzbnVlRmdIZmNFMHRPNXhIVVV5S3dnOThmTHhTRmdOX0tQcDNqbHZBQ2YxMDVTajA4OGJrTXNHLXVhWkNfV0cxbVQ3X3I5MEgwV05JN1VETnNCcUl5Zm5ZQjZCUHlLWmxYYVRvWk5JNkV4WHpKd3RJYVNIMW9hNGNJT2FvVkNLWVJ2ZVhScjdG?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-13T20:19:03.000Z"
-      }
-    },
-    {
       "id": "auto-news-df5e2675a601b8e4fe3c",
       "category": "official",
       "confidence": "confirmed",
@@ -149,48 +207,6 @@
       }
     },
     {
-      "id": "auto-news-d854f58ccd333c5bfeb9",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "İskenderun 6 Şubat Kadın Futbol Takımı'ndan Kadın Futbol Takımımıza Ziyaret - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-14T15:07:28.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiuAFBVV95cUxPbnJ4SGk1OXVERThXQkxZT0pIdjNTdmFMQ2FUbHppUmk3V28zZzVGUWNic0ZULTkwVDFIWG1iZUhZYm1FTkVvWHlVSl9MMkotRUhzeWU2aEdXZ1lDdXF2VGdaRFYxcl9JV0d1blpQSzZ4bVJhLUx5eFY1T0RRUDYzU0M4bm5jaU8tdDM3cjMzTDFiRlMwc1dETnpaVGRxWWFfckxzX1NfUVlPRWlBcVpPNUZUcGt1MU0t?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-14T15:07:27.000Z"
-      }
-    },
-    {
-      "id": "auto-news-590088cd06356f4e1193",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Taraftarlarımıza Önemli Duyuru",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-14T10:04:17.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMihgFBVV95cUxOLUo1ekZldXp4dzhESzVoeUtxSlNnTVdpbXlGQzB4aUdMazk0a011U3YyR0tFclNTS3QycjFJclRhNHFqV0ZkbjZlUjV5a1ZfTUZiN00xdkZ2bUQ5amV3NndyTk9TSG9QY2M2Wmc4Zi01QTBtWlVUN3VpWm1Sd3FHWW1rVnJxQQ?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-051b6c36d276dbbd413b",
       "category": "official",
       "confidence": "confirmed",
@@ -207,9 +223,7 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-12T10:48:00.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -250,8 +264,8 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL",
-        "mergedReports": 4,
-        "firstSeenAt": "2026-10-12T11:30:00.000Z"
+        "mergedReports": 3,
+        "firstSeenAt": "2026-10-13T11:06:00.000Z"
       }
     },
     {
@@ -271,26 +285,6 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-f03f2cb485ff1e963779",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Hoffenheim Maçı Hazırlıkları Başladı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-13T12:01:21.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE13aV9DbnUweEN6MGV0WlZUMWVobEhnNlFwaFhEV1RycHdGUXRJb1RKb1doSUcwY2Juandtb3ZmUXV4MVh1aENpbV9TRWhxUVFkcFlZc05FYUpWRktUSDRV?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -315,45 +309,23 @@
       }
     },
     {
-      "id": "auto-news-3c87c0b0f10be498a88d",
+      "id": "auto-news-cce55b76db63e73c9c22",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "AXA Sigorta Şampiyonlar Kupası Galatasaray'ın!",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-12T19:11:00.000Z",
+      "text": "C. Alanyaspor maçının hakemi; Çağdaş Altay",
+      "team": "Alanyaspor",
+      "timestamp": "2026-10-15T10:17:41.000Z",
       "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNNHJiRGhxSXlHSlZJZnRwU3BjT3R5LWk2NjdUWlVNdVEtRF9EVloxTVktbjQ5MDFWZ2EwR2NPcXBRRmE2ZE9qWThUQTE3Y0Q1UHplYTQ4UE1FallFMVM4enBmMXBHTGRiV2VQRy1HT0Z5TDBkZVA2Q1FKTEV5NEpWcXVXWTdGdWtrUkhyVVNUR0JMdjE1Zmc3VFhCWDJJc01UX3ZFZXB6ZHc3bExacjdr?oc=5",
-        "publisher": "galatasaray.org"
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNYTdjV0U4dVZxeWRvcU9vanY0MWRyQkRERVhrZ0RKcnN4WUNZZi0yT2hJc0tSYndWVWt2TE9WU2dtXzhIU2xqa1Q4YXpROTFLSE5Dc0tTR25ObkdaMHRWUTlhTGdLVFJCRGo4YzdRWHg3SHZYaGQydzUwTXNaYmdlcW5OV1RuRE5tak1aU2FzMXVDS3NBX2c?oc=5",
+        "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
+        "feed": "diger-super-lig",
+        "priority": 7,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-345d56c1b38352dd833b",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Every 2026/27 UEFA Champions League Player of the Match",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-10-15T07:24:28.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi1gFBVV95cUxNQzZ3U0pXaV82aVAxZEwxcmVKclphaHFQNEY1WXRwYnBnQjFKb19mWWtQa0c0WW9SRk9zXzlmdXUxZGFPbndQNTdoT0hNSW4wVUtkeTQycVVqNEF6enhLYlFscmlPeHpEaG96TWxmOUtTRDBITGRfOF9nWjZOQlpJd2ZLVjZLcmZmeklzLXJqSTlIMUNoVlprTzVudVA1ZTZQYmQ3dlVKRWtFbFB2TG9RSDhsOEJ2dnkzQkR5bHJSZEwwOUxiOWlZZEh1SWhSYVdvMThocXJB?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 7,
-        "firstSeenAt": "2026-10-14T18:13:54.000Z"
       }
     },
     {
