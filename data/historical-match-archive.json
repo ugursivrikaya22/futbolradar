@@ -1,8 +1,8 @@
 {
   "source": "futbolradar-historical-match-archive",
   "version": 1,
-  "updatedAt": "2026-10-14T23:12:11.748Z",
-  "matchCount": 7071,
+  "updatedAt": "2026-10-15T00:30:53.193Z",
+  "matchCount": 7077,
   "records": [
     {
       "identity": "viimsi|maardu|2026-10-15|esiliigaa",
@@ -17,7 +17,12 @@
         "season": null,
         "status": "AWARDED",
         "providerStatus": "AWD",
-        "score": null,
+        "score": {
+          "home": 0,
+          "away": 0,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
         "venue": "Viimsi Staadion",
         "referee": null,
         "events": [],
@@ -29,7 +34,7 @@
         "reportPage": "mac-raporu/viimsi-maardu-2026-10-15.html",
         "manualAnalysis": null,
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-14T01:10:37.219Z"
+        "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
       },
       "manualAnalysis": null,
       "completeness": {
@@ -37,7 +42,7 @@
         "season": false,
         "kickoff": true,
         "teams": true,
-        "finalScore": false,
+        "finalScore": true,
         "halfTime": false,
         "venue": true,
         "referee": false,
@@ -51,14 +56,14 @@
         "playerStatistics": false,
         "coaches": false
       },
-      "coverageLevel": null,
-      "workflowState": "needs_manual_review",
-      "reason": "Doğrulanmış tamamlanma kimliği veya nihai skor eksik.",
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
       "sources": [
         {
           "name": "fixture-calendar",
           "id": "viimsi-maardu-2026-10-15",
-          "lastVerifiedAt": "2026-10-14T01:10:37.219Z"
+          "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
         },
         {
           "name": "report",
@@ -66,8 +71,645 @@
           "lastVerifiedAt": "2026-10-14T01:12:08.418Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T01:12:08.418Z",
+      "lastVerifiedAt": "2026-10-15T00:29:21.774Z",
       "archivedAt": "2026-10-13T23:45:07.001Z"
+    },
+    {
+      "identity": "atleticomg|atleticotorque|2026-10-15|conmebolsudamericana",
+      "canonicalId": "atletico-mg-atletico-torque-2026-10-15",
+      "match": {
+        "id": "atletico-mg-atletico-torque-2026-10-15",
+        "homeTeam": "Atletico-MG",
+        "awayTeam": "Atletico Torque",
+        "kickoff": "2026-10-15T01:00:00+03:00",
+        "competition": "CONMEBOL Sudamericana",
+        "league": "CONMEBOL Sudamericana",
+        "season": null,
+        "status": "FINISHED",
+        "providerStatus": "FT",
+        "score": {
+          "home": 3,
+          "away": 0,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": "Arena MRV",
+        "referee": "Carlos Betancur",
+        "events": [
+          {
+            "time": "37'",
+            "team": {
+              "name": "Atletico-MG"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Reinier Jesus Carvalho · Asist: Victor Hugo Gomes Silva · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "42'",
+            "team": {
+              "name": "Atletico-MG"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Bernard Anício Caldeira Duarte · Asist: Reinier Jesus Carvalho · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Atletico Torque"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Pablo Siles · Yellow Card",
+            "comments": "Foul",
+            "providerEventAt": null
+          }
+        ],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/atletico-mg-atletico-torque-2026-10-15.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": true,
+        "referee": true,
+        "status": true,
+        "events": true,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "atletico-mg-atletico-torque-2026-10-15",
+          "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-15T00:29:21.774Z",
+      "archivedAt": "2026-10-15T00:30:53.193Z"
+    },
+    {
+      "identity": "monagassc|dinamodepuertolacruz|2026-10-15|copavenezuela",
+      "canonicalId": "monagas-sc-dinamo-de-puerto-la-cruz-2026-10-14",
+      "match": {
+        "id": "monagas-sc-dinamo-de-puerto-la-cruz-2026-10-14",
+        "homeTeam": "Monagas SC",
+        "awayTeam": "Dinamo de Puerto La Cruz",
+        "kickoff": "2026-10-15T01:00:00+03:00",
+        "competition": "Copa Venezuela",
+        "league": "Copa Venezuela",
+        "season": null,
+        "status": "FINISHED",
+        "providerStatus": "FT",
+        "score": {
+          "home": 2,
+          "away": 1,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": null,
+        "referee": null,
+        "events": [],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/monagas-sc-dinamo-de-puerto-la-cruz-2026-10-14.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": false,
+        "referee": false,
+        "status": true,
+        "events": false,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "monagas-sc-dinamo-de-puerto-la-cruz-2026-10-14",
+          "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-15T00:29:21.774Z",
+      "archivedAt": "2026-10-15T00:30:53.193Z"
+    },
+    {
+      "identity": "realcundinamarca|bogotafc|2026-10-15|primerab",
+      "canonicalId": "real-cundinamarca-bogota-fc-2026-10-15",
+      "match": {
+        "id": "real-cundinamarca-bogota-fc-2026-10-15",
+        "homeTeam": "Real Cundinamarca",
+        "awayTeam": "Bogota FC",
+        "kickoff": "2026-10-15T01:00:00+03:00",
+        "competition": "Primera B",
+        "league": "Primera B",
+        "season": null,
+        "status": "FINISHED",
+        "providerStatus": "FT",
+        "score": {
+          "home": 0,
+          "away": 0,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": "Estadio Municipal de Mosquera",
+        "referee": null,
+        "events": [
+          {
+            "time": "10'",
+            "team": {
+              "name": "Real Cundinamarca"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "E. Ibarguen · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "33'",
+            "team": {
+              "name": "Bogota FC"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "J. Sanchez · Asist: H. Ramos Jaramillo · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "35'",
+            "team": {
+              "name": "Bogota FC"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "H. Ramos Jaramillo · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "48'",
+            "team": {
+              "name": "Real Cundinamarca"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "O. Acosta · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "51'",
+            "team": {
+              "name": "Bogota FC"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/real-cundinamarca-bogota-fc-2026-10-15.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": true,
+        "referee": false,
+        "status": true,
+        "events": true,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "real-cundinamarca-bogota-fc-2026-10-15",
+          "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-15T00:29:21.774Z",
+      "archivedAt": "2026-10-15T00:30:53.193Z"
+    },
+    {
+      "identity": "sarmientojunin|riverplate|2026-10-15|argentinaprimeradivision",
+      "canonicalId": "sarmiento-junin-river-plate-2026-10-15",
+      "match": {
+        "id": "sarmiento-junin-river-plate-2026-10-15",
+        "homeTeam": "Sarmiento Junin",
+        "awayTeam": "River Plate",
+        "kickoff": "2026-10-15T01:00:00+03:00",
+        "competition": "Argentina Primera División",
+        "league": "Argentina Primera División",
+        "season": null,
+        "status": "FINISHED",
+        "providerStatus": "FT",
+        "score": {
+          "home": 1,
+          "away": 1,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": "Estadio Eva Peron",
+        "referee": "Sebastian Zunino",
+        "events": [
+          {
+            "time": "15'",
+            "team": {
+              "name": "Sarmiento Junin"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Julián Contrera · Asist: Junior Marabel · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/sarmiento-junin-river-plate-2026-10-15.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": true,
+        "referee": true,
+        "status": true,
+        "events": true,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "sarmiento-junin-river-plate-2026-10-15",
+          "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-15T00:29:21.774Z",
+      "archivedAt": "2026-10-15T00:30:53.193Z"
+    },
+    {
+      "identity": "junior|deportivopereira|2026-10-15|primeraa",
+      "canonicalId": "junior-deportivo-pereira-2026-10-15",
+      "match": {
+        "id": "junior-deportivo-pereira-2026-10-15",
+        "homeTeam": "Junior",
+        "awayTeam": "Deportivo Pereira",
+        "kickoff": "2026-10-15T00:30:00+03:00",
+        "competition": "Primera A",
+        "league": "Primera A",
+        "season": null,
+        "status": "FINISHED",
+        "providerStatus": "FT",
+        "score": {
+          "home": 1,
+          "away": 1,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": "Estadio Romelio Martinez",
+        "referee": "Carlos Andres Marquez Ortega",
+        "events": [
+          {
+            "time": "5'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Jermein Pena · Asist: Kevin Pérez · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "25'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Manuel Alejandro Diaz Hernandez · Yellow Card",
+            "comments": "Foul",
+            "providerEventAt": null
+          },
+          {
+            "time": "36'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Jermein Pena · Yellow Card",
+            "comments": "Foul",
+            "providerEventAt": null
+          },
+          {
+            "time": "44'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "Var",
+            "detail": "Penalty confirmed",
+            "value": "Kevin Pérez · Penalty confirmed",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "44'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Nicolás Rengifo · Yellow Card",
+            "comments": "Foul",
+            "providerEventAt": null
+          },
+          {
+            "time": "45'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "Goal",
+            "detail": "Missed Penalty",
+            "value": "Luis Muriel · Missed Penalty",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "45'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "Sebastian Acosta · Asist: Anderson Plata · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "45'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "Nicolás Rengifo · Asist: Sebastián Urrea Arbeláez · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "45'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "Manuel Alejandro Diaz Hernandez · Asist: Ederson Moreno · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "47'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Daniel Socarras · Yellow Card",
+            "comments": "Foul",
+            "providerEventAt": null
+          },
+          {
+            "time": "49'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Ederson Moreno · Yellow Card",
+            "comments": "Foul",
+            "providerEventAt": null
+          },
+          {
+            "time": "49'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "Var",
+            "detail": "Red card cancelled",
+            "value": "Ederson Moreno · Red card cancelled",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "58'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Anderson Plata · Asist: Ederson Moreno · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "62'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "Luis Muriel · Asist: Francisco Fydriszewski · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "62'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "Bryan Castrillón · Asist: Teófilo Gutiérrez · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "69'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "Edwin Herrera · Asist: Andrés Shmalbach · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "69'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "Guillermo Paiva · Asist: Cristian Barrios · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "69'",
+            "team": {
+              "name": "Deportivo Pereira"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "Luis Jeiner Moreno · Asist: Miguel Ángel Aguirre · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "79'",
+            "team": {
+              "name": "Junior"
+            },
+            "type": "subst",
+            "detail": "Substitution 5",
+            "value": "Kevin Pérez · Asist: Yimmi Chará · Substitution 5",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/junior-deportivo-pereira-2026-10-15.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": true,
+        "referee": true,
+        "status": true,
+        "events": true,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "junior-deportivo-pereira-2026-10-15",
+          "lastVerifiedAt": "2026-10-15T00:29:21.774Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-15T00:29:21.774Z",
+      "archivedAt": "2026-10-15T00:30:53.193Z"
     },
     {
       "identity": "atleticotembetary|soldeamerica|2026-10-14|copaparaguay",
@@ -129,9 +771,14 @@
           "name": "fixture-calendar",
           "id": "atletico-tembetary-sol-de-america-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "atletico-tembetary-sol-de-america-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -194,9 +841,14 @@
           "name": "fixture-calendar",
           "id": "ittihad-tanger-maghreb-fes-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "ittihad-tanger-maghreb-fes-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -259,9 +911,14 @@
           "name": "fixture-calendar",
           "id": "trujillanos-fc-rayo-zuliano-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "trujillanos-fc-rayo-zuliano-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -324,9 +981,14 @@
           "name": "fixture-calendar",
           "id": "yaracuyanos-fc-fundacion-lara-deportiva-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "yaracuyanos-fc-fundacion-lara-deportiva-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -389,9 +1051,14 @@
           "name": "fixture-calendar",
           "id": "aragua-fc-caracas-fc-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "aragua-fc-caracas-fc-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -454,9 +1121,14 @@
           "name": "fixture-calendar",
           "id": "atletico-avila-fc-anzoategui-fc-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "atletico-avila-fc-anzoategui-fc-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -519,9 +1191,14 @@
           "name": "fixture-calendar",
           "id": "atletico-el-vigia-fc-zamora-fc-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "atletico-el-vigia-fc-zamora-fc-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -584,9 +1261,14 @@
           "name": "fixture-calendar",
           "id": "club-atletico-barinas-real-frontera-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "club-atletico-barinas-real-frontera-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -661,9 +1343,14 @@
           "name": "fixture-calendar",
           "id": "as-roma-real-madrid-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "as-roma-real-madrid-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2370,9 +3057,14 @@
           "name": "fixture-calendar",
           "id": "aston-villa-fenerbahce-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "aston-villa-fenerbahce-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2447,9 +3139,14 @@
           "name": "fixture-calendar",
           "id": "bodo-glimt-borussia-dortmund-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "bodo-glimt-borussia-dortmund-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2512,9 +3209,14 @@
           "name": "fixture-calendar",
           "id": "bolivar-mineros-de-guyana-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "bolivar-mineros-de-guyana-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2589,9 +3291,14 @@
           "name": "fixture-calendar",
           "id": "lincoln-west-ham-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "lincoln-west-ham-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2677,9 +3384,14 @@
           "name": "fixture-calendar",
           "id": "manchester-city-paris-saint-germain-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "manchester-city-paris-saint-germain-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2742,9 +3454,14 @@
           "name": "fixture-calendar",
           "id": "real-betis-fc-porto-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "real-betis-fc-porto-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2819,9 +3536,14 @@
           "name": "fixture-calendar",
           "id": "shakhtar-donetsk-aek-athens-fc-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "shakhtar-donetsk-aek-athens-fc-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2896,9 +3618,14 @@
           "name": "fixture-calendar",
           "id": "slovan-bratislava-vfb-stuttgart-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "slovan-bratislava-vfb-stuttgart-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -2995,9 +3722,14 @@
           "name": "fixture-calendar",
           "id": "norwich-southampton-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "norwich-southampton-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3072,9 +3804,14 @@
           "name": "fixture-calendar",
           "id": "portsmouth-sheffield-utd-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "portsmouth-sheffield-utd-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3193,9 +3930,14 @@
           "name": "fixture-calendar",
           "id": "qpr-derby-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "qpr-derby-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3281,9 +4023,14 @@
           "name": "fixture-calendar",
           "id": "whyteleafe-whitehawk-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "whyteleafe-whitehawk-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3391,9 +4138,14 @@
           "name": "fixture-calendar",
           "id": "balsicas-atletico-bullas-deportivo-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "balsicas-atletico-bullas-deportivo-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3456,9 +4208,14 @@
           "name": "fixture-calendar",
           "id": "boston-river-ca-river-plate-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "boston-river-ca-river-plate-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3544,9 +4301,14 @@
           "name": "fixture-calendar",
           "id": "cerdanyola-del-valles-martinenc-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "cerdanyola-del-valles-martinenc-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3632,9 +4394,14 @@
           "name": "fixture-calendar",
           "id": "recreativo-huelva-navalcarnero-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "recreativo-huelva-navalcarnero-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3742,9 +4509,14 @@
           "name": "fixture-calendar",
           "id": "san-cristobal-grama-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "san-cristobal-grama-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3819,9 +4591,14 @@
           "name": "fixture-calendar",
           "id": "al-faisaly-al-nahda-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "al-faisaly-al-nahda-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3907,9 +4684,14 @@
           "name": "fixture-calendar",
           "id": "america-rn-u20-paysandu-pa-u20-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "america-rn-u20-paysandu-pa-u20-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -3995,9 +4777,14 @@
           "name": "fixture-calendar",
           "id": "colon-res-independiente-riva-res-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "colon-res-independiente-riva-res-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4083,9 +4870,14 @@
           "name": "fixture-calendar",
           "id": "cornella-peralada-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "cornella-peralada-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4182,9 +4974,14 @@
           "name": "fixture-calendar",
           "id": "crystal-palace-u21-anderlecht-u21-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "crystal-palace-u21-anderlecht-u21-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4325,9 +5122,14 @@
           "name": "fixture-calendar",
           "id": "estudiantes-la-plata-res-lanus-res-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "estudiantes-la-plata-res-lanus-res-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4390,9 +5192,14 @@
           "name": "fixture-calendar",
           "id": "farroupilha-ec-novo-horizonte-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "farroupilha-ec-novo-horizonte-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4489,9 +5296,14 @@
           "name": "fixture-calendar",
           "id": "flamengo-u20-criciuma-u20-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "flamengo-u20-criciuma-u20-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4632,9 +5444,14 @@
           "name": "fixture-calendar",
           "id": "hb-u19-flora-iii-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "hb-u19-flora-iii-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4731,9 +5548,14 @@
           "name": "fixture-calendar",
           "id": "l-hospitalet-mollerussa-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "l-hospitalet-mollerussa-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4819,9 +5641,14 @@
           "name": "fixture-calendar",
           "id": "montanesa-l-escala-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "montanesa-l-escala-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4907,9 +5734,14 @@
           "name": "fixture-calendar",
           "id": "operario-pr-u20-nautico-u20-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "operario-pr-u20-nautico-u20-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -4972,9 +5804,14 @@
           "name": "fixture-calendar",
           "id": "platense-res-defensa-y-justicia-res-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "platense-res-defensa-y-justicia-res-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5060,9 +5897,14 @@
           "name": "fixture-calendar",
           "id": "rosario-central-res-aldosivi-res-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "rosario-central-res-aldosivi-res-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5148,9 +5990,14 @@
           "name": "fixture-calendar",
           "id": "san-martin-san-juan-res-deportivo-riestra-res-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "san-martin-san-juan-res-deportivo-riestra-res-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5236,9 +6083,14 @@
           "name": "fixture-calendar",
           "id": "santa-cruz-ac-u20-sao-raimundo-rr-u20-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "santa-cruz-ac-u20-sao-raimundo-rr-u20-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5301,9 +6153,14 @@
           "name": "fixture-calendar",
           "id": "sc-rio-grande-real-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "sc-rio-grande-real-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5366,9 +6223,14 @@
           "name": "fixture-calendar",
           "id": "sport-recife-u20-ca-porto-u20-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "sport-recife-u20-ca-porto-u20-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5431,9 +6293,14 @@
           "name": "fixture-calendar",
           "id": "tigre-res-argentinos-juniors-res-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "tigre-res-argentinos-juniors-res-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5552,9 +6419,14 @@
           "name": "fixture-calendar",
           "id": "uniao-santarem-gil-vicente-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "uniao-santarem-gil-vicente-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5617,9 +6489,14 @@
           "name": "fixture-calendar",
           "id": "uniao-to-u20-sao-paulo-u20-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "uniao-to-u20-sao-paulo-u20-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5793,9 +6670,14 @@
           "name": "fixture-calendar",
           "id": "cska-moscow-fc-rostov-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "cska-moscow-fc-rostov-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5858,9 +6740,14 @@
           "name": "fixture-calendar",
           "id": "asc-dortmund-schermbeck-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "asc-dortmund-schermbeck-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -5968,9 +6855,14 @@
           "name": "fixture-calendar",
           "id": "sestao-river-salamanca-uds-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "sestao-river-salamanca-uds-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -6221,9 +7113,14 @@
           "name": "fixture-calendar",
           "id": "una-strassen-u19-cardiff-metropolitan-u19-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "una-strassen-u19-cardiff-metropolitan-u19-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -7717,18 +8614,112 @@
         },
         "venue": null,
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "19'",
+            "team": {
+              "name": "Al Mesaimeer"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "38'",
+            "team": {
+              "name": "Al Mesaimeer"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "49'",
+            "team": {
+              "name": "Al Mesaimeer"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "54'",
+            "team": {
+              "name": "Al Mesaimeer"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "89'",
+            "team": {
+              "name": "Al Mesaimeer"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/al-mesaimeer-al-gharafa-b-2026-10-14.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 89' Normal Goal tarafından kaydedildi. Al Mesaimeer skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Al Mesaimeer tarafında.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "89'",
+              "text": "Son gol 89' Normal Goal tarafından kaydedildi."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "5-0",
+              "text": "Al Mesaimeer skor üstünlüğünü elinde tutuyor."
+            }
+          ],
+          "eventCount": 5,
+          "dataPoints": 2,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-14T19:19:39.684Z"
+        "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 89' Normal Goal tarafından kaydedildi. Al Mesaimeer skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Al Mesaimeer tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "89'",
+            "text": "Son gol 89' Normal Goal tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "5-0",
+            "text": "Al Mesaimeer skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 5,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -7739,7 +8730,7 @@
         "venue": false,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -7755,7 +8746,7 @@
         {
           "name": "fixture-calendar",
           "id": "al-mesaimeer-al-gharafa-b-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T19:19:39.684Z"
+          "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
         },
         {
           "name": "report",
@@ -7763,7 +8754,7 @@
           "lastVerifiedAt": "2026-10-14T19:21:28.613Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T19:21:28.613Z",
+      "lastVerifiedAt": "2026-10-15T00:29:21.980Z",
       "archivedAt": "2026-10-14T19:21:21.816Z"
     },
     {
@@ -7787,18 +8778,89 @@
         },
         "venue": null,
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "71'",
+            "team": {
+              "name": "UMM Salal"
+            },
+            "type": "Card",
+            "detail": "Red Card",
+            "value": "Red Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "80'",
+            "team": {
+              "name": "UMM Salal"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/al-waab-umm-salal-2026-10-14.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "UMM Salal kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 80' Normal Goal tarafından kaydedildi. Skor üstünlüğü UMM Salal tarafında.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Disiplin dengesi",
+              "value": "1 kırmızı kart",
+              "text": "UMM Salal kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+            },
+            {
+              "label": "Gol akışı",
+              "value": "80'",
+              "text": "Son gol 80' Normal Goal tarafından kaydedildi."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "0-1",
+              "text": "UMM Salal skor üstünlüğünü elinde tutuyor."
+            }
+          ],
+          "eventCount": 2,
+          "dataPoints": 3,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-14T19:19:39.684Z"
+        "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "UMM Salal kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor. Son gol 80' Normal Goal tarafından kaydedildi. Skor üstünlüğü UMM Salal tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Disiplin dengesi",
+            "value": "1 kırmızı kart",
+            "text": "UMM Salal kırmızı kart gördü; oyuncu sayısı dengesi maçın akışını doğrudan etkiliyor."
+          },
+          {
+            "label": "Gol akışı",
+            "value": "80'",
+            "text": "Son gol 80' Normal Goal tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "0-1",
+            "text": "UMM Salal skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 2,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -7809,7 +8871,7 @@
         "venue": false,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -7825,7 +8887,7 @@
         {
           "name": "fixture-calendar",
           "id": "al-waab-umm-salal-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T19:19:39.684Z"
+          "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
         },
         {
           "name": "report",
@@ -7833,7 +8895,7 @@
           "lastVerifiedAt": "2026-10-14T19:21:28.613Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T19:21:28.613Z",
+      "lastVerifiedAt": "2026-10-15T00:29:21.980Z",
       "archivedAt": "2026-10-14T19:21:21.816Z"
     },
     {
@@ -9923,10 +10985,10 @@
         {
           "name": "report",
           "id": "akhmat-dynamo-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T19:21:28.613Z"
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T19:21:21.816Z"
     },
     {
@@ -10660,10 +11722,10 @@
         {
           "name": "report",
           "id": "dinamo-makhachkala-zenit-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T19:21:28.613Z"
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T19:21:21.816Z"
     },
     {
@@ -11691,9 +12753,14 @@
           "name": "fixture-calendar",
           "id": "matlama-lijabatho-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "matlama-lijabatho-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -12334,9 +13401,14 @@
           "name": "fixture-calendar",
           "id": "royal-vision-kayanza-united-2026-10-13",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "royal-vision-kayanza-united-2026-10-13",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -13756,9 +14828,14 @@
           "name": "fixture-calendar",
           "id": "never-give-up-academy-flambeau-du-centre-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "never-give-up-academy-flambeau-du-centre-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -13821,9 +14898,14 @@
           "name": "fixture-calendar",
           "id": "panthere-noir-musongati-2026-10-14",
           "lastVerifiedAt": "2026-10-14T23:10:33.812Z"
+        },
+        {
+          "name": "report",
+          "id": "panthere-noir-musongati-2026-10-14",
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T23:12:11.748Z"
     },
     {
@@ -14867,6 +15949,71 @@
       ],
       "lastVerifiedAt": "2026-10-14T15:05:24.858Z",
       "archivedAt": "2026-10-14T15:05:19.431Z"
+    },
+    {
+      "identity": "redrhinos|mbabaneswallows|2026-10-14|premierleague",
+      "canonicalId": "red-rhinos-mbabane-swallows-2026-10-14",
+      "match": {
+        "id": "red-rhinos-mbabane-swallows-2026-10-14",
+        "homeTeam": "Red Rhinos",
+        "awayTeam": "Mbabane Swallows",
+        "kickoff": "2026-10-14T15:30:00+03:00",
+        "competition": "Premier League",
+        "league": "Premier League",
+        "season": null,
+        "status": "FINISHED",
+        "providerStatus": "FT",
+        "score": {
+          "home": 1,
+          "away": 1,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": null,
+        "referee": null,
+        "events": [],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/red-rhinos-mbabane-swallows-2026-10-14.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": false,
+        "referee": false,
+        "status": true,
+        "events": false,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "red-rhinos-mbabane-swallows-2026-10-14",
+          "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-15T00:29:21.980Z",
+      "archivedAt": "2026-10-15T00:30:53.193Z"
     },
     {
       "identity": "samorin|humenne|2026-10-14|cup",
@@ -28878,10 +30025,10 @@
         {
           "name": "report",
           "id": "tapatio-tepatitlan-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T01:12:08.418Z"
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T01:12:03.582Z"
     },
     {
@@ -28927,6 +30074,226 @@
             "value": "S. Paralluelo · Asist: A. Putellas · Normal Goal",
             "comments": "",
             "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "O. Hernandez · Asist: O. Batlle · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "S. Paralluelo · Asist: L. Corrales · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "E. Imade · Asist: A. Redondo · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "49'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "A. Sanchez · Asist: S. Wilson · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "60'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "T. Rodman · Asist: M. Cooper · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "61'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "G. Thompson · Asist: A. Thompson · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "61'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "L. Heaps · Asist: L. Yohannes · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "61'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "R. Lavelle · Asist: M. Swanson · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "61'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 5",
+            "value": "C. Hutton · Asist: J. M. Howell · Substitution 5",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "62'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "A. Putellas · Asist: F. Iannuzzi · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "62'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 5",
+            "value": "C. Pinedo · Asist: L. Garcia · Substitution 5",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "77'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 6",
+            "value": "I. Paredes · Asist: L. Codina · Substitution 6",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "78'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 7",
+            "value": "A. Medina · Asist: O. Vignola · Substitution 7",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "78'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "subst",
+            "detail": "Substitution 8",
+            "value": "C. Serrajordi · Asist: N. Ramos · Substitution 8",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "80'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 6",
+            "value": "T. Davidson · Asist: K. Del Fava · Substitution 6",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "80'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 7",
+            "value": "S. Wilson · Asist: E. Sears · Substitution 7",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "80'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "subst",
+            "detail": "Substitution 8",
+            "value": "A. Sanchez · Asist: P. Tordin · Substitution 8",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "80'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "N. Ramos · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "86'",
+            "team": {
+              "name": "USA W"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "M. Swanson · Asist: M. Cooper · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "90+3'",
+            "team": {
+              "name": "Spain W"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "O. Vignola · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
           }
         ],
         "substitutions": [],
@@ -28935,11 +30302,59 @@
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/usa-w-spain-w-2026-10-14.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 86' M. Swanson tarafından kaydedildi. Kulübeler oyuna müdahale etti; 16 oyuncu değişikliği kayda geçti.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "86'",
+              "text": "Son gol 86' M. Swanson tarafından kaydedildi."
+            },
+            {
+              "label": "Teknik hamleler",
+              "value": "16 değişiklik",
+              "text": "Kulübeler oyuna müdahale etti; 16 oyuncu değişikliği kayda geçti."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "2-2",
+              "text": "Skor dengede."
+            }
+          ],
+          "eventCount": 22,
+          "dataPoints": 3,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-14T12:03:11.035Z"
+        "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 86' M. Swanson tarafından kaydedildi. Kulübeler oyuna müdahale etti; 16 oyuncu değişikliği kayda geçti.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "86'",
+            "text": "Son gol 86' M. Swanson tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "16 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 16 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "2-2",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 22,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -28966,7 +30381,7 @@
         {
           "name": "fixture-calendar",
           "id": "usa-w-spain-w-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T12:03:11.035Z"
+          "lastVerifiedAt": "2026-10-15T00:29:21.980Z"
         },
         {
           "name": "report",
@@ -28974,7 +30389,7 @@
           "lastVerifiedAt": "2026-10-14T01:12:08.418Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T12:03:11.035Z",
+      "lastVerifiedAt": "2026-10-15T00:29:21.980Z",
       "archivedAt": "2026-10-14T01:12:03.582Z"
     },
     {
@@ -30721,10 +32136,10 @@
         {
           "name": "report",
           "id": "athletic-club-londrina-2026-10-14",
-          "lastVerifiedAt": "2026-10-14T01:12:08.418Z"
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-14T01:12:03.582Z"
     },
     {
@@ -31202,10 +32617,10 @@
         {
           "name": "report",
           "id": "venezuela-w-colombia-w-2026-10-14",
-          "lastVerifiedAt": "2026-10-13T23:45:13.496Z"
+          "lastVerifiedAt": "2026-10-14T23:12:18.637Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-14T23:10:33.812Z",
+      "lastVerifiedAt": "2026-10-14T23:12:18.637Z",
       "archivedAt": "2026-10-13T23:45:07.001Z"
     },
     {
