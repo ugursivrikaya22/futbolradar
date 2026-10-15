@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-15T14:19:08.667Z",
+  "updatedAt": "2026-10-15T19:14:30.813Z",
   "items": [
+    {
+      "id": "auto-news-a1df4386d7f016bbe0fc",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Gençlerbirliği maçı hazırlıkları başladı",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-15T16:06:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMikAFBVV95cUxObzJSSWJyNGg1bkUyTUJ2VVVKMEpiMUdnRVlPQThzOHlFaTFZdWMzOFRGVTF3cE5Bd1pjVmw0SktwWFNqbTc2TzMwaXZOWUF4NElpMzVZMF92a1VnU0I0eDlvMXQ3akZDa1ItQTJwUE9yWHpEM2I5am5PZ0kwYkZSM3JQUGJxZ3Q2aHVrckpfMnE?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-b5cf47dd09b5ce2536ca",
       "category": "official",
@@ -9,7 +29,7 @@
       "section": "transfer",
       "text": "SushiCo sponsorluk imza törenimiz ileri bir tarihe ertelenmiştir",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-15T12:56:15.000Z",
+      "timestamp": "2026-10-15T13:13:52.000Z",
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOdWxEMUR0aWJzRjUzMjNtTzhBaDVWeWprYVhKUm1JVHBkNmhMeERrWmdCVkdvQ053QlRNZzhHaHZ2eXBVU2c3Slc5UTFtYl9hNElPZHNfX2ZlR0YwWVR4Y3NjRVI5TDBWSEQyaGM1em5ZQ2NJVTBmdGRiWUc2d0NvU05aazJ3SnNKMFAzS0EzQUVIR3ZJN0swMWRBalhIQ3ZZWFdtb3N1a2VQUFZqRHEzcUhLYk9IUHdDZUlEdE1rd3c?oc=5",
@@ -63,6 +83,46 @@
       }
     },
     {
+      "id": "auto-news-cce55b76db63e73c9c22",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "C. Alanyaspor maçının hakemi; Çağdaş Altay",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-15T10:17:41.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNYTdjV0U4dVZxeWRvcU9vanY0MWRyQkRERVhrZ0RKcnN4WUNZZi0yT2hJc0tSYndWVWt2TE9WU2dtXzhIU2xqa1Q4YXpROTFLSE5Dc0tTR25ObkdaMHRWUTlhTGdLVFJCRGo4YzdRWHg3SHZYaGQydzUwTXNaYmdlcW5OV1RuRE5tak1aU2FzMXVDS3NBX2c?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-35c6dde64d77d1bfbd1a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Taraftarlarımızın Tampere'deki toplanma noktası belli oldu",
+      "team": "Trabzonspor",
+      "timestamp": "2026-10-15T09:54:57.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxNRFZHT3hILWVXR1g0bkNjNlBQNTZIbkdoUGtHeVBsSm9IY3pOSXRQczJ4WW03X1QySUZMWWhab1UwZTVtZld5TjF1dzVOQTRTTDBpZGNQQl9BZWtPUVRPamdMejB3Z0RpaEFSZGFsZ2ZFdXdxbTh6T29tUzlaV1Blcnl2ZkZnVmU3NjAydi1BUEhCajZLMzZoMWl1OWNzRllFdmpadVNXOA?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-381268b5b465cd1d18d1",
       "category": "official",
       "confidence": "confirmed",
@@ -80,28 +140,6 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-8550b68f402d285b0312",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Aston Villa 6-0 Fenerbahçe",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-15T00:05:05.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxQa1lGbWhqTVl6VVd2MHlsbHJGUVplUTZBOHY0VGFGaXlfS2ptTlhvRU9GT2g2UEtscTlyeGVvOUE0b2RKZ3JfS0VLQzg3djB2aXRJSTkyeVpCN1A1WnFRdzVOekI5R2VxTGpBQnZtb3d3UFhtQ0dRcVV1RVlqNTFZUEhuNA?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-10-13T20:03:59.000Z"
       }
     },
     {
@@ -203,7 +241,7 @@
         "priority": 3,
         "status": "OFFICIAL",
         "mergedReports": 2,
-        "firstSeenAt": "2026-10-14T12:16:41.000Z"
+        "firstSeenAt": "2026-10-14T16:42:48.000Z"
       }
     },
     {
@@ -247,28 +285,6 @@
       }
     },
     {
-      "id": "auto-news-add6c7cc5bec4587a2b5",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Galatasaray 1-4 Barcelona",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-13T21:02:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOMEFpNjJOdWR3VVFXUENnb2U1RDRfbjVDajhTYThwd0lIejBjN2RxTWtUb1JFQWJBN2dVLUNLZkI1OHhZbjhoUVFoeGtLYnR2b2VRbzVLZnZMZ181RDMtejFXQUtDdXk3X2lrVU9WUUxjdzQyRzRvRUZGbHQyd1VJS2dUNlNLYzNIS0xEVFRWV0NtTkU?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-10-13T11:06:00.000Z"
-      }
-    },
-    {
       "id": "auto-news-d186723cb45f5ba657b9",
       "category": "official",
       "confidence": "confirmed",
@@ -309,22 +325,22 @@
       }
     },
     {
-      "id": "auto-news-cce55b76db63e73c9c22",
+      "id": "auto-news-dee8683f8e93f578ddcb",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "C. Alanyaspor maçının hakemi; Çağdaş Altay",
-      "team": "Alanyaspor",
-      "timestamp": "2026-10-15T10:17:41.000Z",
+      "text": "UEFA Core Konsolidasyon Kursu Nyon'da Yapıldı",
+      "team": "TFF",
+      "timestamp": "2026-10-15T13:25:24.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNYTdjV0U4dVZxeWRvcU9vanY0MWRyQkRERVhrZ0RKcnN4WUNZZi0yT2hJc0tSYndWVWt2TE9WU2dtXzhIU2xqa1Q4YXpROTFLSE5Dc0tTR25ObkdaMHRWUTlhTGdLVFJCRGo4YzdRWHg3SHZYaGQydzUwTXNaYmdlcW5OV1RuRE5tak1aU2FzMXVDS3NBX2c?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBUV1UyTlJFNnVCMGdlVlFNbUs3UW1DZDlPbUdoUHU2ZF9odzFIZDdNMlpwaUo1YS0tcjNTTDJ0anR4Z29JdHRKQV9SdGRMRUJ3Y3B3SUQ2WnFiSE5CSFBjSXhwbEdEM3c?oc=5",
+        "publisher": "tff.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "diger-super-lig",
-        "priority": 7,
+        "feed": "tff-kurumsal",
+        "priority": 6,
         "status": "OFFICIAL"
       }
     },
@@ -334,7 +350,7 @@
       "confidence": "confirmed",
       "section": "news",
       "text": "UEFA'dan Bülent Perut'a Görev",
-      "team": "Süper Lig",
+      "team": "Milli Takım",
       "timestamp": "2026-10-14T15:49:51.000Z",
       "source": {
         "name": "TFF",
@@ -343,7 +359,7 @@
       },
       "automation": {
         "source": "rss",
-        "feed": "super-lig",
+        "feed": "milli-takim",
         "priority": 5,
         "status": "OFFICIAL"
       }
