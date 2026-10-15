@@ -1,8 +1,8 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-15T05:54:39.575Z",
-  "matchCount": 7112,
+  "updatedAt": "2026-10-15T07:04:40.158Z",
+  "matchCount": 7113,
   "records": [
     {
       "matchId": "viimsi-maardu-2026-10-15",
@@ -169,6 +169,200 @@
           "strengths": [],
           "improvements": [],
           "closing": "0-0 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "hunters-khovd-2026-10-15",
+      "fixtureId": "1640426",
+      "provider": "api-football",
+      "slug": "hunters-khovd-2026-10-15",
+      "kickoff": "2026-10-15T08:00:00+03:00",
+      "kickoffUtc": "2026-10-15T05:00:00.000Z",
+      "kickoffLocal": "2026-10-15T08:00",
+      "date": "2026-10-15",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Premier League",
+      "competition": "Premier League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Hunters",
+      "awayTeam": "Khovd",
+      "venue": null,
+      "score": {
+        "home": 6,
+        "away": 1
+      },
+      "finalScore": "6-1",
+      "winner": "Hunters",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "7331252ed73ac1a6",
+      "fingerprint": "7331252ed73ac1a6",
+      "analysisGeneratedAt": "2026-10-15T07:04:40.029Z",
+      "analysisUpdatedAt": "2026-10-15T07:04:40.029Z",
+      "generatedAt": "2026-10-15T07:04:40.029Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Hunters 6-1 Khovd maç raporu: Premier League istatistikleri | FutbolRadar",
+        "description": "Hunters, Premier League karşılaşmasında Khovd'u 6-1 mağlup etti.",
+        "path": "mac-raporu/hunters-khovd-2026-10-15.html",
+        "competition": "Premier League"
+      },
+      "reportUrl": "./mac-raporu/hunters-khovd-2026-10-15.html",
+      "digest": {
+        "headline": "Hunters, Khovd'u 6-1 yendi",
+        "paragraph": "Hunters, Premier League karşılaşmasında Khovd'u 6-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Hunters",
+          "loser": "Khovd",
+          "draw": false,
+          "margin": 5
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Hunters, Khovd'u 6-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Hunters sahadan 5 farkla ayrıldı.",
           "basis": "events-only"
         },
         "aiRating": null,
@@ -3940,10 +4134,10 @@
       "winner": "Inter Miami",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -3953,57 +4147,44 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 1
+          "count": 14
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 15
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 1,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 14,
+        "statistics": 15,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7974ade67a92b8bb",
-      "fingerprint": "7974ade67a92b8bb",
+      "analysisSourceHash": "fb469ccb990512d1",
+      "fingerprint": "fb469ccb990512d1",
       "analysisGeneratedAt": "2026-10-15T05:54:35.968Z",
-      "analysisUpdatedAt": "2026-10-15T05:54:35.968Z",
-      "generatedAt": "2026-10-15T05:54:35.968Z",
+      "analysisUpdatedAt": "2026-10-15T07:04:40.029Z",
+      "generatedAt": "2026-10-15T07:04:40.029Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4015,7 +4196,7 @@
       "reportUrl": "./mac-raporu/inter-miami-new-york-city-fc-2026-10-15.html",
       "digest": {
         "headline": "Inter Miami, New York City FC'i 2-0 yendi",
-        "paragraph": "Nu Stadium'da oynanan MLS maçını Inter Miami 2-0 kazandı; New York City FC sahadan puansız ayrıldı. Tek golü 20. dakikada Germán Berterame (Inter Miami) kaydetti.",
+        "paragraph": "Nu Stadium'da oynanan MLS maçını Inter Miami 2-0 kazandı; New York City FC sahadan puansız ayrıldı. Golleri 20. dakikada Germán Berterame (Inter Miami), 45+5. dakikada Rodrigo De Paul (Inter Miami), 90+7. dakikada Nicolás Fernández Mercau (New York City FC) kaydetti.",
         "result": {
           "winner": "Inter Miami",
           "loser": "New York City FC",
@@ -4028,16 +4209,30 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
           "status": "ready",
           "moments": [
             {
+              "minute": "90+7'",
+              "team": "New York City FC",
+              "type": "Kaçan penaltı",
+              "detail": "Nicolás Fernández Mercau",
+              "pivotal": true
+            },
+            {
               "minute": "20'",
               "team": "Inter Miami",
               "type": "Gol",
               "detail": "Germán Berterame",
+              "pivotal": true
+            },
+            {
+              "minute": "45+5'",
+              "team": "Inter Miami",
+              "type": "Gol",
+              "detail": "Rodrigo De Paul",
               "pivotal": true
             }
           ]
@@ -4045,12 +4240,41 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 1 gol kaydedildi, (Nicolás Fernández Mercau).",
           "goals": {
             "home": 0,
-            "away": 0
+            "away": 1
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "75'",
+              "team": "Inter Miami",
+              "type": "Oyuncu değişikliği",
+              "detail": "Germán Berterame",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "Inter Miami",
+              "type": "Sarı kart",
+              "detail": "Riquelme Fillipi",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "New York City FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "Agustin Ojeda",
+              "decisive": false
+            },
+            {
+              "minute": "85'",
+              "team": "New York City FC",
+              "type": "Oyuncu değişikliği",
+              "detail": "Aiden O'Neill",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -4060,55 +4284,176 @@
               "team": "Inter Miami",
               "contribution": "20' gol",
               "impact": "yüksek"
+            },
+            {
+              "name": "Nicolás Fernández Mercau",
+              "team": "New York City FC",
+              "contribution": "90+7' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Rodrigo De Paul",
+              "team": "Inter Miami",
+              "contribution": "45+5' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Matías Galarza",
+              "team": "Inter Miami",
+              "contribution": "52' sarı kart",
+              "impact": "olumsuz"
             }
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Inter Miami sahaya 4-3-3 dizilişiyle çıktı.",
+            "New York City FC sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
-            "20' Inter Miami — Germán Berterame: gol"
+            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "20' Inter Miami — Germán Berterame: gol",
+            "45+5' Inter Miami — Rodrigo De Paul: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (12 olay).",
+            "90+7' New York City FC — Nicolás Fernández Mercau: kaçan penaltı",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
           ],
           "goals": 1
         },
-        "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
-        },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Inter Miami maça 4-3-3 dizilişiyle başladı.",
+            "New York City FC maça 4-2-3-1 dizilişiyle başladı.",
+            "58' New York City FC değişikliği (Substitution 1). Değişiklikten sonra New York City FC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "58' New York City FC değişikliği (Substitution 2). Değişiklikten sonra New York City FC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "65' Inter Miami değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "65' New York City FC değişikliği (Substitution 3). Değişiklikten sonra New York City FC adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
+          "formations": [
+            {
+              "team": "Inter Miami",
+              "formation": "4-3-3"
+            },
+            {
+              "team": "New York City FC",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Inter Miami, New York City FC'i 2-0 yendi."
+            "Inter Miami, New York City FC'i 2-0 yendi.",
+            "İsabetli şutta da öndeydi (6-5); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Inter Miami topa daha çok sahip oldu (%57).",
+            "New York City FC daha çok şut denedi (14-14)."
+          ],
+          "improvements": [
+            "New York City FC şut isabetinde geride kaldı (%36); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Inter Miami sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Inter Miami",
+            "score": 86
+          },
+          "away": {
+            "team": "New York City FC",
+            "score": 54
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Inter Miami %42.9, New York City FC %35.7."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Inter Miami 47.2, New York City FC 34.7 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Inter Miami 0.165, New York City FC 0.109. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.3333333333333333
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -4117,14 +4462,20 @@
       "readySections": [
         "summary",
         "standoutPlayers",
+        "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
+        "secondHalf",
         "turningPoints",
         "lateGame",
-        "finalAssessment"
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 43,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -4155,10 +4506,10 @@
       "winner": "Columbus Crew",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -4168,57 +4519,44 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 2
+          "count": 16
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 2,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 16,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "60f55c41babd4261",
-      "fingerprint": "60f55c41babd4261",
+      "analysisSourceHash": "479bdd0dfe6e885f",
+      "fingerprint": "479bdd0dfe6e885f",
       "analysisGeneratedAt": "2026-10-15T05:54:35.968Z",
-      "analysisUpdatedAt": "2026-10-15T05:54:35.968Z",
-      "generatedAt": "2026-10-15T05:54:35.968Z",
+      "analysisUpdatedAt": "2026-10-15T07:04:40.029Z",
+      "generatedAt": "2026-10-15T07:04:40.029Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4230,7 +4568,7 @@
       "reportUrl": "./mac-raporu/columbus-crew-charlotte-2026-10-15.html",
       "digest": {
         "headline": "Columbus Crew, Charlotte'yi 3-1 yendi",
-        "paragraph": "ScottsMiracle-Gro Field'de oynanan MLS maçını Columbus Crew 3-1 kazandı; Charlotte sahadan puansız ayrıldı. Golleri 17. dakikada Idan Toklomati Jorno (Charlotte), 28. dakikada Brais Méndez (Columbus Crew) kaydetti.",
+        "paragraph": "ScottsMiracle-Gro Field'de oynanan MLS maçını Columbus Crew 3-1 kazandı; Charlotte sahadan puansız ayrıldı. Golleri 17. dakikada Idan Toklomati Jorno (Charlotte), 28. dakikada Brais Méndez (Columbus Crew), 63. dakikada Anass Zaroury (Columbus Crew), 65. dakikada Taha Habroune (Columbus Crew) kaydetti.",
         "result": {
           "winner": "Columbus Crew",
           "loser": "Charlotte",
@@ -4261,22 +4599,71 @@
               "type": "Gol",
               "detail": "Brais Méndez",
               "pivotal": true
+            },
+            {
+              "minute": "63'",
+              "team": "Columbus Crew",
+              "type": "Gol",
+              "detail": "Anass Zaroury",
+              "pivotal": true
+            },
+            {
+              "minute": "65'",
+              "team": "Columbus Crew",
+              "type": "Gol",
+              "detail": "Taha Habroune",
+              "pivotal": true
             }
           ]
         },
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 6 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "78'",
+              "team": "Columbus Crew",
+              "type": "Oyuncu değişikliği",
+              "detail": "Dylan Chambost",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Columbus Crew",
+              "type": "Oyuncu değişikliği",
+              "detail": "Josef Martínez",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Charlotte",
+              "type": "Oyuncu değişikliği",
+              "detail": "Allan Saint-Maximin",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Charlotte",
+              "type": "Oyuncu değişikliği",
+              "detail": "Pep Biel",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
           "players": [
+            {
+              "name": "Anass Zaroury",
+              "team": "Columbus Crew",
+              "contribution": "63' gol",
+              "impact": "yüksek"
+            },
             {
               "name": "Brais Méndez",
               "team": "Columbus Crew",
@@ -4288,56 +4675,166 @@
               "team": "Charlotte",
               "contribution": "17' gol",
               "impact": "yüksek"
+            },
+            {
+              "name": "Taha Habroune",
+              "team": "Columbus Crew",
+              "contribution": "65' gol",
+              "impact": "yüksek"
             }
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "Columbus Crew sahaya 3-4-3 dizilişiyle çıktı.",
+            "Charlotte sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı az sayıda kayıtlı olay üretti (2 olay).",
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
             "17' Charlotte — Idan Toklomati Jorno: gol",
-            "28' Columbus Crew — Brais Méndez: gol"
+            "28' Columbus Crew — Brais Méndez: gol",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
           ],
           "goals": 2
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "63' Columbus Crew — Anass Zaroury: gol",
+            "65' Columbus Crew — Taha Habroune: gol",
+            "İkinci yarı içinde 7 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "Columbus Crew maça 3-4-3 dizilişiyle başladı.",
+            "Charlotte maça 4-2-3-1 dizilişiyle başladı.",
+            "45' Charlotte değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "45' Charlotte değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "45' Charlotte değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "69' Columbus Crew değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "Columbus Crew",
+              "formation": "3-4-3"
+            },
+            {
+              "team": "Charlotte",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "Columbus Crew, Charlotte'yi 3-1 yendi."
+            "Columbus Crew, Charlotte'yi 3-1 yendi.",
+            "İsabetli şutta da öndeydi (14-2); sonuç üretilen pozisyonla uyumlu."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "Columbus Crew topa daha çok sahip oldu (%53).",
+            "Columbus Crew daha çok şut denedi (33-9)."
+          ],
+          "improvements": [
+            "Charlotte şut isabetinde geride kaldı (%22); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "Columbus Crew sahadan 2 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "Columbus Crew",
+            "score": 92
+          },
+          "away": {
+            "team": "Charlotte",
+            "score": 35
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti Columbus Crew %42.4, Charlotte %22.2."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için Columbus Crew 14.8, Charlotte 48.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG Columbus Crew 0.086, Charlotte 0.101. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -4347,14 +4844,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
+        "secondHalf",
         "turningPoints",
         "lateGame",
-        "finalAssessment"
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
@@ -4385,10 +4887,10 @@
       "winner": "New England Revolution",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "events-only",
-      "coverageLabel": "Sadece olaylar",
-      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
-      "coveragePercent": 40,
+      "coverageGrade": "full",
+      "coverageLabel": "Tam analiz",
+      "coverageNote": "Takım istatistikleri, olay akışı ve kadrolar doğrulandı.",
+      "coveragePercent": 100,
       "dataSources": {
         "score": {
           "present": true,
@@ -4398,57 +4900,44 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 6
+          "count": 20
         },
         "statistics": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 16
         },
         "lineups": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 2
         },
         "players": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 40
         }
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 6,
-        "statistics": 0,
-        "lineups": 0,
-        "players": 0
+        "events": 20,
+        "statistics": 16,
+        "lineups": 2,
+        "players": 40
       },
-      "dataCompleteness": 0.4,
+      "dataCompleteness": 1,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
-      "missingInputs": [
-        {
-          "field": "statistics",
-          "label": "Maç istatistikleri"
-        },
-        {
-          "field": "lineups",
-          "label": "Kadrolar"
-        },
-        {
-          "field": "players",
-          "label": "Oyuncu istatistikleri"
-        }
-      ],
+      "missingInputs": [],
       "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
-      "analysisStatus": "partial_data",
+      "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "91511363f19f7006",
-      "fingerprint": "91511363f19f7006",
+      "analysisSourceHash": "38e753f4d91c848b",
+      "fingerprint": "38e753f4d91c848b",
       "analysisGeneratedAt": "2026-10-15T05:54:35.968Z",
-      "analysisUpdatedAt": "2026-10-15T05:54:35.968Z",
-      "generatedAt": "2026-10-15T05:54:35.968Z",
+      "analysisUpdatedAt": "2026-10-15T07:04:40.029Z",
+      "generatedAt": "2026-10-15T07:04:40.029Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -4460,7 +4949,7 @@
       "reportUrl": "./mac-raporu/fc-cincinnati-new-england-revolution-2026-10-15.html",
       "digest": {
         "headline": "New England Revolution, FC Cincinnati'yi 3-2 yendi",
-        "paragraph": "TQL Stadium'da oynanan MLS maçını New England Revolution 3-2 kazandı; FC Cincinnati sahadan puansız ayrıldı. Golleri 13. dakikada Tom Barlow (FC Cincinnati), 21. dakikada Dor Turgeman (New England Revolution), 43. dakikada Joshua Wynder (New England Revolution) kaydetti.",
+        "paragraph": "TQL Stadium'da oynanan MLS maçını New England Revolution 3-2 kazandı; FC Cincinnati sahadan puansız ayrıldı. Golleri 13. dakikada Tom Barlow (FC Cincinnati), 21. dakikada Dor Turgeman (New England Revolution), 43. dakikada Joshua Wynder (New England Revolution), 51. dakikada Dor Turgeman (New England Revolution), 67. dakikada Kevin Denkey (FC Cincinnati) kaydetti.",
         "result": {
           "winner": "New England Revolution",
           "loser": "FC Cincinnati",
@@ -4498,18 +4987,61 @@
               "type": "Gol",
               "detail": "Joshua Wynder",
               "pivotal": true
+            },
+            {
+              "minute": "51'",
+              "team": "New England Revolution",
+              "type": "Gol",
+              "detail": "Dor Turgeman",
+              "pivotal": true
+            },
+            {
+              "minute": "51'",
+              "team": "New England Revolution",
+              "type": "Gol",
+              "detail": "Dor Turgeman",
+              "pivotal": true
             }
           ]
         },
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 5 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "81'",
+              "team": "FC Cincinnati",
+              "type": "Oyuncu değişikliği",
+              "detail": "Kyle Smith",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "New England Revolution",
+              "type": "Sarı kart",
+              "detail": "M. Mitrovic",
+              "decisive": false
+            },
+            {
+              "minute": "84'",
+              "team": "FC Cincinnati",
+              "type": "Sarı kart",
+              "detail": "",
+              "decisive": false
+            },
+            {
+              "minute": "89'",
+              "team": "New England Revolution",
+              "type": "Oyuncu değişikliği",
+              "detail": "Peyton Miller",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -4517,7 +5049,7 @@
             {
               "name": "Dor Turgeman",
               "team": "New England Revolution",
-              "contribution": "21' gol",
+              "contribution": "21' gol · 51' gol · 51' gol",
               "impact": "yüksek"
             },
             {
@@ -4527,67 +5059,172 @@
               "impact": "yüksek"
             },
             {
+              "name": "Kevin Denkey",
+              "team": "FC Cincinnati",
+              "contribution": "67' gol",
+              "impact": "yüksek"
+            },
+            {
               "name": "Tom Barlow",
               "team": "FC Cincinnati",
               "contribution": "13' gol · 44' sarı kart",
               "impact": "orta"
-            },
-            {
-              "name": "Ilay Feingold",
-              "team": "New England Revolution",
-              "contribution": "4' sarı kart",
-              "impact": "olumsuz"
             }
           ]
         },
         "tactical": {
-          "status": "unavailable",
-          "notes": []
+          "status": "partial",
+          "notes": [
+            "FC Cincinnati sahaya 3-5-2 dizilişiyle çıktı.",
+            "New England Revolution sahaya 4-2-3-1 dizilişiyle çıktı."
+          ]
         },
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (9 olay).",
             "13' FC Cincinnati — Tom Barlow: gol",
             "21' New England Revolution — Dor Turgeman: gol",
-            "43' New England Revolution — Joshua Wynder: gol"
+            "43' New England Revolution — Joshua Wynder: gol",
+            "İlk yarı içinde 3 oyuncu değişikliği kaydedildi."
           ],
           "goals": 3
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "51' New England Revolution — Dor Turgeman: gol",
+            "67' FC Cincinnati — Kevin Denkey: gol",
+            "İkinci yarı içinde 6 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 2
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
-          "formations": [],
-          "interpretation": null
+          "status": "ready",
+          "notes": [
+            "FC Cincinnati maça 3-5-2 dizilişiyle başladı.",
+            "New England Revolution maça 4-2-3-1 dizilişiyle başladı.",
+            "45' FC Cincinnati değişikliği (Substitution 1). Değişiklikten sonra FC Cincinnati adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' FC Cincinnati değişikliği (Substitution 2). Değişiklikten sonra FC Cincinnati adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "45' FC Cincinnati değişikliği (Substitution 3). Değişiklikten sonra FC Cincinnati adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "68' FC Cincinnati değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [
+            {
+              "team": "FC Cincinnati",
+              "formation": "3-5-2"
+            },
+            {
+              "team": "New England Revolution",
+              "formation": "4-2-3-1"
+            }
+          ],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
           "verdict": [
-            "New England Revolution, FC Cincinnati'yi 2-3 yendi."
+            "New England Revolution, FC Cincinnati'yi 2-3 yendi.",
+            "İsabetli şutta geride kalmasına rağmen kazandı (5-9); eldeki veri sonucun verimlilikle geldiğini gösteriyor.",
+            "New England Revolution, gol beklentisinin 1,31 üzerinde skor üretti."
           ],
-          "strengths": [],
-          "improvements": [],
+          "strengths": [
+            "FC Cincinnati topa daha çok sahip oldu (%58).",
+            "FC Cincinnati daha çok şut denedi (21-10)."
+          ],
+          "improvements": [
+            "FC Cincinnati şut isabetinde geride kaldı (%43); bitiricilik geliştirilmesi gereken alan."
+          ],
           "closing": "New England Revolution sahadan 1 farkla ayrıldı.",
-          "basis": "events-only"
+          "basis": "statistics+events"
         },
-        "aiRating": null,
-        "analysis": [],
+        "aiRating": {
+          "home": {
+            "team": "FC Cincinnati",
+            "score": 74
+          },
+          "away": {
+            "team": "New England Revolution",
+            "score": 65
+          },
+          "confidence": 80
+        },
+        "analysis": [
+          {
+            "id": "hucum",
+            "title": "Hücum analizi",
+            "readings": [
+              "Şut isabeti FC Cincinnati %42.9, New England Revolution %50."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.6
+            }
+          },
+          {
+            "id": "sahiplik",
+            "title": "Topa sahip olma kalitesi",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "kurulus",
+            "title": "Kuruluş verimliliği",
+            "readings": [
+              "Bir şut üretmek için FC Cincinnati 25.7, New England Revolution 38.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+            ],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.5
+            }
+          },
+          {
+            "id": "durantop",
+            "title": "Duran top ve orta oyunu",
+            "readings": [],
+            "confidence": {
+              "level": "sınırlı",
+              "ratio": 0.25
+            }
+          },
+          {
+            "id": "sutkalitesi",
+            "title": "Şut kalitesi",
+            "readings": [
+              "Şut başına xG FC Cincinnati 0.093, New England Revolution 0.169. Bu oran, şut hacminden bağımsız olarak pozisyonların kalitesini gösterir."
+            ],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.8333333333333334
+            }
+          },
+          {
+            "id": "taktik",
+            "title": "Taktik özet",
+            "readings": [],
+            "confidence": {
+              "level": "orta",
+              "ratio": 0.6666666666666666
+            }
+          },
+          {
+            "id": "sonuc",
+            "title": "Maç sonucu okuması",
+            "readings": [],
+            "confidence": {
+              "level": "yüksek",
+              "ratio": 1
+            }
+          }
+        ],
         "analysisOmitted": [
-          "hucum",
           "savunma",
-          "sahiplik",
           "pres",
-          "kurulus",
-          "durantop",
-          "sutkalitesi",
           "performans",
-          "taktik",
-          "sonuc",
           "gecis-oyunu",
           "pas-agi",
           "en-zayif-performans"
@@ -4597,14 +5234,19 @@
         "summary",
         "standoutPlayers",
         "momentum",
+        "signals",
+        "statistics",
         "firstHalf",
+        "secondHalf",
         "turningPoints",
         "lateGame",
-        "finalAssessment"
+        "coaching",
+        "finalAssessment",
+        "aiRating"
       ],
-      "coverage": 50,
-      "dataStatus": "partial",
-      "intelligenceCoverage": 0,
+      "coverage": 86,
+      "dataStatus": "complete",
+      "intelligenceCoverage": 70,
       "publishState": "page"
     },
     {
