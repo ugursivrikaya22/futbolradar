@@ -94,6 +94,13 @@
   function remember(nick) { try { if (nick) localStorage.setItem(NICK_KEY, nick); else localStorage.removeItem(NICK_KEY); } catch (e) { /* kapalı olabilir */ } }
   function remembered() { try { return localStorage.getItem(NICK_KEY); } catch (e) { return null; } }
 
+  /* Katılımı ölçmek için yalnızca olay ADI gider (GA4 varsa; analytics.js
+     DNT/GPC ve otomasyonu zaten dışlıyor). Takma ad, skor, kod gibi hiçbir
+     değer gönderilmez. */
+  function track(name) {
+    try { if (typeof window.gtag === "function") window.gtag("event", name); } catch (error) { /* ölçüm hiçbir zaman akışı bozmaz */ }
+  }
+
   function api(query, options) {
     var init = options || {};
     init.credentials = "same-origin";
@@ -166,6 +173,7 @@
       if (result.ok) {
         state.predictions[card.getAttribute("data-fixture")] = { home: Number(home), away: Number(away) };
         paintPredictions();
+        track("tahmin_ligi_predict");
         say("Tahmin kaydedildi: " + home + "-" + away + ". Maç başlayana kadar değiştirebilirsin.");
       } else {
         say(errorText(result), true);
@@ -233,6 +241,7 @@
       box.hidden = false;
       $("[data-recovery-code]").textContent = code;
       $("[data-recovery-nick]").textContent = result.json.data.nickname;
+      track("tahmin_ligi_register");
       say("Hesabın hazır. Kurtarma kodunu kaydet: başka cihazda giriş için gerekli.");
       button.disabled = false;
       form.reset();
@@ -242,6 +251,7 @@
   function login(form) {
     api("", { body: { action: "login", nickname: form.nickname.value.trim(), code: form.code.value.trim() } }).then(function (result) {
       if (!result.ok) { say(errorText(result), true); return; }
+      track("tahmin_ligi_login");
       say("Giriş yapıldı.");
       form.reset();
       loadMe();

@@ -181,7 +181,7 @@ async function supabaseRequest(pathname, options = {}) {
  * Dönen nesne YALNIZCA sayıları taşır; hangi seçeneğin geçerli olduğu
  * çağıranın işi — depoda kalmış eski bir seçeneği süzmek uç noktaya aittir.
  */
-async function readTally(pollId) {
+async function readTallyRows(pollId) {
   const query = `${TABLE}?poll_id=eq.${encodeURIComponent(pollId)}&select=option_id`;
   const { rows } = await supabaseRequest(query, { method: "GET" });
 
@@ -192,6 +192,56 @@ async function readTally(pollId) {
     counts[optionId] = (counts[optionId] || 0) + 1;
   }
   return counts;
+}
+
+/**
+ * Sunucuda toplama (supabase/migrations/0011_performance_hotspots.sql).
+ * Satırları çekip saymak oy sayısıyla orantılı veri çekiyordu (ve PostgREST
+ * "Max Rows" sınırında — varsayılan 1000 — sayımı sessizce keserdi). RPC
+ * yalnızca seçenek başına bir satır döndürür. Fonksiyon henüz uygulanmadıysa
+ * (migration elle uygulanıyor) null döner ve eski yol çalışır.
+ */
+const TALLY_RPC_RETRY_MS = 10 * 60 * 1000;
+let tallyRpcUnavailableUntil = 0;
+async function readTallyRpc(pollId) {
+  if (Date.now() < tallyRpcUnavailableUntil) return null;
+  try {
+    const { rows } = await supabaseRequest("rpc/home_poll_tally", { method: "POST", body: JSON.stringify({ p_poll_id: pollId }) });
+    const counts = {};
+    for (const row of Array.isArray(rows) ? rows : []) {
+      const optionId = String((row && row.option_id) || "").trim();
+      if (!optionId) continue;
+      counts[optionId] = Number(row.votes) || 0;
+    }
+    return counts;
+  } catch (error) {
+    // Fonksiyon yok (404/PGRST202) ya da yetki yok: eski yola dön, her istekte yeniden deneme.
+    tallyRpcUnavailableUntil = Date.now() + TALLY_RPC_RETRY_MS;
+    return null;
+  }
+}
+
+/**
+ * Sayım, işlev örneği başına kısa süre bellekte tutulur: ana sayfayı açan her
+ * okuyucu için veritabanında yeniden toplama yapılmaz. Kendi oyu hemen
+ * görünsün diye `recordVote` ilgili anketin kaydını siler.
+ */
+const TALLY_TTL_MS = 20 * 1000;
+const tallyCache = new Map();
+
+async function readTally(pollId) {
+  const cached = tallyCache.get(pollId);
+  if (cached && cached.expires > Date.now()) return { ...cached.counts };
+
+  const counts = (await readTallyRpc(pollId)) || (await readTallyRows(pollId));
+  if (tallyCache.size > 50) tallyCache.clear();
+  tallyCache.set(pollId, { counts, expires: Date.now() + TALLY_TTL_MS });
+  return { ...counts };
+}
+
+function clearTallyCache() {
+  tallyCache.clear();
+  tallyRpcUnavailableUntil = 0;
 }
 
 /**
@@ -207,6 +257,7 @@ async function recordVote(pollId, optionId, voterKey) {
     headers: { Prefer: "return=minimal" },
     body: JSON.stringify({ poll_id: pollId, option_id: optionId, voter_key: voterKey })
   });
+  tallyCache.delete(pollId);
   return { counted: !conflict };
 }
 
@@ -276,6 +327,7 @@ module.exports = {
   isConfigured,
   keyRole,
   readTally,
+  clearTallyCache,
   recordShare,
   recordVote,
   voterKeyFor

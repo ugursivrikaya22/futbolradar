@@ -5,7 +5,7 @@
  * /api/matches (1,7 MB, sunucusuz işlev çağrısı) ve /data/*.json adreslerini
  * ayrı ayrı çekiyordu. Burada aynı GET adresine 1,5 sn içinde gelen ikinci
  * istek, ilkinin yanıtının kopyasını alır. Yalnızca /api/ ve /data/ altındaki,
- * başlıksız/gövdesiz GET istekleri birleştirilir; AbortSignal her çağıran
+ * gövdesiz GET istekleri (başlık olarak yalnızca Accept: application/json) birleştirilir; AbortSignal her çağıran
  * için ayrı çalışır (biri zaman aşımına uğrasa ötekinin isteği kesilmez).
  * Başarısız birleşik istek, çağıranın kendi isteğiyle bir kez yeniden denenir.
  */
@@ -30,7 +30,10 @@
       var url = typeof input === "string" ? input : (input instanceof URL ? input.href : "");
       var options = init || {};
       var method = String(options.method || "GET").toUpperCase();
-      if (!url || method !== "GET" || options.body || options.headers || options.credentials || options.mode || options.integrity) {
+      var headerKeys = options.headers && typeof options.headers === "object" && !(options.headers instanceof Headers) ? Object.keys(options.headers) : null;
+      // Tek izin verilen başlık: Accept: application/json (JSON uç noktaları ona bakmaz).
+      var plainHeaders = !options.headers || (headerKeys && headerKeys.length === 1 && String(headerKeys[0]).toLowerCase() === "accept" && /json/i.test(String(options.headers[headerKeys[0]])));
+      if (!url || method !== "GET" || options.body || !plainHeaders || options.credentials || options.mode || options.integrity) {
         return nativeFetch(input, init);
       }
       var resolved = new URL(url, window.location.href);
@@ -292,7 +295,10 @@
   function setupNowFootball() {
     // Yalnızca ana sayfada: iç sayfalarda okuyucu zaten ne aradığını biliyor.
     var main = document.querySelector("main.home-main");
-    if (!main || document.querySelector("[data-now-football]")) return;
+    var placeholder = document.querySelector("[data-now-football]");
+    // Baştan basılmış boş yer tutucu varsa o doldurulur (yeri ayrılmış: eklenince kayma olmaz).
+    var reserved = Boolean(placeholder && placeholder.hasAttribute("data-placeholder"));
+    if (!main || (placeholder && !reserved)) return;
 
     var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
     var s = en
@@ -301,7 +307,7 @@
       : { title: "Şimdi Futbolda", live: "canlı maç", today: "bugün maç",
         next: "Sıradaki Türk takımı maçı", headline: "Son gelişme" };
 
-    var strip = document.createElement("section");
+    var strip = reserved ? placeholder : document.createElement("section");
     strip.className = "container now-football";
     strip.setAttribute("data-now-football", "");
     strip.setAttribute("aria-label", s.title);
@@ -427,7 +433,12 @@
     watchSummarySources();
     document.addEventListener("futbolradar:rendered", watchSummarySources);
 
-    main.insertBefore(strip, main.firstChild);
+    if (reserved) {
+      strip.removeAttribute("data-placeholder");
+      strip.removeAttribute("aria-hidden");
+    } else {
+      main.insertBefore(strip, main.firstChild);
+    }
 
     // ── Tek istek: canlı ve bugünkü maç sayısı ───────────────────────────
     matchesOnce()
@@ -651,7 +662,11 @@
 
   function setupFavouriteTeam() {
     var main = document.querySelector("main.home-main");
-    if (!main || document.querySelector("[data-favourite-team]")) return;
+    var existing = document.querySelector("[data-favourite-team]");
+    // Sayfada baştan basılmış boş yer tutucu varsa onu doldur (yeri ayrılmış,
+    // yani eklenince düzen kaymaz); yoksa eskisi gibi yeni kutu eklenir.
+    var reserved = Boolean(existing && existing.hasAttribute("data-placeholder"));
+    if (!main || (existing && !reserved)) return;
 
     var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
     var s = en
@@ -660,17 +675,27 @@
       : { pick: "Favori takımını seç", yours: "Takımın", change: "değiştir",
         next: "Sıradaki maç", last: "Son sonuç", table: "Puan durumu", pos: "sıra" };
 
-    var box = document.createElement("section");
-    box.className = "container favourite-team";
-    box.setAttribute("data-favourite-team", "");
+    var box = reserved ? existing : document.createElement("section");
+    if (!reserved) {
+      box.className = "container favourite-team";
+      box.setAttribute("data-favourite-team", "");
+    }
 
     var teams = [];
     favouriteTeams().then(function (list) {
       // Liste hâlâ boşsa (sağlayıcı ulaşılamadı) kutu hiç eklenmez — boş bir
       // takım seçici, yer tutucu uydurmanın sessiz biçimi olurdu.
-      if (!list.length) return;
+      if (!list.length) {
+        if (reserved) box.parentNode.removeChild(box);
+        return;
+      }
       teams = list;
-      main.insertBefore(box, main.firstChild);
+      if (reserved) {
+        box.removeAttribute("data-placeholder");
+        box.removeAttribute("aria-hidden");
+      } else {
+        main.insertBefore(box, main.firstChild);
+      }
       render();
     });
 

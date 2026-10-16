@@ -144,6 +144,10 @@
     </div>
 
       <main class="home-main">
+      <!-- Favori takım kutusunun yeri baştan ayrılır (site.js doldurur). Kutu veri gelince sayfanın en
+           üstüne eklenseydi altındaki her şey ~130 px kayardı (ana sayfa CLS'inin ana nedeni). -->
+      <section class="container favourite-team" data-favourite-team data-placeholder aria-hidden="true"></section>
+      <section class="container now-football" data-now-football data-placeholder aria-hidden="true"></section>
       <!-- RADAR NABZI ANA SAYFA KARTI.
            Kabuk boş ve `hidden` doğar; radar-home-card.js yalnızca gerçekten
            canlı bir maç bulduğunda doldurup açar, maç bitince yeniden kapatır.
