@@ -182,7 +182,7 @@ const probabilityGaps = [];
 function probabilityFor(entry, detail, state) {
   // Ertelenmiş maç da OYNANMAMIŞ maçtır: tahmin kartı kaldırılmaz.
   // İptal edilmiş maçta tahmin anlamsızdır ve gösterilmez.
-  if (state !== "pre" && state !== "postponed") return null;
+  if (state !== "pre" && state !== "postponed" && state !== "tbd") return null;
   const providerFixtureId = entry.providerIds && entry.providerIds.apiFootball ? String(entry.providerIds.apiFootball) : null;
   const stored = probabilityIndex.find(detail.naturalId || entry.id || null, providerFixtureId);
   const fromStore = stored ? probabilityStore.toDisplayRecord(stored) : null;
@@ -352,7 +352,7 @@ function aiH2hFor(entries, homeTeam) {
  * "kazanma ihtimali" basmak okuyucuyu yanıltır.
  */
 function aiProbabilityFor(state, probability, modelPrediction) {
-  if (state === "post" || state === "pending" || state === "cancelled") return null;
+  if (state === "post" || state === "pending" || state === "interrupted" || state === "cancelled") return null;
   if (probability) return probability;
   return modelPrediction || null;
 }
@@ -1037,6 +1037,14 @@ function pageTitles(entry, state, locale, disambiguate) {
       title = `${home} - ${away} Maçı Ertelendi`;
       h1 = `${home} - ${away} Maçı`;
       description = `${home} - ${away} maçı (${day}) ertelendi. Yeni tarih, saat ve yayın kanalı açıklandığında bu sayfa güncellenir. FutbolRadar.`;
+    } else if (state === "tbd") {
+      title = `${home} - ${away} Maçı Saati Belirlenmedi`;
+      h1 = `${home} - ${away} Maçı`;
+      description = `${home} - ${away} maçının başlama saati henüz kesinleşmedi. Tarih, saat ve yayın kanalı açıklandığında bu sayfa güncellenir. FutbolRadar.`;
+    } else if (state === "interrupted") {
+      title = `${home} - ${away} Maçı Yarıda Kaldı`;
+      h1 = `${home} - ${away} Maçı`;
+      description = `${home} - ${away} maçı (${day} ${hour}) yarıda kaldı. Resmî karar ve nihai sonuç doğrulandığında bu sayfa güncellenir. FutbolRadar.`;
     } else if (state === "cancelled") {
       title = `${home} - ${away} Maçı İptal Edildi`;
       h1 = `${home} - ${away} Maçı`;
@@ -1066,6 +1074,14 @@ function pageTitles(entry, state, locale, disambiguate) {
     title = `${home} vs ${away} Postponed`;
     h1 = `${home} vs ${away}`;
     description = `${home} vs ${away} (${day}) has been postponed. This page updates when a new date, kick-off time and broadcaster are announced. FutbolRadar.`;
+  } else if (state === "tbd") {
+    title = `${home} vs ${away}: Kick-off Time To Be Confirmed`;
+    h1 = `${home} vs ${away}`;
+    description = `The kick-off time for ${home} vs ${away} has not been confirmed yet. This page updates when the date, time and broadcaster are announced. FutbolRadar.`;
+  } else if (state === "interrupted") {
+    title = `${home} vs ${away} Suspended`;
+    h1 = `${home} vs ${away}`;
+    description = `${home} vs ${away} (${day}, ${hour}) was suspended. This page updates when the official decision and final result are verified. FutbolRadar.`;
   } else if (state === "cancelled") {
     title = `${home} vs ${away} Cancelled`;
     h1 = `${home} vs ${away}`;
@@ -1274,9 +1290,12 @@ function pageHtml(entry, locale, options) {
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
 
   let sections = [];
-  if (state === "post" || state === "pending") {
+  if (state === "post" || state === "pending" || state === "interrupted") {
     sections = [
       state === "pending" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.pendingResult)}</strong></article></section>` : "",
+      // Yarıda kalan maç: sonuç İLAN EDİLMEZ. Son doğrulanmış skor yalnızca
+      // bu notta, "son doğrulanmış" etiketiyle yazılır; skor tablosuna basılmaz.
+      state === "interrupted" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.interruptedNote)}</strong>${hasScore(entry.score) ? `<span>${escapeHtml(text.lastKnownScore)}: ${escapeHtml(entry.score.home)}-${escapeHtml(entry.score.away)}</span>` : ""}</article></section>` : "",
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       // Paylaşım bölümü istatistiklerin ARDINDAN: kartın taşıdığı sayılar
@@ -1324,6 +1343,7 @@ function pageHtml(entry, locale, options) {
     sections = [
       state === "postponed" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.postponedNote)}</strong></article></section>` : "",
       state === "cancelled" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.cancelledNote)}</strong></article></section>` : "",
+      state === "tbd" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.tbdNote)}</strong></article></section>` : "",
       whenSectionHtml(entry, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       squadsSectionHtml(squads, ctx),
@@ -1539,8 +1559,8 @@ function hubPages(entries, hrefForEntry) {
     // listesi yalnızca henüz oynanmamış/oynanan (pre/live) maçları, Son
     // sonuçlar listesi yalnızca sonuçlanmış/sonuç bekleyen (post/pending)
     // maçları alır — ikisi ayrık kalır.
-    const upcoming = window(today, dayShift(10)).filter((entry) => !["post", "pending"].includes(pageStateOf(entry, NOW)));
-    const recent = window(dayShift(-7), today).filter((entry) => ["post", "pending"].includes(pageStateOf(entry, NOW)));
+    const upcoming = window(today, dayShift(10)).filter((entry) => !["post", "pending", "interrupted"].includes(pageStateOf(entry, NOW)));
+    const recent = window(dayShift(-7), today).filter((entry) => ["post", "pending", "interrupted"].includes(pageStateOf(entry, NOW)));
     const monthLinks = `<nav class="msp-months" aria-label="${escapeHtml(locale === "en" ? "Months" : "Aylar")}">${months.map((key) => `<a href="${escapeHtml(`${base}${locale === "en" ? MONTH_DIR_EN : MONTH_DIR_TR}/${key}`)}">${escapeHtml(monthLabel(key, locale))}</a>`).join("")}</nav>`;
     const body = `
       ${locale === "en" ? '<section class="msp-section"><h2>Today’s matches</h2><div data-daily-fixtures-en></div><script src="/daily-fixtures-en.js" defer></script></section>' : ""}
@@ -1680,7 +1700,7 @@ const sitemapEntries = [];
 const pairs = [];
 let written = 0;
 let unchanged = 0;
-const stateCounts = { pre: 0, live: 0, post: 0, pending: 0, postponed: 0, cancelled: 0 };
+const stateCounts = { pre: 0, live: 0, post: 0, pending: 0, tbd: 0, interrupted: 0, postponed: 0, cancelled: 0 };
 
 for (const plan of plans) {
   const { entry, state } = plan;

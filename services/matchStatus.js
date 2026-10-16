@@ -132,6 +132,18 @@ const PROVIDER_MISSING_LABEL = "Veri sağlayıcı tarafından sunulmadı";
 /** Doğrulanamayan canlı durum için arayüz metni. */
 const UNVERIFIED_LIVE_LABEL = "Canlı veri doğrulanamadı";
 
+/**
+ * SAĞLAYICI "TBD" (Time To Be Defined) DEDİ: tarih/saat KESİNLEŞMEDİ.
+ *
+ * Kayıttaki `kickoff` o durumda son bilinen (ya da yer tutucu) zamandır —
+ * ertelenen bir maçta eski saat kayıtta durur. Bunu "04:05 başlayacak" diye
+ * göstermek, sağlayıcının hiç söylemediği bir saati iddia etmektir.
+ */
+const TIME_TBD_LABEL = "Saat belirlenmedi";
+
+/** Başlamış, sonra durdurulmuş ve sağlayıcıdan sonuç/karar gelmemiş maç. */
+const INTERRUPTED_LABEL = "Yarıda kaldı";
+
 const STATE_LABELS = Object.freeze({
   SCHEDULED: "Başlamadı",
   LIVE: "Canlı",
@@ -240,7 +252,19 @@ function isStaleAnalysisRecord(record, match) {
   return isAnalyzableStatus(match);
 }
 
+/**
+ * Başlama saati sağlayıcı tarafından doğrulanmamış mı? (`TBD`)
+ *
+ * Yalnızca henüz oynanmamış (SCHEDULED) kayıt için anlamlıdır: kayıt zaten
+ * ertelendi/iptal/canlı/bitti ise durum başka bir yoldan söylenir.
+ */
+function isTimeUnconfirmed(match) {
+  if (!match || matchState(match) !== "SCHEDULED") return false;
+  return statusesOf(match).includes("TBD") || match.kickoffConfirmed === false;
+}
+
 function statusLabel(match) {
+  if (isTimeUnconfirmed(match)) return TIME_TBD_LABEL;
   return STATE_LABELS[matchState(match)] || STATE_LABELS.UNKNOWN;
 }
 
@@ -513,6 +537,13 @@ function liveVerdict(match, options) {
   }
 
   // Buradan sonrası SCHEDULED veya UNKNOWN.
+  //
+  // SAAT KESİNLEŞMEMİŞ (TBD). Kayıttaki saat yer tutucudur; "başlama saati
+  // geçti" demek ya da saati göstermek yanlış olur. Canlı değil, oynanmış da değil.
+  if (isTimeUnconfirmed(match)) {
+    return { live: false, verdict: "not-live", reason: "time-tbd", state };
+  }
+
   if (kickoff === null) {
     return { live: false, verdict: "not-live", reason: "no-kickoff", state };
   }
@@ -571,10 +602,61 @@ function displayStatusLabel(match, options) {
   const verdict = liveVerdict(match, options);
 
   if (verdict.verdict === "unverified") {
-    return UNVERIFIED_LIVE_LABEL;
+    // Sağlayıcı "ara verildi/durduruldu" demiş ve sonra ses çıkmamışsa bu
+    // "canlı veri yok" değil, YARIDA KALMIŞ maçtır; öyle yazılır.
+    return matchState(match) === "INTERRUPTED" ? INTERRUPTED_LABEL : UNVERIFIED_LIVE_LABEL;
   }
 
   return statusLabel(match);
+}
+
+/**
+ * KART / LİSTE SATIRI İÇİN TEK FAZ KARARI.
+ *
+ * Kart üreten her yüzey (Türkçe ve İngilizce günün maçları, yayın programı,
+ * ana sayfa vitrini) saati, skoru ve durumu burada verilen karara göre basar;
+ * eskiden her biri `SCHEDULED` ise saati yazıyordu ve saati geçmiş ya da
+ * `TBD` bir maç "04:05" diye görünüyordu.
+ *
+ *   final           oynandı, okunabilir skor var → skor göster
+ *   live            doğrulanmış canlı → skor + dakika
+ *   interrupted     ara verildi / yarıda kaldı → skor GÖSTERİLMEZ (nihai değil)
+ *   postponed       ertelendi
+ *   cancelled       iptal
+ *   abandoned       tatil edildi
+ *   time-tbd        saat belirlenmedi → SAAT GÖSTERİLMEZ
+ *   awaiting-result saati geçti, sağlayıcıdan sonuç gelmedi → "sonuç bekleniyor";
+ *                   skor ya da sonuç UYDURULMAZ
+ *   upcoming        başlamadı, saat doğrulanmış → saat göster
+ */
+const PHASE_LABELS = Object.freeze({
+  tr: { interrupted: INTERRUPTED_LABEL, postponed: "Ertelendi", cancelled: "İptal edildi", abandoned: "Tatil edildi", "time-tbd": TIME_TBD_LABEL, "awaiting-result": "Sonuç bekleniyor" },
+  en: { interrupted: "Suspended", postponed: "Postponed", cancelled: "Cancelled", abandoned: "Abandoned", "time-tbd": "Time TBC", "awaiting-result": "Result pending" }
+});
+
+function cardPhase(match, options) {
+  const settings = options || {};
+  const locale = settings.locale === "en" ? "en" : "tr";
+  const state = matchState(match);
+  const verdict = liveVerdict(match, options);
+  const pick = (phase, extra) => ({ phase, label: PHASE_LABELS[locale][phase] || "", showTime: false, showScore: false, ...extra });
+
+  // Doğrulanmış canlı ama oyun durmuş (SUSP/INT): "Canlı" yazılmaz, skor ise
+  // gerçek ve taze olduğu için gösterilir.
+  if (verdict.live && state === "INTERRUPTED") {
+    return pick("interrupted", { label: locale === "en" ? "Match paused" : STATE_LABELS.INTERRUPTED, showScore: true, paused: true });
+  }
+  if (verdict.live) return pick("live", { showScore: true });
+  if (state === "FINISHED" || state === "AWARDED") {
+    return hasReadableScore(match) ? pick("final", { showScore: true }) : pick("awaiting-result");
+  }
+  if (state === "POSTPONED") return pick("postponed");
+  if (state === "CANCELLED") return pick("cancelled");
+  if (state === "ABANDONED") return pick("abandoned");
+  if (state === "INTERRUPTED") return pick("interrupted");
+  if (isTimeUnconfirmed(match)) return pick("time-tbd");
+  if (verdict.verdict === "unverified") return pick("awaiting-result");
+  return pick("upcoming", { showTime: true });
 }
 
 module.exports = {
@@ -590,8 +672,12 @@ module.exports = {
   UNPLAYED_STATES,
   UNVERIFIED_LIVE_LABEL,
   canonicalStatus,
+  INTERRUPTED_LABEL,
+  TIME_TBD_LABEL,
+  cardPhase,
   displayStatusLabel,
   filterDisplayableLive,
+  isTimeUnconfirmed,
   isDisplayableLive,
   isTodayInIstanbul,
   todayInIstanbul,

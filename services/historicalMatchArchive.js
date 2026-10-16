@@ -1,4 +1,4 @@
-const { isAnalyzableMatch } = require("./matchStatus");
+const { isAnalyzableMatch, isUnplayedStatus } = require("./matchStatus");
 const { nationKey } = require("./displayLabels");
 
 const COVERAGE = Object.freeze({ FULL: "FULL", STANDARD: "STANDARD", LIMITED: "LIMITED" });
@@ -112,10 +112,22 @@ function priority(source) { return source === "manual" ? 3 : source === "fixture
 function buildArchive({ sources, previous, now }) {
   const grouped = new Map();
   const rejected = [];
+  // Sağlayıcının SONRADAN "oynanmadı" dediği maçlar (iptal/erteleme): arşivde
+  // daha önce bitmiş görünen kayıt bu bilgiyle geri çekilir.
+  const unplayed = new Map();
   for (const entry of sources || []) {
     for (const raw of entry.records || []) {
       const match = normalized(raw, entry.name);
-      if (!isAnalyzableMatch(match)) continue;
+      if (!isAnalyzableMatch(match)) {
+        if (isUnplayedStatus(match) && match.homeTeam && match.awayTeam && istanbulDay(match.kickoff)) {
+          const info = { status: match.status, providerStatus: match.providerStatus };
+          unplayed.set(identity(match), info);
+          // Kayıt kimliğiyle de eşleşir: ertelenen maçın başlama günü değişince
+          // (Şili K - Bolivya K: 12 → 13 Ekim) kimlik anahtarı tutmaz.
+          if (match.id) unplayed.set(`id:${match.id}`, info);
+        }
+        continue;
+      }
       const key = identity(match);
       if (!match.homeTeam || !match.awayTeam || !istanbulDay(match.kickoff)) { rejected.push({ id: match.id, source: entry.name, reason: "incomplete-identity" }); continue; }
       if (!grouped.has(key)) grouped.set(key, []);
@@ -167,6 +179,23 @@ function buildArchive({ sources, previous, now }) {
     // Kimlik hesabı değiştiyse (ör. "Italy" → "italya") eski anahtarlı kayıt
     // artık bu koşuda gruplanan bir maçın kopyasıdır; taşınmaz.
     if (grouped.has(identity(prior.match))) continue;
+    const retraction = unplayed.get(key) || unplayed.get(identity(prior.match)) || unplayed.get(`id:${prior.match.id}`);
+    if (retraction && ["CANCELLED", "POSTPONED"].includes(retraction.status) && prior.match.status !== retraction.status) {
+      // GERİ ÇEKİLEN SONUÇ. Sağlayıcı artık iptal/erteleme diyor: eski skor
+      // nihai sonuç olarak sunulamaz. Silinmez (arşiv küçülmez); denetim izi
+      // `retractedResult` olarak kalır, kayıt incelemeye alınır.
+      const { score, status, providerStatus } = prior.match;
+      records.push({
+        ...prior,
+        match: { ...prior.match, status: retraction.status, providerStatus: retraction.providerStatus, score: null, retractedResult: prior.match.retractedResult || { status, providerStatus, score, retractedAt: now } },
+        coverageLevel: null,
+        workflowState: WORKFLOW.REVIEW,
+        reason: "Sağlayıcı sonucu geri çekti (iptal/erteleme); nihai sonuç yok.",
+        retracted: true,
+        carriedForward: true
+      });
+      continue;
+    }
     records.push({ ...prior, carriedForward: true });
   }
 

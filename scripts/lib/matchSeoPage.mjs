@@ -135,7 +135,7 @@ export const STR = {
     varReferee: "VAR",
     status: "Maç durumu",
     round: "Hafta",
-    state: { pre: "Başlamadı", live: "Canlı", post: "Tamamlandı", pending: "Sonuç bekleniyor", postponed: "Ertelendi", cancelled: "İptal edildi", halftime: "Devre arası" },
+    state: { pre: "Başlamadı", live: "Canlı", post: "Tamamlandı", pending: "Sonuç bekleniyor", postponed: "Ertelendi", cancelled: "İptal edildi", halftime: "Devre arası", tbd: "Saat belirlenmedi", interrupted: "Yarıda kaldı" },
     whenTitle: (h, a) => `${h} - ${a} maçı ne zaman?`,
     whenBody: (h, a, day, competition) => `${h} - ${a} maçı ${day} tarihinde${competition ? ` ${competition} kapsamında` : ""} oynanacak.`,
     whenBodyPast: (h, a, day, competition) => `${h} - ${a} maçı ${day} tarihinde${competition ? ` ${competition} kapsamında` : ""} oynandı.`,
@@ -247,6 +247,10 @@ export const STR = {
     pendingResult: "Maçın başlama saati geçti; nihai sonuç doğrulanmış kaynaktan alındığında bu sayfa otomatik güncellenir.",
     postponedNote: "Bu karşılaşma ertelendi. Yeni tarih açıklandığında aynı sayfa güncellenir.",
     cancelledNote: "Bu karşılaşma iptal edildi.",
+    tbdNote: "Bu karşılaşmanın başlama saati henüz kesinleşmedi. Sağlayıcı yeni tarih ve saati açıkladığında aynı sayfa güncellenir.",
+    interruptedNote: "Bu maç yarıda kaldı. Resmî karar ve nihai sonuç doğrulanmış kaynaktan alındığında bu sayfa güncellenir; bir sonuç ilan edilmedi.",
+    lastKnownScore: "Son doğrulanmış skor",
+    timeTbd: "Belirlenmedi",
     teamPage: "Takım sayfası",
     teamFixtures: "Takım fikstürü",
     teamStandings: "Takım puan durumu",
@@ -317,7 +321,7 @@ export const STR = {
     varReferee: "VAR",
     status: "Status",
     round: "Matchweek",
-    state: { pre: "Not started", live: "Live", post: "Full time", pending: "Result pending", postponed: "Postponed", cancelled: "Cancelled", halftime: "Half time" },
+    state: { pre: "Not started", live: "Live", post: "Full time", pending: "Result pending", postponed: "Postponed", cancelled: "Cancelled", halftime: "Half time", tbd: "Time TBC", interrupted: "Suspended" },
     whenTitle: (h, a) => `When is ${h} vs ${a}?`,
     whenBody: (h, a, day, competition) => `${h} vs ${a} is scheduled for ${day}${competition ? ` in the ${competition}` : ""}.`,
     whenBodyPast: (h, a, day, competition) => `${h} vs ${a} was played on ${day}${competition ? ` in the ${competition}` : ""}.`,
@@ -426,6 +430,10 @@ export const STR = {
     pendingResult: "Kick-off has passed; this page updates automatically once the final result is verified.",
     postponedNote: "This match has been postponed. The same page updates when a new date is announced.",
     cancelledNote: "This match has been cancelled.",
+    tbdNote: "The kick-off time for this match has not been confirmed yet. The same page updates when the provider announces a new date and time.",
+    interruptedNote: "This match was suspended. The page updates when the official decision and final result are verified from a source; no result has been declared.",
+    lastKnownScore: "Last verified score",
+    timeTbd: "To be confirmed",
     teamPage: "Team page",
     teamFixtures: "Team fixtures",
     teamStandings: "Team standings",
@@ -854,7 +862,7 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   // bekleyen maçta yalnızca resmî kadro basılır, tahmin gösterilmez.
   // Keep previously published lineup deep links useful after kickoff, even
   // when the provider has not supplied official lineups. Never retain a prediction.
-  if (ctx.state === "post" || ctx.state === "pending") {
+  if (ctx.state === "post" || ctx.state === "pending" || ctx.state === "interrupted") {
     return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.officialLineups, ctx))}</h2><p class="muted-copy">${escapeHtml(text.lineupUnavailable)}</p></section>`;
   }
   const probable = analysis && analysis.probableLineups;
@@ -1304,7 +1312,7 @@ export function faqEntries(entry, ctx) {
   const text = STR[locale];
   const day = longDate(entry.kickoff, locale);
   const hour = clock(entry.kickoff);
-  const past = state === "post" || state === "pending" || state === "live";
+  const past = state === "post" || state === "pending" || state === "interrupted" || state === "live";
   // Kanal `services/broadcastSchedule.js` zincirinden geliyor: elle
   // doğrulama → yayıncının kendi akışının taraması → sağlayıcı alanı.
   // Lig varsayılanı BİLEREK yok; `services/broadcastRights.js` haritası
@@ -1738,7 +1746,7 @@ export function heroHtml(entry, ctx) {
         <div class="msp-scoreboard">
           ${teamHtml(homeTeam, homeHref, homeLogo, "home")}
           <div class="msp-score-wrap">
-            <p class="msp-score" data-msp-score>${scored ? `<b data-msp-score-home>${escapeHtml(entry.score.home)}</b><span aria-hidden="true">-</span><b data-msp-score-away>${escapeHtml(entry.score.away)}</b>` : `<b data-msp-score-home>${escapeHtml(clock(entry.kickoff) || "-")}</b>`}</p>
+            <p class="msp-score" data-msp-score>${scored ? `<b data-msp-score-home>${escapeHtml(entry.score.home)}</b><span aria-hidden="true">-</span><b data-msp-score-away>${escapeHtml(entry.score.away)}</b>` : `<b data-msp-score-home>${escapeHtml(state === "tbd" || state === "postponed" ? "-" : (clock(entry.kickoff) || "-"))}</b>`}</p>
             <p class="msp-minute" data-msp-minute${minute ? "" : " hidden"}>${escapeHtml(minute)}</p>
             ${halftime}
           </div>
@@ -1746,7 +1754,7 @@ export function heroHtml(entry, ctx) {
         </div>
         <dl class="msp-facts">
           <div><dt>${escapeHtml(text.date)}</dt><dd><time datetime="${escapeHtml(kickoffIso || "")}">${escapeHtml(longDate(entry.kickoff, locale))}</time></dd></div>
-          <div><dt>${escapeHtml(text.time)}</dt><dd>${escapeHtml(clock(entry.kickoff))} ${escapeHtml(text.tsi)}</dd></div>
+          <div><dt>${escapeHtml(text.time)}</dt><dd>${state === "tbd" || state === "postponed" ? escapeHtml(text.timeTbd) : `${escapeHtml(clock(entry.kickoff))} ${escapeHtml(text.tsi)}`}</dd></div>
           ${competitionName ? `<div><dt>${escapeHtml(text.competition)}</dt><dd>${escapeHtml(competitionLabel(competitionName, locale))}</dd></div>` : ""}
           <div><dt>${escapeHtml(text.venue)}</dt><dd>${escapeHtml(entry.venue ? venueLabel(entry.venue, locale) : text.notAnnounced)}</dd></div>
           <div><dt>${escapeHtml(text.channel)}</dt><dd>${escapeHtml(channel || text.notAnnounced)}</dd></div>
@@ -1831,7 +1839,7 @@ export function matchCenterPlusSectionsHtml(ctx) {
  * ama sayfada yer kaplar.
  */
 export function matchCenterPlusPayloadHtml(detail, entry, state) {
-  if (!detail || (state !== "post" && state !== "live" && state !== "pending")) return "";
+  if (!detail || (state !== "post" && state !== "live" && state !== "pending" && state !== "interrupted")) return "";
   const pick = (value) => (Array.isArray(value) && value.length ? value : null);
   const payload = {
     homeTeam: entry.homeTeam,

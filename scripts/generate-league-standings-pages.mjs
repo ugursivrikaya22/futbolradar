@@ -19,7 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
@@ -68,7 +68,10 @@ function breadcrumbHtml(items) {
 
 function pageDocument({ title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, dataDate, enPath }) {
   const canonical = `${siteUrl}${canonicalPath}`;
-  const enUrl = `${siteUrl}/en/${enPath}`;
+  // EN karşılığı olmayan sayfa (ör. 1. Lig: yalnızca EN_TAB_ORDER'daki ligler
+  // için İngilizce sayfa üretiliyor) olmayan adresi alternate olarak ilan etmez:
+  // 404'e giden hreflang, çifti geçersiz kılar.
+  const enUrl = enPath ? `${siteUrl}/en/${enPath}` : null;
   const graph = [schema, breadcrumbSchema(breadcrumbs.map(({ name, url }) => ({ name, url })))];
   return `<!doctype html>
 <html lang="tr">
@@ -80,8 +83,7 @@ function pageDocument({ title, description, canonicalPath, h1, kicker, intro, br
     <meta name="robots" content="${ROBOTS_INDEX}" />
     <link rel="canonical" href="${canonical}" />
     <link rel="alternate" hreflang="tr-TR" href="${canonical}" />
-    <link rel="alternate" hreflang="en" href="${enUrl}" />
-    <link rel="alternate" hreflang="x-default" href="${canonical}" />
+${enUrl ? `    <link rel="alternate" hreflang="en" href="${enUrl}" />\n` : ""}    <link rel="alternate" hreflang="x-default" href="${canonical}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -187,7 +189,7 @@ function competitionPage(entry) {
     dataDate,
     // İngilizce karşılık da uzantısız kanonikte; hreflang çifti aynı adresi
     // göstermeli, yoksa iki dil birbirinin kanonik olmayan adresine işaret eder.
-    enPath: entry.slugEn
+    enPath: EN_TAB_ORDER.includes(entry.id) ? entry.slugEn : null
   });
 }
 

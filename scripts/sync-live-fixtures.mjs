@@ -6,8 +6,8 @@ import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
-const { findCompetition, findCompetitionByProviderId, normalizeKey } = require("../services/competitionCatalog.js");
-const { canonicalStatus, istanbulDay } = require("../services/matchStatus.js");
+const { findCompetition, findCompetitionByProviderId, isForeignNamesake, normalizeKey, qualifiedLeagueName, separateCompetitionId } = require("../services/competitionCatalog.js");
+const { canonicalStatus, isTimeUnconfirmed, istanbulDay } = require("../services/matchStatus.js");
 const { sameClub, fixtureTeamNames } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
@@ -172,7 +172,13 @@ function withoutEmptyDetail(match) {
 function normalizedIncoming(match, detail) {
   // Sağlayıcının sayısal lig kimliği varsa ÖNCE o denenir — ad hiçbir zaman
   // kimliği ezmez (bkz. services/competitionCatalog.js: resolveCompetitionId).
-  const competition = findCompetitionByProviderId(match.providerLeagueId) || findCompetition(match.league);
+  //
+  // Ad eşleşmesi YALNIZCA sağlayıcı kimliği çelişmiyorsa kabul edilir: Cezayir
+  // (186) "Ligue 1" adıyla gelir ama Fransa Ligue 1 (61) değildir. Çelişen
+  // kayıt katalog kimliğini ALMAZ; ayrı `ligue-1-186` kimliği ve ülkeli ad
+  // ("Ligue 1 (Algeria)") alır.
+  const foreign = isForeignNamesake(match, normalizeKey(match.competitionId));
+  const competition = findCompetitionByProviderId(match.providerLeagueId) || (foreign ? null : findCompetition(match.league));
   const providerId = String(match.providerId || match.id || "");
   const status = canonicalStatus(match.status || match.providerStatus);
   return {
@@ -183,7 +189,8 @@ function normalizedIncoming(match, detail) {
     awayTeam: canonicalTeamName(match.awayTeam),
     providerId,
     providerIds: { apiFootball: providerId },
-    competitionId: competition ? competition.id : normalizeKey(match.league),
+    league: foreign ? qualifiedLeagueName(match) : match.league,
+    competitionId: competition ? competition.id : separateCompetitionId(match),
     status,
     live: ["LIVE", "HALFTIME", "INTERRUPTED"].includes(status),
     source: "api-football",
@@ -330,6 +337,23 @@ export function mergeCalendarMatches(existingMatches, incomingMatches) {
         ? "api-football+thesportsdb"
         : "api-football"
     };
+
+    // OYNANMAYACAK DURUM SKOR TAŞIMAZ. `mergeScore` sağlayıcı skoru `null`
+    // gönderince eskisini korur; ertelenen/iptal edilen bir maçta bu, geri
+    // çekilmiş bir skorun (Şili K - Bolivya K: FT 7-0 → CANC) CANCELLED
+    // satırında hâlâ görünmesi demekti. Sağlayıcı artık sonuç bildirmiyor:
+    // skor temizlenir, eski değer denetim izi olarak `scoreRetracted`'ta kalır.
+    if (["POSTPONED", "CANCELLED"].includes(canonicalStatus(incoming.status)) && readableScore(merged.score)) {
+      merged.scoreRetracted = { ...merged.score, status: incoming.providerStatus || incoming.status, at: incoming.fetchedAt || null };
+      merged.score = { home: null, away: null, halftimeHome: null, halftimeAway: null };
+    }
+
+    // SAAT/TARİH DEĞİŞİKLİĞİ İZİ: sağlayıcı başlama anını değiştirdiyse eski
+    // değer silinmez, `rescheduledFrom` olarak kalır (ilk bilinen değer korunur).
+    if (existing.kickoff && incoming.kickoff && existing.kickoff !== incoming.kickoff) {
+      merged.rescheduledFrom = existing.rescheduledFrom || existing.kickoff;
+      merged.rescheduledAt = incoming.fetchedAt || null;
+    }
 
     if (sameRecord(existing, merged)) {
       unchanged += 1;
@@ -611,6 +635,77 @@ async function fetchFixtures(provider, mode, now, options = {}) {
 
 }
 
+
+/**
+ * SAĞLAYICININ GÜN LİSTESİNDE ARTIK GÖRÜNMEYEN MAÇLARI KİMLİKLE YENİDEN SOR.
+ *
+ * Saatlik koşu yalnızca dünü/bugünü/yarını soruyor ve canlı akışı dinliyor.
+ * Bir maç o üç günün dışına çıkarsa ya da sağlayıcı onu günün listesinden
+ * düşürürse (ertelendi, tarihi kaydı, iptal) takvimdeki satır SONSUZA DEK
+ * son bilinen hâlinde donuyordu:
+ *
+ *   Ümraniyespor-Boluspor    14 Ekim 19:19'da INT (ara verildi) → iki gün
+ *                            sonra hâlâ "yarıda kaldı", karar yok.
+ *   Caracas W-Santa Fe W     NS, başlama saati geçmiş, kayıt 31 saat bayat.
+ *   Santa Fe-Jaguares        saat önce 15→16 Ekim'e kaydı, sonra PST, sonra
+ *                            TBD; satırda eski yer tutucu saat kalmıştı.
+ *
+ * Çözüm: bu donmuş satırlar, sınırlı sayıda, KENDİ KİMLİKLERİYLE sorulur
+ * (`/fixtures?id=`). Sağlayıcı ne derse o yazılır; hiçbir sonuç ya da durum
+ * türetilmez. Cevap alınamazsa satır olduğu gibi kalır (ve arayüz zaten
+ * "Sonuç bekleniyor"/"Yarıda kaldı" der).
+ *
+ * MALİYET: koşu başına en fazla `limit` (6) istek; aynı satır
+ * `throttleMs` içinde tekrar sorulmaz. Sağlayıcı kotası dar ise hiç çalışmaz.
+ */
+export const RECONCILE_MAX_AGE_MS = 14 * 24 * 60 * 60 * 1000;
+export const RECONCILE_GRACE_MS = 3 * 60 * 60 * 1000;
+const RECONCILE_THROTTLE_MS = {
+  INTERRUPTED: 2 * 60 * 60 * 1000,
+  TBD: 3 * 60 * 60 * 1000,
+  UNRESOLVED: 6 * 60 * 60 * 1000,
+  POSTPONED: 24 * 60 * 60 * 1000
+};
+
+function reconcileClass(row) {
+  const state = canonicalStatus(row.status || row.providerStatus);
+  if (state === "FINISHED" || state === "AWARDED" || state === "CANCELLED" || state === "ABANDONED") return null;
+  if (state === "POSTPONED") return "POSTPONED";
+  if (state === "INTERRUPTED") return "INTERRUPTED";
+  if (["LIVE", "HALFTIME"].includes(state)) return "UNRESOLVED";
+  if (isTimeUnconfirmed(row)) return "TBD";
+  return state === "SCHEDULED" || state === "UNKNOWN" ? "UNRESOLVED" : null;
+}
+
+export function selectReconcileTargets(rows, options = {}) {
+  const nowMs = options.nowMs ?? Date.now();
+  const limit = options.limit ?? 6;
+  const seen = options.seenProviderIds instanceof Set ? options.seenProviderIds : new Set();
+  const rank = { INTERRUPTED: 0, TBD: 1, UNRESOLVED: 2, POSTPONED: 3 };
+  return (Array.isArray(rows) ? rows : [])
+    .map((row) => ({ row, kind: reconcileClass(row) }))
+    .filter(({ row, kind }) => {
+      if (!kind) return false;
+      const id = providerIdOf(row);
+      // Yalnızca API-Football kimliği olan satır sorulur; ad ile tahmin yok.
+      if (!id || seen.has(String(id)) || !/^\d+$/.test(String(id))) return false;
+      const kickoff = Date.parse(row.kickoff || "");
+      if (!Number.isFinite(kickoff)) return false;
+      const age = nowMs - kickoff;
+      // TBD'de başlama saati yer tutucudur: yaşa değil son doğrulamaya bakılır.
+      if (kind !== "TBD" && kind !== "POSTPONED" && age < RECONCILE_GRACE_MS) return false;
+      if (age > RECONCILE_MAX_AGE_MS) return false;
+      const lastCheck = Date.parse(row.reconciledAt || "");
+      if (Number.isFinite(lastCheck) && nowMs - lastCheck < RECONCILE_THROTTLE_MS[kind]) return false;
+      return true;
+    })
+    .sort((left, right) => rank[left.kind] - rank[right.kind]
+      || priorityScore(left.row) - priorityScore(right.row)
+      || String(left.row.reconciledAt || left.row.fetchedAt || "").localeCompare(String(right.row.reconciledAt || right.row.fetchedAt || "")))
+    .slice(0, Math.max(0, limit))
+    .map(({ row }) => row);
+}
+
 /** Sağlayıcı günlük kotası eşiğe geldi mi? null = bilinmiyor = durma. */
 function quotaExhausted(provider) {
   if (!provider || typeof provider.getProviderRateLimit !== "function") return false;
@@ -636,6 +731,33 @@ export async function synchronizeLiveFixtures(options = {}) {
       ...(bulk ? backfillDates(previous, now.getTime(), backfillGunSiniri, RETRY_WINDOW_MS) : [])
     ]
   });
+  // MUTABAKAT: günün listesinde görünmeyen, çözülmemiş satırları kimlikle sor.
+  // Canlı yoklama modunda (dakikada bir) çalışmaz; kota darsa çalışmaz.
+  const reconcile = { requested: 0, answered: 0, notFound: 0, failed: 0 };
+  const reconciledAt = now.toISOString();
+  const reconciledIds = new Set();
+  if (mode !== "live" && !quotaExhausted(provider) && !fetched.errors.some((error) => ["PROVIDER_RATE_LIMIT", "PROVIDER_AUTH_ERROR", "PROVIDER_PLAN_ERROR", "PROVIDER_CONFIG_MISSING"].includes(error.code))) {
+    const seen = new Set(fetched.matches.map((match) => String(match.providerId || match.id)));
+    const targets = selectReconcileTargets(previous.matches || [], {
+      nowMs: now.getTime(),
+      limit: options.reconcileLimit ?? (mode === "full" ? 12 : 6),
+      seenProviderIds: seen
+    });
+    for (const row of targets) {
+      if (quotaExhausted(provider)) break;
+      const id = String(providerIdOf(row));
+      reconcile.requested += 1;
+      reconciledIds.add(id);
+      try {
+        const rows = await provider.getFixtures({ fixtureId: id, fresh: true });
+        const hit = (rows || []).find((match) => String(match.providerId || match.id) === id);
+        if (hit) { fetched.matches.push(hit); reconcile.answered += 1; } else reconcile.notFound += 1;
+      } catch (error) {
+        reconcile.failed += 1;
+        if (["PROVIDER_RATE_LIMIT", "PROVIDER_AUTH_ERROR", "PROVIDER_PLAN_ERROR", "PROVIDER_CONFIG_MISSING"].includes(error.code)) break;
+      }
+    }
+  }
   // DEPODAKİ KAYIT SEÇİCİYE VERİLİR. Eksik döküm ikinci şansı ancak depodaki
   // hâl görülebilirse alabilir; seçiciye gelen satırlar sağlayıcının ham
   // çıktısı, yani orada "bizde ne var" bilgisi yok.
@@ -687,6 +809,11 @@ export async function synchronizeLiveFixtures(options = {}) {
     detail: details.get(String(match.providerId || match.id)) || null
   }));
   const merged = mergeCalendarMatches(previous.matches || [], incoming);
+  if (reconciledIds.size) {
+    for (const row of merged.matches) {
+      if (reconciledIds.has(String(providerIdOf(row)))) row.reconciledAt = reconciledAt;
+    }
+  }
   // Backup identifiers belong to their own namespace. Never send them to API-Football.
   for (const row of fetched.backupMatches) {
     const index = merged.matches.findIndex(old => old.providerIds?.theSportsDb === row.providerId || fixtureIdentity(old) === fixtureIdentity(row));
@@ -727,6 +854,7 @@ export async function synchronizeLiveFixtures(options = {}) {
       degraded: Boolean(fetched.degraded),
       degradedCode: fetched.degradedCode || null,
       fallback: fetched.fallback || null,
+      reconcile,
       backfillRequested: bulk || 0,
       backfillTargets: detailTargets.filter((match) => backfillRank(match, now.getTime()) === 1).length,
       quotaStopped,

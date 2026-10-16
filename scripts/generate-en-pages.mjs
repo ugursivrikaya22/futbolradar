@@ -37,6 +37,7 @@ import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { DIRECTORY_LIKE_PAGES, rootAbsoluteLinks } from "./lib/servedLinks.mjs";
 
 const require = createRequire(import.meta.url);
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
@@ -57,7 +58,7 @@ const {
   statusLabelFor,
   t
 } = require("../services/i18n.js");
-const { canonicalStatus, istanbulDay, liveVerdict } = require("../services/matchStatus.js");
+const { canonicalStatus, cardPhase, istanbulDay, liveVerdict } = require("../services/matchStatus.js");
 // Ana sayfa bölümlerinin SEÇİM ve SIRALAMA kuralları Türkçe tarafla aynı
 // servislerden okunur. İngilizce sayfa yalnızca metni değiştirir; hangi
 // maçın öne çıktığına, hangi başlığın kaçıncı sırada olduğuna dair tek bir
@@ -403,21 +404,27 @@ function fixtureCard(match) {
   const state = canonicalStatus(match.status);
   const verdict = liveVerdict(match);
   const live = Boolean(verdict && verdict.live);
-  const hasScore = match.score && match.score.home !== null && match.score.home !== undefined &&
+  // Saat, skor ve durum metni tek faz kararından gelir (services/matchStatus.js
+  // #cardPhase): TBD / ertelenmiş / yarıda kalmış / saati geçmiş maç saat
+  // olarak "04:05" yazmaz, nihai değilse skor basılmaz.
+  const phase = cardPhase(match, { locale: "en" });
+  const hasScore = phase.showScore && match.score && match.score.home !== null && match.score.home !== undefined &&
     match.score.away !== null && match.score.away !== undefined;
-  const stateLabel = live
-    ? `${label("status.LIVE")}${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
-    : state === "SCHEDULED"
-      ? formatTime(match.kickoff, LOCALE)
-      : state === "FINISHED"
-        ? label("card.fullTimeShort")
-        : statusLabelFor(state, LOCALE);
+  const stateLabel = phase.paused
+    ? phase.label
+    : live
+      ? `${label("status.LIVE")}${Number.isFinite(Number(match.minute)) ? ` ${match.minute}'` : ""}`
+      : phase.phase === "upcoming"
+        ? formatTime(match.kickoff, LOCALE)
+        : phase.phase === "final"
+          ? label("card.fullTimeShort")
+          : phase.label || statusLabelFor(state, LOCALE);
 
   return sharedFixtureCard({
     locale: LOCALE,
     league: competitionLabel(match.league, LOCALE),
-    live,
-    stateClass: live ? "is-live" : state === "FINISHED" ? "is-final" : "",
+    live: live && !phase.paused,
+    stateClass: live && !phase.paused ? "is-live" : phase.phase === "final" ? "is-final" : "",
     stateLabel,
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
@@ -2140,7 +2147,9 @@ for (const route of ROUTES) {
     continue;
   }
   const target = path.join(root, route.en);
-  const html = build();
+  let html = build();
+  // `/en` eğik çizgisiz sunulur: göreli href'ler kök dizine düşmesin.
+  if (DIRECTORY_LIKE_PAGES.has(route.en)) html = rootAbsoluteLinks(html, DIRECTORY_LIKE_PAGES.get(route.en));
   const previous = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
   if (previous !== html) {
     fs.mkdirSync(path.dirname(target), { recursive: true });

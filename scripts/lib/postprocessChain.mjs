@@ -131,6 +131,13 @@ export const POSTPROCESS_CHAIN = [
   // sayfadaki adresi okuyup sürümlüyor, adres önce doğru olmalı.
   { id: "app-bundles", script: "build-app-bundles.mjs", args: [], timeoutMinutes: 5 },
   { id: "app-bundle-link", script: "inject-app-bundle.mjs", args: [], timeoutMinutes: 8 },
+  // `/en` eğik çizgisiz sunulur; dosya yoluna göre yazılmış göreli href'ler
+  // kök dizine düşüp 404 verir (bkz. scripts/lib/servedLinks.mjs). Önceki
+  // enjektörlerin eklediği bağlantıları da kapsamak için en sona yakın.
+  // Dil kutusu hreflang eşine bağlanır (eş yoksa ana sayfa fallback'i kalır).
+  // `hreflang`tan SONRA: eşi o adım yazıyor.
+  { id: "lang-switch", script: "sync-lang-switch.mjs", args: [], timeoutMinutes: 5 },
+  { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
 

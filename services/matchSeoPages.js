@@ -21,7 +21,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { normalizeText } = require("../api/_utils");
-const { canonicalStatus, istanbulDay, kickoffMs, LIVE_GRACE_MS } = require("./matchStatus.js");
+const { canonicalStatus, isTimeUnconfirmed, istanbulDay, kickoffMs, LIVE_GRACE_MS } = require("./matchStatus.js");
 const { resolveCompetitionId, findCompetition, isAmbiguousCompetitionName } = require("./competitionCatalog.js");
 const { sameClub, fixtureTeamNames } = require("./superLigTeams.js");
 const { nationKey } = require("./displayLabels.js");
@@ -223,6 +223,8 @@ const STATE_RANK = Object.freeze({ UNKNOWN: 0, SCHEDULED: 1, LIVE: 2, HALFTIME: 
  *   live       sağlayıcı canlı diyor ve skor okunabilir
  *   post       tamamlandı / hükmen sonuçlandı, nihai skor var
  *   pending    başlama saati uzun süre önce geçti, nihai sonuç doğrulanmadı
+ *   tbd        sağlayıcı "saat belirlenmedi" (TBD) dedi; kayıttaki saat yer tutucu
+ *   interrupted ara verildi / yarıda kaldı, sağlayıcıdan karar gelmedi
  *   postponed  ertelendi
  *   cancelled  iptal / tatil edildi
  */
@@ -237,6 +239,11 @@ function pageStateOf(entry, nowMs) {
   if (status === "CANCELLED" || status === "ABANDONED") return "cancelled";
   if ((status === "FINISHED" || status === "AWARDED") && hasScore) return "post";
   if (["LIVE", "HALFTIME", "INTERRUPTED"].includes(status) && hasScore && kickoff !== null && now - kickoff <= LIVE_GRACE_MS) return "live";
+  // Ara verilmiş ama süre penceresi dolmuş / skorsuz: "Sonuç bekleniyor" DEĞİL,
+  // yarıda kalmış maç. Nihai sonuç iddia edilmez (bkz. interruptedNote).
+  if (status === "INTERRUPTED") return "interrupted";
+  // Saat kesinleşmedi: kayıttaki saat gösterilmez ve "saati geçti" denmez.
+  if (isTimeUnconfirmed(entry)) return "tbd";
   if (kickoff === null) return "pre";
   if (kickoff > now) return "pre";
   if (now - kickoff <= LIVE_GRACE_MS) return "pre";
@@ -248,7 +255,7 @@ function isIndexableEntry(entry, nowMs) {
   if (!entry || !entry.slug || !entry.homeTeam || !entry.awayTeam || !entry.kickoff) return false;
   if (entry.indexable === false) return false;
   const state = pageStateOf(entry, nowMs);
-  return state !== "cancelled" && state !== "postponed";
+  return state !== "cancelled" && state !== "postponed" && state !== "tbd";
 }
 
 function readJsonSafe(file, fallback) {
