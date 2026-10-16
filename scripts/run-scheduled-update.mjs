@@ -662,6 +662,12 @@ function hourlyBuildSteps(diff) {
     // English pages are generated from the final match registry by POSTPROCESS_CHAIN.
     nodeStep("render-match-pages", "generate-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-post-match-pages", "generate-post-match-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    // MAÇ SONUCU HABERLERİ. Sporx keşif hattı kapalıyken /haber/ ve
+    // news-sitemap.xml'e taze içerik giren tek yol bu: doğrulanmış maç
+    // raporundan haber üretir. Rapor sayfası yazıldıktan SONRA koşmalı (rapor
+    // yoksa haber yazılmaz); haber sayfaları bu adımdan sonra yeniden üretilir.
+    nodeStep("match-result-news", "generate-match-result-news.mjs", [], { kind: "build", required: true, timeoutMs: 2 * 60 * 1000 }),
+    nodeStep("render-news-pages-match-results", "generate-news-pages.mjs", [], { kind: "build", required: true, timeoutMs: 5 * 60 * 1000 }),
     // Sezon arşivi rapor bağlantılarını diskteki sayfalardan kurar; maç sonu
     // üretimi geçersiz raporu söktüğünde arşiv de aynı saatte yenilenmeli,
     // yoksa yayından kalkmış rapora kırık bağlantı kalır (#411 sonrası).
