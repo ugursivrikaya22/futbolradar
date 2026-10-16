@@ -1,9 +1,1290 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-15T22:15:38.480Z",
-  "matchCount": 7231,
+  "updatedAt": "2026-10-16T00:22:06.014Z",
+  "matchCount": 7237,
   "records": [
+    {
+      "matchId": "leones-fc-patriotas-2026-10-16",
+      "fixtureId": "1549663",
+      "provider": "api-football",
+      "slug": "leones-fc-patriotas-2026-10-16",
+      "kickoff": "2026-10-16T01:15:00+03:00",
+      "kickoffUtc": "2026-10-15T22:15:00.000Z",
+      "kickoffLocal": "2026-10-16T01:15",
+      "date": "2026-10-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera B",
+      "competition": "Primera B",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Leones FC",
+      "awayTeam": "Patriotas",
+      "venue": "Estadio Metropolitano Ciudad de Itagui",
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Leones FC",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "ace08a90662da84f",
+      "fingerprint": "ace08a90662da84f",
+      "analysisGeneratedAt": "2026-10-16T00:22:05.691Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Leones FC 1-0 Patriotas maç raporu: Primera B istatistikleri | FutbolRadar",
+        "description": "Estadio Metropolitano Ciudad de Itagui'de oynanan Primera B maçını Leones FC 1-0 kazandı; Patriotas sahadan puansız ayrıldı.",
+        "path": "mac-raporu/leones-fc-patriotas-2026-10-16.html",
+        "competition": "Primera B"
+      },
+      "reportUrl": "./mac-raporu/leones-fc-patriotas-2026-10-16.html",
+      "digest": {
+        "headline": "Leones FC, Patriotas'ı 1-0 yendi",
+        "paragraph": "Estadio Metropolitano Ciudad de Itagui'de oynanan Primera B maçını Leones FC 1-0 kazandı; Patriotas sahadan puansız ayrıldı. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Leones FC",
+          "loser": "Patriotas",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Leones FC, Patriotas'ı 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Leones FC sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "union-magdalena-ind-yumbo-2026-10-16",
+      "fixtureId": "1549666",
+      "provider": "api-football",
+      "slug": "union-magdalena-ind-yumbo-2026-10-16",
+      "kickoff": "2026-10-16T01:00:00+03:00",
+      "kickoffUtc": "2026-10-15T22:00:00.000Z",
+      "kickoffLocal": "2026-10-16T01:00",
+      "date": "2026-10-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera B",
+      "competition": "Primera B",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Union Magdalena",
+      "awayTeam": "Ind. Yumbo",
+      "venue": "Estadio Sierra Nevada",
+      "score": {
+        "home": 1,
+        "away": 1
+      },
+      "finalScore": "1-1",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 1,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "6212ba757fc2ae4a",
+      "fingerprint": "6212ba757fc2ae4a",
+      "analysisGeneratedAt": "2026-10-16T00:22:05.691Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Union Magdalena 1-1 Ind. Yumbo maç raporu: Primera B istatistikleri | FutbolRadar",
+        "description": "Union Magdalena 1-1 Ind. Yumbo maç raporu, goller: A. Garcia, goller, olaylar ve sonraki maç.",
+        "path": "mac-raporu/union-magdalena-ind-yumbo-2026-10-16.html",
+        "competition": "Primera B"
+      },
+      "reportUrl": "./mac-raporu/union-magdalena-ind-yumbo-2026-10-16.html",
+      "digest": {
+        "headline": "Union Magdalena ile Ind. Yumbo 1-1 berabere kaldı",
+        "paragraph": "Union Magdalena ile Ind. Yumbo, Estadio Sierra Nevada'da oynanan Primera B karşılaşmasında 1-1 berabere kaldı. Tek golü 8. dakikada A. Garcia (Ind. Yumbo) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "8'",
+              "team": "Ind. Yumbo",
+              "type": "Gol",
+              "detail": "A. Garcia",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Garcia",
+              "team": "Ind. Yumbo",
+              "contribution": "8' gol",
+              "impact": "yüksek"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı az sayıda kayıtlı olay üretti (1 olay).",
+            "8' Ind. Yumbo — A. Garcia: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 1-1 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "1-1 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 43,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "boca-juniors-res-ferro-2-2026-10-16",
+      "fixtureId": "1612094",
+      "provider": "api-football",
+      "slug": "boca-juniors-res-ferro-2-2026-10-16",
+      "kickoff": "2026-10-16T01:00:00+03:00",
+      "kickoffUtc": "2026-10-15T22:00:00.000Z",
+      "kickoffLocal": "2026-10-16T01:00",
+      "date": "2026-10-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Reserve League",
+      "competition": "Reserve League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Boca Juniors Res.",
+      "awayTeam": "Ferro 2",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 0
+      },
+      "finalScore": "1-0",
+      "winner": "Boca Juniors Res.",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "f05220ec2f8ee751",
+      "fingerprint": "f05220ec2f8ee751",
+      "analysisGeneratedAt": "2026-10-16T00:22:05.691Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Boca Juniors Res. 1-0 Ferro 2 maç raporu: Reserve League istatistikleri | FutbolRadar",
+        "description": "Boca Juniors Res., Reserve League karşılaşmasında Ferro 2'u 1-0 mağlup etti.",
+        "path": "mac-raporu/boca-juniors-res-ferro-2-2026-10-16.html",
+        "competition": "Reserve League"
+      },
+      "reportUrl": "./mac-raporu/boca-juniors-res-ferro-2-2026-10-16.html",
+      "digest": {
+        "headline": "Boca Juniors Res., Ferro 2'u 1-0 yendi",
+        "paragraph": "Boca Juniors Res., Reserve League karşılaşmasında Ferro 2'u 1-0 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Boca Juniors Res.",
+          "loser": "Ferro 2",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Boca Juniors Res., Ferro 2'u 1-0 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Boca Juniors Res. sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "central-cordoba-sde-res-belgrano-cordoba-res-2026-10-16",
+      "fixtureId": "1612095",
+      "provider": "api-football",
+      "slug": "central-cordoba-sde-res-belgrano-cordoba-res-2026-10-16",
+      "kickoff": "2026-10-16T01:00:00+03:00",
+      "kickoffUtc": "2026-10-15T22:00:00.000Z",
+      "kickoffLocal": "2026-10-16T01:00",
+      "date": "2026-10-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Reserve League",
+      "competition": "Reserve League",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Central Córdoba SdE Res.",
+      "awayTeam": "Belgrano Córdoba Res.",
+      "venue": null,
+      "score": {
+        "home": 1,
+        "away": 2
+      },
+      "finalScore": "1-2",
+      "winner": "Belgrano Córdoba Res.",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "awaiting-provider",
+      "coverageLabel": "Sağlayıcı verisi bekleniyor",
+      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
+      "coveragePercent": 10,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 0,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.2,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "events",
+          "label": "Olay akışı"
+        },
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "32c5d9d91e9f0e3b",
+      "fingerprint": "32c5d9d91e9f0e3b",
+      "analysisGeneratedAt": "2026-10-16T00:22:05.691Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Central Córdoba SdE Res. 1-2 Belgrano Córdoba Res. maç raporu: Reserve League istatistikleri | FutbolRadar",
+        "description": "Belgrano Córdoba Res., Reserve League karşılaşmasında Central Córdoba SdE Res.'i 2-1 mağlup etti.",
+        "path": "mac-raporu/central-cordoba-sde-res-belgrano-cordoba-res-2026-10-16.html",
+        "competition": "Reserve League"
+      },
+      "reportUrl": "./mac-raporu/central-cordoba-sde-res-belgrano-cordoba-res-2026-10-16.html",
+      "digest": {
+        "headline": "Belgrano Córdoba Res., Central Córdoba SdE Res.'i 2-1 yendi",
+        "paragraph": "Belgrano Córdoba Res., Reserve League karşılaşmasında Central Córdoba SdE Res.'i 2-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "result": {
+          "winner": "Belgrano Córdoba Res.",
+          "loser": "Central Córdoba SdE Res.",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "unavailable",
+          "moments": []
+        },
+        "lateGame": {
+          "status": "unavailable",
+          "from": 75,
+          "verdict": null,
+          "goals": null,
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "unavailable",
+          "players": []
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Belgrano Córdoba Res., Central Córdoba SdE Res.'i 1-2 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Belgrano Córdoba Res. sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "finalAssessment"
+      ],
+      "coverage": 14,
+      "dataStatus": "minimal",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "barranquilla-tigres-fc-2026-10-16",
+      "fixtureId": "1549659",
+      "provider": "api-football",
+      "slug": "barranquilla-tigres-fc-2026-10-16",
+      "kickoff": "2026-10-16T00:00:00+03:00",
+      "kickoffUtc": "2026-10-15T21:00:00.000Z",
+      "kickoffLocal": "2026-10-16T00:00",
+      "date": "2026-10-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Primera B",
+      "competition": "Primera B",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Barranquilla",
+      "awayTeam": "Tigres FC",
+      "venue": "Estadio Romelio Martinez",
+      "score": {
+        "home": 2,
+        "away": 2
+      },
+      "finalScore": "2-2",
+      "winner": "draw",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 9
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 9,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "c4df287c3058b1aa",
+      "fingerprint": "c4df287c3058b1aa",
+      "analysisGeneratedAt": "2026-10-16T00:22:05.691Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Barranquilla 2-2 Tigres FC maç raporu: Primera B istatistikleri | FutbolRadar",
+        "description": "Barranquilla ile Tigres FC, Estadio Romelio Martinez'de oynanan Primera B karşılaşmasında 2-2 berabere kaldı.",
+        "path": "mac-raporu/barranquilla-tigres-fc-2026-10-16.html",
+        "competition": "Primera B"
+      },
+      "reportUrl": "./mac-raporu/barranquilla-tigres-fc-2026-10-16.html",
+      "digest": {
+        "headline": "Barranquilla ile Tigres FC 2-2 berabere kaldı",
+        "paragraph": "Barranquilla ile Tigres FC, Estadio Romelio Martinez'de oynanan Primera B karşılaşmasında 2-2 berabere kaldı. Golleri 16. dakikada Ortiz Javier (Barranquilla), 22. dakikada M. Bolivar (Barranquilla) kaydetti.",
+        "result": {
+          "winner": null,
+          "loser": null,
+          "draw": true,
+          "margin": 0
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "16'",
+              "team": "Barranquilla",
+              "type": "Gol",
+              "detail": "Ortiz Javier",
+              "pivotal": true
+            },
+            {
+              "minute": "22'",
+              "team": "Barranquilla",
+              "type": "Gol",
+              "detail": "M. Bolivar",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "M. Bolivar",
+              "team": "Barranquilla",
+              "contribution": "22' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "Ortiz Javier",
+              "team": "Barranquilla",
+              "contribution": "16' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Cuadros",
+              "team": "Tigres FC",
+              "contribution": "20' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "D. A. Mendoza Benitez",
+              "team": "Barranquilla",
+              "contribution": "45+4' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "16' Barranquilla — Ortiz Javier: gol",
+            "22' Barranquilla — M. Bolivar: gol"
+          ],
+          "goals": 2
+        },
+        "secondHalf": {
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (3 olay).",
+            "İkinci yarı içinde 2 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "ready",
+          "notes": [
+            "46' Barranquilla değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Barranquilla değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
+          "formations": [],
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Maç 2-2 berabere bitti."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "2-2 beraberlik, iki takımın da üstünlük kuramadığı bir maçın sonucu.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
+        "finalAssessment"
+      ],
+      "coverage": 64,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
+    {
+      "matchId": "coban-imperial-municipal-2026-10-16",
+      "fixtureId": "1559667",
+      "provider": "api-football",
+      "slug": "coban-imperial-municipal-2026-10-16",
+      "kickoff": "2026-10-16T00:00:00+03:00",
+      "kickoffUtc": "2026-10-15T21:00:00.000Z",
+      "kickoffLocal": "2026-10-16T00:00",
+      "date": "2026-10-16",
+      "status": "FINISHED",
+      "providerStatus": "FT",
+      "finishType": "regular",
+      "finishLabel": "Normal sürede tamamlandı",
+      "league": "Liga Nacional",
+      "competition": "Liga Nacional",
+      "competitionType": null,
+      "season": null,
+      "homeTeam": "Cobán Imperial",
+      "awayTeam": "Municipal",
+      "venue": "Estadio Verapaz",
+      "score": {
+        "home": 2,
+        "away": 1
+      },
+      "finalScore": "2-1",
+      "winner": "Cobán Imperial",
+      "turkish": false,
+      "turkishTeam": "",
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
+      "dataSources": {
+        "score": {
+          "present": true,
+          "source": "curated",
+          "count": 1
+        },
+        "events": {
+          "present": true,
+          "source": "curated",
+          "count": 6
+        },
+        "statistics": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "lineups": {
+          "present": false,
+          "source": null,
+          "count": 0
+        },
+        "players": {
+          "present": false,
+          "source": null,
+          "count": 0
+        }
+      },
+      "apiKeyPresent": true,
+      "availability": {
+        "events": 6,
+        "statistics": 0,
+        "lineups": 0,
+        "players": 0
+      },
+      "dataCompleteness": 0.4,
+      "providerUpdatedAt": null,
+      "lastSuccessfulSyncAt": null,
+      "missingInputs": [
+        {
+          "field": "statistics",
+          "label": "Maç istatistikleri"
+        },
+        {
+          "field": "lineups",
+          "label": "Kadrolar"
+        },
+        {
+          "field": "players",
+          "label": "Oyuncu istatistikleri"
+        }
+      ],
+      "providerMissingLabel": "Veri sağlayıcı tarafından sunulmadı",
+      "analysisStatus": "partial_data",
+      "analysisVersion": "futbolradar-post-match-v5",
+      "modelVersion": "futbolradar-post-match-v5",
+      "analysisSourceHash": "543d57b84677311a",
+      "fingerprint": "543d57b84677311a",
+      "analysisGeneratedAt": "2026-10-16T00:22:05.691Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
+      "analysisError": null,
+      "analysisAttempts": 0,
+      "seo": {
+        "title": "Cobán Imperial 2-1 Municipal maç raporu: Liga Nacional istatistikleri | FutbolRadar",
+        "description": "Estadio Verapaz'da oynanan Liga Nacional maçını Cobán Imperial 2-1 kazandı; Municipal sahadan puansız ayrıldı.",
+        "path": "mac-raporu/coban-imperial-municipal-2026-10-16.html",
+        "competition": "Liga Nacional"
+      },
+      "reportUrl": "./mac-raporu/coban-imperial-municipal-2026-10-16.html",
+      "digest": {
+        "headline": "Cobán Imperial, Municipal'ı 2-1 yendi",
+        "paragraph": "Estadio Verapaz'da oynanan Liga Nacional maçını Cobán Imperial 2-1 kazandı; Municipal sahadan puansız ayrıldı. Tek golü 45. dakikada M. Moreira (Cobán Imperial) kaydetti.",
+        "result": {
+          "winner": "Cobán Imperial",
+          "loser": "Municipal",
+          "draw": false,
+          "margin": 1
+        },
+        "finish": {
+          "status": "ready",
+          "type": "regular",
+          "label": "Normal sürede tamamlandı",
+          "wentToExtraTime": false,
+          "decidedOnPenalties": false,
+          "extraTimeEventCount": 0
+        },
+        "turningPoints": {
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "45'",
+              "team": "Cobán Imperial",
+              "type": "Gol",
+              "detail": "M. Moreira",
+              "pivotal": true
+            }
+          ]
+        },
+        "lateGame": {
+          "status": "ready",
+          "from": 75,
+          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "goals": {
+            "home": 0,
+            "away": 0
+          },
+          "moments": []
+        },
+        "keyPlayers": {
+          "status": "ready",
+          "players": [
+            {
+              "name": "M. Moreira",
+              "team": "Cobán Imperial",
+              "contribution": "45' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "A. Cabrera",
+              "team": "Cobán Imperial",
+              "contribution": "9' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "A. Ical",
+              "team": "Cobán Imperial",
+              "contribution": "10' sarı kart",
+              "impact": "olumsuz"
+            },
+            {
+              "name": "C. Hernandez",
+              "team": "Municipal",
+              "contribution": "40' sarı kart",
+              "impact": "olumsuz"
+            }
+          ]
+        },
+        "tactical": {
+          "status": "unavailable",
+          "notes": []
+        },
+        "firstHalf": {
+          "status": "ready",
+          "notes": [
+            "İlk yarı kayıtlı olay bakımından yoğun geçti (6 olay).",
+            "45' Cobán Imperial — M. Moreira: gol"
+          ],
+          "goals": 1
+        },
+        "secondHalf": {
+          "status": "unavailable",
+          "notes": [],
+          "goals": 0
+        },
+        "coaching": {
+          "status": "unavailable",
+          "notes": [],
+          "formations": [],
+          "interpretation": null
+        },
+        "finalAssessment": {
+          "status": "ready",
+          "verdict": [
+            "Cobán Imperial, Municipal'ı 2-1 yendi."
+          ],
+          "strengths": [],
+          "improvements": [],
+          "closing": "Cobán Imperial sahadan 1 farkla ayrıldı.",
+          "basis": "events-only"
+        },
+        "aiRating": null,
+        "analysis": [],
+        "analysisOmitted": [
+          "hucum",
+          "savunma",
+          "sahiplik",
+          "pres",
+          "kurulus",
+          "durantop",
+          "sutkalitesi",
+          "performans",
+          "taktik",
+          "sonuc",
+          "gecis-oyunu",
+          "pas-agi",
+          "en-zayif-performans"
+        ]
+      },
+      "readySections": [
+        "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "turningPoints",
+        "lateGame",
+        "finalAssessment"
+      ],
+      "coverage": 50,
+      "dataStatus": "partial",
+      "intelligenceCoverage": 0,
+      "publishState": "page"
+    },
     {
       "matchId": "talleres-cordoba-res-union-santa-fe-res-2026-10-15",
       "fixtureId": "1612106",
@@ -660,11 +1941,11 @@
       "analysisStatus": "completed",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "b3c142c32b046401",
-      "fingerprint": "b3c142c32b046401",
+      "analysisSourceHash": "204fbb701681ca75",
+      "fingerprint": "204fbb701681ca75",
       "analysisGeneratedAt": "2026-10-15T22:15:37.380Z",
-      "analysisUpdatedAt": "2026-10-15T22:15:37.380Z",
-      "generatedAt": "2026-10-15T22:15:37.380Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -902,7 +2183,7 @@
             "id": "kurulus",
             "title": "Kuruluş verimliliği",
             "readings": [
-              "Bir şut üretmek için 1899 Hoffenheim 37.3, Beşiktaş 22.3 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
+              "Bir şut üretmek için 1899 Hoffenheim 37.4, Beşiktaş 22.2 pas kullandı. Düşük değer, daha az dokunuşla şuta ulaşan bir kuruluşu gösterir."
             ],
             "confidence": {
               "level": "sınırlı",
@@ -11820,10 +13101,10 @@
       "winner": "Puszcza Niepołomice",
       "turkish": false,
       "turkishTeam": "",
-      "coverageGrade": "awaiting-provider",
-      "coverageLabel": "Sağlayıcı verisi bekleniyor",
-      "coverageNote": "Maç tamamlandı, sağlayıcı dökümü henüz yayımlamadı.",
-      "coveragePercent": 10,
+      "coverageGrade": "events-only",
+      "coverageLabel": "Sadece olaylar",
+      "coverageNote": "Yalnızca gol ve kart akışı doğrulandı; istatistik okuması yapılmadı.",
+      "coveragePercent": 40,
       "dataSources": {
         "score": {
           "present": true,
@@ -11831,9 +13112,9 @@
           "count": 1
         },
         "events": {
-          "present": false,
-          "source": null,
-          "count": 0
+          "present": true,
+          "source": "curated",
+          "count": 21
         },
         "statistics": {
           "present": false,
@@ -11853,19 +13134,15 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 0,
+        "events": 21,
         "statistics": 0,
         "lineups": 0,
         "players": 0
       },
-      "dataCompleteness": 0.2,
+      "dataCompleteness": 0.4,
       "providerUpdatedAt": null,
       "lastSuccessfulSyncAt": null,
       "missingInputs": [
-        {
-          "field": "events",
-          "label": "Olay akışı"
-        },
         {
           "field": "statistics",
           "label": "Maç istatistikleri"
@@ -11883,11 +13160,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "c48490017fd7474b",
-      "fingerprint": "c48490017fd7474b",
+      "analysisSourceHash": "813e536245ca1edb",
+      "fingerprint": "813e536245ca1edb",
       "analysisGeneratedAt": "2026-10-15T19:07:05.219Z",
-      "analysisUpdatedAt": "2026-10-15T19:07:05.219Z",
-      "generatedAt": "2026-10-15T19:07:05.219Z",
+      "analysisUpdatedAt": "2026-10-16T00:22:05.691Z",
+      "generatedAt": "2026-10-16T00:22:05.691Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -11899,7 +13176,7 @@
       "reportUrl": "./mac-raporu/pogon-siedlce-puszcza-niepo-omice-2026-10-15.html",
       "digest": {
         "headline": "Puszcza Niepołomice, Pogoń Siedlce'yi 3-1 yendi",
-        "paragraph": "Puszcza Niepołomice, Stadion ROSRRiT'te oynanan I Liga karşılaşmasında Pogoń Siedlce'yi 3-1 mağlup etti. Gol dakikaları ve golcü bilgisi sağlayıcı tarafından paylaşılmadı.",
+        "paragraph": "Puszcza Niepołomice, Stadion ROSRRiT'te oynanan I Liga karşılaşmasında Pogoń Siedlce'yi 3-1 mağlup etti. Golleri 48. dakikada A. Gjoni (Puszcza Niepołomice), 67. dakikada M. Cholewiak (Puszcza Niepołomice), 76. dakikada M. Strajnar (Puszcza Niepołomice), 78. dakikada O. Kocar (Pogoń Siedlce) kaydetti.",
         "result": {
           "winner": "Puszcza Niepołomice",
           "loser": "Pogoń Siedlce",
@@ -11915,39 +13192,142 @@
           "extraTimeEventCount": 0
         },
         "turningPoints": {
-          "status": "unavailable",
-          "moments": []
+          "status": "ready",
+          "moments": [
+            {
+              "minute": "48'",
+              "team": "Puszcza Niepołomice",
+              "type": "Gol",
+              "detail": "A. Gjoni",
+              "pivotal": true
+            },
+            {
+              "minute": "67'",
+              "team": "Puszcza Niepołomice",
+              "type": "Gol",
+              "detail": "M. Cholewiak",
+              "pivotal": true
+            },
+            {
+              "minute": "76'",
+              "team": "Puszcza Niepołomice",
+              "type": "Gol",
+              "detail": "M. Strajnar",
+              "pivotal": true
+            },
+            {
+              "minute": "78'",
+              "team": "Pogoń Siedlce",
+              "type": "Kendi kalesine gol",
+              "detail": "O. Kocar",
+              "pivotal": true
+            }
+          ]
         },
         "lateGame": {
-          "status": "unavailable",
+          "status": "ready",
           "from": 75,
-          "verdict": null,
-          "goals": null,
-          "moments": []
+          "verdict": "Son bölümde 2 gol kaydedildi, (M. Strajnar, O. Kocar), sonucu belirleyen fark bu bölümde oluştu.",
+          "goals": {
+            "home": 1,
+            "away": 1
+          },
+          "moments": [
+            {
+              "minute": "76'",
+              "team": "Puszcza Niepołomice",
+              "type": "Gol",
+              "detail": "M. Strajnar",
+              "decisive": true
+            },
+            {
+              "minute": "77'",
+              "team": "Pogoń Siedlce",
+              "type": "Oyuncu değişikliği",
+              "detail": "J. Barczak",
+              "decisive": false
+            },
+            {
+              "minute": "77'",
+              "team": "Pogoń Siedlce",
+              "type": "Oyuncu değişikliği",
+              "detail": "E. Dzieciol",
+              "decisive": false
+            },
+            {
+              "minute": "78'",
+              "team": "Pogoń Siedlce",
+              "type": "Kendi kalesine gol",
+              "detail": "O. Kocar",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
-          "status": "unavailable",
-          "players": []
+          "status": "ready",
+          "players": [
+            {
+              "name": "A. Gjoni",
+              "team": "Puszcza Niepołomice",
+              "contribution": "48' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Cholewiak",
+              "team": "Puszcza Niepołomice",
+              "contribution": "67' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "M. Strajnar",
+              "team": "Puszcza Niepołomice",
+              "contribution": "76' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "O. Kocar",
+              "team": "Pogoń Siedlce",
+              "contribution": "78' gol",
+              "impact": "yüksek"
+            }
+          ]
         },
         "tactical": {
           "status": "unavailable",
           "notes": []
         },
         "firstHalf": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "İlk yarı dengeli bir olay akışı üretti (3 olay).",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
+          ],
           "goals": 0
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (18 olay).",
+            "48' Puszcza Niepołomice — A. Gjoni: gol",
+            "67' Puszcza Niepołomice — M. Cholewiak: gol",
+            "76' Puszcza Niepołomice — M. Strajnar: gol",
+            "78' Pogoń Siedlce — O. Kocar: kendi kalesine gol",
+            "İkinci yarı içinde 9 oyuncu değişikliği kaydedildi."
+          ],
+          "goals": 4
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "40' Puszcza Niepołomice değişikliği (Substitution 1). Değişiklikten sonra Puszcza Niepołomice adına 3 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "46' Pogoń Siedlce değişikliği (Substitution 1). Değişiklikten sonra Pogoń Siedlce adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "60' Puszcza Niepołomice değişikliği (Substitution 2). Değişiklikten sonra Puszcza Niepołomice adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "61' Puszcza Niepołomice değişikliği (Substitution 3). Değişiklikten sonra Puszcza Niepołomice adına 2 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Pogoń Siedlce değişikliği (Substitution 2). Değişiklikten sonra Pogoń Siedlce adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor.",
+            "62' Pogoń Siedlce değişikliği (Substitution 3). Değişiklikten sonra Pogoń Siedlce adına 1 pozisyon kaydedildi — eldeki veri hamlenin ardından hücum üretiminin sürdüğünü gösteriyor."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -11955,7 +13335,9 @@
             "Puszcza Niepołomice, Pogoń Siedlce'yi 1-3 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Pogoń Siedlce son bölümde 1 gol yedi; maç sonu konsantrasyonu öne çıkan sorun."
+          ],
           "closing": "Puszcza Niepołomice sahadan 2 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -11979,10 +13361,17 @@
       },
       "readySections": [
         "summary",
+        "standoutPlayers",
+        "momentum",
+        "firstHalf",
+        "secondHalf",
+        "turningPoints",
+        "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 14,
-      "dataStatus": "minimal",
+      "coverage": 64,
+      "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
     },
