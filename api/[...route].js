@@ -12,6 +12,7 @@ const { providerMeta, resolveFromProviders } = require("../services/liveDataServ
 const { handleMotmVote } = require("../server/motmVoteRoute");
 const { handleMotmWeek } = require("../server/motmWeekRoute");
 const { handleHomePoll } = require("../server/homePollRoute");
+const { handlePredictionLeague } = require("../server/predictionLeagueRoute");
 const { handleMatchWinnerVote } = require("../server/matchWinnerVoteRoute");
 const { handleMatchPoll } = require("../server/matchPollRoute");
 const { handleMatchComments, handleMatchRatings } = require("../server/matchSocialRoute");
@@ -335,6 +336,11 @@ module.exports = async function handler(req, res) {
   // hız sınırı); alttaki genel kapılara sokulmaz.
   if (routeName(req) === "motm-week") {
     return handleMotmWeek(req, res);
+  }
+
+  // Ücretsiz Tahmin Ligi: hesap, tahmin, sıralama (server/predictionLeagueRoute.js).
+  if (routeName(req) === "prediction-league") {
+    return handlePredictionLeague(req, res);
   }
 
   // Ana sayfa tahmin anketi: oy vermek POST, yanıt seçmene özel.

@@ -78,6 +78,10 @@ export const POSTPROCESS_CHAIN = [
   // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir onu
   // normalleştiriyor.
   { id: "national-team-pages", script: "generate-national-team-pages.mjs", args: [], timeoutMinutes: 3 },
+  // Ücretsiz Tahmin Ligi sayfası (/tahmin-ligi): açık maç listesi saate bağlı
+  // (data/prediction-league-fixtures.json saatlik güncellemede tazelenir).
+  // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir normalleştiriyor.
+  { id: "prediction-league-page", script: "generate-prediction-league-page.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
