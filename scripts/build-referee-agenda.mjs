@@ -43,7 +43,7 @@ export function buildRefereeAgenda(now = Date.now()) {
   }
   write('data/referee-agenda.json', feed); write('public/data/referee-agenda.json', feed);
   const embedded = JSON.stringify(feed).replace(/</g, '\\u003c');
-  const html = `<!-- referee-agenda:start --><aside class="referee-agenda" data-referee-agenda aria-label="Hakemler Dosyası güncel gelişmeleri"${feed.enabled ? '' : ' hidden'}>${view.render(feed, now)}</aside><script type="application/json" id="referee-agenda-data">${embedded}</script><!-- referee-agenda:end -->`;
+  const html = `<!-- referee-agenda:start --><aside class="referee-agenda" data-referee-agenda aria-label="Hakemler Dosyası güncel gelişmeleri"${view.active(feed, now).length ? '' : ' hidden'}>${view.render(feed, now)}</aside><script type="application/json" id="referee-agenda-data">${embedded}</script><!-- referee-agenda:end -->`;
   for (const file of ['index.html', 'public/index.html']) {
     let page = fs.readFileSync(path.join(root, file), 'utf8');
     if (/<!-- referee-agenda:start -->/.test(page)) page = page.replace(/<!-- referee-agenda:start -->[\s\S]*?<!-- referee-agenda:end -->/, () => html);

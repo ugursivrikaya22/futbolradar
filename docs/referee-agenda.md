@@ -1,6 +1,6 @@
 # Hakemler Dosyası gündem şeridi
 
-Ana sayfaya özel, dört ayrı öğeli şerit. H1/H2 üretmez. CSS transform ile kayar; üzerine gelince, klavye odağında veya duraklatma düğmesiyle durur. Mobilde bölge kendi içinde kırpılır; azaltılmış hareket tercihinde animasyon kapanır, içerik yatay kaydırılarak okunur. Kopya döngü grubu inert ve aria-hidden'dır. Açık/koyu tema desteklenir. Masaüstünde 64, mobilde 102 piksel alan ayrılır; boş duruma geçiş yükseklik değiştirmez. Yeni JS+CSS yaklaşık 8 KB, kütüphane veya dış font yok. Gerçek saha Core Web Vitals ölçümü ayrıca canlı yayında yapılmalıdır.
+Ana sayfaya özel, dört ayrı öğeli şerit. H1/H2 üretmez. CSS transform ile kayar; üzerine gelince, klavye odağında veya duraklatma düğmesiyle durur. Mobilde bölge kendi içinde kırpılır; azaltılmış hareket tercihinde animasyon kapanır, içerik yatay kaydırılarak okunur. Kopya döngü grubu inert ve aria-hidden'dır. Açık/koyu tema desteklenir. Şerit görünürken masaüstünde 64, mobilde 102 piksel alan ayrılır. Geçerli doğrulanmış öğe yokken şerit gizlenir ve yer kaplamaz. Yeni JS+CSS yaklaşık 8 KB, kütüphane veya dış font yok. Gerçek saha Core Web Vitals ölçümü ayrıca canlı yayında yapılmalıdır.
 
 ## İçerik ve bağlantı
 
@@ -29,7 +29,7 @@ RSS keşifleri `editorial/referee-review-queue.json` içine pending-review olara
 - Aynı kişinin `subjectKeys` değeri sabit tutulur. Yeni olay eski adli durumu kaldırır. İki kişilik eski haberde yalnız bir kişinin durumu değişirse eski birleşik haber bütünüyle çıkar; diğer kişi için gerekirse ayrı doğrulanmış kayıt hazırlanır.
 - `supersedes` ile açık düzeltme ilişkisi de kurulabilir. Yenisi süresi dolunca eski durum geri getirilmez.
 - “Yeni gelişme yok” kontrolü publishedAt/updatedAt değiştirmez. Sayfa beş dakikada bir aynı küçük yerel JSON'u kontrol eder; görünmeyen sekmede ağ isteği atmaz. Dakikalık yerel kontrol eski bilgiyi ağ hatasında bile kaldırır. Feed için no-store başlığı kullanılır.
-- Boş durumda eski haber dönmez; sabit dosya bağlantısı ve “Yeni doğrulanmış gelişme bekleniyor” görünür.
+- Boş durumda şerit gizlenir. Arka plandaki beş dakikalık veri kontrolü devam eder; yeni geçerli doğrulanmış öğe geldiğinde şerit otomatik açılır. Son öğenin süresi dolunca yeniden gizlenir.
 
 ## Çalıştırma ve yayın
 
