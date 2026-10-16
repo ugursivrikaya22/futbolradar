@@ -76,7 +76,13 @@
     news: { fallback: "news", reportSource: false },
     superLigFixtures: { api: "super-lig-fixtures", fallback: "super-lig-fixtures", reportSource: false },
     matchAnalyses: { fallback: "match-analyses", reportSource: false },
-    postMatchReports: { fallback: "post-match-reports", reportSource: false }
+    postMatchReports: { fallback: "post-match-reports", reportSource: false },
+    // HAFİF KOPYALAR (data/slim/, services/slimData.js). Ana sayfa ve kartlar
+    // büyük dosyaların küçük bir parçasını okuyor; dosya yoksa loadLite tam
+    // dosyaya düşer, yani davranış aynı kalır.
+    postMatchReportsLite: { fallback: "slim/post-match-reports-lite", reportSource: false },
+    matchAnalysesLite: { fallback: "slim/match-analyses-lite", reportSource: false },
+    newsLite: { fallback: "slim/news-lite", reportSource: false }
   };
 
   function isInformationalLanding() {
@@ -193,6 +199,16 @@
     return { league: league, season: season };
   }
 
+  // Oyuncu listesini tam isteyen yüzeyler. Bunlardan biri sayfada varsa
+  // sınır konmaz; yalnızca ana sayfa vitrini varsa konur.
+  var FULL_PLAYER_LIST_TARGETS = ["players-page", "player-compare", "player-detail", "player-seo-landing", "team-detail", "statistics-hub", "player-signals"];
+  function homePlayersLimited() {
+    if (!document.querySelector('[data-api-target="player-radar"]')) return false;
+    return !FULL_PLAYER_LIST_TARGETS.some(function (name) {
+      return document.querySelector('[data-api-target="' + name + '"]');
+    });
+  }
+
   function getApiUrl(config) {
     var url = API_ROOT + config.api;
 
@@ -220,6 +236,12 @@
 
       if (params.get("league")) {
         apiParams.set("league", params.get("league"));
+      }
+
+      // Ana sayfa oyuncu vitrini yalnızca ilk üç uygun oyuncuyu basıyor; tüm
+      // liste (4 MB) yerine API'nin sıralı ilk 30'u yeter.
+      if (config.api === "players" && homePlayersLimited()) {
+        apiParams.set("limit", "30");
       }
 
       ["id", "fixtureId", "teamId", "team", "search", "season", "page", "position", "minRating"].forEach(function (key) {
@@ -616,6 +638,47 @@
   function forceReload(name) {
     delete cache[name];
     return loadData(name);
+  }
+
+  var LITE_FULL_NAME = { newsLite: "news", matchAnalysesLite: "matchAnalyses", postMatchReportsLite: "postMatchReports" };
+
+  /**
+   * Hafif kopya varsa onu, yoksa (eski dağıtım, yerel önizleme) tam dosyayı
+   * yükler. Hafif dosya yalnızca hızlandırır; içerik aynı kayıtlardır.
+   */
+  function loadLite(liteName, fullName) {
+    return loadData(liteName).catch(function () {
+      delete cache[liteName];
+      return loadData(fullName);
+    });
+  }
+
+  /**
+   * Maç sonu raporlarının parça adı. services/slimData.js#shardOf ile BİREBİR
+   * aynı (FNV-1a, 256 parça); scripts/test-slim-data.mjs ikisini karşılaştırır.
+   */
+  function postMatchShardOf(matchId) {
+    var hash = 0x811c9dc5;
+    var text = String(matchId == null ? "" : matchId);
+    for (var index = 0; index < text.length; index += 1) {
+      hash ^= text.charCodeAt(index);
+      hash = Math.imul(hash, 0x01000193) >>> 0;
+    }
+    return (hash % 256).toString(16).padStart(2, "0");
+  }
+
+  /** Tek maçın raporu: yalnızca kendi parçası (~100 KB), olmazsa tam dosya. */
+  function loadPostMatchShard(matchId) {
+    var key = "postMatchShard:" + postMatchShardOf(matchId);
+    if (!cache[key]) {
+      cache[key] = fetchJson(DATA_ROOT + "slim/post-match-reports/" + postMatchShardOf(matchId) + ".json")
+        .then(function (result) { return result.data; })
+        .catch(function () {
+          delete cache[key];
+          return loadData("postMatchReports");
+        });
+    }
+    return cache[key];
   }
 
   function recordsUpdatedAt(records) {
@@ -1058,7 +1121,7 @@
 
     var staticFallback = dataName !== "matches" && target.dataset.staticFallback === "true" ? target.innerHTML : "";
     target.dataset.state = "loading";
-    loadData(dataName)
+    (LITE_FULL_NAME[dataName] ? loadLite(dataName, LITE_FULL_NAME[dataName]) : loadData(dataName))
       .then(function (data) {
         var html = renderer(data);
         if (!html) {
@@ -5886,7 +5949,7 @@
       }
     });
 
-    Promise.all([loadData("matches"), loadData("matchAnalyses")]).then(function (results) {
+    Promise.all([loadData("matches"), loadLite("matchAnalysesLite", "matchAnalyses")]).then(function (results) {
       var matches = Array.isArray(results[0]) ? results[0] : [];
       var analyses = Array.isArray(results[1]) ? results[1] : [];
       var index = buildAnalysesIndex(analyses);
@@ -6003,7 +6066,7 @@
     var staticFallback = wrapper.dataset.staticFallback === "true" ? target.innerHTML : "";
     target.dataset.state = "loading";
 
-    Promise.all([loadData("matches"), loadData("matchAnalyses")]).then(function (results) {
+    Promise.all([loadData("matches"), loadLite("matchAnalysesLite", "matchAnalyses")]).then(function (results) {
       var matches = Array.isArray(results[0]) ? results[0] : [];
       var analyses = Array.isArray(results[1]) ? results[1] : [];
       latestAnalysesIndex = buildAnalysesIndex(analyses);
@@ -12140,12 +12203,22 @@
       initMatchDetailPolling(target);
     }
 
+    function loadMatchReportRecord(matchId) {
+      if (!matchId || latestPostMatchIndex[String(matchId)]) return Promise.resolve();
+      return loadPostMatchShard(matchId).then(function (reports) {
+        postMatchRecords(reports).forEach(function (record) {
+          latestPostMatchIndex[String(record.matchId || "")] = record;
+        });
+        if (latestMatchDetail) paintMatchDetail(target, latestMatchDetail);
+      }).catch(function () {});
+    }
+
     function attemptLoad(isRetry) {
       target.dataset.state = "loading";
 
       if (isRetry) {
         forceReload("matchDetail");
-        forceReload("postMatchReports");
+        if (requestedMatch) delete cache["postMatchShard:" + postMatchShardOf(requestedMatch)];
       }
 
       if (requestedMatch && !latestMatchDetail) {
@@ -12153,12 +12226,10 @@
       }
 
       // Optional reports and predicted lineups must never hold up the live score.
-      loadData("postMatchReports").then(function (reports) {
-        postMatchRecords(reports).forEach(function (record) {
-          latestPostMatchIndex[String(record.matchId || "")] = record;
-        });
-        if (latestMatchDetail) paintMatchDetail(target, latestMatchDetail);
-      }).catch(function () {});
+      // Tüm rapor deposu (41 MB) yerine yalnızca bu maçın parçası; maç
+      // kimliği adresten belli değilse (statik yedek sayfa) hiçbir şey
+      // indirilmez, kayıt detay gelince bulunur.
+      loadMatchReportRecord(requestedMatch);
       loadPredictedLineups();
       withDeadline(loadData("matchDetail"), 25000).then(function (data) {
         var detail = Array.isArray(data) ? data[0] : data;
@@ -12173,6 +12244,9 @@
         }
 
         paintMatchDetail(target, detail);
+        // Adres sağlayıcı/fikstür kimliğiyle açıldıysa rapor, maçın kendi
+        // kimliğinin parçasında durur.
+        if (detail.id && String(detail.id) !== String(requestedMatch || "")) loadMatchReportRecord(detail.id);
         startPolling();
       }).catch(function () {
         if (staticFallback) {
@@ -13438,7 +13512,7 @@
     // yoklama tetiklendiğinde kart aniden değişirdi.
     var cardContextReady = Promise.all([
       loadData("teams").then(indexTeamsForCards).catch(function () { return null; }),
-      loadData("matchAnalyses")
+      loadLite("matchAnalysesLite", "matchAnalyses")
         .then(function (records) {
           cardAnalysisIndex = buildAnalysesIndex(records);
           return records;
@@ -13460,9 +13534,9 @@
       // yalnızca bağlantı listeye düşer.
       var headlinesTarget = document.querySelector('[data-api-target="daily-headlines"]');
       if (headlinesTarget) {
-        loadData("postMatchReports")
+        loadLite("postMatchReportsLite", "postMatchReports")
           .then(function (records) {
-            latestPostMatchReports = Array.isArray(records) ? records : [];
+            latestPostMatchReports = postMatchRecords(records);
           })
           .catch(function () {
             latestPostMatchReports = [];
@@ -13664,7 +13738,7 @@
 
     renderInto(
       document.querySelector('[data-api-target="news-preview"]'),
-      "news",
+      "newsLite",
       function (news) {
         return publicNewsItems(news).slice(0, 3).map(renderNewsCard).join("");
       },
