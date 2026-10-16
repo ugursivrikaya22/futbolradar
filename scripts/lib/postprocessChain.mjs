@@ -141,6 +141,7 @@ export const POSTPROCESS_CHAIN = [
   // Dil kutusu hreflang eşine bağlanır (eş yoksa ana sayfa fallback'i kalır).
   // `hreflang`tan SONRA: eşi o adım yazıyor.
   { id: "lang-switch", script: "sync-lang-switch.mjs", args: [], timeoutMinutes: 5 },
+  { id: "organic-growth", script: "apply-organic-growth.mjs", args: [], timeoutMinutes: 2 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
