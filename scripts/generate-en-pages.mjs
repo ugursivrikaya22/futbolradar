@@ -36,7 +36,7 @@ import { homePollBlock, interleavePollPromo, pollPromoCardHtml, pollStickyWidget
 import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { DIRECTORY_LIKE_PAGES, rootAbsoluteLinks } from "./lib/servedLinks.mjs";
 
 const require = createRequire(import.meta.url);
@@ -590,7 +590,7 @@ ${body}
     <link rel="alternate" hreflang="${hreflangOf("en")}" href="${escapeHtml(canonical)}" />
     <link rel="alternate" hreflang="${hreflangOf("tr")}" href="${escapeHtml(trUrl)}" />
     <link rel="alternate" hreflang="x-default" href="${escapeHtml(trUrl)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${routeKey === "matchDetail" ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
     <meta property="og:locale:alternate" content="${ogLocale("tr")}" />

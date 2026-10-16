@@ -695,8 +695,8 @@ function checkSeoAndLinks() {
       expect(html.includes("static-comparison-summary"), `${page}: missing static comparison summary`);
       expect(html.includes('data-api-target="player-compare"'), `${page}: missing dynamic comparison hook`);
       expect(html.includes("data-compare-seed"), `${page}: missing comparison seed`);
-      expect(html.includes('"@type": "Article"'), `${page}: missing Article schema`);
-      expect(html.includes('"@type": "BreadcrumbList"'), `${page}: missing breadcrumb schema`);
+      expect(/"@type":\s*"WebPage"/.test(html), `${page}: missing WebPage schema`);
+      expect(/"@type":\s*"BreadcrumbList"/.test(html), `${page}: missing breadcrumb schema`);
     }
 
     if ([

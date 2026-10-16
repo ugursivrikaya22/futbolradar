@@ -26,6 +26,9 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const probabilityService = require("../../services/fixtureProbabilityService.js");
+// Oyuncu bağlantısı tek çözücüden: taşınmış oyuncunun eski `oyuncular/<id>.html`
+// adresi 301 verir, kanonik `futbolcu/<slug>` doğrudan açılır.
+const { playerLink } = require("../../services/playerLinks.js");
 
 const STATUS_LABELS = {
   injured: "Sakat",
@@ -186,7 +189,7 @@ function pitchChip(player, players, base) {
   const oop = player.outOfPosition ? ' <i class="lineup-oop-flag" title="Alışılmış mevkisi dışında">!</i>' : "";
   const inner = `<b class="pitch-chip-badge">${escapeHtml(label)}</b><span class="pitch-chip-name">${escapeHtml(player.name)}</span>${oop}`;
   if (record) {
-    return `<a class="pitch-chip" href="${base}oyuncular/${escapeHtml(record.id)}.html">${inner}</a>`;
+    return `<a class="pitch-chip" href="${escapeHtml(playerLink(record.id, base))}">${inner}</a>`;
   }
   return `<span class="pitch-chip">${inner}</span>`;
 }
@@ -227,7 +230,7 @@ function substitutesHtml(title, subs, players, base, starters) {
   const items = list.map((player) => {
     const record = findPlayerRecord(players, { providerId: player.providerId, id: player.id, name: player.name });
     const name = record
-      ? `<a href="${base}oyuncular/${escapeHtml(record.id)}.html">${escapeHtml(player.name)}</a>`
+      ? `<a href="${escapeHtml(playerLink(record.id, base))}">${escapeHtml(player.name)}</a>`
       : escapeHtml(player.name);
     const number = player.number != null ? `<b>${escapeHtml(player.number)}</b>` : "";
     return `<li>${number}${name}</li>`;
@@ -313,7 +316,7 @@ function playerCardHtml(entry, players, base) {
     : "";
 
   const heading = record
-    ? `<a href="${base}oyuncular/${escapeHtml(record.id)}.html">${escapeHtml(name)}</a>`
+    ? `<a href="${escapeHtml(playerLink(record.id, base))}">${escapeHtml(name)}</a>`
     : escapeHtml(name);
 
   return `<article class="match-player-card">${photo}<div class="match-player-card-body"><strong>${heading}</strong><div class="match-player-facts">${facts.join("") || '<span class="muted-copy">Profil verisi doğrulanınca genişler</span>'}</div>${stats}</div></article>`;
@@ -358,7 +361,7 @@ const ADVANTAGE_LABELS = { home: "Ev sahibi önde", away: "Deplasman önde", bal
 
 function duelCardHtml(duel, base) {
   const playerHtml = (player) => {
-    const link = player.id ? `<a href="${base}oyuncular/${escapeHtml(player.id)}.html">${escapeHtml(player.name)}</a>` : escapeHtml(player.name);
+    const link = player.id ? `<a href="${escapeHtml(playerLink(player.id, base))}">${escapeHtml(player.name)}</a>` : escapeHtml(player.name);
     const metrics = [
       player.overall != null ? `Genel ${escapeHtml(player.overall)}` : null,
       player.form != null ? `Form ${escapeHtml(player.form)}` : null

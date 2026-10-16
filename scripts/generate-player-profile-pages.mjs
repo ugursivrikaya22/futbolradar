@@ -600,7 +600,12 @@ function pageHtml(player) {
  * @param {string} relativeHref yönlendirme sayfasından hedefe giden yol
  */
 function redirectHtml(player, targetPath, relativeHref) {
-  const canonical = `https://www.futbolradar.com/${targetPath}`;
+  // Canonical ve yönlendirme hedefi SON adrestir: `futbolcu/x.html` vercel.json'da
+  // `/futbolcu/x`e 301 verir; 301 veren adresi canonical ya da bağlantı hedefi
+  // yapmak gereksiz bir sıçrama (ve "canonical yönlendiriyor" uyarısı) demek.
+  const finalPath = targetPath.startsWith("futbolcu/") ? targetPath.replace(/\.html$/, "") : targetPath;
+  relativeHref = relativeHref.replace(/^(\.\.\/futbolcu\/[^?#]+)\.html$/, "$1");
+  const canonical = `https://www.futbolradar.com/${finalPath}`;
   const title = `${player.name} Oyuncu Profili | FutbolRadar`;
   const description = `${player.name} oyuncu profili FutbolRadar kanonik sayfasına yönlendirilir.`;
 
