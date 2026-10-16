@@ -43,5 +43,5 @@
       link('Normal / tasarruf / korumalı politika →','https://github.com/ugursivrikaya22/futbolradar/edit/main/data/operations-policy.json',actions);
     } catch(e){root.replaceChildren();text('p','Operasyon özeti okunamadı. Actions geçmişini kontrol edin.',root);}
   }
-  render();setInterval(render,120000);
+  render();setInterval(function(){if(document.visibilityState==='visible')render();},300000);
 })();
