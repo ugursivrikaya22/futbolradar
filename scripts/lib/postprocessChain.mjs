@@ -87,6 +87,8 @@ export const POSTPROCESS_CHAIN = [
   // (data/prediction-league-fixtures.json saatlik güncellemede tazelenir).
   // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir normalleştiriyor.
   { id: "prediction-league-page", script: "generate-prediction-league-page.mjs", args: [], timeoutMinutes: 2 },
+  // /takip-ettiklerim (kişisel sayfa, noindex): statik kabuk; içerik tarayıcıda yerel favorilerden çizilir.
+  { id: "following-page", script: "generate-following-page.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
@@ -149,6 +151,8 @@ export const POSTPROCESS_CHAIN = [
   // Sık kullanılan sayfalar şeridi (düz bağlantılar): `served-links`ten ÖNCE,
   // çünkü yazdığı göreli adresler orada sunulan adrese göre doğrulanıyor.
   { id: "quick-links", script: "inject-quick-links.mjs", args: [], timeoutMinutes: 2 },
+  // Gizlilik sayfasına "Favoriler ve yerel depolama" bildirimi (işaretli blok, idempotent).
+  { id: "privacy-notice", script: "inject-privacy-notice.mjs", args: [], timeoutMinutes: 2 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
