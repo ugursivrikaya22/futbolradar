@@ -152,6 +152,18 @@ function teamNameCell(team, base = "./") {
     : escapeHtml(team.name);
 }
 
+/** Lider bilgisi yalnızca sezon gerçekten başladıysa (oynanmış maç varsa) açıklamaya girer. */
+function superLigStandingsDescription(ordered) {
+  const leader = ordered[0];
+  const base = "Averaj ve puan dahil tüm sütunlarla tam tablo.";
+  if (!leader || !(Number(leader.played) > 0) || leader.points === null || leader.points === undefined) {
+    return "Süper Lig 2026/27 puan durumu: oynanan maç, galibiyet, beraberlik, mağlubiyet, averaj ve puan sütunlarıyla tam tablo.";
+  }
+  const second = ordered[1];
+  const chase = second && Number(second.played) > 0 ? `, ${second.name} ${second.points} puanla ikinci` : "";
+  return `Süper Lig 2026/27 puan durumu: ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla lider${chase}. ${base}`;
+}
+
 function standingsPage() {
   const ordered = [...teams].filter((team) => team.isCurrentSuperLigTeam).sort((a, b) => a.rank - b.rank);
   const rows = ordered.map((team) => `<tr><td>${value(team.rank)}</td><th scope="row">${teamNameCell(team)}</th><td>${value(team.played)}</td><td>${value(team.won)}</td><td>${value(team.drawn)}</td><td>${value(team.lost)}</td><td>${value(team.goalsFor)}</td><td>${value(team.goalsAgainst)}</td><td>${value(team.goalDifference)}</td><td><strong>${value(team.points)}</strong></td></tr>`);
@@ -163,7 +175,7 @@ function standingsPage() {
     base: "./",
     enPath: "super-lig-standings",
     title: "Süper Lig Puan Durumu 2026/27 | FutbolRadar",
-    description: "Süper Lig 2026/27 puan durumunu; oynanan maç, galibiyet, beraberlik, mağlubiyet, averaj ve puan bilgileriyle inceleyin.",
+    description: superLigStandingsDescription(ordered),
     canonicalPath: "/super-lig-puan-durumu",
     h1: "Süper Lig Puan Durumu",
     kicker: "2026/27 Sezonu",
@@ -232,7 +244,9 @@ function teamPage(featured) {
   return pageDocument({
     base: "../",
     title: `${featured.name} Takım Profili, Puan ve Form | FutbolRadar`,
-    description: `${featured.name} takım profili: kayıtlı Süper Lig sırası, puanı, maç bilançosu, form durumu ve FutbolRadar oyuncu profilleri.`,
+    description: Number(team.played) > 0 && team.points !== null && team.points !== undefined && team.rank
+      ? `${featured.name} takım profili: Süper Lig'de ${team.rank}. sırada, ${team.points} puan (${team.played} maç: ${team.won}G ${team.drawn}B ${team.lost}M). Form durumu, kadro ve oyuncu profilleri.`
+      : `${featured.name} takım profili: kayıtlı Süper Lig sırası, puanı, maç bilançosu, form durumu ve FutbolRadar oyuncu profilleri.`,
     canonicalPath: `/takimlar/${featured.slug}`,
     h1: `${featured.name} Takım Profili`,
     kicker: "Süper Lig Takımı",

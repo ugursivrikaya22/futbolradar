@@ -12,6 +12,10 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { publishedColumns } = require("../services/columnService.js");
 const { ROUTES: I18N_ROUTES, absoluteUrl: i18nUrl, hreflangOf } = require("../services/i18n.js");
+// `matchDetail` (mac-detay.html ↔ en/match-detail.html) istemci kabuğudur: iki dilde de
+// noindex olduğu için site haritasına girmez.
+const NOINDEX_ROUTE_KEYS = new Set(["matchDetail"]);
+const INDEXABLE_ROUTES = I18N_ROUTES.filter((route) => !NOINDEX_ROUTE_KEYS.has(route.key));
 const domain = "https://www.futbolradar.com";
 /**
  * `lastmod` ARTIK SABİT DEĞİL.
@@ -548,9 +552,15 @@ function sitemapXml(files) {
     "futbol-radar-rehberi.html",
     "gunun-radar-bulteni.html",
     ...files,
+    // İKİ DİLLİ ÇİFTİN İKİ YÜZÜ DE HARİTADA OLMAK ZORUNDA. İngilizce sayfa
+    // Türkçe eşini alternate gösterirken Türkçe eşin kendi `<loc>` kaydı yoksa
+    // (ör. anketler.html, arsiv.html) hreflang tek yönlü kalır ve Google
+    // çifti yok sayar. Arama sonucunda yer almayan istemci kabukları
+    // (noindex) çiftiyle birlikte haritadan çıkar.
+    ...INDEXABLE_ROUTES.map((route) => route.tr),
     // İngilizce sürüm ayrı, indekslenebilir sayfalardan oluşuyor; site
     // haritasında görünmezlerse yalnızca dil kutusundan keşfedilirler.
-    ...I18N_ROUTES.map((route) => route.en)
+    ...INDEXABLE_ROUTES.map((route) => route.en)
   ];
   const unique = [...new Set(core)];
 
@@ -558,7 +568,7 @@ function sitemapXml(files) {
   // bildirilir. `<head>` içindeki hreflang ile AYNI eşlemeden (services/i18n.js)
   // üretiliyor; iki kaynak ayrışırsa Google çelişkili sinyal görür.
   const alternatesByFile = new Map();
-  for (const route of I18N_ROUTES) {
+  for (const route of INDEXABLE_ROUTES) {
     const links = [
       `    <xhtml:link rel="alternate" hreflang="${hreflangOf("tr")}" href="${i18nUrl(route.tr)}"/>`,
       `    <xhtml:link rel="alternate" hreflang="${hreflangOf("en")}" href="${i18nUrl(route.en)}"/>`,

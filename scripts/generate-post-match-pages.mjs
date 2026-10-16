@@ -21,6 +21,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { repairPlayerLinks, repairReportJsonLd } from "./lib/reportSchemaRepair.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -439,7 +440,11 @@ function pageHtml(report, match, indexable) {
         // "planlandığı gibi gerçekleşti" demek: EventScheduled.
         eventStatus: "https://schema.org/EventScheduled",
         sport: "Football",
-        location: { "@type": "StadiumOrArena", name: match.venue || "Bilinmiyor", address: match.city || "" },
+        // Stat/şehir yalnızca kayıtlıysa yazılır. "Bilinmiyor" yer tutucusu ve
+        // boş `address` zorunlu alanı boş bırakan geçersiz şemaydı (7.000+ sayfa).
+        ...(match.venue && match.venue !== "Açıklanmadı" && match.venue !== "Bilinmiyor"
+          ? { location: { "@type": "StadiumOrArena", name: match.venue, ...(match.city ? { address: { "@type": "PostalAddress", addressLocality: match.city } } : {}) } }
+          : {}),
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
         description: summary.status === "ready" ? summary.paragraph : match.summary || ""
@@ -710,7 +715,10 @@ function applyCoverageRuleToExistingPages() {
       const target = path.join(base, "mac-raporu", file);
       if (!fs.existsSync(target)) continue;
       const html = fs.readFileSync(target, "utf8");
-      const next = html.replace(ROBOTS_META_RE, replacement);
+      // Robots satırı + eski üretici sürümlerinden kalan şema hataları
+      // (EventCompleted, boş address, yazarsız Article): bu döngü yalnızca
+      // son pencereyi yeniden yazan üreticinin ulaşamadığı sayfalara dokunur.
+      const next = repairPlayerLinks(repairReportJsonLd(html.replace(ROBOTS_META_RE, replacement)), playerLink);
       if (next !== html) fs.writeFileSync(target, next, "utf8");
     }
   }

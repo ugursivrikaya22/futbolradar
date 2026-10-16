@@ -390,6 +390,7 @@ export function siteFooter(options = {}) {
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
+          <p class="footer-tagline"><strong>${escapeHtml(t("footer.tagline", locale))}</strong></p>
           <p>${escapeHtml(t("footer.blurb", locale))}</p>
           <div class="footer-social" aria-label="${escapeHtml(t("footer.social", locale))}">${social}</div>
         </div>

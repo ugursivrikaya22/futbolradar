@@ -97,7 +97,7 @@ console.log("postprocess-chain");
   assert.equal((`${pkg.scripts.build} && ${postbuild}`.match(/node scripts\/postprocess\.mjs/g) || []).length, 1, "postprocess must run exactly once, after all generators");
   assert.match(
     postbuild,
-    /node scripts\/postprocess\.mjs && node scripts\/apply-brand-copy\.mjs && node scripts\/verify-production\.mjs$/,
+    /node scripts\/postprocess\.mjs && node scripts\/apply-brand-copy\.mjs && node scripts\/verify-production\.mjs(?: && node scripts\/minify-served-assets\.mjs)?$/,
     `postbuild, kendi üreticilerinden SONRA tam postprocess zincirini çağırmalı, tek bir enjektörü elle değil (mevcut: ${postbuild})`
   );
 }

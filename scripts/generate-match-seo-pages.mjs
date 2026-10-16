@@ -573,10 +573,43 @@ function mergeCandidate(entry, candidate) {
   return JSON.stringify(entry) !== before;
 }
 
+/**
+ * EMEKLİ MAÇ ADRESLERİ — YENİDEN DOĞMAZ.
+ *
+ * Bir maç sayfası kaldırılıp vercel.json'da 301'lendiyse (ör. Fransa kulübü
+ * olmayan "Ligue 1" maçları, bkz. data/league-identity-report.json) o adres bir
+ * daha sicile girmemeli. Girerse sayfa dosyası yeniden üretilir, site haritasına
+ * ve iç bağlantılara yazılır; oysa vercel.json yönlendirmesi dosyadan önce
+ * çalıştığı için adres HİÇ açılmaz: haritada 301 veren URL ("Sitemap contains
+ * redirect"), 301'e giden iç bağlantılar ve kanonikleri yönlendiren EN eşleri.
+ *
+ * Bu durum yalnızca TAM derlemede (`npm run build`, Vercel ve günlük tam koşu)
+ * görülüyordu: arşiv geri yüklemesi (backfill-historical-match-archive) lig
+ * kimliği olmayan eski "Ligue 1" satırlarını aday olarak yeniden getiriyor,
+ * saatlik koşu ise sicili olduğu gibi koruduğu için saklıyordu.
+ *
+ * Kaynaklar: (1) vercel.json'da kaynağı `/mac/<slug>` olan her yönlendirme,
+ * (2) kimlik onarım raporundaki kaldırılmış sayfalar.
+ */
+const RETIRED_MATCH_SLUGS = (() => {
+  const retired = new Set();
+  const redirects = (readJson("vercel.json", { redirects: [] }).redirects) || [];
+  for (const rule of redirects) {
+    const match = /^\/mac\/([a-z0-9-]+?)(?:\.html)?$/.exec(String(rule && rule.source || ""));
+    if (match) retired.add(match[1]);
+  }
+  const report = readJson("data/league-identity-report.json", { removedMatchPages: [] });
+  for (const page of report.removedMatchPages || []) {
+    if (page && page.slug) retired.add(page.slug);
+  }
+  return retired;
+})();
+
 function newEntry(candidate) {
   const slug = trSlugFor(candidate.homeTeam, candidate.awayTeam, candidate.kickoff);
   const enSlug = enSlugFor(candidate.homeTeam, candidate.awayTeam, candidate.kickoff);
   if (!slug || !enSlug) return null;
+  if (RETIRED_MATCH_SLUGS.has(slug)) return null;
   return {
     slug,
     enSlug,

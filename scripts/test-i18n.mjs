@@ -323,7 +323,10 @@ for (const route of ROUTES) {
     check("site haritası xhtml ad alanını bildiriyor",
       !sitemap.includes("<xhtml:link") || sitemap.includes('xmlns:xhtml="http://www.w3.org/1999/xhtml"'));
 
-    const missing = ROUTES.filter((route) => !sitemap.includes(`<loc>${absoluteUrl(route.en)}</loc>`))
+    // İstemci kabuğu (matchDetail: mac-detay ↔ en/match-detail) iki dilde de noindex;
+    // arama sonucunda yer almayan sayfa site haritasında da yer almaz.
+    const missing = ROUTES.filter((route) => route.key !== "matchDetail")
+      .filter((route) => !sitemap.includes(`<loc>${absoluteUrl(route.en)}</loc>`))
       .map((route) => route.en);
     check("İngilizce sayfalar site haritasında", !missing.length, missing.join(", "));
 

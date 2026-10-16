@@ -153,11 +153,13 @@ function competitionPage(entry) {
   const dataDate = (updatedAt || "").slice(0, 10) || today;
   const leader = rows[0];
   const leaderPlayed = leader && Number(leader.played) > 0;
+  // Başlık hedef sorguyu ("<lig> puan durumu") taşır; lider bilgisi güncelliği gösterir.
+  const leaderIsFirst = leaderPlayed && Number(leader.rank) === 1;
   const title = leaderPlayed
-    ? `${entry.nameTr}: ${leader.name} ${leader.points} puan | FutbolRadar`
+    ? `${entry.nameTr} Puan Durumu: ${leader.name} ${leader.points} puanla ${leaderIsFirst ? "lider" : `${leader.rank}. sırada`} | FutbolRadar`
     : `${entry.nameTr} Puan Durumu | FutbolRadar`;
   const description = leaderPlayed
-    ? `${entry.nameTr} puan durumu: ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla ${leader.rank}. sırada.`
+    ? `${entry.nameTr} güncel puan durumu: ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla ${leader.rank}. sırada. Averaj ve puan dahil tüm sütunlarla tam tablo.`
     : `${entry.nameTr} güncel puan durumu; oynanan maç, galibiyet, beraberlik, mağlubiyet, averaj ve puan bilgileriyle sıralama.`;
   const canonicalPath = `/${entry.slugTr}`;
   const breadcrumbs = [

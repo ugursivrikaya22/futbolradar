@@ -158,6 +158,16 @@ function createPlayerUrlResolver(table) {
     return dir === "en/player" ? enPlayerPagePath(id) : playerPagePath(id);
   }
 
+  /**
+   * Dosya yolunu BAĞLANTI adresine çevirir: `futbolcu/x.html` vercel.json'da
+   * `/futbolcu/x`e 301 verdiği için bağlantıya uzantısız yazılır. Başka yollar
+   * (`oyuncular/<id>.html`, `en/player/x.html`) olduğu gibi kalır.
+   */
+  function cleanPagePath(pagePath) {
+    const raw = String(pagePath || "");
+    return raw.startsWith(`${CANONICAL_DIR}/`) ? raw.replace(/\.html$/, "") : raw;
+  }
+
   /** Taşınan kayıtlar: eski yol → yeni yol (301 kaynağı). */
   function movedPaths() {
     const moved = [];
@@ -175,6 +185,7 @@ function createPlayerUrlResolver(table) {
   return {
     CANONICAL_DIR,
     LEGACY_DIR,
+    cleanPagePath,
     enPlayerPagePath,
     hasCanonicalSlug,
     movedPaths,

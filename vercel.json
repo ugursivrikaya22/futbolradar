@@ -5159,6 +5159,15 @@
   ],
   "headers": [
     {
+      "source": "/(public|api|data|docs|scripts|services|tests|supabase|server|components|locales)/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
       "source": "/app.js",
       "headers": [
         {

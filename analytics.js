@@ -13,6 +13,9 @@
 
   if (!ga4Valid && !adsValid) return;
   if (navigator.globalPrivacyControl === true || navigator.doNotTrack === "1") return;
+  // Otomasyon (Lighthouse, Playwright, Selenium, başsız tarayıcı) gerçek
+  // ziyaretçi sayısını şişirmesin: tarayıcı kendini webdriver olarak bildirirse ölçüm yok.
+  if (navigator.webdriver === true) return;
 
   window.dataLayer = window.dataLayer || [];
   window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
