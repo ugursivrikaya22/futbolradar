@@ -148,6 +148,7 @@ export const POSTPROCESS_CHAIN = [
   // Dil kutusu hreflang eşine bağlanır (eş yoksa ana sayfa fallback'i kalır).
   // `hreflang`tan SONRA: eşi o adım yazıyor.
   { id: "lang-switch", script: "sync-lang-switch.mjs", args: [], timeoutMinutes: 5 },
+  { id: "organic-growth", script: "apply-organic-growth.mjs", args: [], timeoutMinutes: 2 },
   // Sık kullanılan sayfalar şeridi (düz bağlantılar): `served-links`ten ÖNCE,
   // çünkü yazdığı göreli adresler orada sunulan adrese göre doğrulanıyor.
   { id: "quick-links", script: "inject-quick-links.mjs", args: [], timeoutMinutes: 2 },
