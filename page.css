@@ -12003,7 +12003,10 @@ body .container {
   color: #fff;
 }
 
-.live-scores-ticker[data-empty],
+.live-scores-ticker[data-empty] {
+  display: none;
+}
+
 /* Derlemede "canlı maç yok" basılmışsa bant ilk boyamadan itibaren gizli:
    JS gelip data-empty yazınca 39 px'lik bant kalkıyor ve altındaki her şey
    yukarı kayıyordu (ana sayfa CLS'inin yarısı). Canlı maç gelince JS
