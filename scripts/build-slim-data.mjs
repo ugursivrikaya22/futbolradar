@@ -55,6 +55,16 @@ export function buildSlimData({ now = new Date() } = {}) {
   const analyses = readJson("match-analyses.json");
   if (analyses) report.files["match-analyses-lite.json"] = writeJson("match-analyses-lite.json", slim.liteAnalyses(analyses));
 
+  // Favori takım kutusu ve "Takip Ettiklerim" sayfası: takım kimliği → sayfa slug'ı.
+  // (Sayfa adları kimlikten türetilemiyor: "gaziantep-fk", "erzurumspor".)
+  try {
+    const { superLigTeamPages } = require("../services/superLigTeamPages.js");
+    const pages = superLigTeamPages({ root }).map((entry) => ({ id: String(entry.id), slug: entry.slug, name: entry.name, big: Boolean(entry.big) }));
+    if (pages.length) report.files["team-pages.json"] = writeJson("team-pages.json", pages);
+  } catch (error) {
+    console.warn(`build-slim-data: takım sayfaları yazılamadı (${error.message})`);
+  }
+
   const news = readJson("news.json");
   if (news) report.files["news-lite.json"] = writeJson("news-lite.json", slim.liteNews(news));
 

@@ -52,7 +52,10 @@
     if (!entry) {
       var shared = nativeFetch(input, init && init.cache ? { cache: init.cache } : undefined);
       entry = entries[key] = { promise: shared };
-      var release = function () { window.setTimeout(function () { if (entries[key] === entry) delete entries[key]; }, HOLD_MS); };
+      // no-store isteği (canlı yoklama) yalnızca uçuştayken paylaşılır; bitince bekletilmez:
+      // ardışık yoklamalar hep taze yanıt görür. Diğerleri 1,5 sn tutulur (sayfa açılışındaki yinelenenler).
+      var hold = init && init.cache === "no-store" ? 0 : HOLD_MS;
+      var release = function () { window.setTimeout(function () { if (entries[key] === entry) delete entries[key]; }, hold); };
       shared.then(release, function () { if (entries[key] === entry) delete entries[key]; });
     }
 
@@ -67,6 +70,27 @@
         function (error) { signal.removeEventListener("abort", onAbort); reject(error); });
     });
   };
+})();
+
+/**
+ * FAVORİLER DEPOSU (favorites-core.js) — erken ve tek sefer yüklenir.
+ * Ana sayfa kutusu, yıldız düğmeleri ve takip paneli ona bağlı; yüklenemezse
+ * (ağ hatası) `futbolradar:favorites-ready` yine yayınlanır ve her bileşen
+ * kendi yedek davranışına düşer.
+ */
+(function () {
+  function settle() {
+    if (window.__frFavoritesSettled) return;
+    window.__frFavoritesSettled = true;
+    try { document.dispatchEvent(new Event("futbolradar:favorites-ready")); } catch (error) { /* eski tarayıcı */ }
+  }
+  if (window.FutbolRadarFavorites) { settle(); return; }
+  var script = document.createElement("script");
+  script.src = "/favorites-core.js";
+  script.async = true;
+  script.onload = settle;
+  script.onerror = settle;
+  document.head.appendChild(script);
 })();
 
 (function () {
@@ -630,19 +654,39 @@
    * yazılmaz.
    */
   var FAVOURITE_KEY = "futbolradar-favourite-team";
+  var PRIORITY_TEAMS = ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"];
+
+  /**
+   * Seçim tek yerel depoda (favorites-core.js): ana sayfa kutusu, PWA paneli,
+   * "Takip Ettiklerim" sayfası ve radar kartı aynı seçimi görür. Depo yüklenemediyse
+   * (ağ hatası) eski tek anahtara düşülür; kutu yine çalışır.
+   */
+  function favStore() { return window.FutbolRadarFavorites || null; }
 
   function readFavourite() {
+    var store = favStore();
+    if (store) return store.primaryTeam();
     try { return window.localStorage.getItem(FAVOURITE_KEY) || ""; } catch (e) { return ""; }
   }
 
   function writeFavourite(value) {
+    var store = favStore();
+    if (store) { if (value) store.setPrimaryTeam(value); return; }
     try {
       if (value) window.localStorage.setItem(FAVOURITE_KEY, value);
       else window.localStorage.removeItem(FAVOURITE_KEY);
     } catch (e) { /* gizli sekmede yazma reddedilebilir; özellik sessizce kapalı kalır */ }
   }
 
-  /** `/api/teams`den güncel Süper Lig kadrosu; arma `providerId`den kurulur. */
+  function whenFavorites(callback) {
+    if (window.__frFavoritesSettled) { callback(); return; }
+    var done = false;
+    function go() { if (done) return; done = true; callback(); }
+    document.addEventListener("futbolradar:favorites-ready", go, { once: true });
+    window.setTimeout(go, 2500);
+  }
+
+  /** `/api/teams`den güncel Süper Lig kadrosu; arma `providerId`den kurulur. Dört büyük takım başta. */
   function favouriteTeams() {
     return teamsOnce().then(function (rows) {
       if (!rows) return [];
@@ -651,13 +695,56 @@
         var team = rows[i];
         if (!team || !team.isCurrentSuperLigTeam || !team.id || !team.name) continue;
         out.push({
-          id: team.id,
+          id: String(team.id),
           name: team.name,
           logo: team.providerId ? "https://media.api-sports.io/football/teams/" + team.providerId + ".png" : ""
         });
       }
-      return out;
+      return out.sort(function (a, b) {
+        var pa = PRIORITY_TEAMS.indexOf(a.id), pb = PRIORITY_TEAMS.indexOf(b.id);
+        if (pa >= 0 || pb >= 0) return (pa < 0 ? 99 : pa) - (pb < 0 ? 99 : pb);
+        return String(a.name).localeCompare(String(b.name), "tr");
+      });
     });
+  }
+
+  /** Küçük statik JSON'lar (takım sayfaları, haber vitrini): adres başına tek istek, hata = null. */
+  var jsonOnceCache = {};
+  function jsonOnce(url) {
+    if (!jsonOnceCache[url]) {
+      jsonOnceCache[url] = readJsonWithTimeout(url).then(function (payload) {
+        if (Array.isArray(payload)) return payload;
+        return payload && Array.isArray(payload.data) ? payload.data : null;
+      }).catch(function () { return null; });
+    }
+    return jsonOnceCache[url];
+  }
+
+  /** Sezon fikstürü (mevcut /api/super-lig-fixtures; yoksa statik kopya): yalnızca yaklaşan maç eksikse çağrılır. */
+  var fixturesPromise = null;
+  function fixturesOnce() {
+    if (!fixturesPromise) {
+      fixturesPromise = readJsonWithTimeout("/api/super-lig-fixtures").then(function (payload) {
+        var data = payload && (payload.data || payload);
+        if (data && Array.isArray(data.rounds)) return data.rounds;
+        throw new Error("fixtures-empty");
+      }).catch(function () {
+        return readJsonWithTimeout("/data/super-lig-fixtures.json").then(function (payload) {
+          return payload && Array.isArray(payload.rounds) ? payload.rounds : [];
+        }).catch(function () { return []; });
+      });
+    }
+    return fixturesPromise;
+  }
+
+  /** Haber bağlantısı yalnızca kendi alan adımıza (ya da göreli) kabul edilir; yol olarak döner. */
+  function ownPath(value) {
+    try {
+      var url = new URL(String(value || ""), window.location.href);
+      var own = url.origin === window.location.origin || /(^|\.)futbolradar\.com$/.test(url.hostname);
+      if (!own || !/^https?:$/.test(url.protocol)) return "";
+      return /^\/[A-Za-z0-9\/_\-.%~]*$/.test(url.pathname) ? url.pathname : "";
+    } catch (error) { return ""; }
   }
 
   function setupFavouriteTeam() {
@@ -670,10 +757,12 @@
 
     var en = (document.documentElement.getAttribute("lang") || "tr").toLowerCase().indexOf("en") === 0;
     var s = en
-      ? { pick: "Pick your team", yours: "Your team", change: "change",
-        next: "Next match", last: "Last result", table: "Table", pos: "pos." }
-      : { pick: "Favori takımını seç", yours: "Takımın", change: "değiştir",
-        next: "Sıradaki maç", last: "Son sonuç", table: "Puan durumu", pos: "sıra" };
+      ? { pick: "Pick your team", title: "My Team's Matches", change: "change", cancel: "cancel",
+        next: "Next match", last: "Last result", table: "Table", pos: "pos.", news: "Latest news",
+        matches: "Fixtures", standings: "Standings", following: "Following" }
+      : { pick: "Favori takımını seç", title: "Takımımın Maçları", change: "değiştir", cancel: "vazgeç",
+        next: "Sıradaki maç", last: "Son sonuç", table: "Puan durumu", pos: "sıra", news: "Son haberler",
+        matches: "Maçları", standings: "Puan durumu", following: "Takip Ettiklerim" };
 
     var box = reserved ? existing : document.createElement("section");
     if (!reserved) {
@@ -682,21 +771,34 @@
     }
 
     var teams = [];
-    favouriteTeams().then(function (list) {
-      // Liste hâlâ boşsa (sağlayıcı ulaşılamadı) kutu hiç eklenmez — boş bir
-      // takım seçici, yer tutucu uydurmanın sessiz biçimi olurdu.
-      if (!list.length) {
-        if (reserved) box.parentNode.removeChild(box);
-        return;
-      }
-      teams = list;
-      if (reserved) {
-        box.removeAttribute("data-placeholder");
-        box.removeAttribute("aria-hidden");
-      } else {
-        main.insertBefore(box, main.firstChild);
-      }
-      render();
+    var picking = false;
+
+    // Daha önce takım seçmiş okuyucuda kutu seçici yüksekliğinden büyük açılır: yeri
+    // veri gelmeden ayır (kayma olmasın). Depo henüz yüklenmeden ham anahtarlara bakılır.
+    try {
+      var hasSaved = ["futbolradar:favorites:v1", FAVOURITE_KEY, "fr_favorite_team"].some(function (k) { return Boolean(window.localStorage.getItem(k)); });
+      if (hasSaved) box.style.minHeight = "250px";
+    } catch (e) { /* depo kapalı: ayrılmış varsayılan yükseklik kalır */ }
+
+    whenFavorites(function () {
+      favouriteTeams().then(function (list) {
+        // Liste hâlâ boşsa (sağlayıcı ulaşılamadı) kutu hiç eklenmez — boş bir
+        // takım seçici, yer tutucu uydurmanın sessiz biçimi olurdu.
+        if (!list.length) {
+          if (reserved) box.parentNode.removeChild(box);
+          return;
+        }
+        teams = list;
+        if (reserved) {
+          box.removeAttribute("data-placeholder");
+          box.removeAttribute("aria-hidden");
+        } else {
+          main.insertBefore(box, main.firstChild);
+        }
+        render();
+        // Başka sekmede/sayfada seçim değişirse kutu güncellenir.
+        document.addEventListener("futbolradar:favorites-change", function () { picking = false; render(); });
+      });
     });
 
     function render() {
@@ -704,7 +806,9 @@
       var team = null;
       for (var i = 0; i < teams.length; i += 1) if (teams[i].id === chosen) team = teams[i];
       box.innerHTML = "";
-      if (team) renderChosen(team); else renderPicker();
+      // Seçili hâl satırlar/haberler/bağlantılarla uzar; yer baştan ayrılır, seçici hâlinde serbest.
+      box.style.minHeight = team && !picking ? "250px" : "";
+      if (team && !picking) renderChosen(team); else renderPicker();
     }
 
     function renderPicker() {
@@ -717,6 +821,15 @@
       rail.className = "favourite-team__rail";
       for (var i = 0; i < teams.length; i += 1) rail.appendChild(teamButton(teams[i]));
       box.appendChild(rail);
+
+      if (picking) {
+        var cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.className = "favourite-team__change";
+        cancel.textContent = s.cancel;
+        cancel.addEventListener("click", function () { picking = false; render(); });
+        box.appendChild(cancel);
+      }
     }
 
     function teamButton(team) {
@@ -725,84 +838,180 @@
       b.className = "favourite-team__pick";
       b.setAttribute("data-team", team.id);
       b.title = team.name;
-      b.innerHTML = (team.logo
-        ? '<img src="' + escapeText(team.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
-        : "") + "<span>" + escapeText(team.name) + "</span>";
-      b.addEventListener("click", function () { writeFavourite(team.id); render(); });
+      if (team.logo) {
+        var img = document.createElement("img");
+        img.src = team.logo; img.alt = ""; img.width = 28; img.height = 28;
+        img.loading = "lazy"; img.decoding = "async"; img.referrerPolicy = "no-referrer";
+        b.appendChild(img);
+      }
+      var label = document.createElement("span");
+      label.textContent = team.name;
+      b.appendChild(label);
+      b.addEventListener("click", function () { writeFavourite(team.id); picking = false; render(); });
       return b;
     }
 
+    function linkEl(href, text, className) {
+      var a = document.createElement("a");
+      a.href = href; a.textContent = text;
+      if (className) a.className = className;
+      return a;
+    }
+
     function renderChosen(team) {
+      var title = document.createElement("span");
+      title.className = "favourite-team__title";
+      title.textContent = "⭐ " + s.title;
+      box.appendChild(title);
+
       var head = document.createElement("div");
       head.className = "favourite-team__head";
-      head.innerHTML = (team.logo
-        ? '<img src="' + escapeText(team.logo) + '" alt="" width="26" height="26" loading="lazy" decoding="async" referrerpolicy="no-referrer">'
-        : "") +
-        '<span class="favourite-team__name">' + escapeText(s.yours) + ": <b>" + escapeText(team.name) + "</b></span>";
+      if (team.logo) {
+        var logo = document.createElement("img");
+        logo.src = team.logo; logo.alt = ""; logo.width = 26; logo.height = 26;
+        logo.loading = "lazy"; logo.decoding = "async"; logo.referrerPolicy = "no-referrer";
+        head.appendChild(logo);
+      }
+      var name = document.createElement("span");
+      name.className = "favourite-team__name";
+      var strong = document.createElement("b");
+      strong.textContent = team.name;
+      name.appendChild(strong);
+      head.appendChild(name);
 
       var change = document.createElement("button");
       change.type = "button";
       change.className = "favourite-team__change";
       change.textContent = s.change;
-      change.addEventListener("click", function () { writeFavourite(""); render(); });
+      change.addEventListener("click", function () { picking = true; render(); });
       head.appendChild(change);
       box.appendChild(head);
 
       var key = teamKey(team.name);
+      var rowsHost = document.createElement("div");
+      rowsHost.className = "favourite-team__rows";
+      box.appendChild(rowsHost);
+      var linksHost = document.createElement("div");
+      linksHost.className = "favourite-team__links";
+      box.appendChild(linksHost);
+
+      // Maç verisi mevcut tek ortak yanıttan (/api/matches); ek istek yok. Yaklaşan maç
+      // orada yoksa (yanıt yalnızca birkaç günlük pencere) sezon fikstüründen tamamlanır.
+      function sameClub(a, b) {
+        var x = teamKey(a), y = teamKey(b);
+        return Boolean(x) && Boolean(y) && (x === y || (x.length >= 4 && y.indexOf(x) === 0) || (y.length >= 4 && x.indexOf(y) === 0));
+      }
+      function addUpcoming(list) {
+        var now = Date.now();
+        var seen = {};
+        var upcoming = list.filter(function (m) {
+          var t = Date.parse(m.kickoff || "");
+          var status = String(m.status || "SCHEDULED").toUpperCase();
+          if (!isFinite(t) || t < now || status === "FINISHED" || status === "CANCELLED") return false;
+          if (!(sameClub(m.homeTeam, team.name) || sameClub(m.awayTeam, team.name))) return false;
+          var k = teamKey(m.homeTeam) + "|" + teamKey(m.awayTeam) + "|" + String(m.kickoff).slice(0, 10);
+          if (seen[k]) return false;
+          seen[k] = true;
+          return true;
+        }).sort(function (a, b) { return Date.parse(a.kickoff) - Date.parse(b.kickoff); });
+        return upcoming;
+      }
+      function showUpcoming(upcoming) {
+        upcoming.slice(0, 2).forEach(function (m, index) {
+          var when = m.time || (m.kickoff ? new Date(m.kickoff).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit", hour12: false }) : "");
+          rowsHost.insertBefore(favRow(index === 0 ? s.next : "", m.homeTeam + " – " + m.awayTeam, when, matchHref(m)), rowsHost.firstChild && index === 0 ? rowsHost.firstChild : null);
+        });
+      }
 
       matchesOnce().then(function (list) {
-        if (!list) return;
-        var mine = list.filter(function (m) {
-          return teamKey(m.homeTeam) === key || teamKey(m.awayTeam) === key;
-        });
-        if (!mine.length) return;
-
-        var now = Date.now();
-        var upcoming = null;
+        list = list || [];
         var finished = null;
-        for (var i = 0; i < mine.length; i += 1) {
-          var m = mine[i];
+        list.forEach(function (m) {
+          if (m.status !== "FINISHED" || !(sameClub(m.homeTeam, team.name) || sameClub(m.awayTeam, team.name))) return;
           var t = Date.parse(m.kickoff || "");
-          if (!isFinite(t)) continue;
-          if (m.status === "FINISHED") {
-            if (!finished || t > Date.parse(finished.kickoff)) finished = m;
-          } else if (t >= now) {
-            if (!upcoming || t < Date.parse(upcoming.kickoff)) upcoming = m;
-          }
-        }
-
-        if (upcoming) {
-          box.appendChild(favRow(s.next,
-            upcoming.homeTeam + " – " + upcoming.awayTeam, upcoming.time || ""));
-        }
+          if (isFinite(t) && (!finished || t > Date.parse(finished.kickoff))) finished = m;
+        });
+        var upcoming = addUpcoming(list);
+        showUpcoming(upcoming);
         if (finished && finished.score) {
-          box.appendChild(favRow(s.last,
-            finished.homeTeam + " " + finished.score.home + "–" + finished.score.away + " " + finished.awayTeam, ""));
+          rowsHost.appendChild(favRow(s.last,
+            finished.homeTeam + " " + finished.score.home + "–" + finished.score.away + " " + finished.awayTeam, "", matchHref(finished)));
         }
+        if (upcoming.length) return;
+        fixturesOnce().then(function (rounds) {
+          var all = [];
+          (rounds || []).forEach(function (round) { (Array.isArray(round && round.matches) ? round.matches : []).forEach(function (m) { if (m && m.homeTeam && m.awayTeam && m.kickoff) all.push(m); }); });
+          showUpcoming(addUpcoming(all));
+        });
       });
 
-      // "Favori Takımım" kartı Süper Lig kulüpleri için tutuluyor; tablo bu
-      // yüzden AÇIKÇA super-lig'den istenir — ligsiz bir istekten dönen
-      // varsayılan tablo değil.
+      // Tablo AÇIKÇA super-lig'den istenir — ligsiz bir istekten dönen varsayılan tablo değil.
       standingsOnce("super-lig")
         .then(function (rows) {
           if (!rows) return;
           for (var i = 0; i < rows.length; i += 1) {
             if (teamKey(rows[i].team || rows[i].name) !== key) continue;
-            box.appendChild(favRow(s.table,
-              rows[i].rank + ". " + s.pos, rows[i].points + " P"));
+            rowsHost.appendChild(favRow(s.table, rows[i].rank + ". " + s.pos, rows[i].points + " P"));
             return;
           }
         })
         .catch(function () {});
+
+      if (en) return;
+
+      // İlgili haberler: hafif vitrin dosyasından (40 kayıt), takım adına göre; en çok 2.
+      jsonOnce("/data/slim/news-lite.json").then(function (items) {
+        if (!items) return;
+        var picked = items.filter(function (item) {
+          return item && item.team && teamKey(item.team) === key && ownPath(item.url) && item.title;
+        }).slice(0, 2);
+        if (!picked.length) return;
+        var wrap = document.createElement("div");
+        wrap.className = "favourite-team__news";
+        var label = document.createElement("span");
+        label.className = "favourite-team__label";
+        label.textContent = s.news;
+        wrap.appendChild(label);
+        picked.forEach(function (item) { wrap.appendChild(linkEl(ownPath(item.url), String(item.title), "favourite-team__news-link")); });
+        rowsHost.appendChild(wrap);
+      });
+
+      // Takım sayfaları: slug takım kimliğinden türetilemiyor (gaziantep-fk, erzurumspor); derlemede üretilen küçük eşleme.
+      jsonOnce("/data/slim/team-pages.json").then(function (pages) {
+        var page = (pages || []).filter(function (entry) { return entry && String(entry.id) === team.id && /^[a-z0-9-]+$/.test(String(entry.slug)); })[0];
+        if (page) {
+          linksHost.appendChild(linkEl("/" + page.slug + "-maclari.html", s.matches));
+          linksHost.appendChild(linkEl("/" + page.slug + "-puan-durumu.html", s.standings));
+        }
+        linksHost.appendChild(linkEl("/takip-ettiklerim", s.following));
+      });
     }
 
-    function favRow(label, value, meta) {
+    /** Kart bağlantısı: yalnızca kalıcı maç sayfası ya da güvenli göreli yol. */
+    function matchHref(match) {
+      var page = match && (match.matchPage || match.analysisPage);
+      var path = page ? ownPath("/" + String(page).replace(/^\.?\//, "")) : "";
+      return path || "";
+    }
+
+    function favRow(label, value, meta, href) {
       var row = document.createElement("div");
       row.className = "favourite-team__row";
-      row.innerHTML = '<span class="favourite-team__label">' + escapeText(label) + "</span>" +
-        '<span class="favourite-team__value">' + escapeText(value) + "</span>" +
-        (meta ? '<span class="favourite-team__meta">' + escapeText(meta) + "</span>" : "");
+      var labelEl = document.createElement("span");
+      labelEl.className = "favourite-team__label";
+      labelEl.textContent = label;
+      row.appendChild(labelEl);
+      var valueEl = href ? document.createElement("a") : document.createElement("span");
+      valueEl.className = "favourite-team__value";
+      valueEl.textContent = value;
+      if (href) valueEl.href = href;
+      row.appendChild(valueEl);
+      if (meta) {
+        var metaEl = document.createElement("span");
+        metaEl.className = "favourite-team__meta";
+        metaEl.textContent = meta;
+        row.appendChild(metaEl);
+      }
       return row;
     }
   }
@@ -5015,5 +5224,9 @@
 // Match-specific in-site notifications. Reuses shared data; never requests push permission.
 (function () {
   if (window.FutbolRadarFollow || document.querySelector('script[data-live-follow-module]')) return;
-  var script = document.createElement('script'); script.src = '/live-follow.js'; script.defer = true; script.setAttribute('data-live-follow-module', ''); document.head.appendChild(script);
+  function load() {
+    var script = document.createElement('script'); script.src = '/live-follow.js'; script.defer = true; script.setAttribute('data-live-follow-module', ''); document.head.appendChild(script);
+  }
+  // Yıldız düğmeleri favori deposuna bağlı: önce o yüklenir (başarısız olsa da bildirim motoru açılır).
+  if (window.__frFavoritesSettled) load(); else document.addEventListener('futbolradar:favorites-ready', load, { once: true });
 })();

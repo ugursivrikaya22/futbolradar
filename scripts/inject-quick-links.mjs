@@ -33,7 +33,9 @@ const LINKS = [
   { file: "analizler.html", label: "Maç Analizleri" },
   { file: "kose-yazilari.html", label: "Köşe Yazıları" },
   // Uzantısız adres: `.html` biçimi 301 ile buna yönleniyor (vercel.json).
-  { file: "tahmin-ligi.html", href: "./tahmin-ligi", label: "Tahmin Ligi" }
+  { file: "tahmin-ligi.html", href: "./tahmin-ligi", label: "Tahmin Ligi" },
+  // Kişisel sayfa (noindex): favori takım/maç listesi. Uzantısız adres, aynı gerekçe.
+  { file: "takip-ettiklerim.html", href: "./takip-ettiklerim", label: "Takip Ettiklerim" }
 ];
 
 /** Şeridin yazıldığı sayfalar. */

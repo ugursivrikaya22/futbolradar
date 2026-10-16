@@ -320,6 +320,8 @@
       var slug = select.value;
       if (!slug) return;
       writeLocal(LS_FAVORITE_TEAM, slug);
+      // Ana sayfa kutusu ve "Takip Ettiklerim" aynı seçimi görsün (tek favori deposu).
+      if (window.FutbolRadarFavorites) window.FutbolRadarFavorites.setPrimaryTeam(slug);
       notifyServiceWorkerOfFavoriteTeam(slug);
       subscribeToPush(slug, panel);
     });
