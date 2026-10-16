@@ -13,9 +13,39 @@
     <meta property="og:title" content="Takip Ettiklerim: Favori Takım ve Maçlar | FutbolRadar" />
     <meta property="og:description" content="Favori takımlarını, yıldızladığın maçları ve yaklaşan karşılaşmaları tek yerde gör. Üyelik yok; tercihlerin yalnızca bu tarayıcıda saklanır." />
     <meta property="og:url" content="https://www.futbolradar.com/takip-ettiklerim" />
-    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="./page.css" />
+    <link rel="stylesheet" href="./page.css?v=aee5a496" />
     <link rel="stylesheet" href="./takip.css" />
+  <!-- favicon:start -->
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+<link rel="manifest" href="/site.webmanifest" />
+<!-- favicon:end -->
+  <!-- pwa:start -->
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="FutbolRadar" />
+<meta name="fr-vapid-public-key" content="" />
+<script defer src="/pwa.js?v=6f20d450"></script>
+<!-- pwa:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body>
     <div class="site-shell">
@@ -48,6 +78,17 @@
         </nav>
       </div>
     </header>
+      <!-- shared-layout:ticker:start --><div class="news-ticker news-ticker-compact" data-shared-layout="ticker" data-ticker-source="ticker-feed" data-ticker-mode="compact" aria-label="Son dakika futbol gündemi">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge is-live"><i class="live-pulse" aria-hidden="true"></i>Son Dakika</span>
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track">
+            <div class="news-ticker-group"><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMiqgFBVV95cUxPVFlHZEFKenlidWtjSFVZak9VaExoTGJwaU1PV0JvRTBXRGhrLWFMaDFsQjQ3VzUyLWlITUZJMGg2UEhDendHRGdfaWt6QmNjY1l5bGRIaXBOUWh0aWRZd1pnWkNKY0NwR0pJT21sdXY5TC05OUZVcmpCNW1KNVlnU0JLbW5KT0pTdEswRDVWeGhtVGJJV3lVLTh3NnE0Vm1ha3NkUjdQRS10UQ?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Fenerbahçe Tarfin, Beşiktaş BOA&#039;ya konuk oluyor — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Fenerbahçe Tarfin, Beşiktaş BOA&#039;ya konuk oluyor</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMiiAFBVV95cUxPZnJVbHJMTXlUdWs4NHdRaVVUNGFVREJRM3RIQ3dCU1RySkxKMW1JMWIxVC1BeWRmc0V1UEk0dEVKREFac0w1dmtXRlBKWVJja2ptSWF4SDRKeEN5Mlhob0VVUzItY0dURnJiTVZHMXpRRTJjbVJ2S0dzc0FEYjQ1ajN6YW1DWkF5?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Futbol A Takımımız kampa girdi — kaynak: fenerbahce.org" title="Kaynak: fenerbahce.org"><span class="news-ticker-tag">Resmî açıklama</span><span>Futbol A Takımımız kampa girdi</span></a><span class="news-ticker-sep" aria-hidden="true"></span><a class="news-ticker-item" href="https://news.google.com/rss/articles/CBMijwFBVV95cUxNcS1NQWVIYmhkeGdHX0FDaXNWLUtnSzcwWXFoQzdLenFfdTNwQmZtZmtWWW13aWNzNVNDVUMybjhxSkp6NVgwTzJ4dzRtVUZ5UHI4Sl9rREZkbkpscGJmQnNzZHo1YWNHdFRIdUZsclB3M1pHbl9oRk5Ubk1SLThYYnpyekZHQzBMN05ueHNYSQ?oc=5" target="_blank" rel="nofollow noopener noreferrer" aria-label="Beşiktaş maçı hazırlıklarımız başladı — kaynak: trabzonspor.org.tr" title="Kaynak: trabzonspor.org.tr"><span class="news-ticker-tag">Resmî açıklama</span><span>Beşiktaş maçı hazırlıklarımız başladı</span></a></div>
+          </div>
+        </div>
+        <a class="news-ticker-all" href="./haberler.html">Tümü</a>
+      </div>
+    </div><!-- shared-layout:ticker:end -->
       <main class="follow-page" id="takip-ettiklerim" data-following>
         <div class="container">
           <nav class="evergreen-breadcrumb" aria-label="İçerik yolu"><a href="./">Ana Sayfa</a><span aria-hidden="true">/</span><span aria-current="page">Takip Ettiklerim</span></nav>
@@ -147,7 +188,7 @@
     </footer>
     </div>
     <script src="./favorites-core.js" defer></script>
-    <script src="./site.js" defer></script>
+    <script src="./site.js?v=918008c2" defer></script>
     <script src="./takip.js" defer></script>
   </body>
 </html>

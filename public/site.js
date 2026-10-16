@@ -52,7 +52,10 @@
     if (!entry) {
       var shared = nativeFetch(input, init && init.cache ? { cache: init.cache } : undefined);
       entry = entries[key] = { promise: shared };
-      var release = function () { window.setTimeout(function () { if (entries[key] === entry) delete entries[key]; }, HOLD_MS); };
+      // no-store isteği (canlı yoklama) yalnızca uçuştayken paylaşılır; bitince bekletilmez:
+      // ardışık yoklamalar hep taze yanıt görür. Diğerleri 1,5 sn tutulur (sayfa açılışındaki yinelenenler).
+      var hold = init && init.cache === "no-store" ? 0 : HOLD_MS;
+      var release = function () { window.setTimeout(function () { if (entries[key] === entry) delete entries[key]; }, hold); };
       shared.then(release, function () { if (entries[key] === entry) delete entries[key]; });
     }
 
