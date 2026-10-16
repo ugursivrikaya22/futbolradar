@@ -231,7 +231,33 @@ function assessFixtureDay({sourceDay, today, staticAgeMs, runtimeFresh}) {
   return {level:'critical', code:'wrong-fixture-day', detail:`Static fixtures are dated ${sourceDay}, Istanbul today is ${today}, and the live API is not a fresh fallback.`};
 }
 
+/**
+ * Tek tek kaynakların son BAŞARILI zamanı. Koşu yeşil olsa bile bir kaynak
+ * sessizce başarısız olabilir (fixture-calendar 36 saat boyunca zaman aşımına
+ * uğradı, koşular yeşildi). `criticalMs: null` kaynağı yalnızca uyarıya çevirir.
+ */
+const SOURCE_FRESHNESS = Object.freeze({
+  'live-fixtures': {warnMs: 6 * HOUR, criticalMs: 24 * HOUR},
+  'standings': {warnMs: 6 * HOUR, criticalMs: 24 * HOUR},
+  'football-news': {warnMs: 8 * HOUR, criticalMs: null},
+  'english-news': {warnMs: 12 * HOUR, criticalMs: null},
+  'fixture-calendar': {warnMs: 30 * HOUR, criticalMs: null},
+});
+
+function assessSourceFreshness(id, source, now = Date.now(), table = SOURCE_FRESHNESS) {
+  const rule = table[id];
+  if (!rule) return {level:'ok', code:null, detail:`No freshness rule for ${id}.`};
+  if (!source) return {level:'ok', code:null, detail:`${id}: not tracked in this ledger.`};
+  const last = Date.parse(source.lastSuccessfulAt);
+  if (!Number.isFinite(last)) return {level:'warning', code:`source-unknown-${id}`, detail:`${id}: no successful run recorded.`};
+  const age = now - last;
+  const hours = Math.round(age / HOUR);
+  if (rule.criticalMs && age > rule.criticalMs) return {level:'critical', code:`source-stale-${id}`, detail:`${id}: last success ${hours} h ago.`, ageMs: age};
+  if (age > rule.warnMs) return {level:'warning', code:`source-stale-${id}`, detail:`${id}: last success ${hours} h ago${source?.error ? ` (last error: ${String(source.error).slice(0, 80)})` : ''}.`, ageMs: age};
+  return {level:'ok', code:null, detail:`${id}: fresh.`, ageMs: age};
+}
+
 module.exports = { semantic, version, modeFor, skipReason, STOP_CODES, istanbulDay, istanbulHour, hourlyKey, fullKey, assessRun,
-  assessCompletion, fullDayState, lastVerifiedFull, decideUpdateType, assessFullDaily, assessScheduler, assessFixtureFreshness, assessFixtureDay,
+  assessCompletion, fullDayState, lastVerifiedFull, decideUpdateType, assessFullDaily, assessScheduler, assessFixtureFreshness, assessFixtureDay, assessSourceFreshness, SOURCE_FRESHNESS,
   limits: {FULL_TARGET_HOUR, FULL_LAST_START_HOUR, FULL_MAX_ATTEMPTS_PER_DAY, FULL_RETRY_COOLDOWN_MS, FULL_GRACE_MS, FULL_OVERDUE_MS,
     SCHEDULER_DELAY_WARN_MS, SCHEDULER_MISSED_MS, STATIC_FIXTURE_WARN_MS, STATIC_FIXTURE_CRITICAL_MS} };

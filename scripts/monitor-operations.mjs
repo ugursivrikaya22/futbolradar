@@ -75,6 +75,10 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   checks.push({name:'daily-full-update',...note(full),sourceTime:full.lastVerifiedFullAt,day:full.day,attempts:full.state.attempts,completeToday:full.state.complete,lastAttempt:full.state.lastAttemptStatus});
   const source=ledger.lastUpdate?.sourcesChecked?.find(s=>s.id==='live-fixtures');
   if(source?.status==='failed'||source?.summary?.degraded||policy.STOP_CODES.has(source?.providerCode)) issues.push('provider-'+(source.providerCode||source.summary?.degradedCode||'sync-failed'));
+  for(const id of Object.keys(policy.SOURCE_FRESHNESS)) {
+    const a=policy.assessSourceFreshness(id,ledger.sources?.[id],now);
+    if(a.level!=='ok') checks.push({name:'source-'+id,...note(a),ageHours:a.ageMs?Math.round(a.ageMs/3600000):null});
+  }
   const publication=ledger.lastUpdate?.publication;
   const observationPublished=!publication||['committed','unchanged'].includes(publication.state);
   checks.push({name:'writer-publication',state:publication?.state||'legacy-published',commit:publication?.commit||null});

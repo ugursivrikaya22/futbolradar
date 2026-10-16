@@ -205,6 +205,22 @@ test('fixture day: midnight rollover with a fresh live API is a delay, not an ou
   assert.equal(policy.assessFixtureDay({...base, staticAgeMs: NaN, runtimeFresh: true}).code, 'wrong-fixture-day');
 });
 
+test('per-source freshness: a green run cannot hide a source that silently stopped', () => {
+  const H = 3600000, now = Date.parse('2026-10-16T18:00:00Z');
+  const ago = (h) => ({lastSuccessfulAt: new Date(now - h * H).toISOString()});
+  assert.equal(policy.assessSourceFreshness('standings', ago(1), now).level, 'ok');
+  assert.equal(policy.assessSourceFreshness('standings', ago(7), now).code, 'source-stale-standings');
+  assert.equal(policy.assessSourceFreshness('standings', ago(7), now).level, 'warning');
+  assert.equal(policy.assessSourceFreshness('standings', ago(25), now).level, 'critical');
+  // News and the weekly-ish calendar never turn the job red on their own.
+  assert.equal(policy.assessSourceFreshness('football-news', ago(200), now).level, 'warning');
+  const cal = policy.assessSourceFreshness('fixture-calendar', {...ago(36), error: 'Timed out after 480000ms'}, now);
+  assert.equal(cal.level, 'warning'); assert.match(cal.detail, /Timed out/);
+  assert.equal(policy.assessSourceFreshness('standings', {}, now).code, 'source-unknown-standings');
+  assert.equal(policy.assessSourceFreshness('standings', undefined, now).level, 'ok');
+  assert.equal(policy.assessSourceFreshness('unlisted', ago(999), now).level, 'ok');
+});
+
 // ---------------------------------------------------------------------------
 // Monitor scenarios (fake GitHub + fake HTTP)
 // ---------------------------------------------------------------------------
