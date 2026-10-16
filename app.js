@@ -266,6 +266,37 @@
     };
   }
 
+  /**
+   * AYNI İSTEĞİ İKİ KEZ ÇEKME.
+   *
+   * app.js ile live-follow.js aynı sayfa yüklemesinde aynı JSON'u (api/matches,
+   * match-notification-identities.json, matches.json) bağımsız çekiyordu: ana
+   * sayfada ~140 KB (sıkıştırılmış) tekrar. Uçuştaki istek pencere düzeyinde ortak
+   * bir tabloda tutulur; ikinci çağıran aynı yanıtın kopyasını (clone) alır.
+   * Bu bir ÖNBELLEK DEĞİL: kayıt, istek bittikten 8 sn sonra silinir (sayfa açılışında betiklerin sıra kaymasını kapsar), sonraki
+   * çağrı taze ister (canlı skor yoklaması bayat veri görmez). `no-store` isteği
+   * yalnızca uçuştayken paylaşılır. API çağrı sayısı ARTMAZ, yalnızca azalır.
+   */
+  function fetchShared(url, init) {
+    var store = window.__frInflightFetch || (window.__frInflightFetch = {});
+    var cacheMode = (init && init.cache) || "default";
+    // Anahtar: mutlak adres (+ no-store ayrımı). app.js "/api/matches", live-follow.js
+    // new URL(...) verir; ikisi aynı kaynağa çözülmeli.
+    var key = (cacheMode === "no-store" ? "no-store " : "") + new URL(String(url), document.baseURI).href;
+    var pending = store[key];
+    if (!pending) {
+      pending = fetch(url, init);
+      store[key] = pending;
+      // Başarısız yanıt (ağ hatası, 4xx/5xx) bekletilmez: sonraki çağrı yeniden dener.
+      var release = function (response) {
+        var keep = response && response.ok && cacheMode !== "no-store" ? 8000 : 0;
+        window.setTimeout(function () { if (store[key] === pending) delete store[key]; }, keep);
+      };
+      pending.then(release, function () { release(null); });
+    }
+    return pending.then(function (response) { return response.clone(); });
+  }
+
   function fetchJson(url, options) {
     var controller = window.AbortController ? new AbortController() : null;
     var timer = controller
@@ -282,7 +313,7 @@
       options.signal = controller.signal;
     }
 
-    return fetch(url, options).then(function (response) {
+    return fetchShared(url, options).then(function (response) {
       if (!response.ok) {
         throw new Error("data-load-failed");
       }
@@ -1078,6 +1109,42 @@
         }
         setEmpty(target, emptyTitle || "Veri yüklenemedi", "Bu bölüm geçici olarak kullanılamıyor. Sayfanın diğer alanlarını incelemeye devam edebilirsin.");
       });
+  }
+
+  /**
+   * EKRAN DIŞI BÖLÜMÜ GÖRÜNÜRE YAKLAŞANA KADAR BEKLET.
+   *
+   * Ana sayfada oyuncu radarı (players.json ≈ 4 MB ham / 158 KB sıkıştırılmış)
+   * ve haber önizlemesi (news.json ≈ 3,5 MB ham / 227 KB) ilk ekranda
+   * görünmeyen, ÖN RENDER EDİLMİŞ bölümler için indiriliyordu. Bölüm zaten
+   * statik içerikle dolu (`data-static-fallback="true"`); taze veri ekrana
+   * 600 px yaklaşınca çekilir. Kural dar:
+   *   • yalnızca ön render içeriği olan (`data-static-fallback="true"`) kap;
+   *   • IntersectionObserver yoksa ya da bölüm zaten yakınsa hemen çizilir;
+   *   • arama botu görünümü sayfa boyunda olduğundan tüm bölümler hemen çizilir.
+   */
+  function renderIntoWhenNear(target, dataName, renderer, emptyTitle) {
+    if (!target) {
+      return;
+    }
+
+    var deferrable = target.dataset.staticFallback === "true" &&
+      target.children.length > 0 &&
+      typeof window.IntersectionObserver === "function" &&
+      !target.hidden;
+    if (!deferrable) {
+      renderInto(target, dataName, renderer, emptyTitle);
+      return;
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      if (!entries.some(function (entry) { return entry.isIntersecting; })) {
+        return;
+      }
+      observer.disconnect();
+      renderInto(target, dataName, renderer, emptyTitle);
+    }, { rootMargin: "600px 0px" });
+    observer.observe(target);
   }
 
   function signalGroup(signals, groupName) {
@@ -5559,6 +5626,8 @@
   }
   // today-match-card-selection:end
 
+  var TODAY_PREVIEW_MAX = 24;
+
   function renderTodayMatchesPreview(matches, teams) {
     if (!Array.isArray(matches) || !matches.length) {
       return "";
@@ -5577,7 +5646,18 @@
 
     // Sekiz kart, yoğun bir Avrupa gecesinde günün yarısını gizliyordu. On iki
     // görünür, gerisi butonun arkasında; on ikiden azsa buton hiç basılmaz.
-    return renderMatchListWindow(ordered, renderHomeFixtureCard, "today-matches");
+    //
+    // ÖNİZLEME EN FAZLA TODAY_PREVIEW_MAX KART BASAR. Yoğun gecelerde günün
+    // 200+ maçının tamamı gizli (hidden) olarak DOM'a basılıyordu: ana sayfa
+    // 2.100 düğümden ~8.700 düğüme çıkıyor, ölçülen TBT 6 sn'yi aşıyordu.
+    // Liste ilgi puanına göre sıralı olduğundan en önemli kartlar kalır; tam
+    // liste "Bugünün maçları" sayfasında, oraya açık bir bağlantı verilir.
+    var shown = ordered.length > TODAY_PREVIEW_MAX ? ordered.slice(0, TODAY_PREVIEW_MAX) : ordered;
+    var html = renderMatchListWindow(shown, renderHomeFixtureCard, "today-matches");
+    if (ordered.length > shown.length) {
+      html += '<p class="match-more-all"><a class="detail-link" href="./bugunun-maclari">Bugünün tüm maçları (' + ordered.length + ")</a></p>";
+    }
+    return html;
   }
 
   // match-program-order:start
@@ -13522,7 +13602,7 @@
       }
     });
 
-    renderInto(
+    renderIntoWhenNear(
       document.querySelector('[data-api-target="home-trend-teams"]'),
       "momentum",
       renderTrendTeams,
@@ -13589,7 +13669,7 @@
       }).start();
     })();
 
-    renderInto(
+    renderIntoWhenNear(
       document.querySelector('[data-api-target="player-radar"]'),
       "players",
       function (players) {
@@ -13662,7 +13742,7 @@
     );
 
 
-    renderInto(
+    renderIntoWhenNear(
       document.querySelector('[data-api-target="news-preview"]'),
       "news",
       function (news) {

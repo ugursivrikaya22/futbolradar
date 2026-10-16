@@ -201,6 +201,7 @@
   }
 
   function syncMatchControls(scope) {
+    ensureCalendarIds();
     var root = scope && scope.querySelectorAll ? scope : document;
     root.querySelectorAll('[data-match-center]').forEach(function (node) {
       var params = new URLSearchParams(node.getAttribute('data-msp-query') || '');
@@ -374,10 +375,41 @@
   function disconnect() { if (reconnectTimer) clearTimeout(reconnectTimer); reconnectTimer = null; }
   function scheduleReconnect() { if (!polling && !reconnectTimer) reconnectTimer = setTimeout(connect, 0); }
   function restartConnection() { disconnect(); scheduleReconnect(); }
+  /**
+   * AYNI İSTEĞİ İKİ KEZ ÇEKME.
+   *
+   * app.js ile live-follow.js aynı sayfa yüklemesinde aynı JSON'u (api/matches,
+   * match-notification-identities.json, matches.json) bağımsız çekiyordu: ana
+   * sayfada ~140 KB (sıkıştırılmış) tekrar. Uçuştaki istek pencere düzeyinde ortak
+   * bir tabloda tutulur; ikinci çağıran aynı yanıtın kopyasını (clone) alır.
+   * Bu bir ÖNBELLEK DEĞİL: kayıt, istek bittikten 8 sn sonra silinir (sayfa açılışında betiklerin sıra kaymasını kapsar), sonraki
+   * çağrı taze ister (canlı skor yoklaması bayat veri görmez). `no-store` isteği
+   * yalnızca uçuştayken paylaşılır. API çağrı sayısı ARTMAZ, yalnızca azalır.
+   */
+  function fetchShared(url, init) {
+    var store = window.__frInflightFetch || (window.__frInflightFetch = {});
+    var cacheMode = (init && init.cache) || "default";
+    // Anahtar: mutlak adres (+ no-store ayrımı). app.js "/api/matches", live-follow.js
+    // new URL(...) verir; ikisi aynı kaynağa çözülmeli.
+    var key = (cacheMode === "no-store" ? "no-store " : "") + new URL(String(url), document.baseURI).href;
+    var pending = store[key];
+    if (!pending) {
+      pending = fetch(url, init);
+      store[key] = pending;
+      // Başarısız yanıt (ağ hatası, 4xx/5xx) bekletilmez: sonraki çağrı yeniden dener.
+      var release = function (response) {
+        var keep = response && response.ok && cacheMode !== "no-store" ? 8000 : 0;
+        window.setTimeout(function () { if (store[key] === pending) delete store[key]; }, keep);
+      };
+      pending.then(release, function () { release(null); });
+    }
+    return pending.then(function (response) { return response.clone(); });
+  }
+
   async function readShared(file) {
     var controller = new AbortController(), timeout = setTimeout(function () { controller.abort(); }, 10000);
     try {
-      var response = await fetch(new URL('data/' + file, moduleBase), { cache: 'no-cache', signal: controller.signal });
+      var response = await fetchShared(new URL('data/' + file, moduleBase), { cache: 'no-cache', signal: controller.signal });
       if (!response.ok) throw new Error('shared-cache-unavailable');
       return await response.json();
     } finally { clearTimeout(timeout); }
@@ -387,7 +419,7 @@
     try {
       // One canonical CDN URL for all matches/users. Never add user, match or
       // cache-busting parameters; the existing provider cache coalesces misses.
-      var response=await fetch(new URL('api/matches',moduleBase),{signal:controller.signal});
+      var response=await fetchShared(new URL('api/matches',moduleBase),{signal:controller.signal});
       if(!response.ok) return {matches:[]};
       var payload=await response.json();
       return {matches:payload.ok&&Array.isArray(payload.data)?payload.data:[]};
@@ -580,6 +612,7 @@
   function follow(record) {
     var normalized = normalizeRecord(record);
     if (!enabled || !normalized) return false;
+    if (!calendarIdsRequested) loadCalendarIds();
     if (followed.has(subscriptionId(normalized.id))) return true;
     if (!followed.has(normalized.id) && followed.size >= MAX_FOLLOWED_MATCHES) return false;
     baselines.delete(normalized.id);
@@ -730,7 +763,28 @@
     if (changed) persistState();
     return changed;
   }
+  // KİMLİK TABLOSU YALNIZCA GEREKTİĞİNDE İNDİRİLİR.
+  //
+  // match-notification-identities.json (~150 KB ham / 42 KB sıkıştırılmış) her
+  // sayfa açılışında koşulsuz çekiliyordu; puan durumu, takım profili, haber
+  // gibi hiçbir maç kartı olmayan sayfalarda ve takip edilen maçı olmayan
+  // ziyaretçide kullanılacağı hiçbir yer yok. Tablo yalnızca (a) takip edilen
+  // maç varsa (eski kimlik göçü için) ya da (b) sayfada bir maç kontrolü
+  // bulunduğunda (ilk açılışta veya sonradan çizilen kartlarda) çekilir.
+  var calendarIdsRequested = false;
+  var MATCH_NODE_SELECTOR = [
+    '[data-notification-fixture]', 'a.fixture-match-row[href]', '[data-card="today-radar-match"][data-match]',
+    '[data-match-center]', '[data-notification-detail]', '.fixture-card[data-match]', '.live-score-card[data-match]',
+    '.match-detail-card[data-match]', '[data-en-match-detail]', '[data-card="featured-match"]', '.match-follow-button'
+  ].join(',');
+  function ensureCalendarIds() {
+    if (calendarIdsRequested) return;
+    if (!followed.size && !document.querySelector(MATCH_NODE_SELECTOR)) return;
+    calendarIdsRequested = true;
+    loadCalendarIds();
+  }
   function loadCalendarIds() {
+    calendarIdsRequested = true;
     return readShared('match-notification-identities.json').then(function (data) {
       calendarIds = (data && data.calendarIds) || {};
       if (!identitiesLoaded) { identityAliases = (data && data.aliases) || {}; identitiesLoaded = true; }
@@ -741,7 +795,7 @@
 
   function init() {
     loadState();
-    loadCalendarIds();
+    ensureCalendarIds();
     try { seenEvents = new Map(safeJson(localStorage.getItem('futbolradar:notification-seen:v2'), [])); } catch (_) {}
     injectHeaderPanel();
     bindEvents();

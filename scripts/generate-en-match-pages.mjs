@@ -24,7 +24,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { sectionHead } from "./lib/matchCards.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { findFinalResult, resultRowsFrom, resultTitle, resultDescription } from "./lib/enMatchResult.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -218,7 +218,14 @@ function pageHtml(match) {
   const trPath = `mac/${slugValue}.html`;
   const enPath = `en/match/${slugValue}.html`;
   const selfUrl = absoluteUrl(enPath);
-  const centrePath = matchCentrePath(match);
+  // MAÇ SONU: fikstür satırında gün/saat yokken (confirmed-pairing) sağlayıcı
+  // sonucu tarihi taşır. Maç Merkezi eşleşmesi bu tarihle de yapılmalı; aksi
+  // hâlde oynanmış maçın hafta numaralı EN sayfası kendini kanonik sayar,
+  // site haritasında kalır ve aynı maçın tarihli EN sayfasıyla kopya olur
+  // (TR eşi unify-match-canonicals ile birleşiyordu, EN eşi birleşmiyordu).
+  const finalResult = findFinalResult(match, resultRows, { seasonStart: fixtures.seasonStart });
+  const centreMatch = match.kickoff || !finalResult || !finalResult.kickoff ? match : { ...match, kickoff: finalResult.kickoff };
+  const centrePath = matchCentrePath(centreMatch);
   const canonical = centrePath ? absoluteUrl(centrePath) : selfUrl;
   const isCentreAlias = canonical !== selfUrl;
   const radar = calculateMatchRadar(match, { teams, players, squadStatus });
@@ -233,7 +240,6 @@ function pageHtml(match) {
   // önizleme olarak kalır — skor uydurulmaz. Adım ayrı bir cron değil:
   // sayfa üretimi her derlemede koştuğu için maç bittikten sonraki ilk
   // (saatlik) derleme sayfayı kendiliğinden çevirir.
-  const finalResult = findFinalResult(match, resultRows, { seasonStart: fixtures.seasonStart });
 
   const title = finalResult
     ? resultTitle(match, finalResult)
@@ -317,7 +323,7 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
         <article class="card"><span class="card-kicker">${teamLink(match.awayTeam)}</span><h2>${escapeHtml(label("match.form"))} &amp; ${escapeHtml(label("match.squad"))}</h2>${squadNoteHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article>
       </section>
       <section class="match-related-grid" aria-label="${escapeHtml(label("match.related"))}">
-        ${liveCentreCard(match)}<a class="match-related-card" href="../standings.html"><span>Table</span><strong>Süper Lig standings</strong><p>See where both sides stand this season.</p></a>
+        ${liveCentreCard(centreMatch)}<a class="match-related-card" href="../standings.html"><span>Table</span><strong>Süper Lig standings</strong><p>See where both sides stand this season.</p></a>
         <a class="match-related-card" href="../todays-matches.html"><span>Fixtures</span><strong>Today's matches</strong><p>The full Süper Lig fixture list.</p></a>
       </section>`;
 
@@ -329,7 +335,7 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${match.kickoff || (finalResult && finalResult.kickoff) ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -350,7 +356,7 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
     ${siteHeader({ base: BASE, locale: LOCALE, altHref: null })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${BASE}en/index.html">${escapeHtml(label("breadcrumb.home"))}</a><span>/</span><a href="${BASE}en/todays-matches.html">${escapeHtml(label("nav.todayMatches"))}</a><span>/</span><span>${escapeHtml(match.homeTeam)} vs ${escapeHtml(match.awayTeam)}</span></nav>
-      ${centreHandoffBanner(match)}
+      ${centreHandoffBanner(centreMatch)}
 ${body}
     </main>
     ${siteFooter({ base: BASE, locale: LOCALE })}
@@ -359,7 +365,7 @@ ${body}
 </html>
 `;
 
-  return { html, trPath, enPath, canonical, selfUrl, isCentreAlias, lastmod: String((match.freshness && (match.freshness.verifiedAt || match.freshness.fetchedAt)) || fixtures.lastVerifiedAt || "").slice(0, 10) };
+  return { html, trPath, enPath, canonical, selfUrl, isCentreAlias, dated: Boolean(match.kickoff || (finalResult && finalResult.kickoff)), lastmod: String((match.freshness && (match.freshness.verifiedAt || match.freshness.fetchedAt)) || fixtures.lastVerifiedAt || "").slice(0, 10) };
 }
 
 const matches = flattenFixtures();
@@ -380,6 +386,8 @@ for (const match of matches) {
   // Takma ada dönüşmüş sayfa haritaya yazılmaz: kendi adresi kanonik değil,
   // kanonik adresi ise zaten generate-match-seo-pages.mjs listeliyor.
   if (result.isCentreAlias) continue;
+  // Tarihi atanmamış hafta sayfası yer tutucudur: noindex ve haritada yok (bkz. TR eşi).
+  if (!result.dated) continue;
   sitemapEntries.push(`  <url>\n    <loc>${result.selfUrl}</loc>\n    <lastmod>${result.lastmod || fixtures.lastVerifiedAt || ""}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`);
 }
 

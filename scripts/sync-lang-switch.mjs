@@ -47,7 +47,9 @@ for (const full of htmlFiles(root)) {
     const currentTarget = toRootPath(current, pageUrl);
     const currentHit = currentTarget == null ? null : resolver.resolve(currentTarget);
     const same = currentHit && currentHit.status !== "404" && (currentHit.file || currentHit.final) === (altHit.file || altHit.final);
-    if (same) return whole;
+    // Aynı sayfaya gidiyor ama bir 301'den geçiyorsa (ör. `futbolcu/x.html` → `/futbolcu/x`)
+    // yine yeniden yazılır: hreflang eşi son adresi biliyor, kullanıcı gereksiz sıçramasın.
+    if (same && currentHit.status === "ok") return whole;
     return `${open.replace(/\bhref="[^"]*"/i, `href="${altPath}"`)}${close}`;
   });
   if (next !== html) {

@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.futbolradar.com/data/analytics/organic-traffic.schema.json",
+  "title": "FutbolRadar organik trafik verisi",
+  "description": "GA4 'Organic Search' kanalından günlük oturum/kullanıcı ve en çok trafik getiren giriş sayfaları. Dosya boşsa (daily=[]) rapor 'veri yok' der; sıfır yazmaz. Doğrulama: scripts/lib/organicTraffic.mjs#validateOrganicTraffic",
+  "type": "object",
+  "required": ["version", "configured", "daily", "topPages"],
+  "properties": {
+    "version": { "const": 1 },
+    "source": { "type": ["string", "null"], "description": "ga4-data-api | manual-import | null" },
+    "configured": { "type": "boolean" },
+    "fetchedAt": { "type": ["string", "null"], "format": "date-time" },
+    "range": {
+      "type": "object",
+      "properties": { "start": { "type": ["string", "null"], "format": "date" }, "end": { "type": ["string", "null"], "format": "date" } }
+    },
+    "note": { "type": "string" },
+    "daily": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["date", "sessions", "users"],
+        "properties": {
+          "date": { "type": "string", "format": "date" },
+          "sessions": { "type": "integer", "minimum": 0 },
+          "users": { "type": "integer", "minimum": 0, "description": "Günlük tekil kullanıcı; günler arasında toplanamaz." },
+          "newUsers": { "type": "integer", "minimum": 0 },
+          "engagedSessions": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "topPages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "sessions"],
+        "properties": {
+          "path": { "type": "string", "pattern": "^/" },
+          "sessions": { "type": "integer", "minimum": 0 },
+          "users": { "type": "integer", "minimum": 0 },
+          "engagementRate": { "type": "number", "minimum": 0, "maximum": 1 },
+          "avgSessionSeconds": { "type": "integer", "minimum": 0 }
+        }
+      }
+    }
+  }
+}

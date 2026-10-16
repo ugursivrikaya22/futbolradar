@@ -436,11 +436,18 @@ function pageHtml(pair) {
       ${JSON.stringify({
         "@context": "https://schema.org",
         "@graph": [
+          // KIYAS SAYFASI BİR HABER/MAKALE DEĞİL: yayın tarihi ve yazarı yok.
+          // `Article` yazmak zorunlu datePublished/author alanlarını boş
+          // bırakıyordu (2.800+ sayfada geçersiz şema). Sayfanın gerçek türü
+          // WebPage; tarih ya da yazar UYDURULMAZ.
           {
-            "@type": "Article",
-            headline: title,
+            "@type": "WebPage",
+            name: title,
             description: stripTags(description),
+            url: canonical,
             mainEntityOfPage: canonical,
+            inLanguage: "tr-TR",
+            isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${domain}/` },
             publisher: {
               "@type": "Organization",
               name: "FutbolRadar"
@@ -455,14 +462,14 @@ function pageHtml(pair) {
               { "@type": "ListItem", position: 3, name: `${left.name} vs ${right.name}`, item: canonical }
             ]
           },
-          // MEVCUT DÜĞÜMLER BOZULMADAN eklenir: Article ve BreadcrumbList
+          // MEVCUT DÜĞÜMLER BOZULMADAN eklenir: WebPage ve BreadcrumbList
           // aynen kalır, hesaplanmış puanlar yalnızca Person düğümlerine
           // `additionalProperty` olarak girer. Hesaplanamayan kategori
           // düğüme HİÇ girmez — makine okunur veride "Veri yetersiz" metni
           // bir ölçü gibi görünmemeli.
           ...ratingPersonNodes
         ]
-      }, null, 8)}
+      })}
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />

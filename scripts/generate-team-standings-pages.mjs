@@ -171,8 +171,10 @@ function buildPage(team, sorted, total) {
   const rank = Number(fullTeam.rank);
   const points = Number(fullTeam.points);
   const played = displayValue(fullTeam.played);
-  const title = `${fullTeam.name} ${points} puan, ${rank}. sıra | Süper Lig`;
-  const description = `${fullTeam.name}, 2026/27 Süper Lig'de ${played} maç sonunda ${points} puanla ${rank}. sırada.`;
+  // Başlık hedef sorguyu ("<takım> puan durumu") taşır; güncel sıra/puan başlığın
+  // sonunda. Marka eki gerekirse normalize-meta tarafından düşürülür.
+  const title = `${fullTeam.name} Puan Durumu 2026/27: ${rank}. Sıra, ${points} Puan | FutbolRadar`;
+  const description = `${fullTeam.name}, 2026/27 Süper Lig'de ${played} maç sonunda ${points} puanla ${rank}. sırada. Güncel tabloda rakiplerle puan farkını, averajı ve oynanan maç sayısını inceleyin.`;
   const intro = standingsNarrative(fullTeam, sorted, total);
   const indexable = standingsPageIndexable(fullTeam);
   const rowsHtml = sorted.map((t) => fullStandingRowHtml(t, team.id)).join("");

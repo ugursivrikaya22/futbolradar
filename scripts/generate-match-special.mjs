@@ -271,7 +271,7 @@ function lineupPanel(probable, locale, index) {
                 const profile = stored ? playerUrls.refreshPagePath(stored) : null;
                 const exists = profile && fs.existsSync(path.join(process.cwd(), profile));
                 return exists
-                  ? `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${profile}`)}">${escapeHtml(player.name)}</a>`
+                  ? `<a class="match-special__pitch-player" href="${escapeHtml(`${base}${playerUrls.cleanPagePath(profile)}`)}">${escapeHtml(player.name)}</a>`
                   : `<span class="match-special__pitch-player">${escapeHtml(player.name)}</span>`;
               }).join("\n              ")}
             </div>`;
@@ -576,11 +576,11 @@ function refreshCarriedPlayerLinks(entry) {
       const html = fs.readFileSync(full, "utf8");
       const next = html.replace(linkPattern, (match, before, prefix, target, after, label) => {
         const resolved = playerUrls.refreshPagePath(target);
-        if (resolved === target) return match;
+        if (playerUrls.cleanPagePath(resolved) === target) return match;
         if (!fs.existsSync(path.join(root, resolved))) {
           return `<span${before}${after}>${label}</span>`.replace(/\s+>/, ">");
         }
-        return `<a${before}href="${prefix}${resolved}"${after}>${label}</a>`;
+        return `<a${before}href="${prefix}${playerUrls.cleanPagePath(resolved)}"${after}>${label}</a>`;
       });
 
       if (next !== html) fs.writeFileSync(full, next, "utf8");
