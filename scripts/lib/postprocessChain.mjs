@@ -41,6 +41,11 @@ export const POSTPROCESS_CHAIN = [
   // Canlı puan durumu çekirdeğinin tarayıcı kopyası, kaynağından yeniden
   // üretilir. EN BAŞTA: varlık damgası (`inject-asset-version`) bu dosyayı
   // da damgalıyor, yani içerik damgadan önce kesinleşmiş olmalı.
+  // Tarayıcının ana sayfada indirdiği büyük veri dosyalarının hafif kopyaları
+  // (data/slim/, git'e girmez). Ham dosyalardan okur; HTML'e dokunmaz, yani
+  // sırası damgadan bağımsızdır, ama kaynaklar kesinleşmeden önce çalışmasın
+  // diye zincirin başında durur. Ayrıntı: services/slimData.js.
+  { id: "slim-data", script: "build-slim-data.mjs", args: [], timeoutMinutes: 2 },
   { id: "live-standings-core", script: "build-live-standings-client.mjs", args: [], timeoutMinutes: 2 },
   // Maç merkezi çekirdeğinin tarayıcı kopyası ve maç sayfasının hafif haber
   // dizini. İkisi de kaynağından üretiliyor ve varlık damgasından ÖNCE
@@ -141,6 +146,9 @@ export const POSTPROCESS_CHAIN = [
   // Dil kutusu hreflang eşine bağlanır (eş yoksa ana sayfa fallback'i kalır).
   // `hreflang`tan SONRA: eşi o adım yazıyor.
   { id: "lang-switch", script: "sync-lang-switch.mjs", args: [], timeoutMinutes: 5 },
+  // Sık kullanılan sayfalar şeridi (düz bağlantılar): `served-links`ten ÖNCE,
+  // çünkü yazdığı göreli adresler orada sunulan adrese göre doğrulanıyor.
+  { id: "quick-links", script: "inject-quick-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];

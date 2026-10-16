@@ -12007,6 +12007,14 @@ body .container {
   display: none;
 }
 
+/* Derlemede "canlı maç yok" basılmışsa bant ilk boyamadan itibaren gizli:
+   JS gelip data-empty yazınca 39 px'lik bant kalkıyor ve altındaki her şey
+   yukarı kayıyordu (ana sayfa CLS'inin yarısı). Canlı maç gelince JS
+   şeridi doldurur, bu kural eşleşmez ve bant görünür. */
+.live-scores-ticker:has([data-live-scores-empty]) {
+  display: none;
+}
+
 .live-scores-ticker__inner {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
@@ -20501,6 +20509,14 @@ a.motm-week__card:focus-visible {
   background: var(--surface, #fff);
 }
 
+/* Veri gelmeden önce yeri ayrılmış görünmez boşluk (başlık + sayaçlar + iki
+   satır = 177 px). Şerit dolunca altındaki bölümler kaymaz. */
+.now-football[data-placeholder] {
+  min-height: 177px;
+  border-color: transparent;
+  background: transparent;
+}
+
 .now-football__title {
   font-size: 12px;
   font-weight: 900;
@@ -20510,7 +20526,9 @@ a.motm-week__card:focus-visible {
 }
 
 .now-football__counts { display: flex; flex-wrap: wrap; gap: 8px; }
-.now-football__counts:empty { display: none; }
+/* Sayaçlar veri gelince doluyor; yer baştan ayrılır ki altındaki bölümler
+   kaymasın (ölçülen kayma: +33 px). */
+.now-football__counts:empty { min-height: 27px; }
 
 .now-football__count {
   padding: 3px 9px;
@@ -20595,6 +20613,14 @@ a.motm-week__card:focus-visible {
   border: 1px solid var(--line-strong, rgba(0, 0, 0, .12));
   border-radius: 14px;
   background: var(--surface, #fff);
+}
+
+/* Veri gelmeden önce yeri ayrılmış, görünmez boşluk (seçici hâlinin yüksekliği:
+   120 px). Kutu dolunca kayma olmaz; liste gelmezse kutu kaldırılır. */
+.favourite-team[data-placeholder] {
+  min-height: 122px;
+  border-color: transparent;
+  background: transparent;
 }
 
 .favourite-team__title {
@@ -24196,3 +24222,12 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .msp-compare-bar { grid-column: 1 / -1; display: flex; height: 8px; border-radius: 999px; overflow: hidden; background: var(--line, #e5e7eb); }
 .msp-compare-home { background: var(--accent, #c8102e); }
 .msp-compare-away { background: var(--accent-2, #1d4ed8); }
+
+/* ── SIK KULLANILAN SAYFALAR (scripts/inject-quick-links.mjs) ─────────────
+   Düz bağlantı şeridi: JS yok, açılır pencere yok. Mobilde sarılır. */
+.quick-links { margin-top: 28px; margin-bottom: 8px; }
+.quick-links__title { margin: 0 0 10px; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--muted, #5b6470); }
+.quick-links__list { display: flex; flex-wrap: wrap; gap: 8px; }
+.quick-links__list a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .12)); border-radius: 999px; background: var(--surface, #fff); color: inherit; font-size: 14px; font-weight: 700; text-decoration: none; }
+.quick-links__list a:hover, .quick-links__list a:focus-visible { border-color: var(--green, #0b8f5a); color: var(--green, #0b8f5a); }
+.footer-tagline { margin: 0 0 8px; font-size: 14px; line-height: 1.5; }

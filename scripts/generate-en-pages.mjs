@@ -555,6 +555,8 @@ function pageShell({ routeKey, trPath, enPath, heroKicker, heroTitle, heroLead, 
   // ve gövde `main.container` içine hapsedilmez.
   const main = bare
     ? `<main class="home-main">
+      <section class="container favourite-team" data-favourite-team data-placeholder aria-hidden="true"></section>
+      <section class="container now-football" data-now-football data-placeholder aria-hidden="true"></section>
 ${body}
       <section class="container source-strip" aria-label="Data information">
         <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
