@@ -216,7 +216,22 @@ function assessFixtureFreshness({staticAgeMs, runtimeFresh, emptyConfirmed=false
   return {level:'ok', code:null, detail:'Static fixtures are fresh.'};
 }
 
+/**
+ * Static fixture file dated to a different Istanbul day than today. Right after
+ * Istanbul midnight the hourly job can lag (GitHub drops scheduled events), so
+ * the static file is still yesterday's while the live API already serves today.
+ * That window is a delay, not an outage; it turns critical only when the live
+ * API is not fresh too, or the static file is older than the critical bound.
+ */
+function assessFixtureDay({sourceDay, today, staticAgeMs, runtimeFresh}) {
+  if (!sourceDay || sourceDay === today) return {level:'ok', code:null, detail:'Static fixture day matches Istanbul today.'};
+  if (runtimeFresh && Number.isFinite(staticAgeMs) && staticAgeMs <= STATIC_FIXTURE_CRITICAL_MS) {
+    return {level:'warning', code:'fixture-day-rollover', detail:`Static fixtures are still dated ${sourceDay} (Istanbul today is ${today}); live API is fresh.`};
+  }
+  return {level:'critical', code:'wrong-fixture-day', detail:`Static fixtures are dated ${sourceDay}, Istanbul today is ${today}, and the live API is not a fresh fallback.`};
+}
+
 module.exports = { semantic, version, modeFor, skipReason, STOP_CODES, istanbulDay, istanbulHour, hourlyKey, fullKey, assessRun,
-  assessCompletion, fullDayState, lastVerifiedFull, decideUpdateType, assessFullDaily, assessScheduler, assessFixtureFreshness,
+  assessCompletion, fullDayState, lastVerifiedFull, decideUpdateType, assessFullDaily, assessScheduler, assessFixtureFreshness, assessFixtureDay,
   limits: {FULL_TARGET_HOUR, FULL_LAST_START_HOUR, FULL_MAX_ATTEMPTS_PER_DAY, FULL_RETRY_COOLDOWN_MS, FULL_GRACE_MS, FULL_OVERDUE_MS,
     SCHEDULER_DELAY_WARN_MS, SCHEDULER_MISSED_MS, STATIC_FIXTURE_WARN_MS, STATIC_FIXTURE_CRITICAL_MS} };

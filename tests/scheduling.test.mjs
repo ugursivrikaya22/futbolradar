@@ -195,6 +195,16 @@ test('fixture freshness: a fresh live API never hides stale static data, only ch
   assert.equal(policy.assessFixtureFreshness({staticAgeMs: NaN, runtimeFresh: true}).level, 'critical');
 });
 
+test('fixture day: midnight rollover with a fresh live API is a delay, not an outage', () => {
+  const H = 3600000;
+  const base = {sourceDay: '2026-10-14', today: '2026-10-15'};
+  assert.equal(policy.assessFixtureDay({sourceDay: '2026-10-15', today: '2026-10-15', staticAgeMs: 30 * H, runtimeFresh: false}).level, 'ok');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: 3.3 * H, runtimeFresh: true}).code, 'fixture-day-rollover');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: 3.3 * H, runtimeFresh: false}).code, 'wrong-fixture-day');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: 13 * H, runtimeFresh: true}).code, 'wrong-fixture-day');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: NaN, runtimeFresh: true}).code, 'wrong-fixture-day');
+});
+
 // ---------------------------------------------------------------------------
 // Monitor scenarios (fake GitHub + fake HTTP)
 // ---------------------------------------------------------------------------
