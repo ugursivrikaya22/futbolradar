@@ -1,7 +1,7 @@
 {
   "source": "futbolradar-post-match-reports",
   "modelVersion": "futbolradar-post-match-v5",
-  "updatedAt": "2026-10-16T05:57:45.217Z",
+  "updatedAt": "2026-10-16T06:50:03.317Z",
   "matchCount": 7253,
   "records": [
     {
@@ -2218,7 +2218,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 5
+          "count": 16
         },
         "statistics": {
           "present": false,
@@ -2238,7 +2238,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 5,
+        "events": 16,
         "statistics": 0,
         "lineups": 0,
         "players": 0
@@ -2264,11 +2264,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "87c19cc221a60a35",
-      "fingerprint": "87c19cc221a60a35",
+      "analysisSourceHash": "201d3f9c18bcea8d",
+      "fingerprint": "201d3f9c18bcea8d",
       "analysisGeneratedAt": "2026-10-16T05:57:44.828Z",
-      "analysisUpdatedAt": "2026-10-16T05:57:44.828Z",
-      "generatedAt": "2026-10-16T05:57:44.828Z",
+      "analysisUpdatedAt": "2026-10-16T06:50:03.154Z",
+      "generatedAt": "2026-10-16T06:50:03.154Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2293,7 +2293,7 @@
           "label": "Normal sürede tamamlandı",
           "wentToExtraTime": false,
           "decidedOnPenalties": false,
-          "extraTimeEventCount": 0
+          "extraTimeEventCount": 1
         },
         "turningPoints": {
           "status": "ready",
@@ -2317,12 +2317,34 @@
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "Son bölümde 3 olay kaydedildi, gol yok.",
           "goals": {
             "home": 0,
             "away": 0
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "83'",
+              "team": "Internacional Palmira",
+              "type": "Oyuncu değişikliği",
+              "detail": "A. Alvarez",
+              "decisive": false
+            },
+            {
+              "minute": "83'",
+              "team": "Internacional Palmira",
+              "type": "Oyuncu değişikliği",
+              "detail": "K. Gonzalez",
+              "decisive": false
+            },
+            {
+              "minute": "90+5'",
+              "team": "Orsomarso",
+              "type": "Sarı kart",
+              "detail": "S. Agamez",
+              "decisive": false
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -2340,15 +2362,15 @@
               "impact": "orta"
             },
             {
-              "name": "J. Mosquera",
+              "name": "H. Suarez",
               "team": "Internacional Palmira",
-              "contribution": "23' sarı kart",
+              "contribution": "64' sarı kart",
               "impact": "olumsuz"
             },
             {
-              "name": "K. M. Gomez",
-              "team": "Orsomarso",
-              "contribution": "8' sarı kart",
+              "name": "J. Mosquera",
+              "team": "Internacional Palmira",
+              "contribution": "23' sarı kart",
               "impact": "olumsuz"
             }
           ]
@@ -2360,24 +2382,33 @@
         "firstHalf": {
           "status": "ready",
           "notes": [
-            "İlk yarı dengeli bir olay akışı üretti (4 olay).",
+            "İlk yarı dengeli bir olay akışı üretti (5 olay).",
             "17' Orsomarso — D. Barrios: penaltı",
-            "45+1' Internacional Palmira — K. Gonzalez: gol"
+            "45+1' Internacional Palmira — K. Gonzalez: gol",
+            "İlk yarı içinde 1 oyuncu değişikliği kaydedildi."
           ],
           "goals": 2
         },
         "secondHalf": {
           "status": "ready",
           "notes": [
-            "İkinci yarı az sayıda kayıtlı olay üretti (1 olay)."
+            "İkinci yarı kayıtlı olay bakımından yoğun geçti (11 olay).",
+            "İkinci yarı içinde 8 oyuncu değişikliği kaydedildi."
           ],
           "goals": 0
         },
         "coaching": {
-          "status": "unavailable",
-          "notes": [],
+          "status": "ready",
+          "notes": [
+            "28' Orsomarso değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "46' Orsomarso değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "59' Orsomarso değişikliği (Substitution 3). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "59' Orsomarso değişikliği (Substitution 4). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "66' Internacional Palmira değişikliği (Substitution 1). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok.",
+            "74' Internacional Palmira değişikliği (Substitution 2). Değişiklikten sonra bu takım adına kayda geçen pozisyon yok."
+          ],
           "formations": [],
-          "interpretation": null
+          "interpretation": "Değişikliklerin etkisi, yalnızca sonrasında kayda geçen olaylara bakılarak değerlendirildi."
         },
         "finalAssessment": {
           "status": "ready",
@@ -2415,9 +2446,10 @@
         "secondHalf",
         "turningPoints",
         "lateGame",
+        "coaching",
         "finalAssessment"
       ],
-      "coverage": 57,
+      "coverage": 64,
       "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
@@ -2463,7 +2495,7 @@
         "events": {
           "present": true,
           "source": "curated",
-          "count": 1
+          "count": 4
         },
         "statistics": {
           "present": false,
@@ -2483,7 +2515,7 @@
       },
       "apiKeyPresent": true,
       "availability": {
-        "events": 1,
+        "events": 4,
         "statistics": 0,
         "lineups": 0,
         "players": 0
@@ -2509,11 +2541,11 @@
       "analysisStatus": "partial_data",
       "analysisVersion": "futbolradar-post-match-v5",
       "modelVersion": "futbolradar-post-match-v5",
-      "analysisSourceHash": "7300386746c815ea",
-      "fingerprint": "7300386746c815ea",
+      "analysisSourceHash": "777cf63b263bc1cd",
+      "fingerprint": "777cf63b263bc1cd",
       "analysisGeneratedAt": "2026-10-16T05:57:44.828Z",
-      "analysisUpdatedAt": "2026-10-16T05:57:44.828Z",
-      "generatedAt": "2026-10-16T05:57:44.828Z",
+      "analysisUpdatedAt": "2026-10-16T06:50:03.154Z",
+      "generatedAt": "2026-10-16T06:50:03.154Z",
       "analysisError": null,
       "analysisAttempts": 0,
       "seo": {
@@ -2525,7 +2557,7 @@
       "reportUrl": "./mac-raporu/club-nacional-rentistas-2026-10-16.html",
       "digest": {
         "headline": "Club Nacional, Rentistas'ı 3-0 yendi",
-        "paragraph": "Gran Parque Central'da oynanan Copa Uruguay maçını Club Nacional 3-0 kazandı; Rentistas sahadan puansız ayrıldı. Tek golü 40. dakikada A. Rogel (Club Nacional) kaydetti.",
+        "paragraph": "Gran Parque Central'da oynanan Copa Uruguay maçını Club Nacional 3-0 kazandı; Rentistas sahadan puansız ayrıldı. Golleri 40. dakikada A. Rogel (Club Nacional), 64. dakikada T. Veron (Club Nacional), 74. dakikada R. Botta (Club Nacional) kaydetti.",
         "result": {
           "winner": "Club Nacional",
           "loser": "Rentistas",
@@ -2549,18 +2581,47 @@
               "type": "Gol",
               "detail": "A. Rogel",
               "pivotal": true
+            },
+            {
+              "minute": "64'",
+              "team": "Club Nacional",
+              "type": "Gol",
+              "detail": "T. Veron",
+              "pivotal": true
+            },
+            {
+              "minute": "74'",
+              "team": "Club Nacional",
+              "type": "Gol",
+              "detail": "R. Botta",
+              "pivotal": true
+            },
+            {
+              "minute": "90'",
+              "team": "Club Nacional",
+              "type": "Kırmızı kart",
+              "detail": "N. Gelos",
+              "pivotal": true
             }
           ]
         },
         "lateGame": {
           "status": "ready",
           "from": 75,
-          "verdict": "Maçın son 15 dakikasında kayıtlı bir gol, kart ya da kırılma anı yok; sonuç bu bölüme girilmeden belirlenmiş.",
+          "verdict": "1 kırmızı kart bu bölümde görüldü.",
           "goals": {
             "home": 0,
             "away": 0
           },
-          "moments": []
+          "moments": [
+            {
+              "minute": "90'",
+              "team": "Club Nacional",
+              "type": "Kırmızı kart",
+              "detail": "N. Gelos",
+              "decisive": true
+            }
+          ]
         },
         "keyPlayers": {
           "status": "ready",
@@ -2570,6 +2631,24 @@
               "team": "Club Nacional",
               "contribution": "40' gol",
               "impact": "yüksek"
+            },
+            {
+              "name": "R. Botta",
+              "team": "Club Nacional",
+              "contribution": "74' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "T. Veron",
+              "team": "Club Nacional",
+              "contribution": "64' gol",
+              "impact": "yüksek"
+            },
+            {
+              "name": "N. Gelos",
+              "team": "Club Nacional",
+              "contribution": "90' kırmızı kart",
+              "impact": "olumsuz"
             }
           ]
         },
@@ -2586,9 +2665,13 @@
           "goals": 1
         },
         "secondHalf": {
-          "status": "unavailable",
-          "notes": [],
-          "goals": 0
+          "status": "ready",
+          "notes": [
+            "İkinci yarı dengeli bir olay akışı üretti (3 olay).",
+            "64' Club Nacional — T. Veron: gol",
+            "74' Club Nacional — R. Botta: gol"
+          ],
+          "goals": 2
         },
         "coaching": {
           "status": "unavailable",
@@ -2602,7 +2685,9 @@
             "Club Nacional, Rentistas'ı 3-0 yendi."
           ],
           "strengths": [],
-          "improvements": [],
+          "improvements": [
+            "Kırmızı kart maçın seyrini etkiledi (90' Club Nacional)."
+          ],
           "closing": "Club Nacional sahadan 3 farkla ayrıldı.",
           "basis": "events-only"
         },
@@ -2627,12 +2712,14 @@
       "readySections": [
         "summary",
         "standoutPlayers",
+        "momentum",
         "firstHalf",
+        "secondHalf",
         "turningPoints",
         "lateGame",
         "finalAssessment"
       ],
-      "coverage": 43,
+      "coverage": 57,
       "dataStatus": "partial",
       "intelligenceCoverage": 0,
       "publishState": "page"
