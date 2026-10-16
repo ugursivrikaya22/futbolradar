@@ -1391,6 +1391,10 @@ function pageHtml(entry, locale, options) {
     home.standings && home.standings !== league.standings ? { kicker: text.teamStandings, title: entry.homeTeam, href: home.standings } : null,
     league.standings ? { kicker: text.leagueStandings, title: competitionLabel(competitionName, locale), href: league.standings } : null,
     league.league ? { kicker: locale === "en" ? "League" : "Lig", title: competitionLabel(competitionName, locale), href: league.league } : null,
+    // Süper Lig maçından Tahmin Ligi'ne iç bağlantı (yalnızca Türkçe sayfa var).
+    locale === "tr" && entry.competitionId === "super-lig"
+      ? { kicker: "Tahmin Ligi", title: state === "pre" ? "Bu maçın skorunu tahmin et" : "Tahmin Ligi sıralaması", href: `${base}tahmin-ligi` }
+      : null,
     { kicker: text.todayMatches, title: locale === "en" ? "Today's matches" : "Bugünün maçları", href: locale === "en" ? `${base}en/todays-matches.html` : `${base}bugunun-maclari.html` },
     { kicker: text.allMatches, title: locale === "en" ? "All matches" : "Tüm maçlar", href: `${base}${locale === "en" ? HUB_EN : HUB_TR}` }
   ];

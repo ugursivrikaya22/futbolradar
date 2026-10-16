@@ -502,6 +502,8 @@ function relatedLinks(team) {
     { href: "./asist-kralligi.html", kicker: "Asist", title: "Süper Lig asist krallığı", text: "Güncel asist sıralaması ve oyuncu profilleri." },
     { href: "./haberler.html", kicker: "Haber", title: `${team.name} haberleri`, text: "Doğrulanmış son takım haberleri." },
     { href: "./analizler.html", kicker: "Analiz", title: "Maç analizleri", text: `${team.name} ile ilgili veri odaklı maç okumaları.` },
+    // Ücretsiz Tahmin Ligi'ne iç bağlantı (kullanıcıyı davet eder, zorlamaz).
+    { href: "./tahmin-ligi", kicker: "Tahmin Ligi", title: `${team.name} maçını tahmin et`, text: "Ücretsiz skor tahmini yap, haftalık sıralamada yüksel." },
   ];
   // `generate-team-standings-pages.mjs` AYNI listeden ve AYNI slug'la üretir;
   // eşiği geçmeyen (noindex) puan sayfasına bağlantı verilmez.

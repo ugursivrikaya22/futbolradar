@@ -594,6 +594,11 @@ function transformSteps(type, hasChanges, providerReady) {
     // performanslar" sekmeleri bu depodan okur. Değişiklik yoksa dosya yazılmaz.
     nodeStep("player-match-history", "harvest-player-match-history.mjs", ["--apply"], { kind: "transform", timeoutMs: 4 * 60 * 1000 }),
     nodeStep("player-ratings", "compute-player-ratings.mjs", [], { kind: "transform", timeoutMs: 6 * 60 * 1000 }),
+    // TAHMİN LİGİ: takvimden Süper Lig maç listesini üretir; Supabase
+    // yapılandırılmışsa değişen maçları yazar ve sonucu doğrulanmış maçları
+    // puanlar. Sağlayıcıya istek ATMAZ, yeni cron DEĞİL (bu koşunun içinde),
+    // değişmeyen maça sıfır istek. Başarısızlık siteyi engellemez.
+    nodeStep("prediction-league", "sync-prediction-league.mjs", [], { kind: "transform", timeoutMs: 3 * 60 * 1000 }),
     // SUPABASE ALIMI — SİTENİN BUİLD/DEPLOY'UNU HİÇBİR KOŞULDA ENGELLEMEZ.
     //
     // Bu adım `required` DEĞİL (varsayılan `false`) ve `criticalFailure`

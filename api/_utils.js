@@ -44,6 +44,11 @@ const CACHE_POLICIES = Object.freeze({
   // Ana sayfa anketi yanıtı seçmene özel alan taşıyor (`alreadyVoted`,
   // `choice`); oy uç noktasıyla aynı gerekçeyle önbelleğe alınmaz.
   "home-poll": { noStore: true },
+  // Tahmin ligi: herkese açık görünümler (sıralama, açık maç listesi) CDN'de
+  // 5 dk durur — trafik ne olursa olsun veritabanına en çok 5 dakikada bir
+  // sorgu gider. Kişiye özel görünümler ve tüm yazmalar önbelleğe girmez.
+  "prediction-league-public": { maxAge: 300, stale: 600 },
+  "prediction-league-private": { noStore: true },
   // Yorum ve oyuncu puanı yanıtı SEÇMENE ÖZEL: "benim beğenim", "benim
   // puanım" alanları var. Önbelleğe alınsa bir okuyucunun durumu
   // başkasına servis edilirdi.
