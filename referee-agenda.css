@@ -1,0 +1,22 @@
+.referee-agenda{border-block:1px solid #b83b3b;background:#fff6f4;color:#27352f;min-height:64px;contain:layout paint;font-size:14px}
+.referee-agenda__inner{display:flex;align-items:center;gap:16px;min-height:64px;max-width:100%;box-sizing:border-box}
+.referee-agenda__label{flex:0 0 auto;display:grid;gap:3px;text-decoration:none;color:inherit;font-size:12px;font-weight:800;letter-spacing:.02em}
+.referee-agenda__label small{color:#a82020;font-size:10px;letter-spacing:.13em}
+.referee-agenda__viewport{min-width:0;flex:1;overflow:hidden;border-inline-start:1px solid #d6bdb6;padding-inline-start:12px}
+.referee-agenda__track{display:flex;width:max-content;animation:referee-agenda-scroll var(--agenda-duration,80s) linear infinite}
+.referee-agenda__group{display:flex;align-items:center;flex-shrink:0;gap:24px;padding-inline-end:24px}
+.referee-agenda__item{display:flex;align-items:center;gap:7px;white-space:nowrap;color:inherit;text-decoration:none;min-height:36px}
+.referee-agenda__item strong{font-size:11px;color:#9d2929}.referee-agenda__dot{color:#bd3939}.referee-agenda__item time{font-size:11px;color:#626a65}
+.referee-agenda__more{color:#087649;text-decoration:none;font-size:12px;white-space:nowrap;font-weight:700}
+.referee-agenda__pause{border:1px solid #c8ada5;background:transparent;color:inherit;border-radius:6px;min-width:36px;min-height:36px;cursor:pointer}
+.referee-agenda__empty{display:block;color:inherit;text-decoration:none;font-size:13px;white-space:normal}
+.referee-agenda:has(.referee-agenda__empty) .referee-agenda__track{animation:none;width:auto}
+.referee-agenda:hover .referee-agenda__track,.referee-agenda:focus-within .referee-agenda__track,.referee-agenda.is-paused .referee-agenda__track{animation-play-state:paused}
+.referee-agenda a:focus-visible,.referee-agenda button:focus-visible,.referee-agenda__viewport:focus-visible{outline:2px solid #087649;outline-offset:-2px}
+.referee-agenda__viewport:focus-within{overflow-x:auto}.referee-agenda__viewport:focus-within .referee-agenda__track{animation:none}
+@keyframes referee-agenda-scroll{to{transform:translateX(-50%)}}
+:root[data-theme="dark"] .referee-agenda{background:#231f20;color:#eef5f0;border-color:#704040}
+:root[data-theme="dark"] .referee-agenda__label small,:root[data-theme="dark"] .referee-agenda__item strong{color:#ffb4ad}
+:root[data-theme="dark"] .referee-agenda__item time{color:#bbc8bf}:root[data-theme="dark"] .referee-agenda__more{color:#83dfad}
+@media(max-width:640px){.referee-agenda{min-height:102px}.referee-agenda__inner{min-height:102px;display:grid;grid-template-columns:minmax(0,1fr) 36px;gap:6px 12px;padding-block:9px}.referee-agenda__label{display:flex;align-items:center;gap:10px;grid-column:1}.referee-agenda__pause{grid-column:2;grid-row:1}.referee-agenda__viewport{grid-column:1 / -1;width:100%;box-sizing:border-box;border:0;padding:0}.referee-agenda__more{display:none}}
+@media(prefers-reduced-motion:reduce){.referee-agenda__track{animation:none}.referee-agenda__viewport{overflow-x:auto}.referee-agenda__group[aria-hidden]{display:none}.referee-agenda__pause{visibility:hidden}}

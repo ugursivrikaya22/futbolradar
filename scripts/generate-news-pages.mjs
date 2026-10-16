@@ -446,7 +446,8 @@ function updateNewsSitemap(articles) {
   return count;
 }
 
-const articles = publishableArticles();
+const selectedId = process.argv.find(arg => arg.startsWith('--id='))?.slice(5);
+const articles = publishableArticles().filter(article => !selectedId || article.id === selectedId);
 for (const article of articles) {
   writeArticle(article, "tr");
 }
@@ -457,12 +458,12 @@ for (const article of articles) {
 // burada ayrıca sayfa yazılmayan bir habere İngilizce kart bağlanmasının
 // önüne geçilmiş oluyor — İngilizce liste ile İngilizce sayfa kümesi
 // TANIM GEREĞİ aynı süzgeçten geçiyor.
-const englishArticles = publishableNews(news, { locale: "en" });
+const englishArticles = publishableNews(news, { locale: "en" }).filter(article => !selectedId || article.id === selectedId);
 for (const article of englishArticles) {
   writeArticle(article, "en");
 }
 
-updateSitemap(articles);
-const freshCount = updateNewsSitemap(articles);
+if (!selectedId) updateSitemap(articles);
+const freshCount = selectedId ? 0 : updateNewsSitemap(articles);
 
 console.log(`Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"} + ${englishArticles.length} English (news-sitemap: ${freshCount} taze haber)`);
