@@ -161,6 +161,59 @@ function isAmbiguousCompetitionName(value) {
 }
 
 /**
+ * Kaydın sağlayıcı lig kimliği, adı/bildirilen kimliği tutan katalog
+ * yarışmasının sağlayıcı kimliğinden FARKLI mı? (Aynı ada sahip başka ülke ligi.)
+ *
+ * Kimliği olmayan kayıt ya da sağlayıcı kimliği tanımsız yarışma için
+ * `false`: o durumda ad eşleşmesi tek yoldur ve eski davranış korunur.
+ */
+function isForeignNamesake(match, declaredKey) {
+  const rawId = match && match.providerLeagueId;
+  if (rawId === undefined || rawId === null || rawId === "") return false;
+  const byName = findCompetition(match.league) || (declaredKey ? findCompetition(declaredKey) : null);
+  if (!byName) return false;
+  const expected = byName.providers && byName.providers.apiFootball;
+  if (expected === undefined || expected === null || expected === "") return false;
+  return String(expected) !== String(rawId);
+}
+
+/**
+ * "Ligue 1" adını taşıyan Fransa dışı liglerin sağlayıcı kimliği → ülke.
+ * Kayıt ülke alanı taşımıyorsa (eski takvim satırları) ülke buradan okunur.
+ * Yalnızca KESİN bilinenler yazılır; bilinmeyen kimlik ülkesiz kalır —
+ * ülke uydurulmaz, yalnızca Fransa ligiyle KARIŞTIRILMAZ.
+ */
+const NAMESAKE_LEAGUE_COUNTRIES = Object.freeze({
+  186: "Algeria",
+  202: "Tunisia",
+  386: "Ivory Coast",
+  403: "Senegal"
+});
+
+/**
+ * Kayıt başka ülkenin aynı adlı ligiyse ülke eklenmiş görünen ad
+ * ("Ligue 1 (Algeria)"); değilse ad olduğu gibi. İdempotent: ad zaten
+ * ülke içeriyorsa tekrar eklenmez.
+ */
+function qualifiedLeagueName(match) {
+  const name = String((match && match.league) || "").trim();
+  if (!name || / \([^)]+\)$/.test(name) || !isForeignNamesake(match, normalizeKey(match.competitionId))) return name;
+  const country = String(match.country || match.leagueCountry || NAMESAKE_LEAGUE_COUNTRIES[String(match.providerLeagueId)] || "").trim();
+  return country ? `${name} (${country})` : name;
+}
+
+/**
+ * Aynı adlı başka ülke ligi için AYRI yarışma kimliği: `ligue-1` yerine
+ * `ligue-1-186`. Katalog kimliğiyle asla çakışmaz. Diğer tüm kayıtlarda
+ * eski davranış (adın düz hâli) aynen korunur.
+ */
+function separateCompetitionId(match) {
+  const base = normalizeKey(match && match.league);
+  if (!base || !isForeignNamesake(match, normalizeKey(match && match.competitionId))) return base;
+  return `${base}-${normalizeKey(match.providerLeagueId)}`;
+}
+
+/**
  * DOĞRULANMIŞ YARIŞMA KİMLİĞİ.
  *
  * Kaydın `competitionId` alanı varsa kullanılır — ama `league` metni çok
@@ -183,6 +236,18 @@ function resolveCompetitionId(match) {
   const ambiguous = AMBIGUOUS_COMPETITION_NAMES.has(leagueName);
 
   const declared = normalizeKey(match && match.competitionId);
+
+  // BAŞKA ÜLKENİN AYNI ADLI LİGİ. Sağlayıcı lig kimliği var ama katalogdaki
+  // hiçbir yarışmanın kimliği değil; ad ya da bildirilen `competitionId` ise
+  // kimliği AYRI bir katalog yarışmasına işaret ediyor. Bu, "Ligue 1"
+  // adıyla gelen Cezayir (186), Tunus (202), Fildişi Sahili (386), Senegal
+  // (403) liglerinin Fransa Ligue 1'i (61) sayılması demekti: büyük beş
+  // lig önceliği, lig formu, puan durumu bağlantısı hep yanlış ülkeye gidiyordu.
+  // Aynı hata "Premier League", "Primera División", "Bundesliga" ve
+  // "Championship" adlarında da yaşanıyordu. Kimlik adı ezer; belirsizken
+  // "tanımıyorum" demek yanlış ülkeyi seçmekten doğrudur.
+  if (isForeignNamesake(match, declared)) return "";
+
   if (declared) {
     if (!ambiguous) return declared;
     const canonical = findCompetition(declared);
@@ -237,5 +302,9 @@ module.exports = {
   providerLeagueValue,
   classifyFixtureCompetition,
   isAmbiguousCompetitionName,
-  resolveCompetitionId
+  isForeignNamesake,
+  qualifiedLeagueName,
+  NAMESAKE_LEAGUE_COUNTRIES,
+  resolveCompetitionId,
+  separateCompetitionId
 };

@@ -9,7 +9,7 @@ const {
   normalizeText,
   withTimeout
 } = require("../../api/_utils");
-const { competitions, matchesCompetition, findCompetitionByProviderId } = require("../competitionCatalog");
+const { competitions, matchesCompetition, findCompetitionByProviderId, isForeignNamesake } = require("../competitionCatalog");
 const { canonicalStatus } = require("../matchStatus");
 const { fetchWithCache, ttlFor } = require("../providerCache");
 const { modeFor } = require('../operationsPolicy');
@@ -696,6 +696,11 @@ function normalizeFixture(item) {
     // çözümü) önce bunu dener — ad hiçbir zaman tek başına karar vermez.
     // bkz. services/competitionCatalog.js: findCompetitionByProviderId.
     providerLeagueId: league.id === undefined || league.id === null ? null : String(league.id),
+    // Ülke YALNIZCA aynı adlı başka ülke ligi için taşınır ("Ligue 1" Fransa
+    // değil Cezayir); diğer kayıtların biçimi değişmez.
+    ...(!competition && league.country && isForeignNamesake({ league: league.name, providerLeagueId: league.id }, "")
+      ? { leagueCountry: String(league.country) }
+      : {}),
     round: roundNumber(league),
     venue: (fixture.venue && fixture.venue.name) || null,
     // Hakem adı sağlayıcı fikstür yükünde hazır geliyordu ama düşürülüyordu;

@@ -6,6 +6,36 @@
   var timeFormat = new Intl.DateTimeFormat('en-GB', { timeZone: 'Europe/Istanbul', hour: '2-digit', minute: '2-digit' });
   var leagueNames = { 'UEFA Uluslar Ligi': 'UEFA Nations League', 'UEFA Şampiyonlar Ligi': 'UEFA Champions League', 'UEFA Avrupa Ligi': 'UEFA Europa League', 'UEFA Konferans Ligi': 'UEFA Conference League', 'Hazırlık Maçı': 'Friendly', 'Türkiye Kupası': 'Turkish Cup' };
   function day(row) { return dayFormat.format(new Date(row.kickoff)); }
+  // Durum, saat ve skor tek faz kararından gelir; kural sunucudaki
+  // services/matchStatus.js#cardPhase ile aynı. TBD / ertelenmiş / yarıda
+  // kalmış / saati geçmiş maç saat olarak "04:05" yazmaz, nihai değilse skor basılmaz.
+  var STALE_DATA_MS = 12 * 60 * 1000;
+  var GRACE_MS = 150 * 60 * 1000;
+  function statusTokens(row) {
+    return [row.status, row.providerStatus, row.matchStatus].map(function (value) { return String(value || '').toUpperCase().replace(/[\s-]+/g, '_'); }).filter(Boolean);
+  }
+  function hasScore(row) {
+    var score = row.score || {};
+    return score.home != null && score.away != null && score.home !== '' && score.away !== '';
+  }
+  function phaseOf(row) {
+    var tokens = statusTokens(row);
+    var has = function (list) { return tokens.some(function (token) { return list.indexOf(token) !== -1; }); };
+    var kickoff = Date.parse(row.kickoff);
+    var now = Date.now();
+    if (has(['FT', 'AET', 'PEN', 'FINISHED', 'AWD', 'AWARDED', 'WO'])) return hasScore(row) ? { phase: 'final', score: true } : { phase: 'pending', label: 'Result pending' };
+    if (has(['PST', 'POSTPONED'])) return { phase: 'postponed', label: 'Postponed' };
+    if (has(['CANC', 'CANCELLED'])) return { phase: 'cancelled', label: 'Cancelled' };
+    if (has(['ABD', 'ABANDONED'])) return { phase: 'abandoned', label: 'Abandoned' };
+    var fetched = Date.parse(row.fetchedAt || row.updatedAt);
+    var fresh = Number.isFinite(fetched) && now - fetched <= STALE_DATA_MS && Number.isFinite(kickoff) && now - kickoff <= GRACE_MS && !row.__staticFallback && hasScore(row);
+    if (has(['INT', 'SUSP', 'INTERRUPTED', 'SUSPENDED'])) return fresh ? { phase: 'paused', label: 'Match paused', score: true } : { phase: 'interrupted', label: 'Suspended' };
+    if (has(['LIVE', 'IN_PLAY', 'HALFTIME', 'HT', 'PAUSED', '1H', '2H', 'ET', 'BT', 'P'])) return fresh ? { phase: 'live', score: true } : { phase: 'pending', label: 'Result pending' };
+    if (has(['TBD'])) return { phase: 'tbd', label: 'Time TBC' };
+    if (Number.isFinite(kickoff) && kickoff <= now) return { phase: 'pending', label: 'Result pending' };
+    return { phase: 'upcoming', time: true };
+  }
+
   function json(url) {
     return fetch(url, { cache: 'no-cache', signal: AbortSignal.timeout(12000) }).then(function (r) {
       if (!r.ok) throw new Error('unavailable');
@@ -56,8 +86,13 @@
         link.textContent = 'Match details';
         var info = document.createElement('div');
         info.className = 'fixture-card-top';
-        var score = row.score || {};
-        info.textContent = (leagueNames[row.league] || row.league || 'Football') + ' · ' + timeFormat.format(new Date(row.kickoff)) + ' Türkiye time' + (score.home != null && score.away != null ? ' · ' + score.home + '–' + score.away : '');
+        var phase = phaseOf(row);
+        var score = phase.score ? (row.score || {}) : {};
+        var league = leagueNames[row.league] || row.league || 'Football';
+        info.textContent = phase.time
+          ? league + ' · ' + timeFormat.format(new Date(row.kickoff)) + ' Türkiye time'
+          : league + ' · ' + (phase.label || (phase.phase === 'live' ? 'Live' : 'Full time'))
+            + (phase.score && score.home != null && score.away != null ? ' · ' + score.home + '–' + score.away : '');
         var teams = document.createElement('div');
         teams.className = 'fixture-card-rows';
         [[row.homeTeam, score.home], [row.awayTeam, score.away]].forEach(function (team) {

@@ -136,7 +136,7 @@ const { MATCH_LIST_INITIAL } = require("../services/matchListWindow.js");
 // Statik yedeğin takvim günü, istemcinin kullandığı kuralla AYNI olmalı
 // (app.js: istanbulDayOf). Ayrışırsa JavaScript açılana kadar farklı bir
 // gün listelenir ve sayfa gözün önünde değişir.
-const { isDisplayableLive, istanbulDay } = require("../services/matchStatus.js");
+const { cardPhase, isDisplayableLive, istanbulDay } = require("../services/matchStatus.js");
 
 /**
  * ANA SAYFADA HİÇ GÖSTERİLMEYECEK OYUNCULAR.
@@ -561,7 +561,10 @@ function staticFixtureCard(match, meta) {
   const isLive = status === "LIVE" && isDisplayableLive(match);
   const isFinal = status === "FINISHED";
   const stateClass = isLive ? "is-live" : isFinal ? "is-final" : "";
-  const stateLabel = isFinal ? "MS" : isLive ? "Canlı" : (headlineValue || MATCH_STATUS_TR[status] || "Planlandı");
+  // Saat yalnızca doğrulanmış "başlamadı" maçta yazılır; TBD / ertelenmiş /
+  // yarıda kalmış / saati geçmiş maç durumunu söyler (services/matchStatus.js#cardPhase).
+  const phase = cardPhase(match, { locale: "tr" });
+  const stateLabel = isFinal ? "MS" : isLive ? "Canlı" : (phase.phase === "upcoming" || !phase.label ? (headlineValue || MATCH_STATUS_TR[status] || "Planlandı") : phase.label);
   const homeScore = finalScore ? Number(String(finalScore).split("-")[0]) : null;
   const awayScore = finalScore ? Number(String(finalScore).split("-")[1]) : null;
 

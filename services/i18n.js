@@ -662,11 +662,25 @@ function pairUrl(row, locale) {
   return absoluteUrl(target === "en" ? row.en : row.tr);
 }
 
+let siteLinksInstance = null;
+function finalPathOf(rootPath) {
+  try {
+    if (!siteLinksInstance) siteLinksInstance = require("./siteLinks.js").defaultSiteLinks();
+    return siteLinksInstance.resolveFinalPath(rootPath);
+  } catch {
+    return rootPath;
+  }
+}
+
 function absoluteUrl(path) {
   const normalized = normalizePath(path);
   if (normalized === "index.html") return `${DOMAIN}/`;
   if (normalized === `${EN_PREFIX}index.html`) return `${DOMAIN}/${EN_PREFIX.slice(0, -1)}`;
-  return `${DOMAIN}/${normalized}`;
+  // YÖNLENDİRMEYE ÇARPMAYAN ADRES. Dosya yolu (`futbolcu/x.html`) vercel.json'da
+  // 301 ile uzantısız kanonik adrese (`/futbolcu/x`) gidiyorsa hreflang /
+  // canonical / site haritası SON adresi göstermeli: yönlendiren bir adres
+  // alternate olarak bildirilirse arama motoru karşılıklılığı doğrulayamaz.
+  return `${DOMAIN}${finalPathOf(`/${normalized}`)}`;
 }
 
 const DATE_LOCALES = Object.freeze({ tr: "tr-TR", en: "en-GB" });
@@ -811,6 +825,14 @@ const COMPETITION_KEYS = Object.freeze({
 const TIER_GROUP_PATTERN = /^(?:tff\s*|trendyol\s*)?([123])\.\s*lig(?:\s*[-–:]\s*(?:group|grup)\s*(\d+))?$/i;
 const TIER_KEYS = Object.freeze({ 1: "first-league", 2: "second-league", 3: "third-league" });
 
+// Ülke etiketi taşıyan lig adları için (services/competitionCatalog.js
+// qualifiedLeagueName). Bilinmeyen ülke olduğu gibi kalır.
+const COUNTRY_TR = Object.freeze({
+  algeria: "Cezayir", tunisia: "Tunus", morocco: "Fas", egypt: "Mısır", senegal: "Senegal",
+  "ivory coast": "Fildişi Sahili", "ivory-coast": "Fildişi Sahili", "burkina faso": "Burkina Faso",
+  mali: "Mali", cameroon: "Kamerun", ghana: "Gana", nigeria: "Nijerya", france: "Fransa"
+});
+
 function competitionKey(name) {
   const raw = String(name || "").trim().toLowerCase();
   if (!raw) return null;
@@ -823,6 +845,12 @@ function competitionLabel(name, locale) {
   if (key) return t(`competition.${key}`, locale);
 
   // Statik eşleme tutmadıysa grup numaralı alt lig kalıbı denenir.
+  // Aynı adlı başka ülke ligi: "Ligue 1 (Algeria)" → TR'de "Ligue 1 (Cezayir)".
+  const qualified = raw.match(/^(.+?) \(([^()]+)\)$/);
+  if (qualified && COUNTRY_TR[qualified[2].toLowerCase()]) {
+    return normalizeLocale(locale) === "tr" ? `${qualified[1]} (${COUNTRY_TR[qualified[2].toLowerCase()]})` : raw;
+  }
+
   const tier = raw.toLowerCase().match(TIER_GROUP_PATTERN);
   if (tier) {
     const base = t(`competition.${TIER_KEYS[tier[1]]}`, locale);

@@ -74,8 +74,13 @@ function breadcrumbHtml(items) {
     .join("")}</nav>`;
 }
 
-function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true }) {
+function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null }) {
   const canonical = `${siteUrl}${canonicalPath}`;
+  // Gerçekten var olan İngilizce karşılık: İngilizce sayfa Türkçe sayfayı alternate
+  // ilan ediyor; karşılık verilmezse Google tek yönlü bildirimi yok sayar.
+  const hreflang = enPath
+    ? `\n    <link rel="alternate" hreflang="tr-TR" href="${canonical}" />\n    <link rel="alternate" hreflang="en" href="${siteUrl}/en/${enPath}" />\n    <link rel="alternate" hreflang="x-default" href="${canonical}" />`
+    : "";
   const graph = [schema, breadcrumbSchema(breadcrumbs.map(({ name, url }) => ({ name, url })))];
   return `<!doctype html>
 <html lang="tr">
@@ -85,7 +90,7 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
-    <link rel="canonical" href="${canonical}" />
+    <link rel="canonical" href="${canonical}" />${hreflang}
     <meta property="og:type" content="${schema["@type"] === "Article" ? "article" : "website"}" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -156,6 +161,7 @@ function standingsPage() {
   ];
   return pageDocument({
     base: "./",
+    enPath: "super-lig-standings",
     title: "Süper Lig Puan Durumu 2026/27 | FutbolRadar",
     description: "Süper Lig 2026/27 puan durumunu; oynanan maç, galibiyet, beraberlik, mağlubiyet, averaj ve puan bilgileriyle inceleyin.",
     canonicalPath: "/super-lig-puan-durumu",

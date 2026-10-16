@@ -144,7 +144,9 @@ function metric(card, label) {
 
 for (const [file, locale, resolveHref] of [
   ["index.html", "tr", (href) => `${href.replace(/^\.\//, "")}.html`],
-  ["en/index.html", "en", (href) => `en/${href.replace(/^\.\//, "")}`]
+  // `/en` eğik çizgisiz sunulduğundan en/index.html'deki bağlantılar kök mutlak
+  // yazılır (scripts/lib/servedLinks.mjs); ikisi de dosya yoluna çevrilir.
+  ["en/index.html", "en", (href) => (href.startsWith("/") ? href.slice(1) : `en/${href.replace(/^\.\//, "")}`)]
 ]) {
   const labels = locale === "tr"
     ? { age: "Yaş", minutes: "Dakika", rating: "Sezon reytingi" }

@@ -2745,6 +2745,14 @@
         return { live: true, verdict: "live", reason: "provider-live", state: state };
       }
 
+      // SAAT KESİNLEŞMEMİŞ (TBD): kayıttaki saat yer tutucu. Sunucudaki
+      // services/matchStatus.js#liveVerdict ile aynı karar: canlı değil,
+      // "saati geçti" da değil.
+      if (state === "SCHEDULED" && [match && match.status, match && match.providerStatus, match && match.matchStatus]
+        .some(function (value) { return String(value || "").toUpperCase() === "TBD"; })) {
+        return { live: false, verdict: "not-live", reason: "time-tbd", state: state };
+      }
+
       if (kickoff === null) {
         return { live: false, verdict: "not-live", reason: "no-kickoff", state: state };
       }
@@ -2818,7 +2826,8 @@
       live: verdict.live === true,
       unverified: verdict.verdict === "unverified",
       stale: verdict.stale === true,
-      reason: verdict.reason
+      reason: verdict.reason,
+      state: verdict.state
     };
   }
 
@@ -2844,10 +2853,17 @@
       return { className: "is-unplayed", label: statusTr(status), live: false, finished: false, unplayed: true };
     }
 
+    // Saat belirlenmedi (TBD): saat yazılmaz, durum yazılır.
+    if (verdict.reason === "time-tbd") {
+      return { className: "is-unplayed", label: "Saat belirlenmedi", live: false, finished: false, unplayed: true };
+    }
+
     if (verdict.unverified) {
+      // Ara verilmiş ve sonra haber gelmemiş maç "canlı veri yok" değil, yarıda kalmış maçtır.
+      var interrupted = verdict.state === "INTERRUPTED";
       return {
         className: "is-unverified",
-        label: UNVERIFIED_LIVE_LABEL,
+        label: interrupted ? "Yarıda kaldı" : UNVERIFIED_LIVE_LABEL,
         live: false,
         finished: false,
         unverified: true

@@ -26,6 +26,8 @@
  * boşluğu sessiz kalmamalı.
  */
 
+const { isTimeUnconfirmed, matchState } = require("./matchStatus.js");
+
 // Onaylı kaynaklar. Buraya girmeyen hiçbir kayıt yayımlanmaz — "mock" dahil.
 const APPROVED_SOURCES = new Set([
   "manual_verified",
@@ -183,7 +185,14 @@ function evaluateMatch(match, options = {}) {
   // gelmediğini de görür.
   const now = options.now instanceof Date ? options.now : new Date();
   const hoursSinceKickoff = (now.getTime() - kickoff.getTime()) / 3600000;
-  const stillPending = !isFinished(match) && !isLive(match);
+  //
+  // YALNIZCA gerçekten "başlayacak" diyen kayıt için. Ertelenmiş, iptal,
+  // tatil edilmiş, yarıda kalmış (INT/SUSP) ve saati belirlenmemiş (TBD)
+  // maç zaten KENDİ durumunu söylüyor; ona "sonuç bekleniyor" demek, oynanmayan
+  // bir maçın sonucunun geleceğini ima etmek olurdu.
+  const state = matchState(match);
+  const stillPending = !isFinished(match) && !isLive(match) &&
+    (state === "SCHEDULED" || state === "UNKNOWN") && !isTimeUnconfirmed(match);
   if (stillPending && hoursSinceKickoff > STALE_STATUS_HOURS) {
     gaps.push({ field: "status", label: "Sonuç bekleniyor" });
   }
