@@ -50,7 +50,7 @@ Defter: `fixture-calendar` **failed — "Timed out after 480000ms"**, son başar
 Panoya erişim yok → **tutar yok**. Depodan bilinenler:
 - Cron yok; işlev tek (`api/[...route].js`); statik varlıklar `immutable`; `/data/*` `s-maxage=300`; derleme kararı `buildDecision` ile.
 - Ayrıntılı kalem analizi, çift derleme ve `/api/matches` önbellek önerileri: `docs/vercel-maliyet-denetimi.md` (EMİR 6) — onay bekliyor, **uygulanmadı**.
-- **Yeni bulgu (düzeltildi):** `admin-updates.html` her 60 sn'de `data/update-status.json` (**970 KB**, `no-store`) indiriyordu → açık unutulan tek sekme ≈ **1,4 GB/gün**. Artık 5 dk'da bir ve yalnızca sekme görünürken (≈%97 azalma, açık sekme başına). `operations-dashboard.js` 120 sn → 5 dk, görünürlük kontrollü.
+- **Yeni bulgu (düzeltildi):** `admin-updates.html` her 60 sn'de `data/update-status.json` (**970 KB**, `no-store`) indiriyordu → açık unutulan tek sekme ≈ **1,4 GB/gün**. Artık 5 dk'da bir ve yalnızca sekme görünürken (görünür sekme için 5 kat, ≈%80 azalma; arka plan sekmesi için ≈%100). `operations-dashboard.js` 120 sn → 5 dk, görünürlük kontrollü.
 - **Spend Management:** erişim yok, **doğrulanmadı**, değiştirilmedi. Limit dolduğunda dağıtım/işlevlerin duraklayabileceği senaryo izleyicide zaten aranıyor (`DEPLOYMENT_PAUSED|Payment Required` sayfa kontrolü). Harcama sınırının faturayı kesin sınırladığı varsayılmamalı.
 - Canlı skor ve haber maliyeti ayrı ayrı: **ölçülemedi** (kalem bazlı kullanım Vercel panosunda).
 
@@ -87,7 +87,7 @@ Ana sayfa erişimi · bugünün maç listesi ↔ API-Football · canlı skor gü
 `node --test tests/scheduling.test.mjs tests/operations.test.mjs` → 41/41. `tests/request-breaker.test.mjs` → 3/3 (`npm test` zincirine eklendi). Tam `npm test` ve tarayıcı kapıları CI'da (PR) koşar.
 
 ## 11. Aylık maliyet etkisi
-Sıfır ek maliyet (yeni hizmet/plan/cron yok). Azalma yalnızca **ölçülebilen** kalemlerde: yönetici sekmesi veri transferi (açık sekme başına ≈1,4 GB/gün → ≈0,05 GB/gün) ve başarısız takvim adımında koşucu dakikası. Actions/Vercel/Supabase fatura tutarı **bilinmiyor**; TL/dolar tasarrufu iddia edilmiyor.
+Sıfır ek maliyet (yeni hizmet/plan/cron yok). Azalma yalnızca **ölçülebilen** kalemlerde: yönetici sekmesi veri transferi (görünür açık sekme başına ≈1,4 GB/gün → ≈0,28 GB/gün; arka plandaki sekme ≈0) ve başarısız takvim adımında koşucu dakikası. Actions/Vercel/Supabase fatura tutarı **bilinmiyor**; TL/dolar tasarrufu iddia edilmiyor.
 
 ## 12. Sahibin kararına bırakılanlar
 Migration 0011'in uygulanması (yedek + kimlik bilgisi sizde) · yönetici paneli erişim modeli · `requestBudget.DAILY_QUOTA` güncellemesi · Actions dakika kotası/plan kontrolü (Settings → Billing; özel depoda tam güncelleme + 28–48 dk'lık CI koşuları dakika tüketir) · Vercel Spend Management ayarının doğrulanması · sitemap kontrolü ekleme · öksüz `europe-player-data-snapshot` iş akışı kaydının temizlenmesi.
