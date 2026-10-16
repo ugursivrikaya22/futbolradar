@@ -1,9 +1,79 @@
 {
   "source": "futbolradar-historical-match-archive",
   "version": 1,
-  "updatedAt": "2026-10-16T09:03:48.592Z",
-  "matchCount": 7254,
+  "updatedAt": "2026-10-16T12:18:42.579Z",
+  "matchCount": 7255,
   "records": [
+    {
+      "identity": "minerosdeguyana|maritimo|2026-10-17|segundadivision",
+      "canonicalId": "mineros-de-guyana-maritimo-2026-10-17",
+      "match": {
+        "id": "mineros-de-guyana-maritimo-2026-10-17",
+        "homeTeam": "Mineros de Guyana",
+        "awayTeam": "Marítimo",
+        "kickoff": "2026-10-17T23:00:00+03:00",
+        "competition": "Segunda División",
+        "league": "Segunda División",
+        "season": null,
+        "status": "AWARDED",
+        "providerStatus": "AWD",
+        "score": {
+          "home": 3,
+          "away": 0,
+          "halftimeHome": null,
+          "halftimeAway": null
+        },
+        "venue": "Estadio Cachamay",
+        "referee": null,
+        "events": [],
+        "substitutions": [],
+        "lineups": [],
+        "statistics": [],
+        "players": [],
+        "coaches": null,
+        "reportPage": "mac-raporu/mineros-de-guyana-maritimo-2026-10-17.html",
+        "manualAnalysis": null,
+        "source": "fixture-calendar",
+        "lastVerifiedAt": "2026-10-16T08:59:01.683Z"
+      },
+      "manualAnalysis": null,
+      "completeness": {
+        "competition": true,
+        "season": false,
+        "kickoff": true,
+        "teams": true,
+        "finalScore": true,
+        "halfTime": false,
+        "venue": true,
+        "referee": false,
+        "status": true,
+        "events": false,
+        "cards": false,
+        "substitutions": false,
+        "lineups": false,
+        "formations": false,
+        "teamStatistics": false,
+        "playerStatistics": false,
+        "coaches": false
+      },
+      "coverageLevel": "LIMITED",
+      "workflowState": "limited_complete",
+      "reason": "Yalnızca temel doğrulanmış maç bilgileri mevcut.",
+      "sources": [
+        {
+          "name": "fixture-calendar",
+          "id": "mineros-de-guyana-maritimo-2026-10-17",
+          "lastVerifiedAt": "2026-10-16T08:59:01.683Z"
+        },
+        {
+          "name": "report",
+          "id": "mineros-de-guyana-maritimo-2026-10-17",
+          "lastVerifiedAt": "2026-10-16T09:00:53.619Z"
+        }
+      ],
+      "lastVerifiedAt": "2026-10-16T09:00:53.619Z",
+      "archivedAt": "2026-10-16T09:00:45.528Z"
+    },
     {
       "identity": "deportivosaprissa|sportingsanjose|2026-10-16|primeradivision",
       "canonicalId": "deportivo-saprissa-sporting-san-jose-2026-10-16",
@@ -165,18 +235,79 @@
         },
         "venue": "Sergio Torres Stadium",
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "45'",
+            "team": {
+              "name": "Firpo"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "M. Cerritos · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "45+4'",
+            "team": {
+              "name": "Firpo"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "V. Garcia · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/firpo-inca-aruba-2026-10-16.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 45+4' V. Garcia tarafından kaydedildi. Firpo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Firpo tarafında.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "45+4'",
+              "text": "Son gol 45+4' V. Garcia tarafından kaydedildi."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "2-0",
+              "text": "Firpo skor üstünlüğünü elinde tutuyor."
+            }
+          ],
+          "eventCount": 2,
+          "dataPoints": 2,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-16T05:56:00.339Z"
+        "lastVerifiedAt": "2026-10-16T08:59:01.076Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 45+4' V. Garcia tarafından kaydedildi. Firpo skor üstünlüğünü elinde tutuyor. Skor üstünlüğü Firpo tarafında.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "45+4'",
+            "text": "Son gol 45+4' V. Garcia tarafından kaydedildi."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "2-0",
+            "text": "Firpo skor üstünlüğünü elinde tutuyor."
+          }
+        ],
+        "eventCount": 2,
+        "dataPoints": 2,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -187,7 +318,7 @@
         "venue": true,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -203,15 +334,15 @@
         {
           "name": "fixture-calendar",
           "id": "firpo-inca-aruba-2026-10-16",
-          "lastVerifiedAt": "2026-10-16T05:56:00.339Z"
+          "lastVerifiedAt": "2026-10-16T08:59:01.076Z"
         },
         {
           "name": "report",
           "id": "firpo-inca-aruba-2026-10-16",
-          "lastVerifiedAt": "2026-10-16T05:57:44.828Z"
+          "lastVerifiedAt": "2026-10-16T09:00:53.619Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-16T05:57:44.828Z",
+      "lastVerifiedAt": "2026-10-16T09:00:53.619Z",
       "archivedAt": "2026-10-16T05:57:40.408Z"
     },
     {
@@ -235,18 +366,298 @@
         },
         "venue": "Estadio Centenario",
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "21'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "Y. Torres · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "23'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "J. Rodriguez · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "45'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "J. Ibarguen · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "Y. Torres · Asist: S. Roa · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "57'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "J. Ibarguen · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "61'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "D. Castillo · Asist: L. Taffur · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "61'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "J. Rodriguez · Asist: J. Rios · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "64'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "J. Lloreda · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "66'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "C. De Las Salas · Asist: A. Escobar · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "70'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "Goal",
+            "detail": "Penalty",
+            "value": "F. Montero · Penalty",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "72'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "A. F. Carabali R. · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "75'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "J. Ramirez · Asist: S. Orozco · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "75'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "J. Ibarguen · Asist: J. Lopez · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "79'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "E. Lopez · Asist: D. Pino · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "79'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "G. Tegue · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "81'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "S. Orozco · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "85'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "A. Alvarez · Asist: F. Mosquera · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "85'",
+            "team": {
+              "name": "Quindio"
+            },
+            "type": "subst",
+            "detail": "Substitution 5",
+            "value": "A. F. Carabali R. · Asist: A. Tello · Substitution 5",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "87'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "subst",
+            "detail": "Substitution 5",
+            "value": "J. Pineda · Asist: J. P. Gallego · Substitution 5",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "87'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "subst",
+            "detail": "Substitution 6",
+            "value": "J. Aleman · Asist: A. Melendez · Substitution 6",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "90+4'",
+            "team": {
+              "name": "Real Cartagena"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "D. Pino · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/quindio-real-cartagena-2026-10-16.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 70' F. Montero tarafından kaydedildi. Kulübeler oyuna müdahale etti; 11 oyuncu değişikliği kayda geçti.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "70'",
+              "text": "Son gol 70' F. Montero tarafından kaydedildi."
+            },
+            {
+              "label": "Teknik hamleler",
+              "value": "11 değişiklik",
+              "text": "Kulübeler oyuna müdahale etti; 11 oyuncu değişikliği kayda geçti."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "1-1",
+              "text": "Skor dengede."
+            }
+          ],
+          "eventCount": 21,
+          "dataPoints": 3,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-16T05:56:00.339Z"
+        "lastVerifiedAt": "2026-10-16T08:59:01.076Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 70' F. Montero tarafından kaydedildi. Kulübeler oyuna müdahale etti; 11 oyuncu değişikliği kayda geçti.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "70'",
+            "text": "Son gol 70' F. Montero tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "11 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 11 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-1",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 21,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -257,7 +668,7 @@
         "venue": true,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -273,15 +684,15 @@
         {
           "name": "fixture-calendar",
           "id": "quindio-real-cartagena-2026-10-16",
-          "lastVerifiedAt": "2026-10-16T05:56:00.339Z"
+          "lastVerifiedAt": "2026-10-16T08:59:01.076Z"
         },
         {
           "name": "report",
           "id": "quindio-real-cartagena-2026-10-16",
-          "lastVerifiedAt": "2026-10-16T05:57:44.828Z"
+          "lastVerifiedAt": "2026-10-16T09:00:53.619Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-16T05:57:44.828Z",
+      "lastVerifiedAt": "2026-10-16T09:00:53.619Z",
       "archivedAt": "2026-10-16T05:57:40.408Z"
     },
     {
@@ -375,18 +786,221 @@
         },
         "venue": "Estadio Carlos Salazar Hijo",
         "referee": null,
-        "events": [],
+        "events": [
+          {
+            "time": "25'",
+            "team": {
+              "name": "Suchitepéquez"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "A. Zamorano · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "27'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "Goal",
+            "detail": "Normal Goal",
+            "value": "J. Fajardo · Normal Goal",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Suchitepéquez"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "F. Gonzalez · Asist: F. de Leon · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "46'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "subst",
+            "detail": "Substitution 1",
+            "value": "A. Navarro · Asist: J. Navas · Substitution 1",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "63'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "S. Colon · Asist: I. dos Santos · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "63'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "L. Calderon · Asist: Y. A. Moran · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "67'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "J. Fajardo · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "70'",
+            "team": {
+              "name": "Suchitepéquez"
+            },
+            "type": "subst",
+            "detail": "Substitution 2",
+            "value": "N. Cabrera · Asist: A. Lezcano · Substitution 2",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "70'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "R. Gomez · Asist: O. Salguero · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "76'",
+            "team": {
+              "name": "Suchitepéquez"
+            },
+            "type": "subst",
+            "detail": "Substitution 3",
+            "value": "A. Lezcano · Asist: C. Artola · Substitution 3",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "77'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "subst",
+            "detail": "Substitution 5",
+            "value": "J. Fajardo · Asist: B. Aldana · Substitution 5",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "86'",
+            "team": {
+              "name": "Suchitepéquez"
+            },
+            "type": "subst",
+            "detail": "Substitution 4",
+            "value": "E. Silva · Asist: W. Diaz · Substitution 4",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "86'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "subst",
+            "detail": "Substitution 6",
+            "value": "G. Aguila · Asist: M. Ceballos · Substitution 6",
+            "comments": "",
+            "providerEventAt": null
+          },
+          {
+            "time": "90+2'",
+            "team": {
+              "name": "Deportivo San Pedro"
+            },
+            "type": "Card",
+            "detail": "Yellow Card",
+            "value": "R. Mendez · Yellow Card",
+            "comments": "",
+            "providerEventAt": null
+          }
+        ],
         "substitutions": [],
         "lineups": [],
         "statistics": [],
         "players": [],
         "coaches": null,
         "reportPage": "mac-raporu/suchitepequez-deportivo-san-pedro-2026-10-16.html",
-        "manualAnalysis": null,
+        "manualAnalysis": {
+          "title": "Maç Radar Analizi",
+          "summary": "Son gol 27' J. Fajardo tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti.",
+          "confidence": "Orta",
+          "signals": [
+            {
+              "label": "Gol akışı",
+              "value": "27'",
+              "text": "Son gol 27' J. Fajardo tarafından kaydedildi."
+            },
+            {
+              "label": "Teknik hamleler",
+              "value": "10 değişiklik",
+              "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+            },
+            {
+              "label": "Canlı skor",
+              "value": "1-1",
+              "text": "Skor dengede."
+            }
+          ],
+          "eventCount": 14,
+          "dataPoints": 3,
+          "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+        },
         "source": "fixture-calendar",
-        "lastVerifiedAt": "2026-10-16T05:56:00.339Z"
+        "lastVerifiedAt": "2026-10-16T08:59:01.076Z"
       },
-      "manualAnalysis": null,
+      "manualAnalysis": {
+        "title": "Maç Radar Analizi",
+        "summary": "Son gol 27' J. Fajardo tarafından kaydedildi. Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti.",
+        "confidence": "Orta",
+        "signals": [
+          {
+            "label": "Gol akışı",
+            "value": "27'",
+            "text": "Son gol 27' J. Fajardo tarafından kaydedildi."
+          },
+          {
+            "label": "Teknik hamleler",
+            "value": "10 değişiklik",
+            "text": "Kulübeler oyuna müdahale etti; 10 oyuncu değişikliği kayda geçti."
+          },
+          {
+            "label": "Canlı skor",
+            "value": "1-1",
+            "text": "Skor dengede."
+          }
+        ],
+        "eventCount": 14,
+        "dataPoints": 3,
+        "disclaimer": "Analiz yalnızca mevcut skor, olay ve canlı istatistiklerden üretilir; eksik veri tahminle doldurulmaz."
+      },
       "completeness": {
         "competition": true,
         "season": false,
@@ -397,7 +1011,7 @@
         "venue": true,
         "referee": false,
         "status": true,
-        "events": false,
+        "events": true,
         "cards": false,
         "substitutions": false,
         "lineups": false,
@@ -413,15 +1027,15 @@
         {
           "name": "fixture-calendar",
           "id": "suchitepequez-deportivo-san-pedro-2026-10-16",
-          "lastVerifiedAt": "2026-10-16T05:56:00.339Z"
+          "lastVerifiedAt": "2026-10-16T08:59:01.076Z"
         },
         {
           "name": "report",
           "id": "suchitepequez-deportivo-san-pedro-2026-10-16",
-          "lastVerifiedAt": "2026-10-16T05:57:44.828Z"
+          "lastVerifiedAt": "2026-10-16T09:00:53.619Z"
         }
       ],
-      "lastVerifiedAt": "2026-10-16T05:57:44.828Z",
+      "lastVerifiedAt": "2026-10-16T09:00:53.619Z",
       "archivedAt": "2026-10-16T05:57:40.408Z"
     },
     {
@@ -13003,7 +13617,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-15T19:07:05.219Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "rubin|fcorenburg|2026-10-15|cup",
@@ -13143,7 +13757,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-15T19:07:05.219Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "alhazm|alfateh|2026-10-15|proleague",
@@ -41804,7 +42418,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-14T19:21:28.613Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "fcviktoriakoln|sgsonnenhofgrossaspach|2026-10-14|3liga",
@@ -42714,7 +43328,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-14T19:21:28.613Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "verl|ssvjahnregensburg|2026-10-14|3liga",
@@ -67301,7 +67915,7 @@
             "halftimeHome": null,
             "halftimeAway": null
           },
-          "retractedAt": "2026-10-16T09:03:48.592Z"
+          "retractedAt": "2026-10-16T12:18:42.579Z"
         }
       },
       "manualAnalysis": null,
@@ -67545,7 +68159,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-13T23:45:13.496Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "arsenal|lille|2026-10-13|sampiyonlarligi",
@@ -88675,7 +89289,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-13T18:54:29.034Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "lens|sportingcp|2026-10-13|sampiyonlarligi",
@@ -93139,7 +93753,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-13T09:36:57.142Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "hapoelummalfahm|fcshefaamr|2026-10-13|statecup",
@@ -96225,7 +96839,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-13T17:07:39.292Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "uschaouia|paradouac|2026-10-13|ligue2",
@@ -148715,7 +149329,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-12T21:15:54.451Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "realdufaso|rck|2026-10-12|ligue1",
@@ -148855,7 +149469,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-12T21:15:54.451Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "usfa|asfayennenga|2026-10-12|ligue1",
@@ -151123,7 +151737,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-12T21:15:54.451Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "khenchela|csconstantine|2026-10-12|ligue1algeria",
@@ -151249,7 +151863,7 @@
         }
       ],
       "lastVerifiedAt": "2026-10-12T21:15:54.451Z",
-      "archivedAt": "2026-10-16T09:03:48.592Z"
+      "archivedAt": "2026-10-16T12:18:42.579Z"
     },
     {
       "identity": "moldovaw|georgiaw|2026-10-12|friendlieswomen",
