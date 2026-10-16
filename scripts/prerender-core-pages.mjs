@@ -1250,9 +1250,13 @@ function standingsDocumentMeta() {
   const leader = rows[0];
   const second = rows[1];
   if (!leader || !(Number(leader.played) > 0)) return null;
-  const title = `Süper Lig: ${leader.name} ${leader.points} puan | FutbolRadar`;
+  // BU SAYFA TÜM LİGLERİN MERKEZİ; "süper lig puan durumu" sorgusunu yalnızca
+  // Süper Lig'in kendi sayfası (/super-lig-puan-durumu) hedefler. İki sayfa aynı
+  // başlığı taşırsa birbirinin sıralamasını yer (kanibalizasyon): burada başlık
+  // merkez rolünü, açıklama güncel lideri söyler.
+  const title = "Puan Durumu: Süper Lig ve Avrupa Ligleri Tabloları | FutbolRadar";
   const chase = second ? `, ${second.name} ${second.points} puanla takipte` : "";
-  const description = `2026/27 Süper Lig puan durumu. ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla ${leader.rank}. sırada${chase}.`;
+  const description = `Süper Lig ve Avrupa liglerinin güncel puan durumu tabloları. Süper Lig 2026/27: ${leader.name} ${leader.played} maç sonunda ${leader.points} puanla ${leader.rank}. sırada${chase}.`;
   return { title, description };
 }
 

@@ -349,8 +349,16 @@ check("devredilmiş hafta sayfası kanoniği Maç Merkezi'ni gösterir ve harita
 
       const selfUrl = `${seo.DOMAIN}/${prefix}/${slugOf(file)}.html`;
       if (canonical === selfUrl) {
-        // Tarihi henüz atanmamış eşleşme: kendi adresi kanonik kalır.
-        assert.ok(sitemap.includes(`<loc>${selfUrl}</loc>`), `${dir}/${file}: kanonik sayfa haritada olmalı`);
+        // Tarihi henüz atanmamış eşleşme: kendi adresi kanonik kalır AMA sayfa
+        // yer tutucudur — `noindex,follow` ve site haritası dışı (bkz. test-index-policy.mjs).
+        // Tarihi olup kendini kanonik sayan sayfa indekslenebilir ve haritada olmalı.
+        const robots = (html.match(/<meta name="robots" content="([^"]*)"/) || [])[1] || "";
+        if (html.includes("SportsEvent")) {
+          assert.ok(sitemap.includes(`<loc>${selfUrl}</loc>`), `${dir}/${file}: tarihli kanonik sayfa haritada olmalı`);
+        } else {
+          assert.match(robots, /^noindex,follow/, `${dir}/${file}: tarihsiz hafta sayfası noindex olmalı`);
+          assert.ok(!sitemap.includes(`<loc>${selfUrl}</loc>`), `${dir}/${file}: tarihsiz hafta sayfası haritada olmamalı`);
+        }
         continue;
       }
 

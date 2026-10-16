@@ -221,7 +221,7 @@ function testComparisonSchemaCarriesRatingsWithoutBreakingExistingNodes() {
   assert.ok(block, "JSON-LD bloğu yok");
 
   const graph = JSON.parse(block[1])["@graph"];
-  assert.ok(graph.some((node) => node["@type"] === "Article"), "mevcut Article düğümü korunmalı");
+  assert.ok(graph.some((node) => node["@type"] === "WebPage"), "mevcut WebPage düğümü korunmalı");
   assert.ok(graph.some((node) => node["@type"] === "BreadcrumbList"), "mevcut BreadcrumbList düğümü korunmalı");
 
   const persons = graph.filter((node) => node["@type"] === "Person");

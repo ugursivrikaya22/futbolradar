@@ -57,7 +57,7 @@ assert.ok(today.includes(`rel="canonical" href="${siteUrl}/bugunun-maclari.html"
 
 const playerComparison = fs.readFileSync(path.join(root, "karsilastirma", "mauro-icardi-vs-sebastian-szymanski.html"), "utf8");
 assert.match(playerComparison, /<h1[\s>]/i, "Oyuncu karşılaştırmasında H1 olmalı");
-assert.match(playerComparison, /"@type"\s*:\s*"Article"/, "Oyuncu karşılaştırmasında Article şeması olmalı");
+assert.match(playerComparison, /"@type"\s*:\s*"WebPage"/, "Oyuncu karşılaştırmasında WebPage şeması olmalı (tarih/yazar uydurmayan Article yerine)");
 assert.match(playerComparison, /"@type"\s*:\s*"BreadcrumbList"/, "Oyuncu karşılaştırmasında breadcrumb şeması olmalı");
 
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
