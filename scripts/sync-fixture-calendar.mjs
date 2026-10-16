@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
+import { createRequestBreaker, isRetryableRequestError } from "./lib/requestBreaker.mjs";
 
 const require = createRequire(import.meta.url);
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
@@ -182,7 +183,7 @@ async function fetchOnce(url) {
   try {
     const response = await fetch(url, { signal: controller.signal, headers: { accept: "application/json" } });
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      throw Object.assign(new Error(`HTTP ${response.status}`), { status: response.status });
     }
     return await response.json();
   } finally {
@@ -197,6 +198,8 @@ async function fetchJson(url) {
       return await fetchOnce(url);
     } catch (error) {
       lastError = error;
+      // Kalıcı 4xx (429 hariç) tekrar denenmez: aynı cevabı alır, süre yakar.
+      if (!isRetryableRequestError(error)) break;
       // Hız limiti/geçici hata: artan bekleme ile tekrar dene.
       await sleep(REQUEST_GAP_MS * (attempt + 1));
     }
@@ -284,10 +287,17 @@ async function collectMatches() {
   const collected = new Map();
   const failures = [];
 
-  for (const team of TRACKED_TEAMS) {
+  const breaker = createRequestBreaker();
+  collect: for (const team of TRACKED_TEAMS) {
     for (const endpoint of ["eventsnext", "eventslast"]) {
+      const stopReason = breaker.stopReason();
+      if (stopReason) {
+        failures.push(`aborted early: ${stopReason}`);
+        break collect;
+      }
       try {
         const payload = await fetchJson(`${API_ROOT}/${endpoint}.php?id=${team.id}`);
+        breaker.record(true);
         const events = payload.events || payload.results || [];
         for (const event of events) {
           const normalized = normalizeEvent(event);
@@ -301,6 +311,7 @@ async function collectMatches() {
           }
         }
       } catch (error) {
+        breaker.record(false);
         failures.push(`${team.name}/${endpoint}: ${error.message}`);
       }
       await sleep(REQUEST_GAP_MS);

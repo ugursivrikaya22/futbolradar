@@ -89,7 +89,10 @@ const html = `<!doctype html>
     document.getElementById("history").innerHTML=(data.history||[]).slice(0,20).map(function(item){return "<tr><td>"+esc(item.type)+"</td><td>"+badge(item)+"</td><td>"+esc(time(item.startedAt))+"</td><td>"+esc(duration(item.durationMs))+"</td><td>"+esc((item.counts&&item.counts.filesChanged)||0)+" dosya</td></tr>";}).join("")||'<tr><td colspan="5" class="empty">Henüz çalışma kaydı yok.</td></tr>';
   }
   function load(){fetch("/data/update-status.json",{cache:"no-store"}).then(function(response){if(!response.ok)throw new Error("HTTP "+response.status);return response.json();}).then(render).catch(function(error){document.getElementById("updated").textContent="Status okunamadı: "+error.message;});}
-  load();setInterval(load,60000);
+  // update-status.json ~1 MB ve no-store: açık unutulan sekme dakikada bir tam indirme yapıyordu
+  // (~1,4 GB/gün/sekme). Yalnızca sekme görünürken ve 5 dakikada bir yenilenir.
+  load();setInterval(function(){if(document.visibilityState==="visible")load();},300000);
+  document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")load();});
 })();
 </script>
 </body>
