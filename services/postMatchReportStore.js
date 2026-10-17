@@ -324,6 +324,8 @@ function buildReportRecord(match, context) {
   const ready = readySectionIds(report);
   const generatedAt = settings.generatedAt || null;
   const previous = settings.previous || null;
+  // Corrected team names/dates must not move an already published report.
+  report.seo = { ...report.seo, path: String(match.analysisPage || previous?.seo?.path || match.reportPage || report.seo.path).replace(/^\.\//, "") };
   const analysisStatus = analysisStatusFor(match, report, availability);
   // Anahtar durumu çağrı bağlamından gelir; gelmezse ortamdan okunur.
   const apiKeyPresent = settings.apiKeyPresent !== undefined
@@ -506,7 +508,12 @@ function syncPostMatchReports(options) {
     if (existing && !stale && existing.fingerprint === fingerprint && existing.modelVersion === MODEL_VERSION) {
       // Source identity can be restored without regenerating unchanged prose.
       const fixtureId = fixtureIdOf(match);
-      records.push(fixtureId && String(existing.fixtureId || "") !== String(fixtureId) ? { ...existing, fixtureId } : existing);
+      const metadata = fixtureId || match.identityResolution ? { fixtureId } : {};
+      for (const key of ["identityResolution", "sourceUrls", "providerIds"]) {
+        if (match[key] !== undefined) metadata[key] = match[key];
+      }
+      const changed = Object.keys(metadata).some(key => JSON.stringify(existing[key] ?? null) !== JSON.stringify(metadata[key] ?? null));
+      records.push(changed ? { ...existing, ...metadata } : existing);
       stats.reused += 1;
       stats.byStatus[existing.analysisStatus] = (stats.byStatus[existing.analysisStatus] || 0) + 1;
       continue;

@@ -1,6 +1,10 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
 const { buildArchive } = require('../services/historicalMatchArchive');
+const { buildMatchReport } = require('../services/matchReportService');
+const { dedupeFixtures } = require('../services/matchResultSyncService');
 const archive = require('../data/historical-match-archive.json');
 const reports = require('../data/post-match-reports.json');
 const resolutions = require('../data/match-identity-resolutions.json').records;
@@ -26,6 +30,10 @@ for (const resolution of resolutions) {
       assert.equal(report.awayTeam, resolution.awayTeam);
       assert.equal(report.kickoff, resolution.kickoff);
       assert.equal(report.fixtureId || null, resolution.providerId);
+      assert.equal(report.reportUrl, './'+report.seo.path);
+      assert.equal(report.slug, report.seo.path.replace(/^mac-raporu\//,'').replace(/\.html$/,''));
+      for(const base of ['', 'public']) assert.ok(fs.existsSync(path.join(__dirname,'..',base,report.seo.path)), 'published route exists: '+report.seo.path);
+      assert.equal(buildMatchReport(match,{}).seo.path,report.seo.path,'archive rebuild retains URL');
     }
     if (resolution.status === 'FINISHED') {
       const rebuilt = buildArchive({sources:[{name:'report',records:[match]}],previous:{records:[]},now:'2026-10-17T19:00:00Z'});
@@ -41,4 +49,16 @@ test('same-day friendlies and provider namespaces remain distinct', () => {
   const fener = archive.records.find(r=>r.canonicalId==='fenerbahce-gornik-zabrze-2026-07-21').match;
   assert.equal(fener.providerIds.apiFootball,'1556502');
   assert.equal(fener.providerIds.opta,'blx8udpkfd48ndx9a93jskg0k');
+});
+
+test('both Chile fixtures survive calendar deduplication without sharing an API ID',()=>{
+  for(const file of ['../data/fixture-calendar.json','../public/data/fixture-calendar.json']){
+    const rows=require(file).matches.filter(m=>m.homeTeam==='Chile W'&&m.awayTeam==='Bolivia W');
+    assert.equal(rows.length,2);
+    assert.equal(dedupeFixtures(rows).records.length,2);
+    const cancelled=rows.find(m=>m.status==='CANCELLED');
+    assert.ok(!cancelled.providerId);
+    assert.ok(!cancelled.providerIds?.apiFootball);
+    assert.equal(cancelled.score,null);
+  }
 });
