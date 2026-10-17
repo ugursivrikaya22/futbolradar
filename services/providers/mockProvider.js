@@ -621,7 +621,7 @@ function transferRecordKey(transfer) {
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFTIME", "PAUSED", "INTERRUPTED", "SUSP", "P"]);
 
-// One saved-data snapshot, for at most one second. Concurrent home widgets
+// One saved-data snapshot, for at most five seconds. Concurrent home widgets
 // should not repeat the same multi-thousand-row merge. This never caches a
 // live provider response, and direct curatedMatches() callers remain fresh.
 let savedMatchSnapshot = null;
@@ -629,7 +629,7 @@ let savedMatchSnapshotUntil = 0;
 function matchSnapshot() {
   if (!savedMatchSnapshot || Date.now() >= savedMatchSnapshotUntil) {
     savedMatchSnapshot = curatedMatches();
-    savedMatchSnapshotUntil = Date.now() + 1000;
+    savedMatchSnapshotUntil = Date.now() + 5000;
   }
   return savedMatchSnapshot;
 }
