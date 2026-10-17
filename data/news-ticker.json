@@ -1,7 +1,29 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-17T06:54:17.550Z",
+  "updatedAt": "2026-10-17T08:42:14.974Z",
   "items": [
+    {
+      "id": "auto-news-2dbd42ec27eb106ca66a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe arsaVev, Yüksekova Spor Kulübü’ne konuk oluyor",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-17T08:25:56.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPWlRKV1hncGE5bmVlN3dlLTlSeFMyUXJVTlhqa3ZiNEhuaHVtTmFRVno3UWp6bklsa3poOUlnRXJ3YWRBZVRQY01ncFBSeGI0UjZGcnlIekNXWUwxUmxOem1JNkVMdkh0RFM2bjBaVDNZcUxQU0tCR2hNcUdvem92ZHU3V0JEWHZFRlRGUUNKYVFRN0pvNUlKcUxfQXA1ZmF3Sy0ycUJLQk5HZkkyVmZwdlYtTQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-17T08:25:49.000Z"
+      }
+    },
     {
       "id": "auto-news-ddbb884858a7f4377537",
       "category": "official",
@@ -13,26 +35,6 @@
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPVFlHZEFKenlidWtjSFVZak9VaExoTGJwaU1PV0JvRTBXRGhrLWFMaDFsQjQ3VzUyLWlITUZJMGg2UEhDendHRGdfaWt6QmNjY1l5bGRIaXBOUWh0aWRZd1pnWkNKY0NwR0pJT21sdXY5TC05OUZVcmpCNW1KNVlnU0JLbW5KT0pTdEswRDVWeGhtVGJJV3lVLTh3NnE0Vm1ha3NkUjdQRS10UQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-1f3f25804374fb191fdf",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Kamuoyuna Duyuru",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-16T22:04:57.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5idmp4RzBiaFMxUFRERHJCakNkRFFvQU9FVmhQUU9WTzZZNnA3MUlvM0FfSWNBaVZoc3hBdER1MDlCam5nMmpudHVfMGFraEppMnJYOG5rNEV6ZjlZakUxQWlYbE5nSjVjU2p2bW42ajIxMjY0?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -185,26 +187,6 @@
       }
     },
     {
-      "id": "auto-news-6d260568b88be1b4ad5e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "KuPS 2-4 Trabzonspor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-15T19:57:29.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5sa3Y4QnN1MjZuaHJxLWpPT2hwdkNnTUszellvOGZnVWY4aXFZc2x4WTNsZ0hqZEZ6cW5xNWhmd0NycmhqVnVtM1pLWWlsM2JIaGVJYXFSamFNYW03ZThGWGo2bXVGcUlyLXFPX2c3aXdYZl93cVE?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-a1df4386d7f016bbe0fc",
       "category": "official",
       "confidence": "confirmed",
@@ -281,7 +263,9 @@
         "source": "rss",
         "feed": "besiktas",
         "priority": 3,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-14T12:16:41.000Z"
       }
     },
     {
@@ -322,6 +306,28 @@
         "feed": "diger-super-lig",
         "priority": 7,
         "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-df2bdc752f90f9a70cd4",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Conference League highlights: Hajduk Split 2-1 Ajax | Highlights | UEFA Conference League",
+      "team": "Avrupa futbolu",
+      "timestamp": "2026-10-16T00:11:12.000Z",
+      "source": {
+        "name": "UEFA.com",
+        "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxQZkxjWTI0MVpnZlAwSktEd3VVZ1JUckNVSG01SGJ4SlN3Rk5tTXBySnR3VnNYbTY5MkhxR21tTzZIc2s1UTdSTnN6bkd6UkNnRlduc3oyU05YdUw2ZFdCOC1zS3Vwall0UFoxdTUtSWNyRVN2MnFMa0JuRTE4eXNGWDJJUFc1aFFnR0JkWTBXemNFeE5JUl8xaHlnMUMyQ2NjMmhWaHRjQzJKNEZDREEyRHpTR3NzNDhXV2stakVMQkNodEFGQVptc2xweWVDMm1XYS1LeGx2bG9PTnlMbXJrUA?oc=5",
+        "publisher": "uefa.com"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "uefa",
+        "priority": 9,
+        "status": "OFFICIAL",
+        "mergedReports": 5,
+        "firstSeenAt": "2026-10-14T18:13:54.000Z"
       }
     },
     {
