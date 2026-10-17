@@ -53,7 +53,15 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "caykurrizespor.org.tr",
     "acmonza.com",
     "mancity.com",
+    // Official match reports used to verify historical fixture identities.
+    "liverpoolfc.com",
+    "atleticobaleares.com",
     "raal.be"
+  ]),
+
+  // Existing calendar provider: retain its event citation when archiving a match.
+  dataProvider: Object.freeze([
+    "thesportsdb.com"
   ]),
 
   // Lig ve turnuva siteleri
