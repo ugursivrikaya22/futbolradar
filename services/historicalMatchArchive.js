@@ -96,6 +96,10 @@ function normalized(match, source) {
   const score = match && match.score || {};
   return {
     id: matchId(match), homeTeam: text(match && match.homeTeam), awayTeam: text(match && match.awayTeam), kickoff: text(match && (match.kickoff || match.date)),
+    // Keep source identity through report -> archive -> report round trips.
+    // A local URL/slug is not a substitute for the provider's fixture ID.
+    ...(match && (match.providerId || match.fixtureId) ? { providerId: String(match.providerId || match.fixtureId) } : {}),
+    ...(match && match.providerIds && typeof match.providerIds === "object" && !Array.isArray(match.providerIds) ? { providerIds: { ...match.providerIds } } : {}),
     competition: text(match && (match.competition || match.league)), league: text(match && match.league), season: text(match && match.season) || null,
     status: text(match && (match.status || match.providerStatus)).toUpperCase(), providerStatus: text(match && match.providerStatus) || null,
     score: hasScore(match) ? { home: number(score.home), away: number(score.away), halftimeHome: number(score.halftimeHome ?? score.halfTimeHome), halftimeAway: number(score.halftimeAway ?? score.halfTimeAway) } : null,
