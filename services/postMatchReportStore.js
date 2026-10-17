@@ -338,6 +338,9 @@ function buildReportRecord(match, context) {
     // Sağlayıcı fikstür kimliği YETKİLİ tekil anahtardır; aynı karşılaşma
     // iki kaynaktan farklı yerel id ile gelebiliyor.
     fixtureId: fixtureIdOf(match),
+    ...(match.identityResolution ? { identityResolution: match.identityResolution } : {}),
+    ...(Array.isArray(match.sourceUrls) ? { sourceUrls: [...match.sourceUrls] } : {}),
+    ...(match.providerIds ? { providerIds: { ...match.providerIds } } : {}),
     provider: match.liveStateSource || (match.providerIds ? "api-football" : "curated"),
     slug: report.seo.path.replace(/^mac-raporu\//, "").replace(/\.html$/, ""),
 

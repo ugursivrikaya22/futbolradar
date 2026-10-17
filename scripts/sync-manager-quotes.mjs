@@ -78,7 +78,7 @@ function googleNewsUrl(query) {
  * engelleyen kaynaklara (Sporx, Ajansspor, Fanatik) tek meşru yol.
  */
 const DIRECT_FEEDS = [
-  { id: "trt-spor", url: "https://www.trtspor.com.tr/rss/futbol.rss", name: "TRT Spor" },
+  { id: "trt-haber", url: "https://www.trthaber.com/spor_articles.rss", name: "TRT Haber" },
   { id: "hurriyet-spor", url: "https://www.hurriyet.com.tr/rss/spor", name: "Hürriyet" },
   { id: "fotomac", url: "https://www.fotomac.com.tr/rss/anasayfa.xml", name: "Fotomaç" },
   { id: "sabah-spor", url: "https://www.sabah.com.tr/rss/spor.xml", name: "Sabah" },

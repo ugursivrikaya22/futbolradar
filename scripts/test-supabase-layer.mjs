@@ -253,6 +253,7 @@ const dryRunOutput = execFileSync(process.execPath, ["scripts/supabase-ingest.mj
 });
 assert.match(dryRunOutput, /kuru çalıştırma/, "kuru çalıştırma modu açıkça belirtilmeli");
 assert.match(dryRunOutput, /okunan \d+, yazılan 0/, "kuru çalıştırma hiçbir şey yazmamalı");
+assert.match(dryRunOutput, /Toplam: okunan \d+, yazılan 0 \(kuru çalıştırma\)/, "anketler dahil toplam yazım sıfır olmalı");
 console.log("supabase-ingest.mjs --dry-run: ağsız çalışıyor, sıfır satır yazıyor, kaynak dosyaları gerçekten okuyor");
 
 // Yapılandırılmamış ortamda (kuru çalıştırma olmadan) script BAŞARISIZ

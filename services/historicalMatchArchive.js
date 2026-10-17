@@ -100,6 +100,8 @@ function normalized(match, source) {
     // A local URL/slug is not a substitute for the provider's fixture ID.
     ...(match && (match.providerId || match.fixtureId) ? { providerId: String(match.providerId || match.fixtureId) } : {}),
     ...(match && match.providerIds && typeof match.providerIds === "object" && !Array.isArray(match.providerIds) ? { providerIds: { ...match.providerIds } } : {}),
+    ...(match && match.identityResolution ? { identityResolution: match.identityResolution } : {}),
+    ...(Array.isArray(match && match.sourceUrls) ? { sourceUrls: [...match.sourceUrls] } : {}),
     competition: text(match && (match.competition || match.league)), league: text(match && match.league), season: text(match && match.season) || null,
     status: text(match && (match.status || match.providerStatus)).toUpperCase(), providerStatus: text(match && match.providerStatus) || null,
     score: hasScore(match) ? { home: number(score.home), away: number(score.away), halftimeHome: number(score.halftimeHome ?? score.halfTimeHome), halftimeAway: number(score.halftimeAway ?? score.halfTimeAway) } : null,
