@@ -71,3 +71,10 @@ test('RSS investigation candidates stay in review queue', async () => {
  const r = await sync.synchronizeFootballNews({now:new Date(now),previous:{items:[]},feeds:[{id:'test',url:'https://www.tff.org',team:'Süper Lig'}],fetchText:async()=>'<rss><channel><item><title>MHK soruşturmasında yeni gelişme</title><link>https://www.tff.org/news</link><pubDate>'+new Date(now-1000).toUTCString()+'</pubDate></item></channel></rss>'});
  assert.equal(r.refereeCandidates.length,1);assert.equal(r.refereeCandidates[0].status,'pending-review');assert.equal(r.output.items.length,0);
 });
+
+test('empty, disabled and expired feeds render no strip content',()=>{
+ assert.equal(view.render({enabled:true,items:[]},now),'');
+ assert.equal(view.render({...feed([approved()]),enabled:false},now),'');
+ assert.equal(view.render(feed([approved()]),now+3600001),'');
+ assert.ok(view.render(feed([approved()]),now).includes('Test Kişisi'));
+});
