@@ -25,7 +25,7 @@ const browserGates = new Set([
   'scripts/test-clickable-browser.cjs'
 ]);
 for (const args of [
-  ['--test', 'tests/operations-alert.test.mjs', 'tests/supabase-bounds.test.cjs'],
+  ['--test', 'tests/operations-alert.test.mjs', 'tests/supabase-bounds.test.cjs', 'tests/club-identity-cache.test.cjs'],
   ['scripts/test-home-signals.mjs'],
   ['scripts/test-match-focus.mjs'],
   ['scripts/qa.mjs'],

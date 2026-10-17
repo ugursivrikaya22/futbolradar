@@ -10,6 +10,10 @@ const require = createRequire(import.meta.url);
 // Build-time browser checks must not consume the live provider's quota.
 const { API_KEY_ENV_NAMES, APIFOOTBALL_API_KEY_ENV_NAMES } = require('../api/_utils');
 for (const key of [...API_KEY_ENV_NAMES, ...APIFOOTBALL_API_KEY_ENV_NAMES]) delete process.env[key];
+// The public TheSportsDB fallback needs no key. Select the persisted provider
+// first as well, so browser builds cannot make that external request either.
+process.env.FOOTBALL_PRIMARY_PROVIDER = 'mock';
+process.env.FOOTBALL_MATCH_PROVIDER = 'mock';
 
 const root = process.cwd();
 const port = Number(process.env.PORT || 4173);

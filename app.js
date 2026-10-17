@@ -5166,18 +5166,22 @@
 
   function renderFeaturedMatch(matches) {
     var list = Array.isArray(matches) ? matches.slice() : [];
+    var statsDay = todayInIstanbul();
+    var statsList = list.filter(function (match) {
+      return matchDateValue(match) === statsDay || matchLiveVerdict(match).live;
+    });
     // Sayaç, "Bugünün Maçları" panosuyla (matchCenterMetricsHtml) AYNI
     // hükmü kullanır: yalnızca isLiveMatch sayılsaydı, sağlayıcı bir maçı
     // saatlerce güncellemeyi bıraktığında (bkz. matchLiveVerdict'in bayat
     // canlı koruması) ana sayfa "Canlı: 1" derken diğer sayfa 0 gösterir —
     // aynı veri anında iki farklı sayı, tutarsız bir sayaç.
-    var liveCount = list.filter(function (match) {
+    var liveCount = statsList.filter(function (match) {
       return matchLiveVerdict(match).live;
     }).length;
-    var finishedCount = list.filter(function (match) {
+    var finishedCount = statsList.filter(function (match) {
       return ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
-    var upcomingCount = list.filter(function (match) {
+    var upcomingCount = statsList.filter(function (match) {
       return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
     // Karusel sırası: canlı Türk maçı ilk karta sabit, sonra bugünün diğer
@@ -5205,7 +5209,7 @@
     // Analizi hazır: maçın kendi kaydından üretilebilen bir okuma var mı?
     // Sayaç canlı yoklamada yeniden hesaplanır, çünkü bir maç başladığında
     // veya bittiğinde analiz durumu da değişir.
-    var analysisReadyCount = list.filter(matchHasReadyAnalysis).length;
+    var analysisReadyCount = statsList.filter(matchHasReadyAnalysis).length;
 
     // Sıfır olan sayaç çizilmez; hepsi sıfırsa şerit hiç basılmaz.
     var quickStats = renderQuickStats({
@@ -5213,7 +5217,7 @@
       upcoming: upcomingCount,
       finished: finishedCount,
       analysisReady: analysisReadyCount,
-      total: list.length
+      total: statsList.length
     });
 
     if (!featured) {

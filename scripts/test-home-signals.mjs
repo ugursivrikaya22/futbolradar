@@ -30,6 +30,24 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 
 const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
 
+// The hero may select a future fixture, but its "today" counters must not.
+{
+  const featuredSource = appSource.match(/  function renderFeaturedMatch\(matches\) \{[\s\S]*?\r?\n  \}/)[0];
+  let counts;
+  const render = new Function('todayInIstanbul', 'matchDateValue', 'matchLiveVerdict',
+    'selectFeaturedMatchEntries', 'logFeaturedRotation', 'featuredCarouselActiveId',
+    'matchHasReadyAnalysis', 'renderQuickStats', 'FEATURED_ROTATION_MS', 'escapeHtml', 'formatMatchDate',
+    `return (${featuredSource});`)(
+      () => '2026-10-17', m => m.kickoff.slice(0, 10), () => ({ live: false }),
+      () => [], () => {}, null, m => Boolean(m.summary), c => { counts = c; return ''; }, 15000, String, String);
+  render([
+    { kickoff: '2026-10-17T21:00:00+03:00', status: 'SCHEDULED', summary: 'Source-confirmed preview' },
+    { kickoff: '2026-10-18T21:00:00+03:00', status: 'SCHEDULED' },
+    { kickoff: '2026-10-16T21:00:00+03:00', status: 'FINISHED', summary: 'Source-confirmed report' }
+  ]);
+  assert.deepEqual(counts, { live: 0, upcoming: 1, finished: 0, analysisReady: 1, total: 1 });
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
