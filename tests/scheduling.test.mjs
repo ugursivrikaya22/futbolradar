@@ -348,7 +348,7 @@ test('planner reads the restored ledger and writes the real type to GITHUB_OUTPU
 });
 
 test('workflow: dependencies and Playwright follow the planned type, not the first cron event', () => {
-  const wf = fs.readFileSync('.github/workflows/match-analysis.yml', 'utf8');
+  const wf = fs.readFileSync('.github/workflows/match-analysis.yml', 'utf8').replace(/\r\n/g, '\n');
   const idx = (needle) => wf.indexOf(needle);
   assert(idx('id: plan') > 0 && idx('id: plan') < idx('npm ci --include=dev'), 'plan precedes dependency installation');
   assert(idx('restore-operations-ledger.mjs') < idx('id: plan'), 'ledger restored before planning');
@@ -358,8 +358,8 @@ test('workflow: dependencies and Playwright follow the planned type, not the fir
 });
 
 test('workflow: shared write lock is kept and critical failures reach the final result', () => {
-  const wf = fs.readFileSync('.github/workflows/match-analysis.yml', 'utf8');
-  assert.match(wf, /group: futbolradar-production-update\n\s+cancel-in-progress: false/);
+  const wf = fs.readFileSync('.github/workflows/match-analysis.yml', 'utf8').replace(/\r\n/g, '\n');
+  assert.match(wf, /group: futbolradar-production-update\r?\n\s+cancel-in-progress: false/);
   assert.equal((wf.match(/continue-on-error: true/g) || []).length, 1, 'only the pipeline step defers its failure');
   assert.match(wf, /name: Fail workflow after status capture\n\s+if: always\(\) && steps\.update\.outcome == 'failure'[\s\S]*?run: exit 1/);
   assert.doesNotMatch(wf, /\|\|\s*true|exit 0/);

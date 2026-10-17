@@ -4876,9 +4876,10 @@
   function headlineScoreOf(match) {
     var score = match && match.score;
     if (!score || typeof score !== "object") return null;
+    if ([score.home, score.away].some(function (value) { return value === null || value === undefined || typeof value === 'boolean' || String(value).trim() === ''; })) return null;
     var home = Number(score.home);
     var away = Number(score.away);
-    if (!isFinite(home) || !isFinite(away)) return null;
+    if (!Number.isInteger(home) || !Number.isInteger(away) || home < 0 || away < 0) return null;
     return { home: home, away: away };
   }
 
@@ -5054,9 +5055,9 @@
     var settings = options || {};
     var list = Array.isArray(matches) ? matches : [];
     var reports = Array.isArray(settings.reports) ? settings.reports : [];
-    var day = headlineText(settings.today);
     var limit = isFinite(settings.limit) ? Math.max(0, settings.limit) : DAILY_HEADLINE_LIMIT;
     var nowMs = isFinite(settings.nowMs) ? settings.nowMs : Date.now();
+    var day = headlineText(settings.today) || istanbulDayOf(new Date(nowMs).toISOString());
     var candidates = [];
 
     list.forEach(function (match) {

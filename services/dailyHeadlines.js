@@ -110,10 +110,11 @@ function firstSentence(value, limit = 160) {
 function scoreOf(match) {
   const score = match && match.score;
   if (!score || typeof score !== "object") return null;
+  if ([score.home, score.away].some(value => value === null || value === undefined || typeof value === 'boolean' || String(value).trim() === '')) return null;
 
   const home = Number(score.home);
   const away = Number(score.away);
-  if (!Number.isFinite(home) || !Number.isFinite(away)) return null;
+  if (!Number.isInteger(home) || !Number.isInteger(away) || home < 0 || away < 0) return null;
 
   return { home, away };
 }
@@ -322,9 +323,9 @@ function isOnDay(match, day) {
 function buildDailyHeadlines(matches, options = {}) {
   const list = Array.isArray(matches) ? matches : [];
   const reports = Array.isArray(options.reports) ? options.reports : [];
-  const day = text(options.today);
   const limit = Number.isFinite(options.limit) ? Math.max(0, options.limit) : MAX_HEADLINES;
   const nowMs = Number.isFinite(options.nowMs) ? options.nowMs : Date.now();
+  const day = text(options.today) || istanbulDay(new Date(nowMs).toISOString());
 
   const candidates = [];
 

@@ -389,6 +389,25 @@ const parityCases = [
   { label: "gerçek kürasyonlu liste", list: curatedMatches() }
 ];
 
+// Omitted/empty day must still mean Istanbul today, including UTC midnight.
+for (const build of [buildDailyHeadlines, clientModule.buildDailyHeadlines]) {
+  const clock = Date.parse('2026-10-16T21:30:00Z');
+  const base = { homeTeam: 'Ajax', awayTeam: 'Roma', status: 'SCHEDULED', time: '20:00', league: 'Test' };
+  const rows = [
+    { ...base, id: 'today', kickoff: '2026-10-17T17:00:00Z' },
+    { ...base, id: 'tomorrow', kickoff: '2026-10-18T17:00:00Z' },
+    { ...base, id: 'yesterday', kickoff: '2026-10-16T17:00:00Z' }
+  ];
+  assert.deepEqual(build(rows, { nowMs: clock }).map(h => h.matchId), ['today']);
+  assert.deepEqual(build(rows, { nowMs: clock, today: '' }).map(h => h.matchId), ['today']);
+  for (const invalid of [null, undefined, '', ' ', false, -1, 1.5]) {
+    const row = { ...rows[0], status: 'FINISHED', summary: 'Verified match report.', score: { home: invalid, away: invalid } };
+    assert.equal(build([row], { nowMs: clock })[0].title, 'Ajax – Roma', 'missing/invalid score must not become a result');
+  }
+  const draw = { ...rows[0], status: 'FINISHED', summary: 'Verified match report.', score: { home: 0, away: 0 } };
+  assert.equal(build([draw], { nowMs: clock })[0].title, 'Ajax 0-0 Roma');
+}
+
 for (const testCase of parityCases) {
   const fromService = buildDailyHeadlines(testCase.list, { today, nowMs });
   const fromClient = clientModule.buildDailyHeadlines(testCase.list, { today, nowMs });
