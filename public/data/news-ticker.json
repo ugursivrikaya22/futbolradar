@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-16T23:39:11.515Z",
+  "updatedAt": "2026-10-17T00:34:15.203Z",
   "items": [
     {
       "id": "auto-news-ddbb884858a7f4377537",
@@ -9,7 +9,7 @@
       "section": "news",
       "text": "Fenerbahçe Tarfin, Beşiktaş BOA'ya konuk oluyor",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-16T22:07:30.000Z",
+      "timestamp": "2026-10-16T22:59:59.000Z",
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiqgFBVV95cUxPVFlHZEFKenlidWtjSFVZak9VaExoTGJwaU1PV0JvRTBXRGhrLWFMaDFsQjQ3VzUyLWlITUZJMGg2UEhDendHRGdfaWt6QmNjY1l5bGRIaXBOUWh0aWRZd1pnWkNKY0NwR0pJT21sdXY5TC05OUZVcmpCNW1KNVlnU0JLbW5KT0pTdEswRDVWeGhtVGJJV3lVLTh3NnE0Vm1ha3NkUjdQRS10UQ?oc=5",
@@ -39,6 +39,26 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-07599c20d7acb6667c3a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Orkun Kökçü'nün Sağlık Durumu Hakkında Bilgilendirme - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-16T20:18:31.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9WekJMNWhROFhaSFJSRzZ4d2s3aldoN0dLakVmSXU4X20zMnlfRXRLc2RUeGhMNnZQOGpTZF9KRWpFNDc0dHpmWWR2dGVuQmhsalI2NVdYM0c2RzA?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -205,26 +225,6 @@
       }
     },
     {
-      "id": "auto-news-949612befce952d35185",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Hoffenheim Maçını Deplasman Tribününden İzleyecek Taraftarlarımıza Önemli Duyuru",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-15T12:36:12.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9INFpCVEd5d2tmSFNFdGpLa3FGZ1E4RVVhR2cybGkyZU9QY25lcUprZUlrYVV2emp2cUhmTGNXYjBWNXAtTVJaWVlRUFRXNDNtanFhQTc5dHM0Wk0?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-c1e30b6dd1587f3a6ef6",
       "category": "club-agenda",
       "confidence": "reported",
@@ -302,8 +302,8 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 7,
-        "firstSeenAt": "2026-10-15T15:05:07.000Z"
+        "mergedReports": 8,
+        "firstSeenAt": "2026-10-14T18:13:54.000Z"
       }
     },
     {
