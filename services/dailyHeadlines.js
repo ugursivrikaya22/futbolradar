@@ -401,5 +401,6 @@ module.exports = {
   MAX_HEADLINES,
   RANKS,
   buildDailyHeadlines,
+  scoreOf,
   firstSentence
 };

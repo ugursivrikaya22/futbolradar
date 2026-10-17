@@ -30,6 +30,28 @@ const { curatedMatches } = require("../services/providers/mockProvider.js");
 
 const appSource = fs.readFileSync(path.join(root, "app.js"), "utf8");
 
+// Exercise the actual English renderer: null is not 0, and an upcoming
+// fixture has no score even when its provider sends numeric zeroes.
+{
+  const source = fs.readFileSync(path.join(root, 'scripts/generate-en-pages.mjs'), 'utf8');
+  const section = source.match(/function dailyHeadlinesSection\(\) \{[\s\S]*?\r?\n\}/)[0];
+  const { scoreOf } = require('../services/dailyHeadlines.js');
+  for (const [state, score, expected] of [
+    ['upcoming', { home: 0, away: 0 }, 'Ajax – Roma'],
+    ['finished', { home: null, away: null }, 'Ajax – Roma'],
+    ['finished', { home: 0, away: 0 }, 'Ajax 0-0 Roma'],
+    ['live', { home: 1, away: 0 }, 'Ajax 1-0 Roma']
+  ]) {
+    const row = { id: 'sample', homeTeam: 'Ajax', awayTeam: 'Roma', league: 'Test', time: '21:00', score };
+    const render = new Function('programMatches', 'buildDailyHeadlines', 'withRelevance', 'isHomeFixture',
+      'TODAY', 'postMatchRecords', 'scoreOf', 'label', 'formatTime', 'LOCALE', 'competitionLabel',
+      'venueLabel', 'escapeHtml', 'sectionHead', `return (${section});`)(
+      () => [row], () => [{ matchId: row.id, state }], x => x, () => true,
+      '2026-10-17', [], scoreOf, String, () => '21:00', 'en', String, String, String, () => '');
+    assert.ok(render().includes(`<strong class="daily-headline-title">${expected}</strong>`), `English headline ${state}: ${expected}`);
+  }
+}
+
 // The hero may select a future fixture, but its "today" counters must not.
 {
   const featuredSource = appSource.match(/  function renderFeaturedMatch\(matches\) \{[\s\S]*?\r?\n  \}/)[0];

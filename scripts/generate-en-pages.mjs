@@ -64,7 +64,7 @@ const { canonicalStatus, cardPhase, istanbulDay, liveVerdict } = require("../ser
 // maçın öne çıktığına, hangi başlığın kaçıncı sırada olduğuna dair tek bir
 // karar burada yeniden yazılmaz — yoksa iki dil sessizce ayrışır.
 const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js");
-const { buildDailyHeadlines } = require("../services/dailyHeadlines.js");
+const { buildDailyHeadlines, scoreOf } = require("../services/dailyHeadlines.js");
 const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { publishedColumns } = require("../services/columnService.js");
@@ -941,9 +941,7 @@ function dailyHeadlinesSection() {
   const cards = ordered.map((headline) => {
     const match = byId.get(String(headline.matchId || ""));
     if (!match) return "";
-    const score = match.score && Number.isFinite(Number(match.score.home)) && Number.isFinite(Number(match.score.away))
-      ? { home: Number(match.score.home), away: Number(match.score.away) }
-      : null;
+    const score = ["live", "finished"].includes(headline.state) ? scoreOf(match) : null;
 
     const kicker = headline.state === "live"
       ? label("status.LIVE")
