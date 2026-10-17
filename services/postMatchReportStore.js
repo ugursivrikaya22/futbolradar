@@ -59,6 +59,10 @@ const { isTurkishMatch, turkishSideOf } = require("./turkishTeams");
 // hiç girmiyordu (167 yayınlanmış sayfa etkilendi).
 const MODEL_VERSION = "futbolradar-post-match-v5";
 
+function fixtureIdOf(match) {
+  return (match.providerIds && (match.providerIds.apiFootball || match.providerIds["api-football"])) || match.providerId || match.fixtureId || null;
+}
+
 /**
  * ANALİZ YAŞAM DÖNGÜSÜ.
  *
@@ -333,7 +337,7 @@ function buildReportRecord(match, context) {
     matchId: match.id,
     // Sağlayıcı fikstür kimliği YETKİLİ tekil anahtardır; aynı karşılaşma
     // iki kaynaktan farklı yerel id ile gelebiliyor.
-    fixtureId: (match.providerIds && match.providerIds["api-football"]) || match.providerId || match.fixtureId || null,
+    fixtureId: fixtureIdOf(match),
     provider: match.liveStateSource || (match.providerIds ? "api-football" : "curated"),
     slug: report.seo.path.replace(/^mac-raporu\//, "").replace(/\.html$/, ""),
 
@@ -497,7 +501,9 @@ function syncPostMatchReports(options) {
       (existing.apiKeyPresent !== undefined && existing.apiKeyPresent !== apiKeyPresent));
 
     if (existing && !stale && existing.fingerprint === fingerprint && existing.modelVersion === MODEL_VERSION) {
-      records.push(existing);
+      // Source identity can be restored without regenerating unchanged prose.
+      const fixtureId = fixtureIdOf(match);
+      records.push(fixtureId && String(existing.fixtureId || "") !== String(fixtureId) ? { ...existing, fixtureId } : existing);
       stats.reused += 1;
       stats.byStatus[existing.analysisStatus] = (stats.byStatus[existing.analysisStatus] || 0) + 1;
       continue;

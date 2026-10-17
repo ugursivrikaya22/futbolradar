@@ -94,6 +94,19 @@ const AGE_GROUP_OR_RESERVE_SUFFIX = /(^|\s)(u1[3-9]|u2[0-3]|akademi|academy|yout
 // String(value || "") üzerinden çalışıyor); sınırlı, dolunca boşalıyor.
 const SAME_CLUB_MEMO = new Map();
 const SAME_CLUB_MEMO_LIMIT = 50000;
+const CLUB_NAME_MEMO = new Map();
+function clubNameParts(value) {
+  const key = String(value || "");
+  if (CLUB_NAME_MEMO.has(key)) return CLUB_NAME_MEMO.get(key);
+  const normalized = normalizeText(key);
+  const escaped = normalized.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = { normalized, containment: new RegExp(`(^|\\s)${escaped}(\\s|$)`) };
+  if (key.length <= 256) {
+    if (CLUB_NAME_MEMO.size >= 8192) CLUB_NAME_MEMO.delete(CLUB_NAME_MEMO.keys().next().value);
+    CLUB_NAME_MEMO.set(key, parts);
+  }
+  return parts;
+}
 
 function sameClub(left, right) {
   const memoKey = `${String(left || "")}\u0000${String(right || "")}`;
@@ -106,8 +119,10 @@ function sameClub(left, right) {
 }
 
 function sameClubUncached(left, right) {
-  const a = normalizeText(left);
-  const b = normalizeText(right);
+  const leftParts = clubNameParts(left);
+  const rightParts = clubNameParts(right);
+  const a = leftParts.normalized;
+  const b = rightParts.normalized;
   if (!a || !b) return false;
   if (a === b) return true;
   // Millî takım: "Italy" ile "İtalya" aynı takımdır.
@@ -118,8 +133,7 @@ function sameClubUncached(left, right) {
   if (shorter.length < MIN_CONTAINMENT_LENGTH) return false;
   // Kelime sınırı: "amed" ⊂ "amed sportif faaliyetler" eşleşir,
   // rastgele bir alt dize eşleşmez.
-  const escapedShorter = shorter.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const containment = new RegExp(`(^|\\s)${escapedShorter}(\\s|$)`);
+  const containment = (a.length <= b.length ? leftParts : rightParts).containment;
   if (!containment.test(longer)) return false;
 
   const remainder = ` ${longer.replace(containment, " ").trim()} `;

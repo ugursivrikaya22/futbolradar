@@ -65,6 +65,7 @@ export function* htmlFiles(root, dir = root) {
 
 export function createResolver(root, config = loadConfig(root)) {
   const existsCache = new Map();
+  const resolvedCache = new Map();
   const isFile = (p) => {
     if (!existsCache.has(p)) {
       const full = path.join(root, decodeURIComponent(p));
@@ -79,7 +80,7 @@ export function createResolver(root, config = loadConfig(root)) {
   /**
    * @returns {{status:"ok"|"redirect-ok"|"external"|"404", final:string, file?:string, hops:string[]}}
    */
-  function resolve(urlPath) {
+  function resolveUncached(urlPath) {
     let current = urlPath;
     const hops = [];
     for (let i = 0; i < 10; i += 1) {
@@ -109,6 +110,10 @@ export function createResolver(root, config = loadConfig(root)) {
       if (isFile(dest)) return { ...base, status: hops.length ? "redirect-ok" : "ok", file: dest };
     }
     return { ...base, status: "404" };
+  }
+  function resolve(urlPath) {
+    if (!resolvedCache.has(urlPath)) resolvedCache.set(urlPath, resolveUncached(urlPath));
+    return resolvedCache.get(urlPath);
   }
   return { resolve, isFile };
 }

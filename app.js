@@ -4876,9 +4876,10 @@
   function headlineScoreOf(match) {
     var score = match && match.score;
     if (!score || typeof score !== "object") return null;
+    if ([score.home, score.away].some(function (value) { return value === null || value === undefined || typeof value === 'boolean' || String(value).trim() === ''; })) return null;
     var home = Number(score.home);
     var away = Number(score.away);
-    if (!isFinite(home) || !isFinite(away)) return null;
+    if (!Number.isInteger(home) || !Number.isInteger(away) || home < 0 || away < 0) return null;
     return { home: home, away: away };
   }
 
@@ -5054,9 +5055,9 @@
     var settings = options || {};
     var list = Array.isArray(matches) ? matches : [];
     var reports = Array.isArray(settings.reports) ? settings.reports : [];
-    var day = headlineText(settings.today);
     var limit = isFinite(settings.limit) ? Math.max(0, settings.limit) : DAILY_HEADLINE_LIMIT;
     var nowMs = isFinite(settings.nowMs) ? settings.nowMs : Date.now();
+    var day = headlineText(settings.today) || istanbulDayOf(new Date(nowMs).toISOString());
     var candidates = [];
 
     list.forEach(function (match) {
@@ -5165,18 +5166,22 @@
 
   function renderFeaturedMatch(matches) {
     var list = Array.isArray(matches) ? matches.slice() : [];
+    var statsDay = todayInIstanbul();
+    var statsList = list.filter(function (match) {
+      return matchDateValue(match) === statsDay || matchLiveVerdict(match).live;
+    });
     // Sayaç, "Bugünün Maçları" panosuyla (matchCenterMetricsHtml) AYNI
     // hükmü kullanır: yalnızca isLiveMatch sayılsaydı, sağlayıcı bir maçı
     // saatlerce güncellemeyi bıraktığında (bkz. matchLiveVerdict'in bayat
     // canlı koruması) ana sayfa "Canlı: 1" derken diğer sayfa 0 gösterir —
     // aynı veri anında iki farklı sayı, tutarsız bir sayaç.
-    var liveCount = list.filter(function (match) {
+    var liveCount = statsList.filter(function (match) {
       return matchLiveVerdict(match).live;
     }).length;
-    var finishedCount = list.filter(function (match) {
+    var finishedCount = statsList.filter(function (match) {
       return ["FINISHED", "FT", "AET", "PEN"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
-    var upcomingCount = list.filter(function (match) {
+    var upcomingCount = statsList.filter(function (match) {
       return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS"].includes(String(match.status || match.providerStatus || "").toUpperCase());
     }).length;
     // Karusel sırası: canlı Türk maçı ilk karta sabit, sonra bugünün diğer
@@ -5204,7 +5209,7 @@
     // Analizi hazır: maçın kendi kaydından üretilebilen bir okuma var mı?
     // Sayaç canlı yoklamada yeniden hesaplanır, çünkü bir maç başladığında
     // veya bittiğinde analiz durumu da değişir.
-    var analysisReadyCount = list.filter(matchHasReadyAnalysis).length;
+    var analysisReadyCount = statsList.filter(matchHasReadyAnalysis).length;
 
     // Sıfır olan sayaç çizilmez; hepsi sıfırsa şerit hiç basılmaz.
     var quickStats = renderQuickStats({
@@ -5212,7 +5217,7 @@
       upcoming: upcomingCount,
       finished: finishedCount,
       analysisReady: analysisReadyCount,
-      total: list.length
+      total: statsList.length
     });
 
     if (!featured) {

@@ -137,7 +137,7 @@ function teamPlayers(name) {
 }
 
 function keyPlayersHtml(name) {
-  const selected = teamPlayers(name).filter((player) => publicPlayerView(player).verified);
+  const selected = teamPlayers(name).filter((player) => publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id);
   if (!selected.length) {
     return `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`;
   }
@@ -148,7 +148,7 @@ function keyPlayersHtml(name) {
     const profile = playerUrls.enPlayerPagePath(player.id);
     const label = `${escapeHtml(player.name)}`;
     const cell = fs.existsSync(path.join(root, profile))
-      ? `<a href="../player/${escapeHtml(playerUrls.slugFor(player.id))}.html">${label}</a>`
+      ? `<a href="/${escapeHtml(profile.replace(/^\/+/, ''))}">${label}</a>`
       : label;
     return `<li>${cell}${rating ? `<span>Rating ${escapeHtml(rating)}</span>` : ""}</li>`;
   }).join("")}</ul>`;
