@@ -816,6 +816,11 @@
 
     target.innerHTML = html;
     target.dataset.state = "ready";
+    // Hydration can happen on a later Istanbul day than the static build.
+    // These renderers select today's fixtures, so their metadata must agree.
+    if (["featured-match", "daily-headlines", "today-matches", "today-superlig-matches"].includes(target.dataset.apiTarget)) {
+      target.dataset.matchesDay = todayInIstanbul();
+    }
     // innerHTML düğümleri değiştirdiği için karusel her çizimde yeniden
     // bağlanmalı; aksi halde canlı yoklamadan sonra kart dönmeyi bırakır.
     initFeaturedCarousel(target);

@@ -59,7 +59,16 @@ const server = http.createServer((req, res) => {
   let file = path.join(root, decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname));
   if (!file.startsWith(root)) { res.statusCode = 403; return res.end(); }
   if (!fs.existsSync(file) && fs.existsSync(file + '.html')) file += '.html';
-  if (fs.existsSync(file) && fs.statSync(file).isFile()) { res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream'); return res.end(fs.readFileSync(file)); }
+  if (fs.existsSync(file) && fs.statSync(file).isFile()) {
+    res.setHeader('Content-Type', types[path.extname(file)] || 'application/octet-stream');
+    // Serve yesterday's static day even in daytime: hydration must replace
+    // both the cards and their day metadata after an overnight deployment.
+    if (path.basename(file) === 'index.html') {
+      const yesterday = iso(istanbulDayStart - 3600000).slice(0, 10);
+      return res.end(fs.readFileSync(file, 'utf8').replace(/data-matches-day="[^"]*"/g, `data-matches-day="${yesterday}"`));
+    }
+    return res.end(fs.readFileSync(file));
+  }
   res.statusCode = 404; res.end();
 });
 
@@ -83,6 +92,10 @@ async function cardIds(page) {
     await page.goto(origin + '/');
     let ids = await cardIds(page);
     assert.ok(fixtures.every((f) => ids.includes(f.providerId)), 'kontrol: tablo yokken sayısal kimlik beklenirdi: ' + ids.join(','));
+    const renderedDays = await page.locator('[data-api-target][data-matches-day][data-state="ready"]').evaluateAll(nodes => nodes.map(n => n.dataset.matchesDay));
+    const today = new Date(now).toLocaleDateString('en-CA', { timeZone: 'Europe/Istanbul' });
+    assert.ok(renderedDays.length > 0, 'hydrated match sections must expose their day');
+    assert.ok(renderedDays.every(day => day === today), 'rendered day must replace yesterday’s build day: ' + renderedDays.join(','));
     await page.close();
 
     // 2) Tablo varken: kart kimliği takvim kimliği; eski sayısal takip kaydı taşınır.
