@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-17T00:34:15.203Z",
+  "updatedAt": "2026-10-17T06:54:17.550Z",
   "items": [
     {
       "id": "auto-news-ddbb884858a7f4377537",
@@ -29,7 +29,7 @@
       "section": "news",
       "text": "Kamuoyuna Duyuru",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-16T21:56:15.000Z",
+      "timestamp": "2026-10-16T22:04:57.000Z",
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE5idmp4RzBiaFMxUFRERHJCakNkRFFvQU9FVmhQUU9WTzZZNnA3MUlvM0FfSWNBaVZoc3hBdER1MDlCam5nMmpudHVfMGFraEppMnJYOG5rNEV6ZjlZakUxQWlYbE5nSjVjU2p2bW42ajIxMjY0?oc=5",
@@ -185,6 +185,26 @@
       }
     },
     {
+      "id": "auto-news-6d260568b88be1b4ad5e",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "KuPS 2-4 Trabzonspor",
+      "team": "Trabzonspor",
+      "timestamp": "2026-10-15T19:57:29.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMidkFVX3lxTE5sa3Y4QnN1MjZuaHJxLWpPT2hwdkNnTUszellvOGZnVWY4aXFZc2x4WTNsZ0hqZEZ6cW5xNWhmd0NycmhqVnVtM1pLWWlsM2JIaGVJYXFSamFNYW03ZThGWGo2bXVGcUlyLXFPX2c3aXdYZl93cVE?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-a1df4386d7f016bbe0fc",
       "category": "official",
       "confidence": "confirmed",
@@ -225,6 +245,46 @@
       }
     },
     {
+      "id": "auto-news-949612befce952d35185",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Hoffenheim Maçını Deplasman Tribününden İzleyecek Taraftarlarımıza Önemli Duyuru",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-15T12:36:12.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9INFpCVEd5d2tmSFNFdGpLa3FGZ1E4RVVhR2cybGkyZU9QY25lcUprZUlrYVV2emp2cUhmTGNXYjBWNXAtTVJaWVlRUFRXNDNtanFhQTc5dHM0Wk0?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-ae6ebb6adaf05fc32e9d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Futbol A Takımımız Almanya'da - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-14T16:42:48.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1NSXVWSF9SYVZLRU9EQkY5dF9BbFF4MHJwNmNLdTdaYWkxTmlBenVmM21IZ3VjS0l3MXdjS3lXNG9vWEJBNWRJZVlJY1ctcC03VHZFbk11dHR4b2hpQ0JzTC1ZazdsRHdzOTZ3R3lQdEhqMjNBaV9UeW1hRQ?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-c1e30b6dd1587f3a6ef6",
       "category": "club-agenda",
       "confidence": "reported",
@@ -235,26 +295,6 @@
       "source": {
         "name": "fotomac",
         "url": "https://www.fotomac.com.tr/fenerbahce/2026/10/16/ismail-kartaldan-flas-asensio-karari-iste-fenerbahcenin-muhtemel-11i",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
-      "id": "auto-news-c7287dd5943ac8eb0e06",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Başkent'te parola galibiyet! İşte Galatasaray'ın muhtemel 11'i",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-16T08:46:45.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/galatasaray/2026/10/16/baskentte-parola-galibiyet-iste-galatasarayin-muhtemel-11i",
         "publisher": "fotomac.com.tr"
       },
       "automation": {
@@ -282,28 +322,6 @@
         "feed": "diger-super-lig",
         "priority": 7,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-d3010a08f75602e1ca60",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Conference League highlights: KuPS Kuopio 2-4 Trabzonspor",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-10-16T19:43:48.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi6AFBVV95cUxON0NGczdfRl9DY1preWgxS0Y2ejg1aXhXUHVyY0c3eUdQRmtlcTlIWktvd2FDMlE1MHdHTDR5eF81Z25jTU1PRk5EeS1wN294VU1tOUd4VkR5NDcwVnlEdFlLNjNWOWRaWVBjU0c2bzU5XzVvd0pGQzJxMnpqM0FYWEwyYVluS0FKcTd3cmRoVGRBLWZvUHlFWFFSbFBjSENDcVdDd0JkRVhnNFl6WDk3aVpDcFRKREZyYXFQc2JFX2NvRlpiNTlSTEp2ZFlhRzVqNnB1dVpFdWZlWlZnbklzejhpRHF1Z242?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 8,
-        "firstSeenAt": "2026-10-14T18:13:54.000Z"
       }
     },
     {
