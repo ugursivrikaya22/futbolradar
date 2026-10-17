@@ -9,13 +9,16 @@ const season = Array.from({length:teams.length/2},(_,i)=>({id:String(900000+i),p
 
 test('one season request merges the window and preserves unrelated rows and timestamps', async()=>{
   let calls=0;
-  const old={id:'unrelated',homeTeam:'Liverpool',awayTeam:'Como',kickoff:'2026-08-16T20:00:00+03:00',source:'editorial',fetchedAt:'2026-08-16T21:00:00Z'};
-  const result=await primaryFixtureCalendar({previous:{matches:[old]},today:'2026-10-17',fetchSeason:async()=>{calls++;return season;}});
+  const old={id:'unrelated',homeTeam:'Liverpool',awayTeam:'Como',kickoff:'2026-10-20T20:00:00+03:00',source:'editorial',fetchedAt:'2026-10-16T21:00:00Z'};
+  const expired={...old,id:'expired',kickoff:'2026-08-16T20:00:00+03:00'};
+  const result=await primaryFixtureCalendar({previous:{matches:[old,expired]},today:'2026-10-17',fetchSeason:async()=>{calls++;return season;}});
   assert.equal(calls,1);
   assert.equal(result.calendarSync.requests,1);
   assert.equal(result.returnedInWindow,9);
   assert.equal(result.provider,'api-football');
   assert.deepEqual(result.matches.find(m=>m.id==='unrelated'),old);
+  assert.equal(result.calendarSync.pruned,1);
+  assert.ok(!result.matches.some(m=>m.id==='expired'));
   assert.ok(result.matches.filter(m=>m.providerIds?.apiFootball).every(m=>m.score.home===null));
 });
 test('wrong league, empty response and real window loss all fail closed',async()=>{

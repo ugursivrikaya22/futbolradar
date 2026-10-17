@@ -18,12 +18,15 @@ export async function primaryFixtureCalendar({ previous, fetchSeason, today, now
   const prior = (previous.matches || []).filter(m => inWindow(m) && leagues.has(String(m.providerLeagueId)));
   if (prior.length >= 6 && incoming.length < prior.length * 0.5) throw new Error('calendar-window-count-drop');
   const merged = mergeCalendarMatches(previous.matches || [], incoming);
+  // Keep the original calendar retention bound. History lives in the archive;
+  // retaining every expired global fixture here would grow the browser payload.
+  const kept = merged.matches.filter(m => !Number.isFinite(Date.parse(m.kickoff)) || Date.parse(m.kickoff) >= start);
   return {
     ...previous, provider: 'api-football', source: 'API-Football',
     providers: [...new Set([...(previous.providers || []), 'api-football'])],
     fetchedAt: now, windowDays: { past: 3, future: 35 },
     coverageMode: 'super-lig-season-window', returnedInWindow: incoming.length,
-    requestFailures: 0, matches: merged.matches,
-    calendarSync: { provider: 'api-football', day: istanbulDay(now), requests: 1, added: merged.added, updated: merged.updated }
+    requestFailures: 0, matches: kept,
+    calendarSync: { provider: 'api-football', day: istanbulDay(now), requests: 1, added: merged.added, updated: merged.updated, pruned: merged.matches.length - kept.length }
   };
 }
