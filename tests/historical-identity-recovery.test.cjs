@@ -38,6 +38,7 @@ for (const resolution of resolutions) {
     if (resolution.status === 'FINISHED') {
       const rebuilt = buildArchive({sources:[{name:'report',records:[match]}],previous:{records:[]},now:'2026-10-17T19:00:00Z'});
       assert.deepEqual(rebuilt.records[0].match.identityResolution, match.identityResolution, 'provenance survives rebuild');
+      assert.equal(rebuilt.records[0].match.reportPage, match.reportPage, 'published route survives archive round trip');
     }
   });
 }

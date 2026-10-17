@@ -108,7 +108,7 @@ function normalized(match, source) {
     venue: text(match && match.venue) || null, referee: text(match && match.referee) || null,
     events: Array.isArray(match && match.events) ? match.events : [], substitutions: Array.isArray(match && match.substitutions) ? match.substitutions : [],
     lineups: Array.isArray(match && match.lineups) ? match.lineups : [], statistics: Array.isArray(match && match.statistics) ? match.statistics : [], players: Array.isArray(match && match.players) ? match.players : [],
-    coaches: match && match.coaches || null, reportPage: text(match && (match.reportUrl || (match.seo && match.seo.path))) || (matchId(match) ? `mac-raporu/${matchId(match)}.html` : null),
+    coaches: match && match.coaches || null, reportPage: text(match && (match.analysisPage || match.reportPage || match.reportUrl || (match.seo && match.seo.path))).replace(/^\.\//, "") || (matchId(match) ? `mac-raporu/${matchId(match)}.html` : null),
     manualAnalysis: match && match.analysis ? match.analysis : null, source, lastVerifiedAt: text(match && (match.lastVerifiedAt || match.lastSuccessfulSyncAt || match.fetchedAt || match.analysisUpdatedAt)) || null
   };
 }
