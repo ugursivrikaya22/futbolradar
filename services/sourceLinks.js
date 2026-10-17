@@ -96,6 +96,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // kılıyordu.
     "exxen.com",
     "aa.com.tr",
+    // Reviewed Hakemler Dosyasi archive citations; publication still requires editorial review.
+    "trthaber.com",
+    "dha.com.tr",
+    "haberler.com",
     "ntvspor.net",
     "ntv.com.tr",
     "fotomac.com.tr",

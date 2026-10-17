@@ -22,6 +22,12 @@
       for (const selector of ['meta[name="description"]','meta[property="og:description"]','meta[name="twitter:description"]']) document.querySelector(selector)?.setAttribute('content',data.summary);
       for (const selector of ['meta[property="og:title"]','meta[name="twitter:title"]']) document.querySelector(selector)?.setAttribute('content',data.title);
       document.getElementById('mn-schema').textContent=JSON.stringify(data.schema);
+      const share = document.querySelector('[data-page-share]');
+      const shareUrl = share?.querySelector('[data-page-share-copy]')?.getAttribute('data-page-share-copy');
+      if (shareUrl) {
+        share.querySelector('a[href^="https://wa.me/"]')?.setAttribute('href','https://wa.me/?text='+encodeURIComponent(data.title+'\n'+shareUrl));
+        share.querySelector('a[href^="https://twitter.com/intent/tweet"]')?.setAttribute('href','https://twitter.com/intent/tweet?text='+encodeURIComponent(data.title)+'&url='+encodeURIComponent(shareUrl));
+      }
       // HTML is escaped and rendered by our same-origin server, never by a feed.
       if (lastHtml!==data.html) { live.innerHTML=data.html; lastHtml=data.html; }
       note.textContent=data.ended?'Maç sonu: skor, analiz ve oyuncu verileri kontrol edilmeye devam ediyor.':'Otomatik kontrol açık · 15 saniyede bir.';

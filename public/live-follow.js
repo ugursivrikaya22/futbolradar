@@ -61,8 +61,24 @@
       href: safeHref(record.href),
       aliases: Array.isArray(record.aliases) ? record.aliases.map(String).slice(0,8) : [],
       finishedAt: Number(record.finishedAt) || null,
-      followedAt: Number(record.followedAt) || Date.now()
+      followedAt: Number(record.followedAt) || Date.now(),
+      types: normalizeTypes(record.types)
     };
+  }
+
+  // MAÇ BAZLI BİLDİRİM TÜRLERİ (yalnızca site içi; sunucu ve izin gerekmez).
+  // Varsayılan: hepsi açık (eski davranış). Olay türleri dört gruba iner.
+  var TYPE_GROUPS = { kickoff: 'start', goal: 'goal', var: 'goal', red_card: 'goal', penalty_awarded: 'goal', penalty_scored: 'goal', penalty_missed: 'goal', score_update: 'goal', score_correction: 'goal', halftime: 'halftime', fulltime: 'result' };
+  var TYPE_KEYS = ['start', 'goal', 'halftime', 'result'];
+  function normalizeTypes(value) {
+    var out = {};
+    TYPE_KEYS.forEach(function (key) { out[key] = !(value && typeof value === 'object' && value[key] === false); });
+    return out;
+  }
+  function typeAllowed(record, eventType) {
+    var group = TYPE_GROUPS[eventType];
+    if (!group || !record || !record.types) return true;
+    return record.types[group] !== false;
   }
 
   function loadState() {
@@ -168,6 +184,40 @@
     if (root) root.classList.toggle("is-followed", active);
   }
 
+  // FAVORİ MAÇ (YILDIZ). Bildirim düğmesinden BAĞIMSIZ: yıldız yalnızca "Takip
+  // Ettiklerim" listesine ekler (yerel depo, sunucu yok); bildirimi çan açar.
+  function favoritesStore() { return window.FutbolRadarFavorites || null; }
+  function createStarButton(record) {
+    var button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'match-star-button';
+    button.setAttribute('data-star-match', record.id);
+    button.setAttribute('data-home-team', record.homeTeam);
+    button.setAttribute('data-away-team', record.awayTeam);
+    button.setAttribute('data-match-href', record.href);
+    button.innerHTML = '<span class="match-star-icon" aria-hidden="true">☆</span><span class="match-star-label"></span>';
+    return button;
+  }
+  function syncStar(button) {
+    var store = favoritesStore();
+    if (!store) return;
+    var id = button.getAttribute('data-star-match');
+    var active = store.hasMatch(id);
+    var pair = (button.getAttribute('data-home-team') || '') + ' - ' + (button.getAttribute('data-away-team') || '');
+    button.setAttribute('aria-pressed', active ? 'true' : 'false');
+    button.setAttribute('aria-label', pair + ': ' + (active ? tr('favorilerden çıkar', 'remove from favourites') : tr('favorilere ekle', 'add to favourites')));
+    button.title = active ? tr('Favorilerden çıkar', 'Remove from favourites') : tr('Favorilere ekle', 'Add to favourites');
+    var icon = button.querySelector('.match-star-icon');
+    if (icon) icon.textContent = active ? '★' : '☆';
+    var label = button.querySelector('.match-star-label');
+    if (label) label.textContent = active ? tr('Favoride', 'Favourite') : tr('Favori', 'Favourite');
+    var root = button.closest('[data-match]');
+    if (root) root.classList.toggle('is-favourite', active);
+  }
+  function syncStars() {
+    document.querySelectorAll('.match-star-button[data-star-match]').forEach(syncStar);
+  }
+
   function enhanceMatchRoot(root) {
     var record = readNodeRecord(root);
     if (!record) return;
@@ -193,6 +243,10 @@
       }
     }
     syncButton(button, record);
+    if (favoritesStore() && button.parentNode && !button.parentNode.querySelector('.match-star-button[data-star-match="' + cssEscape(record.id) + '"]')) {
+      button.parentNode.insertBefore(createStarButton(record), button);
+    }
+    root.querySelectorAll('.match-star-button[data-star-match]').forEach(syncStar);
   }
 
   function cssEscape(value) {
@@ -201,6 +255,7 @@
   }
 
   function syncMatchControls(scope) {
+    ensureCalendarIds();
     var root = scope && scope.querySelectorAll ? scope : document;
     root.querySelectorAll('[data-match-center]').forEach(function (node) {
       var params = new URLSearchParams(node.getAttribute('data-msp-query') || '');
@@ -328,7 +383,34 @@
       remove.textContent = "×";
       row.appendChild(link);
       row.appendChild(remove);
-      return row;
+
+      // Bildirim türleri (yalnızca bu maç için): başlangıç, gol/önemli olay, devre arası, sonuç.
+      var prefs = document.createElement('details');
+      prefs.className = 'follow-panel-prefs';
+      var summary = document.createElement('summary');
+      summary.textContent = tr('Bildirim türleri', 'Notification types');
+      prefs.appendChild(summary);
+      var typeLabels = { start: tr('Maç başlangıcı', 'Kick-off'), goal: tr('Gol ve önemli olaylar', 'Goals and key events'), halftime: tr('Devre arası', 'Half time'), result: tr('Maç sonucu', 'Full time') };
+      TYPE_KEYS.forEach(function (key) {
+        var label = document.createElement('label');
+        var box = document.createElement('input');
+        box.type = 'checkbox';
+        box.checked = !record.types || record.types[key] !== false;
+        box.setAttribute('data-follow-type', key);
+        box.addEventListener('change', function () {
+          var change = {}; change[key] = box.checked;
+          setTypes(record.id, change);
+        });
+        label.appendChild(box);
+        label.appendChild(document.createTextNode(' ' + typeLabels[key]));
+        prefs.appendChild(label);
+      });
+
+      var item = document.createElement('div');
+      item.className = 'follow-panel-item';
+      item.appendChild(row);
+      item.appendChild(prefs);
+      return item;
     });
 
     followPanel.replaceChildren();
@@ -348,6 +430,14 @@
       list.appendChild(empty);
     }
     followPanel.appendChild(list);
+
+    if (!EN) {
+      var all = document.createElement('a');
+      all.className = 'follow-panel-all';
+      all.href = '/takip-ettiklerim';
+      all.textContent = 'Takip Ettiklerim →';
+      followPanel.appendChild(all);
+    }
 
     var help = document.createElement('p'); help.className = 'follow-explanation'; help.textContent = EXPLANATION; followPanel.appendChild(help);
     var state = document.createElement('p'); state.className = 'follow-feed-status'; state.setAttribute('data-follow-status', ''); state.textContent = feedLabel(); followPanel.appendChild(state);
@@ -374,10 +464,44 @@
   function disconnect() { if (reconnectTimer) clearTimeout(reconnectTimer); reconnectTimer = null; }
   function scheduleReconnect() { if (!polling && !reconnectTimer) reconnectTimer = setTimeout(connect, 0); }
   function restartConnection() { disconnect(); scheduleReconnect(); }
-  async function readShared(file) {
+  /**
+   * AYNI İSTEĞİ İKİ KEZ ÇEKME.
+   *
+   * app.js ile live-follow.js aynı sayfa yüklemesinde aynı JSON'u (api/matches,
+   * match-notification-identities.json, matches.json) bağımsız çekiyordu: ana
+   * sayfada ~140 KB (sıkıştırılmış) tekrar. Uçuştaki istek pencere düzeyinde ortak
+   * bir tabloda tutulur; ikinci çağıran aynı yanıtın kopyasını (clone) alır.
+   * Bu bir ÖNBELLEK DEĞİL: kayıt istek bitince silinir (canlı skor ve bildirim yoklaması
+   * hiçbir zaman bayat veri görmez); yalnızca `holdMs` verilen, bir kez okunan statik dosyalar
+   * (kimlik tablosu) o süre tutulur (sayfa açılışında betiklerin sıra kaymasını kapsar).
+   * `no-store` isteği yalnızca uçuştayken paylaşılır. API çağrı sayısı ARTMAZ, yalnızca azalır.
+   */
+  function fetchShared(url, init, holdMs) {
+    var store = window.__frInflightFetch || (window.__frInflightFetch = {});
+    var cacheMode = (init && init.cache) || "default";
+    // Anahtar: mutlak adres (+ no-store ayrımı). app.js "/api/matches", live-follow.js
+    // new URL(...) verir; ikisi aynı kaynağa çözülmeli.
+    var key = (cacheMode === "no-store" ? "no-store " : "") + new URL(String(url), document.baseURI).href;
+    var pending = store[key];
+    if (!pending) {
+      pending = fetch(url, init);
+      store[key] = pending;
+      // Başarısız yanıt (ağ hatası, 4xx/5xx) bekletilmez: sonraki çağrı yeniden dener.
+      var release = function (response) {
+        // Yanıt YALNIZCA çağıran açıkça isterse (kimlik tablosu gibi bir kez okunan statik dosya) bekletilir;
+        // yoklama okumaları (maç listesi, ortak JSON'lar) hiç bekletilmez: ardışık yoklama hep taze görür.
+        var keep = response && response.ok && cacheMode !== "no-store" && holdMs > 0 ? holdMs : 0;
+        window.setTimeout(function () { if (store[key] === pending) delete store[key]; }, keep);
+      };
+      pending.then(release, function () { release(null); });
+    }
+    return pending.then(function (response) { return response.clone(); });
+  }
+
+  async function readShared(file, holdMs) {
     var controller = new AbortController(), timeout = setTimeout(function () { controller.abort(); }, 10000);
     try {
-      var response = await fetch(new URL('data/' + file, moduleBase), { cache: 'no-cache', signal: controller.signal });
+      var response = await fetchShared(new URL('data/' + file, moduleBase), { cache: 'no-cache', signal: controller.signal }, holdMs);
       if (!response.ok) throw new Error('shared-cache-unavailable');
       return await response.json();
     } finally { clearTimeout(timeout); }
@@ -387,7 +511,7 @@
     try {
       // One canonical CDN URL for all matches/users. Never add user, match or
       // cache-busting parameters; the existing provider cache coalesces misses.
-      var response=await fetch(new URL('api/matches',moduleBase),{signal:controller.signal});
+      var response=await fetchShared(new URL('api/matches',moduleBase),{signal:controller.signal});
       if(!response.ok) return {matches:[]};
       var payload=await response.json();
       return {matches:payload.ok&&Array.isArray(payload.data)?payload.data:[]};
@@ -572,6 +696,9 @@
       if (!document.hidden) updateScoreDom(match);
     }
 
+    // Kullanıcının kapattığı tür: olay görüldü sayılır (sonradan açınca eski olaylar
+    // yeniden gelmez) ama bildirim gösterilmez.
+    if (!typeAllowed(followed.get(String(event.matchId)), event.type)) return false;
     document.dispatchEvent(new CustomEvent("futbolradar:live-event", { detail: event }));
     showToast(event);
     return true;
@@ -580,6 +707,7 @@
   function follow(record) {
     var normalized = normalizeRecord(record);
     if (!enabled || !normalized) return false;
+    if (!calendarIdsRequested) loadCalendarIds();
     if (followed.has(subscriptionId(normalized.id))) return true;
     if (!followed.has(normalized.id) && followed.size >= MAX_FOLLOWED_MATCHES) return false;
     baselines.delete(normalized.id);
@@ -651,6 +779,22 @@
         return;
       }
 
+      var starButton = event.target.closest && event.target.closest(".match-star-button[data-star-match]");
+      if (starButton) {
+        event.preventDefault();
+        var store = favoritesStore();
+        if (!store) return;
+        var result = store.toggleMatch({
+          id: starButton.getAttribute('data-star-match'),
+          home: starButton.getAttribute('data-home-team'),
+          away: starButton.getAttribute('data-away-team'),
+          href: starButton.getAttribute('data-match-href')
+        });
+        if (result.full) starButton.title = tr('Favori listesi dolu (en çok ' + store.MAX_MATCHES + ' maç).', 'Favourites list is full (max ' + store.MAX_MATCHES + ' matches).');
+        syncStars();
+        return;
+      }
+
       var remove = event.target.closest && event.target.closest("[data-unfollow-match]");
       if (remove) {
         event.preventDefault();
@@ -691,6 +835,7 @@
     document.addEventListener("futbolradar:rendered", function (event) {
       scheduleDomSync(event.detail && event.detail.target);
     });
+    document.addEventListener("futbolradar:favorites-change", syncStars);
 
     document.addEventListener("visibilitychange", function () {
       if (!document.hidden) {
@@ -730,8 +875,29 @@
     if (changed) persistState();
     return changed;
   }
+  // KİMLİK TABLOSU YALNIZCA GEREKTİĞİNDE İNDİRİLİR.
+  //
+  // match-notification-identities.json (~150 KB ham / 42 KB sıkıştırılmış) her
+  // sayfa açılışında koşulsuz çekiliyordu; puan durumu, takım profili, haber
+  // gibi hiçbir maç kartı olmayan sayfalarda ve takip edilen maçı olmayan
+  // ziyaretçide kullanılacağı hiçbir yer yok. Tablo yalnızca (a) takip edilen
+  // maç varsa (eski kimlik göçü için) ya da (b) sayfada bir maç kontrolü
+  // bulunduğunda (ilk açılışta veya sonradan çizilen kartlarda) çekilir.
+  var calendarIdsRequested = false;
+  var MATCH_NODE_SELECTOR = [
+    '[data-notification-fixture]', 'a.fixture-match-row[href]', '[data-card="today-radar-match"][data-match]',
+    '[data-match-center]', '[data-notification-detail]', '.fixture-card[data-match]', '.live-score-card[data-match]',
+    '.match-detail-card[data-match]', '[data-en-match-detail]', '[data-card="featured-match"]', '.match-follow-button'
+  ].join(',');
+  function ensureCalendarIds() {
+    if (calendarIdsRequested) return;
+    if (!followed.size && !document.querySelector(MATCH_NODE_SELECTOR)) return;
+    calendarIdsRequested = true;
+    loadCalendarIds();
+  }
   function loadCalendarIds() {
-    return readShared('match-notification-identities.json').then(function (data) {
+    calendarIdsRequested = true;
+    return readShared('match-notification-identities.json', 8000).then(function (data) {
       calendarIds = (data && data.calendarIds) || {};
       if (!identitiesLoaded) { identityAliases = (data && data.aliases) || {}; identitiesLoaded = true; }
       migrateFollowedIds();
@@ -741,7 +907,7 @@
 
   function init() {
     loadState();
-    loadCalendarIds();
+    ensureCalendarIds();
     try { seenEvents = new Map(safeJson(localStorage.getItem('futbolradar:notification-seen:v2'), [])); } catch (_) {}
     injectHeaderPanel();
     bindEvents();
@@ -750,9 +916,20 @@
     scheduleReconnect(true);
   }
 
+  function setTypes(id, types) {
+    id = subscriptionId(cleanText(id));
+    var record = followed.get(id);
+    if (!record) return false;
+    record.types = normalizeTypes(Object.assign({}, record.types, types));
+    persistState();
+    return true;
+  }
+
   window.FutbolRadarFollow = {
     follow: follow,
     unfollow: unfollow,
+    setTypes: setTypes,
+    TYPE_KEYS: TYPE_KEYS,
     getState: getState,
     ingestEvent: ingestEvent,
     reconnect: restartConnection

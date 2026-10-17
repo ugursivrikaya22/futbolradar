@@ -199,9 +199,13 @@ for (const pair of playerSample) {
     // Maç Merkezi'ne devredilmiş hafta sayfası haritada YER ALMAZ: haritaya
     // yalnızca kanonik adresler yazılır. Beklenti bu sayfalar için tersine
     // döner — kendi adresiyle listelenmiş olması hata olurdu.
+    // Tarihi atanmamış hafta sayfası yer tutucudur: noindex ve haritada yok
+    // (bkz. scripts/test-index-policy.mjs) — o da "haritada olmamalı" sınıfına girer.
     const sampledMatches = sample(matchPairs, 20).map((pair) => {
-      const canonical = ((read(pair.en) || "").match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
-      return { ...pair, aliased: isMatchCentreHandoff(pair.en, canonical) };
+      const html = read(pair.en) || "";
+      const canonical = (html.match(/<link rel="canonical" href="([^"]+)"/) || [])[1];
+      const placeholder = /<meta name="robots" content="noindex/.test(html);
+      return { ...pair, aliased: isMatchCentreHandoff(pair.en, canonical) || placeholder };
     });
     const missingMatch = sampledMatches.filter((pair) => !pair.aliased && !sitemap.includes(`<loc>${absoluteUrl(pair.en)}</loc>`));
     check("site haritasında örneklenen maç URL'leri var", !missingMatch.length, missingMatch.map((p) => p.en).join(", "));

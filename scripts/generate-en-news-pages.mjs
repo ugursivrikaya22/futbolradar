@@ -18,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
@@ -29,6 +29,8 @@ const {
 } = require("../services/englishNews.js");
 const { statusLabel, BREAKING_LABEL } = require("../services/editorialStatus.js");
 const { publishableNews } = require("../services/newsFeed.js");
+// Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
+const { isThinAutomatedNews } = require("../services/newsIndexPolicy.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -45,7 +47,7 @@ function translatedArticles() {
   try {
     const parsed = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
     return publishableNews(parsed, { locale: "en" })
-      .map((article) => ({ slug: String(article.slug || ""), publishedAt: article.publishedAt }))
+      .map((article) => ({ slug: String(article.slug || ""), publishedAt: article.publishedAt, thin: isThinAutomatedNews(article) }))
       .filter((article) => article.slug);
   } catch {
     return [];
@@ -183,7 +185,7 @@ function pageHtml(article) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${isThinAutomatedNews(article) ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="en" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -279,7 +281,8 @@ function pruneRemoved(slugs) {
  * kurulur.
  */
 function updateSitemap(allArticles) {
-  const all = [...allArticles, ...translatedArticles()];
+  // İnce otomatik haberler site haritasına girmez (noindex ile çelişmesin).
+  const all = [...allArticles.filter((article) => !isThinAutomatedNews(article)), ...translatedArticles().filter((article) => !article.thin)];
   const entries = all.map((article) => `  <url>
     <loc>${articleUrl(article)}</loc>
     <lastmod>${String(article.publishedAt || "").slice(0, 10) || "2026-09-01"}</lastmod>

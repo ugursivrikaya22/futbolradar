@@ -483,7 +483,12 @@ function automatedId(item) {
   return `auto-news-${crypto.createHash("sha256").update(input).digest("hex").slice(0, 20)}`;
 }
 
+export function isRefereeInvestigation(item) {
+  return /hakemler.?dosyas|hakem.{0,35}soruştur|mhk.{0,35}soruştur|yasin kol|göktuğ hazar erel|ferhat gündoğdu/i.test((item.title || item.text || '') + ' ' + (item.description || ''));
+}
+
 export function toTickerItem(item) {
+  if (isRefereeInvestigation(item)) return null;
   const official = isOfficial(item);
   return {
     id: automatedId(item),
@@ -562,7 +567,7 @@ export function mergeNewsItems(payload, incoming, options = {}) {
   // süzgeç eklenmeden önce banda düşmüş basketbol/voleybol başlıklarının
   // raf ömrü dolana kadar orada kalması demekti.
   const retainedAutomated = existing.filter((item) =>
-    item.automation &&
+    item.automation && !isRefereeInvestigation(item) &&
     nowMs - Date.parse(item.timestamp) <= MAX_AGE_MS &&
     isFootballTopic({ title: item.text }));
   const byId = new Map(retainedAutomated.map((item) => [item.id, item]));
@@ -661,6 +666,7 @@ export async function synchronizeFootballNews(options = {}) {
   }
   if (!checked) throw new Error(`All football news feeds failed: ${errors.map((item) => item.source).join(", ")}`);
 
+  const refereeCandidates = candidates.filter(isRefereeInvestigation).map(item => ({ id: automatedId(item), tag: 'hakem-sorusturmasi', status: 'pending-review', title: item.title, url: item.link, sourceName: item.sourceName, sourcePublishedAt: item.publishedAt, discoveredAt: now.toISOString() }));
   const cutoff = now.getTime() - MAX_AGE_MS;
   const accepted = [];
   const seen = new Set();
@@ -668,6 +674,7 @@ export async function synchronizeFootballNews(options = {}) {
     .filter((item) => Date.parse(item.publishedAt) >= cutoff && isTrusted(item) && isFootballTopic(item) && inScope(item) && hasUsableTitle(item.title) && allowAutomatedNews(item.title,isOfficial(item)))
     .sort((left, right) => Number(left.feed.priority || 99) - Number(right.feed.priority || 99) || Date.parse(right.publishedAt) - Date.parse(left.publishedAt))) {
     const tickerItem = toTickerItem(candidate);
+    if (!tickerItem) continue;
     const verdict = validateTickerItem(tickerItem);
     if (!verdict.valid || seen.has(tickerItem.id)) continue;
     seen.add(tickerItem.id);
@@ -677,6 +684,7 @@ export async function synchronizeFootballNews(options = {}) {
   const previous = options.previous || JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8"));
   const merged = mergeNewsItems(previous, accepted, { nowMs: now.getTime() });
   return {
+    refereeCandidates,
     output: merged.changed ? { ...previous, updatedAt: now.toISOString(), items: merged.items } : previous,
     summary: { source: "rss", feedsChecked: checked, candidates: candidates.length, accepted: accepted.length, updated: merged.changed ? accepted.length : 0, errors },
     changed: merged.changed
@@ -686,6 +694,14 @@ export async function synchronizeFootballNews(options = {}) {
 async function main() {
   const apply = process.argv.includes("--apply");
   const result = await synchronizeFootballNews();
+  if (apply && result.refereeCandidates.length) {
+    const queuePath = path.join(root, 'editorial/referee-review-queue.json');
+    const previous = fs.existsSync(queuePath) ? JSON.parse(fs.readFileSync(queuePath, 'utf8')) : {items:[]};
+    const queue = new Map(previous.items.map(i=>[i.id,i]));
+    for (const item of result.refereeCandidates) if (!queue.has(item.id)) queue.set(item.id,item);
+    fs.mkdirSync(path.dirname(queuePath),{recursive:true});
+    atomicWrite(queuePath,{tag:'hakem-sorusturmasi',items:[...queue.values()]});
+  }
   if (apply && result.changed) {
     atomicWrite(OUTPUT_PATH, result.output);
     if (fs.existsSync(path.dirname(PUBLIC_OUTPUT_PATH))) atomicWrite(PUBLIC_OUTPUT_PATH, result.output);

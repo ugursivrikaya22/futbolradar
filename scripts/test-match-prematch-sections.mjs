@@ -18,6 +18,7 @@ import {
 
 const require = createRequire(import.meta.url);
 const { sameClub } = require("../services/superLigTeams.js");
+const { playerLink } = require("../services/playerLinks.js");
 const root = process.cwd();
 
 /**
@@ -134,7 +135,9 @@ check("muhtemel 11 sahada çizilir, resmî rozet YOK, muhtemel rozeti VAR", () =
   assert.ok(!html.includes("Resmî İlk 11"));
   assert.ok((html.match(/pitch-spot/g) || []).length === 11, "11 saha noktası çizilmeli");
   assert.ok(html.includes("Kadro bekleniyor"), "verisiz taraf dürüst mesaj almalı");
-  assert.ok(html.includes("../oyuncular/u-cakir-galatasaray.html"), "kayıtlı oyuncu profile bağlanmalı");
+  // Bağlantı tek oyuncu adresi çözücüsünden gelir: taşınmış oyuncu `futbolcu/<slug>`,
+  // taşınmamış `oyuncular/<id>.html` (301'e giden eski yol yazılmaz).
+  assert.ok(html.includes(`href="${playerLink("u-cakir-galatasaray", "../")}"`), "kayıtlı oyuncu profile bağlanmalı");
 });
 
 check("resmî 11 varsa muhtemelin önüne geçer ve yedekleri basılır", () => {

@@ -3,7 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import {
   lineupsSection,
   playerCardsSection,
@@ -312,6 +312,24 @@ function clockLabel(value) {
   return new Intl.DateTimeFormat("tr-TR", { hour: "2-digit", minute: "2-digit", timeZone: "Europe/Istanbul" }).format(parsed);
 }
 
+/**
+ * TARİHİ ATANMAMIŞ HAFTA SAYFASI İNDEKSLENMEZ.
+ *
+ * Fikstürde yalnızca eşleşmesi belli (gün/saat yok) maçın hafta numaralı
+ * sayfası ("... Maç Önü Analizi" başlığı) yer tutucudur: tam analiz "maç
+ * haftası yaklaştığında" üretilecek, içerik "bekleniyor" notlarından oluşuyor
+ * ve başlık olmayan bir analizi vaat ediyor. Bu sayfalar aynı iskeletle onlarca
+ * kez tekrarlanır (306 sayfa; 235'i tarihsiz). Gün/saat atanıp Maç Merkezi
+ * sayfası açılınca aynı adres `unify-match-canonicals` ile kalıcı sayfaya
+ * kanonikleşir; o ana kadar `noindex,follow` + site haritası dışı. Sayfa
+ * AÇIK kalır, iç bağlantılar izlenir.
+ */
+function isDatedMatch(match) {
+  if (match.kickoff) return true;
+  const result = findFinalResult(match, resultRows, { seasonStart: fixtures.seasonStart });
+  return Boolean(result && result.kickoff);
+}
+
 function pageHtml(match) {
   const slugValue = pageSlug(match);
   const selfUrl = `${domain}/mac/${slugValue}.html`;
@@ -446,7 +464,7 @@ function pageHtml(match) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${isDatedMatch(match) ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="article" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -508,7 +526,7 @@ function updateSitemap(matches) {
   // Maç Merkezi'ne devredilmiş hafta sayfaları site haritasından düşer:
   // haritaya yalnızca kanonik adresler yazılır, takma ad yazılmaz. Sayfa
   // dosyası yerinde kalır ve canonical ile kanonik adrese bağlanır.
-  const canonicalOnly = matches.filter((match) => !matchCentrePath(match));
+  const canonicalOnly = matches.filter((match) => !matchCentrePath(match) && isDatedMatch(match));
   const content = wrapUrlset(retained.concat(canonicalOnly.map(sitemapEntry)));
   fs.writeFileSync(sitemapPath, content, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), content, "utf8");

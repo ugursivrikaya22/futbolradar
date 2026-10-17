@@ -441,3 +441,41 @@
 [data-notification-fixture] { border-bottom: 1px solid var(--line); padding-bottom: 8px; }
 [data-notification-fixture] > .match-follow-button { margin: 4px 12px; }
 .follow-menu-mobile-toggle { flex-shrink: 0; }
+
+/* ── FAVORİ MAÇ (YILDIZ) ─────────────────────────────────────────────── */
+.match-star-button {
+  display: inline-flex;
+  min-height: var(--tap);
+  min-width: var(--tap);
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 11px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font: inherit;
+  font-size: var(--fs-xs);
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.match-star-button:hover,
+.match-star-button:focus-visible { border-color: var(--line-strong); color: var(--green); outline: none; }
+.match-star-button .match-star-icon { color: var(--warn); font-size: 18px; line-height: 1; }
+.match-star-button[aria-pressed="true"] { border-color: rgba(11, 143, 90, 0.34); background: var(--green-tint); color: var(--green-deep); }
+.fixture-card > .match-star-button { width: 100%; margin-bottom: 6px; }
+[data-notification-fixture] > .match-star-button { margin: 4px 12px 0; }
+.md-scoreboard-actions .match-star-button { flex: 0 0 auto; }
+.fixture-card.is-favourite,
+.live-score-card.is-favourite { border-color: rgba(214, 158, 46, 0.55); }
+
+/* Takip paneli: maç başına bildirim türleri ve "Takip Ettiklerim" bağlantısı */
+.follow-panel-item { border-bottom: 1px solid var(--line); }
+.follow-panel-prefs { padding: 0 12px 8px; font-size: var(--fs-xs); color: var(--text-soft); }
+.follow-panel-prefs summary { cursor: pointer; min-height: 32px; display: flex; align-items: center; }
+.follow-panel-prefs label { display: flex; align-items: center; gap: 8px; min-height: 32px; cursor: pointer; }
+.follow-panel-prefs input { width: 17px; height: 17px; accent-color: var(--green); }
+.follow-panel-all { display: block; padding: 10px 12px; font-weight: 800; font-size: var(--fs-xs); color: var(--green-deep); text-decoration: none; }

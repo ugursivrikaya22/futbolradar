@@ -195,6 +195,32 @@ test('fixture freshness: a fresh live API never hides stale static data, only ch
   assert.equal(policy.assessFixtureFreshness({staticAgeMs: NaN, runtimeFresh: true}).level, 'critical');
 });
 
+test('fixture day: midnight rollover with a fresh live API is a delay, not an outage', () => {
+  const H = 3600000;
+  const base = {sourceDay: '2026-10-14', today: '2026-10-15'};
+  assert.equal(policy.assessFixtureDay({sourceDay: '2026-10-15', today: '2026-10-15', staticAgeMs: 30 * H, runtimeFresh: false}).level, 'ok');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: 3.3 * H, runtimeFresh: true}).code, 'fixture-day-rollover');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: 3.3 * H, runtimeFresh: false}).code, 'wrong-fixture-day');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: 13 * H, runtimeFresh: true}).code, 'wrong-fixture-day');
+  assert.equal(policy.assessFixtureDay({...base, staticAgeMs: NaN, runtimeFresh: true}).code, 'wrong-fixture-day');
+});
+
+test('per-source freshness: a green run cannot hide a source that silently stopped', () => {
+  const H = 3600000, now = Date.parse('2026-10-16T18:00:00Z');
+  const ago = (h) => ({lastSuccessfulAt: new Date(now - h * H).toISOString()});
+  assert.equal(policy.assessSourceFreshness('standings', ago(1), now).level, 'ok');
+  assert.equal(policy.assessSourceFreshness('standings', ago(7), now).code, 'source-stale-standings');
+  assert.equal(policy.assessSourceFreshness('standings', ago(7), now).level, 'warning');
+  assert.equal(policy.assessSourceFreshness('standings', ago(25), now).level, 'critical');
+  // News and the weekly-ish calendar never turn the job red on their own.
+  assert.equal(policy.assessSourceFreshness('football-news', ago(200), now).level, 'warning');
+  const cal = policy.assessSourceFreshness('fixture-calendar', {...ago(36), error: 'Timed out after 480000ms'}, now);
+  assert.equal(cal.level, 'warning'); assert.match(cal.detail, /Timed out/);
+  assert.equal(policy.assessSourceFreshness('standings', {}, now).code, 'source-unknown-standings');
+  assert.equal(policy.assessSourceFreshness('standings', undefined, now).level, 'ok');
+  assert.equal(policy.assessSourceFreshness('unlisted', ago(999), now).level, 'ok');
+});
+
 // ---------------------------------------------------------------------------
 // Monitor scenarios (fake GitHub + fake HTTP)
 // ---------------------------------------------------------------------------

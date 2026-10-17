@@ -75,6 +75,10 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   checks.push({name:'daily-full-update',...note(full),sourceTime:full.lastVerifiedFullAt,day:full.day,attempts:full.state.attempts,completeToday:full.state.complete,lastAttempt:full.state.lastAttemptStatus});
   const source=ledger.lastUpdate?.sourcesChecked?.find(s=>s.id==='live-fixtures');
   if(source?.status==='failed'||source?.summary?.degraded||policy.STOP_CODES.has(source?.providerCode)) issues.push('provider-'+(source.providerCode||source.summary?.degradedCode||'sync-failed'));
+  for(const id of Object.keys(policy.SOURCE_FRESHNESS)) {
+    const a=policy.assessSourceFreshness(id,ledger.sources?.[id],now);
+    if(a.level!=='ok') checks.push({name:'source-'+id,...note(a),ageHours:a.ageMs?Math.round(a.ageMs/3600000):null});
+  }
   const publication=ledger.lastUpdate?.publication;
   const observationPublished=!publication||['committed','unchanged'].includes(publication.state);
   checks.push({name:'writer-publication',state:publication?.state||'legacy-published',commit:publication?.commit||null});
@@ -96,8 +100,8 @@ export async function monitor({fetcher=boundedFetch,github=gh,root=process.cwd()
   const freshness=policy.assessFixtureFreshness({staticAgeMs:age,runtimeFresh,emptyConfirmed});
   checks.push({name:'fixture-freshness',sourceTime,ageMinutes:Number.isFinite(age)?Math.round(age/60000):null,...note(freshness),runtimeApi:runtimeFresh?'fresh':'not-fresh'});
   const today=policy.istanbulDay(now);
-  checks.push({name:'istanbul-day',expected:today,sourceDay:localCalendar.fixtureHealth?.date||null});
-  if(localCalendar.fixtureHealth?.date && localCalendar.fixtureHealth.date!==today) issues.push('wrong-fixture-day');
+  const fixtureDay=policy.assessFixtureDay({sourceDay:localCalendar.fixtureHealth?.date||null,today,staticAgeMs:age,runtimeFresh});
+  checks.push({name:'istanbul-day',expected:today,sourceDay:localCalendar.fixtureHealth?.date||null,...note(fixtureDay)});
   const registry=JSON.parse(fs.readFileSync(path.join(root,'data/match-seo-pages.json'),'utf8'));
   const entries=Array.isArray(registry)?registry:registry.pages||registry.records||[];
   const recent=entries.find(r=>r.path&&/^(?:\/)?mac\//.test(r.path));

@@ -57,7 +57,28 @@ test('HTTP route serves JSON and server-rendered SEO using the same fixture',asy
     assert.match(json.headers['Content-Type'],/json/);assert.equal(JSON.parse(json.body).ended,true);
     const html=await call('/api/match-news');
     assert.match(html.body,/<title>Galatasaray 2–1 Kasımpaşa/);
+    assert.match(html.body,/data-page-share-copy=/);
     assert.equal(html.headers['Vercel-CDN-Cache-Control'],'public, s-maxage=15');
     assert.equal(requests,1);
   } finally {provider.getMatchDetail=original;}
+});
+
+
+test('server-rendered sharing follows the current headline and canonical URL in every match state',()=>{
+  const {URL:canonical}=require('../services/matchNews');
+  for (const match of [null,{...fixture,status:'SCHEDULED'},{...fixture,providerStatus:'1H',score:{home:1,away:0}},{...fixture,providerStatus:'FT',score:{home:3,away:1}}]) {
+    const html=renderPage(match,before);
+    const title=view(match,before).title;
+    const decode=value=>value.replace(/&amp;/g,'&').replace(/&#39;/g,"'");
+    const whatsapp=new URL(decode(html.match(/href="(https:\/\/wa\.me\/[^"]+)"/)[1]));
+    const x=new URL(decode(html.match(/href="(https:\/\/twitter\.com\/intent\/tweet[^"]+)"/)[1]));
+    assert.equal(whatsapp.searchParams.get('text'),title+'\n'+canonical);
+    assert.equal(x.searchParams.get('text'),title);
+    assert.equal(x.searchParams.get('url'),canonical);
+    assert.ok(html.includes('data-page-share-copy="'+canonical+'"'));
+    assert.equal(html.split('data-page-share aria-label=').length-1,1);
+    assert.ok(html.includes('src="/page-share.js"'));
+    assert.ok(html.includes('href="/page-share.css"'));
+    assert.ok(!liveHtml(view(match,before)).includes('data-page-share'));
+  }
 });
