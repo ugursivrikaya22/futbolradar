@@ -83,7 +83,8 @@ export const DEFAULT_FEEDS = [
 
   // Tier 2 — doğrudan Türk spor medyası beslemeleri (gerçek makale adresi)
   { id: "aa-spor", scope: "general", officialDomain: "aa.com.tr", trusted: true, priority: 6, url: "https://www.aa.com.tr/tr/rss/default?cat=spor" },
-  { id: "trt-spor", scope: "general", officialDomain: "trtspor.com.tr", trusted: true, priority: 6, url: "https://www.trtspor.com.tr/rss/futbol.rss" },
+  // TRT Spor rejects automated RSS access (403). TRT's supported sports
+  // feed below replaces it, with its own publisher identity and one request.
   { id: "trt-haber", scope: "general", officialDomain: "trthaber.com", trusted: true, priority: 7, url: "https://www.trthaber.com/spor_articles.rss" },
   { id: "hurriyet-spor", scope: "general", officialDomain: "hurriyet.com.tr", trusted: true, priority: 7, url: "https://www.hurriyet.com.tr/rss/spor" },
   { id: "fotomac", scope: "general", officialDomain: "fotomac.com.tr", trusted: true, priority: 8, url: "https://www.fotomac.com.tr/rss/anasayfa.xml" },

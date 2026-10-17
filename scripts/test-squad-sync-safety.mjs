@@ -12,6 +12,14 @@ function expect(condition, message) {
   }
 }
 
+{
+  const players = Array.from({ length: 30 }, (_, i) => ({ providerId: String(i + 1), name: `P${i}` }));
+  const old = { players: [...players, ...players, ...players] };
+  expect(evaluateSquadSyncSafety(old, { players }).safe, "deduplication must not count as loss");
+  expect(!evaluateSquadSyncSafety(old, { players: players.slice(0, 15) }).safe, "real identity loss must remain blocked");
+  expect(!evaluateSquadSyncSafety({ players }, old).safe, "duplicate incoming identities must be rejected");
+}
+
 // --- Faz 2: team list change guard ---
 {
   const previous = Array.from({ length: 18 }, (_, i) => ({ id: `t${i}`, name: `Team ${i}` }));

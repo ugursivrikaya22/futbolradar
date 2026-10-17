@@ -4,6 +4,19 @@ const { repairMojibake } = require("./textEncodingRepair.js");
 
 const PARTIAL_SQUAD_THRESHOLD = 11;
 
+// Compare people, not accumulated duplicate rows. Missing identities remain
+// separate so they cannot artificially improve the loss guard.
+function uniqueSquadPlayerCount(players) {
+  const ids = new Set();
+  let unidentified = 0;
+  for (const player of players || []) {
+    const id = String(player.providerId || "").trim();
+    if (id) ids.add(id);
+    else unidentified += 1;
+  }
+  return ids.size + unidentified;
+}
+
 async function fetchTeamSquad(team) {
   if (!apiFootballProvider.hasConfig()) {
     return { status: "unavailable", reason: "no-provider-config", players: [] };
@@ -53,11 +66,18 @@ function buildSquadSnapshot(team, providerPlayers, season) {
  * snapshot for that team.
  */
 function evaluateSquadSyncSafety(previousSnapshot, freshSnapshot) {
-  const previousCount = previousSnapshot && Array.isArray(previousSnapshot.players) ? previousSnapshot.players.length : 0;
-  const freshCount = freshSnapshot && Array.isArray(freshSnapshot.players) ? freshSnapshot.players.length : 0;
+  const previousCount = uniqueSquadPlayerCount(previousSnapshot?.players);
+  const freshCount = uniqueSquadPlayerCount(freshSnapshot?.players);
 
   if (freshCount === 0 && previousCount > 0) {
     return { safe: false, reason: "empty-fetch-would-erase-existing-squad", previousCount, freshCount };
+  }
+
+  if (previousCount > 0 && freshCount < previousCount * 0.8) {
+    return { safe: false, reason: "unique-player-count-drop", previousCount, freshCount };
+  }
+  if (freshCount !== (freshSnapshot?.players || []).length) {
+    return { safe: false, reason: "duplicate-player-identities", previousCount, freshCount };
   }
 
   return { safe: true, reason: null, previousCount, freshCount };
@@ -150,6 +170,7 @@ function matchCanonicalPlayer(canonicalPlayers, providerPlayer, providerBirthDat
 }
 
 module.exports = {
+  uniqueSquadPlayerCount,
   normalizedName,
   fetchTeamSquad,
   buildSquadSnapshot,

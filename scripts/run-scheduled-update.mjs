@@ -427,7 +427,7 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
   const noProvider = providerReady ? false : "API-Football preflight/configuration is unavailable; last valid provider cache is preserved.";
   return [
     ...((full || ['11','15','19'].includes(istanbulParts().hour)) ? [nodeStep('broadcast-schedule','scan-broadcast-schedule.mjs',['--apply','--days=2'],{kind:'source',source:'official-broadcasters',timeoutMs:4*60*1000})] : []),
-    ...(full ? [nodeStep("fixture-calendar", "sync-fixture-calendar.mjs", ["--apply"], { kind: "source", source: "thesportsdb", attempts: 2, timeoutMs: 8 * 60 * 1000 })] : []),
+    ...(full ? [nodeStep("fixture-calendar", "sync-fixture-calendar.mjs", ["--apply"], { kind: "source", source: providerReady ? "api-football" : "thesportsdb", attempts: 2, timeoutMs: 8 * 60 * 1000 })] : []),
     // Takvimden gelen kesinleşmiş gün/saatler TFF eşleşme listesine işlenir.
     // Sağlayıcıya istek atmaz; yalnızca iki dosyayı hizalar, bu yüzden
     // fixture-calendar başarısız olsa bile çalışması güvenli.

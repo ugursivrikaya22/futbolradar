@@ -9,7 +9,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { fetchCurrentSuperLigTeams, evaluateTeamListChange, evaluateLeagueIdentity, mergeTeamList } = require("../services/teamSyncService.js");
-const { fetchTeamSquad, buildSquadSnapshot, evaluateSquadSyncSafety, detectProviderIdConflicts } = require("../services/squadSyncService.js");
+const { fetchTeamSquad, buildSquadSnapshot, evaluateSquadSyncSafety, detectProviderIdConflicts, uniqueSquadPlayerCount } = require("../services/squadSyncService.js");
 const { resolveSuperLigLeagueId, CACHE_PATH: LEAGUE_CACHE_PATH } = require("../services/leagueResolver.js");
 const { hasRealProviderId } = require("../services/cardCredibility.js");
 
@@ -265,8 +265,8 @@ function validateStagedOutputs(staged, previous) {
   }
 
   // Önceki geçerli veriden ciddi bir küçülme olmamalı.
-  const previousPlayers = (previous.previousSquads || []).flatMap((snapshot) => snapshot.players || []).length;
-  const stagedPlayers = squads.flatMap((snapshot) => snapshot.players || []).length;
+  const previousPlayers = (previous.previousSquads || []).reduce((sum, snapshot) => sum + uniqueSquadPlayerCount(snapshot.players), 0);
+  const stagedPlayers = squads.reduce((sum, snapshot) => sum + uniqueSquadPlayerCount(snapshot.players), 0);
   if (previousPlayers > 0 && stagedPlayers < previousPlayers * 0.8) {
     return {
       valid: false,

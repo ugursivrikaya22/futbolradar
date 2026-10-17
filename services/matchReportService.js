@@ -1449,7 +1449,7 @@ function buildSeo(match, summary) {
   if (description.length > 158) description = `${description.slice(0, 155).replace(/[\s,;:]+$/, "")}...`;
 
   const dateStamp = String(match.kickoff || match.date || "").slice(0, 10);
-  const path = match.analysisPage || `mac-raporu/${slug(match.homeTeam)}-${slug(match.awayTeam)}-${dateStamp}.html`;
+  const path = String(match.analysisPage || match.reportPage || `mac-raporu/${slug(match.homeTeam)}-${slug(match.awayTeam)}-${dateStamp}.html`).replace(/^\.\//, "");
 
   return { title, description, path, competition };
 }
