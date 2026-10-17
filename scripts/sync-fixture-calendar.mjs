@@ -24,6 +24,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { createRequestBreaker, isRetryableRequestError } from "./lib/requestBreaker.mjs";
 import { calendarCoverage } from "./lib/calendarCoverage.mjs";
+import { primaryFixtureCalendar } from "./lib/primaryFixtureCalendar.mjs";
 
 const require = createRequire(import.meta.url);
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
@@ -449,6 +450,15 @@ function mergeIntoCalendar(previousMatches, incoming) {
 
 async function main() {
   const today = istanbulDateOnly(new Date());
+  const primary = require("../services/providers/apiFootballProvider.js");
+  if (primary.hasConfig()) {
+    const previous = fs.existsSync(OUTPUT_PATH) ? JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8")) : { matches: [] };
+    const output = await primaryFixtureCalendar({ previous, today, fetchSeason: () => primary.getSeasonFixtures({}) });
+    console.log(`Fixture calendar: ${output.returnedInWindow} primary-provider matches; one season request, existing other competitions retained.`);
+    if (APPLY) fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(output, null, 2)}\n`);
+    else console.log("Dry run - no files written.");
+    return;
+  }
   const { matches, failures } = await collectMatches();
 
   // Boş çekim koruması: sağlayıcı tümüyle sessizse mevcut takvimi silmek
@@ -496,6 +506,7 @@ async function main() {
     console.error(
       `Fixture calendar sync aborted: ${coverage.mode}, ${windowed.length} incoming, ${previousOwned} stored, ${failures.length} failed requests.`
     );
+    if (failures.length) console.error(failures.slice(0, 8).join("\n"));
     process.exitCode = 1;
     return;
   }

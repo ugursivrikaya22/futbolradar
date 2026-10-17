@@ -30,6 +30,7 @@ for (const args of [
   ['scripts/test-squad-sync-safety.mjs'],
   ['--test', 'tests/historical-identity-recovery.test.cjs'],
   ['--test', 'tests/calendar-coverage.test.mjs'],
+  ['--test', 'tests/primary-fixture-calendar.test.mjs'],
   ['scripts/test-squad-sync-e2e.mjs'],
   ['scripts/test-match-focus.mjs'],
   ['scripts/qa.mjs'],
