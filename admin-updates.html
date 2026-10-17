@@ -9,7 +9,20 @@
     :root{color-scheme:dark;--bg:#07101d;--panel:#101d2e;--line:#263a51;--text:#edf5ff;--muted:#93a8be;--ok:#35d07f;--warn:#ffbd4a;--bad:#ff6675}
     *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,sans-serif}.wrap{width:min(1120px,calc(100% - 32px));margin:34px auto}.head{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}h1,h2{margin:0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.value{font-size:24px;font-weight:750;margin-top:8px}.badge{display:inline-block;border-radius:999px;padding:4px 10px;font-weight:750}.success{background:#123b2a;color:var(--ok)}.partial,.skipped{background:#3c3115;color:var(--warn)}.failed{background:#451d27;color:var(--bad)}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-size:12px;text-transform:uppercase}.section{margin-top:18px}.empty{padding:18px 0;color:var(--muted)}.freshness-banner{border-radius:14px;padding:14px 18px;margin-bottom:18px;font-weight:750}@media(max-width:720px){.head{display:block}.head p{margin-bottom:0}.table-wrap{overflow:auto}}
   </style>
-<!-- favicon:start -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
+  <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -27,24 +40,11 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=6f20d450"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-  </head>
+</head>
 <body>
 <main class="wrap" id="data-update-monitor">
   <div class="head"><div><h1>Otomatik Güncelleme İzleme</h1><p class="muted">Europe/Istanbul · tam güncelleme 05:00 · saatlik güncelleme diğer saat başları · <a href="./canli-veri-testi.html" style="color:inherit">Canlı veri gecikme testi →</a></p></div><div id="updated" class="muted">Yükleniyor…</div></div>
