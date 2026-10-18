@@ -229,6 +229,70 @@ export function siteHeader(options = {}) {
     </header>`;
 }
 
+/**
+ * Bant öğesinin bağlantısını çözer: iç/dış ayrımı ve iç adresin kök-göreli
+ * hâli TEK yerde. Hem sunucuda basılan tam bant (`newsTicker`) hem de
+ * istemciye giden paylaşılan veri dosyası (`tickerFeedPayload`) bunu kullanır.
+ */
+export function resolveTickerHref(rawHrefInput, allHref) {
+  const rawHref = rawHrefInput ? rawHrefInput : allHref;
+  // Mutlak bir futbolradar.com bağlantısı (news.json'dan gelen haber
+  // URL'i gibi) İÇ sayılır: göreli yol gibi yeni sekme/nofollow almaz.
+  // Yalnızca gerçekten sitenin dışına çıkan bağlantı kaynak künyesidir.
+  const external = /^https?:/i.test(rawHref) && isExternalUrl(rawHref);
+  // İÇ ADRES MUTLAK YAZILMAZ. Kendi haberimizin künyesi
+  // `https://www.futbolradar.com/haber/<slug>` biçiminde üretiliyor;
+  // bant bunu olduğu gibi yazınca bağlantı, sayfanın sunulduğu kopyadan
+  // ÇIKIP üretime gidiyordu. Önizlemede ya da CI'ın yerel sunucusunda
+  // henüz dağıtılmamış taze bir haber bu yüzden 404 veriyor ve
+  // tıklanabilirlik denetimi dokuz görünümde birden düşüyordu. Kök
+  // dizinden göreli yol her kopyada o kopyanın sayfasını açar; temiz
+  // adres hem vercel.json'da hem yerel önizleme sunucusunda çözülüyor.
+  const href = !external && /^https?:/i.test(rawHref)
+    ? (() => { const parsed = new URL(rawHref); return `${parsed.pathname}${parsed.search}${parsed.hash}`; })()
+    : rawHref;
+  return { href, external };
+}
+
+/** İstemci bandının okuduğu paylaşılan veri dosyası (site köküne göre). */
+export const TICKER_FEED_PATH = "data/ticker-feed.json";
+
+/**
+ * İstemci bandı için paylaşılan veri yükü. Sunucudaki `newsTicker` ile AYNI
+ * bağlantı kuralını (`resolveTickerHref`) ve aynı kompakt öğe sınırını
+ * kullanır; yalnızca sayfaya göre değişen önek (`base`) burada YOKTUR —
+ * istemci onu sayfanın `data-ticker-base` değerinden ekler.
+ *
+ * Yük deterministik: zaman damgası yok. Haber içeriği değişmediyse bayt da
+ * değişmez, dosya yeniden yazılmaz.
+ */
+export function tickerFeedPayload({ tr, en } = {}) {
+  const view = (group, locale) => {
+    const allHref = locale === "en" ? "en/news.html" : "haberler.html";
+    const rows = (Array.isArray(group && group.items) ? group.items : []).filter(Boolean).slice(0, COMPACT_TICKER_MAX_ITEMS);
+    const liveBadge = t("ticker.breaking", locale);
+    const badge = typeof (group && group.badge) === "string" && group.badge.trim() ? group.badge.trim() : t("ticker.agenda", locale);
+    return {
+      badge,
+      live: badge === liveBadge,
+      items: rows.map((item) => {
+        const { href, external } = resolveTickerHref(item.href, allHref);
+        const attribution = item.publisher || item.sourceName || "";
+        const out = { href, text: String(item.text || "") };
+        if (external) out.external = true;
+        if (item.label) out.label = String(item.label);
+        if (item.confidenceBadge) {
+          out.confidenceBadge = String(item.confidenceBadge);
+          out.confidence = String(item.confidence || "rumour");
+        }
+        if (attribution) out.attribution = String(attribution);
+        return out;
+      })
+    };
+  };
+  return { schemaVersion: 1, tr: view(tr, "tr"), en: view(en, "en") };
+}
+
 /** Kompakt bantta gösterilecek en fazla öğe. */
 export const COMPACT_TICKER_MAX_ITEMS = 3;
 
@@ -267,22 +331,7 @@ export function newsTicker(options = {}) {
   }
 
   const renderItem = (item) => {
-    const rawHref = item.href ? item.href : allHref;
-    // Mutlak bir futbolradar.com bağlantısı (news.json'dan gelen haber
-    // URL'i gibi) İÇ sayılır: göreli yol gibi yeni sekme/nofollow almaz.
-    // Yalnızca gerçekten sitenin dışına çıkan bağlantı kaynak künyesidir.
-    const external = /^https?:/i.test(rawHref) && isExternalUrl(rawHref);
-    // İÇ ADRES MUTLAK YAZILMAZ. Kendi haberimizin künyesi
-    // `https://www.futbolradar.com/haber/<slug>` biçiminde üretiliyor;
-    // bant bunu olduğu gibi yazınca bağlantı, sayfanın sunulduğu kopyadan
-    // ÇIKIP üretime gidiyordu. Önizlemede ya da CI'ın yerel sunucusunda
-    // henüz dağıtılmamış taze bir haber bu yüzden 404 veriyor ve
-    // tıklanabilirlik denetimi dokuz görünümde birden düşüyordu. Kök
-    // dizinden göreli yol her kopyada o kopyanın sayfasını açar; temiz
-    // adres hem vercel.json'da hem yerel önizleme sunucusunda çözülüyor.
-    const href = !external && /^https?:/i.test(rawHref)
-      ? (() => { const parsed = new URL(rawHref); return `${parsed.pathname}${parsed.search}${parsed.hash}`; })()
-      : rawHref;
+    const { href, external } = resolveTickerHref(item.href, allHref);
     // Banttaki dış bağlantı bir kaynak künyesidir: alıntı, tavsiye değil.
     const rel = external ? ` target="_blank" rel="${SOURCE_LINK_REL}"` : "";
     const label = item.label ? `<span class="news-ticker-tag">${escapeHtml(item.label)}</span>` : "";
@@ -321,6 +370,31 @@ export function newsTicker(options = {}) {
   const track = items.map(renderItem).join('<span class="news-ticker-sep" aria-hidden="true"></span>');
   const badgeMarkup = `<span class="news-ticker-badge${badge === liveBadge ? " is-live" : ""}">${badge === liveBadge ? '<i class="live-pulse" aria-hidden="true"></i>' : ""}${escapeHtml(badge)}</span>`;
   const allLink = `<a class="news-ticker-all" href="${allHref}">${escapeHtml(t("ticker.all", locale))}</a>`;
+
+  if (compact && options.deferred) {
+    // İSTEMCİDE DOLAN BANT (iç sayfalar).
+    //
+    // Haber başlıkları ve bağlantıları ~14.800 sayfaya gömülünce her haber
+    // değişikliği hepsini yeniden yazıyordu (commit başına ~11-14 bin dosya).
+    // Artık sayfada HABERDEN BAĞIMSIZ, sabit bir iskelet var; öğeler tek bir
+    // paylaşılan dosyadan (`data/ticker-feed.json`) site.js ile doldurulur.
+    // Bu işaretleme haber akışına hiç bağlı OLMAMALI: rozet her zaman nötr
+    // "Gündem", metin sabit bir çağrı, bağlantı "Tümü" ile aynı hedef. Böylece
+    // JS yoksa ya da veri dosyası inmezse sayfa bozulmaz, yükseklik aynı kalır
+    // ve haber değişince bu bloğun baytı değişmez.
+    const feedHref = `${base}${TICKER_FEED_PATH}`;
+    return `<div class="news-ticker news-ticker-compact" data-shared-layout="ticker" data-ticker-source="ticker-feed" data-ticker-mode="compact" data-ticker-render="client" data-ticker-src="${feedHref}" data-ticker-base="${base}" data-ticker-locale="${locale}" aria-label="${escapeHtml(t("ticker.aria", locale))}">
+      <div class="container-wide news-ticker-inner">
+        <span class="news-ticker-badge">${escapeHtml(t("ticker.agenda", locale))}</span>
+        <div class="news-ticker-viewport">
+          <div class="news-ticker-track">
+            <div class="news-ticker-group"><a class="news-ticker-item" href="${allHref}"><span>${escapeHtml(t("ticker.fallback", locale))}</span></a></div>
+          </div>
+        </div>
+        ${allLink}
+      </div>
+    </div>`;
+  }
 
   if (compact) {
     // Sabit tek satır: kayan ikinci kopya yok, `animation` da yok — bu

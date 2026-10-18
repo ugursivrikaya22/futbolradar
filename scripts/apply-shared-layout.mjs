@@ -13,7 +13,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { siteHeader, siteFooter, newsTicker } from "./lib/layout.mjs";
+import { siteHeader, siteFooter, newsTicker, tickerFeedPayload, TICKER_FEED_PATH } from "./lib/layout.mjs";
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
 import { buildEnTickerItems } from "./lib/enTicker.mjs";
 import { liveTickerBlock, LIVE_TICKER_PAGES } from "./lib/liveScoresTicker.mjs";
@@ -171,6 +171,30 @@ const LIVE_TICKER_PAGE_SET = new Set(LIVE_TICKER_PAGES);
 // skor bir çeviri sorunu değil, takım/lig adları zaten katalogdan geliyor.
 const liveRecords = selectLiveTickerRecords(curatedMatches());
 
+// İÇ SAYFALARIN BANDI İSTEMCİDE DOLAR (bkz. layout.mjs → `deferred`).
+// Haber içeriği artık ~14.800 HTML'e değil, bu TEK paylaşılan dosyaya yazılır.
+// Dosya deterministik (zaman damgası yok) ve yalnızca içerik değiştiyse
+// yeniden yazılır; `public/` aynası da aynı kuralla hizalanır.
+function writeTickerFeedFile() {
+  const payload = tickerFeedPayload({
+    tr: { items: tickerItems, badge: tickerFeed.badge },
+    en: { items: enTickerItems }
+  });
+  const serialized = `${JSON.stringify(payload, null, 2)}\n`;
+  let written = 0;
+  for (const dir of [root, path.join(root, "public")]) {
+    if (dir !== root && !fs.existsSync(dir)) continue;
+    const target = path.join(dir, TICKER_FEED_PATH);
+    const current = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : "";
+    if (current === serialized) continue;
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    fs.writeFileSync(target, serialized, "utf8");
+    written += 1;
+  }
+  return written;
+}
+const tickerFeedFilesWritten = writeTickerFeedFile();
+
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
   .filter((file) => !path.relative(root, file).startsWith("node_modules"));
 
@@ -202,8 +226,8 @@ for (const file of files) {
   const ticker = tickerMode === "none"
     ? ""
     : locale === "en"
-      ? newsTicker({ base, locale, items: rebaseItems(enTickerItems, base), compact: tickerMode === "compact" })
-      : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge, compact: tickerMode === "compact" });
+      ? newsTicker({ base, locale, items: rebaseItems(enTickerItems, base), compact: tickerMode === "compact", deferred: tickerMode === "compact" })
+      : newsTicker({ base, items: rebaseItems(tickerItems, base), badge: tickerFeed.badge, compact: tickerMode === "compact", deferred: tickerMode === "compact" });
   // Canlı skor bandı haber bandının ALTINA girer ve yalnızca listedeki
   // sayfalara. Ana sayfalarda bant zaten sayfanın KENDİ işaretlemesinde;
   // oraya ikinci bir kopya basılmaz.
@@ -246,5 +270,6 @@ for (const file of files) {
 console.log(
   `Shared layout applied: ${updated} updated, ${skipped} without layout blocks, ` +
   `${tickerItems.length} ticker items (${tickerFeed.badge}` +
-  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""})`
+  `${tickerFeed.usedFallback ? ", son doğrulanmış içerik korundu" : ""}); ` +
+  `${TICKER_FEED_PATH}: ${tickerFeedFilesWritten} dosya yazıldı`
 );

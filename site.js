@@ -5230,3 +5230,120 @@
   // Yıldız düğmeleri favori deposuna bağlı: önce o yüklenir (başarısız olsa da bildirim motoru açılır).
   if (window.__frFavoritesSettled) load(); else document.addEventListener('futbolradar:favorites-ready', load, { once: true });
 })();
+
+/**
+ * İÇ SAYFALARIN HABER BANDI — İSTEMCİDE DOLAR.
+ *
+ * Sunucu, iç sayfalara haberden bağımsız sabit bir iskelet basar
+ * (`data-ticker-render="client"`, içinde sabit "Güncel futbol haberleri"
+ * bağlantısı). Gerçek öğeler tek bir paylaşılan dosyadan gelir:
+ * `data/ticker-feed.json` (CDN'de s-maxage=300, vercel.json /data/ kuralı).
+ * Böylece haber değişince ~14.800 HTML yeniden yazılmaz.
+ *
+ * DAYANIKLILIK: JS yoksa, ağ ya da dosya bozuksa, öğe listesi boşsa iskelet
+ * olduğu gibi KALIR; hiçbir şey silinmez ve yükseklik değişmez. Öğeler
+ * `textContent` ile yazılır (HTML enjeksiyonu yok). Tek istek, sayfa başına.
+ */
+(function () {
+  var bands = document.querySelectorAll('.news-ticker[data-ticker-render="client"]');
+  if (!bands.length || typeof window.fetch !== "function") return;
+  var first = bands[0];
+  var src = first.getAttribute("data-ticker-src");
+  if (!src) return;
+
+  function make(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text) node.textContent = text;
+    return node;
+  }
+
+  function anchorFor(item, base) {
+    var href = String(item.href || "");
+    // Yalnızca http(s) ya da site içi yol; başka şema (javascript: vb.) reddedilir.
+    if (!/^(https?:\/\/|\/|[A-Za-z0-9_.\-][^:]*$)/.test(href)) return null;
+    var a = make("a", "news-ticker-item");
+    a.setAttribute("href", item.external || /^https?:|^\//i.test(href) ? href : base + href);
+    if (item.external) {
+      a.setAttribute("target", "_blank");
+      a.setAttribute("rel", "nofollow noopener noreferrer");
+    }
+    if (item.label) a.appendChild(make("span", "news-ticker-tag", item.label));
+    if (item.confidenceBadge) {
+      a.appendChild(make("span", "news-ticker-confidence is-" + String(item.confidence || "rumour").replace(/[^a-z0-9_-]/gi, ""), item.confidenceBadge));
+    }
+    a.appendChild(make("span", "", item.text));
+    var who = item.attribution || "";
+    var spoken = item.confidenceBadge ? item.confidenceBadge + ": " + item.text : item.text;
+    if (who || item.confidenceBadge) a.setAttribute("aria-label", spoken + (who ? " — " + (document.documentElement.lang === "en" ? "source" : "kaynak") + ": " + who : ""));
+    if (who) a.setAttribute("title", (document.documentElement.lang === "en" ? "Source: " : "Kaynak: ") + who);
+    return a;
+  }
+
+  function fill(band, data) {
+    var locale = band.getAttribute("data-ticker-locale") === "en" ? "en" : "tr";
+    var view = data && data[locale];
+    if (!view || !Array.isArray(view.items) || !view.items.length) return;
+    var base = band.getAttribute("data-ticker-base") || "";
+    var group = band.querySelector(".news-ticker-group");
+    if (!group) return;
+    var nodes = [];
+    view.items.slice(0, 3).forEach(function (item) {
+      if (!item || !item.text) return;
+      var a = anchorFor(item, base);
+      if (a) nodes.push(a);
+    });
+    if (!nodes.length) return;
+    while (group.firstChild) group.removeChild(group.firstChild);
+    nodes.forEach(function (a, index) {
+      if (index) group.appendChild(make("span", "news-ticker-sep")).setAttribute("aria-hidden", "true");
+      group.appendChild(a);
+    });
+    var badge = band.querySelector(".news-ticker-badge");
+    if (badge && view.badge) {
+      badge.textContent = "";
+      if (view.live) {
+        var pulse = make("i", "live-pulse");
+        pulse.setAttribute("aria-hidden", "true");
+        badge.appendChild(pulse);
+      }
+      badge.appendChild(document.createTextNode(view.badge));
+      badge.classList.toggle("is-live", Boolean(view.live));
+    }
+    band.setAttribute("data-ticker-state", "ready");
+  }
+
+  // Aynı sekmede sayfadan sayfaya geçerken her sayfada yeniden istek atılmasın:
+  // paylaşılan veri 5 dakika sessionStorage'da tutulur (CDN s-maxage=300 ile
+  // aynı tazelik). Depolama yoksa/bozuksa sessizce yalnızca ağa düşülür.
+  var CACHE_KEY = "fr-ticker-feed:v1";
+  var CACHE_MS = 300000;
+  function cached() {
+    try {
+      var raw = window.sessionStorage && window.sessionStorage.getItem(CACHE_KEY);
+      var hit = raw && JSON.parse(raw);
+      var age = hit && Date.now() - hit.t;
+      if (hit && hit.src === src && typeof age === "number" && age >= 0 && age < CACHE_MS && hit.data) return hit.data;
+    } catch (error) { /* yoksay */ }
+    return null;
+  }
+  function remember(data) {
+    try {
+      if (window.sessionStorage) window.sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), src: src, data: data }));
+    } catch (error) { /* yoksay */ }
+  }
+  function paint(data) {
+    Array.prototype.forEach.call(bands, function (band) { fill(band, data); });
+  }
+
+  var stored = cached();
+  if (stored) { paint(stored); return; }
+  window.fetch(src, { credentials: "same-origin", headers: { Accept: "application/json" } })
+    .then(function (response) { return response.ok ? response.json() : null; })
+    .then(function (data) {
+      if (!data || !data.tr) return;
+      remember(data);
+      paint(data);
+    })
+    .catch(function () { /* iskelet kalır */ });
+})();
