@@ -132,7 +132,7 @@ async function ingestSources() {
     { id: "thesportsdb", name: "TheSportsDB", kind: "provider", trust: "provider", base_url: "https://www.thesportsdb.com" },
     { id: "api-football", name: "API-Football", kind: "provider", trust: "provider", base_url: "https://v3.football.api-sports.io" }
   ];
-  const written = dryRun ? 0 : (await client.upsert(TABLES.dataSources.name, rows, TABLES.dataSources.conflict)).written;
+  const written = dryRun ? 0 : (await client.upsert(TABLES.dataSources.name, rows.map(row => ({ base_url: null, note: null, ...row })), TABLES.dataSources.conflict)).written;
   return { read: rows.length, written, skipped: 0 };
 }
 
