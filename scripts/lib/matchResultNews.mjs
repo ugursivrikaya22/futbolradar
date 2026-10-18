@@ -32,6 +32,11 @@ const DOMAIN = "https://www.futbolradar.com";
 
 function isNum(value) { return Number.isFinite(Number(value)) && value !== null && value !== ""; }
 
+/** Maçın İstanbul takvim günü (YYYY-MM-DD); kopya eşleşmesi üretim saatine değil buna bakar. */
+export function kickoffDay(iso) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(iso));
+}
+
 function trDate(iso) {
   return new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "long", year: "numeric" }).format(new Date(iso));
 }
@@ -81,6 +86,7 @@ export function buildArticle(record) {
     sourceName: "FutbolRadar",
     matchId: record.matchId,
     matchFixtureId: record.fixtureId || null,
+    kickoffDay: kickoffDay(record.kickoff),
     autoMatchResult: true,
     url: `${DOMAIN}/haber/${id}`,
     body: [
@@ -115,10 +121,13 @@ export function buildMatchResultNews(records, existingNews, options = {}) {
     if (reason) { if (reason !== "kapsam dışı yarışma" && reason !== "pencere dışı" && reason !== "Türk takımı yok") skipped.push({ id: record.matchId, reason }); continue; }
     const keys = [`${record.matchId}-mac-sonucu`, record.matchId, record.fixtureId].filter(Boolean).map(String);
     if (keys.some((key) => seen.has(key))) continue;
-    // Aynı gerçek maçın iki kaydı (sağlayıcı kopyası): takım+gün+skor eşleşmesi.
+    // Aynı gerçek maçın iki kaydı (sağlayıcı kopyası): takım+skor+MAÇ GÜNÜ eşleşmesi.
+    // Rapor üretim saatine bakılmaz; iki kopya UTC gece yarısının iki yanında üretilse de tek haber.
+    const day = kickoffDay(record.kickoff);
+    const dayTag = trDate(record.kickoff);
     const twin = existing.concat(added).some((item) => item.autoMatchResult
-      && item.title.startsWith(`${record.homeTeam} ${record.score.home}–${record.score.away} ${record.awayTeam}:`)
-      && String(item.publishedAt).slice(0, 10) === new Date(record.analysisGeneratedAt || record.generatedAt).toISOString().slice(0, 10));
+      && String(item.title || "").startsWith(`${record.homeTeam} ${record.score.home}–${record.score.away} ${record.awayTeam}:`)
+      && (item.kickoffDay ? item.kickoffDay === day : (Array.isArray(item.tags) && item.tags.includes(dayTag))));
     if (twin) continue;
     added.push(buildArticle(record));
     keys.forEach((key) => seen.add(key));

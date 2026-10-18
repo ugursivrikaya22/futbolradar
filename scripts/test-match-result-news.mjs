@@ -43,6 +43,15 @@ const run = (record, existing = []) => buildMatchResultNews([record], existing, 
   assert.equal(run(base, [{ id: "y", matchFixtureId: "1635666" }]).added.length, 0);
   const twin = { ...base, matchId: "galatasaray-barcelona-2026-10-13-b", fixtureId: "9999" };
   assert.equal(buildMatchResultNews([base, twin], [], opts).added.length, 1, "sağlayıcı kopyası tek haber");
+  // Kopyalar UTC gece yarısının iki yanında üretilse de tek haber (aynı çalıştırma ve sonraki çalıştırma).
+  const early = { ...base, analysisGeneratedAt: "2026-10-13T23:50:00Z", generatedAt: "2026-10-13T23:50:00Z" };
+  const late = { ...twin, analysisGeneratedAt: "2026-10-14T00:20:00Z", generatedAt: "2026-10-14T00:20:00Z" };
+  assert.equal(buildMatchResultNews([early, late], [], opts).added.length, 1, "gece yarısı kopyası aynı çalıştırmada tek haber");
+  const firstRun = buildMatchResultNews([early], [], opts).added;
+  assert.equal(firstRun.length, 1);
+  assert.equal(buildMatchResultNews([late], firstRun, opts).added.length, 0, "gece yarısı kopyası sonraki çalıştırmada eklenmemeli");
+  const legacy = firstRun.map(({ kickoffDay: _drop, ...rest }) => rest);
+  assert.equal(buildMatchResultNews([late], legacy, opts).added.length, 0, "kickoffDay alanı olmayan eski kayıtta gün etiketiyle eşleşmeli");
 }
 
 // 3) Boş/hatalı/yanlış kayıtlar habere dönüşmez.
