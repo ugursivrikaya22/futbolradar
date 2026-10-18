@@ -94,6 +94,17 @@ const playerPairs = dynamicRoutePairs("player");
     `eşleme=${playerPairs.length} kapı=${verifiedCount}`);
 }
 
+{
+  const radar = read("en/player-radar.html") || "";
+  const profiles = new Set(playerPairs.map((pair) => pair.en));
+  const links = [...radar.matchAll(/href="\.\/player\/([^"]+)"/g)]
+    .map((match) => `en/player/${match[1]}`);
+  check("oyuncu radarı profil bağlantıları içeriyor", links.length > 0);
+  const missing = links.filter((link) => !profiles.has(link) || !read(link));
+  check("oyuncu radarı yalnızca yayımlanmış EN profillerine bağlanıyor",
+    missing.length === 0, missing.join(", "));
+}
+
 // --- 2. Örneklem: takımların TAMAMI, maç/oyuncu için deterministik alt küme -
 function sample(list, size) {
   if (list.length <= size) return list;

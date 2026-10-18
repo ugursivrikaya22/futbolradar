@@ -1699,7 +1699,8 @@ function statCell(value) {
 }
 
 function playerRadarPage() {
-  const roster = verifiedPlayerCards();
+  const roster = verifiedPlayerCards().filter((player) =>
+    player.verified && playerUrls.resolveId(player.id) === player.id);
   const cards = roster
     .slice()
     .sort((left, right) => Number(right.rating || 0) - Number(left.rating || 0))
