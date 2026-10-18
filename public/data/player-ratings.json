@@ -1,22 +1,22 @@
 {
   "source": "futbolradar:player-rating-engine",
   "version": 1,
-  "updatedAt": "2026-10-18T17:19:40.732Z",
+  "updatedAt": "2026-10-18T20:36:40.598Z",
   "playerCount": 825,
-  "ratedPlayerCount": 304,
+  "ratedPlayerCount": 309,
   "summary": {
     "total": 825,
-    "computed": 304,
-    "insufficient": 521,
+    "computed": 309,
+    "insufficient": 516,
     "categories": {
       "overall": {
-        "computed": 299,
-        "insufficient": 526,
+        "computed": 302,
+        "insufficient": 523,
         "notApplicable": 0
       },
       "form": {
-        "computed": 298,
-        "insufficient": 527,
+        "computed": 302,
+        "insufficient": 523,
         "notApplicable": 0
       },
       "attack": {
@@ -30,27 +30,27 @@
         "notApplicable": 88
       },
       "defense": {
-        "computed": 271,
-        "insufficient": 554,
+        "computed": 274,
+        "insufficient": 551,
         "notApplicable": 0
       },
       "discipline": {
-        "computed": 298,
-        "insufficient": 527,
+        "computed": 302,
+        "insufficient": 523,
         "notApplicable": 0
       },
       "durability": {
-        "computed": 300,
-        "insufficient": 525,
+        "computed": 304,
+        "insufficient": 521,
         "notApplicable": 0
       },
       "potential": {
-        "computed": 299,
-        "insufficient": 526,
+        "computed": 302,
+        "insufficient": 523,
         "notApplicable": 0
       }
     },
-    "changed": 1
+    "changed": 33
   },
   "players": {
     "gabriel-sara": {
@@ -20084,7 +20084,7 @@
       "status": "computed",
       "computedCategories": 6,
       "coverage": 0.75,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 40,
         "form": 20,
@@ -20096,9 +20096,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 62,
           "status": "computed",
-          "display": "51",
+          "display": "62",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -20108,46 +20108,46 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "27 / 100"
+              "value": "55 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
+              "value": "51 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "83 / 100"
+              "value": "86 / 100"
             },
             {
               "label": "Potansiyel (ağırlık %15)",
-              "value": "58 / 100"
+              "value": "70 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 27,
+          "value": 55,
           "status": "computed",
-          "display": "27",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "55",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "45 dk"
+              "value": "140 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Kurtarış",
-              "value": "2"
+              "value": "5"
             },
             {
               "label": "Son maç",
@@ -20186,16 +20186,16 @@
           "inputs": [
             {
               "label": "Kurtarış",
-              "value": "2 · 4 / 90 dk"
+              "value": "5 · 3.21 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 83,
+          "value": 86,
           "status": "computed",
-          "display": "83",
+          "display": "86",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -20212,32 +20212,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 32,
+          "value": 51,
           "status": "computed",
-          "display": "32",
+          "display": "51",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
+              "value": "%22.2 (140 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "45 dk"
+              "value": "70 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 58,
+          "value": 70,
           "status": "computed",
-          "display": "58",
+          "display": "70",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -20247,7 +20247,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "50 / 100"
+              "value": "60 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -20255,7 +20255,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-12 puan (form ↔ sezon)"
+              "value": "-5 puan (form ↔ sezon)"
             }
           ]
         }
@@ -20263,15 +20263,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
+        "matches": 2,
+        "minutes": 140
       },
-      "fingerprint": "2f0dab4a30432c8b"
+      "fingerprint": "9c606dfcbb4f64ab"
     },
     "o-bayrak-goztepe": {
       "version": 1,
@@ -20503,7 +20503,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 35,
         "form": 20,
@@ -20516,58 +20516,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 55,
           "status": "computed",
-          "display": "51",
+          "display": "55",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Savunma (ağırlık %35)",
-              "value": "51 / 100"
+              "value": "50 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "38 / 100"
+              "value": "55 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "84 / 100"
+              "value": "87 / 100"
             },
             {
               "label": "Hücum (ağırlık %10)",
-              "value": "49 / 100"
+              "value": "46 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %10)",
-              "value": "48 / 100"
+              "value": "45 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 38,
+          "value": 55,
           "status": "computed",
-          "display": "38",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "55",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "185 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -20578,9 +20578,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 49,
+          "value": 46,
           "status": "computed",
-          "display": "49",
+          "display": "46",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -20590,7 +20590,7 @@
             },
             {
               "label": "Şut",
-              "value": "2 · 2 / 90 dk"
+              "value": "2 · 0.97 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -20605,9 +20605,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 48,
+          "value": 45,
           "status": "computed",
-          "display": "48",
+          "display": "45",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -20620,9 +20620,9 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 51,
+          "value": 50,
           "status": "computed",
-          "display": "51",
+          "display": "50",
           "coverage": 0.48,
           "window": null,
           "inputs": [
@@ -20632,16 +20632,16 @@
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "2 · 2 / 90 dk"
+              "value": "7 · 3.41 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -20658,32 +20658,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%29.4 (185 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "92.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 54,
+          "value": 64,
           "status": "computed",
-          "display": "54",
+          "display": "64",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -20693,7 +20693,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "55 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -20701,7 +20701,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-12 puan (form ↔ sezon)"
+              "value": "+0 puan (form ↔ sezon)"
             }
           ]
         }
@@ -20709,15 +20709,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 185
       },
-      "fingerprint": "3af6469f081f6f49"
+      "fingerprint": "39a1e0beb9d7e247"
     },
     "n-dismas-goztepe": {
       "version": 1,
@@ -20726,7 +20726,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 35,
         "form": 20,
@@ -20739,9 +20739,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 58,
           "status": "computed",
-          "display": "51",
+          "display": "58",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -20751,19 +20751,19 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "43 / 100"
+              "value": "64 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "39 / 100"
+              "value": "55 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "83 / 100"
+              "value": "73 / 100"
             },
             {
               "label": "Hücum (ağırlık %10)",
-              "value": "52 / 100"
+              "value": "64 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %10)",
@@ -20774,23 +20774,27 @@
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 43,
+          "value": 64,
           "status": "computed",
-          "display": "43",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "64",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "64 dk"
+              "value": "156 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
+            },
+            {
+              "label": "Gol + asist",
+              "value": "1 gol · 0 asist"
             },
             {
               "label": "Son maç",
@@ -20801,27 +20805,27 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 52,
+          "value": 64,
           "status": "computed",
-          "display": "52",
+          "display": "64",
           "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Gol",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.58 / 90 dk"
             },
             {
               "label": "Şut",
-              "value": "2 · 2.81 / 90 dk"
+              "value": "4 · 2.31 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "1 · 1.41 / 90 dk"
+              "value": "3 · 1.73 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.58 / 90 dk"
             }
           ]
         },
@@ -20831,12 +20835,16 @@
           "value": 49,
           "status": "computed",
           "display": "49",
-          "coverage": 0.32,
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 0.58 / 90 dk"
             }
           ]
         },
@@ -20851,20 +20859,213 @@
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.58 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "2 · 2.81 / 90 dk"
+              "value": "5 · 2.88 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 83,
+          "value": 73,
           "status": "computed",
-          "display": "83",
+          "display": "73",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "1 · 0.58 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 55,
+          "status": "computed",
+          "display": "55",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%24.8 (156 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "2 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "78 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 76,
+          "status": "computed",
+          "display": "76",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "24"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "58 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%48"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+6 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 2,
+        "minutes": 156
+      },
+      "fingerprint": "52eb95f6d9411b10"
+    },
+    "n-sonko-sundberg-goztepe": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "defender",
+      "status": "computed",
+      "computedCategories": 6,
+      "coverage": 0.75,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "defense": 35,
+        "form": 20,
+        "durability": 15,
+        "discipline": 10,
+        "attack": 10,
+        "creativity": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 61,
+          "status": "computed",
+          "display": "61",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Savunma (ağırlık %35)",
+              "value": "56 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "66 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %10)",
+              "value": "85 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 66,
+          "status": "computed",
+          "display": "66",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "95 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Süper Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 56,
+          "status": "computed",
+          "display": "56",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "1 · 0.95 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "6 · 5.68 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 85,
+          "status": "computed",
+          "display": "85",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -20881,15 +21082,15 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 39,
+          "value": 51,
           "status": "computed",
-          "display": "39",
+          "display": "51",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%10.2 (64 dk / 7 maç)"
+              "value": "%15.1 (95 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
@@ -20897,34 +21098,34 @@
             },
             {
               "label": "Maç başına dakika",
-              "value": "64 dk"
+              "value": "95 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 61,
+          "value": 65,
           "status": "computed",
-          "display": "61",
+          "display": "65",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaş",
-              "value": "24"
+              "value": "30"
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
-              "value": "%48"
+              "value": "%7"
             },
             {
               "label": "Gelişim trendi",
-              "value": "-8 puan (form ↔ sezon)"
+              "value": "+5 puan (form ↔ sezon)"
             }
           ]
         }
@@ -20933,14 +21134,14 @@
         {
           "kind": "matches",
           "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
         "matches": 1,
-        "minutes": 64
+        "minutes": 95
       },
-      "fingerprint": "b5d006e3b310d58e"
+      "fingerprint": "cd589e5327ccd15d"
     },
     "ege-yildirim-goztepe": {
       "version": 1,
@@ -20949,7 +21150,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-13T02:39:57.277Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 35,
         "form": 20,
@@ -20978,7 +21179,7 @@
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
+              "value": "30 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
@@ -21000,20 +21201,20 @@
           "value": 51,
           "status": "computed",
           "display": "51",
-          "coverage": 0.2,
-          "window": 1,
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "45 dk"
+              "value": "48 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "1 / 2"
             },
             {
               "label": "Son maç",
@@ -21074,11 +21275,11 @@
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "1 · 2 / 90 dk"
+              "value": "1 · 1.88 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "3 · 6 / 90 dk"
+              "value": "3 · 5.63 / 90 dk"
             }
           ]
         },
@@ -21104,23 +21305,23 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 32,
+          "value": 30,
           "status": "computed",
-          "display": "32",
+          "display": "30",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
+              "value": "%7.6 (48 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "45 dk"
+              "value": "24 dk"
             }
           ]
         },
@@ -21155,15 +21356,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
+        "matches": 2,
+        "minutes": 48
       },
-      "fingerprint": "a4ca9cc9bcbb0fdb"
+      "fingerprint": "e35b57da007ad972"
     },
     "t-altikardes-goztepe": {
       "version": 1,
@@ -21172,7 +21373,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -21185,58 +21386,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 50,
+          "value": 55,
           "status": "computed",
-          "display": "50",
+          "display": "55",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaratıcılık (ağırlık %25)",
-              "value": "48 / 100"
+              "value": "45 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "37 / 100"
+              "value": "59 / 100"
             },
             {
               "label": "Hücum (ağırlık %20)",
-              "value": "49 / 100"
+              "value": "45 / 100"
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "61 / 100"
+              "value": "62 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "87 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 37,
+          "value": 59,
           "status": "computed",
-          "display": "37",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "59",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "185 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -21247,9 +21448,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 49,
+          "value": 45,
           "status": "computed",
-          "display": "49",
+          "display": "45",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -21259,7 +21460,7 @@
             },
             {
               "label": "Şut",
-              "value": "1 · 1 / 90 dk"
+              "value": "1 · 0.49 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -21274,9 +21475,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 48,
+          "value": 45,
           "status": "computed",
-          "display": "48",
+          "display": "45",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -21289,28 +21490,28 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 61,
+          "value": 62,
           "status": "computed",
-          "display": "61",
+          "display": "62",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "3 · 3 / 90 dk"
+              "value": "3 · 1.46 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "8 · 8 / 90 dk"
+              "value": "19 · 9.24 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -21327,32 +21528,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%29.4 (185 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "92.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 61,
+          "value": 76,
           "status": "computed",
-          "display": "61",
+          "display": "76",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -21362,7 +21563,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "50 / 100"
+              "value": "55 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -21370,7 +21571,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-12 puan (form ↔ sezon)"
+              "value": "+4 puan (form ↔ sezon)"
             }
           ]
         }
@@ -21378,15 +21579,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 185
       },
-      "fingerprint": "b7c5562a9f95402e"
+      "fingerprint": "df637c77c08a2ee6"
     },
     "a-antunes-goztepe": {
       "version": 1,
@@ -21395,7 +21596,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -21408,58 +21609,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 57,
           "status": "computed",
-          "display": "51",
+          "display": "57",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaratıcılık (ağırlık %25)",
-              "value": "50 / 100"
+              "value": "53 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "52 / 100"
+              "value": "63 / 100"
             },
             {
               "label": "Hücum (ağırlık %20)",
-              "value": "52 / 100"
+              "value": "48 / 100"
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "58 / 100"
+              "value": "64 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
+              "value": "49 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "83 / 100"
+              "value": "86 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 52,
+          "value": 63,
           "status": "computed",
-          "display": "52",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "63",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "45 dk"
+              "value": "133 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -21470,9 +21671,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 52,
+          "value": 48,
           "status": "computed",
-          "display": "52",
+          "display": "48",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -21482,7 +21683,376 @@
             },
             {
               "label": "Şut",
-              "value": "2 · 4 / 90 dk"
+              "value": "3 · 2.03 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 53,
+          "status": "computed",
+          "display": "53",
+          "coverage": 0.56,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "3 · 2.03 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 64,
+          "status": "computed",
+          "display": "64",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "4 · 2.71 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "13 · 8.8 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 86,
+          "status": "computed",
+          "display": "86",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 49,
+          "status": "computed",
+          "display": "49",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%21.1 (133 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "2 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "66.5 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 69,
+          "status": "computed",
+          "display": "69",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "26"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "57 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%29"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+6 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 2,
+        "minutes": 133
+      },
+      "fingerprint": "a9b3edac1516f400"
+    },
+    "e-bekiroglu-goztepe": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 2,
+      "coverage": 0.25,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0.2,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "19 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "81 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 81,
+          "status": "computed",
+          "display": "81",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 19,
+          "status": "computed",
+          "display": "19",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%1.1 (7 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "7 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 7
+      },
+      "fingerprint": "5c756ba5e213d09c"
+    },
+    "rhaldney-goztepe": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 57,
+          "status": "computed",
+          "display": "57",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaratıcılık (ağırlık %25)",
+              "value": "50 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "64 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %20)",
+              "value": "45 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %15)",
+              "value": "62 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "68 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "64 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 64,
+          "status": "computed",
+          "display": "64",
+          "coverage": 0.4,
+          "window": 2,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "2 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "182 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "2 / 2"
+            },
+            {
+              "label": "Son maç",
+              "value": "Süper Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 45,
+          "status": "computed",
+          "display": "45",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "1 · 0.49 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -21500,229 +22070,6 @@
           "value": 50,
           "status": "computed",
           "display": "50",
-          "coverage": 0.32,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Asist",
-              "value": "0 · 0 / 90 dk"
-            }
-          ]
-        },
-        "defense": {
-          "key": "defense",
-          "label": "Savunma",
-          "value": 58,
-          "status": "computed",
-          "display": "58",
-          "coverage": 0.48,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Müdahale (tackle)",
-              "value": "1 · 2 / 90 dk"
-            },
-            {
-              "label": "Kazanılan ikili mücadele",
-              "value": "5 · 10 / 90 dk"
-            }
-          ]
-        },
-        "discipline": {
-          "key": "discipline",
-          "label": "Disiplin",
-          "value": 83,
-          "status": "computed",
-          "display": "83",
-          "coverage": 0.75,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Sarı kart",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "Kırmızı kart",
-              "value": "0"
-            }
-          ]
-        },
-        "durability": {
-          "key": "durability",
-          "label": "Süreklilik",
-          "value": 32,
-          "status": "computed",
-          "display": "32",
-          "coverage": 0.667,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
-            },
-            {
-              "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
-            },
-            {
-              "label": "Maç başına dakika",
-              "value": "45 dk"
-            }
-          ]
-        },
-        "potential": {
-          "key": "potential",
-          "label": "Potansiyel",
-          "value": 61,
-          "status": "computed",
-          "display": "61",
-          "coverage": 1,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Yaş",
-              "value": "26"
-            },
-            {
-              "label": "Mevcut performans",
-              "value": "51 / 100"
-            },
-            {
-              "label": "Yaşa bağlı gelişim payı",
-              "value": "%29"
-            },
-            {
-              "label": "Gelişim trendi",
-              "value": "+1 puan (form ↔ sezon)"
-            }
-          ]
-        }
-      },
-      "sources": [
-        {
-          "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
-        }
-      ],
-      "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
-      },
-      "fingerprint": "149652084518350b"
-    },
-    "rhaldney-goztepe": {
-      "version": 1,
-      "scheme": "outfield",
-      "positionGroup": "midfielder",
-      "status": "computed",
-      "computedCategories": 8,
-      "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
-      "weights": {
-        "creativity": 25,
-        "form": 20,
-        "attack": 20,
-        "defense": 15,
-        "durability": 15,
-        "discipline": 5
-      },
-      "categories": {
-        "overall": {
-          "key": "overall",
-          "label": "Overall",
-          "value": 56,
-          "status": "computed",
-          "display": "56",
-          "coverage": 1,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Yaratıcılık (ağırlık %25)",
-              "value": "54 / 100"
-            },
-            {
-              "label": "Form (ağırlık %20)",
-              "value": "62 / 100"
-            },
-            {
-              "label": "Hücum (ağırlık %20)",
-              "value": "49 / 100"
-            },
-            {
-              "label": "Savunma (ağırlık %15)",
-              "value": "59 / 100"
-            },
-            {
-              "label": "Süreklilik (ağırlık %15)",
-              "value": "60 / 100"
-            },
-            {
-              "label": "Disiplin (ağırlık %5)",
-              "value": "55 / 100"
-            }
-          ]
-        },
-        "form": {
-          "key": "form",
-          "label": "Form",
-          "value": 62,
-          "status": "computed",
-          "display": "62",
-          "coverage": 0.2,
-          "window": 1,
-          "inputs": [
-            {
-              "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
-            },
-            {
-              "label": "Toplam süre",
-              "value": "90 dk"
-            },
-            {
-              "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
-            },
-            {
-              "label": "Son maç",
-              "value": "Süper Lig"
-            }
-          ]
-        },
-        "attack": {
-          "key": "attack",
-          "label": "Hücum",
-          "value": 49,
-          "status": "computed",
-          "display": "49",
-          "coverage": 0.8,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Gol",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "Şut",
-              "value": "1 · 1 / 90 dk"
-            },
-            {
-              "label": "İsabetli şut",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "Gol katkısı (G+A)",
-              "value": "0 · 0 / 90 dk"
-            }
-          ]
-        },
-        "creativity": {
-          "key": "creativity",
-          "label": "Yaratıcılık",
-          "value": 54,
-          "status": "computed",
-          "display": "54",
           "coverage": 0.44,
           "window": null,
           "inputs": [
@@ -21732,45 +22079,45 @@
             },
             {
               "label": "Başarılı çalım",
-              "value": "4 · 4 / 90 dk"
+              "value": "4 · 1.98 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 59,
+          "value": 62,
           "status": "computed",
-          "display": "59",
+          "display": "62",
           "coverage": 0.7,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "3 · 1.48 / 90 dk"
             },
             {
               "label": "Pas arası",
-              "value": "8 · 8 / 90 dk"
+              "value": "8 · 3.96 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "0 · 0 / 90 dk"
+              "value": "7 · 3.46 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 55,
+          "value": 64,
           "status": "computed",
-          "display": "55",
+          "display": "64",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Sarı kart",
-              "value": "1 · 1 / 90 dk"
+              "value": "1 · 0.49 / 90 dk"
             },
             {
               "label": "Kırmızı kart",
@@ -21778,43 +22125,43 @@
             },
             {
               "label": "Faul",
-              "value": "8 · 8 / 90 dk"
+              "value": "8 · 3.96 / 90 dk"
             }
           ]
         },
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 60,
+          "value": 68,
           "status": "computed",
-          "display": "60",
+          "display": "68",
           "coverage": 0.841,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%28.9 (182 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "91 dk"
             },
             {
               "label": "İlk 11 oranı",
-              "value": "%100 (4 / 1)"
+              "value": "%100 (4 / 2)"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 66,
+          "value": 67,
           "status": "computed",
-          "display": "66",
+          "display": "67",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -21824,7 +22171,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "56 / 100"
+              "value": "57 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -21832,7 +22179,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+6 puan (form ↔ sezon)"
+              "value": "+7 puan (form ↔ sezon)"
             }
           ]
         }
@@ -21845,15 +22192,15 @@
         },
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 182
       },
-      "fingerprint": "691bb7e0fb3e2fd6"
+      "fingerprint": "6bb299e6249dadc1"
     },
     "andre-henrique-goztepe": {
       "version": 1,
@@ -21862,7 +22209,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -21875,15 +22222,15 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 69,
+          "value": 68,
           "status": "computed",
-          "display": "69",
+          "display": "68",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "68 / 100"
+              "value": "66 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
@@ -21891,7 +22238,7 @@
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "60 / 100"
+              "value": "58 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
@@ -21899,11 +22246,11 @@
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "83 / 100"
+              "value": "71 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "54 / 100"
+              "value": "57 / 100"
             }
           ]
         },
@@ -21933,9 +22280,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 68,
+          "value": 66,
           "status": "computed",
-          "display": "68",
+          "display": "66",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -21945,7 +22292,7 @@
             },
             {
               "label": "Şut",
-              "value": "3 · 6 / 90 dk"
+              "value": "4 · 2.81 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -21960,49 +22307,53 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 60,
+          "value": 58,
           "status": "computed",
-          "display": "60",
-          "coverage": 0.32,
+          "display": "58",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "1 · 0.2 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 0.7 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 54,
+          "value": 57,
           "status": "computed",
-          "display": "54",
+          "display": "57",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "2 · 1.41 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "3 · 6 / 90 dk"
+              "value": "8 · 5.63 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 83,
+          "value": 71,
           "status": "computed",
-          "display": "83",
+          "display": "71",
           "coverage": 0.75,
           "window": null,
           "inputs": [
             {
               "label": "Sarı kart",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.7 / 90 dk"
             },
             {
               "label": "Kırmızı kart",
@@ -22048,7 +22399,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "69 / 100"
+              "value": "68 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -22056,7 +22407,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+5 puan (form ↔ sezon)"
+              "value": "+6 puan (form ↔ sezon)"
             }
           ]
         }
@@ -22064,8 +22415,8 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         },
         {
           "kind": "leaderboard",
@@ -22074,10 +22425,10 @@
         }
       ],
       "sampleWindow": {
-        "matches": 1,
+        "matches": 2,
         "minutes": 444
       },
-      "fingerprint": "1414082703e4c536"
+      "fingerprint": "23dd168504f6d8cd"
     },
     "s-armstrong-goztepe": {
       "version": 1,
@@ -22086,7 +22437,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -22111,46 +22462,46 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "58 / 100"
+              "value": "56 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "52 / 100"
+              "value": "54 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "24 / 100"
+              "value": "27 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "63 / 100"
+              "value": "64 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "56 / 100"
+              "value": "55 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 58,
+          "value": 56,
           "status": "computed",
-          "display": "58",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "56",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "21 dk"
+              "value": "33 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -22173,11 +22524,11 @@
             },
             {
               "label": "Şut",
-              "value": "1 · 4.29 / 90 dk"
+              "value": "1 · 2.73 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "1 · 4.29 / 90 dk"
+              "value": "1 · 2.73 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
@@ -22188,49 +22539,53 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 52,
+          "value": 54,
           "status": "computed",
-          "display": "52",
-          "coverage": 0.32,
+          "display": "54",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 2.73 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 56,
+          "value": 55,
           "status": "computed",
-          "display": "56",
+          "display": "55",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "1 · 4.29 / 90 dk"
+              "value": "1 · 2.73 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "1 · 4.29 / 90 dk"
+              "value": "1 · 2.73 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 63,
+          "value": 64,
           "status": "computed",
-          "display": "63",
+          "display": "64",
           "coverage": 0.75,
           "window": null,
           "inputs": [
             {
               "label": "Sarı kart",
-              "value": "1 · 4.29 / 90 dk"
+              "value": "1 · 2.73 / 90 dk"
             },
             {
               "label": "Kırmızı kart",
@@ -22241,32 +22596,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 24,
+          "value": 27,
           "status": "computed",
-          "display": "24",
+          "display": "27",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%3.3 (21 dk / 7 maç)"
+              "value": "%5.2 (33 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "21 dk"
+              "value": "16.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 76,
+          "value": 74,
           "status": "computed",
-          "display": "76",
+          "display": "74",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -22284,7 +22639,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+7 puan (form ↔ sezon)"
+              "value": "+5 puan (form ↔ sezon)"
             }
           ]
         }
@@ -22292,15 +22647,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 21
+        "matches": 2,
+        "minutes": 33
       },
-      "fingerprint": "f487daa439bfa210"
+      "fingerprint": "d953ead8bc57a184"
     },
     "janderson-goztepe": {
       "version": 1,
@@ -22309,7 +22664,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -22322,9 +22677,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 61,
+          "value": 62,
           "status": "computed",
-          "display": "61",
+          "display": "62",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -22346,11 +22701,11 @@
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "85 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "56 / 100"
+              "value": "59 / 100"
             }
           ]
         },
@@ -22392,7 +22747,7 @@
             },
             {
               "label": "Şut",
-              "value": "2 · 2 / 90 dk"
+              "value": "2 · 1.76 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -22422,28 +22777,28 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 56,
+          "value": 59,
           "status": "computed",
-          "display": "56",
+          "display": "59",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "1 · 1 / 90 dk"
+              "value": "2 · 1.76 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "6 · 6 / 90 dk"
+              "value": "8 · 7.06 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 85,
           "status": "computed",
-          "display": "84",
+          "display": "85",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -22483,9 +22838,9 @@
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 67,
+          "value": 68,
           "status": "computed",
-          "display": "67",
+          "display": "68",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -22495,7 +22850,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "61 / 100"
+              "value": "62 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -22503,7 +22858,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+1 puan (form ↔ sezon)"
+              "value": "+0 puan (form ↔ sezon)"
             }
           ]
         }
@@ -22511,8 +22866,8 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         },
         {
           "kind": "leaderboard",
@@ -22521,10 +22876,10 @@
         }
       ],
       "sampleWindow": {
-        "matches": 1,
+        "matches": 2,
         "minutes": 380
       },
-      "fingerprint": "4137c4069e5f3f35"
+      "fingerprint": "c47167bf24320f20"
     },
     "juan-goztepe": {
       "version": 1,
@@ -22533,7 +22888,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -22546,9 +22901,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 71,
+          "value": 72,
           "status": "computed",
-          "display": "71",
+          "display": "72",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -22562,7 +22917,7 @@
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "40 / 100"
+              "value": "45 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
@@ -22570,11 +22925,11 @@
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "87 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "59 / 100"
+              "value": "57 / 100"
             }
           ]
         },
@@ -22616,11 +22971,11 @@
             },
             {
               "label": "Şut",
-              "value": "2 · 2 / 90 dk"
+              "value": "4 · 2.08 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "2 · 2 / 90 dk"
+              "value": "3 · 1.56 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
@@ -22631,43 +22986,47 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 40,
+          "value": 45,
           "status": "computed",
-          "display": "40",
-          "coverage": 0.32,
+          "display": "45",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 0.52 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 59,
+          "value": 57,
           "status": "computed",
-          "display": "59",
+          "display": "57",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "1 · 1 / 90 dk"
+              "value": "1 · 0.52 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "10 · 10 / 90 dk"
+              "value": "15 · 7.8 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -22719,7 +23078,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "71 / 100"
+              "value": "72 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -22727,7 +23086,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+10 puan (form ↔ sezon)"
+              "value": "+9 puan (form ↔ sezon)"
             }
           ]
         }
@@ -22735,8 +23094,8 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         },
         {
           "kind": "leaderboard",
@@ -22745,10 +23104,10 @@
         }
       ],
       "sampleWindow": {
-        "matches": 1,
+        "matches": 2,
         "minutes": 414
       },
-      "fingerprint": "e75922070c809a32"
+      "fingerprint": "e9f2ccf5c4174f2c"
     },
     "a-kurtulan-goztepe": {
       "version": 1,
@@ -22757,7 +23116,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -22770,58 +23129,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 52,
           "status": "computed",
-          "display": "51",
+          "display": "52",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "48 / 100"
+              "value": "44 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "49 / 100"
+              "value": "57 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "48 / 100"
+              "value": "45 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "69 / 100"
+              "value": "74 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "61 / 100"
+              "value": "59 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 49,
+          "value": 57,
           "status": "computed",
-          "display": "49",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "57",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "185 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -22832,9 +23191,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 48,
+          "value": 44,
           "status": "computed",
-          "display": "48",
+          "display": "44",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -22859,9 +23218,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 48,
+          "value": 45,
           "status": "computed",
-          "display": "48",
+          "display": "45",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -22874,34 +23233,34 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 61,
+          "value": 59,
           "status": "computed",
-          "display": "61",
+          "display": "59",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "2 · 2 / 90 dk"
+              "value": "3 · 1.46 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "10 · 10 / 90 dk"
+              "value": "14 · 6.81 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 69,
+          "value": 74,
           "status": "computed",
-          "display": "69",
+          "display": "74",
           "coverage": 0.75,
           "window": null,
           "inputs": [
             {
               "label": "Sarı kart",
-              "value": "1 · 1 / 90 dk"
+              "value": "1 · 0.49 / 90 dk"
             },
             {
               "label": "Kırmızı kart",
@@ -22912,32 +23271,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%29.4 (185 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "92.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 69,
+          "value": 75,
           "status": "computed",
-          "display": "69",
+          "display": "75",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -22947,7 +23306,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "52 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -22955,7 +23314,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-2 puan (form ↔ sezon)"
+              "value": "+5 puan (form ↔ sezon)"
             }
           ]
         }
@@ -22963,15 +23322,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 185
       },
-      "fingerprint": "dcfd903444afeaeb"
+      "fingerprint": "f2a8473d5a0b0d59"
     },
     "u-akdag-alanyaspor": {
       "version": 1,
@@ -28319,6 +28678,135 @@
         "minutes": 90
       },
       "fingerprint": "36b1dc264e326749"
+    },
+    "a-traore-genclerbirligi-s-k": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "forward",
+      "status": "computed",
+      "computedCategories": 1,
+      "coverage": 0.125,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "attack": 35,
+        "form": 20,
+        "creativity": 15,
+        "durability": 15,
+        "discipline": 5,
+        "defense": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0.2,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "64 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 64,
+          "status": "computed",
+          "display": "64",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Gol + asist",
+              "value": "1 gol · 0 asist"
+            },
+            {
+              "label": "Son maç",
+              "value": "Ligue 1 (Burkina-Faso)"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-18T18:30:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": null
+      },
+      "fingerprint": "e3013fc2975e8eee"
     },
     "a-gianniotis-kasimpasa": {
       "version": 1,
@@ -36404,7 +36892,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -36417,9 +36905,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 54,
+          "value": 53,
           "status": "computed",
-          "display": "54",
+          "display": "53",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -36441,7 +36929,7 @@
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "48 / 100"
+              "value": "38 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
@@ -36455,12 +36943,12 @@
           "value": 58,
           "status": "computed",
           "display": "58",
-          "coverage": 0.2,
-          "window": 1,
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
@@ -36468,7 +36956,7 @@
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "1 / 2"
             },
             {
               "label": "Son maç",
@@ -36559,9 +37047,9 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 48,
+          "value": 38,
           "status": "computed",
-          "display": "48",
+          "display": "38",
           "coverage": 0.667,
           "window": null,
           "inputs": [
@@ -36571,11 +37059,11 @@
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "82 dk"
+              "value": "41 dk"
             }
           ]
         },
@@ -36594,7 +37082,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "54 / 100"
+              "value": "53 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -36602,7 +37090,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+4 puan (form ↔ sezon)"
+              "value": "+5 puan (form ↔ sezon)"
             }
           ]
         }
@@ -36610,15 +37098,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T19:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
+        "matches": 2,
         "minutes": 82
       },
-      "fingerprint": "e5e413754b5ddbe0"
+      "fingerprint": "6b43ebb7550e0503"
     },
     "k-koz-owski-gaziantep-fk": {
       "version": 1,
@@ -39688,7 +40176,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T18:15:59.624Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -39701,58 +40189,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 52,
+          "value": 53,
           "status": "computed",
-          "display": "52",
+          "display": "53",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "55 / 100"
+              "value": "53 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "62 / 100"
+              "value": "59 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "52 / 100"
+              "value": "50 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "19 / 100"
+              "value": "30 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "81 / 100"
+              "value": "83 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "55 / 100"
+              "value": "60 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 62,
+          "value": 59,
           "status": "computed",
-          "display": "62",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "59",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "8 dk"
+              "value": "53 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -39763,9 +40251,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 55,
+          "value": 53,
           "status": "computed",
-          "display": "55",
+          "display": "53",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -39775,11 +40263,11 @@
             },
             {
               "label": "Şut",
-              "value": "1 · 11.25 / 90 dk"
+              "value": "2 · 3.4 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "1 · 11.25 / 90 dk"
+              "value": "1 · 1.7 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
@@ -39790,9 +40278,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 52,
+          "value": 50,
           "status": "computed",
-          "display": "52",
+          "display": "50",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -39805,28 +40293,28 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 55,
+          "value": 60,
           "status": "computed",
-          "display": "55",
+          "display": "60",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "2 · 3.4 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "1 · 11.25 / 90 dk"
+              "value": "6 · 10.19 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 81,
+          "value": 83,
           "status": "computed",
-          "display": "81",
+          "display": "83",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -39843,32 +40331,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 19,
+          "value": 30,
           "status": "computed",
-          "display": "19",
+          "display": "30",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%1.1 (8 dk / 8 maç)"
+              "value": "%7.4 (53 dk / 8 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 8 maç"
+              "value": "2 / 8 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "8 dk"
+              "value": "26.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 78,
+          "value": 76,
           "status": "computed",
-          "display": "78",
+          "display": "76",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -39878,7 +40366,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "52 / 100"
+              "value": "53 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -39886,7 +40374,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+10 puan (form ↔ sezon)"
+              "value": "+6 puan (form ↔ sezon)"
             }
           ]
         }
@@ -39894,15 +40382,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 8
+        "matches": 2,
+        "minutes": 53
       },
-      "fingerprint": "5b1e41b1d0659655"
+      "fingerprint": "e7a47cb0bc8ab88d"
     },
     "k-michalak-eyupspor": {
       "version": 1,
@@ -41896,7 +42384,7 @@
       "status": "computed",
       "computedCategories": 6,
       "coverage": 0.75,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 40,
         "form": 20,
@@ -41908,58 +42396,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 72,
+          "value": 70,
           "status": "computed",
-          "display": "72",
+          "display": "70",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Savunma (ağırlık %40)",
-              "value": "61 / 100"
+              "value": "59 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "87 / 100"
+              "value": "76 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "84 / 100"
+              "value": "87 / 100"
             },
             {
               "label": "Potansiyel (ağırlık %15)",
-              "value": "95 / 100"
+              "value": "92 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 87,
+          "value": 76,
           "status": "computed",
-          "display": "87",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "76",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "185 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Kurtarış",
-              "value": "4"
+              "value": "6"
             },
             {
               "label": "Son maç",
@@ -41990,24 +42478,24 @@
         "defense": {
           "key": "defense",
           "label": "Kalecilik",
-          "value": 61,
+          "value": 59,
           "status": "computed",
-          "display": "61",
+          "display": "59",
           "coverage": 0.34,
           "window": null,
           "inputs": [
             {
               "label": "Kurtarış",
-              "value": "4 · 4 / 90 dk"
+              "value": "6 · 2.92 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -42024,32 +42512,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%29.4 (185 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "92.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 95,
+          "value": 92,
           "status": "computed",
-          "display": "95",
+          "display": "92",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -42059,7 +42547,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "68 / 100"
+              "value": "67 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -42067,7 +42555,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+12 puan (form ↔ sezon)"
+              "value": "+9 puan (form ↔ sezon)"
             }
           ]
         }
@@ -42075,24 +42563,24 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 185
       },
-      "fingerprint": "6ebf9a5b1621a16c"
+      "fingerprint": "d7ed34eca80af557"
     },
-    "a-dijksteel-kocaelispor": {
+    "m-cinan-kocaelispor": {
       "version": 1,
       "scheme": "outfield",
       "positionGroup": "defender",
       "status": "computed",
-      "computedCategories": 8,
-      "coverage": 1,
-      "updatedAt": "2026-10-12T15:27:19.627Z",
+      "computedCategories": 6,
+      "coverage": 0.75,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 35,
         "form": 20,
@@ -42105,44 +42593,36 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 56,
+          "value": 59,
           "status": "computed",
-          "display": "56",
-          "coverage": 1,
+          "display": "59",
+          "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Savunma (ağırlık %35)",
-              "value": "53 / 100"
-            },
-            {
-              "label": "Form (ağırlık %20)",
               "value": "58 / 100"
             },
             {
+              "label": "Form (ağırlık %20)",
+              "value": "64 / 100"
+            },
+            {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "37 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "84 / 100"
-            },
-            {
-              "label": "Hücum (ağırlık %10)",
-              "value": "48 / 100"
-            },
-            {
-              "label": "Yaratıcılık (ağırlık %10)",
-              "value": "48 / 100"
+              "value": "83 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 58,
+          "value": 64,
           "status": "computed",
-          "display": "58",
+          "display": "64",
           "coverage": 0.2,
           "window": 1,
           "inputs": [
@@ -42152,7 +42632,7 @@
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "58 dk"
             },
             {
               "label": "Maç reytingi olan maç",
@@ -42167,9 +42647,210 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 48,
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 58,
           "status": "computed",
-          "display": "48",
+          "display": "58",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "2 · 3.1 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "4 · 6.21 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 83,
+          "status": "computed",
+          "display": "83",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 37,
+          "status": "computed",
+          "display": "37",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%9.2 (58 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "58 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 66,
+          "status": "computed",
+          "display": "66",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "28"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "59 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%16"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+5 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 58
+      },
+      "fingerprint": "0b57cf6c8cf873be"
+    },
+    "a-dijksteel-kocaelispor": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "defender",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "defense": 35,
+        "form": 20,
+        "durability": 15,
+        "discipline": 10,
+        "attack": 10,
+        "creativity": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 58,
+          "status": "computed",
+          "display": "58",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Savunma (ağırlık %35)",
+              "value": "53 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "61 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "61 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %10)",
+              "value": "87 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %10)",
+              "value": "44 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %10)",
+              "value": "45 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 61,
+          "status": "computed",
+          "display": "61",
+          "coverage": 0.4,
+          "window": 2,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "2 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "185 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "2 / 2"
+            },
+            {
+              "label": "Son maç",
+              "value": "Süper Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": 44,
+          "status": "computed",
+          "display": "44",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -42194,9 +42875,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 48,
+          "value": 45,
           "status": "computed",
-          "display": "48",
+          "display": "45",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -42217,20 +42898,20 @@
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.49 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "5 · 5 / 90 dk"
+              "value": "9 · 4.38 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -42247,32 +42928,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%29.4 (185 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "92.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 60,
+          "value": 63,
           "status": "computed",
-          "display": "60",
+          "display": "63",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -42282,7 +42963,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "56 / 100"
+              "value": "58 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -42290,7 +42971,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+2 puan (form ↔ sezon)"
+              "value": "+3 puan (form ↔ sezon)"
             }
           ]
         }
@@ -42298,15 +42979,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 185
       },
-      "fingerprint": "97d4d6be5e4113a7"
+      "fingerprint": "b58b5c590a92cf30"
     },
     "m-haidara-kocaelispor": {
       "version": 1,
@@ -42538,7 +43219,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 35,
         "form": 20,
@@ -42551,9 +43232,232 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
+          "value": 60,
+          "status": "computed",
+          "display": "60",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Savunma (ağırlık %35)",
+              "value": "62 / 100"
+            },
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "77 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "41 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %10)",
+              "value": "69 / 100"
+            },
+            {
+              "label": "Hücum (ağırlık %10)",
+              "value": "51 / 100"
+            },
+            {
+              "label": "Yaratıcılık (ağırlık %10)",
+              "value": "48 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 77,
+          "status": "computed",
+          "display": "77",
+          "coverage": 0.4,
+          "window": 2,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "2 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "96 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 2"
+            },
+            {
+              "label": "Son maç",
+              "value": "Süper Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
           "value": 51,
           "status": "computed",
           "display": "51",
+          "coverage": 0.8,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Gol",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Şut",
+              "value": "2 · 1.88 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "1 · 0.94 / 90 dk"
+            },
+            {
+              "label": "Gol katkısı (G+A)",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": 48,
+          "status": "computed",
+          "display": "48",
+          "coverage": 0.32,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Asist",
+              "value": "0 · 0 / 90 dk"
+            }
+          ]
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 62,
+          "status": "computed",
+          "display": "62",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "2 · 1.88 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "13 · 12.19 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 69,
+          "status": "computed",
+          "display": "69",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "1 · 0.94 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 41,
+          "status": "computed",
+          "display": "41",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%15.2 (96 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "2 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "48 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 88,
+          "status": "computed",
+          "display": "88",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "22"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "60 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%68"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+12 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 2,
+        "minutes": 96
+      },
+      "fingerprint": "64e4086556e2851c"
+    },
+    "u-yildiz-kocaelispor": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "defender",
+      "status": "computed",
+      "computedCategories": 8,
+      "coverage": 1,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "defense": 35,
+        "form": 20,
+        "durability": 15,
+        "discipline": 10,
+        "attack": 10,
+        "creativity": 10
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 55,
+          "status": "computed",
+          "display": "55",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -42563,55 +43467,59 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "55 / 100"
+              "value": "62 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "16 / 100"
+              "value": "39 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
-              "value": "81 / 100"
+              "value": "84 / 100"
             },
             {
               "label": "Hücum (ağırlık %10)",
-              "value": "53 / 100"
+              "value": "48 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %10)",
-              "value": "53 / 100"
+              "value": "51 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 55,
+          "value": 62,
           "status": "computed",
-          "display": "55",
-          "coverage": 0.45,
-          "window": 1,
+          "display": "62",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç (sezon başı)"
+              "value": "2 resmî maç"
             },
             {
-              "label": "Süre",
-              "value": "1 dk"
+              "label": "Toplam süre",
+              "value": "90 dk"
             },
             {
-              "label": "Gol katkısı",
-              "value": "0 gol · 0 asist · 0 / 90 dk"
+              "label": "Maç reytingi olan maç",
+              "value": "2 / 2"
+            },
+            {
+              "label": "Son maç",
+              "value": "Süper Lig"
             }
           ]
         },
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 53,
+          "value": 48,
           "status": "computed",
-          "display": "53",
+          "display": "48",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -42636,15 +43544,19 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 53,
+          "value": 51,
           "status": "computed",
-          "display": "53",
-          "coverage": 0.32,
+          "display": "51",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 1 / 90 dk"
             }
           ]
         },
@@ -42659,20 +43571,20 @@
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 1 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "0 · 0 / 90 dk"
+              "value": "4 · 4 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 81,
+          "value": 84,
           "status": "computed",
-          "display": "81",
+          "display": "84",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -42689,242 +43601,19 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 16,
+          "value": 39,
           "status": "computed",
-          "display": "16",
+          "display": "39",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%0.2 (1 dk / 7 maç)"
+              "value": "%14.3 (90 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
-            },
-            {
-              "label": "Maç başına dakika",
-              "value": "1 dk"
-            }
-          ]
-        },
-        "potential": {
-          "key": "potential",
-          "label": "Potansiyel",
-          "value": 77,
-          "status": "computed",
-          "display": "77",
-          "coverage": 1,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Yaş",
-              "value": "22"
-            },
-            {
-              "label": "Mevcut performans",
-              "value": "51 / 100"
-            },
-            {
-              "label": "Yaşa bağlı gelişim payı",
-              "value": "%68"
-            },
-            {
-              "label": "Gelişim trendi",
-              "value": "+4 puan (form ↔ sezon)"
-            }
-          ]
-        }
-      },
-      "sources": [
-        {
-          "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
-        }
-      ],
-      "sampleWindow": {
-        "matches": 1,
-        "minutes": 1
-      },
-      "fingerprint": "79e09a11bf2847a2"
-    },
-    "u-yildiz-kocaelispor": {
-      "version": 1,
-      "scheme": "outfield",
-      "positionGroup": "defender",
-      "status": "computed",
-      "computedCategories": 8,
-      "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
-      "weights": {
-        "defense": 35,
-        "form": 20,
-        "durability": 15,
-        "discipline": 10,
-        "attack": 10,
-        "creativity": 10
-      },
-      "categories": {
-        "overall": {
-          "key": "overall",
-          "label": "Overall",
-          "value": 55,
-          "status": "computed",
-          "display": "55",
-          "coverage": 1,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Savunma (ağırlık %35)",
-              "value": "56 / 100"
-            },
-            {
-              "label": "Form (ağırlık %20)",
-              "value": "62 / 100"
-            },
-            {
-              "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
-            },
-            {
-              "label": "Disiplin (ağırlık %10)",
-              "value": "83 / 100"
-            },
-            {
-              "label": "Hücum (ağırlık %10)",
-              "value": "50 / 100"
-            },
-            {
-              "label": "Yaratıcılık (ağırlık %10)",
-              "value": "50 / 100"
-            }
-          ]
-        },
-        "form": {
-          "key": "form",
-          "label": "Form",
-          "value": 62,
-          "status": "computed",
-          "display": "62",
-          "coverage": 0.2,
-          "window": 1,
-          "inputs": [
-            {
-              "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
-            },
-            {
-              "label": "Toplam süre",
-              "value": "45 dk"
-            },
-            {
-              "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
-            },
-            {
-              "label": "Son maç",
-              "value": "Süper Lig"
-            }
-          ]
-        },
-        "attack": {
-          "key": "attack",
-          "label": "Hücum",
-          "value": 50,
-          "status": "computed",
-          "display": "50",
-          "coverage": 0.8,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Gol",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "Şut",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "İsabetli şut",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "Gol katkısı (G+A)",
-              "value": "0 · 0 / 90 dk"
-            }
-          ]
-        },
-        "creativity": {
-          "key": "creativity",
-          "label": "Yaratıcılık",
-          "value": 50,
-          "status": "computed",
-          "display": "50",
-          "coverage": 0.32,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Asist",
-              "value": "0 · 0 / 90 dk"
-            }
-          ]
-        },
-        "defense": {
-          "key": "defense",
-          "label": "Savunma",
-          "value": 56,
-          "status": "computed",
-          "display": "56",
-          "coverage": 0.48,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Müdahale (tackle)",
-              "value": "1 · 2 / 90 dk"
-            },
-            {
-              "label": "Kazanılan ikili mücadele",
-              "value": "2 · 4 / 90 dk"
-            }
-          ]
-        },
-        "discipline": {
-          "key": "discipline",
-          "label": "Disiplin",
-          "value": 83,
-          "status": "computed",
-          "display": "83",
-          "coverage": 0.75,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Sarı kart",
-              "value": "0 · 0 / 90 dk"
-            },
-            {
-              "label": "Kırmızı kart",
-              "value": "0"
-            }
-          ]
-        },
-        "durability": {
-          "key": "durability",
-          "label": "Süreklilik",
-          "value": 32,
-          "status": "computed",
-          "display": "32",
-          "coverage": 0.667,
-          "window": null,
-          "inputs": [
-            {
-              "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
-            },
-            {
-              "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
@@ -42963,15 +43652,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
+        "matches": 2,
+        "minutes": 90
       },
-      "fingerprint": "cb41771da63ae424"
+      "fingerprint": "78e8e854d2be7826"
     },
     "t-zoukrou-kocaelispor": {
       "version": 1,
@@ -43196,6 +43885,208 @@
       },
       "fingerprint": "67c8e6fa3f8160ed"
     },
+    "r-rivas-kocaelispor": {
+      "version": 1,
+      "scheme": "outfield",
+      "positionGroup": "midfielder",
+      "status": "computed",
+      "computedCategories": 6,
+      "coverage": 0.75,
+      "updatedAt": "2026-10-18T20:36:40.598Z",
+      "weights": {
+        "creativity": 25,
+        "form": 20,
+        "attack": 20,
+        "defense": 15,
+        "durability": 15,
+        "discipline": 5
+      },
+      "categories": {
+        "overall": {
+          "key": "overall",
+          "label": "Overall",
+          "value": 58,
+          "status": "computed",
+          "display": "58",
+          "coverage": 0.55,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Form (ağırlık %20)",
+              "value": "71 / 100"
+            },
+            {
+              "label": "Savunma (ağırlık %15)",
+              "value": "58 / 100"
+            },
+            {
+              "label": "Süreklilik (ağırlık %15)",
+              "value": "34 / 100"
+            },
+            {
+              "label": "Disiplin (ağırlık %5)",
+              "value": "83 / 100"
+            }
+          ]
+        },
+        "form": {
+          "key": "form",
+          "label": "Form",
+          "value": 71,
+          "status": "computed",
+          "display": "71",
+          "coverage": 0.2,
+          "window": 1,
+          "inputs": [
+            {
+              "label": "Değerlendirilen maç",
+              "value": "1 resmî maç"
+            },
+            {
+              "label": "Toplam süre",
+              "value": "50 dk"
+            },
+            {
+              "label": "Maç reytingi olan maç",
+              "value": "1 / 1"
+            },
+            {
+              "label": "Son maç",
+              "value": "Süper Lig"
+            }
+          ]
+        },
+        "attack": {
+          "key": "attack",
+          "label": "Hücum",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0.28,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Şut",
+              "value": "2 · 3.6 / 90 dk"
+            },
+            {
+              "label": "İsabetli şut",
+              "value": "1 · 1.8 / 90 dk"
+            }
+          ]
+        },
+        "creativity": {
+          "key": "creativity",
+          "label": "Yaratıcılık",
+          "value": null,
+          "status": "insufficient",
+          "display": "Veri yetersiz",
+          "coverage": 0,
+          "window": null,
+          "inputs": []
+        },
+        "defense": {
+          "key": "defense",
+          "label": "Savunma",
+          "value": 58,
+          "status": "computed",
+          "display": "58",
+          "coverage": 0.48,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Müdahale (tackle)",
+              "value": "2 · 3.6 / 90 dk"
+            },
+            {
+              "label": "Kazanılan ikili mücadele",
+              "value": "3 · 5.4 / 90 dk"
+            }
+          ]
+        },
+        "discipline": {
+          "key": "discipline",
+          "label": "Disiplin",
+          "value": 83,
+          "status": "computed",
+          "display": "83",
+          "coverage": 0.75,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Sarı kart",
+              "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kırmızı kart",
+              "value": "0"
+            }
+          ]
+        },
+        "durability": {
+          "key": "durability",
+          "label": "Süreklilik",
+          "value": 34,
+          "status": "computed",
+          "display": "34",
+          "coverage": 0.667,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Takım maçlarındaki dakika payı",
+              "value": "%7.9 (50 dk / 7 maç)"
+            },
+            {
+              "label": "Kadroda yer alma",
+              "value": "1 / 7 maç"
+            },
+            {
+              "label": "Maç başına dakika",
+              "value": "50 dk"
+            }
+          ]
+        },
+        "potential": {
+          "key": "potential",
+          "label": "Potansiyel",
+          "value": 69,
+          "status": "computed",
+          "display": "69",
+          "coverage": 1,
+          "window": null,
+          "inputs": [
+            {
+              "label": "Yaş",
+              "value": "28"
+            },
+            {
+              "label": "Mevcut performans",
+              "value": "58 / 100"
+            },
+            {
+              "label": "Yaşa bağlı gelişim payı",
+              "value": "%16"
+            },
+            {
+              "label": "Gelişim trendi",
+              "value": "+12 puan (form ↔ sezon)"
+            }
+          ]
+        }
+      },
+      "sources": [
+        {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
+        }
+      ],
+      "sampleWindow": {
+        "matches": 1,
+        "minutes": 50
+      },
+      "fingerprint": "9df5e3dc1a4b8872"
+    },
     "mahamadou-susoho-sissoho-kocaelispor": {
       "version": 1,
       "scheme": "outfield",
@@ -43203,7 +44094,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -43228,46 +44119,46 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "73 / 100"
+              "value": "65 / 100"
             },
             {
               "label": "Hücum (ağırlık %20)",
-              "value": "52 / 100"
+              "value": "48 / 100"
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "57 / 100"
+              "value": "58 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
+              "value": "48 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "83 / 100"
+              "value": "71 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 73,
+          "value": 65,
           "status": "computed",
-          "display": "73",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "65",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "45 dk"
+              "value": "130 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -43278,9 +44169,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 52,
+          "value": 48,
           "status": "computed",
-          "display": "52",
+          "display": "48",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -43290,7 +44181,7 @@
             },
             {
               "label": "Şut",
-              "value": "2 · 4 / 90 dk"
+              "value": "2 · 1.38 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -43308,46 +44199,50 @@
           "value": 50,
           "status": "computed",
           "display": "50",
-          "coverage": 0.32,
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 0.69 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 57,
+          "value": 58,
           "status": "computed",
-          "display": "57",
+          "display": "58",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "1 · 2 / 90 dk"
+              "value": "2 · 1.38 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "4 · 8 / 90 dk"
+              "value": "9 · 6.23 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 83,
+          "value": 71,
           "status": "computed",
-          "display": "83",
+          "display": "71",
           "coverage": 0.75,
           "window": null,
           "inputs": [
             {
               "label": "Sarı kart",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.69 / 90 dk"
             },
             {
               "label": "Kırmızı kart",
@@ -43358,32 +44253,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 32,
+          "value": 48,
           "status": "computed",
-          "display": "32",
+          "display": "48",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
+              "value": "%20.6 (130 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "45 dk"
+              "value": "65 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 89,
+          "value": 87,
           "status": "computed",
-          "display": "89",
+          "display": "87",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -43401,7 +44296,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+12 puan (form ↔ sezon)"
+              "value": "+10 puan (form ↔ sezon)"
             }
           ]
         }
@@ -43409,15 +44304,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
+        "matches": 2,
+        "minutes": 130
       },
-      "fingerprint": "e05fe51ba82daa8a"
+      "fingerprint": "d4e84f1c45ccb780"
     },
     "d-agyei-kocaelispor": {
       "version": 1,
@@ -43426,7 +44321,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -43439,58 +44334,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 52,
           "status": "computed",
-          "display": "51",
+          "display": "52",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "50 / 100"
+              "value": "48 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "58 / 100"
+              "value": "56 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "50 / 100"
+              "value": "47 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
+              "value": "46 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "83 / 100"
+              "value": "85 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "51 / 100"
+              "value": "54 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 58,
+          "value": 56,
           "status": "computed",
-          "display": "58",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "56",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "45 dk"
+              "value": "119 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -43501,9 +44396,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 50,
+          "value": 48,
           "status": "computed",
-          "display": "50",
+          "display": "48",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -43513,7 +44408,7 @@
             },
             {
               "label": "Şut",
-              "value": "0 · 0 / 90 dk"
+              "value": "2 · 1.51 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -43528,9 +44423,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 50,
+          "value": 47,
           "status": "computed",
-          "display": "50",
+          "display": "47",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -43543,28 +44438,28 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 51,
+          "value": 54,
           "status": "computed",
-          "display": "51",
+          "display": "54",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.76 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "0 · 0 / 90 dk"
+              "value": "5 · 3.78 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 83,
+          "value": 85,
           "status": "computed",
-          "display": "83",
+          "display": "85",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -43581,32 +44476,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 32,
+          "value": 46,
           "status": "computed",
-          "display": "32",
+          "display": "46",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
+              "value": "%18.9 (119 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "45 dk"
+              "value": "59.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 58,
+          "value": 57,
           "status": "computed",
-          "display": "58",
+          "display": "57",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -43616,7 +44511,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "52 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -43624,7 +44519,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+7 puan (form ↔ sezon)"
+              "value": "+4 puan (form ↔ sezon)"
             }
           ]
         }
@@ -43632,15 +44527,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
+        "matches": 2,
+        "minutes": 119
       },
-      "fingerprint": "914c3dfedfada298"
+      "fingerprint": "56b1713713b117ef"
     },
     "m-baku-kocaelispor": {
       "version": 1,
@@ -43649,7 +44544,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -43662,9 +44557,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 55,
+          "value": 54,
           "status": "computed",
-          "display": "55",
+          "display": "54",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -43674,46 +44569,46 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "66 / 100"
+              "value": "64 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "50 / 100"
+              "value": "49 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "32 / 100"
+              "value": "34 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "83 / 100"
+              "value": "84 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "54 / 100"
+              "value": "53 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 66,
+          "value": 64,
           "status": "computed",
-          "display": "66",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "64",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "45 dk"
+              "value": "66 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -43736,11 +44631,11 @@
             },
             {
               "label": "Şut",
-              "value": "3 · 6 / 90 dk"
+              "value": "4 · 5.45 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "2 · 4 / 90 dk"
+              "value": "3 · 4.09 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
@@ -43751,9 +44646,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 50,
+          "value": 49,
           "status": "computed",
-          "display": "50",
+          "display": "49",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -43766,9 +44661,9 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 54,
+          "value": 53,
           "status": "computed",
-          "display": "54",
+          "display": "53",
           "coverage": 0.48,
           "window": null,
           "inputs": [
@@ -43778,16 +44673,16 @@
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "3 · 6 / 90 dk"
+              "value": "3 · 4.09 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 83,
+          "value": 84,
           "status": "computed",
-          "display": "83",
+          "display": "84",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -43804,32 +44699,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 32,
+          "value": 34,
           "status": "computed",
-          "display": "32",
+          "display": "34",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%7.1 (45 dk / 7 maç)"
+              "value": "%10.5 (66 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "45 dk"
+              "value": "33 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 65,
+          "value": 64,
           "status": "computed",
-          "display": "65",
+          "display": "64",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -43839,7 +44734,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "55 / 100"
+              "value": "54 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -43847,7 +44742,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+11 puan (form ↔ sezon)"
+              "value": "+10 puan (form ↔ sezon)"
             }
           ]
         }
@@ -43855,15 +44750,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 45
+        "matches": 2,
+        "minutes": 66
       },
-      "fingerprint": "b10d60d6a14462d5"
+      "fingerprint": "af13536ff0efff70"
     },
     "a-bulbul-galatasaray": {
       "version": 1,
@@ -45739,7 +46634,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -45752,58 +46647,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 56,
+          "value": 59,
           "status": "computed",
-          "display": "56",
+          "display": "59",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaratıcılık (ağırlık %25)",
-              "value": "48 / 100"
+              "value": "45 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "72 / 100"
+              "value": "76 / 100"
             },
             {
               "label": "Hücum (ağırlık %20)",
-              "value": "48 / 100"
+              "value": "44 / 100"
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "55 / 100"
+              "value": "69 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "87 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 72,
+          "value": 76,
           "status": "computed",
-          "display": "72",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "76",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "185 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -45814,9 +46709,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 48,
+          "value": 44,
           "status": "computed",
-          "display": "48",
+          "display": "44",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -45841,9 +46736,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 48,
+          "value": 45,
           "status": "computed",
-          "display": "48",
+          "display": "45",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -45856,28 +46751,28 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 55,
+          "value": 69,
           "status": "computed",
-          "display": "55",
+          "display": "69",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "2 · 2 / 90 dk"
+              "value": "7 · 3.41 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "2 · 2 / 90 dk"
+              "value": "20 · 9.73 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -45894,32 +46789,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%29.4 (185 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "92.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 69,
+          "value": 72,
           "status": "computed",
-          "display": "69",
+          "display": "72",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -45929,7 +46824,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "56 / 100"
+              "value": "59 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -45945,15 +46840,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 185
       },
-      "fingerprint": "b22c5da821e4149a"
+      "fingerprint": "85c502ffe39a8a38"
     },
     "e-watt-samsunspor": {
       "version": 1,
@@ -48860,13 +49755,18 @@
       },
       "sources": [
         {
+          "kind": "matches",
+          "label": "Maç kayıtları (1 resmî maç)",
+          "verifiedAt": "2026-10-18T19:00:00+03:00"
+        },
+        {
           "kind": "leaderboard",
           "label": "API-Football lig gol ve asist tablosu",
           "verifiedAt": "2026-10-18T08:49:26.662Z"
         }
       ],
       "sampleWindow": {
-        "matches": 7,
+        "matches": 1,
         "minutes": 523
       },
       "fingerprint": "1a5ea13d4f334c3d"
@@ -56954,7 +57854,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -56967,58 +57867,62 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 61,
           "status": "computed",
-          "display": "51",
+          "display": "61",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaratıcılık (ağırlık %25)",
-              "value": "49 / 100"
+              "value": "48 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "53 / 100"
+              "value": "76 / 100"
             },
             {
               "label": "Hücum (ağırlık %20)",
-              "value": "50 / 100"
+              "value": "60 / 100"
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "50 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "41 / 100"
+              "value": "57 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "87 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 53,
+          "value": 76,
           "status": "computed",
-          "display": "53",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "76",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "68 dk"
+              "value": "163 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
+            },
+            {
+              "label": "Gol + asist",
+              "value": "1 gol · 0 asist"
             },
             {
               "label": "Son maç",
@@ -57029,70 +57933,74 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 50,
+          "value": 60,
           "status": "computed",
-          "display": "50",
+          "display": "60",
           "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Gol",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.55 / 90 dk"
             },
             {
               "label": "Şut",
-              "value": "1 · 1.32 / 90 dk"
+              "value": "2 · 1.1 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.55 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 0.55 / 90 dk"
             }
           ]
         },
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 49,
+          "value": 48,
           "status": "computed",
-          "display": "49",
-          "coverage": 0.32,
+          "display": "48",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 0.55 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 50,
+          "value": 61,
           "status": "computed",
-          "display": "50",
+          "display": "61",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "5 · 2.76 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "0 · 0 / 90 dk"
+              "value": "9 · 4.97 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 87,
           "status": "computed",
-          "display": "84",
+          "display": "87",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -57109,32 +58017,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 41,
+          "value": 57,
           "status": "computed",
-          "display": "41",
+          "display": "57",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%10.8 (68 dk / 7 maç)"
+              "value": "%25.9 (163 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "68 dk"
+              "value": "81.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 57,
+          "value": 71,
           "status": "computed",
-          "display": "57",
+          "display": "71",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -57144,7 +58052,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -57152,7 +58060,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+2 puan (form ↔ sezon)"
+              "value": "+12 puan (form ↔ sezon)"
             }
           ]
         }
@@ -57160,15 +58068,15 @@
       "sources": [
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 68
+        "matches": 2,
+        "minutes": 163
       },
-      "fingerprint": "6048c13fc584fe46"
+      "fingerprint": "512df2e20058c5a8"
     },
     "f-miretti-besiktas": {
       "version": 1,
@@ -60429,7 +61337,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-12T15:27:19.627Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "defense": 35,
         "form": 20,
@@ -60442,9 +61350,9 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 60,
+          "value": 56,
           "status": "computed",
-          "display": "60",
+          "display": "56",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -60454,11 +61362,11 @@
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "79 / 100"
+              "value": "67 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "60 / 100"
+              "value": "46 / 100"
             },
             {
               "label": "Disiplin (ağırlık %10)",
@@ -60466,7 +61374,7 @@
             },
             {
               "label": "Hücum (ağırlık %10)",
-              "value": "48 / 100"
+              "value": "47 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %10)",
@@ -60477,23 +61385,23 @@
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 79,
+          "value": 67,
           "status": "computed",
-          "display": "79",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "67",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "90 dk"
+              "value": "100 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -60504,9 +61412,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 48,
+          "value": 47,
           "status": "computed",
-          "display": "48",
+          "display": "47",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -60558,11 +61466,11 @@
             },
             {
               "label": "Pas arası",
-              "value": "1 · 1 / 90 dk"
+              "value": "1 · 0.9 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "3 · 3 / 90 dk"
+              "value": "4 · 3.6 / 90 dk"
             }
           ]
         },
@@ -60585,43 +61493,43 @@
             },
             {
               "label": "Faul",
-              "value": "4 · 4 / 90 dk"
+              "value": "4 · 3.6 / 90 dk"
             }
           ]
         },
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 60,
+          "value": 46,
           "status": "computed",
-          "display": "60",
+          "display": "46",
           "coverage": 0.841,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.3 (90 dk / 7 maç)"
+              "value": "%15.9 (100 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "90 dk"
+              "value": "50 dk"
             },
             {
               "label": "İlk 11 oranı",
-              "value": "%100 (1 / 1)"
+              "value": "%50 (1 / 2)"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 70,
+          "value": 66,
           "status": "computed",
-          "display": "70",
+          "display": "66",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -60631,7 +61539,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "60 / 100"
+              "value": "56 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -60639,7 +61547,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+12 puan (form ↔ sezon)"
+              "value": "+11 puan (form ↔ sezon)"
             }
           ]
         }
@@ -60652,15 +61560,15 @@
         },
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 90
+        "matches": 2,
+        "minutes": 100
       },
-      "fingerprint": "97a52a269a2fc61d"
+      "fingerprint": "5ce9106377b8d53a"
     },
     "f-aye-kocaelispor": {
       "version": 1,
@@ -60669,7 +61577,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -60682,58 +61590,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 67,
+          "value": 63,
           "status": "computed",
-          "display": "67",
+          "display": "63",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "64 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "100 / 100"
+              "value": "80 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "49 / 100"
+              "value": "50 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "48 / 100"
+              "value": "49 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "84 / 100"
+              "value": "86 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "59 / 100"
+              "value": "60 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 100,
+          "value": 80,
           "status": "computed",
-          "display": "100",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "80",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "82 dk"
+              "value": "132 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Gol + asist",
@@ -60748,70 +61656,74 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 64,
+          "value": 61,
           "status": "computed",
-          "display": "64",
+          "display": "61",
           "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Gol",
-              "value": "1 · 1.1 / 90 dk"
+              "value": "1 · 0.68 / 90 dk"
             },
             {
               "label": "Şut",
-              "value": "1 · 1.1 / 90 dk"
+              "value": "1 · 0.68 / 90 dk"
             },
             {
               "label": "İsabetli şut",
-              "value": "1 · 1.1 / 90 dk"
+              "value": "1 · 0.68 / 90 dk"
             },
             {
               "label": "Gol katkısı (G+A)",
-              "value": "1 · 1.1 / 90 dk"
+              "value": "1 · 0.68 / 90 dk"
             }
           ]
         },
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 49,
+          "value": 50,
           "status": "computed",
-          "display": "49",
-          "coverage": 0.32,
+          "display": "50",
+          "coverage": 0.56,
           "window": null,
           "inputs": [
             {
               "label": "Asist",
               "value": "0 · 0 / 90 dk"
+            },
+            {
+              "label": "Kilit pas",
+              "value": "1 · 0.68 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 59,
+          "value": 60,
           "status": "computed",
-          "display": "59",
+          "display": "60",
           "coverage": 0.48,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "1 · 1.1 / 90 dk"
+              "value": "2 · 1.36 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "9 · 9.88 / 90 dk"
+              "value": "12 · 8.18 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 84,
+          "value": 86,
           "status": "computed",
-          "display": "84",
+          "display": "86",
           "coverage": 0.75,
           "window": null,
           "inputs": [
@@ -60828,32 +61740,32 @@
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 48,
+          "value": 49,
           "status": "computed",
-          "display": "48",
+          "display": "49",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%13 (82 dk / 7 maç)"
+              "value": "%21 (132 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "82 dk"
+              "value": "66 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 75,
+          "value": 71,
           "status": "computed",
-          "display": "75",
+          "display": "71",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -60863,7 +61775,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "67 / 100"
+              "value": "63 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -60884,15 +61796,15 @@
         },
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 82
+        "matches": 2,
+        "minutes": 132
       },
-      "fingerprint": "da7fc69d753a8909"
+      "fingerprint": "f5731a4c3beb92df"
     },
     "a-sylla-gaziantep-fk": {
       "version": 1,
@@ -62776,7 +63688,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -62789,58 +63701,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 52,
           "status": "computed",
-          "display": "51",
+          "display": "52",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaratıcılık (ağırlık %25)",
-              "value": "52 / 100"
+              "value": "50 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "60 / 100"
+              "value": "62 / 100"
             },
             {
               "label": "Hücum (ağırlık %20)",
-              "value": "52 / 100"
+              "value": "49 / 100"
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "55 / 100"
+              "value": "57 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "25 / 100"
+              "value": "33 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "79 / 100"
+              "value": "81 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 60,
+          "value": 62,
           "status": "computed",
-          "display": "60",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "62",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "22 dk"
+              "value": "59 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -62851,9 +63763,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 52,
+          "value": 49,
           "status": "computed",
-          "display": "52",
+          "display": "49",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -62878,9 +63790,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 52,
+          "value": 50,
           "status": "computed",
-          "display": "52",
+          "display": "50",
           "coverage": 0.32,
           "window": null,
           "inputs": [
@@ -62893,32 +63805,32 @@
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 55,
+          "value": 57,
           "status": "computed",
-          "display": "55",
+          "display": "57",
           "coverage": 0.7,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "0 · 0 / 90 dk"
+              "value": "1 · 1.53 / 90 dk"
             },
             {
               "label": "Pas arası",
-              "value": "1 · 4.09 / 90 dk"
+              "value": "1 · 1.53 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "0 · 0 / 90 dk"
+              "value": "5 · 7.63 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 79,
+          "value": 81,
           "status": "computed",
-          "display": "79",
+          "display": "81",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -62932,39 +63844,39 @@
             },
             {
               "label": "Faul",
-              "value": "1 · 4.09 / 90 dk"
+              "value": "1 · 1.53 / 90 dk"
             }
           ]
         },
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 25,
+          "value": 33,
           "status": "computed",
-          "display": "25",
+          "display": "33",
           "coverage": 0.667,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%3.5 (22 dk / 7 maç)"
+              "value": "%9.4 (59 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "22 dk"
+              "value": "29.5 dk"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 77,
+          "value": 78,
           "status": "computed",
-          "display": "77",
+          "display": "78",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -62974,7 +63886,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "52 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -62982,7 +63894,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "+9 puan (form ↔ sezon)"
+              "value": "+10 puan (form ↔ sezon)"
             }
           ]
         }
@@ -62995,15 +63907,15 @@
         },
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 22
+        "matches": 2,
+        "minutes": 59
       },
-      "fingerprint": "8cd352b2d2caf0dd"
+      "fingerprint": "6269954734c36a8d"
     },
     "s-erakovic-samsunspor": {
       "version": 1,
@@ -63256,7 +64168,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-17T21:11:12.709Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "creativity": 25,
         "form": 20,
@@ -63269,15 +64181,15 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 51,
+          "value": 50,
           "status": "computed",
-          "display": "51",
+          "display": "50",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Yaratıcılık (ağırlık %25)",
-              "value": "54 / 100"
+              "value": "53 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
@@ -63289,7 +64201,7 @@
             },
             {
               "label": "Savunma (ağırlık %15)",
-              "value": "62 / 100"
+              "value": "61 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
@@ -63307,20 +64219,20 @@
           "value": 49,
           "status": "computed",
           "display": "49",
-          "coverage": 0.2,
-          "window": 1,
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "26 dk"
+              "value": "29 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "1 / 2"
             },
             {
               "label": "Son maç",
@@ -63343,7 +64255,7 @@
             },
             {
               "label": "Şut",
-              "value": "1 · 3.46 / 90 dk"
+              "value": "1 · 3.1 / 90 dk"
             },
             {
               "label": "İsabetli şut",
@@ -63358,9 +64270,9 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 54,
+          "value": 53,
           "status": "computed",
-          "display": "54",
+          "display": "53",
           "coverage": 0.44,
           "window": null,
           "inputs": [
@@ -63370,34 +64282,34 @@
             },
             {
               "label": "Başarılı çalım",
-              "value": "1 · 3.46 / 90 dk"
+              "value": "1 · 3.1 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 62,
+          "value": 61,
           "status": "computed",
-          "display": "62",
+          "display": "61",
           "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "2 · 6.92 / 90 dk"
+              "value": "2 · 6.21 / 90 dk"
             },
             {
               "label": "Pas arası",
-              "value": "2 · 6.92 / 90 dk"
+              "value": "2 · 6.21 / 90 dk"
             },
             {
               "label": "Blok",
-              "value": "1 · 3.46 / 90 dk"
+              "value": "1 · 3.1 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "3 · 10.38 / 90 dk"
+              "value": "3 · 9.31 / 90 dk"
             }
           ]
         },
@@ -63420,7 +64332,7 @@
             },
             {
               "label": "Faul",
-              "value": "2 · 6.92 / 90 dk"
+              "value": "2 · 6.21 / 90 dk"
             }
           ]
         },
@@ -63435,15 +64347,15 @@
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%4.1 (26 dk / 7 maç)"
+              "value": "%4.6 (29 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "26 dk"
+              "value": "14.5 dk"
             }
           ]
         },
@@ -63462,7 +64374,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "51 / 100"
+              "value": "50 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -63470,7 +64382,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-2 puan (form ↔ sezon)"
+              "value": "-1 puan (form ↔ sezon)"
             }
           ]
         }
@@ -63483,15 +64395,15 @@
         },
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-07T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 26
+        "matches": 2,
+        "minutes": 29
       },
-      "fingerprint": "f92fee338eded9f0"
+      "fingerprint": "215b0325aac77de5"
     },
     "rafael-luis-genclerbirligi-s-k": {
       "version": 1,
@@ -64339,7 +65251,7 @@
       "status": "computed",
       "computedCategories": 8,
       "coverage": 1,
-      "updatedAt": "2026-10-15T05:54:43.227Z",
+      "updatedAt": "2026-10-18T20:36:40.598Z",
       "weights": {
         "attack": 35,
         "form": 20,
@@ -64352,58 +65264,58 @@
         "overall": {
           "key": "overall",
           "label": "Overall",
-          "value": 54,
+          "value": 57,
           "status": "computed",
-          "display": "54",
+          "display": "57",
           "coverage": 1,
           "window": null,
           "inputs": [
             {
               "label": "Hücum (ağırlık %35)",
-              "value": "48 / 100"
+              "value": "44 / 100"
             },
             {
               "label": "Form (ağırlık %20)",
-              "value": "47 / 100"
+              "value": "63 / 100"
             },
             {
               "label": "Yaratıcılık (ağırlık %15)",
-              "value": "56 / 100"
+              "value": "54 / 100"
             },
             {
               "label": "Süreklilik (ağırlık %15)",
-              "value": "60 / 100"
+              "value": "69 / 100"
             },
             {
               "label": "Disiplin (ağırlık %5)",
-              "value": "81 / 100"
+              "value": "86 / 100"
             },
             {
               "label": "Savunma (ağırlık %10)",
-              "value": "64 / 100"
+              "value": "63 / 100"
             }
           ]
         },
         "form": {
           "key": "form",
           "label": "Form",
-          "value": 47,
+          "value": 63,
           "status": "computed",
-          "display": "47",
-          "coverage": 0.2,
-          "window": 1,
+          "display": "63",
+          "coverage": 0.4,
+          "window": 2,
           "inputs": [
             {
               "label": "Değerlendirilen maç",
-              "value": "1 resmî maç"
+              "value": "2 resmî maç"
             },
             {
               "label": "Toplam süre",
-              "value": "89 dk"
+              "value": "184 dk"
             },
             {
               "label": "Maç reytingi olan maç",
-              "value": "1 / 1"
+              "value": "2 / 2"
             },
             {
               "label": "Son maç",
@@ -64414,9 +65326,9 @@
         "attack": {
           "key": "attack",
           "label": "Hücum",
-          "value": 48,
+          "value": 44,
           "status": "computed",
-          "display": "48",
+          "display": "44",
           "coverage": 0.8,
           "window": null,
           "inputs": [
@@ -64441,10 +65353,10 @@
         "creativity": {
           "key": "creativity",
           "label": "Yaratıcılık",
-          "value": 56,
+          "value": 54,
           "status": "computed",
-          "display": "56",
-          "coverage": 0.44,
+          "display": "54",
+          "coverage": 0.68,
           "window": null,
           "inputs": [
             {
@@ -64452,44 +65364,48 @@
               "value": "0 · 0 / 90 dk"
             },
             {
+              "label": "Kilit pas",
+              "value": "2 · 0.98 / 90 dk"
+            },
+            {
               "label": "Başarılı çalım",
-              "value": "6 · 6.07 / 90 dk"
+              "value": "6 · 2.93 / 90 dk"
             }
           ]
         },
         "defense": {
           "key": "defense",
           "label": "Savunma",
-          "value": 64,
+          "value": 63,
           "status": "computed",
-          "display": "64",
+          "display": "63",
           "coverage": 0.8,
           "window": null,
           "inputs": [
             {
               "label": "Müdahale (tackle)",
-              "value": "4 · 4.04 / 90 dk"
+              "value": "6 · 2.93 / 90 dk"
             },
             {
               "label": "Pas arası",
-              "value": "4 · 4.04 / 90 dk"
+              "value": "4 · 1.96 / 90 dk"
             },
             {
               "label": "Blok",
-              "value": "1 · 1.01 / 90 dk"
+              "value": "1 · 0.49 / 90 dk"
             },
             {
               "label": "Kazanılan ikili mücadele",
-              "value": "7 · 7.08 / 90 dk"
+              "value": "15 · 7.34 / 90 dk"
             }
           ]
         },
         "discipline": {
           "key": "discipline",
           "label": "Disiplin",
-          "value": 81,
+          "value": 86,
           "status": "computed",
-          "display": "81",
+          "display": "86",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -64503,43 +65419,43 @@
             },
             {
               "label": "Faul",
-              "value": "2 · 2.02 / 90 dk"
+              "value": "2 · 0.98 / 90 dk"
             }
           ]
         },
         "durability": {
           "key": "durability",
           "label": "Süreklilik",
-          "value": 60,
+          "value": 69,
           "status": "computed",
-          "display": "60",
+          "display": "69",
           "coverage": 0.841,
           "window": null,
           "inputs": [
             {
               "label": "Takım maçlarındaki dakika payı",
-              "value": "%14.1 (89 dk / 7 maç)"
+              "value": "%29.2 (184 dk / 7 maç)"
             },
             {
               "label": "Kadroda yer alma",
-              "value": "1 / 7 maç"
+              "value": "2 / 7 maç"
             },
             {
               "label": "Maç başına dakika",
-              "value": "89 dk"
+              "value": "92 dk"
             },
             {
               "label": "İlk 11 oranı",
-              "value": "%100 (6 / 1)"
+              "value": "%100 (6 / 2)"
             }
           ]
         },
         "potential": {
           "key": "potential",
           "label": "Potansiyel",
-          "value": 74,
+          "value": 87,
           "status": "computed",
-          "display": "74",
+          "display": "87",
           "coverage": 1,
           "window": null,
           "inputs": [
@@ -64549,7 +65465,7 @@
             },
             {
               "label": "Mevcut performans",
-              "value": "54 / 100"
+              "value": "57 / 100"
             },
             {
               "label": "Yaşa bağlı gelişim payı",
@@ -64557,7 +65473,7 @@
             },
             {
               "label": "Gelişim trendi",
-              "value": "-7 puan (form ↔ sezon)"
+              "value": "+6 puan (form ↔ sezon)"
             }
           ]
         }
@@ -64570,15 +65486,15 @@
         },
         {
           "kind": "matches",
-          "label": "Maç kayıtları (1 resmî maç)",
-          "verifiedAt": "2026-09-06T20:00:00+03:00"
+          "label": "Maç kayıtları (2 resmî maç)",
+          "verifiedAt": "2026-10-18T16:00:00+03:00"
         }
       ],
       "sampleWindow": {
-        "matches": 1,
-        "minutes": 89
+        "matches": 2,
+        "minutes": 184
       },
-      "fingerprint": "137d802492a239df"
+      "fingerprint": "078224981ba901cf"
     },
     "m-yandas-fenerbahce": {
       "version": 1,
