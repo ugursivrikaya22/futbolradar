@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-18T00:05:47.152Z",
+  "updatedAt": "2026-10-18T07:06:35.351Z",
   "items": [
     {
       "id": "auto-news-26ca5c8078ebe7b87cd2",
@@ -81,6 +81,26 @@
         "source": "rss",
         "feed": "galatasaray",
         "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-db4a1d0bc079bc881e3d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "BEŞİKTAŞ JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-17T15:46:05.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5pTlNNeEplUy0zdlNtRkFWYk93a3k1RmhJclNxdjBRRFpEU0hNQ0twM3NibGtiM19YWldyMmNxWDRUeTZJakZudFFLZGlmbUhJMHU2amlKYlRtdjNQc0pUbHJtbnNoRGkxZkJV?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
         "status": "OFFICIAL"
       }
     },
@@ -269,26 +289,6 @@
       }
     },
     {
-      "id": "auto-news-949612befce952d35185",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Hoffenheim Maçını Deplasman Tribününden İzleyecek Taraftarlarımıza Önemli Duyuru",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-15T12:36:12.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE9INFpCVEd5d2tmSFNFdGpLa3FGZ1E4RVVhR2cybGkyZU9QY25lcUprZUlrYVV2emp2cUhmTGNXYjBWNXAtTVJaWVlRUFRXNDNtanFhQTc5dHM0Wk0?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-c1e30b6dd1587f3a6ef6",
       "category": "club-agenda",
       "confidence": "reported",
@@ -346,7 +346,7 @@
         "feed": "uefa",
         "priority": 9,
         "status": "OFFICIAL",
-        "mergedReports": 6,
+        "mergedReports": 5,
         "firstSeenAt": "2026-10-15T15:05:07.000Z"
       }
     },
