@@ -30,6 +30,7 @@ import {
   renderPlayer360
 } from "./lib/player360.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { englishProfilePlayers } from "./lib/englishPlayerProfiles.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -204,6 +205,14 @@ function pageHtml(player) {
     displayName: playerUrls.playerDisplayName(player),
     comparisonSlugFor: slugForPair
   });
+  // Static pairs are generated only for canonical records. A verified alias
+  // can still own the public profile when its canonical record is unverified;
+  // use the existing picker (which resolves IDs) instead of inventing a URL.
+  if (player.isDuplicate) {
+    model.compare.peers = model.compare.peers.map(peer => ({ ...peer,
+      href: `${BASE}oyuncu-karsilastir.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`
+    }));
+  }
 
   const title = player360Title(model, { locale: LOCALE });
   const description = player360Description(model, { locale: LOCALE });
@@ -302,9 +311,8 @@ function pageHtml(player) {
   return { html, trPath, enPath, canonical };
 }
 
-// Kopya kayıt İngilizce sayfa üretmez — kanonik kaydınki zaten var.
-const eligible = players.filter((player) =>
-  publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id);
+// Aynı yayın adresi yalnızca bir doğrulanmış kayıttan üretilir.
+const eligible = englishProfilePlayers(players, playerUrls, publicPlayerView);
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;
