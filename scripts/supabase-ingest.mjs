@@ -289,7 +289,7 @@ async function ingestPolls() {
     optionRows += options.length;
   }
 
-  return { read: entries.length, written: pollRows + optionRows, skipped: 0 };
+  return { read: entries.length, written: dryRun ? 0 : pollRows + optionRows, skipped: 0 };
 }
 
 const STEPS = {

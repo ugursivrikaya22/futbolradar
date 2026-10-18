@@ -96,13 +96,19 @@ function normalized(match, source) {
   const score = match && match.score || {};
   return {
     id: matchId(match), homeTeam: text(match && match.homeTeam), awayTeam: text(match && match.awayTeam), kickoff: text(match && (match.kickoff || match.date)),
+    // Keep source identity through report -> archive -> report round trips.
+    // A local URL/slug is not a substitute for the provider's fixture ID.
+    ...(match && (match.providerId || match.fixtureId) ? { providerId: String(match.providerId || match.fixtureId) } : {}),
+    ...(match && match.providerIds && typeof match.providerIds === "object" && !Array.isArray(match.providerIds) ? { providerIds: { ...match.providerIds } } : {}),
+    ...(match && match.identityResolution ? { identityResolution: match.identityResolution } : {}),
+    ...(Array.isArray(match && match.sourceUrls) ? { sourceUrls: [...match.sourceUrls] } : {}),
     competition: text(match && (match.competition || match.league)), league: text(match && match.league), season: text(match && match.season) || null,
     status: text(match && (match.status || match.providerStatus)).toUpperCase(), providerStatus: text(match && match.providerStatus) || null,
     score: hasScore(match) ? { home: number(score.home), away: number(score.away), halftimeHome: number(score.halftimeHome ?? score.halfTimeHome), halftimeAway: number(score.halftimeAway ?? score.halfTimeAway) } : null,
     venue: text(match && match.venue) || null, referee: text(match && match.referee) || null,
     events: Array.isArray(match && match.events) ? match.events : [], substitutions: Array.isArray(match && match.substitutions) ? match.substitutions : [],
     lineups: Array.isArray(match && match.lineups) ? match.lineups : [], statistics: Array.isArray(match && match.statistics) ? match.statistics : [], players: Array.isArray(match && match.players) ? match.players : [],
-    coaches: match && match.coaches || null, reportPage: text(match && (match.reportUrl || (match.seo && match.seo.path))) || (matchId(match) ? `mac-raporu/${matchId(match)}.html` : null),
+    coaches: match && match.coaches || null, reportPage: text(match && (match.analysisPage || match.reportPage || match.reportUrl || (match.seo && match.seo.path))).replace(/^\.\//, "") || (matchId(match) ? `mac-raporu/${matchId(match)}.html` : null),
     manualAnalysis: match && match.analysis ? match.analysis : null, source, lastVerifiedAt: text(match && (match.lastVerifiedAt || match.lastSuccessfulSyncAt || match.fetchedAt || match.analysisUpdatedAt)) || null
   };
 }

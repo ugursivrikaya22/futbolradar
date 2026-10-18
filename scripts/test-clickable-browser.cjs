@@ -292,8 +292,14 @@ function todayCalendarFixtureCount(gun) {
           console.log('PASS', viewport.width, name);
         } catch (e) {
           const screenshot = path.join('outputs', 'clickable', `${viewport.width}-${results.length}.png`);
+          const diagnostics = await page.evaluate(() => ({
+            readyState: document.readyState,
+            visibility: document.visibilityState,
+            panels: Array.from(document.querySelectorAll('[data-api-target]')).map(node => ({ target: node.dataset.apiTarget, state: node.dataset.state || null })),
+            resources: performance.getEntriesByType('resource').filter(entry => entry.name.startsWith(location.origin) && /\/(api|data)\//.test(entry.name)).map(entry => ({ url: entry.name, duration: Math.round(entry.duration), status: entry.responseStatus }))
+          })).catch(() => null);
           await page.screenshot({ path: screenshot, timeout: 5000 }).catch(() => {});
-          results.push({ viewport, name, passed: false, error: e.message, url: page.url(), consoleErrors, screenshot });
+          results.push({ viewport, name, passed: false, error: e.message, url: page.url(), consoleErrors, screenshot, diagnostics });
           console.log('FAIL', viewport.width, name, e.message.slice(0, 160));
         }
         fs.writeFileSync(reportFile, JSON.stringify({ base, results }, null, 2));

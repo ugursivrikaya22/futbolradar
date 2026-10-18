@@ -23,6 +23,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { createRequestBreaker, isRetryableRequestError } from "./lib/requestBreaker.mjs";
+import { calendarCoverage } from "./lib/calendarCoverage.mjs";
+import { primaryFixtureCalendar } from "./lib/primaryFixtureCalendar.mjs";
 
 const require = createRequire(import.meta.url);
 const { findCompetition, normalizeKey } = require("../services/competitionCatalog.js");
@@ -31,7 +33,8 @@ const { sameClub } = require("../services/superLigTeams.js");
 
 const root = process.cwd();
 const OUTPUT_PATH = path.join(root, "data", "fixture-calendar.json");
-const API_KEY = process.env.THESPORTSDB_API_KEY || "3";
+// Public v1 key documented at https://www.thesportsdb.com/docs/api.
+const API_KEY = process.env.THESPORTSDB_API_KEY || "123";
 const API_ROOT = `https://www.thesportsdb.com/api/v1/json/${API_KEY}`;
 const APPLY = process.argv.includes("--apply");
 // Ücretsiz katman dakikada ~30 istek kabul ediyor; 36 istek bu aralıkla
@@ -447,6 +450,15 @@ function mergeIntoCalendar(previousMatches, incoming) {
 
 async function main() {
   const today = istanbulDateOnly(new Date());
+  const primary = require("../services/providers/apiFootballProvider.js");
+  if (primary.hasConfig()) {
+    const previous = fs.existsSync(OUTPUT_PATH) ? JSON.parse(fs.readFileSync(OUTPUT_PATH, "utf8")) : { matches: [] };
+    const output = await primaryFixtureCalendar({ previous, today, fetchSeason: () => primary.getSeasonFixtures({}) });
+    console.log(`Fixture calendar: ${output.returnedInWindow} primary-provider matches; one season request, existing other competitions retained.`);
+    if (APPLY) fs.writeFileSync(OUTPUT_PATH, `${JSON.stringify(output, null, 2)}\n`);
+    else console.log("Dry run - no files written.");
+    return;
+  }
   const { matches, failures } = await collectMatches();
 
   // Boş çekim koruması: sağlayıcı tümüyle sessizse mevcut takvimi silmek
@@ -489,10 +501,12 @@ async function main() {
 
   // Sayı düşüşü koruması: sağlayıcı kısmi cevap verdiyse (ör. hız limiti)
   // dolu bir takvimi yarısına indirmek yerine mevcut dosya korunur.
-  if (previousOwned >= 6 && windowed.length < previousOwned * 0.5) {
+  const coverage = calendarCoverage({ publicKey: API_KEY === "123", failures: failures.length, previousCount: previousOwned, incomingCount: windowed.length });
+  if (!coverage.safe) {
     console.error(
-      `Fixture calendar sync aborted: provider returned ${windowed.length} TheSportsDB matches vs ${previousOwned} stored in the same window (>50% drop).`
+      `Fixture calendar sync aborted: ${coverage.mode}, ${windowed.length} incoming, ${previousOwned} stored, ${failures.length} failed requests.`
     );
+    if (failures.length) console.error(failures.slice(0, 8).join("\n"));
     process.exitCode = 1;
     return;
   }
@@ -524,6 +538,10 @@ async function main() {
     windowDays: { past: PAST_WINDOW_DAYS, future: FUTURE_WINDOW_DAYS },
     teamCount: TRACKED_TEAMS.length,
     requestFailures: failures.length,
+    coverageMode: coverage.mode,
+    // Unreturned fixtures retain their own fetchedAt/staleAfter. This
+    // timestamp certifies the requests, not freshness of retained rows.
+    returnedInWindow: windowed.length,
     matches: kept
   };
 

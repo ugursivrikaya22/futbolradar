@@ -222,6 +222,23 @@ async function testFullSyncPopulatesAllTeams() {
     assert.ok(goztepe, "Göztepe kadrosu yazılmalı");
     assert.equal(goztepe.players.length, 24);
 
+    // Regression: old snapshots accumulated duplicate people. A complete
+    // refresh must remove repeats, while still preserving every identity.
+    const duplicated = squads.map(s => ({ ...s, players: [...s.players, ...s.players, ...s.players] }));
+    fs.writeFileSync(path.join(workspace, "data", "super-lig-squads.json"), JSON.stringify(duplicated));
+    const refreshed = await runSync(workspace, {
+      APIFOOTBALL_API_KEY: SECRET_KEY,
+      APIFOOTBALL_API_BASE_URL: baseUrl,
+      APIFOOTBALL_LEAGUE_ID: String(SUPER_LIG_ID),
+      APIFOOTBALL_SEASON: "2026"
+    });
+    assert.equal(refreshed.code, 0, `duplicate cleanup rejected: ${refreshed.stderr}`);
+    const cleaned = JSON.parse(fs.readFileSync(path.join(workspace, "data", "super-lig-squads.json"), "utf8"));
+    assert.equal(cleaned.flatMap(s => s.players).length, 18 * 24);
+    for (const snapshot of cleaned) {
+      assert.equal(new Set(snapshot.players.map(p => p.providerId)).size, 24);
+    }
+
     // Önbellek çözülen kimliği taşımalı, anahtarı değil.
     const cache = JSON.parse(fs.readFileSync(path.join(workspace, "data", "api-football-league.json"), "utf8"));
     assert.equal(String(cache.leagueId), String(SUPER_LIG_ID));

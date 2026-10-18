@@ -1693,6 +1693,9 @@ function writeIfChanged(relative, html) {
 }
 
 const registry = loadRegistry();
+// The retirement gate must cover persisted entries too, not only newEntry().
+// Otherwise an hourly/full build republishes URLs that Vercel still redirects.
+registry.pages = registry.pages.filter(entry => !RETIRED_MATCH_SLUGS.has(entry.slug));
 const candidates = collectCandidates();
 const { added, updated } = mergeRegistry(registry, candidates);
 

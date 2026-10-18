@@ -16,6 +16,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { audit, auditSeo, auditSitemap, createResolver } from "./lib-link-audit.mjs";
 
 const root = process.cwd();
@@ -63,7 +64,7 @@ export function runAudit(rootDir = root) {
   };
 }
 
-const isMain = process.argv[1] && path.resolve(process.argv[1]) === new URL(import.meta.url).pathname;
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) {
   const result = runAudit();
   console.log(`pages=${result.pages} links=${result.linkCount} unique=${result.uniqueTargets} redirected(301)=${result.redirectedLinks}`);

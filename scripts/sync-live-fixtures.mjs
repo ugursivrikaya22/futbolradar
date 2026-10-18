@@ -681,10 +681,12 @@ export function selectReconcileTargets(rows, options = {}) {
   const nowMs = options.nowMs ?? Date.now();
   const limit = options.limit ?? 6;
   const seen = options.seenProviderIds instanceof Set ? options.seenProviderIds : new Set();
+  const verifiedDays = options.verifiedDays instanceof Set ? options.verifiedDays : new Set();
+  const today = istanbulDate(new Date(nowMs));
   const rank = { INTERRUPTED: 0, TBD: 1, UNRESOLVED: 2, POSTPONED: 3 };
   return (Array.isArray(rows) ? rows : [])
-    .map((row) => ({ row, kind: reconcileClass(row) }))
-    .filter(({ row, kind }) => {
+    .map((row) => ({ row, kind: reconcileClass(row), missingToday: verifiedDays.has(today) && dateOnly(row) === today && !seen.has(String(providerIdOf(row))) }))
+    .filter(({ row, kind, missingToday }) => {
       if (!kind) return false;
       const id = providerIdOf(row);
       // Yalnızca API-Football kimliği olan satır sorulur; ad ile tahmin yok.
@@ -693,13 +695,16 @@ export function selectReconcileTargets(rows, options = {}) {
       if (!Number.isFinite(kickoff)) return false;
       const age = nowMs - kickoff;
       // TBD'de başlama saati yer tutucudur: yaşa değil son doğrulamaya bakılır.
-      if (kind !== "TBD" && kind !== "POSTPONED" && age < RECONCILE_GRACE_MS) return false;
+      // A successful day response no longer lists this fixture. Verify its ID
+      // before the old kickoff too: it may have moved to another month.
+      if (!missingToday && kind !== "TBD" && kind !== "POSTPONED" && age < RECONCILE_GRACE_MS) return false;
       if (age > RECONCILE_MAX_AGE_MS) return false;
       const lastCheck = Date.parse(row.reconciledAt || "");
       if (Number.isFinite(lastCheck) && nowMs - lastCheck < RECONCILE_THROTTLE_MS[kind]) return false;
       return true;
     })
-    .sort((left, right) => rank[left.kind] - rank[right.kind]
+    .sort((left, right) => Number(right.missingToday) - Number(left.missingToday)
+      || rank[left.kind] - rank[right.kind]
       || priorityScore(left.row) - priorityScore(right.row)
       || String(left.row.reconciledAt || left.row.fetchedAt || "").localeCompare(String(right.row.reconciledAt || right.row.fetchedAt || "")))
     .slice(0, Math.max(0, limit))
@@ -741,7 +746,8 @@ export async function synchronizeLiveFixtures(options = {}) {
     const targets = selectReconcileTargets(previous.matches || [], {
       nowMs: now.getTime(),
       limit: options.reconcileLimit ?? (mode === "full" ? 12 : 6),
-      seenProviderIds: seen
+      seenProviderIds: seen,
+      verifiedDays: new Set(fetched.requests.filter(request => request.date && request.status === "ok" && !request.provider).map(request => request.date))
     });
     for (const row of targets) {
       if (quotaExhausted(provider)) break;

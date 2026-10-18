@@ -44,6 +44,7 @@ const REQUEST_TIMEOUT_MS = 8000;
  * geliyor ve bir parça başarısız olduğunda kaybedilen iş küçük kalıyor.
  */
 const CHUNK_SIZE = 500;
+const MAX_SELECT_ROWS = 1000;
 
 function assertConfigured() {
   if (!env.isConfigured()) {
@@ -152,7 +153,10 @@ async function insert(table, rows) {
  * Sıralama ve sınır ayrı parametre: sorgu dizesini elle birleştirmek,
  * bir gün kullanıcı girdisinin filtreye karışmasıyla biter.
  */
-async function select(table, { columns = "*", filters = {}, order = "", limit = 0 } = {}) {
+async function select(table, { columns = "*", filters = {}, order = "", limit = MAX_SELECT_ROWS } = {}) {
+  if (!Number.isInteger(limit) || limit < 1 || limit > MAX_SELECT_ROWS) {
+    throw new RangeError(`Supabase select limit must be an integer between 1 and ${MAX_SELECT_ROWS}`);
+  }
   const parts = [`select=${encodeURIComponent(columns)}`];
 
   for (const [column, expression] of Object.entries(filters || {})) {
@@ -170,7 +174,7 @@ async function select(table, { columns = "*", filters = {}, order = "", limit = 
   }
 
   if (order) parts.push(`order=${encodeURIComponent(order)}`);
-  if (limit > 0) parts.push(`limit=${Number(limit)}`);
+  parts.push(`limit=${limit}`);
 
   const rows = await request(`${table}?${parts.join("&")}`, { method: "GET" });
   return Array.isArray(rows) ? rows : [];
@@ -178,6 +182,7 @@ async function select(table, { columns = "*", filters = {}, order = "", limit = 
 
 module.exports = {
   CHUNK_SIZE,
+  MAX_SELECT_ROWS,
   REQUEST_TIMEOUT_MS,
   chunk,
   insert,

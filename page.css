@@ -22392,7 +22392,8 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
     min-height: 44px;
   }
   .now-football__label, .favourite-team__label { grid-column: 1 / -1; white-space: normal; }
-  .now-football__value, .favourite-team__value { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+  .now-football__value, .favourite-team__value { min-width: 0; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+  .now-football__meta, .favourite-team__meta { max-width: 100%; min-width: 0; white-space: normal; overflow-wrap: anywhere; }
   .favourite-team__pick span { max-width: 100px; white-space: normal; overflow: visible; overflow-wrap: anywhere; }
   .favourite-team__change { min-height: 44px; }
 }

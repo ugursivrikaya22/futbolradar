@@ -621,11 +621,24 @@ function transferRecordKey(transfer) {
 
 const LIVE_STATUSES = new Set(["LIVE", "IN_PLAY", "1H", "2H", "ET", "HT", "HALFTIME", "PAUSED", "INTERRUPTED", "SUSP", "P"]);
 
+// One saved-data snapshot, for at most five seconds. Concurrent home widgets
+// should not repeat the same multi-thousand-row merge. This never caches a
+// live provider response, and direct curatedMatches() callers remain fresh.
+let savedMatchSnapshot = null;
+let savedMatchSnapshotUntil = 0;
+function matchSnapshot() {
+  if (!savedMatchSnapshot || Date.now() >= savedMatchSnapshotUntil) {
+    savedMatchSnapshot = curatedMatches();
+    savedMatchSnapshotUntil = Date.now() + 5000;
+  }
+  return savedMatchSnapshot;
+}
+
 async function getMatches(query) {
-  const records = curatedMatches();
+  const records = matchSnapshot();
   // Date/league selection needs no broadcast or logo work. Preserve the
   // kickoff fallback from normalizeMatch before selecting the requested day.
-  const byDate = query && query.live ? records : byMatchDate(records, query && query.date,
+  const byDate = query && query.live ? records.filter(match => LIVE_STATUSES.has(String(match.status || "").toUpperCase())) : byMatchDate(records, query && query.date,
     row => matchDateOnly({ kickoff: row.kickoff || row.time || "", date: row.date, utcDate: row.utcDate }));
   const data = byLeague(byDate, query && query.league).map(normalizeMatch);
 

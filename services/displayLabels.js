@@ -330,9 +330,18 @@ const NATION_KEY_BY_ALIAS = (() => {
   return map;
 })();
 
+const nationKeyMemo = new Map();
 function nationKey(name) {
-  const key = asciiKey(name);
-  return key ? NATION_KEY_BY_ALIAS.get(key) || null : null;
+  const value = String(name || "");
+  if (nationKeyMemo.has(value)) return nationKeyMemo.get(value);
+  const key = asciiKey(value);
+  const result = key ? NATION_KEY_BY_ALIAS.get(key) || null : null;
+  // Cache names, including non-national clubs, rather than every name pair.
+  if (value.length <= 256) {
+    if (nationKeyMemo.size >= 8192) nationKeyMemo.delete(nationKeyMemo.keys().next().value);
+    nationKeyMemo.set(value, result);
+  }
+  return result;
 }
 
 module.exports = {

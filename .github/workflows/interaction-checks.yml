@@ -26,6 +26,10 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Check committed mirrors before build can overwrite them. The scheduled
+      # writer validates these same inputs before generating the static site.
+      - name: Validate source and committed public data
+        run: node scripts/validate-match-analyses.mjs
       # TARAYICI ÖNBELLEĞİ. Chromium indirmesi her koşuda sıfırdan yapılıyordu
       # (~1-2 dakika × koşu başına). Sürüm anahtarı package-lock.json'dan
       # geliyor, yani Playwright yükseltilince önbellek kendiliğinden

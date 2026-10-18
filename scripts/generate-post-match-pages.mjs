@@ -176,6 +176,14 @@ function matchQuotesTicker(report) {
 }
 
 const fixturePool = curatedMatches();
+// Explicitly corrected archived identities must also refresh their existing
+// pages, even after leaving the live calendar. Do not rebuild the entire
+// historical archive on every hourly run.
+const identityArchive = JSON.parse(fs.readFileSync(path.join(root, "data", "historical-match-archive.json"), "utf8"));
+for (const record of identityArchive.records || []) {
+  if (!record.match?.identityResolution || !isAnalyzableMatch(record.match)) continue;
+  if (!fixturePool.some(match => match.id === record.canonicalId)) fixturePool.push(record.match);
+}
 
 /**
  * Rapor havuzu kürasyonlu kayıtlar ile sağlayıcı takviminin BİRLEŞİMİ.

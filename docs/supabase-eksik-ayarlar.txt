@@ -1,0 +1,56 @@
+Supabase yapılandırma kontrolü — 17 Ekim 2026
+
+Doğrulanan durum
+Vercel Production ortamında SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY var.
+/api/health?probe=supabase okuma testi başarılı. Bu nedenle üretim
+veritabanı bağlantısını eksik saymıyoruz. GitHub Actions secret listesinde
+yalnızca iki mevcut API-Football anahtarı var; Supabase alımı bu ortamda
+yapılandırılmamış. Anahtar değerleri okunmadı veya rapora yazılmadı.
+
+Eksik ayarlar
+1. GitHub repository Actions secret: SUPABASE_URL
+   Mevcut Vercel projesinin bağlı olduğu Supabase proje URL'si.
+2. GitHub repository Actions secret: SUPABASE_SERVICE_ROLE_KEY
+   Aynı projenin sunucu tarafı secret/service-role anahtarı. Bu kodda
+   değişkenin adı tarihsel olarak SERVICE_ROLE_KEY; çalışan Vercel
+   yapılandırmasındaki yetkili anahtar türü kullanılmalı. Anon/publishable
+   anahtar yazma yetkisi sağlamaz. Yeni ücretli proje veya servis gerekmez.
+3. Vercel Production: HOME_POLL_IP_SALT
+   Sağlık yanıtında eksik. Anket IP karması katmanını açmak için rastgele,
+   uzun ve kalıcı bir sunucu sırrı gerekir. Çerez/localStorage korumaları
+   mevcut; bu eksiklik veri alımını engellemez. Actions'ın mevcut env
+   eşlemesine de eklenecekse aynı secret adı kullanılabilir; alım için
+   zorunlu değildir. Tuz değişikliği önceki IP karmalarını eşleştiremez.
+
+Yerler
+GitHub: repository Settings > Secrets and variables > Actions.
+Vercel: FutbolRadar project Settings > Environment Variables > Production.
+Anahtarlar sohbet, kaynak kodu, public/data veya istemci ortam değişkeni
+olarak paylaşılmamalı. NEXT_PUBLIC_ öneki kullanılmamalı.
+
+Şema kontrolü
+Depoda supabase/migrations/0001_core_schema.sql ile
+0011_performance_hotspots.sql arasındaki mevcut göçler bulunuyor.
+Canlı yönetim erişimi olmadan bunların hepsinin uygulandığını iddia
+edemeyiz. Çalışan home_poll_votes okuması tüm şemayı doğrulamaz.
+Alım için data_sources, teams, players, player_stats, matches,
+match_stats, transfers, analysis_reports, polls, ingestion_runs ve
+fixture_predictions tabloları ile services/supabase/schema.js içindeki
+sütun/benzersiz anahtar sözleşmesi denetlenmeli. Mevcut şemayı körlemesine
+yeniden kurmayın; yalnızca uygulanmamış göçleri sırayla uygulayın.
+Public şemasında RLS korunmalı; alım için anon erişimi açılmamalı.
+
+Doğrulama
+node scripts/test-supabase-layer.mjs
+node scripts/supabase-ingest.mjs --dry-run
+İki Actions secret eklendikten sonra tam veri yenileme çalıştırılıp
+supabase-ingest adımı ve ingestion_runs sonuçları kontrol edilmeli.
+Bu çalışmada canlı yazma testi yapılmadı: Actions sırları eksik ve
+Supabase yönetim bağlantısı yok. Kuru çalışma canlı yazma kanıtı değildir.
+
+Güncel kaynaklar
+https://supabase.com/docs/guides/getting-started/api-keys
+https://supabase.com/docs/guides/api/securing-your-api
+https://supabase.com/changelog/cbc-tls-ciphers-deprecated
+Eski CBC TLS şifrelerinin kaldırılması modern Node TLS istemcisine
+engel değil; üretim okuma testi bunu bu bağlantı için doğruladı.
