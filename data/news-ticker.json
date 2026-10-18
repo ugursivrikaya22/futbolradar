@@ -1,7 +1,71 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-18T08:56:48.268Z",
+  "updatedAt": "2026-10-18T13:18:14.537Z",
   "items": [
+    {
+      "id": "auto-news-dc25391823a3759519b3",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Lille maçı hazırlıkları başladı",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-18T12:42:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPUkVmQlRnWk9GeWZKRzRIWlItVVZjblV1aUc2TlBUbnAxdDZyZmdjTzZUWlRSd0duU2pKbzNmUXRuQ0FyRE9Ub3pwUTk5RlBHWlZNdzBVRnFkSWRaOF80cXFYaEt2RTJhT0JQcEVOLTlDU1VKU285NVlUVGVhVVY2RnZVcmt3aWNEU25VMTVIUUpXalZ1d3JPaTJJWQ?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-c71f927f3964c059f3f5",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe-Slavia Prag maçının medya programı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-18T12:26:51.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMinAFBVV95cUxNNjRGNzFLUXgxdUtfYzA3WHJWUktZNG52dVUycXFpRWJRWXhydlFEaFVoU1VkbnV6eFVCQkg2QU5oaTg0VlR6YkhmM2p2bUx5a0l0R3lISGhVUmJGa21mLWFLRTJ4OHB0Q1ZwWGhfM3laQVpYclV0Q2RZSndPYUgxTVNGYnNfQ2NmS1JWdmZjcGZ1N0d4RDFFQTM2dUE?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-18T11:33:48.000Z"
+      }
+    },
+    {
+      "id": "auto-news-3a5259987c70039c369c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Trabzonspor Maçı Hazırlıkları Tamamlandı - Beşiktaş JK",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-18T11:26:04.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1DNWw0T0RUNG42bDJOenRVbzUwdzhncWJ4OFpfSlk4Skl3OEUxUExxdl9uV1otaU5EaEpjYjJZVjloQkNyaUdhaDFLOGVaeWZzbmVqay02M3I0dURLRzA4?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL",
+        "mergedReports": 3,
+        "firstSeenAt": "2026-10-17T11:58:06.000Z"
+      }
+    },
     {
       "id": "auto-news-1f319a57c6f7679dd8b5",
       "category": "official",
@@ -23,28 +87,6 @@
       }
     },
     {
-      "id": "auto-news-26ca5c8078ebe7b87cd2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbolcularımız, C. Alanyaspor maçı sonrası açıklamalarda bulundu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-17T19:20:50.000Z",
-      "source": {
-        "name": "Fenerbahce",
-        "url": "https://news.google.com/rss/articles/CBMitAFBVV95cUxORWpIM0VKSGVJbV9vWnFrNGdIcHkzbVEwVVl3ZUswcGR5VUdiOGgyYkU5TGN5d3dYcVpqZHlfMzdjU2Zjb1YtbTdNRWhqTDUybVRLSEU5Y0lQS1BtWnZPQldEaVN5Nl8zbXZxUGRJRm5uOHlmZGk5cHJHMEo0UHp3V0dvU3dxeFBvLVRvanY4aHplYXV0cFJET3VjeTdoOXVXbkl0MXBQY1hHQ190Z0RwS3dHOEo?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-17T18:54:57.000Z"
-      }
-    },
-    {
       "id": "auto-news-4a7d9987a5e84a23a237",
       "category": "official",
       "confidence": "confirmed",
@@ -53,7 +95,7 @@
       "team": "Fenerbahçe",
       "timestamp": "2026-10-17T18:55:49.000Z",
       "source": {
-        "name": "Fenerbahce",
+        "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMi5AFBVV95cUxOWmRET1BhVFh0WXAzR09CVWdNODE2UnViQlVkUGUtb1JOdWlwZUI0djVTdWptSlVhQkNnTVpjZi1yckRKNXU3dHViMDRFMTJxMU0wZmhzcWJvcDlEY20yRXdYZVZmVUpPaVZOZVZja2w0T0lHWEdHVEdHZHVPNUc3LVVCcmV1TkljTFJBS3NtbXdEZ2FBVXlHX2V4ZDB1MjhaWWZkc3FwWTRxaWhfMDZNUUNYZ1NhSmxfeTR1ckJSdDVIU21MSDM5WnBjR3dlTHJUUG54UFJaczE3QXR5eHAzdGNWT1M?oc=5",
         "publisher": "fenerbahce.org"
       },
@@ -105,6 +147,26 @@
       }
     },
     {
+      "id": "auto-news-90ea79699a9c1f2692ac",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Başantrenörümüz Erman Okerman'dan Açıklamalar",
+      "team": "Beşiktaş",
+      "timestamp": "2026-10-17T16:27:12.000Z",
+      "source": {
+        "name": "Bjk.com.tr",
+        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1NQjB4M3dRcUtwSy1pZG1TbWNvcDhNM1RSSlowTnFsYl8yaFNfdHB3Z1ppWjh4UjVhMkZDWkZ1UXlfbXNZWnJzWHRQcG1ZWmlWTFhTM2JtUXItNlk?oc=5",
+        "publisher": "bjk.com.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "besiktas",
+        "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
       "id": "auto-news-db4a1d0bc079bc881e3d",
       "category": "official",
       "confidence": "confirmed",
@@ -135,26 +197,6 @@
       "source": {
         "name": "GALATASARAY.ORG",
         "url": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPZWlCNzZUclF2OVE0cE1hVlpaclg4a1p4bm56VThFMVplOXZla08xbnBiN2JEMzB2UlJMSkxVTk05X0tGdUpuUzY2akdTOHJLek5JUUFKaXEtaGNDYURYVVl2Vm00OU5aRjJoUWkzY2FUeXVqU3dKWkc4cGxjbXhfZUJSQ1p2NTY3OXdHV1hqdVVRSjFCSjI3dXVJRkN5Nk5vR1NqMHdFeVNnSTI2OWhndUxqYw?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-fc5983863b6aa926e0fc",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Deniz Gül: \"Galatasaray'da bulunduğum için çok mutluyum\"",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-17T15:33:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxORktmcHBRTTlzaWdpcVhCVGFZRnNlSElHSjhWb3ZtZkRRWXZDZHlfdTF6b21zX0tRS0QzUGJuSEZwSXNyeGFjaWhMTUpma2tZMVJtYWdkZmw5Rzd1YkdROVY5Z010czBkOHJCWUpwOEdEdjNhZ2JQSmhrXzRRZU4tTXRtLV9NVDhFcm03dl9BMGVqYTNRSVVCN1RMUzBSak5f?oc=5",
         "publisher": "galatasaray.org"
       },
       "automation": {
@@ -227,48 +269,6 @@
       }
     },
     {
-      "id": "auto-news-43de94cb14628f197ab2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Trabzonspor Maçı Hazırlıkları Başladı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-17T11:58:06.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE5WZnAzM2VkZ1hYVmtOZGtCeld0aURERG1CeUhNYlNldjRzMEtBTHVBWXAydmRoRnF1ZDUzTTZERktHVExKSXJ0dy1HeXUwVExHb2hPdjRFS0phbVk?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-17T11:58:06.000Z"
-      }
-    },
-    {
-      "id": "auto-news-b5cf47dd09b5ce2536ca",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "transfer",
-      "text": "SushiCo sponsorluk imza törenimiz ileri bir tarihe ertelenmiştir",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-15T13:13:52.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiwAFBVV95cUxOdWxEMUR0aWJzRjUzMjNtTzhBaDVWeWprYVhKUm1JVHBkNmhMeERrWmdCVkdvQ053QlRNZzhHaHZ2eXBVU2c3Slc5UTFtYl9hNElPZHNfX2ZlR0YwWVR4Y3NjRVI5TDBWSEQyaGM1em5ZQ2NJVTBmdGRiWUc2d0NvU05aazJ3SnNKMFAzS0EzQUVIR3ZJN0swMWRBalhIQ3ZZWFdtb3N1a2VQUFZqRHEzcUhLYk9IUHdDZUlEdE1rd3c?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-c1e30b6dd1587f3a6ef6",
       "category": "club-agenda",
       "confidence": "reported",
@@ -289,23 +289,25 @@
       }
     },
     {
-      "id": "auto-news-17d22f842504b10ba757",
+      "id": "auto-news-2f1aa7d3ea75526189dc",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Fenerbahçe 1-1 Corendon Alanyaspor (U-19)",
+      "text": "Fenerbahçe 3-0 Corendon Alanyaspor",
       "team": "Alanyaspor",
-      "timestamp": "2026-10-17T14:05:39.000Z",
+      "timestamp": "2026-10-18T10:25:00.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiogFBVV95cUxPcW1FY3JUbDJWR1A2WG1zZ2stLXRTS2xydlZPRkFxZFIxb2E5R1k4Z25VMGh1VDRrV2hhX3g5N2RMVGk1QXV5YmtCRFdTRjd4enltczhnV1BxUjNpOXN0b0tpdkZDMjhHcDA4NjMxNjA3Ykw5NDV1NUVXVWxLVHN0VmJOWW42c080eDdGODQxUm9leFM4bFIzZ0FPb2NCNmwyRWc?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNUkJiLUpFVEhNbVE1eFRsWjc2d2FmQk1FRWc2eDlRWWN3TnYwRzZ4YndvZ3pMeGJza1pwSjlhUkFYZU5HZG5jcHZRVGJwOFo0MUhSc2IwTXUwaExpYnI5QVVSNEdSck1HMURtLS1kMTVsUDYwMEhOZnR4MVR1cFJ1YnVEV21YZnpLRjNGREtR?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
         "source": "rss",
         "feed": "diger-super-lig",
         "priority": 7,
-        "status": "OFFICIAL"
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-17T14:05:39.000Z"
       }
     },
     {
@@ -317,7 +319,7 @@
       "team": "Alanyaspor",
       "timestamp": "2026-10-17T15:00:40.000Z",
       "source": {
-        "name": "Fenerbahce",
+        "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOMmJsQVAtTG9QM1VjcmVvdDVhUHB5ODQxeG1ZWHltaDJfem9jVzdZcE9JN1ZBUlNvUEgyWDZQVEtoYW1KY3owcEFOMi00M0FBYzF1YmhFb1BraG0wdHJ3QTl2LUhLQVVNSWJSLUlfeEFRTDRkc1kxOVJNR0NNR2R5UEJ4ZHdoNWVWYXg3ai01R2FEU0E0eGJxMC1DSVAzOUZsbXR4SQ?oc=5",
         "publisher": "fenerbahce.org"
       },
@@ -326,28 +328,6 @@
         "feed": "diger-super-lig",
         "priority": 7,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-1f15c830e204c980d942",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Conference League highlights: CSKA Sofia 1-2 Monaco | Highlights | UEFA Conference League",
-      "team": "Avrupa futbolu",
-      "timestamp": "2026-10-16T00:11:17.000Z",
-      "source": {
-        "name": "UEFA.com",
-        "url": "https://news.google.com/rss/articles/CBMi4AFBVV95cUxOX3Z5bjMxeW5TazNYYktKMi1LenhvMkE3YlB0eDc2VDFHZXQ3LXZBZjVpTkNiZVZjT1lxbHVXbTM1WkZEa2pGdGdlZTBPZGRQMXBLREYyTHJSaUhzbG1vaXlndXpjcVBCem53TllCUVZhVF9MMkdYbzZicDBXLU5vcDZ3V3ZkdGw1STRObE9oS1hoUURKb21Iam5jd3NHT1BRNjgtSXdVa1Y4cEsybXU3QnYtVmNNLUVTd0NKSFlXTnluLUkyaXF1aU1lTDA2WFdid1JnVm9adFBVX2xiZlAzZw?oc=5",
-        "publisher": "uefa.com"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "uefa",
-        "priority": 9,
-        "status": "OFFICIAL",
-        "mergedReports": 5,
-        "firstSeenAt": "2026-10-15T15:05:07.000Z"
       }
     },
     {
