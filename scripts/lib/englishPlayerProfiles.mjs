@@ -1,5 +1,5 @@
-// Slug aliases can outlive a provider's old player ID. Keep the published URL
-// when a verified current record exists, even if its former canonical ID does not.
+// Keep the published URL when a verified current record exists, even if its
+// canonical record is missing or no longer passes the publication gate.
 export function englishProfilePlayers(players, urls, view) {
   const pages = new Map();
   for (const player of players) {

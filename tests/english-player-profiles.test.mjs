@@ -19,3 +19,7 @@ test('an extant verified canonical record wins without generating duplicate page
 test('aliases never make unverified players eligible for publication', () => {
   assert.deepEqual(englishProfilePlayers([{id:'current-id',verified:false}],urls,view),[]);
 });
+test('a stale unverified canonical record cannot suppress its verified replacement', () => {
+  const current={id:'current-id',verified:true};
+  assert.deepEqual(englishProfilePlayers([{id:'former-id',verified:false},current],urls,view),[current]);
+});
