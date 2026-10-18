@@ -104,7 +104,11 @@ function articleFile(article, locale = "tr") {
 
 function articleUrl(article, locale = "tr") {
   const slug = articleSlug(article);
-  return locale === "en" ? `${domain}/en/news/${slug}.html` : `${domain}/haber/${slug}`;
+  // İngilizce adres de Türkçe gibi uzantısız: site haritası ve
+  // generate-en-news-pages.mjs `/en/news/<slug>` bildiriyor, vercel.json
+  // `/en/news/:slug` → `.html` yeniden yazıyor. Eskiden burada `.html`
+  // vardı; canonical ile haritadaki adres ayrışıyordu (46 sayfa).
+  return locale === "en" ? `${domain}/en/news/${slug}` : `${domain}/haber/${slug}`;
 }
 
 function articleSources(article) {

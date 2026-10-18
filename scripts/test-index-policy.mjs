@@ -63,6 +63,8 @@ const inSitemap = (url) => sitemap.includes(`<loc>${url}</loc>`);
       } else {
         indexableCount += 1;
         assert.match(robots, /^index,follow/, `${file}: ince olmayan haber indekslenebilir olmalı (robots="${robots}")`);
+        // Canonical, site haritasındaki adresle aynı olmalı (uzantısız).
+        if (inSitemap(url)) assert.equal(canonicalOf(html), url, `${file}: canonical site haritasındaki adresle aynı olmalı`);
       }
     }
   }
