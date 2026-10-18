@@ -25,6 +25,7 @@ import { sectionHead } from "./lib/matchCards.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { findFinalResult, resultRowsFrom, resultTitle, resultDescription } from "./lib/enMatchResult.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { eligibleEnPlayerIds } from "./lib/enPlayerPages.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -76,6 +77,7 @@ const calendarMatches = JSON.parse(fs.readFileSync(path.join(root, "data", "fixt
 // Oynanmış maçlar takvim penceresinden düşünce sonuç arşivden okunur.
 const resultRows = resultRowsFrom(calendarMatches, (JSON.parse(fs.readFileSync(path.join(root, "data", "historical-match-archive.json"), "utf8")).records) || []);
 const players = getPlayers(rawPlayers);
+const enPlayerIds = eligibleEnPlayerIds(players, playerUrls);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -137,7 +139,7 @@ function teamPlayers(name) {
 }
 
 function keyPlayersHtml(name) {
-  const selected = teamPlayers(name).filter((player) => publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id);
+  const selected = teamPlayers(name).filter((player) => enPlayerIds.has(player.id));
   if (!selected.length) {
     return `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`;
   }
@@ -147,7 +149,8 @@ function keyPlayersHtml(name) {
     // kapısından geçen oyuncular için üretiliyor.
     const profile = playerUrls.enPlayerPagePath(player.id);
     const label = `${escapeHtml(player.name)}`;
-    const cell = fs.existsSync(path.join(root, profile))
+    // Saf karar (üretim sırasına bağlı değil): bkz. lib/enPlayerPages.mjs
+    const cell = enPlayerIds.has(player.id)
       ? `<a href="/${escapeHtml(profile.replace(/^\/+/, ''))}">${label}</a>`
       : label;
     return `<li>${cell}${rating ? `<span>Rating ${escapeHtml(rating)}</span>` : ""}</li>`;

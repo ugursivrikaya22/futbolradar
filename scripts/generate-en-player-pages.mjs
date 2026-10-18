@@ -30,6 +30,7 @@ import {
   renderPlayer360
 } from "./lib/player360.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { eligibleEnPlayerIds } from "./lib/enPlayerPages.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -303,8 +304,8 @@ function pageHtml(player) {
 }
 
 // Kopya kayıt İngilizce sayfa üretmez — kanonik kaydınki zaten var.
-const eligible = players.filter((player) =>
-  publicPlayerView(player).verified && playerUrls.resolveId(player.id) === player.id);
+const eligibleIds = eligibleEnPlayerIds(players, playerUrls);
+const eligible = players.filter((player) => eligibleIds.has(player.id));
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;

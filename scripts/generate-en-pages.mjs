@@ -37,6 +37,7 @@ import { liveTickerBlock } from "./lib/liveScoresTicker.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { eligibleEnPlayerIds } from "./lib/enPlayerPages.mjs";
 import { DIRECTORY_LIKE_PAGES, rootAbsoluteLinks } from "./lib/servedLinks.mjs";
 
 const require = createRequire(import.meta.url);
@@ -153,6 +154,12 @@ const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
 const curatedMatches = readJson("matches.json", []);
 const teams = readJson("teams.json", []);
 const players = getPlayers(readJson("players.json", []));
+let enPlayerIdsCache = null;
+/** EN oyuncu sayfası olan kimlikler (saf karar; bkz. lib/enPlayerPages.mjs). */
+function enPlayerIds() {
+  enPlayerIdsCache ||= eligibleEnPlayerIds(players, playerUrls);
+  return enPlayerIdsCache;
+}
 // `scripts/sync-super-lig-leaders.mjs` yazar; `/players/topscorers` ve
 // `/players/topassists` LİGİN KENDİSİYLE sorgulanır — players.json'un
 // turnuva-toplamı goals/assists alanlarından bağımsız, yalnızca Trendyol
@@ -1089,7 +1096,7 @@ function playerRadarSection() {
       const metrics = [`<span>Age <b>${escapeHtml(age || label("common.noData"))}</b></span>`];
       if (minutes !== undefined && minutes !== null) metrics.push(`<span>Minutes <b>${escapeHtml(minutes)}</b></span>`);
       if (market) metrics.push(`<span>Market value <b>${escapeHtml(market)}</b></span>`);
-      return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>Profile metrics and transfer history are on the player page.</p><a class="detail-link" href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">Open player profile</a></article>`;
+      return `<article class="card player-detail-card" data-card="player" data-player="${escapeHtml(player.id)}"><div class="card-head"><div><span class="card-kicker">${escapeHtml(kicker)}</span><h2>${escapeHtml(player.name)}</h2></div>${badge}</div><div class="metric-grid compact">${metrics.join("")}</div><p>Profile metrics and transfer history are on the player page.</p>${enPlayerIds().has(player.id) ? `<a class="detail-link" href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">Open player profile</a>` : ""}</article>`;
     }).join("")
     : `<article class="card data-empty" data-card="empty-state"><strong>Waiting for data</strong><span>Trend player cards are only built from verified current-season records with a provider identity. This area fills in automatically once the squad sync delivers that data.</span></article>`;
 
@@ -1132,7 +1139,7 @@ function trendPlayerCategoriesBlock() {
     players: kept,
     history: history.rows || [],
     now: new Date(),
-    hasProfile: (player) => fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id))),
+    hasProfile: (player) => enPlayerIds().has(player.id),
     viewOptions: { leagueTeams: fixtureTeamNames() }
   });
   return renderTrendCategoryTabs(result, "en", (card) => `./player/${playerUrls.slugFor(card.id)}.html`);
@@ -1705,7 +1712,7 @@ function playerRadarPage() {
     .sort((left, right) => Number(right.rating || 0) - Number(left.rating || 0))
     .slice(0, 40)
     .map((player) => `<article class="player-card">
-            <header><div><h3><a href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">${escapeHtml(player.name)}</a></h3>
+            <header><div><h3>${enPlayerIds().has(player.id) ? `<a href="./player/${escapeHtml(playerUrls.slugFor(player.id))}.html">${escapeHtml(player.name)}</a>` : escapeHtml(player.name)}</h3>
             <span>${escapeHtml([player.team, player.position].filter(Boolean).join(" · ") || "Player profile")}</span></div>
             <strong class="momentum-number">${escapeHtml(statCell(player.rating))}</strong></header>
             <div class="metric-grid compact">
@@ -1745,8 +1752,7 @@ function leagueLeaderCell(row) {
   // Bağlantı ancak İngilizce sayfa üretilmişse basılır; lider tablosunda
   // adı geçen her oyuncunun İngilizce profili olmak zorunda değil.
   if (!row.slug) return name;
-  const profile = playerUrls.enPlayerPagePath(row.slug);
-  return fs.existsSync(path.join(process.cwd(), profile))
+  return enPlayerIds().has(row.slug)
     ? `<a href="./player/${escapeHtml(playerUrls.slugFor(row.slug))}.html">${name}</a>`
     : name;
 }
