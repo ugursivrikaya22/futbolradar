@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-18T20:45:55.025Z",
+  "updatedAt": "2026-10-18T23:14:32.496Z",
   "items": [
     {
       "id": "auto-news-4cfa11fe1d5b16196f06",
@@ -64,8 +64,28 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-18T14:37:01.000Z"
+        "mergedReports": 3,
+        "firstSeenAt": "2026-10-18T14:01:45.000Z"
+      }
+    },
+    {
+      "id": "auto-news-d4f3cb40df605edbd272",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Beşiktaş maçı hazırlıklarımız tamamlandı",
+      "team": "Trabzonspor",
+      "timestamp": "2026-10-18T14:48:49.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOQnRPZGVvT0h4YVVORkFPTVFybFFlN0NMLVFkRkVBVFVPZlRybEZMdjRodGh4Y01pY2psdWRvcFhlUnlhTTFIRG9qUHd1UDQ3WmtfbEhhTWxVdHU0YThHZWd2MkUtbEtMS3F5S05zcUl5ZW9iTFBfRkRmbktTbURKS0hQS0xNNDBCUE4zN0gzOW1YNU0?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -106,28 +126,6 @@
         "feed": "galatasaray",
         "priority": 1,
         "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-3a5259987c70039c369c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Trabzonspor Maçı Hazırlıkları Tamamlandı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-18T11:26:04.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTE1DNWw0T0RUNG42bDJOenRVbzUwdzhncWJ4OFpfSlk4Skl3OEUxUExxdl9uV1otaU5EaEpjYjJZVjloQkNyaUdhaDFLOGVaeWZzbmVqay02M3I0dURLRzA4?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-18T09:27:38.000Z"
       }
     },
     {
@@ -261,26 +259,6 @@
       "source": {
         "name": "Trabzonspor Kulübü Resmi Web Sitesi",
         "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQTzZrSkphSHZzMzRMeDF6OENOUkdDb21QbG5xMmZ3U3F5VHFzUWRjTjNKdk9kMExNSmdYVmJ5bERzaElnM29JNWZPcE1CNFFwWXZqVnVMaVllbUVjTmg5RURGZ0F5SG9LbzdMVTBTSjN6TUFJSGVEOXN4dUs0cmhxN3A5N3hLcWN5d0ZnZ09Qd0NWX1A3NlE?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-62117af8ac401d2c45c2",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "U16 ve U17 Takımlarımızın bu hafta Gelişim Ligi’nde oynadığı maç sonuçları",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-17T14:07:43.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMixAFBVV95cUxQM1BlN0htMFVZSmF2R1kzVG5lRFIwWkQ1andVRjZ3bVZjSE1ROXVxQk0wYTlwelpYdE9WRkpETG11UnlVOEduVTRjVENyX2JsUVZ5dk4xMG9QNHNnUlJqYXVyT2pSYVlRVW92TGtuV0lUYTBHb3A4dEpyRjdwRHdTeloxU2ZpSjZvNVJyQlF6aEdDT2FKZkpNc3B3RUEwWS0xSjZodG5kaFlVd2Y0SGlDWDdHNmNDMk92a0ZjYkd2b1hURzJ5?oc=5",
         "publisher": "trabzonspor.org.tr"
       },
       "automation": {
