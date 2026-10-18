@@ -1,0 +1,53 @@
+name: Supabase live verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/supabase-live-verification]
+    paths:
+      - scripts/verify-supabase-live.mjs
+      - scripts/supabase-ingest.mjs
+      - scripts/verify-supabase-provider.mjs
+      - tests/supabase-source-ingest.test.mjs
+      - .github/workflows/supabase-verification.yml
+permissions:
+  contents: read
+concurrency:
+  group: futbolradar-production-update
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Validate ingestion code without secrets
+        run: |
+          node scripts/test-supabase-layer.mjs
+          node --test tests/supabase-source-ingest.test.mjs
+      - name: Verify schema before writing
+        run: node scripts/verify-supabase-live.mjs --preflight
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE__SERVICE_ROLE_KEY }}
+      - name: Ingest real repository data and verify persisted values
+        run: node scripts/verify-supabase-live.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE__SERVICE_ROLE_KEY }}
+      - name: Verify live provider write, readback and idempotency
+        run: node scripts/verify-supabase-provider.mjs
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE__SERVICE_ROLE_KEY }}
+          APIFOOTBALL_API_KEY: ${{ secrets.APIFOOTBALL_API_KEY }}
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: supabase-live-verification
+          path: outputs/supabase-*-verification.json
+          retention-days: 7

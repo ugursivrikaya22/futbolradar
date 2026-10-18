@@ -1,56 +1,38 @@
-Supabase yapılandırma kontrolü — 17 Ekim 2026
+Supabase canlı doğrulama — 18 Ekim 2026
 
-Doğrulanan durum
-Vercel Production ortamında SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY var.
-/api/health?probe=supabase okuma testi başarılı. Bu nedenle üretim
-veritabanı bağlantısını eksik saymıyoruz. GitHub Actions secret listesinde
-yalnızca iki mevcut API-Football anahtarı var; Supabase alımı bu ortamda
-yapılandırılmamış. Anahtar değerleri okunmadı veya rapora yazılmadı.
+Yapılandırma
+GitHub Actions: SUPABASE_URL mevcut. Sunucu anahtarı kullanıcı tarafından
+SUPABASE__SERVICE_ROLE_KEY (iki alt çizgi) adıyla eklenmiş. Zamanlanmış
+akış ve doğrulama akışı, önce standart SUPABASE_SERVICE_ROLE_KEY adını,
+yoksa mevcut çift alt çizgili adı kullanır. Anahtar değeri okunmadı.
+Vercel Production: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY ve
+HOME_POLL_IP_SALT mevcut; canlı sağlık yanıtında doğrulandı.
 
-Eksik ayarlar
-1. GitHub repository Actions secret: SUPABASE_URL
-   Mevcut Vercel projesinin bağlı olduğu Supabase proje URL'si.
-2. GitHub repository Actions secret: SUPABASE_SERVICE_ROLE_KEY
-   Aynı projenin sunucu tarafı secret/service-role anahtarı. Bu kodda
-   değişkenin adı tarihsel olarak SERVICE_ROLE_KEY; çalışan Vercel
-   yapılandırmasındaki yetkili anahtar türü kullanılmalı. Anon/publishable
-   anahtar yazma yetkisi sağlamaz. Yeni ücretli proje veya servis gerekmez.
-3. Vercel Production: HOME_POLL_IP_SALT
-   Sağlık yanıtında eksik. Anket IP karması katmanını açmak için rastgele,
-   uzun ve kalıcı bir sunucu sırrı gerekir. Çerez/localStorage korumaları
-   mevcut; bu eksiklik veri alımını engellemez. Actions'ın mevcut env
-   eşlemesine de eklenecekse aynı secret adı kullanılabilir; alım için
-   zorunlu değildir. Tuz değişikliği önceki IP karmalarını eşleştiremez.
+Bulunan ve düzeltilen hata
+Kaynak tohumlamasında data_sources satırları aynı sütunlara sahip değildi.
+PostgREST “All object keys must match” hatası nedeniyle kaynakları yazamıyor,
+sonraki ingestion_runs kayıtları yabancı anahtar kontrolünde duruyordu.
+Eksik base_url/note alanları açık NULL ile tamamlandı. Gerçek HTTP
+sözleşmesini taklit eden regresyon testi bu hatayı tekrar yakalar.
 
-Yerler
-GitHub: repository Settings > Secrets and variables > Actions.
-Vercel: FutbolRadar project Settings > Environment Variables > Production.
-Anahtarlar sohbet, kaynak kodu, public/data veya istemci ortam değişkeni
-olarak paylaşılmamalı. NEXT_PUBLIC_ öneki kullanılmamalı.
+Canlı test
+39145858123 numaralı Actions işi başarılı. Beklenen 15 tablonun sütunları
+canlıdan okundu. 32.306 kaynak kayıt işlendi, 30.689 kayıt upsert edildi;
+22 örnek kayıt geri okunup gönderilen alanlarla karşılaştırıldı.
+Bu sayılar yeni eklenen benzersiz kayıt sayısı değildir: upsert mevcut
+kayıtları da günceller. Maçlarda 2.442 kaynak satırın elenmesi birleştirme/
+normalizasyon sonucudur. Tüm satırların tek tek geri okunduğu iddia edilmez.
 
-Şema kontrolü
-Depoda supabase/migrations/0001_core_schema.sql ile
-0011_performance_hotspots.sql arasındaki mevcut göçler bulunuyor.
-Canlı yönetim erişimi olmadan bunların hepsinin uygulandığını iddia
-edemeyiz. Çalışan home_poll_votes okuması tüm şemayı doğrulamaz.
-Alım için data_sources, teams, players, player_stats, matches,
-match_stats, transfers, analysis_reports, polls, ingestion_runs ve
-fixture_predictions tabloları ile services/supabase/schema.js içindeki
-sütun/benzersiz anahtar sözleşmesi denetlenmeli. Mevcut şemayı körlemesine
-yeniden kurmayın; yalnızca uygulanmamış göçleri sırayla uygulayın.
-Public şemasında RLS korunmalı; alım için anon erişimi açılmamalı.
+Tekrarlanabilir doğrulama
+Supabase live verification iş akışı elle çalıştırılabilir. Sütun kontrolü,
+katman testleri, gerçek alım ve örnek kayıtların geri okumasını içerir.
+Ayrıca API-Football'a bir istekle gerçek bir maç alınır; mevcut sağlayıcı
+kimliği korunarak iki upsert ve iki geri okuma ile tekrar yazma denetlenir.
+Sonucun kanıtı işin supabase-live-verification artifact'inde tutulur.
+Şema ön kontrolü başarısızsa alım başlamaz; test başarısızsa iş kırmızı olur.
 
-Doğrulama
-node scripts/test-supabase-layer.mjs
-node scripts/supabase-ingest.mjs --dry-run
-İki Actions secret eklendikten sonra tam veri yenileme çalıştırılıp
-supabase-ingest adımı ve ingestion_runs sonuçları kontrol edilmeli.
-Bu çalışmada canlı yazma testi yapılmadı: Actions sırları eksik ve
-Supabase yönetim bağlantısı yok. Kuru çalışma canlı yazma kanıtı değildir.
-
-Güncel kaynaklar
-https://supabase.com/docs/guides/getting-started/api-keys
-https://supabase.com/docs/guides/api/securing-your-api
-https://supabase.com/changelog/cbc-tls-ciphers-deprecated
-Eski CBC TLS şifrelerinin kaldırılması modern Node TLS istemcisine
-engel değil; üretim okuma testi bunu bu bağlantı için doğruladı.
+Maliyet ve erişim
+Yeni servis, plan yükseltmesi veya ek abonelik yok. İşler mevcut Actions,
+Supabase ve API-Football kotalarını kullanır. Anahtarlar loglara, istemciye
+veya repoya yazılmaz. Şema/RLS değiştirilmedi; beklenen sütunlar mevcut.
+Bu kontrol, tüm RLS politikalarının ve indekslerin denetimi değildir.
