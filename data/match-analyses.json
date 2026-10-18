@@ -39838,7 +39838,7 @@
     "dataConfidence": 86,
     "analysisStatus": "complete",
     "warnings": [],
-    "updatedAt": "2026-10-18T13:14:06.737Z"
+    "updatedAt": "2026-10-18T16:47:26.414Z"
   },
   {
     "fixtureId": "kocaelispor-goztepe-2026-10-18",
@@ -39849,7 +39849,7 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-10-18T13:00:00.000Z",
-    "status": "live",
+    "status": "finished",
     "generatedAt": "2026-10-18T04:24:36.989Z",
     "preMatchFrozenAt": "2026-10-18T13:14:06.883Z",
     "modelVersion": "futbolradar-match-v1",
@@ -41428,7 +41428,7 @@
     "dataConfidence": 86,
     "analysisStatus": "complete",
     "warnings": [],
-    "updatedAt": "2026-10-18T13:14:06.883Z"
+    "updatedAt": "2026-10-18T16:47:26.698Z"
   },
   {
     "fixtureId": "basaksehir-gaziantep-fk-2026-10-18",
@@ -41439,9 +41439,9 @@
     "isOfficialCompetition": true,
     "includeInLeagueForm": true,
     "kickoff": "2026-10-18T16:00:00.000Z",
-    "status": "scheduled",
+    "status": "live",
     "generatedAt": "2026-10-18T13:14:07.010Z",
-    "preMatchFrozenAt": null,
+    "preMatchFrozenAt": "2026-10-18T16:47:27.011Z",
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Başakşehir",
@@ -42994,7 +42994,9 @@
         "label": "balanced"
       },
       "summary": "Model, ev sahibi için %38, beraberlik için %36, deplasman için %26 ihtimal hesaplıyor. Takım güç puanları 42/100 - 41/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
-      "warnings": []
+      "warnings": [],
+      "frozenAt": "2026-10-18T16:47:27.011Z",
+      "frozenKickoff": "2026-10-18T16:00:00.000Z"
     },
     "coverage": {
       "homeSquadCoverage": 100,
@@ -43013,7 +43015,8 @@
     },
     "dataConfidence": 86,
     "analysisStatus": "complete",
-    "warnings": []
+    "warnings": [],
+    "updatedAt": "2026-10-18T16:47:27.011Z"
   },
   {
     "fixtureId": "trabzonspor-besiktas-2026-10-19",
@@ -43025,7 +43028,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-19T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-18T13:14:07.133Z",
+    "generatedAt": "2026-10-18T16:47:27.304Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -44991,7 +44994,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-18T13:14:07.133Z",
+      "generatedAt": "2026-10-18T16:47:27.304Z",
       "asOf": "2026-10-19T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 87,
@@ -45053,7 +45056,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-23T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-18T13:14:07.249Z",
+    "generatedAt": "2026-10-18T16:47:27.658Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -45297,15 +45300,27 @@
       "teamName": "Kocaelispor",
       "recentForm": {
         "sampleSize": 5,
-        "points": 9,
-        "wins": 3,
+        "points": 6,
+        "wins": 2,
         "draws": 0,
-        "losses": 2,
-        "goalsFor": 6,
-        "goalsAgainst": 4,
-        "goalDifference": 2,
-        "weightedScore": 56,
+        "losses": 3,
+        "goalsFor": 5,
+        "goalsAgainst": 5,
+        "goalDifference": 0,
+        "weightedScore": 36,
         "results": [
+          {
+            "matchId": "kocaelispor-goztepe-2026-10-18",
+            "kickoff": "2026-10-18T16:00:00+03:00",
+            "opponent": "Göztepe",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "besiktas-kocaelispor-2026-10-11",
             "kickoff": "2026-10-11T19:00:00+03:00",
@@ -45353,33 +45368,33 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "konyaspor-kocaelispor-2026-08-29",
-            "kickoff": "2026-08-29T19:00:00+03:00",
-            "opponent": "Konyaspor",
-            "venue": "away",
-            "goalsFor": 2,
-            "goalsAgainst": 1,
-            "outcome": "W",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 2,
+        "sampleSize": 3,
         "points": 6,
         "wins": 2,
         "draws": 0,
-        "losses": 0,
-        "goalsFor": 3,
-        "goalsAgainst": 0,
-        "goalDifference": 3,
-        "weightedScore": 100,
+        "losses": 1,
+        "goalsFor": 4,
+        "goalsAgainst": 2,
+        "goalDifference": 2,
+        "weightedScore": 64,
         "results": [
+          {
+            "matchId": "kocaelispor-goztepe-2026-10-18",
+            "kickoff": "2026-10-18T16:00:00+03:00",
+            "opponent": "Göztepe",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "kocaelispor-gaziantep-fk-2026-09-19",
             "kickoff": "2026-09-19T17:00:00+03:00",
@@ -45405,7 +45420,7 @@
             "isFriendly": false
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "awayForm": {
         "sampleSize": 4,
@@ -45470,20 +45485,20 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 1.2,
-        "direction": "down",
+        "averageGoalsFor": 1,
+        "direction": "up",
         "sampleSize": 5,
-        "score": 48
+        "score": 40
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 0.8,
+        "averageGoalsAgainst": 1,
         "direction": "down",
         "sampleSize": 5,
-        "score": 68
+        "score": 60
       },
-      "restDays": 12,
+      "restDays": 5,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -45493,13 +45508,13 @@
       "leaguePosition": {
         "rank": 8,
         "points": 12,
-        "played": 7,
-        "goalDifference": 2,
+        "played": 8,
+        "goalDifference": 1,
         "season": "2026/27",
         "status": "live"
       },
       "momentum": {
-        "score": 56,
+        "score": 48,
         "trend": "up",
         "goalSignal": "Dusuk",
         "risk": "Dusuk",
@@ -46422,7 +46437,7 @@
       },
       "form": {
         "home": 50,
-        "away": 56
+        "away": 36
       },
       "availability": {
         "home": 85,
@@ -46453,7 +46468,7 @@
         {
           "key": "form",
           "label": "Form",
-          "advantage": "away"
+          "advantage": "home"
         },
         {
           "key": "availability",
@@ -46461,7 +46476,7 @@
           "advantage": "home"
         }
       ],
-      "summary": "Deplasman mevcut verilerde Kanat alanları ve Form alanlarında bir adım önde görünüyor."
+      "summary": "Ev sahibi mevcut verilerde Form ve Kadro devamlılığı alanlarında bir adım önde görünüyor."
     },
     "keyDuels": [
       {
@@ -46587,37 +46602,37 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-18T13:14:07.249Z",
+      "generatedAt": "2026-10-18T16:47:27.658Z",
       "asOf": "2026-10-23T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
         "home": 46,
-        "away": 43
+        "away": 38
       },
       "probabilities": {
-        "homeWin": 40,
-        "draw": 35,
-        "awayWin": 25
+        "homeWin": 47,
+        "draw": 33,
+        "awayWin": 20
       },
       "prediction": {
         "primary": "home",
         "label": "Ev sahibi net önde",
-        "confidence": 81
+        "confidence": 86
       },
       "goalPotential": {
         "score": 38,
         "label": "low"
       },
       "upsetRisk": {
-        "score": 63,
+        "score": 56,
         "label": "high"
       },
       "matchBalance": {
-        "score": 94,
-        "label": "balanced"
+        "score": 84,
+        "label": "slight-home"
       },
-      "summary": "Model, ev sahibi için %40, beraberlik için %35, deplasman için %25 ihtimal hesaplıyor. Takım güç puanları 46/100 - 43/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %47, beraberlik için %33, deplasman için %20 ihtimal hesaplıyor. Takım güç puanları 46/100 - 38/100 ve maç dengesi \"slight-home\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -46649,7 +46664,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-24T10:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-18T13:14:07.361Z",
+    "generatedAt": "2026-10-18T16:47:27.914Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -48232,7 +48247,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-18T13:14:07.361Z",
+      "generatedAt": "2026-10-18T16:47:27.914Z",
       "asOf": "2026-10-24T10:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -48294,7 +48309,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-24T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-18T13:14:07.471Z",
+    "generatedAt": "2026-10-18T16:47:28.171Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -48507,7 +48522,7 @@
       "dataStatus": "sufficient",
       "warnings": [],
       "leaguePosition": {
-        "rank": 13,
+        "rank": 14,
         "points": 8,
         "played": 7,
         "goalDifference": -3,
@@ -49852,7 +49867,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-18T13:14:07.471Z",
+      "generatedAt": "2026-10-18T16:47:28.171Z",
       "asOf": "2026-10-24T13:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 89,
@@ -49914,7 +49929,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-10-24T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-10-18T13:14:07.581Z",
+    "generatedAt": "2026-10-18T16:47:28.434Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -51093,7 +51108,7 @@
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-10-18T13:14:07.581Z",
+      "generatedAt": "2026-10-18T16:47:28.434Z",
       "asOf": "2026-10-24T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
