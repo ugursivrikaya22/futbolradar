@@ -29,7 +29,9 @@
  * yalnızca buraya bir satır yazmak yeterli ve YETERLİ OLMAK ZORUNDA.
  *
  * Sıra rastgele değil:
- *   1. `refresh-news-ticker` — bandı sayfaya gömer (gövde değişir).
+ *   1. `refresh-news-ticker` — bant verisini (data/news-ticker.json) tazeler.
+ *      Sayfalara GÖMME artık `apply-shared-layout` içinde: iç sayfalara sabit
+ *      iskelet, öğeler `data/ticker-feed.json` ile istemcide (bkz. layout.mjs).
  *   2. `apply-shared-layout` — ortak başlık/altlık, `<head>`i yeniden yazar.
  *   3-6. Enjektörler — `<head>` içine kendi işaretli bloklarını koyar.
  *   7. `inject-asset-version` EN SONDA: kendinden önceki adımlar sayfaya

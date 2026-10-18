@@ -1,0 +1,32 @@
+name: FutbolRadar notification delivery test
+on:
+  workflow_dispatch: {}
+permissions:
+  issues: write
+concurrency:
+  group: futbolradar-notification-test
+  cancel-in-progress: false
+jobs:
+  notify:
+    if: github.repository == 'ugursivrikaya22/futbolradar' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Send one clearly labelled test from the real notification sender
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo='ugursivrikaya22/futbolradar'
+          marker="<!-- futbolradar-notification-test-${GITHUB_RUN_ID} -->"
+          existing=$(gh api "repos/$repo/issues/440/comments?per_page=100" --paginate | jq -sr --arg marker "$marker" '[.[][] | select(.user.login == "github-actions[bot]" and (.body | contains($marker)))] | length')
+          if [ "$existing" -gt 0 ]; then
+            echo 'This run already posted its test notification.'
+            exit 0
+          fi
+          run_url="https://github.com/$repo/actions/runs/$GITHUB_RUN_ID"
+          body=$(printf '%s\n\n%s\n\n%s\n\n%s\n' "$marker" '@ugursivrikaya22 **TEST BİLDİRİMİ — gerçek bir kritik hata değildir.**' 'Bu yorum, FutbolRadar kritik hata ve süre sonu raporlarının kullandığı github-actions[bot] hesabından e-posta teslimatını kontrol etmek için gönderildi. E-posta ulaştıysa Codex sohbetinde “test e-postası geldi” diye teyit edebilirsin. Takip verileri veya sistem durumu değiştirilmedi.' "Test çalışması: $run_url")
+          result=$(jq -n --arg body "$body" '{body:$body}' | gh api "repos/$repo/issues/440/comments" --method POST --input -)
+          echo "$result" | jq '{html_url, sender:.user.login, created_at}'
+          echo "$result" | jq -r '"[Gönderilen test yorumu](" + .html_url + ")"' >> "$GITHUB_STEP_SUMMARY"
