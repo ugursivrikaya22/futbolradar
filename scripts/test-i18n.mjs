@@ -266,6 +266,19 @@ for (const route of ROUTES) {
   }
 }
 
+{
+  for (const page of ["en/index.html", "en/player-radar.html"]) {
+    const html = read(page);
+    if (!html) continue;
+    const profileLinks = [...html.matchAll(/<a\b[^>]*href="([^"]+)"/g)]
+      .map((match) => new URL(match[1], absoluteUrl(page)))
+      .filter((url) => url.origin === DOMAIN && url.pathname.startsWith("/en/player/"));
+    const missing = profileLinks.filter((url) => !read(url.pathname.slice(1)));
+    check(`${page}: oyuncu bağlantıları üretilmiş İngilizce profillere gidiyor`,
+      !missing.length, missing.map((url) => url.pathname).join(", "));
+  }
+}
+
 // --- 7. Türkçe sayfalarda dil kutusu var mı --------------------------------
 {
   // OYUNCU SAYFASI SABİT BİR YOLDA DEĞİL. Tam adı bilinen oyuncu

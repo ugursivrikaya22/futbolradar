@@ -1072,7 +1072,9 @@ function playerRadarSection() {
   const ranked = players.slice().sort((left, right) =>
     Number(right.overallRating || 0) - Number(left.overallRating || 0));
   const { kept } = filterPlayerCards(ranked, { trend: true, leagueTeams: fixtureTeamNames() });
-  const shortlist = kept.slice(0, 3);
+  const shortlist = kept
+    .filter((player) => fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id))))
+    .slice(0, 3);
 
   const body = shortlist.length
     ? shortlist.map((player) => {
@@ -1676,7 +1678,8 @@ function matchCentrePage() {
  */
 function verifiedPlayerCards() {
   const { kept } = filterPlayerCards(players, { leagueTeams: fixtureTeamNames() });
-  return kept.map((player) => {
+  return kept.filter((player) =>
+    fs.existsSync(path.join(root, playerUrls.enPlayerPagePath(player.id)))).map((player) => {
     const view = publicPlayerView(player);
     const fields = view.fields || {};
     return {
