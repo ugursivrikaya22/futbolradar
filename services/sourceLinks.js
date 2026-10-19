@@ -143,7 +143,11 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "nbcnews.com",
     "nbcsports.com",
     "sports.yahoo.com",
-    "corrieredellosport.it"
+    "corrieredellosport.it",
+    // Yle: Finlandiya kamu yayıncısı; Avrupa kupası maçlarında (ör.
+    // KuPS–Trabzonspor) Fin tarafının birincil maç raporu için BİLİNÇLİ
+    // eklendi (19 Ekim 2026).
+    "yle.fi"
   ]),
 
   // BİRİNCİL KAYIT PLATFORMU — diğer gruplardan farkı bilinçli.
@@ -168,7 +172,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // Galatasaray–Kasımpaşa haberindeki geçmiş karşılaşma kayıtları için
     // sayfası açılıp doğrulanan istatistik kaynağı (9 Ekim 2026).
     "sporzip.com",
-    "ssportplus.com"
+    "ssportplus.com",
+    // Transfermarkt: ikili rekabet geçmişi (son 10 karşılaşma) için
+    // BİLİNÇLİ eklendi (19 Ekim 2026 köşe yazısı).
+    "transfermarkt.us"
   ]),
 
   // TOPLAYICI — kendisi yayın organı değil, yayın organına GİDEN yol.
