@@ -16,6 +16,7 @@ import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
 import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { leagueLeaderTableHtml as renderLeagueLeaderTable } from "./lib/leaderTable.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -103,10 +104,18 @@ const rawPlayers = JSON.parse(fs.readFileSync(path.join(root, "data", "players.j
 // Lig'e ait bir kaynaktır (bkz. o betikteki dosya başı notu). Dosya henüz
 // hiç üretilmemişse (yerel geliştirme, ilk kurulum) boş liste ile devam
 // edilir — uydurma satır basılmaz.
-const leagueLeadersPath = path.join(root, "data", "league-leaders.json");
-const leagueLeaders = fs.existsSync(leagueLeadersPath)
-  ? JSON.parse(fs.readFileSync(leagueLeadersPath, "utf8"))
-  : { topScorers: [], topAssists: [] };
+//
+// Lig, sezon ve kaynak artık `data/stats-leagues.json` → "super-lig"
+// kaydından çözülür (services/statsLeagues.js). Aynı dosya, aynı alanlar:
+// çıktı değişmez; yeni bir lig eklemek bu dosyaya dokunmayı gerektirmez.
+const { getStatsLeague, leadersFor } = require("../services/statsLeagues.js");
+const superLigStatsLeague = getStatsLeague("super-lig", { root });
+const superLigLeaders = leadersFor(superLigStatsLeague, { root });
+const leagueLeaders = {
+  topScorers: superLigLeaders.scorers,
+  topAssists: superLigLeaders.assists,
+  updatedAt: superLigLeaders.updatedAt
+};
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const fixtureCalendarPath = path.join(root, "data", "fixture-calendar.json");
 const calendarMatches = fs.existsSync(fixtureCalendarPath)
@@ -1480,35 +1489,11 @@ function homeLeadersAssistsSlot(limit) {
  * tek sürüm damgasını (ve dolayısıyla binlerce sayfanın `?v=` referansını)
  * gereksiz yere değiştirirdi.
  */
-function leagueLeaderLogoHtml(row) {
-  const initials = escapeHtml(fixtureTeamInitials(row.team));
-  if (!row.teamLogo) {
-    return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
-  }
-  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(row.teamLogo)}" alt="" width="20" height="20" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
-}
-
-function leagueLeaderNameHtml(row) {
-  const name = escapeHtml(row.name || "");
-  return row.slug ? `<a href="${escapeHtml(playerUrls.playerCanonicalHref(row.slug, "./"))}">${name}</a>` : `<span>${name}</span>`;
-}
-
 function leagueLeaderTableHtml(rows, metric, metricLabel) {
-  if (!rows || !rows.length) {
-    return emptyStateCard("Veri bekleniyor", `Süper Lig ${metricLabel.toLocaleLowerCase("tr-TR")} sıralaması, resmî lig maçları oynandıkça güncellenir.`);
-  }
-  const body = rows.map((row) => `<tr>
-              <td>${escapeHtml(String(row.rank))}</td>
-              <th scope="row">${leagueLeaderNameHtml(row)}</th>
-              <td><span class="home-standing-team">${leagueLeaderLogoHtml(row)}<span>${escapeHtml(row.team || "")}</span></span></td>
-              <td><strong>${escapeHtml(String(row[metric] ?? 0))}</strong></td>
-              <td>${row.appearances ? escapeHtml(String(row.appearances)) : "-"}</td>
-            </tr>`).join("");
-
-  return `<div class="evergreen-table-wrap"><table class="evergreen-table">
-          <thead><tr><th scope="col">Sıra</th><th scope="col">Oyuncu</th><th scope="col">Takım</th><th scope="col">${escapeHtml(metricLabel)}</th><th scope="col">Maç</th></tr></thead>
-          <tbody>${body}</tbody>
-        </table></div>`;
+  return renderLeagueLeaderTable(rows, metric, metricLabel, {
+    league: superLigStatsLeague,
+    playerHref: (slug) => playerUrls.playerCanonicalHref(slug, "./")
+  });
 }
 
 function homeLeadersFormSlot(limit) {

@@ -1,0 +1,78 @@
+{
+  "_comment": "League-parameterised stats centre config (top scorers, top assists, team form, per-round stats). Add a league by appending an entry to `leagues`; see docs/stats-leagues.md. `apiId` is the API-Football league id, `season` is the API-Football season year (\"auto\" = derived from today's date, July cut-over). `rounds` maps API-Football /fixtures/rounds labels to site round keys; labels are matched exactly (`labels`) or by regex (`pattern`, first capture group = matchday). Unknown labels are never dropped: they are shown under their raw provider label.",
+  "version": 1,
+  "leagues": [
+    {
+      "slug": "super-lig",
+      "competitionId": "super-lig",
+      "apiId": 203,
+      "season": "auto",
+      "format": "domestic-league",
+      "name": { "tr": "Süper Lig", "en": "Süper Lig" },
+      "leadersSource": "league-leaders",
+      "fixturesSource": null,
+      "pages": {
+        "tr": {
+          "scorers": "gol-kralligi.html",
+          "assists": "asist-kralligi.html",
+          "form": "form-tablosu/super-lig"
+        }
+      },
+      "rounds": [
+        { "key": "hafta", "keyEn": "matchday", "name": { "tr": "Hafta", "en": "Matchday" }, "pattern": "^Regular Season - (\\d+)$" }
+      ]
+    },
+    {
+      "slug": "sampiyonlar-ligi",
+      "competitionId": "sampiyonlar-ligi",
+      "apiId": 2,
+      "season": "auto",
+      "format": "uefa-league-phase",
+      "teamCount": 36,
+      "name": { "tr": "Şampiyonlar Ligi", "en": "Champions League" },
+      "fullName": { "tr": "UEFA Şampiyonlar Ligi", "en": "UEFA Champions League" },
+      "leadersSource": "competition-leaders",
+      "fixturesSource": "competition-fixtures",
+      "features": ["teamFilter", "roundStats", "teamForm"],
+      "pages": {
+        "tr": { "stats": "sampiyonlar-ligi-istatistikleri", "standings": "sampiyonlar-ligi-puan-durumu" },
+        "en": { "stats": "en/champions-league-stats", "standings": "en/champions-league-standings" }
+      },
+      "rounds": [
+        { "key": "eleme", "keyEn": "qualifying", "name": { "tr": "Eleme turları", "en": "Qualifying rounds" }, "labels": ["1st Qualifying Round", "2nd Qualifying Round", "3rd Qualifying Round", "Play-offs"], "inDefaultScope": false },
+        { "key": "lig-asamasi", "keyEn": "league-phase", "name": { "tr": "Lig aşaması", "en": "League phase" }, "pattern": "^League Stage - (\\d+)$", "matchdays": 8 },
+        { "key": "play-off", "keyEn": "knockout-play-offs", "name": { "tr": "Play-off turu", "en": "Knockout phase play-offs" }, "labels": ["Knockout Round Play-offs"] },
+        { "key": "son-16", "keyEn": "round-of-16", "name": { "tr": "Son 16", "en": "Round of 16" }, "labels": ["Round of 16"] },
+        { "key": "ceyrek-final", "keyEn": "quarter-finals", "name": { "tr": "Çeyrek final", "en": "Quarter-finals" }, "labels": ["Quarter-finals"] },
+        { "key": "yari-final", "keyEn": "semi-finals", "name": { "tr": "Yarı final", "en": "Semi-finals" }, "labels": ["Semi-finals"] },
+        { "key": "final", "keyEn": "final", "name": { "tr": "Final", "en": "Final" }, "labels": ["Final"] }
+      ]
+    },
+    {
+      "slug": "avrupa-ligi",
+      "competitionId": "avrupa-ligi",
+      "apiId": 3,
+      "season": "auto",
+      "format": "uefa-league-phase",
+      "teamCount": 36,
+      "name": { "tr": "Avrupa Ligi", "en": "Europa League" },
+      "fullName": { "tr": "UEFA Avrupa Ligi", "en": "UEFA Europa League" },
+      "leadersSource": "competition-leaders",
+      "fixturesSource": "competition-fixtures",
+      "features": ["teamFilter", "roundStats", "teamForm"],
+      "pages": {
+        "tr": { "stats": "avrupa-ligi-istatistikleri", "standings": "avrupa-ligi-puan-durumu" },
+        "en": { "stats": "en/europa-league-stats", "standings": "en/europa-league-standings" }
+      },
+      "rounds": [
+        { "key": "eleme", "keyEn": "qualifying", "name": { "tr": "Eleme turları", "en": "Qualifying rounds" }, "labels": ["1st Qualifying Round", "2nd Qualifying Round", "3rd Qualifying Round", "Play-offs"], "inDefaultScope": false },
+        { "key": "lig-asamasi", "keyEn": "league-phase", "name": { "tr": "Lig aşaması", "en": "League phase" }, "pattern": "^League Stage - (\\d+)$", "matchdays": 8 },
+        { "key": "play-off", "keyEn": "knockout-play-offs", "name": { "tr": "Play-off turu", "en": "Knockout phase play-offs" }, "labels": ["Knockout Round Play-offs"] },
+        { "key": "son-16", "keyEn": "round-of-16", "name": { "tr": "Son 16", "en": "Round of 16" }, "labels": ["Round of 16"] },
+        { "key": "ceyrek-final", "keyEn": "quarter-finals", "name": { "tr": "Çeyrek final", "en": "Quarter-finals" }, "labels": ["Quarter-finals"] },
+        { "key": "yari-final", "keyEn": "semi-finals", "name": { "tr": "Yarı final", "en": "Semi-finals" }, "labels": ["Semi-finals"] },
+        { "key": "final", "keyEn": "final", "name": { "tr": "Final", "en": "Final" }, "labels": ["Final"] }
+      ]
+    }
+  ]
+}

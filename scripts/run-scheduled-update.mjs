@@ -471,6 +471,12 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
     // içinde yalnızca maç oynanan liglerde değişir ve bir sonraki tam koşu
     // tazeler — saatlik koşuda 20 lig × 2 uç nokta kotayı gereksiz yer.
     ...(full ? [nodeStep("competition-leaders", "sync-competition-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider })] : []),
+    // İSTATİSTİK MERKEZİ FİKSTÜRLERİ (Şampiyonlar/Avrupa Ligi, bkz.
+    // data/stats-leagues.json). Saatlik koşuda durur ama kendini kısar: lig
+    // başına en fazla 2 istek (/fixtures/rounds + /fixtures?league&season),
+    // yalnızca önbellek yoksa, 12 saatten eskiyse ya da sonucu gelmesi
+    // gereken bir maç varsa. Diğer saatlerde sıfır istek. Yeni cron yok.
+    nodeStep("competition-fixtures", "sync-competition-fixtures.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 3 * 60 * 1000, skip: noProvider }),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
     // İNGİLİZCE AKIŞ AYRI ADIMDIR. Türkçe akışla aynı sıklıkta tazelenir
@@ -675,6 +681,7 @@ function hourlyBuildSteps(diff) {
     nodeStep("render-core-pages", "prerender-core-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
     nodeStep("render-broadcast-schedule", "generate-broadcast-schedule-page.mjs", [], { kind: "build", required: true, timeoutMs: 3 * 60 * 1000 }),
     nodeStep("render-league-pages", "generate-league-pages.mjs", [], { kind: "build", required: true, timeoutMs: 8 * 60 * 1000 }),
+    nodeStep("render-competition-stats-pages", "generate-competition-stats-pages.mjs", [], { kind: "build", required: true, timeoutMs: 2 * 60 * 1000 }),
     nodeStep("sync-public-assets", "sync-public-assets.mjs", [], { kind: "build", required: true, timeoutMs: 4 * 60 * 1000 })
   );
 
