@@ -69,7 +69,7 @@ test('closed polls emit no impression; visible polls emit only one across vote r
     for (const storage of ['none', 'supabase']) {
       const events = [], listeners = {};
       const question = { id: 'winner', question: 'Who wins?', options: [{ id: 'draw', label: 'Draw' }], total: 0, results: [] };
-      const body = { innerHTML: '' };
+      const body = { innerHTML: '', setAttribute() {}, removeAttribute() {} };
       const button = { getAttribute: key => key === 'data-question' ? 'winner' : 'draw' };
       const section = { getAttribute: key => key.endsWith('slug') ? 'test-match-tr' : 'en',
         querySelector: () => body, querySelectorAll: () => [button], setAttribute() {}, removeAttribute() {},
