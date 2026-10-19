@@ -38,6 +38,7 @@ import { aiMatchCenterPanelHtml, tabsHtml, AI_STR } from "./lib/aiMatchCenter.mj
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
+import { prematchFactsFor, prematchFactsSectionHtml, prematchColumnFor, prematchColumnSectionHtml } from "./lib/matchPrematchFacts.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -392,6 +393,10 @@ const predictedLineupsStore = readJson("data/predicted-lineups.json", { matches:
  * Kayıt yoksa sayfa eski davranışla (yerel form + arşiv h2h) çizilir.
  */
 const featuredContextStore = readJson("data/featured-match-context.json", { fixtures: {} });
+// Elle kürasyon edilmiş, maddesi kaynaklı maç öncesi notlar (bkz. scripts/lib/matchPrematchFacts.mjs).
+const prematchFactsStore = readJson("data/match-prematch-facts.json", { matches: {} });
+// Maç öncesi köşe yazısı köprüsü: yalnızca bağlantı + künye (yorum, veri değil).
+const columnsStore = readJson("data/columns.json", { columns: [] });
 const featuredContext = require("../services/featuredMatchContext.js");
 const featuredSpotlight = require("../services/featuredMatchSpotlight.js");
 const featuredSpotlightSettings = featuredSpotlight.withDefaults(readJson("data/featured-match-spotlight.json", {}) || {});
@@ -1378,9 +1383,11 @@ function pageHtml(entry, locale, options) {
       state === "cancelled" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.cancelledNote)}</strong></article></section>` : "",
       state === "tbd" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.tbdNote)}</strong></article></section>` : "",
       whenSectionHtml(entry, ctx),
+      prematchColumnSectionHtml(prematchColumnFor(columnsStore, entry), { locale, state }),
       lineupsSectionHtml(detail, analysis, ctx),
       squadsSectionHtml(squads, ctx),
       absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
+      prematchFactsSectionHtml(prematchFactsFor(prematchFactsStore, entry), { locale, state }),
       formSectionHtml(forms, ctx),
       comparisonSectionHtml(focus && focus.summary, ctx),
       h2hSectionHtml(h2h, ctx),

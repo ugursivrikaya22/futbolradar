@@ -278,6 +278,10 @@ function presentColumn(entry, locale) {
       ? text((entry.en || {}).featuredImageAlt)
       : text(entry.featuredImageAlt),
     hideStandfirst: Boolean(entry.hideStandfirst),
+    // YAZIYA ÖZEL KÜNYE NOTU (ör. "Bu bir yorum yazısıdır; içerdiği
+    // istatistikler yazarın görüşüdür."). Genel künyenin YERİNE geçmez,
+    // onun yanına basılır. Dil başına: İngilizce yüzeyde yalnızca `en.note`.
+    note: wanted === "en" ? text((entry.en || {}).note) : text(entry.note),
     body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
     // GÜNCELLEME NOTLARI — süren bir gündemi izleyen yazılar için.
     //
