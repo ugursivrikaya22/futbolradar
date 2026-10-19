@@ -85,6 +85,9 @@ export const POSTPROCESS_CHAIN = [
   // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir onu
   // normalleştiriyor.
   { id: "national-team-pages", script: "generate-national-team-pages.mjs", args: [], timeoutMinutes: 3 },
+  // Avrupa'daki Türk futbolcular (`/avrupadaki-turk-futbolcular`, `/futbolcu/<slug>`): elle derlenen
+  // data/turkish-players-abroad.json + depodaki maç kayıtları. `shared-layout`ten ÖNCE.
+  { id: "turkish-players-abroad-pages", script: "generate-turkish-players-abroad-pages.mjs", args: [], timeoutMinutes: 2 },
   // Ücretsiz Tahmin Ligi sayfası (/tahmin-ligi): açık maç listesi saate bağlı
   // (data/prediction-league-fixtures.json saatlik güncellemede tazelenir).
   // `shared-layout`ten ÖNCE: sayfa kendi başlığını basıyor, zincir normalleştiriyor.
