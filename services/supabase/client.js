@@ -153,9 +153,12 @@ async function insert(table, rows) {
  * Sıralama ve sınır ayrı parametre: sorgu dizesini elle birleştirmek,
  * bir gün kullanıcı girdisinin filtreye karışmasıyla biter.
  */
-async function select(table, { columns = "*", filters = {}, order = "", limit = MAX_SELECT_ROWS } = {}) {
+async function select(table, { columns = "*", filters = {}, order = "", limit = MAX_SELECT_ROWS, offset = 0 } = {}) {
   if (!Number.isInteger(limit) || limit < 1 || limit > MAX_SELECT_ROWS) {
     throw new RangeError(`Supabase select limit must be an integer between 1 and ${MAX_SELECT_ROWS}`);
+  }
+  if (!Number.isSafeInteger(offset) || offset < 0) {
+    throw new RangeError("Supabase select offset must be a non-negative safe integer");
   }
   const parts = [`select=${encodeURIComponent(columns)}`];
 
@@ -175,6 +178,7 @@ async function select(table, { columns = "*", filters = {}, order = "", limit = 
 
   if (order) parts.push(`order=${encodeURIComponent(order)}`);
   parts.push(`limit=${limit}`);
+  if (offset) parts.push(`offset=${offset}`);
 
   const rows = await request(`${table}?${parts.join("&")}`, { method: "GET" });
   return Array.isArray(rows) ? rows : [];
