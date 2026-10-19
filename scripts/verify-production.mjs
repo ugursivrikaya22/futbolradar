@@ -27,6 +27,7 @@ const browserGates = new Set([
 for (const args of [
   ['--test', 'tests/operations-alert.test.mjs', 'tests/supabase-bounds.test.cjs', 'tests/club-identity-cache.test.cjs', 'tests/rescheduled-fixtures.test.mjs', 'tests/archive-provider-identity.test.cjs'],
   ['scripts/test-home-signals.mjs'],
+  ['--test', 'tests/emir11-poll-release.test.cjs'],
   ['scripts/test-squad-sync-safety.mjs'],
   ['--test', 'tests/historical-identity-recovery.test.cjs'],
   ['--test', 'tests/calendar-coverage.test.mjs'],

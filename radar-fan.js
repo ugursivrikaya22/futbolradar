@@ -196,6 +196,7 @@
     var slug = section.getAttribute("data-match-poll-slug") || "";
     var locale = section.getAttribute("data-match-poll-locale") === "en" ? "en" : "tr";
     if (!slug) return;
+    var impressionSent = false;
 
     function paint(payload) {
       // DEPO KAPALIYSA BÖLÜM HİÇ AÇILMAZ. Oy kabul edemeyen bir anketi
@@ -208,6 +209,10 @@
       if (!html) { section.setAttribute("hidden", ""); return; }
       if (body) body.innerHTML = html;
       section.removeAttribute("hidden");
+      if (!impressionSent) {
+        impressionSent = true;
+        track("match_poll_view", { locale: locale });
+      }
     }
 
     function load() {
