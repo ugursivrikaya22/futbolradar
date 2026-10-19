@@ -41,10 +41,6 @@
   <link rel="stylesheet" href="/page-share.css?v=bac8714a" />
 <meta property="og:image:alt" content="Bugünkü Futbol Maçları ve Program | FutbolRadar — FutbolRadar paylaşım görseli" />
 <meta name="twitter:image:alt" content="Bugünkü Futbol Maçları ve Program | FutbolRadar — FutbolRadar paylaşım görseli" />
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -63,7 +59,11 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=6f20d450"></script>
 <!-- pwa:end -->
-  <!-- hreflang:start -->
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+<!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/bugunun-maclari.html" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en/todays-matches.html" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/bugunun-maclari.html" />
@@ -110,13 +110,12 @@
         <a class="news-ticker-all" href="./haberler.html">Tümü</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="Şu anda canlı maç yok." role="region" aria-label="Canlı Skorlar">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="Şu anda canlı maç yok." role="region" aria-label="Canlı Skorlar">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Canlı Skorlar</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
-          <div class="live-scores-ticker__track" style="--live-ticker-duration:15s" data-live-scores-track data-live-rendered-at="2026-10-19T10:01:06.965Z">
-            <div class="live-scores-ticker__group"><a class="live-scores-ticker__item" href="./mac-detay.html?id=1607329&amp;date=2026-10-19" data-live-until="2026-10-19T10:30:00.000Z" aria-label="Premier League (Hong-Kong) | Wofoo Tai Po 4 - 2 Southern District | 88&#039;"><span class="live-scores-ticker__league">Premier League (Hong-Kong)</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Wofoo Tai Po</span><span class="live-scores-ticker__score">4 - 2</span><span class="live-scores-ticker__team">Southern District</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>88&#039;</span></a><a class="live-scores-ticker__item" href="./mac-detay.html?id=1634007&amp;date=2026-10-19" data-live-until="2026-10-19T10:30:00.000Z" aria-label="Second League - Group 4 | Ural II 0 - 1 Izhevsk | 90&#039;"><span class="live-scores-ticker__league">Second League - Group 4</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Ural II</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Izhevsk</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>90&#039;</span></a></div>
-            <div class="live-scores-ticker__group" aria-hidden="true"><a class="live-scores-ticker__item" href="./mac-detay.html?id=1607329&amp;date=2026-10-19" tabindex="-1" data-live-until="2026-10-19T10:30:00.000Z" aria-label="Premier League (Hong-Kong) | Wofoo Tai Po 4 - 2 Southern District | 88&#039;"><span class="live-scores-ticker__league">Premier League (Hong-Kong)</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Wofoo Tai Po</span><span class="live-scores-ticker__score">4 - 2</span><span class="live-scores-ticker__team">Southern District</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>88&#039;</span></a><a class="live-scores-ticker__item" href="./mac-detay.html?id=1634007&amp;date=2026-10-19" tabindex="-1" data-live-until="2026-10-19T10:30:00.000Z" aria-label="Second League - Group 4 | Ural II 0 - 1 Izhevsk | 90&#039;"><span class="live-scores-ticker__league">Second League - Group 4</span><span class="live-scores-ticker__separator" aria-hidden="true">|</span><strong class="live-scores-ticker__match"><span class="live-scores-ticker__team">Ural II</span><span class="live-scores-ticker__score">0 - 1</span><span class="live-scores-ticker__team">Izhevsk</span></strong><span class="live-scores-ticker__separator" aria-hidden="true">|</span><span class="live-scores-ticker__minute"><i class="live-pulse" aria-hidden="true"></i>90&#039;</span></a></div>
+          <div class="live-scores-ticker__track is-static" data-live-scores-track data-live-scores-empty>
+            <div class="live-scores-ticker__group"><span class="live-scores-ticker__empty">Şu anda canlı maç yok.</span></div>
           </div>
         </div>
       </div>
@@ -189,7 +188,7 @@
 <section class="league-match-group league-block" data-league-group="Süper Lig"><div class="league-block-head"><span class="league-block-title">Süper Lig</span><b class="league-block-count">1 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="trabzonspor-besiktas-2026-10-19">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">SL</i>Süper Lig</span><span class="fixture-card-state ">20:00</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">T</span><span class="fixture-row-name">Trabzonspor</span><span class="fixture-row-score">–</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">B</span><span class="fixture-row-name">Beşiktaş</span><span class="fixture-row-score">–</span></div></div>
-    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://www.trt1.com.tr/yayin-akisi"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın: TRT 1</span></div>
+    <div class="fixture-card-broadcast" data-broadcast="verified" data-broadcast-source="https://beinsports.com.tr/haber/bu-hafta-hangi-mac-hangi-kanalda-23"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Yayın: beIN SPORTS 1 / beIN SPORTS 1 4K</span></div>
     <div class="fixture-card-meta"><div class="fixture-metric"><span>Form (son 5)</span><b>%60 · %80</b></div></div>
     <a class="fixture-card-action" href="./mac/trabzonspor-besiktas-19-ekim-2026" data-match-click>Maç ayrıntısını aç</a>
   </article></div></section><section class="league-match-group league-block" data-league-group="Trendyol 1. Lig"><div class="league-block-head"><span class="league-block-title">Trendyol 1. Lig</span><b class="league-block-count">4 maç</b></div><div class="league-match-grid"><article class="fixture-card" data-card="fixture" data-match="fatih-karagumruk-keciorengucu-2026-10-19">
