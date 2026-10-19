@@ -74,3 +74,18 @@ de `data/ticker.json`'daki her dış alan adını beyaz listeye karşı tarar.
 - `scripts/lib/homeTicker.mjs` — işaretleme
 - `home-ticker.css`, `home-ticker.js` — görünüm ve istemci davranışı
 - `scripts/test-home-ticker.mjs` — testler (`npm test` zincirinde)
+
+## Kalıcı sayfa: `/transfer-donemi-2026-27`
+
+Bandın transfer öğeleri, aynı doğrulanmış bilgileri tablo hâlinde taşıyan
+kalıcı sayfaya bağlanır (tescil dönemi tarihleri, FIFA tescil yasağı
+listesindeki Türk kulüpleri, Hatayspor notu, SSS).
+
+- Veri: `data/transfer-donemi-2026-27.json` (her satırda kaynak; FIFA listesi
+  tarihli anlık görüntüdür, güncellerken `bans.snapshotAt` ve `dateModified`
+  değiştirin).
+- Üretici: `scripts/generate-transfer-period-page.mjs` (postprocess zincirinde;
+  sitemap girdisini de o ekler). Temiz adres `vercel.json` rewrite'ı ile
+  `transfer-donemi-2026-27.html` dosyasına gider; `.html` adresi 308 ile temiz
+  adrese yönlenir.
+- Test: `scripts/test-transfer-period-page.mjs`.
