@@ -34,6 +34,7 @@ for (const args of [
   ['--test', 'tests/primary-fixture-calendar.test.mjs'],
   ['scripts/test-squad-sync-e2e.mjs'],
   ['scripts/test-match-focus.mjs'],
+  ['--test', 'tests/emir11-discovery.test.mjs'],
   ['scripts/qa.mjs'],
   ['scripts/test-match-date-performance.mjs'],
   ['scripts/test-match-seo-pages.mjs'],
