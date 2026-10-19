@@ -47,5 +47,15 @@ threads still use one likes request. There is no schema change or new service.
 and REST client with a simulated HTTP database: first save/reload across TR/EN,
 multi-page likes and viewer state, later-page failure, bounded overflow and
 invalid offsets. All five tests pass, along with the existing fan and social
-checks. Real preview persistence verification is still pending; keep
-`enabled=false`, `matchSlug=null`, and the PR draft while that is incomplete.
+checks. The real preview verification result and deployment commit are recorded
+in PR #445's description after the run. Keep `enabled=false`, `matchSlug=null`,
+and the PR draft while any release check is incomplete; verification does not
+itself activate the feature.
+
+The production browser poll check on `d1baa2a` passed: click Beraberlik on
+Trabzonspor–Beşiktaş, observe the saved state, reload, and read the same selection
+again. The independent API read returned `storage=supabase`, `alreadyVoted=true`,
+`choice=draw`, and `total=1`. This test added one labelled-in-the-report draw vote.
+The existing production poll is the tested surface; this disabled draft was not
+deployed to production. Do not treat the earlier comment 503 as a successful
+comment-save check merely because the poll works.
