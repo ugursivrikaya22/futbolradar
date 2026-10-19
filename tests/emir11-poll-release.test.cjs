@@ -5,7 +5,12 @@ const { matchPollReleased } = require('../services/matchPollRelease');
 const enabled = { enabled: true, matchSlug: 'test-match-tr',
   verified: { pollPersistence: true, commentPersistence: true, browserFlow: true } };
 
-test('production defaults remain closed until all three checks pass', () => {
+test('release selects exactly one registered match and requires all three checks', () => {
+  const pages = require('../services/matchSeoPages').loadRegistry().pages;
+  const selected = pages.filter(page => matchPollReleased(page.slug));
+  assert.deepEqual(selected.map(page => page.slug), ['fenerbahce-slavia-praha-20-ekim-2026']);
+  assert.equal(selected[0].enSlug, 'fenerbahce-slavia-praha-october-20-2026');
+  assert.equal(matchPollReleased(release.matchSlug, { ...release, enabled: false }), false);
   assert.equal(matchPollReleased('test-match-tr'), false);
   assert.equal(matchPollReleased('test-match-tr', enabled), true);
   assert.equal(matchPollReleased('different-match', enabled), false);
@@ -24,11 +29,12 @@ test('route gate does no storage work when closed and exposes only winner when r
   const originalStore = require.cache[storePath].exports, originalRegistry = require.cache[registryPath].exports;
   let writes = 0, reads = 0;
   const entry = { slug: 'test-match-tr', enSlug: 'test-match-en', kickoff: '2099-01-01T18:00:00Z', homeTeam: 'Home', awayTeam: 'Away' };
+  const other = { ...entry, slug: 'other-match-tr', enSlug: 'other-match-en' };
   require.cache[storePath].exports = { ...store, isConfigured: () => true,
     findVote: async () => { reads++; return { voted: writes > 0, optionId: writes ? 'draw' : null }; },
     readTally: async () => { reads++; return writes ? { draw: 1 } : {}; },
     recordVote: async () => { writes++; } };
-  require.cache[registryPath].exports = { ...registry, loadRegistry: () => ({ pages: [entry] }) };
+  require.cache[registryPath].exports = { ...registry, loadRegistry: () => ({ pages: [entry, other] }) };
   delete require.cache[routePath];
   const route = require(routePath);
   const call = async (method, slug, questionId = 'winner') => {
@@ -44,6 +50,13 @@ test('route gate does no storage work when closed and exposes only winner when r
     assert.equal((await call('POST', entry.slug)).status, 503);
     assert.equal(reads + writes, 0);
     Object.assign(release, enabled);
+    for (const slug of [other.slug, other.enSlug]) {
+      const closed = await call('GET', slug);
+      assert.equal(closed.body.data.storage, 'none');
+      assert.deepEqual(closed.body.data.questions, []);
+      assert.equal((await call('POST', slug)).status, 503);
+    }
+    assert.equal(reads + writes, 0);
     const before = await call('GET', entry.enSlug);
     assert.deepEqual(before.body.data.questions.map(q => q.id), ['winner']);
     assert.equal((await call('POST', entry.slug, 'next-goal')).status, 400);
@@ -52,6 +65,10 @@ test('route gate does no storage work when closed and exposes only winner when r
     assert.equal(saved.status, 200);
     assert.equal(saved.body.data.questions[0].alreadyVoted, true);
     assert.equal(saved.body.data.questions[0].choice, 'draw');
+    assert.equal(writes, 1);
+    const reloaded = await call('GET', entry.slug);
+    assert.equal(reloaded.body.data.questions[0].alreadyVoted, true);
+    assert.equal(reloaded.body.data.questions[0].choice, 'draw');
     assert.equal(writes, 1);
   } finally {
     Object.assign(release, originalRelease);
