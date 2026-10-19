@@ -17,6 +17,17 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { createRequire } from "node:module";
+
+// İstatistik sayfası olan yarışmalar (data/stats-leagues.json → pages.*.stats)
+// puan durumu sayfasından oraya bağlanır; liste config'ten türetilir.
+const { loadStatsLeagues } = createRequire(import.meta.url)("../services/statsLeagues.js");
+const STATS_PAGES = new Map(loadStatsLeagues().filter((league) => league.pages && league.pages.tr && league.pages.tr.stats).map((league) => [league.competitionId, league]));
+function statsPageLink(entry, locale, label) {
+  const league = STATS_PAGES.get(entry.id);
+  const target = league && league.pages[locale] && league.pages[locale].stats;
+  return target ? [[`./${path.basename(target)}`, label(league.name[locale])]] : [];
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -131,6 +142,7 @@ function emptyStateHtml(nameEn) {
 function relatedLinksHtml(entry) {
   const links = [
     ["./standings.html", "Süper Lig standings hub"],
+    ...statsPageLink(entry, "en", (name) => `${name} stats: scorers, assists, form`),
     ["./todays-matches.html", "Today's matches"],
     ["./match-centre.html", "Match centre"]
   ];

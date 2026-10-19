@@ -22,6 +22,17 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { createRequire } from "node:module";
+
+// İstatistik sayfası olan yarışmalar (data/stats-leagues.json → pages.*.stats)
+// puan durumu sayfasından oraya bağlanır; liste config'ten türetilir.
+const { loadStatsLeagues } = createRequire(import.meta.url)("../services/statsLeagues.js");
+const STATS_PAGES = new Map(loadStatsLeagues().filter((league) => league.pages && league.pages.tr && league.pages.tr.stats).map((league) => [league.competitionId, league]));
+function statsPageLink(entry, locale, label) {
+  const league = STATS_PAGES.get(entry.id);
+  const target = league && league.pages[locale] && league.pages[locale].stats;
+  return target ? [[`./${path.basename(target)}`, label(league.name[locale])]] : [];
+}
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -142,6 +153,7 @@ function relatedLinksHtml(entry) {
   const links = [
     ["./puan-durumu.html", "Tüm ligler — puan durumu merkezi"],
     ["./lig/" + entry.id + ".html", `${entry.nameTr} fikstür ve sonuçlar`],
+    ...statsPageLink(entry, "tr", (name) => `${name} istatistikleri: gol, asist, form`),
     ["./bugunun-maclari.html", "Bugünün maçları"],
     ["./mac-merkezi.html", "Maç merkezi"]
   ];
