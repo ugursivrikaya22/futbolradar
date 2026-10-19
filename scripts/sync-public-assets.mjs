@@ -50,6 +50,7 @@ for (const file of [
   "match-center-plus.js",
   "match-center-plus.css",
   "site.webmanifest",
+  "en/site.webmanifest",
   "404.html",
   "index.html",
   "admin-updates.html",

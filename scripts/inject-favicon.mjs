@@ -55,10 +55,11 @@ const ICON_FILES = [
   "favicon-192x192.png",
   "favicon-512x512.png",
   "apple-touch-icon.png",
-  "site.webmanifest"
+  "site.webmanifest",
+  "en/site.webmanifest"
 ];
 
-const BLOCK = `${MARKER_START}
+const blockFor = (manifest) => `${MARKER_START}
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -66,8 +67,11 @@ const BLOCK = `${MARKER_START}
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
 <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512x512.png" />
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<link rel="manifest" href="/site.webmanifest" />
+<link rel="manifest" href="${manifest}" />
 ${MARKER_END}`;
+const BLOCK = blockFor("/site.webmanifest");
+const EN_BLOCK = blockFor("/en/site.webmanifest");
+const isEnglishPage = (file) => /^(?:public\/)?en\//.test(path.relative(root, file).split(path.sep).join("/"));
 
 function collectHtmlFiles(dir) {
   const found = [];
@@ -115,7 +119,7 @@ for (const file of collectHtmlFiles(root)) {
 
   checked += 1;
   const stripped = original.replace(BLOCK_RE, "").replace(LEGACY_LINE_RE, "");
-  const next = stripped.replace(/<\/head>/i, `${BLOCK}\n  </head>`);
+  const next = stripped.replace(/<\/head>/i, `${isEnglishPage(file) ? EN_BLOCK : BLOCK}\n  </head>`);
   if (next === original) continue;
 
   if (CHECK_ONLY) {
