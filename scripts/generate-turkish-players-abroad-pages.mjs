@@ -144,7 +144,7 @@ function matchesSection(player, rows) {
 function sourceList(player) {
   const sources = [player.source, player.secondarySource].filter(Boolean);
   return sources
-    .map((source) => `<a href="${escapeHtml(source.url)}" rel="noopener" target="_blank">${escapeHtml(source.label)}</a>`)
+    .map((source) => `<a href="${escapeHtml(source.url)}" rel="nofollow noopener noreferrer" target="_blank">${escapeHtml(source.label)}</a>`)
     .join(" · ");
 }
 
@@ -323,7 +323,7 @@ export function hubPage(entries) {
       ${groups}
       <section class="p360" aria-labelledby="abroad-sources">
         <div class="p360-head"><h2 id="abroad-sources">Kaynaklar</h2></div>
-        <p class="p360-source">Liste yalnızca doğrulanmış kaynaklardan derlenir: ${sources.map((source) => `<a href="${escapeHtml(source.url)}" rel="noopener" target="_blank">${escapeHtml(source.label)}</a>`).join(" · ")}. Maç ve dakika sütunları FutbolRadar maç kayıtlarından gelir; kaydı olmayan oyuncuda "–" görünür.</p>
+        <p class="p360-source">Liste yalnızca doğrulanmış kaynaklardan derlenir: ${sources.map((source) => `<a href="${escapeHtml(source.url)}" rel="nofollow noopener noreferrer" target="_blank">${escapeHtml(source.label)}</a>`).join(" · ")}. Maç ve dakika sütunları FutbolRadar maç kayıtlarından gelir; kaydı olmayan oyuncuda "–" görünür.</p>
       </section>
       <p><a class="detail-link" href="milli-takim.html">A Millî Takım</a></p>`;
   return documentHtml({ base: "", title, description, canonical: HUB_URL, indexable: true, ogType: "website", graph, main });

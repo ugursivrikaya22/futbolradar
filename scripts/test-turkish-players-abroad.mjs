@@ -87,6 +87,8 @@ const read = (relative) => fs.readFileSync(path.join(sandbox, relative), "utf8")
   assert.match(page, /<span>Asist<\/span><b>1<\/b>/);
   assert.doesNotMatch(page, /<span>Gol<\/span>/, "eksik gol alanı toplam gol olarak uydurulmaz");
   assert.match(page, /"@type":"Person"/);
+  assert.match(page, /rel="nofollow noopener noreferrer"/, "dış kaynak bağlantısı politika rel'ini taşır");
+  assert.doesNotMatch(page, /rel="noopener"/);
   assert.equal(read("public/futbolcu/kayitli-oyuncu.html"), page, "public kopyası aynı");
   console.log("  ok  istatistik yalnızca depodaki kayıtlardan, eksik alan uydurulmuyor");
 }
