@@ -59,3 +59,24 @@ again. The independent API read returned `storage=supabase`, `alreadyVoted=true`
 The existing production poll is the tested surface; this disabled draft was not
 deployed to production. Do not treat the earlier comment 503 as a successful
 comment-save check merely because the poll works.
+
+## Verified preview and source-policy integration
+
+Preview `c8531ec` (19 October 2026, 16:27 Türkiye time) used the same comment
+and poll runtime code as this PR. The original failed production submission
+was recovered as comment 1. One new browser submission was persisted as comment
+2, survived a full page reload, and was returned by an independent authenticated
+API GET with `storage=supabase`. The browser viewport was approximately 1265 px
+wide. Both comments are visibly labelled `FutbolRadar Test`.
+
+The preview poll remained hidden; its GET returned `storage=none` and no questions.
+The source allow-list CI failure was fixed upstream in #453 by changing the
+column's citations and removing unsupported claims, without expanding the
+allow-list. This PR integrates that existing fix rather than changing policy.
+
+Release remains disabled. After the complete PR CI passes, verify the deployed
+commit, a new production comment submission and reload, and the closed poll
+state across reloads. A disabled production poll must reject writes; do not
+temporarily enable it or bypass the gate just to manufacture a passing vote test.
+The earlier production vote/save/reload evidence remains separate from this
+closed-state check. Activation requires a separate reviewed change.
