@@ -30,7 +30,7 @@ const require = createRequire(import.meta.url);
 
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const {
-  broadcastChannel,
+  broadcastChannels,
   broadcastLabel,
   istanbulDayOffset,
   competitionDisplayName,
@@ -263,7 +263,7 @@ for (const page of PAGES) {
     matchListSchema(matches, {
       name: `${page.dayWord} oynanacak öncelikli futbol maçları ve yayın bilgileri`,
       urlFor: (match) => (match && (match.matchPage || match.analysisPage) ? matchDetailPath(match) : ""),
-      broadcastFor: (match) => broadcastChannel(match)
+      broadcastFor: (match) => broadcastChannels(match)
     }),
     {
       "@context": "https://schema.org",
