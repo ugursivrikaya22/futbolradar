@@ -38,6 +38,7 @@ import { aiMatchCenterPanelHtml, tabsHtml, AI_STR } from "./lib/aiMatchCenter.mj
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
+import { broadcasterLinkFor, deepLinksSectionHtml, fiveMinutesFrom, fiveMinutesSectionHtml, loadRadarTv, radarTvFor, radarTvSectionHtml, relatedColumnsFor, tacticalNotesFrom } from "./lib/matchCentreExtras.mjs";
 import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
 import {
   STR,
@@ -77,7 +78,8 @@ import {
   summarySectionHtml,
   teamSlug,
   whenSectionHtml,
-  faqEntries
+  faqEntries,
+  playerPageHref
 } from "./lib/matchSeoPage.mjs";
 
 const require = createRequire(import.meta.url);
@@ -116,6 +118,9 @@ const { resolveStandingsForMatch } = require("../services/standingsResolver.js")
 const { buildAiMatchCenter } = require("../services/aiMatchCenter.js");
 const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.js");
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
+const { verifiedBroadcast } = require("../services/broadcastSchedule.js");
+const { isAllowedSourceUrl, SOURCE_LINK_REL, PLAIN_EXTERNAL_REL } = require("../services/sourceLinks.js");
+const { publishedColumns } = require("../services/columnService.js");
 
 const CHECK_ONLY = process.argv.includes("--check");
 const NOW = Date.now();
@@ -384,6 +389,8 @@ const teams = readJson("data/teams.json", []);
 const players = getPlayers(readJson("data/players.json", []));
 const reportStore = readJson("data/post-match-reports.json", { records: [] });
 const reports = Array.isArray(reportStore) ? reportStore : (reportStore.records || reportStore.reports || []);
+const publicColumns = publishedColumns(readJson("data/columns.json", { columns: [] })).columns;
+const radarTvStore = loadRadarTv(root);
 const internationalTeams = readJson("data/international-teams.json", []);
 const predictedLineupsStore = readJson("data/predicted-lineups.json", { matches: [], sources: {}, asOf: null });
 /**
@@ -1205,6 +1212,41 @@ function schemaFor(entry, state, locale, ctx, urls) {
   return { "@context": "https://schema.org", "@graph": graph };
 }
 
+/** Türkçe maç sayfası için zenginleştirme bölümleri (bkz. lib/matchCentreExtras.mjs). */
+function matchCentreExtras(entry, { state, detail, report, reportHref, h2h, base }) {
+  const post = state === "post";
+  const moments = post ? fiveMinutesFrom(report) : [];
+  const tactical = post && reportHref ? tacticalNotesFrom(report) : [];
+  const columns = relatedColumnsFor({ columns: publicColumns, homeTeam: entry.homeTeam, awayTeam: entry.awayTeam, kickoff: entry.kickoff, sameClub });
+  const homeSlug = teamPageSlug(entry.homeTeam);
+  const awaySlug = teamPageSlug(entry.awayTeam);
+  const comparison = homeSlug && awaySlug
+    ? [`${homeSlug}-vs-${awaySlug}`, `${awaySlug}-vs-${homeSlug}`].find((slug) => fileExists(`karsilastirma/takimlar/${slug}.html`))
+    : null;
+  const keyPlayers = post && report && report.digest && report.digest.keyPlayers && report.digest.keyPlayers.status === "ready" ? report.digest.keyPlayers.players || [] : [];
+  const playerLinks = [];
+  for (const row of keyPlayers) {
+    const player = row && row.name ? playerIndex.find(row.name) : null;
+    const href = player ? playerPageHref(base, "tr", player.id) : null;
+    if (href && !playerLinks.some((link) => link.href === href)) playerLinks.push({ kicker: "Oyuncu", title: player.name || row.name, href });
+    if (playerLinks.length === 4) break;
+  }
+  const links = [
+    reportHref ? { kicker: "Maç raporu", title: "Maç sonu raporu", href: reportHref } : null,
+    tactical.length ? { kicker: "Taktik analiz", title: "Raporda taktik okuma", href: reportHref } : null,
+    post && Array.isArray(detail.statistics) && detail.statistics.length ? { kicker: "İstatistik", title: "Maç istatistikleri", href: "#istatistik" } : null,
+    h2h.length ? { kicker: "İkili rekabet", title: `Son ${h2h.length} karşılaşma`, href: "#son-maclar" } : null,
+    comparison ? { kicker: "Karşılaştırma", title: "Takım karşılaştırması", href: `${base}karsilastirma/takimlar/${comparison}` } : null,
+    ...columns.map((column) => ({ kicker: column.tactical ? "Analiz" : "Köşe yazısı", title: column.title, href: `${base}${column.path}` })),
+    ...playerLinks
+  ];
+  return {
+    five: fiveMinutesSectionHtml(moments),
+    tv: radarTvSectionHtml(radarTvFor(radarTvStore, entry.slug), PLAIN_EXTERNAL_REL),
+    deep: deepLinksSectionHtml({ links, broadcaster: broadcasterLinkFor(verifiedBroadcast(entry), isAllowedSourceUrl), sourceRel: SOURCE_LINK_REL })
+  };
+}
+
 function pageHtml(entry, locale, options) {
   const { state, detail, analysis, report, disambiguate, hrefForMatch, probability } = options;
   const base = locale === "en" ? "../../" : "../";
@@ -1287,7 +1329,10 @@ function pageHtml(entry, locale, options) {
   const focusH2h = focus && Array.isArray(focus.h2h) && focus.h2h.length
     ? focus.h2h.map((row) => ({ date: row.date, homeTeam: row.homeTeam, awayTeam: row.awayTeam, homeGoals: row.homeGoals, awayGoals: row.awayGoals, competition: row.competition }))
     : null;
-  const h2h = focusH2h || buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 5 });
+  const kickoffDay = istanbulDay(entry.kickoff);
+  const h2h = focusH2h || buildH2hEntries({ archiveRecords, calendarRec: detail.calendar, homeName: entry.homeTeam, awayName: entry.awayTeam, sameClub, limit: 11 })
+    .filter((row) => !kickoffDay || !row.date || istanbulDay(row.date) < kickoffDay)
+    .slice(0, 10);
   const focusForms = focus && focus.last10 && (focus.last10.home.length || focus.last10.away.length)
     ? { home: providerFormRows(focus.last10.home, focus.homeTeamId), away: providerFormRows(focus.last10.away, focus.awayTeamId), source: "provider-last10" }
     : null;
@@ -1322,6 +1367,7 @@ function pageHtml(entry, locale, options) {
   // kimlik yoksa bölüm "veri yok" der, başka bir ligin tablosunu basmaz.
   const leaders = resolveMatchLeaders(entry);
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
+  const extras = locale === "tr" ? matchCentreExtras(entry, { state, detail, report, reportHref, h2h, base }) : { five: "", tv: "", deep: "" };
 
   let sections = [];
   if (state === "post" || state === "pending" || state === "interrupted") {
@@ -1330,6 +1376,7 @@ function pageHtml(entry, locale, options) {
       // Yarıda kalan maç: sonuç İLAN EDİLMEZ. Son doğrulanmış skor yalnızca
       // bu notta, "son doğrulanmış" etiketiyle yazılır; skor tablosuna basılmaz.
       state === "interrupted" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.interruptedNote)}</strong>${hasScore(entry.score) ? `<span>${escapeHtml(text.lastKnownScore)}: ${escapeHtml(entry.score.home)}-${escapeHtml(entry.score.away)}</span>` : ""}</article></section>` : "",
+      extras.five,
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       // Paylaşım bölümü istatistiklerin ARDINDAN: kartın taşıdığı sayılar
@@ -1348,11 +1395,13 @@ function pageHtml(entry, locale, options) {
       // özet de aynı korumayı alıyor: İngilizce karşılığı varsa basılır,
       // yoksa bölüm hiç çizilmez (olay akışı ve istatistik zaten İngilizce).
       summarySectionHtml(locale === "en" ? (detail.summaryEn || "") : detail.summary, reportHref, ctx),
+      extras.tv,
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),
       h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx),
+      extras.deep,
       commentsSectionHtml(ctx)
     ];
   } else if (state === "live") {
@@ -1371,6 +1420,7 @@ function pageHtml(entry, locale, options) {
       leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx),
+      extras.deep,
       commentsSectionHtml(ctx)
     ];
   } else {
@@ -1379,6 +1429,7 @@ function pageHtml(entry, locale, options) {
       state === "cancelled" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.cancelledNote)}</strong></article></section>` : "",
       state === "tbd" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.tbdNote)}</strong></article></section>` : "",
       whenSectionHtml(entry, ctx),
+      extras.tv,
       lineupsSectionHtml(detail, analysis, ctx),
       squadsSectionHtml(squads, ctx),
       absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
@@ -1395,6 +1446,7 @@ function pageHtml(entry, locale, options) {
       eventsSectionHtml([], ctx),
       statsSectionHtml([], ctx),
       matchCenterPlusSectionsHtml(ctx),
+      extras.deep,
       commentsSectionHtml(ctx)
     ];
   }
