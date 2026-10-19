@@ -91,6 +91,9 @@ export const POSTPROCESS_CHAIN = [
   { id: "prediction-league-page", script: "generate-prediction-league-page.mjs", args: [], timeoutMinutes: 2 },
   // /takip-ettiklerim (kişisel sayfa, noindex): statik kabuk; içerik tarayıcıda yerel favorilerden çizilir.
   { id: "following-page", script: "generate-following-page.mjs", args: [], timeoutMinutes: 2 },
+  // World club pages (/takimlar/{slug}, /en/teams/{slug} + sub-pages): live blocks read
+  // standings/fixtures/leaders refreshed hourly, so they re-render here before shared layout.
+  { id: "world-club-pages", script: "generate-world-club-pages.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
