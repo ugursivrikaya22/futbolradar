@@ -21,6 +21,32 @@ const XML_ESCAPES = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'"
 export const escapeXml = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => XML_ESCAPES[c]);
 
 /**
+ * KÖŞE YAZILARI → NEWS HARİTASI KAYDI.
+ *
+ * Köşe yazıları (data/columns.json) editörün elle yayımladığı özgün kanaat
+ * metinleridir; otomatik keşif haberi değildir. Bu yüzden ince-haber kuralı
+ * (services/newsIndexPolicy.js) onlara uygulanmaz: kayıt `kind: "column"`
+ * taşır ve üretici `isExcluded`'da bu türü atlar. Adres, köşe yazısı
+ * sayfasının canonical'ıyla aynı: uzantısız `/kose-yazilari/<slug>`
+ * (bkz. generate-column-pages.mjs `publicUrl`). 48 saat penceresini ve
+ * gelecek tarih elemesini buildNewsSitemap uygular.
+ *
+ * @param {object[]} columns  columnService.publishedColumns(...).columns (Türkçe)
+ * @param {string} domain     https://www.futbolradar.com
+ */
+export function columnNewsItems(columns, domain) {
+  return (columns || [])
+    .filter((column) => column && column.path && column.title && column.date && column.locale !== "en")
+    .map((column) => ({
+      kind: "column",
+      id: column.id,
+      title: column.title,
+      publishedAt: column.date,
+      url: `${domain}/${String(column.path).replace(/\.html$/i, "")}`
+    }));
+}
+
+/**
  * @param {object[]} articles  yayımlanabilir haberler (publishedAt, title, …)
  * @param {{now?: number, urlFor: (a: object) => string, isExcluded?: (a: object) => boolean}} options
  * @returns {{xml: string, count: number}}
