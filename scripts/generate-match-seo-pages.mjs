@@ -38,6 +38,7 @@ import { aiMatchCenterPanelHtml, tabsHtml, AI_STR } from "./lib/aiMatchCenter.mj
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
+import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -1481,6 +1482,7 @@ function pageHtml(entry, locale, options) {
       ${matchFollowHtml(ctx)}
       ${countdownHtml(entry, ctx)}
       ${heroHtml(entry, ctx)}
+        ${matchDiscoveryHtml(entry, ctx, { players, next, now: NOW, related: [...forms.home, ...forms.away].map((row) => ({ match: row.match, href: hrefForMatch(row.match) })) })}
       ${matchTabs}
       ${relatedLinksHtml(related, locale)}
       <p class="msp-source muted-copy"><b>${escapeHtml(text.dataSource)}:</b> ${escapeHtml(text.dataSourceNote)}</p>

@@ -60,7 +60,7 @@ const playerUrls = require("../../services/playerUrl.js").createPlayerUrlResolve
  * kapısından geçen oyuncular için var ve olmayan bir sayfaya bağlantı
  * atmak 404 demek.
  */
-function playerPageHref(base, locale, id) {
+export function playerPageHref(base, locale, id) {
   const relative = locale === "en" ? playerUrls.enPlayerPagePath(id) : playerUrls.playerPagePath(id);
   if (!fs.existsSync(path.join(process.cwd(), relative))) return null;
   // Dosya var; TR bağlantısı 301'siz kanonik (uzantısız) adrese verilir.
