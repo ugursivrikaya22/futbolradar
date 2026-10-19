@@ -374,3 +374,27 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   assert.ok(!rendered.includes('<script>alert(1)</script>'));
   assert.match(rendered, /"author":\{"@type":"Organization","name":"FutbolRadar"/);
 }
+
+// Ana sayfa öne çıkan köşe yazısı: veriye bağlı, en yeni yazı, uzantısız adres, kaçırılmış metin.
+{
+  const { featuredColumnHtml, pickFeaturedColumn } = await import("./generate-column-pages.mjs");
+  const now = Date.parse("2026-10-19T17:00:00+03:00");
+  const older = presentColumn(column({ id: "eski-yazi", date: "2026-10-18T23:30:00+03:00" }));
+  // UTC ofseti farklı ama zamanca daha yeni: metin sıralaması yanılırdı.
+  const newer = presentColumn(column({ id: "yeni-yazi", title: "Yeni <b>yazı</b> & \"tırnak\"", excerpt: "Özet <script>x</script>", date: "2026-10-18T21:00:00Z" }));
+  const future = presentColumn(column({ id: "gelecek-yazi", date: "2026-10-20T10:00:00+03:00" }));
+  assert.equal(pickFeaturedColumn([older, newer, future], now).id, "yeni-yazi", "vitrin en yeni (gelecek tarihli olmayan) yazıyı seçmeli");
+  const hero = featuredColumnHtml([older, newer, future], now);
+  assert.match(hero, /<article class="home-featured-column__card"/, "vitrin <article> olmalı");
+  assert.match(hero, /<h2 class="home-featured-column__title"/, "vitrin başlığı h2 olmalı");
+  const cleanHref = `./${newer.path.replace(/\.html$/, "")}`;
+  assert.ok(hero.includes(`href="${cleanHref}" aria-label="Devamını Oku: `), "Devamını Oku uzantısız kanonik adrese gitmeli");
+  assert.ok(!hero.includes(".html"), "vitrin .html uzantılı bağlantı vermemeli");
+  assert.match(hero, /Yeni &lt;b&gt;yazı&lt;\/b&gt; &amp; &quot;tırnak&quot;/, "başlık kaçırılmalı");
+  assert.ok(!hero.includes("<script>"), "özet kaçırılmalı");
+  assert.match(hero, /Köşe Yazısı/, "vitrin yorum rozetini taşımalı");
+  assert.equal(featuredColumnHtml([], now), "", "yazı yoksa vitrin boş kalmalı");
+  const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  assert.match(home, /<section[^>]*data-featured-column[^>]*aria-label="Öne çıkan köşe yazısı"/, "ana sayfada vitrin bölümü olmalı");
+  assert.match(home, /<!-- prerender:home-featured-column:start -->/, "ana sayfada vitrin slot'u olmalı");
+}

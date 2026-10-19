@@ -627,6 +627,7 @@ function checkSeoAndLinks() {
       expect(html.includes("analizler.html"), `${page}: missing analysis hub route`);
       expect(html.includes('data-api-target="home-columns"'), `${page}: missing latest columns block`);
       expect(html.includes("Son Köşe Yazıları"), `${page}: latest columns heading is unclear`);
+      expect(/<section\b[^>]*\bdata-featured-column\b/.test(html), `${page}: missing featured column section`);
     }
 
     if (page === "kose-yazilari.html") {
