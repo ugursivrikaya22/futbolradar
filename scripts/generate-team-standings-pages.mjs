@@ -118,6 +118,7 @@ function relatedStandingsLinks(team) {
     ...(fs.existsSync(path.join(root, `${team.slug}-maclari.html`))
       ? [{ href: `./${team.slug}-maclari.html`, kicker: "Fikstür", title: `${team.name} maçları`, text: "Sıradaki maç, yaklaşan karşılaşmalar ve sonuçlar." }]
       : []),
+    { href: `./puan-durumu-simulator?takim=${team.slug}`, kicker: "Simülatör", title: `${team.name} kazanırsa ne olur?`, text: "Sıradaki maçın üç sonucunu ve kalan maçları tabloda dene." },
     { href: "./canli-skor.html", kicker: "Canlı", title: "Canlı skor", text: "Oynanan maçların dakikası ve skoru." },
     { href: "./mac-sonuclari.html", kicker: "Sonuç", title: "Maç sonuçları", text: "Doğrulanmış Süper Lig ve Avrupa sonuçları." },
     { href: "./gol-kralligi.html", kicker: "Gol", title: "Gol krallığı radarı", text: "Gol tehdidi ve bitiricilikle okunan sıralama." }
