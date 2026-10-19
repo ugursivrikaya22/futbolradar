@@ -428,6 +428,7 @@ export function columnPageHtml(column, locale = "tr") {
         ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}
         ${shareLinks(column)}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
+        ${column.note ? `<p class="column-disclaimer column-note"><strong>${escapeHtml(column.note)}</strong></p>` : ""}
         ${updatesHtml}
 
         <div class="column-body">
