@@ -93,6 +93,7 @@ const {
   evaluateEligibility,
   identityOf,
   isIndexableEntry,
+  isTurkeyRelevantEntry,
   istanbulDateParts,
   loadRegistry,
   pageStateOf,
@@ -1439,7 +1440,7 @@ function pageHtml(entry, locale, options) {
 
   const urls = { canonical };
   const schema = schemaFor(entry, state, locale, ctx, urls);
-  const indexable = isIndexableEntry(entry, NOW);
+  const indexable = isIndexableEntry(entry, NOW) && (locale !== "en" || isTurkeyRelevantEntry(entry));
   const detailQuery = entry.providerIds && entry.providerIds.apiFootball
     ? `fixtureId=${encodeURIComponent(entry.providerIds.apiFootball)}&date=${encodeURIComponent(istanbulDay(entry.kickoff))}`
     : detail.naturalId ? `id=${encodeURIComponent(detail.naturalId)}&date=${encodeURIComponent(istanbulDay(entry.kickoff))}` : "";
@@ -1657,7 +1658,8 @@ function hubPages(entries, hrefForEntry) {
 /* ------------------------------------------------------------------ */
 
 function sitemapEntry(url, alt, lastmod, changefreq, priority) {
-  return `  <url>\n    <loc>${url}</loc>\n    <xhtml:link rel="alternate" hreflang="tr-TR" href="${alt.tr}"/>\n    <xhtml:link rel="alternate" hreflang="en" href="${alt.en}"/>\n    <xhtml:link rel="alternate" hreflang="x-default" href="${alt.tr}"/>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
+  const enAlternate = alt.en ? `\n    <xhtml:link rel="alternate" hreflang="en" href="${alt.en}"/>` : "";
+  return `  <url>\n    <loc>${url}</loc>\n    <xhtml:link rel="alternate" hreflang="tr-TR" href="${alt.tr}"/>${enAlternate}\n    <xhtml:link rel="alternate" hreflang="x-default" href="${alt.tr}"/>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${changefreq}</changefreq>\n    <priority>${priority}</priority>\n  </url>`;
 }
 
 function isOwnSitemapEntry(entry) {
@@ -1770,9 +1772,9 @@ for (const plan of plans) {
     const daysToKickoff = (kickoffMs(entry) - NOW) / 86400000;
     const changefreq = state === "live" ? "hourly" : state === "pre" && daysToKickoff <= 7 ? "daily" : state === "post" ? "monthly" : "weekly";
     const priority = state === "live" ? "0.9" : state === "pre" && daysToKickoff <= 7 ? "0.8" : state === "post" && daysToKickoff > -14 ? "0.7" : "0.6";
-    const alt = { tr: trPage.canonical, en: enPage.canonical };
+    const alt = { tr: trPage.canonical, en: enPage.indexable ? enPage.canonical : null };
     sitemapEntries.push(sitemapEntry(trPage.canonical, alt, trLastmod, changefreq, priority));
-    sitemapEntries.push(sitemapEntry(enPage.canonical, alt, enLastmod, changefreq, state === "live" ? "0.7" : "0.6"));
+    if (enPage.indexable) sitemapEntries.push(sitemapEntry(enPage.canonical, alt, enLastmod, changefreq, state === "live" ? "0.7" : "0.6"));
   }
 }
 

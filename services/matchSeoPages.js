@@ -25,6 +25,7 @@ const { canonicalStatus, isTimeUnconfirmed, istanbulDay, kickoffMs, LIVE_GRACE_M
 const { resolveCompetitionId, findCompetition, isAmbiguousCompetitionName } = require("./competitionCatalog.js");
 const { sameClub, fixtureTeamNames } = require("./superLigTeams.js");
 const { nationKey } = require("./displayLabels.js");
+const { isTurkishTeamName } = require("./turkishTeams.js");
 
 const DOMAIN = "https://www.futbolradar.com";
 const REGISTRY_PATH = path.join(__dirname, "..", "data", "match-seo-pages.json");
@@ -178,6 +179,28 @@ function isTurkiyeNationalMatch(match) {
   if (!match) return false;
   if (isNonSeniorCompetition(match)) return false;
   return [match.homeTeam, match.awayTeam].some((name) => NATIONAL_TEAM_NAMES.has(normalizeText(name)));
+}
+
+const EUROPEAN_CUP_IDS = new Set(["sampiyonlar-ligi", "avrupa-ligi", "konferans-ligi"]);
+
+function isSuperLigTeam(name) {
+  if (!fixtureNameCache) fixtureNameCache = fixtureTeamNames();
+  const wanted = normalizeText(name);
+  if (!wanted) return false;
+  return fixtureNameCache.some((candidate) => normalizeText(candidate) === wanted || sameClub(candidate, name));
+}
+
+/**
+ * İngilizce maç sayfası yalnızca Türk futboluna dokunan maçta indekslenir:
+ * Süper Lig takımı, Türkiye A Millî Takımı ya da Avrupa kupasında Türk kulübü.
+ * Diğer maçların EN sayfası kalır, `noindex,follow` olur ve haritaya girmez.
+ */
+function isTurkeyRelevantEntry(entry) {
+  if (!entry || !entry.homeTeam || !entry.awayTeam) return false;
+  const sides = [entry.homeTeam, entry.awayTeam];
+  if (sides.some(isSuperLigTeam)) return true;
+  if (isTurkiyeNationalMatch(entry)) return true;
+  return EUROPEAN_CUP_IDS.has(entry.competitionId) && sides.some(isTurkishTeamName);
 }
 
 /**
@@ -450,6 +473,7 @@ module.exports = {
   evaluateEligibility,
   identityOf,
   isIndexableEntry,
+  isTurkeyRelevantEntry,
   isTurkiyeNationalMatch,
   istanbulDateParts,
   loadIndex,

@@ -99,6 +99,18 @@ check("iptal ve erteleme: sayfa kalır, indekslenmez", () => {
   assert.equal(seo.isIndexableEntry({ ...cancelled, status: "SCHEDULED" }, NOW), true);
 });
 
+check("EN indeks kuralı: Süper Lig takımı, Türkiye ya da Avrupa kupasında Türk kulübü", () => {
+  const match = (homeTeam, awayTeam, competitionId) => ({ slug: "x", homeTeam, awayTeam, competitionId });
+  assert.equal(seo.isTurkeyRelevantEntry(match("Galatasaray", "Barcelona", "sampiyonlar-ligi")), true);
+  assert.equal(seo.isTurkeyRelevantEntry(match("Fenerbahçe", "Beşiktaş", "super-lig")), true);
+  assert.equal(seo.isTurkeyRelevantEntry(match("Belgium", "Türkiye", "uefa-uluslar-ligi")), true);
+  assert.equal(seo.isTurkeyRelevantEntry(match("KuPS", "Trabzonspor", "konferans-ligi")), true);
+  assert.equal(seo.isTurkeyRelevantEntry(match("Werder Bremen", "SC Paderborn 07", "bundesliga")), false);
+  assert.equal(seo.isTurkeyRelevantEntry(match("Rayo Vallecano", "Espanyol", "la-liga")), false);
+  assert.equal(seo.isTurkeyRelevantEntry(match("FC Vaduz", "Inter Turku", "konferans-ligi")), false);
+  assert.equal(seo.isTurkeyRelevantEntry(match("Sakaryaspor", "Boluspor", "1-lig")), false);
+});
+
 // ── 4. Dürüst boş durumlar ────────────────────────────────────────────────
 const baseCtx = (locale) => ({ locale, base: "../", state: "pre", playerIndex: { find: () => null }, homeTeam: "Fenerbahçe", awayTeam: "Beşiktaş", homeHref: null, awayHref: null, homeLogo: null, awayLogo: null, competitionName: "Süper Lig", roundLabel: "4. Hafta" });
 
@@ -253,20 +265,35 @@ check("F) mobil güvenlik: sabit piksel genişlik yok, armalar boyutlu (CLS yok)
   }
 });
 
-check("J) sitemap: indekslenebilir her maç sayfası (TR+EN) alternate ve tarihli lastmod ile listeli; iptal edilen listede değil", () => {
+check("J) sitemap: indekslenebilir her maç sayfası alternate ve tarihli lastmod ile listeli; EN yalnızca Türk futboluna dokunan maçta; iptal edilen listede değil", () => {
   assert.ok(sitemap, "sitemap.xml yok");
+  const entryBlockOf = (url) => {
+    const block = sitemap.slice(sitemap.indexOf(`<loc>${url}</loc>`));
+    return block.slice(0, block.indexOf("</url>"));
+  };
   for (const entry of pages) {
     const trUrl = seo.trPageUrl(entry.slug);
+    const enUrl = seo.enPageUrl(entry.enSlug);
     const listed = sitemap.includes(`<loc>${trUrl}</loc>`);
+    const enListed = sitemap.includes(`<loc>${enUrl}</loc>`);
+    const enHtml = fs.existsSync(path.join(root, seo.enPagePath(entry.enSlug))) ? read(seo.enPagePath(entry.enSlug)) : "";
     if (seo.isIndexableEntry(entry)) {
       assert.ok(listed, `sitemap'te yok: ${trUrl}`);
-      assert.ok(sitemap.includes(`<loc>${seo.enPageUrl(entry.enSlug)}</loc>`), `EN sitemap'te yok: ${entry.enSlug}`);
+      if (seo.isTurkeyRelevantEntry(entry)) {
+        assert.ok(enListed, `EN sitemap'te yok: ${entry.enSlug}`);
+        assert.ok(entryBlockOf(trUrl).includes(`hreflang="en" href="${enUrl}"`), `TR girdisi EN eşini göstermiyor: ${entry.slug}`);
+      } else {
+        assert.ok(!enListed, `Türk futboluna dokunmayan EN maç sayfası sitemap'te: ${entry.enSlug}`);
+        assert.ok(!entryBlockOf(trUrl).includes('hreflang="en"'), `TR girdisi haritada olmayan EN eşini gösteriyor: ${entry.slug}`);
+        assert.match(enHtml, /<meta name="robots" content="noindex,follow/, `EN sayfa noindex değil: ${entry.enSlug}`);
+      }
     } else {
       assert.ok(!listed, `indekslenmeyen sayfa sitemap'te: ${trUrl}`);
+      assert.ok(!enListed, `indekslenmeyen EN sayfa sitemap'te: ${entry.enSlug}`);
     }
   }
-  const block = sitemap.slice(sitemap.indexOf(`<loc>${seo.trPageUrl(pages[0].slug)}</loc>`));
-  const entryBlock = block.slice(0, block.indexOf("</url>"));
+  const sample = pages.find((entry) => seo.isIndexableEntry(entry) && seo.isTurkeyRelevantEntry(entry));
+  const entryBlock = entryBlockOf(seo.trPageUrl(sample.slug));
   assert.match(entryBlock, /<lastmod>\d{4}-\d{2}-\d{2}<\/lastmod>/);
   assert.ok(entryBlock.includes('hreflang="en"') && entryBlock.includes('hreflang="x-default"'));
   assert.ok(sitemap.includes("<loc>https://www.futbolradar.com/mac-takvimi</loc>") && sitemap.includes("<loc>https://www.futbolradar.com/en/matches</loc>"), "hub sayfaları sitemap'te");
