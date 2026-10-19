@@ -18,7 +18,7 @@
  *
  * Options (tests): --fixtures-store=<json> --leaders-store=<json>
  *                  --out=<dir> (default: repo root + public/) --no-sitemap
- *                  --now=<iso>
+ *                  --now=<iso> --sitemap-only (refresh sitemap entries only)
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -371,7 +371,7 @@ export function generateCompetitionStatsPages(options = {}) {
         playerHref: (slug) => playerUrls.playerCanonicalHref(slug, base)
       });
       const html = renderPage(league, locale, payload, leagues);
-      for (const outRoot of outRoots) {
+      for (const outRoot of options.sitemapOnly ? [] : outRoots) {
         const destination = path.join(outRoot, `${relative}.html`);
         fs.mkdirSync(path.dirname(destination), { recursive: true });
         fs.writeFileSync(destination, html, "utf8");
@@ -393,6 +393,7 @@ if (isMain) {
     out: arg("out"),
     now: arg("now"),
     noSitemap: process.argv.includes("--no-sitemap"),
+    sitemapOnly: process.argv.includes("--sitemap-only"),
     fixturesStore: arg("fixtures-store") ? readJson(arg("fixtures-store")) : undefined,
     leadersStore: arg("leaders-store") ? readJson(arg("leaders-store")) : undefined
   });

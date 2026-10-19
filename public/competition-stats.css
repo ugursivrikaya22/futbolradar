@@ -1,0 +1,67 @@
+/* Competition stats pages (Şampiyonlar Ligi / Avrupa Ligi). Mobile-first.
+   Kept out of page.css on purpose: page.css carries one site-wide version
+   stamp, and these rules only matter on four pages. */
+.competition-stats-page .cs-format-note { font-size: .92rem; color: var(--muted, #64748b); max-width: 70ch; }
+.cs-filter-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 10px; }
+.cs-filter-bar button, .cs-filter-bar .stats-filter-result { grid-column: 1 / -1; }
+.cs-filter-bar .stats-filter-result:empty { display: none; }
+.cs-filter-bar select { min-height: 44px; font-size: 16px; }
+.cs-filter-bar [hidden] { display: none !important; }
+.cs-jump { display: flex; gap: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 0 20px; padding-bottom: 4px; scrollbar-width: none; }
+.cs-jump::-webkit-scrollbar { display: none; }
+.cs-jump a { flex: 0 0 auto; padding: 8px 14px; border: 1px solid var(--line, #dbe4e0); border-radius: 999px; font-size: .88rem; font-weight: 700; text-decoration: none; color: var(--text, #0f172a); background: rgba(var(--surface-rgb, 255,255,255), .9); }
+.cs-section { scroll-margin-top: 150px; margin-bottom: 28px; }
+.cs-note, .cs-source { font-size: .85rem; color: var(--muted, #64748b); margin: 0 0 10px; }
+.cs-table { font-size: .9rem; }
+.cs-table th[scope="row"] { text-align: left; }
+.cs-team { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.cs-team > span:last-child { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 42vw; }
+.cs-logo { width: 20px; height: 20px; flex: 0 0 20px; object-fit: contain; }
+.cs-logo-empty { display: inline-block; border-radius: 50%; background: var(--line, #dbe4e0); }
+.cs-form { display: inline-flex; gap: 3px; }
+.cs-form-chip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 4px; font-size: .72rem; font-weight: 800; color: #fff; }
+.cs-form-w { background: #0b8f5a; }
+.cs-form-d { background: #94a3b8; }
+.cs-form-l { background: #dc2626; }
+.cs-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 16px; }
+.cs-summary-item { padding: 10px 12px; border: 1px solid var(--line, #dbe4e0); border-radius: 8px; background: rgba(var(--surface-rgb, 255,255,255), .86); }
+.cs-summary-item dt { font-size: .72rem; font-weight: 800; text-transform: uppercase; color: var(--muted, #64748b); }
+.cs-summary-item dd { margin: 4px 0 0; font-size: 1.15rem; font-weight: 800; }
+.cs-summary-wide { grid-column: 1 / -1; }
+.cs-summary-wide dd { font-size: 1rem; }
+.cs-subhead { font-size: 1rem; margin: 8px 0; }
+.cs-fixtures { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.cs-fixture { padding: 8px 10px; border: 1px solid var(--line, #dbe4e0); border-radius: 8px; }
+.cs-fixture-round { display: block; font-size: .72rem; color: var(--muted, #64748b); margin-bottom: 2px; }
+.cs-fixture-teams { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; font-size: .92rem; }
+.cs-home { text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-away { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-score { min-width: 44px; text-align: center; }
+.cs-kickoff { font-size: .78rem; color: var(--muted, #64748b); text-align: center; }
+.cs-empty { margin: 8px 0; }
+.cs-example-banner { padding: 10px 14px; border: 2px dashed #dc2626; border-radius: 8px; color: #991b1b; background: #fef2f2; }
+@media (min-width: 761px) {
+  .cs-filter-bar { grid-template-columns: repeat(2, minmax(0, 1fr)) auto; }
+  .cs-filter-bar button, .cs-filter-bar .stats-filter-result { grid-column: auto; }
+  .cs-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .cs-team > span:last-child { max-width: none; }
+}
+/* Mobile-first tables: the leaders table stacks the club under the player,
+   the form table drops W/D/L/GF/GA below 761px (played, GD and last 5 stay). */
+.cs-table { width: 100%; table-layout: auto; }
+.cs-table th, .cs-table td { padding: 8px 6px; }
+.cs-col-rank { width: 34px; text-align: center; }
+.cs-col-num { width: 44px; text-align: center; }
+.cs-col-player, .cs-col-team { text-align: left; }
+.cs-player-name { display: block; font-weight: 700; }
+.cs-player-team { margin-top: 2px; font-size: .78rem; font-weight: 500; color: var(--muted, #64748b); }
+.cs-player-team .cs-logo { width: 16px; height: 16px; flex-basis: 16px; }
+.cs-col-wide { display: none; }
+.cs-col-form { white-space: nowrap; }
+.cs-form-chip { width: 20px; height: 20px; }
+.cs-form-table .cs-team > span:last-child { max-width: 34vw; }
+@media (min-width: 761px) {
+  .cs-col-wide { display: table-cell; }
+  .cs-form-chip { width: 22px; height: 22px; }
+  .cs-form-table .cs-team > span:last-child { max-width: none; }
+}
