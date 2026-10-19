@@ -31,6 +31,8 @@ for (const file of [
   "favorites-core.js",
   "takip.js",
   "takip.css",
+  "puan-durumu-simulator.js",
+  "puan-durumu-simulator.css",
   "operations-dashboard.js",
   "match-notifications-core.js",
   "match-notifications.css",

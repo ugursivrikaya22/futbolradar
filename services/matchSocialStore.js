@@ -89,13 +89,24 @@ async function listComments(matchSlug, viewerKey) {
   if (!rows.length) return [];
 
   const ids = rows.map((row) => Number(row.id)).filter(Number.isFinite);
-  const likes = ids.length
-    ? await client().select(LIKES, {
+  const likes = [];
+  // The shared client accepts at most 1,000 rows per request. The old 8,000
+  // limit threw after the first comment was inserted, making save AND reload
+  // return 503. Preserve the existing read budget with bounded pages.
+  const maxLikes = MAX_ROWS * 20;
+  for (let offset = 0; ids.length; offset += client().MAX_SELECT_ROWS) {
+    const page = await client().select(LIKES, {
       columns: "comment_id,voter_key",
       filters: { comment_id: `in.(${ids.join(",")})` },
-      limit: MAX_ROWS * 20
-    })
-    : [];
+      order: "comment_id.asc,voter_key.asc",
+      limit: offset === maxLikes ? 1 : client().MAX_SELECT_ROWS,
+      offset
+    });
+    // Never report a truncated tally as a complete count.
+    if (offset === maxLikes && page.length) throw new Error("match-comment-likes-read-budget-exceeded");
+    likes.push(...page);
+    if (page.length < client().MAX_SELECT_ROWS) break;
+  }
 
   const counts = new Map();
   const mine = new Set();
