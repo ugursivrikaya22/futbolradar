@@ -44,6 +44,29 @@
   loader.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(ga4Valid ? ga4Id : adsId);
   document.head.appendChild(loader);
 
+  // Reuse GA4; at most one click per destination type per page view.
+  // No IDs, query strings, extra collector, storage, polling, or provider calls.
+  var discovery = document.querySelector("[data-match-discovery]");
+  if (ga4Valid && discovery) {
+    var types = ["team", "player", "related_match", "next_match"];
+    var dimensions = { locale: document.documentElement.lang === "en" ? "en" : "tr" };
+    types.forEach(function (type) {
+      dimensions["has_" + type] = discovery.querySelector('[data-discovery-link="' + type + '"]') ? 1 : 0;
+    });
+    window.gtag("event", "match_navigation_view", dimensions);
+    var clicked = {};
+    discovery.addEventListener("click", function (event) {
+      var link = event.target.closest ? event.target.closest("[data-discovery-link]") : null;
+      if (!link || !discovery.contains(link)) return;
+      var type = link.getAttribute("data-discovery-link");
+      if (types.indexOf(type) === -1 || clicked[type]) return;
+      clicked[type] = true;
+      window.gtag("event", "match_navigation_click", {
+        destination_type: type, locale: dimensions.locale, transport_type: "beacon"
+      });
+    });
+  }
+
   document.addEventListener("click", function (event) {
     var link = event.target.closest ? event.target.closest("a[href]") : null;
     if (!link) return;
