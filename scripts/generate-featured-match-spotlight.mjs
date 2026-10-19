@@ -35,6 +35,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { spotlightBlock, spotlightStrip } from "./lib/featuredMatchSpotlight.mjs";
+import { applyFeaturedColumnNote, featuredColumnNote } from "./lib/featuredColumnNote.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -376,6 +377,38 @@ for (const page of homePages) {
     anchorLabel: "hero bölümü",
     withAssets: true
   });
+}
+
+/* ÖNE ÇIKAN KÖŞE YAZISI NOTU (yalnızca Türkçe ana sayfa).
+   Vitrinin seçtiği maçtan türetilir; maç bugün değilse, başlamasının üzerinden
+   2 saat geçtiyse ya da maç seçilmemişse slot boşalır ve not `hidden` olur.
+   Bağlantı yalnızca kalıcı maç sayfası diskte varsa verilir. */
+{
+  const homeOpen = selected && isHomeFixture(selected, now) && ["pre", "live"].includes(spotlight.phaseOf(selected, now, config));
+  const matchPage = selected && selected.slug && fs.existsSync(path.join(root, `mac/${selected.slug}.html`));
+  const note = homeOpen
+    ? featuredColumnNote({
+      homeTeam: selected.homeTeam,
+      awayTeam: selected.awayTeam,
+      kickoff: selected.kickoff,
+      venue: selected.venue,
+      phase: spotlight.phaseOf(selected, now, config),
+      href: matchPage ? `./mac/${selected.slug}` : ""
+    }, now)
+    : { html: "" };
+  for (const file of targetsFor("index.html")) {
+    const absolute = path.join(root, file);
+    const original = fs.readFileSync(absolute, "utf8");
+    const next = applyFeaturedColumnNote(original, note.html);
+    if (next === original) continue;
+    if (CHECK_ONLY) {
+      problems.push(`${file}: köşe yazısı maç notu güncel değil`);
+      continue;
+    }
+    if (DRY_RUN) continue;
+    fs.writeFileSync(absolute, next, "utf8");
+    updated += 1;
+  }
 }
 
 /* Takım ve lig sayfasındaki iç bağlantı şeridi. Hedef dosya yoksa sessizce

@@ -24328,3 +24328,48 @@ a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: va
 @media (prefers-reduced-motion: reduce) {
   .home-featured-column__cta { transition: none; }
 }
+
+/* Köşe notu: öne çıkan köşe yazısı kartının altında bugünün maçı
+   (scripts/lib/featuredColumnNote.mjs). Kısa, tek satıra sığmazsa sarılır. */
+.home-featured-column__note { margin-top: var(--sp-3); }
+.home-featured-column__note[hidden] { display: none; }
+.home-featured-column__note-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sp-2);
+  margin: 0;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--green-tint, rgba(11, 143, 90, 0.08));
+  color: var(--text);
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+.home-featured-column__note-kicker {
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--green, #0b8f5a);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.home-featured-column__note-link {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 6px;
+  min-height: 44px;
+  color: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+a.home-featured-column__note-link:hover { color: var(--green, #0b8f5a); text-decoration: underline; }
+a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
+.home-featured-column__note-link strong { font-weight: 900; }
+@media (min-width: 721px) {
+  .home-featured-column__note-text { font-size: var(--fs-base); padding: var(--sp-3) var(--sp-6); }
+}

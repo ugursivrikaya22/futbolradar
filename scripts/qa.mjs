@@ -628,6 +628,7 @@ function checkSeoAndLinks() {
       expect(html.includes('data-api-target="home-columns"'), `${page}: missing latest columns block`);
       expect(html.includes("Son Köşe Yazıları"), `${page}: latest columns heading is unclear`);
       expect(/<section\b[^>]*\bdata-featured-column\b/.test(html), `${page}: missing featured column section`);
+      expect(/<aside\b[^>]*\bdata-featured-column-note\b/.test(html), `${page}: missing featured column match note shell`);
       {
         // Sıra: canlı skor kahramanı → öne çıkan köşe yazısı → maç vitrini / maç dosyası kutusu.
         const heroAt = html.indexOf('id="hero-canli-skor"');
