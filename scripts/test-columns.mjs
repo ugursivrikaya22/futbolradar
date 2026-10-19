@@ -397,4 +397,29 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
   assert.match(home, /<section[^>]*data-featured-column[^>]*aria-label="Öne çıkan köşe yazısı"/, "ana sayfada vitrin bölümü olmalı");
   assert.match(home, /<!-- prerender:home-featured-column:start -->/, "ana sayfada vitrin slot'u olmalı");
+
+  // SIRA: canlı skor kahramanı → öne çıkan köşe yazısı → maç vitrini / maç dosyası.
+  // Şablonda bölüm hero'nun HEMEN ardında (arada yalnızca açıklama yorumu olabilir);
+  // maç günü olmasa da (vitrin bloğu sökülmüşken) bu sıra korunur.
+  const heroEnd = home.match(/<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n/);
+  assert.ok(heroEnd, "ana sayfada canlı skor kahramanı bulunmalı");
+  const afterHero = home.slice(heroEnd.index + heroEnd[0].length);
+  assert.match(afterHero, /^\s*(?:<!--[\s\S]*?-->\s*)?<section class="container home-featured-column"/, "öne çıkan köşe yazısı canlı skor kahramanının hemen altında olmalı");
+  const featuredAt = home.indexOf("data-featured-column");
+  for (const marker of ["<!-- featured-match-spotlight:start -->", "<!-- match-special:start -->"]) {
+    const at = home.indexOf(marker);
+    if (at >= 0) assert.ok(featuredAt < at, `öne çıkan köşe yazısı ${marker} bloğunun üstünde olmalı`);
+  }
+  // Enjektörler kendi bloklarını önce köşe yazısı bölümünün ardına, yoksa hero'nun ardına yazar.
+  const spotlightSource = fs.readFileSync(path.join(root, "scripts", "generate-featured-match-spotlight.mjs"), "utf8");
+  const specialSource = fs.readFileSync(path.join(root, "scripts", "inject-match-special.mjs"), "utf8");
+  assert.match(spotlightSource, /anchors: \[FEATURED_COLUMN_END_RE, HERO_END_RE\]/, "maç vitrini köşe yazısı bölümünün ardına yazılmalı");
+  assert.match(specialSource, /\[FEATURED_COLUMN_END_RE, HERO_END_RE\]\.find/, "maç dosyası kutusu köşe yazısı bölümünün ardına yazılmalı");
+  // Çapa deseni gerçek bir sayfada bölümün tamamını (ve yalnızca onu) yakalamalı.
+  const anchorSource = (spotlightSource.match(/const FEATURED_COLUMN_END_RE = (\/.+\/);/) || [])[1];
+  assert.ok(anchorSource, "FEATURED_COLUMN_END_RE tanımı bulunmalı");
+  const anchorRe = new Function(`return ${anchorSource}`)();
+  const sample = `<section class="container hero" id="hero-canli-skor"><div></div></section>\n<section class="container home-featured-column" data-featured-column hidden>\n<!-- s --><!-- e -->\n</section>\n<section class="container x"></section>\n`;
+  const caught = sample.match(anchorRe);
+  assert.ok(caught && caught[0].endsWith("</section>\n") && !caught[0].includes("container x") && !caught[0].includes("hero-canli-skor"), "çapa yalnızca köşe yazısı bölümünü yakalamalı");
 }
