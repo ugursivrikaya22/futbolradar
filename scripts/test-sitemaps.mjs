@@ -19,7 +19,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { DOMAIN, auditSitemap, createResolver } from "./lib-link-audit.mjs";
-import { NEWS_MAX_URLS, NEWS_WINDOW_MS, buildNewsSitemap } from "./lib/newsSitemap.mjs";
+import { NEWS_MAX_URLS, NEWS_WINDOW_MS, buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
 
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -220,6 +220,21 @@ const urls = [];
   const many = Array.from({ length: 1200 }, (_, i) => ({ id: `n${i}`, title: `Haber ${i}`, publishedAt: hours(1 + (i % 40)) }));
   assert.equal(buildNewsSitemap(many, { now, urlFor: (a) => `${DOMAIN}/haber/${a.id}` }).count, NEWS_MAX_URLS, "harita başına en fazla 1.000 kayıt");
   assert.equal(NEWS_WINDOW_MS, 48 * 3600000);
+
+  // Köşe yazıları: uzantısız canonical adres, ince-haber kuralından muaf, 48 saat penceresi.
+  const columnItems = columnNewsItems([
+    { id: "taze-yazi", path: "kose-yazilari/taze-yazi.html", title: "Taze köşe yazısı", date: hours(3), locale: "tr" },
+    { id: "eski-yazi", path: "kose-yazilari/eski-yazi.html", title: "Eski köşe yazısı", date: hours(49), locale: "tr" },
+    { id: "gelecek-yazi", path: "kose-yazilari/gelecek-yazi.html", title: "Gelecek", date: hours(-1), locale: "tr" }
+  ], DOMAIN);
+  assert.equal(columnItems[0].url, `${DOMAIN}/kose-yazilari/taze-yazi`, "köşe yazısı adresi uzantısız canonical olmalı");
+  const withColumns = buildNewsSitemap(columnItems, {
+    now,
+    urlFor: (item) => item.url,
+    isExcluded: (item) => item.kind !== "column"
+  });
+  assert.equal(withColumns.count, 1, "yalnızca son 48 saatin, geleceğe tarihlenmemiş köşe yazısı haritaya girer");
+  assert.ok(withColumns.xml.includes(`<loc>${DOMAIN}/kose-yazilari/taze-yazi</loc>`));
 
   const news = read("news-sitemap.xml");
   assert.match(news, /xmlns:news="http:\/\/www\.google\.com\/schemas\/sitemap-news\/0\.9"/, "news ad alanı");
