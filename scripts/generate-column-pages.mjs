@@ -6,6 +6,7 @@
  *   • Her yazar için arşiv sayfası (yazarlar/<slug>.html)
  *   • Liste sayfasının içeriği (kose-yazilari.html slot'u)
  *   • Ana sayfadaki son üç yazı bloğu
+ *   • Ana sayfadaki öne çıkan (en yeni) köşe yazısı vitrini
  *
  * TASLAK SAYFA ÜRETMEZ. `draft` ve `review` durumundaki yazılar için hiçbir
  * dosya yazılmaz — yazılsaydı, yayına alınmamış bir kanaat adresi bilen
@@ -264,6 +265,46 @@ function listingHtml(columns) {
 function homeHtml(columns) {
   if (!columns.length) return "";
   return columns.slice(0, 3).map((column) => columnCard(column, "./")).join("");
+}
+
+/**
+ * ANA SAYFA ÖNE ÇIKAN KÖŞE YAZISI (hero).
+ *
+ * Elle seçilmez, kodda sabit değildir: her derlemede yayımlanmış yazılar
+ * arasından TARİHİ EN YENİ olan seçilir. Tarihler farklı UTC ofsetleriyle
+ * yazılabildiği için metin karşılaştırması yerine zaman damgası kullanılır.
+ * Gelecek tarihli kayıt (zamanlanmış yayın) vitrine çıkmaz.
+ *
+ * Bağlantı uzantısız kanonik adrese gider (`/kose-yazilari/<slug>`);
+ * vercel.json'daki `/kose-yazilari/:slug` yeniden yazımı sayfayı sunar.
+ * Yazı yoksa BOŞ DİZE döner ve bölüm `hidden` olur.
+ */
+export function pickFeaturedColumn(columns, now = Date.now()) {
+  const dated = (columns || [])
+    .map((column) => ({ column, time: Date.parse(column && column.date) }))
+    .filter(({ column, time }) => column && column.path && Number.isFinite(time) && time <= now);
+  dated.sort((left, right) => right.time - left.time);
+  return dated.length ? dated[0].column : null;
+}
+
+export function featuredColumnHtml(columns, now = Date.now()) {
+  const column = pickFeaturedColumn(columns, now);
+  if (!column) return "";
+  const href = escapeHtml(`./${cleanPublicPath(column.path)}`);
+  const badge = column.contentType || column.badge || OPINION_BADGE;
+  return `<article class="home-featured-column__card" data-card="featured-column">
+            <div class="home-featured-column__meta">
+              <span class="column-badge">${escapeHtml(badge)}</span>
+              ${column.categoryLabel ? `<span class="column-category">${escapeHtml(column.categoryLabel)}</span>` : ""}
+              <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date, column.locale))}</time>
+            </div>
+            <h2 class="home-featured-column__title" id="home-featured-column-title"><a href="${href}">${escapeHtml(column.title)}</a></h2>
+            ${column.excerpt ? `<p class="home-featured-column__excerpt">${escapeHtml(column.excerpt)}</p>` : ""}
+            <div class="home-featured-column__foot">
+              <span class="home-featured-column__author">${escapeHtml(column.author)}</span>
+              <a class="home-featured-column__cta" href="${href}" aria-label="Devamını Oku: ${escapeHtml(column.title)}">Devamını Oku <span aria-hidden="true">→</span></a>
+            </div>
+          </article>`;
 }
 
 export function groupAuthors(columns) {
@@ -644,6 +685,18 @@ export function generateColumnPages() {
     let html = fs.readFileSync(homePath, "utf8");
     const content = homeHtml(columns);
     html = replaceSlot(html, "home-columns", content);
+
+    // Öne çıkan köşe yazısı: en yeni yayımlanmış yazı, her derlemede yeniden seçilir.
+    const featured = featuredColumnHtml(columns);
+    html = replaceSlot(html, "home-featured-column", featured);
+    const featuredTag = (html.match(/<section\b[^>]*\bdata-featured-column\b[^>]*>/) || [])[0];
+    if (featuredTag) {
+      const hasHidden = /\s+hidden(?=[\s>])/.test(featuredTag);
+      const nextTag = featured.trim()
+        ? featuredTag.replace(/\s+hidden(?=[\s>])/, "")
+        : (hasHidden ? featuredTag : featuredTag.replace(/>$/, " hidden>"));
+      html = html.replace(featuredTag, nextTag);
+    }
     html = html.replace(
       /(<a class="section-link" href="\.\/kose-yazilari\.html">)[^<]*(<\/a>)/,
       "$1Tüm Köşe Yazıları$2"

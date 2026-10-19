@@ -627,6 +627,18 @@ function checkSeoAndLinks() {
       expect(html.includes("analizler.html"), `${page}: missing analysis hub route`);
       expect(html.includes('data-api-target="home-columns"'), `${page}: missing latest columns block`);
       expect(html.includes("Son Köşe Yazıları"), `${page}: latest columns heading is unclear`);
+      expect(/<section\b[^>]*\bdata-featured-column\b/.test(html), `${page}: missing featured column section`);
+      expect(/<aside\b[^>]*\bdata-featured-column-note\b/.test(html), `${page}: missing featured column match note shell`);
+      {
+        // Sıra: canlı skor kahramanı → öne çıkan köşe yazısı → maç vitrini / maç dosyası kutusu.
+        const heroAt = html.indexOf('id="hero-canli-skor"');
+        const featuredAt = html.search(/<section\b[^>]*\bdata-featured-column\b/);
+        expect(heroAt >= 0 && featuredAt > heroAt, `${page}: featured column must sit below the live-score hero`);
+        for (const marker of ["featured-match-spotlight:start", "match-special:start", "data-featured-match-spotlight"]) {
+          const at = html.indexOf(marker);
+          if (at >= 0) expect(featuredAt < at, `${page}: featured column must sit above ${marker}`);
+        }
+      }
     }
 
     if (page === "kose-yazilari.html") {
