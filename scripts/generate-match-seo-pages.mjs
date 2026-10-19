@@ -1173,7 +1173,11 @@ function schemaFor(entry, state, locale, ctx, urls) {
       awayTeam: team(awayName, ctx.awayAbsolute),
       competitor: [team(homeName, ctx.homeAbsolute), team(awayName, ctx.awayAbsolute)],
       ...(competitionName ? { superEvent: { "@type": "SportsOrganization", name: competitionName } } : {}),
-      ...(ctx.channel ? { publication: { "@type": "BroadcastEvent", name: ctx.channel, isLiveBroadcast: true } } : {}),
+      // Birden çok doğrulanmış besleme (ör. "beIN SPORTS 1" + "beIN SPORTS 1 4K")
+      // varsa her biri ayrı bir BroadcastEvent; tek kanalda çıktı eskisiyle aynı.
+      ...(ctx.channel ? { publication: (ctx.channels && ctx.channels.length > 1)
+        ? ctx.channels.map((name) => ({ "@type": "BroadcastEvent", name, isLiveBroadcast: true }))
+        : { "@type": "BroadcastEvent", name: ctx.channel, isLiveBroadcast: true } } : {}),
       inLanguage: locale === "en" ? "en" : "tr"
     });
   }
@@ -1217,10 +1221,9 @@ function pageHtml(entry, locale, options) {
   const away = teamLinks(entry.awayTeam, locale, base);
   const league = leagueLinks(entry, locale, base);
   const competitionName = competitionNameFor(entry.competitionId, entry.league) || entry.league || "";
-  const channel = (() => {
-    const { broadcastChannel } = require("../services/broadcastSchedule.js");
-    return broadcastChannel(entry) || "";
-  })();
+  const { broadcastChannel, broadcastChannels } = require("../services/broadcastSchedule.js");
+  const channel = broadcastChannel(entry) || "";
+  const channels = channel ? broadcastChannels(entry) : [];
   // Mutlak adres: takım profilleri ve lig puan durumu sayfaları uzantısız
   // kanonik taşır; lig sayfaları (`lig/<id>.html`) ve takım fikstürleri
   // uzantılı kalır. Şemadaki `url` sayfanın kendi canonical'ıyla eşleşmeli.
@@ -1265,6 +1268,7 @@ function pageHtml(entry, locale, options) {
     competitionName,
     roundLabel: entry.round ? (locale === "en" ? `Matchweek ${entry.round}` : `${entry.round}. Hafta`) : "",
     channel,
+    channels,
     description: titles.description,
     // Paylaşım bağlantıları SUNUCUDA kuruluyor; JS kapalıyken de çalışsın
     // diye adres istemciden değil kanonikten geliyor.
