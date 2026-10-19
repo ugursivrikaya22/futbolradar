@@ -54,6 +54,15 @@ try {
   await page.screenshot({ path: "/tmp/standings-simulator-mobile.png", fullPage: true });
   check(errors.length === 0, `sayfa hatası yok${errors.length ? `: ${errors.join(" | ")}` : ""}`);
   check(!requests.some((u) => /\/api\/|simulat/i.test(u)), "simülasyon için ağ isteği yok");
+  for (const linkPage of ["/super-lig-puan-durumu.html", "/genclerbirligi-puan-durumu.html"]) {
+    await page.goto(`${BASE}${linkPage}`, { waitUntil: "load" });
+    const fits = await page.evaluate(() => [...document.querySelectorAll('a[href^="./puan-durumu-simulator"]')].map((a) => {
+      const box = a.getBoundingClientRect();
+      const parent = a.parentElement.getBoundingClientRect();
+      return a.scrollWidth <= a.clientWidth + 1 && box.right <= parent.right + 1;
+    }));
+    check(fits.length > 0 && fits.every(Boolean), `${linkPage}: simülatör bağlantısı var ve kabına sığıyor`);
+  }
 } finally {
   await browser.close();
   server.kill();
