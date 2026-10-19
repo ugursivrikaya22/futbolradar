@@ -223,26 +223,38 @@
     }
 
     function vote(questionId, optionId) {
+      var note = section.querySelector("[data-fan-poll-error]");
+      if (note) note.setAttribute("hidden", "");
+      track("fan_vote_attempt", { locale: locale, question_id: questionId });
       return fetch("/api/match-poll", {
         method: "POST",
         cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ slug: slug, questionId: questionId, optionId: optionId, locale: locale })
       })
-        .then(function (response) { return response.json(); })
+        .then(function (response) {
+          if (!response.ok) throw new Error("vote-http-error");
+          return response.json();
+        })
         .then(function (payload) {
-          if (!payload || payload.ok === false) throw new Error("vote-failed");
+          var saved = payload && payload.data && Array.isArray(payload.data.questions)
+            ? payload.data.questions.find(function (question) { return question.id === questionId; }) : null;
+          if (!payload || payload.ok !== true || payload.data.storage !== "supabase" ||
+              !saved || !saved.alreadyVoted || !saved.choice) throw new Error("vote-unconfirmed");
           paint(payload.data);
           track("fan_vote", {
             match_slug: slug,
             locale: locale,
             question_id: questionId,
-            option_id: optionId
+            option_id: saved.choice
           });
         })
         .catch(function () {
           var note = section.querySelector("[data-fan-poll-error]");
           if (note) note.removeAttribute("hidden");
+          var buttons = section.querySelectorAll("[data-fan-vote]");
+          for (var index = 0; index < buttons.length; index += 1) buttons[index].disabled = false;
+          track("fan_vote_error", { locale: locale, question_id: questionId });
         });
     }
 

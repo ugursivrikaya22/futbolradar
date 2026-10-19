@@ -14,9 +14,10 @@ const { editorialStatusOf } = createRequire(import.meta.url)("../services/editor
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
-import { buildNewsSitemap } from "./lib/newsSitemap.mjs";
+import { buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
 // Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
 const { isThinAutomatedNews } = createRequire(import.meta.url)("../services/newsIndexPolicy.js");
+const { publishedColumns } = createRequire(import.meta.url)("../services/columnService.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -435,14 +436,33 @@ function updateSitemap(articles) {
 }
 
 /**
+ * Yayımlanmış Türkçe köşe yazıları → News haritası kayıtları (kural:
+ * scripts/lib/newsSitemap.mjs `columnNewsItems`).
+ */
+function loadColumnNewsItems() {
+  const file = path.join(root, "data", "columns.json");
+  if (!fs.existsSync(file)) return [];
+  try {
+    const { columns } = publishedColumns(JSON.parse(fs.readFileSync(file, "utf8")), { locale: "tr" });
+    return columnNewsItems(columns, domain);
+  } catch (error) {
+    console.warn(`[news-sitemap] columns.json okunamadı: ${error.message}`);
+    return [];
+  }
+}
+
+/**
  * Google News haritası: yalnızca son 48 saatin, otomatik üretilmemiş haberleri
  * (News protokolü gereği). Eski haberler normal site haritasında kalmaya devam
  * eder. Kurallar ve sınır değerleri: scripts/lib/newsSitemap.mjs.
  */
 function updateNewsSitemap(articles) {
-  const { xml, count } = buildNewsSitemap(articles, {
-    urlFor: (article) => articleUrl(article),
-    isExcluded: isThinAutomatedNews
+  // Köşe yazıları editörün elle yayımladığı özgün metinlerdir; ince-haber
+  // kuralı (otomatik keşif haberleri) onlara uygulanmaz.
+  const items = [...articles, ...loadColumnNewsItems()];
+  const { xml, count } = buildNewsSitemap(items, {
+    urlFor: (item) => (item.kind === "column" ? item.url : articleUrl(item)),
+    isExcluded: (item) => item.kind !== "column" && isThinAutomatedNews(item)
   });
   for (const target of [path.join(root, "news-sitemap.xml"), path.join(root, "public", "news-sitemap.xml")]) {
     writeGeneratedFile(target, xml);

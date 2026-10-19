@@ -17,6 +17,11 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/en/player/:slug([a-z0-9-]+)",
+      "destination": "/en/player/:slug.html",
+      "permanent": false
+    },
+    {
       "source": "/futbolcu/:slug.html",
       "destination": "/futbolcu/:slug",
       "permanent": true
