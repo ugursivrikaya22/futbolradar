@@ -38,6 +38,13 @@ test('missing data stays absent and no unpublished player is linked', () => {
   assert.equal(html, '');
 });
 
+test('English related match labels translate national team names', () => {
+  const html = matchDiscoveryHtml(entry, { ...ctx, locale: 'en' }, { now,
+    related: [{ href: '/en/match/turkey-italy', match: { homeTeam: 'Türkiye', awayTeam: 'İtalya' } }] });
+  assert.match(html, /Türkiye – Italy/);
+  assert.doesNotMatch(html, /İtalya/);
+});
+
 test('labels are escaped and no fetch/script dependency is introduced', () => {
   const html = matchDiscoveryHtml(entry, { ...ctx, homeTeam: '<img onerror=evil>' }, { now });
   assert.match(html, /&lt;img/);

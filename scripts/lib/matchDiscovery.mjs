@@ -3,6 +3,7 @@ import { escapeHtml, playerPageHref, shortDate, clock } from './matchSeoPage.mjs
 const require = createRequire(import.meta.url);
 const { sameClub } = require('../../services/superLigTeams.js');
 const { publicPlayerView } = require('../../services/cardCredibility.js');
+const { nationLabel } = require('../../services/displayLabels.js');
 const playerCache = new WeakMap();
 
 function publishedPlayer(players, team, ctx) {
@@ -23,6 +24,7 @@ function publishedPlayer(players, team, ctx) {
 // All inputs already exist in the page generator: no browser fetch or provider call.
 export function matchDiscoveryHtml(entry, ctx, { players = [], next = {}, related = [], now = Date.now() } = {}) {
   const en = ctx.locale === 'en';
+  const matchTitle = match => `${nationLabel(match.homeTeam, ctx.locale)} – ${nationLabel(match.awayTeam, ctx.locale)}`;
   const cards = [];
   const seen = new Set();
   const card = (type, label, title, href) => {
@@ -40,7 +42,7 @@ export function matchDiscoveryHtml(entry, ctx, { players = [], next = {}, relate
   for (const row of related) {
     if (!row.match || !row.href || seen.has(row.href)) continue;
     cards.push(card('related_match', en ? 'Related match' : 'İlgili maç',
-      `${row.match.homeTeam} – ${row.match.awayTeam}`, row.href));
+      matchTitle(row.match), row.href));
     if (++relatedCount === 2) break;
   }
   const upcoming = [...(next.home || []), ...(next.away || [])]
@@ -51,7 +53,7 @@ export function matchDiscoveryHtml(entry, ctx, { players = [], next = {}, relate
   if (nearest) {
     const match = nearest.match;
     recommendation = card('next_match', en ? 'Next match' : 'Sonraki maç',
-      `${match.homeTeam} – ${match.awayTeam} · ${shortDate(match.kickoff, ctx.locale)} ${clock(match.kickoff)} ${en ? 'Türkiye time' : 'TSİ'}`, nearest.href);
+      `${matchTitle(match)} · ${shortDate(match.kickoff, ctx.locale)} ${clock(match.kickoff)} ${en ? 'Türkiye time' : 'TSİ'}`, nearest.href);
   }
   const content = cards.filter(Boolean).join('') + recommendation;
   if (!content) return '';
