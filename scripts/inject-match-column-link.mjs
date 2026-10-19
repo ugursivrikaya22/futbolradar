@@ -105,7 +105,11 @@ function targetsFor(matchId, seoPages, locale) {
     const pageDate = pageIdentity.split("|").pop();
     if (pageDate !== date) continue;
     const slugTeams = `${page.homeTeam || ""}-${page.awayTeam || ""}`.toLocaleLowerCase("tr");
-    if (!teams.split("-").every((token) => token.length < 3 || slugTeams.includes(token) || identity.includes(token))) continue;
+    // Eşleşme sayfanın KENDİ kimliğine/slug'ına bakılarak yapılır. Önceki
+    // "kimlik token içeriyor mu" koşulu her zaman doğruydu (token zaten
+    // kimlikten geliyor) ve aynı tarihteki BÜTÜN maç sayfalarına köprü basıyordu.
+    const pageKeys = `${pageIdentity} ${page.slug || ""} ${slugTeams}`;
+    if (!teams.split("-").every((token) => token.length < 3 || pageKeys.includes(token))) continue;
     const candidate = locale === "en"
       ? (page.enSlug ? `en/match/${page.enSlug}.html` : "")
       : (page.slug ? `mac/${page.slug}.html` : "");
