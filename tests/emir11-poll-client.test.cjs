@@ -14,6 +14,20 @@ test('English compatibility route cannot redirect HTML pages into a loop', () =>
   assert.equal(require('node:fs').existsSync('en/player/does-not-exist-emir11.html'), false);
 });
 
+test('English team clean URL redirects to the generated page without looping', () => {
+  const route = require('../vercel.json').redirects.find(r => r.source.startsWith('/en/team/:slug'));
+  assert.ok(route);
+  assert.equal(route.permanent, false);
+  const source = new RegExp('^' + route.source.replace(':slug', '') + '$');
+  for (const slug of ['galatasaray', 'fenerbahce']) {
+    assert.equal(source.test(`/en/team/${slug}`), true);
+    assert.equal(route.destination.replace(':slug', slug), `/en/team/${slug}.html`);
+    assert.equal(require('node:fs').existsSync(`en/team/${slug}.html`), true);
+  }
+  assert.equal(source.test('/en/team/galatasaray.html'), false);
+  assert.equal(source.test('/en/team/missing/nested'), false);
+});
+
 const question = { id: 'winner', question: 'Who wins?', closed: false,
   options: [{ id: 'home', label: 'Home' }, { id: 'draw', label: 'Draw' }],
   total: 0, results: [], alreadyVoted: false, choice: null };
