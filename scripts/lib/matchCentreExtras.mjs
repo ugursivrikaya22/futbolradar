@@ -102,15 +102,19 @@ export function broadcasterLinkFor(record, isAllowedSourceUrl) {
   return { channel: String(record.turkey).trim(), url };
 }
 
+// page.css değişirse ~19 bin sayfanın varlık damgası yenilenmeli; bu yüzden küçük, bölüme özel stil satır içi.
+const FIVE_CSS = "<style>.msp-five-list{margin:0 0 8px;padding:0;list-style:none;display:grid;gap:8px}.msp-five-list li{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 6px;line-height:1.4}.msp-five-list b{min-width:44px;font-variant-numeric:tabular-nums}.msp-five-list small{color:var(--muted)}</style>";
+const TV_CSS = "<style>.msp-tv-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}.msp-tv-card{display:grid;gap:6px;padding:10px;color:inherit;text-decoration:none;min-width:0}.msp-tv-card img{width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;border-radius:8px}.msp-tv-card small{color:var(--muted)}</style>";
+
 export function fiveMinutesSectionHtml(moments) {
   if (!moments.length) return "";
   const title = moments.length === 5 ? "Maçın 5 dakikası" : `Maçın ${moments.length} kritik anı`;
-  return `<section class="msp-section" id="macin-5-dakikasi" aria-labelledby="msp-five-title"><h2 id="msp-five-title" class="msp-section-title">${esc(title)}</h2><div class="card msp-five"><ol class="msp-five-list">${moments.map((m) => `<li><b>${esc(m.minute)}</b> <span>${esc(m.type)}</span> · ${esc(m.detail)}${m.team ? ` <small>${esc(m.team)}</small>` : ""}</li>`).join("")}</ol><p class="muted-copy">Kaynak: maç sonu olay kaydı. Yalnızca doğrulanmış olaylar listelenir.</p></div></section>`;
+  return `<section class="msp-section" id="macin-5-dakikasi" aria-labelledby="msp-five-title">${FIVE_CSS}<h2 id="msp-five-title" class="msp-section-title">${esc(title)}</h2><div class="card msp-five"><ol class="msp-five-list">${moments.map((m) => `<li><b>${esc(m.minute)}</b> <span>${esc(m.type)}</span> · ${esc(m.detail)}${m.team ? ` <small>${esc(m.team)}</small>` : ""}</li>`).join("")}</ol><p class="muted-copy">Kaynak: maç sonu olay kaydı. Yalnızca doğrulanmış olaylar listelenir.</p></div></section>`;
 }
 
 export function radarTvSectionHtml(videos, rel) {
   if (!videos.length) return "";
-  return `<section class="msp-section" id="radar-tv" aria-labelledby="msp-tv-title"><h2 id="msp-tv-title" class="msp-section-title">Radar TV</h2><div class="msp-tv-grid">${videos.map((v) => `<a class="card msp-tv-card" href="${esc(v.url)}" target="_blank" rel="${esc(rel)}">${v.thumbnail ? `<img src="${esc(v.thumbnail)}" alt="" width="480" height="360" loading="lazy" decoding="async" />` : ""}<strong>${esc(v.title)}</strong><small>${v.provider === "youtube" ? "YouTube" : "Vimeo"} · FutbolRadar</small></a>`).join("")}</div></section>`;
+  return `<section class="msp-section" id="radar-tv" aria-labelledby="msp-tv-title">${TV_CSS}<h2 id="msp-tv-title" class="msp-section-title">Radar TV</h2><div class="msp-tv-grid">${videos.map((v) => `<a class="card msp-tv-card" href="${esc(v.url)}" target="_blank" rel="${esc(rel)}">${v.thumbnail ? `<img src="${esc(v.thumbnail)}" alt="" width="480" height="360" loading="lazy" decoding="async" />` : ""}<strong>${esc(v.title)}</strong><small>${v.provider === "youtube" ? "YouTube" : "Vimeo"} · FutbolRadar</small></a>`).join("")}</div></section>`;
 }
 
 /**
