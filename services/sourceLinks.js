@@ -168,12 +168,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // Galatasaray–Kasımpaşa haberindeki geçmiş karşılaşma kayıtları için
     // sayfası açılıp doğrulanan istatistik kaynağı (9 Ekim 2026).
     "sporzip.com",
-    "ssportplus.com",
-    // Transfermarkt (Türkçe alan adı): kulüpler arası tüm karşılaşmaların
-    // tarih/skor dökümü. Trabzonspor–Beşiktaş maç önü köşe yazısındaki son 10
-    // maç listesi için sayfası açılıp doğrulandı (19 Ekim 2026). Listeye
-    // BİLİNÇLİ eklendi; yalnızca .com.tr alan adı.
-    "transfermarkt.com.tr"
+    "ssportplus.com"
   ]),
 
   // TOPLAYICI — kendisi yayın organı değil, yayın organına GİDEN yol.
