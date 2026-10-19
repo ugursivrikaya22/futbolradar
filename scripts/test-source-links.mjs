@@ -37,6 +37,7 @@ const {
 const DATA_FILES = [
   "news.json",
   "news-ticker.json",
+  "ticker.json",
   "transfers.json",
   "matches.json",
   "broadcast-verifications.json",
