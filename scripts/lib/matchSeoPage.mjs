@@ -886,7 +886,11 @@ export function lineupsSectionHtml(detail, analysis, ctx) {
   const predictedSection = predictedLineupSectionHtml(ctx, text);
   if (predictedSection) return predictedSection;
 
-  return `<section class="msp-section" id="muhtemel-11" data-msp-lineups aria-labelledby="msp-lineups-title"><h2 id="msp-lineups-title" class="msp-section-title">${escapeHtml(fixtureHeading(text.lineups, ctx))}</h2><article class="card data-empty"><strong>${escapeHtml(text.lineupPending)}</strong></article></section>`;
+  // Ne site içi model ne de kaynaklı editoryal Muhtemel 11 var: bölüm HİÇ
+  // basılmaz. "Kadrolar açıklandığında…" yer tutucusu indekslenen sayfada
+  // içeriksiz bir blok bırakıyordu; resmî kadro gelince yukarıdaki dal
+  // bölümü (id="kadrolar" + #muhtemel-11) kendisi açar.
+  return "";
 }
 
 const POSITION_ORDER = { goalkeeper: 0, kaleci: 0, defender: 1, defans: 1, midfielder: 2, "orta saha": 2, attacker: 3, forvet: 3 };
@@ -1378,6 +1382,34 @@ export function faqEntries(entry, ctx) {
       answer: channelAnswer
     }
   ];
+}
+
+/**
+ * "HANGİ KANALDA İZLENİR" — yalnızca DOĞRULANMIŞ kanal + KAYNAK ADRESİ varsa.
+ *
+ * Kanal ve kaynak `services/broadcastSchedule.js` zincirinden gelir
+ * (data/broadcast-verifications.json → yayıncı akışı taraması → sağlayıcı
+ * alanı). Kaynak adresi olmayan kanal bu bölümü AÇMAZ: SSS cevabı ve
+ * künye satırı kanalı yine söyler, ama "kaynaklı" bölüm kaynaksız
+ * basılmaz. Bitmiş maçta bölüm yok (soru "izlenir", geçmiş değil).
+ */
+export function broadcastSectionHtml(entry, ctx) {
+  if (ctx.state !== "pre" && ctx.state !== "live") return "";
+  const { verifiedBroadcast, broadcastChannel: channelOf } = require("../../services/broadcastSchedule.js");
+  const channel = channelOf(entry);
+  if (!channel) return "";
+  const record = verifiedBroadcast(entry) || {};
+  const sourceUrl = String(record.sourceUrl || entry.broadcastSourceUrl || "").trim();
+  if (!/^https?:\/\//.test(sourceUrl)) return "";
+  const en = ctx.locale === "en";
+  const verifiedAt = record.verifiedAt ? shortDate(record.verifiedAt, ctx.locale) : "";
+  let host = "";
+  try { host = new URL(sourceUrl).hostname.replace(/^www\./, ""); } catch { host = ""; }
+  const title = en ? `Where to watch ${ctx.homeTeam} vs ${ctx.awayTeam}` : `${ctx.homeTeam} - ${ctx.awayTeam} hangi kanalda izlenir?`;
+  const body = en
+    ? `${ctx.homeTeam} vs ${ctx.awayTeam} is shown live on ${channel} in Türkiye.`
+    : `${ctx.homeTeam} - ${ctx.awayTeam} maçı Türkiye'de ${channel} ekranlarından canlı yayınlanacak.`;
+  return `<section class="msp-section" id="yayin" aria-labelledby="msp-broadcast-title"><h2 id="msp-broadcast-title" class="msp-section-title">${escapeHtml(title)}</h2><article class="card"><p><strong>${escapeHtml(channel)}</strong></p><p>${escapeHtml(body)}</p><p class="muted-copy">${en ? "Source" : "Kaynak"}: <a href="${escapeHtml(sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${escapeHtml(host || sourceUrl)}</a>${verifiedAt ? ` · ${en ? "Verified" : "Doğrulama"}: ${escapeHtml(verifiedAt)}` : ""}</p></article></section>`;
 }
 
 export function whenSectionHtml(entry, ctx) {

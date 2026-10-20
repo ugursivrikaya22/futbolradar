@@ -245,6 +245,18 @@ function profileAvatarHtml(player) {
     `width="96" height="96" loading="lazy" decoding="async">`;
 }
 
+function hasSubstantivePlayerContent(model) {
+  if (!model) return false;
+  const rows = (block) => Boolean(block && (block.available || (Array.isArray(block.rows) && block.rows.length) || (Array.isArray(block.items) && block.items.length)));
+  return Boolean(
+    (model.seasonStats && model.seasonStats.available) ||
+    (model.matchLog && model.matchLog.available) ||
+    rows(model.career) || rows(model.transfers) ||
+    Boolean(model.news && ((model.news.transfer || []).length || (model.news.general || []).length)) ||
+    rows(model.honours) || (model.availability && model.availability.available)
+  );
+}
+
 function playerDescription(player, view) {
   if (view && !view.verified) {
     const position = player.position ? `, mevki ${player.position}` : "";
@@ -456,6 +468,12 @@ function pageHtml(player) {
       ? (playerNeedsTransferReview(player) ? description : player.summary || description)
       : description;
   const canonical = playerUrls.playerCanonicalUrl(player.id);
+  // İNDEKS KARARI: doğrulanmış oyuncu, kesinleşmiş transferi olan oyuncu ya da
+  // en az bir KAYNAKLI içerik bölümü (sezon, maçlar, kariyer, transfer, haber,
+  // kadro durumu, kupa) taşıyan sayfa indekslenir. Hiçbiri yoksa sayfa yalnızca
+  // ad + mevkiden ibarettir: noindex,follow; `generate-static-seo-pages`
+  // noindex sayfayı site haritasına zaten almaz.
+  const indexable = view.verified || Boolean(recentTransfer) || hasSubstantivePlayerContent(model);
   // Sıfır ya da tire basılmaz: gerçek bir ölçüm sanılabilir. Doğrulanmamış
   // kayıtta puan rozeti HİÇ çizilmez (aşağıda view.verified ile).
   //
@@ -478,7 +496,7 @@ function pageHtml(player) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${canonical}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -549,15 +567,10 @@ function pageHtml(player) {
       ${recentTransfer ? transferHeroHtml(player, recentTransfer, age) : ""}
       ${ratingSectionHtml(player)}
       ${renderPlayer360(model, { locale: "tr" })}
-      ${view.verified ? "" : `<section class="player-unverified-note" aria-label="Veri durumu">
-        <article class="data-empty" data-card="empty-state" data-player-verified="false">
-          <strong>${recentTransfer ? "Performans verisi bekleniyor" : "Doğrulanmış veri bekleniyor"}</strong>
-          <span>${recentTransfer
-            ? `${escapeHtml(player.name)} için güncel kulüp ve transfer bilgisi resmî kulüp açıklamasıyla doğrulandı. Rating, piyasa değeri ve detaylı performans metrikleri sağlayıcı kaydıyla eşleştirilip doğrulanana kadar yayımlanmıyor.`
-            : `Bu oyuncunun güncel kulübü, performans metrikleri ve piyasa değeri, sağlayıcı kaydıyla
-          eşleştirilip doğrulanana kadar yayımlanmıyor. Tahmini ya da eski değer gösterilmiyor.`}</span>
-        </article>
-      </section>`}
+      ${/* "Doğrulanmış veri bekleniyor" yer tutucusu KALDIRILDI: sayfa yalnızca
+         elindeki kaynaklı veriyi (kariyer, maçlar, haber, transfer) gösterir.
+         Hiçbiri yoksa sayfa noindex olur ve site haritasından düşer
+         (bkz. hasSubstantivePlayerContent). */ ""}
       <section class="player-profile-shell" data-api-target="player-detail" data-player-id="${escapeHtml(player.id)}" data-player-verified="${view.verified ? "true" : "false"}" data-p360="1">
         <article class="data-empty" data-card="empty-state">
           <strong>${escapeHtml(player.name)}</strong>

@@ -1,0 +1,65 @@
+/* /puan-durumu-simulator — page.css değişkenleriyle, önce mobil */
+.sim-grid { display: grid; gap: 16px; margin: 16px 0; }
+.sim-card { padding: 14px 12px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .12)); border-radius: var(--radius-lg, 14px); background: var(--surface, #fff); min-width: 0; }
+.sim-card h2 { margin: 0 0 10px; font-size: var(--fs-md, 1.0625rem); }
+.sim-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.sim-count { font-size: var(--fs-xs, .8125rem); font-weight: 700; color: var(--green-deep, #086a43); }
+.sim-note { margin: 10px 0 0; font-size: var(--fs-xs, .8125rem); line-height: 1.5; color: var(--muted, #6b7c76); }
+.sim-btn, .sim-pick { min-height: var(--tap, 40px); min-width: var(--tap, 40px); padding: 0 12px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .15)); border-radius: var(--radius, 8px); background: var(--surface, #fff); color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
+.sim-btn.ghost { background: transparent; font-weight: 700; font-size: var(--fs-sm, .875rem); }
+.sim-btn:focus-visible, .sim-pick:focus-visible, .sim-card select:focus-visible, .sim-score input:focus-visible { outline: none; box-shadow: var(--ring); }
+.sim-pick[aria-pressed="true"] { background: var(--green, #0b8f5a); border-color: var(--green, #0b8f5a); color: #fff; }
+.sim-round-nav { display: flex; gap: 8px; margin-bottom: 10px; }
+.sim-round-nav select, .sim-card select { flex: 1; min-height: var(--tap, 40px); padding: 0 10px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .15)); border-radius: var(--radius, 8px); background: var(--surface, #fff); color: inherit; font: inherit; max-width: 100%; }
+.sim-label { display: block; margin-bottom: 6px; font-size: var(--fs-sm, .875rem); font-weight: 700; }
+.sim-round-title { margin: 0 0 8px; font-size: var(--fs-sm, .875rem); }
+.sim-matches { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sim-match { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); grid-template-areas: "home picks away" "score score score" "time time time"; align-items: center; gap: 6px; padding: 10px 8px; border: 1px solid var(--line, rgba(0, 0, 0, .08)); border-radius: var(--radius, 8px); }
+.sim-team { grid-area: home; font-weight: 700; font-size: var(--fs-sm, .875rem); line-height: 1.25; overflow-wrap: break-word; hyphens: auto; }
+.sim-team.is-away { grid-area: away; text-align: right; }
+.sim-vs { grid-area: picks; text-align: center; }
+.sim-picks { grid-area: picks; display: flex; gap: 4px; }
+.sim-pick { min-width: 34px; padding: 0 4px; }
+@media (max-width: 420px) { .sim-team { font-size: var(--fs-xs, .8125rem); } }
+.sim-score { grid-area: score; display: flex; justify-content: center; align-items: center; gap: 6px; }
+.sim-score input { width: 44px; min-height: 36px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .15)); border-radius: var(--radius, 8px); text-align: center; font: inherit; font-weight: 700; background: var(--surface-sunken, #f7f9f8); color: inherit; }
+.sim-kickoff { grid-area: time; text-align: center; font-size: var(--fs-xs, .8125rem); color: var(--muted, #6b7c76); }
+.sim-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.sim-table-wrap { overflow-x: auto; }
+.sim-table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm, .875rem); font-variant-numeric: tabular-nums; }
+.sim-table th, .sim-table td { padding: 7px 4px; border-bottom: 1px solid var(--line, rgba(0, 0, 0, .08)); text-align: center; white-space: nowrap; }
+.sim-table tbody th { text-align: left; font-weight: 700; white-space: normal; }
+.sim-table thead th { font-size: var(--fs-xs, .8125rem); color: var(--muted, #6b7c76); }
+.sim-row td:first-child { border-left: 3px solid transparent; }
+.sim-row.is-leader td:first-child { border-left-color: #caa43d; }
+.sim-row.is-europe td:first-child { border-left-color: var(--green, #0b8f5a); }
+.sim-row.is-relegation td:first-child { border-left-color: #c81e2d; }
+.sim-row.is-zone-change { background: var(--green-tint, #e8f5ef); }
+.sim-up, .sim-down { display: block; font-style: normal; font-size: 10px; line-height: 1; }
+.sim-up { color: var(--green, #0b8f5a); }
+.sim-down { color: #c81e2d; }
+.sim-chip { display: inline-block; width: 18px; margin: 0 1px; border-radius: 4px; background: var(--surface-sunken, #f7f9f8); color: var(--muted, #6b7c76); font-size: 12px; line-height: 18px; text-align: center; }
+.sim-chip.is-clinched { background: var(--green, #0b8f5a); color: #fff; }
+.sim-chip.is-eliminated { background: #c81e2d; color: #fff; }
+.sim-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 10px 0 0; padding: 0; list-style: none; font-size: var(--fs-xs, .8125rem); color: var(--muted, #6b7c76); }
+.sim-legend li { display: inline-flex; align-items: center; gap: 4px; }
+.sim-legend i { width: 10px; height: 10px; border-radius: 2px; }
+.sim-legend i.is-leader { background: #caa43d; }
+.sim-legend i.is-europe { background: var(--green, #0b8f5a); }
+.sim-legend i.is-relegation { background: #c81e2d; }
+.sim-scenario { margin-top: 10px; }
+.sim-scenario-match { margin: 0 0 8px; font-weight: 700; font-size: var(--fs-sm, .875rem); }
+.sim-scenario-match small { display: block; font-weight: 400; color: var(--muted, #6b7c76); }
+.sim-outcomes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.sim-outcomes li { display: grid; gap: 2px; padding: 8px 6px; border-radius: var(--radius, 8px); background: var(--surface-sunken, #f7f9f8); text-align: center; font-size: var(--fs-xs, .8125rem); }
+.sim-outcomes strong { font-size: var(--fs-md, 1.0625rem); }
+.sim-outcomes .is-win { box-shadow: inset 0 -3px 0 var(--green, #0b8f5a); }
+.sim-outcomes .is-draw { box-shadow: inset 0 -3px 0 var(--warn, #b07410); }
+.sim-outcomes .is-loss { box-shadow: inset 0 -3px 0 #c81e2d; }
+.sim-faq details { padding: 8px 0; border-bottom: 1px solid var(--line, rgba(0, 0, 0, .08)); }
+.sim-faq summary { cursor: pointer; font-weight: 700; }
+.sim-faq p { margin: 6px 0 0; font-size: var(--fs-sm, .875rem); line-height: 1.55; }
+@media (min-width: 900px) {
+  .sim-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); align-items: start; }
+  .sim-grid > .sim-card:last-child { grid-column: 1 / -1; }
+}

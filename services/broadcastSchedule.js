@@ -48,6 +48,33 @@ function verifiedBroadcast(match) {
 }
 
 /**
+ * EK KANALLAR — aynı yayının başka bir beslemesi (ör. "beIN SPORTS 1 4K").
+ *
+ * Elle doğrulama kaydı `turkey` alanında ANA kanalı taşır; aynı maçın
+ * yayıncının kendi akışında ayrıca listelenen beslemeleri isteğe bağlı
+ * `additionalChannels` dizisine yazılır. Ana kanal tek başına kalır ki
+ * eşleştirme, tarayıcı ve eski kayıtlar değişmesin; görünen ad ise ikisini
+ * birlikte söyler. Boş, tekrarlanan ya da ana kanalla aynı ad atlanır.
+ */
+function recordChannels(record) {
+  if (!record) return [];
+  const channels = [];
+  const push = (value) => {
+    const name = text(value);
+    if (name && !channels.includes(name)) channels.push(name);
+  };
+  push(record.turkey);
+  if (!channels.length) return [];
+  for (const extra of Array.isArray(record.additionalChannels) ? record.additionalChannels : []) push(extra);
+  return channels;
+}
+
+/** Kanal listesinin tek satırlık görünen adı — taramanın birleştirme biçimiyle aynı (" / "). */
+function channelLabel(channels) {
+  return (Array.isArray(channels) ? channels : []).filter(Boolean).join(" / ");
+}
+
+/**
  * TARAMANIN KENDİ ÇIKTISINI GÖRMEDEN OKUDUĞU KANAL.
  *
  * `verifiedBroadcast` günlük tarama dosyasını da okur; bu, sayfalar için
@@ -68,7 +95,7 @@ function primaryBroadcast(match) {
   if (!match) return null;
   const manual = broadcastVerifications.find((record) => matchesRecord(match, record));
   if (manual && text(manual.turkey)) {
-    return { channel: text(manual.turkey), sourceUrl: text(manual.sourceUrl) };
+    return { channel: channelLabel(recordChannels(manual)), sourceUrl: text(manual.sourceUrl) };
   }
   const broadcast = match.broadcast;
   const channel = typeof broadcast === "string"
@@ -104,7 +131,7 @@ function applyVerifiedBroadcast(match) {
   const referee = verifiedReferee(match);
   let next = match;
   if (record) {
-    next = { ...next, broadcast: { ...(typeof next.broadcast === "object" ? next.broadcast : {}), turkey: record.turkey },
+    next = { ...next, broadcast: { ...(typeof next.broadcast === "object" ? next.broadcast : {}), turkey: channelLabel(recordChannels(record)) || record.turkey },
       broadcastSourceUrl: record.sourceUrl, broadcastVerifiedAt: record.verifiedAt };
   }
   if (referee && !text(next.referee)) {
@@ -307,7 +334,7 @@ function broadcastLabel(match, locale) {
  */
 function broadcastChannel(match) {
   const verified = verifiedBroadcast(match);
-  if (verified) return verified.turkey;
+  if (verified) return channelLabel(recordChannels(verified)) || verified.turkey;
   const broadcast = match && match.broadcast;
   if (!broadcast) return "";
   if (typeof broadcast === "string") return text(broadcast);
@@ -335,6 +362,21 @@ function cardBroadcastLabel(match, locale) {
   return broadcastLabel(match, locale);
 }
 
+/**
+ * Yayın kanalları DİZİ olarak — yapılandırılmış veri her kanal için ayrı
+ * bir `BroadcastEvent` yazabilsin diye. Elle doğrulamada ana kanal +
+ * `additionalChannels`; diğer yollarda `broadcastChannel`ın tek değeri.
+ */
+function broadcastChannels(match) {
+  const verified = verifiedBroadcast(match);
+  if (verified) {
+    const channels = recordChannels(verified);
+    if (channels.length) return channels;
+  }
+  const single = broadcastChannel(match);
+  return single ? [single] : [];
+}
+
 /** Turnuvanın kanonik görünen adı; katalogda yoksa kayıttaki ham ad. */
 function competitionDisplayName(match) {
   const id = resolveCompetitionId(match);
@@ -349,6 +391,7 @@ module.exports = {
   PRIORITY_CLUBS,
   PRIORITY_COMPETITION_IDS,
   broadcastChannel,
+  broadcastChannels,
   broadcastLabel,
   cardBroadcastLabel,
   primaryBroadcast,

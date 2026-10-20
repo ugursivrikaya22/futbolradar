@@ -114,18 +114,25 @@ function sportsEventNode(match, options = {}) {
   // Yayın kanalı: YALNIZCA çağıran gerçek bir kanal adı verdiyse eklenir.
   // Opsiyonel — mevcut çağıranlar `options.broadcast` göndermez, davranışları
   // değişmez. Uydurma yok: kanal bilinmiyorsa bu alan hiç yazılmaz.
-  const broadcast = text(options.broadcast);
-  if (broadcast) {
-    node.publication = {
-      "@type": "BroadcastEvent",
-      isLiveBroadcast: true,
-      videoFormat: "HD",
-      publishedOn: {
-        "@type": "BroadcastService",
-        name: broadcast,
-        broadcastDisplayName: broadcast
-      }
-    };
+  // Dizi verilirse (ör. ["beIN SPORTS 1", "beIN SPORTS 1 4K"]) her kanal
+  // ayrı bir BroadcastEvent olur; adı "4K" ile biten beslemenin biçimi 4K.
+  const broadcasts = (Array.isArray(options.broadcast) ? options.broadcast : [options.broadcast])
+    .map(text)
+    .filter((name, index, list) => name && list.indexOf(name) === index);
+  const publicationFor = (broadcast) => ({
+    "@type": "BroadcastEvent",
+    isLiveBroadcast: true,
+    videoFormat: /\b4K$/i.test(broadcast) ? "4K" : "HD",
+    publishedOn: {
+      "@type": "BroadcastService",
+      name: broadcast,
+      broadcastDisplayName: broadcast
+    }
+  });
+  if (broadcasts.length === 1) {
+    node.publication = publicationFor(broadcasts[0]);
+  } else if (broadcasts.length > 1) {
+    node.publication = broadcasts.map(publicationFor);
   }
 
   return node;

@@ -26,6 +26,23 @@
  * Kutu kaldırıldığında sayfanın geri kalanı olduğu gibi kalır: maç sayfası
  * kalıcıdır, yalnızca ana sayfadaki geçici öne çıkarma kapanır.
  */
+/* ÖNE ÇIKAN KÖŞE YAZISI NOTU — SON KULLANMA.
+   Ana sayfadaki "Köşe notu" (bu akşamın maçı) başlama saatinden 2 saat sonra
+   düşmeli. Sunucu bir sonraki derlemede slot'u boşaltır; aradaki boşlukta açık
+   sekmede bayat not kalmasın diye `data-expires-at` damgası burada uygulanır. */
+(function () {
+  "use strict";
+  var note = document.querySelector("[data-featured-column-note]");
+  if (!note) return;
+  var stamp = note.querySelector("[data-expires-at]");
+  var expiresMs = stamp ? Date.parse(stamp.getAttribute("data-expires-at")) : NaN;
+  if (!isFinite(expiresMs)) return;
+  function drop() { note.hidden = true; }
+  var wait = expiresMs - Date.now();
+  if (wait <= 0) drop();
+  else if (wait < 2147483000) window.setTimeout(drop, wait);
+})();
+
 (function () {
   "use strict";
 

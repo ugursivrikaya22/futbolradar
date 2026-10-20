@@ -374,3 +374,105 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   assert.ok(!rendered.includes('<script>alert(1)</script>'));
   assert.match(rendered, /"author":\{"@type":"Organization","name":"FutbolRadar"/);
 }
+
+// Ana sayfa öne çıkan köşe yazısı: veriye bağlı, en yeni yazı, uzantısız adres, kaçırılmış metin.
+{
+  const { featuredColumnHtml, pickFeaturedColumn } = await import("./generate-column-pages.mjs");
+  const now = Date.parse("2026-10-19T17:00:00+03:00");
+  const older = presentColumn(column({ id: "eski-yazi", date: "2026-10-18T23:30:00+03:00" }));
+  // UTC ofseti farklı ama zamanca daha yeni: metin sıralaması yanılırdı.
+  const newer = presentColumn(column({ id: "yeni-yazi", title: "Yeni <b>yazı</b> & \"tırnak\"", excerpt: "Özet <script>x</script>", date: "2026-10-18T21:00:00Z" }));
+  const future = presentColumn(column({ id: "gelecek-yazi", date: "2026-10-20T10:00:00+03:00" }));
+  assert.equal(pickFeaturedColumn([older, newer, future], now).id, "yeni-yazi", "vitrin en yeni (gelecek tarihli olmayan) yazıyı seçmeli");
+  const hero = featuredColumnHtml([older, newer, future], now);
+  assert.match(hero, /<article class="home-featured-column__card"/, "vitrin <article> olmalı");
+  assert.match(hero, /<h2 class="home-featured-column__title"/, "vitrin başlığı h2 olmalı");
+  const cleanHref = `./${newer.path.replace(/\.html$/, "")}`;
+  assert.ok(hero.includes(`href="${cleanHref}" aria-label="Devamını Oku: `), "Devamını Oku uzantısız kanonik adrese gitmeli");
+  assert.ok(!hero.includes(".html"), "vitrin .html uzantılı bağlantı vermemeli");
+  assert.match(hero, /Yeni &lt;b&gt;yazı&lt;\/b&gt; &amp; &quot;tırnak&quot;/, "başlık kaçırılmalı");
+  assert.ok(!hero.includes("<script>"), "özet kaçırılmalı");
+  assert.match(hero, /Köşe Yazısı/, "vitrin yorum rozetini taşımalı");
+  assert.equal(featuredColumnHtml([], now), "", "yazı yoksa vitrin boş kalmalı");
+  const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  assert.match(home, /<section[^>]*data-featured-column[^>]*aria-label="Öne çıkan köşe yazısı"/, "ana sayfada vitrin bölümü olmalı");
+  assert.match(home, /<!-- prerender:home-featured-column:start -->/, "ana sayfada vitrin slot'u olmalı");
+
+  // SIRA: canlı skor kahramanı → öne çıkan köşe yazısı → maç vitrini / maç dosyası.
+  // Şablonda bölüm hero'nun HEMEN ardında (arada yalnızca açıklama yorumu olabilir);
+  // maç günü olmasa da (vitrin bloğu sökülmüşken) bu sıra korunur.
+  const heroEnd = home.match(/<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n/);
+  assert.ok(heroEnd, "ana sayfada canlı skor kahramanı bulunmalı");
+  const afterHero = home.slice(heroEnd.index + heroEnd[0].length);
+  assert.match(afterHero, /^\s*(?:<!--[\s\S]*?-->\s*)?<section class="container home-featured-column"/, "öne çıkan köşe yazısı canlı skor kahramanının hemen altında olmalı");
+  const featuredAt = home.indexOf("data-featured-column");
+  for (const marker of ["<!-- featured-match-spotlight:start -->", "<!-- match-special:start -->"]) {
+    const at = home.indexOf(marker);
+    if (at >= 0) assert.ok(featuredAt < at, `öne çıkan köşe yazısı ${marker} bloğunun üstünde olmalı`);
+  }
+  // Enjektörler kendi bloklarını önce köşe yazısı bölümünün ardına, yoksa hero'nun ardına yazar.
+  const spotlightSource = fs.readFileSync(path.join(root, "scripts", "generate-featured-match-spotlight.mjs"), "utf8");
+  const specialSource = fs.readFileSync(path.join(root, "scripts", "inject-match-special.mjs"), "utf8");
+  assert.match(spotlightSource, /anchors: \[FEATURED_COLUMN_END_RE, HERO_END_RE\]/, "maç vitrini köşe yazısı bölümünün ardına yazılmalı");
+  assert.match(specialSource, /\[FEATURED_COLUMN_END_RE, HERO_END_RE\]\.find/, "maç dosyası kutusu köşe yazısı bölümünün ardına yazılmalı");
+  // Çapa deseni gerçek bir sayfada bölümün tamamını (ve yalnızca onu) yakalamalı.
+  const anchorSource = (spotlightSource.match(/const FEATURED_COLUMN_END_RE = (\/.+\/);/) || [])[1];
+  assert.ok(anchorSource, "FEATURED_COLUMN_END_RE tanımı bulunmalı");
+  const anchorRe = new Function(`return ${anchorSource}`)();
+  const sample = `<section class="container hero" id="hero-canli-skor"><div></div></section>\n<section class="container home-featured-column" data-featured-column hidden>\n<!-- s --><!-- e -->\n</section>\n<section class="container x"></section>\n`;
+  const caught = sample.match(anchorRe);
+  assert.ok(caught && caught[0].endsWith("</section>\n") && !caught[0].includes("container x") && !caught[0].includes("hero-canli-skor"), "çapa yalnızca köşe yazısı bölümünü yakalamalı");
+}
+
+// Öne çıkan köşe yazısı "Köşe notu": vitrinin maçından türetilir, bugün + başlama+2 saat penceresinde görünür.
+{
+  const { featuredColumnNote, applyFeaturedColumnNote, NOTE_DWELL_MS } = await import("./lib/featuredColumnNote.mjs");
+  const match = { homeTeam: "Trabzonspor", awayTeam: "Beşiktaş", kickoff: "2026-10-19T20:00:00+03:00", venue: "Papara Park", phase: "pre", href: "./mac/trabzonspor-besiktas-19-ekim-2026" };
+  const at = (iso) => Date.parse(iso);
+  assert.equal(NOTE_DWELL_MS, 2 * 60 * 60 * 1000, "not başlama saatinden 2 saat sonra düşmeli");
+  const note = featuredColumnNote(match, at("2026-10-19T17:00:00+03:00"));
+  assert.match(note.html, /<time datetime="2026-10-19T20:00:00\+03:00">Bu akşam 20\.00<\/time> · Papara Park — <strong>Trabzonspor–Beşiktaş<\/strong>/, "not saat, stadyum ve eşleşmeyi taşımalı");
+  assert.match(note.html, /<a class="home-featured-column__note-link" href="\.\/mac\/trabzonspor-besiktas-19-ekim-2026">/, "not uzantısız maç sayfasına bağlanmalı");
+  assert.match(note.html, /data-expires-at="2026-10-19T19:00:00\.000Z"/, "son kullanma = başlama + 2 saat");
+  assert.ok(!featuredColumnNote({ ...match, href: "" }, at("2026-10-19T17:00:00+03:00")).html.includes("<a "), "maç sayfası yoksa bağlantı basılmamalı");
+  assert.ok(!featuredColumnNote({ ...match, venue: "" }, at("2026-10-19T17:00:00+03:00")).html.includes(" · "), "stadyum yoksa uydurulmamalı");
+  assert.match(featuredColumnNote({ ...match, kickoff: "2026-10-19T14:30:00+03:00" }, at("2026-10-19T09:00:00+03:00")).html, />Bugün 14\.30</, "gündüz maçında 'Bugün' yazmalı");
+  assert.ok(featuredColumnNote({ ...match, phase: "live" }, at("2026-10-19T21:30:00+03:00")).html, "maç sırasında görünmeli");
+  assert.equal(featuredColumnNote(match, at("2026-10-19T22:00:00+03:00")).html, "", "başlama + 2 saatte düşmeli");
+  assert.equal(featuredColumnNote(match, at("2026-10-18T21:00:00+03:00")).html, "", "maç bugün değilse görünmemeli");
+  assert.equal(featuredColumnNote({ ...match, phase: "post" }, at("2026-10-19T21:00:00+03:00")).html, "", "biten maçta görünmemeli");
+  assert.equal(featuredColumnNote({ ...match, phase: "postponed" }, at("2026-10-19T17:00:00+03:00")).html, "", "ertelenen maçta görünmemeli");
+  assert.equal(featuredColumnNote(null).html, "", "veri yoksa görünmemeli");
+  assert.equal(featuredColumnNote({ ...match, kickoff: "belirsiz" }, at("2026-10-19T17:00:00+03:00")).html, "", "saat yoksa görünmemeli");
+  const tricky = featuredColumnNote({ ...match, homeTeam: "<img src=x onerror=1>", venue: "A & B \"Park\"" }, at("2026-10-19T17:00:00+03:00")).html;
+  assert.ok(!tricky.includes("<img") && tricky.includes("&lt;img") && tricky.includes("A &amp; B &quot;Park&quot;"), "not metni kaçırılmalı");
+
+  const shell = `<section class="container home-featured-column" data-featured-column><aside class="home-featured-column__note" data-featured-column-note aria-label="x" hidden>\n<!-- prerender:home-featured-column-note:start -->\n<!-- prerender:home-featured-column-note:end -->\n</aside></section>`;
+  const shown = applyFeaturedColumnNote(shell, note.html);
+  assert.match(shown, /<aside [^>]*data-featured-column-note aria-label="x">/, "not doluyken hidden kalkmalı");
+  assert.ok(shown.includes("Bu akşam 20.00"), "slot dolmalı");
+  const cleared = applyFeaturedColumnNote(shown, "");
+  assert.match(cleared, /<aside [^>]*data-featured-column-note aria-label="x" hidden>/, "not boşken hidden olmalı");
+  assert.ok(!cleared.includes("Bu akşam"), "slot boşalmalı");
+
+  const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
+  const sectionAt = home.indexOf("data-featured-column ");
+  const noteAt = home.indexOf("data-featured-column-note");
+  const sectionEnd = home.indexOf("</section>", sectionAt);
+  assert.ok(noteAt > sectionAt && noteAt < sectionEnd, "köşe notu öne çıkan köşe yazısı bölümünün içinde olmalı");
+  assert.ok(home.indexOf("<!-- prerender:home-featured-column-note:start -->") > home.indexOf("<!-- prerender:home-featured-column:end -->"), "not slot'u köşe yazısı slot'unun dışında (kartın altında) olmalı");
+  const generator = fs.readFileSync(path.join(root, "scripts", "generate-featured-match-spotlight.mjs"), "utf8");
+  assert.match(generator, /featuredColumnNote\(\{/, "not vitrin üreticisinin seçtiği maçtan türetilmeli");
+  assert.match(generator, /fs\.existsSync\(path\.join\(root, `mac\/\$\{selected\.slug\}\.html`\)\)/, "bağlantı yalnızca maç sayfası varsa verilmeli");
+  const client = fs.readFileSync(path.join(root, "featured-match-spotlight.js"), "utf8");
+  assert.match(client, /\[data-featured-column-note\]/, "istemci notun son kullanmasını uygulamalı");
+}
+
+// Maç sonu köprüsü yalnızca yazının bağlı olduğu maçın sayfasına basılmalı.
+{
+  const linker = fs.readFileSync(path.join(root, "scripts", "inject-match-column-link.mjs"), "utf8");
+  assert.ok(!/identity\.includes\(token\)/.test(linker), "köprü eşleşmesi her zaman doğru olan kimlik koşuluna dayanmamalı");
+  assert.match(linker, /pageKeys\.includes\(token\)/, "köprü eşleşmesi sayfanın kendi kimliğine bakmalı");
+  const chain = fs.readFileSync(path.join(root, "scripts", "lib", "postprocessChain.mjs"), "utf8");
+  assert.match(chain, /inject-match-column-link\.mjs/, "köprü her derlemede yeniden basılmalı");
+}

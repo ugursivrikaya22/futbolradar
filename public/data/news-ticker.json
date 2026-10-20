@@ -1,18 +1,38 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-19T10:00:42.979Z",
+  "updatedAt": "2026-10-20T15:12:25.655Z",
   "items": [
     {
-      "id": "auto-news-4cfa11fe1d5b16196f06",
+      "id": "auto-news-2b9cb6364502bc3c7153",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Slavia Prag maçının biletleri satışa çıktı",
+      "text": "Orex ile birlikte yola devam ediyoruz",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-19T06:16:31.000Z",
+      "timestamp": "2026-10-20T14:09:23.000Z",
       "source": {
         "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxOVlZzbDV6TFhaVG1uc0NfVW1YX1VpUE1QSEdKMFRrckNRcnI4VmVIdG5HX3hKVmUwUFQ3UHlzSlp6LTRMTzRicWhwUFRfUmhwLVNSSk85aERzb3UtRnZRcGZMWnVyQ3Bnck02Qkk4emVjWEV3TmxNU2p6R3BpYjVfX3YtQzhfRFhJQ2FoVTJwU3gzcmJnQUxyVWptSQ?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPbUlHVThKWkpMeHZXbzE4QV9Za2tGWlBaVkdaZzVOa1Y4M2RFRl9ibkRQUW1iZWRzTUNobWpDR0dtejRBNmJjRWtQOTJvT3R0cC1xX3VrcE95NWZyeXprTWJYR0c4YmxUT1hnOVJOYzMycjRSVlNHaUpMLU1NRUZuTnVmcmswaWZKanhRTzlWSzJ4UllvOXZ2OW45dUpYQnRpZzFfNQ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-c33e407e225fd36346fe",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "UEFA Gençlik Ligi: Fenerbahçe 1-3 Slavia Prag",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-20T13:19:19.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMipgFBVV95cUxOSUM1YURzWTVjUmRLZDVYbHg3UVlhdHlwVHRmVW93dFJVM25BWTlBUWx2d3dfaDlBQ0lCSFphTFZQQmhScHF6c2h6c1RIVDRSaGkzSUFRckJzTXBWVEJmVEtZalluUmdKR1gwY01hdkttTVc3SnJ3a0pCdmlhRWJSd0NEOHF2Ty1TSXpzUW5mR3QxbHpIYU96clR1UXZpbEowNzI0bEJR?oc=5",
         "publisher": "fenerbahce.org"
       },
       "automation": {
@@ -20,21 +40,185 @@
         "feed": "fenerbahce",
         "priority": 2,
         "status": "OFFICIAL",
-        "mergedReports": 3,
-        "firstSeenAt": "2026-10-18T13:36:54.000Z"
+        "mergedReports": 4,
+        "firstSeenAt": "2026-10-19T13:12:35.000Z"
       }
     },
     {
-      "id": "auto-news-4512630852df391ee799",
+      "id": "auto-news-427dd1c531e3ef6964d3",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Futbol A Takımımız Trabzon'da",
+      "text": "Maça Doğru | Lille - Galatasaray",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-20T12:52:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPWE5VeUxmN2NFVzBtZjlHeHZKUG5IR1RHVkZYNUcxTEItU0VQd1pvVWRITjYzTWoxSTYwdlBFZGdnN3dIYWFZTmpFRXRUSVcyazdPcEpvcjFJRHRQdTd3YWpiaTd2QXVmRmlkVXpKNGJndmlaWkRrNGxHdHRXOUhsVVdKUDl6UXJKd2QtNk1PQkYyV0dpSkE0?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-3e74d09b9ab28ac0d85c",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Hearts Maçı Medya Programı Belli Oldu | Trabzonspor Kulübü Resmi Web Sitesi",
+      "team": "Trabzonspor",
+      "timestamp": "2026-10-20T11:02:06.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQRFJ2WDRCbHZSczlmS1VESTJ6dnZGTkVXVG0tQ2RCTW1qNklaVXN4M1FBdEFsWlJHcVJlb241Y2FKMkJGZW01SFZ2c3FveTlnZHVIQkszcC1DLVF6VkMweFh0UUszazFxZ2hNWHpkZWloaTRUNHpkTjBYS28wcHV1VmVob3Y4OTNZRHMxM1h0dE45ZllJOW54WjBZVDViVWM?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-7d08e0a8b6e9133e221a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Lille maçı hazırlıkları tamamlandı",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-20T10:57:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPdy12UnRMd2hfalFmYWhoODJuaVZjVjRCQlBhcUNmVndoQUNuaTIyZWFoemtIeGhBT3lqd2hLT2hqLW9Xa3hGSkh4M3dXYkhwZGlTZUEwLXRWdEtpUHNVSC1VbDVTZHdkalgxLWdTUkljVHZjcEp4OHBaUU92WTNlSEo3dHllOHZJaUlVdTM3ZzNrUkMxa2tGemIxNmdJajQ?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-79c03b0260235951880d",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe Tarfin - Baskonia Vitoria-Gasteiz maçının bilet satışı başladı",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-19T18:36:52.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQMHREVUhZSVVRMk9HWlFNNWxCX2dKd0dsQlE4RHFfV0EzbU51Mldocm0zdGlMU1daYW9FeXNQcjMydXhibzFSbkF0Ty0wRHdnUDlpc3kxMTd4SkRYYmswQU1XbW5Udkc4eXJZanhBdG1ILWUtSy1jekhJcmFKMVZuNUNGTlIxRUNqVnJ3Z1Vwc1ZXYkFXRWhYNzg1bzF5R09QWXY5emVDSVc3YUJHdVRfUkM4VWFPOW90bHMzSkowUTlDTjhUQURHa3luYXU?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-6a07a71426caf8481ee0",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "FUTBOL A TAKIMI",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-10-19T18:02:51.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxOSFpKSXM5QkVqeEZ4M0h1TDd2NThsMUpyZXZwc3FnN05RRVgwdjI3eVFOYkpRa1ZiYXZQblVOckltS05za19MWXA4TUZHeDg3aTByRnBSRmpJX1JyZ29IYXBKbmxrSVZnc256SXU4WXlPQmh2RF81cjFOaGluRUZwcHh1QzNsZzMzYmFZ?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-19T17:17:51.000Z"
+      }
+    },
+    {
+      "id": "auto-news-1d9023a565f272ad29c1",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "transfer",
+      "text": "Forma şort arkası sponsorumuz Albayrak Finans ile sözleşme imzaladık",
+      "team": "Trabzonspor",
+      "timestamp": "2026-10-19T15:04:25.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQZ2ZVX3dXSXpsT1I4RU5iOHpvWU9nZWdLenZOMGRMc3NKN0tiX0xlWUhYdnd0WTdOOGwza2VkUkJ6NWQtWlZMWmZNZVktbDZibEJ0REtFS3R5VTR1MGVTOU1Ya29kUE4wT3FJcndqOTF5bFF2amVhbGpteEJqSTlYYkF2THU5eS14bFBOeXczemk3MDVvNllvanBoNVRsR2lPekh0ZUlneW9UV2VGMGt3VEJtZHVEd1pFM2hF?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-7935ee012bd041429f7e",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Futbolcumuz Arseniy Batagov’un Sağlık Durumuyla İlgili Açıklama",
+      "team": "Trabzonspor",
+      "timestamp": "2026-10-19T14:34:18.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQQTBmQUNQS2NyNF82UU43a0MySkxhLUtNUFVmb19FMkZnNVdwSGg4SjhuV3BaUGlmeURGTE4yN0tUWEZJTkFLMEROZ0EtZ2hobHhwamhFYml2aVdtbG1yc0hLMW9TcWlvRUlSUFFnRnpfMm16aTB5ZGVxZklYajRJWHhEN3hTSFFYOC1pMFJRdmpUa2hNZmhqUjg2WUR4dTkwTHh2bE1IU1pNRTBFTlZweg?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-bafde4fd6a888c219c6a",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "1905 GSYİAD, Galatasaray Futbol Akademisi'ne şort sponsoru oldu",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-19T13:21:00.000Z",
+      "source": {
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQXy1DTGZsdzY3VGJabmtXYXdjYnp4SjBvWHlEOUowMmhxVV8tbGliWWMwdjRjYXdHRFpSZFBReFd6dGo4T2ZuYnBVVEhVSmRmRlpPa2ZWRzlrMmg4aVJPWlZOQ0tOSWNEZUJNeS1ZOFA0d0NkWjBQSFByTEJ4SG8tTmtlMmJBSUJBVE13VVZacTFZWVFOT1NBdnhUU1B6ZnNRSXNPTUw2OHExUEVadktqOTBoQi1SYmd1eVE?oc=5",
+        "publisher": "galatasaray.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL",
+        "mergedReports": 2,
+        "firstSeenAt": "2026-10-18T08:09:00.000Z"
+      }
+    },
+    {
+      "id": "auto-news-b2bf95aa3bfd29a83ac3",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Trabzonspor:1 Beşiktaş:4 (U-19)",
       "team": "Beşiktaş",
-      "timestamp": "2026-10-18T16:06:21.000Z",
+      "timestamp": "2026-10-19T13:16:57.000Z",
       "source": {
         "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTFA5X2NqNEhVaGhPNTdaRHNIWURsY1hRc1RZUnVFdzU2Q1lPU3Rwdmpna2NfTFY5TzlvbDg1QWRmU1A4Z0lmUGNvV0VZZlFKZGp5ZXhPcEl2aHd6d28?oc=5",
+        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBEYjdtTGpOMTNrX2pTN09mNWVVeURtV282WEx3UFhZNldKc2VxaXV2am9WWGcwS05TRk9WNmthRlNkMGEwVDFDOTFYUUtFRkNZZmN5UG5nbjdIemowQkxr?oc=5",
         "publisher": "bjk.com.tr"
       },
       "automation": {
@@ -43,29 +227,27 @@
         "priority": 3,
         "status": "OFFICIAL",
         "mergedReports": 2,
-        "firstSeenAt": "2026-10-18T15:48:39.000Z"
+        "firstSeenAt": "2026-10-19T13:16:57.000Z"
       }
     },
     {
-      "id": "auto-news-e646668e042b6be3b802",
+      "id": "auto-news-47a584e45d82f7782488",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Başantrenörümüz Sarunas Jasikevicius, Aliağa Petkim Spor maçının ardından konuştu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-18T15:47:03.000Z",
+      "text": "Lille maçı biletleri satışa çıktı!",
+      "team": "Galatasaray",
+      "timestamp": "2026-10-19T12:30:00.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi1wFBVV95cUxOMDRaNWJlcnFNRC0yc0RvcUZ6TkNRdU1fWHlBZzE3RUd4MU5NRnhCYXBaNHlvWThGREVEWXo2SGQ5ZU15ek5Bc1Vrbk1VWThISG9ZWHFGSFBSeFRsQnlSc21ZSVlwM2JTS090LUNHcDZWQTNGdmZfWFZXMUJac0NBbW1KSTFqSUNucWExdm1XMnVoQnJfc1FnZWVGWFBtb2tXMF9FcmFBMlFpTENkMV9manV1cHZQaHkwdmFkSlZrdUFoNDI5Qm5HOWtTWlgwRUptN0dlNl9Qaw?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "GALATASARAY.ORG",
+        "url": "https://news.google.com/rss/articles/CBMikwFBVV95cUxOclZXQm0zamRWVVZnM3VuMS1ZRVhjWDM3ME5fb0VqVFViRDh2WjN0THZUeTM5TFBnNHJoWGtZSnk0M1BXUmJ6M3lvcjRnc2tXU3hvX2swSDVJZk5BMWxqMlM0dmNtajdUNGFya3hzLVJiaHQ5MWM5dVlzZVF1dGpiamJmRFh0dEhkUURaeUROT3dGbGs?oc=5",
+        "publisher": "galatasaray.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-18T14:37:01.000Z"
+        "feed": "galatasaray",
+        "priority": 1,
+        "status": "OFFICIAL"
       }
     },
     {
@@ -89,53 +271,13 @@
       }
     },
     {
-      "id": "auto-news-b61be44c7b4b41cf9b5c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbol Direktörümüz Oğuz Çetin ve Takım Doktorumuz Ahmet Kulduk, Marco Asensio'nun sağlık durumuyla ilgili açıklamalarda bulundu",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-18T13:11:51.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMi4wFBVV95cUxQMnVJSDBEN1JZRUFXYVdwTFFLNWFYUzNYMmVwbDR0R3dhWDZBWVpWWnF3aXUydkxKVGlLRUdMYnVra3k5QlVHWnVBODBvVE9KV2VVcGlHZmkwYmJwU1Q4SzdVNU1KMG54QnpJZVltbndDN2Nuak94eDcyNEVSVzBGUmpRakJmc01EZnBISG5mSHNHYks0dHhWQzI5R2JQOUhVZ1NrMWx2dVc4VXN3LWxEOFVmSU5DOFFKYXo4cnlEYVdwaFAtbDBLNjE4NVE5cE5GMXp4czVHRk9BTTY2MGdDRzVIVQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-dc25391823a3759519b3",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Lille maçı hazırlıkları başladı",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-18T12:42:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMimwFBVV95cUxPUkVmQlRnWk9GeWZKRzRIWlItVVZjblV1aUc2TlBUbnAxdDZyZmdjTzZUWlRSd0duU2pKbzNmUXRuQ0FyRE9Ub3pwUTk5RlBHWlZNdzBVRnFkSWRaOF80cXFYaEt2RTJhT0JQcEVOLTlDU1VKU285NVlUVGVhVVY2RnZVcmt3aWNEU25VMTVIUUpXalZ1d3JPaTJJWQ?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
       "id": "auto-news-4dc80ed0ddb848e7e9e0",
       "category": "official",
       "confidence": "confirmed",
       "section": "news",
       "text": "Crystal Palace Maçı Biletleri Hakkında Bilgilendirme",
       "team": "Beşiktaş",
-      "timestamp": "2026-10-18T09:27:38.000Z",
+      "timestamp": "2026-10-18T09:27:35.000Z",
       "source": {
         "name": "Bjk.com.tr",
         "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1ibkN4LUZncGt5VUhjeEVKMDdBREJTM3JNTmJKNTNaRkFyTEdUSVZKQ0xhNTVCMWV3UHdZRDJwTHdLZ2tScjVTb0NJakNONlFaWi1waGd2MkdDZVU?oc=5",
@@ -145,88 +287,6 @@
         "source": "rss",
         "feed": "besiktas",
         "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-17T12:56:08.000Z"
-      }
-    },
-    {
-      "id": "auto-news-e2f4c50d4b6c48ac9ac7",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Acıbadem Sağlık Raporu | Rafael Leão",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-18T09:13:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMipwFBVV95cUxOX0NUc2lVOHNUcXhuUy1aMmk5Q2xIZWdSa3BEU2p0WExiMUE5Q2YzSm43bVI5MGdMQXVGYXZzSl9QX0F2eUlldXhtcWFZckY4NVp2YTZvTHgtTUJIV05jaEo4UU9ZZ1lBTXFSQkh1Z19hNWFoMXZYb1BUR1ctdTM4cjhPNnNCbWpmdjNucGdqWk9pYTVHSGdNTnMxb2x6aTJHbmE4dU5VWQ?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-1f319a57c6f7679dd8b5",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "transfer",
-      "text": "Galatasaray ile 1905 GSYİAD arasındaki sponsorluk anlaşması imza töreni hakkında",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-18T08:09:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNMmZ4LS1PYTREZUFpcXZKY1g3V3JvUERVemYyWkZUa1VqQ21XQlg0aEtkOEVRcXBtalVlREJBTUJ4cFhFcklNRkg5ZTUtcU0tQzhDaDQzUnViV2xSQVBma0E2ay1lZ2hvUUNCSDN1d0dtaVMzcU1lZmI0RzVXejItV0M1YXF0cGpDYkVxYk01a1puVUw4aTFfb1BfaUdyQVE5T3ZfaTVBQzd4bW1DSTYzbV9oQmdMYTZDSEQxekpWN3ZJdTk2Xy0zZjNxNUFqcVViMGU0?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-37ec9b89548a7e772a30",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe Medicana 0-3 Ziraat Bankart",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-17T17:50:47.000Z",
-      "source": {
-        "name": "Fenerbahce",
-        "url": "https://news.google.com/rss/articles/CBMingFBVV95cUxOS3ZQN0ZhamxQRUNEQ2UzVHNsU2xHWE05ZXVvb1dwbEFyMGNwVURZUjA0ZnRJN0Q0OTBiTUFjTTY5c0hyMDFfaG1mbEYwc0VUdjZsM3c0cWNvaDJocExJQVFhSVlVeHdrSTV2cEMtaVoyY3JXQnFUTXZXWE02VTNQTFE4VDNfTW1LZVM4OEVnLWM5ZVdubmszUTBja2syQQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-73957f1127fa4de1ae9c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Okan Buruk’tan 150. galibiyet!",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-17T17:21:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMigAFBVV95cUxOcEUzTl9IQWk5bWM2OEpyUXZqM2lHV0w2V2FGV0ZudEFtRjVwV0tuVWFJYU1ndklNVW5CSFVoR3BNQzQyRTlMWW1DNUdfSGlvVEtiM1hkV0t2ZklSN1I1Q053b05XWHVmQkZnWm9pN3A3cW96LW5Ta0JqR01OS1ZmRw?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
         "status": "OFFICIAL"
       }
     },
@@ -251,86 +311,6 @@
       }
     },
     {
-      "id": "auto-news-db4a1d0bc079bc881e3d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "BEŞİKTAŞ JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-17T15:46:05.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMia0FVX3lxTE5pTlNNeEplUy0zdlNtRkFWYk93a3k1RmhJclNxdjBRRFpEU0hNQ0twM3NibGtiM19YWldyMmNxWDRUeTZJakZudFFLZGlmbUhJMHU2amlKYlRtdjNQc0pUbHJtbnNoRGkxZkJV?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-7af3c2ce80961f741cfa",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Beşiktaş maçı hazırlıklarımız devam ediyor",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-17T14:12:44.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMilgFBVV95cUxQTzZrSkphSHZzMzRMeDF6OENOUkdDb21QbG5xMmZ3U3F5VHFzUWRjTjNKdk9kMExNSmdYVmJ5bERzaElnM29JNWZPcE1CNFFwWXZqVnVMaVllbUVjTmg5RURGZ0F5SG9LbzdMVTBTSjN6TUFJSGVEOXN4dUs0cmhxN3A5N3hLcWN5d0ZnZ09Qd0NWX1A3NlE?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-e1148f8e35c5c4c7bf2f",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Zirve yarışında kritik viraj! İşte Trabzonspor-Beşiktaş maçının muhtemel 11'leri",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-18T21:54:51.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/superlig/2026/10/18/zirve-yarisinda-kritik-viraj-iste-trabzonspor-besiktas-macinin-muhtemel-11leri",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
-      "id": "auto-news-c1e30b6dd1587f3a6ef6",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "İsmail Kartal'dan flaş karar! İşte Fenerbahçe'nin muhtemel 11'i",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-16T11:17:23.000Z",
-      "source": {
-        "name": "fotomac",
-        "url": "https://www.fotomac.com.tr/fenerbahce/2026/10/16/ismail-kartaldan-flas-asensio-karari-iste-fenerbahcenin-muhtemel-11i",
-        "publisher": "fotomac.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fotomac",
-        "priority": 8,
-        "status": "REPORTED"
-      }
-    },
-    {
       "id": "auto-news-2f1aa7d3ea75526189dc",
       "category": "official",
       "confidence": "confirmed",
@@ -351,22 +331,42 @@
       }
     },
     {
-      "id": "auto-news-edea9c676a776c182f72",
-      "category": "squad-update",
+      "id": "auto-news-372cde90fcc661357365",
+      "category": "official",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Fenerbahçe’mizin, C. Alanyaspor karşısındaki ilk 11’i",
-      "team": "Alanyaspor",
-      "timestamp": "2026-10-17T15:00:40.000Z",
+      "text": "PFDK Kararları - 20.10.2026",
+      "team": "Süper Lig",
+      "timestamp": "2026-10-20T14:22:21.000Z",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxOMmJsQVAtTG9QM1VjcmVvdDVhUHB5ODQxeG1ZWHltaDJfem9jVzdZcE9JN1ZBUlNvUEgyWDZQVEtoYW1KY3owcEFOMi00M0FBYzF1YmhFb1BraG0wdHJ3QTl2LUhLQVVNSWJSLUlfeEFRTDRkc1kxOVJNR0NNR2R5UEJ4ZHdoNWVWYXg3ai01R2FEU0E0eGJxMC1DSVAzOUZsbXR4SQ?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFA0UFRNdkl1OGE3ZS1NTHZhclYzTzdFa00yZ0h4NUVqLVJKWWFNYjFiWlk3UFpLVlp0Y0VvRm1LWDEtdHpkSHphVlpld0lfbU5sSTB3Q281QUpaVm95cW9QdnFZQkJ3MXc?oc=5",
+        "publisher": "tff.org"
       },
       "automation": {
         "source": "rss",
-        "feed": "diger-super-lig",
-        "priority": 7,
+        "feed": "super-lig",
+        "priority": 5,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-370d8aa09b058bd2d891",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "UEFA'dan Oğuzhan Çakır'a Görev",
+      "team": "Süper Lig",
+      "timestamp": "2026-10-19T09:01:29.000Z",
+      "source": {
+        "name": "TFF",
+        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBBZGIwQlgxX2lQb0ZZd0FFdUFnQzc2bmdMVEgzc2ZrM0xieEtUSVJ2amZjRE5CamdIWjdja2FqT3YzbGZteHY2cHlHRnlmYkUxbTYydk1PNlRLS2NJOGdMWTdJY2JnZnM?oc=5",
+        "publisher": "tff.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "super-lig",
+        "priority": 5,
         "status": "OFFICIAL"
       }
     }

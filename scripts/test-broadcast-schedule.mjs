@@ -220,4 +220,44 @@ console.log("broadcast-schedule");
   console.log("  ok  akış kanal adları tek biçimli (TRT 1, TRT Spor, TRT Spor Yıldız, beIN Sports 1)");
 }
 
-console.log("broadcast-schedule OK (10 bölüm)");
+// 11. EK KANALLAR (additionalChannels) — elle doğrulama ana kanalın yanına
+//     aynı yayının başka beslemesini (ör. 4K) ekleyebilir; tarama ezemez.
+{
+  const {
+    applyVerifiedBroadcast,
+    broadcastChannel,
+    broadcastChannels,
+    primaryBroadcast
+  } = require("../services/broadcastSchedule.js");
+  const { matchListSchema } = require("../services/matchSchema.js");
+  // Trabzonspor–Beşiktaş, 19 Ekim 2026 (API-Football 1584438): tarama TRT 1
+  // yazmıştı, beIN'in kendi listesi "beIN SPORTS 1 - 4K".
+  const tsbjk = {
+    homeTeam: "Trabzonspor", awayTeam: "Beşiktaş", providerId: "1584438",
+    kickoff: "2026-10-19T20:00:00+03:00", league: "Süper Lig", broadcast: { turkey: "TRT 1" }
+  };
+  assert.deepEqual(broadcastChannels(tsbjk), ["beIN SPORTS 1", "beIN SPORTS 1 4K"]);
+  assert.equal(broadcastChannel(tsbjk), "beIN SPORTS 1 / beIN SPORTS 1 4K");
+  assert.doesNotMatch(broadcastChannel(tsbjk), /TRT/, "tarama kaydı elle doğrulamayı ezmemeli");
+  assert.equal(applyVerifiedBroadcast(tsbjk).broadcast.turkey, "beIN SPORTS 1 / beIN SPORTS 1 4K");
+  assert.equal(tsbjk.broadcast.turkey, "TRT 1", "kaynak kayıt değiştirilmemeli");
+  assert.equal(primaryBroadcast(tsbjk).channel, "beIN SPORTS 1 / beIN SPORTS 1 4K");
+  assert.equal(cardBroadcastLabel(tsbjk, "tr").text, "Yayın: beIN SPORTS 1 / beIN SPORTS 1 4K");
+  // Ek kanalı olmayan kayıt eskisi gibi tek kanal.
+  const fbRoma = { providerId: "1635659", kickoff: "2026-09-10T19:45:00+03:00" };
+  assert.deepEqual(broadcastChannels(fbRoma), ["TRT 1"]);
+  assert.equal(broadcastChannel(fbRoma), "TRT 1");
+  // Başka gün sızmaz.
+  assert.deepEqual(broadcastChannels({ ...tsbjk, kickoff: "2026-10-20T20:00:00+03:00" }), ["TRT 1"]);
+
+  const schema = matchListSchema([tsbjk], { broadcastFor: (match) => broadcastChannels(match) });
+  const publication = schema.itemListElement[0].item.publication;
+  assert.ok(Array.isArray(publication) && publication.length === 2, "iki kanal iki BroadcastEvent olmalı");
+  assert.deepEqual(publication.map((item) => item.publishedOn.name), ["beIN SPORTS 1", "beIN SPORTS 1 4K"]);
+  assert.deepEqual(publication.map((item) => item.videoFormat), ["HD", "4K"]);
+  const single = matchListSchema([fbRoma].map((m) => ({ ...m, homeTeam: "Fenerbahçe", awayTeam: "AS Roma" })), { broadcastFor: () => "TRT 1" });
+  assert.equal(single.itemListElement[0].item.publication.publishedOn.name, "TRT 1", "tek kanal: nesne biçimi değişmez");
+  console.log("  ok  ek kanallar: görünen ad birleşik, JSON-LD her besleme için ayrı BroadcastEvent");
+}
+
+console.log("broadcast-schedule OK (11 bölüm)");

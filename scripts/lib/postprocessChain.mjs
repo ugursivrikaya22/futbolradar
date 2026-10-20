@@ -92,6 +92,8 @@ export const POSTPROCESS_CHAIN = [
   { id: "transfer-period-page", script: "generate-transfer-period-page.mjs", args: [], timeoutMinutes: 2 },
   // /takip-ettiklerim (kişisel sayfa, noindex): statik kabuk; içerik tarayıcıda yerel favorilerden çizilir.
   { id: "following-page", script: "generate-following-page.mjs", args: [], timeoutMinutes: 2 },
+  // /puan-durumu-simulator: resmî tablo + kalan fikstür gömülü; saatlik tablo güncellemesini izlemeli.
+  { id: "standings-simulator-page", script: "generate-standings-simulator-page.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
@@ -131,6 +133,11 @@ export const POSTPROCESS_CHAIN = [
   // disk gerçeği bellidir. `inject-hreflang`den SONRA: hreflang bildirimleri
   // bu geçişin dışında tutuluyor, önce yazılmış olmaları gerekiyor.
   { id: "match-canonicals", script: "unify-match-canonicals.mjs", args: [], timeoutMinutes: 8 },
+  // Maç sayfasından yayımlanmış maç sonu köşe yazısına "MAÇ SONU ANALİZİ"
+  // köprüsü. Maç sayfaları her derlemede yeniden üretildiği için köprü de her
+  // koşuda yeniden basılmalı; aksi hâlde ilk saatlik koşu onu siler. Yalnızca
+  // `generated.matchId` taşıyan YAYIMLANMIŞ yazılar için iş yapar, yoksa no-op.
+  { id: "match-column-link", script: "inject-match-column-link.mjs", args: [], timeoutMinutes: 3 },
   // Ana sayfa anketi: canlı skor kahramanının hemen ardına, vitrin kartları
   // maç/transfer bölümlerinin arasına, sabit kutu altlığın ardına.
   // `shared-layout`ten SONRA koşar (blok gövdeye yazılıyor, `<head>`e değil)

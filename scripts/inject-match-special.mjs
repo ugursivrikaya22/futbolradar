@@ -30,6 +30,9 @@ const BLOCK_RE = /[\t ]*<!-- match-special:start -->[\s\S]*?<!-- match-special:e
  * çözülü (`page.css`, `.home-poll { order: -1 }`).
  */
 const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\n)/;
+// Öne çıkan köşe yazısı kahramanın hemen altında kalır; kutu onun ardına yazılır.
+// Bölüm yoksa (ör. en/index.html) eskisi gibi hero'nun ardına.
+const FEATURED_COLUMN_END_RE = /(<section class="container home-featured-column"[^>]*>[\s\S]*?<\/section>\r?\n)/;
 
 const PAGES = [
   { file: "index.html", locale: "tr" },
@@ -73,11 +76,12 @@ for (const page of PAGES) {
 
     let next = stripped;
     if (block) {
-      if (!HERO_END_RE.test(stripped)) {
+      const anchorRe = [FEATURED_COLUMN_END_RE, HERO_END_RE].find((candidate) => candidate.test(stripped));
+      if (!anchorRe) {
         problems.push(`${path.relative(root, file)}: hero bölümü bulunamadı, maç dosyası kutusu yazılamadı`);
         continue;
       }
-      next = stripped.replace(HERO_END_RE, (match) => `${match}\n        ${MARKER_START}${block}${MARKER_END}\n`);
+      next = stripped.replace(anchorRe, (match) => `${match}\n        ${MARKER_START}${block}${MARKER_END}\n`);
     }
 
     if (next === original) continue;
