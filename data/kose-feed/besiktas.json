@@ -1,0 +1,568 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "besiktas",
+    "name": "Beşiktaş",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/besiktas",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/besiktas/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/besiktas/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/besiktas/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/besiktas/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "M",
+        "G",
+        "M",
+        "G",
+        "G"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "M",
+        "G",
+        "G",
+        "G",
+        "G"
+      ],
+      "matches": [
+        {
+          "id": "trabzonspor-besiktas-2026-10-19",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584438"
+        },
+        {
+          "id": "hoffenheim-besiktas-2026-10-15",
+          "result": "G",
+          "sourceUrl": "https://www.thesportsdb.com/event/2594833"
+        },
+        {
+          "id": "besiktas-erzurumspor-fk-2026-09-11",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584405"
+        },
+        {
+          "id": "midtjylland-besiktas-2026-07-30",
+          "result": "G",
+          "sourceUrl": "https://www.hurriyet.com.tr/sporarena/midtjylland-0-2-besiktas-uefa-avrupa-ligi-maci-ozeti-43256213"
+        },
+        {
+          "id": "besiktas-midtjylland-2026-07-23",
+          "result": "G",
+          "sourceUrl": "https://bjk.com.tr/tr/mobil/haber?news_id=94748"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 5,
+    "played": 8,
+    "won": 5,
+    "drawn": 0,
+    "lost": 3,
+    "goalsFor": 16,
+    "goalsAgainst": 10,
+    "goalDifference": 6,
+    "points": 15,
+    "syncedAt": "2026-10-19T21:29:03.036Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 6,
+      "won": 4,
+      "drawn": 0,
+      "lost": 2,
+      "goalsFor": 11,
+      "goalsAgainst": 7,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [
+      {
+        "name": "D. Vlahović",
+        "rank": 5,
+        "goals": 6,
+        "assists": 0,
+        "appearances": 5,
+        "minutes": 369,
+        "profile": "https://www.futbolradar.com/futbolcu/dusan-vlahovic",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      }
+    ],
+    "topAssists": [
+      {
+        "name": "O. Kökçü",
+        "rank": 13,
+        "goals": 2,
+        "assists": 2,
+        "appearances": 7,
+        "minutes": 585,
+        "profile": "https://www.futbolradar.com/futbolcu/orkun-kokcu",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      }
+    ]
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 9,
+    "items": [
+      {
+        "id": "trabzonspor-besiktas-2026-10-19",
+        "date": "2026-10-19",
+        "kickoff": "2026-10-19T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Papara Park",
+        "homeTeam": "Trabzonspor",
+        "awayTeam": "Beşiktaş",
+        "opponent": "Trabzonspor",
+        "score": {
+          "home": 2,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/trabzonspor-besiktas-2026-10-19.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584438",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "hoffenheim-besiktas-2026-10-15",
+        "date": "2026-10-15",
+        "kickoff": "2026-10-15T22:00:00+03:00",
+        "competition": "Avrupa Ligi",
+        "venue": "Deplasman",
+        "stadium": "Prezero Arena",
+        "homeTeam": "1899 Hoffenheim",
+        "awayTeam": "Beşiktaş",
+        "opponent": "1899 Hoffenheim",
+        "score": {
+          "home": 2,
+          "away": 3
+        },
+        "goalsFor": 3,
+        "goalsAgainst": 2,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/1899-hoffenheim-besiktas-2026-10-15.html",
+        "sourceUrl": "https://www.thesportsdb.com/event/2594833",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "besiktas-erzurumspor-fk-2026-09-11",
+        "date": "2026-09-11",
+        "kickoff": "2026-09-11T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Tüpraş Stadyumu",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "Erzurumspor FK",
+        "opponent": "Erzurumspor FK",
+        "score": {
+          "home": 3,
+          "away": 0
+        },
+        "goalsFor": 3,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/besiktas-erzurumspor-fk-2026-09-11.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584405",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "midtjylland-besiktas-2026-07-30",
+        "date": "2026-07-30",
+        "kickoff": "2026-07-30T20:00:00+03:00",
+        "competition": "UEFA Avrupa Ligi",
+        "venue": "Deplasman",
+        "stadium": "MCH Arena",
+        "homeTeam": "FC Midtjylland",
+        "awayTeam": "Beşiktaş",
+        "opponent": "FC Midtjylland",
+        "score": {
+          "home": 0,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": null,
+        "sourceUrl": "https://www.hurriyet.com.tr/sporarena/midtjylland-0-2-besiktas-uefa-avrupa-ligi-maci-ozeti-43256213",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "besiktas-midtjylland-2026-07-23",
+        "date": "2026-07-23",
+        "kickoff": "2026-07-23T21:00:00+03:00",
+        "competition": "UEFA Avrupa Ligi",
+        "venue": "İç saha",
+        "stadium": "Tüpraş Stadyumu",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "FC Midtjylland",
+        "opponent": "FC Midtjylland",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": null,
+        "sourceUrl": "https://bjk.com.tr/tr/mobil/haber?news_id=94748",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "besiktas-spartak-trnava-2026-07-14",
+        "date": "2026-07-14",
+        "kickoff": "2026-07-14T18:30:00+03:00",
+        "competition": "Hazırlık Maçı",
+        "venue": "İç saha",
+        "stadium": "Stadion Antona Malatinskeho",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "Spartak Trnava",
+        "opponent": "Spartak Trnava",
+        "score": {
+          "home": 2,
+          "away": 3
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 3,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/besiktas-spartak-trnava-2026-07-14.html",
+        "sourceUrl": "https://www.bjk.com.tr/tr/haber/94728/besiktas-2-spartak-trnava-3-hazirlik-maci.html",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:25.198Z",
+    "count": 31,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "D. Alemdar",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 23,
+        "number": null,
+        "providerId": "50104",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "A. Nübel",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 29,
+        "number": null,
+        "providerId": "399",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Emir Yaşar",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 19,
+        "number": null,
+        "providerId": "394221",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "E. Agbadou",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 28,
+        "number": null,
+        "providerId": "135068",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Ü. Akdağ",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "367637",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Taylan  Bulut",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "394663",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Tiago Djaló",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "1479",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "A. Murillo",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "2973",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "K. Ouattara",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 21,
+        "number": null,
+        "providerId": "333137",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Y. Özcan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "376039",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "E. Topçu",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "50046",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "R. Yılmaz",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 24,
+        "number": null,
+        "providerId": "1987",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "A. Yortac",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 18,
+        "number": null,
+        "providerId": "618891",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "K. Yılmaz",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "1998",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "O. Kökçü",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "37155",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "F. Miretti",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "181808",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "W. Ndidi",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 29,
+        "number": null,
+        "providerId": "18786",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "J. Olaitan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 23,
+        "number": null,
+        "providerId": "316904",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "S. Özcan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "24807",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Sami Bircan Ahmet",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "630520",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "V. Černý",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 28,
+        "number": null,
+        "providerId": "549",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "I. Fakili",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 19,
+        "number": null,
+        "providerId": "446824",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "M. Hekimoğlu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "436179",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "S. Kılıçsoy",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 20,
+        "number": null,
+        "providerId": "336567",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "Oh Hyeon-Gyu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "34710",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "A. Pagda",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 17,
+        "number": null,
+        "providerId": "633057",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "E. Poku",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 21,
+        "number": null,
+        "providerId": "312840",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "M. Rashica",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 29,
+        "number": null,
+        "providerId": "25324",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "O. Sevim",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 19,
+        "number": null,
+        "providerId": "667583",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "L. Trossard",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 31,
+        "number": null,
+        "providerId": "1946",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      },
+      {
+        "name": "D. Vlahović",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 25,
+        "number": null,
+        "providerId": "30415",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Vincenzo Italiano",
+      "appointedAt": "2026-06-07",
+      "note": "2027-2028 sezonu sonuna kadar iki yıllık sözleşme; kulüp KAP'a bildirdi.",
+      "confidence": "confirmed",
+      "sourceName": "Hürriyet",
+      "sourceUrl": "https://www.hurriyet.com.tr/sporarena/besiktas-vincenzo-italianoyu-resmen-acikladi-43195704",
+      "publishedAt": "2026-06-07"
+    }
+  }
+}
