@@ -467,3 +467,12 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   const client = fs.readFileSync(path.join(root, "featured-match-spotlight.js"), "utf8");
   assert.match(client, /\[data-featured-column-note\]/, "istemci notun son kullanmasını uygulamalı");
 }
+
+// Maç sonu köprüsü yalnızca yazının bağlı olduğu maçın sayfasına basılmalı.
+{
+  const linker = fs.readFileSync(path.join(root, "scripts", "inject-match-column-link.mjs"), "utf8");
+  assert.ok(!/identity\.includes\(token\)/.test(linker), "köprü eşleşmesi her zaman doğru olan kimlik koşuluna dayanmamalı");
+  assert.match(linker, /pageKeys\.includes\(token\)/, "köprü eşleşmesi sayfanın kendi kimliğine bakmalı");
+  const chain = fs.readFileSync(path.join(root, "scripts", "lib", "postprocessChain.mjs"), "utf8");
+  assert.match(chain, /inject-match-column-link\.mjs/, "köprü her derlemede yeniden basılmalı");
+}
