@@ -11,3 +11,19 @@ export function englishProfilePlayers(players, urls, view) {
   }
   return [...pages.values()];
 }
+
+/**
+ * Yayından düşen oyuncunun İngilizce sayfası SİLİNMEZ. Saatlik yenileme
+ * yalnızca o anki veri dilimini görür; bir oyuncu geçici olarak düşünce
+ * sayfasını silmek /en/player/:slug yönlendirmesini ve üretim kapısını
+ * (tests/emir11-poll-client.test.cjs) kırıyordu. Güncel veride olmayan
+ * mevcut sayfalar korunur; döndürülen liste yalnızca rapor içindir.
+ */
+export function retainedEnglishPages(existingFiles, expectedFiles) {
+  const expected = new Set(expectedFiles);
+  return existingFiles.filter((file) => file.endsWith(".html") && !expected.has(file)).sort();
+}
+
+export function stripHreflangAlternates(html) {
+  return html.replace(/[ \t]*<link rel="alternate" hreflang="[^"]*"[^>]*>\r?\n?/g, "");
+}
