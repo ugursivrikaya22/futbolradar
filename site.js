@@ -687,6 +687,16 @@
   }
 
   /** `/api/teams`den güncel Süper Lig kadrosu; arma `providerId`den kurulur. Dört büyük takım başta. */
+  function setTeamLogo(img, url) {
+    var match = /^https?:\/\/media\.api-sports\.io\/football\/teams\/(\d+)\.png$/.exec(String(url || ""));
+    if (!match) { img.src = url; return; }
+    img.addEventListener("error", function onError() {
+      img.removeEventListener("error", onError);
+      img.src = url;
+    });
+    img.src = "/assets/logos/" + match[1] + ".webp";
+  }
+
   function favouriteTeams() {
     return teamsOnce().then(function (rows) {
       if (!rows) return [];
@@ -840,7 +850,7 @@
       b.title = team.name;
       if (team.logo) {
         var img = document.createElement("img");
-        img.src = team.logo; img.alt = ""; img.width = 28; img.height = 28;
+        setTeamLogo(img, team.logo); img.alt = ""; img.width = 28; img.height = 28;
         img.loading = "lazy"; img.decoding = "async"; img.referrerPolicy = "no-referrer";
         b.appendChild(img);
       }
@@ -868,7 +878,7 @@
       head.className = "favourite-team__head";
       if (team.logo) {
         var logo = document.createElement("img");
-        logo.src = team.logo; logo.alt = ""; logo.width = 26; logo.height = 26;
+        setTeamLogo(logo, team.logo); logo.alt = ""; logo.width = 26; logo.height = 26;
         logo.loading = "lazy"; logo.decoding = "async"; logo.referrerPolicy = "no-referrer";
         head.appendChild(logo);
       }

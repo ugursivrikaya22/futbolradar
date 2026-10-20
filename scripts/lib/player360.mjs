@@ -25,6 +25,7 @@
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const { teamLogoAttrs } = require("../../services/teamLogos.js");
 const { competitionLabel, t } = require("../../services/i18n.js");
 // Veride Türkçe hazır metin olarak duran künye satırları.
 const { sourceNoteLabel } = require("../../services/displayLabels.js");
@@ -110,7 +111,7 @@ function renderIdentity(model, locale) {
   if (!rows.length) return "";
 
   const logo = model.identity.teamLogo
-    ? `<img class="p360-club-logo" src="${escapeHtml(model.identity.teamLogo)}" alt="${escapeHtml(model.identity.team || "")}" width="28" height="28" loading="lazy" decoding="async">`
+    ? `<img class="p360-club-logo" ${teamLogoAttrs(model.identity.teamLogo, escapeHtml)} onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');}" alt="${escapeHtml(model.identity.team || "")}" width="28" height="28" loading="lazy" decoding="async">`
     : "";
 
   return `<section class="p360 p360-identity" aria-labelledby="p360-identity-title" data-p360-section="identity">

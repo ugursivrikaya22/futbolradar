@@ -1749,6 +1749,19 @@
     return team || "";
   }
 
+
+  function localTeamLogo(url) {
+    var match = /^https?:\/\/media\.api-sports\.io\/football\/teams\/(\d+)\.png$/.exec(String(url || ""));
+    return match ? "/assets/logos/" + match[1] + ".webp" : url;
+  }
+
+  function teamLogoSrcAttrs(url) {
+    var local = localTeamLogo(url);
+    return local !== url
+      ? 'src="' + escapeHtml(local) + '" data-remote="' + escapeHtml(url) + '"'
+      : 'src="' + escapeHtml(url) + '"';
+  }
+
   function getTeamLogo(team) {
     if (team && typeof team === "object") {
       return team.logo || team.crest || team.badge || "";
@@ -1791,7 +1804,7 @@
 
     return (
       '<span class="live-score-team-logo-wrap">' +
-      '<img class="live-score-team-logo" src="' + escapeHtml(logo) + '" alt="' + altText + '" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<img class="live-score-team-logo" ' + teamLogoSrcAttrs(logo) + ' alt="' + altText + '" width="40" height="40" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute(\'data-remote\');return;}this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
       '<span class="live-score-team-logo-fallback" aria-hidden="true" style="display:none">' + initials + '</span>' +
       '</span>'
     );
@@ -5597,7 +5610,7 @@
 
   function superLigTeamLogoHtml(entry, name) {
     if (entry && entry.logo) {
-      return '<img class="superlig-strip-logo" src="' + escapeHtml(entry.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
+      return '<img class="superlig-strip-logo" ' + teamLogoSrcAttrs(entry.logo) + ' alt="" width="28" height="28" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute(\'data-remote\');return;}this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
         '<span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">' + escapeHtml(teamInitials(name)) + '</span>';
     }
     return '<span class="superlig-strip-logo-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + '</span>';
@@ -7373,7 +7386,7 @@
 
     return (
       '<span class="home-standing-logo-wrap">' +
-      '<img class="home-standing-logo" src="' + escapeHtml(logo) + '" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<img class="home-standing-logo" ' + teamLogoSrcAttrs(logo) + ' alt="" width="22" height="22" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute(\'data-remote\');return;}this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
       '<span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">' + initials + "</span>" +
       "</span>"
     );

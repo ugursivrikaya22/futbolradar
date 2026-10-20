@@ -16,6 +16,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const { teamLogoAttrs } = require("../../services/teamLogos.js");
 const { normalizeText } = require("../../api/_utils.js");
 const { canonicalStatus, finishType, istanbulDay } = require("../../services/matchStatus.js");
 const { sameClub } = require("../../services/superLigTeams.js");
@@ -502,7 +503,7 @@ function initials(name) {
 export function teamBadge(name, logo, options = {}) {
   const size = options.size || 40;
   if (logo) {
-    return `<img class="msp-badge" src="${escapeHtml(logo)}" alt="${escapeHtml(name)} ${options.logoAlt || "logo"}" width="${size}" height="${size}" loading="${options.eager ? "eager" : "lazy"}" decoding="async" />`;
+    return `<img class="msp-badge" ${teamLogoAttrs(logo, escapeHtml)} onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');}" alt="${escapeHtml(name)} ${options.logoAlt || "logo"}" width="${size}" height="${size}" loading="${options.eager ? "eager" : "lazy"}" decoding="async" />`;
   }
   return `<span class="msp-badge msp-badge-initials" aria-hidden="true">${escapeHtml(initials(name))}</span>`;
 }
