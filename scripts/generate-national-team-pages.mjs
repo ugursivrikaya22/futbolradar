@@ -123,7 +123,8 @@ const STR = {
       { href: "bugunun-maclari.html", kicker: "Bugün", label: "Bugünün maçları" },
       { href: "canli-skor.html", kicker: "Canlı", label: "Canlı skor" },
       { href: "mac-takvimi.html", kicker: "Program", label: "Maç takvimi" },
-      { href: "haberler.html", kicker: "Gündem", label: "Futbol haberleri" }
+      { href: "haberler.html", kicker: "Gündem", label: "Futbol haberleri" },
+      { href: "avrupadaki-turk-futbolcular", kicker: "Lejyoner", label: "Avrupa'daki Türk futbolcular" }
     ],
     dataNote: "Veri politikası: saat, kadro, hakem ve skor yalnızca doğrulanmış kaynaktan yazılır; eksik alan uydurulmaz."
   },

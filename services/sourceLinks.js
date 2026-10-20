@@ -53,6 +53,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "caykurrizespor.org.tr",
     "acmonza.com",
     "mancity.com",
+    // Official squad pages that verify players listed in data/turkish-players-abroad.json.
+    "juventus.com",
+    "inter.it",
+    "getafecf.com",
     // Official match reports used to verify historical fixture identities.
     "liverpoolfc.com",
     "atleticobaleares.com",
