@@ -1,5 +1,18 @@
 const { providerMeta, resolveFromProviders } = require("../services/liveDataService");
 const { withRelevance } = require("../services/matchRelevance");
+const { withHomePriority } = require("../services/homeMatchPriority");
+
+let cachedHomeStandings;
+function homeStandings() {
+  if (cachedHomeStandings === undefined) {
+    try {
+      cachedHomeStandings = require("../data/league-standings.json");
+    } catch {
+      cachedHomeStandings = null;
+    }
+  }
+  return cachedHomeStandings;
+}
 // Takım kimliği damgası: ana sayfa kişiselleştirmesi favori takımı bu
 // alanla eşleştiriyor. İstemcide ad normalleştirmesiyle eşleştirmek 18
 // kulübün yalnızca 5'inde tutardı — kimliklerin bir kısmı sağlayıcı numarası.
@@ -81,7 +94,9 @@ module.exports = async function handler(req, res) {
   // `locale=en` istendiğinde İngilizce maç sayfası yolu da damgalanır
   // (ana sayfa Radar Nabzı kartı İngilizce yüzeyde İngilizce sayfaya
   // bağlanabilsin diye). Türkçe istek bu ek tabloyu hiç yüklemez.
-  const data = withMatchPages(withTeamIds(withRelevance(rawData)), undefined, {
+  // ANA SAYFA ÖNCELİK PUANI (services/homeMatchPriority.js): lig + takım +
+  // derbi/zirve. Zirve için yalnızca mevcut puan durumu dosyası okunur.
+  const data = withMatchPages(withTeamIds(withHomePriority(withRelevance(rawData), { standings: homeStandings() })), undefined, {
     includeEn: String(query.locale || "").toLowerCase() === "en"
   });
 
