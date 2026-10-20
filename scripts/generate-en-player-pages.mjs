@@ -30,7 +30,13 @@ import {
   renderPlayer360
 } from "./lib/player360.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
-import { englishProfilePlayers } from "./lib/englishPlayerProfiles.mjs";
+import {
+  englishProfilePlayers,
+  peerHrefForBuiltComparisons,
+  retainedEnglishPages,
+  rewriteUnbuiltComparisonLinks,
+  stripHreflangAlternates
+} from "./lib/englishPlayerProfiles.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -148,6 +154,8 @@ const players = annotateDuplicates(getPlayers(rawPlayers));
 const comparablePlayers = players.filter((player) => !player.isDuplicate);
 /** Kıyas adresi TR tarafıyla aynı kaynaktan; çözücü TAM listeyle kurulur. */
 const slugForPair = require("../services/playerComparisonPairs.js").createComparisonSlugResolver(players, comparablePlayers);
+/** Kıyas üreticisinin bu veriyle yazacağı slug'lar (TR/EN ortak kaynak). */
+const builtComparisonSlugs = slugForPair.generatedSlugs;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -208,9 +216,13 @@ function pageHtml(player) {
   // Static pairs are generated only for canonical records. A verified alias
   // can still own the public profile when its canonical record is unverified;
   // use the existing picker (which resolves IDs) instead of inventing a URL.
+  const pickerFor = (peer) => `${BASE}oyuncu-karsilastir.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`;
   if (player.isDuplicate) {
+    model.compare.peers = model.compare.peers.map(peer => ({ ...peer, href: pickerFor(peer) }));
+  } else {
+    // TR profiliyle aynı kural: yalnızca üreticinin yazdığı kıyas sayfası.
     model.compare.peers = model.compare.peers.map(peer => ({ ...peer,
-      href: `${BASE}oyuncu-karsilastir.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`
+      href: peerHrefForBuiltComparisons(peer.href, builtComparisonSlugs, pickerFor(peer))
     }));
   }
 
@@ -333,31 +345,35 @@ for (const player of eligible) {
 }
 
 /**
- * ESKİ KOŞULARDAN KALAN SAYFALARI BUDA.
- *
- * Üretici bugüne kadar yalnızca YAZIYORDU, hiç silmiyordu: yayın kapısından
- * düşen ya da adresi değişen oyuncunun eski dosyası dizinde kalıyor, site
- * haritasına girmediği için sessizce "öksüz" bir sayfa olarak yaşıyordu.
- * Dizin artık güncel veriyi birebir yansıtır.
+ * GÜNCEL VERİDE OLMAYAN SAYFALAR KORUNUR (silme yok).
+ * Eskiden dizin güncel veriye budanıyordu; saatlik yenileme oyuncu düşürdüğünde
+ * yayındaki sayfalar silinip üretim kapısı kırıldı (eade051911fd). Artık
+ * mevcut dosyalar ve site haritası kayıtları yerinde kalır.
  */
 const expectedFiles = new Set(pairs.map((pair) => path.basename(pair.en)));
-let pruned = 0;
-for (const file of fs.readdirSync(OUT_DIR)) {
-  if (!file.endsWith(".html") || expectedFiles.has(file)) continue;
-  fs.rmSync(path.join(OUT_DIR, file));
-  pruned += 1;
+const retainedPages = retainedEnglishPages(fs.readdirSync(OUT_DIR), expectedFiles);
+// Korunan sayfanın TR eşi artık EN alternatifini duyurmuyor; tek taraflı
+// hreflang bırakmamak için korunan sayfadaki alternate etiketleri kaldırılır
+// (canonical yerinde kalır, sayfa erişilebilir kalır).
+for (const file of retainedPages) {
+  const target = path.join(OUT_DIR, file);
+  const html = fs.readFileSync(target, "utf8");
+  const stripped = rewriteUnbuiltComparisonLinks(stripHreflangAlternates(html), builtComparisonSlugs, `${BASE}oyuncu-karsilastir.html`);
+  if (stripped !== html) fs.writeFileSync(target, stripped, "utf8");
 }
+const retainedLocs = new Set(retainedPages.map((file) => `${DOMAIN}/en/player/${file.slice(0, -5)}`));
 
 const registered = writeDynamicRoutePairs("player", pairs);
 
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
   const current = fs.readFileSync(sitemapPath, "utf8");
-  const retained = (current.match(URL_ENTRY_RE) || []).filter((entry) => !entry.includes(`${DOMAIN}/en/player/`));
+  const retained = (current.match(URL_ENTRY_RE) || []).filter((entry) => !entry.includes(`${DOMAIN}/en/player/`)
+    || [...retainedLocs].some((loc) => entry.includes(`<loc>${loc}</loc>`) || entry.includes(`<loc>${loc}.html</loc>`)));
   fs.writeFileSync(sitemapPath, wrapUrlset(retained.concat(sitemapEntries)), "utf8");
 }
 
 console.log(`English player pages: ${written} written, ${eligible.length - written} unchanged (${eligible.length} verified players).`);
 console.log(`English player pages: ${skipped} unverified players skipped (no thin/unconfirmed EN profile).`);
 console.log(`English player pages: ${registered} TR↔EN pairs registered (dynamic route map).`);
-console.log(`English player pages: ${pruned} stale file(s) pruned.`);
+console.log(`English player pages: ${retainedPages.length} page(s) outside current data retained (never deleted).`);

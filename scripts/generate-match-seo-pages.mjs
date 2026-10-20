@@ -39,6 +39,7 @@ import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
+import { columnsForTeams } from "./lib/clusterLinks.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -58,6 +59,7 @@ import {
   istanbulIso,
   leadersSectionHtml,
   lineupsSectionHtml,
+  broadcastSectionHtml,
   matchCenterPlusPayloadHtml,
   matchCenterPlusSectionsHtml,
   longDate,
@@ -1129,6 +1131,28 @@ function pageTitles(entry, state, locale, disambiguate) {
       ? `${home} vs ${away}: ${day}, ${hour} Türkiye time on ${channel}. Probable line-ups, live score, result and stats on FutbolRadar.`
       : `When is ${home} vs ${away}, what time is kick-off and where to watch? ${day}, ${hour} Türkiye time. Probable line-ups, live score, result and stats on FutbolRadar.`;
   }
+  if (locale === "tr") {
+    // TR BAŞLIK KALIBI: "{Ev} - {Deplasman} | {tarih} {Lig}" + kısa niyet eki.
+    // Tarih ve lig her başlıkta bulunduğu için aynı eşleşmenin farklı
+    // tarihli sayfaları (lig + kupa, ilk yarı + ikinci yarı) kendiliğinden
+    // ayrışır; ayrı bir "disambiguate" eki gerekmez. Lig adı kayıtta yoksa
+    // yazılmaz (uydurulmaz).
+    const leagueName = competitionNameFor(entry.competitionId, entry.league) || entry.league || "";
+    const leagueText = leagueName ? competitionLabel(leagueName, "tr") : "";
+    const suffix = {
+      live: "Canlı Skor",
+      post: score ? `Maç Sonucu ${score}` : "Maç Sonucu",
+      pending: "Maç Sonucu",
+      postponed: "Ertelendi",
+      tbd: "Saat Belirlenmedi",
+      interrupted: "Yarıda Kaldı",
+      cancelled: "İptal Edildi",
+      pre: "Saat Kaçta, Hangi Kanalda?"
+    }[state] || "";
+    const head = `${home} - ${away} | ${[day, leagueText].filter(Boolean).join(" ")}`;
+    const full = suffix ? `${head} ${suffix}` : head;
+    return { title: full.length <= 62 ? `${full} | FutbolRadar` : full, description, h1 };
+  }
   if (disambiguate) title = `${title} (${day})`;
   return { title: `${title} | FutbolRadar`, description, h1 };
 }
@@ -1362,6 +1386,7 @@ function pageHtml(entry, locale, options) {
   } else if (state === "live") {
     sections = [
       `<section class="msp-section msp-live-note"><p class="muted-copy">${escapeHtml(text.liveNote)}</p></section>`,
+      broadcastSectionHtml(entry, ctx),
       radarPulseSectionHtml(ctx),
       matchPollSectionHtml(ctx),
       eventsSectionHtml(events, ctx),
@@ -1382,6 +1407,7 @@ function pageHtml(entry, locale, options) {
       state === "postponed" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.postponedNote)}</strong></article></section>` : "",
       state === "cancelled" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.cancelledNote)}</strong></article></section>` : "",
       state === "tbd" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.tbdNote)}</strong></article></section>` : "",
+      broadcastSectionHtml(entry, ctx),
       whenSectionHtml(entry, ctx),
       lineupsSectionHtml(detail, analysis, ctx),
       squadsSectionHtml(squads, ctx),
@@ -1427,7 +1453,16 @@ function pageHtml(entry, locale, options) {
     home.fixtures && home.fixtures !== home.page ? { kicker: text.teamFixtures, title: entry.homeTeam, href: home.fixtures } : null,
     away.fixtures && away.fixtures !== away.page ? { kicker: text.teamFixtures, title: entry.awayTeam, href: away.fixtures } : null,
     home.standings && home.standings !== league.standings ? { kicker: text.teamStandings, title: entry.homeTeam, href: home.standings } : null,
+    away.standings && away.standings !== league.standings && away.standings !== home.standings ? { kicker: text.teamStandings, title: entry.awayTeam, href: away.standings } : null,
     league.standings ? { kicker: text.leagueStandings, title: competitionLabel(competitionName, locale), href: league.standings } : null,
+    // KÜME BAĞLANTISI: iki takımdan birini etiketleyen köşe yazıları (en
+    // fazla 2; bu maça yazılmış olan önce). Bağlantı metni yazının başlığı.
+    ...(locale === "tr"
+      ? columnsForTeams([entry.homeTeam, entry.awayTeam], { limit: 6 })
+        .sort((a, b) => Number(Boolean(b.matchId && b.matchId === detail.naturalId)) - Number(Boolean(a.matchId && a.matchId === detail.naturalId)))
+        .slice(0, 2)
+        .map((column) => ({ kicker: "Köşe yazısı", title: column.title, href: `${base}${column.path}` }))
+      : []),
     league.league ? { kicker: locale === "en" ? "League" : "Lig", title: competitionLabel(competitionName, locale), href: league.league } : null,
     // Süper Lig maçından Tahmin Ligi'ne iç bağlantı (yalnızca Türkçe sayfa var).
     locale === "tr" && entry.competitionId === "super-lig"

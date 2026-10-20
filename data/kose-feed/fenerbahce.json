@@ -1,0 +1,616 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "fenerbahce",
+    "name": "Fenerbahçe",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/fenerbahce",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/fenerbahce/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/fenerbahce/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/fenerbahce/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/fenerbahce/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "G",
+        "G",
+        "G",
+        "B",
+        "M"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "G",
+        "M",
+        "B",
+        "G",
+        "B"
+      ],
+      "matches": [
+        {
+          "id": "fenerbahce-alanyaspor-2026-10-17",
+          "result": "G",
+          "sourceUrl": "https://www.thesportsdb.com/event/2527788"
+        },
+        {
+          "id": "aston-villa-fenerbahce-2026-10-14",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635620"
+        },
+        {
+          "id": "gaziantep-fk-fenerbahce-2026-09-14",
+          "result": "B",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584408"
+        },
+        {
+          "id": "lyon-fenerbahce-2026-08-26",
+          "result": "G",
+          "sourceUrl": "https://www.aspor.com.tr/fenerbahce/2026/08/26/ve-fenerbahce-sampiyonlar-liginde-lyonu-deviren-temsilcimiz-17-yillik-hasreti-bitirdi"
+        },
+        {
+          "id": "gornik-zabrze-fenerbahce-2026-07-29",
+          "result": "B",
+          "sourceUrl": "https://www.sporx.com/fenerbahce-sampiyonlar-ligi-nde-sturm-graz-ile-eslesti-SXHBQ1170767SXQ"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 3,
+    "played": 8,
+    "won": 5,
+    "drawn": 1,
+    "lost": 2,
+    "goalsFor": 22,
+    "goalsAgainst": 6,
+    "goalDifference": 16,
+    "points": 16,
+    "syncedAt": "2026-10-17T19:18:57.313Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 6,
+      "won": 3,
+      "drawn": 2,
+      "lost": 1,
+      "goalsFor": 7,
+      "goalsAgainst": 8,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [
+      {
+        "name": "V. Muriqi",
+        "rank": 1,
+        "goals": 7,
+        "assists": 1,
+        "appearances": 8,
+        "minutes": 414,
+        "profile": "https://www.futbolradar.com/futbolcu/vedat-muriqi",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "M. Greenwood",
+        "rank": 11,
+        "goals": 4,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 597,
+        "profile": "https://www.futbolradar.com/futbolcu/mason-greenwood",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "O. Aydın",
+        "rank": 18,
+        "goals": 2,
+        "assists": 3,
+        "appearances": 8,
+        "minutes": 379,
+        "profile": "https://www.futbolradar.com/futbolcu/oguz-aydin",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "İ. Kahveci",
+        "rank": 19,
+        "goals": 2,
+        "assists": 3,
+        "appearances": 7,
+        "minutes": 406,
+        "profile": "https://www.futbolradar.com/futbolcu/irfan-can-kahveci",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      }
+    ],
+    "topAssists": [
+      {
+        "name": "K. Aktürkoğlu",
+        "rank": 2,
+        "goals": 1,
+        "assists": 3,
+        "appearances": 7,
+        "minutes": 368,
+        "profile": null,
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "O. Aydın",
+        "rank": 3,
+        "goals": 2,
+        "assists": 3,
+        "appearances": 8,
+        "minutes": 379,
+        "profile": "https://www.futbolradar.com/futbolcu/oguz-aydin",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "İ. Kahveci",
+        "rank": 4,
+        "goals": 2,
+        "assists": 3,
+        "appearances": 7,
+        "minutes": 406,
+        "profile": "https://www.futbolradar.com/futbolcu/irfan-can-kahveci",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "M. Greenwood",
+        "rank": 15,
+        "goals": 4,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 597,
+        "profile": "https://www.futbolradar.com/futbolcu/mason-greenwood",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      }
+    ]
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 10,
+    "items": [
+      {
+        "id": "fenerbahce-alanyaspor-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T19:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadium Fenerbahce Sukru Saracoglu",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Alanyaspor",
+        "opponent": "Alanyaspor",
+        "score": {
+          "home": 3,
+          "away": 0
+        },
+        "goalsFor": 3,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-alanyaspor-2026-10-17.html",
+        "sourceUrl": "https://www.thesportsdb.com/event/2527788",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "aston-villa-fenerbahce-2026-10-14",
+        "date": "2026-10-14",
+        "kickoff": "2026-10-14T22:00:00+03:00",
+        "competition": "Şampiyonlar Ligi",
+        "venue": "Deplasman",
+        "stadium": "Villa Park",
+        "homeTeam": "Aston Villa",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Aston Villa",
+        "score": {
+          "home": 6,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 6,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/aston-villa-fenerbahce-2026-10-14.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635620",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "gaziantep-fk-fenerbahce-2026-09-14",
+        "date": "2026-09-14",
+        "kickoff": "2026-09-14T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Gaziantep Stadyumu",
+        "homeTeam": "Gaziantep FK",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Gaziantep FK",
+        "score": {
+          "home": 0,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/gaziantep-fk-fenerbahce-2026-09-14.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584408",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "lyon-fenerbahce-2026-08-26",
+        "date": "2026-08-26",
+        "kickoff": "2026-08-26T22:00:00+03:00",
+        "competition": "UEFA Şampiyonlar Ligi",
+        "venue": "Deplasman",
+        "stadium": null,
+        "homeTeam": "Lyon",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Lyon",
+        "score": {
+          "home": 1,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 1,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/lyon-fenerbahce-2026-08-26.html",
+        "sourceUrl": "https://www.aspor.com.tr/fenerbahce/2026/08/26/ve-fenerbahce-sampiyonlar-liginde-lyonu-deviren-temsilcimiz-17-yillik-hasreti-bitirdi",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "gornik-zabrze-fenerbahce-2026-07-29",
+        "date": "2026-07-29",
+        "kickoff": "2026-07-29T21:00:00+03:00",
+        "competition": "UEFA Şampiyonlar Ligi",
+        "venue": "Deplasman",
+        "stadium": "Stadion im. Ernesta Pohla",
+        "homeTeam": "Górnik Zabrze",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Górnik Zabrze",
+        "score": {
+          "home": 1,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 1,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/gornik-zabrze-fenerbahce-2026-07-29.html",
+        "sourceUrl": "https://www.sporx.com/fenerbahce-sampiyonlar-ligi-nde-sturm-graz-ile-eslesti-SXHBQ1170767SXQ",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "fenerbahce-gornik-zabrze-2026-07-21",
+        "date": "2026-07-21",
+        "kickoff": "2026-07-21T21:00:00+03:00",
+        "competition": "UEFA Şampiyonlar Ligi",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadyumu",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Gornik Zabrze",
+        "opponent": "Gornik Zabrze",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/fenerbahce-gornik-zabrze-mac-analizi.html",
+        "sourceUrl": "https://www.sahadan.com/mac/fenerbahce-vs-gornik-zabrze/blx8udpkfd48ndx9a93jskg0k/istatistikler",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:24.845Z",
+    "count": 29,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "T. Çetin",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 29,
+        "number": null,
+        "providerId": "62401",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Ederson",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 32,
+        "number": null,
+        "providerId": "617",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "M. Günok",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 36,
+        "number": null,
+        "providerId": "49837",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Kuzey Sapaz",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 18,
+        "number": null,
+        "providerId": "673366",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "N. Aké",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 30,
+        "number": null,
+        "providerId": "18861",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "A. Brown",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "161661",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Y. Demir",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 21,
+        "number": null,
+        "providerId": "364594",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "L. Mercan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "127609",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "O. Mimović",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 21,
+        "number": null,
+        "providerId": "340727",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "M. Müldür",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "1719",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "J. Oosterwolde",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 24,
+        "number": null,
+        "providerId": "272721",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "K. Peprah Oppong",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 21,
+        "number": null,
+        "providerId": "404172",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Nélson Semedo",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 32,
+        "number": null,
+        "providerId": "130",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "M. Škriniar",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 30,
+        "number": null,
+        "providerId": "198",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Kamil Efe Üregen",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "625426",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Marco Asensio",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 30,
+        "number": null,
+        "providerId": "746",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "Alaettin Ekici",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 17,
+        "number": null,
+        "providerId": "630584",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "B. Elmaz",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "162004",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "M. Guendouzi",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 26,
+        "number": null,
+        "providerId": "1454",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "N. Kanté",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 34,
+        "number": null,
+        "providerId": "2290",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "M. Yandaş",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 31,
+        "number": null,
+        "providerId": "50097",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "İ. Yüksek",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "214463",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "K. Aktürkoğlu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 27,
+        "number": null,
+        "providerId": "142959",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "O. Aydın",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "134590",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "M. Greenwood",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 24,
+        "number": null,
+        "providerId": "897",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "İ. Kahveci",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 30,
+        "number": null,
+        "providerId": "49857",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "R. Lukaku",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 32,
+        "number": null,
+        "providerId": "907",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "V. Muriqi",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 31,
+        "number": null,
+        "providerId": "50048",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      },
+      {
+        "name": "N. Dorgeles",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 23,
+        "number": null,
+        "providerId": "302869",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "İsmail Kartal",
+      "appointedAt": "2026-06-18",
+      "note": "Kulüpteki dördüncü dönemi; bir yıllık sözleşme imzalandı.",
+      "confidence": "confirmed",
+      "sourceName": "Hürriyet",
+      "sourceUrl": "https://www.hurriyet.com.tr/sporarena/fenerbahce-yeni-teknik-direktorunu-duyurdu-4-ismail-kartal-donemi-basladi-43209818",
+      "publishedAt": "2026-06-18"
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "_comment": "/transfer-donemi-2026-27 sayfasının tek kaynağı (scripts/generate-transfer-period-page.mjs). Elle düzenlenir; her iddianın sourceUrl'i olmalı ve alan adı services/sourceLinks.js beyaz listesinde bulunmalı. FIFA listesi 6 saatte bir güncellenir: yasak tablosunu güncellerken snapshotAt'i de değiştirin.",
+  "datePublished": "2026-10-19T15:30:00+03:00",
+  "dateModified": "2026-10-19T15:30:00+03:00",
+  "windows": [
+    {
+      "id": "superlig-yaz-2026",
+      "label": "Süper Lig yaz (1.) transfer ve tescil dönemi",
+      "opens": "2026-06-22",
+      "closes": "2026-09-04",
+      "sourceName": "TFF",
+      "sourceUrl": "https://www.tff.org/default.aspx?ftxtID=50633&pageID=687"
+    },
+    {
+      "id": "superlig-ara-2027",
+      "label": "Süper Lig ara (2.) transfer ve tescil dönemi",
+      "opens": "2027-01-01",
+      "closes": "2027-02-05",
+      "sourceName": "TFF",
+      "sourceUrl": "https://www.tff.org/default.aspx?ftxtID=50633&pageID=687"
+    }
+  ],
+  "europe": {
+    "summerClosed": "2026-09-01",
+    "leagues": ["Premier Lig", "LaLiga", "Serie A", "Bundesliga", "Ligue 1"],
+    "premierLeagueWinterOpens": "2027-01-01",
+    "premierLeagueWinterCloses": "2027-02-01",
+    "sourceName": "Premier League",
+    "sourceUrl": "https://www.premierleague.com/en/news/4698998/summer-2026-transfer-deadline-day-everything-you-need-to-know"
+  },
+  "bans": {
+    "snapshotAt": "2026-10-19T14:58:00+03:00",
+    "sourceName": "FIFA Registration Ban List",
+    "sourceUrl": "https://knowledge.fifa.com/registration-bans",
+    "leagueSource": "FutbolRadar puan durumu verisi (data/league-standings.json, 19 Ekim 2026)",
+    "clubs": [
+      { "club": "Eyüpspor", "league": "Süper Lig", "entries": 2, "latestStart": "2026-10-15", "latestPeriods": "3", "note": "Ayrıca 25 Ağustos 2026 başlangıçlı, \"kaldırılıncaya kadar\" süren ikinci bir kayıt listede.", "pressName": "Sabah", "pressUrl": "https://www.sabah.com.tr/spor/futbol/2026/10/16/fifadan-eyupspora-transfer-yasagi" },
+      { "club": "Gaziantep FK", "league": "Süper Lig", "entries": 3, "latestStart": "2026-10-15", "latestPeriods": "3", "note": "Kayıtlar 2, 12 ve 15 Ekim 2026 başlangıçlı." },
+      { "club": "Antalyaspor", "league": "1. Lig", "entries": 2, "latestStart": "2026-10-13", "latestPeriods": "Until lifted", "note": "Basında \"3 dönem\" diye geçti; FIFA listesinde iki kaydın süresi de \"kaldırılıncaya kadar\".", "pressName": "Ajansspor", "pressUrl": "https://ajansspor.com/haber/fifadan-fatih-karagumruk-ve-antalyaspora-ceza-736574" },
+      { "club": "Fatih Karagümrük", "league": "1. Lig", "entries": 1, "latestStart": "2026-10-12", "latestPeriods": "3", "pressName": "Ajansspor", "pressUrl": "https://ajansspor.com/haber/fifadan-fatih-karagumruk-ve-antalyaspora-ceza-736574" },
+      { "club": "Kayserispor", "league": "1. Lig", "entries": 7, "latestStart": "2026-10-16", "latestPeriods": "3", "note": "İlk kayıt 17 Eylül 2026." },
+      { "club": "Sivasspor", "league": "1. Lig", "entries": 1, "latestStart": "2026-09-16", "latestPeriods": "3" },
+      { "club": "Pendikspor", "league": "1. Lig", "entries": 1, "latestStart": "2026-09-25", "latestPeriods": "3" },
+      { "club": "Bandırmaspor", "league": "1. Lig", "entries": 1, "latestStart": "2026-10-06", "latestPeriods": "3" },
+      { "club": "Boluspor", "league": "1. Lig", "entries": 2, "latestStart": "2026-10-15", "latestPeriods": "3", "note": "İlk kayıt 1 Ekim 2026." },
+      { "club": "Hatayspor", "league": "2. Lig", "entries": 12, "latestStart": "2026-09-18", "latestPeriods": "Until lifted", "note": "Kayıtlar 23 Şubat – 18 Eylül 2026 arasında." },
+      { "club": "Adana Demirspor", "league": "2. Lig", "entries": 37, "latestStart": "2026-10-14", "latestPeriods": "Until lifted" }
+    ],
+    "otherClubs": ["Sakaryaspor", "Serik Belediyespor", "MKE Ankaragücü", "Giresunspor", "Denizlispor", "Adanaspor", "Altay", "Yeni Malatyaspor", "Giresun Sanayispor"]
+  },
+  "hatayspor": {
+    "pastLiftedSourceName": "beIN SPORTS",
+    "pastLiftedSourceUrl": "https://beinsports.com.tr/haber/atakas-hatayspor-10-transferini-acikladi",
+    "pastLiftedDate": "2026-02-04"
+  }
+}

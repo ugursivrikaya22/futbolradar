@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
+import { renderHomeTicker } from "./lib/homeTicker.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -68,6 +69,7 @@ const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { latestQuotes, RECENT_QUOTE_WINDOW_HOURS } = require("../services/managerQuotes.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
+const { isTurkishMatch } = require("../services/turkishTeams.js");
 const { filterScoredMatches } = require("../services/liveScoreFilter.js");
 // "Bugünün Maçları" yüzeyinin kuralı — sıra, lig blokları, bağlantı, SSS.
 const {
@@ -392,11 +394,33 @@ function calendarProgramMatches(limit, options = {}) {
     .slice(0, limit || 6);
 }
 
+function homePriorityProgramMatches(limit) {
+  const { withHomePriority, pinnedMatches, placePinned } = require("../services/homeMatchPriority.js");
+  let standings = null;
+  try {
+    standings = JSON.parse(fs.readFileSync(path.join(root, "data", "league-standings.json"), "utf8"));
+  } catch {
+    standings = null;
+  }
+  const pool = withHomePriority(programMatchPool()
+    .filter((match) => isHomeFixture(match))
+    .filter((match) => !isSuperLigProgramMatch(match)), { standings });
+  const compare = (left, right) =>
+    (Number(isTurkishMatch(right)) - Number(isTurkishMatch(left))) ||
+    (right.homePriority - left.homePriority) ||
+    String(left.kickoff).localeCompare(String(right.kickoff));
+  const ordered = pool.sort(compare);
+  return placePinned(ordered, pinnedMatches(ordered), limit, compare, isTurkishMatch).slice(0, limit);
+}
+
 function calendarProgramCards(limit) {
   const today = istanbulToday();
   // Süper Lig maçları hemen üstte aynı boy kartlarla ayrı ve öncelikli
   // çizilir; genel listede ikinci kez gösterilmez.
-  const upcoming = calendarProgramMatches(limit, { excludeSuperLig: true, homeOnly: true });
+  // Statik yedek de istemciyle aynı kuralı izler: Türk maçı önce, sonra
+  // öncelik puanı (services/homeMatchPriority.js), sonra saat; puanı eşiği
+  // geçen büyük maçlar pencereye sabitlenir.
+  const upcoming = homePriorityProgramMatches(limit || 6);
 
   if (!upcoming.length) {
     return "";
@@ -2022,6 +2046,18 @@ function trendPlayerCategoriesSlot() {
   return renderTrendCategoryTabs(result, "tr", (card) => `./${playerUrls.playerPagePath(card.id).replace(/\.html$/, "")}`);
 }
 
+/**
+ * ANA SAYFA KAYAN YAZISI (data/ticker.json → services/homeTicker.js).
+ * Elle girilen, kaynaklı transfer/gündem notları; süresi geçen öğe düşer,
+ * öğe yoksa yuva boş kalır ve bant hiç basılmaz. Belge: docs/ticker.md.
+ */
+function homeTickerSlot() {
+  const { readTickerFile, selectHomeTickerItems } = require("../services/homeTicker.js");
+  const { items, rejected } = selectHomeTickerItems(readTickerFile(path.join(root, "data", "ticker.json")));
+  for (const entry of rejected) console.warn(`[home-ticker] öğe atlandı (${entry.id || "?"}): ${entry.errors.join(", ")}`);
+  return renderHomeTicker(items, { base: "./" });
+}
+
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
@@ -2047,6 +2083,7 @@ writePage("index.html", {
   "official-lineup-alerts": officialLineupAlerts(),
   "trend-player-categories": trendPlayerCategoriesSlot(),
   "match-quotes": matchQuotesTicker(),
+  "home-ticker": homeTickerSlot(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
   // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu
