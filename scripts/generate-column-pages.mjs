@@ -37,6 +37,7 @@ const {
 } = require("../services/columnService.js");
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+const { relatedColumns } = require("../services/relatedContent.js");
 
 const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
@@ -336,20 +337,20 @@ const PAGE_STRINGS = {
     lang: "tr", ogLocale: "tr_TR", inLanguage: "tr-TR",
     breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
     indexPath: "kose-yazilari.html", backAll: "Tüm Köşe Yazıları",
-    updateLabel: "Güncelleme", sources: "Kaynaklar",
+    updateLabel: "Güncelleme", sources: "Kaynaklar", related: "İlgili yazılar",
     byline: (author, title) => `${author} yazdı: ${title}`
   },
   en: {
     lang: "en", ogLocale: "en_GB", inLanguage: "en-GB",
     breadcrumbLabel: "Breadcrumb", home: "Home",
     indexPath: "en/columns.html", backAll: "All columns",
-    updateLabel: "Update", sources: "Sources",
+    updateLabel: "Update", sources: "Sources", related: "Related columns",
     byline: (author, title) => `${author} wrote: ${title}`
   }
 };
 
 /** Tek yazı sayfası. */
-export function columnPageHtml(column, locale = "tr") {
+export function columnPageHtml(column, locale = "tr", allColumns = []) {
   const copy = PAGE_STRINGS[locale === "en" ? "en" : "tr"];
   const url = publicUrl(column.path);
   // İngilizce yazı iki kat derinlikte (`en/columns/`), Türkçe bir kat.
@@ -381,6 +382,10 @@ export function columnPageHtml(column, locale = "tr") {
     : "";
   const sourcesHtml = column.sources.length
     ? `<section class="article-sources" aria-labelledby="column-sources-title"><h2 id="column-sources-title">${escapeHtml(copy.sources)}</h2><ul>${column.sources.map((row) => `<li><a href="${escapeHtml(row.url)}" target="_blank" rel="${SOURCE_LINK_REL}">${escapeHtml(row.label)}</a></li>`).join("")}</ul></section>`
+    : "";
+  const relatedList = locale === "en" ? [] : relatedColumns(column, allColumns, { limit: 4 });
+  const relatedHtml = relatedList.length
+    ? `<aside class="evergreen-related" aria-labelledby="column-related-title" data-related="columns"><h2 id="column-related-title">${escapeHtml(copy.related)}</h2><div class="column-grid">${relatedList.map((row) => columnCard(row, base)).join("")}</div></aside>`
     : "";
   // "## " önekli satır ara başlıktır: yazının kendi bölüm başlıkları
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
@@ -476,6 +481,7 @@ export function columnPageHtml(column, locale = "tr") {
         </div>
 
         ${sourcesHtml}
+        ${relatedHtml}
 
         ${column.tags.length ? `<div class="column-tags">${column.tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       </article>
@@ -634,7 +640,7 @@ export function generateColumnPages() {
   fs.mkdirSync(AUTHOR_DIR, { recursive: true });
 
   for (const column of columns) {
-    writeBoth(column.path, columnPageHtml(column, "tr"));
+    writeBoth(column.path, columnPageHtml(column, "tr", columns));
   }
 
   // ── İNGİLİZCE KARŞILIKLAR ────────────────────────────────────────────────
@@ -646,7 +652,7 @@ export function generateColumnPages() {
   const { columns: englishColumns } = publishedColumns(store, { locale: "en" });
   const translated = englishColumns.filter((column) => column.hasEnglish && column.path);
   for (const column of translated) {
-    writeBoth(column.path, columnPageHtml(column, "en"));
+    writeBoth(column.path, columnPageHtml(column, "en", translated));
   }
   writeRouteMap(translated);
 

@@ -18,6 +18,7 @@ import { buildNewsSitemap, columnNewsItems } from "./lib/newsSitemap.mjs";
 // Otomatik keşif kaynaklı, şablon metinli ince haberler indekslenmez (bkz. servis).
 const { isThinAutomatedNews } = createRequire(import.meta.url)("../services/newsIndexPolicy.js");
 const { publishedColumns } = createRequire(import.meta.url)("../services/columnService.js");
+const { relatedForNews, teamMatchPage } = createRequire(import.meta.url)("../services/relatedContent.js");
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
@@ -152,8 +153,48 @@ function sourceLabel(source, locale) {
   }
 }
 
+let relatedContext = null;
+function loadRelatedContext() {
+  if (relatedContext) return relatedContext;
+  const readJson = (file, fallback) => {
+    try { return JSON.parse(fs.readFileSync(path.join(root, "data", file), "utf8")); } catch { return fallback; }
+  };
+  let columns = [];
+  try { columns = publishedColumns(readJson("columns.json", { columns: [] }), { locale: "tr" }).columns; } catch { columns = []; }
+  const matchPages = asArray(readJson("match-seo-pages.json", {}), "pages");
+  relatedContext = {
+    news: publishableNews(news),
+    columns,
+    matchPages,
+    exists: (file) => fs.existsSync(path.join(root, file)),
+    articlePath: (item) => articleFile(item, "tr")
+  };
+  return relatedContext;
+}
+
+function relatedNewsItems(article, context = loadRelatedContext()) {
+  return relatedForNews(article, context);
+}
+
+const RELATED_KIND_LABEL = { match: "Maç", column: "Köşe Yazısı", news: "Haber" };
+
+function relatedCard(item, base) {
+  const kind = RELATED_KIND_LABEL[item.kind] || "";
+  return `<a class="match-related-card" href="${escapeHtml(internalHref(item.path, { from: "haber/_.html" }))}" data-related-kind="${escapeHtml(item.kind)}"><span>${escapeHtml(kind)}</span><strong>${escapeHtml(item.title)}</strong>${item.label ? `<p>${escapeHtml(item.label)}</p>` : ""}</a>`;
+}
+
+function relatedNewsHtml(items) {
+  if (!items.length) return { inline: "", grid: "" };
+  const first = items[0];
+  const inline = `<p class="article-read-next" data-related="inline"><strong>Devamını oku:</strong> <a href="${escapeHtml(internalHref(first.path, { from: "haber/_.html" }))}">${escapeHtml(first.title)}</a></p>`;
+  const grid = `<aside class="evergreen-related" aria-labelledby="article-related-title" data-related="grid"><h2 id="article-related-title">Devamını oku</h2><div class="match-related-grid">${items.map((item) => relatedCard(item)).join("")}</div></aside>`;
+  return { inline, grid };
+}
+
 function articleInternalLinks(article) {
-  return (Array.isArray(article.internalLinks) ? article.internalLinks : [])
+  const context = loadRelatedContext();
+  const match = teamMatchPage(article.team, context.matchPages, { exists: context.exists });
+  const links = (Array.isArray(article.internalLinks) ? article.internalLinks : [])
     .filter((link) =>
       link &&
       link.label &&
@@ -165,6 +206,10 @@ function articleInternalLinks(article) {
     .map((link) => (link.href.startsWith("../")
       ? { ...link, href: internalHref(link.href.slice(3), { from: "haber/_.html" }) }
       : link));
+  if (!match) return links;
+  const href = internalHref(`mac/${match.slug}.html`, { from: "haber/_.html" });
+  if (links.some((link) => link.href === href)) return links;
+  return [...links, { label: `${match.homeTeam} - ${match.awayTeam} maç sayfası`, href }];
 }
 
 /** İngilizce takım sayfası; yoksa İngilizce takım listesi. */
@@ -316,7 +361,8 @@ function pageHtml(article, locale = "tr") {
   // İngilizce rotalar okuyucuyu zaten devam ettiriyor.
   const internalLinks = locale === "en" ? [] : articleInternalLinks(article);
   const bodyAnchors = Array.isArray(article.bodyAnchors) ? article.bodyAnchors : [];
-  const body = article.body
+  const related = relatedNewsHtml(locale === "en" ? [] : relatedNewsItems(article));
+  const bodyParts = article.body
     .map((paragraph, index) => ({
       paragraph: String(paragraph || "").trim(),
       anchor: String(bodyAnchors[index] || "").trim()
@@ -325,8 +371,9 @@ function pageHtml(article, locale = "tr") {
     .map(({ paragraph, anchor }) => {
       const id = /^[a-z0-9][a-z0-9-]*$/.test(anchor) ? ` id="${anchor}"` : "";
       return `<p${id}>${escapeHtml(paragraph)}</p>`;
-    })
-    .join("\n        ");
+    });
+  if (related.inline && bodyParts.length > 1) bodyParts.splice(1, 0, related.inline);
+  const body = bodyParts.join("\n        ");
   const tagHtml = tags.length
     ? `<div class="column-tags">${tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>`
     : "";
@@ -388,6 +435,7 @@ ${siteHeader({ base, locale })}
         </div>
         ${internalLinksHtml}
         ${sourceHtml}
+        ${related.grid}
       </article>
       <section class="source-strip" aria-label="${escapeHtml(copy.breadcrumbLabel)}">
         <div><span>${escapeHtml(copy.stripAgenda)}</span><b><a href="${base}${copy.indexPath}">${escapeHtml(copy.stripAll)}</a></b></div>
