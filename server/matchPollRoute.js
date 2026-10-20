@@ -43,6 +43,7 @@ const {
 } = require("../services/homePollVoteStore");
 const { VOTER_COOKIE } = require("./homePollRoute");
 const { loadRegistry } = require("../services/matchSeoPages");
+const { matchPollReleased } = require("../services/matchPollRelease");
 
 const crypto = require("crypto");
 
@@ -292,8 +293,15 @@ async function handleMatchPoll(req, res) {
     return sendError(res, 404, "Bu slug icin kayitli mac bulunamadi.", "MATCH_NOT_FOUND", SOURCE);
   }
 
+  if (!matchPollReleased(entry.slug)) {
+    if (method === "POST") {
+      return sendError(res, 503, "Anket geçici olarak kapalı.", "POLL_DISABLED", SOURCE);
+    }
+    return sendSuccess(res, { storage: "none", slug: entry.slug, questions: [] }, SOURCE);
+  }
+
   const now = Date.now();
-  const questions = buildQuestions(entry, locale, now);
+  const questions = buildQuestions(entry, locale, now).filter((question) => question.id === "winner");
 
   // DEPO YOKSA ÖZELLİK KAPALIDIR, UYDURMA DEĞİL.
   if (!isConfigured()) {

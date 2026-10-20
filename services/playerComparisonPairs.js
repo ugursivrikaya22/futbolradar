@@ -124,9 +124,14 @@ function createComparisonSlugResolver(allPlayerRecords, pool) {
   for (const player of pool) {
     for (const item of profileCompareCandidates(player, pool)) claim(player, item.player);
   }
-  return function slugForPair(left, right) {
+  const resolver = function slugForPair(left, right) {
     return firstSlugByPair.get(canonicalPairKey(left, right)) || base(left, right);
   };
+  // Üreticinin bu havuzla GERÇEKTEN yazacağı slug kümesi. Profil yüzeyleri
+  // (özellikle önceki koşudan korunan EN sayfaları) yalnızca bu kümedeki
+  // kıyas sayfalarına bağlanabilir; geri kalanı 404 demektir.
+  resolver.generatedSlugs = new Set(firstSlugByPair.values());
+  return resolver;
 }
 
 function comparePeerScore(primary, candidate) {

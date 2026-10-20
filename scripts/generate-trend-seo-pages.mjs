@@ -7,12 +7,16 @@ const { playerLink: playerProfileLink } = createRequire(import.meta.url)("../ser
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { readUefaCoefficients, renderUefaCountryBlock } from "./lib/uefaCountryTable.mjs";
 
 const root = process.cwd();
 const domain = "https://www.futbolradar.com";
 const updatedAt = "2026-07-22";
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+
+const uefaCoefficients = readUefaCoefficients(root);
+const uefaTurkiye = uefaCoefficients?.rows.find((row) => row.countryCode === "TUR");
 
 const playerById = new Map(players.map((player) => [player.id, player]));
 
@@ -154,11 +158,12 @@ const pages = [
     h1: "UEFA Ülke Puanı Sıralaması",
     lead: "Türkiye'nin Avrupa kupalarındaki konumu, temsilcilerin maç sonuçları ve sezon katsayılarının birleşimiyle değişir. FutbolRadar puanın arkasındaki maç etkisini açıklar.",
     facts: [
+      ...(uefaTurkiye ? [{ label: "Türkiye", value: `${uefaTurkiye.position}. sıra · ${uefaTurkiye.coefficient.toFixed(3).replace(".", ",")}`, note: `UEFA ülke katsayısı, veri tarihi ${uefaCoefficients.asOf}.` }] : []),
       { label: "Hesaplama", value: "Takım puanı / temsilci", note: "Sezon puanı katılan kulüp sayısına bölünür." },
       { label: "Değerlendirme", value: "5 sezon", note: "Ülke sırası beş sezonluk toplamla oluşur." },
       { label: "Güncelleme", value: "Tur sonrasında", note: "UEFA sıralaması tamamlanan turlardan sonra yenilenir." }
     ],
-    body: () => `${section("Ülke puanı neyi belirler?", "Sıralama, ülkelerin sonraki sezonlarda Avrupa kupalarına kaç takımla ve hangi aşamadan katılacağını etkiler.", `<div class="trend-explainer-grid"><article><span>1</span><h3>Maç puanı oluşur</h3><p>Galibiyet, beraberlik ve aşama bonusları kulüp hanesine eklenir.</p></article><article><span>2</span><h3>Temsilci sayısına bölünür</h3><p>Bir ülkenin sezon toplamı, o sezon yarışan kulüp sayısıyla oranlanır.</p></article><article><span>3</span><h3>Beş sezon birleşir</h3><p>Son beş sezonun katsayıları ülke sırasını oluşturur.</p></article></div>`, "Puan sistemi")}${section("Türkiye için maç etkisi", "Ön eleme turlarındaki her sonuç sezon katsayısına katkı verir; güncel sıra resmî UEFA tablosu üzerinden doğrulanmalıdır.", `<div class="trend-note"><strong>Kesin sıra uydurulmaz.</strong><p>UEFA tablosu tamamlanan turların ardından değişebildiği için FutbolRadar doğrulanmamış anlık sıra yayımlamaz. Temsilcilerin maçlarını ve oluşan etkileri analiz sayfalarında izler.</p><a class="detail-link" href="https://www.uefa.com/nationalassociations/uefarankings/?year=2026" target="_blank" rel="nofollow noopener noreferrer">Resmî UEFA sıralamasını aç</a></div>`, "Doğruluk notu")}`,
+    body: () => `${renderUefaCountryBlock(uefaCoefficients)}${section("Ülke puanı neyi belirler?", "Sıralama, ülkelerin sonraki sezonlarda Avrupa kupalarına kaç takımla ve hangi aşamadan katılacağını etkiler.", `<div class="trend-explainer-grid"><article><span>1</span><h3>Maç puanı oluşur</h3><p>Galibiyet, beraberlik ve aşama bonusları kulüp hanesine eklenir.</p></article><article><span>2</span><h3>Temsilci sayısına bölünür</h3><p>Bir ülkenin sezon toplamı, o sezon yarışan kulüp sayısıyla oranlanır.</p></article><article><span>3</span><h3>Beş sezon birleşir</h3><p>Son beş sezonun katsayıları ülke sırasını oluşturur.</p></article></div>`, "Puan sistemi")}${section("Türkiye için maç etkisi", "Ön eleme turlarındaki her sonuç sezon katsayısına katkı verir; güncel sıra resmî UEFA tablosu üzerinden doğrulanmalıdır.", `<div class="trend-note"><strong>Kesin sıra uydurulmaz.</strong><p>Tablo yalnızca UEFA resmî verisinden alınır ve veri tarihiyle gösterilir; tamamlanan turların ardından UEFA güncellediğinde yenilenir.</p><a class="detail-link" href="https://www.uefa.com/nationalassociations/uefarankings/?year=2026" target="_blank" rel="nofollow noopener noreferrer">Resmî UEFA sıralamasını aç</a></div>`, "Doğruluk notu")}`,
     links: [
       { href: "./sampiyonlar-ligi-on-eleme-maclari.html", kicker: "UEFA", title: "Şampiyonlar Ligi ön eleme maçları", text: "Eleme takvimini ve temsilci maçlarını incele." },
       { href: "./fenerbahce-avrupa-maclari.html", kicker: "Temsilci", title: "Fenerbahçe Avrupa maçları", text: "Fenerbahçe'nin sonuç ve fikstür akışını aç." },
