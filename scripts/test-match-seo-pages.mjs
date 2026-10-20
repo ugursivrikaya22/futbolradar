@@ -22,6 +22,7 @@ import {
   STR,
   heroHtml,
   lineupsSectionHtml,
+  broadcastSectionHtml,
   normalizeEvents,
   statsTableHtml,
   whenSectionHtml
@@ -113,11 +114,17 @@ check("D) yayın kanalı bilinmiyor → 'Henüz açıklanmadı', kanal tahmini y
   assert.ok(withChannel.includes("beIN Sports 1 ekranlarından"));
   const en = heroHtml(entry, baseCtx("en"));
   assert.ok(en.includes("Not announced yet"));
+  // "Hangi kanalda izlenir" bölümü: kanal yoksa ya da KAYNAK ADRESİ yoksa basılmaz.
+  assert.strictEqual(broadcastSectionHtml(entry, { ...baseCtx("tr"), state: "pre" }), "");
+  assert.strictEqual(broadcastSectionHtml({ ...entry, broadcast: { turkey: "beIN Sports 1" } }, { ...baseCtx("tr"), state: "pre" }), "", "kaynaksız kanal bölüm açmamalı");
+  const sourced = broadcastSectionHtml({ ...entry, broadcast: { turkey: "beIN Sports 1" }, broadcastSourceUrl: "https://example.org/yayin-akisi" }, { ...baseCtx("tr"), state: "pre" });
+  assert.ok(sourced.includes('id="yayin"') && sourced.includes("beIN Sports 1") && sourced.includes("https://example.org/yayin-akisi"));
+  assert.strictEqual(broadcastSectionHtml({ ...entry, broadcast: { turkey: "beIN Sports 1" }, broadcastSourceUrl: "https://example.org/x" }, { ...baseCtx("tr"), state: "post" }), "", "bitmiş maçta bölüm yok");
 });
 
-check("E) kadro bilgisi yok → 'Kadrolar açıklandığında' notu, boş kutu değil", () => {
+check("E) kadro/Muhtemel 11 verisi yok → bölüm HİÇ basılmaz (yer tutucu yok)", () => {
   const html = lineupsSectionHtml({ lineups: [] }, null, baseCtx("tr"));
-  assert.ok(html.includes("Kadrolar açıklandığında burada yayımlanır"));
+  assert.strictEqual(html, "", "kaynaklı Muhtemel 11 yoksa bölüm yazılmamalı");
   assert.ok(!html.includes("<ol"), "oyuncu listesi çizilmemeli");
   const official = lineupsSectionHtml({ lineups: [
     { team: "Fenerbahçe", formation: "4-2-3-1", players: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"], substitutes: ["L"] },
