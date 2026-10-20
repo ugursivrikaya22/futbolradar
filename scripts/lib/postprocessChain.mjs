@@ -93,6 +93,10 @@ export const POSTPROCESS_CHAIN = [
   { id: "following-page", script: "generate-following-page.mjs", args: [], timeoutMinutes: 2 },
   // /puan-durumu-simulator: resmî tablo + kalan fikstür gömülü; saatlik tablo güncellemesini izlemeli.
   { id: "standings-simulator-page", script: "generate-standings-simulator-page.mjs", args: [], timeoutMinutes: 2 },
+  // /uefa-ulke-puani-siralamasi: UEFA ülke tablosu data/uefa-country-coefficients.json'dan; API çağrısı yok.
+  { id: "uefa-country-table", script: "inject-uefa-country-table.mjs", args: [], timeoutMinutes: 2 },
+  // /tarihte-bugun + /en/on-this-day: tarihe bağlı, her koşuda yeniden üretilir (yalnız yerel arşiv verisi).
+  { id: "on-this-day-pages", script: "generate-on-this-day-pages.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
