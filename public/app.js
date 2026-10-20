@@ -5670,6 +5670,17 @@
     return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
   }
 
+  // Değerler services/homeMatchPriority.js ile aynı (PIN_COUNT, PIN_MIN_SCORE);
+  // scripts/test-home-match-priority.mjs ikisinin eşitliğini denetler.
+  var HOME_PIN_COUNT = 8;
+  var HOME_PIN_MIN_SCORE = 95;
+  var HOME_CARD_VISIBLE = 12;
+
+  function homePriorityOf(match) {
+    var value = Number(match && match.homePriority);
+    return isFinite(value) ? value : 0;
+  }
+
   function selectTodayMatchCards(matches, options) {
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
@@ -5684,7 +5695,7 @@
       return 2;
     }
 
-    return list.sort(function (left, right) {
+    function compareCards(left, right) {
       var stateGap = rank(left) - rank(right);
       if (stateGap !== 0) return stateGap;
 
@@ -5694,8 +5705,37 @@
       // özellikle önemli kılar: "daha fazla göster"e basmadan görünen
       // pencere masaüstünden çok daha az kart taşır.
       var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
-      return turkishGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+      if (turkishGap) return turkishGap;
+      // Grup içinde ÖNCELİK PUANI (services/homeMatchPriority.js; sunucu
+      // `homePriority` olarak damgalar). Puansız statik yedekte tüm kayıtlar
+      // 0 sayılır ve eski saat sırası korunur.
+      var priorityGap = homePriorityOf(right) - homePriorityOf(left);
+      return priorityGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    }
+
+    var ordered = list.sort(compareCards);
+    var limit = typeof settings.visibleLimit === "number" ? settings.visibleLimit : HOME_CARD_VISIBLE;
+    // SABİTLENEN BÜYÜK MAÇLAR: eşiği geçen en yüksek puanlı HOME_PIN_COUNT
+    // maç görünür pencerede garanti edilir. Yer açmak için yalnızca
+    // sabitlenmemiş ve Türk olmayan en alttaki kart pencereden çıkar.
+    var pinned = ordered.filter(function (match) { return homePriorityOf(match) >= HOME_PIN_MIN_SCORE; })
+      .sort(function (a, b) { return homePriorityOf(b) - homePriorityOf(a); })
+      .slice(0, HOME_PIN_COUNT);
+    if (!pinned.length || ordered.length <= limit) return ordered;
+    var head = ordered.slice(0, limit);
+    var tail = ordered.slice(limit);
+    pinned.forEach(function (match) {
+      if (head.indexOf(match) >= 0) return;
+      for (var index = head.length - 1; index >= 0; index -= 1) {
+        if (pinned.indexOf(head[index]) < 0 && !isTurkishMatch(head[index])) {
+          tail.push(head.splice(index, 1)[0]);
+          tail.splice(tail.indexOf(match), 1);
+          head.push(match);
+          return;
+        }
+      }
     });
+    return head.sort(compareCards).concat(tail.sort(compareCards));
   }
   // today-match-card-selection:end
 
