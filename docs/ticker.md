@@ -24,6 +24,7 @@ yüzden ayrı dosya.
   "url": "/transfer-donemi-2026-27#yasaklar",
   "date": "2026-10-17T00:29:00+03:00",
   "category": "transfer",
+  "tip": "transfer",
   "sourceUrl": "https://knowledge.fifa.com/registration-bans",
   "sourceName": "FIFA",
   "expiresAt": "2026-12-31T23:59:59+03:00"
@@ -42,6 +43,7 @@ Bant bir sonraki derlemede (en geç saatlik CI koşusunda) güncellenir.
 | `url` | hayır | **Site içi** olmalı (`/...` ya da `https://www.futbolradar.com/...`). Dış site buraya yazılmaz |
 | `date` | evet | Saat dilimli ISO 8601 (`2026-10-17T00:29:00+03:00`). Gelecekte olamaz |
 | `category` | evet | `transfer`, `mac` ya da `haber` |
+| `tip` | `haber` için evet | `son_dakika`, `transfer` ya da `mac_ozeti`. Bantta renk + simge + **metin etiketi** ("Son Dakika", "Transfer", "Maç Özeti") olarak görünür. Yazılmazsa yalnızca kesin eşleme türetilir: `transfer`→`transfer`, `mac`→`mac_ozeti`. `haber` için tip açıkça yazılmalı (her haber son dakika değildir). Uyum: `transfer`→{transfer, son_dakika}, `mac`→{mac_ozeti, son_dakika}, `haber`→{son_dakika, transfer} |
 | `sourceUrl` | **evet** | `http(s)`; alan adı `services/sourceLinks.js` beyaz listesinde olmalı (TFF, FIFA, kulüp siteleri, AA, NTV Spor, Fanatik, Hürriyet, beIN…) |
 | `sourceName` | **evet** | Künyede görünen ad ("TFF", "FIFA", "Fanatik") |
 | `expiresAt` | hayır | Saat dilimli ISO 8601. Bu andan sonra öğe derlemede ve tarayıcıda gizlenir |

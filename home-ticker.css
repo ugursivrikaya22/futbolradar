@@ -74,6 +74,13 @@
   font-size: var(--fs-xs, 0.8125rem);
   font-weight: 750;
 }
+.home-ticker__tag { display: inline-flex; align-items: center; gap: 4px; border: 1px solid currentColor; line-height: 1.35; }
+.home-ticker__icon { font-size: 0.9em; line-height: 1; }
+/* Tip renkleri: her biri arka planına karşı ≥ 4.5:1 (WCAG AA); anlam her
+   zaman metin etiketinde ("Son Dakika", "Transfer", "Maç Özeti"). */
+.home-ticker__tag--son_dakika { background: #fdecea; color: #a8201a; }
+.home-ticker__tag--transfer { background: #e8eefc; color: #1e3a8a; }
+.home-ticker__tag--mac_ozeti { background: #e3f4ec; color: #075e3c; }
 .home-ticker__link { color: var(--text, #0f1c17); font-weight: 600; text-decoration: none; }
 .home-ticker__link:hover, .home-ticker__link:focus-visible { color: var(--green, #0b8f5a); text-decoration: underline; }
 .home-ticker__source { color: var(--muted, #6b7c76); font-size: var(--fs-xs, 0.8125rem); text-decoration: underline; text-underline-offset: 2px; }
