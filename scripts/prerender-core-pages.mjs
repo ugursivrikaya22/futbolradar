@@ -21,6 +21,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { internalHref } = require("../services/siteLinks.js");
 const { teamProfileHref } = require("../services/teamHubLinks.js");
+const { teamLogoAttrs } = require("../services/teamLogos.js");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function writeGeneratedFile(file, contents) {
@@ -1324,7 +1325,7 @@ function homeStandingLogoHtml(team) {
   if (!team.logo) {
     return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
   }
-  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(team.logo)}" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" ${teamLogoAttrs(team.logo, escapeHtml)} alt="" width="22" height="22" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');return;}this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
 }
 
 function homeStandingRowHtml(team, total) {
@@ -1485,7 +1486,7 @@ function leagueLeaderLogoHtml(row) {
   if (!row.teamLogo) {
     return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
   }
-  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(row.teamLogo)}" alt="" width="20" height="20" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" ${teamLogoAttrs(row.teamLogo, escapeHtml)} alt="" width="20" height="20" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');return;}this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
 }
 
 function leagueLeaderNameHtml(row) {

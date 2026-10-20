@@ -20,6 +20,7 @@ const require = createRequire(import.meta.url);
 const { normalizeLocale, t } = require("../../services/i18n.js");
 const { canonicalStatus, isDisplayableLive, LIVE_STATES, PLAYED_STATES } = require("../../services/matchStatus.js");
 const { sameClub } = require("../../services/superLigTeams.js");
+const { teamLogoAttrs } = require("../../services/teamLogos.js");
 
 /**
  * SÜRESİ GEÇEN "RESMÎ İLK 11" UYARISININ EŞİĞİ — TEK YERDE.
@@ -501,7 +502,7 @@ function superLigPriorityRank(name) {
 function teamLogoOrInitials(entry, name) {
   const logo = entry && entry.logo;
   if (logo) {
-    return `<img class="superlig-strip-logo" src="${escapeHtml(logo)}" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">${escapeHtml(fixtureTeamInitials(name))}</span>`;
+    return `<img class="superlig-strip-logo" ${teamLogoAttrs(logo, escapeHtml)} alt="" width="28" height="28" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');return;}this.style.display='none';this.nextElementSibling.style.display='inline-flex';" /><span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">${escapeHtml(fixtureTeamInitials(name))}</span>`;
   }
   return `<span class="superlig-strip-logo-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>`;
 }

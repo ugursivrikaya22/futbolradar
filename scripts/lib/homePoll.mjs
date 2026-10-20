@@ -32,6 +32,7 @@
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
+const { teamLogoAttrs } = require("../../services/teamLogos.js");
 /**
  * ÇERÇEVE METİNLERİ SERVİSTEN GELİR, BURADA İKİNCİ KEZ YAZILMAZ.
  *
@@ -115,7 +116,7 @@ const STICKY_STRINGS = {
 function optionRow(option, pollId) {
   const inputId = `home-poll-${pollId}-${option.id}`;
   const crest = option.logo
-    ? `<img class="home-poll__crest" src="${escapeHtml(option.logo)}" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
+    ? `<img class="home-poll__crest" ${teamLogoAttrs(option.logo, escapeHtml)} onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');}" alt="" width="32" height="32" loading="lazy" decoding="async" referrerpolicy="no-referrer">`
     : `<span class="home-poll__crest is-initials" aria-hidden="true">${escapeHtml(option.initials || "?")}</span>`;
 
   return `<li class="home-poll__option">` +

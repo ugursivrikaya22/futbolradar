@@ -1,5 +1,6 @@
 import { createRequire } from "node:module";
 const { teamProfileHref } = createRequire(import.meta.url)("../../services/teamHubLinks.js");
+const { teamLogoAttrs } = createRequire(import.meta.url)("../../services/teamLogos.js");
 /**
  * ANA SAYFA "PUAN DURUMLARI" SEKMELİ WIDGET'I — TR ve EN ana sayfası aynı
  * fonksiyonu çağırır (yalnızca `locale` değişir), böylece iki dil hep aynı
@@ -52,7 +53,7 @@ function logoOrFallback(row) {
   if (!row.logo) {
     return `<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">${initials}</span>`;
   }
-  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(row.logo)}" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
+  return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" ${teamLogoAttrs(row.logo, escapeHtml)} alt="" width="22" height="22" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute('data-remote');return;}this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
 }
 
 /** Süper Lig satırı Türkçe ana sayfada takım profiline bağlanır (dahili linkleme); diğer 8 yarışmada karşılık gelen bir profil sayfası olmadığı için satır düz metin kalır. */

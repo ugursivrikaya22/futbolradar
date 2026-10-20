@@ -1749,6 +1749,29 @@
     return team || "";
   }
 
+
+  var LOCAL_LOGO_IDS = "1,2,33,34,35,36,40,42,45,47,49,50,51,52,55,57,63,64,65,66,77,79,80,81,84,85,91,94,95,96,97,106,108,110,111,114,116,157,160,162,163,164,165,167,168,169,170,172,173,174,175,182,185,192,194,197,201,209,211,212,217,228,247,249,254,256,257,319,321,327,336,340,347,397,398,400,406,413,415,487,488,489,490,492,494,495,496,497,499,500,502,503,505,512,517,523,529,530,531,532,533,535,536,538,539,540,541,542,543,544,546,548,549,550,553,554,560,563,564,567,569,571,575,598,606,607,608,611,617,620,628,631,632,637,645,646,651,656,664,667,727,728,735,746,759,768,777,797,853,867,895,994,996,997,998,999,1001,1002,1003,1004,1005,1007,1009,1012,1026,1122,1124,1165,1298,1346,1379,1393,1579,1660,2240,3327,3342,3364,3402,3403,3502,3563,3564,3566,3568,3569,3572,3573,3575,3577,3578,3579,3583,3584,3587,3588,3589,3590,3595,3596,3597,3601,3602,3603,3605,3609,3610,3611,3683,3872,4360,4665,4799,6341,6342,6343,6508,6509,6512,6513,6516,6517,6518,6525,6526,6527,6529,6531,6533,6538,6541,6546,7395,7396,7399,7401,7402,7404,7405,7407,7408,7409,7411,7414,7418,7420,7421,7422,10124,13369,13374,13407,13442,13446,13976,15361,17259,17261,19299,19301,19303,20294,20295,21035,21994,21995,21997,21998,22445,22448,24602,24603,24957,26465,26467,26470,27999,28377,28378,28379,28380,28381,28382,28383,28384,28385,28386,28387,28388,28389,28390";
+  var localLogoSet = null;
+  function hasLocalLogo(id) {
+    if (!localLogoSet) {
+      localLogoSet = {};
+      LOCAL_LOGO_IDS.split(",").forEach(function (value) { localLogoSet[value] = true; });
+    }
+    return localLogoSet[id] === true;
+  }
+
+  function localTeamLogo(url) {
+    var match = /^https?:\/\/media\.api-sports\.io\/football\/teams\/(\d+)\.png$/.exec(String(url || ""));
+    return match && hasLocalLogo(match[1]) ? "/assets/logos/" + match[1] + ".webp" : url;
+  }
+
+  function teamLogoSrcAttrs(url) {
+    var local = localTeamLogo(url);
+    return local !== url
+      ? 'src="' + escapeHtml(local) + '" data-remote="' + escapeHtml(url) + '"'
+      : 'src="' + escapeHtml(url) + '"';
+  }
+
   function getTeamLogo(team) {
     if (team && typeof team === "object") {
       return team.logo || team.crest || team.badge || "";
@@ -1791,7 +1814,7 @@
 
     return (
       '<span class="live-score-team-logo-wrap">' +
-      '<img class="live-score-team-logo" src="' + escapeHtml(logo) + '" alt="' + altText + '" width="40" height="40" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<img class="live-score-team-logo" ' + teamLogoSrcAttrs(logo) + ' alt="' + altText + '" width="40" height="40" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute(\'data-remote\');return;}this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
       '<span class="live-score-team-logo-fallback" aria-hidden="true" style="display:none">' + initials + '</span>' +
       '</span>'
     );
@@ -5597,7 +5620,7 @@
 
   function superLigTeamLogoHtml(entry, name) {
     if (entry && entry.logo) {
-      return '<img class="superlig-strip-logo" src="' + escapeHtml(entry.logo) + '" alt="" width="28" height="28" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
+      return '<img class="superlig-strip-logo" ' + teamLogoSrcAttrs(entry.logo) + ' alt="" width="28" height="28" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute(\'data-remote\');return;}this.style.display=\'none\';this.nextElementSibling.style.display=\'inline-flex\';" />' +
         '<span class="superlig-strip-logo-fallback" aria-hidden="true" style="display:none">' + escapeHtml(teamInitials(name)) + '</span>';
     }
     return '<span class="superlig-strip-logo-fallback" aria-hidden="true">' + escapeHtml(teamInitials(name)) + '</span>';
@@ -7373,7 +7396,7 @@
 
     return (
       '<span class="home-standing-logo-wrap">' +
-      '<img class="home-standing-logo" src="' + escapeHtml(logo) + '" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
+      '<img class="home-standing-logo" ' + teamLogoSrcAttrs(logo) + ' alt="" width="22" height="22" loading="lazy" decoding="async" onerror="if(this.dataset.remote){this.src=this.dataset.remote;this.removeAttribute(\'data-remote\');return;}this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';" />' +
       '<span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">' + initials + "</span>" +
       "</span>"
     );
