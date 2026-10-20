@@ -36,3 +36,12 @@ const missing = list
 assert.deepEqual(missing, [], `yerel arması eksik Süper Lig takımı: ${missing.join(", ")}`);
 
 console.log(`team logos: ${files.length} yerel WebP arma, yardımcı ve geri dönüş doğru`);
+
+// İstemci listesi diskteki armalarla birebir aynı olmalı (yoksa 404 ya da kaçan arma).
+const onDisk = files.map((f) => f.replace(/\.webp$/, "")).sort((a, b) => a - b).join(",");
+for (const client of ["app.js", "site.js"]) {
+  const m = fs.readFileSync(path.join(root, client), "utf8").match(/var LOCAL_LOGO_IDS = "([\d,]*)";/);
+  assert.ok(m, `${client}: LOCAL_LOGO_IDS yok`);
+  assert.equal(m[1], onDisk, `${client}: LOCAL_LOGO_IDS assets/logos ile uyumsuz`);
+}
+console.log("team logos: istemci listesi diskle uyumlu");
