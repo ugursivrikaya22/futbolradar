@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { englishProfilePlayers } from '../scripts/lib/englishPlayerProfiles.mjs';
+import { englishProfilePlayers, englishProfileGate } from '../scripts/lib/englishPlayerProfiles.mjs';
 
 const urls = {
   resolveId: id => id === 'current-id' ? 'former-id' : id,
@@ -22,4 +22,14 @@ test('aliases never make unverified players eligible for publication', () => {
 test('a stale unverified canonical record cannot suppress its verified replacement', () => {
   const current={id:'current-id',verified:true};
   assert.deepEqual(englishProfilePlayers([{id:'former-id',verified:false},current],urls,view),[current]);
+});
+test('page gate keeps a stale-but-identified profile and hides its stats', async () => {
+  const { createRequire } = await import('node:module');
+  const { evaluatePlayerCard, publicPlayerView } = createRequire(import.meta.url)('../services/cardCredibility.js');
+  const old = { id: 'p1', name: 'Test Player', providerId: '123456', sourceUrl: 'https://example.com/p', lastVerifiedAt: '2026-01-01T00:00:00Z', goals: 9 };
+  assert.equal(englishProfileGate(old, evaluatePlayerCard), true);
+  assert.equal(publicPlayerView(old).verified, false);
+  assert.equal('goals' in publicPlayerView(old).fields, false);
+  assert.equal(englishProfileGate({ ...old, providerId: 'mock-x' }, evaluatePlayerCard), false);
+  assert.equal(englishProfileGate({ ...old, sourceUrl: '' }, evaluatePlayerCard), false);
 });

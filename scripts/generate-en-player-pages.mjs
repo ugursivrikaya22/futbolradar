@@ -30,7 +30,7 @@ import {
   renderPlayer360
 } from "./lib/player360.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
-import { englishProfilePlayers } from "./lib/englishPlayerProfiles.mjs";
+import { englishProfilePlayers, englishProfileGate } from "./lib/englishPlayerProfiles.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -44,7 +44,7 @@ const {
 } = require("../services/i18n.js");
 const { getPlayers } = require("../services/playerService.js");
 const { resolvePlayerPhoto } = require("../services/playerPhotoService.js");
-const { publicPlayerView } = require("../services/cardCredibility.js");
+const { publicPlayerView, evaluatePlayerCard } = require("../services/cardCredibility.js");
 const { slug: teamSlug } = require("../services/superLigTeams.js");
 const { buildPlayer360 } = require("../services/player360Service.js");
 const { createPlayerUrlResolver } = require("../services/playerUrl.js");
@@ -311,8 +311,24 @@ function pageHtml(player) {
   return { html, trPath, enPath, canonical };
 }
 
-// Aynı yayın adresi yalnızca bir doğrulanmış kayıttan üretilir.
-const eligible = englishProfilePlayers(players, playerUrls, publicPlayerView);
+// Sayfanın VARLIĞI 45 günlük tazelik kapısına bağlanmaz (TR profil sayfalarındaki
+// gibi): bir kez yayımlanmış EN profil, kimlik/kaynak/derecelendirme kapısını
+// geçmeye devam ettiği sürece silinmez; doğrulaması eskiyen kaydın kısıtlı
+// istatistikleri publicPlayerView(...).fields içinde gizlenir (pageHtml).
+// Yeni EN sayfası ise yalnızca tam doğrulanmış (taze) kayıttan açılır.
+const retainedSlugs = new Set([
+  ...(fs.existsSync(OUT_DIR) ? fs.readdirSync(OUT_DIR) : []).filter((f) => f.endsWith(".html")).map((f) => f.slice(0, -5)),
+  ...((readJsonSafe(path.join(root, "data", "en-player-retained-slugs.json")) || {}).slugs || [])
+]);
+const identityView = (player) => {
+  if (publicPlayerView(player).verified) return { verified: true };
+  const slug = path.basename(playerUrls.enPlayerPagePath(player.id), ".html");
+  return { verified: retainedSlugs.has(slug) && englishProfileGate(player, evaluatePlayerCard) };
+};
+function readJsonSafe(file) {
+  try { return JSON.parse(fs.readFileSync(file, "utf8")); } catch { return null; }
+}
+const eligible = englishProfilePlayers(players, playerUrls, identityView);
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;

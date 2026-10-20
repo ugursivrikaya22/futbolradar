@@ -11,3 +11,12 @@ export function englishProfilePlayers(players, urls, view) {
   }
   return [...pages.values()];
 }
+
+// Page-existence gate: every publication rule except the 45-day freshness one.
+// A stale record keeps its URL; its restricted stats are withheld by
+// publicPlayerView. Identity/source/rating failures still block the page.
+const FRESHNESS_REASON = /^son doğrulama \d+ gün önce$/;
+export function englishProfileGate(player, evaluateCard) {
+  const verdict = evaluateCard(player);
+  return verdict.reasons.every(reason => FRESHNESS_REASON.test(reason));
+}
