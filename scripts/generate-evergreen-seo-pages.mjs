@@ -237,7 +237,8 @@ function teamPage(featured) {
     : "";
   const teamLinks = [
     fs.existsSync(path.join(root, `${featured.slug}-maclari.html`)) ? `<a href="../${featured.slug}-maclari.html">${escapeHtml(featured.name)} maçları ve fikstür</a>` : "",
-    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : ""
+    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : "",
+    fs.existsSync(path.join(root, `${featured.slug}-form-durumu.html`)) ? `<a href="../${featured.slug}-form-durumu.html">${escapeHtml(featured.name)} form durumu</a>` : ""
   ].join("");
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");
