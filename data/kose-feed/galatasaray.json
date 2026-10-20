@@ -1,0 +1,646 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "galatasaray",
+    "name": "Galatasaray",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/galatasaray",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/galatasaray/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/galatasaray/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/galatasaray/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/galatasaray/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "G",
+        "G",
+        "M",
+        "G",
+        "G"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "G",
+        "M",
+        "G",
+        "G",
+        "M"
+      ],
+      "matches": [
+        {
+          "id": "genclerbirligi-galatasaray-2026-10-17",
+          "result": "G",
+          "sourceUrl": "https://www.thesportsdb.com/event/2527789"
+        },
+        {
+          "id": "galatasaray-barcelona-2026-10-13",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635666"
+        },
+        {
+          "id": "galatasaray-kocaelispor-2026-09-13",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584407"
+        },
+        {
+          "id": "basaksehir-galatasaray-2026-09-04",
+          "result": "G",
+          "sourceUrl": "https://www.futbolradar.com/kose-yazilari/basaksehir-galatasaray-90-1-gabriel-sara-karakter"
+        },
+        {
+          "id": "galatasaray-monza-2026-07-24",
+          "result": "M",
+          "sourceUrl": "https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 1,
+    "played": 8,
+    "won": 6,
+    "drawn": 1,
+    "lost": 1,
+    "goalsFor": 17,
+    "goalsAgainst": 11,
+    "goalDifference": 6,
+    "points": 19,
+    "syncedAt": "2026-10-17T16:21:36.773Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 6,
+      "won": 4,
+      "drawn": 0,
+      "lost": 2,
+      "goalsFor": 11,
+      "goalsAgainst": 9,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [
+      {
+        "name": "V. Osimhen",
+        "rank": 6,
+        "goals": 6,
+        "assists": 3,
+        "appearances": 6,
+        "minutes": 406,
+        "profile": "https://www.futbolradar.com/futbolcu/victor-osimhen",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "Gabriel Sara",
+        "rank": 20,
+        "goals": 2,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 619,
+        "profile": "https://www.futbolradar.com/futbolcu/gabriel-sara",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      }
+    ],
+    "topAssists": [
+      {
+        "name": "V. Osimhen",
+        "rank": 5,
+        "goals": 6,
+        "assists": 3,
+        "appearances": 6,
+        "minutes": 406,
+        "profile": "https://www.futbolradar.com/futbolcu/victor-osimhen",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "L. Torreira",
+        "rank": 10,
+        "goals": 1,
+        "assists": 2,
+        "appearances": 7,
+        "minutes": 567,
+        "profile": "https://www.futbolradar.com/futbolcu/lucas-torreira",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "Gabriel Sara",
+        "rank": 16,
+        "goals": 2,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 619,
+        "profile": "https://www.futbolradar.com/futbolcu/gabriel-sara",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      }
+    ]
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 9,
+    "items": [
+      {
+        "id": "genclerbirligi-galatasaray-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T16:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Eryaman Stadium",
+        "homeTeam": "Gençlerbirliği",
+        "awayTeam": "Galatasaray",
+        "opponent": "Gençlerbirliği",
+        "score": {
+          "home": 0,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/genclerbirligi-galatasaray-2026-10-17.html",
+        "sourceUrl": "https://www.thesportsdb.com/event/2527789",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "galatasaray-barcelona-2026-10-13",
+        "date": "2026-10-13",
+        "kickoff": "2026-10-13T22:00:00+03:00",
+        "competition": "Şampiyonlar Ligi",
+        "venue": "İç saha",
+        "stadium": "Rams Park",
+        "homeTeam": "Galatasaray",
+        "awayTeam": "Barcelona",
+        "opponent": "Barcelona",
+        "score": {
+          "home": 1,
+          "away": 4
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 4,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/galatasaray-barcelona-2026-10-13.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635666",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "galatasaray-kocaelispor-2026-09-13",
+        "date": "2026-09-13",
+        "kickoff": "2026-09-13T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Rams Park Stadyumu",
+        "homeTeam": "Galatasaray",
+        "awayTeam": "Kocaelispor",
+        "opponent": "Kocaelispor",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/galatasaray-kocaelispor-2026-09-13.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584407",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "basaksehir-galatasaray-2026-09-04",
+        "date": "2026-09-04",
+        "kickoff": "2026-09-04T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Başakşehir Fatih Terim Stadyumu",
+        "homeTeam": "Başakşehir",
+        "awayTeam": "Galatasaray",
+        "opponent": "Başakşehir",
+        "score": {
+          "home": 2,
+          "away": 3
+        },
+        "goalsFor": 3,
+        "goalsAgainst": 2,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/basaksehir-galatasaray-2026-09-04.html",
+        "sourceUrl": "https://www.futbolradar.com/kose-yazilari/basaksehir-galatasaray-90-1-gabriel-sara-karakter",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "galatasaray-monza-2026-07-24",
+        "date": "2026-07-24",
+        "kickoff": "2026-07-24T21:00:00+03:00",
+        "competition": "Hazırlık Maçı",
+        "venue": "İç saha",
+        "stadium": "Raiffeisen Arena",
+        "homeTeam": "Galatasaray",
+        "awayTeam": "AC Monza",
+        "opponent": "AC Monza",
+        "score": {
+          "home": 0,
+          "away": 2
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": null,
+        "sourceUrl": "https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "umraniyespor-galatasaray-2026-07-17",
+        "date": "2026-07-17",
+        "kickoff": "2026-07-17T21:00:00+03:00",
+        "competition": "Hazırlık Maçı",
+        "venue": "Deplasman",
+        "stadium": "Ümraniye Şehir Stadyumu",
+        "homeTeam": "Ümraniyespor",
+        "awayTeam": "Galatasaray",
+        "opponent": "Ümraniyespor",
+        "score": {
+          "home": 1,
+          "away": 5
+        },
+        "goalsFor": 5,
+        "goalsAgainst": 1,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/umraniyespor-galatasaray-2026-07-17.html",
+        "sourceUrl": "https://www.galatasaray.org/haber/futbol/umraniyespor-1-5-galatasaray/60614",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:24.492Z",
+    "count": 36,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "E. E. Buyuk",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 20,
+        "number": null,
+        "providerId": "568438",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "U. Çakır",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 29,
+        "number": null,
+        "providerId": "49866",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "G. Güvenç",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 34,
+        "number": null,
+        "providerId": "61950",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "A. Yilmaz",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 17,
+        "number": null,
+        "providerId": "568439",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "J. Yılmaz",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 21,
+        "number": null,
+        "providerId": "327517",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "K. Ayhan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 31,
+        "number": null,
+        "providerId": "25448",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "A. Bardakcı",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 31,
+        "number": null,
+        "providerId": "61837",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "E. Bitshiabu",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "268571",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "E. Elmalı",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "50057",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "I. Jakobs",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "158121",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "Y. Kahraman",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "568393",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "K. Karataş",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "145057",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "R. Sallai",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 28,
+        "number": null,
+        "providerId": "26252",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "D. Sánchez",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "168",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "W. Singo",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "30504",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "A. Ünyay",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "404443",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "E. Aydin",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "550893",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "A. Batrakov",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 20,
+        "number": null,
+        "providerId": "401073",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "Gabriel Sara",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 26,
+        "number": null,
+        "providerId": "80552",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "İ. Gündoğan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 35,
+        "number": null,
+        "providerId": "633",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "E. C. Karasu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 19,
+        "number": null,
+        "providerId": "567978",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "F. Koçak",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 17,
+        "number": null,
+        "providerId": "498673",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "M. Lemina",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 32,
+        "number": null,
+        "providerId": "18947",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "Renato Nhaga",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 19,
+        "number": null,
+        "providerId": "518567",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "L. Torreira",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 29,
+        "number": null,
+        "providerId": "1462",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "L. Ugochukwu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "270508",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "N. Ogulcan Yancel",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 16,
+        "number": null,
+        "providerId": "567979",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "Y. Akgün",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "454",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "D. Gül",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 22,
+        "number": null,
+        "providerId": "388570",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "C. Guner",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 17,
+        "number": null,
+        "providerId": "585709",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "Rafael Leão",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "22236",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "Berat Luş",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "492270",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "V. Osimhen",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 27,
+        "number": null,
+        "providerId": "2780",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "L. Sané",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 30,
+        "number": null,
+        "providerId": "644",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "B. Yılmaz",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "63274",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      },
+      {
+        "name": "A. Yuzgec",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 16,
+        "number": null,
+        "providerId": "602698",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Okan Buruk",
+      "appointedAt": null,
+      "note": "2025-2026 sezonunu şampiyon tamamlayıp görevini sürdüren beş teknik direktörden biri.",
+      "confidence": "confirmed",
+      "sourceName": "Anadolu Ajansı",
+      "sourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-18-takim-35-farkli-teknik-direktorle-calisti/3944402",
+      "publishedAt": "2026-05-21"
+    }
+  }
+}
