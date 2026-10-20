@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
+import { renderHomeTicker } from "./lib/homeTicker.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -2022,6 +2023,18 @@ function trendPlayerCategoriesSlot() {
   return renderTrendCategoryTabs(result, "tr", (card) => `./${playerUrls.playerPagePath(card.id).replace(/\.html$/, "")}`);
 }
 
+/**
+ * ANA SAYFA KAYAN YAZISI (data/ticker.json → services/homeTicker.js).
+ * Elle girilen, kaynaklı transfer/gündem notları; süresi geçen öğe düşer,
+ * öğe yoksa yuva boş kalır ve bant hiç basılmaz. Belge: docs/ticker.md.
+ */
+function homeTickerSlot() {
+  const { readTickerFile, selectHomeTickerItems } = require("../services/homeTicker.js");
+  const { items, rejected } = selectHomeTickerItems(readTickerFile(path.join(root, "data", "ticker.json")));
+  for (const entry of rejected) console.warn(`[home-ticker] öğe atlandı (${entry.id || "?"}): ${entry.errors.join(", ")}`);
+  return renderHomeTicker(items, { base: "./" });
+}
+
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
@@ -2047,6 +2060,7 @@ writePage("index.html", {
   "official-lineup-alerts": officialLineupAlerts(),
   "trend-player-categories": trendPlayerCategoriesSlot(),
   "match-quotes": matchQuotesTicker(),
+  "home-ticker": homeTickerSlot(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
   // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu

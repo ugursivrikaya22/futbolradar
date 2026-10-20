@@ -49,6 +49,8 @@ for (const file of [
   "match-center.js",
   "match-center-plus.js",
   "match-center-plus.css",
+  "home-ticker.css",
+  "home-ticker.js",
   "site.webmanifest",
   "404.html",
   "index.html",
