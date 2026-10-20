@@ -30,7 +30,13 @@ import {
   renderPlayer360
 } from "./lib/player360.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
-import { englishProfilePlayers, retainedEnglishPages, stripHreflangAlternates } from "./lib/englishPlayerProfiles.mjs";
+import {
+  englishProfilePlayers,
+  peerHrefForBuiltComparisons,
+  retainedEnglishPages,
+  rewriteUnbuiltComparisonLinks,
+  stripHreflangAlternates
+} from "./lib/englishPlayerProfiles.mjs";
 
 const require = createRequire(import.meta.url);
 const {
@@ -148,6 +154,8 @@ const players = annotateDuplicates(getPlayers(rawPlayers));
 const comparablePlayers = players.filter((player) => !player.isDuplicate);
 /** Kıyas adresi TR tarafıyla aynı kaynaktan; çözücü TAM listeyle kurulur. */
 const slugForPair = require("../services/playerComparisonPairs.js").createComparisonSlugResolver(players, comparablePlayers);
+/** Kıyas üreticisinin bu veriyle yazacağı slug'lar (TR/EN ortak kaynak). */
+const builtComparisonSlugs = slugForPair.generatedSlugs;
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -208,9 +216,13 @@ function pageHtml(player) {
   // Static pairs are generated only for canonical records. A verified alias
   // can still own the public profile when its canonical record is unverified;
   // use the existing picker (which resolves IDs) instead of inventing a URL.
+  const pickerFor = (peer) => `${BASE}oyuncu-karsilastir.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`;
   if (player.isDuplicate) {
+    model.compare.peers = model.compare.peers.map(peer => ({ ...peer, href: pickerFor(peer) }));
+  } else {
+    // TR profiliyle aynı kural: yalnızca üreticinin yazdığı kıyas sayfası.
     model.compare.peers = model.compare.peers.map(peer => ({ ...peer,
-      href: `${BASE}oyuncu-karsilastir.html?p1=${encodeURIComponent(player.id)}&p2=${encodeURIComponent(peer.id)}`
+      href: peerHrefForBuiltComparisons(peer.href, builtComparisonSlugs, pickerFor(peer))
     }));
   }
 
@@ -346,7 +358,7 @@ const retainedPages = retainedEnglishPages(fs.readdirSync(OUT_DIR), expectedFile
 for (const file of retainedPages) {
   const target = path.join(OUT_DIR, file);
   const html = fs.readFileSync(target, "utf8");
-  const stripped = stripHreflangAlternates(html);
+  const stripped = rewriteUnbuiltComparisonLinks(stripHreflangAlternates(html), builtComparisonSlugs, `${BASE}oyuncu-karsilastir.html`);
   if (stripped !== html) fs.writeFileSync(target, stripped, "utf8");
 }
 const retainedLocs = new Set(retainedPages.map((file) => `${DOMAIN}/en/player/${file.slice(0, -5)}`));
