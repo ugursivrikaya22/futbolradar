@@ -1,6 +1,6 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-19T21:40:05.272Z",
+  "updatedAt": "2026-10-20T01:10:59.135Z",
   "items": [
     {
       "id": "auto-news-79c03b0260235951880d",
@@ -53,7 +53,7 @@
       "section": "news",
       "text": "inside: Fenerbahçe vs C. Alanyaspor",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-19T17:34:02.000Z",
+      "timestamp": "2026-10-19T17:32:51.000Z",
       "source": {
         "name": "Fenerbahce.org",
         "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPakI0eUtRa1NDNVRhVEplVlI2OHN6WDh2cTk5WmhqSE81Vm9BdG1EZDFkNlF3N1Q2TGY2bXpNUDVxRUx5M1FDOXNISFZzcnVfNGJDczl5S2pCcmFDYWtzbW9IVmJPWW1KWlJFMzlkMHVCY3dnbDhaTXFlN3IzbldNYzNhajBtdFBNMXVz?oc=5",
@@ -169,9 +169,7 @@
         "source": "rss",
         "feed": "fenerbahce",
         "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-19T06:16:31.000Z"
+        "status": "OFFICIAL"
       }
     },
     {
@@ -315,6 +313,26 @@
         "source": "rss",
         "feed": "trabzonspor",
         "priority": 4,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-2f1aa7d3ea75526189dc",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Fenerbahçe 3-0 Corendon Alanyaspor",
+      "team": "Alanyaspor",
+      "timestamp": "2026-10-18T10:25:00.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNUkJiLUpFVEhNbVE1eFRsWjc2d2FmQk1FRWc2eDlRWWN3TnYwRzZ4YndvZ3pMeGJza1pwSjlhUkFYZU5HZG5jcHZRVGJwOFo0MUhSc2IwTXUwaExpYnI5QVVSNEdSck1HMURtLS1kMTVsUDYwMEhOZnR4MVR1cFJ1YnVEV21YZnpLRjNGREtR?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "diger-super-lig",
+        "priority": 7,
         "status": "OFFICIAL"
       }
     },
