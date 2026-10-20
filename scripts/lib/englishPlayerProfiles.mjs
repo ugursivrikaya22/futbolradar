@@ -27,3 +27,27 @@ export function retainedEnglishPages(existingFiles, expectedFiles) {
 export function stripHreflangAlternates(html) {
   return html.replace(/[ \t]*<link rel="alternate" hreflang="[^"]*"[^>]*>\r?\n?/g, "");
 }
+
+/**
+ * KIYAS BAĞLANTISI YALNIZCA ÜRETİLEN SAYFAYA.
+ *
+ * Korunan (önceki koşudan kalan) EN sayfası, taze veride artık üretilmeyen
+ * `karsilastirma/<slug>.html` sayfalarına bağlanabiliyor; tam derlemede
+ * bağlantı denetimi bunları kırık hedef olarak raporluyordu. Üreticinin
+ * kümesinde olmayan her kıyas bağlantısı karşılaştırma seçicisine çevrilir.
+ *
+ * @param {string} html sayfa içeriği
+ * @param {Set<string>} builtSlugs üreticinin yazacağı slug'lar
+ * @param {string} fallbackHref örn. "../../oyuncu-karsilastir.html"
+ */
+export function rewriteUnbuiltComparisonLinks(html, builtSlugs, fallbackHref) {
+  return html.replace(/href="((?:\.\.\/)*|\/)karsilastirma\/([^"\/]+?)\.html"/g, (match, _prefix, slug) =>
+    (builtSlugs.has(slug) ? match : `href="${fallbackHref}"`));
+}
+
+/** Üretilmeyen kıyas sayfasına giden eş bağlantısını seçiciye çevirir. */
+export function peerHrefForBuiltComparisons(href, builtSlugs, pickerHref) {
+  const match = /karsilastirma\/([^"\/]+?)\.html$/.exec(String(href || ""));
+  if (!match || builtSlugs.has(match[1])) return href;
+  return pickerHref;
+}
