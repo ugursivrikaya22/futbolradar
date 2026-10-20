@@ -23,6 +23,7 @@ import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { columnTeams, matchPageFor, teamStandingsLink } from "./lib/clusterLinks.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -349,6 +350,30 @@ const PAGE_STRINGS = {
 };
 
 /** Tek yazı sayfası. */
+/**
+ * KÜME BAĞLANTILARI (yalnızca Türkçe): yazının etiketlediği Süper Lig
+ * takımlarının maç sayfası (iki takım varsa, yazı tarihine ±4 gün) ve
+ * takım puan durumu sayfaları + lig tablosu. Hepsi diskte var olan,
+ * veriyle eşleşen sayfalar (bkz. scripts/lib/clusterLinks.mjs).
+ */
+function clusterLinksHtml(column, locale, base) {
+  if (locale === "en") return "";
+  const teams = columnTeams(column);
+  if (!teams.length) return "";
+  const links = [];
+  if (teams.length >= 2) {
+    const match = matchPageFor(teams[0].name, teams[1].name, column.date);
+    if (match) links.push({ href: `${base}${match.path}`, text: `${match.title}: skor, istatistikler ve kadrolar` });
+  }
+  for (const team of teams.slice(0, 3)) {
+    const standing = teamStandingsLink(team.name);
+    if (standing) links.push({ href: `${base}${standing.path}`, text: `${standing.title} ve kalan maçlar` });
+  }
+  if (fs.existsSync(path.join(process.cwd(), "super-lig-puan-durumu.html"))) links.push({ href: `${base}super-lig-puan-durumu`, text: "Süper Lig puan durumu (tam tablo)" });
+  if (!links.length) return "";
+  return `<nav class="article-sources column-cluster-links" aria-labelledby="column-cluster-title"><h2 id="column-cluster-title">Bu yazıyla ilgili maç ve puan durumu</h2><ul>${links.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.text)}</a></li>`).join("")}</ul></nav>`;
+}
+
 export function columnPageHtml(column, locale = "tr") {
   const copy = PAGE_STRINGS[locale === "en" ? "en" : "tr"];
   const url = publicUrl(column.path);
@@ -476,6 +501,8 @@ export function columnPageHtml(column, locale = "tr") {
         </div>
 
         ${sourcesHtml}
+
+        ${clusterLinksHtml(column, locale, base)}
 
         ${column.tags.length ? `<div class="column-tags">${column.tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       </article>

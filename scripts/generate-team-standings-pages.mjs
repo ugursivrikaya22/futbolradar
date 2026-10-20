@@ -24,6 +24,7 @@ import path from "node:path";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { columnsForTeams, teamMatchPages } from "./lib/clusterLinks.mjs";
 
 const require = createRequire(import.meta.url);
 const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
@@ -119,6 +120,10 @@ function relatedStandingsLinks(team) {
       ? [{ href: `./${team.slug}-maclari.html`, kicker: "Fikstür", title: `${team.name} maçları`, text: "Sıradaki maç, yaklaşan karşılaşmalar ve sonuçlar." }]
       : []),
     { href: `./puan-durumu-simulator?takim=${team.slug}`, kicker: "Simülatör", title: `${team.name} kazanırsa ne olur?`, text: "Sıradaki maçın üç sonucunu ve kalan maçları tabloda dene." },
+    // KÜME BAĞLANTILARI: takımın son/sıradaki maç sayfası ve takımı
+    // etiketleyen en yeni iki köşe yazısı (scripts/lib/clusterLinks.mjs).
+    ...teamMatchPages(team.name).map((match) => ({ href: `./${match.path}`, kicker: match.kicker, title: match.title, text: `${team.name} maç sayfası: saat, kanal, skor ve istatistikler.` })),
+    ...columnsForTeams([team.name], { limit: 2 }).map((column) => ({ href: `./${column.path}`, kicker: "Köşe yazısı", title: column.title, text: `${team.name} üzerine FutbolRadar yorumu.` })),
     { href: "./canli-skor.html", kicker: "Canlı", title: "Canlı skor", text: "Oynanan maçların dakikası ve skoru." },
     { href: "./mac-sonuclari.html", kicker: "Sonuç", title: "Maç sonuçları", text: "Doğrulanmış Süper Lig ve Avrupa sonuçları." },
     { href: "./gol-kralligi.html", kicker: "Gol", title: "Gol krallığı radarı", text: "Gol tehdidi ve bitiricilikle okunan sıralama." }

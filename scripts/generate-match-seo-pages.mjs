@@ -39,6 +39,7 @@ import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
+import { columnsForTeams } from "./lib/clusterLinks.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -1452,7 +1453,16 @@ function pageHtml(entry, locale, options) {
     home.fixtures && home.fixtures !== home.page ? { kicker: text.teamFixtures, title: entry.homeTeam, href: home.fixtures } : null,
     away.fixtures && away.fixtures !== away.page ? { kicker: text.teamFixtures, title: entry.awayTeam, href: away.fixtures } : null,
     home.standings && home.standings !== league.standings ? { kicker: text.teamStandings, title: entry.homeTeam, href: home.standings } : null,
+    away.standings && away.standings !== league.standings && away.standings !== home.standings ? { kicker: text.teamStandings, title: entry.awayTeam, href: away.standings } : null,
     league.standings ? { kicker: text.leagueStandings, title: competitionLabel(competitionName, locale), href: league.standings } : null,
+    // KÜME BAĞLANTISI: iki takımdan birini etiketleyen köşe yazıları (en
+    // fazla 2; bu maça yazılmış olan önce). Bağlantı metni yazının başlığı.
+    ...(locale === "tr"
+      ? columnsForTeams([entry.homeTeam, entry.awayTeam], { limit: 6 })
+        .sort((a, b) => Number(Boolean(b.matchId && b.matchId === detail.naturalId)) - Number(Boolean(a.matchId && a.matchId === detail.naturalId)))
+        .slice(0, 2)
+        .map((column) => ({ kicker: "Köşe yazısı", title: column.title, href: `${base}${column.path}` }))
+      : []),
     league.league ? { kicker: locale === "en" ? "League" : "Lig", title: competitionLabel(competitionName, locale), href: league.league } : null,
     // Süper Lig maçından Tahmin Ligi'ne iç bağlantı (yalnızca Türkçe sayfa var).
     locale === "tr" && entry.competitionId === "super-lig"
