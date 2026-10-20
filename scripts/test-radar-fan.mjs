@@ -364,8 +364,8 @@ const notifyMatch = {
 };
 
 ok("istenen bildirim türlerinin hepsi yük üretir", () => {
-  for (const type of ["kickoff", "goal", "halftime", "fulltime", "red-card"]) {
-    const payload = notifier.buildPayload({ type, side: "home", match: notifyMatch });
+  for (const type of ["kickoff", "goal", "halftime", "fulltime", "red-card", "yellow-card", "penalty"]) {
+    const payload = notifier.buildPayload({ type, side: "home", match: notifyMatch, providerEvent: { time: "40'", value: "Oyuncu" } });
     assert.ok(payload, `${type}: yük üretilmeli`);
     assert.ok(payload.title && payload.body, `${type}: başlık ve gövde dolu olmalı`);
     assert.ok(payload.tag, `${type}: etiket olmalı (aynı olay iki kez düşmesin)`);

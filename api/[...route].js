@@ -401,6 +401,16 @@ module.exports = async function handler(req, res) {
     return handleLiveScoreStream(req, res);
   }
 
+  // Zamanlanmış push tiki (CRON_SECRET) ve yönetici test bildirimi
+  // (ADMIN_TEST_TOKEN). İkisi de kendi kimlik doğrulamasını yapar.
+  if (routeName(req) === "live-score-tick") {
+    return require("../server/liveScoreTickRoute").handleLiveScoreTick(req, res);
+  }
+
+  if (routeName(req) === "admin") {
+    return require("../server/adminTestGoalRoute").handleAdminTestGoal(req, res);
+  }
+
   // Push abonelik uç noktası: POST/DELETE yazma taşır, alttaki genel kapı
   // yalnızca okuma yöntemlerine (GET/HEAD) izin veriyor.
   if (routeName(req) === "push-subscribe") {

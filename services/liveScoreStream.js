@@ -48,6 +48,10 @@ function eventSnapshot(event, kickoff) {
     time: event && event.time ? String(event.time) : null,
     teamId: event && event.teamId ? String(event.teamId) : null,
     playerId: event && event.playerId ? String(event.playerId) : null,
+    // Sarı kart / penaltı bildirimi için: sağlayıcının verdiği takım adı ve
+    // "Oyuncu · Asist · detay" metni. Yoksa null — uydurulmaz.
+    teamName: event && event.team && event.team.name ? String(event.team.name) : null,
+    value: event && event.value ? String(event.value).slice(0, 200) : null,
     providerEventAt: isoOrNull(event && event.providerEventAt),
     // API-Football normally supplies only elapsed minute. This is explicitly
     // labelled as an estimate and remains null if either input is absent.
@@ -132,6 +136,54 @@ function countRedCards(events) {
   return total;
 }
 
+/**
+ * Olayın kimliği. API-Football olaylarına kimlik vermiyor; tür + detay +
+ * dakika + takım + oyuncu metni birlikte aynı olayı tekrar yoklamalarda da
+ * aynı anahtara indirger.
+ */
+function providerEventIdentity(event) {
+  if (!event) return "";
+  if (event.id) return `id:${event.id}`;
+  return [event.type, event.detail, event.time, event.teamId || event.teamName, event.playerId || event.value]
+    .map((part) => String(part || "").trim().toLowerCase())
+    .join("|");
+}
+
+function isYellowCardEvent(event) {
+  const type = String((event && event.type) || "").toLowerCase();
+  const detail = String((event && event.detail) || "").toLowerCase();
+  // "Second Yellow card" kırmızı sayılır (countRedCards) — iki kez bildirilmez.
+  return type === "card" && detail.includes("yellow") && !detail.includes("second");
+}
+
+/** Yalnızca sağlayıcının açıkça yazdığı penaltılar: atılan ve kaçan. */
+function penaltyOutcome(event) {
+  const type = String((event && event.type) || "").toLowerCase();
+  const detail = String((event && event.detail) || "").toLowerCase();
+  if (type !== "goal") return null;
+  if (detail === "missed penalty") return "missed";
+  if (detail === "penalty") return "scored";
+  return null;
+}
+
+/** `prev`de bulunmayan sağlayıcı olayları. */
+function newProviderEvents(prev, match) {
+  const seen = new Set((prev && Array.isArray(prev.events) ? prev.events : []).map(providerEventIdentity));
+  return (Array.isArray(match && match.events) ? match.events : []).filter((event) => !seen.has(providerEventIdentity(event)));
+}
+
+function sideForEvent(event, match) {
+  const name = normalizeTeamName(event && event.teamName);
+  if (!name) return null;
+  if (name === normalizeTeamName(match.homeTeam)) return "home";
+  if (name === normalizeTeamName(match.awayTeam)) return "away";
+  return null;
+}
+
+function normalizeTeamName(value) {
+  return String(value || "").trim().toLocaleLowerCase("tr-TR");
+}
+
 function detectMatchEvents(previousById, matches, everPolled) {
   const events = [];
   for (const match of matches) {
@@ -147,11 +199,30 @@ function detectMatchEvents(previousById, matches, everPolled) {
       const nextHome = Number.isFinite(match.score && match.score.home) ? match.score.home : null;
       const nextAway = Number.isFinite(match.score && match.score.away) ? match.score.away : null;
 
+      const fresh = newProviderEvents(prev, match);
+      const penaltyGoalSides = new Set(fresh
+        .filter((event) => penaltyOutcome(event) === "scored")
+        .map((event) => sideForEvent(event, match))
+        .filter(Boolean));
+
+      // Penaltı golü AYRI bir bildirim değil: gol bildirimi "penaltı" diye
+      // işaretlenir, okuyucuya aynı an için iki bildirim gitmez.
       if (prevHome !== null && nextHome !== null && nextHome > prevHome) {
-        events.push({ type: "goal", side: "home", match });
+        events.push({ type: "goal", side: "home", match, penalty: penaltyGoalSides.has("home") });
       }
       if (prevAway !== null && nextAway !== null && nextAway > prevAway) {
-        events.push({ type: "goal", side: "away", match });
+        events.push({ type: "goal", side: "away", match, penalty: penaltyGoalSides.has("away") });
+      }
+
+      // SARI KART VE KAÇAN PENALTI — YENİ SAĞLAYICI OLAYINDAN.
+      // "Penaltı verildi" API-Football olay akışında güvenilir biçimde yok
+      // (yalnızca VAR "Penalty confirmed" bazen gelir); bildirilmez.
+      for (const event of fresh) {
+        if (isYellowCardEvent(event)) {
+          events.push({ type: "yellow-card", side: sideForEvent(event, match), match, providerEvent: event });
+        } else if (penaltyOutcome(event) === "missed") {
+          events.push({ type: "penalty", outcome: "missed", side: sideForEvent(event, match), match, providerEvent: event });
+        }
       }
 
       // DEVRE ARASI VE MAÇ SONU — DURUM GEÇİŞİNDEN, SAATTEN DEĞİL.
@@ -180,11 +251,29 @@ function detectMatchEvents(previousById, matches, everPolled) {
       const prevReds = countRedCards(prev.events);
       const nextReds = countRedCards(match.events);
       if (nextReds > prevReds) {
-        events.push({ type: "red-card", match });
+        events.push({ type: "red-card", match, redCount: nextReds });
       }
     }
   }
   return events;
+}
+
+/**
+ * ÖRNEKLER ARASI TEKİLLEŞTİRME ANAHTARI (services/pushEventStore.js).
+ * Aynı gerçek olay hangi örnekte (SSE hub'ı ya da zamanlanmış tik) tespit
+ * edilirse edilsin aynı anahtarı üretir.
+ */
+function matchEventKey(event) {
+  const match = (event && event.match) || {};
+  const fixture = String(match.providerId || match.id || "");
+  const score = match.score || {};
+  switch (event && event.type) {
+    case "goal": return `${fixture}:goal:${score.home}-${score.away}:${event.side || ""}`;
+    case "red-card": return `${fixture}:red:${event.redCount || countRedCards(match.events)}`;
+    case "yellow-card":
+    case "penalty": return `${fixture}:${event.type}:${providerEventIdentity(event.providerEvent)}`.slice(0, 400);
+    default: return `${fixture}:${event && event.type}`;
+  }
 }
 
 function snapshotSignature(matches) {
@@ -363,6 +452,8 @@ module.exports = {
   LiveScoreHub,
   PROVIDER_CADENCE_MS,
   detectMatchEvents,
+  matchEventKey,
+  providerEventIdentity,
   estimatedEventTime,
   eventSnapshot,
   getLiveScoreHub,

@@ -1196,7 +1196,14 @@ async function getFixtures(query) {
   const filteredMatches = query && query.league && !liveValue
     ? supportedMatches.filter((match) => competition ? competitionMatchesFixture(match, competition) : String(match.providerLeagueId) === String(query.league))
     : supportedMatches;
-  return stampProviderData(filteredMatches, "matches", liveValue ? 90 * 1000 : 5 * 60 * 1000, payload);
+  const stamped = stampProviderData(filteredMatches, "matches", liveValue ? 90 * 1000 : 5 * 60 * 1000, payload);
+  // PUSH TİKİ İÇİN PAYLAŞILAN ANLIK GÖRÜNTÜ: zaten yapılmış bu canlı isteğin
+  // sonucu Supabase'e yazılır; zamanlanmış tik sağlayıcıya hiç gitmez
+  // (services/pushEventStore.js, server/liveScoreTickRoute.js).
+  if (liveValue === "all" && !fixtureId) {
+    try { require("../pushEventStore").recordLiveFixtures(stamped); } catch (error) { /* sessiz */ }
+  }
+  return stamped;
 }
 
 async function getMatches(query) {

@@ -97,6 +97,13 @@ async function listByTeam(favoriteTeam) {
   return Array.isArray(rows) ? rows : [];
 }
 
+/** Tek abonelik — yalnızca yönetici test bildirimi (server/adminTestGoalRoute.js) kullanır. */
+async function getByEndpoint(endpoint) {
+  const query = `${TABLE}?endpoint=eq.${encodeURIComponent(endpoint)}&select=endpoint,p256dh,auth,favorite_team&limit=1`;
+  const rows = await supabaseRequest(query, { method: "GET" });
+  return Array.isArray(rows) && rows[0] ? rows[0] : null;
+}
+
 /** Başarılı gönderim sonrası teşhis damgası (bkz. migrasyon `last_sent_at`). */
 async function markSent(endpoint) {
   await supabaseRequest(`${TABLE}?endpoint=eq.${encodeURIComponent(endpoint)}`, {
@@ -109,6 +116,7 @@ async function markSent(endpoint) {
 module.exports = {
   TABLE,
   configurationHint,
+  getByEndpoint,
   isConfigured,
   listByTeam,
   markSent,
