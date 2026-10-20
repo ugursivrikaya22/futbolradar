@@ -12658,6 +12658,24 @@ a.column-author:focus-visible {
   padding-bottom: var(--sp-5);
 }
 
+/* Ana sayfadan #çapa ile doğrudan gelinen paragraflar (Muhtemel 11, Hangi
+   Kanalda? vb.): sabit üst çubuğun altında kaybolmasınlar diye kaydırma
+   payı, "düz metne düştüm" hissi vermesinler diye kart + başlık alırlar. */
+.column-anchor-card {
+  scroll-margin-top: 92px;
+  border-left: 3px solid var(--green);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.column-anchor-card h2 {
+  margin: 0 0 8px;
+  font-size: var(--fs-lg);
+}
+
+.column-anchor-card p {
+  margin: 0;
+}
+
 /* ----------------------------------------------------------------------------
    MAÇ SONU RAPORU — BEŞ BÖLÜMLÜK OMURGA
    Mobilde tek sütun, geniş ekranda iki. `auto-fit` + `minmax` kullanılıyor ki
@@ -22323,9 +22341,13 @@ a.motm-week__card:focus-visible {
   font-weight: 800;
   font-size: 0.72rem;
 }
-.cl-match-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--sp-2); border-top: 1px dashed var(--line); }
+.cl-match-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: var(--sp-2); border-top: 1px dashed var(--line); }
 .cl-match-links a {
-  padding: 5px 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 5px 12px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--line);
   background: var(--surface-sunken);
@@ -22333,6 +22355,7 @@ a.motm-week__card:focus-visible {
   font-size: 0.74rem;
   font-weight: 700;
   text-decoration: none;
+  touch-action: manipulation;
 }
 .cl-match-links a:hover, .cl-match-links a:focus-visible { border-color: var(--line-strong); color: var(--green-deep); }
 
