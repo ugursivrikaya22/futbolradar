@@ -10,6 +10,7 @@
     "test:match-focus": "node scripts/test-match-focus.mjs",
     "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/generate-prediction-league-page.mjs && node scripts/generate-following-page.mjs && node scripts/postprocess.mjs && node scripts/apply-brand-copy.mjs && node scripts/verify-production.mjs && node scripts/minify-served-assets.mjs",
     "typecheck": "tsc --noEmit",
+    "test:search-surface": "node scripts/test-search-surface.mjs",
     "test:routes": "node scripts/audit-interaction-routes.mjs",
     "test:browser": "node scripts/test-clickable-browser.cjs",
     "test:poll-share": "node scripts/test-poll-share-browser.mjs",

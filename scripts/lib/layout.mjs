@@ -192,9 +192,9 @@ export function siteHeader(options = {}) {
   // o içeriğin tamamından mahrum bırakıyordu. Kutu artık iki dilde de
   // çiziliyor; yer tutucu ve etiketler çevrildi, sonuç satırları hedef
   // sayfanın kendi dilini taşıyor.
-  const search = `<form class="site-search" role="search" method="get" action="${base}${locale === "en" ? "en/teams.html" : "oyuncu-radari.html"}" data-search-base="${base}" data-search-locale="${escapeHtml(locale)}" autocomplete="off">
+  const search = `<form class="site-search" role="search" method="get" action="${base}${locale === "en" ? "en/teams.html" : "arama.html"}" data-search-base="${base}" data-search-locale="${escapeHtml(locale)}" autocomplete="off">
             <span class="site-search-icon" aria-hidden="true">${ICONS.search}</span>
-            <input class="site-search-input" type="search" name="search" placeholder="${escapeHtml(t("nav.searchPlaceholder", locale))}" aria-label="${escapeHtml(t("nav.searchInSite", locale))}" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
+            <input class="site-search-input" type="search" name="${locale === "en" ? "search" : "q"}" placeholder="${escapeHtml(t("nav.searchPlaceholder", locale))}" aria-label="${escapeHtml(t("nav.searchInSite", locale))}" aria-expanded="false" aria-controls="site-search-results" role="combobox" />
             <button class="site-search-clear" type="button" aria-label="${escapeHtml(t("nav.searchClear", locale))}" hidden>×</button>
             <div class="site-search-panel" id="site-search-results" role="listbox" hidden></div>
           </form>`;
@@ -511,10 +511,14 @@ function bottomNav(base, locale) {
     { key: "bottomNav.teams", href: en ? "en/teams.html" : "takimlar.html", icon:
       '<circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 11a3 3 0 1 0-2-5.2"/><path d="M18 20c0-2.2-.9-4.2-2.3-5.6"/>' }
   ];
+  if (!en) {
+    items.push({ key: "bottomNav.search", href: "arama.html", search: true, icon:
+      '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>' });
+  }
 
   const links = items.map((item) => {
     const label = escapeHtml(t(item.key, locale));
-    return `<a class="bottom-nav__item" href="${base}${item.href}" data-bottom-nav-item>
+    return `<a class="bottom-nav__item" href="${base}${item.href}" data-bottom-nav-item${item.search ? " data-bottom-nav-search" : ""}>
           <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${item.icon}</svg>
           <span class="bottom-nav__label">${label}</span>
         </a>`;

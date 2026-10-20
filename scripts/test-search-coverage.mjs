@@ -161,7 +161,7 @@ function testResultTypesStaySeparated() {
   const index = readIndex();
   // `enPage` ayrı bir tip: rozeti hedefin DİLİNİ söyler. Türkçe sayfalarla
   // aynı rozeti taşısaydı okuyucu tıkladığında habersizce dil değiştirirdi.
-  const badges = { team: "TKM", player: "OYN", page: "SYF", enPage: "EN", news: "HBR", column: "KÖŞE", author: "YZR", league: "LİG" };
+  const badges = { team: "TKM", player: "OYN", page: "SYF", enPage: "EN", news: "HBR", column: "KÖŞE", author: "YZR", league: "LİG", match: "MAÇ" };
 
   for (const entry of index) {
     assert.ok(badges[entry.type], `bilinmeyen sonuç tipi: ${entry.type}`);
@@ -178,6 +178,10 @@ function testResultTypesStaySeparated() {
   assert.ok(index.some((entry) => entry.type === "news"), "haber sonucu yok");
   assert.ok(index.some((entry) => entry.type === "column"), "köşe yazısı sonucu yok");
   assert.ok(index.some((entry) => entry.type === "author"), "yazar sonucu yok");
+  assert.ok(index.filter((entry) => entry.type === "news").length <= 300, "haber kayıtları sınırlı kalmalı");
+  for (const entry of index.filter((row) => row.type === "match")) {
+    assert.ok(/^mac\/[a-z0-9-]+\.html$/.test(entry.href), `maç adresi: ${entry.href}`);
+  }
 }
 
 /** Katlama kuralları site.js ile aynı kalmalı — kopya sessizce kaymamalı. */
