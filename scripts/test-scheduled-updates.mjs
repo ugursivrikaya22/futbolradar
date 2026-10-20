@@ -442,6 +442,15 @@ assert.match(fs.readFileSync(path.join(root, "services", "operationsPolicy.js"),
 
 const orchestrator = fs.readFileSync(path.join(root, "scripts", "run-scheduled-update.mjs"), "utf8");
 assert.match(orchestrator, /nodeStep\("render-news-pages", "generate-news-pages\.mjs"/);
+const playersUpdatedStart = orchestrator.indexOf("if (diff.playersUpdated) {");
+const teamsUpdatedStart = orchestrator.indexOf("if (diff.teamsUpdated)", playersUpdatedStart);
+assert.ok(playersUpdatedStart >= 0, "playersUpdated hourly build branch must exist");
+assert.ok(teamsUpdatedStart > playersUpdatedStart, "playersUpdated branch must precede teamsUpdated branch");
+const playersUpdatedBlock = orchestrator.slice(playersUpdatedStart, teamsUpdatedStart);
+assert.match(playersUpdatedBlock, /nodeStep\("render-player-pages", "generate-player-profile-pages\.mjs"/);
+assert.match(playersUpdatedBlock, /nodeStep\("render-player-comparisons", "generate-player-comparison-pages\.mjs"/);
+assert.match(playersUpdatedBlock, /nodeStep\("render-en-player-pages", "generate-en-player-pages\.mjs"/);
+assert.match(playersUpdatedBlock, /nodeStep\("prerender-player-content", "prerender-player-content\.mjs"/);
 // EN core pages (live scores, standings, results, today's matches) must
 // render every hour alongside their TR equivalents, or EN can silently
 // drift up to 24h behind until the next full build.
