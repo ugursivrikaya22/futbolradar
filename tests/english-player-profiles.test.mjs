@@ -23,3 +23,15 @@ test('a stale unverified canonical record cannot suppress its verified replaceme
   const current={id:'current-id',verified:true};
   assert.deepEqual(englishProfilePlayers([{id:'former-id',verified:false},current],urls,view),[current]);
 });
+import { retainedEnglishPages } from '../scripts/lib/englishPlayerProfiles.mjs';
+import { readFileSync } from 'node:fs';
+test('pages outside the current dataset are retained, never deleted', () => {
+  assert.deepEqual(retainedEnglishPages(['b.html','a.html','keep.html','notes.txt'], new Set(['keep.html'])), ['a.html','b.html']);
+  const src = readFileSync(new URL('../scripts/generate-en-player-pages.mjs', import.meta.url), 'utf8');
+  assert.equal(/rmSync|unlinkSync|rm\(/.test(src), false, 'EN player generator must not delete pages');
+});
+import { stripHreflangAlternates } from '../scripts/lib/englishPlayerProfiles.mjs';
+test('retained pages drop one-sided hreflang alternates but keep canonical', () => {
+  const html = '<link rel="canonical" href="x" />\n    <link rel="alternate" hreflang="en" href="y" />\n<title>t</title>';
+  assert.equal(stripHreflangAlternates(html), '<link rel="canonical" href="x" />\n<title>t</title>');
+});
