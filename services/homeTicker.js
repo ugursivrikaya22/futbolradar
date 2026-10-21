@@ -12,7 +12,12 @@
  *   • Zorunlu alanlar: id, text, date (ISO, saat dilimli), category,
  *     sourceUrl (http/https), sourceName. Eksik ya da hatalı öğe banda
  *     GİRMEZ ve testte kırmızı yanar (scripts/test-home-ticker.mjs).
- *   • category ∈ transfer | mac | haber.
+ *   • category ∈ transfer | mac | haber (geriye dönük uyumluluk).
+ *   • tip ∈ son_dakika | transfer | mac_ozeti — bantta renk + simge + METİN
+ *     etiketiyle gösterilir. Yoksa yalnızca kesin eşlemeler türetilir
+ *     (transfer→transfer, mac→mac_ozeti); `haber` için tip AÇIKÇA yazılmalı,
+ *     çünkü her haber "son dakika" değildir. tip, category ile uyumlu olmalı
+ *     (TIP_COMPAT).
  *   • sourceUrl alan adı services/sourceLinks.js beyaz listesinde olmalı.
  *   • url isteğe bağlı; verilirse site içi olmalı ("/..." ya da
  *     futbolradar.com). Dış bağlantı yalnızca kaynak künyesidir.
@@ -29,6 +34,29 @@ const CATEGORIES = Object.freeze({
   mac: "Maç",
   haber: "Haber"
 });
+/** Gösterim tipi → görünen metin etiketi (renk tek başına anlam taşımaz). */
+const TIPS = Object.freeze({
+  son_dakika: "Son Dakika",
+  transfer: "Transfer",
+  mac_ozeti: "Maç Özeti"
+});
+/** category → izin verilen tip değerleri. */
+const TIP_COMPAT = Object.freeze({
+  transfer: Object.freeze(["transfer", "son_dakika"]),
+  mac: Object.freeze(["mac_ozeti", "son_dakika"]),
+  haber: Object.freeze(["son_dakika", "transfer"])
+});
+/** tip yokken güvenle türetilebilen eşlemeler (haber bilinçli olarak yok). */
+const DEFAULT_TIP_BY_CATEGORY = Object.freeze({ transfer: "transfer", mac: "mac_ozeti" });
+
+/** Öğenin etkin tipi: açık `tip` ya da kesin eşleme; belirlenemezse null. */
+function resolveTip(item) {
+  if (!item || typeof item !== "object") return null;
+  if (item.tip !== undefined && item.tip !== null && item.tip !== "") {
+    return Object.prototype.hasOwnProperty.call(TIPS, item.tip) ? item.tip : null;
+  }
+  return DEFAULT_TIP_BY_CATEGORY[item.category] || null;
+}
 const MAX_ITEMS = 8;
 const ISO_WITH_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/;
 /** Saat farkı / ufak giriş hataları için tolerans: tarih en fazla 1 saat ileride olabilir. */
@@ -62,6 +90,12 @@ function validateTickerEntry(item, options = {}) {
   if (!/^[a-z0-9-]+$/.test(item.id)) errors.push("id yalnızca küçük harf, rakam ve tire içermeli");
   if (item.text.length > 160) errors.push("text 160 karakteri aşıyor");
   if (!Object.prototype.hasOwnProperty.call(CATEGORIES, item.category)) errors.push(`category geçersiz: ${item.category}`);
+  if (item.tip !== undefined && item.tip !== null && item.tip !== "") {
+    if (typeof item.tip !== "string" || !Object.prototype.hasOwnProperty.call(TIPS, item.tip)) errors.push(`tip geçersiz: ${item.tip}`);
+    else if (TIP_COMPAT[item.category] && !TIP_COMPAT[item.category].includes(item.tip)) errors.push(`tip "${item.tip}", category "${item.category}" ile uyumsuz`);
+  } else if (Object.prototype.hasOwnProperty.call(CATEGORIES, item.category) && !DEFAULT_TIP_BY_CATEGORY[item.category]) {
+    errors.push(`tip eksik: category "${item.category}" için tip açıkça yazılmalı`);
+  }
   if (!ISO_WITH_ZONE.test(item.date) || !Number.isFinite(Date.parse(item.date))) errors.push("date saat dilimli ISO 8601 olmalı");
   else if (Date.parse(item.date) > nowMs + FUTURE_TOLERANCE_MS) errors.push("date gelecekte");
   if (!/^https?:\/\//i.test(item.sourceUrl)) errors.push("sourceUrl http(s) olmalı");
@@ -108,6 +142,10 @@ function selectHomeTickerItems(items, options = {}) {
 module.exports = {
   CATEGORIES,
   DATA_PATH,
+  DEFAULT_TIP_BY_CATEGORY,
+  TIPS,
+  TIP_COMPAT,
+  resolveTip,
   MAX_ITEMS,
   isExpired,
   isInternalUrl,

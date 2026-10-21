@@ -20,7 +20,7 @@ import { renderHomeTicker } from "./lib/homeTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
-const { readTickerFile, selectHomeTickerItems, validateTickerEntry } = require("../services/homeTicker.js");
+const { TIPS, readTickerFile, resolveTip, selectHomeTickerItems, validateTickerEntry } = require("../services/homeTicker.js");
 
 const NOW = Date.parse("2026-10-19T12:00:00+03:00");
 const base = {
@@ -50,6 +50,34 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   const { items, rejected } = selectHomeTickerItems([base, { ...base }], { now: NOW });
   assert.equal(items.length, 1);
   assert.ok(rejected.some((r) => r.errors.includes("id yinelenmiş")), "yinelenen id reddedilmeli");
+}
+
+// ── 1b. tip şeması ───────────────────────────────────────────────────────────
+assert.deepEqual(Object.keys(TIPS).sort(), ["mac_ozeti", "son_dakika", "transfer"], "tip kümesi sabit");
+assert.deepEqual(errs({ tip: "transfer" }), [], "transfer/transfer geçerli");
+assert.deepEqual(errs({ tip: "son_dakika" }), [], "transfer kategorisi son_dakika olabilir");
+assert.deepEqual(errs({ category: "mac", tip: "mac_ozeti" }), [], "mac/mac_ozeti geçerli");
+assert.deepEqual(errs({ category: "haber", tip: "son_dakika" }), [], "haber/son_dakika geçerli");
+assert.ok(errs({ tip: "dedikodu" }).some((m) => /tip geçersiz/.test(m)), "bilinmeyen tip reddedilmeli");
+assert.ok(errs({ tip: 3 }).some((m) => /tip geçersiz/.test(m)), "dize olmayan tip reddedilmeli");
+assert.ok(errs({ tip: "mac_ozeti" }).some((m) => /uyumsuz/.test(m)), "transfer kategorisi mac_ozeti olamaz");
+assert.ok(errs({ category: "haber", tip: undefined }).some((m) => /tip eksik/.test(m)), "haber için tip açıkça yazılmalı");
+assert.deepEqual(errs({ tip: undefined }), [], "transfer için tip türetilebilir");
+assert.equal(resolveTip({ category: "transfer" }), "transfer");
+assert.equal(resolveTip({ category: "mac" }), "mac_ozeti");
+assert.equal(resolveTip({ category: "haber" }), null, "haber → son_dakika körlemesine eşlenmez");
+{
+  const html = renderHomeTicker([
+    { ...base, id: "a", tip: "son_dakika" },
+    { ...base, id: "b", tip: "transfer" },
+    { ...base, id: "c", category: "mac", tip: "mac_ozeti" }
+  ]);
+  for (const [tip, label] of Object.entries(TIPS)) {
+    assert.ok(html.includes(`home-ticker__tag--${tip}"><span class="home-ticker__icon" aria-hidden="true">`), `${tip}: simge aria-hidden`);
+    assert.ok(html.includes(`</span>${label}</span>`), `${tip}: görünür metin etiketi "${label}"`);
+  }
+  const visible = html.slice(0, html.indexOf('aria-hidden="true"><li'));
+  assert.equal((visible.match(/data-tip="/g) || []).length, 3, "tüm öğeler döngüde (tek öğeye takılmaz)");
 }
 
 // ── 2. Süre dolumu ve boş bant ───────────────────────────────────────────────
@@ -83,6 +111,8 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   assert.ok(reduced.length > 40 && /animation:\s*none/.test(reduced), "hareket azaltmada animasyon kapanmalı");
   assert.ok(/\.home-ticker__group\[aria-hidden="true"\][^{]*\{[^}]*display:\s*none/.test(reduced), "hareket azaltmada kopya gizlenmeli");
   assert.ok(/\.home-ticker__inner\s*\{[^}]*min-height:\s*44px/.test(css), "yükseklik rezerve edilmeli (CLS)");
+  for (const tip of Object.keys(TIPS)) assert.ok(new RegExp(`\\.home-ticker__tag--${tip}\\s*\\{[^}]*color`).test(css), `${tip} rengi tanımlı`);
+  assert.ok(/animation:\s*home-ticker-scroll[^;]*infinite/.test(css), "bant sonsuz döngüde kaymalı");
   assert.ok(/viewport:hover[\s\S]*?animation-play-state:\s*paused/.test(css), "hover/odakta durmalı");
 }
 
@@ -92,6 +122,7 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   assert.ok(raw.length > 0, "data/ticker.json okunabilir olmalı");
   const { rejected } = selectHomeTickerItems(raw);
   assert.deepEqual(rejected, [], `data/ticker.json geçersiz öğe içeriyor: ${JSON.stringify(rejected)}`);
+  for (const item of raw) assert.ok(Object.prototype.hasOwnProperty.call(TIPS, item.tip), `data/ticker.json: ${item.id} açık ve geçerli tip taşımalı`);
 
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
   assert.ok(index.includes("<!-- prerender:home-ticker:start -->") && index.includes("<!-- prerender:home-ticker:end -->"), "index.html home-ticker yuvasını taşımalı");

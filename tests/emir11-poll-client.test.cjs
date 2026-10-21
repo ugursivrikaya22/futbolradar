@@ -1,8 +1,15 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const fan = require('../radar-fan.js');
 
-test('English compatibility route cannot redirect HTML pages into a loop', () => {
+test('English compatibility route cannot redirect HTML pages into a loop', t => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'emir11-route-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  fs.mkdirSync(path.join(root, 'en/player'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'en/player/test-player.html'), '<!doctype html>');
   const route = require('../vercel.json').redirects.find(r => r.source.startsWith('/en/player/:slug'));
   assert.ok(route);
   const source = new RegExp('^' + route.source.replace(':slug', '') + '$');
@@ -10,8 +17,9 @@ test('English compatibility route cannot redirect HTML pages into a loop', () =>
   assert.equal(source.test('/en/player/victor-osimhen.html'), false);
   assert.equal(source.test('/en/player/missing/nested'), false);
   assert.equal(route.destination.replace(':slug', 'victor-osimhen'), '/en/player/victor-osimhen.html');
-  assert.equal(require('node:fs').existsSync('en/player/victor-osimhen.html'), true);
-  assert.equal(require('node:fs').existsSync('en/player/does-not-exist-emir11.html'), false);
+  const destination = slug => path.join(root, route.destination.replace(':slug', slug));
+  assert.equal(fs.existsSync(destination('test-player')), true);
+  assert.equal(fs.existsSync(destination('does-not-exist-emir11')), false);
 });
 
 const question = { id: 'winner', question: 'Who wins?', closed: false,

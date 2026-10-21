@@ -16,11 +16,14 @@
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { CATEGORIES } = require("../../services/homeTicker.js");
+const { TIPS, resolveTip } = require("../../services/homeTicker.js");
 
 const escapeHtml = (value) => String(value ?? "")
   .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
   .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+
+/** Tip simgeleri yalnızca süs (aria-hidden); anlamı metin etiketi taşır. */
+const TIP_ICONS = Object.freeze({ son_dakika: "⚡", transfer: "⇄", mac_ozeti: "⚽" });
 
 /** Site içi mutlak yolu sayfaya göre göreli yola çevirir ("/x" → "./x"). */
 function internalHref(url, base) {
@@ -33,13 +36,14 @@ function internalHref(url, base) {
 function itemHtml(item, { base, hidden }) {
   const tab = hidden ? ' tabindex="-1"' : "";
   const href = internalHref(item.url, base);
-  const label = CATEGORIES[item.category] || "Gündem";
+  const tip = resolveTip(item) || "son_dakika";
+  const label = TIPS[tip];
   const text = href
     ? `<a class="home-ticker__link" href="${escapeHtml(href)}"${tab}>${escapeHtml(item.text)}</a>`
     : `<span class="home-ticker__text">${escapeHtml(item.text)}</span>`;
   const source = `<a class="home-ticker__source" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer"${tab} aria-label="Kaynak: ${escapeHtml(item.sourceName)}">${escapeHtml(item.sourceName)}</a>`;
   const expires = item.expiresAt ? ` data-expires="${escapeHtml(item.expiresAt)}"` : "";
-  return `<li class="home-ticker__item" data-ticker-id="${escapeHtml(item.id)}"${expires}><span class="home-ticker__tag">${escapeHtml(label)}</span>${text}${source}</li>`;
+  return `<li class="home-ticker__item home-ticker__item--${tip}" data-ticker-id="${escapeHtml(item.id)}" data-tip="${tip}"${expires}><span class="home-ticker__tag home-ticker__tag--${tip}"><span class="home-ticker__icon" aria-hidden="true">${TIP_ICONS[tip]}</span>${escapeHtml(label)}</span>${text}${source}</li>`;
 }
 
 /** Kaydırma süresi metin uzunluğuyla orantılı: okunabilir hız, en az 30 sn. */
