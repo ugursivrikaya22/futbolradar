@@ -163,16 +163,41 @@ for (const id of EN_TAB_ORDER) {
   push({ type: "enPage", badge: "EN", href, title: `${entry.nameEn} Standings`, subtitle: "Current standings", locale: "en" });
 }
 
-for (const article of asArray(readJson("news.json"), "news", "items")) {
-  if (!article || String(article.status || "").toLowerCase() !== "verified" || !article.slug || !article.title || !Array.isArray(article.body)) {
-    continue;
-  }
+const MATCH_WINDOW_DAYS = 7;
+const NEWS_LIMIT = 300;
+const SUBTITLE_MAX = 110;
+
+function shortText(value) {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  return text.length > SUBTITLE_MAX ? `${text.slice(0, SUBTITLE_MAX - 1).trimEnd()}…` : text;
+}
+
+const matchDate = new Intl.DateTimeFormat("tr-TR", { day: "numeric", month: "long", timeZone: "Europe/Istanbul" });
+const nowMs = Date.now();
+for (const page of asArray(readJson("match-seo-pages.json"), "pages")
+  .map((row) => ({ row, t: Date.parse(row && row.kickoff) }))
+  .filter(({ row, t }) => row && row.slug && row.homeTeam && row.awayTeam && Number.isFinite(t) && Math.abs(t - nowMs) <= MATCH_WINDOW_DAYS * 864e5)
+  .sort((a, b) => a.t - b.t)) {
+  push({
+    type: "match",
+    badge: "MAÇ",
+    href: `mac/${page.row.slug}.html`,
+    title: `${page.row.homeTeam} - ${page.row.awayTeam}`,
+    subtitle: [matchDate.format(new Date(page.t)), page.row.league].filter(Boolean).join(" · ")
+  });
+}
+
+const newsArticles = asArray(readJson("news.json"), "news", "items")
+  .filter((article) => article && String(article.status || "").toLowerCase() === "verified" && article.slug && article.title && Array.isArray(article.body))
+  .sort((a, b) => (Date.parse(b.publishedAt) || 0) - (Date.parse(a.publishedAt) || 0))
+  .slice(0, NEWS_LIMIT);
+for (const article of newsArticles) {
   push({
     type: "news",
     badge: "HBR",
     href: `haber/${article.slug}.html`,
     title: article.title,
-    subtitle: article.spot || article.summary || "FutbolRadar haberi"
+    subtitle: shortText(article.spot || article.summary) || "FutbolRadar haberi"
   });
 }
 

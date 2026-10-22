@@ -32,7 +32,7 @@
 // gösteriminin kaynaklarından biri. v2'ye geçiş, düzeltmeyi alan her
 // ziyaretçide o anlık görüntüyü bir kez temizler. Favori takım yolları
 // (`fr-meta-*`) kaybolur ama pwa.js her açılışta yeniden gönderir.
-const SW_VERSION = "v2";
+const SW_VERSION = "v3";
 const HTML_CACHE = `fr-pages-${SW_VERSION}`;
 const ASSET_CACHE = `fr-assets-${SW_VERSION}`;
 const API_CACHE = `fr-api-${SW_VERSION}`;
@@ -42,7 +42,8 @@ const KNOWN_CACHES = new Set([HTML_CACHE, ASSET_CACHE, API_CACHE, META_CACHE]);
 const META_KEY = new Request("/__fr-pwa-meta/favorite-team-paths");
 
 const LIVE_SCORE_PATHS = ["/canli-skor.html", "/canli-maclar.html", "/canli-mac-sonuclari.html"];
-const TRACKED_ASSET_PATHS = new Set(["/page.css", "/site.js", "/app.js"]);
+const SEARCH_PAGE_PATH = "/arama.html";
+const TRACKED_ASSET_PATHS = new Set(["/page.css", "/site.js", "/app.js", "/search-index.json"]);
 const TRACKED_API_PATHS = new Set(["/api/matches", "/api/standings", "/api/teams"]);
 
 const NETWORK_TIMEOUT_MS = 4000;
@@ -106,7 +107,9 @@ async function staleWhileRevalidate(request, cacheName) {
 self.addEventListener("install", (event) => {
   event.waitUntil((async () => {
     const cache = await caches.open(HTML_CACHE);
-    await Promise.all(LIVE_SCORE_PATHS.map((path) => cache.add(path).catch(() => {})));
+    await Promise.all([...LIVE_SCORE_PATHS, SEARCH_PAGE_PATH].map((path) => cache.add(path).catch(() => {})));
+    const assets = await caches.open(ASSET_CACHE);
+    await assets.add("/search-index.json").catch(() => {});
     self.skipWaiting();
   })());
 });
@@ -142,6 +145,20 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   const isNavigation = request.mode === "navigate" || request.destination === "document";
+
+  if (isNavigation && url.pathname === SEARCH_PAGE_PATH) {
+    event.respondWith((async () => {
+      const cache = await caches.open(HTML_CACHE);
+      try {
+        const response = await fetchWithTimeout(request, NETWORK_TIMEOUT_MS);
+        if (response && response.ok) cache.put(SEARCH_PAGE_PATH, response.clone());
+        return response;
+      } catch (error) {
+        return (await cache.match(SEARCH_PAGE_PATH)) || fetch(request);
+      }
+    })());
+    return;
+  }
 
   if (isNavigation) {
     event.respondWith((async () => {

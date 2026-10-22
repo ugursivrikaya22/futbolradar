@@ -1266,6 +1266,30 @@
       .replace(/'/g, "&#039;");
   }
 
+  function rankSearchIndex(index, needle, searchLocale, limit) {
+    return index
+      .map(function (entry) {
+        if (searchLocale === "en" && entry.enHref) {
+          entry = Object.assign({}, entry, { href: entry.enHref, locale: "en", badge: "EN" });
+        }
+        return { entry: entry, score: scoreEntry(entry, needle, searchLocale) };
+      })
+      .filter(function (row) {
+        return row.score >= 0;
+      })
+      .sort(function (left, right) {
+        return right.score - left.score;
+      })
+      .slice(0, limit)
+      .map(function (row) {
+        return row.entry;
+      });
+  }
+
+  function searchBadge(entry) {
+    return entry.badge || (entry.type === "team" ? "TKM" : entry.type === "player" ? "OYN" : entry.type === "match" ? "MAÇ" : "SYF");
+  }
+
   function setupSearch(form) {
     var input = form.querySelector(".site-search-input");
     var panel = form.querySelector(".site-search-panel");
@@ -1280,6 +1304,8 @@
 
     var results = [];
     var activeIndex = -1;
+    var navigated = false;
+    var hasResultsPage = /arama(\.html)?$/.test((form.getAttribute("action") || "").split("?")[0]);
     var searchVersion = 0;
 
     function hidePanel() {
@@ -1304,12 +1330,13 @@
     function render(matches, needle) {
       results = matches;
       activeIndex = matches.length ? 0 : -1;
+      navigated = false;
 
       if (!matches.length) {
         panel.innerHTML =
           '<div class="site-search-empty">&quot;' +
           escapeHtml(needle) +
-          '&quot; için eşleşme yok. Enter ile oyuncu radarında aratabilirsin.</div>';
+          (hasResultsPage ? '&quot; için eşleşme yok. Enter ile tüm sonuçları gör.</div>' : '&quot; için eşleşme yok. Enter ile oyuncu radarında aratabilirsin.</div>');
         panel.hidden = false;
         input.setAttribute("aria-expanded", "true");
         return;
@@ -1317,7 +1344,7 @@
 
       panel.innerHTML = matches
         .map(function (entry) {
-          var badge = entry.badge || (entry.type === "team" ? "TKM" : entry.type === "player" ? "OYN" : "SYF");
+          var badge = searchBadge(entry);
           return (
             '<a class="site-search-option" role="option" href="' +
             escapeHtml(base + entry.href) +
@@ -1355,23 +1382,7 @@
           return;
         }
 
-        var matches = index
-          .map(function (entry) {
-            if (searchLocale === "en" && entry.enHref) {
-              entry = Object.assign({}, entry, { href: entry.enHref, locale: "en", badge: "EN" });
-            }
-            return { entry: entry, score: scoreEntry(entry, needle, searchLocale) };
-          })
-          .filter(function (row) {
-            return row.score >= 0;
-          })
-          .sort(function (left, right) {
-            return right.score - left.score;
-          })
-          .slice(0, 8)
-          .map(function (row) {
-            return row.entry;
-          });
+        var matches = rankSearchIndex(index, needle, searchLocale, 8);
 
         render(matches, raw);
       });
@@ -1391,13 +1402,15 @@
 
       if (event.key === "ArrowDown") {
         event.preventDefault();
+        navigated = true;
         activeIndex = (activeIndex + 1) % results.length;
         highlight();
       } else if (event.key === "ArrowUp") {
         event.preventDefault();
+        navigated = true;
         activeIndex = (activeIndex - 1 + results.length) % results.length;
         highlight();
-      } else if (event.key === "Enter" && activeIndex > -1) {
+      } else if (event.key === "Enter" && activeIndex > -1 && (navigated || !hasResultsPage)) {
         event.preventDefault();
         window.location.href = base + results[activeIndex].href;
       } else if (event.key === "Escape") {
@@ -1419,6 +1432,37 @@
       if (!form.contains(event.target)) {
         hidePanel();
       }
+    });
+  }
+
+  function setupSearchResultsPage(root) {
+    var list = root.querySelector("[data-search-results]");
+    var status = root.querySelector("[data-search-status]");
+    var input = root.querySelector("input[name='q']");
+    var base = root.getAttribute("data-search-base") || "./";
+    var raw = "";
+    try {
+      raw = (new URLSearchParams(window.location.search).get("q") || "").trim();
+    } catch (error) {
+      raw = "";
+    }
+    if (input) input.value = raw;
+    if (!list || !status) return;
+    if (raw.length < 2) {
+      status.textContent = "Aramak için en az iki harf yaz.";
+      return;
+    }
+    status.textContent = "Aranıyor…";
+    loadSearchIndex(base).then(function (index) {
+      var matches = rankSearchIndex(index, foldTurkish(raw), "tr", 50);
+      status.textContent = matches.length
+        ? "\u201c" + raw + "\u201d için " + matches.length + " sonuç"
+        : "\u201c" + raw + "\u201d için sonuç bulunamadı.";
+      list.innerHTML = matches.map(function (entry) {
+        return '<li><a class="site-search-option" href="' + escapeHtml(base + entry.href) + '"><i aria-hidden="true">' +
+          escapeHtml(searchBadge(entry)) + "</i><strong>" + escapeHtml(entry.title) + "</strong><span>" +
+          escapeHtml(entry.subtitle || "") + "</span></a></li>";
+      }).join("");
     });
   }
 
@@ -1690,6 +1734,7 @@
   setupNowFootball();
   setupFavouriteTeam();
   document.querySelectorAll(".site-search").forEach(setupSearch);
+  document.querySelectorAll("[data-search-results-page]").forEach(setupSearchResultsPage);
 
   /* --------------------------------------------------------------------------
      Arama düğmesi (büyüteç)
