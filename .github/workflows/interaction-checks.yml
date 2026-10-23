@@ -3,6 +3,18 @@ on:
   pull_request:
   push:
     branches: [main]
+    # Yalnızca veri ve doküman değiştiren main push'ları (kod, betik, HTML
+    # şablonu, iş akışı yoksa) bu işi tetiklemez. Ölçüm (Grok, 21.09-16.10.2026):
+    # 300 koşu ~9.963 dk; main push'ları %36'sı; yalnızca `data/` değişen 20
+    # koşu 754 dk. Saatlik otomatik güncelleme zaten GITHUB_TOKEN ile commit'lenir
+    # ve bu işi tetiklemez; Vercel hızlı kapıları (qa, tsc, rota, veri testleri)
+    # her derlemede koşturur. PR'lar (`pull_request`) bu süzgeçten ETKİLENMEZ ve
+    # kod içeren her push tam koşar: paths-ignore yalnızca TÜM değişen dosyalar
+    # eşleşirse atlar.
+    paths-ignore:
+      - 'data/**'
+      - 'docs/**'
+      - '**/*.md'
   workflow_dispatch:
 permissions:
   contents: read
