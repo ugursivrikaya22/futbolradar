@@ -179,6 +179,57 @@ const seoPages = [
   }
 ];
 
+// Büyük 4 dışındaki Süper Lig takımlarının form sayfaları: aynı şablon, aynı URL kalıbı
+// (`<slug>-form-durumu.html`). Takım listesi tek kaynaktan (services/superLigTeamPages.js),
+// değerler yalnızca repodaki data/teams.json puan durumu kaydından (API-Football senkronu).
+// Kayıt yoksa / maç oynanmamışsa değer uydurulmaz: "veri bekleniyor".
+const { superLigTeamPages } = require("../services/superLigTeamPages.js");
+const BIG_FOUR_FORM = new Set(["galatasaray", "fenerbahce", "besiktas", "trabzonspor"]);
+const FORM_LABELS = { win: "G", draw: "B", loss: "M" };
+const clubFormPages = superLigTeamPages({ root })
+  .filter(({ slug }) => !BIG_FOUR_FORM.has(slug))
+  .map(({ slug, name, record }) => ({
+    file: `${slug}-form-durumu.html`,
+    team: name,
+    teamSlug: slug,
+    formRecord: record || null,
+    title: `${name} Form Durumu | Son 5 Maç ve Puan Durumu | FutbolRadar`,
+    description: `${name} form durumu; 2026/27 Süper Lig son 5 maç sonucu, lig sırası, puan ve gol dengesi kayıtlı verilerle.`,
+    h1: `${name} Form Durumu`,
+    lead: `${name} için 2026/27 Süper Lig son maç trendini ve lig görünümünü kayıtlı verilerle incele.`,
+    cards: ["Son form", "Gol dengesi", "Lig sırası"]
+  }));
+seoPages.push(...clubFormPages);
+
+function formValue(value) {
+  return value === null || value === undefined || value === "" ? "veri bekleniyor" : String(value);
+}
+
+function clubFormHtml(page) {
+  if (!page.teamSlug) return "";
+  const r = page.formRecord || {};
+  const hasData = Number(r.played) > 0;
+  const form = hasData && Array.isArray(r.form) ? r.form.slice(0, 5) : [];
+  const formHtml = form.length
+    ? form.map((f) => `<span class="form-pill form-${f.result}">${FORM_LABELS[f.result] || "—"}</span>`).join(" ")
+    : "veri bekleniyor";
+  const rows = [
+    ["Son 5 maç (kayıt sırası)", formHtml],
+    ["Lig sırası", hasData ? formValue(r.rank) : "veri bekleniyor"],
+    ["Oynanan", hasData ? formValue(r.played) : "veri bekleniyor"],
+    ["G / B / M", hasData ? `${formValue(r.won)} / ${formValue(r.drawn)} / ${formValue(r.lost)}` : "veri bekleniyor"],
+    ["Attığı / yediği gol", hasData ? `${formValue(r.goalsFor)} / ${formValue(r.goalsAgainst)}` : "veri bekleniyor"],
+    ["Puan", hasData ? formValue(r.points) : "veri bekleniyor"]
+  ].map(([k, v]) => `<tr><th scope="row">${k}</th><td>${v}</td></tr>`).join("");
+  const synced = r.lastStandingsSyncedAt ? String(r.lastStandingsSyncedAt).slice(0, 10) : "veri bekleniyor";
+  return `<section class="card team-form-record" aria-labelledby="${page.teamSlug}-form-kaydi">
+        <h2 id="${page.teamSlug}-form-kaydi">${page.team} 2026/27 form kaydı</h2>
+        <table><tbody>${rows}</tbody></table>
+        <p class="source-note">Kaynak: API-Football Süper Lig puan durumu senkronu (son senkron ${synced}). G: galibiyet, B: beraberlik, M: mağlubiyet.</p>
+        <p><a href="./takimlar/${page.teamSlug}">${page.team} takım profili</a> · <a href="./${page.teamSlug}-maclari.html">${page.team} maçları</a> · <a href="./super-lig-puan-durumu">Süper Lig puan durumu</a> · <a href="./super-lig-form-durumu.html">Süper Lig form tablosu</a></p>
+      </section>`;
+}
+
 const playerSeoPages = [
   {
     file: "en-iyi-super-lig-oyunculari.html",
@@ -434,6 +485,7 @@ ${nav}
       <section class="grid" data-api-section="player-landing" data-api-target="player-seo-landing" data-player-landing="${page.landing}">
         <article class="data-empty" data-card="empty-state"><strong>Oyuncular yükleniyor</strong><span>Doğrulanmış oyuncu profilleri hazırlanıyor.</span></article>
       </section>${landingExtraLinksHtml(page)}` : `<section class="grid three">${cardsHtml(page.cards)}</section>`}
+      ${clubFormHtml(page)}
       ${teamContentHtml(page)}
       <section class="source-strip" aria-label="İlgili bağlantılar">
         <div><span>İlgili ekran</span><b><a href="./oyuncu-radari.html">Oyuncu Radarı</a></b></div>
