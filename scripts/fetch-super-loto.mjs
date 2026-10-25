@@ -4,9 +4,10 @@
  *
  * Saatlik zamanlanmış güncellemenin (run-scheduled-update.mjs → sourceSteps)
  * bir adımıdır; yeni cron ya da workflow değişikliği gerektirmez. Ucuzdur:
- *   • Perşembe 21:00 – Cuma 23:59 (Europe/Istanbul) penceresi dışında hiç
- *     istek atmaz (`--force` hariç).
- *   • Bu haftanın Perşembe çekilişi zaten kayıtlıysa istek atmaz.
+ *   • Çekiliş günleri Salı, Perşembe, Pazar 21:30 (resmî kurallar). Çekiliş
+ *     günü 21:00'dan ertesi gün 23:59'a (Europe/Istanbul) kadar olan pencere
+ *     dışında hiç istek atmaz (`--force` hariç).
+ *   • O çekiliş zaten kayıtlıysa istek atmaz.
  *   • Pencere içinde koşu başına en fazla bir istek (uç nokta başına).
  *
  * KURAL: sayı uydurulmaz. Yanıt doğrulanamazsa (HTTP hatası, WAF/403,
@@ -22,7 +23,7 @@ import { fileURLToPath } from "node:url";
 import { isValidDraw, normalizeDraws } from "./lib/superLoto.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const FILE = path.join(root, "data", "super-loto.json");
+const FILE = path.join(root, "data", "super-loto-draws.json");
 export const OFFICIAL_HOSTS = ["www.millipiyangoonline.com", "millipiyangoonline.com", "www.millipiyango.gov.tr", "www.mpi.gov.tr"];
 export const DEFAULT_URL = "https://www.millipiyangoonline.com/sisalsans/result.superloto.json";
 const USER_AGENT = "FutbolRadarBot/1.0 (+https://www.futbolradar.com/iletisim)";
@@ -32,11 +33,14 @@ export function istanbulNow(now = new Date()) {
   return { date: `${parts.year}-${parts.month}-${parts.day}`, hour: Number(parts.hour), weekday: parts.weekday };
 }
 
-/** Bu çekiliş haftasının Perşembe tarihi (Perş/Cuma için). Pencere dışında null. */
+export const DRAW_DAYS = ["Tue", "Thu", "Sun"];
+const NEXT_DAY = { Tue: "Wed", Thu: "Fri", Sun: "Mon" };
+
+/** Beklenen çekilişin tarihi (çekiliş günü ≥21:00 ya da ertesi gün). Pencere dışında null. */
 export function drawWindow(now = new Date()) {
   const t = istanbulNow(now);
-  if (t.weekday === "Thu" && t.hour >= 21) return t.date;
-  if (t.weekday === "Fri") {
+  if (DRAW_DAYS.includes(t.weekday) && t.hour >= 21) return t.date;
+  if (Object.values(NEXT_DAY).includes(t.weekday)) {
     const d = new Date(`${t.date}T12:00:00Z`);
     d.setUTCDate(d.getUTCDate() - 1);
     return d.toISOString().slice(0, 10);
@@ -51,6 +55,15 @@ const toIsoDate = (value) => {
   m = /^(\d{2})[./](\d{2})[./](\d{4})/.exec(s);
   if (m) return `${m[3]}-${m[2]}-${m[1]}`;
   return null;
+};
+
+/** "1.234.567,50" | 1234567.5 → 1234567.5; çözülemezse null. */
+const toAmount = (value) => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  const s = String(value ?? "").replace(/[^\d.,]/g, "");
+  if (!s) return null;
+  const n = Number(s.includes(",") ? s.replace(/\./g, "").replace(",", ".") : s);
+  return Number.isFinite(n) ? n : null;
 };
 
 const toNumbers = (value) => {
@@ -73,12 +86,12 @@ export function parseOfficial(payload, sourceUrl, fetchedAt) {
     if (numbers && date) {
       const prizesRaw = node.bilenKisiler ?? node.prizes ?? node.winners ?? null;
       const prizes = Array.isArray(prizesRaw) ? prizesRaw.map((p) => ({
-        category: String(p.tur ?? p.category ?? p.typeCode ?? "").replace(/^\$?(\d)_BILEN$/i, "$1 Bilen"),
+        tier: String(p.tur ?? p.tier ?? p.category ?? p.typeCode ?? "").replace(/^\$?(\d)_BILEN$/i, "$1 Bilen"),
         winners: Number.isInteger(Number(p.kisiSayisi ?? p.winners ?? p.count)) ? Number(p.kisiSayisi ?? p.winners ?? p.count) : null,
-        amount: (p.kisiBasinaDusenIkramiye ?? p.amount ?? null) === null ? null : String(p.kisiBasinaDusenIkramiye ?? p.amount)
-      })).filter((p) => p.category) : [];
-      const draw = { date, numbers, drawNo: node.hafta ?? node.drawNo ?? node.drawId ?? undefined, prizes, sourceUrl, fetchedAt };
-      if (draw.drawNo === undefined) delete draw.drawNo;
+        amountTRY: toAmount(p.kisiBasinaDusenIkramiye ?? p.amountTRY ?? p.amount)
+      })).filter((p) => p.tier) : [];
+      const draw = { date, numbers, drawNumber: Number.isInteger(Number(node.hafta ?? node.drawNumber ?? node.drawNo ?? node.drawId)) ? Number(node.hafta ?? node.drawNumber ?? node.drawNo ?? node.drawId) : undefined, prizes, sourceUrl, fetchedAt };
+      if (draw.drawNumber === undefined) delete draw.drawNumber;
       if (isValidDraw(draw)) out.push(draw);
     }
     for (const value of Object.values(node)) if (value && typeof value === "object") visit(value, depth + 1);
@@ -104,7 +117,7 @@ async function main() {
   const existing = normalizeDraws(data.draws);
   const week = drawWindow();
   if (!args.has("--force")) {
-    if (!week) { console.log("[super-loto] çekiliş penceresi dışında (Perş 21:00 – Cuma); istek atılmadı."); return; }
+    if (!week) { console.log("[super-loto] çekiliş penceresi dışında (Salı/Perşembe/Pazar 21:00 – ertesi gün); istek atılmadı."); return; }
     if (existing.some((d) => d.date >= week)) { console.log(`[super-loto] ${week} çekilişi zaten kayıtlı; istek atılmadı.`); return; }
   }
 
@@ -124,7 +137,7 @@ async function main() {
   if (!added.length) { console.log(`[super-loto] yeni çekiliş yok (yanıtta ${parsed.length} geçerli kayıt).`); return; }
   console.log(`[super-loto] ${added.length} yeni çekiliş: ${added.map((d) => d.date).join(", ")}`);
   if (!args.has("--apply")) { console.log("[super-loto] --apply verilmedi; dosya yazılmadı."); return; }
-  fs.writeFileSync(FILE, `${JSON.stringify({ ...data, draws }, null, 2)}\n`, "utf8");
+  fs.writeFileSync(FILE, `${JSON.stringify({ ...data, source: data.source || "https://www.millipiyangoonline.com/super-loto/cekilis-sonuclari", fetchedAt: new Date().toISOString(), draws }, null, 2)}\n`, "utf8");
 }
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);

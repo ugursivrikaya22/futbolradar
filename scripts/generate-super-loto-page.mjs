@@ -2,7 +2,7 @@
 /**
  * /super-loto-sonuclari — SÜPER LOTO SONUÇLARI.
  *
- * Kaynak data/super-loto.json (yalnızca resmî Milli Piyango kaynağından
+ * Kaynak data/super-loto-draws.json (yalnızca resmî Milli Piyango kaynağından
  * çekilmiş çekilişler; bkz. scripts/fetch-super-loto.mjs). Son çekiliş üstte,
  * geçmiş çekilişler arşiv tablosunda. Köşe yazısı scripts/lib/superLoto.mjs
  * içindeki şablonla gerçek verilerden hesaplanır; dil modeli yok, uydurma yok.
@@ -27,14 +27,14 @@ export const CANONICAL = `${siteUrl}/${SLUG}`;
 const ARCHIVE_LIMIT = 520; // ~10 yıl haftalık çekiliş
 
 export const PAGE_TITLE = "Süper Loto Sonuçları | FutbolRadar";
-export const PAGE_DESCRIPTION = "Süper Loto son çekiliş kazanan numaralar, çekiliş tarihi ve ikramiye bilgisi. Süper Loto sonuçları her Perşembe çekilişinden sonra resmî kaynaktan güncellenir; geçmiş çekiliş arşivi.";
+export const PAGE_DESCRIPTION = "Süper Loto son çekiliş kazanan numaralar, çekiliş tarihi ve ikramiye bilgisi. Süper Loto sonuçları her Salı, Perşembe ve Pazar çekilişinden sonra resmî kaynaktan güncellenir; geçmiş çekiliş arşivi.";
 
 const escapeHtml = (value) => String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
 const balls = (nums) => `<ol class="loto-balls" aria-label="Kazanan numaralar">${nums.map((n) => `<li>${String(n).padStart(2, "0")}</li>`).join("")}</ol>`;
 
 function prizeTable(draw) {
   if (!Array.isArray(draw.prizes) || !draw.prizes.length) return `<p class="loto-note">Bu çekiliş için ikramiye dağılımı resmî kaynaktan alınamadı.</p>`;
-  const rows = draw.prizes.map((p) => `<tr><th scope="row">${escapeHtml(p.category)}</th><td>${Number.isInteger(p.winners) ? escapeHtml(p.winners.toLocaleString("tr-TR")) : "—"}</td><td>${escapeHtml(p.amount || "—")}</td></tr>`).join("");
+  const rows = draw.prizes.map((p) => `<tr><th scope="row">${escapeHtml(p.tier)}</th><td>${Number.isInteger(p.winners) ? escapeHtml(p.winners.toLocaleString("tr-TR")) : "—"}</td><td>${Number.isFinite(p.amountTRY) ? `${escapeHtml(p.amountTRY.toLocaleString("tr-TR"))} TL` : "—"}</td></tr>`).join("");
   return `<div class="table-scroll"><table class="loto-prizes"><caption>İkramiye dağılımı</caption><thead><tr><th scope="col">Kategori</th><th scope="col">Kazanan</th><th scope="col">Kişi başı ikramiye</th></tr></thead><tbody>${rows}</tbody></table></div>`;
 }
 
@@ -101,7 +101,7 @@ export function renderPage(data) {
 
   const latestBlock = ok
     ? `<section class="loto-card loto-latest" id="cekilis-${latest.date}" aria-labelledby="son-cekilis">
-            <h2 id="son-cekilis">Son çekiliş: ${escapeHtml(trDate(latest.date))}${latest.drawNo ? ` · ${escapeHtml(latest.drawNo)}. çekiliş` : ""}</h2>
+            <h2 id="son-cekilis">Son çekiliş: ${escapeHtml(trDate(latest.date))}${latest.drawNumber ? ` · ${escapeHtml(latest.drawNumber)}. çekiliş` : ""}</h2>
             ${balls(latest.numbers)}
             <p class="loto-meta">Toplam ${drawShape(latest.numbers).sum} · ${drawShape(latest.numbers).odd} tek / ${drawShape(latest.numbers).even} çift</p>
             ${prizeTable(latest)}
@@ -124,7 +124,7 @@ export function renderPage(data) {
             <h2 id="arsiv">Geçmiş Süper Loto sonuçları</h2>
             <div class="table-scroll"><table class="loto-archive"><thead><tr><th scope="col">Tarih</th><th scope="col">Kazanan numaralar</th><th scope="col">6 bilen</th></tr></thead><tbody>
             ${draws.slice(1, ARCHIVE_LIMIT).map((d) => {
-              const six = Array.isArray(d.prizes) ? d.prizes.find((p) => String(p.category || "").startsWith("6")) : null;
+              const six = Array.isArray(d.prizes) ? d.prizes.find((p) => String(p.tier || "").startsWith("6")) : null;
               return `<tr id="cekilis-${d.date}"><th scope="row">${escapeHtml(trDate(d.date))}</th><td>${escapeHtml(formatNumbers(d.numbers))}</td><td>${six && Number.isInteger(six.winners) ? (six.winners === 0 ? "Devir" : escapeHtml(six.winners)) : "—"}</td></tr>`;
             }).join("\n            ")}
             </tbody></table></div>
@@ -168,9 +168,9 @@ export function renderPage(data) {
         <div class="container">
           <nav class="evergreen-breadcrumb" aria-label="İçerik yolu"><a href="./">Ana Sayfa</a><span aria-hidden="true">/</span><span aria-current="page">Süper Loto Sonuçları</span></nav>
           <header class="evergreen-hero">
-            <span class="section-kicker">Şans oyunları · Her Perşembe</span>
+            <span class="section-kicker">Şans oyunları · Salı, Perşembe, Pazar</span>
             <h1>Süper Loto Sonuçları</h1>
-            <p>Süper Loto son çekiliş kazanan numaralar, çekiliş tarihi ve ikramiye bilgisi bu sayfada. Süper Loto çekilişi her Perşembe akşamı yapılır; sonuçlar resmî olarak açıklandıktan sonra sayfa kendiliğinden güncellenir ve önceki Süper Loto sonuçları arşivde kalır.</p>
+            <p>Süper Loto son çekiliş kazanan numaralar, çekiliş tarihi ve ikramiye bilgisi bu sayfada. Süper Loto çekilişleri her hafta Salı, Perşembe ve Pazar akşamı yapılır; sonuçlar resmî olarak açıklandıktan sonra sayfa kendiliğinden güncellenir ve önceki Süper Loto sonuçları arşivde kalır.</p>
             ${ok ? `<p class="loto-meta">Arşivde ${draws.length} çekiliş · Son güncelleme: ${escapeHtml(trDate(latest.date))}</p>` : ""}
           </header>
           ${latestBlock}

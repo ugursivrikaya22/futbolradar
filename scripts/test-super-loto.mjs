@@ -12,7 +12,7 @@ import { renderPage, structuredData } from "./generate-super-loto-page.mjs";
 const T = [
   { date: "2000-01-13", numbers: [1, 2, 10, 33, 47, 60] },
   { date: "2000-01-06", numbers: [2, 5, 11, 33, 40, 59] },
-  { date: "2000-01-20", numbers: [7, 8, 21, 33, 44, 52], prizes: [{ category: "6 Bilen", winners: 0, amount: null }] }
+  { date: "2000-01-20", numbers: [7, 8, 21, 33, 44, 52], prizes: [{ tier: "6 Bilen", winners: 0, amountTRY: 0 }] }
 ];
 
 assert.equal(isValidDraw({ date: "2000-01-01", numbers: [1, 2, 3, 4, 5, 61] }), false, "61 geçersiz");
@@ -28,12 +28,16 @@ assert.equal(buildCommentary([]), null, "veri yoksa yazı yok");
 
 const parsed = parseOfficial({ data: { rakamlar: "05#12#19#33#41#58", cekilisTarihi: "20000127", bilenKisiler: [{ tur: "$6_BILEN", kisiSayisi: 0, kisiBasinaDusenIkramiye: 0 }] } }, "https://www.millipiyangoonline.com/x.json", "t");
 assert.equal(parsed.length, 1);
-assert.equal(parsed[0].prizes[0].category, "6 Bilen");
+assert.equal(parsed[0].prizes[0].tier, "6 Bilen");
 assert.equal(parseOfficial({ data: { rakamlar: "05#12", cekilisTarihi: "20000127" } }, "u", "t").length, 0, "eksik sayı reddedilir");
 assert.equal(mergeDraws(draws, parsed).added.length, 1);
 assert.equal(mergeDraws(draws, [draws[0]]).added.length, 0);
 
 assert.equal(drawWindow(new Date("2026-10-22T17:00:00Z")), null, "Perşembe 20:00 pencere dışı");
+assert.equal(drawWindow(new Date("2026-10-25T19:00:00Z")), "2026-10-25", "Pazar 22:00");
+assert.equal(drawWindow(new Date("2026-10-27T05:00:00Z")), null, "Salı sabah pencere dışı");
+assert.equal(drawWindow(new Date("2026-10-28T08:00:00Z")), "2026-10-27", "Çarşamba (Salı çekilişinin ertesi)");
+assert.equal(parseOfficial({ data: { rakamlar: "05#12#19#33#41#58", cekilisTarihi: "20000127", hafta: 12, bilenKisiler: [{ tur: "$5_BILEN", kisiSayisi: 3, kisiBasinaDusenIkramiye: "1.234,50" }] } }, "u", "t")[0].prizes[0].amountTRY, 1234.5);
 assert.equal(drawWindow(new Date("2026-10-22T19:30:00Z")), "2026-10-22", "Perşembe 22:30");
 assert.equal(drawWindow(new Date("2026-10-22T21:30:00Z")), "2026-10-22", "Cuma 00:30");
 assert.equal(drawWindow(new Date("2026-10-24T10:00:00Z")), null, "Cumartesi");
@@ -51,7 +55,9 @@ const empty = renderPage({ draws: [] });
 assert.match(empty, /noindex/, "boş sayfa noindex");
 assert.ok(!/<ol class="loto-balls"/.test(empty), "boş sayfada sayı yok");
 
-const real = JSON.parse(fs.readFileSync(new URL("../data/super-loto.json", import.meta.url), "utf8"));
+assert.ok(!fs.existsSync(new URL("../data/super-loto.json", import.meta.url)), "eski veri dosyası kaldırıldı");
+const real = JSON.parse(fs.readFileSync(new URL("../data/super-loto-draws.json", import.meta.url), "utf8"));
+assert.equal(typeof real.source, "string", "PR 505 şeması: source zorunlu");
 for (const d of real.draws || []) {
   assert.ok(isValidDraw(d), `geçersiz kayıt ${d.date}`);
   assert.ok(/millipiyango|mpi\.gov\.tr/.test(d.sourceUrl || ""), `${d.date}: resmî kaynak URL'si şart`);

@@ -1,7 +1,8 @@
 /**
  * SÜPER LOTO — VERİ, İSTATİSTİK VE KÖŞE YAZISI ÇEKİRDEĞİ.
  *
- * Kaynak: data/super-loto.json. Bu dosyaya YALNIZCA resmî Milli Piyango
+ * Kaynak: data/super-loto-draws.json
+ * ({ source, fetchedAt, draws: [{ drawNumber, date, numbers, sourceUrl, prizes: [{ tier, winners, amountTRY }] }] }). Bu dosyaya YALNIZCA resmî Milli Piyango
  * kaynağından gerçekten çekilmiş çekilişler girer (scripts/fetch-super-loto.mjs).
  * Buradaki hiçbir fonksiyon sayı, tarih ya da ikramiye uydurmaz: köşe yazısı
  * şablonla, yalnızca arşivdeki gerçek çekilişlerden hesaplanan istatistiklerle
@@ -43,7 +44,7 @@ export function normalizeDraws(draws) {
 }
 
 export function readSuperLoto(root) {
-  const file = path.join(root, "data", "super-loto.json");
+  const file = path.join(root, "data", "super-loto-draws.json");
   let data = {};
   try { data = JSON.parse(fs.readFileSync(file, "utf8")); } catch { data = {}; }
   return { ...data, draws: normalizeDraws(data.draws) };
@@ -81,7 +82,7 @@ export function archiveStats(draws) {
   return { count: draws.length, frequency, ranked, lastSeenIndex, avgSum, neverSeen };
 }
 
-const prizeOf = (draw, category) => (Array.isArray(draw.prizes) ? draw.prizes.find((p) => String(p.category || "").startsWith(category)) : null);
+const prizeOf = (draw, category) => (Array.isArray(draw.prizes) ? draw.prizes.find((p) => String(p.tier || "").startsWith(category)) : null);
 
 /**
  * Köşe yazısı: son çekilişi yorumlayan kısa paragraflar. Tamamen deterministik.
@@ -133,7 +134,7 @@ export function buildCommentary(draws) {
   if (jackpot && Number.isInteger(jackpot.winners)) {
     paragraphs.push(jackpot.winners === 0
       ? "Bu çekilişte 6 bilen çıkmadı; büyük ikramiye bir sonraki çekilişe devrediyor."
-      : `Bu çekilişte ${jackpot.winners} kişi 6 sayıyı da bildi${jackpot.amount ? `; kişi başı ikramiye ${jackpot.amount}` : ""}.`);
+      : `Bu çekilişte ${jackpot.winners} kişi 6 sayıyı da bildi${Number.isFinite(jackpot.amountTRY) && jackpot.amountTRY > 0 ? `; kişi başı ikramiye ${jackpot.amountTRY.toLocaleString("tr-TR")} TL` : ""}.`);
   }
 
   paragraphs.push("Her çekiliş bağımsızdır: geçmiş sıklıklar bir sonraki çekilişi tahmin etmez. Bu yazı yalnızca resmî sonuçlardan hesaplanan istatistiklerdir.");
