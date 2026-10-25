@@ -1,0 +1,58 @@
+{
+  "_comment": "El Clásico (Barcelona – Real Madrid) kalıcı SEO sayfasının KAYNAKLI verileri. Her kayıtta sourceUrl zorunludur; kaynağı olmayan sayı eklenmez. Fikstür alanı data/fixture-calendar.json'da aynı providerId bulunursa oradan güncellenir. Üretici: scripts/generate-el-clasico-page.mjs",
+  "schemaVersion": 1,
+  "teams": {
+    "home": { "name": "Barcelona", "providerId": "529", "officialUrl": "https://www.fcbarcelona.com/" },
+    "away": { "name": "Real Madrid", "providerId": "541", "officialUrl": "https://www.realmadrid.com/" }
+  },
+  "fixtures": [
+    {
+      "providerId": "1570426",
+      "homeTeam": "Barcelona",
+      "awayTeam": "Real Madrid",
+      "kickoff": "2026-10-25T23:00:00+03:00",
+      "competition": "La Liga",
+      "round": 10,
+      "venue": "Spotify Camp Nou",
+      "venueCity": "Barcelona",
+      "referee": "Juan Martinez Munuera",
+      "status": "SCHEDULED",
+      "score": null,
+      "sourceName": "API-Football (FutbolRadar maç API'si)",
+      "sourceUrl": "https://www.futbolradar.com/api/matches",
+      "retrievedAt": "2026-10-25T13:05:17Z",
+      "broadcast": {
+        "channels": ["S Sport", "S Sport Plus"],
+        "country": "TR",
+        "sourceName": "Milli Gazete",
+        "sourceUrl": "https://www.milligazete.com.tr/el-clasico-2026-hangi-kanalda-barcelona-real-madrid-s-sport-canli-yayin-saati",
+        "retrievedAt": "2026-10-25"
+      }
+    },
+    {
+      "homeTeam": "Barcelona",
+      "awayTeam": "Real Madrid",
+      "kickoff": "2026-05-10",
+      "competition": "La Liga",
+      "venue": "Spotify Camp Nou",
+      "status": "FINISHED",
+      "score": { "home": 2, "away": 0 },
+      "note": "Barcelona bu galibiyetle 2025/26 La Liga şampiyonluğunu garantiledi.",
+      "sourceName": "Al Jazeera; FC Barcelona resmî sitesi",
+      "sourceUrl": "https://www.aljazeera.com/sports/2026/10/23/el-clasico-barcelona-real-madrid-rivalry",
+      "secondarySourceUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4502686/fc-barcelona-match-real-madrid-for-clasico-wins"
+    }
+  ],
+  "headToHead": {
+    "asOf": "2026-10-24",
+    "scope": "Resmî maçlar (1902'den bugüne)",
+    "total": { "played": 264, "barcelonaWins": 106, "realMadridWins": 106, "draws": 52, "barcelonaGoals": 441, "realMadridGoals": 444 },
+    "laLiga": { "played": 192, "barcelonaWins": 77, "realMadridWins": 80, "draws": 35, "barcelonaGoals": 312, "realMadridGoals": 309 },
+    "firstMeeting": { "date": "1902-05-13", "competition": "Copa de la Coronación", "score": "Barcelona 3–1 Madrid FC" },
+    "largestWins": { "realMadrid": "Real Madrid 11–1 Barcelona (Copa, 1943)", "barcelona": "Barcelona 7–2 Real Madrid (La Liga, 1950/51)" },
+    "sourceName": "AS — \"Empate técnico tras 124 años\" (24 Ekim 2026)",
+    "sourceUrl": "https://as.com/futbol/primera/empate-tecnico-tras-124-anos-f202610-n/",
+    "secondarySourceName": "FC Barcelona resmî sitesi (12 Mayıs 2026)",
+    "secondarySourceUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4502686/fc-barcelona-match-real-madrid-for-clasico-wins"
+  }
+}
