@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 const m = await import("./generate-super-loto-page.mjs");
 const empty = m.renderPage([]);
 assert.match(empty, /<title>Süper Loto Sonuçları \| futbolradar\.com<\/title>/);
+assert.match(empty, /<meta name="description" content="Süper Loto son çekiliş kazanan numaralar ve ikramiyeler\. Salı, Perşembe ve Pazar çekilişlerinin güncel sonuçları\."/);
 assert.match(empty, /<h1>Süper Loto Sonuçları<\/h1>/);
 assert.match(empty, /rel="canonical" href="https:\/\/www\.futbolradar\.com\/super-loto-sonuclari"/);
 assert.match(empty, /name="robots" content="noindex/);

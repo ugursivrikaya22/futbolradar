@@ -34,8 +34,8 @@ export const OFFICIAL_SOURCE = "https://www.millipiyangoonline.com/super-loto/ce
 export const DATA_FILE = path.join(root, "data", "super-loto-draws.json");
 
 export const PAGE_TITLE = "Süper Loto Sonuçları | futbolradar.com";
-// Kullanıcı metni korunuyor. NOT: resmî çekiliş günleri Salı, Perşembe ve Pazar.
-export const PAGE_DESCRIPTION = "Süper Loto son çekiliş kazanan numaralar ve ikramiyeler. Her Perşembe güncel sonuçlar.";
+// Resmî çekiliş günleri: Salı, Perşembe ve Pazar (Milli Piyango).
+export const PAGE_DESCRIPTION = "Süper Loto son çekiliş kazanan numaralar ve ikramiyeler. Salı, Perşembe ve Pazar çekilişlerinin güncel sonuçları.";
 export const H1 = "Süper Loto Sonuçları";
 
 const esc = (v) => String(v ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
