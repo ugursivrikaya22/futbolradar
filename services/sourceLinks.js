@@ -99,6 +99,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "yenisafak.com",
     "sabah.com.tr",
     "aspor.com.tr",
+    "milligazete.com.tr", // Dated El Clásico broadcast-time report (S Sport) used on the El Clásico guide.
     "trtspor.com.tr",
     "trt1.com.tr", // The broadcaster's own dated programme, checked for match-specific TV information.
     "tabii.com", // TRT's official streaming platform for the match broadcast.

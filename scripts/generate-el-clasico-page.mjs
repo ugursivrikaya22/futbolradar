@@ -25,7 +25,7 @@ const readJson = (rel, fallback) => {
   try { return JSON.parse(fs.readFileSync(path.join(root, rel), "utf8")); } catch { return fallback; }
 };
 const esc = (v) => String(v ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
-const src = (url, name) => `<a href="${esc(url)}" rel="nofollow noopener" target="_blank">${esc(name)}</a>`;
+const src = (url, name) => `<a href="${esc(url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(name)}</a>`;
 const isClasico = (m) => {
   const t = [m?.homeTeam, m?.awayTeam].map((x) => String(x || "").trim());
   return t.includes("Barcelona") && t.includes("Real Madrid");
