@@ -94,6 +94,8 @@ export const POSTPROCESS_CHAIN = [
   { id: "following-page", script: "generate-following-page.mjs", args: [], timeoutMinutes: 2 },
   // /puan-durumu-simulator: resmî tablo + kalan fikstür gömülü; saatlik tablo güncellemesini izlemeli.
   { id: "standings-simulator-page", script: "generate-standings-simulator-page.mjs", args: [], timeoutMinutes: 2 },
+  // /super-loto-sonuclari: data/super-loto.json (resmî Milli Piyango sonuçları) + şablonla köşe yazısı; ağ isteği yok.
+  { id: "super-loto-page", script: "generate-super-loto-page.mjs", args: [], timeoutMinutes: 2 },
   // /uefa-ulke-puani-siralamasi: UEFA ülke tablosu data/uefa-country-coefficients.json'dan; API çağrısı yok.
   { id: "uefa-country-table", script: "inject-uefa-country-table.mjs", args: [], timeoutMinutes: 2 },
   // /tarihte-bugun + /en/on-this-day: tarihe bağlı, her koşuda yeniden üretilir (yalnız yerel arşiv verisi).

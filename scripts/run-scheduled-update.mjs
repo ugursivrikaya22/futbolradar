@@ -472,6 +472,11 @@ function sourceSteps(type, providerReady, match = "", backfill = "") {
     // tazeler — saatlik koşuda 20 lig × 2 uç nokta kotayı gereksiz yer.
     ...(full ? [nodeStep("competition-leaders", "sync-competition-leaders.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 8 * 60 * 1000, skip: noProvider })] : []),
     nodeStep("injuries-suspensions", "sync-squad-statuses.mjs", ["--apply"], { kind: "source", source: "api-football", attempts: 2, timeoutMs: 4 * 60 * 1000, skip: noProvider }),
+    // SÜPER LOTO: yalnızca Perşembe 21:00 – Cuma (İstanbul) penceresinde ve o
+    // haftanın çekilişi henüz kayıtlı değilken resmî Milli Piyango kaynağına
+    // tek istek atar; başka zamanlarda ağa çıkmaz. Yeni çekiliş gelirse
+    // data/super-loto.json değişir, saatlik derleme sayfayı yeniden basar.
+    nodeStep("super-loto", "fetch-super-loto.mjs", ["--apply"], { kind: "source", source: "milli-piyango", attempts: 1, timeoutMs: 60 * 1000 }),
     nodeStep("football-news", "sync-football-news.mjs", ["--apply"], { kind: "source", source: "rss", attempts: 2, timeoutMs: 4 * 60 * 1000 }),
     // İNGİLİZCE AKIŞ AYRI ADIMDIR. Türkçe akışla aynı sıklıkta tazelenir
     // ama ayrı beslemelerden ayrı dosyaya yazar; biri düşerse diğeri
