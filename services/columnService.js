@@ -278,6 +278,8 @@ function presentColumn(entry, locale) {
       ? text((entry.en || {}).featuredImageAlt)
       : text(entry.featuredImageAlt),
     hideStandfirst: Boolean(entry.hideStandfirst),
+    // Yazının konu aldığı maç için doğrulanmış etkinlik künyesi (SportsEvent).
+    sportsEvent: entry.sportsEvent && typeof entry.sportsEvent === "object" ? entry.sportsEvent : null,
     body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
     // GÜNCELLEME NOTLARI — süren bir gündemi izleyen yazılar için.
     //
