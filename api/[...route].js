@@ -21,6 +21,7 @@ const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
 const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
+const { handleColumnsPublish } = require("../server/columnsPublishRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -405,6 +406,11 @@ module.exports = async function handler(req, res) {
   // yalnızca okuma yöntemlerine (GET/HEAD) izin veriyor.
   if (routeName(req) === "push-subscribe") {
     return handlePushSubscription(req, res);
+  }
+
+  // Köşe yazısı yayın uç noktası: yalnızca POST, EDITOR_TOKEN ile korunur.
+  if (routeName(req) === "columns-publish") {
+    return handleColumnsPublish(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {
