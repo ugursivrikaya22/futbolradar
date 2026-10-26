@@ -92,8 +92,6 @@ const COPY = Object.freeze({
     button: "Oyunu Ver",
     thanks: "Teşekkürler! Güncel sonuçlar aşağıda.",
     leader: "Önde",
-    votesSuffix: "oy",
-    totalVotes: "toplam oy",
     closed: "Bu anket kapandı; sonuçlar kesinleşti.",
     closedNext: "Yeni anket yakında bu alanda.",
     communityNote: "Sonuçlar tüm okuyucuların oylarından hesaplanıyor. Her tarayıcı bir kez oy verebilir.",
@@ -111,8 +109,6 @@ const COPY = Object.freeze({
     button: "Cast Your Vote",
     thanks: "Thanks! Live results are below.",
     leader: "Leading",
-    votesSuffix: "votes",
-    totalVotes: "total votes",
     closed: "This poll has closed; the results are final.",
     closedNext: "A new poll is coming to this space.",
     communityNote: "Results are calculated from all readers' votes. Each browser can vote once.",
@@ -215,7 +211,8 @@ function pollPathFor(poll, locale) {
  * yalnızca yer tutucuları dolduruyor.
  *
  * Yer tutucular: `{team}` seçilen/önde giden seçenek, `{percent}` onun oy
- * oranı, `{total}` toplam oy, `{url}` anketin adresi.
+ * oranı, `{url}` anketin adresi. Toplam oy/katılımcı sayısı için yer tutucu
+ * YOKTUR: anket sonuçlarında yalnızca yüzde gösterilir.
  *
  * YÜZDE UYDURULMAZ. Sayım yoksa (`withoutResult`) yüzdesiz metin kullanılır;
  * "%0 ile lider" demek, veride olmayan bir sayı iddia etmek olurdu.

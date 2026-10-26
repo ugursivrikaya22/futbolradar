@@ -2098,7 +2098,8 @@
   /** Sunucu yanıtını render'ın beklediği biçime çevirir. */
   function serverState(data, choice) {
     var counts = {};
-    (data.results || []).forEach(function (row) { counts[row.optionId] = row.votes; });
+    // Sunucu ham oy sayısı göndermiyor; yüzde, oranı koruyan ağırlık olarak kullanılır.
+    (data.results || []).forEach(function (row) { counts[row.optionId] = Number(row.percent) || 0; });
     return { counts: counts, choice: choice || data.choice || null, remote: true };
   }
 
@@ -2188,7 +2189,7 @@
         renderLocked(data);
         return;
       }
-      if (data && (data.alreadyVoted || data.total > 0)) {
+      if (data && (data.alreadyVoted || data.hasVotes)) {
         // Sunucu "bu tarayıcı oy verdi" diyorsa form yerine sonuç gösterilir;
         // hangi seçeneğe oy verildiği yalnızca cihazda biliniyor (sunucu
         // seçmeni oyuna bağlamıyor), o yüzden işaret oradan alınır.
@@ -2395,7 +2396,8 @@
 
   function serverState(data, choice) {
     var counts = {};
-    (data.results || []).forEach(function (row) { counts[row.optionId] = row.votes; });
+    // Sunucu ham oy sayısı göndermiyor; yüzde, oranı koruyan ağırlık olarak kullanılır.
+    (data.results || []).forEach(function (row) { counts[row.optionId] = Number(row.percent) || 0; });
     return { counts: counts, choice: choice || data.choice || null, remote: true };
   }
 
@@ -2812,7 +2814,7 @@
         ? fillTemplate(copy.voted, { team: mine.label, percent: mine.percent })
         : fillTemplate(copy.votedWithoutResult, { team: mine.label });
     }
-    if (rows.length && data.total > 0) {
+    if (rows.length && data.hasVotes) {
       return fillTemplate(copy.leader, { team: rows[0].label, percent: rows[0].percent });
     }
     return fillTemplate(copy.plain, { question: poll ? poll.question : "" });
@@ -3083,17 +3085,15 @@
     var strings = locale === "en"
       ? {
         votes: "votes", leader: "Leading", yours: "✓ Your vote", ends: "Voting closes:",
-        // Toplam katılım bir davettir, bir istatistik satırı değil: "13.842
-        // kişi oy kullandı" cümlesi okuyucuyu da oy vermeye çağırıyor.
-        totalLine: "🔥 {total} football fans have voted",
+        // Katılımcı/oy sayısı metni yok: sonuçlarda yalnızca yüzde görünür.
         pickLabel: "My pick", leaderLabel: "Leading",
-        cardTotal: "{total} votes in total", cardCta: "Cast your vote too"
+        cardCta: "Cast your vote too"
       }
       : {
         votes: "oy", leader: "Önde", yours: "✓ Senin oyun", ends: "Oylama bitişi:",
-        totalLine: "🔥 Toplam {total} futbolsever oy kullandı",
+
         pickLabel: "Benim seçimim", leaderLabel: "Ankette lider",
-        cardTotal: "Toplam {total} oy", cardCta: "Sen de oyunu kullan"
+        cardCta: "Sen de oyunu kullan"
       };
 
     var poll = null;
@@ -3220,11 +3220,7 @@
         percent.textContent = "%" + row.percent;
         head.appendChild(percent);
 
-        var votes = document.createElement("span");
-        votes.className = "home-poll__result-votes";
-        // Binlik ayraçlı: "4281 oy" dört haneden sonra okunmaz oluyor.
-        votes.textContent = formatCount(row.votes) + " " + strings.votes;
-        head.appendChild(votes);
+        // Oy sayısı gösterilmez: anket sonuçlarında yalnızca yüzde görünür.
 
         var bar = document.createElement("div");
         bar.className = "home-poll__bar";
@@ -3246,10 +3242,9 @@
       show(resultList, rows.length > 0);
       if (totalNode) {
         // Binlik ayracı okuyucunun diline göre: "13.842" (tr) / "13,842" (en).
-        setText(totalNode, data.total
-          ? fillTemplate(strings.totalLine, { total: formatCount(data.total) })
-          : "");
-        show(totalNode, Boolean(data.total));
+        // Katılımcı sayısı gösterilmez; yalnızca yüzdeler.
+        setText(totalNode, "");
+        show(totalNode, false);
       }
     }
 
@@ -3267,7 +3262,7 @@
       if (!podiumList) return;
       var rows = (data.results || []).slice(0, 3);
       podiumList.innerHTML = "";
-      if (!rows.length || !data.total) {
+      if (!rows.length || !data.hasVotes) {
         show(podiumList, false);
         return;
       }
@@ -3368,15 +3363,14 @@
       // AYNI KART İKİ KEZ ÇİZİLMEZ. Sonuç görünümdeyken `render()` dakikada
       // bir koşuyor; her koşuda 1080 piksellik bir tuvali yeniden çizmek ve
       // PNG'ye kodlamak, hiçbir şey değişmemişken telefonun pilini yakardı.
-      var signature = [shareState.format, subject.row.optionId, subject.row.percent, data.total].join("|");
+      var signature = [shareState.format, subject.row.optionId, subject.row.percent].join("|");
       if (signature === shareState.signature) return;
       shareState.signature = signature;
 
       var option = optionById(subject.row.optionId);
       var percentText = subject.row.percent > 0 ? "%" + subject.row.percent : "";
-      var totalText = data.total
-        ? fillTemplate(strings.cardTotal, { total: formatCount(data.total) })
-        : "";
+      // Paylaşım kartında toplam oy satırı yok: yalnızca yüzde.
+      var totalText = "";
 
       loadCrestImage(option && option.logo).then(function (image) {
         return drawShareCard({
@@ -3961,10 +3955,6 @@
       percent.textContent = "%" + row.percent;
       rowHead.appendChild(percent);
 
-      var votes = document.createElement("span");
-      votes.className = "home-poll__result-votes";
-      votes.textContent = row.votes + " " + strings.votes;
-      rowHead.appendChild(votes);
 
       var bar = document.createElement("div");
       bar.className = "home-poll__bar";
@@ -3984,12 +3974,6 @@
     });
     card.appendChild(results);
 
-    if (poll.total) {
-      var total = document.createElement("p");
-      total.className = "home-poll__total";
-      total.textContent = poll.total + " " + strings.total;
-      card.appendChild(total);
-    }
 
     // HER ANKETİN KENDİ SAYFASI VAR — VE PAYLAŞILAN ADRES ODUR.
     // Arşiv kartı tam paylaşım panelini taşımıyor (panel seçime ve canlı
@@ -4239,10 +4223,6 @@
     return SHARED_POLL_FETCH[key];
   }
 
-  function pollTotalText(total, locale) {
-    if (!total) return "";
-    return locale === "en" ? total + " votes" : total + " oy";
-  }
 
   /**
    * VİTRİN KARTLARINI DOLDUR — soru + canlı katılım sayısı.
@@ -4267,11 +4247,7 @@
         }
         var question = card.querySelector("[data-poll-promo-question]");
         if (question && !question.textContent) question.textContent = data.poll.question;
-        var total = card.querySelector("[data-poll-promo-total]");
-        if (total && data.total) {
-          total.textContent = pollTotalText(data.total, locale);
-          total.hidden = false;
-        }
+        // Katılım sayısı gösterilmez (yalnızca yüzde kuralı).
         trackImpressionOnce(card, "promo");
         var cta = card.querySelector("[data-poll-promo-cta]");
         if (cta) cta.addEventListener("click", function () { trackPollEvent("poll_click", { location: "promo" }); });
@@ -4343,11 +4319,6 @@
       pollOpen = true;
       var question = widget.querySelector("[data-poll-sticky-question]");
       if (question) question.textContent = data.poll.question;
-      var total = widget.querySelector("[data-poll-sticky-total]");
-      if (total && data.total) {
-        total.textContent = pollTotalText(data.total, locale);
-        total.hidden = false;
-      }
       updateVisibility();
     });
   }

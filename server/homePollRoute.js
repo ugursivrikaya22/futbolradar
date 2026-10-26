@@ -184,7 +184,11 @@ function presentTally(counts, poll) {
     row.isLeader = !tied && row.votes === leaderVotes && leaderVotes > 0;
   }
 
-  return { total, results: rows };
+  // YALNIZCA YÜZDE. Ham oy sayıları ve toplam katılım okuyucuya gönderilmez
+  // (yayın kuralı: anket sonuçlarında katılımcı sayısı görünmez). Sayılar
+  // veritabanında kalır; istemci yalnızca yüzde ve "sonuç var mı" bilgisi alır.
+  const results = rows.map(({ votes, ...row }) => row);
+  return { hasVotes: total > 0, results };
 }
 
 async function handleHomePoll(req, res) {
@@ -245,7 +249,7 @@ async function handleHomePoll(req, res) {
         // Başlamamış ankette sayım OKUNMAZ: henüz oy olamaz ve boş bir
         // sorgu her sayfa görüntülemesinde depoya gereksiz yük olurdu.
         if (!configured || entry.status === "upcoming") {
-          return { ...poll, status: entry.status, results: [], total: 0, alreadyVoted: false, choice: null };
+          return { ...poll, status: entry.status, results: [], hasVotes: false, alreadyVoted: false, choice: null };
         }
         const existing = await findVote(poll.id, voterKey);
         return {
@@ -268,7 +272,7 @@ async function handleHomePoll(req, res) {
         storage: "unavailable",
         polls: entries.map((entry) => ({
           ...localizePoll(entry.poll, locale),
-          status: entry.status, results: [], total: 0, alreadyVoted: false, choice: null
+          status: entry.status, results: [], hasVotes: false, alreadyVoted: false, choice: null
         }))
       }, SOURCE, null, { note: "Oy deposuna ulasilamadi; sayimlar gosterilemiyor." });
     }
@@ -305,7 +309,7 @@ async function handleHomePoll(req, res) {
 
   if (!selection.poll) {
     // Gösterilecek anket yok: istemci bölümü hiç çizmez.
-    return sendSuccess(res, { storage: "none", status: "none", poll: null, results: [], total: 0 }, SOURCE, null, {
+    return sendSuccess(res, { storage: "none", status: "none", poll: null, results: [], hasVotes: false }, SOURCE, null, {
       note: "Su an yayinda bir anket yok."
     });
   }
@@ -320,7 +324,7 @@ async function handleHomePoll(req, res) {
     // ANAHTAR TÜRÜNDEN ayırmıyordu; operatör hangisi olduğunu göremiyordu.
     // Yalnızca DURUM yazılır, anahtarın kendisi hiçbir koşulda yazılmaz.
     return sendSuccess(res, {
-      storage: "unavailable", status: selection.status, poll, results: [], total: 0
+      storage: "unavailable", status: selection.status, poll, results: [], hasVotes: false
     }, SOURCE, null, {
       note: "Oy deposu yapilandirilmamis; anket salt okunur.",
       configuration: configurationHint()
@@ -379,7 +383,7 @@ async function handleHomePoll(req, res) {
   } catch (error) {
     // Depo arızası ana sayfayı KIRMAZ: anket salt okunur görünür.
     return sendSuccess(res, {
-      storage: "unavailable", status: selection.status, poll, results: [], total: 0
+      storage: "unavailable", status: selection.status, poll, results: [], hasVotes: false
     }, SOURCE, null, { note: "Oy deposuna ulasilamadi; anket salt okunur." });
   }
 }
