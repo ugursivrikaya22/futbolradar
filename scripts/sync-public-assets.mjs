@@ -49,9 +49,9 @@ for (const file of [
   "match-center.js",
   "match-center-plus.js",
   "match-center-plus.css",
-  "home-ticker.css",
-  "home-ticker.js",
   "home-columns.js",
+  "transfer-ticker.css",
+  "transfer-ticker.js",
   "site.webmanifest",
   "404.html",
   "index.html",
@@ -92,6 +92,7 @@ for (const file of [
   "super-lig-fixtures.json",
   "teams.json",
   "transfers.json",
+  "transfer-ticker.json",
   "update-status.json"
 ]) {
   copyGeneratedFile(path.join(root, "data", file), path.join(publicDir, "data", file));
