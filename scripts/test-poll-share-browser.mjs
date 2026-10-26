@@ -146,8 +146,8 @@ function tallyFor(choiceId) {
     poll: pollTr,
     alreadyVoted: Boolean(choiceId),
     choice: choiceId || null,
-    total,
-    results
+    hasVotes: total > 0,
+    results: results.map(({ votes, ...row }) => row)
   };
 }
 
@@ -268,10 +268,10 @@ try {
       assert.ok(await page.isVisible(".home-poll__badge.is-yours"), '"Senin oyun" rozeti yok');
     });
 
-    await check(`${device.name}: toplam katılım satırı`, async () => {
-      const total = (await page.textContent("[data-home-poll-total]")).trim();
-      assert.match(total, /^🔥 Toplam [\d.]+ futbolsever oy kullandı$/,
-        `toplam satırı beklenen biçimde değil: "${total}"`);
+    await check(`${device.name}: katılımcı sayısı gösterilmez`, async () => {
+      assert.equal(await page.isVisible("[data-home-poll-total]"), false, "toplam katılım satırı görünmemeli");
+      const text = await page.textContent("[data-home-poll]");
+      assert.equal(/(^|[^%\d])\d[\d.,]*\s*(oy|futbolsever|votes)\b/.test(text), false, `oy sayısı metni bulundu: ${(text.match(/.{0,40}\d[\d.,]*\s*(oy|futbolsever|votes)\b.{0,20}/) || [""])[0]}`);
     });
 
     await check(`${device.name}: anket liderleri podyumu`, async () => {
