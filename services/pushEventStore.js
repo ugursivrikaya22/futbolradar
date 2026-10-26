@@ -1,7 +1,7 @@
 /**
  * PUSH OLAY TEKİLLEŞTİRME VE PAYLAŞILAN CANLI ANLIK GÖRÜNTÜ — SUPABASE.
  *
- * Şema: supabase/migrations/0012_push_event_dedup.sql. Desen
+ * Şema: supabase/migrations/0013_push_event_dedup.sql. Desen
  * services/pushSubscriptionStore.js ile aynı (PostgREST'e düz fetch).
  *
  * Supabase yapılandırılmamışsa her şey zararsız no-op: `claimEvent` "açık"
