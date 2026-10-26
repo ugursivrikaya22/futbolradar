@@ -51,6 +51,9 @@ function calendarMatches() {
   return out;
 }
 
+// Köşe yazısı sayfaları build adımında (generate-column-pages) üretilir; yalnızca açılan sayfaya bağlantı verilir.
+const columnPageExists = (slug) => fs.existsSync(path.join(root, "kose-yazilari", `${slug}.html`));
+
 export function buildModel({ now = new Date(), data = readJson("data/el-clasico.json", {}), calendar = calendarMatches(), standings = readJson("data/league-standings.json", {}) } = {}) {
   const fixtures = (data.fixtures || []).filter((f) => f.sourceUrl && isClasico(f)).map((f) => {
     const live = f.providerId && calendar.find((m) => String(m.providerId || m.id) === String(f.providerId));
@@ -65,10 +68,18 @@ export function buildModel({ now = new Date(), data = readJson("data/el-clasico.
   const table = standings?.["la-liga"]?.table || [];
   const rows = ["Barcelona", "Real Madrid"].map((n) => table.find((r) => r.team === n)).filter((r) => r && r.source && Number(r.played) > 0);
   const h2h = data.headToHead?.sourceUrl && data.headToHead?.total ? data.headToHead : null;
-  const cols = (readJson("data/columns.json", {}).columns || []).filter((c) => (!c.status || c.status === "published") && c.slug && ["Barcelona", "Real Madrid"].every((t) => (c.tags || []).includes(t)) && /cl[aá]sico/i.test(`${c.title} ${(c.tags || []).join(" ")}`)).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 3);
-  const sections = { hero: Boolean(next || last), h2h: Boolean(h2h), standings: rows.length === 2, broadcast: Boolean(next?.broadcast?.sourceUrl && next.broadcast.channels?.length) };
+  const cols = (readJson("data/columns.json", {}).columns || []).filter((c) => (!c.status || c.status === "published") && c.slug && ["Barcelona", "Real Madrid"].every((t) => (c.tags || []).includes(t)) && /cl[aá]sico/i.test(`${c.title} ${(c.tags || []).join(" ")}`)).filter((c) => columnPageExists(c.slug)).sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 3);
+  const pv = data.preview;
+  const pvSrc = (k) => pv?.sources?.[k]?.sourceUrl && /^https:\/\//.test(pv.sources[k].sourceUrl) ? pv.sources[k] : null;
+  const preview = pv?.column?.date ? {
+    ...pv,
+    stats: (pv.stats || []).filter((s) => s.value && pvSrc(s.source)).map((s) => ({ ...s, src: pvSrc(s.source) })),
+    sections: (pv.sections || []).filter((x) => x.h3 && x.paragraphs?.length && (x.sources || []).length && x.sources.every(pvSrc)).map((x) => ({ ...x, srcs: x.sources.map(pvSrc) })),
+    columnPublished: (readJson("data/columns.json", {}).columns || []).some((c) => c.slug === pv.column.slug && (!c.status || c.status === "published")) && columnPageExists(pv.column.slug)
+  } : null;
+  const sections = { hero: Boolean(next || last), preview: Boolean(preview && (preview.stats.length || preview.sections.length)), h2h: Boolean(h2h), standings: rows.length === 2, broadcast: Boolean(next?.broadcast?.sourceUrl && next.broadcast.channels?.length) };
   const indexable = [sections.hero, sections.h2h, sections.standings].filter(Boolean).length >= 2;
-  return { columns: cols, next, last, h2h, rows, standingsUpdatedAt: standings?.["la-liga"]?.updatedAt || null, sections, indexable };
+  return { preview, columns: cols, next, last, h2h, rows, standingsUpdatedAt: standings?.["la-liga"]?.updatedAt || null, sections, indexable };
 }
 
 function faqItems(m) {
@@ -77,6 +88,8 @@ function faqItems(m) {
     q.push(["El Clásico ne zaman?", `Sıradaki El Clásico, ${m.next.homeTeam} – ${m.next.awayTeam} maçı ${trDate(m.next.kickoff)} (Türkiye saati) oynanacak; ${m.next.competition}${m.next.round ? ` ${m.next.round}. hafta` : ""}, ${m.next.venue}.`]);
     if (m.sections.broadcast) q.push(["Barcelona – Real Madrid maçı hangi kanalda?", `Maç Türkiye'de ${m.next.broadcast.channels.join(" ve ")} üzerinden yayınlanacak (kaynak: ${m.next.broadcast.sourceName}).`]);
   }
+  const opta = m.sections.preview && m.preview.stats.find((s) => s.source === "goal" && /Opta/.test(s.label));
+  if (opta) q.push(["El Clásico'da favori kim?", `${trDate(m.preview.matchKickoff, false)} maçı öncesinde Opta'nın galibiyet olasılığı endeksi: ${opta.detail} (kaynak: Goal.com).`]);
   if (m.last) q.push(["Son El Clásico nasıl bitti?", `Son El Clásico'da ${m.last.homeTeam} ${m.last.score.home}–${m.last.score.away} ${m.last.awayTeam} (${trDate(m.last.kickoff, false)}, ${m.last.competition}).`]);
   if (m.h2h) {
     const t = m.h2h.total;
@@ -90,10 +103,12 @@ function faqItems(m) {
 }
 
 function render(m) {
-  const title = "El Clásico: Barcelona – Real Madrid Maçı Ne Zaman, Hangi Kanalda? | FutbolRadar";
+  const title = m.next ? "El Clásico: Barcelona – Real Madrid Maçı Ne Zaman, Hangi Kanalda? | FutbolRadar" : "El Clásico: Barcelona – Real Madrid Maç Önü Analiz ve İstatistikler | FutbolRadar";
   const description = m.next
     ? `El Clásico ${trDate(m.next.kickoff)} TSİ, ${m.next.venue}.${m.sections.broadcast ? ` Yayın: ${m.next.broadcast.channels.join(", ")}.` : ""} Barcelona – Real Madrid ikili rekabet, puan durumu ve son maç.`
-    : "El Clásico: Barcelona – Real Madrid ikili rekabet istatistikleri, son maç sonucu ve La Liga puan durumu kaynaklarıyla.";
+    : m.sections.preview
+      ? "El Clásico maç önü analiz: Barcelona – Real Madrid için Opta tahmini, golcüler, eksikler, ikili rekabet ve La Liga istatistikleri kaynaklarıyla."
+      : "El Clásico: Barcelona – Real Madrid ikili rekabet istatistikleri, son maç sonucu ve La Liga puan durumu kaynaklarıyla.";
   const h1 = "El Clásico: Barcelona – Real Madrid";
   const parts = [];
   const sources = new Map();
@@ -116,7 +131,15 @@ function render(m) {
     parts.push(html + "</section>");
   }
 
-  parts.push(`<section class="evergreen-section" aria-labelledby="clasico-teams"><h2 id="clasico-teams">Takımlar</h2><div class="clasico-teams"><article><h3>Barcelona</h3><p>Ev sahibi; iç saha maçlarını Spotify Camp Nou'da oynuyor.</p><p><a href="./la-liga-puan-durumu">Barcelona'nın La Liga puan durumu</a> · <a href="./lig/la-liga">La Liga fikstür ve sonuçlar</a></p></article><article><h3>Real Madrid</h3><p>Konuk takım; iç saha maçlarını Santiago Bernabéu'da oynuyor.</p><p><a href="./la-liga-puan-durumu">Real Madrid'in La Liga puan durumu</a> · <a href="./haberler">Real Madrid ve Barcelona haberleri</a></p></article></div></section>`);
+  if (m.sections.preview) {
+    const p = m.preview;
+    const colLink = p.columnPublished ? ` · <a href="./kose-yazilari/${esc(p.column.slug)}">Köşe yazısının tamamı</a>` : "";
+    const stats = p.stats.length ? `<div class="clasico-stats">${p.stats.map((s) => { addSrc(s.src.sourceUrl, s.src.sourceName); return `<article class="glass-card clasico-stat"><span class="card-kicker">${esc(s.label)}</span><strong>${esc(s.value)}</strong>${s.detail ? `<p>${esc(s.detail)}</p>` : ""}<p class="clasico-source">Kaynak: ${src(s.src.sourceUrl, s.src.sourceName.split(" — ")[0])}</p></article>`; }).join("")}</div>` : "";
+    const secs = p.sections.map((x) => { x.srcs.forEach((y) => addSrc(y.sourceUrl, y.sourceName)); return `<h3 id="analiz-${esc(x.id)}">${esc(x.h3)}</h3>${x.paragraphs.map((t) => `<p>${esc(t)}</p>`).join("")}<p class="clasico-source">Kaynak: ${x.srcs.map((y) => src(y.sourceUrl, y.sourceName)).join("; ")}</p>`; }).join("");
+    parts.push(`<section class="evergreen-section clasico-preview" aria-labelledby="mac-onu-analiz"><h2 id="mac-onu-analiz">Maç Önü Analiz</h2><p class="clasico-byline">Yazan: <strong>${esc(p.column.name)}</strong> (${esc(p.column.label)}) · <time datetime="${esc(p.column.date)}">${esc(trDate(p.column.date, false))}</time> · Maç öncesinde yazıldı; başlama ${esc(trDate(p.matchKickoff))} TSİ${colLink}</p>${stats}${secs}</section>`);
+  }
+
+  parts.push(`<section class="evergreen-section" aria-labelledby="clasico-teams"><h2 id="clasico-teams">Takımlar</h2><div class="clasico-teams"><article><h3>Barcelona</h3><p>Ev sahibi; iç saha maçlarını Spotify Camp Nou'da oynuyor.</p><p><a href="./la-liga-puan-durumu">Barcelona'nın La Liga puan durumu</a> · <a href="./lig/la-liga.html">La Liga fikstür ve sonuçlar</a></p></article><article><h3>Real Madrid</h3><p>Konuk takım; iç saha maçlarını Santiago Bernabéu'da oynuyor.</p><p><a href="./la-liga-puan-durumu">Real Madrid'in La Liga puan durumu</a> · <a href="./haberler.html">Real Madrid ve Barcelona haberleri</a></p></article></div></section>`);
 
   if (m.h2h) {
     const h = m.h2h; addSrc(h.sourceUrl, h.sourceName); addSrc(h.secondarySourceUrl, h.secondarySourceName);
@@ -138,7 +161,7 @@ function render(m) {
 
   const faq = faqItems(m);
   if (faq.length) parts.push(`<section class="evergreen-section" aria-labelledby="clasico-sss"><h2 id="clasico-sss">El Clásico hakkında sık sorulan sorular</h2>${faq.map(([q, a]) => `<details class="clasico-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join("")}</section>`);
-  parts.push(`<aside class="evergreen-related" aria-labelledby="clasico-related"><h2 id="clasico-related">El Clásico'dan devam edin</h2><div class="evergreen-link-grid"><a href="./la-liga-puan-durumu">La Liga puan durumu</a><a href="./lig/la-liga">La Liga fikstür ve sonuçlar</a><a href="./bugunun-maclari-hangi-kanalda">Bugünün maçları hangi kanalda</a><a href="./derbi-radari">Derbi radarı</a></div></aside>`);
+  parts.push(`<aside class="evergreen-related" aria-labelledby="clasico-related"><h2 id="clasico-related">El Clásico'dan devam edin</h2><div class="evergreen-link-grid"><a href="./la-liga-puan-durumu">La Liga puan durumu</a><a href="./lig/la-liga.html">La Liga fikstür ve sonuçlar</a><a href="./bugunun-maclari-hangi-kanalda">Bugünün maçları hangi kanalda</a><a href="./derbi-radari.html">Derbi radarı</a></div></aside>`);
 
   const graph = [
     { "@type": "WebPage", "@id": `${canonical}#page`, url: canonical, name: title, description, inLanguage: "tr-TR" },
@@ -147,10 +170,11 @@ function render(m) {
     { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${siteUrl}/` }, { "@type": "ListItem", position: 2, name: "La Liga", item: `${siteUrl}/la-liga-puan-durumu` }, { "@type": "ListItem", position: 3, name: "El Clásico", item: canonical }] }
   ];
   if (m.next) graph.push({ "@type": "SportsEvent", "@id": `${canonical}#next`, name: `El Clásico: ${m.next.homeTeam} – ${m.next.awayTeam}`, startDate: m.next.kickoff, eventStatus: "https://schema.org/EventScheduled", eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", sport: "Soccer", location: { "@type": "Place", name: m.next.venue, address: { "@type": "PostalAddress", addressLocality: m.next.venueCity || "Barcelona", addressCountry: "ES" } }, homeTeam: { "@id": `${canonical}#barcelona` }, awayTeam: { "@id": `${canonical}#real-madrid` }, competitor: [{ "@id": `${canonical}#barcelona` }, { "@id": `${canonical}#real-madrid` }] });
+  if (m.sections.preview) graph.push({ "@type": "Article", "@id": `${canonical}#mac-onu-analiz`, headline: "El Clásico Maç Önü Analiz: Barcelona – Real Madrid", datePublished: m.preview.column.date, inLanguage: "tr-TR", author: { "@type": "Organization", name: `FutbolRadar ${m.preview.column.name}` }, publisher: { "@type": "Organization", name: "FutbolRadar", url: `${siteUrl}/` }, mainEntityOfPage: { "@id": `${canonical}#page` }, about: [{ "@id": `${canonical}#barcelona` }, { "@id": `${canonical}#real-madrid` }], citation: [...new Set(m.preview.stats.map((s) => s.src.sourceUrl).concat(m.preview.sections.flatMap((x) => x.srcs.map((y) => y.sourceUrl))))] });
   if (faq.length) graph.push({ "@type": "FAQPage", "@id": `${canonical}#faq`, mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) });
 
-  const intro = "El Clásico, Barcelona ile Real Madrid arasındaki dünyanın en çok izlenen futbol rekabeti. Bu sayfada sıradaki El Clásico'nun tarihi, saati ve yayın kanalı, son maç sonucu, ikili rekabet istatistikleri ve La Liga puan durumu kaynaklarıyla yer alır.";
-  const css = `<style>.clasico-facts{display:grid;grid-template-columns:1fr;gap:8px;margin:0}.clasico-facts div{display:flex;flex-wrap:wrap;gap:4px 8px}.clasico-facts dt{font-weight:600}.clasico-facts dd{margin:0}.clasico-source{font-size:.85rem;opacity:.85;overflow-wrap:anywhere}.clasico-source a,.evergreen-related a,.clasico-teams a,[data-page="el-clasico"] .evergreen-breadcrumb a,.clasico-hero a,#clasico-analiz~ul a{display:inline-block;min-height:24px;line-height:24px}.clasico-teams{display:grid;grid-template-columns:1fr;gap:12px}.clasico-faq summary{min-height:24px;padding:6px 0;cursor:pointer}.evergreen-table-wrap{max-width:100%;overflow-x:auto}@media(min-width:720px){.clasico-teams{grid-template-columns:1fr 1fr}.clasico-facts{grid-template-columns:1fr 1fr}}</style>`;
+  const intro = "El Clásico, Barcelona ile Real Madrid arasındaki dünyanın en çok izlenen futbol rekabeti. Bu sayfada sıradaki El Clásico'nun tarihi, saati ve yayın kanalı, son maç sonucu, maç önü analiz, ikili rekabet istatistikleri ve La Liga puan durumu kaynaklarıyla yer alır.";
+  const css = `<style>.clasico-facts{display:grid;grid-template-columns:1fr;gap:8px;margin:0}.clasico-facts div{display:flex;flex-wrap:wrap;gap:4px 8px}.clasico-facts dt{font-weight:600}.clasico-facts dd{margin:0}.clasico-source{font-size:.85rem;opacity:.85;overflow-wrap:anywhere}.clasico-source a,.evergreen-related a,.clasico-teams a,[data-page="el-clasico"] .evergreen-breadcrumb a,.clasico-hero a,#clasico-analiz~ul a{display:inline-block;min-height:24px;line-height:24px}.clasico-teams{display:grid;grid-template-columns:1fr;gap:12px}.clasico-faq summary{min-height:24px;padding:6px 0;cursor:pointer}.evergreen-table-wrap{max-width:100%;overflow-x:auto}.clasico-byline{font-size:.9rem;opacity:.85}.clasico-preview .clasico-byline a{display:inline-block;min-height:24px;line-height:24px}.clasico-stats{display:grid;grid-template-columns:1fr;gap:10px;margin:12px 0 16px}.clasico-stat{padding:12px 14px;min-width:0;min-height:0;height:auto;aspect-ratio:auto}.clasico-stat strong{display:block;font-size:1.5rem;line-height:1.2;margin:4px 0}.clasico-stat p{margin:4px 0}@media(min-width:480px){.clasico-stats{grid-template-columns:1fr 1fr}}@media(min-width:960px){.clasico-stats{grid-template-columns:repeat(3,1fr)}}@media(min-width:720px){.clasico-teams{grid-template-columns:1fr 1fr}.clasico-facts{grid-template-columns:1fr 1fr}}</style>`;
   return `<!doctype html>
 <html lang="tr">
   <head>

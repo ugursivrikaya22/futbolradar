@@ -2,8 +2,16 @@
   "_comment": "El Clásico (Barcelona – Real Madrid) kalıcı SEO sayfasının KAYNAKLI verileri. Her kayıtta sourceUrl zorunludur; kaynağı olmayan sayı eklenmez. Fikstür alanı data/fixture-calendar.json'da aynı providerId bulunursa oradan güncellenir. Üretici: scripts/generate-el-clasico-page.mjs",
   "schemaVersion": 1,
   "teams": {
-    "home": { "name": "Barcelona", "providerId": "529", "officialUrl": "https://www.fcbarcelona.com/" },
-    "away": { "name": "Real Madrid", "providerId": "541", "officialUrl": "https://www.realmadrid.com/" }
+    "home": {
+      "name": "Barcelona",
+      "providerId": "529",
+      "officialUrl": "https://www.fcbarcelona.com/"
+    },
+    "away": {
+      "name": "Real Madrid",
+      "providerId": "541",
+      "officialUrl": "https://www.realmadrid.com/"
+    }
   },
   "fixtures": [
     {
@@ -22,7 +30,10 @@
       "sourceUrl": "https://www.futbolradar.com/api/matches",
       "retrievedAt": "2026-10-25T13:05:17Z",
       "broadcast": {
-        "channels": ["S Sport", "S Sport Plus"],
+        "channels": [
+          "S Sport",
+          "S Sport Plus"
+        ],
         "country": "TR",
         "sourceName": "Milli Gazete",
         "sourceUrl": "https://www.milligazete.com.tr/el-clasico-2026-hangi-kanalda-barcelona-real-madrid-s-sport-canli-yayin-saati",
@@ -36,7 +47,10 @@
       "competition": "La Liga",
       "venue": "Spotify Camp Nou",
       "status": "FINISHED",
-      "score": { "home": 2, "away": 0 },
+      "score": {
+        "home": 2,
+        "away": 0
+      },
       "note": "Barcelona bu galibiyetle 2025/26 La Liga şampiyonluğunu garantiledi.",
       "sourceName": "Al Jazeera; FC Barcelona resmî sitesi",
       "sourceUrl": "https://www.aljazeera.com/sports/2026/10/23/el-clasico-barcelona-real-madrid-rivalry",
@@ -46,13 +60,179 @@
   "headToHead": {
     "asOf": "2026-10-24",
     "scope": "Resmî maçlar (1902'den bugüne)",
-    "total": { "played": 264, "barcelonaWins": 106, "realMadridWins": 106, "draws": 52, "barcelonaGoals": 441, "realMadridGoals": 444 },
-    "laLiga": { "played": 192, "barcelonaWins": 77, "realMadridWins": 80, "draws": 35, "barcelonaGoals": 312, "realMadridGoals": 309 },
-    "firstMeeting": { "date": "1902-05-13", "competition": "Copa de la Coronación", "score": "Barcelona 3–1 Madrid FC" },
-    "largestWins": { "realMadrid": "Real Madrid 11–1 Barcelona (Copa, 1943)", "barcelona": "Barcelona 7–2 Real Madrid (La Liga, 1950/51)" },
+    "total": {
+      "played": 264,
+      "barcelonaWins": 106,
+      "realMadridWins": 106,
+      "draws": 52,
+      "barcelonaGoals": 441,
+      "realMadridGoals": 444
+    },
+    "laLiga": {
+      "played": 192,
+      "barcelonaWins": 77,
+      "realMadridWins": 80,
+      "draws": 35,
+      "barcelonaGoals": 312,
+      "realMadridGoals": 309
+    },
+    "firstMeeting": {
+      "date": "1902-05-13",
+      "competition": "Copa de la Coronación",
+      "score": "Barcelona 3–1 Madrid FC"
+    },
+    "largestWins": {
+      "realMadrid": "Real Madrid 11–1 Barcelona (Copa, 1943)",
+      "barcelona": "Barcelona 7–2 Real Madrid (La Liga, 1950/51)"
+    },
     "sourceName": "AS — \"Empate técnico tras 124 años\" (24 Ekim 2026)",
     "sourceUrl": "https://as.com/futbol/primera/empate-tecnico-tras-124-anos-f202610-n/",
     "secondarySourceName": "FC Barcelona resmî sitesi (12 Mayıs 2026)",
     "secondarySourceUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4502686/fc-barcelona-match-real-madrid-for-clasico-wins"
+  },
+  "preview": {
+    "_comment": "Köşe'nin El Clásico maç önü köşe yazısından (drafts-2026-10-26/el-clasico-mac-onu-tutkulu.md) yalnızca kaynakla doğrulanan bilgiler. Her istatistik bloğunda sourceUrl zorunlu.",
+    "matchKickoff": "2026-10-25T23:00:00+03:00",
+    "column": {
+      "name": "Köşe",
+      "label": "FutbolRadar köşe yazısı",
+      "date": "2026-10-25",
+      "slug": "el-clasico-barcelona-real-madrid-mac-onu-analiz-25-ekim-2026"
+    },
+    "sources": {
+      "fcb": {
+        "sourceName": "FC Barcelona — PREVIEW | FC Barcelona v Real Madrid (25 Ekim 2026)",
+        "sourceUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4598192/preview-fc-barcelona-v-real-madrid"
+      },
+      "espn": {
+        "sourceName": "ESPN — Barcelona-Real Madrid: Clásico form, team news, combined XI, predictions (23 Ekim 2026)",
+        "sourceUrl": "https://www.espn.com/soccer/story/_/id/50227950/barcelona-real-madrid-laliga-clasico-form-team-news-combined-xi-predictions-odds-all-head-head"
+      },
+      "goal": {
+        "sourceName": "Goal.com — Opta tips Barcelona to win the Clasico (24 Ekim 2026)",
+        "sourceUrl": "https://www.goal.com/en/news/opta-tips-barcelona-to-win-the-clasico-a-four-scene-paradox-to-reassure-real-madrid/blteaeaec64c5ee7aa7"
+      },
+      "nbc": {
+        "sourceName": "NBC Sports — Barcelona 2-0 Real Madrid (10 Mayıs 2026)",
+        "sourceUrl": "https://www.nbcsports.com/soccer/news/barcelona-win-la-liga-el-clasico-recap-barca-vs-real-madrid-analysis-video-highlights-champions"
+      },
+      "marca": {
+        "sourceName": "Marca — Lamine Yamal, este Clásico no se lo pierde (25 Ekim 2026)",
+        "sourceUrl": "https://www.marca.com/futbol/barcelona/2026/10/25/lamine-yamal-clasico-pierde.html"
+      }
+    },
+    "stats": [
+      {
+        "label": "Opta galibiyet olasılığı",
+        "value": "%54,4 – %26,1",
+        "detail": "Barcelona %54,4, Real Madrid %26,1; kalan %19,5 beraberlik.",
+        "source": "goal"
+      },
+      {
+        "label": "Barcelona'nın lig başlangıcı",
+        "value": "9'da 9",
+        "detail": "İlk 9 La Liga maçında 39 gol; ilk 9 haftada tarihin en golcü ikinci başlangıcı.",
+        "source": "fcb"
+      },
+      {
+        "label": "Flick dönemi El Clásico",
+        "value": "7'de 6",
+        "detail": "Hansi Flick yönetimindeki ilk 7 El Clásico'nun 6'sını Barcelona kazandı.",
+        "source": "fcb"
+      },
+      {
+        "label": "Maç öncesi puan farkı",
+        "value": "6 puan",
+        "detail": "Barcelona 27 puanla lider, Real Madrid 21 puanla 3. sırada.",
+        "source": "goal"
+      },
+      {
+        "label": "La Liga gol krallığı",
+        "value": "Raphinha 12",
+        "detail": "Mbappé 9 golle 2., Lamine Yamal 8 gol ve 6 asistle 3. sırada.",
+        "source": "marca"
+      },
+      {
+        "label": "Mbappé – Barcelona",
+        "value": "10 maçta 12 gol",
+        "detail": "Kariyer toplamı, 10 Mayıs 2026 itibarıyla; 6 golü PSG formasıyla.",
+        "source": "nbc"
+      }
+    ],
+    "sections": [
+      {
+        "id": "favori",
+        "h3": "Favori kim? Opta'nın tahmini",
+        "paragraphs": [
+          "Opta'nın galibiyet olasılığı endeksi maç öncesinde Barcelona'ya %54,4, Real Madrid'e %26,1 şans verdi; kalan %19,5 beraberlik ihtimaliydi. Kâğıt üzerinde Barça açık favoriydi.",
+          "Ama El Clásico'da tahmin garanti değil: Goal.com'un aktardığı Opta verisine göre 2021'den bu yana oynanan son 11 lig El Clásico'sunun dördünü maç öncesi daha düşük şans verilen takım kazandı; ikisi Barça, ikisi Madrid.",
+          "Barça'yı tarihi bir eşik de bekliyordu: kazanırsa La Liga tarihinde sezona 10'da 10 ile başlayan ilk takım olacaktı. Rekoru o güne kadar paylaştığı takım ise Real Madrid'di (1968-69)."
+        ],
+        "sources": [
+          "goal",
+          "fcb"
+        ]
+      },
+      {
+        "id": "golculer",
+        "h3": "Golcüler düellosu: Raphinha, Mbappé, Yamal",
+        "paragraphs": [
+          "Raphinha 12 golle La Liga'nın en golcüsü olarak geldi; Mbappé'nin üç, Lamine Yamal'ın dört gol önündeydi.",
+          "Kylian Mbappé'nin Barcelona karşısındaki kariyer karnesi 10 maçta 12 gol; bunun altısı PSG formasıyla geldi. Bu sezon ligde 9 golü var.",
+          "19 yaşındaki Lamine Yamal ligde 8 gol, 6 asist üretti. Marca'ya göre bu yüzyılda ilk dokuz hafta sonunda ondan fazla gol atan İspanyol oyuncu yalnızca iki: David Villa ve Diego Costa. Bu maç, onun kariyerindeki onuncu ve Camp Nou'daki ilk El Clásico'su."
+        ],
+        "sources": [
+          "marca",
+          "nbc"
+        ]
+      },
+      {
+        "id": "eksikler",
+        "h3": "Eksikler: Vinícius cezalı, Flick'in savunması yaralı",
+        "paragraphs": [
+          "Real Madrid'de Vinícius Júnior, Villarreal maçında gördüğü kırmızı kart sonrası dört maç ceza aldı ve yoktu. Rodrygo, Ferland Mendy ve Raúl Asencio sakat; Thibaut Courtois da grip nedeniyle kadroda değildi.",
+          "Barcelona'da Andreas Christensen ve Eric García sakattı; Jules Koundé'nin ayak bileği sorunu nedeniyle risk alınmadı. PSG maçında sakatlanan Dani Olmo ve Roony Bardghji de yoktu. Üç savunmacısı eksik bir Barça, karşısında Barcelona'ya 10 maçta 12 gol atmış bir Mbappé buldu.",
+          "Barça bu maça, salı günü Paris'te PSG'ye 4-2 kaybettiği ve sezonun ilk yenilgisini aldığı maçın ardından çıktı."
+        ],
+        "sources": [
+          "fcb",
+          "nbc"
+        ]
+      },
+      {
+        "id": "kenar",
+        "h3": "Kenar düellosu: Flick ve Mourinho'nun dönüşü",
+        "paragraphs": [
+          "Barcelona'nın resmî sitesi de maçın en büyük konularından birinin José Mourinho'nun dönüşü olduğunu yazdı. Mourinho bir zamanlar bu kulüpte Bobby Robson'ın, sonra Louis van Gaal'ın yanında çalıştı; Real Madrid'den ayrılışının üzerinden 13 yıl geçtikten sonra yeniden Madrid'in başında.",
+          "Flick'in göreve gelmesinden bu yana oynanan yedi El Clásico'nun altısını Barcelona kazandı. Mourinho'yu bekleyen dağ büyüktü."
+        ],
+        "sources": [
+          "fcb",
+          "espn"
+        ]
+      },
+      {
+        "id": "taktik",
+        "h3": "Taktik beklenti",
+        "paragraphs": [
+          "ESPN muhabirlerinin beklentisi netti: Madrid topa daha az sahip olacak, savunmada sağlam ve kontrada acımasız olmak zorunda kalacaktı. Barça ise Rodri ve Pedri ile oyunu kontrol etmeye çalışacaktı.",
+          "Topu rakibe bırakıp bekleyerek vurmak Mourinho'nun bildiği oyun; karşısında ise topa hükmetmeyi kimlik edinmiş bir Barça vardı."
+        ],
+        "sources": [
+          "espn"
+        ]
+      },
+      {
+        "id": "tablo",
+        "h3": "Puan tablosuna etkisi",
+        "paragraphs": [
+          "Maç öncesinde fark 6 puandı. Barça kazanırsa fark sezonun daha 10. haftasında dokuz puana çıkacaktı; Madrid kazanırsa üçe inecekti."
+        ],
+        "sources": [
+          "fcb",
+          "espn"
+        ]
+      }
+    ]
   }
 }
