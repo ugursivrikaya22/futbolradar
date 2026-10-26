@@ -42,6 +42,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const client = require("../services/supabase/client.js");
 const normalize = require("../services/supabase/normalize.js");
 const { TABLES } = require("../services/supabase/schema.js");
+const { pollRowsFrom } = require("../services/supabase/pollRows.js");
 
 const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
@@ -253,43 +254,13 @@ async function ingestReports() {
 async function ingestPolls() {
   const raw = readJson("data/home-polls.json") || {};
   const entries = Array.isArray(raw) ? raw : (raw.polls || raw.items || []);
-  let pollRows = 0;
-  let optionRows = 0;
+  // İki dilli metin ve optionSource'tan türeyen seçenekler: services/supabase/pollRows.js
+  const { polls, options } = pollRowsFrom(raw, { teams: readJson("data/teams.json") || [] });
 
-  for (const entry of entries) {
-    const poll = entry.poll || entry;
-    const id = normalize.text(poll.id);
-    if (!id || !poll.startsAt || !poll.endsAt) continue;
+  if (!dryRun && polls.length) await client.upsert(TABLES.polls.name, polls, TABLES.polls.conflict);
+  if (!dryRun && options.length) await client.upsert(TABLES.pollOptions.name, options, TABLES.pollOptions.conflict);
 
-    const pollRow = {
-      id,
-      kind: normalize.text(poll.type) || "champion",
-      question_tr: normalize.text(poll.question),
-      question_en: normalize.text(poll.questionEn),
-      subtitle_tr: normalize.text(poll.subtitle),
-      subtitle_en: normalize.text(poll.subtitleEn),
-      starts_at: normalize.isoStamp(poll.startsAt),
-      ends_at: normalize.isoStamp(poll.endsAt)
-    };
-    if (!pollRow.question_tr || !pollRow.starts_at || !pollRow.ends_at) continue;
-
-    if (!dryRun) await client.upsert(TABLES.polls.name, [pollRow], TABLES.polls.conflict);
-    pollRows += 1;
-
-    const options = (poll.options || []).map((option, index) => ({
-      poll_id: id,
-      option_id: normalize.text(option.id),
-      label_tr: normalize.text(option.label),
-      label_en: normalize.text(option.labelEn),
-      team_id: option.team ? normalize.slug(option.team) : null,
-      sort_order: index
-    })).filter((row) => row.option_id && row.label_tr);
-
-    if (!dryRun && options.length) await client.upsert(TABLES.pollOptions.name, options, TABLES.pollOptions.conflict);
-    optionRows += options.length;
-  }
-
-  return { read: entries.length, written: dryRun ? 0 : pollRows + optionRows, skipped: 0 };
+  return { read: entries.length, written: dryRun ? 0 : polls.length + options.length, skipped: entries.length - polls.length };
 }
 
 const STEPS = {

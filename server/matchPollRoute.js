@@ -238,7 +238,11 @@ function presentTally(counts, question) {
     row.isLeader = !tied && row.votes === leaderVotes && leaderVotes > 0;
   }
 
-  return { total, results: rows };
+  // YALNIZCA YÜZDE. Ham oy sayıları ve toplam katılım okuyucuya gönderilmez
+  // (yayın kuralı: anket sonuçlarında katılımcı sayısı görünmez). Sayılar
+  // veritabanında kalır; istemci yalnızca yüzde ve "sonuç var mı" bilgisi alır.
+  const results = rows.map(({ votes, ...row }) => row);
+  return { hasVotes: total > 0, results };
 }
 
 async function readJsonBody(req) {
@@ -308,7 +312,7 @@ async function handleMatchPoll(req, res) {
     return sendSuccess(res, {
       storage: "none",
       slug: entry.slug,
-      questions: questions.map((question) => ({ ...question, total: 0, results: [], alreadyVoted: false, choice: null }))
+      questions: questions.map((question) => ({ ...question, hasVotes: false, results: [], alreadyVoted: false, choice: null }))
     }, SOURCE, null, { note: configurationHint() || "Oy deposu yapilandirilmamis." });
   }
 

@@ -163,7 +163,7 @@
           ' data-question="' + esc(question.id) + '" data-option="' + esc(option.id) + '">' +
           esc(option.label) + "</button>";
       }).join("") + "</div>";
-    } else if (!question.total) {
+    } else if (!question.hasVotes) {
       body = '<p class="fan-poll-empty muted-copy">' + esc(question.closed ? text.closed : text.noVotes) + "</p>";
     } else {
       body = '<ul class="fan-poll-results">' + question.results.map(function (row) {
@@ -171,11 +171,11 @@
         return '<li class="fan-poll-result' + (row.isLeader ? " is-leader" : "") + (mine ? " is-mine" : "") + '">' +
           '<span class="fan-poll-result-head"><span>' + esc(row.label) + "</span>" +
           "<b>%" + esc(row.percent) + "</b></span>" +
-          '<span class="fan-poll-bar"><i style="width:' + Number(row.percent) + '%"></i></span>' +
-          '<small>' + esc(row.votes) + " " + esc(text.votes) + "</small></li>";
+          '<span class="fan-poll-bar"><i style="width:' + Number(row.percent) + '%"></i></span></li>';
       }).join("") + "</ul>" +
-        '<p class="fan-poll-total muted-copy">' + esc(question.total) + " " + esc(text.votes) +
-        (question.closed ? " · " + esc(text.closed) : question.alreadyVoted ? " · " + esc(text.voted) : "") + "</p>";
+        // Oy sayısı yazılmaz; yalnızca durum notu (kapandı / oy verdin).
+        (question.closed ? '<p class="fan-poll-total muted-copy">' + esc(text.closed) + "</p>"
+          : question.alreadyVoted ? '<p class="fan-poll-total muted-copy">' + esc(text.voted) + "</p>" : "");
     }
 
     return '<article class="fan-poll-question" data-fan-question="' + esc(question.id) + '">' +

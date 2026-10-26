@@ -161,7 +161,11 @@ function presentTally(counts) {
     row.isLeader = !tied && row.votes === leaderVotes && leaderVotes > 0;
   }
 
-  return { total, results: rows };
+  // YALNIZCA YÜZDE. Ham oy sayıları ve toplam katılım okuyucuya gönderilmez
+  // (yayın kuralı: anket sonuçlarında katılımcı sayısı görünmez). Sayılar
+  // veritabanında kalır; istemci yalnızca yüzde ve "sonuç var mı" bilgisi alır.
+  const results = rows.map(({ votes, ...row }) => row);
+  return { hasVotes: total > 0, results };
 }
 
 async function handleMatchWinnerVote(req, res) {
@@ -186,7 +190,7 @@ async function handleMatchWinnerVote(req, res) {
     // Depo yoksa anket GÖSTERİLİR ama oy alınmaz: soru statik veriden
     // geliyor, sayım gerçek bir depodan gelmek zorunda.
     return sendSuccess(res, {
-      storage: "unavailable", poll: pollPayload(), votingOpen: open, alreadyVoted: false, choice: null, results: [], total: 0
+      storage: "unavailable", poll: pollPayload(), votingOpen: open, alreadyVoted: false, choice: null, results: [], hasVotes: false
     }, SOURCE, null, {
       note: "Oy deposu yapilandirilmamis; anket salt okunur.",
       configuration: configurationHint()
@@ -239,7 +243,7 @@ async function handleMatchWinnerVote(req, res) {
   } catch (error) {
     // Depo arızası anketi KIRMAZ: istemci cihaz-yerel kipe düşer.
     return sendSuccess(res, {
-      storage: "unavailable", poll: pollPayload(), votingOpen: open, alreadyVoted: false, choice: null, results: [], total: 0
+      storage: "unavailable", poll: pollPayload(), votingOpen: open, alreadyVoted: false, choice: null, results: [], hasVotes: false
     }, SOURCE, null, { note: "Oy deposuna ulasilamadi; anket cihaz-yerel kipte calisiyor." });
   }
 }
