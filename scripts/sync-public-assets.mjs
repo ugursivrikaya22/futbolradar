@@ -52,6 +52,8 @@ for (const file of [
   "home-ticker.css",
   "home-ticker.js",
   "home-columns.js",
+  "tarihte-bugun-futbolda.js",
+  "tarihte-bugun-futbolda.css",
   "site.webmanifest",
   "404.html",
   "index.html",
@@ -92,7 +94,8 @@ for (const file of [
   "super-lig-fixtures.json",
   "teams.json",
   "transfers.json",
-  "update-status.json"
+  "update-status.json",
+  "tarihte-bugun-futbolda.json"
 ]) {
   copyGeneratedFile(path.join(root, "data", file), path.join(publicDir, "data", file));
 }
