@@ -21,6 +21,7 @@ const { handleLiveLatency } = require("../server/liveLatencyRoute");
 const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
 const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
+const { handleCron } = require("../server/cronRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -405,6 +406,12 @@ module.exports = async function handler(req, res) {
   // yalnızca okuma yöntemlerine (GET/HEAD) izin veriyor.
   if (routeName(req) === "push-subscribe") {
     return handlePushSubscription(req, res);
+  }
+
+  // Vercel Cron işleri (server/cronRoute.js): CRON_SECRET doğrulaması,
+  // kendi no-store politikası; alttaki genel okuma kapısına sokulmaz.
+  if (routeName(req) === "cron") {
+    return handleCron(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {
