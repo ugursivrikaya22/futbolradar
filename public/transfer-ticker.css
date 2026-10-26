@@ -1,0 +1,25 @@
+/* Ana sayfa üst "Transfer Gündemi" kayan yazısı (transfer-ticker.js).
+   Sabit yükseklik: veri gelince yerleşim kaymaz. */
+.fr-ticker{--fr-ticker-h:40px;position:relative;height:var(--fr-ticker-h);overflow:hidden;background:#0f172a;color:#e2e8f0;border-bottom:1px solid rgba(148,163,184,.25);font-size:13px;line-height:var(--fr-ticker-h)}
+.fr-ticker[hidden]{display:none}
+.fr-ticker__inner{display:flex;align-items:stretch;height:100%;max-width:1280px;margin:0 auto}
+.fr-ticker__label{flex:0 0 auto;display:flex;align-items:center;margin:0;padding:0 10px;font-size:12px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:#fff;background:#b91c1c;white-space:nowrap}
+.fr-ticker__viewport{position:relative;flex:1 1 auto;min-width:0;overflow:hidden}
+.fr-ticker__track{display:flex;width:max-content;height:100%;animation:fr-ticker-scroll var(--fr-ticker-duration,60s) linear infinite;will-change:transform}
+.fr-ticker:hover .fr-ticker__track,.fr-ticker:focus-within .fr-ticker__track{animation-play-state:paused}
+.fr-ticker__group{display:flex;align-items:center;gap:0;margin:0;padding:0;list-style:none;white-space:nowrap}
+.fr-ticker__item{display:inline-flex;align-items:center;gap:6px;padding:0 18px;height:100%;border-right:1px solid rgba(148,163,184,.25)}
+.fr-ticker__badge{display:inline-block;padding:0 6px;border-radius:3px;font-size:10px;font-weight:800;line-height:18px;letter-spacing:.03em;color:#0f172a;background:#fbbf24}
+.fr-ticker__badge--resmi{background:#22c55e}
+.fr-ticker__badge--imza{background:#38bdf8}
+.fr-ticker__league{color:#94a3b8;font-size:11px;font-weight:700}
+.fr-ticker__text{color:#f8fafc}
+.fr-ticker__source{color:#93c5fd;font-size:11px;text-decoration:underline;text-underline-offset:2px}
+.fr-ticker__source:hover,.fr-ticker__source:focus-visible{color:#fff}
+@keyframes fr-ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (min-width:768px){.fr-ticker{--fr-ticker-h:42px;font-size:14px}.fr-ticker__label{padding:0 16px}}
+@media (prefers-reduced-motion:reduce){
+  .fr-ticker__viewport{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .fr-ticker__track{animation:none;transform:none}
+  .fr-ticker__group[aria-hidden="true"]{display:none}
+}
