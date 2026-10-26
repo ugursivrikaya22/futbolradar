@@ -143,7 +143,8 @@ function relatedLinksHtml(entry) {
     ["./puan-durumu.html", "Tüm ligler — puan durumu merkezi"],
     ["./lig/" + entry.id + ".html", `${entry.nameTr} fikstür ve sonuçlar`],
     ["./bugunun-maclari.html", "Bugünün maçları"],
-    ["./mac-merkezi.html", "Maç merkezi"]
+    ["./mac-merkezi.html", "Maç merkezi"],
+    ...(entry.id === "la-liga" ? [["./el-clasico-barcelona-real-madrid", "El Clásico: Barcelona – Real Madrid rehberi"]] : [])
   ];
   return `<aside class="evergreen-related" aria-labelledby="related-heading"><h2 id="related-heading">Puan durumundan devam edin</h2><div class="evergreen-link-grid">${links.map(([href, label]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join("")}</div></aside>`;
 }

@@ -374,6 +374,51 @@ function clusterLinksHtml(column, locale, base) {
   return `<nav class="article-sources column-cluster-links" aria-labelledby="column-cluster-title"><h2 id="column-cluster-title">Bu yazıyla ilgili maç ve puan durumu</h2><ul>${links.map((link) => `<li><a href="${escapeHtml(link.href)}">${escapeHtml(link.text)}</a></li>`).join("")}</ul></nav>`;
 }
 
+/**
+ * TABLO SATIRI: `|` ile başlayan gövde satırı bir istatistik tablosudur.
+ * Satırlar `\n` ile, hücreler `|` ile ayrılır; ilk satır başlıktır. İsteğe
+ * bağlı ilk satır `|! Başlık` tablo başlığını (caption) verir. Hücreler aynı
+ * satır içi işaretlemeden (kalın, iç bağlantı, [n] kaynak) geçer. Dar
+ * ekranlarda tablo kendi kabında yatay kayar; sayfa taşmaz.
+ */
+function tableHtml(line, base, sources) {
+  const rows = line.split("\n").map((row) => row.trim()).filter(Boolean);
+  let caption = "";
+  if (rows[0] && rows[0].startsWith("|!")) caption = rows.shift().slice(2).trim();
+  const cells = (row) => row.replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+  const [head, ...bodyRows] = rows.map(cells);
+  if (!head) return "";
+  const th = head.map((cell) => `<th scope="col">${inlineText(cell, base, sources)}</th>`).join("");
+  const tr = bodyRows.map((row) => `<tr>${row.map((cell) => `<td>${inlineText(cell, base, sources)}</td>`).join("")}</tr>`).join("");
+  return `<div class="column-table-wrap" style="overflow-x:auto"><table class="column-table">${caption ? `<caption>${escapeHtml(caption)}</caption>` : ""}<thead><tr>${th}</tr></thead><tbody>${tr}</tbody></table></div>`;
+}
+
+/**
+ * MAÇ ÖNÜ/SONU YAZISI İÇİN SportsEvent — yalnızca yazı `sportsEvent` alanı
+ * taşıyorsa. Tarih, saha ve durum elle doğrulanıp yazılır; alan yoksa hiçbir
+ * şey basılmaz (uydurma etkinlik verisi üretilmez).
+ */
+function sportsEventJsonLd(event) {
+  if (!event || !event.name || !event.startDate || !event.home || !event.away) return null;
+  const status = { scheduled: "EventScheduled", postponed: "EventPostponed", cancelled: "EventCancelled", rescheduled: "EventRescheduled" }[event.status] || "EventScheduled";
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "SportsEvent",
+    name: event.name,
+    startDate: event.startDate,
+    eventStatus: `https://schema.org/${status}`,
+    eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+    sport: "Football",
+    homeTeam: { "@type": "SportsTeam", name: event.home },
+    awayTeam: { "@type": "SportsTeam", name: event.away },
+    competitor: [{ "@type": "SportsTeam", name: event.home }, { "@type": "SportsTeam", name: event.away }]
+  };
+  if (event.venue) ld.location = { "@type": "Place", name: event.venue, address: { "@type": "PostalAddress", addressLocality: event.city || "", addressCountry: event.country || "" } };
+  if (event.competition) ld.superEvent = { "@type": "SportsEvent", name: event.competition };
+  if (event.description) ld.description = event.description;
+  return ld;
+}
+
 export function columnPageHtml(column, locale = "tr") {
   const copy = PAGE_STRINGS[locale === "en" ? "en" : "tr"];
   const url = publicUrl(column.path);
@@ -414,6 +459,7 @@ export function columnPageHtml(column, locale = "tr") {
     if (line.startsWith("## ")) {
       return `<h2>${inlineText(line.slice(3).trim(), base)}</h2>`;
     }
+    if (line.startsWith("|")) return tableHtml(line, base, column.sources);
     return `<p>${inlineText(line, base, column.sources)}</p>`;
   }).join("\n        ");
 
@@ -443,6 +489,8 @@ export function columnPageHtml(column, locale = "tr") {
     inLanguage: copy.inLanguage
   };
 
+  const eventLd = locale === "en" ? null : sportsEventJsonLd(column.sportsEvent);
+
   return `<!doctype html>
 <html lang="${copy.lang}">
   <head>
@@ -471,6 +519,7 @@ export function columnPageHtml(column, locale = "tr") {
     <link rel="manifest" href="${base}site.webmanifest" />
     <link rel="stylesheet" href="${base}page.css" />
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    ${eventLd ? `<script type="application/ld+json">${JSON.stringify(eventLd)}</script>` : ""}
   </head>
   <body class="subpage column-page">
     ${siteHeader({ base, locale })}

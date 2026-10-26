@@ -118,7 +118,9 @@ const winnerQuestion = route.buildQuestions(entry, "tr", kickoffMs - 3600000)[0]
 
 ok("yüzdeler ve lider doğru hesaplanır", () => {
   const tally = route.presentTally({ home: 20, draw: 37, away: 81 }, winnerQuestion);
-  assert.equal(tally.total, 138);
+  assert.equal(tally.hasVotes, true);
+  assert.ok(!("total" in tally), "toplam oy sayısı dönmemeli");
+  assert.ok(tally.results.every((row) => !("votes" in row)), "satırda oy sayısı olmamalı");
   assert.equal(tally.results[0].optionId, "away");
   assert.equal(tally.results[0].percent, 59);
   assert.equal(tally.results[0].isLeader, true);
@@ -134,13 +136,13 @@ ok("beraberlikte lider işareti verilmez", () => {
 ok("geçersiz seçenek satırı sayıma girmez", () => {
   // Soru değişmiş olabilir; depoda kalan eski seçenek toplamı şişirmemeli.
   const tally = route.presentTally({ away: 10, "eski-secenek": 999 }, winnerQuestion);
-  assert.equal(tally.total, 10);
+  assert.equal(tally.results[0].percent, 100);
   assert.equal(tally.results.length, 1);
 });
 
 ok("oy yoksa sayım boştur", () => {
   const tally = route.presentTally({}, winnerQuestion);
-  assert.equal(tally.total, 0);
+  assert.equal(tally.hasVotes, false);
   assert.deepEqual(tally.results, []);
 });
 
@@ -154,7 +156,7 @@ const baseQuestion = {
   closed: false,
   alreadyVoted: false,
   choice: null,
-  total: 0,
+  hasVotes: false,
   results: [],
   options: [
     { id: "home", label: "Gaziantep FK" },
@@ -174,25 +176,26 @@ ok("oy verilmişse sonuç çizilir ve kendi oyu işaretlenir", () => {
     ...baseQuestion,
     alreadyVoted: true,
     choice: "away",
-    total: 138,
+    hasVotes: true,
     results: [
-      { optionId: "away", label: "Fenerbahçe", votes: 81, percent: 59, isLeader: true },
-      { optionId: "home", label: "Gaziantep FK", votes: 20, percent: 14, isLeader: false }
+      { optionId: "away", label: "Fenerbahçe", percent: 59, isLeader: true },
+      { optionId: "home", label: "Gaziantep FK", percent: 14, isLeader: false }
     ]
   }, "tr");
   assert.equal(html.includes("data-fan-vote"), false, "oy verdikten sonra düğme kalmamalı");
   assert.match(html, /is-mine/);
   assert.match(html, /%59/);
+  assert.equal(/\d+\s*oy\b/.test(html), false, "sonuçta oy sayısı metni olmamalı");
 });
 
 ok("sıfır oyda yüzde BASILMAZ", () => {
-  const html = fan.questionHtml({ ...baseQuestion, alreadyVoted: true, total: 0, results: [] }, "tr");
+  const html = fan.questionHtml({ ...baseQuestion, alreadyVoted: true, hasVotes: false, results: [] }, "tr");
   assert.equal(/%\d/.test(html), false, "'%0' ölçülmüş bir oran değil, boş kümenin yanlış okunuşudur");
   assert.match(html, /Henüz oy yok/);
 });
 
 ok("kapalı soruda düğme yok, durum yazılı", () => {
-  const html = fan.questionHtml({ ...baseQuestion, closed: true, total: 0 }, "tr");
+  const html = fan.questionHtml({ ...baseQuestion, closed: true, hasVotes: false }, "tr");
   assert.equal(html.includes("data-fan-vote"), false);
   assert.match(html, /Bu soru kapandı/);
 });

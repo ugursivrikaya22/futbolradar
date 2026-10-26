@@ -50,7 +50,7 @@ async function runVote(response, status = 200) {
 }
 
 test('only a persisted vote emits success', async () => {
-  const q = { ...question, alreadyVoted: true, choice: 'draw', total: 1,
+  const q = { ...question, alreadyVoted: true, choice: 'draw', total: 1, hasVotes: true,
     results: [{ optionId: 'draw', label: 'Draw', votes: 1, percent: 100 }] };
   const result = await runVote(payload(q));
   assert.equal(result.events.filter(e => e[1] === 'fan_vote').length, 1);

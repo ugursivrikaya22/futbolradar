@@ -56,7 +56,11 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // Official match reports used to verify historical fixture identities.
     "liverpoolfc.com",
     "atleticobaleares.com",
-    "raal.be"
+    "raal.be",
+    // El Clásico (25 Ekim 2026) yazısı: kadro, sakatlık ve resmî transfer
+    // duyuruları iki kulübün kendi sitelerinden doğrulandı.
+    "fcbarcelona.com",
+    "realmadrid.com"
   ]),
 
   // Existing calendar provider: retain its event citation when archiving a match.
@@ -95,6 +99,7 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "yenisafak.com",
     "sabah.com.tr",
     "aspor.com.tr",
+    "milligazete.com.tr", // Dated El Clásico broadcast-time report (S Sport) used on the El Clásico guide.
     "trtspor.com.tr",
     "trt1.com.tr", // The broadcaster's own dated programme, checked for match-specific TV information.
     "tabii.com", // TRT's official streaming platform for the match broadcast.
@@ -144,6 +149,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "nbcsports.com",
     "sports.yahoo.com",
     "corrieredellosport.it",
+    // İspanya'nın köklü spor gazeteleri; El Clásico ikili rekabet tablosu
+    // (AS) ve kadro listesi (Marca) için BİLİNÇLİ eklendi (25 Ekim 2026).
+    "as.com",
+    "marca.com",
     // Yle: Finlandiya kamu yayıncısı; Avrupa kupası maçlarında (ör.
     // KuPS–Trabzonspor) Fin tarafının birincil maç raporu için BİLİNÇLİ
     // eklendi (19 Ekim 2026).
