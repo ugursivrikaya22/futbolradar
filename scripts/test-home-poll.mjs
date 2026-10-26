@@ -342,7 +342,7 @@ console.log("home-poll");
       assert.equal(response.payload.error.code, "OPTION_NOT_IN_POLL");
     }
     const after = await invoke(handler);
-    assert.equal(after.payload.data.total, 0, "reddedilen oy sayıma girmiş");
+    assert.equal(after.payload.data.hasVotes, false, "reddedilen oy sayıma girmiş");
   }
 
   // Geçerli oy sayılır, yüzde GERÇEK toplamdan hesaplanır, lider işaretlenir.
@@ -352,14 +352,17 @@ console.log("home-poll");
 
     const first = await invoke(handler, { method: "POST", body: { optionId: options[0].id }, ip: "1.1.1.1" });
     assert.equal(first.payload.data.counted, true);
-    assert.equal(first.payload.data.total, 1);
+    assert.equal(first.payload.data.hasVotes, true);
+    // YALNIZCA YÜZDE: yanıt toplam katılımı ya da satır başı oy sayısını taşımamalı.
+    assert.ok(!("total" in first.payload.data), "yanıt toplam oy sayısı taşımamalı");
+    assert.ok(first.payload.data.results.every((row) => !("votes" in row)), "sonuç satırı oy sayısı taşımamalı");
     assert.equal(first.payload.data.results[0].percent, 100);
     assert.equal(first.payload.data.results[0].isLeader, true, "tek oy alan lider olmalı");
     assert.equal(first.payload.data.choice, options[0].id, "istemci kendi oyunu görebilmeli");
 
     // Farklı seçmen ikinci seçeneğe oy versin: BERABERLİKTE lider YOK.
     const second = await invoke(handler, { method: "POST", body: { optionId: options[1].id }, ip: "2.2.2.2" });
-    assert.equal(second.payload.data.total, 2);
+    assert.equal(second.payload.data.results[0].percent, 50);
     assert.ok(!second.payload.data.results.some((row) => row.isLeader),
       "beraberlikte lider işareti verilmemeli");
 
@@ -385,7 +388,7 @@ console.log("home-poll");
       method: "POST", body: { optionId: options[1].id }, cookie, ip: "9.9.9.9"
     });
     assert.equal(again.payload.data.counted, false, "aynı tarayıcı ikinci kez sayılmamalı");
-    assert.equal(again.payload.data.total, 1, "ikinci oy toplamı artırmamalı");
+    assert.equal(again.payload.data.results[0].percent, 100, "ikinci oy sayımı değiştirmemeli");
 
     // Çerez SİLİNSE bile aynı IP tanınır (tuz tanımlıysa).
     const saltSaved = process.env.HOME_POLL_IP_SALT;
@@ -798,7 +801,7 @@ console.log("home-poll");
     const upcoming = response.payload.data.polls.find((entry) => entry.status === "upcoming");
     assert.ok(upcoming.options.length >= 18, "planlanan ankette seçenekler görünmeli");
     assert.deepEqual(upcoming.results, []);
-    assert.equal(upcoming.total, 0);
+    assert.equal(upcoming.hasVotes, false);
   }
 
   // Liste kipi POST kabul etmez: oy vermek her zaman tekil yoldan geçer,
@@ -1270,7 +1273,7 @@ console.log("home-poll");
   // Paylaşım bir OY DEĞİL: sayaç isteği oy sayımına dokunmamalı.
   {
     const response = await invoke(handler, { url: "/api/home-poll?pollId=sabit-acik" });
-    assert.equal(response.payload.data.total, 0, "paylaşım sayacı oy sayımına yazmış");
+    assert.equal(response.payload.data.hasVotes, false, "paylaşım sayacı oy sayımına yazmış");
   }
 
   delete require.cache[POLLS_PATH];
