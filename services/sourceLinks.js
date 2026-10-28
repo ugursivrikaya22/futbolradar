@@ -153,6 +153,12 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // (AS) ve kadro listesi (Marca) için BİLİNÇLİ eklendi (25 Ekim 2026).
     "as.com",
     "marca.com",
+    // Galatasaray 2-1 Fenerbahçe (26 Ekim 2026) maç sonu yazısı: BBC Sport
+    // (sonuç, istatistik), Cumhuriyet (dakika dakika anlatım) ve Transfermarkt
+    // (puan durumu) BİLİNÇLİ eklendi (26 Ekim 2026).
+    "bbc.com",
+    "cumhuriyet.com.tr",
+    "transfermarkt.com.tr",
     // Yle: Finlandiya kamu yayıncısı; Avrupa kupası maçlarında (ör.
     // KuPS–Trabzonspor) Fin tarafının birincil maç raporu için BİLİNÇLİ
     // eklendi (19 Ekim 2026).

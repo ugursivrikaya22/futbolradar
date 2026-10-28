@@ -58,6 +58,18 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   const fresh = { ...base, id: "yeni", date: "2026-10-19T09:00:00+03:00", expiresAt: "2026-10-30T00:00:00+03:00" };
   const { items } = selectHomeTickerItems([expired, base, fresh], { now: NOW });
   assert.deepEqual(items.map((i) => i.id), ["yeni", "ornek-kayit"], "süresi geçen düşer, en yeni önce");
+  // Son dakika (breaking) öğesi: doğrulama, sıralama ve işaretleme.
+  assert.ok(errs({ breaking: "evet" }).some((m) => /breaking boolean/.test(m)), "breaking boolean olmalı");
+  assert.ok(errs({ breaking: true, expiresAt: undefined }).some((m) => /expiresAt taşımalı/.test(m)), "breaking öğe süresiz olamaz");
+  {
+    const older = { ...base, id: "son-dakika", breaking: true, date: "2026-10-01T10:00:00+03:00", expiresAt: "2026-12-31T23:59:59+03:00" };
+    const newer = { ...base, id: "normal-yeni", date: "2026-10-17T10:00:00+03:00" };
+    const picked = selectHomeTickerItems([newer, older], { now: NOW }).items;
+    assert.deepEqual(picked.map((i) => i.id), ["son-dakika", "normal-yeni"], "breaking öğe en başta");
+    const bhtml = renderHomeTicker(picked);
+    assert.ok(/class="home-ticker__item home-ticker__item--breaking"[^>]*><span class="home-ticker__tag">Son dakika<\/span>/.test(bhtml), "breaking öğe vurgulu sınıf ve Son dakika etiketi taşımalı");
+    assert.equal((bhtml.match(/home-ticker__item--breaking/g) || []).length, 2, "iki kopyada da vurgulu");
+  }
   assert.equal(selectHomeTickerItems([expired], { now: NOW }).items.length, 0);
   assert.equal(renderHomeTicker([]), "", "öğe yoksa bant hiç basılmaz");
 }
@@ -84,6 +96,7 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   assert.ok(/\.home-ticker__group\[aria-hidden="true"\][^{]*\{[^}]*display:\s*none/.test(reduced), "hareket azaltmada kopya gizlenmeli");
   assert.ok(/\.home-ticker__inner\s*\{[^}]*min-height:\s*44px/.test(css), "yükseklik rezerve edilmeli (CLS)");
   assert.ok(/viewport:hover[\s\S]*?animation-play-state:\s*paused/.test(css), "hover/odakta durmalı");
+  assert.ok(/\.home-ticker__item--breaking\s*\{[^}]*animation:\s*none/.test(reduced), "hareket azaltmada son dakika nabzı kapanmalı");
 }
 
 // ── 5. Gerçek veri, ana sayfa yuvası, service worker ─────────────────────────

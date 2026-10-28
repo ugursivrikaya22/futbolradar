@@ -16,6 +16,9 @@
  *   • sourceUrl alan adı services/sourceLinks.js beyaz listesinde olmalı.
  *   • url isteğe bağlı; verilirse site içi olmalı ("/..." ya da
  *     futbolradar.com). Dış bağlantı yalnızca kaynak künyesidir.
+ *   • breaking isteğe bağlı (boolean). true ise öğe kırmızı "Son dakika"
+ *     vurgusuyla ve listenin başında basılır; yalnızca resmî kaynağı olan
+ *     gerçekten acil gelişmeler için kullanılır, mutlaka expiresAt taşır.
  *   • expiresAt isteğe bağlı; geçmişse öğe gizlenir. Geleceğe tarihli `date`
  *     (yanlış giriş) reddedilir.
  */
@@ -67,6 +70,8 @@ function validateTickerEntry(item, options = {}) {
   if (!/^https?:\/\//i.test(item.sourceUrl)) errors.push("sourceUrl http(s) olmalı");
   else if (!isAllowedSourceHost(hostOf(item.sourceUrl))) errors.push(`sourceUrl alan adı beyaz listede değil: ${hostOf(item.sourceUrl)}`);
   if (item.url !== undefined && item.url !== null && item.url !== "" && !isInternalUrl(item.url)) errors.push("url site içi olmalı");
+  if (item.breaking !== undefined && typeof item.breaking !== "boolean") errors.push("breaking boolean olmalı");
+  if (item.breaking === true && !item.expiresAt) errors.push("breaking öğe expiresAt taşımalı");
   if (item.expiresAt !== undefined && item.expiresAt !== null && item.expiresAt !== "") {
     if (!ISO_WITH_ZONE.test(item.expiresAt) || !Number.isFinite(Date.parse(item.expiresAt))) errors.push("expiresAt saat dilimli ISO 8601 olmalı");
     else if (ISO_WITH_ZONE.test(item.date) && Date.parse(item.expiresAt) < Date.parse(item.date)) errors.push("expiresAt, date'ten önce");
@@ -101,7 +106,9 @@ function selectHomeTickerItems(items, options = {}) {
     if (isExpired(item, nowMs)) continue;
     active.push(item);
   }
-  active.sort((left, right) => Date.parse(right.date) - Date.parse(left.date));
+  // Son dakika (breaking) öğeleri önce, sonra en yeni önce.
+  active.sort((left, right) => (Number(right.breaking === true) - Number(left.breaking === true))
+    || (Date.parse(right.date) - Date.parse(left.date)));
   return { items: active.slice(0, limit), rejected };
 }
 
