@@ -23,6 +23,12 @@ export function buildDecision(env = process.env, cwd = process.cwd()) {
   if (!/^[a-f0-9]{40}$/i.test(previous || "") || !/^[a-f0-9]{40}$/i.test(current || "")) {
     return { build: true, reason: "deployment comparison unavailable" };
   }
+  // Aynı commit'in yeniden derlenmesi = Deploy Hook (Vercel Cron veri
+  // tazelemesi, bkz. docs/vercel-cron.md). Fark boş olduğu için aşağıdaki
+  // kural bunu atlardı; taze veri prebuild'de Supabase'ten okunur.
+  if (previous.toLowerCase() === current.toLowerCase()) {
+    return { build: true, reason: "same commit redeploy (deploy hook data refresh)" };
+  }
   try {
     const files = execFileSync("git", ["diff", "--no-renames", "--name-only", "-z", previous, current, "--"], {
       cwd, encoding: "utf8", timeout: 15000, maxBuffer: 16 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"]
