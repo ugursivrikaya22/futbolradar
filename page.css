@@ -24373,3 +24373,19 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
 @media (min-width: 721px) {
   .home-featured-column__note-text { font-size: var(--fs-base); padding: var(--sp-3) var(--sp-6); }
 }
+
+/* Mobil dokunma hedefleri (WCAG 2.2 AA 2.5.8: en az 24x24 CSS px).
+   390px denetiminde 17-20px yüksekliğinde kalan satır içi linkler. */
+@media (max-width: 760px) {
+  .breadcrumb a,
+  .footer-links a,
+  .team-recent-transfers-head a,
+  .team-card-player a,
+  .stats-group-head a,
+  .stats-match-grid article a,
+  .evergreen-table th a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+}
