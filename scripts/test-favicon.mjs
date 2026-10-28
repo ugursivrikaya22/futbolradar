@@ -136,8 +136,11 @@ function pngSize(file) {
       `${relative}: 48×48 PNG bildirimi yok`);
     assert.match(head, /<link rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png" \/>/,
       `${relative}: apple-touch-icon yok`);
-    assert.match(head, /<link rel="manifest" href="\/site\.webmanifest" \/>/,
-      `${relative}: manifest bildirimi kök-mutlak değil`);
+    const manifestRe = relative.startsWith(`en${path.sep}`)
+      ? /<link rel="manifest" href="\/en\/site\.webmanifest" \/>/
+      : /<link rel="manifest" href="\/site\.webmanifest" \/>/;
+    assert.match(head, manifestRe, `${relative}: manifest bildirimi dile uygun ve kök-mutlak değil`);
+    assert.equal((head.match(/<link rel="manifest"/g) || []).length, 1, `${relative}: birden fazla manifest bildirimi`);
 
     // GÖRELİ ADRES KALMAMALI: eski üretici satırları sökülmüş olmalı.
     const relativeIcons = head.match(/<link rel="(?:icon|apple-touch-icon|manifest)"[^>]*href="(?!\/)[^"]*"/g) || [];
@@ -169,6 +172,15 @@ function pngSize(file) {
   const raster = manifest.icons.filter((icon) => icon.type === "image/png");
   assert.ok(raster.some((icon) => icon.sizes === "192x192"), "manifest: 192×192 yok");
   assert.ok(raster.some((icon) => icon.sizes === "512x512"), "manifest: 512×512 yok");
+
+  const en = JSON.parse(fs.readFileSync(path.join(root, "en", "site.webmanifest"), "utf8"));
+  assert.equal(manifest.lang, "tr", "TR manifest: lang tr kalmalı");
+  assert.equal(en.lang, "en", "EN manifest: lang en değil");
+  assert.equal(en.start_url, "/en", "EN manifest: start_url /en değil");
+  assert.ok(en.start_url.startsWith(en.scope), "EN manifest: start_url kapsam dışında");
+  assert.notEqual(en.id, manifest.id, "EN manifest: id TR ile aynı");
+  assert.equal(en.name, manifest.name, "EN manifest: ad farklı");
+  assert.deepEqual(en.icons, manifest.icons, "EN manifest: ikonlar TR ile aynı olmalı");
 }
 
 // ── 5b. Organization LOGOSU RASTER ────────────────────────────────────────
@@ -222,7 +234,7 @@ function pngSize(file) {
 {
   const publicDir = path.join(root, "public");
   if (fs.existsSync(publicDir)) {
-    for (const name of ["favicon.ico", "favicon.svg", "favicon-48x48.png", "favicon-512x512.png", "apple-touch-icon.png", "site.webmanifest"]) {
+    for (const name of ["favicon.ico", "favicon.svg", "favicon-48x48.png", "favicon-512x512.png", "apple-touch-icon.png", "site.webmanifest", path.join("en", "site.webmanifest")]) {
       const mirror = path.join(publicDir, name);
       assert.ok(fs.existsSync(mirror), `public/${name}: ayna eksik`);
       assert.ok(fs.readFileSync(mirror).equals(fs.readFileSync(path.join(root, name))),

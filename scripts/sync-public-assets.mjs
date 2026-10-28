@@ -53,6 +53,7 @@ for (const file of [
   "home-ticker.js",
   "home-columns.js",
   "site.webmanifest",
+  "en/site.webmanifest",
   "404.html",
   "index.html",
   "admin-updates.html",
