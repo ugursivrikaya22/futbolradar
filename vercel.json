@@ -5,6 +5,12 @@
   "ignoreCommand": "node scripts/vercel-continue-build.mjs",
   "installCommand": "npm ci --include=dev && node scripts/install-browser.mjs",
   "outputDirectory": ".",
+  "crons": [
+    {
+      "path": "/api/cron-on-this-day",
+      "schedule": "0 0 * * *"
+    }
+  ],
   "git": {
     "deploymentEnabled": {
       "**": false,
@@ -19,6 +25,11 @@
     {
       "source": "/ulke-puanlari",
       "destination": "/uefa-ulke-puani-siralamasi.html",
+      "permanent": true
+    },
+    {
+      "source": "/tarih/:slug.html",
+      "destination": "/tarih/:slug",
       "permanent": true
     },
     {
@@ -4806,6 +4817,10 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/tarih/:slug",
+      "destination": "/tarih/:slug.html"
+    },
     {
       "source": "/tarihte-bugun",
       "destination": "/tarihte-bugun.html"

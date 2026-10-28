@@ -22,6 +22,7 @@ const { handleDailyHealthCheck } = require("../server/dailyHealthCheckRoute");
 const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
 const { handleColumnsPublish } = require("../server/columnsPublishRoute");
+const { handleOnThisDayCron } = require("../server/onThisDayCronRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -411,6 +412,11 @@ module.exports = async function handler(req, res) {
   // Köşe yazısı yayın uç noktası: yalnızca POST, EDITOR_TOKEN ile korunur.
   if (routeName(req) === "columns-publish") {
     return handleColumnsPublish(req, res);
+  }
+
+  // Tarihte Bugün günlük cron'u: CRON_SECRET ile korunur, hiçbir şey yazmaz.
+  if (routeName(req) === "cron-on-this-day") {
+    return handleOnThisDayCron(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {

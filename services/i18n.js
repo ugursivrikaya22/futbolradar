@@ -469,7 +469,8 @@ const NAV_KEYS = Object.freeze({
       { href: "gol-kralligi.html", key: "nav.topScorers" },
       { href: "haberler.html", key: "nav.news" },
       { href: "anketler.html", key: "nav.polls" },
-      { href: "milli-takim.html", key: "nav.nationalTeam" }
+      { href: "milli-takim.html", key: "nav.nationalTeam" },
+      { href: "tarihte-bugun.html", key: "nav.onThisDay" }
     ]
   },
   // İNGİLİZCE MENÜ TÜRKÇEYLE AYNI YÜZEYİ, AYNI SIRAYLA AÇAR.

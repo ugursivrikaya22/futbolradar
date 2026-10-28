@@ -1,8 +1,202 @@
 {
-  "_comment": "Türetilmiş dosya — scripts/generate-on-this-day-pages.mjs üretir; elle düzenlenmez. Yalnız depodaki doğrulanmış maç arşivi.",
-  "source": "data/season-archive.json",
-  "today": "2026-10-20",
-  "monthDay": "10-20",
-  "count": 0,
-  "entries": []
+  "_comment": "ELLE DOĞRULANMIŞ 'Tarihte Bugün' olayları. Her kayıt kaynak bağlantısı taşır (source_url zorunlu); yalnız verified=true kayıtlar yayınlanır. Otomatik web taraması bu dosyaya YAZMAZ. Supabase 'on_this_day' tablosunun tohum verisidir (scripts/seed-on-this-day.mjs).",
+  "categories": [
+    "mac",
+    "gol",
+    "transfer",
+    "rekor",
+    "dogum",
+    "olum"
+  ],
+  "events": [
+    {
+      "id": "10-26-1863-rekor-1",
+      "month": 10,
+      "day": 26,
+      "year": 1863,
+      "category": "rekor",
+      "title_tr": "Futbol Federasyonu (FA) kuruldu",
+      "description_tr": "Londra'daki Freemasons' Tavern'de yapılan toplantıyla İngiltere Futbol Federasyonu (The FA) kuruldu; modern futbolun ilk ortak kuralları bu kurumla yazıldı.",
+      "teams": [],
+      "source_url": "https://www.thefa.com/about-football-association/who-we-are/history",
+      "source_name": "The FA",
+      "verified": true
+    },
+    {
+      "id": "10-26-1923-mac-1",
+      "month": 10,
+      "day": 26,
+      "year": 1923,
+      "category": "mac",
+      "title_tr": "A Millî Takım'ın ilk resmî maçı: Türkiye 2-2 Romanya",
+      "description_tr": "Türkiye Millî Takımı ilk uluslararası maçına İstanbul Taksim Stadı'nda Romanya karşısında çıktı; karşılaşma 2-2 bitti.",
+      "teams": [
+        "Türkiye",
+        "Romanya"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Turkey_national_football_team",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1923-gol-2",
+      "month": 10,
+      "day": 26,
+      "year": 1923,
+      "category": "gol",
+      "title_tr": "Zeki Rıza Sporel millî takımın ilk golünü attı",
+      "description_tr": "Romanya ile oynanan ilk resmî maçta Türkiye'nin iki golünü de Zeki Rıza Sporel kaydetti; böylece A Millî Takım tarihindeki ilk golün sahibi oldu.",
+      "teams": [
+        "Türkiye",
+        "Romanya"
+      ],
+      "source_url": "https://tr.wikipedia.org/wiki/26_Ekim",
+      "source_name": "Vikipedi",
+      "verified": true
+    },
+    {
+      "id": "10-26-1980-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1980,
+      "category": "dogum",
+      "title_tr": "Cristian Chivu doğdu",
+      "description_tr": "Romanyalı eski savunma oyuncusu ve teknik direktör Cristian Chivu Reșița'da doğdu. Ajax, Roma ve Inter formaları giydi.",
+      "teams": [
+        "Inter",
+        "Ajax",
+        "Roma"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Cristian_Chivu",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1983-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1983,
+      "category": "dogum",
+      "title_tr": "Dmitri Sychev doğdu",
+      "description_tr": "Rus forvet Dmitri Sychev doğdu; Lokomotiv Moskova ile uzun yıllar oynadı ve Rusya Millî Takımı'nda forma giydi.",
+      "teams": [
+        "Lokomotiv Moskova"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Dmitri_Sychev",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1984-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1984,
+      "category": "dogum",
+      "title_tr": "Adriano Correia doğdu",
+      "description_tr": "Barcelona ve Sevilla'da forma giyen, ardından Beşiktaş'ta oynayan Brezilyalı bek/orta saha Adriano Correia doğdu.",
+      "teams": [
+        "Beşiktaş",
+        "Barcelona",
+        "Sevilla"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Adriano_(footballer,_born_1984)",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1993-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1993,
+      "category": "dogum",
+      "title_tr": "Dimitris Pelkas doğdu",
+      "description_tr": "Fenerbahçe ve Başakşehir formaları da giyen Yunan orta saha oyuncusu Dimitris Pelkas doğdu.",
+      "teams": [
+        "Fenerbahçe",
+        "Başakşehir"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Dimitris_Pelkas",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2004-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2004,
+      "category": "dogum",
+      "title_tr": "Patrick Dorgu doğdu",
+      "description_tr": "Lecce ve Manchester United'da forma giyen Danimarkalı kanat/bek oyuncusu Patrick Dorgu doğdu.",
+      "teams": [
+        "Manchester United",
+        "Lecce"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Patrick_Dorgu",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2005-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2005,
+      "category": "olum",
+      "title_tr": "George Swindin hayatını kaybetti",
+      "description_tr": "Arsenal'in eski kalecisi ve teknik direktörü George Swindin 90 yaşında hayatını kaybetti.",
+      "teams": [
+        "Arsenal"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/George_Swindin",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2007-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2007,
+      "category": "olum",
+      "title_tr": "Nicolae Dobrin hayatını kaybetti",
+      "description_tr": "Romanya futbolunun efsane ofansif orta sahalarından, Argeș Pitești'nin simgesi Nicolae Dobrin 60 yaşında hayatını kaybetti.",
+      "teams": [
+        "Argeș Pitești"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Nicolae_Dobrin",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2014-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2014,
+      "category": "olum",
+      "title_tr": "Senzo Meyiwa hayatını kaybetti",
+      "description_tr": "Güney Afrika Millî Takımı ve Orlando Pirates kaptanı kaleci Senzo Meyiwa, Vosloorus'ta silahlı saldırıda öldürüldü.",
+      "teams": [
+        "Orlando Pirates",
+        "Güney Afrika"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Senzo_Meyiwa",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2021-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2021,
+      "category": "olum",
+      "title_tr": "Walter Smith hayatını kaybetti",
+      "description_tr": "Rangers, Everton ve İskoçya Millî Takımı'nı çalıştıran efsane teknik direktör Walter Smith 73 yaşında hayatını kaybetti.",
+      "teams": [
+        "Rangers",
+        "Everton",
+        "İskoçya"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Walter_Smith",
+      "source_name": "Wikipedia",
+      "verified": true
+    }
+  ]
 }
