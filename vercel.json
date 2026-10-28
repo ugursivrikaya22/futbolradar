@@ -5,6 +5,16 @@
   "ignoreCommand": "node scripts/vercel-continue-build.mjs",
   "installCommand": "npm ci --include=dev && node scripts/install-browser.mjs",
   "outputDirectory": ".",
+  "crons": [
+    {
+      "path": "/api/cron-on-this-day",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/daily",
+      "schedule": "0 2 * * *"
+    }
+  ],
   "git": {
     "deploymentEnabled": {
       "**": false,
@@ -17,8 +27,28 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/istatistik-merkezi",
+      "destination": "/istatistik-merkezi.html",
+      "permanent": true
+    },
+    {
+      "source": "/asist-kralligi",
+      "destination": "/asist-kralligi.html",
+      "permanent": true
+    },
+    {
+      "source": "/gol-kralligi",
+      "destination": "/gol-kralligi.html",
+      "permanent": true
+    },
+    {
       "source": "/ulke-puanlari",
       "destination": "/uefa-ulke-puani-siralamasi.html",
+      "permanent": true
+    },
+    {
+      "source": "/tarih/:slug.html",
+      "destination": "/tarih/:slug",
       "permanent": true
     },
     {
@@ -4807,6 +4837,10 @@
   ],
   "rewrites": [
     {
+      "source": "/tarih/:slug",
+      "destination": "/tarih/:slug.html"
+    },
+    {
       "source": "/tarihte-bugun",
       "destination": "/tarihte-bugun.html"
     },
@@ -5466,7 +5500,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://gxhntmzjvwnhjrapmixx.supabase.co https://www.google-analytics.com https://region1.google-analytics.com https://www.googleadservices.com https://googleads.g.doubleclick.net; font-src 'self'; object-src 'none'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests"
         }
       ]
     },
@@ -5485,14 +5519,5 @@
       "maxDuration": 300,
       "includeFiles": "{scripts/**,services/**,lib/**,data/**}"
     }
-  },
-  "crons": [
-    { "path": "/api/cron/scheduled-update", "schedule": "7 * * * *" },
-    { "path": "/api/cron/scheduled-update?phase=resume", "schedule": "17,27,37 * * * *" },
-    { "path": "/api/cron/deploy", "schedule": "50 * * * *" },
-    { "path": "/api/cron/health", "schedule": "47 * * * *" },
-    { "path": "/api/cron/search-demand", "schedule": "15 6 * * 1-5" },
-    { "path": "/api/cron/full-update", "schedule": "0 2 * * *" },
-    { "path": "/api/cron/full-update?phase=resume", "schedule": "10,20,30,40,50 2,3 * * *" }
-  ]
+  }
 }

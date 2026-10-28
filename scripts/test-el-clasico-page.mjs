@@ -55,4 +55,28 @@ ok(pkg.scripts.postbuild.includes("generate-el-clasico-page.mjs"), "postbuild zi
 const vercel = fs.readFileSync(path.join(root, "vercel.json"), "utf8");
 ok(vercel.includes(`"/${EL_CLASICO_SLUG}.html"`) && vercel.includes(`"destination": "/${EL_CLASICO_SLUG}.html"`), "vercel 308 + rewrite");
 ok(fs.readFileSync(path.join(root, "scripts", "generate-league-standings-pages.mjs"), "utf8").includes(EL_CLASICO_SLUG), "La Liga hub bağlantısı");
+// 6) Maç önü analiz (Köşe): her istatistik ve bölüm kaynaklı, H2/H3 yapısı, Article JSON-LD.
+const pv = data.preview;
+for (const s of pv.stats) ok(/^https:\/\//.test(pv.sources[s.source]?.sourceUrl || ""), `istatistik kaynaklı: ${s.label}`);
+for (const x of pv.sections) ok(x.sources.length && x.sources.every((k) => /^https:\/\//.test(pv.sources[k]?.sourceUrl || "")), `bölüm kaynaklı: ${x.h3}`);
+for (const html of [pre.html, post.html]) {
+  ok(html.includes('<h2 id="mac-onu-analiz">Maç Önü Analiz</h2>'), "Maç Önü Analiz H2");
+  ok((html.match(/<h1[\s>]/g) || []).length === 1, "tek H1");
+  ok((html.match(/class="glass-card clasico-stat"/g) || []).length === pv.stats.length, "tüm istatistik blokları çizildi");
+  ok(html.includes("Köşe") && html.includes('datetime="2026-10-25"'), "Köşe ve tarih künyesi");
+}
+const statBlocks = post.html.match(/<article class="glass-card clasico-stat">[\s\S]*?<\/article>/g) || [];
+ok(statBlocks.every((b) => /Kaynak: <a href="https:\/\//.test(b)), "her istatistik bloğunda kaynak linki");
+for (const id of pv.sections.map((x) => x.id)) ok(post.html.includes(`id="analiz-${id}"`), `H3 analiz-${id}`);
+ok(!/10\.000 simülasyon|kaptan/i.test(post.html), "doğrulanamayan iddialar sayfada yok");
+const colExists = fs.existsSync(path.join(root, "kose-yazilari", `${pv.column.slug}.html`));
+ok(post.html.includes(`./kose-yazilari/${pv.column.slug}`) === colExists, "köşe yazısına yalnızca sayfası varsa bağlantı");
+const pt = post.html.match(/<title>([^<]+)/)[1]; const pd = post.html.match(/name="description" content="([^"]+)/)[1];
+ok(pt.includes("El Clásico") && pt.includes("Maç Önü Analiz") && pd.includes("El Clásico"), "maç sonrası başlık/açıklama El Clásico + analiz");
+const pld = JSON.parse(post.html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
+const art = pld["@graph"].find((x) => x["@type"] === "Article");
+ok(art && art.datePublished === "2026-10-25" && art.citation.length >= 5, "Article JSON-LD + kaynaklar");
+ok(!/href="\.\/(haberler|derbi-radari|lig\/la-liga)"/.test(post.html), "kırık uzantısız iç bağlantılar düzeltildi");
+const noPv = renderElClasico({ now: new Date("2026-10-26T12:00:00Z"), data: { ...data, preview: { ...pv, sources: {} } }, calendar: [], standings });
+ok(!noPv.html.includes('id="mac-onu-analiz"') && !noPv.html.includes('"Article"'), "kaynaksız analiz çizilmez");
 console.log(`test-el-clasico-page: ${n} kontrol geçti`);

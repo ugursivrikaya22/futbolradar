@@ -61,7 +61,14 @@ await test("vercel.json crons bloğu geçerli ve zorunlu işler doğru takvimde"
   const { JOBS } = require("../server/cronRoute.js");
   assert.ok(Array.isArray(config.crons) && config.crons.length > 0);
   const field = /^(\*|\d+(-\d+)?(,\d+(-\d+)?)*)(\/\d+)?$/;
+  // Hobby: en çok 2 cron, her biri günde en çok 1 kez.
+  assert.ok(config.crons.length <= 2, "Hobby: en çok 2 cron");
   for (const cron of config.crons) {
+    const [min, hour, dom, mon, dow] = cron.schedule.split(" ");
+    assert.match(min, /^\d+$/, cron.schedule); assert.match(hour, /^\d+$/, cron.schedule);
+    assert.equal(dom, "*"); assert.equal(mon, "*");
+  }
+  for (const cron of config.crons.filter((c) => c.path.startsWith("/api/cron/"))) {
     assert.match(cron.path, /^\/api\/cron\/[a-z-]+(\?phase=resume)?$/, cron.path);
     assert.ok(JOBS.has(cron.path.replace(/^\/api\/cron\//, "").split("?")[0]), cron.path);
     const parts = cron.schedule.split(" ");
@@ -69,11 +76,8 @@ await test("vercel.json crons bloğu geçerli ve zorunlu işler doğru takvimde"
     for (const p of parts) assert.match(p, field, cron.schedule);
   }
   const bySchedule = Object.fromEntries(config.crons.map((c) => [c.path, c.schedule]));
-  assert.equal(bySchedule["/api/cron/scheduled-update"], "7 * * * *");
-  assert.equal(bySchedule["/api/cron/health"], "47 * * * *");
-  assert.equal(bySchedule["/api/cron/search-demand"], "15 6 * * 1-5");
-  assert.equal(bySchedule["/api/cron/full-update"], "0 2 * * *");
-  assert.ok(bySchedule["/api/cron/deploy"]);
+  assert.equal(bySchedule["/api/cron/daily"], "0 2 * * *");
+  assert.equal(bySchedule["/api/cron-on-this-day"], "0 0 * * *");
   assert.equal(new Set(config.crons.map((c) => c.path)).size, config.crons.length, "yinelenen path yok");
   // Mevcut build/deploy ayarları değişmedi.
   assert.equal(config.buildCommand, "npm run build");
@@ -304,3 +308,18 @@ await test("prebuild hydrate betiği Supabase yokken sessizce çıkar", async ()
 });
 
 console.log(`\n${passed} test geçti`);
+
+await test("daily dağıtıcı işleri sırayla koşturur, hafta sonu search-demand atlanır", async () => {
+  const { runDaily } = require("../server/cronRoute.js");
+  const calls = [];
+  const table = Object.fromEntries(["full-update", "health", "search-demand", "deploy"].map((n) => [n, async (o) => { calls.push([n, o]); return { status: "complete" }; }]));
+  const r = await runDaily(table, { date: new Date("2026-10-28T02:00:00Z") });
+  assert.deepEqual(calls.map((c) => c[0]), ["full-update", "health", "search-demand", "deploy"]);
+  assert.equal(calls[0][1].budgetMs, 180000);
+  assert.equal(r.status, "complete");
+  calls.length = 0;
+  const w = await runDaily({ ...table, health: async () => { throw new Error("x"); } }, { date: new Date("2026-10-31T02:00:00Z") });
+  assert.deepEqual(calls.map((c) => c[0]), ["full-update", "deploy"]);
+  assert.equal(w.jobs["search-demand"].reason, "weekend");
+  assert.equal(w.status, "partial");
+});

@@ -9,13 +9,23 @@ iş akışları (Scheduled Updates, Daily Health Check, Search Demand Daily)
 ## Mimari
 
 ```
-Vercel Cron ──► /api/cron/scheduled-update (07)      ─┐  veri çek (parçalı)
-            ──► /api/cron/scheduled-update?phase=resume (17,27,37) ─┘  kalan adımlar
-            ──► /api/cron/deploy (50)  ─► Deploy Hook ─► build (prebuild: Supabase'ten veri)
-            ──► /api/cron/health (47)
-            ──► /api/cron/search-demand (06:15 hafta içi)
-            ──► /api/cron/full-update (02:00) + ?phase=resume (02:10–03:50, 10 dk'da bir)
+Vercel Cron ──► /api/cron-on-this-day (00:00)  Tarihte Bugün (ayrı özellik)
+            ──► /api/cron/daily (02:00)        TEK günlük dağıtıcı:
+                  1. full-update (start, 180 sn bütçe)
+                  2. health
+                  3. search-demand (yalnız hafta içi, bütçe kalırsa)
+                  4. deploy ─► Deploy Hook ─► build (prebuild: Supabase'ten veri)
 ```
+
+**Hobby sınırı:** en çok 2 cron, her biri günde en çok 1 kez. Bu yüzden
+saatlik tazelik (scheduled-update + resume, saatlik deploy/health) Vercel
+Cron ile **mümkün değil**; `vercel.json` yalnız iki günlük girdi içerir.
+Tek çağrı 300 sn ile sınırlı olduğundan full-update bitmezse kalan adımlar
+o gün tamamlanmaz (`?phase=resume` cron'u yok). Diğer uç noktalar
+(`/api/cron/scheduled-update`, `full-update?phase=resume`, `deploy`,
+`health`, `search-demand`) elle ya da harici bir zamanlayıcıyla
+`Authorization: Bearer $CRON_SECRET` ile çağrılabilir. Saatlik tazelik için
+Pro plan (ve saatlik girdilerin geri eklenmesi) gerekir.
 
 Tüm saatler UTC. Uç noktalar **yeni işlev açmaz**: `api/[...route].js`
 (maxDuration 300) → `server/cronRoute.js`. Hobby'nin 12 işlev sınırı
@@ -119,21 +129,19 @@ gitmez.
   olmalı (supabase-sync adımı bunları kullanıyor).
 
 ### Supabase migration
-`supabase/migrations/0012_cron_job_engine.sql` — SQL Editor'da elle
+`supabase/migrations/0013_cron_job_engine.sql` — SQL Editor'da elle
 uygulanır. Yalnızca iki yeni tablo (`cron_runs`, `cron_data_artifacts`),
 RLS açık, politika yok (yalnızca service_role).
 
-### Plan: Pro gerekli
-Hobby yalnızca **günde bir kez** çalışan cron'a izin verir; saatlik ifadeler
-deploy'u **başarısız** yapar ("Hobby accounts are limited to daily cron
-jobs"). Bu PR, proje Pro'ya geçmeden (ya da saatlik girdiler çıkarılmadan)
-**birleştirilmemeli**. Pro'da `functions["api/[...route].js"].maxDuration`
-800'e çıkarılabilir.
+### Plan
+Hobby ile uyumlu: 2 günlük cron (`0 0 * * *` Tarihte Bugün, `0 2 * * *`
+daily). Pro'ya geçilirse saatlik girdiler geri eklenebilir ve
+`functions["api/[...route].js"].maxDuration` 800'e çıkarılabilir.
 
 ## Devreye alma
 1. Migration'ı uygula.
 2. Ortam değişkenlerini ekle; Deploy Hook oluştur.
-3. Pro'ya geç (ya da saatlik cron'ları çıkar).
+3. (İsteğe bağlı) Saatlik tazelik için Pro'ya geç.
 4. **Önizleme deploy'unda** fonksiyon boyutunu kontrol et:
    `includeFiles` `data/**` (~230 MB) içeriyor; 250 MB sıkıştırılmamış
    sınırı aşılırsa `includeFiles` saatlik adımların okuduğu dosyalarla

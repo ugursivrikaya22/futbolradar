@@ -1,8 +1,388 @@
 {
-  "_comment": "Türetilmiş dosya — scripts/generate-on-this-day-pages.mjs üretir; elle düzenlenmez. Yalnız depodaki doğrulanmış maç arşivi.",
-  "source": "data/season-archive.json",
-  "today": "2026-10-20",
-  "monthDay": "10-20",
-  "count": 0,
-  "entries": []
+  "_comment": "ELLE DOĞRULANMIŞ 'Tarihte Bugün' olayları. Her kayıt kaynak bağlantısı taşır (source_url zorunlu); yalnız verified=true kayıtlar yayınlanır. Otomatik web taraması bu dosyaya YAZMAZ. Supabase 'on_this_day' tablosunun tohum verisidir (scripts/seed-on-this-day.mjs).",
+  "categories": [
+    "mac",
+    "gol",
+    "transfer",
+    "rekor",
+    "dogum",
+    "olum"
+  ],
+  "events": [
+    {
+      "id": "10-26-1863-rekor-1",
+      "month": 10,
+      "day": 26,
+      "year": 1863,
+      "category": "rekor",
+      "title_tr": "Futbol Federasyonu (FA) kuruldu",
+      "description_tr": "Londra'daki Freemasons' Tavern'de yapılan toplantıyla İngiltere Futbol Federasyonu (The FA) kuruldu; modern futbolun ilk ortak kuralları bu kurumla yazıldı.",
+      "teams": [],
+      "source_url": "https://www.thefa.com/about-football-association/who-we-are/history",
+      "source_name": "The FA",
+      "verified": true
+    },
+    {
+      "id": "10-26-1923-mac-1",
+      "month": 10,
+      "day": 26,
+      "year": 1923,
+      "category": "mac",
+      "title_tr": "A Millî Takım'ın ilk resmî maçı: Türkiye 2-2 Romanya",
+      "description_tr": "Türkiye Millî Takımı ilk uluslararası maçına İstanbul Taksim Stadı'nda Romanya karşısında çıktı; karşılaşma 2-2 bitti.",
+      "teams": [
+        "Türkiye",
+        "Romanya"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Turkey_national_football_team",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1923-gol-2",
+      "month": 10,
+      "day": 26,
+      "year": 1923,
+      "category": "gol",
+      "title_tr": "Zeki Rıza Sporel millî takımın ilk golünü attı",
+      "description_tr": "Romanya ile oynanan ilk resmî maçta Türkiye'nin iki golünü de Zeki Rıza Sporel kaydetti; böylece A Millî Takım tarihindeki ilk golün sahibi oldu.",
+      "teams": [
+        "Türkiye",
+        "Romanya"
+      ],
+      "source_url": "https://tr.wikipedia.org/wiki/26_Ekim",
+      "source_name": "Vikipedi",
+      "verified": true
+    },
+    {
+      "id": "10-26-1980-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1980,
+      "category": "dogum",
+      "title_tr": "Cristian Chivu doğdu",
+      "description_tr": "Romanyalı eski savunma oyuncusu ve teknik direktör Cristian Chivu Reșița'da doğdu. Ajax, Roma ve Inter formaları giydi.",
+      "teams": [
+        "Inter",
+        "Ajax",
+        "Roma"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Cristian_Chivu",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1983-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1983,
+      "category": "dogum",
+      "title_tr": "Dmitri Sychev doğdu",
+      "description_tr": "Rus forvet Dmitri Sychev doğdu; Lokomotiv Moskova ile uzun yıllar oynadı ve Rusya Millî Takımı'nda forma giydi.",
+      "teams": [
+        "Lokomotiv Moskova"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Dmitri_Sychev",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1984-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1984,
+      "category": "dogum",
+      "title_tr": "Adriano Correia doğdu",
+      "description_tr": "Barcelona ve Sevilla'da forma giyen, ardından Beşiktaş'ta oynayan Brezilyalı bek/orta saha Adriano Correia doğdu.",
+      "teams": [
+        "Beşiktaş",
+        "Barcelona",
+        "Sevilla"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Adriano_(footballer,_born_1984)",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-1993-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 1993,
+      "category": "dogum",
+      "title_tr": "Dimitris Pelkas doğdu",
+      "description_tr": "Fenerbahçe ve Başakşehir formaları da giyen Yunan orta saha oyuncusu Dimitris Pelkas doğdu.",
+      "teams": [
+        "Fenerbahçe",
+        "Başakşehir"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Dimitris_Pelkas",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2004-dogum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2004,
+      "category": "dogum",
+      "title_tr": "Patrick Dorgu doğdu",
+      "description_tr": "Lecce ve Manchester United'da forma giyen Danimarkalı kanat/bek oyuncusu Patrick Dorgu doğdu.",
+      "teams": [
+        "Manchester United",
+        "Lecce"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Patrick_Dorgu",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2005-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2005,
+      "category": "olum",
+      "title_tr": "George Swindin hayatını kaybetti",
+      "description_tr": "Arsenal'in eski kalecisi ve teknik direktörü George Swindin 90 yaşında hayatını kaybetti.",
+      "teams": [
+        "Arsenal"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/George_Swindin",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2007-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2007,
+      "category": "olum",
+      "title_tr": "Nicolae Dobrin hayatını kaybetti",
+      "description_tr": "Romanya futbolunun efsane ofansif orta sahalarından, Argeș Pitești'nin simgesi Nicolae Dobrin 60 yaşında hayatını kaybetti.",
+      "teams": [
+        "Argeș Pitești"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Nicolae_Dobrin",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2014-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2014,
+      "category": "olum",
+      "title_tr": "Senzo Meyiwa hayatını kaybetti",
+      "description_tr": "Güney Afrika Millî Takımı ve Orlando Pirates kaptanı kaleci Senzo Meyiwa, Vosloorus'ta silahlı saldırıda öldürüldü.",
+      "teams": [
+        "Orlando Pirates",
+        "Güney Afrika"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Senzo_Meyiwa",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-26-2021-olum-1",
+      "month": 10,
+      "day": 26,
+      "year": 2021,
+      "category": "olum",
+      "title_tr": "Walter Smith hayatını kaybetti",
+      "description_tr": "Rangers, Everton ve İskoçya Millî Takımı'nı çalıştıran efsane teknik direktör Walter Smith 73 yaşında hayatını kaybetti.",
+      "teams": [
+        "Rangers",
+        "Everton",
+        "İskoçya"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Walter_Smith",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-27-1932-dogum-1",
+      "month": 10,
+      "day": 27,
+      "year": 1932,
+      "category": "dogum",
+      "title_tr": "Harry Gregg doğdu",
+      "description_tr": "Kuzey İrlandalı kaleci Harry Gregg Tobermore'da doğdu. Manchester United ve Kuzey İrlanda kalesini korudu.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Harry_Gregg",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-27-1957-dogum-1",
+      "month": 10,
+      "day": 27,
+      "year": 1957,
+      "category": "dogum",
+      "title_tr": "Glenn Hoddle doğdu",
+      "description_tr": "İngiliz futbolcu ve teknik direktör Glenn Hoddle Harlington'da doğdu. Daha sonra İngiltere Millî Takımı'nı çalıştırdı.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Glenn_Hoddle",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-27-1969-dogum-1",
+      "month": 10,
+      "day": 27,
+      "year": 1969,
+      "category": "dogum",
+      "title_tr": "Michael Tarnat doğdu",
+      "description_tr": "Alman futbolcu Michael Tarnat Hilden'de doğdu. Kariyerinde Bayern Münih forması giydi.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Michael_Tarnat",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-27-1971-dogum-1",
+      "month": 10,
+      "day": 27,
+      "year": 1971,
+      "category": "dogum",
+      "title_tr": "Theodoros Zagorakis doğdu",
+      "description_tr": "Yunan orta saha oyuncusu ve siyasetçi Theodoros Zagorakis Kavala yakınlarında doğdu.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Theodoros_Zagorakis",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-27-1981-dogum-1",
+      "month": 10,
+      "day": 27,
+      "year": 1981,
+      "category": "dogum",
+      "title_tr": "Volkan Demirel doğdu",
+      "description_tr": "Türk kaleci Volkan Demirel İstanbul'da doğdu. Fenerbahçe ve A Millî Takım'ın kalesini uzun yıllar korudu.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Volkan_Demirel",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-27-1992-dogum-1",
+      "month": 10,
+      "day": 27,
+      "year": 1992,
+      "category": "dogum",
+      "title_tr": "Stephan El Shaarawy doğdu",
+      "description_tr": "İtalyan kanat oyuncusu Stephan El Shaarawy Savona'da doğdu.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Stephan_El_Shaarawy",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1933-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1933,
+      "category": "dogum",
+      "title_tr": "Garrincha doğdu",
+      "description_tr": "Brezilyalı efsane sağ kanat Garrincha (Manuel Francisco dos Santos) Rio de Janeiro eyaletindeki Magé'de doğdu. Tüm zamanların en iyi çalım ustalarından biri sayılır.",
+      "teams": [
+        "Brezilya"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Garrincha",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1946-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1946,
+      "category": "dogum",
+      "title_tr": "Wim Jansen doğdu",
+      "description_tr": "Hollandalı futbolcu ve teknik direktör Wim Jansen Rotterdam'da doğdu. Oyunculuk kariyerinin büyük bölümünü Feyenoord'da geçirdi, Ajax'ta da oynadı.",
+      "teams": [
+        "Feyenoord",
+        "Ajax"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Wim_Jansen",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1962-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1962,
+      "category": "dogum",
+      "title_tr": "Erik Thorstvedt doğdu",
+      "description_tr": "Norveçli kaleci Erik Thorstvedt Stavanger'de doğdu. Norveç Millî Takımı'nda 97 maça çıktı, 1994 Dünya Kupası'nda takımının kalesini korudu; Tottenham Hotspur'da da forma giydi.",
+      "teams": [
+        "Tottenham Hotspur",
+        "Norveç"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Erik_Thorstvedt",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1979-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1979,
+      "category": "dogum",
+      "title_tr": "Olcay Çetinkaya doğdu",
+      "description_tr": "Türk kaleci Olcay Çetinkaya İstanbul'da doğdu. Altyapısı İstanbulspor'da başladı, kariyerinde Dardanelspor, Karabükspor ve Muğlaspor gibi kulüplerde oynadı.",
+      "teams": [],
+      "source_url": "https://en.wikipedia.org/wiki/Olcay_Çetinkaya",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1981-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1981,
+      "category": "dogum",
+      "title_tr": "Milan Baroš doğdu",
+      "description_tr": "Çek forvet Milan Baroš Valašské Meziříčí'de doğdu. Liverpool, Aston Villa ve Lyon'un ardından 2008-2013 arasında Galatasaray forması giydi, sonra Antalyaspor'da da oynadı.",
+      "teams": [
+        "Galatasaray",
+        "Liverpool",
+        "Antalyaspor"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Milan_Baroš",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1984-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1984,
+      "category": "dogum",
+      "title_tr": "Obafemi Martins doğdu",
+      "description_tr": "Nijeryalı forvet Obafemi Martins Lagos'ta doğdu. Inter, Newcastle United, Wolfsburg ve Rubin Kazan gibi kulüplerde oynadı.",
+      "teams": [
+        "Inter",
+        "Newcastle United"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Obafemi_Martins",
+      "source_name": "Wikipedia",
+      "verified": true
+    },
+    {
+      "id": "10-28-1991-dogum-1",
+      "month": 10,
+      "day": 28,
+      "year": 1991,
+      "category": "dogum",
+      "title_tr": "Lucy Bronze doğdu",
+      "description_tr": "İngiliz sağ bek Lucy Bronze Berwick-upon-Tweed'de doğdu. İngiltere Kadın Millî Takımı'nın yanı sıra Lyon, Manchester City, Barcelona ve Chelsea'de forma giydi.",
+      "teams": [
+        "İngiltere"
+      ],
+      "source_url": "https://en.wikipedia.org/wiki/Lucy_Bronze",
+      "source_name": "Wikipedia",
+      "verified": true
+    }
+  ]
 }

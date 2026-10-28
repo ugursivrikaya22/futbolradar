@@ -168,6 +168,8 @@ export const POSTPROCESS_CHAIN = [
   { id: "quick-links", script: "inject-quick-links.mjs", args: [], timeoutMinutes: 2 },
   // Gizlilik sayfasına "Favoriler ve yerel depolama" bildirimi (işaretli blok, idempotent).
   { id: "privacy-notice", script: "inject-privacy-notice.mjs", args: [], timeoutMinutes: 2 },
+  // Sitemap ↔ robots tutarlılığı: noindex URL sitemap'e girmez, köşe yazıları lastmod ile girer.
+  { id: "sitemap-indexability", script: "sync-sitemap-indexability.mjs", args: [], timeoutMinutes: 2 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
