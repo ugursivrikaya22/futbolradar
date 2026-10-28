@@ -44,6 +44,7 @@ Bant bir sonraki derlemede (en geç saatlik CI koşusunda) güncellenir.
 | `category` | evet | `transfer`, `mac` ya da `haber` |
 | `sourceUrl` | **evet** | `http(s)`; alan adı `services/sourceLinks.js` beyaz listesinde olmalı (TFF, FIFA, kulüp siteleri, AA, NTV Spor, Fanatik, Hürriyet, beIN…) |
 | `sourceName` | **evet** | Künyede görünen ad ("TFF", "FIFA", "Fanatik") |
+| `breaking` | hayır | `true` ise öğe kırmızı zemin + beyaz kalın "Son dakika" vurgusuyla ve listenin başında basılır (hafif nabız; hareket azaltmada kapalı). Yalnızca resmî kaynaklı acil gelişmeler için; `expiresAt` zorunlu |
 | `expiresAt` | hayır | Saat dilimli ISO 8601. Bu andan sonra öğe derlemede ve tarayıcıda gizlenir |
 
 **Kaynaksız öğe yoktur.** Kuralı bozan öğe banda girmez, derleme uyarı basar

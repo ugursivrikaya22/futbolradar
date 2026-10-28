@@ -33,13 +33,15 @@ function internalHref(url, base) {
 function itemHtml(item, { base, hidden }) {
   const tab = hidden ? ' tabindex="-1"' : "";
   const href = internalHref(item.url, base);
-  const label = CATEGORIES[item.category] || "Gündem";
+  const breaking = item.breaking === true;
+  const label = breaking ? "Son dakika" : (CATEGORIES[item.category] || "Gündem");
   const text = href
     ? `<a class="home-ticker__link" href="${escapeHtml(href)}"${tab}>${escapeHtml(item.text)}</a>`
     : `<span class="home-ticker__text">${escapeHtml(item.text)}</span>`;
   const source = `<a class="home-ticker__source" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer"${tab} aria-label="Kaynak: ${escapeHtml(item.sourceName)}">${escapeHtml(item.sourceName)}</a>`;
   const expires = item.expiresAt ? ` data-expires="${escapeHtml(item.expiresAt)}"` : "";
-  return `<li class="home-ticker__item" data-ticker-id="${escapeHtml(item.id)}"${expires}><span class="home-ticker__tag">${escapeHtml(label)}</span>${text}${source}</li>`;
+  const cls = breaking ? "home-ticker__item home-ticker__item--breaking" : "home-ticker__item";
+  return `<li class="${cls}" data-ticker-id="${escapeHtml(item.id)}"${expires}><span class="home-ticker__tag">${escapeHtml(label)}</span>${text}${source}</li>`;
 }
 
 /** Kaydırma süresi metin uzunluğuyla orantılı: okunabilir hız, en az 30 sn. */
