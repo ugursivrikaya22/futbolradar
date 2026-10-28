@@ -15,7 +15,11 @@
 - `vercel.json` içinde `crons` → `GET /api/cron-on-this-day`, her gün `0 0 * * *` (00:00 UTC = 03:00 İstanbul). İsteği `api/[...route].js` üzerinden `server/onThisDayCronRoute.js` karşılar.
 - Cron, bugünün olaylarını önce Supabase'den okur, okuyamazsa JSON'a düşer. Web'den hiçbir şey çekmez ve hiçbir yere yazmaz.
 - Yenileme: depoda ISR ya da deploy hook yok; site statik derleniyor. `ON_THIS_DAY_DEPLOY_HOOK_URL` tanımlıysa Vercel Deploy Hook'una POST atılır, tanımlı değilse yanıt bunu açıkça bildirir.
-- **Dikkat:** `scripts/lib/buildDecision.mjs` (ignoreCommand), önceki dağıtımla aynı commit için derlemeyi atlayabilir; bu durumda hook tetiklense bile derleme yapılmaz. Hook kullanılacaksa hook tetiklemelerinin derlemeyi atlamaması için ayrı bir karar gerekir. Ayrıca her derleme yaklaşık 13 dakika sürer ve build dakikası tüketir.
+- **Derleme kararı:** `scripts/lib/buildDecision.mjs` (ignoreCommand) normalde önceki dağıtımdan beri yalnız operasyonel dosyalar (docs/ vb.) değiştiyse derlemeyi atlar. Hook ile tetiklenen derlemeler bu kontrolü atlar:
+  - Aynı commit'in yeniden derlenmesi her zaman derlenir (hook en son commit'i derler).
+  - Vercel hook'u bildiren bir sistem değişkeni vermez; güvenilir sinyal dağıtımın `meta.deployHookId` alanıdır. Build ortamına salt-okunur `BUILD_DECISION_VERCEL_TOKEN` (ekip projesiyse `BUILD_DECISION_VERCEL_TEAM_ID`) eklenirse `scripts/lib/deployHookTrigger.mjs` bunu Vercel API'den okur ve hook derlemesini her durumda sürdürür. Token yoksa yalnız "aynı commit" kuralı geçerlidir.
+  - Elle zorlamak için `FUTBOLRADAR_FORCE_BUILD=1`.
+  - Test: `npm run test:build-decision-hook`.
 
 ## Ortam değişkenleri (Vercel'de elle tanımlanır)
 | Ad | Gerekli | Not |
