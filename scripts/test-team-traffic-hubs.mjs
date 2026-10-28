@@ -23,10 +23,10 @@ for (const [slug, name] of teams) {
   const file = `${slug}-maclari.html`;
   const html = fs.readFileSync(path.join(root, file), "utf8");
   const mirror = fs.readFileSync(path.join(root, "public", file), "utf8");
-  assert.ok(mirror.includes(`<title>${name} Maçları, Puan Durumu ve Fikstür ${season} | FutbolRadar</title>`), `${file}: public çıktısında title eksik`);
+  assert.ok(mirror.includes(`<title>${name} Maçları ve Fikstür ${season}: Son Maç, Puan Durumu | FutbolRadar</title>`), `${file}: public çıktısında title eksik`);
   assert.ok(mirror.includes('data-card="current-squad"'), `${file}: public çıktısında kadro eksik`);
   assert.equal((html.match(/<h1\b/g) || []).length, 1, `${file}: tek H1 olmalı`);
-  assert.ok(html.includes(`<title>${name} Maçları, Puan Durumu ve Fikstür ${season} | FutbolRadar</title>`));
+  assert.ok(html.includes(`<title>${name} Maçları ve Fikstür ${season}: Son Maç, Puan Durumu | FutbolRadar</title>`));
   assert.ok(html.includes(`rel="canonical" href="https://www.futbolradar.com/${file}"`));
   assert.ok(html.includes('data-card="team-standing"'));
   assert.ok(html.includes('data-card="last-match"'));
