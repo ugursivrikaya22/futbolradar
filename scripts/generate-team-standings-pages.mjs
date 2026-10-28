@@ -25,6 +25,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { columnsForTeams, teamMatchPages } from "./lib/clusterLinks.mjs";
+import { faqItems, faqSchemaNode, faqSectionHtml } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
 const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
@@ -137,7 +138,8 @@ function relatedStandingsLinks(team) {
   return `<div class="trend-link-grid">${links.map((link) => `<a href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
 }
 
-function pageSchema(team, url, title, description) {
+function pageSchema(team, url, title, description, faq) {
+  const faqNode = faqSchemaNode(faq);
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -157,7 +159,8 @@ function pageSchema(team, url, title, description) {
           { "@type": "ListItem", position: 2, name: "Puan Durumu", item: `${DOMAIN}/puan-durumu.html` },
           { "@type": "ListItem", position: 3, name: `${team.name} Puan Durumu`, item: url }
         ]
-      }
+      },
+      ...(faqNode ? [faqNode] : [])
     ]
   };
 }
@@ -183,6 +186,12 @@ function buildPage(team, sorted, total) {
   const description = `${fullTeam.name}, 2026/27 Süper Lig'de ${played} maç sonunda ${points} puanla ${rank}. sırada. Güncel tabloda rakiplerle puan farkını, averajı ve oynanan maç sayısını inceleyin.`;
   const intro = standingsNarrative(fullTeam, sorted, total);
   const indexable = standingsPageIndexable(fullTeam);
+  const leader = sorted[0];
+  // SSS cevapları görünen tabloyla aynı kayıtlardan (data/teams.json).
+  const faq = faqItems([
+    { q: `${fullTeam.name} puan durumunda kaçıncı sırada?`, a: `${fullTeam.name}, Süper Lig puan durumunda ${played} maçta ${points} puanla ${rank}. sırada (averaj ${displayValue(fullTeam.average)}).` },
+    { q: "Süper Lig puan durumunda lider kim?", a: leader ? `${leader.name}, ${displayValue(leader.played)} maçta ${leader.points} puanla lider.` : null }
+  ]);
   const rowsHtml = sorted.map((t) => fullStandingRowHtml(t, team.id)).join("");
 
   const html = `<!doctype html>
@@ -205,7 +214,7 @@ function buildPage(team, sorted, total) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
-    <script type="application/ld+json">${JSON.stringify(pageSchema(team, url, title, description))}</script>
+    <script type="application/ld+json">${JSON.stringify(pageSchema(team, url, title, description, faq))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
@@ -231,6 +240,7 @@ ${rowsHtml}
 <!-- prerender:standings:end -->
         </div>
       </section>
+      ${faqSectionHtml(faq, { heading: `${team.name} puan durumu: sık sorulan sorular` })}
       ${section("İlgili ekranlar", `${team.name} için maç programı, canlı skor ve ligin diğer büyük takımlarının puan durumu.`, relatedStandingsLinks(team), "İç bağlantılar")}
     </main>
     ${siteFooter({ base: "./" })}

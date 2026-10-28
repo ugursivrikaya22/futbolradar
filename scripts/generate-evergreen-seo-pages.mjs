@@ -5,6 +5,7 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, lastMatchAnswer, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
 const { playerLink } = require("../services/playerLinks.js");
@@ -16,6 +17,7 @@ const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-image.png`;
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+const richSources = loadTeamSources(root);
 
 const featuredTeams = [
   { slug: "galatasaray", name: "Galatasaray" },
@@ -74,7 +76,7 @@ function breadcrumbHtml(items) {
     .join("")}</nav>`;
 }
 
-function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null }) {
+function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null, faq = null }) {
   const canonical = `${siteUrl}${canonicalPath}`;
   // Gerçekten var olan İngilizce karşılık: İngilizce sayfa Türkçe sayfayı alternate
   // ilan ediyor; karşılık verilmezse Google tek yönlü bildirimi yok sayar.
@@ -82,6 +84,8 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
     ? `\n    <link rel="alternate" hreflang="tr-TR" href="${canonical}" />\n    <link rel="alternate" hreflang="en" href="${siteUrl}/en/${enPath}" />\n    <link rel="alternate" hreflang="x-default" href="${canonical}" />`
     : "";
   const graph = [schema, breadcrumbSchema(breadcrumbs.map(({ name, url }) => ({ name, url })))];
+  const faqNode = faqSchemaNode(faq);
+  if (faqNode) graph.push(faqNode);
   return `<!doctype html>
 <html lang="tr">
   <head>
@@ -119,6 +123,7 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
             <p class="evergreen-freshness"><time datetime="${dataDate}">Veri tarihi: ${dataDate}</time> · Yalnızca kayıtlı sağlayıcı verileri gösterilir.</p>
           </header>
           ${content}
+          ${faqSectionHtml(faq, { className: "evergreen-section" })}
         </div>
       </main>
       ${siteFooter({ base })}
@@ -171,10 +176,21 @@ function standingsPage() {
     { name: "Ana Sayfa", href: "./", url: `${siteUrl}/` },
     { name: "Süper Lig Puan Durumu", href: "./super-lig-puan-durumu", url: `${siteUrl}/super-lig-puan-durumu` }
   ];
+  const played = ordered.filter((team) => Number(team.played) > 0 && Number.isFinite(team.points));
+  const leader = played[0];
+  const last = played.at(-1);
+  const topScoring = [...played].sort((a, b) => (b.goalsFor ?? -1) - (a.goalsFor ?? -1))[0];
+  // SSS yalnızca tüm takımların oynanmış maçı varsa; cevaplar görünen tablodan.
+  const faq = played.length === ordered.length && ordered.length ? faqItems([
+    { q: "Süper Lig puan durumunda lider kim?", a: `${leader.name}, ${leader.played} maçta ${leader.points} puanla Süper Lig puan durumunda lider.` },
+    { q: "Süper Lig puan durumunda son sırada hangi takım var?", a: `${last.name}, ${last.played} maçta ${last.points} puanla ${last.rank}. sırada.` },
+    { q: "Süper Lig'de en çok gol atan takım hangisi?", a: Number.isFinite(topScoring?.goalsFor) ? `${topScoring.name}, ${topScoring.played} maçta ${topScoring.goalsFor} golle ligin en golcü takımı.` : null }
+  ]) : null;
   return pageDocument({
     base: "./",
+    faq,
     enPath: "super-lig-standings",
-    title: "Süper Lig Puan Durumu 2026/27 | FutbolRadar",
+    title: "Süper Lig Puan Durumu 2026/27: Güncel Tablo ve Lider | FutbolRadar",
     description: superLigStandingsDescription(ordered),
     canonicalPath: "/super-lig-puan-durumu",
     h1: "Süper Lig Puan Durumu",
@@ -193,8 +209,13 @@ function formPage() {
     { name: "Ana Sayfa", href: "../", url: `${siteUrl}/` },
     { name: "Süper Lig", href: "../form-tablosu/super-lig", url: `${siteUrl}/form-tablosu/super-lig` }
   ];
+  const best = ordered.find((team) => Number.isFinite(team.formScore));
+  const faq = best ? faqItems([
+    { q: "Süper Lig'de en formda takım hangisi?", a: `Kayıtlı form skoruna göre ${best.name} ${best.formScore} form skoruyla zirvede${(best.form || []).length ? ` (son sonuçlar: ${best.form.map((item) => item.label).join(" ")})` : ""}.` }
+  ]) : null;
   return pageDocument({
     base: "../",
+    faq,
     title: "Süper Lig Form Tablosu 2026/27 | FutbolRadar",
     description: "Süper Lig takımlarının kayıtlı son form sonuçlarını, form skorunu ve momentum verisini karşılaştırın.",
     canonicalPath: "/form-tablosu/super-lig",
@@ -209,6 +230,13 @@ function formPage() {
 
 function relatedLinks(title, base = "./") {
   return `<aside class="evergreen-related" aria-labelledby="related-heading"><h2 id="related-heading">${escapeHtml(title)}</h2><div class="evergreen-link-grid"><a href="${base}bugunun-maclari">Bugünün maçları</a><a href="${base}super-lig-puan-durumu">Süper Lig puan durumu</a><a href="${base}form-tablosu/super-lig">Süper Lig form tablosu</a><a href="${base}takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="${base}oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a></div></aside>`;
+}
+
+function teamVenueAnswer(name) {
+  const node = sportsTeamNode(richSources, { name });
+  if (!node.location) return null;
+  const city = node.location.address ? ` (${node.location.address.addressLocality})` : "";
+  return `${name} kulübünün kayıtlı iç saha statı: ${node.location.name}${city}.`;
 }
 
 function teamPage(featured) {
@@ -241,18 +269,25 @@ function teamPage(featured) {
   ].join("");
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");
+  const lastGame = lastFinishedMatch(richSources, team.name);
+  const faq = faqItems([
+    { q: `${featured.name} son maç sonucu ne?`, a: lastMatchAnswer(lastGame) },
+    { q: `${featured.name} Süper Lig'de kaçıncı sırada?`, a: Number(team.played) > 0 && Number.isFinite(team.points) && team.rank ? `${featured.name}, Süper Lig puan durumunda ${team.played} maçta ${team.points} puanla ${team.rank}. sırada.` : null },
+    { q: `${genitive(featured.name)} iç saha statı hangisi?`, a: teamVenueAnswer(featured.name) }
+  ]);
   return pageDocument({
     base: "../",
-    title: `${featured.name} Takım Profili, Puan ve Form | FutbolRadar`,
+    faq,
+    title: `${featured.name} Takım Profili: Son Maç, Fikstür ve Puan | FutbolRadar`,
     description: Number(team.played) > 0 && team.points !== null && team.points !== undefined && team.rank
-      ? `${featured.name} takım profili: Süper Lig'de ${team.rank}. sırada, ${team.points} puan (${team.played} maç: ${team.won}G ${team.drawn}B ${team.lost}M). Form durumu, kadro ve oyuncu profilleri.`
+      ? `${featured.name} takım profili: Süper Lig'de ${team.rank}. sırada, ${team.points} puan (${team.played} maç: ${team.won}G ${team.drawn}B ${team.lost}M). Son maç sonucu, fikstür, form durumu ve kadro.`
       : `${featured.name} takım profili: kayıtlı Süper Lig sırası, puanı, maç bilançosu, form durumu ve FutbolRadar oyuncu profilleri.`,
     canonicalPath: `/takimlar/${featured.slug}`,
-    h1: `${featured.name} Takım Profili`,
+    h1: `${featured.name} Takım Profili: Son Maç ve Fikstür`,
     kicker: "Süper Lig Takımı",
     intro: `${featured.name} için kayıtlı 2026/27 lig görünümü, takım formu ve doğrulanmış oyuncu kayıtlarına erişim sayfası.`,
     breadcrumbs,
-    schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: { "@type": "SportsTeam", name: featured.name, sport: "Football", memberOf: { "@type": "SportsOrganization", name: team.league } } },
+    schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: sportsTeamNode(richSources, { name: featured.name, providerId: team.providerId, url: `${siteUrl}/takimlar/${featured.slug}`, id: `${siteUrl}/takimlar/${featured.slug}#team` }) },
     indexable: featured.indexable !== false,
     content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
   });

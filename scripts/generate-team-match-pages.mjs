@@ -29,6 +29,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastMatchAnswer, loadTeamSources, sportsEventNode, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -56,6 +57,7 @@ const TEAMS = superLigTeamPages({ root }).map(({ slug, name, record }) => {
   return {
     slug,
     name,
+    providerId: record && record.providerId,
     radar: fs.existsSync(path.join(root, radar)) ? radar : null,
     form: fs.existsSync(path.join(root, form)) ? form : null,
     // Puan durumu sayfası (generate-team-standings-pages) indekslenebilir mi?
@@ -76,6 +78,7 @@ const managers = JSON.parse(fs.readFileSync(path.join(root, "data", "managers.js
 const leaders = JSON.parse(fs.readFileSync(path.join(root, "data", "league-leaders.json"), "utf8"));
 const playerStore = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const newsStore = JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8"));
+const richSources = loadTeamSources(root);
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -415,14 +418,9 @@ function section(title, note, body, kicker) {
   </section>`;
 }
 
-function schemaFor(team, url, description, scheduled, squad, manager, news) {
-  const sportsTeam = {
-    "@type": "SportsTeam",
-    "@id": `${url}#team`,
-    name: team.name,
-    sport: "Football",
-    memberOf: { "@type": "SportsOrganization", name: "Trendyol Süper Lig" }
-  };
+function schemaFor(team, url, description, scheduled, squad, manager, news, faq) {
+  // Logo/stat yalnızca depodaki kayıttan (scripts/lib/teamRichResults.mjs).
+  const sportsTeam = sportsTeamNode(richSources, { name: team.name, providerId: team.providerId, id: `${url}#team` });
   if (manager) sportsTeam.coach = { "@type": "Person", name: manager.manager };
   if (squad) sportsTeam.athlete = squad.players.map((player) => ({ "@type": "Person", name: player.name }));
   const graph = [
@@ -449,23 +447,15 @@ function schemaFor(team, url, description, scheduled, squad, manager, news) {
   ];
 
   // Yalnızca başlama anı kesin olan maçlar şemaya girer.
+  scheduled = scheduled.filter((match) => sportsEventNode(match));
   if (scheduled.length) {
     graph.push({
       "@type": "ItemList",
       name: `${team.name} yaklaşan maçları`,
       numberOfItems: scheduled.length,
       itemListElement: scheduled.map((match, index) => {
-        const event = {
-          "@type": "SportsEvent",
-          name: `${match.homeTeam} - ${match.awayTeam}`,
-          startDate: match.kickoff,
-          eventStatus: "https://schema.org/EventScheduled",
-          eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-          homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
-          awayTeam: { "@type": "SportsTeam", name: match.awayTeam }
-        };
-        if (match.venue) event.location = { "@type": "Place", name: match.venue };
-        if (match.league) event.superEvent = { "@type": "SportsOrganization", name: match.league };
+        const href = matchPageHref(match);
+        const event = sportsEventNode(match, { url: /^\.\/mac\//.test(href) ? `${DOMAIN}/${href.slice(2)}` : undefined });
         return { "@type": "ListItem", position: index + 1, item: event };
       })
     });
@@ -489,7 +479,25 @@ function schemaFor(team, url, description, scheduled, squad, manager, news) {
     });
   }
 
+  const faqNode = faqSchemaNode(faq);
+  if (faqNode) graph.push(faqNode);
+
   return { "@context": "https://schema.org", "@graph": graph };
+}
+
+/** SSS: cevaplar sayfadaki kartlarla aynı kayıtlardan üretilir. */
+function teamFaq(team, next, lastGame, standing) {
+  return faqItems([
+    {
+      q: `${genitive(team.name)} sıradaki maçı ne zaman?`,
+      a: next && next.kickoff ? `${genitive(team.name)} sıradaki maçı ${longDate(next.kickoff)} saat ${clockLabel(next.kickoff)} TSİ'de: ${next.homeTeam} - ${next.awayTeam}${next.venue ? ` (${next.venue})` : ""}.` : null
+    },
+    { q: `${team.name} son maç sonucu ne?`, a: lastMatchAnswer(lastGame) },
+    {
+      q: `${team.name} puan durumunda kaçıncı sırada?`,
+      a: standing && Number(standing.played) > 0 ? `${team.name}, Süper Lig puan durumunda ${standing.played} maçta ${standing.points} puanla ${standing.rank}. sırada.` : null
+    }
+  ]);
 }
 
 function relatedLinks(team) {
@@ -549,8 +557,9 @@ function buildPage(team, today) {
     ? `${team.name}'ın sıradaki maçı ${longDate(next.kickoff)} günü saat ${clockLabel(next.kickoff)} TSİ'de ${opponentOf(next, team)} karşısında.`
     : `${team.name} için takvimde gün ve saati doğrulanmış bir sonraki maç henüz yok.`;
 
-  const title = `${team.name} Maçları, Puan Durumu ve Fikstür ${seasonLabel} | FutbolRadar`;
-  const description = `${team.name} maçı bugün var mı? Sıradaki maçın saati ve yayın kanalı, ${team.name} puan durumu, fikstürü, kadrosu ve güncel takım haberleri.`;
+  const title = `${team.name} Maçları ve Fikstür ${seasonLabel}: Son Maç, Puan Durumu | FutbolRadar`;
+  const description = `${team.name} fikstür ve maç programı: sıradaki maçın saati ve kanalı, ${team.name} son maç sonucu, puan durumu, kadro ve güncel takım haberleri.`;
+  const faq = teamFaq(team, next, lastGame, standing);
 
   const html = `<!doctype html>
 <html lang="tr">
@@ -572,7 +581,7 @@ function buildPage(team, today) {
     <meta name="twitter:title" content="${escapeHtml(title)}" />
     <meta name="twitter:description" content="${escapeHtml(description)}" />
     <meta name="twitter:image" content="${DOMAIN}/assets/og-image.png" />
-    <script type="application/ld+json">${JSON.stringify(schemaFor(team, url, description, scheduled, squad, manager, teamNews))}</script>
+    <script type="application/ld+json">${JSON.stringify(schemaFor(team, url, description, scheduled, squad, manager, teamNews, faq))}</script>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="./site.webmanifest" />
     <link rel="stylesheet" href="./page.css" />
@@ -584,7 +593,7 @@ function buildPage(team, today) {
       <section class="trend-hero">
         <div>
           <span class="eyebrow">${escapeHtml(team.name)} · ${escapeHtml(seasonLabel)} sezonu</span>
-          <h1>${escapeHtml(team.name)} Maçları, Puan Durumu ve Fikstür</h1>
+          <h1>${escapeHtml(team.name)} Maçları ve Fikstür</h1>
           <p>${escapeHtml(nextSentence)}</p>
           <p class="muted">${escapeHtml(team.name)} maçı saat kaçta ve hangi kanalda sorularının yanıtı, fikstür, kadro ve lig verileri aynı doğrulanmış kaynaklardan otomatik güncellenir.</p>
         </div>
@@ -599,6 +608,7 @@ function buildPage(team, today) {
       ${section(`${team.name} güncel kadrosu`, squad ? `${seasonLabel} sezonu sağlayıcı kadrosu; son senkron ${timestampLabel(squad.syncedAt)}.` : "", squadSection(team, squad, manager), "Kadro ve teknik ekip")}
       ${section("Son transfer hareketleri", "Yalnızca resmî açıklamayla doğrulanmış kayıtlar.", transferRows(moves), "Kadro")}
       ${renderTeamNewsSection(teamNews, { team: team.name, base: "./" })}
+      ${faqSectionHtml(faq, { heading: `${team.name} hakkında sık sorulan sorular` })}
       ${section("İlgili ekranlar", "Aynı veriyi lig, kadro ve form açısından derinleştir.", relatedLinks(team), "İç bağlantılar")}
       ${updatedAt ? `<p class="team-data-freshness" data-source-updated-at="${escapeHtml(updatedAt)}">Son veri güncellemesi: <time datetime="${escapeHtml(updatedAt)}">${escapeHtml(timestampLabel(updatedAt))}</time></p>` : ""}
     </main>
