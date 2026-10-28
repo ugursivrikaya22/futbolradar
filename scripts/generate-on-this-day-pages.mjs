@@ -108,7 +108,7 @@ function dayStyle() {
 }
 
 function eventItem(e) {
-  return `<li class="otd-item" data-category="${esc(e.category)}"><div class="otd-meta"><span class="otd-year">${e.year}</span><span class="otd-tag">${esc(CATEGORY_LABELS[e.category])}</span></div><h3>${esc(e.title_tr)}</h3>${e.description_tr ? `<p>${esc(e.description_tr)}</p>` : ""}<a href="${esc(e.source_url)}" target="_blank" rel="noopener nofollow">Kaynak: ${esc(e.source_name || new URL(e.source_url).hostname)}</a></li>`;
+  return `<li class="otd-item" data-category="${esc(e.category)}"><div class="otd-meta"><span class="otd-year">${e.year}</span><span class="otd-tag">${esc(CATEGORY_LABELS[e.category])}</span></div><h3>${esc(e.title_tr)}</h3>${e.description_tr ? `<p>${esc(e.description_tr)}</p>` : ""}<a href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer nofollow">Kaynak: ${esc(e.source_name || new URL(e.source_url).hostname)}</a></li>`;
 }
 
 function matchItem(m, base) {
