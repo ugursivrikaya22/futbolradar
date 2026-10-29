@@ -29,6 +29,8 @@ import { faqItems, faqSchemaNode, faqSectionHtml } from "./lib/teamRichResults.m
 
 const require = createRequire(import.meta.url);
 const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
+const { sameClub } = require("../services/superLigTeams.js");
+const { playerLink } = require("../services/playerLinks.js");
 
 const root = process.cwd();
 const DOMAIN = "https://www.futbolradar.com";
@@ -38,6 +40,42 @@ const DOMAIN = "https://www.futbolradar.com";
 const TEAMS = superLigTeamPages({ root }).map(({ slug, id, name }) => ({ slug, id, name }));
 
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
+let leagueLeaders = { topScorers: [], topAssists: [] };
+try { leagueLeaders = JSON.parse(fs.readFileSync(path.join(root, "data", "league-leaders.json"), "utf8")); } catch { /* liste yoksa bölüm düşer */ }
+
+const BIG_FOUR_SECTIONS = [["kadro", "Kadro", "Güncel kadro, mevki ve yaş bilgisiyle."], ["istatistikler", "İstatistikler", "Sıra, galibiyet-beraberlik-mağlubiyet, gol-asist liderleri."], ["mac-sonuclari", "Maç sonuçları", "Oynanmış maçların skorları, kaynaklarıyla."], ["tarihce", "Tarihçe", "Kulüp bilgileri; doğrulanmış kaynaklı bölümler."]];
+
+/**
+ * TAKIM ↔ OYUNCU KÜMESİ. Puan durumu sayfası takım profiline, (büyük dört
+ * için) kadro/istatistik sayfalarına ve takımın Süper Lig gol/asist
+ * listelerindeki oyuncularının profillerine bağlanır. Sayılar yalnızca
+ * data/league-leaders.json'dan okunur; listede oyuncu yoksa satır basılmaz,
+ * hedef dosya yoksa bağlantı verilmez.
+ */
+function teamPlayerCluster(team, { leaders = leagueLeaders, exists = (rel) => fs.existsSync(path.join(root, rel)), linkFor = (slug) => playerLink(slug, "./") } = {}) {
+  const links = [];
+  if (exists(`takimlar/${team.slug}.html`)) links.push({ href: `./takimlar/${team.slug}`, kicker: "Takım", title: `${team.name} takım profili`, text: "Kadro, form ve fikstür tek sayfada." });
+  for (const [key, title, text] of BIG_FOUR_SECTIONS) {
+    if (exists(`takimlar/${team.slug}/${key}.html`)) links.push({ href: `./takimlar/${team.slug}/${key}.html`, kicker: "Takım verisi", title: `${team.name} ${title.toLocaleLowerCase("tr-TR")}`, text });
+  }
+  const rows = new Map();
+  for (const [list, metric, label] of [[leaders.topScorers, "goals", "gol"], [leaders.topAssists, "assists", "asist"]]) {
+    for (const row of list || []) {
+      if (!row?.slug || !row?.name || !sameClub(row.team, team.name)) continue;
+      const value = Number(row[metric]);
+      if (!Number.isFinite(value) || value <= 0) continue;
+      const entry = rows.get(row.slug) || { name: row.name, href: linkFor(row.slug), parts: [] };
+      entry.parts.push(`${value} ${label}`);
+      rows.set(row.slug, entry);
+    }
+  }
+  const players = [...rows.values()].filter((row) => row.href);
+  if (!links.length && !players.length) return "";
+  const playerHtml = players.length
+    ? `<h3>Gol ve asist listelerindeki ${escapeHtml(team.name)} oyuncuları</h3><div class="trend-link-grid">${players.map((row) => `<a href="${escapeHtml(row.href)}"><span>Oyuncu</span><strong>${escapeHtml(row.name)}</strong><p>Süper Lig: ${escapeHtml(row.parts.join(", "))}.</p></a>`).join("")}</div>`
+    : "";
+  return `${links.length ? `<div class="trend-link-grid">${links.map((link) => `<a href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>` : ""}${playerHtml}`;
+}
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -241,6 +279,7 @@ ${rowsHtml}
         </div>
       </section>
       ${faqSectionHtml(faq, { heading: `${team.name} puan durumu: sık sorulan sorular` })}
+      ${(() => { const cluster = teamPlayerCluster(team); return cluster ? section(`${team.name} takımı ve oyuncuları`, "Takım profili, kadro ve Süper Lig gol/asist listelerindeki oyuncuların profilleri.", cluster, "Takım ve oyuncular") : ""; })()}
       ${section("İlgili ekranlar", `${team.name} için maç programı, canlı skor ve ligin diğer büyük takımlarının puan durumu.`, relatedStandingsLinks(team), "İç bağlantılar")}
     </main>
     ${siteFooter({ base: "./" })}
