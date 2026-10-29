@@ -20,6 +20,8 @@ const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), 
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const richSources = loadTeamSources(root);
 
+const BIG_FOUR_SECTIONS = [["kadro", "kadro ve oyuncular"], ["istatistikler", "sezon istatistikleri"], ["mac-sonuclari", "maç sonuçları"], ["tarihce", "kulüp tarihçesi"]];
+
 const featuredTeams = [
   { slug: "galatasaray", name: "Galatasaray" },
   { slug: "fenerbahce", name: "Fenerbahçe" },
@@ -266,7 +268,11 @@ function teamPage(featured) {
     : "";
   const teamLinks = [
     fs.existsSync(path.join(root, `${featured.slug}-maclari.html`)) ? `<a href="../${featured.slug}-maclari.html">${escapeHtml(featured.name)} maçları ve fikstür</a>` : "",
-    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : ""
+    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : "",
+    // Büyük dört veri sayfaları (generate-big-four-data-pages.mjs) indekslenir ve
+    // site haritasında; takım profilinden bağlanmadıkları için öksüz kalıyorlardı.
+    ...BIG_FOUR_SECTIONS.map(([key, label]) => fs.existsSync(path.join(root, "takimlar", featured.slug, `${key}.html`))
+      ? `<a href="../takimlar/${featured.slug}/${key}.html">${escapeHtml(featured.name)} ${label}</a>` : "")
   ].join("");
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");

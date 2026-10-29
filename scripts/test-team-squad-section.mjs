@@ -24,4 +24,10 @@ for (const file of fs.readdirSync("takimlar").filter((f) => f.endsWith(".html"))
   assert.equal(new Set(links).size, links.length, `${file}: yinelenen oyuncu bağlantısı`);
   assert.ok(!/<span>(Goalkeeper|Defender|Midfielder|Attacker)<\/span>/.test(m[0]), `${file}: İngilizce mevki etiketi`);
 }
+for (const slug of ["galatasaray", "fenerbahce", "besiktas", "trabzonspor"]) {
+  const html = fs.readFileSync(`takimlar/${slug}.html`, "utf8");
+  for (const key of ["kadro", "istatistikler", "mac-sonuclari", "tarihce"]) {
+    if (fs.existsSync(`takimlar/${slug}/${key}.html`)) assert.ok(html.includes(`href="../takimlar/${slug}/${key}.html"`), `${slug}: ${key} sayfasına bağlantı yok`);
+  }
+}
 console.log("team squad section: OK");
