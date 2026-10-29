@@ -5,6 +5,7 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { buildSquadGroups, squadSectionHtml } from "./lib/teamSquad.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, lastMatchAnswer, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
@@ -18,6 +19,8 @@ const socialImage = `${siteUrl}/assets/og-image.png`;
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const richSources = loadTeamSources(root);
+
+const BIG_FOUR_SECTIONS = [["kadro", "kadro ve oyuncular"], ["istatistikler", "sezon istatistikleri"], ["mac-sonuclari", "maç sonuçları"], ["tarihce", "kulüp tarihçesi"]];
 
 const featuredTeams = [
   { slug: "galatasaray", name: "Galatasaray" },
@@ -242,10 +245,10 @@ function teamVenueAnswer(name) {
 function teamPage(featured) {
   const team = featured.record || teamBySlug.get(featured.slug);
   if (!team) throw new Error(`Takım verisi bulunamadı: ${featured.slug}`);
-  const squad = players.filter((player) => sameClub(player.currentTeam, team.name)).sort((a, b) => a.name.localeCompare(b.name, "tr")).slice(0, 12);
-  const teamPlayers = squad.length
-    ? `<ul class="evergreen-player-list">${squad.map((player) => `<li><a href="${escapeHtml(playerLink(player.id, "../"))}"><strong>${escapeHtml(player.name)}</strong><span>${escapeHtml(player.position || "Pozisyon kaydı yok")}</span></a></li>`).join("")}</ul>`
-    : "<p>Bu takım için güncel oyuncu kaydı bulunmuyor.</p>";
+  const squad = players.filter((player) => sameClub(player.currentTeam, team.name));
+  const squadGroups = buildSquadGroups(squad, (id) => playerLink(id, "../"));
+  const squadTotal = squadGroups.reduce((sum, group) => sum + group.players.length, 0);
+  const teamPlayers = squadSectionHtml(squadGroups, escapeHtml);
   const breadcrumbs = [
     { name: "Ana Sayfa", href: "../", url: `${siteUrl}/` },
     { name: "Takımlar", href: "../takimlar", url: `${siteUrl}/takimlar` },
@@ -265,7 +268,11 @@ function teamPage(featured) {
     : "";
   const teamLinks = [
     fs.existsSync(path.join(root, `${featured.slug}-maclari.html`)) ? `<a href="../${featured.slug}-maclari.html">${escapeHtml(featured.name)} maçları ve fikstür</a>` : "",
-    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : ""
+    standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : "",
+    // Büyük dört veri sayfaları (generate-big-four-data-pages.mjs) indekslenir ve
+    // site haritasında; takım profilinden bağlanmadıkları için öksüz kalıyorlardı.
+    ...BIG_FOUR_SECTIONS.map(([key, label]) => fs.existsSync(path.join(root, "takimlar", featured.slug, `${key}.html`))
+      ? `<a href="../takimlar/${featured.slug}/${key}.html">${escapeHtml(featured.name)} ${label}</a>` : "")
   ].join("");
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");
@@ -289,7 +296,7 @@ function teamPage(featured) {
     breadcrumbs,
     schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: sportsTeamNode(richSources, { name: featured.name, providerId: team.providerId, url: `${siteUrl}/takimlar/${featured.slug}`, id: `${siteUrl}/takimlar/${featured.slug}#team` }) },
     indexable: featured.indexable !== false,
-    content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
+    content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">${escapeHtml(featured.name)} kadrosu${squadTotal ? ` (${squadTotal} oyuncu)` : ""}</h2><p class="evergreen-note">Mevkiye göre gruplu, sitede profili bulunan oyuncular.</p>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
   });
 }
 
