@@ -261,7 +261,7 @@ export async function runProcess(command, args, options = {}) {
   return await new Promise((resolve) => {
     const started = Date.now();
     const child = spawn(command, args, {
-      cwd: options.cwd || root,
+      cwd: root,
       env: process.env,
       stdio: ["ignore", "pipe", "pipe"],
       detached: POSIX_GROUPS
@@ -723,37 +723,6 @@ function appendGithubSummary(record) {
   fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${lines.join("\n")}\n`, "utf8");
 }
 
-// PAYLAŞILAN SAATLİK KİLİT (Supabase `cron_runs`, migration 0012).
-//
-// Vercel Cron (`/api/cron/scheduled-update`) ile bu koşu aynı saatte
-// başlayabilir. Aynı anahtar (`hourly:YYYY-MM-DDTHH` / `full:YYYY-MM-DD`)
-// için ilk INSERT kazanır; Vercel almışsa bu koşu API-Football'a HİÇ
-// gitmeden atlar. Yalnızca zamanlanmış (schedule) koşularda uygulanır —
-// elle tetiklenen, --force, --match, --backfill koşuları engellenmez.
-// Supabase yapılandırılmamış / tablo yok / erişilemiyorsa bugünkü davranış
-// sürer (fail-open). Kilit alınırsa Vercel'in yazdığı daha yeni veri
-// eserleri depo verisinin üzerine koşullu uygulanır (services/cron/hydrate.js).
-async function claimSharedRunLock(args, key, env = process.env) {
-  if (env.GITHUB_EVENT_NAME !== "schedule" || args.force || args.match || args.backfill) return { skip: false, reason: "not-scheduled" };
-  if (!supabaseConfigured()) return { skip: false, reason: "supabase-not-configured" };
-  const { createRequire } = await import("node:module");
-  const req = createRequire(import.meta.url);
-  try {
-    const store = req("../services/cron/runStore.js");
-    const claim = await store.acquireRun({ key, type: args.type, runner: "github-actions" });
-    if (!claim.acquired && claim.row && claim.row.runner === "vercel") {
-      return { skip: true, reason: `Shared lock ${key} is held by Vercel Cron (${claim.row.status}); skipping to avoid duplicate API-Football requests.` };
-    }
-    if (claim.acquired) {
-      await req("../services/cron/hydrate.js").hydrateDataDir({ root, log: (m) => console.log(m) });
-    }
-    return { skip: false, reason: claim.acquired ? "lock-acquired" : "lock-held-by-github-actions" };
-  } catch (error) {
-    console.warn(`[scheduled-update] shared lock unavailable (fail-open): ${redact(error.message || String(error))}`);
-    return { skip: false, reason: "lock-unavailable" };
-  }
-}
-
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.ciGuard) validateCiContext();
@@ -791,21 +760,6 @@ async function main() {
     };
     // A fallback schedule may arrive after the primary run. Keep the published
     // last-success record intact and capture this no-op in the Actions log only.
-    appendGithubSummary(record);
-    console.log(`[scheduled-update] ${record.reason}`);
-    return;
-  }
-
-  const sharedLock = await claimSharedRunLock(args, key);
-  if (sharedLock.skip) {
-    const finishedAt = new Date().toISOString();
-    const record = {
-      id: `${process.env.GITHUB_RUN_ID || process.pid}-shared-lock`,
-      dedupeKey: key, type: args.type, trigger: process.env.GITHUB_EVENT_NAME || "local", status: "skipped",
-      startedAt: started.toISOString(), finishedAt, durationMs: Date.parse(finishedAt) - started.getTime(),
-      reason: sharedLock.reason, sourcesChecked: [],
-      counts: { matchesUpdated: 0, newsUpdated: 0, transfersUpdated: 0, teamsUpdated: 0, playersUpdated: 0, filesChanged: 0 }, errors: []
-    };
     appendGithubSummary(record);
     console.log(`[scheduled-update] ${record.reason}`);
     return;
@@ -1041,4 +995,4 @@ if (isMain) {
 // hattın gerçekten hangi betikleri çağırdığını okuyup her birinin diskte
 // bulunduğunu doğruluyor. Bir adımın sessizce düşmesi ya da silinmiş bir
 // betiğe işaret etmesi, ancak hat üretimde koşunca fark ediliyordu.
-export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff, sourceSteps, fullMaintenanceSteps, transformSteps, validationSteps, providerKeyConfigured, claimSharedRunLock };
+export { buildCrashRecord, collectionSnapshot, dedupeKey, snapshotDiff, sourceSteps, fullMaintenanceSteps, transformSteps };
