@@ -5,6 +5,7 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { MCAL_CSS, calendarRowHtml, teamCalendar } from "./lib/matchCalendar.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, lastMatchAnswer, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
@@ -239,6 +240,23 @@ function teamVenueAnswer(name) {
   return `${name} kulübünün kayıtlı iç saha statı: ${node.location.name}${city}.`;
 }
 
+/**
+ * TAKIM MAÇ TAKVİMİ — /takimlar/<slug> → /mac/<maç> detay sayfaları ve
+ * /mac-takvimi#takim-<slug>. Kaynak: data/match-seo-pages.json sicili
+ * (generate-match-seo-pages.mjs üretir). Yalnızca indekslenebilir ve
+ * sayfası üretilmiş maçlar; skor yalnızca bitmiş maçta, sicilde varsa.
+ */
+const matchSeoRegistry = (() => {
+  try { return Object.values(JSON.parse(fs.readFileSync(path.join(root, "data", "match-seo-pages.json"), "utf8")).pages || {}); } catch { return []; }
+})();
+function teamCalendarSectionHtml(featured) {
+  const withPage = matchSeoRegistry.filter((entry) => entry && entry.slug && fs.existsSync(path.join(root, "mac", `${entry.slug}.html`)));
+  const { upcoming, recent } = teamCalendar(withPage, featured.slug, { upcomingLimit: 5, recentLimit: 5 });
+  if (!upcoming.length && !recent.length) return "";
+  const list = (rows) => `<ul class="mcal-list">${rows.map((entry) => calendarRowHtml(entry, `../mac/${entry.slug}`)).join("")}</ul>`;
+  return `${MCAL_CSS}<section class="evergreen-section" id="mac-takvimi" aria-labelledby="team-calendar"><h2 id="team-calendar">${escapeHtml(featured.name)} maç takvimi</h2>${upcoming.length ? `<h3>Yaklaşan maçlar</h3>${list(upcoming)}` : ""}${recent.length ? `<h3>Son maç sonuçları</h3>${list(recent)}` : ""}<p class="mcal-links"><a href="../mac-takvimi.html#takim-${escapeHtml(featured.slug)}">Tüm maç takvimi</a><a href="../mac-sonuclari.html">Maç sonuçları</a></p></section>`;
+}
+
 function teamPage(featured) {
   const team = featured.record || teamBySlug.get(featured.slug);
   if (!team) throw new Error(`Takım verisi bulunamadı: ${featured.slug}`);
@@ -270,6 +288,7 @@ function teamPage(featured) {
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");
   const lastGame = lastFinishedMatch(richSources, team.name);
+  const calendarSection = teamCalendarSectionHtml(featured);
   const faq = faqItems([
     { q: `${featured.name} son maç sonucu ne?`, a: lastMatchAnswer(lastGame) },
     { q: `${featured.name} Süper Lig'de kaçıncı sırada?`, a: Number(team.played) > 0 && Number.isFinite(team.points) && team.rank ? `${featured.name}, Süper Lig puan durumunda ${team.played} maçta ${team.points} puanla ${team.rank}. sırada.` : null },
@@ -289,7 +308,7 @@ function teamPage(featured) {
     breadcrumbs,
     schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: sportsTeamNode(richSources, { name: featured.name, providerId: team.providerId, url: `${siteUrl}/takimlar/${featured.slug}`, id: `${siteUrl}/takimlar/${featured.slug}#team` }) },
     indexable: featured.indexable !== false,
-    content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
+    content: `${calendarSection}<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
   });
 }
 

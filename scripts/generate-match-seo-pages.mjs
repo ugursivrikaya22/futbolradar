@@ -40,6 +40,7 @@ import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
 import { columnsForTeams } from "./lib/clusterLinks.mjs";
+import { MCAL_CSS, calendarRowHtml, groupByCompetition, itemListNode, teamCalendar } from "./lib/matchCalendar.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -1614,6 +1615,37 @@ function shellHtml({ locale, title, description, canonical, base, h1, lead, body
 `;
 }
 
+/**
+ * /mac-takvimi — LİG VE TAKIM KIRILIMI (yalnızca TR).
+ * Ligler competitionId ile ayrılır (providerLeagueId doğrulamasından geçmiş
+ * kimlik); takım bölümleri Süper Lig takım profillerine (/takimlar/<slug>)
+ * ve takımın maçlar/puan sayfalarına iki yönlü bağlantı verir. Takım
+ * profilleri de `#takim-<slug>` çapasına geri bağlanır.
+ */
+function trCalendarBreakdownHtml(upcoming, indexable, base) {
+  const leagues = groupByCompetition(upcoming);
+  const leagueHtml = leagues.length
+    ? `<nav class="mcal-nav" aria-label="Lige göre">${leagues.map((g) => `<a href="#lig-${escapeHtml(g.id)}">${escapeHtml(g.name)} (${g.rows.length})</a>`).join("")}</nav>${leagues.map((g) => `<section class="mcal-group" id="lig-${escapeHtml(g.id)}"><h3>${escapeHtml(g.name)} maç takvimi</h3><ul class="mcal-list">${g.rows.slice().sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff))).map((e) => calendarRowHtml(e, `${base}${hrefForEntry(e, "tr")}`, { now: NOW })).join("")}</ul>${fileExists(`lig/${g.id}.html`) ? `<p class="mcal-links"><a href="${base}lig/${escapeHtml(g.id)}.html">${escapeHtml(g.name)} sayfası</a></p>` : ""}</section>`).join("")}`
+    : "";
+  const teamBlocks = teams.map((team) => {
+    const slug = teamPageSlug(team.name);
+    if (!slug) return "";
+    const cal = teamCalendar(indexable, slug, { now: NOW, upcomingLimit: 3, recentLimit: 2 });
+    if (!cal.upcoming.length && !cal.recent.length) return "";
+    const rows = [...cal.upcoming, ...cal.recent.slice().reverse()].sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff)));
+    const links = [
+      fileExists(`takimlar/${slug}.html`) ? `<a href="${base}takimlar/${slug}">${escapeHtml(team.name)} takım profili</a>` : "",
+      fileExists(`${slug}-maclari.html`) ? `<a href="${base}${slug}-maclari.html">${escapeHtml(team.name)} maçları</a>` : "",
+      fileExists(`${slug}-puan-durumu.html`) ? `<a href="${base}${slug}-puan-durumu">${escapeHtml(team.name)} puan durumu</a>` : ""
+    ].filter(Boolean).join("");
+    return { slug, name: team.name, html: `<section class="mcal-group" id="takim-${slug}"><h3>${escapeHtml(team.name)} maç takvimi</h3><ul class="mcal-list">${rows.map((e) => calendarRowHtml(e, `${base}${hrefForEntry(e, "tr")}`, { now: NOW })).join("")}</ul>${links ? `<p class="mcal-links">${links}</p>` : ""}</section>` };
+  }).filter(Boolean).sort((a, b) => a.name.localeCompare(b.name, "tr"));
+  const teamHtml = teamBlocks.length
+    ? `<nav class="mcal-nav" aria-label="Takıma göre">${teamBlocks.map((t) => `<a href="#takim-${t.slug}">${escapeHtml(t.name)}</a>`).join("")}</nav>${teamBlocks.map((t) => t.html).join("")}`
+    : "";
+  return `${MCAL_CSS}${leagueHtml ? `<section class="msp-section" id="liglere-gore"><h2 class="msp-section-title">Liglere göre maç takvimi</h2>${leagueHtml}</section>` : ""}${teamHtml ? `<section class="msp-section" id="takimlara-gore"><h2 class="msp-section-title">Süper Lig takımlarına göre maç takvimi</h2>${teamHtml}</section>` : ""}`;
+}
+
 function hubPages(entries, hrefForEntry) {
   const pages = [];
   const indexable = entries.filter((entry) => isIndexableEntry(entry, NOW));
@@ -1645,6 +1677,7 @@ function hubPages(entries, hrefForEntry) {
       <section class="msp-section"><h2 class="msp-section-title">${escapeHtml(locale === "en" ? "Upcoming matches" : "Yaklaşan maçlar")}</h2>${upcoming.length ? groupedListHtml(upcoming, locale, hrefFromHub) : `<article class="card data-empty"><strong>${escapeHtml(locale === "en" ? "No verified fixture in the next ten days yet." : "Önümüzdeki on gün için doğrulanmış maç henüz yok.")}</strong></article>`}</section>
       <section class="msp-section"><h2 class="msp-section-title">${escapeHtml(locale === "en" ? "Recent results" : "Son sonuçlar")}</h2>${recent.length ? groupedListHtml(recent, locale, hrefFromHub) : `<article class="card data-empty"><strong>${escapeHtml(locale === "en" ? "No verified result in the last week." : "Son bir haftada doğrulanmış sonuç yok.")}</strong></article>`}</section>
       <section class="msp-section"><h2 class="msp-section-title">${escapeHtml(locale === "en" ? "Match archive by month" : "Aylara göre maç arşivi")}</h2>${monthLinks}</section>
+      ${locale === "tr" ? trCalendarBreakdownHtml(upcoming, indexable, base) : ""}
       <section class="msp-section msp-related"><div class="msp-related-grid"><a class="match-related-card" href="${base}${locale === "en" ? "en/todays-matches.html" : "bugunun-maclari.html"}"><span>${escapeHtml(text.todayMatches)}</span><strong>${escapeHtml(locale === "en" ? "Today's programme" : "Günün programı")}</strong></a><a class="match-related-card" href="${base}${locale === "en" ? "en/live-football-scores.html" : "canli-skor.html"}"><span>${escapeHtml(text.liveScore)}</span><strong>${escapeHtml(locale === "en" ? "Live scores" : "Canlı skor")}</strong></a><a class="match-related-card" href="${base}${locale === "en" ? "en/standings.html" : "puan-durumu.html"}"><span>${escapeHtml(text.leagueStandings)}</span><strong>${escapeHtml(locale === "en" ? "Standings" : "Puan durumu")}</strong></a></div></section>`;
     const title = locale === "en" ? "Match Calendar: Fixtures, Kick-off Times & Results | FutbolRadar" : "Maç Takvimi: Fikstür, Maç Saatleri ve Sonuçlar | FutbolRadar";
     const description = locale === "en"
@@ -1653,7 +1686,8 @@ function hubPages(entries, hrefForEntry) {
     const breadcrumb = `<nav class="breadcrumb" aria-label="${locale === "en" ? "Breadcrumb" : "Sayfa yolu"}"><a href="${base}${locale === "en" ? "en/index.html" : "index.html"}">${escapeHtml(text.breadcrumbHome)}</a><span>/</span><span>${escapeHtml(text.allMatches)}</span></nav>`;
     const schema = { "@context": "https://schema.org", "@graph": [
       { "@type": "CollectionPage", name: title.replace(" | FutbolRadar", ""), url: hubUrl, description, inLanguage: locale === "en" ? "en" : "tr" },
-      { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: text.breadcrumbHome, item: locale === "en" ? `${DOMAIN}/en` : `${DOMAIN}/` }, { "@type": "ListItem", position: 2, name: text.allMatches, item: hubUrl }] }
+      { "@type": "BreadcrumbList", itemListElement: [{ "@type": "ListItem", position: 1, name: text.breadcrumbHome, item: locale === "en" ? `${DOMAIN}/en` : `${DOMAIN}/` }, { "@type": "ListItem", position: 2, name: text.allMatches, item: hubUrl }] },
+      ...(locale === "tr" && upcoming.length ? [itemListNode(upcoming.slice(0, 50), "Yaklaşan maçlar", NOW)] : [])
     ] };
     pages.push({
       relative: hubPath,
