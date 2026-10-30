@@ -26,6 +26,7 @@ import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { columnsForTeams, teamMatchPages } from "./lib/clusterLinks.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml } from "./lib/teamRichResults.mjs";
+import { istanbulDate, trDateLabel } from "./lib/pageFreshness.mjs";
 
 const require = createRequire(import.meta.url);
 const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
@@ -138,6 +139,15 @@ function relatedStandingsLinks(team) {
   return `<div class="trend-link-grid">${links.map((link) => `<a href="${escapeHtml(link.href)}"><span>${escapeHtml(link.kicker)}</span><strong>${escapeHtml(link.title)}</strong><p>${escapeHtml(link.text)}</p></a>`).join("")}</div>`;
 }
 
+// Veri tarihi: data/league-standings.json Süper Lig kaydının kendi damgası
+// (derleme saati değil). Yoksa dateModified/lastmod basılmaz.
+function standingsDataDate() {
+  try {
+    return istanbulDate(JSON.parse(fs.readFileSync(path.join(root, "data", "league-standings.json"), "utf8"))["super-lig"]?.updatedAt);
+  } catch { return null; }
+}
+const DATA_DATE = standingsDataDate();
+
 function pageSchema(team, url, title, description, faq) {
   const faqNode = faqSchemaNode(faq);
   return {
@@ -150,7 +160,8 @@ function pageSchema(team, url, title, description, faq) {
         name: title,
         isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${DOMAIN}/` },
         inLanguage: "tr-TR",
-        description
+        description,
+        ...(DATA_DATE ? { dateModified: DATA_DATE } : {})
       },
       {
         "@type": "BreadcrumbList",
@@ -226,7 +237,7 @@ function buildPage(team, sorted, total) {
       <section class="trend-hero">
         <div>
           <span class="eyebrow">Süper Lig · 2026/27</span>
-          <h1>${escapeHtml(team.name)} Puan Durumu</h1>
+          <h1>${escapeHtml(team.name)} Puan Durumu</h1>${DATA_DATE ? `\n          <p class="evergreen-freshness" data-data-freshness>Son güncelleme: <time datetime="${DATA_DATE}">${trDateLabel(DATA_DATE)}</time> · Süper Lig puan durumu verisi</p>` : ""}
           <p>${escapeHtml(intro)}</p>
           <p class="muted">Tablo tüm 18 takımı gösterir; ${escapeHtml(team.name)} satırı vurgulanmıştır. Sonuçlar geldikçe otomatik güncellenir.</p>
         </div>
@@ -280,7 +291,8 @@ for (const team of TEAMS) {
 const sitemapPath = path.join(root, "sitemap.xml");
 if (fs.existsSync(sitemapPath)) {
   let xml = fs.readFileSync(sitemapPath, "utf8");
-  const stamp = new Date().toISOString().slice(0, 10);
+  // lastmod = verinin değiştiği gün; veri damgası yoksa derleme günü (eski davranış).
+  const stamp = DATA_DATE || new Date().toISOString().slice(0, 10);
   let added = 0;
 
   for (const file of written) {

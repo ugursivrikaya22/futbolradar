@@ -17,6 +17,7 @@ import { interleavePollPromo, pollPromoCardHtml } from "./lib/homePoll.mjs";
 import { renderStandingsTabsInner } from "./lib/standingsHomeWidget.mjs";
 import { renderTrendCategoryTabs } from "./lib/trendPlayerCategoriesHtml.mjs";
 import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { applyDataFreshness } from "./lib/pageFreshness.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -1978,6 +1979,22 @@ function updateSourceStripFreshness(html, freshness) {
   return html.replace(expression, sourceStripFreshnessDiv(freshness));
 }
 
+/**
+ * Kilit SEO sayfalarının veri tarihi (dateModified + görünür "Son güncelleme").
+ * Kaynak: ilgili veri dosyasının kendi zaman damgası — derleme saati DEĞİL.
+ */
+function superLigStandingsUpdatedAt() {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(root, "data", "league-standings.json"), "utf8"))["super-lig"]?.updatedAt || null;
+  } catch { return null; }
+}
+const DATA_FRESHNESS_PAGES = {
+  "gol-kralligi.html": () => ({ dataTimestamp: leagueLeaders.updatedAt || leagueLeaders.generatedAt, label: "Süper Lig gol krallığı verisi" }),
+  "asist-kralligi.html": () => ({ dataTimestamp: leagueLeaders.updatedAt || leagueLeaders.generatedAt, label: "Süper Lig asist krallığı verisi" }),
+  "puan-durumu.html": () => ({ dataTimestamp: superLigStandingsUpdatedAt(), label: "Süper Lig puan durumu verisi" }),
+  "takimlar.html": () => ({ dataTimestamp: superLigStandingsUpdatedAt(), label: "Süper Lig puan durumu verisi" })
+};
+
 function writePage(file, slots, freshness, staticSlots = {}) {
   const pagesArg = process.argv.find(arg => arg.startsWith("--pages="));
   if (pagesArg && !pagesArg.slice(8).split(",").includes(file)) return;
@@ -2005,6 +2022,8 @@ function writePage(file, slots, freshness, staticSlots = {}) {
     (tag) => tag.replace(/ data-matches-day="[^"]*"/g, "").replace(/>$/, ` data-matches-day="${istanbulDay(new Date().toISOString())}">`));
   html = updateRobotsDirective(html, file);
   if (file === "puan-durumu.html") html = applyStandingsDocumentMeta(html);
+  const dataStamp = DATA_FRESHNESS_PAGES[file];
+  if (dataStamp) html = applyDataFreshness(html, { ...dataStamp(), pageUrl: `https://www.futbolradar.com/${file}` });
   writeGeneratedFile(sourcePath, html);
   writeGeneratedFile(path.join(root, "public", file), html);
 }
