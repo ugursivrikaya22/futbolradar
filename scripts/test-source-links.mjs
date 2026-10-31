@@ -44,7 +44,8 @@ const DATA_FILES = [
   "broadcast-verifications.json",
   "columns.json",
   "manager-quotes.json",
-  "post-match-reports.json"
+  "post-match-reports.json",
+  "tarihte-bugun-futbolda.json"
 ];
 
 /** Kök HTML sayfaları; üretilen alt klasörler örneklenerek taranır. */
