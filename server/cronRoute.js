@@ -11,6 +11,7 @@
  *   /api/cron/deploy                           Deploy Hook (saatte en fazla 1)
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
+ *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
  *   /api/cron/matchday-reminder                PWA push: "favori takımının maçı bugün" (saatlik, 09–22 İstanbul)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
@@ -29,7 +30,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "matchday-reminder"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "x-autopost", "matchday-reminder"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -76,6 +77,9 @@ async function defaultRunners() {
     // Sağlık raporu catch-all'daki mevcut `/api/daily-health-check` ucundan
     // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
     health: () => engine.runHealth(),
+    // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
+    // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
+    "x-autopost": () => require("../services/xAutopost").runXAutopost(),
     // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
     // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
     "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()
