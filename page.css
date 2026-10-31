@@ -13834,11 +13834,13 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
    are handled by site.js without covering these controls. */
 .fixture-card-quicklinks {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
 .fixture-card-quicklinks a {
-  flex: 1 1 0;
+  /* Dar ekranda en fazla üç düğme bir satıra sığar, gerisi alta geçer. */
+  flex: 1 1 calc(33.333% - 6px);
   min-width: 0;
   display: inline-flex;
   align-items: center;
@@ -24387,5 +24389,14 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
     display: inline-flex;
     align-items: center;
     min-height: 24px;
+  }
+}
+
+/* DESKTOP_DRAWER — scripts/lib/layout.mjs → DESKTOP_DRAWER_KEYS.
+   Tek satırlık masaüstü çubuğunda (≥1366 px) yer kalmayan öğe gizlenir;
+   alt bilgide ve dar ekran çekmecesinde görünmeye devam eder. */
+@media (min-width: 1366px) {
+  .topbar-premium .nav-links a[data-nav-drawer-only] {
+    display: none;
   }
 }

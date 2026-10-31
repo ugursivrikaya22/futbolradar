@@ -10,6 +10,8 @@
  *
  * `base` her sayfanın köke göre önekidir: kökte "./", alt klasörde "../".
  */
+import fs from "node:fs";
+import path from "node:path";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -26,9 +28,29 @@ const { NAV_KEYS, normalizeLocale, t } = require("../../services/i18n.js");
  * aynı kalıyor — `locales/tr.json` içindeki karşılıklar eski sabit metinlerle
  * aynı dizgeler.
  */
+/**
+ * KOŞULLU MENÜ HEDEFİ (`preferredHref`). Henüz üretilmemiş olabilecek bir
+ * sayfa (ör. SEO botunun `transfer-radar.html`'i) derleme anında diskte
+ * varsa ona, yoksa her zaman yayında olan `href`'e bağlanılır; `href` de
+ * yoksa öğe hiç çizilmez. Kırık bağlantı denetimi bu yüzden hep geçer.
+ */
+function navTargetExists(href) {
+  const clean = String(href || "").replace(/[?#].*$/, "");
+  if (!clean) return false;
+  return fs.existsSync(path.join(process.cwd(), clean)) ||
+    fs.existsSync(path.join(process.cwd(), "public", clean));
+}
+
+export function resolveNavHref(item, exists = navTargetExists) {
+  if (item.preferredHref && exists(item.preferredHref)) return item.preferredHref;
+  return item.href || null;
+}
+
 function navList(locale, group) {
   const resolved = NAV_KEYS[normalizeLocale(locale)] || NAV_KEYS.tr;
-  return (resolved[group] || []).map((item) => ({
+  return (resolved[group] || []).map((item) => ({ ...item, href: resolveNavHref(item) }))
+    .filter((item) => item.href)
+    .map((item) => ({
     href: item.href,
     label: t(item.key, locale),
     // Hedef sayfa yalnızca Türkçe var: bağlantı bunu okuyucuya SÖYLER
@@ -103,6 +125,15 @@ function normalizeBase(base) {
 const NAV_NEW_BADGE_UNTIL = "2026-08-22T21:00:00+03:00";
 const NAV_NEW_BADGE_KEY = "nav.polls";
 
+/**
+ * "Transfer Radar" ve "İstatistik" üst menüye girince 1366-1920 px tek satırlık
+ * masaüstü çubuğu 11 bağlantıyı taşıyamıyor (önceki 9 bağlantı bile 0-3 px
+ * payla sığıyordu; 1440 px'te ölçülen taşma 11 bağlantıyla ~130 px).
+ * "Köşe Yazıları" ve "Arşiv" geniş masaüstü satırında gösterilmez; dar ekran
+ * çekmecesinde ve alt bilginin "Maç" sütununda aynen durur.
+ */
+const DESKTOP_DRAWER_KEYS = new Set(["nav.columns", "nav.archive"]);
+
 function linkList(items, base, locale, options = {}) {
   // Rözet yalnızca ÜST menüde gösterilir (`showBadges: true` ile açıkça
   // istenmedikçe): alt bilgi bağlantı listesi gezinme değil kaynakça, aynı
@@ -118,7 +149,10 @@ function linkList(items, base, locale, options = {}) {
       const badge = showBadges && item.key === NAV_NEW_BADGE_KEY
         ? ` <span class="nav-badge" data-nav-badge-until="${NAV_NEW_BADGE_UNTIL}">${escapeHtml(t("nav.newBadge", locale))}</span>`
         : "";
-      return `<a href="${base}${item.href}"${attributes}>${escapeHtml(item.label)}${suffix}${badge}</a>`;
+      // Geniş masaüstü satırına sığmayan öğe (bkz. page.css → DESKTOP_DRAWER)
+      // yalnızca üst menüde işaretlenir; çekmece ve alt bilgide görünür kalır.
+      const drawerOnly = options.showBadges && DESKTOP_DRAWER_KEYS.has(item.key) ? " data-nav-drawer-only" : "";
+      return `<a href="${base}${item.href}"${attributes}${drawerOnly}>${escapeHtml(item.label)}${suffix}${badge}</a>`;
     })
     .join("");
 }

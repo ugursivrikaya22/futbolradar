@@ -215,7 +215,9 @@ for (const route of ROUTES) {
 // önce söyler (`hreflang="tr"` + etikette "(TR)"). İşaretsiz Türkçe hedef
 // hâlâ hatadır: sessizce dil değiştiren bağlantı, kırık bağlantı kadar kötü.
 {
-  const enNav = [...NAV_KEYS.en.primary, ...NAV_KEYS.en.secondary];
+  // `href: null` öğeler (ör. Transfer Radar) yalnızca `preferredHref`
+  // derleme anında varsa çizilir; layout.mjs → resolveNavHref.
+  const enNav = [...NAV_KEYS.en.primary, ...NAV_KEYS.en.secondary].filter((item) => item.href);
   const broken = enNav.filter((item) => !read(item.href)).map((item) => item.href);
   check("İngilizce menüde kırık bağlantı yok", !broken.length, broken.join(", "));
 
