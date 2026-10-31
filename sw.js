@@ -32,7 +32,7 @@
 // gösteriminin kaynaklarından biri. v2'ye geçiş, düzeltmeyi alan her
 // ziyaretçide o anlık görüntüyü bir kez temizler. Favori takım yolları
 // (`fr-meta-*`) kaybolur ama pwa.js her açılışta yeniden gönderir.
-const SW_VERSION = "v2";
+const SW_VERSION = "v3";
 const HTML_CACHE = `fr-pages-${SW_VERSION}`;
 const ASSET_CACHE = `fr-assets-${SW_VERSION}`;
 const API_CACHE = `fr-api-${SW_VERSION}`;
@@ -180,7 +180,9 @@ self.addEventListener("fetch", (event) => {
 });
 
 /**
- * PUSH — gol ve maç başı bildirimleri.
+ * PUSH — maç günü hatırlatması ("Bugün maç var"), gol ve maç durumu
+ * bildirimleri. Hepsi aynı simge/rozet; `tag` aynı olay için tekrar eden
+ * bildirimi cihazda tekilleştirir (ör. `matchday-<maç>`).
  *
  * Gövde `services/pushNotifier.js` `buildPayload()`ın ürettiği JSON:
  * `{ title, body, tag, url }`. Biçim bozuksa bildirim sessizce atlanır —
@@ -200,7 +202,7 @@ self.addEventListener("push", (event) => {
     tag: payload.tag || undefined,
     icon: "/favicon-192x192.png",
     badge: "/favicon-96x96.png",
-    data: { url: payload.url || "/canli-skor.html" }
+    data: { url: payload.url || "/canli-skor.html", type: payload.type || null }
   }));
 });
 

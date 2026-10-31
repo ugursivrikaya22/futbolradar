@@ -30,6 +30,7 @@ const MATCH_FOLLOW_PREFIX = "match:";
 // yerine ortak yardımcıya taşındı, böylece iki yüzey aynı takım için
 // farklı cevap veremez.
 const { loadTeams, normalizeName, teamIdForName } = require("./teamIdentity");
+const { wantsEvent } = require("./pushNotificationTypes");
 
 function slugForTeamName(teamName, teams) {
   return teamIdForName(teamName, teams);
@@ -147,6 +148,48 @@ function buildPayload(event) {
   return null;
 }
 
+/**
+ * MAÇ GÜNÜ HATIRLATMASI — "Favori takımının bugün maçı var".
+ *
+ * Saat ve rakip YALNIZCA `data/super-lig-fixtures.json`daki tarihi
+ * kesinleşmiş maçtan gelir (bkz. services/matchDayFixtures.js); veri yoksa
+ * bildirim üretilmez. Etiket `matchday-<maç>`: aynı maç için ikinci bir
+ * gönderim cihazda yeni bildirim açmaz, öncekinin yerine geçer.
+ * Adres: maçın kalıcı sayfası varsa o, yoksa favori takımın hub sayfası.
+ */
+function buildMatchDayPayload(match, { teamId, teamUrl } = {}) {
+  if (!match || !match.homeTeam || !match.awayTeam || !match.time) return null;
+  const isHome = teamId && match.homeTeamId === teamId;
+  const isAway = teamId && match.awayTeamId === teamId;
+  const favorite = isHome ? match.homeTeam : isAway ? match.awayTeam : null;
+  const opponent = isHome ? match.awayTeam : isAway ? match.homeTeam : null;
+  const page = matchUrl(match);
+  return {
+    title: favorite ? `📅 Bugün maç var: ${favorite}` : "📅 Bugün maç var",
+    body: favorite
+      ? `${favorite}, bugün ${match.time}'da ${opponent} ile ${isHome ? "evinde" : "deplasmanda"} oynuyor.`
+      : `${match.homeTeam} - ${match.awayTeam} bugün ${match.time}'da.`,
+    tag: `matchday-${match.id}`,
+    type: "match-day",
+    url: page !== "/canli-skor.html" ? page : (teamUrl || page)
+  };
+}
+
+/** Takım kimliği → `/takimlar/<slug>` (hub slug'ı kimlikten farklı olabilir, ör. 564 → basaksehir). */
+function teamPageUrls(teams) {
+  const map = new Map();
+  try {
+    // eslint-disable-next-line global-require
+    const { superLigTeamPages } = require("./superLigTeamPages");
+    for (const entry of superLigTeamPages({ root: require("path").join(__dirname, ".."), teams })) {
+      if (entry && entry.record && entry.slug) map.set(String(entry.record.id), `/takimlar/${entry.slug}`);
+    }
+  } catch (error) {
+    /* hub listesi okunamazsa maç sayfası / canlı skor kalır */
+  }
+  return map;
+}
+
 async function sendToSubscriber(subscriber, payload, vapid) {
   try {
     const result = await webPush.sendNotification(
@@ -197,16 +240,74 @@ async function notifyMatchEvents(events) {
       } catch (error) {
         continue;
       }
+      // Tür tercihi: aboneliği yalnızca maç günü hatırlatması için açan
+      // kişiye gol gitmez. Sütunu boş (eski) abonelik her şeyi alır.
+      subscribers = subscribers.filter((subscriber) => wantsEvent(subscriber.notification_types, event.type));
       if (!subscribers.length) continue;
       await Promise.allSettled(subscribers.map((subscriber) => sendToSubscriber(subscriber, payload, vapid)));
     }
   }
 }
 
+/**
+ * Bugün maçı olan her takımın, maç günü hatırlatmasını isteyen abonelerine
+ * TEK bildirim. `dryRun` ile hiçbir şey gönderilmez, yalnızca plan döner.
+ * Zamanlayıcı yok: bunu `/api/push-match-day` (CRON_SECRET korumalı)
+ * çağırır — bkz. server/pushMatchDayRoute.js.
+ */
+async function sendMatchDayReminders({ matches = [], today, dryRun = false, store = pushSubscriptionStore, send } = {}) {
+  const teams = loadTeams();
+  const urls = teamPageUrls(teams);
+  const vapid = vapidConfig();
+  const plan = [];
+  let sent = 0;
+  let skipped = 0;
+  const seenEndpoints = new Set();
+
+  for (const match of matches) {
+    for (const teamId of [match.homeTeamId, match.awayTeamId].filter(Boolean)) {
+      const payload = buildMatchDayPayload(match, { teamId, teamUrl: urls.get(String(teamId)) });
+      if (!payload) continue;
+      let subscribers = [];
+      try {
+        subscribers = await store.listByTeam(teamId);
+      } catch (error) {
+        plan.push({ matchId: match.id, teamId, error: "store" });
+        continue;
+      }
+      const eligible = subscribers.filter((subscriber) => {
+        if (!wantsEvent(subscriber.notification_types, "match-day")) return false;
+        if (subscriber.last_match_day_on && String(subscriber.last_match_day_on).slice(0, 10) === today) return false;
+        if (seenEndpoints.has(subscriber.endpoint)) return false;
+        seenEndpoints.add(subscriber.endpoint);
+        return true;
+      });
+      skipped += subscribers.length - eligible.length;
+      plan.push({ matchId: match.id, teamId, title: payload.title, body: payload.body, tag: payload.tag, url: payload.url, recipients: eligible.length });
+      if (dryRun) continue;
+      await Promise.allSettled(eligible.map(async (subscriber) => {
+        const result = send
+          ? await send(subscriber, payload)
+          : await webPush.sendNotification(
+            { endpoint: subscriber.endpoint, keys: { p256dh: subscriber.p256dh, auth: subscriber.auth } },
+            payload,
+            { vapidPublicKey: vapid.publicKey, vapidPrivateKey: vapid.privateKey, vapidSubject: vapid.subject }
+          );
+        if (result && result.expired) await store.removeSubscription(subscriber.endpoint);
+        else if (result && result.ok) { sent += 1; await store.markMatchDaySent(subscriber.endpoint, today); }
+      }));
+    }
+  }
+  return { today, dryRun, matches: matches.length, sent, skipped, plan };
+}
+
 module.exports = {
   MATCH_FOLLOW_PREFIX,
+  buildMatchDayPayload,
   buildPayload,
   matchUrl,
+  sendMatchDayReminders,
+  teamPageUrls,
   isConfigured,
   notifyMatchEvents,
   slugForTeamName,

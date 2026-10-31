@@ -6,6 +6,7 @@ const {
   saveSubscription
 } = require("../services/pushSubscriptionStore");
 const { vapidConfig } = require("../services/pushNotifier");
+const { normalizeNotificationTypes } = require("../services/pushNotificationTypes");
 
 /**
  * FAVORİ TAKIM PUSH ABONELİĞİ UÇ NOKTASI.
@@ -178,7 +179,12 @@ async function handlePushSubscription(req, res) {
       p256dh,
       auth,
       favoriteTeam,
-      userAgent: req.headers && req.headers["user-agent"]
+      userAgent: req.headers && req.headers["user-agent"],
+      // Tür tercihi gönderilmediyse (eski istemci / maç takip düğmesi)
+      // sütuna dokunulmaz → mevcut davranış korunur.
+      notificationTypes: body && Array.isArray(body.notificationTypes)
+        ? normalizeNotificationTypes(body.notificationTypes)
+        : undefined
     });
     return sendSuccess(res, { saved: true, favoriteTeam }, SOURCE);
   } catch (error) {
