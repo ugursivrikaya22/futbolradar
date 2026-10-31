@@ -11,7 +11,11 @@
  * veya Supabase yapılandırması eksikse tweetler yalnızca loglanır; X'e de
  * Supabase'e de hiçbir şey yazılmaz.
  *
- * SIRA: favori takım golleri → maç sonuçları → köşe yazıları → (maçsız gün) dolgu.
+ * SIRA: favori takım golleri → maç sonuçları → maç öncesi anket/tahmin →
+ * köşe yazıları → (maçsız gün) dolgu.
+ * MAÇ ÖNCESİ (X_PREMATCH_POLLS_ENABLED=1, varsayılan KAPALI): favori takım /
+ * Türkiye maçlarına başlamadan X_PREMATCH_HOURS (4) saat önce yerel X anketi
+ * ("Kim kazanır?") ve/veya "Senin tahminin ne?" gönderisi; maç başına bir kez.
  * Tavanlar: koşu başına X_MAX_PER_RUN (4), günlük X_MAX_PER_DAY (8).
  * MALİYET: X API'de ücretsiz katman yok; bağlantılı gönderi $0.20, bağlantısız
  * $0.015. X_INCLUDE_LINKS=0 bağlantıyı çıkarır (bkz. docs/x-autopost.md).
@@ -27,6 +31,7 @@ const RESULT_WINDOW_MS = 6 * 3600e3;      // maç sonu: başlama + 6 sa içinde
 const GOAL_WINDOW_MS = 3 * 3600e3;        // gol: canlı ya da başlama + 3 sa içinde
 const COLUMN_WINDOW_MS = 48 * 3600e3;     // köşe yazısı: son 48 sa
 const TRANSFER_WINDOW_DAYS = 7;
+const PREMATCH_MIN_LEAD_MS = 10 * 60e3;  // başlamaya 10 dk'dan az kaldıysa anket açılmaz
 
 /** Maçsız günde dolgu saatleri (İstanbul): 12:xx ve 19:xx. */
 const FILLER_SLOTS = [{ id: "noon", hour: 12, prefer: ["transfers", "topAssists", "topScorers"] }, { id: "evening", hour: 19, prefer: ["topScorers", "transfers", "topAssists"] }];
@@ -52,6 +57,12 @@ function config(env = process.env) {
     maxPerDay: num(env.X_MAX_PER_DAY, 8, 50),
     // X pay-per-use: bağlantılı gönderi $0.20, bağlantısız $0.015 (docs.x.com/x-api/getting-started/pricing).
     includeLinks: !/^(0|false|no|off)$/i.test(String(env.X_INCLUDE_LINKS || "").trim()),
+    prematch: {
+      enabled: /^(1|true|yes|on)$/i.test(String(env.X_PREMATCH_POLLS_ENABLED || "").trim()),
+      mode: /^(poll|ask|both)$/i.test(String(env.X_PREMATCH_MODE || "").trim()) ? String(env.X_PREMATCH_MODE).trim().toLowerCase() : "poll",
+      hours: Math.max(1, num(env.X_PREMATCH_HOURS, 4, 24)),
+      maxPerDay: num(env.X_PREMATCH_MAX_PER_DAY, 3, 20)
+    },
     favorites: (favorites.length ? favorites : DEFAULT_FAVORITES).map(normalizeName)
   };
 }
@@ -69,7 +80,7 @@ function matchList(calendar) {
 function status(m) { return String(m.providerStatus || m.status || ""); }
 
 /** Aday tweetler (öncelik sırasıyla). Saf: yalnızca girdilere ve `now`a bakar. */
-function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { now = new Date(), favorites = DEFAULT_FAVORITES.map(normalizeName) } = {}) {
+function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { now = new Date(), favorites = DEFAULT_FAVORITES.map(normalizeName), prematch = null } = {}) {
   const t = now.getTime();
   // matchSeoPages#slugForMatch ile aynı dizin anahtarları (af:/tsdb:). O modül
   // data/*.json'u require ettiği için cron işlevinde (paket içinde data/ yok)
@@ -88,7 +99,7 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
   for (const m of matches) if (/^Süper Lig$/i.test(String(m.league || "").trim())) { superLig.add(normalizeName(m.homeTeam)); superLig.add(normalizeName(m.awayTeam)); }
   const inScope = (m) => superLig.has(normalizeName(m.homeTeam)) || superLig.has(normalizeName(m.awayTeam)) || /^türkiye$/i.test(String(m.homeTeam).trim()) || /^türkiye$/i.test(String(m.awayTeam).trim());
   const fav = new Set(favorites);
-  const goals = []; const results = [];
+  const goals = []; const results = []; const prematchList = [];
   let todayHasMatch = false;
   const today = istanbul(now).date;
   for (const m of matches) {
@@ -104,6 +115,16 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
       if (c) results.push({ ...c, at: kick });
     }
     const isFav = fav.has(normalizeName(m.homeTeam)) || fav.has(normalizeName(m.awayTeam));
+    // MAÇ ÖNCESİ: yalnızca favori takım ya da Türkiye maçı, henüz başlamamış,
+    // başlamaya [10 dk, X_PREMATCH_HOURS] kalmış. Takım adı/saat yalnızca takvimden.
+    const national = /^türkiye$/i.test(String(m.homeTeam).trim()) || /^türkiye$/i.test(String(m.awayTeam).trim());
+    if (prematch && prematch.enabled && (isFav || national) && !finished && !LIVE.test(status(m)) && !m.live
+      && kick - t >= PREMATCH_MIN_LEAD_MS && kick - t <= prematch.hours * 3600e3) {
+      const items = [];
+      if (prematch.mode !== "ask") items.push(compose.composePrematchPoll(m, slug, { now }));
+      if (prematch.mode !== "poll") items.push(compose.composePrematchAsk(m, slug, { now }));
+      for (const c of items) if (c) prematchList.push({ ...c, at: kick });
+    }
     if (isFav && !finished && (LIVE.test(status(m)) || m.live) && t - kick <= GOAL_WINDOW_MS) {
       const evs = compose.goalEvents(m);
       evs.forEach((e, i) => {
@@ -138,15 +159,17 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
     }
   }
   results.sort((a, b) => a.at - b.at);
-  return { goals, results, columns: cols, fillers, todayHasMatch };
+  prematchList.sort((a, b) => a.at - b.at);
+  return { goals, results, prematch: prematchList, columns: cols, fillers, todayHasMatch };
 }
 
-async function postTweet(text, creds, { fetcher = fetch } = {}) {
+async function postTweet(text, creds, { fetcher = fetch, poll = null } = {}) {
   const auth = authorizationHeader({ method: "POST", url: TWEET_ENDPOINT, ...creds });
   const response = await fetcher(TWEET_ENDPOINT, {
     method: "POST",
     headers: { Authorization: auth, "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
+    // Anket: X API v2 `poll` alanı (2-4 seçenek, ≤25 karakter, 5-10080 dk; medya ile birlikte olamaz).
+    body: JSON.stringify(poll ? { text, poll: { options: poll.options, duration_minutes: poll.duration_minutes } } : { text }),
     signal: AbortSignal.timeout(15_000)
   });
   const body = await response.json().catch(() => ({}));
@@ -200,19 +223,19 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
   const cfg = config(env);
   const live = cfg.live && (store || supabaseConfigured());
   const input = data || await loader({ fetcher });
-  const c = buildCandidates(input, { now, favorites: cfg.favorites });
+  const c = buildCandidates(input, { now, favorites: cfg.favorites, prematch: cfg.prematch });
   if (!cfg.includeLinks) {
     const strip = (item) => ({ ...item, text: item.text.replace(/\n*https?:\/\/\S+\s*$/, "").trim() });
-    for (const k of ["goals", "results", "columns", "fillers"]) c[k] = c[k].map(strip);
+    for (const k of ["goals", "results", "prematch", "columns", "fillers"]) c[k] = c[k].map(strip);
   }
-  const ordered = [...c.goals, ...c.results, ...c.columns];
+  const ordered = [...c.goals, ...c.results, ...c.prematch, ...c.columns];
   const summary = { mode: live ? "live" : "dry-run", reason: live ? null : (!cfg.enabled ? "X_AUTOPOST_ENABLED kapalı" : cfg.missing.length ? `eksik: ${cfg.missing.join(",")}` : "Supabase yapılandırılmamış"), todayHasMatch: c.todayHasMatch, candidates: ordered.length + (c.fillers.length ? 1 : 0), posted: [], skipped: [], dryRun: [] };
 
   if (!live) {
     const preview = [...ordered, ...c.fillers.slice(0, 1)].slice(0, cfg.maxPerRun);
     for (const item of preview) {
-      summary.dryRun.push({ key: item.key, kind: item.kind, length: compose.weightedLength(item.text), text: item.text });
-      log(`[x-autopost] KURU KOŞU (${summary.reason}) ${item.key} (${compose.weightedLength(item.text)}/280)\n${item.text}\n---`);
+      summary.dryRun.push({ key: item.key, kind: item.kind, length: compose.weightedLength(item.text), text: item.text, ...(item.poll ? { poll: item.poll } : {}) });
+      log(`[x-autopost] KURU KOŞU (${summary.reason}) ${item.key} (${compose.weightedLength(item.text)}/280)\n${item.text}${item.poll ? `\n[anket: ${item.poll.options.join(" / ")} · ${item.poll.duration_minutes} dk]` : ""}\n---`);
     }
     return summary;
   }
@@ -220,6 +243,7 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
   const db = store || createStore();
   const day = istanbul(now);
   let today = await db.countSince(day.dayStartIso);
+  let prematchToday = c.prematch.length ? (await db.countSince(day.dayStartIso, "prematch-poll")) + (await db.countSince(day.dayStartIso, "prematch-ask")) : 0;
   const seen = await db.existing([...ordered.map((x) => x.key), ...c.fillers.flatMap((f) => [f.key, f.slotKey])]);
   const queue = ordered.filter((x) => !seen.has(x.key));
   const filler = c.fillers.find((f) => !seen.has(f.key) && !seen.has(f.slotKey));
@@ -228,15 +252,17 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
   for (const item of queue) {
     if (summary.posted.length >= cfg.maxPerRun) { summary.skipped.push({ key: item.key, reason: "run-cap" }); continue; }
     if (today >= cfg.maxPerDay) { summary.skipped.push({ key: item.key, reason: "day-cap" }); continue; }
+    const isPrematch = /^prematch-/.test(item.kind);
+    if (isPrematch && prematchToday >= cfg.prematch.maxPerDay) { summary.skipped.push({ key: item.key, reason: "prematch-day-cap" }); continue; }
     if (compose.weightedLength(item.text) > compose.MAX_WEIGHT) { summary.skipped.push({ key: item.key, reason: "too-long" }); continue; }
     if (!(await db.claim(item))) { summary.skipped.push({ key: item.key, reason: "already-claimed" }); continue; }
     if (item.slotKey && !(await db.claim({ key: item.slotKey, kind: "filler-slot", text: item.key }))) {
       await db.finish({ key: item.key, status: "skipped", error: "slot-taken" });
       summary.skipped.push({ key: item.key, reason: "slot-taken" }); continue;
     }
-    today += 1;
+    today += 1; if (isPrematch) prematchToday += 1;
     try {
-      const id = await postTweet(item.text, cfg.creds, { fetcher });
+      const id = await postTweet(item.text, cfg.creds, { fetcher, poll: item.poll || null });
       await db.finish({ key: item.key, status: "posted", tweetId: id });
       summary.posted.push({ key: item.key, id });
       log(`[x-autopost] paylaşıldı ${item.key} → ${id}`);
@@ -244,7 +270,7 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
       // Kalıcı hata (ör. 403 duplicate) tekrar DENENMEZ.
       // Kota/yetki/geçici hata: anahtar bırakılır, sonraki koşu yeniden dener.
       const transient = error.status === 429 || error.status === 401 || !error.status || error.status >= 500;
-      if (transient) { await db.release(item.key); if (item.slotKey) await db.release(item.slotKey); today -= 1; }
+      if (transient) { await db.release(item.key); if (item.slotKey) await db.release(item.slotKey); today -= 1; if (isPrematch) prematchToday -= 1; }
       else await db.finish({ key: item.key, status: "failed", error: error.message });
       summary.skipped.push({ key: item.key, reason: error.message });
       log(`[x-autopost] hata ${item.key}: ${error.message}`);

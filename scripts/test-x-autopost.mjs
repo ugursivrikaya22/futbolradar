@@ -56,20 +56,20 @@ function fakeSupabase() {
     if (method === "PATCH") { const k = eq("post_key"); rows.set(k, { ...rows.get(k), ...body }); return []; }
     if (method === "DELETE") { const k = eq("post_key"); if (rows.get(k)?.status === "pending") rows.delete(k); return []; }
     if (/post_key=in\./.test(query)) { const list = decodeURIComponent(query.match(/in\.\(([^)]*)\)/)[1]).split(",").map((s) => s.replace(/"/g, "")); return [...rows.values()].filter((r) => list.includes(r.post_key)); }
-    if (/status=in\./.test(query)) return [...rows.values()].filter((r) => ["posted", "pending"].includes(r.status));
+    if (/status=in\./.test(query)) { const kind = eq("kind"); return [...rows.values()].filter((r) => ["posted", "pending"].includes(r.status) && (!kind || r.kind === kind)); }
     return [];
   }
   return { rows, calls, request };
 }
 function fakeX({ status = 201 } = {}) {
-  const sent = [];
+  const sent = []; const bodies = [];
   const fetcher = async (url, init) => {
     assert.equal(url, "https://api.x.com/2/tweets");
     assert.match(init.headers.Authorization, /^OAuth oauth_consumer_key="ck", oauth_nonce="[0-9a-f]{32}", oauth_signature="[^"]+", oauth_signature_method="HMAC-SHA1", oauth_timestamp="\d+", oauth_token="at", oauth_version="1\.0"$/);
-    sent.push(JSON.parse(init.body).text);
+    bodies.push(JSON.parse(init.body)); sent.push(JSON.parse(init.body).text);
     return { ok: status < 300, status, json: async () => (status < 300 ? { data: { id: String(1000 + sent.length), text: "" } } : { title: "err", detail: "nope" }) };
   };
-  return { sent, fetcher };
+  return { sent, bodies, fetcher };
 }
 const LIVE_ENV = { X_AUTOPOST_ENABLED: "1", X_API_KEY: "ck", X_API_SECRET: "cs", X_ACCESS_TOKEN: "at", X_ACCESS_TOKEN_SECRET: "ats" };
 const NOW = new Date("2026-10-20T22:30:00+03:00");
@@ -253,9 +253,74 @@ await test("cron ucu: x-autopost işi kayıtlı ve CRON_SECRET olmadan 401", asy
 await test("gerçek depo verisiyle tüm adaylar 280 sınırında", () => {
   const disk = x.loadFromDisk();
   for (const at of ["2026-10-19T22:30:00+03:00", "2026-10-20T23:40:00+03:00", "2026-10-22T12:05:00+03:00", "2026-10-22T19:05:00+03:00"]) {
-    const c = x.buildCandidates(disk, { now: new Date(at) });
-    for (const t of [...c.goals, ...c.results, ...c.columns, ...c.fillers]) assert.ok(compose.weightedLength(t.text) <= 280, `${t.key} ${compose.weightedLength(t.text)}`);
+    const c = x.buildCandidates(disk, { now: new Date(at), prematch: x.config({ X_PREMATCH_POLLS_ENABLED: "1", X_PREMATCH_MODE: "both", X_PREMATCH_HOURS: "24" }).prematch });
+    for (const t of [...c.goals, ...c.results, ...c.prematch, ...c.columns, ...c.fillers]) assert.ok(compose.weightedLength(t.text) <= 280, `${t.key} ${compose.weightedLength(t.text)}`);
   }
+});
+
+/* ---------------- maç öncesi anket / "Senin tahminin ne?" ---------------- */
+const UPCOMING = () => match({ id: "gs-fb", providerIds: { apiFootball: "777" }, league: "Süper Lig", kickoff: "2026-11-01T20:00:00+03:00", homeTeam: "Galatasaray", awayTeam: "Fenerbahçe", status: "SCHEDULED", providerStatus: "NS", score: null, statistics: [], events: [] });
+const PRE_NOW = new Date("2026-11-01T16:30:00+03:00");
+const preData = () => data({ calendar: { matches: [UPCOMING()] }, seoIndex: { ...seoIndex, "af:777": "galatasaray-fenerbahce-1-kasim-2026" }, columns: { columns: [] } });
+const PRE_ON = { X_PREMATCH_POLLS_ENABLED: "1" };
+
+await test("maç öncesi: bayrak kapalıyken aday yok (varsayılan)", () => {
+  const cfg = x.config({});
+  assert.equal(cfg.prematch.enabled, false); assert.equal(cfg.prematch.hours, 4); assert.equal(cfg.prematch.mode, "poll");
+  assert.equal(x.buildCandidates(preData(), { now: PRE_NOW, prematch: cfg.prematch }).prematch.length, 0);
+});
+
+await test("maç öncesi: anket metni, seçenekler, süre başlamada biter, sayı yok", () => {
+  const c = x.buildCandidates(preData(), { now: PRE_NOW, prematch: x.config(PRE_ON).prematch });
+  assert.equal(c.prematch.length, 1);
+  const p = c.prematch[0];
+  assert.equal(p.key, "prematch-poll:af:777"); assert.equal(p.kind, "prematch-poll");
+  assert.equal(p.text, "📊 MAÇ ÖNCESİ ANKET | Süper Lig\nGalatasaray – Fenerbahçe\n⏰ Bugün 20:00\n\nSenin tahminin ne? Kim kazanır?\n\nhttps://www.futbolradar.com/mac/galatasaray-fenerbahce-1-kasim-2026");
+  assert.deepEqual(p.poll, { options: ["Galatasaray", "Beraberlik", "Fenerbahçe"], duration_minutes: 210 });
+  assert.ok(!/\d+\s*(oy|kişi|katılımcı)/i.test(p.text), "oy/katılımcı sayısı yazılmaz");
+});
+
+await test("maç öncesi: pencere dışı / başlamış / favori dışı maç → yok", () => {
+  const pre = x.config(PRE_ON).prematch;
+  assert.equal(x.buildCandidates(preData(), { now: new Date("2026-11-01T15:30:00+03:00"), prematch: pre }).prematch.length, 0, "4 saatten erken");
+  assert.equal(x.buildCandidates(preData(), { now: new Date("2026-11-01T19:55:00+03:00"), prematch: pre }).prematch.length, 0, "10 dk'dan az");
+  const live = preData(); live.calendar.matches[0].providerStatus = "1H";
+  assert.equal(x.buildCandidates(live, { now: PRE_NOW, prematch: pre }).prematch.length, 0, "başlamış");
+  assert.equal(x.buildCandidates(preData(), { now: PRE_NOW, prematch: pre, favorites: ["Trabzonspor"] }).prematch.length, 0, "favori dışı");
+  assert.equal(x.buildCandidates(preData(), { now: new Date("2026-11-01T14:30:00+03:00"), prematch: x.config({ ...PRE_ON, X_PREMATCH_HOURS: "6" }).prematch }).prematch.length, 1, "X_PREMATCH_HOURS=6");
+});
+
+await test("maç öncesi: X_PREMATCH_MODE=both → anket + 'Senin tahminin ne?'", () => {
+  const c = x.buildCandidates(preData(), { now: PRE_NOW, prematch: x.config({ ...PRE_ON, X_PREMATCH_MODE: "both" }).prematch });
+  assert.deepEqual(c.prematch.map((p) => p.key), ["prematch-poll:af:777", "prematch-ask:af:777"]);
+  assert.equal(c.prematch[1].text, "🔮 Senin tahminin ne?\nGalatasaray – Fenerbahçe (Süper Lig)\n⏰ Bugün 20:00\n\nSkor tahminini yanıtlara yaz 👇\n\nhttps://www.futbolradar.com/mac/galatasaray-fenerbahce-1-kasim-2026");
+  assert.equal(c.prematch[1].poll, undefined);
+});
+
+await test("anket seçeneği 25 karakter sınırı ve yarın etiketi", () => {
+  assert.equal(compose.pollOption("Brighton & Hove Albion Football Club").length, 25);
+  const p = compose.composePrematchPoll(UPCOMING(), "s", { now: new Date("2026-10-31T23:00:00+03:00") });
+  assert.match(p.text, /⏰ Yarın 20:00/); assert.equal(p.poll.duration_minutes, 1260);
+  assert.equal(compose.composePrematchPoll(UPCOMING(), null), null, "sayfası olmayan maç yok");
+});
+
+await test("maç öncesi canlı: poll gövdesi gönderilir, maç başına bir kez, günlük maç öncesi tavanı", async () => {
+  const db = fakeSupabase(); const tw = fakeX(); const store = createStore({ request: db.request });
+  const env = { ...LIVE_ENV, ...PRE_ON, X_INCLUDE_LINKS: "0" };
+  const r1 = await x.runXAutopost({ env, now: PRE_NOW, data: preData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.deepEqual(r1.posted.map((p) => p.key), ["prematch-poll:af:777"]);
+  assert.deepEqual(tw.bodies[0], { text: "📊 MAÇ ÖNCESİ ANKET | Süper Lig\nGalatasaray – Fenerbahçe\n⏰ Bugün 20:00\n\nSenin tahminin ne? Kim kazanır?", poll: { options: ["Galatasaray", "Beraberlik", "Fenerbahçe"], duration_minutes: 210 } });
+  const r2 = await x.runXAutopost({ env, now: new Date("2026-11-01T17:00:00+03:00"), data: preData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.equal(r2.posted.length, 0, "aynı maç ikinci kez yok");
+  const db2 = fakeSupabase(); const tw2 = fakeX();
+  const r3 = await x.runXAutopost({ env: { ...env, X_PREMATCH_MODE: "both", X_PREMATCH_MAX_PER_DAY: "1" }, now: PRE_NOW, data: preData(), store: createStore({ request: db2.request }), fetcher: tw2.fetcher, log: quiet });
+  assert.equal(r3.posted.length, 1); assert.ok(r3.skipped.some((s) => s.reason === "prematch-day-cap"));
+});
+
+await test("maç öncesi kuru koşu: anahtar yoksa hiçbir şey gönderilmez", async () => {
+  const tw = fakeX();
+  const r = await x.runXAutopost({ env: PRE_ON, now: PRE_NOW, data: preData(), fetcher: tw.fetcher, log: quiet });
+  assert.equal(r.mode, "dry-run"); assert.equal(tw.sent.length, 0); assert.ok(r.dryRun[0].poll);
 });
 
 console.log(`\n${passed} test geçti${process.exitCode ? " — HATA VAR" : ""}`);

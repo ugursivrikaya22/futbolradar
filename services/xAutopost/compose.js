@@ -173,7 +173,57 @@ function composeLeaderStat(leaders, which) {
   return { key: `filler:${which}:${list.map((p) => `${p.providerId || p.name}=${p[metric]}`).join(",")}`, kind: "filler", text: weightedLength(text) <= MAX_WEIGHT ? text : `${title}\n${rows[0]}\n\n${url}` };
 }
 
+/* ------------------------- maç öncesi (etkileşim) ------------------- */
+
+const POLL_OPTION_MAX = 25; // X: 2-4 seçenek, her biri 1-25 karakter
+
+function pollOption(name) {
+  const v = String(name || "").replace(/\s+/g, " ").trim();
+  return [...v].length <= POLL_OPTION_MAX ? v : [...v].slice(0, POLL_OPTION_MAX - 1).join("").trim() + "…";
+}
+
+/** İstanbul saatiyle "Bugün 20:00" / "Yarın 13:30" / "1 Kasım 20:00". */
+function kickoffLabel(kickIso, now) {
+  const fmt = (d, o) => new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", ...o }).format(d);
+  const kick = new Date(kickIso);
+  const day = (d) => fmt(d, { year: "numeric", month: "2-digit", day: "2-digit" });
+  const time = fmt(kick, { hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+  if (day(kick) === day(now)) return `Bugün ${time}`;
+  if (day(kick) === day(new Date(now.getTime() + 864e5))) return `Yarın ${time}`;
+  return `${fmt(kick, { day: "numeric", month: "long" })} ${time}`;
+}
+
+function matchIdOf(m) {
+  return m.providerIds && m.providerIds.apiFootball ? `af:${m.providerIds.apiFootball}` : String(m.id);
+}
+
+/**
+ * Maç öncesi X anketi: ev sahibi / beraberlik / deplasman. Anket süresi
+ * başlama saatinde biter (5 dk – 7 gün aralığına kısılır). Oy sayısı hiçbir
+ * metinde yazılmaz; X sonuçları zaten yüzde gösterir.
+ */
+function composePrematchPoll(m, slug, { now = new Date() } = {}) {
+  if (!slug || !m.homeTeam || !m.awayTeam) return null;
+  const kick = Date.parse(m.kickoff);
+  if (!Number.isFinite(kick)) return null;
+  const options = [pollOption(m.homeTeam), "Beraberlik", pollOption(m.awayTeam)];
+  if (new Set(options).size !== 3 || options.some((o) => !o)) return null;
+  const minutes = Math.max(5, Math.min(10080, Math.floor((kick - now.getTime()) / 60000)));
+  const head = `📊 MAÇ ÖNCESİ ANKET${m.league ? ` | ${m.league}` : ""}\n${m.homeTeam} – ${m.awayTeam}\n⏰ ${kickoffLabel(m.kickoff, now)}`;
+  const text = `${head}\n\nSenin tahminin ne? Kim kazanır?\n\n${matchUrl(slug)}`;
+  return { key: `prematch-poll:${matchIdOf(m)}`, kind: "prematch-poll", text: weightedLength(text) <= MAX_WEIGHT ? text : `📊 ${m.homeTeam} – ${m.awayTeam}\nKim kazanır?\n\n${matchUrl(slug)}`, poll: { options, duration_minutes: minutes } };
+}
+
+/** "Senin tahminin ne?" — skor tahmini yanıtlarda istenir (anketsiz düz gönderi). */
+function composePrematchAsk(m, slug, { now = new Date() } = {}) {
+  if (!slug || !m.homeTeam || !m.awayTeam || !Number.isFinite(Date.parse(m.kickoff))) return null;
+  const head = `🔮 Senin tahminin ne?\n${m.homeTeam} – ${m.awayTeam}${m.league ? ` (${m.league})` : ""}\n⏰ ${kickoffLabel(m.kickoff, now)}`;
+  const text = `${head}\n\nSkor tahminini yanıtlara yaz 👇\n\n${matchUrl(slug)}`;
+  return { key: `prematch-ask:${matchIdOf(m)}`, kind: "prematch-ask", text: weightedLength(text) <= MAX_WEIGHT ? text : `🔮 ${m.homeTeam} – ${m.awayTeam}\nSkor tahminin ne? 👇\n\n${matchUrl(slug)}` };
+}
+
 module.exports = {
   SITE, MAX_WEIGHT, weightedLength, fitText, analysisSentence, goalEvents,
-  composeResult, composeGoal, composeColumn, composeTransferDigest, composeLeaderStat
+  composeResult, composeGoal, composeColumn, composeTransferDigest, composeLeaderStat,
+  composePrematchPoll, composePrematchAsk, kickoffLabel, pollOption, POLL_OPTION_MAX
 };
