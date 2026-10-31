@@ -40,3 +40,17 @@ Varsayılan günlük 8 tweet bağlantılı → en fazla ~$1.6/gün (~$48/ay). `X
 
 ## Yerel test
 `npm run test:x-autopost` (ağ yok) · `npm run x-autopost:dry-run -- --now=2026-10-20T23:40:00+03:00`
+
+## Etkileşim katmanı (maç öncesi anket / soru)
+Kod: `services/xAutopost/engagement.js`. Bayrak: `X_ENGAGEMENT_ENABLED=1` (varsayılan KAPALI).
+Gönderim yine `X_AUTOPOST_ENABLED`, kuru koşu kuralları ve `X_MAX_PER_RUN` / `X_MAX_PER_DAY` tavanlarına tabidir.
+
+- **Maç öncesi** (`prematch:<maç>`): favori takım maçından 60–90 dk önce. Anket: ev / Beraberlik / deplasman
+  (≤25 karakter), süre başlama anına kadar (5–10080 dk aralığına sıkıştırılır). Metne maça göre deterministik
+  seçilen bir soru eklenir ("Skor tahminin ne? Yorumlara yaz 👇", "İlk golü kim atar?", "Maçın adamı kim olur?" …).
+- **Medya varsa** anket düşer, metin-soru varyantı gider (X'te anket + medya aynı gönderide olamaz).
+- **Maç sonu takip** (`followup:<maç>`): "Tahminini tutturan var mı?" — yalnızca o maçın maç öncesi gönderisi paylaşıldıysa.
+- İsteğe bağlı: `X_ENGAGEMENT_POLLS=0` (yalnızca soru), `X_ENGAGEMENT_LINKS=1` (maç bağlantısı ekle, $0.20/gönderi),
+  `X_ENGAGEMENT_FOLLOWUP=0` (takip kapalı).
+- Maliyet: bağlantısız gönderi $0.015 (`Post: Create`). Favori takım başına maç günü en fazla 2 gönderi (~$0.03).
+- Yerel: `npm run test:x-engagement` · `X_ENGAGEMENT_ENABLED=1 npm run x-autopost:dry-run -- --now=2026-10-26T20:15:00+03:00`

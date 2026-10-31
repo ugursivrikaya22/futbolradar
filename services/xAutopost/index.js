@@ -17,6 +17,7 @@
  * $0.015. X_INCLUDE_LINKS=0 bağlantıyı çıkarır (bkz. docs/x-autopost.md).
  */
 const compose = require("./compose");
+const engagement = require("./engagement");
 const { authorizationHeader } = require("./oauth1");
 const { createStore } = require("./store");
 const { normalizeName } = require("../teamIdentity");
@@ -52,7 +53,8 @@ function config(env = process.env) {
     maxPerDay: num(env.X_MAX_PER_DAY, 8, 50),
     // X pay-per-use: bağlantılı gönderi $0.20, bağlantısız $0.015 (docs.x.com/x-api/getting-started/pricing).
     includeLinks: !/^(0|false|no|off)$/i.test(String(env.X_INCLUDE_LINKS || "").trim()),
-    favorites: (favorites.length ? favorites : DEFAULT_FAVORITES).map(normalizeName)
+    favorites: (favorites.length ? favorites : DEFAULT_FAVORITES).map(normalizeName),
+    engagement: engagement.engagementConfig(env)
   };
 }
 
@@ -69,7 +71,7 @@ function matchList(calendar) {
 function status(m) { return String(m.providerStatus || m.status || ""); }
 
 /** Aday tweetler (öncelik sırasıyla). Saf: yalnızca girdilere ve `now`a bakar. */
-function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { now = new Date(), favorites = DEFAULT_FAVORITES.map(normalizeName) } = {}) {
+function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { now = new Date(), favorites = DEFAULT_FAVORITES.map(normalizeName), engagementCfg = engagement.engagementConfig({}) } = {}) {
   const t = now.getTime();
   // matchSeoPages#slugForMatch ile aynı dizin anahtarları (af:/tsdb:). O modül
   // data/*.json'u require ettiği için cron işlevinde (paket içinde data/ yok)
@@ -88,7 +90,7 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
   for (const m of matches) if (/^Süper Lig$/i.test(String(m.league || "").trim())) { superLig.add(normalizeName(m.homeTeam)); superLig.add(normalizeName(m.awayTeam)); }
   const inScope = (m) => superLig.has(normalizeName(m.homeTeam)) || superLig.has(normalizeName(m.awayTeam)) || /^türkiye$/i.test(String(m.homeTeam).trim()) || /^türkiye$/i.test(String(m.awayTeam).trim());
   const fav = new Set(favorites);
-  const goals = []; const results = [];
+  const goals = []; const results = []; const prematch = []; const followups = [];
   let todayHasMatch = false;
   const today = istanbul(now).date;
   for (const m of matches) {
@@ -104,6 +106,19 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
       if (c) results.push({ ...c, at: kick });
     }
     const isFav = fav.has(normalizeName(m.homeTeam)) || fav.has(normalizeName(m.awayTeam));
+    // ETKİLEŞİM (X_ENGAGEMENT_ENABLED): favori takım maçından 60–90 dk önce anket/soru,
+    // maç bitince "Tahminini tutturan var mı?" takibi. Aynı takvim + aynı seçim, ek istek yok.
+    if (engagementCfg.enabled && isFav) {
+      const until = kick - t;
+      if (!finished && !LIVE.test(status(m)) && !m.live && until <= engagement.PREMATCH_FROM_MS && until >= engagement.PREMATCH_TO_MS) {
+        const c = engagement.composePrematch(m, slug, { now, polls: engagementCfg.polls, links: engagementCfg.links });
+        if (c) prematch.push({ ...c, at: kick });
+      }
+      if (engagementCfg.followup && finished && t - kick >= 0 && t - kick <= RESULT_WINDOW_MS) {
+        const c = engagement.composeFollowup(m, slug, { links: engagementCfg.links });
+        if (c) followups.push({ ...c, at: kick });
+      }
+    }
     if (isFav && !finished && (LIVE.test(status(m)) || m.live) && t - kick <= GOAL_WINDOW_MS) {
       const evs = compose.goalEvents(m);
       evs.forEach((e, i) => {
@@ -138,15 +153,17 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
     }
   }
   results.sort((a, b) => a.at - b.at);
-  return { goals, results, columns: cols, fillers, todayHasMatch };
+  prematch.sort((a, b) => a.at - b.at);
+  followups.sort((a, b) => a.at - b.at);
+  return { goals, results, prematch, followups, columns: cols, fillers, todayHasMatch };
 }
 
-async function postTweet(text, creds, { fetcher = fetch } = {}) {
+async function postTweet(text, creds, { fetcher = fetch, poll = null } = {}) {
   const auth = authorizationHeader({ method: "POST", url: TWEET_ENDPOINT, ...creds });
   const response = await fetcher(TWEET_ENDPOINT, {
     method: "POST",
     headers: { Authorization: auth, "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify(engagement.tweetPayload({ text, poll })),
     signal: AbortSignal.timeout(15_000)
   });
   const body = await response.json().catch(() => ({}));
@@ -200,19 +217,19 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
   const cfg = config(env);
   const live = cfg.live && (store || supabaseConfigured());
   const input = data || await loader({ fetcher });
-  const c = buildCandidates(input, { now, favorites: cfg.favorites });
+  const c = buildCandidates(input, { now, favorites: cfg.favorites, engagementCfg: cfg.engagement });
   if (!cfg.includeLinks) {
     const strip = (item) => ({ ...item, text: item.text.replace(/\n*https?:\/\/\S+\s*$/, "").trim() });
-    for (const k of ["goals", "results", "columns", "fillers"]) c[k] = c[k].map(strip);
+    for (const k of ["goals", "results", "prematch", "followups", "columns", "fillers"]) c[k] = c[k].map(strip);
   }
-  const ordered = [...c.goals, ...c.results, ...c.columns];
+  const ordered = [...c.goals, ...c.results, ...c.prematch, ...c.followups, ...c.columns];
   const summary = { mode: live ? "live" : "dry-run", reason: live ? null : (!cfg.enabled ? "X_AUTOPOST_ENABLED kapalı" : cfg.missing.length ? `eksik: ${cfg.missing.join(",")}` : "Supabase yapılandırılmamış"), todayHasMatch: c.todayHasMatch, candidates: ordered.length + (c.fillers.length ? 1 : 0), posted: [], skipped: [], dryRun: [] };
 
   if (!live) {
     const preview = [...ordered, ...c.fillers.slice(0, 1)].slice(0, cfg.maxPerRun);
     for (const item of preview) {
-      summary.dryRun.push({ key: item.key, kind: item.kind, length: compose.weightedLength(item.text), text: item.text });
-      log(`[x-autopost] KURU KOŞU (${summary.reason}) ${item.key} (${compose.weightedLength(item.text)}/280)\n${item.text}\n---`);
+      summary.dryRun.push({ key: item.key, kind: item.kind, length: compose.weightedLength(item.text), text: item.text, ...(item.poll ? { poll: item.poll } : {}) });
+      log(`[x-autopost] KURU KOŞU (${summary.reason}) ${item.key} (${compose.weightedLength(item.text)}/280)\n${item.text}${item.poll ? `\n[anket: ${item.poll.options.join(" / ")} · ${item.poll.duration_minutes} dk]` : ""}\n---`);
     }
     return summary;
   }
@@ -220,8 +237,9 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
   const db = store || createStore();
   const day = istanbul(now);
   let today = await db.countSince(day.dayStartIso);
-  const seen = await db.existing([...ordered.map((x) => x.key), ...c.fillers.flatMap((f) => [f.key, f.slotKey])]);
-  const queue = ordered.filter((x) => !seen.has(x.key));
+  const seen = await db.existing([...ordered.flatMap((x) => (x.requires ? [x.key, x.requires] : [x.key])), ...c.fillers.flatMap((f) => [f.key, f.slotKey])]);
+  // Takip gönderisi yalnızca maç öncesi gönderisi gerçekten paylaşılmışsa.
+  const queue = ordered.filter((x) => !seen.has(x.key) && (!x.requires || seen.has(x.requires)));
   const filler = c.fillers.find((f) => !seen.has(f.key) && !seen.has(f.slotKey));
   if (filler && !queue.length) queue.push(filler);
 
@@ -236,7 +254,7 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
     }
     today += 1;
     try {
-      const id = await postTweet(item.text, cfg.creds, { fetcher });
+      const id = await postTweet(item.text, cfg.creds, { fetcher, poll: item.poll || null });
       await db.finish({ key: item.key, status: "posted", tweetId: id });
       summary.posted.push({ key: item.key, id });
       log(`[x-autopost] paylaşıldı ${item.key} → ${id}`);
