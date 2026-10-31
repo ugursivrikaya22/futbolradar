@@ -3,6 +3,8 @@
  * X otomatik paylaşım — YEREL KURU KOŞU. Depodaki data/*.json'dan tweetleri
  * kurar ve yazdırır. X'e, Supabase'e ya da API-Football'a HİÇBİR istek atmaz.
  *   node scripts/x-autopost-dry-run.mjs [--now=2026-10-20T22:30:00+03:00]
+ * Maç öncesi anket/tahmin önizlemesi: X_PREMATCH_POLLS_ENABLED=1
+ * (X_PREMATCH_MODE=poll|ask|both, X_PREMATCH_HOURS=4) ortam değişkenleriyle.
  */
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
@@ -11,9 +13,10 @@ const { weightedLength } = require("../services/xAutopost/compose.js");
 
 const arg = process.argv.find((a) => a.startsWith("--now="));
 const now = arg ? new Date(arg.slice(6)) : new Date();
-const cfg = config({ X_FAVORITE_TEAMS: process.env.X_FAVORITE_TEAMS || "" });
-const c = buildCandidates(loadFromDisk(), { now, favorites: cfg.favorites });
+const pick = (k) => process.env[k] || "";
+const cfg = config({ X_FAVORITE_TEAMS: pick("X_FAVORITE_TEAMS"), X_PREMATCH_POLLS_ENABLED: pick("X_PREMATCH_POLLS_ENABLED"), X_PREMATCH_MODE: pick("X_PREMATCH_MODE"), X_PREMATCH_HOURS: pick("X_PREMATCH_HOURS") });
+const c = buildCandidates(loadFromDisk(), { now, favorites: cfg.favorites, prematch: cfg.prematch });
 console.log(`[x-autopost] kuru koşu @ ${now.toISOString()} — bugün maç var mı: ${c.todayHasMatch}`);
-for (const [group, list] of Object.entries({ goals: c.goals, results: c.results, columns: c.columns, fillers: c.fillers })) {
-  for (const t of list) console.log(`\n### ${group} · ${t.key} · ${weightedLength(t.text)}/280\n${t.text}`);
+for (const [group, list] of Object.entries({ goals: c.goals, results: c.results, prematch: c.prematch, columns: c.columns, fillers: c.fillers })) {
+  for (const t of list) console.log(`\n### ${group} · ${t.key} · ${weightedLength(t.text)}/280\n${t.text}${t.poll ? `\n[anket: ${t.poll.options.join(" / ")} · ${t.poll.duration_minutes} dk]` : ""}`);
 }
