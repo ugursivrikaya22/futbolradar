@@ -3753,26 +3753,57 @@
     return null;
   }
 
+  // match-card-links:start
+  // Organizasyonun puan durumu sayfası — scripts/prerender-core-pages.mjs
+  // COMPETITION_STANDINGS ile özdeş; yalnızca yayında olan sayfalar.
+  var COMPETITION_STANDINGS = [
+    [/^süper lig$/i, "super-lig-puan-durumu.html"],
+    [/^(tff )?1\. lig$/i, "1-lig-puan-durumu.html"],
+    [/şampiyonlar ligi/i, "sampiyonlar-ligi-puan-durumu.html"],
+    [/avrupa ligi/i, "avrupa-ligi-puan-durumu.html"],
+    [/konferans ligi/i, "konferans-ligi-puan-durumu.html"],
+    [/^premier (lig|league)$/i, "premier-lig-puan-durumu.html"],
+    [/^la ?liga$/i, "la-liga-puan-durumu.html"],
+    [/^serie a$/i, "serie-a-puan-durumu.html"],
+    [/^bundesliga$/i, "bundesliga-puan-durumu.html"],
+    [/^ligue 1$/i, "ligue-1-puan-durumu.html"]
+  ];
+
   function quickLinkStandingsHref(match) {
-    var team = quickLinkTeamFor(match);
-    if (team) return "./" + team.slug + "-puan-durumu.html";
-    return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+    var league = String(match.league || "").trim();
+    if (/hazırlık|friendly/i.test(league)) {
+      var team = quickLinkTeamFor(match);
+      return team ? "./" + team.slug + "-puan-durumu.html" : null;
+    }
+    for (var index = 0; index < COMPETITION_STANDINGS.length; index += 1) {
+      if (COMPETITION_STANDINGS[index][0].test(league)) return "./" + COMPETITION_STANDINGS[index][1];
+    }
+    return "./puan-durumu.html";
   }
 
-  function quickLinkFormHref(match) {
-    var team = quickLinkTeamFor(match);
-    var name = (team && team.name) || match.homeTeam || match.awayTeam || "";
-    return teamDetailHref({ name: name });
+  function quickLinkTeamLinksHtml(match) {
+    return [match.homeTeam, match.awayTeam]
+      .filter(function (name) { return name && teamPageSlug(name); })
+      .map(function (name) {
+        return '<a href="' + escapeHtml(teamProfileHref(name)) + '" data-quicklink="team">' + escapeHtml(name) + "</a>";
+      })
+      .join("");
   }
 
   function quickLinkButtonsHtml(match) {
     var analysisLabel = fixtureStatusMeta(match).finished ? "Sonuç Analizi" : "Analiz";
+    var standings = quickLinkStandingsHref(match);
+    var stats = /^süper lig$/i.test(String(match.league || "").trim())
+      ? '<a href="./istatistik-merkezi.html" data-quicklink="stats">İstatistik</a>'
+      : "";
     return (
       '<a href="' + escapeHtml(matchDetailHref(match)) + '">' + analysisLabel + "</a>" +
-      '<a href="' + escapeHtml(quickLinkStandingsHref(match)) + '">Puan Durumu</a>' +
-      '<a href="' + escapeHtml(quickLinkFormHref(match)) + '">Takım Formu</a>'
+      (standings ? '<a href="' + escapeHtml(standings) + '">Puan Durumu</a>' : "") +
+      quickLinkTeamLinksHtml(match) +
+      stats
     );
   }
+  // match-card-links:end
 
   /**
    * Yalnızca ana sayfanın "Bugünün Maçları" önizlemesi (today-matches
