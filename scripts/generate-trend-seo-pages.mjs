@@ -14,6 +14,14 @@ const domain = "https://www.futbolradar.com";
 const updatedAt = "2026-07-22";
 const transfers = JSON.parse(fs.readFileSync(path.join(root, "data", "transfers.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
+// Transfer özetinin gerçek veri tarihi: en son doğrulanan kaydın tarihi (derleme günü değil).
+const confirmedTransfers = transfers.filter((item) => item.status === "confirmed");
+const transfersUpdatedAt = confirmedTransfers.map((item) => String(item.lastVerifiedAt || item.date || "").slice(0, 10)).filter(Boolean).sort().at(-1) || updatedAt;
+const TR_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+const trDate = (value) => { const [y, m, d] = String(value).slice(0, 10).split("-").map(Number); return `${d} ${TR_MONTHS[m - 1]} ${y}`; };
+const { sameClub } = createRequire(import.meta.url)("../services/superLigTeams.js");
+const superLigTeamNames = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8")).filter((team) => team.isCurrentSuperLigTeam).map((team) => team.name);
+const pageUpdatedAt = (page) => page.updatedAt || updatedAt;
 
 const uefaCoefficients = readUefaCoefficients(root);
 const uefaTurkiye = uefaCoefficients?.rows.find((row) => row.countryCode === "TUR");
@@ -68,6 +76,25 @@ function transferCards(records) {
   }).join("");
 }
 
+/** Süper Lig takımı başına gelen/giden sayısı; yalnızca kaynaklı, doğrulanmış kayıtlar. */
+function transferSummaryTable() {
+  const counts = new Map();
+  const bump = (team, key) => {
+    if (!team || team === "Serbest oyuncu") return;
+    const row = counts.get(team) || { team, incoming: 0, outgoing: 0 };
+    row[key] += 1;
+    counts.set(team, row);
+  };
+  for (const item of confirmedTransfers.filter((record) => record.sourceUrl && /s[üu]per lig/i.test(String(record.league || "")))) {
+    bump(item.toTeam, "incoming");
+    bump(item.fromTeam, "outgoing");
+  }
+  const rows = [...counts.values()].filter((row) => superLigTeamNames.some((name) => sameClub(name, row.team)))
+    .sort((a, b) => (b.incoming + b.outgoing) - (a.incoming + a.outgoing) || a.team.localeCompare(b.team, "tr"));
+  if (!rows.length) return "";
+  return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>2026-27 doğrulanmış transfer sayıları</caption><thead><tr><th scope="col">Takım</th><th scope="col">Gelen</th><th scope="col">Giden</th></tr></thead><tbody>${rows.map((row) => `<tr><th scope="row">${escapeHtml(row.team)}</th><td>${row.incoming}</td><td>${row.outgoing}</td></tr>`).join("")}</tbody></table></div>`;
+}
+
 function teamTransfers(team) {
   return transfers
     .filter((transfer) => transfer.status === "confirmed" && (transfer.fromTeam === team || transfer.toTeam === team))
@@ -115,6 +142,7 @@ const pages = [
   },
   {
     file: "super-lig-transferleri-2026-2027.html",
+    updatedAt: transfersUpdatedAt,
     title: "2026-2027 Süper Lig Transferleri: Gelenler ve Gidenler | FutbolRadar",
     description: "2026-2027 Süper Lig transferlerini takım, oyuncu, bonservis, geliş ve ayrılık yönüyle FutbolRadar transfer ekranında inceleyin.",
     h1: "2026-2027 Süper Lig Transferleri",
@@ -124,7 +152,7 @@ const pages = [
       { label: "Yaz dönemi sonu", value: "4 Eylül 2026", note: "TFF tescil takvimindeki kapanış tarihi." },
       { label: "Veri yaklaşımı", value: "Doğrulama odaklı", note: "Açıklanmayan bedeller tahmin edilmez." }
     ],
-    body: () => section("Son transfer hareketleri", "Kayıtlar en yeni tarih önde olacak şekilde listelenir.", `<div class="trend-transfer-grid">${transferCards(transfers.filter((item) => item.status === "confirmed").sort((a, b) => String(b.date).localeCompare(String(a.date))).slice(0, 12))}</div>`, "Süper Lig transferleri"),
+    body: () => `${section("Takım takım transfer özeti", `Her satır, kaynağı bağlantılı doğrulanmış kayıtların sayısıdır. Son doğrulama: ${trDate(transfersUpdatedAt)}.`, transferSummaryTable(), "Transfer özeti")}${section("Tüm doğrulanmış transfer hareketleri", "Kayıtlar en yeni tarih önde olacak şekilde listelenir; her kartta kaynak bağlantısı vardır.", `<div class="trend-transfer-grid">${transferCards([...confirmedTransfers].sort((a, b) => String(b.date).localeCompare(String(a.date))))}</div>`, "Süper Lig transferleri")}`,
     links: [
       { href: "./transfer-sezonu-ne-zaman-bitiyor.html", kicker: "Takvim", title: "Transfer sezonu ne zaman bitiyor?", text: "Yaz ve ara transfer tarihlerini incele." },
       { href: "./galatasaray-oyuncu-radari.html", kicker: "Takım", title: "Galatasaray Oyuncu Radarı", text: "Galatasaray kadrosunu oyuncu bazında incele." },
@@ -214,7 +242,7 @@ function pageHtml(page) {
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "WebPage", name: page.h1, description: page.description, url, dateModified: updatedAt, isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${domain}/` } },
+      { "@type": "WebPage", name: page.h1, description: page.description, url, dateModified: pageUpdatedAt(page), isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${domain}/` } },
       { "@type": "BreadcrumbList", itemListElement: [
         { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: `${domain}/` },
         { "@type": "ListItem", position: 2, name: "Trend Radar", item: `${domain}/` },
@@ -252,7 +280,7 @@ function pageHtml(page) {
     ${siteHeader({ base: "./" })}
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="./index.html">Ana Sayfa</a><span>/</span><a href="./index.html">Trend Radar</a><span>/</span><span>${escapeHtml(page.h1)}</span></nav>
-      <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong>22 Temmuz 2026</strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
+      <section class="trend-hero"><div><span class="eyebrow">Gündem · Veri · Analiz</span><h1>${escapeHtml(page.h1)}</h1><p>${escapeHtml(page.lead)}</p></div><aside><span>Son kontrol</span><strong><time datetime="${pageUpdatedAt(page)}">${trDate(pageUpdatedAt(page))}</time></strong><small>Doğrulanmayan alanlar kesin bilgi gibi sunulmaz.</small></aside></section>
       ${factCards(page.facts)}
       ${page.body()}
       ${page.team ? renderTeamNewsSection(readVerifiedTeamNews(root, page.team, 3), { team: page.team, base: "./" }) : ""}
@@ -271,6 +299,7 @@ function writePage(page) {
   fs.writeFileSync(path.join(root, "public", page.file), html, "utf8");
 }
 
+const lastmodByFile = new Map(pages.map((page) => [page.file, pageUpdatedAt(page)]));
 function upsertSitemap(files) {
   const sitemapPath = path.join(root, "sitemap.xml");
   let xml = fs.readFileSync(sitemapPath, "utf8");
@@ -278,7 +307,7 @@ function upsertSitemap(files) {
     const loc = `${domain}/${file}`;
     const escapedLoc = loc.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     xml = xml.replace(new RegExp(`  <url>\\s*<loc>${escapedLoc}<\\/loc>[\\s\\S]*?<\\/url>`, "g"), "");
-    xml = xml.replace("</urlset>", `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${updatedAt}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n</urlset>`);
+    xml = xml.replace("</urlset>", `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${lastmodByFile.get(file) || updatedAt}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.9</priority>\n  </url>\n</urlset>`);
   }
   fs.writeFileSync(sitemapPath, xml, "utf8");
   fs.writeFileSync(path.join(root, "public", "sitemap.xml"), xml, "utf8");
@@ -287,7 +316,8 @@ function upsertSitemap(files) {
 pages.forEach(writePage);
 upsertSitemap([
   ...pages.map((page) => page.file),
-  "fenerbahce-gornik-zabrze-mac-analizi.html",
+  // fenerbahce-gornik-zabrze-mac-analizi.html artık /mac/… adresine 301 veriyor;
+  // yönlendiren adres site haritasına yazılmaz (test-sitemaps).
   "en-iyi-super-lig-oyunculari.html"
 ]);
 console.log(`Generated ${pages.length} football trend SEO pages`);
