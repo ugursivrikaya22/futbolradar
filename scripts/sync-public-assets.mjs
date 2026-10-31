@@ -52,6 +52,8 @@ for (const file of [
   "home-ticker.css",
   "home-ticker.js",
   "home-columns.js",
+  "youtube-watch.js",
+  "youtube-watch.css",
   "site.webmanifest",
   "404.html",
   "index.html",

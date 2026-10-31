@@ -19,6 +19,7 @@ import {
 } from "./lib/matchAnalysisSections.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import { findFinalResult, resultRowsFrom } from "./lib/enMatchResult.mjs";
+import { matchWatchCard } from "./lib/youtubeWatchPage.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -48,6 +49,16 @@ const {
 } = require("../services/freshnessService.js");
 
 const players = getPlayers(rawPlayers);
+// İzlerken skor: yalnızca site sahibinin data/youtube-watch.json'a eklediği
+// resmi YouTube yayınları. Kayıt yoksa maç sayfasına yeni kutu eklenmez.
+const { loadEntries: loadWatchEntries } = require("../services/youtubeWatch.js");
+const watchEntries = (() => {
+  try { return loadWatchEntries(JSON.parse(fs.readFileSync(path.join(root, "data", "youtube-watch.json"), "utf8"))).entries; } catch { return []; }
+})();
+function watchEntryFor(match) {
+  const slugValue = pageSlug(match);
+  return watchEntries.find((entry) => entry.slug === slugValue || entry.matchPath === `/mac/${slugValue}.html`) || null;
+}
 const calendarMatches = Array.isArray(fixtureCalendar.matches) ? fixtureCalendar.matches : [];
 const archiveRecords = Array.isArray(matchArchive.records) ? matchArchive.records : [];
 // Oynanmış hafta maçlarının sonucu: takvim + arşiv (bkz. lib/enMatchResult.mjs).
@@ -493,7 +504,7 @@ function pageHtml(match) {
       <section class="match-radar-board" aria-label="Maç öncesi radar puanları">${radarCard(match.homeTeam, radar.home, homeTeam)}${radarCard(match.awayTeam, radar.away, awayTeam)}</section>
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>
-      <section class="match-related-grid" aria-label="İlgili radar ekranları">${liveCenterCard(match)}${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
+      <section class="match-related-grid" aria-label="İlgili radar ekranları">${matchWatchCard(watchEntryFor(match))}${liveCenterCard(match)}${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>
