@@ -35,6 +35,7 @@ import { pathToFileURL } from "node:url";
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { competitions } = require("../services/competitionCatalog.js");
+const { isSyncEnabledLeague } = require("../services/iddaaLeagues.js");
 const {
   ASSISTS_KIND,
   SCORERS_KIND,
@@ -171,7 +172,8 @@ export function buildLeaderRows(rows, metric, leagueId, season, byProviderId = n
 function targetCompetitions() {
   return TARGET_COMPETITION_IDS
     .map((id) => competitions.find((competition) => competition.id === id) || null)
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((competition) => isSyncEnabledLeague(competition.id));
 }
 
 function seasonFor(competition, now) {

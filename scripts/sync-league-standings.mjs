@@ -22,6 +22,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { competitions } = require("../services/competitionCatalog.js");
+const { isSyncEnabledLeague } = require("../services/iddaaLeagues.js");
 
 const args = new Set(process.argv.slice(2));
 const wantApply = args.has("--apply");
@@ -53,7 +54,8 @@ async function main() {
   }
 
   const eligible = competitions.filter((competition) =>
-    competition.providers && competition.providers.apiFootball && standingsSupported(competition));
+    competition.providers && competition.providers.apiFootball && standingsSupported(competition) &&
+    isSyncEnabledLeague(competition.id));
 
   if (!eligible.length) {
     line("  Coverage'ı 'standings: true' olan doğrulanmış lig yok — bekleniyor.");
