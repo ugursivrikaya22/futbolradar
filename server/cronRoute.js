@@ -11,6 +11,8 @@
  *   /api/cron/deploy                           Deploy Hook (saatte en fazla 1)
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
+ *   /api/cron/newsletter                       haftalık e-posta bülteni (Pzt 09:00 TSİ;
+ *                                              NEWSLETTER_ENABLED=1 değilse kuru çalışma)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
  * değişkeni yoksa ya da başlık eşleşmezse 401 döner ve hiçbir iş yapılmaz.
@@ -28,7 +30,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "newsletter"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -74,7 +76,9 @@ async function defaultRunners() {
     "search-demand": ({ budgetMs } = {}) => engine.runSearchDemand(budgetMs ? { budgetMs } : {}),
     // Sağlık raporu catch-all'daki mevcut `/api/daily-health-check` ucundan
     // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
-    health: () => engine.runHealth()
+    health: () => engine.runHealth(),
+    // Bülten motoru veri çekme motorundan bağımsız: veriyi SITE_URL/data/... üzerinden okur.
+    newsletter: () => require("../services/newsletter/weekly").runWeekly()
   };
 }
 

@@ -35,6 +35,10 @@
       "schedule": "0 2 * * *"
     },
     {
+      "path": "/api/cron/newsletter",
+      "schedule": "0 6 * * 1"
+    },
+    {
       "path": "/api/cron/full-update?phase=resume",
       "schedule": "20,40 2 * * *"
     }
@@ -50,6 +54,11 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
+    {
+      "source": "/bulten",
+      "destination": "/bulten.html",
+      "permanent": true
+    },
     {
       "source": "/istatistik-merkezi",
       "destination": "/istatistik-merkezi.html",

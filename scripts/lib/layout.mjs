@@ -454,7 +454,7 @@ export function siteFooter(options = {}) {
     : "");
 
   const bottomLinks = locale === "tr"
-    ? `<span class="footer-links"><a href="${base}veri-notu.html">${escapeHtml(t("footer.dataNote", locale))}</a><a href="${base}iletisim.html">${escapeHtml(t("footer.contact", locale))}</a></span>`
+    ? `<span class="footer-links"><a href="${base}veri-notu.html">${escapeHtml(t("footer.dataNote", locale))}</a><a href="${base}iletisim.html">${escapeHtml(t("footer.contact", locale))}</a><a href="${base}bulten.html">E-posta bülteni</a></span>`
     : "";
 
   return `<footer class="footer footer-premium" data-shared-layout="footer">
