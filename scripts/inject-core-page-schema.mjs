@@ -161,6 +161,10 @@ function buildGraph(file, config, html) {
     inLanguage: "tr-TR"
   };
   if (description) webPage.description = description;
+  // Veri tarihi: prerender'ın bastığı görünür "Son güncelleme" damgasından
+  // (scripts/lib/pageFreshness.mjs). Damga yoksa alan yazılmaz.
+  const dataDate = attr(html, /data-data-freshness>Son güncelleme: <time datetime="(\d{4}-\d{2}-\d{2})"/);
+  if (dataDate) webPage.dateModified = dataDate;
 
   const graph = [
     webPage,
