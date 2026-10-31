@@ -67,19 +67,39 @@ async function supabaseRequest(pathname, options = {}) {
  * takımını değiştirdiğinde yeni satır açmak yerine mevcut satır güncellenir
  * (bkz. migrasyon dosyasındaki gerekçe).
  */
-async function saveSubscription({ endpoint, p256dh, auth, favoriteTeam, userAgent }) {
-  await supabaseRequest(`${TABLE}?on_conflict=endpoint`, {
+/**
+ * MİGRASYON 0014 UYGULANMAMIŞ OLABİLİR. `notification_types` /
+ * `last_match_day_on` sütunları yoksa PostgREST 400 (PGRST204 / 42703)
+ * döner; bu durumda istek ESKİ sütunlarla tekrarlanır. Böylece migrasyon
+ * gelmeden de abonelik ve gol bildirimi bugünkü gibi çalışır — yalnızca
+ * tür tercihi ve maç günü tekilleştirmesi devre dışı kalır.
+ */
+function isMissingColumnError(error) {
+  const message = String((error && error.message) || "");
+  return /http-400/.test(message) && /(notification_types|last_match_day_on|PGRST204|42703|column)/i.test(message);
+}
+
+async function saveSubscription({ endpoint, p256dh, auth, favoriteTeam, userAgent, notificationTypes }) {
+  const base = {
+    endpoint,
+    p256dh,
+    auth,
+    favorite_team: favoriteTeam,
+    user_agent: userAgent ? String(userAgent).slice(0, 300) : null,
+    updated_at: new Date().toISOString()
+  };
+  const request = (body) => supabaseRequest(`${TABLE}?on_conflict=endpoint`, {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
-    body: JSON.stringify({
-      endpoint,
-      p256dh,
-      auth,
-      favorite_team: favoriteTeam,
-      user_agent: userAgent ? String(userAgent).slice(0, 300) : null,
-      updated_at: new Date().toISOString()
-    })
+    body: JSON.stringify(body)
   });
+  if (notificationTypes === undefined) return request(base);
+  try {
+    return await request({ ...base, notification_types: notificationTypes });
+  } catch (error) {
+    if (!isMissingColumnError(error)) throw error;
+    return request(base);
+  }
 }
 
 /** Abonelik sil — kullanıcı bildirimi kapattığında ya da push servisi 404/410 döndürdüğünde. */
@@ -92,9 +112,36 @@ async function removeSubscription(endpoint) {
 
 /** Bir takımın tüm aboneleri — gol/maç başı bildirimi göndermeden önce okunur. */
 async function listByTeam(favoriteTeam) {
-  const query = `${TABLE}?favorite_team=eq.${encodeURIComponent(favoriteTeam)}&select=endpoint,p256dh,auth`;
-  const rows = await supabaseRequest(query, { method: "GET" });
+  const base = `${TABLE}?favorite_team=eq.${encodeURIComponent(favoriteTeam)}&select=endpoint,p256dh,auth`;
+  let rows;
+  try {
+    rows = await supabaseRequest(`${base},notification_types,last_match_day_on`, { method: "GET" });
+  } catch (error) {
+    if (!isMissingColumnError(error)) throw error;
+    rows = await supabaseRequest(base, { method: "GET" });
+  }
   return Array.isArray(rows) ? rows : [];
+}
+
+/**
+ * Maç günü hatırlatması gönderildi damgası (İstanbul tarihi, YYYY-AA-GG).
+ * Uç nokta gün içinde iki kez çağrılsa bile aynı abone ikinci kez almaz.
+ * Sütun yoksa (migrasyon 0014 uygulanmamış) `false` döner; tekilleştirme
+ * o zaman yalnızca bildirim `tag`ına kalır.
+ */
+async function markMatchDaySent(endpoint, isoDate) {
+  try {
+    await supabaseRequest(`${TABLE}?endpoint=eq.${encodeURIComponent(endpoint)}`, {
+      method: "PATCH",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({ last_match_day_on: isoDate, last_sent_at: new Date().toISOString() })
+    });
+    return true;
+  } catch (error) {
+    if (!isMissingColumnError(error)) throw error;
+    await markSent(endpoint);
+    return false;
+  }
 }
 
 /** Başarılı gönderim sonrası teşhis damgası (bkz. migrasyon `last_sent_at`). */
@@ -110,7 +157,9 @@ module.exports = {
   TABLE,
   configurationHint,
   isConfigured,
+  isMissingColumnError,
   listByTeam,
+  markMatchDaySent,
   markSent,
   removeSubscription,
   saveSubscription

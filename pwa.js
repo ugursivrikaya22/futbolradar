@@ -24,6 +24,19 @@
   var LS_BANNER_SHOWN = "fr_pwa_banner_shown";
   var LS_FAVORITE_TEAM = "fr_favorite_team";
   var LS_PUSH_SUBSCRIBED_TEAM = "fr_push_subscribed_team";
+  var LS_PUSH_TYPES = "fr_push_types";
+  // Sunucudaki services/pushNotificationTypes.js ile aynı liste.
+  var PUSH_TYPES = [
+    { id: "match-day", label: "Bugün maç var hatırlatması" },
+    { id: "goal", label: "Goller" },
+    { id: "match-status", label: "Maç başı, devre, maç sonu, kırmızı kart" }
+  ];
+
+  function readPushTypes() {
+    var raw = readLocal(LS_PUSH_TYPES);
+    if (!raw) return PUSH_TYPES.map(function (t) { return t.id; });
+    return raw.split(",").filter(function (id) { return PUSH_TYPES.some(function (t) { return t.id === id; }); });
+  }
   var ENGAGEMENT_MS = 3000;
 
   var TEAMS_WITH_DEDICATED_PAGES = ["besiktas", "fenerbahce", "galatasaray", "trabzonspor"];
@@ -84,6 +97,9 @@
       ".fr-pwa-panel select{width:100%;padding:8px;border-radius:8px;margin:8px 0;background:#1a2732;color:#fff;border:1px solid #2c3e4f}" +
       ".fr-pwa-panel button{width:100%;border:0;border-radius:8px;padding:9px;background:#0b8f5a;color:#fff;font-weight:600;cursor:pointer}" +
       ".fr-pwa-panel .fr-pwa-unsubscribe{background:transparent;color:#e57373;margin-top:6px}" +
+      ".fr-pwa-types{border:0;margin:0 0 8px;padding:0}.fr-pwa-types legend{font-size:12px;color:#9fb0c0;padding:0;margin-bottom:2px}" +
+      ".fr-pwa-types label{display:flex;align-items:center;gap:8px;min-height:36px;font-size:13px;cursor:pointer}" +
+      ".fr-pwa-types input{width:20px;height:20px;margin:0;flex:none;accent-color:#0b8f5a}" +
       ".fr-pwa-fab,.fr-pwa-panel{z-index:65}.fr-pwa-panel{max-height:calc(100dvh - 170px);overflow:auto}" +
       "@media(max-width:900px){.fr-pwa-fab{bottom:calc(76px + env(safe-area-inset-bottom))}.fr-pwa-panel{bottom:calc(136px + env(safe-area-inset-bottom))}.fr-pwa-toast{bottom:calc(76px + env(safe-area-inset-bottom))}}";
     document.head.appendChild(style);
@@ -222,7 +238,7 @@
     if (note) note.textContent = text;
   }
 
-  function subscribeToPush(slug, panel) {
+  function subscribeToPush(slug, panel, types) {
     if (isIos() && !isStandalone()) {
       panel.remove();
       showIosInstallCard();
@@ -255,7 +271,9 @@
           return fetch("/api/push-subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ subscription: subscription.toJSON(), favoriteTeam: slug })
+            body: JSON.stringify(types
+              ? { subscription: subscription.toJSON(), favoriteTeam: slug, notificationTypes: types }
+              : { subscription: subscription.toJSON(), favoriteTeam: slug })
           });
         })
         .then(function (response) {
@@ -308,12 +326,19 @@
       return '<option value="' + team.id + '"' + selected + ">" + team.name + "</option>";
     }).join("");
 
+    var enabledTypes = readPushTypes();
+    var typeInputs = PUSH_TYPES.map(function (type) {
+      return '<label><input type="checkbox" name="fr-push-type" value="' + type.id + '"' +
+        (enabledTypes.indexOf(type.id) !== -1 ? " checked" : "") + "> " + type.label + "</label>";
+    }).join("");
+
     panel.innerHTML =
       "<strong>Favori Takımın</strong>" +
-      "<select>" + options + "</select>" +
+      '<select aria-label="Favori takım">' + options + "</select>" +
+      '<fieldset class="fr-pwa-types"><legend>Hangi bildirimler?</legend>' + typeInputs + "</fieldset>" +
       '<button type="button" data-action="subscribe">Bildirimleri Aç</button>' +
       (subscribedTeam ? '<button type="button" class="fr-pwa-unsubscribe" data-action="unsubscribe">Bildirimleri Kapat</button>' : "") +
-      '<p class="fr-pwa-note">' + (subscribedTeam ? "Bildirimler açık." : "Gol ve maç başı bildirimi almak için seç ve aç.") + "</p>";
+      '<p class="fr-pwa-note">' + (subscribedTeam ? "Bildirimler açık." : "Maç günü, gol ve maç durumu bildirimleri için seç ve aç.") + "</p>";
 
     var select = panel.querySelector("select");
     panel.querySelector('[data-action="subscribe"]').addEventListener("click", function () {
@@ -323,7 +348,14 @@
       // Ana sayfa kutusu ve "Takip Ettiklerim" aynı seçimi görsün (tek favori deposu).
       if (window.FutbolRadarFavorites) window.FutbolRadarFavorites.setPrimaryTeam(slug);
       notifyServiceWorkerOfFavoriteTeam(slug);
-      subscribeToPush(slug, panel);
+      var types = Array.prototype.slice.call(panel.querySelectorAll('input[name="fr-push-type"]:checked'))
+        .map(function (input) { return input.value; });
+      if (!types.length) {
+        setPanelNote(panel, "En az bir bildirim türü seç.");
+        return;
+      }
+      writeLocal(LS_PUSH_TYPES, types.join(","));
+      subscribeToPush(slug, panel, types);
     });
 
     var unsubscribeButton = panel.querySelector('[data-action="unsubscribe"]');
