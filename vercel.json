@@ -5539,10 +5539,9 @@
     }
   ],
   "functions": {
-    "api/cron/[job].js": {
-      "maxDuration": 800,
+    "api/[...route].js": {
       "includeFiles": "{scripts/**,services/**,lib/**,server/**,.cron/data-manifest.json}",
-      "excludeFiles": "{data/**,.git/**,public/**,outputs/**,node_modules/**,en/**,mac/**,mac-raporu/**,karsilastirma/**,futbolcu/**,haber/**,oyuncular/**,arsiv/**,kose-yazilari/**,takimlar/**,mac-dosyasi/**,assets/**,*.html,*.xml,scripts/**/*.html,scripts/**/fixtures/**}"
+      "excludeFiles": "{scripts/**/*.html,scripts/**/fixtures/**}"
     }
   }
 }

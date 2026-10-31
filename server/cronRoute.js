@@ -1,7 +1,7 @@
 /**
  * VERCEL CRON UÇ NOKTALARI — `/api/cron/<iş>`.
  *
- * GİRİŞ: `api/cron/[job].js` (ayrı, küçük işlev; paket içinde `data/` yok).
+ * GİRİŞ: `api/[...route].js` catch-all (routeName "cron"; Hobby 12 işlev sınırı).
  * Pro planı: her iş kendi cron takviminde koşar (vercel.json).
  *
  *   /api/cron/daily                            (yalnızca elle) full-update → health →

@@ -419,6 +419,16 @@ module.exports = async function handler(req, res) {
     return handleOnThisDayCron(req, res);
   }
 
+  // Vercel Cron işleri `/api/cron/<iş>` (scheduled-update, full-update,
+  // deploy, health, search-demand, daily). Eskiden ayrı `api/cron/[job].js`
+  // işleviydi; Hobby planının 12 işlev sınırı için catch-all'a taşındı.
+  // Kimlik doğrulama değişmedi: handleCron her isteği önce CRON_SECRET ile
+  // doğrular (server/cronAuth.js), sırsız istek 401 alır. Modül yalnızca
+  // cron isteklerinde yüklenir.
+  if (routeName(req) === "cron") {
+    return require("../server/cronRoute").handleCron(req, res);
+  }
+
   if (rejectUnsupportedMethod(req, res)) {
     return;
   }

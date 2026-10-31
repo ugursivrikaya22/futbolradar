@@ -56,7 +56,7 @@ function fakeSupabase() {
 }
 
 /* ---------------- vercel.json ---------------- */
-await test("vercel.json: Pro cron takvimi, ayrı küçük cron işlevi, data/ pakette yok", () => {
+await test("vercel.json: Pro cron takvimi, cron catch-all içinde, data/ pakete eklenmez", () => {
   const config = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
   const { JOBS } = require("../server/cronRoute.js");
   const field = /^(\*|\d+(-\d+)?(,\d+(-\d+)?)*)(\/\d+)?$/;
@@ -79,14 +79,16 @@ await test("vercel.json: Pro cron takvimi, ayrı küçük cron işlevi, data/ pa
   assert.equal(config.buildCommand, "npm run build");
   assert.equal(config.ignoreCommand, "node scripts/vercel-continue-build.mjs");
   assert.deepEqual(config.git.deploymentEnabled, { "**": false, main: true, "preview/**": true, "automation/*": false });
-  // Catch-all'a dokunulmaz; yalnızca ayrı cron işlevi yapılandırılır, data/ hiçbir includeFiles'ta yok.
-  assert.deepEqual(Object.keys(config.functions || {}), ["api/cron/[job].js"]);
-  const fn = config.functions["api/cron/[job].js"];
-  assert.ok(fn.maxDuration <= 800);
+  // Hobby 12 işlev sınırı: cron ayrı işlev değil, catch-all içinde. Catch-all'ın
+  // vercel.json girdisi yalnızca cron motorunun dosyalarını EKLER; data/ eklemez.
+  assert.deepEqual(Object.keys(config.functions || {}), ["api/[...route].js"]);
+  const fn = config.functions["api/[...route].js"];
+  assert.ok(fn.maxDuration === undefined || fn.maxDuration <= 300, "Hobby: en fazla 300 sn");
   assert.ok(!/data\//.test(fn.includeFiles), "includeFiles data/ içermemeli");
-  assert.match(fn.excludeFiles, /data\/\*\*/);
-  assert.ok(fs.existsSync(path.join(root, "api", "cron", "[job].js")));
-  assert.ok(!fs.readFileSync(path.join(root, "api", "[...route].js"), "utf8").includes("cronRoute"), "catch-all cron motorunu yüklememeli");
+  assert.match(fn.includeFiles, /scripts\/\*\*/);
+  assert.ok(!/node_modules|data\/\*\*/.test(fn.excludeFiles || ""), "catch-all'ın data/ ve node_modules'ü dışlanmamalı");
+  assert.ok(!fs.existsSync(path.join(root, "api", "cron")), "ayrı cron işlevi olmamalı (13/12)");
+  assert.match(fs.readFileSync(path.join(root, "api", "[...route].js"), "utf8"), /require\("\.\.\/server\/cronRoute"\)/);
 });
 
 /* ---------------- CRON_SECRET ---------------- */
@@ -126,14 +128,40 @@ await test("CRON_SECRET: eksik env, eksik/yanlış başlık → 401 ve iş yok; 
   assert.equal(constantTimeEqual("", ""), false);
 });
 
-await test("api/cron/[job].js sırsız isteği 401 ile reddeder", async () => {
+await test("catch-all /api/cron/<iş> isteğini cron işleyicisine yönlendirir; sırsız 401, sırlı 200", async () => {
   const saved = process.env.CRON_SECRET;
-  delete process.env.CRON_SECRET;
-  const handler = require("../api/cron/[job].js");
-  const res = fakeRes();
-  await handler({ url: "/api/cron/scheduled-update", method: "GET", headers: {} }, res);
-  assert.equal(res.statusCode, 401);
-  if (saved !== undefined) process.env.CRON_SECRET = saved;
+  const cronRoute = require("../server/cronRoute.js");
+  const original = cronRoute.handleCron;
+  const calls = [];
+  let ran = 0;
+  const runners = { health: async () => { ran += 1; return { status: "complete" }; } };
+  // Gerçek motor/ağ yok: sahte iş tablosu enjekte edilir, kimlik doğrulama gerçek kalır.
+  cronRoute.handleCron = (req, res) => { calls.push(req.url); return original(req, res, { env: process.env, runners }); };
+  try {
+    const handler = require("../api/[...route].js");
+    delete process.env.CRON_SECRET;
+    const noEnv = fakeRes();
+    await handler({ url: "/api/cron/health", method: "GET", headers: { authorization: "Bearer x" } }, noEnv);
+    assert.equal(noEnv.statusCode, 401);
+    process.env.CRON_SECRET = "s3cret-value";
+    const noSecret = fakeRes();
+    await handler({ url: "/api/cron/health", method: "GET", headers: {} }, noSecret);
+    assert.equal(noSecret.statusCode, 401);
+    assert.equal(noSecret.body.source, "vercel-cron");
+    const wrong = fakeRes();
+    await handler({ url: "/api/cron/health", method: "GET", headers: { authorization: "Bearer wrong" } }, wrong);
+    assert.equal(wrong.statusCode, 401);
+    assert.equal(ran, 0, "401 durumunda iş koşmamalı");
+    const ok = fakeRes();
+    await handler({ url: "/api/cron/health", method: "GET", headers: { authorization: "Bearer s3cret-value" } }, ok);
+    assert.equal(ok.statusCode, 200);
+    assert.equal(ok.body.job, "health");
+    assert.equal(ran, 1);
+    assert.deepEqual(calls, ["/api/cron/health", "/api/cron/health", "/api/cron/health", "/api/cron/health"]);
+  } finally {
+    cronRoute.handleCron = original;
+    if (saved === undefined) delete process.env.CRON_SECRET; else process.env.CRON_SECRET = saved;
+  }
 });
 
 /* ---------------- eser kararı / kodlama ---------------- */
