@@ -5,12 +5,14 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { buildWeeklyDigest, formatTrDate, sourcedSuperLigResults } from "./lib/weeklyDigest.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, lastMatchAnswer, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
 const { playerLink } = require("../services/playerLinks.js");
 const { superLigTeamPages, teamHubIndexable, standingsPageIndexable } = require("../services/superLigTeamPages.js");
 const { sameClub } = require("../services/superLigTeams.js");
+const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -18,6 +20,13 @@ const socialImage = `${siteUrl}/assets/og-image.png`;
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 const players = JSON.parse(fs.readFileSync(path.join(root, "data", "players.json"), "utf8"));
 const richSources = loadTeamSources(root);
+const readJson = (file, fallback) => { try { return JSON.parse(fs.readFileSync(path.join(root, "data", file), "utf8")); } catch { return fallback; } };
+const leagueLeaders = readJson("league-leaders.json", { topScorers: [], topAssists: [] });
+const leadersDate = String(leagueLeaders.updatedAt || leagueLeaders.generatedAt || "").slice(0, 10) || null;
+const postMatchRecords = readJson("post-match-reports.json", { records: [] }).records || [];
+// Derleme günü değil, gerçek "bugün" (TSİ). Test için FUTBOLRADAR_TODAY ile sabitlenebilir.
+const todayTr = process.env.FUTBOLRADAR_TODAY || new Date(Date.now() + 3 * 60 * 60 * 1000).toISOString().slice(0, 10);
+const weeklyDigest = buildWeeklyDigest(postMatchRecords, { today: todayTr });
 
 const featuredTeams = [
   { slug: "galatasaray", name: "Galatasaray" },
@@ -76,7 +85,7 @@ function breadcrumbHtml(items) {
     .join("")}</nav>`;
 }
 
-function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null, faq = null }) {
+function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null, faq = null, freshDate = dataDate, freshNote = "Yalnızca kayıtlı sağlayıcı verileri gösterilir." }) {
   const canonical = `${siteUrl}${canonicalPath}`;
   // Gerçekten var olan İngilizce karşılık: İngilizce sayfa Türkçe sayfayı alternate
   // ilan ediyor; karşılık verilmezse Google tek yönlü bildirimi yok sayar.
@@ -120,7 +129,7 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
             <span class="section-kicker">${escapeHtml(kicker)}</span>
             <h1>${escapeHtml(h1)}</h1>
             <p>${escapeHtml(intro)}</p>
-            <p class="evergreen-freshness"><time datetime="${dataDate}">Veri tarihi: ${dataDate}</time> · Yalnızca kayıtlı sağlayıcı verileri gösterilir.</p>
+            <p class="evergreen-freshness"><time datetime="${escapeHtml(freshDate)}">Veri tarihi: ${escapeHtml(freshDate)}</time> · ${escapeHtml(freshNote)}</p>
           </header>
           ${content}
           ${faqSectionHtml(faq, { className: "evergreen-section" })}
@@ -304,6 +313,7 @@ function comparisonPage(leftFeatured, rightFeatured) {
     ["Form skoru", left.formScore, right.formScore], ["Momentum", left.momentum, right.momentum]
   ];
   const rows = metrics.map(([label, leftValue, rightValue]) => `<tr><th scope="row">${escapeHtml(label)}</th><td>${value(leftValue)}</td><td>${value(rightValue)}</td></tr>`);
+  const extra = comparisonExtras(left, right, leftFeatured, rightFeatured);
   const breadcrumbs = [
     { name: "Ana Sayfa", href: "../../", url: `${siteUrl}/` },
     { name: "Takım Karşılaştırmaları", href: "../../takim-karsilastirmalari", url: `${siteUrl}/takim-karsilastirmalari` },
@@ -320,8 +330,117 @@ function comparisonPage(leftFeatured, rightFeatured) {
     intro: "Bu sayfa iki takımın aynı veri anındaki kayıtlarını yan yana getirir; tahmin, skor veya olay üretmez.",
     breadcrumbs,
     schema: { "@type": "Article", "@id": `${siteUrl}/karsilastirma/takimlar/${slug}#article`, mainEntityOfPage: `${siteUrl}/karsilastirma/takimlar/${slug}`, headline: title, description: `${leftFeatured.name} ve ${rightFeatured.name} takım verilerinin karşılaştırması.`, datePublished: dataDate, dateModified: dataDate, inLanguage: "tr-TR", author: { "@type": "Organization", name: "FutbolRadar" }, publisher: { "@type": "Organization", name: "FutbolRadar", logo: { "@type": "ImageObject", url: `${siteUrl}/favicon-512x512.png` } }, image: socialImage },
-    content: `<section class="evergreen-section" aria-labelledby="comparison-heading"><h2 id="comparison-heading">Kayıtlı sezon verileri</h2>${table(["Gösterge", leftFeatured.name, rightFeatured.name], rows, `${leftFeatured.name} ve ${rightFeatured.name} karşılaştırma tablosu`)}<p class="evergreen-note">Karşılaştırma yalnızca veri dosyasında bulunan değerleri gösterir. Eksik bir değer “—” olarak bırakılır.</p></section><div class="evergreen-link-grid"><a href="../../takimlar/${leftFeatured.slug}">${escapeHtml(leftFeatured.name)} takım profili</a><a href="../../takimlar/${rightFeatured.slug}">${escapeHtml(rightFeatured.name)} takım profili</a></div>${relatedLinks("Karşılaştırmadan devam edin", "../../")}`
+    content: `<section class="evergreen-section" aria-labelledby="comparison-heading"><h2 id="comparison-heading">Kayıtlı sezon verileri</h2>${table(["Gösterge", leftFeatured.name, rightFeatured.name], rows, `${leftFeatured.name} ve ${rightFeatured.name} karşılaştırma tablosu`)}<p class="evergreen-note">Karşılaştırma yalnızca veri dosyasında bulunan değerleri gösterir. Eksik bir değer “—” olarak bırakılır.</p></section>${extra}<div class="evergreen-link-grid"><a href="../../takimlar/${leftFeatured.slug}">${escapeHtml(leftFeatured.name)} takım profili</a><a href="../../takimlar/${rightFeatured.slug}">${escapeHtml(rightFeatured.name)} takım profili</a></div>${relatedLinks("Karşılaştırmadan devam edin", "../../")}`
   });
+}
+
+function teamLeaders(list, team, key) {
+  return (list || []).filter((row) => sameClub(row.team, team.name) && Number.isFinite(row[key])).slice(0, 3);
+}
+
+function sourceLinksHtml(urls) {
+  return urls.map((url, index) => `<a href="${escapeHtml(url)}" target="_blank" rel="${SOURCE_LINK_REL}">Kaynak${urls.length > 1 ? ` ${index + 1}` : ""}</a>`).join(" ");
+}
+
+function resultRow(record, base) {
+  const report = record.reportUrl && fs.existsSync(path.join(root, String(record.reportUrl).replace(/^\.\//, "")))
+    ? ` <a href="${base}${escapeHtml(String(record.reportUrl).replace(/^\.\//, ""))}">Maç raporu</a>` : "";
+  return `<tr><td><time datetime="${escapeHtml(record.date)}">${escapeHtml(formatTrDate(record.date))}</time></td><th scope="row">${escapeHtml(record.homeTeam)} <strong>${record.score.home}-${record.score.away}</strong> ${escapeHtml(record.awayTeam)}</th><td>${sourceLinksHtml(record.sources)}${report}</td></tr>`;
+}
+
+const sourcedResults = sourcedSuperLigResults(postMatchRecords);
+
+/** Karşılaştırma sayfasına eklenen, yalnızca repo verisinden gelen bölümler. */
+function comparisonExtras(left, right, leftFeatured, rightFeatured) {
+  const sections = [];
+  const leaderRows = [];
+  for (const [team, featured] of [[left, leftFeatured], [right, rightFeatured]]) {
+    for (const row of teamLeaders(leagueLeaders.topScorers, team, "goals")) leaderRows.push(`<tr><td>${escapeHtml(featured.name)}</td><th scope="row">${escapeHtml(row.name)}</th><td>${value(row.goals)}</td><td>${value(row.assists)}</td><td>${value(row.appearances)}</td></tr>`);
+  }
+  if (leaderRows.length && leadersDate) {
+    sections.push(`<section class="evergreen-section" aria-labelledby="cmp-scorers"><h2 id="cmp-scorers">Gol krallığı listesindeki oyuncular</h2>${table(["Takım", "Oyuncu", "Gol", "Asist", "Maç"], leaderRows, `${leftFeatured.name} ve ${rightFeatured.name} gol krallığı listesindeki oyuncular`)}<p class="evergreen-note">Süper Lig gol/asist liderleri listesinin <time datetime="${leadersDate}">${escapeHtml(formatTrDate(leadersDate))}</time> tarihli kaydından (API-Football). Tam liste: <a href="../../gol-kralligi.html">gol krallığı</a> · <a href="../../asist-kralligi.html">asist krallığı</a>.</p></section>`);
+  }
+  const squad = (team) => players.filter((player) => sameClub(player.currentTeam, team.name)).length;
+  const leftSquad = squad(left);
+  const rightSquad = squad(right);
+  const h2h = sourcedResults.filter((record) => [record.homeTeam, record.awayTeam].some((name) => sameClub(name, left.name)) && [record.homeTeam, record.awayTeam].some((name) => sameClub(name, right.name)));
+  const recent = (team) => sourcedResults.filter((record) => sameClub(record.homeTeam, team.name) || sameClub(record.awayTeam, team.name)).slice(0, 3);
+  const recentRows = [...new Map([...h2h, ...recent(left), ...recent(right)].map((record) => [record.matchId || record.slug, record])).values()]
+    .sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  if (recentRows.length) {
+    sections.push(`<section class="evergreen-section" aria-labelledby="cmp-results"><h2 id="cmp-results">${h2h.length ? "Aralarındaki maç ve son kaynaklı sonuçlar" : "Son kaynaklı Süper Lig sonuçları"}</h2>${table(["Tarih", "Maç", "Kaynak"], recentRows.map((record) => resultRow(record, "../../")), "Kaynaklı son sonuçlar")}<p class="evergreen-note">Yalnızca kaynağı doğrulanmış sonuçlar listelenir; kaynağı olmayan maçlar bilerek gösterilmez.</p></section>`);
+  }
+  if (leftSquad || rightSquad) {
+    sections.push(`<p class="evergreen-note">Kayıtlı oyuncu profili sayısı: ${escapeHtml(leftFeatured.name)} ${leftSquad}, ${escapeHtml(rightFeatured.name)} ${rightSquad}.</p>`);
+  }
+  return sections.join("");
+}
+
+function digestPage() {
+  const digest = weeklyDigest;
+  const breadcrumbs = [
+    { name: "Ana Sayfa", href: "./", url: `${siteUrl}/` },
+    { name: "Bu Hafta Süper Lig", href: "./bu-hafta-super-lig", url: `${siteUrl}/bu-hafta-super-lig` }
+  ];
+  const week = digest.week;
+  const range = week ? `${formatTrDate(week.monday)} – ${formatTrDate(week.sunday)}` : null;
+  const freshDate = digest.latestResultDate || dataDate;
+  const stale = week && !digest.isCurrentWeek;
+  const notice = !week
+    ? `<p class="evergreen-note">Güncelleniyor: kaynağı doğrulanmış Süper Lig sonucu henüz yok.</p>`
+    : stale
+      ? `<p class="evergreen-note"><strong>Not:</strong> Bu derleme ${escapeHtml(range)} haftasına (ISO ${escapeHtml(week.key)}) aittir. Daha yeni haftanın kaynaklı sonuçları henüz veri dosyalarına işlenmedi; güncellendiğinde sayfa otomatik yenilenir.</p>`
+      : "";
+  const resultsSection = digest.results.length
+    ? `<section class="evergreen-section" aria-labelledby="digest-results"><h2 id="digest-results">Haftanın sonuçları</h2>${table(["Tarih", "Maç", "Kaynak"], digest.results.map((record) => resultRow(record, "./")), `${range} Süper Lig sonuçları`)}<p class="evergreen-note">Yalnızca kaynağı doğrulanmış ${digest.totals.matches} maç listelenir; kaynağı eksik maçlar bilerek gösterilmez.</p></section>` : "";
+  const t = digest.totals;
+  const numbers = t ? `<section class="evergreen-section" aria-labelledby="digest-numbers"><h2 id="digest-numbers">Haftanın rakamları</h2><div class="evergreen-score-grid"><div><span>Maç</span><strong>${t.matches}</strong></div><div><span>Gol</span><strong>${t.goals}</strong></div><div><span>Maç başı gol</span><strong>${(t.goals / t.matches).toFixed(2)}</strong></div><div><span>Ev / Beraberlik / Deplasman</span><strong>${t.homeWins} / ${t.draws} / ${t.awayWins}</strong></div></div>${t.biggest ? `<p>Haftanın en farklı skoru: <strong>${escapeHtml(t.biggest.homeTeam)} ${t.biggest.score.home}-${t.biggest.score.away} ${escapeHtml(t.biggest.awayTeam)}</strong>.</p>` : ""}</section>` : "";
+  const standings = [...teams].filter((team) => team.isCurrentSuperLigTeam && Number(team.played) > 0 && Number.isFinite(team.points)).sort((a, b) => a.rank - b.rank).slice(0, 6);
+  const standingsSection = standings.length ? `<section class="evergreen-section" aria-labelledby="digest-table"><h2 id="digest-table">Puan durumunda ilk 6</h2>${table(["Sıra", "Takım", "O", "Av.", "P"], standings.map((team) => `<tr><td>${value(team.rank)}</td><th scope="row">${teamNameCell(team)}</th><td>${value(team.played)}</td><td>${value(team.goalDifference)}</td><td><strong>${value(team.points)}</strong></td></tr>`), "Süper Lig ilk 6")}<p class="evergreen-note">Puan durumu kaydı: <time datetime="${dataDate}">${escapeHtml(formatTrDate(dataDate))}</time>. <a href="./super-lig-puan-durumu">Tam tablo</a></p></section>` : "";
+  const scorers = (leagueLeaders.topScorers || []).filter((row) => Number.isFinite(row.goals)).slice(0, 5);
+  const scorersSection = scorers.length && leadersDate ? `<section class="evergreen-section" aria-labelledby="digest-scorers"><h2 id="digest-scorers">Gol krallığında ilk 5</h2>${table(["Sıra", "Oyuncu", "Takım", "Gol"], scorers.map((row) => `<tr><td>${value(row.rank)}</td><th scope="row">${escapeHtml(row.name)}</th><td>${escapeHtml(row.team)}</td><td><strong>${value(row.goals)}</strong></td></tr>`), "Süper Lig gol krallığı ilk 5")}<p class="evergreen-note">Gol listesi kaydı: <time datetime="${leadersDate}">${escapeHtml(formatTrDate(leadersDate))}</time>. <a href="./gol-kralligi.html">Gol krallığı</a> · <a href="./asist-kralligi.html">Asist krallığı</a></p></section>` : "";
+  const title = week ? `Bu Hafta Süper Lig'de Ne Oldu? ${range} Sonuçları | FutbolRadar` : "Bu Hafta Süper Lig'de Ne Oldu? | FutbolRadar";
+  const description = week && t
+    ? `Süper Lig ${range} haftası: ${t.matches} kaynaklı maç, ${t.goals} gol. Haftanın sonuçları, puan durumunda ilk 6 ve gol krallığı tek sayfada.`
+    : "Süper Lig haftalık derlemesi: kaynaklı sonuçlar, puan durumu ve gol krallığı.";
+  return pageDocument({
+    base: "./",
+    title,
+    description,
+    canonicalPath: "/bu-hafta-super-lig",
+    h1: week ? `Bu Hafta Süper Lig'de Ne Oldu? (${range})` : "Bu Hafta Süper Lig'de Ne Oldu?",
+    kicker: week ? `Haftalık Derleme · ISO ${week.key}` : "Haftalık Derleme",
+    intro: "Süper Lig'in son haftasını kaynaklı sonuçlar, haftanın rakamları, puan durumu ve gol krallığıyla özetleyen derleme. Sayfa her derlemede veri dosyalarından yeniden üretilir; tahmin veya uydurma içerik yoktur.",
+    breadcrumbs,
+    freshDate,
+    freshNote: "Son kaynaklı sonucun tarihi; puan ve gol tablolarının kendi tarihleri bölümlerinde yazar.",
+    indexable: digest.indexable,
+    schema: { "@type": "CollectionPage", "@id": `${siteUrl}/bu-hafta-super-lig#page`, url: `${siteUrl}/bu-hafta-super-lig`, name: "Bu Hafta Süper Lig", description, inLanguage: "tr-TR", dateModified: freshDate, ...(week ? { temporalCoverage: `${week.monday}/${week.sunday}` } : {}) },
+    content: `${notice}${resultsSection}${numbers}${standingsSection}${scorersSection}${relatedLinks("Derlemeden devam edin")}`
+  });
+}
+
+/** İstatistik merkezine veri tarihi ve kalıcı sayfa bağlantıları (işaretli blok, idempotent). */
+function patchStatsHub(file) {
+  if (!fs.existsSync(file)) return;
+  let html = fs.readFileSync(file, "utf8");
+  const dates = [dataDate, leadersDate].filter(Boolean).sort();
+  const latest = dates.at(-1);
+  const block = `<!-- kalici-seo-links:start -->
+        <section class="section stats-route-section" aria-labelledby="stats-evergreen-title">
+          <div class="section-head"><div class="section-title"><span class="section-kicker">Kalıcı Sayfalar</span><h2 id="stats-evergreen-title">Lider tabloları, karşılaştırmalar ve haftalık derleme</h2><p class="evergreen-freshness">Son veri güncellemesi: <time datetime="${latest}">${escapeHtml(formatTrDate(latest))}</time> (puan durumu ${escapeHtml(formatTrDate(dataDate))}${leadersDate ? `, gol/asist listesi ${escapeHtml(formatTrDate(leadersDate))}` : ""}).</p></div></div>
+          <div class="stats-route-grid">
+            <a href="./gol-kralligi.html"><span>Gol</span><strong>Süper Lig gol krallığı</strong></a>
+            <a href="./asist-kralligi.html"><span>Asist</span><strong>Süper Lig asist krallığı</strong></a>
+            <a href="./takim-karsilastirmalari"><span>Kıyas</span><strong>Büyük dörtlü takım karşılaştırmaları</strong></a>
+            ${weeklyDigest.indexable ? `<a href="./bu-hafta-super-lig"><span>Hafta</span><strong>Bu hafta Süper Lig'de ne oldu?</strong></a>` : ""}
+            <a href="./super-lig-transferleri-2026-2027.html"><span>Transfer</span><strong>2026-27 transfer özeti</strong></a>
+          </div>
+        </section>
+        <!-- kalici-seo-links:end -->`;
+  const pattern = /\s*<!-- kalici-seo-links:start -->[\s\S]*?<!-- kalici-seo-links:end -->/;
+  html = pattern.test(html) ? html.replace(pattern, `\n        ${block}`) : html.replace(/\s*<\/main>/, `\n        ${block}\n      </main>`);
+  fs.writeFileSync(file, html, "utf8");
 }
 
 function comparisonHub() {
@@ -340,7 +459,7 @@ function comparisonHub() {
     intro: "Dört büyük takımın kayıtlı sezon verilerini çiftler halinde karşılaştırın. Her sayfa sunucudan teslim edilen, taranabilir HTML içerir.",
     breadcrumbs,
     schema: { "@type": "CollectionPage", "@id": `${siteUrl}/takim-karsilastirmalari#page`, url: `${siteUrl}/takim-karsilastirmalari`, name: "Süper Lig Takım Karşılaştırmaları", description: "Süper Lig takım karşılaştırma sayfaları.", inLanguage: "tr-TR", dateModified: dataDate },
-    content: `<section class="evergreen-card-grid" aria-label="Takım karşılaştırmaları">${links}</section>${relatedLinks("Karşılaştırma merkezinden devam edin")}`
+    content: `<section class="evergreen-card-grid" aria-label="Takım karşılaştırmaları">${links}</section><nav class="evergreen-link-grid" aria-label="İstatistik sayfaları"><a href="./gol-kralligi.html">Gol krallığı</a><a href="./asist-kralligi.html">Asist krallığı</a>${weeklyDigest.indexable ? `<a href="./bu-hafta-super-lig">Bu hafta Süper Lig</a>` : ""}<a href="./istatistik-merkezi.html">İstatistik merkezi</a></nav>${relatedLinks("Karşılaştırma merkezinden devam edin")}`
   });
 }
 
@@ -366,8 +485,11 @@ function updateSitemap(file) {
     ...hubTeams.filter((team) => team.indexable).map((team) => `/takimlar/${team.slug}`),
     ...comparisonPairs.map(([left, right]) => `/karsilastirma/takimlar/${left.slug}-vs-${right.slug}`)
   ];
+  const digestUrl = `${siteUrl}/bu-hafta-super-lig`;
   const urls = new Set(newPaths.map((item) => `${siteUrl}${item}`));
-  const entries = (xml.match(URL_ENTRY_RE) || []).filter((entry) => ![...urls].some((url) => entry.includes(`<loc>${url}</loc>`)));
+  const entries = (xml.match(URL_ENTRY_RE) || []).filter((entry) => ![...urls, digestUrl].some((url) => entry.includes(`<loc>${url}</loc>`)));
+  // Haftalık derleme yalnızca indekslenebilirse (yeterli kaynaklı sonuç) haritaya girer.
+  if (weeklyDigest.indexable) entries.push(`  <url>\n    <loc>${digestUrl}</loc>\n    <lastmod>${weeklyDigest.latestResultDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>`);
   entries.push(...[...urls].map((url) => `  <url>\n    <loc>${url}</loc>\n    <lastmod>${dataDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${url.includes("/karsilastirma/") ? "0.7" : "0.8"}</priority>\n  </url>`));
   fs.writeFileSync(file, wrapUrlset(entries), "utf8");
 }
@@ -375,10 +497,12 @@ function updateSitemap(file) {
 writePage("super-lig-puan-durumu.html", standingsPage());
 writePage(path.join("form-tablosu", "super-lig.html"), formPage());
 writePage("takim-karsilastirmalari.html", comparisonHub());
+writePage("bu-hafta-super-lig.html", digestPage());
 for (const team of hubTeams) writePage(path.join("takimlar", `${team.slug}.html`), teamPage(team));
 for (const [left, right] of comparisonPairs) writePage(path.join("karsilastirma", "takimlar", `${left.slug}-vs-${right.slug}.html`), comparisonPage(left, right));
 for (const outputRoot of [root, path.join(root, "public")]) {
   patchHomePage(path.join(outputRoot, "index.html"));
+  patchStatsHub(path.join(outputRoot, "istatistik-merkezi.html"));
   updateSitemap(path.join(outputRoot, "sitemap.xml"));
 }
 
