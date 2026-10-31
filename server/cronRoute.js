@@ -11,6 +11,7 @@
  *   /api/cron/deploy                           Deploy Hook (saatte en fazla 1)
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
+ *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
  * değişkeni yoksa ya da başlık eşleşmezse 401 döner ve hiçbir iş yapılmaz.
@@ -28,7 +29,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "x-autopost"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -74,7 +75,10 @@ async function defaultRunners() {
     "search-demand": ({ budgetMs } = {}) => engine.runSearchDemand(budgetMs ? { budgetMs } : {}),
     // Sağlık raporu catch-all'daki mevcut `/api/daily-health-check` ucundan
     // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
-    health: () => engine.runHealth()
+    health: () => engine.runHealth(),
+    // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
+    // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
+    "x-autopost": () => require("../services/xAutopost").runXAutopost()
   };
 }
 
