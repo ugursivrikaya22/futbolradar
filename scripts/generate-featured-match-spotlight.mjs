@@ -249,6 +249,15 @@ const stateFile = {
 
 /* ───────────────────────────── İŞARETLEME ────────────────────────────── */
 
+function pageAnchorIds(relative) {
+  try {
+    const html = fs.readFileSync(path.join(root, relative), "utf8");
+    return Array.from(html.matchAll(/\sid="([^"]+)"/g), (match) => match[1]);
+  } catch {
+    return null;
+  }
+}
+
 function viewFor(entry, locale, base) {
   const trPath = `mac/${entry.slug}`;
   const enPath = entry.enSlug ? `en/match/${entry.enSlug}` : "";
@@ -278,7 +287,15 @@ function viewFor(entry, locale, base) {
     ? [{ href: `${base}${hubRelative.replace(/\.html$/, "")}`, label: locale === "en" ? "Türkiye national team hub" : "A Millî Takım sayfası" }]
     : [];
 
+  // DERİN BAĞLANTI YALNIZCA HEDEF KİMLİK SAYFADA VARSA. Maç sayfası örneğin
+  // ne resmî ne muhtemel 11 verisi yokken `#muhtemel-11` bölümünü hiç
+  // basmıyor; o durumda bağlantı kırık çapa olurdu (audit-interaction-routes
+  // derlemeyi durdurur). Sayfa diskte okunamazsa liste boş kalmaz, `null`
+  // döner ve kutu eski davranışla tüm bağlantıları basar.
+  const availableAnchors = pageAnchorIds(`${target}.html`);
+
   return {
+    availableAnchors,
     // GÖRÜNEN AD: İngilizce yüzeyde ülke adı İngilizce ("İtalya" → "Italy"),
     // tıpkı kutunun bağlandığı maç sayfasının tabelası gibi. Kulüp adına
     // dokunulmaz (services/displayLabels.js#nationLabel).
