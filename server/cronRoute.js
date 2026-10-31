@@ -11,6 +11,7 @@
  *   /api/cron/deploy                           Deploy Hook (saatte en fazla 1)
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
+ *   /api/cron/matchday-reminder                PWA push: "favori takımının maçı bugün" (saatlik, 09–22 İstanbul)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
  * değişkeni yoksa ya da başlık eşleşmezse 401 döner ve hiçbir iş yapılmaz.
@@ -28,7 +29,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "matchday-reminder"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -74,7 +75,10 @@ async function defaultRunners() {
     "search-demand": ({ budgetMs } = {}) => engine.runSearchDemand(budgetMs ? { budgetMs } : {}),
     // Sağlık raporu catch-all'daki mevcut `/api/daily-health-check` ucundan
     // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
-    health: () => engine.runHealth()
+    health: () => engine.runHealth(),
+    // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
+    // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
+    "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()
   };
 }
 

@@ -25,6 +25,7 @@
     "posttest": "node scripts/test-seo-foundation.mjs",
     "test:scheduled-updates": "node scripts/test-scheduled-updates.mjs",
     "test:vercel-cron": "node scripts/test-vercel-cron.mjs",
+    "test:matchday-reminder": "node scripts/test-matchday-reminder.mjs",
     "test:operations": "node --test tests/operations.test.mjs tests/scheduling.test.mjs",
     "pretest": "node scripts/test-live-score-stream.mjs && node scripts/test-official-transfers-20260814.mjs",
     "update:full": "node scripts/run-scheduled-update.mjs --type=full --force",
