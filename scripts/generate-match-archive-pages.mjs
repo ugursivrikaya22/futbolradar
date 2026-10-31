@@ -153,7 +153,9 @@ function model(page) {
   const lineups = archive.lineupBlocks(match.lineups);
   const stats = archive.statRows(match.statistics);
   const score = match.score || {};
-  const decision = archive.indexDecision({ score, sources, goals, lineups, stats });
+  // API-Football kökenli veri (fixture kimliği API-Football'dan) geçerli kaynak sayılır (Ugur, 31 Ekim 2026).
+  const apiFootball = [match, record.match, ...page.duplicates.map((d) => d.match), page.registry].some((x) => archive.isApiFootballOrigin(x));
+  const decision = archive.indexDecision({ score, sources, goals, lineups, stats, apiFootball });
   const competitionId = competitionIdOf(page);
   const rawRound = (page.registry && page.registry.round) || match.round || (page.curated && page.curated.stage) || null;
   const roundNo = rawRound && /^(?:regular season\s*-\s*)?(\d{1,2})$/i.exec(String(rawRound).trim());
@@ -181,6 +183,8 @@ function model(page) {
     score,
     status: String(match.status || "").toUpperCase(),
     sources,
+    apiFootball,
+    sourced: sources.length > 0 || apiFootball,
     goals,
     cards,
     lineups,
@@ -209,9 +213,9 @@ function scoreText(m) {
 
 function titleFor(m) {
   const parts = [];
-  if (m.goals.length && m.sources.length) parts.push("Goller");
-  if (m.lineups.length && m.sources.length) parts.push("Kadrolar");
-  if (m.stats.length && m.sources.length) parts.push(m.corners ? "İstatistikler" : "İstatistikler");
+  if (m.goals.length && m.sourced) parts.push("Goller");
+  if (m.lineups.length && m.sourced) parts.push("Kadrolar");
+  if (m.stats.length && m.sourced) parts.push(m.corners ? "İstatistikler" : "İstatistikler");
   const tail = parts.length ? `Maç Özeti, ${parts.join(" ve ").replace(/ ve (?=.* ve )/, ", ")}` : "Maç Sonucu";
   return `${m.homeTeam} ${scoreText(m)} ${m.awayTeam} (${archive.trDateLabel(m.day)}) ${tail} | FutbolRadar`;
 }
@@ -220,13 +224,13 @@ function descriptionFor(m) {
   const comp = m.competition ? `${m.competition}${m.round ? ` ${m.round}` : ""} karşılaşmasında ` : "";
   const h = Number(m.score.home), a = Number(m.score.away);
   let text = `${archive.trDateLabel(m.day)} — ${comp}${h === a ? `${m.homeTeam} ile ${m.awayTeam} ${scoreText(m)} berabere kaldı.` : `${h > a ? m.homeTeam : m.awayTeam}, ${h > a ? m.awayTeam : m.homeTeam} karşısında ${h > a ? scoreText(m) : `${a}-${h}`} kazandı.`}`;
-  if (m.sources.length && m.goals.length) {
+  if (m.sourced && m.goals.length) {
     text += ` Goller: ${m.goals.slice(0, 4).map((g) => `${g.player}${g.minute ? ` ${g.minute}` : ""}`).join(", ")}${m.goals.length > 4 ? "…" : ""}.`;
   }
   const extras = [];
-  if (m.sources.length && m.lineups.length) extras.push("ilk 11'ler");
-  if (m.sources.length && m.stats.length) extras.push("maç istatistikleri");
-  if (m.sources.length && m.corners) extras.push("korner sayıları");
+  if (m.sourced && m.lineups.length) extras.push("ilk 11'ler");
+  if (m.sourced && m.stats.length) extras.push("maç istatistikleri");
+  if (m.sourced && m.corners) extras.push("korner sayıları");
   if (extras.length) {
     const list = extras.length > 1 ? `${extras.slice(0, -1).join(", ")} ve ${extras[extras.length - 1]}` : extras[0];
     text += ` ${list.replace(/^./, (c) => c.toLocaleUpperCase("tr-TR"))} kaynak bağlantılarıyla bu sayfada.`;
@@ -235,9 +239,13 @@ function descriptionFor(m) {
 }
 
 /* ---------- 4. HTML ---------- */
+const API_FOOTBALL_URL = "https://www.api-football.com/";
 function sourceLine(m) {
-  if (!m.sources.length) return "";
-  return `<p class="ma-src">Kaynak: ${m.sources.map((s) => `<a href="${escapeHtml(s.url)}" rel="${escapeHtml(SOURCE_LINK_REL)}" target="_blank">${escapeHtml(s.host)}</a>`).join(", ")}</p>`;
+  if (!m.sourced) return "";
+  const parts = [];
+  if (m.sources.length) parts.push(`Kaynak: ${m.sources.map((s) => `<a href="${escapeHtml(s.url)}" rel="${escapeHtml(SOURCE_LINK_REL)}" target="_blank">${escapeHtml(s.host)}</a>`).join(", ")}`);
+  if (m.apiFootball) parts.push(`<a href="${API_FOOTBALL_URL}" rel="${escapeHtml(SOURCE_LINK_REL)}" target="_blank">Veri: API-Football</a>`);
+  return `<p class="ma-src">${parts.join(" · ")}</p>`;
 }
 
 function nameHtml(name, team) {
@@ -246,7 +254,7 @@ function nameHtml(name, team) {
 }
 
 function goalsSection(m) {
-  if (!m.sources.length || !m.goals.length) return "";
+  if (!m.sourced || !m.goals.length) return "";
   const kind = (g) => (g.kind === "pen" ? " (P)" : g.kind === "kk" ? " (K.K.)" : "");
   return `<section class="ma-card" aria-labelledby="ma-goller"><h2 id="ma-goller">Goller ve golcüler</h2>
       <ol class="ma-goals">${m.goals.map((g) => `<li class="${g.team === m.awayTeam ? "is-away" : "is-home"}"><b>${escapeHtml(g.minute || "–")}</b><span>${nameHtml(g.player, g.team)}${escapeHtml(kind(g))}${g.assist ? `<small>Asist: ${nameHtml(g.assist, g.team)}</small>` : ""}</span><em>${escapeHtml(g.team)}</em></li>`).join("")}</ol>
@@ -255,7 +263,7 @@ function goalsSection(m) {
 }
 
 function lineupsSection(m) {
-  if (!m.sources.length || !m.lineups.length) return "";
+  if (!m.sourced || !m.lineups.length) return "";
   const row = (p, team) => `<li>${p.number !== null && p.number !== undefined ? `<b>${escapeHtml(p.number)}</b>` : ""}${nameHtml(p.name, team)}${p.position ? `<em>${escapeHtml(p.position)}</em>` : ""}</li>`;
   return `<section class="ma-card" aria-labelledby="ma-kadro"><h2 id="ma-kadro">Kadrolar ve ilk 11</h2>
       <div class="ma-lineups">${m.lineups.map((l) => `<article><h3>${escapeHtml(l.team)}${l.formation ? ` <small>${escapeHtml(l.formation)}</small>` : ""}</h3><ol>${l.starters.map((p) => row(p, l.team)).join("")}</ol>${l.subs.length ? `<h4>Yedekler</h4><ul>${l.subs.map((p) => row(p, l.team)).join("")}</ul>` : ""}</article>`).join("")}</div>
@@ -268,7 +276,7 @@ function fmt(value, decimals) {
 }
 
 function statsSection(m) {
-  if (!m.sources.length || !m.stats.length) return "";
+  if (!m.sourced || !m.stats.length) return "";
   const rows = [...m.stats].sort((a, b) => Number(b.corner) - Number(a.corner));
   return `<section class="ma-card" aria-labelledby="ma-istatistik"><h2 id="ma-istatistik">Maç istatistikleri${m.corners ? " ve kornerler" : ""}</h2>
       <table class="ma-stats"><thead><tr><th scope="col">${escapeHtml(m.homeTeam)}</th><th scope="col">İstatistik</th><th scope="col">${escapeHtml(m.awayTeam)}</th></tr></thead><tbody>${rows.map((r) => `<tr${r.corner ? ' class="is-corner"' : ""}><td>${escapeHtml(fmt(r.home, r.decimals))}</td><th scope="row">${escapeHtml(r.type)}</th><td>${escapeHtml(fmt(r.away, r.decimals))}</td></tr>`).join("")}</tbody></table>
@@ -384,8 +392,8 @@ function pageHtml(m) {
   const meta = [
     `<li><time datetime="${escapeHtml(m.kickoff)}">${escapeHtml(archive.trDateLabel(m.day))}</time></li>`,
     m.competition ? `<li>${escapeHtml(m.competition)}${m.round ? ` · ${escapeHtml(m.round)}` : ""}</li>` : "",
-    m.venue && m.sources.length ? `<li>Stat: ${escapeHtml(m.venue)}</li>` : "",
-    m.referee && m.sources.length ? `<li>Hakem: ${escapeHtml(m.referee)}</li>` : "",
+    m.venue && m.sourced ? `<li>Stat: ${escapeHtml(m.venue)}</li>` : "",
+    m.referee && m.sourced ? `<li>Hakem: ${escapeHtml(m.referee)}</li>` : "",
     m.status === "AWARDED" ? "<li>Hükmen sonuçlandı</li>" : ""
   ].filter(Boolean).join("");
   return `<!doctype html>
@@ -423,7 +431,7 @@ function pageHtml(m) {
         <h1>${escapeHtml(m.homeTeam)} ${escapeHtml(scoreText(m))} ${escapeHtml(m.awayTeam)} maç özeti</h1>
         <div class="ma-board"><strong>${escapeHtml(m.homeTeam)}</strong><div class="ma-score">${escapeHtml(m.score.home)} - ${escapeHtml(m.score.away)}${halftime ? `<small>İY ${escapeHtml(m.score.halftimeHome)}-${escapeHtml(m.score.halftimeAway)}</small>` : ""}</div><strong>${escapeHtml(m.awayTeam)}</strong></div>
         <ul class="ma-meta">${meta}</ul>
-        ${m.sources.length ? sourceLine(m) : ""}
+        ${m.sourced ? sourceLine(m) : ""}
       </section>
       ${sections.join("\n      ")}
       ${sections.length ? "" : `<p class="ma-note">Bu maçın gol, kadro ve istatistik dökümü için izinli bir kaynak bağlantısı henüz yok; doğrulanmamış veri gösterilmiyor.</p>`}
@@ -494,7 +502,7 @@ const sectionCounts = { goals: 0, lineups: 0, stats: 0, corners: 0, cards: 0 };
 const reasons = {};
 for (const m of models) {
   reasons[m.decision.reason] = (reasons[m.decision.reason] || 0) + 1;
-  if (m.sources.length) {
+  if (m.sourced) {
     if (m.goals.length) sectionCounts.goals += 1;
     if (m.lineups.length) sectionCounts.lineups += 1;
     if (m.stats.length) sectionCounts.stats += 1;
@@ -510,7 +518,7 @@ const indexRecords = models.map((m) => ({
   competition: m.competition,
   indexable: m.decision.indexable,
   reason: m.decision.reason,
-  sections: [m.sources.length && m.goals.length && "goals", m.sources.length && m.lineups.length && "lineups", m.sources.length && m.stats.length && "stats", m.sources.length && m.corners && "corners"].filter(Boolean),
+  sections: [m.sourced && m.goals.length && "goals", m.sourced && m.lineups.length && "lineups", m.sourced && m.stats.length && "stats", m.sourced && m.corners && "corners"].filter(Boolean),
   lastmod: m.lastVerified ? String(m.lastVerified).slice(0, 10) : null,
   legacy: m.legacy,
   generated: generated.has(m.file)

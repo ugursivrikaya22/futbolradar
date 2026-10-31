@@ -121,3 +121,18 @@ if (failures.length) {
   process.exit(1);
 }
 console.log("[test:mac-arsiv] OK");
+
+// API-Football atfı: indekslenebilir API-Football sayfasında tam metin ve noreferrer.
+{
+  const fsx = await import("node:fs");
+  const idx = JSON.parse(fsx.readFileSync(new URL("../data/match-archive-index.json", import.meta.url), "utf8")).records;
+  let checked = 0;
+  for (const r of idx.filter((x) => x.indexable).slice(0, 400)) {
+    const html = fsx.readFileSync(new URL(`../mac/${r.path}.html`, import.meta.url), "utf8");
+    if (!html.includes("api-football.com")) continue;
+    if (!/<a href="https:\/\/www\.api-football\.com\/" rel="[^"]*noreferrer[^"]*" target="_blank">Veri: API-Football<\/a>/.test(html)) throw new Error(`${r.path}: API-Football atfı eksik/biçimsiz`);
+    checked += 1;
+  }
+  if (!checked) throw new Error("API-Football atıflı indekslenebilir sayfa bulunamadı");
+  console.log(`[test:mac-arsiv] API-Football atfı ${checked} sayfada doğrulandı`);
+}

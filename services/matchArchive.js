@@ -165,10 +165,18 @@ function statRows(statistics) {
  * (c) skorun ötesinde en az bir veri bloğu (goller, kadro, istatistik)
  * gösterilebiliyorsa indekslenir.
  */
-function indexDecision({ score, sources, goals, lineups, stats }) {
+/** Veri API-Football kökenli mi: fixture kimliği API-Football'dan geliyorsa. thesportsdb vb. sayılmaz. */
+function isApiFootballOrigin(m) {
+  if (!m || typeof m !== "object") return false;
+  const ids = m.providerIds || {};
+  if (ids.apiFootball || ids["api-football"]) return true;
+  return /api-football|api-sports/i.test(String(m.source || m.provider || "")) && Boolean(m.providerId);
+}
+
+function indexDecision({ score, sources, goals, lineups, stats, apiFootball = false }) {
   const hasScore = score && Number.isFinite(Number(score.home)) && Number.isFinite(Number(score.away)) && score.home !== null && score.away !== null;
   if (!hasScore) return { indexable: false, reason: "skor-yok" };
-  if (!sources.length) return { indexable: false, reason: "izinli-kaynak-yok" };
+  if (!sources.length && !apiFootball) return { indexable: false, reason: "izinli-kaynak-yok" };
   const blocks = (goals.length ? 1 : 0) + (lineups.length ? 1 : 0) + (stats.length ? 1 : 0);
   const goalless = Number(score.home) + Number(score.away) === 0;
   if (!blocks) return { indexable: false, reason: goalless ? "yalniz-skor-golsuz" : "yalniz-skor" };
@@ -193,6 +201,7 @@ module.exports = {
   collectSourceUrls,
   goalEvents,
   indexDecision,
+  isApiFootballOrigin,
   isArchivePath,
   isFinished,
   legacySlugFor,
