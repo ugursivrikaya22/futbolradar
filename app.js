@@ -491,13 +491,35 @@
       fetchJson(DATA_ROOT + "fixture-calendar.json").then(function (result) {
         var payload = result.data;
         return payload && Array.isArray(payload.matches) ? payload.matches : [];
-      }).catch(function () { return []; })
+      }).catch(function () { return []; }),
+      // Derleme anında üretilen öncelik puanları (scripts/build-home-priority.mjs).
+      // Dosya yoksa sessizce atlanır; kartlar eski saat sırasında kalır.
+      fetchJson(DATA_ROOT + "home-priority.json").then(function (result) {
+        return result.data && result.data.scores ? result.data.scores : {};
+      }).catch(function () { return {}; })
     ]).then(function (results) {
       var curated = Array.isArray(results[0]) ? results[0] : [];
       var calendar = Array.isArray(results[1]) ? results[1] : [];
-      return mergeMatchCollections(curated, calendar);
+      return attachStaticHomePriority(mergeMatchCollections(curated, calendar), results[2]);
     });
   }
+
+  // static-home-priority:start
+  /** Statik yedek kayıtlarına maç kimliğiyle `homePriority` ekler (kopya). */
+  function attachStaticHomePriority(matches, scores) {
+    if (!Array.isArray(matches) || !scores || typeof scores !== "object") return matches;
+    return matches.map(function (match) {
+      if (!match || match.id === undefined || match.id === null) return match;
+      if (isFinite(Number(match.homePriority)) && match.homePriority !== null && match.homePriority !== "") return match;
+      var score = Number(scores[String(match.id)]);
+      if (!isFinite(score)) return match;
+      var copy = {};
+      for (var key in match) if (Object.prototype.hasOwnProperty.call(match, key)) copy[key] = match[key];
+      copy.homePriority = score;
+      return copy;
+    });
+  }
+  // static-home-priority:end
 
   /**
    * MUHTEMEL 11 — spor basınından derlenmiş, kaynak gösterilmiş editoryal
