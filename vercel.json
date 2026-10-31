@@ -5293,6 +5293,10 @@
       "destination": "/mac/:slug.html"
     },
     {
+      "source": "/ozet/:slug",
+      "destination": "/ozet/:slug.html"
+    },
+    {
       "source": "/en/matches",
       "destination": "/en/matches.html"
     },
@@ -5550,7 +5554,7 @@
     "api/cron/[job].js": {
       "maxDuration": 800,
       "includeFiles": "{scripts/**,services/**,lib/**,server/**,.cron/data-manifest.json}",
-      "excludeFiles": "{data/**,.git/**,public/**,outputs/**,node_modules/**,en/**,mac/**,mac-raporu/**,karsilastirma/**,futbolcu/**,haber/**,oyuncular/**,arsiv/**,kose-yazilari/**,takimlar/**,mac-dosyasi/**,assets/**,*.html,*.xml,scripts/**/*.html,scripts/**/fixtures/**}"
+      "excludeFiles": "{data/**,.git/**,public/**,outputs/**,node_modules/**,en/**,mac/**,ozet/**,mac-raporu/**,karsilastirma/**,futbolcu/**,haber/**,oyuncular/**,arsiv/**,kose-yazilari/**,takimlar/**,mac-dosyasi/**,assets/**,*.html,*.xml,scripts/**/*.html,scripts/**/fixtures/**}"
     }
   }
 }
