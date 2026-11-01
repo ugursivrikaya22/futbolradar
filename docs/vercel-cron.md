@@ -1,5 +1,29 @@
 # Vercel Cron iş motoru
 
+> **GÜNCEL TASARIM (grok/vercel-cron-slim, #514'ün yerine).** #514 `includeFiles: data/**`
+> yüzünden catch-all işlevi ~1,3 GB oldu ve her üretim deploy'u düştü (#534 ile geri alındı).
+> Bu sürümde:
+>
+> - Cron uçları **ayrı** bir işlevde: `api/cron/[job].js` (catch-all `api/[...route].js` değişmedi).
+> - İşlev paketinde **`data/` yok**: `includeFiles` yalnızca `scripts/**, services/**, lib/**, server/**,
+>   .cron/data-manifest.json` (~7,9 MB). Motor `import()` yolu çalışma zamanında kurulur, böylece nft
+>   betiklerin `process.cwd()` okumalarını izleyip depoyu pakete çekmez; `excludeFiles` ek güvenlik.
+> - Çalışma verisi her koşuda üretim sitesinden indirilir: `SITE_URL/data/<dosya>` (CDN, br sıkıştırmalı,
+>   ~194 MB açık / ~15 MB aktarım) → `/tmp/futbolradar-cron/<anahtar>/data`. Liste prebuild'de
+>   `.cron/data-manifest.json` olarak yazılır (`git ls-files data`). Tek dosya bile inmezse koşu başlamaz.
+> - Build bazı `data/*.json` dosyalarını yerinde değiştirdiği için (ör. players.json, sitemap-lastmod.json)
+>   eserlerin lineage'ına dağıtım commit'i `git:<sha>` eklenir; prebuild hydrate, depo dosyası o commit'ten
+>   beri değişmediyse eseri uygular, değiştiyse depo kazanır.
+> - Takvim (UTC, Pro): scheduled-update `7 * * * *` (+ resume `27 * * * *`), deploy `40 * * * *`,
+>   health `47 * * * *` (mevcut `/api/daily-health-check` ucunu `DAILY_HEALTH_CHECK_SECRET` ile çağırır),
+>   search-demand `15 6 * * 1-5`, full-update `0 2 * * *` (+ resume `20,40 2 * * *`). `maxDuration` 800,
+>   varsayılan bütçe 720 sn (`CRON_TIME_BUDGET_MS`).
+> - Gerekli ortam değişkenleri: `CRON_SECRET`, `VERCEL_DEPLOY_HOOK_URL`, `DAILY_HEALTH_CHECK_SECRET`,
+>   `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `APIFOOTBALL_API_KEY`; isteğe bağlı `SITE_URL`.
+>
+> Aşağıdaki bölümler #514'ün ilk tasarımını anlatır; "daily"/Hobby kısıtları artık geçerli değil.
+
+
 Bu belge saatlik/günlük güncellemenin GitHub Actions'tan Vercel Cron'a
 taşınmasının mimarisini, kurulumunu ve geri dönüşünü anlatır. GitHub Actions
 iş akışları (Scheduled Updates, Daily Health Check, Search Demand Daily)
