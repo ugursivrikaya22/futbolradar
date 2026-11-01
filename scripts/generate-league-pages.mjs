@@ -25,13 +25,14 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { fixtureCard as sharedFixtureCard } from "./lib/matchCards.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 const { competitions } = require("../services/competitionCatalog.js");
+const { isIndexableLeague } = require("../services/iddaaLeagues.js");
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { matchDetailPath } = require("../services/matchProgram.js");
 const { istanbulDay } = require("../services/matchStatus.js");
@@ -180,7 +181,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${isIndexableLeague(competition.id) ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta name="theme-color" content="#0b8f5a" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
@@ -279,7 +280,8 @@ export function generateLeaguePages() {
     console.log(`[league-pages] kataloğa artık bağlı olmayan sayfa silindi: ${file}`);
   }
 
-  updateSitemap(targets);
+  // iddaa dışı ligler sayfasını korur (noindex) ama sitemap'e girmez.
+  updateSitemap(targets.filter((competition) => isIndexableLeague(competition.id)));
 
   console.log(`[league-pages] ${targets.length} lig sayfası üretildi.`);
 }
