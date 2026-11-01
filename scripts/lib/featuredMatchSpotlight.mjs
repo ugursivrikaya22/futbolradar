@@ -260,6 +260,9 @@ export function spotlightBlock(view, options) {
 
   const links = copy.links
     .filter((link) => PHASE_ANCHORS.includes(link.anchor))
+    // Çağıran hedef sayfadaki kimlikleri verdiyse, sayfada olmayan bölüme
+    // bağlantı basılmaz (kırık çapa yerine bağlantı hiç yok).
+    .filter((link) => !Array.isArray(view.availableAnchors) || view.availableAnchors.includes(link.anchor))
     .map((link) => `<a class="fms__jump" href="${escapeHtml(view.href)}#${link.anchor}">${escapeHtml(link.label)}</a>`)
     .concat(
       // EK BAĞLANTI ÇAĞIRANDAN GELİR (ör. "/milli-takim" — son gelişmeler,

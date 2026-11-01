@@ -79,6 +79,26 @@ function decodeContent(b64) {
   return zlib.gunzipSync(Buffer.from(String(b64), "base64"));
 }
 
+const GIT_MARKER = /^git:[a-f0-9]{40}$/;
+
+/**
+ * Lineage'ı en fazla 50 öğeye kırpar; en son `git:<commit>` işaretini
+ * (eserin türediği dağıtım commit'i) her zaman korur.
+ */
+function trimLineage(list, max = 50) {
+  const items = (Array.isArray(list) ? list : []).filter(Boolean);
+  const markers = items.filter((x) => GIT_MARKER.test(x));
+  const lastMarker = markers.length ? markers[markers.length - 1] : null;
+  const shas = items.filter((x) => !GIT_MARKER.test(x));
+  const keep = shas.slice(-(lastMarker ? max - 1 : max));
+  return lastMarker ? [lastMarker, ...keep] : keep;
+}
+
+function lineageCommits(artifact) {
+  const lineage = Array.isArray(artifact && artifact.lineage) ? artifact.lineage : [];
+  return lineage.filter((x) => GIT_MARKER.test(x)).map((x) => x.slice(4));
+}
+
 function assertDataPath(relPath) {
   if (!/^data\/[A-Za-z0-9._/-]+$/.test(relPath) || relPath.includes("..")) {
     throw new Error(`invalid-artifact-path: ${relPath}`);
@@ -87,14 +107,14 @@ function assertDataPath(relPath) {
 
 async function putArtifact({ relPath, buffer, lineage = [], key, request = defaultRequest() }) {
   assertDataPath(relPath);
-  const chain = lineage.filter(Boolean).slice(-50);
+  const chain = trimLineage(lineage);
   await request("cron_data_artifacts?on_conflict=path", {
     method: "POST",
     headers: { Prefer: "resolution=merge-duplicates,return=minimal" },
     body: JSON.stringify([{
       path: relPath,
       sha256: sha256(buffer),
-      origin_sha256: chain[0] || null,
+      origin_sha256: chain.find((x) => !GIT_MARKER.test(x)) || null,
       lineage: chain,
       content_gzip_b64: encodeContent(buffer),
       bytes: buffer.length,
@@ -125,17 +145,22 @@ async function readArtifact({ relPath, request = defaultRequest() }) {
  *   - yerel dosya yok, lineage boş   → "apply"
  *   - aksi                          → "repo-wins" (depo bağımsız değişti; eser yok sayılır)
  */
-function artifactDecision(localSha, artifact) {
+function artifactDecision(localSha, artifact, { unchangedSince } = {}) {
   if (localSha && localSha === artifact.sha256) return "same";
   const lineage = Array.isArray(artifact.lineage) ? artifact.lineage : [];
-  if (localSha ? lineage.includes(localSha) : lineage.length === 0) return "apply";
+  const shas = lineage.filter((x) => !GIT_MARKER.test(x));
+  if (localSha ? shas.includes(localSha) : shas.length === 0) return "apply";
+  // Eser üretim dağıtımından (build sonrası veri) türedi: depo dosyası o
+  // dağıtımın commit'inden beri DEĞİŞMEDİYSE eser daha yenidir → uygula.
+  // Commit'ten sonra elle/Actions değişikliği varsa depo kazanır.
+  if (typeof unchangedSince === "function" && lineageCommits(artifact).some((c) => unchangedSince(c))) return "apply";
   return "repo-wins";
 }
 
 /** Uygulanan/aynı eserden türeyecek yeni sürümün lineage'ı. */
 function nextLineage(artifact) {
   const lineage = Array.isArray(artifact.lineage) ? artifact.lineage : [];
-  return [...lineage, artifact.sha256].slice(-50);
+  return trimLineage([...lineage, artifact.sha256]);
 }
 
 module.exports = {
@@ -145,6 +170,8 @@ module.exports = {
   decodeContent,
   encodeContent,
   getRun,
+  lineageCommits,
+  trimLineage,
   istanbulParts,
   lastDeployRequestedAt,
   latestDeployCandidate,

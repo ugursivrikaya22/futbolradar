@@ -16,13 +16,33 @@
  */
 const fs = require("fs");
 const path = require("path");
+const { execFileSync } = require("child_process");
 const store = require("./runStore");
+
+/**
+ * `relPath` dosyası `commit`ten HEAD'e kadar depoda değişmedi mi?
+ * HEAD == commit ise git'e gerek yok. Git yoksa/commit sığ klonda yoksa false
+ * (güvenli taraf: depo kazanır).
+ */
+function gitUnchangedSince(root, headSha) {
+  const head = String(headSha || "").toLowerCase();
+  return (relPath) => (commit) => {
+    if (!/^[a-f0-9]{40}$/.test(commit)) return false;
+    if (head && commit === head) return true;
+    try {
+      execFileSync("git", ["diff", "--quiet", commit, "HEAD", "--", relPath], { cwd: root, stdio: "ignore", timeout: 15000 });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+}
 
 function localSha(file) {
   try { return store.sha256(fs.readFileSync(file)); } catch { return null; }
 }
 
-async function hydrateDataDir({ root, request, isConfigured, log = () => {} } = {}) {
+async function hydrateDataDir({ root, request, isConfigured, log = () => {}, gitAware = false, headSha = process.env.VERCEL_GIT_COMMIT_SHA } = {}) {
   const result = { configured: false, applied: [], same: [], repoWins: [], errors: [], lineage: {} };
   const configured = typeof isConfigured === "function" ? isConfigured() : require("../supabase/env").isConfigured();
   if (!configured) return result;
@@ -38,11 +58,12 @@ async function hydrateDataDir({ root, request, isConfigured, log = () => {} } = 
     return result;
   }
 
+  const unchanged = gitAware ? gitUnchangedSince(root, headSha) : null;
   for (const artifact of artifacts) {
     try {
       store.assertDataPath(artifact.path);
       const file = path.join(root, artifact.path);
-      const decision = store.artifactDecision(localSha(file), artifact);
+      const decision = store.artifactDecision(localSha(file), artifact, unchanged ? { unchangedSince: unchanged(artifact.path) } : {});
       if (decision === "repo-wins") { result.repoWins.push(artifact.path); continue; }
       if (decision === "apply") {
         const buffer = await store.readArtifact({ relPath: artifact.path, request: req });
@@ -64,4 +85,4 @@ async function hydrateDataDir({ root, request, isConfigured, log = () => {} } = 
   return result;
 }
 
-module.exports = { hydrateDataDir, localSha };
+module.exports = { hydrateDataDir, localSha, gitUnchangedSince };

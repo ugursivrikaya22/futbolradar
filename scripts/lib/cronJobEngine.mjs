@@ -38,7 +38,9 @@ const store = require("../../services/cron/runStore.js");
 const { hydrateDataDir } = require("../../services/cron/hydrate.js");
 const operationsPolicy = require("../../services/operationsPolicy.js");
 
-export const DEFAULT_BUDGET_MS = 240_000;
+// Pro planı: işlev maxDuration 800 sn (vercel.json). Bütçe ~12 dk; kalan
+// süre /tmp veri indirme + son yükleme + güvenlik payı içindir.
+export const DEFAULT_BUDGET_MS = 720_000;
 export const MIN_STEP_WINDOW_MS = 45_000;
 export const SAFETY_MARGIN_MS = 15_000;
 export const FULL_STALE_MS = 3 * 60 * 60 * 1000;
@@ -70,36 +72,93 @@ function listFiles(dir, base = dir, out = []) {
   return out;
 }
 
+/* ------------------------------------------------------------------ */
+/* Veri tohumu: işlev paketinde `data/` YOK                             */
+/* ------------------------------------------------------------------ */
+
+const DEFAULT_SITE_URL = "https://www.futbolradar.com";
+export const SEED_CONCURRENCY = 8;
+export const SEED_TIMEOUT_MS = 60_000;
+
+/** Build sırasında (prebuild) yazılan veri listesi: `.cron/data-manifest.json`. */
+export function readDataManifest(bundleRoot = process.cwd()) {
+  const file = path.join(bundleRoot, ".cron", "data-manifest.json");
+  let manifest;
+  try { manifest = JSON.parse(fs.readFileSync(file, "utf8")); } catch { throw new Error("cron-data-manifest-missing"); }
+  const files = Array.isArray(manifest.files) ? manifest.files : [];
+  for (const rel of files) store.assertDataPath(rel);
+  if (!files.length) throw new Error("cron-data-manifest-empty");
+  return { files, commit: manifest.commit || null };
+}
+
 /**
- * /tmp altında yazılabilir bir kök kurar: `data/` paketten KOPYALANIR
- * (betikler yazar), diğer üst düzey girdiler salt-okunur sembolik bağdır.
- * Ardından Supabase eserleri koşullu uygulanır.
+ * Üretim sitesinin yayımladığı `data/` dosyalarını (ör. https://www.futbolradar.com/data/matches.json)
+ * workdir'e indirir. CDN sıkıştırılmış (br/gzip) sunar; tek bir dosya bile
+ * alınamazsa koşu BAŞLAMAZ — betikler eksik veriyle çalışıp dosyaların
+ * boş/eksik hâlini Supabase'e yazmasın diye.
  */
-export async function prepareWorkdir({ bundleRoot = process.cwd(), key, tmpRoot = os.tmpdir(), hydrate = hydrateDataDir, log = console.log } = {}) {
+export async function seedDataFromSite({ workdir, files, siteUrl, fetcher = fetch, concurrency = SEED_CONCURRENCY, timeoutMs = SEED_TIMEOUT_MS }) {
+  const base = String(siteUrl || DEFAULT_SITE_URL).replace(/\/+$/, "");
+  if (!/^https:\/\//.test(base)) throw new Error("seed-site-url-invalid");
+  let bytes = 0;
+  let next = 0;
+  const worker = async () => {
+    while (next < files.length) {
+      const rel = files[next++];
+      const url = `${base}/${rel.split("/").map(encodeURIComponent).join("/")}`;
+      const response = await fetcher(url, { headers: { "cache-control": "no-cache" }, signal: AbortSignal.timeout(timeoutMs) });
+      if (!response.ok) throw new Error(`seed-http-${response.status}: ${rel}`);
+      const buffer = Buffer.from(await response.arrayBuffer());
+      if (/\.json$/.test(rel)) JSON.parse(buffer.toString("utf8")); // yarım/bozuk indirme koşuyu durdurur
+      const file = path.join(workdir, rel);
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      fs.writeFileSync(file, buffer);
+      bytes += buffer.length;
+    }
+  };
+  await Promise.all(Array.from({ length: Math.max(1, Math.min(concurrency, files.length)) }, worker));
+  return { files: files.length, bytes };
+}
+
+/**
+ * /tmp altında yazılabilir bir kök kurar: `data/` üretim sitesinden
+ * İNDİRİLİR (paket içinde yok), diğer üst düzey girdiler salt-okunur
+ * sembolik bağdır. Ardından Supabase eserleri koşullu uygulanır. Her
+ * dosyanın lineage'ına bu dağıtımın commit'i (`git:<sha>`) eklenir; prebuild
+ * hydrate, depo dosyası o commit'ten beri değişmediyse eseri uygular.
+ */
+export async function prepareWorkdir({
+  bundleRoot = process.cwd(), key, tmpRoot = os.tmpdir(), hydrate = hydrateDataDir, log = console.log,
+  env = process.env, fetcher = fetch, manifest
+} = {}) {
   const workdir = path.join(tmpRoot, "futbolradar-cron", String(key).replace(/[^A-Za-z0-9_-]/g, "_"));
-  fs.rmSync(workdir, { recursive: true, force: true });
+  // /tmp 512 MB: sıcak örnekte önceki işlerin kopyaları (her biri ~194 MB) birikmesin.
+  fs.rmSync(path.join(tmpRoot, "futbolradar-cron"), { recursive: true, force: true });
   fs.mkdirSync(workdir, { recursive: true });
   for (const entry of fs.readdirSync(bundleRoot, { withFileTypes: true })) {
-    if (["data", "outputs", "node_modules", ".git"].includes(entry.name)) continue;
+    if (["data", "outputs", ".git", ".cron"].includes(entry.name)) continue;
     try { fs.symlinkSync(path.join(bundleRoot, entry.name), path.join(workdir, entry.name)); } catch { /* yoksay */ }
   }
-  // node_modules ayrıca bağlanır: betikler `import` ile paket çözer.
-  try { fs.symlinkSync(path.join(bundleRoot, "node_modules"), path.join(workdir, "node_modules")); } catch { /* yoksay */ }
   fs.mkdirSync(path.join(workdir, "outputs", "operations"), { recursive: true });
-  if (fs.existsSync(path.join(bundleRoot, "data"))) {
-    fs.cpSync(path.join(bundleRoot, "data"), path.join(workdir, "data"), { recursive: true, dereference: true });
-  } else {
-    fs.mkdirSync(path.join(workdir, "data"), { recursive: true });
-  }
+  fs.mkdirSync(path.join(workdir, "data"), { recursive: true });
+  const list = manifest || readDataManifest(bundleRoot);
+  const t0 = Date.now();
+  const seeded = await seedDataFromSite({ workdir, files: list.files, siteUrl: env.SITE_URL, fetcher });
+  log(`[cron] veri tohumu: ${seeded.files} dosya, ${(seeded.bytes / 1e6).toFixed(1)} MB, ${Date.now() - t0} ms`);
   const hydration = await hydrate({ root: workdir, log });
+  const commit = String(env.VERCEL_GIT_COMMIT_SHA || list.commit || "").trim();
+  const marker = /^[a-f0-9]{40}$/i.test(commit) ? `git:${commit.toLowerCase()}` : null;
   const baseline = {};
+  const lineage = {};
   for (const rel of listFiles(path.join(workdir, "data"))) {
     const relPath = `data/${rel.split(path.sep).join("/")}`;
     const file = path.join(workdir, relPath);
     const stat = fs.statSync(file);
     baseline[relPath] = { sha: store.sha256(fs.readFileSync(file)), mtimeMs: stat.mtimeMs, size: stat.size };
+    const prior = (hydration && hydration.lineage && hydration.lineage[relPath]) || [];
+    lineage[relPath] = marker && !prior.includes(marker) ? [...prior, marker] : [...prior];
   }
-  return { workdir, baseline, lineage: { ...(hydration && hydration.lineage) } };
+  return { workdir, baseline, lineage, seeded };
 }
 
 /** Taban çizgisine göre değişen/yeni `data/` dosyaları. Taban güncellenir. */
@@ -114,7 +173,7 @@ export function detectChanges(ctx) {
     const buffer = fs.readFileSync(file);
     const sha = store.sha256(buffer);
     if (prev && prev.sha === sha) { ctx.baseline[relPath] = { ...prev, mtimeMs: stat.mtimeMs }; continue; }
-    const lineage = [...(ctx.lineage[relPath] || []), ...(prev ? [prev.sha] : [])].slice(-50);
+    const lineage = store.trimLineage([...(ctx.lineage[relPath] || []), ...(prev ? [prev.sha] : [])]);
     changed.push({ relPath, buffer, lineage, sha });
     ctx.baseline[relPath] = { sha, mtimeMs: stat.mtimeMs, size: stat.size };
     ctx.lineage[relPath] = lineage;
@@ -328,6 +387,20 @@ export async function runDeploy({ env = process.env, now = () => Date.now(), req
     await store.updateRun({ key: row.run_key, request: req, patch: { deploy_requested_at: result === "triggered" ? at : null, deploy_result: result } });
   }
   return { status: result === "triggered" ? "triggered" : "failed", result, runs: pending.map((r) => r.run_key) };
+}
+
+/* ------------------------------------------------------------------ */
+/* Sağlık raporu: mevcut /api/daily-health-check ucu                   */
+/* ------------------------------------------------------------------ */
+
+export async function runHealth({ env = process.env, fetcher = fetch } = {}) {
+  const secret = String(env.DAILY_HEALTH_CHECK_SECRET || "").trim();
+  if (!secret) return { status: "skipped", reason: "DAILY_HEALTH_CHECK_SECRET-not-configured" };
+  const base = String(env.SITE_URL || DEFAULT_SITE_URL).replace(/\/+$/, "");
+  const response = await fetcher(`${base}/api/daily-health-check`, { headers: { authorization: `Bearer ${secret}` }, signal: AbortSignal.timeout(60_000) });
+  let body = null;
+  try { body = await response.json(); } catch { /* yoksay */ }
+  return { status: response.ok ? "complete" : "failed", httpStatus: response.status, report: body && (body.data || body) };
 }
 
 /* ------------------------------------------------------------------ */

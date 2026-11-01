@@ -745,7 +745,7 @@ async function claimSharedRunLock(args, key, env = process.env) {
       return { skip: true, reason: `Shared lock ${key} is held by Vercel Cron (${claim.row.status}); skipping to avoid duplicate API-Football requests.` };
     }
     if (claim.acquired) {
-      await req("../services/cron/hydrate.js").hydrateDataDir({ root, log: (m) => console.log(m) });
+      await req("../services/cron/hydrate.js").hydrateDataDir({ root, gitAware: true, headSha: process.env.GITHUB_SHA, log: (m) => console.log(m) });
     }
     return { skip: false, reason: claim.acquired ? "lock-acquired" : "lock-held-by-github-actions" };
   } catch (error) {
