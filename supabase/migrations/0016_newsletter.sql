@@ -1,4 +1,4 @@
--- 0014 — Haftalık e-posta bülteni: aboneler + sayı başına gönderim günlüğü
+-- 0016 — Haftalık e-posta bülteni: aboneler + sayı başına gönderim günlüğü
 --
 -- Yalnızca EKLEMELİ ve tekrar çalıştırılabilir (idempotent). Elle uygulanır
 -- (Supabase SQL Editor). Bkz. docs/haftalik-bulten.md. ÜRETİME OTOMATİK UYGULANMAZ.

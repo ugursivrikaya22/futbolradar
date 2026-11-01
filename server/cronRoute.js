@@ -13,6 +13,8 @@
  *   /api/cron/search-demand                    arama talebi verisi
  *   /api/cron/newsletter                       haftalık e-posta bülteni (Pzt 09:00 TSİ;
  *                                              NEWSLETTER_ENABLED=1 değilse kuru çalışma)
+ *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
+ *   /api/cron/matchday-reminder                PWA push: "favori takımının maçı bugün" (saatlik, 09–22 İstanbul)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
  * değişkeni yoksa ya da başlık eşleşmezse 401 döner ve hiçbir iş yapılmaz.
@@ -30,7 +32,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "newsletter"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "newsletter", "x-autopost", "matchday-reminder"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -78,7 +80,13 @@ async function defaultRunners() {
     // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
     health: () => engine.runHealth(),
     // Bülten motoru veri çekme motorundan bağımsız: veriyi SITE_URL/data/... üzerinden okur.
-    newsletter: () => require("../services/newsletter/weekly").runWeekly()
+    newsletter: () => require("../services/newsletter/weekly").runWeekly(),
+    // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
+    // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
+    "x-autopost": () => require("../services/xAutopost").runXAutopost(),
+    // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
+    // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
+    "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()
   };
 }
 

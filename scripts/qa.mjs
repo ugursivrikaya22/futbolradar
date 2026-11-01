@@ -128,6 +128,12 @@ const endpoints = ["matches", "standings", "teams", "players", "player-detail", 
 const skipDirs = new Set([".git", ".agents", ".codex", ".vercel", "node_modules", "work", "outputs"]);
 const { checkStandings } = require("../services/standingsIntegrity.js");
 const VERCEL_HOBBY_FUNCTION_LIMIT = 12;
+// Bilerek AYRI tutulan küçük işlevler: catch-all `api/[...route].js` paketine
+// (data/ dahil ~1,3 GB) girmemeleri gerekiyor, aksi hâlde 250 MB sınırı aşılır.
+// Takım Pro planında (Hobby'nin 12 işlev sınırı burada geçerli değil); sayaç
+// yine de yeni rastgele api/ dosyalarına karşı koruma olarak 12'de kalıyor ve
+// yalnızca bu açık listedeki dosyalar sayım dışı bırakılıyor.
+const VERCEL_DEDICATED_FUNCTIONS = new Set(["api/cron/[job].js"]);
 const appFeatureMarkers = [
   "scoutingSnapshotHtml",
   "playerWatchChecklistHtml",
@@ -263,13 +269,14 @@ function apiFunctionFiles() {
 
 function checkVercelFunctionLimit() {
   const functionFiles = apiFunctionFiles();
+  const countedFiles = functionFiles.filter((file) => !VERCEL_DEDICATED_FUNCTIONS.has(file));
   expect(
-    functionFiles.length <= VERCEL_HOBBY_FUNCTION_LIMIT,
-    `Vercel Hobby function limit exceeded: ${functionFiles.length}/${VERCEL_HOBBY_FUNCTION_LIMIT}. ` +
+    countedFiles.length <= VERCEL_HOBBY_FUNCTION_LIMIT,
+    `Vercel Hobby function limit exceeded: ${countedFiles.length}/${VERCEL_HOBBY_FUNCTION_LIMIT}. ` +
     "Move helper/provider files outside api/ or route new API handlers through api/[...route].js."
   );
 
-  const nestedApiFiles = functionFiles.filter((file) => path.dirname(file) !== "api");
+  const nestedApiFiles = countedFiles.filter((file) => path.dirname(file) !== "api");
   if (nestedApiFiles.length) {
     console.warn(
       `Vercel API warning: nested api/*.js files can be deployed as functions: ${nestedApiFiles.join(", ")}`

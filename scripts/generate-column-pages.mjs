@@ -490,6 +490,18 @@ export function columnPageHtml(column, locale = "tr") {
   };
 
   const eventLd = locale === "en" ? null : sportsEventJsonLd(column.sportsEvent);
+  // Sayfa yolu (Ana Sayfa > Köşe Yazıları > yazı) görünür breadcrumb ile aynı
+  // sırayı yapısal veriye taşır; liste adresi kanonik (uzantısız) biçimdedir.
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: copy.home, item: locale === "en" ? `${DOMAIN}/en` : `${DOMAIN}/` },
+      { "@type": "ListItem", position: 2, name: locale === "en" ? "Columns" : "Köşe Yazıları", item: `${DOMAIN}/${locale === "en" ? "en/columns" : "kose-yazilari"}` },
+      { "@type": "ListItem", position: 3, name: column.title, item: url }
+    ]
+  };
+
 
   return `<!doctype html>
 <html lang="${copy.lang}">
@@ -519,6 +531,7 @@ export function columnPageHtml(column, locale = "tr") {
     <link rel="manifest" href="${base}site.webmanifest" />
     <link rel="stylesheet" href="${base}page.css" />
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
+    <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
     ${eventLd ? `<script type="application/ld+json">${JSON.stringify(eventLd)}</script>` : ""}
   </head>
   <body class="subpage column-page">

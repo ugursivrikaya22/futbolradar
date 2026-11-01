@@ -459,12 +459,17 @@ const NAV_KEYS = Object.freeze({
       { route: null, href: "takimlar.html", key: "nav.teams" },
       { route: null, href: "kose-yazilari.html", key: "nav.columns" },
       { route: null, href: "puan-durumu.html", key: "nav.standings" },
+      { route: null, href: "istatistik-merkezi.html", key: "nav.stats" },
+      // TRANSFER RADAR: SEO botunun üreteceği asıl hedef `transfer-radar.html`.
+      // Derleme anında o dosya varsa menü ona bağlanır (`preferredHref`);
+      // yoksa yayında olan en yakın transfer merkezi (`href`) kullanılır.
+      // Böylece menü hiçbir zaman var olmayan bir adrese gitmez.
+      { route: null, href: "super-lig-transferleri-2026-2027.html", preferredHref: "transfer-radar.html", key: "nav.transferRadar" },
       { route: null, href: "arsiv.html", key: "nav.archive" }
     ],
     secondary: [
       { href: "mac-takvimi.html", key: "nav.matchCalendar" },
       { href: "oyuncu-radari.html", key: "nav.playerRadar" },
-      { href: "istatistik-merkezi.html", key: "nav.statsHub" },
       { href: "momentum.html", key: "nav.momentum" },
       { href: "gol-kralligi.html", key: "nav.topScorers" },
       { href: "haberler.html", key: "nav.news" },
@@ -493,12 +498,16 @@ const NAV_KEYS = Object.freeze({
       { href: "en/teams.html", key: "nav.teams" },
       { href: "en/columns.html", key: "nav.columns" },
       { href: "en/standings.html", key: "nav.standings" },
+      { href: "en/stats-hub.html", key: "nav.stats" },
+      // İngilizce transfer sayfası henüz yok ve Türkçe transfer sayfasına
+      // sessizce göndermek dil kuralını bozar: `href: null` → öğe yalnızca
+      // `en/transfer-radar.html` derleme anında varsa çizilir.
+      { href: null, preferredHref: "en/transfer-radar.html", key: "nav.transferRadar" },
       { href: "en/archive.html", key: "nav.archive" }
     ],
     secondary: [
       { href: "en/matches.html", key: "nav.matchCalendar" },
       { href: "en/player-radar.html", key: "nav.playerRadar" },
-      { href: "en/stats-hub.html", key: "nav.statsHub" },
       { href: "en/momentum.html", key: "nav.momentum" },
       { href: "en/top-scorers.html", key: "nav.topScorers" },
       { href: "en/news.html", key: "nav.news" },

@@ -15,6 +15,10 @@
       "schedule": "7 * * * *"
     },
     {
+      "path": "/api/cron/x-autopost",
+      "schedule": "*/15 * * * *"
+    },
+    {
       "path": "/api/cron/scheduled-update?phase=resume",
       "schedule": "27 * * * *"
     },
@@ -25,6 +29,10 @@
     {
       "path": "/api/cron/health",
       "schedule": "47 * * * *"
+    },
+    {
+      "path": "/api/cron/matchday-reminder",
+      "schedule": "5 6-19 * * *"
     },
     {
       "path": "/api/cron/search-demand",
@@ -57,6 +65,26 @@
     {
       "source": "/bulten",
       "destination": "/bulten.html",
+      "permanent": true
+    },
+    {
+      "source": "/kose/kasimpasa-besiktas-formdaki-ev-sahibi",
+      "destination": "/kose-yazilari/kasimpasa-besiktas-formdaki-ev-sahibi",
+      "permanent": true
+    },
+    {
+      "source": "/kose/kasimpasa-besiktas-formdaki-ev-sahibi.html",
+      "destination": "/kose-yazilari/kasimpasa-besiktas-formdaki-ev-sahibi",
+      "permanent": true
+    },
+    {
+      "source": "/kose/fenerbahce-goztepe-yedek-kulube",
+      "destination": "/kose-yazilari/fenerbahce-goztepe-yedek-kulube",
+      "permanent": true
+    },
+    {
+      "source": "/kose/fenerbahce-goztepe-yedek-kulube.html",
+      "destination": "/kose-yazilari/fenerbahce-goztepe-yedek-kulube",
       "permanent": true
     },
     {

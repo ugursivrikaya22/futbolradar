@@ -184,7 +184,7 @@ test("cron: newsletter işi kayıtlı, Pazartesi 06:00 UTC takvimi, CRON_SECRET'
 });
 
 test("migrasyon: idempotent, RLS açık, anon erişimi yok", () => {
-  const sql = fs.readFileSync("supabase/migrations/0014_newsletter.sql", "utf8");
+  const sql = fs.readFileSync("supabase/migrations/0016_newsletter.sql", "utf8");
   assert.ok(!/create table (?!if not exists)/i.test(sql));
   assert.match(sql, /alter table newsletter_subscribers enable row level security/);
   assert.match(sql, /alter table newsletter_sends enable row level security/);

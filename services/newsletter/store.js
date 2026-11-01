@@ -1,7 +1,7 @@
 /**
  * Bülten abone deposu — Supabase PostgREST'e düz fetch, yalnızca service-role
  * anahtarıyla (RLS açık, anon/authenticated için politika YOK → liste asla
- * herkese açık değildir). Şema: supabase/migrations/0014_newsletter.sql
+ * herkese açık değildir). Şema: supabase/migrations/0016_newsletter.sql
  */
 const crypto = require("crypto");
 const { isConfigured, restUrl, serviceKey } = require("../supabase/env");
