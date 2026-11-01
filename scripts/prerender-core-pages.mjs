@@ -22,6 +22,7 @@ const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { internalHref } = require("../services/siteLinks.js");
 const { teamProfileHref } = require("../services/teamHubLinks.js");
+const { teamPageSlug } = require("../services/superLigTeamPages.js");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
 function writeGeneratedFile(file, contents) {
@@ -336,35 +337,59 @@ function quickLinkTeamFor(match) {
 }
 
 /**
- * Puan durumu hedefi: dört büyükten biri oynuyorsa kendi puan durumu
- * sayfası, Süper Lig maçıysa lig sayfası, değilse genel puan durumu sayfası
- * (yeni bir sayfa üretilmez — üçü de zaten yayında).
+ * Organizasyonun puan durumu sayfası. Yalnızca yayında olan
+ * `<lig>-puan-durumu` sayfaları listelenir; listede olmayan bir lig
+ * (ör. Uluslar Ligi) genel puan durumu merkezine gider. Hazırlık maçının
+ * puan tablosu olmadığı için bağlantı hiç basılmaz (null).
  */
+const COMPETITION_STANDINGS = [
+  [/^süper lig$/i, "super-lig-puan-durumu.html"],
+  [/^(tff )?1\. lig$/i, "1-lig-puan-durumu.html"],
+  [/şampiyonlar ligi/i, "sampiyonlar-ligi-puan-durumu.html"],
+  [/avrupa ligi/i, "avrupa-ligi-puan-durumu.html"],
+  [/konferans ligi/i, "konferans-ligi-puan-durumu.html"],
+  [/^premier (lig|league)$/i, "premier-lig-puan-durumu.html"],
+  [/^la ?liga$/i, "la-liga-puan-durumu.html"],
+  [/^serie a$/i, "serie-a-puan-durumu.html"],
+  [/^bundesliga$/i, "bundesliga-puan-durumu.html"],
+  [/^ligue 1$/i, "ligue-1-puan-durumu.html"]
+];
+
 function quickLinkStandingsHref(match) {
-  const team = quickLinkTeamFor(match);
-  if (team) return `./${team.slug}-puan-durumu`;
-  return internalHref(match.league === "Süper Lig" ? "super-lig-puan-durumu.html" : "puan-durumu.html");
+  const league = String(match.league || "").trim();
+  if (/hazırlık|friendly/i.test(league)) {
+    const team = quickLinkTeamFor(match);
+    return team ? `./${team.slug}-puan-durumu` : null;
+  }
+  const hit = COMPETITION_STANDINGS.find(([pattern]) => pattern.test(league));
+  return internalHref(hit ? hit[1] : "puan-durumu.html");
 }
 
-/** Takım formu hedefi: Süper Lig takımıysa takım profili, değilse takim-detay. */
-function quickLinkFormHref(match) {
-  const team = quickLinkTeamFor(match);
-  const name = (team && team.name) || match.homeTeam || match.awayTeam || "";
-  return teamProfileHref(name);
+/** Takım bağlantısı: yalnızca gerçek takım profili (`takimlar/<slug>`) olan takımlar. */
+function quickLinkTeamLinks(match) {
+  return [match.homeTeam, match.awayTeam]
+    .filter((name) => name && teamPageSlug(name))
+    .map((name) => `<a href="${escapeHtml(teamProfileHref(name))}" data-quicklink="team">${escapeHtml(name)}</a>`)
+    .join("");
 }
 
 /**
- * Üç düğme. Maç bitince ilk düğme "Analiz"den "Sonuç Analizi"ne döner ama
- * hedefi DEĞİŞMEZ: `matchDetailPath` zaten sitenin "bu maça git" için tek
- * gerçek kaynağı, bittiğinde de aynı sayfa sonucu gösterir. Puan Durumu ve
- * Takım Formu maçın durumundan bağımsızdır.
+ * Kart altı iç bağlantılar: maç sayfası, organizasyonun puan durumu, iki
+ * takımın profili (varsa) ve Süper Lig maçlarında İstatistik Merkezi.
+ * Maç bitince ilk düğme "Sonuç Analizi"ne döner, hedefi DEĞİŞMEZ. Kart bir
+ * `<article>`; bağlantılar kardeş, iç içe `<a>` yoktur.
  */
 function quickLinkButtonsHtml(match) {
   const isFinal = String(match.status || "SCHEDULED").toUpperCase() === "FINISHED";
   const analysisLabel = isFinal ? "Sonuç Analizi" : "Analiz";
+  const standings = quickLinkStandingsHref(match);
+  const stats = /^süper lig$/i.test(String(match.league || "").trim())
+    ? `<a href="${escapeHtml(internalHref("istatistik-merkezi.html"))}" data-quicklink="stats">İstatistik</a>`
+    : "";
   return `<a href="${escapeHtml(matchDetailPath(match))}">${escapeHtml(analysisLabel)}</a>` +
-    `<a href="${escapeHtml(quickLinkStandingsHref(match))}">Puan Durumu</a>` +
-    `<a href="${escapeHtml(quickLinkFormHref(match))}">Takım Formu</a>`;
+    (standings ? `<a href="${escapeHtml(standings)}">Puan Durumu</a>` : "") +
+    quickLinkTeamLinks(match) +
+    stats;
 }
 
 function programFixtureCard(match, today, options = {}) {
