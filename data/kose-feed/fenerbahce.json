@@ -12,7 +12,7 @@
       "tarihce": "https://www.futbolradar.com/takimlar/fenerbahce/tarihce.html"
     }
   },
-  "dataDate": "2026-10-19",
+  "dataDate": "2026-11-01",
   "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
   "form": {
     "league": {
@@ -31,37 +31,37 @@
     "allCompetitions": {
       "status": "ok",
       "last": [
-        "G",
+        "M",
         "M",
         "B",
         "G",
-        "B"
+        "M"
       ],
       "matches": [
         {
+          "id": "2026-10-31-fenerbahce-goztepe",
+          "result": "M",
+          "sourceUrl": "https://www.fenerbahce.org/haberler/futbol/2026/10/fenerbahce-1-2-goztepe"
+        },
+        {
+          "id": "2026-10-26-galatasaray-fenerbahce",
+          "result": "M",
+          "sourceUrl": "https://www.hurriyet.com.tr/sporarena/live-galatasaray-2-1-fenerbahce-super-lig-mac-ozeti-43354900"
+        },
+        {
+          "id": "fenerbahce-slavia-praha-2026-10-20",
+          "result": "B",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635661"
+        },
+        {
           "id": "fenerbahce-alanyaspor-2026-10-17",
           "result": "G",
-          "sourceUrl": "https://www.thesportsdb.com/event/2527788"
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584434"
         },
         {
           "id": "aston-villa-fenerbahce-2026-10-14",
           "result": "M",
           "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635620"
-        },
-        {
-          "id": "gaziantep-fk-fenerbahce-2026-09-14",
-          "result": "B",
-          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584408"
-        },
-        {
-          "id": "lyon-fenerbahce-2026-08-26",
-          "result": "G",
-          "sourceUrl": "https://www.aspor.com.tr/fenerbahce/2026/08/26/ve-fenerbahce-sampiyonlar-liginde-lyonu-deviren-temsilcimiz-17-yillik-hasreti-bitirdi"
-        },
-        {
-          "id": "gornik-zabrze-fenerbahce-2026-07-29",
-          "result": "B",
-          "sourceUrl": "https://www.sporx.com/fenerbahce-sampiyonlar-ligi-nde-sturm-graz-ile-eslesti-SXHBQ1170767SXQ"
         }
       ]
     }
@@ -85,18 +85,18 @@
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 6,
+      "matches": 9,
       "won": 3,
-      "drawn": 2,
-      "lost": 1,
-      "goalsFor": 7,
-      "goalsAgainst": 8,
+      "drawn": 3,
+      "lost": 3,
+      "goalsFor": 11,
+      "goalsAgainst": 14,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "V. Muriqi",
-        "rank": 1,
+        "rank": 2,
         "goals": 7,
         "assists": 1,
         "appearances": 8,
@@ -118,7 +118,7 @@
       },
       {
         "name": "O. Aydın",
-        "rank": 18,
+        "rank": 17,
         "goals": 2,
         "assists": 3,
         "appearances": 8,
@@ -129,7 +129,7 @@
       },
       {
         "name": "İ. Kahveci",
-        "rank": 19,
+        "rank": 18,
         "goals": 2,
         "assists": 3,
         "appearances": 7,
@@ -175,7 +175,7 @@
       },
       {
         "name": "M. Greenwood",
-        "rank": 15,
+        "rank": 16,
         "goals": 4,
         "assists": 2,
         "appearances": 8,
@@ -190,6 +190,77 @@
     "status": "ok",
     "excludedWithoutSource": 10,
     "items": [
+      {
+        "id": "2026-10-31-fenerbahce-goztepe",
+        "date": "2026-10-31",
+        "kickoff": "2026-10-31T23:59:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Göztepe",
+        "opponent": "Göztepe",
+        "score": {
+          "home": 1,
+          "away": 2
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": null,
+        "sourceUrl": "https://www.fenerbahce.org/haberler/futbol/2026/10/fenerbahce-1-2-goztepe",
+        "sourceUrls": [
+          "https://www.fenerbahce.org/haberler/futbol/2026/10/fenerbahce-1-2-goztepe",
+          "https://www.hurriyet.com.tr/sporarena/fenerbahce-1-2-goztepe-super-lig-maci-ozeti-43361493"
+        ],
+        "sourceType": "haber-ya-da-kulup",
+        "note": "Göztepe'nin 2. golünün sahibi kaynaklarda farklı yazıldığı için golcü adı verilmedi."
+      },
+      {
+        "id": "2026-10-26-galatasaray-fenerbahce",
+        "date": "2026-10-26",
+        "kickoff": "2026-10-26T23:59:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "homeTeam": "Galatasaray",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Galatasaray",
+        "score": {
+          "home": 2,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": null,
+        "sourceUrl": "https://www.hurriyet.com.tr/sporarena/live-galatasaray-2-1-fenerbahce-super-lig-mac-ozeti-43354900",
+        "sourceUrls": [
+          "https://www.hurriyet.com.tr/sporarena/live-galatasaray-2-1-fenerbahce-super-lig-mac-ozeti-43354900",
+          "https://t24.com.tr/spor/trendyol-super-ligde-9-haftanin-ardindan-gorunum-puan-durumu-ve-10-hafta-programi,1355474"
+        ],
+        "sourceType": "haber-ya-da-kulup",
+        "note": null
+      },
+      {
+        "id": "fenerbahce-slavia-praha-2026-10-20",
+        "date": "2026-10-20",
+        "kickoff": "2026-10-20T19:45:00+03:00",
+        "competition": "Şampiyonlar Ligi",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadium",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Slavia Praha",
+        "opponent": "Slavia Praha",
+        "score": {
+          "home": 2,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 2,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-slavia-praha-2026-10-20.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635661",
+        "sourceType": "api-football"
+      },
       {
         "id": "fenerbahce-alanyaspor-2026-10-17",
         "date": "2026-10-17",
@@ -208,8 +279,8 @@
         "goalsAgainst": 0,
         "result": "G",
         "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-alanyaspor-2026-10-17.html",
-        "sourceUrl": "https://www.thesportsdb.com/event/2527788",
-        "sourceType": "resmi-ya-da-yayin"
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584434",
+        "sourceType": "api-football"
       },
       {
         "id": "aston-villa-fenerbahce-2026-10-14",
@@ -315,6 +386,110 @@
         "reportPage": "https://www.futbolradar.com/fenerbahce-gornik-zabrze-mac-analizi.html",
         "sourceUrl": "https://www.sahadan.com/mac/fenerbahce-vs-gornik-zabrze/blx8udpkfd48ndx9a93jskg0k/istatistikler",
         "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "pendingMatches": [],
+  "latestPoints": {
+    "status": "ok",
+    "team": "Fenerbahçe",
+    "played": 10,
+    "points": 16,
+    "asOf": "2026-10-31",
+    "source": "https://www.hurriyet.com.tr/sporarena/fenerbahce-1-2-goztepe-super-lig-maci-ozeti-43361493"
+  },
+  "transfers": {
+    "status": "ok",
+    "items": [
+      {
+        "playerName": "Kojo Peprah Oppong",
+        "date": "2026-08-28",
+        "fromTeam": "OGC Nice",
+        "toTeam": "Fenerbahçe",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.aa.com.tr/tr/spor/fenerbahce-yeni-transferi-oppong-icin-imza-toreni-duzenledi/4040921"
+      },
+      {
+        "playerName": "Emre Demir",
+        "date": "2026-08-26",
+        "fromTeam": "Fenerbahçe",
+        "toTeam": "Corendon Alanyaspor",
+        "type": "Bonservis",
+        "direction": "giden",
+        "sourceUrl": "https://www.trtspor.com.tr/haber/futbol/emre-demir-alanyasporda-32796518"
+      },
+      {
+        "playerName": "Omar Fayed",
+        "date": "2026-08-17",
+        "fromTeam": "Fenerbahçe",
+        "toTeam": "Frosinone",
+        "type": "Bonservis",
+        "direction": "giden",
+        "sourceUrl": "https://www.aa.com.tr/tr/spor/fenerbahceli-futbolcu-omar-fayed-frosinoneye-transfer-oldu/4032007"
+      },
+      {
+        "playerName": "Fred",
+        "date": "2026-08-14",
+        "fromTeam": "Fenerbahçe",
+        "toTeam": "Serbest oyuncu",
+        "type": "Sözleşme feshi",
+        "direction": "giden",
+        "sourceUrl": "https://www.fenerbahce.org/haberler/futbol/2026/8/tesekkurler-fred-santos"
+      },
+      {
+        "playerName": "İrfan Can Eğribayat",
+        "date": "2026-08-13",
+        "fromTeam": "Fenerbahçe",
+        "toTeam": "Gençlerbirliği",
+        "type": "Bonservis",
+        "direction": "giden",
+        "sourceUrl": "https://genclerbirligi.org.tr/haberler/irfan-can-egribayat-genclerbirligimizde-13-agustos-2026"
+      },
+      {
+        "playerName": "Romelu Lukaku",
+        "date": "2026-08-12",
+        "fromTeam": "Napoli",
+        "toTeam": "Fenerbahçe",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.fenerbahce.org/haberler/futbol/2026/8/futbol-direktorumuz-oguz-cetin-romelu-lukaku-fenerbahcemizde"
+      },
+      {
+        "playerName": "Mason Greenwood",
+        "date": "2026-07-14",
+        "fromTeam": "Olympique Marsilya",
+        "toTeam": "Fenerbahçe",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.trtspor.com.tr/haber/futbol/fenerbahceden-kap-bildirimi-32151564"
+      },
+      {
+        "playerName": "Nathan Aké",
+        "date": "2026-07-04",
+        "fromTeam": "Manchester City",
+        "toTeam": "Fenerbahçe",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.mancity.com/news/mens/nathan-ake-leaves-city-for-fenerbahce-63918750/"
+      },
+      {
+        "playerName": "Amara Diouf",
+        "date": "2026-06-24",
+        "fromTeam": "Génération Foot",
+        "toTeam": "Fenerbahçe",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.aa.com.tr/tr/spor/fenerbahce-18-yasindaki-futbolcu-amara-dioufu-transfer-etti/3976842"
+      },
+      {
+        "playerName": "Vedat Muriqi",
+        "date": "2026-06-19",
+        "fromTeam": "Mallorca",
+        "toTeam": "Fenerbahçe",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.trtspor.com.tr/haber/futbol/vedat-muric-resmen-fenerbahcede-31766061"
       }
     ]
   },

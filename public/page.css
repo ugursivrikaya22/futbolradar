@@ -24400,3 +24400,15 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
     display: none;
   }
 }
+
+/* Büyük 4 takım sayfaları: kaynaklı sonuç kartları (mobil-first, ≥32px dokunma alanı) */
+.evergreen-results { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.evergreen-results > li { border: 1px solid rgba(127, 127, 127, 0.25); border-radius: 10px; padding: 10px 12px; overflow-wrap: anywhere; }
+.evergreen-results > li p { margin: 4px 0; }
+.evergreen-results a,
+.evergreen-source a,
+main.evergreen-page p > a,
+main.evergreen-page li > a,
+main.evergreen-page td > a,
+main.evergreen-page th > a,
+.evergreen-breadcrumb a { display: inline-flex; align-items: center; min-height: 32px; }
