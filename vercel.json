@@ -11,8 +11,40 @@
       "schedule": "0 0 * * *"
     },
     {
-      "path": "/api/cron/daily",
+      "path": "/api/cron/scheduled-update",
+      "schedule": "7 * * * *"
+    },
+    {
+      "path": "/api/cron/x-autopost",
+      "schedule": "*/15 * * * *"
+    },
+    {
+      "path": "/api/cron/scheduled-update?phase=resume",
+      "schedule": "27 * * * *"
+    },
+    {
+      "path": "/api/cron/deploy",
+      "schedule": "40 * * * *"
+    },
+    {
+      "path": "/api/cron/health",
+      "schedule": "47 * * * *"
+    },
+    {
+      "path": "/api/cron/matchday-reminder",
+      "schedule": "5 6-19 * * *"
+    },
+    {
+      "path": "/api/cron/search-demand",
+      "schedule": "15 6 * * 1-5"
+    },
+    {
+      "path": "/api/cron/full-update",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/full-update?phase=resume",
+      "schedule": "20,40 2 * * *"
     }
   ],
   "git": {
@@ -26,6 +58,26 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
+    {
+      "source": "/kose/kasimpasa-besiktas-formdaki-ev-sahibi",
+      "destination": "/kose-yazilari/kasimpasa-besiktas-formdaki-ev-sahibi",
+      "permanent": true
+    },
+    {
+      "source": "/kose/kasimpasa-besiktas-formdaki-ev-sahibi.html",
+      "destination": "/kose-yazilari/kasimpasa-besiktas-formdaki-ev-sahibi",
+      "permanent": true
+    },
+    {
+      "source": "/kose/fenerbahce-goztepe-yedek-kulube",
+      "destination": "/kose-yazilari/fenerbahce-goztepe-yedek-kulube",
+      "permanent": true
+    },
+    {
+      "source": "/kose/fenerbahce-goztepe-yedek-kulube.html",
+      "destination": "/kose-yazilari/fenerbahce-goztepe-yedek-kulube",
+      "permanent": true
+    },
     {
       "source": "/istatistik-merkezi",
       "destination": "/istatistik-merkezi.html",
@@ -5515,9 +5567,10 @@
     }
   ],
   "functions": {
-    "api/[...route].js": {
-      "maxDuration": 300,
-      "includeFiles": "{scripts/**,services/**,lib/**,data/**}"
+    "api/cron/[job].js": {
+      "maxDuration": 800,
+      "includeFiles": "{scripts/**,services/**,lib/**,server/**,.cron/data-manifest.json}",
+      "excludeFiles": "{data/**,.git/**,public/**,outputs/**,node_modules/**,en/**,mac/**,mac-raporu/**,karsilastirma/**,futbolcu/**,haber/**,oyuncular/**,arsiv/**,kose-yazilari/**,takimlar/**,mac-dosyasi/**,assets/**,*.html,*.xml,scripts/**/*.html,scripts/**/fixtures/**}"
     }
   }
 }

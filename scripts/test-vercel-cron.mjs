@@ -56,18 +56,10 @@ function fakeSupabase() {
 }
 
 /* ---------------- vercel.json ---------------- */
-await test("vercel.json crons bloğu geçerli ve zorunlu işler doğru takvimde", () => {
+await test("vercel.json: Pro cron takvimi, ayrı küçük cron işlevi, data/ pakette yok", () => {
   const config = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
   const { JOBS } = require("../server/cronRoute.js");
-  assert.ok(Array.isArray(config.crons) && config.crons.length > 0);
   const field = /^(\*|\d+(-\d+)?(,\d+(-\d+)?)*)(\/\d+)?$/;
-  // Hobby: en çok 2 cron, her biri günde en çok 1 kez.
-  assert.ok(config.crons.length <= 2, "Hobby: en çok 2 cron");
-  for (const cron of config.crons) {
-    const [min, hour, dom, mon, dow] = cron.schedule.split(" ");
-    assert.match(min, /^\d+$/, cron.schedule); assert.match(hour, /^\d+$/, cron.schedule);
-    assert.equal(dom, "*"); assert.equal(mon, "*");
-  }
   for (const cron of config.crons.filter((c) => c.path.startsWith("/api/cron/"))) {
     assert.match(cron.path, /^\/api\/cron\/[a-z-]+(\?phase=resume)?$/, cron.path);
     assert.ok(JOBS.has(cron.path.replace(/^\/api\/cron\//, "").split("?")[0]), cron.path);
@@ -76,19 +68,25 @@ await test("vercel.json crons bloğu geçerli ve zorunlu işler doğru takvimde"
     for (const p of parts) assert.match(p, field, cron.schedule);
   }
   const bySchedule = Object.fromEntries(config.crons.map((c) => [c.path, c.schedule]));
-  assert.equal(bySchedule["/api/cron/daily"], "0 2 * * *");
+  assert.equal(bySchedule["/api/cron/scheduled-update"], "7 * * * *");
+  assert.equal(bySchedule["/api/cron/health"], "47 * * * *");
+  assert.equal(bySchedule["/api/cron/search-demand"], "15 6 * * 1-5");
+  assert.equal(bySchedule["/api/cron/full-update"], "0 2 * * *");
+  assert.ok(bySchedule["/api/cron/deploy"], "deploy cron'u var");
   assert.equal(bySchedule["/api/cron-on-this-day"], "0 0 * * *");
   assert.equal(new Set(config.crons.map((c) => c.path)).size, config.crons.length, "yinelenen path yok");
   // Mevcut build/deploy ayarları değişmedi.
   assert.equal(config.buildCommand, "npm run build");
   assert.equal(config.ignoreCommand, "node scripts/vercel-continue-build.mjs");
   assert.deepEqual(config.git.deploymentEnabled, { "**": false, main: true, "preview/**": true, "automation/*": false });
-  // Yeni fonksiyon yok: yalnızca mevcut catch-all yapılandırılıyor.
-  assert.deepEqual(Object.keys(config.functions || {}), ["api/[...route].js"]);
-  assert.ok(config.functions["api/[...route].js"].maxDuration <= 300);
-  const apiFiles = fs.readdirSync(path.join(root, "api")).filter((f) => f.endsWith(".js") && !f.startsWith("_"));
-  assert.ok(apiFiles.length <= 12, `Hobby 12 işlev sınırı: ${apiFiles.length}`);
-  assert.ok(!fs.existsSync(path.join(root, "api", "cron")), "api/cron/ altında yeni işlev olmamalı");
+  // Catch-all'a dokunulmaz; yalnızca ayrı cron işlevi yapılandırılır, data/ hiçbir includeFiles'ta yok.
+  assert.deepEqual(Object.keys(config.functions || {}), ["api/cron/[job].js"]);
+  const fn = config.functions["api/cron/[job].js"];
+  assert.ok(fn.maxDuration <= 800);
+  assert.ok(!/data\//.test(fn.includeFiles), "includeFiles data/ içermemeli");
+  assert.match(fn.excludeFiles, /data\/\*\*/);
+  assert.ok(fs.existsSync(path.join(root, "api", "cron", "[job].js")));
+  assert.ok(!fs.readFileSync(path.join(root, "api", "[...route].js"), "utf8").includes("cronRoute"), "catch-all cron motorunu yüklememeli");
 });
 
 /* ---------------- CRON_SECRET ---------------- */
@@ -128,10 +126,10 @@ await test("CRON_SECRET: eksik env, eksik/yanlış başlık → 401 ve iş yok; 
   assert.equal(constantTimeEqual("", ""), false);
 });
 
-await test("catch-all /api/cron/* isteklerini cron rotasına yönlendirir (401, sırsız)", async () => {
+await test("api/cron/[job].js sırsız isteği 401 ile reddeder", async () => {
   const saved = process.env.CRON_SECRET;
   delete process.env.CRON_SECRET;
-  const handler = require("../api/[...route].js");
+  const handler = require("../api/cron/[job].js");
   const res = fakeRes();
   await handler({ url: "/api/cron/scheduled-update", method: "GET", headers: {} }, res);
   assert.equal(res.statusCode, 401);
@@ -140,6 +138,7 @@ await test("catch-all /api/cron/* isteklerini cron rotasına yönlendirir (401, 
 
 /* ---------------- eser kararı / kodlama ---------------- */
 const store = require("../services/cron/runStore.js");
+const engine = await import("./lib/cronJobEngine.mjs");
 await test("artifactDecision: aynı / ata → uygula / depo kazanır", () => {
   assert.equal(store.artifactDecision("a", { sha256: "a", lineage: [] }), "same");
   assert.equal(store.artifactDecision("r0", { sha256: "a2", lineage: ["r0", "a1"] }), "apply");
@@ -151,6 +150,59 @@ await test("artifactDecision: aynı / ata → uygula / depo kazanır", () => {
   assert.throws(() => store.assertDataPath("api/x.js"));
   assert.match(store.runKey("hourly", new Date("2026-10-26T10:07:00Z")), /^hourly:2026-10-26T13$/);
   assert.equal(store.runKey("full", new Date("2026-10-26T02:00:00Z")), "full:2026-10-26");
+});
+
+await test("git işareti: dağıtım commit'inden beri değişmeyen depo dosyasına eser uygulanır; lineage kırpması işareti korur", () => {
+  const c = "c".repeat(40);
+  const art = { sha256: "a2", lineage: [`git:${c}`, "deployed", "a1"] };
+  assert.equal(store.artifactDecision("repo", art), "repo-wins");
+  assert.equal(store.artifactDecision("repo", art, { unchangedSince: (x) => x === c }), "apply");
+  assert.equal(store.artifactDecision("repo", art, { unchangedSince: () => false }), "repo-wins");
+  assert.equal(store.artifactDecision(null, { sha256: "a2", lineage: [`git:${c}`] }), "apply");
+  const long = [`git:${c}`, ...Array.from({ length: 80 }, (_, i) => `s${i}`)];
+  const t = store.trimLineage(long);
+  assert.equal(t.length, 50);
+  assert.equal(t[0], `git:${c}`);
+  assert.equal(t[49], "s79");
+  assert.deepEqual(store.lineageCommits({ lineage: t }), [c]);
+});
+
+await test("veri tohumu: manifestteki dosyalar siteden indirilir; tek hata koşuyu durdurur", async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "fr-seed-"));
+  const served = { "/data/a.json": "[1]", "/data/sub/b.json": "{\"x\":2}" };
+  const urls = [];
+  const fetcher = async (url) => { const u = new URL(url); urls.push(u.host + u.pathname); const body = served[u.pathname];
+    return { ok: body !== undefined, status: body === undefined ? 404 : 200, arrayBuffer: async () => new TextEncoder().encode(body || "").buffer }; };
+  const r = await engine.seedDataFromSite({ workdir: dir, files: ["data/a.json", "data/sub/b.json"], siteUrl: "https://www.futbolradar.com/", fetcher });
+  assert.equal(r.files, 2);
+  assert.ok(urls.every((u) => u.startsWith("www.futbolradar.com/data/")));
+  assert.equal(fs.readFileSync(path.join(dir, "data/sub/b.json"), "utf8"), "{\"x\":2}");
+  await assert.rejects(engine.seedDataFromSite({ workdir: dir, files: ["data/a.json", "data/missing.json"], fetcher }), /seed-http-404/);
+  await assert.rejects(engine.seedDataFromSite({ workdir: dir, files: ["data/a.json"], siteUrl: "http://x", fetcher }), /seed-site-url-invalid/);
+  const bad = async () => ({ ok: true, status: 200, arrayBuffer: async () => new TextEncoder().encode("{yarım").buffer });
+  await assert.rejects(engine.seedDataFromSite({ workdir: dir, files: ["data/a.json"], fetcher: bad }));
+  // prepareWorkdir: data/ paketten KOPYALANMAZ, siteden gelir; lineage'a git işareti eklenir.
+  const bundle = fs.mkdtempSync(path.join(os.tmpdir(), "fr-bundle-"));
+  fs.mkdirSync(path.join(bundle, "data")); fs.writeFileSync(path.join(bundle, "data", "a.json"), "PAKETTEKİ-ESKİ");
+  fs.mkdirSync(path.join(bundle, "scripts"));
+  const sha = "d".repeat(40);
+  const ctx = await engine.prepareWorkdir({ bundleRoot: bundle, key: "t:1", tmpRoot: dir, hydrate: async () => ({ lineage: {} }), log: () => {},
+    env: { VERCEL_GIT_COMMIT_SHA: sha }, fetcher, manifest: { files: ["data/a.json"] } });
+  assert.equal(fs.readFileSync(path.join(ctx.workdir, "data", "a.json"), "utf8"), "[1]");
+  assert.deepEqual(ctx.lineage["data/a.json"], [`git:${sha}`]);
+  assert.ok(fs.lstatSync(path.join(ctx.workdir, "scripts")).isSymbolicLink());
+  assert.throws(() => engine.readDataManifest(bundle), /cron-data-manifest-missing/);
+  fs.rmSync(dir, { recursive: true, force: true }); fs.rmSync(bundle, { recursive: true, force: true });
+});
+
+await test("health: sır yoksa atlar; varsa mevcut /api/daily-health-check ucunu Bearer ile çağırır", async () => {
+  assert.equal((await engine.runHealth({ env: {} })).status, "skipped");
+  let seen;
+  const fetcher = async (url, opts) => { seen = { url, auth: opts.headers.authorization }; return { ok: true, status: 200, json: async () => ({ data: { ok: 1 } }) }; };
+  const r = await engine.runHealth({ env: { DAILY_HEALTH_CHECK_SECRET: "h", SITE_URL: "https://www.futbolradar.com" }, fetcher });
+  assert.equal(r.status, "complete");
+  assert.equal(seen.url, "https://www.futbolradar.com/api/daily-health-check");
+  assert.equal(seen.auth, "Bearer h");
 });
 
 await test("hydrate: Supabase yoksa dokunmaz; ata ise uygular, bağımsız değişiklikte depo kazanır", async () => {
@@ -173,7 +225,6 @@ await test("hydrate: Supabase yoksa dokunmaz; ata ise uygular, bağımsız deği
 });
 
 /* ---------------- parçalı koşu ---------------- */
-const engine = await import("./lib/cronJobEngine.mjs");
 
 function fakePipeline() {
   const step = (id, kind, extra = {}) => ({ id, command: process.execPath, args: [`/scripts/${id}.mjs`], kind, source: kind === "source" ? "api-football" : null, timeoutMs: 60_000, ...extra });
@@ -305,9 +356,11 @@ await test("prebuild hydrate betiği Supabase yokken sessizce çıkar", async ()
   const env = { PATH: process.env.PATH };
   const out = execFileSync(process.execPath, ["scripts/hydrate-data-from-supabase.mjs"], { env, encoding: "utf8" });
   assert.match(out, /yapılandırılmamış/);
+  const manifest = JSON.parse(fs.readFileSync(path.join(root, ".cron", "data-manifest.json"), "utf8"));
+  assert.ok(manifest.files.length > 0 && manifest.files.every((f) => f.startsWith("data/")));
+  assert.ok(!manifest.files.some((f) => f.startsWith("data/slim/")), "build ürünü data/slim listede olmamalı");
 });
 
-console.log(`\n${passed} test geçti`);
 
 await test("daily dağıtıcı işleri sırayla koşturur, hafta sonu search-demand atlanır", async () => {
   const { runDaily } = require("../server/cronRoute.js");
@@ -323,3 +376,5 @@ await test("daily dağıtıcı işleri sırayla koşturur, hafta sonu search-dem
   assert.equal(w.jobs["search-demand"].reason, "weekend");
   assert.equal(w.status, "partial");
 });
+
+console.log(`\n${passed} test geçti`);

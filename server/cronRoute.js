@@ -1,25 +1,36 @@
 /**
  * VERCEL CRON UÇ NOKTALARI — `/api/cron/<iş>`.
  *
- * DOSYA `api/` ALTINDA DEĞİL: Hobby planının 12 işlev sınırı dolu; yönlendirme
- * `api/[...route].js` (maxDuration 300) üzerinden yapılır.
+ * GİRİŞ: `api/cron/[job].js` (ayrı, küçük işlev; paket içinde `data/` yok).
+ * Pro planı: her iş kendi cron takviminde koşar (vercel.json).
  *
- *   /api/cron/daily                            TEK GÜNLÜK CRON (Hobby: en çok 2 cron,
- *                                              günde 1): full-update → health →
+ *   /api/cron/daily                            (yalnızca elle) full-update → health →
  *                                              search-demand (hafta içi) → deploy
  *   /api/cron/scheduled-update[?phase=resume]  saatlik veri çekme (parçalı)
  *   /api/cron/full-update[?phase=resume]       günlük tam güncelleme (parçalı)
  *   /api/cron/deploy                           Deploy Hook (saatte en fazla 1)
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
+ *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
+ *   /api/cron/matchday-reminder                PWA push: "favori takımının maçı bugün" (saatlik, 09–22 İstanbul)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
  * değişkeni yoksa ya da başlık eşleşmezse 401 döner ve hiçbir iş yapılmaz.
  */
+const path = require("path");
+const { pathToFileURL } = require("url");
 const { verifyCronRequest } = require("./cronAuth");
 
+// Motor, işlev paketine vercel.json `includeFiles` ile girer (scripts/**,
+// services/**). Yol bilerek çalışma zamanında kurulur: dosya izleyici (nft)
+// motorun `process.cwd()` okumalarını izleyip tüm depoyu (data/ dahil, ~1 GB)
+// pakete çekmesin diye.
+function enginePath() {
+  return path.join(__dirname, "..", ["scripts", "lib", "cronJobEngine.mjs"].join(String(path.sep)));
+}
+
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "x-autopost", "matchday-reminder"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -57,17 +68,21 @@ async function runDaily(table, { now = () => Date.now(), date = new Date() } = {
 }
 
 async function defaultRunners() {
-  const engine = await import("../scripts/lib/cronJobEngine.mjs");
+  const engine = await import(pathToFileURL(enginePath()).href);
   return {
     "scheduled-update": ({ phase }) => engine.runChunk({ type: "hourly", phase }),
     "full-update": ({ phase, budgetMs }) => engine.runChunk({ type: "full", phase, ...(budgetMs ? { budgetMs } : {}) }),
     deploy: () => engine.runDeploy(),
     "search-demand": ({ budgetMs } = {}) => engine.runSearchDemand(budgetMs ? { budgetMs } : {}),
-    health: async () => {
-      const { buildDailyHealthReport } = require("../services/dailyHealthCheckService");
-      const siteUrl = String(process.env.SITE_URL || "https://www.futbolradar.com").trim();
-      return { status: "complete", report: await buildDailyHealthReport({ siteUrl }) };
-    }
+    // Sağlık raporu catch-all'daki mevcut `/api/daily-health-check` ucundan
+    // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
+    health: () => engine.runHealth(),
+    // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
+    // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
+    "x-autopost": () => require("../services/xAutopost").runXAutopost(),
+    // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
+    // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
+    "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()
   };
 }
 
