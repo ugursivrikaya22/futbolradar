@@ -25,7 +25,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { fixtureCard as sharedFixtureCard } from "./lib/matchCards.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -159,6 +159,14 @@ function standingsSectionHtml(standingsEntry, competition) {
     </section>`;
 }
 
+// İnce sayfa koruması: yaklaşan maç, doğrulanmış sonuç ve puan tablosu
+// üçü birden yoksa sayfa yalnızca boş durum metni taşır (~15 kelime).
+// Uydurma içerikle doldurmak yerine noindex,follow verilir ve site
+// haritasından çıkarılır; veri gelince sonraki derlemede kendiliğinden döner.
+function isThinLeague({ upcoming, results, standingsEntry }) {
+  return !upcoming.length && !results.length && !standingsEntry;
+}
+
 function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
   const url = `${DOMAIN}/lig/${competition.id}.html`;
   const title = `${competition.name} — Fikstür, Sonuçlar ve Puan Durumu | FutbolRadar`;
@@ -180,7 +188,7 @@ function leaguePageHtml(competition, { upcoming, results, standingsEntry }) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(url)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${isThinLeague({ upcoming, results, standingsEntry }) ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX}" />
     <meta name="theme-color" content="#0b8f5a" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
@@ -251,6 +259,7 @@ export function generateLeaguePages() {
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
 
+  const indexable = [];
   for (const competition of targets) {
     const leagueMatches = all.filter((match) => match.competitionId === competition.id);
     const upcoming = leagueMatches
@@ -263,6 +272,8 @@ export function generateLeaguePages() {
       .sort((left, right) => String(right.kickoff).localeCompare(String(left.kickoff)))
       .slice(0, 8);
 
+    if (!isThinLeague({ upcoming, results, standingsEntry: standings[competition.id] })) indexable.push(competition);
+    else console.log(`[league-pages] veri yok, noindex + site haritası dışı: lig/${competition.id}.html`);
     writeBoth(`lig/${competition.id}.html`, leaguePageHtml(competition, {
       upcoming,
       results,
@@ -279,7 +290,7 @@ export function generateLeaguePages() {
     console.log(`[league-pages] kataloğa artık bağlı olmayan sayfa silindi: ${file}`);
   }
 
-  updateSitemap(targets);
+  updateSitemap(indexable);
 
   console.log(`[league-pages] ${targets.length} lig sayfası üretildi.`);
 }
