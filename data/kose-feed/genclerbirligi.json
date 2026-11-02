@@ -1,0 +1,451 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "genclerbirligi",
+    "name": "Gençlerbirliği",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/genclerbirligi",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/genclerbirligi/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/genclerbirligi/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/genclerbirligi/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/genclerbirligi/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "M",
+        "B",
+        "M",
+        "M",
+        "M"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "M",
+        "M"
+      ],
+      "matches": [
+        {
+          "id": "genclerbirligi-galatasaray-2026-10-17",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584435"
+        },
+        {
+          "id": "trabzonspor-genclerbirligi-2026-09-06",
+          "result": "M",
+          "sourceUrl": "https://www.fotomac.com.tr/superlig/2026/09/06/canli-trabzonspor-genclerbirligi-maci-saat-kacta-hangi-kanalda"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 15,
+    "played": 8,
+    "won": 2,
+    "drawn": 2,
+    "lost": 4,
+    "goalsFor": 7,
+    "goalsAgainst": 16,
+    "goalDifference": -9,
+    "points": 8,
+    "syncedAt": "2026-10-18T16:46:30.720Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 2,
+      "won": 0,
+      "drawn": 0,
+      "lost": 2,
+      "goalsFor": 0,
+      "goalsAgainst": 6,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [],
+    "topAssists": []
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 5,
+    "items": [
+      {
+        "id": "genclerbirligi-galatasaray-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T16:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Eryaman Stadium",
+        "homeTeam": "Gençlerbirliği",
+        "awayTeam": "Galatasaray",
+        "opponent": "Galatasaray",
+        "score": {
+          "home": 0,
+          "away": 1
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 1,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/genclerbirligi-galatasaray-2026-10-17.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584435",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "trabzonspor-genclerbirligi-2026-09-06",
+        "date": "2026-09-06",
+        "kickoff": "2026-09-06T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Papara Park",
+        "homeTeam": "Trabzonspor",
+        "awayTeam": "Gençlerbirliği",
+        "opponent": "Trabzonspor",
+        "score": {
+          "home": 5,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 5,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/trabzonspor-genclerbirligi-2026-09-06.html",
+        "sourceUrl": "https://www.fotomac.com.tr/superlig/2026/09/06/canli-trabzonspor-genclerbirligi-maci-saat-kacta-hangi-kanalda",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:27.669Z",
+    "count": 32,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "G. Akkan",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 31,
+        "number": null,
+        "providerId": "50020",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "İ. Eğribayat",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 27,
+        "number": null,
+        "providerId": "62137",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "H. Ogul",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 19,
+        "number": null,
+        "providerId": "685894",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Y. Aydar",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "550881",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "M. Baltacı",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "162000",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "M. Cavusoglu",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "550999",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "A. Çelik",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "399862",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "A. Dursun",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 27,
+        "number": null,
+        "providerId": "101413",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "D. Goutas",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 31,
+        "number": null,
+        "providerId": "40547",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Pedro Pereira",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 28,
+        "number": null,
+        "providerId": "30768",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Kévin Rodrigues",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 31,
+        "number": null,
+        "providerId": "47304",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Bilal Sari",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "661697",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Thalisson Kelven",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 27,
+        "number": null,
+        "providerId": "9737",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "F. Üzüm",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "62196",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Emirzat Baycu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 18,
+        "number": null,
+        "providerId": "645521",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Ousmane Diabate",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 18,
+        "number": null,
+        "providerId": "631912",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "G. Erdem",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "325418",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "O. Etebo",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 30,
+        "number": null,
+        "providerId": "2774",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Rafael Luís",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "345416",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "C. Niasse",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "22239",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "F. Tongya",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 23,
+        "number": null,
+        "providerId": "161972",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "S. Uçan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 32,
+        "number": null,
+        "providerId": "31058",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "O. Ülgün",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "61939",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Arda Aslan Erk",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 17,
+        "number": null,
+        "providerId": "640064",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Tiago Gouveia",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "158065",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "S. Koïta",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "7571",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "P. Martor",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 19,
+        "number": null,
+        "providerId": "621239",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Pedro Mendes",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 27,
+        "number": null,
+        "providerId": "147756",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "V. Orakpo",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 19,
+        "number": null,
+        "providerId": "477124",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "F. Ayaz Ozcan",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 16,
+        "number": null,
+        "providerId": "550860",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "Y. Hasan Temel",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "550882",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      },
+      {
+        "name": "A. Traoré",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 30,
+        "number": null,
+        "providerId": "3347",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=997"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Metin Diyadin",
+      "appointedAt": null,
+      "note": "2025-2026 sezonunda ligde en çok teknik direktör değiştiren kulüpte (altı) sezonu tamamlayan isim.",
+      "confidence": "reported",
+      "sourceName": "Anadolu Ajansı",
+      "sourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-18-takim-35-farkli-teknik-direktorle-calisti/3944402",
+      "publishedAt": "2026-05-21"
+    }
+  }
+}

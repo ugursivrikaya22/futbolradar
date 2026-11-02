@@ -1,0 +1,442 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "konyaspor",
+    "name": "Konyaspor",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/konyaspor",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/konyaspor/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/konyaspor/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/konyaspor/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/konyaspor/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "M",
+        "B",
+        "B",
+        "G",
+        "M"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "M",
+        "M"
+      ],
+      "matches": [
+        {
+          "id": "amed-sportif-faaliyetler-konyaspor-2026-10-17",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584430"
+        },
+        {
+          "id": "konyaspor-hull-city-2026-07-25",
+          "result": "M",
+          "sourceUrl": "https://www.konyaspor.org.tr/haber/hazirlik-macinda-hull-city-ile-karsilastik489"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 16,
+    "played": 8,
+    "won": 1,
+    "drawn": 2,
+    "lost": 5,
+    "goalsFor": 4,
+    "goalsAgainst": 9,
+    "goalDifference": -5,
+    "points": 5,
+    "syncedAt": "2026-10-17T16:21:36.773Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 2,
+      "won": 0,
+      "drawn": 0,
+      "lost": 2,
+      "goalsFor": 0,
+      "goalsAgainst": 4,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [],
+    "topAssists": []
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 7,
+    "items": [
+      {
+        "id": "amed-sportif-faaliyetler-konyaspor-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T16:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Diyarbakir Stadium",
+        "homeTeam": "Amed Sportif Faaliyetler",
+        "awayTeam": "Konyaspor",
+        "opponent": "Amed Sportif Faaliyetler",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 1,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/amed-sportif-faaliyetler-konyaspor-2026-10-17.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584430",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "konyaspor-hull-city-2026-07-25",
+        "date": "2026-07-25",
+        "kickoff": "2026-07-25T18:30:00+03:00",
+        "competition": "Hazırlık Maçı",
+        "venue": "İç saha",
+        "stadium": "Športni park Aluminij",
+        "homeTeam": "Konyaspor",
+        "awayTeam": "Hull City",
+        "opponent": "Hull City",
+        "score": {
+          "home": 0,
+          "away": 3
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 3,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/konyaspor-hull-city-2026-07-25.html",
+        "sourceUrl": "https://www.konyaspor.org.tr/haber/hazirlik-macinda-hull-city-ile-karsilastik489",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:26.612Z",
+    "count": 31,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "E. Aydın",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 18,
+        "number": null,
+        "providerId": "478077",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "D. Ertaş",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 20,
+        "number": null,
+        "providerId": "402493",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "B. Güngördü",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 30,
+        "number": null,
+        "providerId": "194689",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "Y. Andzouana",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "47512",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "C. Awaziem",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "50026",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "R. Baniya",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "119182",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "A. Boşluk",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "338815",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "Da Mata",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "414354",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "A. Demirbağ",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 28,
+        "number": null,
+        "providerId": "61986",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "T. Elgun",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "645518",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "A. Masuaku",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 32,
+        "number": null,
+        "providerId": "18816",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "A. Oğuz",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 33,
+        "number": null,
+        "providerId": "61810",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "A. Yanik",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 16,
+        "number": null,
+        "providerId": "619706",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "U. Yazğılı",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "50063",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. Bardhi",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 30,
+        "number": null,
+        "providerId": "47461",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "Omer Cobanoglu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 18,
+        "number": null,
+        "providerId": "645318",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. Dogan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 17,
+        "number": null,
+        "providerId": "645517",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "M. İbrahimoğlu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "152845",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "M. Jevtović",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 32,
+        "number": null,
+        "providerId": "50008",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. Secil",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 17,
+        "number": null,
+        "providerId": "619619",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "R.Tóth",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "419517",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. Bars",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 20,
+        "number": null,
+        "providerId": "339888",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. Colley",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "140847",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. Destan",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 23,
+        "number": null,
+        "providerId": "182422",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "J. Dompé",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 30,
+        "number": null,
+        "providerId": "8483",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "Diogo Gonçalves",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 29,
+        "number": null,
+        "providerId": "19300",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "Mostafa Mohamed",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 28,
+        "number": null,
+        "providerId": "2668",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "J. Muleka",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "144656",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "E. I. Seven",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 19,
+        "number": null,
+        "providerId": "645526",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "D. Türüç",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 33,
+        "number": null,
+        "providerId": "50126",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      },
+      {
+        "name": "M. Var",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "645525",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=607"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "İlhan Palut",
+      "appointedAt": null,
+      "note": "Depodaki maç kaydında da teknik direktör olarak doğrulandı (Konyaspor-Hull City, 25 Temmuz 2026).",
+      "confidence": "confirmed",
+      "sourceName": "Anadolu Ajansı",
+      "sourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-18-takim-35-farkli-teknik-direktorle-calisti/3944402",
+      "publishedAt": "2026-05-21"
+    }
+  }
+}

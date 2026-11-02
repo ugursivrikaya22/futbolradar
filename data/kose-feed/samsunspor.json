@@ -1,0 +1,433 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "samsunspor",
+    "name": "Samsunspor",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/samsunspor",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/samsunspor/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/samsunspor/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/samsunspor/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/samsunspor/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "M",
+        "M",
+        "M",
+        "M",
+        "M"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "M",
+        "M",
+        "B"
+      ],
+      "matches": [
+        {
+          "id": "kasimpasa-samsunspor-2026-10-18",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584436"
+        },
+        {
+          "id": "kocaelispor-samsunspor-2026-09-06",
+          "result": "M",
+          "sourceUrl": "https://www.tff.org/Default.aspx?macId=317818&pageID=29"
+        },
+        {
+          "id": "samsunspor-raal-la-louviere-2026-07-25",
+          "result": "B",
+          "sourceUrl": "https://www.raal.be/preparation-raal-samsunspor-0-0/"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 17,
+    "played": 8,
+    "won": 1,
+    "drawn": 1,
+    "lost": 6,
+    "goalsFor": 7,
+    "goalsAgainst": 19,
+    "goalDifference": -12,
+    "points": 4,
+    "syncedAt": "2026-10-18T13:13:26.008Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 3,
+      "won": 0,
+      "drawn": 1,
+      "lost": 2,
+      "goalsFor": 1,
+      "goalsAgainst": 5,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [],
+    "topAssists": []
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 7,
+    "items": [
+      {
+        "id": "kasimpasa-samsunspor-2026-10-18",
+        "date": "2026-10-18",
+        "kickoff": "2026-10-18T13:30:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Recep Tayyip Erdogan Stadium",
+        "homeTeam": "Kasımpaşa",
+        "awayTeam": "Samsunspor",
+        "opponent": "Kasımpaşa",
+        "score": {
+          "home": 4,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 4,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/kasimpasa-samsunspor-2026-10-18.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584436",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "kocaelispor-samsunspor-2026-09-06",
+        "date": "2026-09-06",
+        "kickoff": "2026-09-06T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Kocaeli Stadyumu",
+        "homeTeam": "Kocaelispor",
+        "awayTeam": "Samsunspor",
+        "opponent": "Kocaelispor",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 1,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/kocaelispor-samsunspor-2026-09-06.html",
+        "sourceUrl": "https://www.tff.org/Default.aspx?macId=317818&pageID=29",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "samsunspor-raal-la-louviere-2026-07-25",
+        "date": "2026-07-25",
+        "kickoff": "2026-07-25T15:30:00+03:00",
+        "competition": "Hazırlık Maçı",
+        "venue": "İç saha",
+        "stadium": "Sportpark Juliana",
+        "homeTeam": "Samsunspor",
+        "awayTeam": "RAAL La Louvière",
+        "opponent": "RAAL La Louvière",
+        "score": {
+          "home": 0,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 0,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/samsunspor-raal-la-louviere-2026-07-25.html",
+        "sourceUrl": "https://www.raal.be/preparation-raal-samsunspor-0-0/",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:25.905Z",
+    "count": 27,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "B. Bayazıt",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 26,
+        "number": null,
+        "providerId": "37111",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "O. Kocuk",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 30,
+        "number": null,
+        "providerId": "50217",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Efe Berat Töruz",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 19,
+        "number": null,
+        "providerId": "502903",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Efe Üstün",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 17,
+        "number": null,
+        "providerId": "525877",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "E. Albak",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "394819",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "B. Çetin",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "368103",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Y. Çift",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "273762",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "I. Drapiński",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 21,
+        "number": null,
+        "providerId": "346522",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "S. Eraković",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 24,
+        "number": null,
+        "providerId": "133391",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "G. Guarino",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 21,
+        "number": null,
+        "providerId": "340706",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "J. Mendes",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "310029",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "H. Tan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "451828",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "L. Tómasson",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "28806",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Y. Kayan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "50181",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "O. Øhlenschlæger",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 21,
+        "number": null,
+        "providerId": "425317",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "S. Onur",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 23,
+        "number": null,
+        "providerId": "202992",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Y. Sekongo",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "437484",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Afonso Sousa",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 26,
+        "number": null,
+        "providerId": "130262",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "E. Watt",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "18749",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "C. Yüksel",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 28,
+        "number": null,
+        "providerId": "453",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "K. Assoumou",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 23,
+        "number": null,
+        "providerId": "356998",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "M. Bayo",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 27,
+        "number": null,
+        "providerId": "24288",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "T. Coulibaly",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 24,
+        "number": null,
+        "providerId": "113581",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "Saikuba Jarju",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "631674",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "F. Kaya",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "25223",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "E. Kılınç",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 31,
+        "number": null,
+        "providerId": "50091",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      },
+      {
+        "name": "E. Tavşan",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "93001",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3603"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Thorsten Fink",
+      "appointedAt": null,
+      "note": "2025-2026 sezonunu Samsunspor'da tamamladı.",
+      "confidence": "reported",
+      "sourceName": "Anadolu Ajansı",
+      "sourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-18-takim-35-farkli-teknik-direktorle-calisti/3944402",
+      "publishedAt": "2026-05-21"
+    }
+  }
+}

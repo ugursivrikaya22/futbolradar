@@ -22,10 +22,11 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const { sameClub } = require("../services/superLigTeams.js");
+const { defaultSiteLinks } = require("../services/siteLinks.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -43,6 +44,31 @@ export const BIG_FOUR = [
   { slug: "besiktas", name: "Beşiktaş" },
   { slug: "trabzonspor", name: "Trabzonspor" }
 ];
+/**
+ * Süper Lig 2026-27'nin diğer 14 takımı (2 Kasım 2026). Aynı URL şeması
+ * (/takimlar/<slug>/<bölüm>.html) ve aynı veri kuralları geçerlidir; ek olarak
+ * kaynaklı verisi olmayan (ince) alt sayfa noindex alır ve site haritasına girmez.
+ * Slug'lar mevcut takimlar/<slug>.html profilleriyle birebir aynıdır.
+ */
+export const OTHER_SUPER_LIG = [
+  { slug: "samsunspor", name: "Samsunspor" },
+  { slug: "basaksehir", name: "Başakşehir" },
+  { slug: "konyaspor", name: "Konyaspor" },
+  { slug: "goztepe", name: "Göztepe" },
+  { slug: "alanyaspor", name: "Alanyaspor" },
+  { slug: "genclerbirligi", name: "Gençlerbirliği" },
+  { slug: "kasimpasa", name: "Kasımpaşa" },
+  { slug: "rizespor", name: "Rizespor" },
+  { slug: "erzurumspor", name: "Erzurumspor FK" },
+  { slug: "gaziantep-fk", name: "Gaziantep FK" },
+  { slug: "amed", name: "Amed" },
+  { slug: "eyupspor", name: "Eyüpspor" },
+  { slug: "corum-fk", name: "Çorum FK" },
+  { slug: "kocaelispor", name: "Kocaelispor" }
+];
+export const ALL_TEAMS = [...BIG_FOUR, ...OTHER_SUPER_LIG];
+const isBigFour = (slug) => BIG_FOUR.some((t) => t.slug === slug);
+const API_FOOTBALL_HOME = "https://www.api-football.com/";
 const PENDING = "Güncelleniyor — veri bekleniyor";
 
 const exists = (rel) => fs.existsSync(path.join(root, rel));
@@ -94,7 +120,8 @@ function teamResults(teamName) {
     const date = String(m.kickoff || "").slice(0, 10);
     const opponent = home ? m.awayTeam : m.homeTeam;
     const key = `${date}|${String(opponent).toLocaleLowerCase("tr").replace(/[^a-z0-9çğıöşü]/g, "").slice(0, 6)}`;
-    const urls = Array.isArray(m.sourceUrls) ? m.sourceUrls.filter((u) => /^https?:\/\//.test(u)) : [];
+    // TheSportsDB onaylı kaynak değil: bu kayıtlar kaynak sayılmaz (API-Football kimliği varsa o gösterilir).
+    const urls = Array.isArray(m.sourceUrls) ? m.sourceUrls.filter((u) => /^https?:\/\//.test(u) && !/thesportsdb\.com/i.test(u)) : [];
     const providerId = m.providerIds?.apiFootball || m.providerId || null;
     const sourceUrl = urls[0] || (providerId ? `${API}/fixtures?id=${providerId}` : null);
     const record = {
@@ -201,15 +228,31 @@ function buildTeamData({ slug, name }) {
 
 // ---------- HTML ----------
 const pending = (label) => `<p class="evergreen-note" data-status="veri-bekleniyor"><strong>${esc(label)}:</strong> ${PENDING}</p>`;
-const src = (url, label = "Kaynak") => (url ? `<a href="${esc(url)}" rel="nofollow noopener" target="_blank">${esc(label)}</a>` : "");
+// API-Football uç noktaları anahtar ister; ziyaretçiye herkese açık API-Football
+// sayfası gösterilir, uç nokta adı metin olarak kalır.
+const src = (url, label = "Kaynak") => {
+  if (!url) return "";
+  if (url.startsWith(API)) return `<a href="${API_FOOTBALL_HOME}" rel="nofollow noopener noreferrer" target="_blank">Veri: API-Football</a>${label && label !== "Kaynak" ? ` (${esc(label)})` : ""}`;
+  return `<a href="${esc(url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(label)}</a>`;
+};
 const table = (caption, heads, rows) => `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>${esc(caption)}</caption><thead><tr>${heads.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 const section = (id, title, body) => `<section class="evergreen-section" aria-labelledby="${id}"><h2 id="${id}">${esc(title)}</h2>${body}</section>`;
 
 function sectionNav(d, current) {
   return `<nav class="evergreen-related" aria-label="${esc(d.name)} veri sayfaları"><h2>${esc(d.name)} veri sayfaları</h2><ul class="evergreen-link-list">${SECTIONS.map((s) =>
     s.key === current ? `<li><span aria-current="page">${esc(s.label)}</span></li>` : `<li><a href="./${s.key}.html">${esc(d.name)} ${esc(s.label.toLocaleLowerCase("tr"))}</a></li>`).join("")}
-    <li><a href="../${d.slug}">${esc(d.name)} takım profili</a></li><li><a href="../../${d.slug}-form-durumu.html">${esc(d.name)} form durumu</a></li><li><a href="../../${d.slug}-maclari.html">${esc(d.name)} maçları</a></li><li><a href="../../${d.slug}-puan-durumu.html">${esc(d.name)} puan durumu</a></li></ul>
-    <p>Diğer büyükler: ${BIG_FOUR.filter((t) => t.slug !== d.slug).map((t) => `<a href="../${t.slug}/${current}.html">${esc(t.name)}</a>`).join(" · ")}</p></nav>`;
+    <li><a href="../${d.slug}">${esc(d.name)} takım profili</a></li>${[["form-durumu", "form durumu"], ["maclari", "maçları"], ["puan-durumu", "puan durumu"]].filter(([k]) => exists(`${d.slug}-${k}.html`)).map(([k, l]) => `<li><a href="../../${d.slug}-${k}.html">${esc(d.name)} ${l}</a></li>`).join("")}</ul>
+    ${isBigFour(d.slug)
+      ? `<p>Diğer büyükler: ${BIG_FOUR.filter((t) => t.slug !== d.slug).map((t) => `<a href="../${t.slug}/${current}.html">${esc(t.name)}</a>`).join(" · ")}</p>`
+      : `<p>Büyük dört: ${BIG_FOUR.map((t) => `<a href="../${t.slug}/${current}.html">${esc(t.name)}</a>`).join(" · ")}</p>`}
+    ${otherLinks(d, current)}</nav>`;
+}
+
+// Dizine açık aynı bölüme sahip diğer Süper Lig takımları (iç bağlantı; noindex sayfalara bağlantı verilmez).
+let INDEXABLE = new Set();
+function otherLinks(d, current) {
+  const list = OTHER_SUPER_LIG.filter((t) => t.slug !== d.slug && INDEXABLE.has(`${t.slug}/${current}`));
+  return list.length ? `<p>Diğer Süper Lig takımları: ${list.map((t) => `<a href="../${t.slug}/${current}.html">${esc(t.name)}</a>`).join(" · ")}</p>` : "";
 }
 
 function kadroContent(d) {
@@ -261,9 +304,60 @@ const META = {
   tarihce: (d) => ({ title: `${d.name} Tarihçesi | Kulüp Bilgileri | FutbolRadar`, description: `${d.name} tarihçesi ve kulüp bilgileri. Doğrulanmış kaynak bulunan bilgiler gösterilir; diğer bölümler güncelleniyor.`, h1: `${d.name} Tarihçesi`, intro: `${d.name} kulüp bilgileri. Kaynağı depoda olmayan bilgiler uydurulmaz, "veri bekleniyor" olarak işaretlenir.`, body: historyContent })
 };
 
+/**
+ * Alt sayfa dizine açık mı? Büyük dört mevcut davranışını korur (açık PR #561
+ * ile çakışmamak için). Diğer takımlarda yalnızca kaynaklı ana verisi olan
+ * bölüm indekslenir; tarihçe, kuruluş/kupa/stadyum kaynaklı değilse noindex.
+ */
+export function isIndexable(d, key) {
+  if (isBigFour(d.slug)) return true;
+  if (key === "kadro") return d.squad.status === "ok";
+  if (key === "istatistikler") return d.stats.standings.status === "ok";
+  if (key === "mac-sonuclari") return d.results.status === "ok" && d.results.items.length >= 3;
+  if (key === "tarihce") return ["founded", "honours", "stadium"].some((k) => d.history[k].status === "ok");
+  return false;
+}
+
+/**
+ * Diğer 14 takım için meta: başlık ≤60, açıklama 140-160 karakter. Uzun
+ * adlarda kısa varyanta düşülür; sınır dışı kalan aday kullanılmaz. Türkçe
+ * iyelik eki takım adına göre değiştiğinden ekli kalıptan kaçınılır.
+ */
+const fit = (cands, min, max) => cands.find((c) => c.length >= min && c.length <= max) || cands.find((c) => c.length <= max) || cands.at(-1);
+const OTHER_META = {
+  kadro: (d) => ({
+    title: fit([`${d.name} Kadrosu ${d.season || ""}: Oyuncular | FutbolRadar`, `${d.name} Kadrosu ${d.season || ""} | FutbolRadar`, `${d.name} Kadrosu | FutbolRadar`], 0, 60),
+    description: fit([
+      `${d.name} ${d.season || ""} Süper Lig kadrosu: ${d.squad.count || ""} oyuncu kaleci, defans, orta saha ve forvet olarak; yaş ve forma numarasıyla. Veri: API-Football.`,
+      `${d.name} ${d.season || ""} Süper Lig kadrosu: ${d.squad.count || ""} oyuncu mevki, yaş ve forma numarasıyla listelenir. Liste API-Football kaynaklıdır; veri tarihi sayfada belirtilir.`,
+      `${d.name} kadrosu: ${d.squad.count || ""} oyuncu mevki, yaş ve forma numarasıyla. API-Football kaynaklı, veri tarihi belirtilen liste.`], 140, 160)
+  }),
+  istatistikler: (d) => ({
+    title: fit([`${d.name} İstatistikleri ${d.season || ""} | FutbolRadar`, `${d.name} İstatistikleri | FutbolRadar`], 0, 60),
+    description: fit([
+      `${d.name} ${d.season || ""} Süper Lig istatistikleri: sıra, puan, galibiyet, beraberlik, mağlubiyet, atılan ve yenilen gol, form ile gol ve asist liderleri.`,
+      `${d.name} Süper Lig istatistikleri: sıra, puan, galibiyet-beraberlik-mağlubiyet, atılan ve yenilen gol, son form ve gol-asist liderleri, kaynaklı.`,
+      `${d.name} istatistikleri: sıra, puan, G-B-M, atılan/yenilen gol, form ve gol-asist liderleri; tüm veriler kaynak bağlantılı.`], 140, 160)
+  }),
+  "mac-sonuclari": (d) => ({
+    title: fit([`${d.name} Maç Sonuçları ${d.season || ""} | FutbolRadar`, `${d.name} Maç Sonuçları | FutbolRadar`], 0, 60),
+    description: fit([
+      `${d.name} maç sonuçları: Süper Lig ve diğer turnuvalarda oynanan maçların skorları, tarih ve rakip bilgisiyle. Her skor kaynak bağlantısıyla listelenir.`,
+      `${d.name} maç sonuçları: oynanan maçların skorları, tarih, turnuva ve rakip bilgisiyle. Her skor kaynak bağlantısıyla doğrulanmış olarak listelenir.`,
+      `${d.name} maç sonuçları ve skorları; tarih, turnuva ve rakip bilgisiyle, her skor kaynak bağlantılı.`], 140, 160)
+  }),
+  tarihce: (d) => ({
+    title: fit([`${d.name} Tarihçesi ve Kulüp Bilgileri | FutbolRadar`, `${d.name} Tarihçesi | FutbolRadar`], 0, 60),
+    description: fit([
+      `${d.name} tarihçesi ve kulüp bilgileri: güncel teknik direktör kaynağıyla gösterilir; kuruluş, kupa ve stadyum bilgileri doğrulanana dek güncelleniyor.`,
+      `${d.name} kulüp bilgileri: teknik direktör kaynağıyla gösterilir; kuruluş, kupa ve stadyum bölümleri doğrulanmış kaynak bulunana dek güncelleniyor.`,
+      `${d.name} kulüp bilgileri; doğrulanmış kaynak bulunan bilgiler gösterilir, diğer bölümler güncelleniyor.`], 140, 160)
+  })
+};
+
 function pageHtml(d, key, dataDate) {
   const base = "../../";
-  const meta = META[key](d);
+  const meta = isBigFour(d.slug) ? META[key](d) : { ...META[key](d), ...OTHER_META[key](d), intro: META[key](d).intro.replace(`${d.name}'in arşivde`, `${d.name} için arşivde`) };
   const label = SECTIONS.find((s) => s.key === key).label;
   const canonical = `${siteUrl}/takimlar/${d.slug}/${key}.html`;
   const crumbs = [
@@ -286,9 +380,9 @@ function pageHtml(d, key, dataDate) {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>${esc(meta.title.replace(/\s+\|/g, " |"))}</title>
+    <title>${esc(meta.title.replace(/\s+(\||:)/g, " $1").replace(/\s+:/g, ":"))}</title>
     <meta name="description" content="${esc(meta.description)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${isIndexable(d, key) ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <link rel="canonical" href="${canonical}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
@@ -300,6 +394,7 @@ function pageHtml(d, key, dataDate) {
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="${base}page.css" />
+    <style>/* Mobil dokunma hedefi ≥32 px (page.css'e dokunmadan, yalnız bu sayfalar) */.evergreen-breadcrumb a,.evergreen-related a,.evergreen-source a,.evergreen-results a{display:inline-flex;align-items:center;min-height:32px}</style>
     <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replaceAll("<", "\\u003c")}</script>
   </head>
   <body>
@@ -326,6 +421,21 @@ function pageHtml(d, key, dataDate) {
 `;
 }
 
+/**
+ * 301'e giden göreli iç bağlantıları (ör. tarihte-bugun.html, <takım>-puan-durumu.html)
+ * vercel.json'a göre son adrese çevirir; test-internal-redirect-links sayacı artmaz.
+ */
+function finalHrefs(html, rel) {
+  const links = defaultSiteLinks();
+  const dir = path.posix.dirname(rel);
+  return html.replace(/href="([^"#?:]+)([?#][^"]*)?"/g, (all, target, suffix = "") => {
+    if (target.startsWith("/") || /\.(css|js|svg|png|ico|json|webmanifest)$/.test(target)) return all;
+    const rootPath = `/${path.posix.normalize(path.posix.join(dir, target)).replace(/^\/+/, "")}`;
+    if (rootPath.startsWith("/..") || !links.isRedirected(rootPath)) return all;
+    return `href="${links.internalHref(rootPath, { from: rel })}${suffix}"`;
+  });
+}
+
 function write(rel, content) {
   for (const outRoot of [root, path.join(root, "public")]) {
     const dest = path.join(outRoot, rel);
@@ -336,18 +446,21 @@ function write(rel, content) {
 }
 
 export function buildAll() {
-  return BIG_FOUR.map(buildTeamData);
+  return ALL_TEAMS.map(buildTeamData);
 }
 
 function main() {
   const data = buildAll();
   const dataDate = teams.map((t) => t.lastStandingsSyncedAt).filter(Boolean).sort().at(-1)?.slice(0, 10) || "1970-01-01";
+  INDEXABLE = new Set(data.flatMap((d) => SECTIONS.filter((s) => isIndexable(d, s.key)).map((s) => `${d.slug}/${s.key}`)));
   const files = [];
+  const sitemapFiles = [];
   for (const d of data) {
     for (const s of SECTIONS) {
       const rel = `takimlar/${d.slug}/${s.key}.html`;
-      write(rel, pageHtml(d, s.key, dataDate));
+      write(rel, finalHrefs(pageHtml(d, s.key, dataDate), rel));
       files.push(rel);
+      if (isIndexable(d, s.key)) sitemapFiles.push(rel);
     }
     const feed = {
       schema: "futbolradar.kose-feed.v1",
@@ -366,10 +479,10 @@ function main() {
     if (!fs.existsSync(sitemapPath)) continue;
     const retained = (fs.readFileSync(sitemapPath, "utf8").match(URL_ENTRY_RE) || [])
       .filter((e) => !files.some((f) => e.includes(`<loc>${siteUrl}/${f}</loc>`)));
-    const entries = files.map((f) => `  <url>\n    <loc>${siteUrl}/${f}</loc>\n    <lastmod>${dataDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.75</priority>\n  </url>`);
+    const entries = sitemapFiles.map((f) => `  <url>\n    <loc>${siteUrl}/${f}</loc>\n    <lastmod>${dataDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.75</priority>\n  </url>`);
     fs.writeFileSync(sitemapPath, wrapUrlset(retained.concat(entries)), "utf8");
   }
-  console.log(`[big-four-data-pages] ${files.length} sayfa, ${data.length} Köşe beslemesi yazıldı.`);
+  console.log(`[big-four-data-pages] ${files.length} sayfa (${sitemapFiles.length} site haritasında), ${data.length} Köşe beslemesi yazıldı.`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

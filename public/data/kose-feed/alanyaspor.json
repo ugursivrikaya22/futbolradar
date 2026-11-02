@@ -1,0 +1,406 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "alanyaspor",
+    "name": "Alanyaspor",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/alanyaspor",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/alanyaspor/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/alanyaspor/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/alanyaspor/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/alanyaspor/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "M",
+        "B",
+        "G",
+        "B",
+        "G"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "M",
+        "G"
+      ],
+      "matches": [
+        {
+          "id": "fenerbahce-alanyaspor-2026-10-17",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584434"
+        },
+        {
+          "id": "caykur-rizespor-alanyaspor-2026-09-07",
+          "result": "G",
+          "sourceUrl": "https://www.tff.org/Default.aspx?macId=317814&pageID=29"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 9,
+    "played": 8,
+    "won": 3,
+    "drawn": 3,
+    "lost": 2,
+    "goalsFor": 8,
+    "goalsAgainst": 9,
+    "goalDifference": -1,
+    "points": 12,
+    "syncedAt": "2026-10-18T13:13:26.008Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 2,
+      "won": 1,
+      "drawn": 0,
+      "lost": 1,
+      "goalsFor": 1,
+      "goalsAgainst": 3,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [],
+    "topAssists": []
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 6,
+    "items": [
+      {
+        "id": "fenerbahce-alanyaspor-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T19:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Chobani Stadium Fenerbahce Sukru Saracoglu",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Alanyaspor",
+        "opponent": "Fenerbahçe",
+        "score": {
+          "home": 3,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 3,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-alanyaspor-2026-10-17.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584434",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "caykur-rizespor-alanyaspor-2026-09-07",
+        "date": "2026-09-07",
+        "kickoff": "2026-09-07T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Çaykur Didi Stadyumu",
+        "homeTeam": "Çaykur Rizespor",
+        "awayTeam": "Alanyaspor",
+        "opponent": "Çaykur Rizespor",
+        "score": {
+          "home": 0,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/caykur-rizespor-alanyaspor-2026-09-07.html",
+        "sourceUrl": "https://www.tff.org/Default.aspx?macId=317814&pageID=29",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:27.315Z",
+    "count": 27,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "M. Bayram",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 21,
+        "number": null,
+        "providerId": "339950",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Paulo Victor",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 39,
+        "number": null,
+        "providerId": "10476",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "F. Aksoy",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 28,
+        "number": null,
+        "providerId": "50079",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "F. Aliti",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 32,
+        "number": null,
+        "providerId": "48211",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "B. Demirag",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "619705",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "E. Karatas",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 18,
+        "number": null,
+        "providerId": "674071",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Nuno Lima",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "282946",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "B. Özyurt",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "360121",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "S. Kigbafory",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 19,
+        "number": null,
+        "providerId": "674072",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "İ. Çelik",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "282773",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "E. Demir",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "50129",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "B. Gezek",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 20,
+        "number": null,
+        "providerId": "371932",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "F. Hadërgjonaj",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 31,
+        "number": null,
+        "providerId": "19042",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "I. Hagi",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "43084",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Hwang Ui-Jo",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 33,
+        "number": null,
+        "providerId": "2910",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "İ. Kaya",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "302392",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "E. Keskin",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 24,
+        "number": null,
+        "providerId": "134490",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Maestro",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "237120",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "G. Makouta",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 29,
+        "number": null,
+        "providerId": "41975",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Y. Özdemir",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "286825",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Ruan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 20,
+        "number": null,
+        "providerId": "384398",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "O. Ben Ali",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 21,
+        "number": null,
+        "providerId": "463330",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Iván Cédric",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "285506",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Ş. Dik",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 21,
+        "number": null,
+        "providerId": "366672",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "M. Elia",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 28,
+        "number": null,
+        "providerId": "3034",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "Paolo Fernandes",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "38707",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      },
+      {
+        "name": "A. Usluoğlu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 19,
+        "number": null,
+        "providerId": "354082",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=996"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "João Pereira",
+      "appointedAt": null,
+      "note": "Sezonu başlattığı takımla tamamlayan beş teknik direktörden biri.",
+      "confidence": "confirmed",
+      "sourceName": "Anadolu Ajansı",
+      "sourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-18-takim-35-farkli-teknik-direktorle-calisti/3944402",
+      "publishedAt": "2026-05-21"
+    }
+  }
+}

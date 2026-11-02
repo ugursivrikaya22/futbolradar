@@ -1,0 +1,477 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "amed",
+    "name": "Amed",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/amed",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/amed/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/amed/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/amed/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/amed/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "G",
+        "B",
+        "G",
+        "G",
+        "B"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "G",
+        "G",
+        "B"
+      ],
+      "matches": [
+        {
+          "id": "amed-sportif-faaliyetler-konyaspor-2026-10-17",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584430"
+        },
+        {
+          "id": "amed-sportif-faaliyetler-basaksehir-2026-09-13",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584404"
+        },
+        {
+          "id": "kasimpasa-amed-sportif-faaliyetler-2026-09-06",
+          "result": "B",
+          "sourceUrl": "https://www.aspor.com.tr/spor-toto-super-lig/2026/09/06/kasimpasa-amedspor-maci-saat-kacta-hangi-kanalda"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 2,
+    "played": 8,
+    "won": 5,
+    "drawn": 2,
+    "lost": 1,
+    "goalsFor": 18,
+    "goalsAgainst": 9,
+    "goalDifference": 9,
+    "points": 17,
+    "syncedAt": "2026-10-17T16:21:36.773Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 3,
+      "won": 2,
+      "drawn": 1,
+      "lost": 0,
+      "goalsFor": 8,
+      "goalsAgainst": 2,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [
+      {
+        "name": "G. Orban",
+        "rank": 3,
+        "goals": 7,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 581,
+        "profile": "https://www.futbolradar.com/futbolcu/gift-orban",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "D. Sabia",
+        "rank": 13,
+        "goals": 4,
+        "assists": 1,
+        "appearances": 8,
+        "minutes": 687,
+        "profile": null,
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      }
+    ],
+    "topAssists": [
+      {
+        "name": "G. Orban",
+        "rank": 13,
+        "goals": 7,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 581,
+        "profile": "https://www.futbolradar.com/futbolcu/gift-orban",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      }
+    ]
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 4,
+    "items": [
+      {
+        "id": "amed-sportif-faaliyetler-konyaspor-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T16:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Diyarbakir Stadium",
+        "homeTeam": "Amed Sportif Faaliyetler",
+        "awayTeam": "Konyaspor",
+        "opponent": "Konyaspor",
+        "score": {
+          "home": 1,
+          "away": 0
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/amed-sportif-faaliyetler-konyaspor-2026-10-17.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584430",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "amed-sportif-faaliyetler-basaksehir-2026-09-13",
+        "date": "2026-09-13",
+        "kickoff": "2026-09-13T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Şilbe Spor Kompleksi",
+        "homeTeam": "Amed Sportif Faaliyetler",
+        "awayTeam": "Başakşehir",
+        "opponent": "Başakşehir",
+        "score": {
+          "home": 5,
+          "away": 0
+        },
+        "goalsFor": 5,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/amed-sportif-faaliyetler-basaksehir-2026-09-13.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584404",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "kasimpasa-amed-sportif-faaliyetler-2026-09-06",
+        "date": "2026-09-06",
+        "kickoff": "2026-09-06T17:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Recep Tayyip Erdoğan Stadyumu",
+        "homeTeam": "Kasımpaşa",
+        "awayTeam": "Amed Sportif Faaliyetler",
+        "opponent": "Kasımpaşa",
+        "score": {
+          "home": 2,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 2,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/kasimpasa-amed-sportif-faaliyetler-2026-09-06.html",
+        "sourceUrl": "https://www.aspor.com.tr/spor-toto-super-lig/2026/09/06/kasimpasa-amedspor-maci-saat-kacta-hangi-kanalda",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:29.422Z",
+    "count": 28,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "B. Bozan",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 25,
+        "number": null,
+        "providerId": "61949",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "Y. Girisen",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 18,
+        "number": null,
+        "providerId": "625854",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "A. Lafont",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 26,
+        "number": null,
+        "providerId": "30393",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "V. Sapan",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 29,
+        "number": null,
+        "providerId": "63307",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "M. Acer",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "134470",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "D. Bates",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "24865",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "A. Bülbül",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "339951",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "A. Cissé",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "451702",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "L. Dellova",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "14590",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "K. Demirtaş",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 31,
+        "number": null,
+        "providerId": "63225",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "U. Meraş",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 30,
+        "number": null,
+        "providerId": "50223",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "M. Yeşil",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 27,
+        "number": null,
+        "providerId": "101312",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "G. Gül",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "25522",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "B. Gun",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 17,
+        "number": null,
+        "providerId": "630551",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "R. Lutin",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "359335",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "R. Raveloson",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 28,
+        "number": null,
+        "providerId": "20586",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "D. Sabia",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 33,
+        "number": null,
+        "providerId": "12939",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "F. Soyalp",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 30,
+        "number": null,
+        "providerId": "50239",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "C. Üstündag",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "271460",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "S. Ballet",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 24,
+        "number": null,
+        "providerId": "152609",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "Dilhan Demir",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 22,
+        "number": null,
+        "providerId": "427020",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "M. Diagne",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 34,
+        "number": null,
+        "providerId": "458",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "I. Duyu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 17,
+        "number": null,
+        "providerId": "685895",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "M. Khalil",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "169735",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "B. Kizildemir",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 19,
+        "number": null,
+        "providerId": "568054",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "E. Krasniqi",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 27,
+        "number": null,
+        "providerId": "271921",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "G. Orban",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 23,
+        "number": null,
+        "providerId": "368260",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      },
+      {
+        "name": "Y. Sor",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 25,
+        "number": null,
+        "providerId": "203458",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3579"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Besnik Hasi",
+      "appointedAt": "2026-06-10",
+      "note": "Anderlecht'ten ayrılmasının ardından göreve geldi; kulüp duyurusuna göre sözleşme 2026-2027 ve 2027-2028 sezonlarını kapsıyor. Kulüp 2026-2027 sezonunda Süper Lig'e yükseldi.",
+      "confidence": "confirmed",
+      "sourceName": "Sabah",
+      "sourceUrl": "https://www.sabah.com.tr/spor/futbol/2026/06/10/amed-sportif-faaliyetlerde-besnik-hasi-donemi",
+      "publishedAt": "2026-06-10"
+    }
+  }
+}

@@ -65,6 +65,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
 
   // Existing calendar provider: retain its event citation when archiving a match.
   dataProvider: Object.freeze([
+    // API-Football: onaylı veri sağlayıcı; takım veri sayfalarında görünür
+    // "Veri: API-Football" atfı https://www.api-football.com/ adresine bağlanır.
+    "api-football.com",
     "thesportsdb.com"
   ]),
 

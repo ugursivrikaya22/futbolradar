@@ -31,17 +31,22 @@
     "allCompetitions": {
       "status": "ok",
       "last": [
+        "B",
         "G",
         "M",
         "B",
-        "G",
-        "B"
+        "G"
       ],
       "matches": [
         {
+          "id": "fenerbahce-slavia-praha-2026-10-20",
+          "result": "B",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635661"
+        },
+        {
           "id": "fenerbahce-alanyaspor-2026-10-17",
           "result": "G",
-          "sourceUrl": "https://www.thesportsdb.com/event/2527788"
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584434"
         },
         {
           "id": "aston-villa-fenerbahce-2026-10-14",
@@ -57,11 +62,6 @@
           "id": "lyon-fenerbahce-2026-08-26",
           "result": "G",
           "sourceUrl": "https://www.aspor.com.tr/fenerbahce/2026/08/26/ve-fenerbahce-sampiyonlar-liginde-lyonu-deviren-temsilcimiz-17-yillik-hasreti-bitirdi"
-        },
-        {
-          "id": "gornik-zabrze-fenerbahce-2026-07-29",
-          "result": "B",
-          "sourceUrl": "https://www.sporx.com/fenerbahce-sampiyonlar-ligi-nde-sturm-graz-ile-eslesti-SXHBQ1170767SXQ"
         }
       ]
     }
@@ -85,18 +85,18 @@
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 6,
+      "matches": 7,
       "won": 3,
-      "drawn": 2,
+      "drawn": 3,
       "lost": 1,
-      "goalsFor": 7,
-      "goalsAgainst": 8,
+      "goalsFor": 9,
+      "goalsAgainst": 10,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "V. Muriqi",
-        "rank": 1,
+        "rank": 2,
         "goals": 7,
         "assists": 1,
         "appearances": 8,
@@ -118,7 +118,7 @@
       },
       {
         "name": "O. Aydın",
-        "rank": 18,
+        "rank": 17,
         "goals": 2,
         "assists": 3,
         "appearances": 8,
@@ -129,7 +129,7 @@
       },
       {
         "name": "İ. Kahveci",
-        "rank": 19,
+        "rank": 18,
         "goals": 2,
         "assists": 3,
         "appearances": 7,
@@ -175,7 +175,7 @@
       },
       {
         "name": "M. Greenwood",
-        "rank": 15,
+        "rank": 16,
         "goals": 4,
         "assists": 2,
         "appearances": 8,
@@ -190,6 +190,27 @@
     "status": "ok",
     "excludedWithoutSource": 10,
     "items": [
+      {
+        "id": "fenerbahce-slavia-praha-2026-10-20",
+        "date": "2026-10-20",
+        "kickoff": "2026-10-20T19:45:00+03:00",
+        "competition": "Şampiyonlar Ligi",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadium",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Slavia Praha",
+        "opponent": "Slavia Praha",
+        "score": {
+          "home": 2,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 2,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-slavia-praha-2026-10-20.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635661",
+        "sourceType": "api-football"
+      },
       {
         "id": "fenerbahce-alanyaspor-2026-10-17",
         "date": "2026-10-17",
@@ -208,8 +229,8 @@
         "goalsAgainst": 0,
         "result": "G",
         "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-alanyaspor-2026-10-17.html",
-        "sourceUrl": "https://www.thesportsdb.com/event/2527788",
-        "sourceType": "resmi-ya-da-yayin"
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584434",
+        "sourceType": "api-football"
       },
       {
         "id": "aston-villa-fenerbahce-2026-10-14",

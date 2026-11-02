@@ -1,0 +1,433 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "eyupspor",
+    "name": "Eyüpspor",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/eyupspor",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/eyupspor/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/eyupspor/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/eyupspor/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/eyupspor/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "M",
+        "M",
+        "M",
+        "M",
+        "M"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "M",
+        "M",
+        "M"
+      ],
+      "matches": [
+        {
+          "id": "erzurumspor-fk-eyupspor-2026-10-17",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584433"
+        },
+        {
+          "id": "eyupspor-goztepe-2026-10-12",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584423"
+        },
+        {
+          "id": "corum-fk-eyupspor-2026-09-06",
+          "result": "M",
+          "sourceUrl": "https://www.tff.org/Default.aspx?macId=317816&pageID=29"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 18,
+    "played": 8,
+    "won": 1,
+    "drawn": 0,
+    "lost": 7,
+    "goalsFor": 2,
+    "goalsAgainst": 22,
+    "goalDifference": -20,
+    "points": 3,
+    "syncedAt": "2026-10-17T16:21:36.773Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 3,
+      "won": 0,
+      "drawn": 0,
+      "lost": 3,
+      "goalsFor": 0,
+      "goalsAgainst": 9,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [],
+    "topAssists": []
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 5,
+    "items": [
+      {
+        "id": "erzurumspor-fk-eyupspor-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T13:30:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Kazim Karabekir Stadyumu",
+        "homeTeam": "Erzurumspor FK",
+        "awayTeam": "Eyüpspor",
+        "opponent": "Erzurumspor FK",
+        "score": {
+          "home": 2,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/erzurumspor-fk-eyupspor-2026-10-17.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584433",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "eyupspor-goztepe-2026-10-12",
+        "date": "2026-10-12",
+        "kickoff": "2026-10-12T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Esenyurt Necmi Kadioglu Stadi",
+        "homeTeam": "Eyüpspor",
+        "awayTeam": "Göztepe",
+        "opponent": "Göztepe",
+        "score": {
+          "home": 0,
+          "away": 4
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 4,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/eyupspor-goztepe-2026-10-12.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584423",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "corum-fk-eyupspor-2026-09-06",
+        "date": "2026-09-06",
+        "kickoff": "2026-09-06T17:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Çorum Şehir Stadyumu",
+        "homeTeam": "Çorum FK",
+        "awayTeam": "Eyüpspor",
+        "opponent": "Çorum FK",
+        "score": {
+          "home": 3,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 3,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/corum-fk-eyupspor-2026-09-06.html",
+        "sourceUrl": "https://www.tff.org/Default.aspx?macId=317816&pageID=29",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:29.777Z",
+    "count": 27,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "E. Bilgin",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 21,
+        "number": null,
+        "providerId": "275090",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "H. Moldovan",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 27,
+        "number": null,
+        "providerId": "42642",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Ömer Ahmet Ceyhan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 18,
+        "number": null,
+        "providerId": "630292",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Yigit Demir",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "595969",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "J. El Yamiq",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 33,
+        "number": null,
+        "providerId": "31386",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "S. Giordano",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 24,
+        "number": null,
+        "providerId": "322954",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Z. Jules",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 28,
+        "number": null,
+        "providerId": "17977",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Diabel Ndoye",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 18,
+        "number": null,
+        "providerId": "640066",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Kutlay Satli Berhan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 20,
+        "number": null,
+        "providerId": "626939",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "T. Ülvan",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 24,
+        "number": null,
+        "providerId": "352779",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "A. Yaşar",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "137430",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "A. Popov",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 19,
+        "number": null,
+        "providerId": "451845",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "H. Akman",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "364378",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "David Costa",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "427076",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "C. Massanga",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "291531",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "C. Raux Yao",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 24,
+        "number": null,
+        "providerId": "333168",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "A. Sabiri",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 29,
+        "number": null,
+        "providerId": "19053",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "T. İlter",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 31,
+        "number": null,
+        "providerId": "62285",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "A. Abdullahi",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 21,
+        "number": null,
+        "providerId": "388461",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Y. Barası",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 22,
+        "number": null,
+        "providerId": "36906",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "B. Boutobba",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 27,
+        "number": null,
+        "providerId": "21589",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "M. Demir",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "62185",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "M. Karakas",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 22,
+        "number": null,
+        "providerId": "639455",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "K. Michalak",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 28,
+        "number": null,
+        "providerId": "40452",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "L. Pintor",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 25,
+        "number": null,
+        "providerId": "670",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "Christ Sadia",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "614411",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      },
+      {
+        "name": "A. K. Sy",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 18,
+        "number": null,
+        "providerId": "638714",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=3588"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Özhan Pulat",
+      "appointedAt": "2026-06-29",
+      "note": "Sezonu Eyüpspor'da tamamlayan Atila Gerin'in yerine göreve geldi; kulüp duyurusunda sözleşme süresi belirtilmedi.",
+      "confidence": "confirmed",
+      "sourceName": "Sporx",
+      "sourceUrl": "https://www.sporx.com/futbol/superlig/eyupspor/eyupspor-da-yeni-donem-ozhan-pulat-resmen-aciklandi-SXHBQ1167469SXQ",
+      "publishedAt": "2026-06-29"
+    }
+  }
+}

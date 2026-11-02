@@ -1,0 +1,468 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "goztepe",
+    "name": "Göztepe",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/goztepe",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/goztepe/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/goztepe/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/goztepe/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/goztepe/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "G",
+        "G",
+        "B",
+        "B",
+        "M"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "G",
+        "G",
+        "M",
+        "B"
+      ],
+      "matches": [
+        {
+          "id": "kocaelispor-goztepe-2026-10-18",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584437"
+        },
+        {
+          "id": "eyupspor-goztepe-2026-10-12",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584423"
+        },
+        {
+          "id": "goztepe-gaziantep-fk-2026-09-07",
+          "result": "M",
+          "sourceUrl": "https://www.tff.org/Default.aspx?macId=317815&pageID=29"
+        },
+        {
+          "id": "goztepe-rudes-2026-07-26",
+          "result": "B",
+          "sourceUrl": "https://www.sofascore.com/tr/football/match/nk-rudes-goztepe/elbsBeo"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 13,
+    "played": 8,
+    "won": 2,
+    "drawn": 3,
+    "lost": 3,
+    "goalsFor": 17,
+    "goalsAgainst": 16,
+    "goalDifference": 1,
+    "points": 9,
+    "syncedAt": "2026-10-18T20:35:26.370Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 4,
+      "won": 2,
+      "drawn": 1,
+      "lost": 1,
+      "goalsFor": 9,
+      "goalsAgainst": 6,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [
+      {
+        "name": "Juan",
+        "rank": 7,
+        "goals": 5,
+        "assists": 1,
+        "appearances": 8,
+        "minutes": 497,
+        "profile": "https://www.futbolradar.com/futbolcu/san-juan",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "André Henrique",
+        "rank": 14,
+        "goals": 3,
+        "assists": 1,
+        "appearances": 8,
+        "minutes": 527,
+        "profile": "https://www.futbolradar.com/futbolcu/andre-henrique",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      }
+    ],
+    "topAssists": [
+      {
+        "name": "Janderson",
+        "rank": 8,
+        "goals": 0,
+        "assists": 2,
+        "appearances": 8,
+        "minutes": 392,
+        "profile": null,
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      }
+    ]
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 5,
+    "items": [
+      {
+        "id": "kocaelispor-goztepe-2026-10-18",
+        "date": "2026-10-18",
+        "kickoff": "2026-10-18T16:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Turka Araç Muayene Kocaeli Stadyumu",
+        "homeTeam": "Kocaelispor",
+        "awayTeam": "Göztepe",
+        "opponent": "Kocaelispor",
+        "score": {
+          "home": 1,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 1,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/kocaelispor-goztepe-2026-10-18.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584437",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "eyupspor-goztepe-2026-10-12",
+        "date": "2026-10-12",
+        "kickoff": "2026-10-12T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Esenyurt Necmi Kadioglu Stadi",
+        "homeTeam": "Eyüpspor",
+        "awayTeam": "Göztepe",
+        "opponent": "Eyüpspor",
+        "score": {
+          "home": 0,
+          "away": 4
+        },
+        "goalsFor": 4,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/eyupspor-goztepe-2026-10-12.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584423",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "goztepe-gaziantep-fk-2026-09-07",
+        "date": "2026-09-07",
+        "kickoff": "2026-09-07T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Gürsel Aksel Stadyumu",
+        "homeTeam": "Göztepe",
+        "awayTeam": "Gaziantep FK",
+        "opponent": "Gaziantep FK",
+        "score": {
+          "home": 2,
+          "away": 4
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 4,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/goztepe-gaziantep-fk-2026-09-07.html",
+        "sourceUrl": "https://www.tff.org/Default.aspx?macId=317815&pageID=29",
+        "sourceType": "resmi-ya-da-yayin"
+      },
+      {
+        "id": "goztepe-rudes-2026-07-26",
+        "date": "2026-07-26",
+        "kickoff": "2026-07-26T15:00:00+03:00",
+        "competition": "Hazırlık Maçı",
+        "venue": "İç saha",
+        "stadium": "Açıklanmadı",
+        "homeTeam": "Göztepe",
+        "awayTeam": "Rudeš",
+        "opponent": "Rudeš",
+        "score": {
+          "home": 1,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 1,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/goztepe-rudes-2026-07-26.html",
+        "sourceUrl": "https://www.sofascore.com/tr/football/match/nk-rudes-goztepe/elbsBeo",
+        "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:26.965Z",
+    "count": 24,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "L. Gugeshashvili",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 26,
+        "number": null,
+        "providerId": "24665",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "A. Özçimen",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 24,
+        "number": null,
+        "providerId": "50165",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Ş. Öztürk",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 20,
+        "number": null,
+        "providerId": "368122",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Allan Godói",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 32,
+        "number": null,
+        "providerId": "159466",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "T. Altıkardeş",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "301272",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "M. Bokele",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 25,
+        "number": null,
+        "providerId": "87633",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "N. Sonko-Sundberg",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "48091",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Ege Yildirim",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 18,
+        "number": null,
+        "providerId": "437786",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "R. Akonnor",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "401646",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "F. Anjorin",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 24,
+        "number": null,
+        "providerId": "138777",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "A. Antunes",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 25,
+        "number": null,
+        "providerId": "48607",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "O. Bayrak",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "134564",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "E. Bekiroğlu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 30,
+        "number": null,
+        "providerId": "26128",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Rhaldney",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 27,
+        "number": null,
+        "providerId": "54699",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "A. Kurtulan",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 23,
+        "number": null,
+        "providerId": "328155",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Alex Matos",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 21,
+        "number": null,
+        "providerId": "289618",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "N. Dismas",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 23,
+        "number": null,
+        "providerId": "303493",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Y. Sirin",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 18,
+        "number": null,
+        "providerId": "657670",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "André Henrique",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "237847",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "S. Armstrong",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 22,
+        "number": null,
+        "providerId": "199863",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "G. Bayrakdar",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "143705",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "T. Böke",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "197114",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Janderson",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "353394",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      },
+      {
+        "name": "Juan",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 23,
+        "number": null,
+        "providerId": "180916",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=994"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Stanimir Stoilov",
+      "appointedAt": null,
+      "note": "Sezonu başlattığı takımla tamamlayan beş teknik direktörden biri.",
+      "confidence": "confirmed",
+      "sourceName": "Anadolu Ajansı",
+      "sourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-18-takim-35-farkli-teknik-direktorle-calisti/3944402",
+      "publishedAt": "2026-05-21"
+    }
+  }
+}

@@ -1,0 +1,409 @@
+{
+  "schema": "futbolradar.kose-feed.v1",
+  "team": {
+    "slug": "erzurumspor",
+    "name": "Erzurumspor FK",
+    "season": "2026/27",
+    "teamPage": "https://www.futbolradar.com/takimlar/erzurumspor",
+    "pages": {
+      "kadro": "https://www.futbolradar.com/takimlar/erzurumspor/kadro.html",
+      "istatistikler": "https://www.futbolradar.com/takimlar/erzurumspor/istatistikler.html",
+      "mac-sonuclari": "https://www.futbolradar.com/takimlar/erzurumspor/mac-sonuclari.html",
+      "tarihce": "https://www.futbolradar.com/takimlar/erzurumspor/tarihce.html"
+    }
+  },
+  "dataDate": "2026-10-19",
+  "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
+  "form": {
+    "league": {
+      "status": "ok",
+      "last": [
+        "G",
+        "B",
+        "G",
+        "M",
+        "G"
+      ],
+      "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
+      "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+      "sourceName": "API-Football /standings"
+    },
+    "allCompetitions": {
+      "status": "ok",
+      "last": [
+        "G",
+        "M"
+      ],
+      "matches": [
+        {
+          "id": "erzurumspor-fk-eyupspor-2026-10-17",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584433"
+        },
+        {
+          "id": "besiktas-erzurumspor-fk-2026-09-11",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584405"
+        }
+      ]
+    }
+  },
+  "standings": {
+    "status": "ok",
+    "season": "2026/27",
+    "rank": 11,
+    "played": 8,
+    "won": 3,
+    "drawn": 2,
+    "lost": 3,
+    "goalsFor": 5,
+    "goalsAgainst": 11,
+    "goalDifference": -6,
+    "points": 11,
+    "syncedAt": "2026-10-18T20:35:26.370Z",
+    "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
+    "sourceName": "API-Football /standings"
+  },
+  "stats": {
+    "resultsSummary": {
+      "status": "ok",
+      "matches": 2,
+      "won": 1,
+      "drawn": 0,
+      "lost": 1,
+      "goalsFor": 2,
+      "goalsAgainst": 3,
+      "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
+    },
+    "topScorers": [
+      {
+        "name": "E. Tozlu",
+        "rank": 15,
+        "goals": 3,
+        "assists": 0,
+        "appearances": 8,
+        "minutes": 599,
+        "profile": "https://www.futbolradar.com/futbolcu/eren-tozlu",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      }
+    ],
+    "topAssists": []
+  },
+  "results": {
+    "status": "ok",
+    "excludedWithoutSource": 6,
+    "items": [
+      {
+        "id": "erzurumspor-fk-eyupspor-2026-10-17",
+        "date": "2026-10-17",
+        "kickoff": "2026-10-17T13:30:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Kazim Karabekir Stadyumu",
+        "homeTeam": "Erzurumspor FK",
+        "awayTeam": "Eyüpspor",
+        "opponent": "Eyüpspor",
+        "score": {
+          "home": 2,
+          "away": 0
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/erzurumspor-fk-eyupspor-2026-10-17.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584433",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "besiktas-erzurumspor-fk-2026-09-11",
+        "date": "2026-09-11",
+        "kickoff": "2026-09-11T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Tüpraş Stadyumu",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "Erzurumspor FK",
+        "opponent": "Beşiktaş",
+        "score": {
+          "home": 3,
+          "away": 0
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 3,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/besiktas-erzurumspor-fk-2026-09-11.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584405",
+        "sourceType": "api-football"
+      }
+    ]
+  },
+  "squad": {
+    "status": "ok",
+    "season": "2026",
+    "syncedAt": "2026-10-19T06:07:28.721Z",
+    "count": 26,
+    "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009",
+    "sourceName": "API-Football /players/squads",
+    "players": [
+      {
+        "name": "E. Anapa",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 27,
+        "number": null,
+        "providerId": "62232",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "M. Orbanić",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 25,
+        "number": null,
+        "providerId": "80125",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "E. Taşkıran",
+        "position": "Goalkeeper",
+        "positionTr": "Kaleci",
+        "age": 36,
+        "number": null,
+        "providerId": "49991",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "C. Bayrak",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 26,
+        "number": null,
+        "providerId": "147018",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "F. Ebosele",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "161638",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "A. Gerxhaliu",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 23,
+        "number": null,
+        "providerId": "382221",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "G. Giorbelidze",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 29,
+        "number": null,
+        "providerId": "24669",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "M. Igit",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "627072",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "Omer Kara",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "593991",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "Y. Kırtay",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 22,
+        "number": null,
+        "providerId": "353894",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "N. Mujakić",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 27,
+        "number": null,
+        "providerId": "76867",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "O. Ovacıklı",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 37,
+        "number": null,
+        "providerId": "50029",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "Taha Rençber",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 17,
+        "number": null,
+        "providerId": "498996",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "M. Yumlu",
+        "position": "Defender",
+        "positionTr": "Defans",
+        "age": 38,
+        "number": null,
+        "providerId": "2140",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "E. Acar",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 20,
+        "number": null,
+        "providerId": "339901",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "L. Agyekum",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 22,
+        "number": null,
+        "providerId": "352500",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "S. Akgün",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "50201",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "B. Baiye",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 25,
+        "number": null,
+        "providerId": "75",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "E. Owusu",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 28,
+        "number": null,
+        "providerId": "21010",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "M. Rodríguez",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
+        "age": 31,
+        "number": null,
+        "providerId": "35925",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "N. Axundzadə",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 21,
+        "number": null,
+        "providerId": "375811",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "Miguel Cardoso",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 32,
+        "number": null,
+        "providerId": "53659",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "I. Diabate",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 26,
+        "number": null,
+        "providerId": "182784",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "M. Fettahoğlu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 24,
+        "number": null,
+        "providerId": "162002",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "G. Kerk",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 30,
+        "number": null,
+        "providerId": "37188",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      },
+      {
+        "name": "E. Tozlu",
+        "position": "Attacker",
+        "positionTr": "Forvet",
+        "age": 35,
+        "number": null,
+        "providerId": "49925",
+        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=1009"
+      }
+    ]
+  },
+  "history": {
+    "founded": {
+      "status": "veri-bekleniyor"
+    },
+    "honours": {
+      "status": "veri-bekleniyor"
+    },
+    "stadium": {
+      "status": "veri-bekleniyor"
+    },
+    "colours": {
+      "status": "veri-bekleniyor"
+    },
+    "currentManager": {
+      "status": "ok",
+      "name": "Serkan Özbalta",
+      "appointedAt": null,
+      "note": "Takımı 1. Lig'den Süper Lig'e çıkaran isim; 22 Haziran 2026'da 2026-2027 sezonunu kapsayan bir yıllık yeni sözleşme imzalandı. İlk atama tarihi doğrulanmadığı için boş bırakıldı.",
+      "confidence": "confirmed",
+      "sourceName": "beIN Sports Türkiye",
+      "sourceUrl": "https://beinsports.com.tr/haber/erzurumspor-fk-serkan-ozbalta-ile-sozlesme-yeniledi",
+      "publishedAt": "2026-06-22"
+    }
+  }
+}
