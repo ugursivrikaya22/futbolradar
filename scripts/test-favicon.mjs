@@ -178,7 +178,7 @@ function pngSize(file) {
 // için burada da rasterlenmiş sürüm gösteriliyor.
 {
   const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
-  const logos = [...html.matchAll(/"logo":"([^"]+)"/g)].map((row) => row[1]);
+  const logos = [...html.matchAll(/"logo":\s*"([^"]+)"/g)].map((row) => row[1]);
   assert.ok(logos.length > 0, "index.html: Organization logosu yok");
   for (const logo of logos) {
     assert.ok(!logo.endsWith(".svg"), `Organization logosu SVG olmamalı: ${logo}`);

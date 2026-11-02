@@ -107,7 +107,7 @@ function page({ file, title, description, h1, kicker, intro, crumbs, schemaType 
   const canonical = `${SITE}/${file}`;
   const breadcrumb = [{ name: "Ana Sayfa", href: "./", url: `${SITE}/` }, ...crumbs, { name: h1, href: `./${file}`, url: canonical }];
   const graph = [
-    { "@type": schemaType, "@id": `${canonical}#page`, url: canonical, name: h1, headline: title, description, inLanguage: "tr-TR", dateModified, isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${SITE}/` }, publisher: { "@type": "Organization", name: "FutbolRadar", url: `${SITE}/`, logo: { "@type": "ImageObject", url: OG } } },
+    { "@type": schemaType, "@id": `${canonical}#page`, url: canonical, name: h1, headline: title, description, inLanguage: "tr-TR", dateModified, ...(schemaType === "Article" ? { datePublished: dateModified, author: { "@type": "Organization", name: "FutbolRadar", url: `${SITE}/` } } : {}), isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${SITE}/` }, publisher: { "@type": "Organization", name: "FutbolRadar", url: `${SITE}/`, logo: { "@type": "ImageObject", url: OG } } },
     { "@type": "BreadcrumbList", itemListElement: breadcrumb.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) },
     ...extraSchema
   ];

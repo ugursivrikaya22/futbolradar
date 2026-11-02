@@ -276,13 +276,21 @@ function sanitizeQuery(query) {
   }));
 }
 
+// Sorgu önce req.url'den WHATWG URL ile okunur. Vercel'in Node yardımcısındaki
+// `req.query` tembel getter'ı eski url.parse() çağırıyor ve her istekte DEP0169
+// uyarısı üretiyordu (runtime loglarında /api/matches, /api/teams). Getter
+// tetiklenmesin diye yalnızca düz veri özelliği olan req.query (testler,
+// yerel sunucu) yedek olarak kullanılır.
 function getQuery(req) {
-  if (req.query) {
-    return sanitizeQuery(req.query);
+  const own = Object.getOwnPropertyDescriptor(req || {}, "query");
+  const plainQuery = own && "value" in own && own.value && typeof own.value === "object" ? own.value : null;
+  if (typeof req?.url === "string") {
+    const url = new URL(req.url || "/", "http://localhost");
+    if (url.search || !plainQuery) {
+      return sanitizeQuery(Object.fromEntries(url.searchParams.entries()));
+    }
   }
-
-  const url = new URL(req.url || "/", "http://localhost");
-  return sanitizeQuery(Object.fromEntries(url.searchParams.entries()));
+  return sanitizeQuery(plainQuery || {});
 }
 
 function normalizeText(value) {

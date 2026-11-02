@@ -1,10 +1,196 @@
 {
-  "note": "Kulüp künyesi. Değerler aşağıdaki Wikipedia (EN) revizyonlarının bilgi kutusundan (infobox) elle aktarıldı; her kulübün kendi kaynağı var. Şampiyonluk sayıları bu dosyada tutulmaz, data/evergreen-history-sources.json sezon listesinden hesaplanır.",
-  "retrievedAt": "2026-11-02",
-  "clubs": {
-    "galatasaray": { "fullName": "Galatasaray Spor Kulübü", "founded": "1905-10-01", "stadium": "Rams Park", "capacity": 53387, "source": { "title": "Galatasaray S.K. (football)", "oldid": 1381328827 } },
-    "fenerbahce": { "fullName": "Fenerbahçe Spor Kulübü", "founded": "1907-05-03", "foundedNote": "Phener-Bagtche Association Football Club adıyla", "stadium": "Şükrü Saracoğlu Stadyumu", "capacity": 47911, "source": { "title": "Fenerbahçe S.K. (football)", "oldid": 1382784805 } },
-    "besiktas": { "fullName": "Beşiktaş Jimnastik Kulübü", "founded": "1903-03-03", "foundedNote": "Bereket Jimnastik Kulübü adıyla", "stadium": "Beşiktaş Stadyumu", "capacity": 42684, "source": { "title": "Beşiktaş J.K.", "oldid": 1383325035 } },
-    "trabzonspor": { "fullName": "Trabzonspor Kulübü", "founded": "1967-08-02", "stadium": "Papara Park (Şenol Güneş Spor Kompleksi)", "capacity": 41131, "source": { "title": "Trabzonspor", "oldid": 1381468553 } }
+ "note": "Kulüp künyesi. Değerler aşağıdaki Wikipedia (EN) revizyonlarının bilgi kutusundan (infobox) elle aktarıldı; her kulübün kendi kaynağı var. Şampiyonluk sayıları bu dosyada tutulmaz, data/evergreen-history-sources.json sezon listesinden hesaplanır. Stadyum adları Türkçeleştirildi; kapasite ve tarih değerleri bilgi kutusundakiyle aynıdır.",
+ "retrievedAt": "2026-11-02",
+ "clubs": {
+  "galatasaray": {
+   "fullName": "Galatasaray Spor Kulübü",
+   "founded": "1905-10-01",
+   "stadium": "Rams Park",
+   "capacity": 53387,
+   "source": {
+    "title": "Galatasaray S.K. (football)",
+    "oldid": 1381328827
+   }
+  },
+  "fenerbahce": {
+   "fullName": "Fenerbahçe Spor Kulübü",
+   "founded": "1907-05-03",
+   "foundedNote": "Phener-Bagtche Association Football Club adıyla",
+   "stadium": "Şükrü Saracoğlu Stadyumu",
+   "capacity": 47911,
+   "source": {
+    "title": "Fenerbahçe S.K. (football)",
+    "oldid": 1382784805
+   }
+  },
+  "besiktas": {
+   "fullName": "Beşiktaş Jimnastik Kulübü",
+   "founded": "1903-03-03",
+   "foundedNote": "Bereket Jimnastik Kulübü adıyla",
+   "stadium": "Beşiktaş Stadyumu",
+   "capacity": 42684,
+   "source": {
+    "title": "Beşiktaş J.K.",
+    "oldid": 1383325035
+   }
+  },
+  "trabzonspor": {
+   "fullName": "Trabzonspor Kulübü",
+   "founded": "1967-08-02",
+   "stadium": "Papara Park (Şenol Güneş Spor Kompleksi)",
+   "capacity": 41131,
+   "source": {
+    "title": "Trabzonspor",
+    "oldid": 1381468553
+   }
+  },
+  "samsunspor": {
+   "fullName": "Samsunspor Futbol Kulübü A.Ş.",
+   "founded": "1965-06-30",
+   "foundedNote": "19 Mayıs adıyla",
+   "stadium": "Samsun 19 Mayıs Stadyumu",
+   "capacity": 33919,
+   "source": {
+    "title": "Samsunspor",
+    "oldid": 1381221714
+   }
+  },
+  "basaksehir": {
+   "fullName": "İstanbul Başakşehir Futbol Kulübü",
+   "founded": "1990-06-15",
+   "foundedNote": "İstanbul Büyükşehir Belediyesi Spor Kulübü adıyla; 4 Haziran 2014'te İstanbul Başakşehir Futbol Kulübü adını aldı",
+   "stadium": "Başakşehir Fatih Terim Stadyumu",
+   "capacity": 17067,
+   "source": {
+    "title": "İstanbul Başakşehir F.K.",
+    "oldid": 1380558148
+   }
+  },
+  "konyaspor": {
+   "fullName": "Konyaspor Kulübü",
+   "founded": "1922-06-22",
+   "stadium": "Konya Büyükşehir Belediye Stadyumu",
+   "capacity": 41600,
+   "source": {
+    "title": "Konyaspor",
+    "oldid": 1383139139
+   }
+  },
+  "goztepe": {
+   "fullName": "Göztepe Spor Kulübü",
+   "founded": "1925-06-14",
+   "foundedNote": "Göztepe Gençlik Kulübü adıyla",
+   "stadium": "Gürsel Aksel Stadyumu",
+   "capacity": 23376,
+   "source": {
+    "title": "Göztepe S.K.",
+    "oldid": 1380042783
+   }
+  },
+  "alanyaspor": {
+   "fullName": "Alanyaspor Kulübü",
+   "founded": "1948",
+   "stadium": "Alanya Oba Stadyumu",
+   "capacity": 9789,
+   "source": {
+    "title": "Alanyaspor",
+    "oldid": 1380404687
+   }
+  },
+  "genclerbirligi": {
+   "fullName": "Gençlerbirliği Spor Kulübü",
+   "founded": "1923-03-14",
+   "stadium": "Eryaman Stadyumu",
+   "capacity": 20560,
+   "source": {
+    "title": "Gençlerbirliği S.K.",
+    "oldid": 1380965460
+   }
+  },
+  "kasimpasa": {
+   "fullName": "Kasımpaşa Sportif Faaliyetler A.Ş.",
+   "founded": "1921-01-15",
+   "foundedNote": "Kasımpaşa Gençlik Kulübü adıyla",
+   "stadium": "Recep Tayyip Erdoğan Stadyumu",
+   "capacity": 14234,
+   "source": {
+    "title": "Kasımpaşa S.K.",
+    "oldid": 1381052638
+   }
+  },
+  "rizespor": {
+   "fullName": "Çaykur Rize Spor Kulübü",
+   "founded": "1953-05-19",
+   "stadium": "Rize Şehir Stadyumu",
+   "capacity": 14879,
+   "source": {
+    "title": "Çaykur Rizespor",
+    "oldid": 1381175580
+   }
+  },
+  "erzurumspor": {
+   "fullName": "Erzurumspor Futbol Kulübü",
+   "founded": "1972",
+   "foundedNote": "Erzurum Büyükşehir Belediyespor adıyla yeniden yapılanma; sonraki yıllarda ad değişiklikleri oldu",
+   "stadium": "Kazım Karabekir Stadyumu",
+   "capacity": 21374,
+   "source": {
+    "title": "Erzurumspor F.K.",
+    "oldid": 1380669296
+   }
+  },
+  "gaziantep-fk": {
+   "fullName": "Gaziantep Futbol Kulübü A.Ş.",
+   "founded": "1988",
+   "foundedNote": "Sankospor adıyla; 1999'da Gaziantep Büyükşehir Belediyespor, 2017'de Gazişehir Gaziantep adlarını aldı",
+   "stadium": "Gaziantep Stadyumu",
+   "capacity": 30320,
+   "source": {
+    "title": "Gaziantep F.K.",
+    "oldid": 1380815793
+   }
+  },
+  "amed": {
+   "fullName": "Amed Sportif Faaliyetler Kulübü",
+   "founded": "1972",
+   "foundedNote": "bugünkü adını 2015'te aldı",
+   "stadium": "Diyarbakır Stadyumu",
+   "capacity": 33000,
+   "source": {
+    "title": "Amed S.F.K.",
+    "oldid": 1380498595
+   }
+  },
+  "eyupspor": {
+   "fullName": "Eyüpspor Kulübü",
+   "founded": "1919",
+   "stadium": "Esenyurt Necmi Kadıoğlu Stadyumu",
+   "capacity": 4274,
+   "source": {
+    "title": "Eyüpspor",
+    "oldid": 1380732488
+   }
+  },
+  "corum-fk": {
+   "fullName": "Çorum Futbol Kulübü A.Ş.",
+   "founded": "1997",
+   "foundedNote": "Çorum Belediyespor adıyla; 2018'de Yeni Çorumspor, 2019'da Çorum Futbol Kulübü adını aldı",
+   "stadium": "Çorum Şehir Stadyumu",
+   "capacity": 15000,
+   "source": {
+    "title": "Çorum F.K.",
+    "oldid": 1380598269
+   }
+  },
+  "kocaelispor": {
+   "fullName": "Kocaelispor Kulübü",
+   "founded": "1966-04-24",
+   "stadium": "Kocaeli Stadyumu",
+   "capacity": 34829,
+   "source": {
+    "title": "Kocaelispor",
+    "oldid": 1381059042
+   }
   }
+ }
 }
