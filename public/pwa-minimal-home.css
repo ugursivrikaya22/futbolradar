@@ -1,0 +1,60 @@
+/* PWA MİNİMAL ANA EKRAN (bkz. pwa-minimal-home.js). Varsayılan: gizli.
+   Yalnızca <html class="fr-app-minimal"> iken (uygulama kipi) görünür ve
+   ana sayfanın geri kalanını gizler; HTML'deki SEO içeriği yerinde kalır. */
+.pwa-home { display: none; }
+
+html.fr-app-minimal .pwa-home {
+  display: block;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 12px 0 24px;
+}
+html.fr-app-minimal body.home-page .home-main > :not(.pwa-home):not(link):not(script),
+html.fr-app-minimal body.home-page .live-scores-ticker,
+html.fr-app-minimal body.home-page .home-ticker,
+html.fr-app-minimal body.home-page .news-ticker,
+html.fr-app-minimal body.home-page .footer { display: none !important; }
+
+.pwa-home__summary { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 4px 0 12px; }
+.pwa-home__title { font-size: 1.05rem; font-weight: 700; margin: 0; }
+.pwa-home__count { font-size: .85rem; color: #4b5563; margin: 0; }
+
+.pwa-home__cards { display: grid; gap: 10px; }
+.pwa-card {
+  display: block; position: relative;
+  padding: 14px 16px; border-radius: 14px;
+  background: #fff; border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+  color: inherit; text-decoration: none;
+  min-height: 44px;
+}
+.pwa-card:active { transform: scale(.99); }
+.pwa-card:focus-visible { outline: 2px solid #0b8f5a; outline-offset: 2px; }
+.pwa-card__kicker { display: block; font-size: .7rem; letter-spacing: .04em; text-transform: uppercase; color: #0b8f5a; font-weight: 700; }
+.pwa-card__title { display: block; font-size: 1rem; margin-top: 4px; line-height: 1.3; }
+.pwa-card__meta { display: block; font-size: .8rem; color: #6b7280; margin-top: 2px; }
+.pwa-card__lines { list-style: none; padding: 0; margin: 8px 0 0; font-size: .8rem; color: #374151; display: grid; gap: 2px; }
+.pwa-card__cta { display: block; margin-top: 8px; font-size: .78rem; font-weight: 600; color: #0b8f5a; }
+
+.pwa-strip {
+  margin-top: 14px; border-top: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.pwa-strip::-webkit-scrollbar { display: none; }
+.pwa-strip__list { display: flex; gap: 4px; list-style: none; margin: 0; padding: 4px 0; white-space: nowrap; }
+.pwa-strip__item {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px 8px; min-height: 32px; border-radius: 8px;
+  font-size: .72rem; line-height: 1; color: #111827; text-decoration: none;
+  font-variant-numeric: tabular-nums;
+}
+.pwa-strip__item:hover, .pwa-strip__item:focus-visible { background: #f3f4f6; }
+.pwa-strip__code { color: #6b7280; font-weight: 600; }
+.pwa-strip__score { font-weight: 700; }
+.pwa-strip__min { color: #6b7280; }
+.pwa-strip__min.is-live { color: #dc2626; font-weight: 700; }
+.pwa-strip__empty { font-size: .75rem; color: #6b7280; margin: 6px 0; }
+.pwa-home__more { margin: 14px 0 0; text-align: center; font-size: .78rem; }
+.pwa-home__more a { color: #6b7280; }
+
+@media (prefers-reduced-motion: reduce) { .pwa-card:active { transform: none; } }
