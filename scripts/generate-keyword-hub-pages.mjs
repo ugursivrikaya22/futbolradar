@@ -22,6 +22,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
@@ -48,7 +49,8 @@ export const KEYWORD_PAGES = [
   { file: "super-lig-tarihcesi.html", keyword: "Süper Lig tarihçesi" },
   { file: "super-lig-kadrolari-2026-2027.html", keyword: "takım kadroları 2026-2027" },
   { file: "super-lig-gol-kralligi-tum-zamanlar.html", keyword: "gol krallığı tüm zamanlar" },
-  { file: "derbi-gecmisi.html", keyword: "derbi geçmişi" }
+  { file: "derbi-gecmisi.html", keyword: "derbi geçmişi" },
+  { file: "super-lig-bu-hafta.html", keyword: "Süper Lig bu hafta" }
 ];
 
 function esc(value) {
@@ -172,7 +174,8 @@ const HUB_LINKS = [
   ["./turkiye-kupasi-fikstur.html", "Türkiye Kupası fikstürü"],
   ["./galatasaray-son-dakika.html", "Galatasaray son dakika"],
   ["./fenerbahce-transfer.html", "Fenerbahçe transfer"],
-  ["./besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"]
+  ["./besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"],
+  ["./super-lig-bu-hafta.html", "Süper Lig bu hafta"]
 ];
 /**
  * Maç dosyası "adaları": iç link denetiminde (seo-ic-link-yetim-sayfalar.csv)
@@ -461,6 +464,65 @@ ${sourcesSection([wiki("gsfb"), wiki("fbbjk"), wiki("bjkgs"), SITE_DATA])}`
  * mac-takvimi.html → /mac-takvimi) link de doğrudan o adrese gider; böylece
  * kanonik olmayan .html varyantına link verilmez.
  */
+// ------------------------------------------------------- Süper Lig bu hafta
+/**
+ * MAÇ OLMAYAN GÜNLER İÇİN KALICI SAYFA. Derleme anında (GitHub Actions'a
+ * bağlı değil) TFF fikstüründen sıradaki haftayı, sitenin puan tablosundan
+ * (API-Football) iki takımın sırasını, maç arşivinden son 5 Süper Lig
+ * sonucunu ve arşivdeki son karşılaşmaları yazar. Tahmin, yorum ya da
+ * kaynaksız cümle yok; veri yoksa ilgili hücre "—".
+ */
+const leagueStandings = (() => { try { return read("league-standings.json")["super-lig"] || null; } catch { return null; } })();
+const { sameClub } = createRequire(import.meta.url)("../services/superLigTeams.js");
+const standingRow = (team) => (leagueStandings?.table || []).find((row) => row.team === team || row.name === team || sameClub(row.team || row.name, team)) || null;
+const teamFile = (name) => { const t = teams.find((x) => x.name === name) || teams.find((x) => sameClub(x.name, name)); return t && exists(`takimlar/${t.id}.html`) ? `./takimlar/${t.id}` : null; };
+const slMatches = (team) => teamMatches(team).filter((m) => m.league === "Süper Lig");
+const resultLetter = (m, team) => { const home = isTeam(m.homeTeam, team); const f = home ? m.score.home : m.score.away; const a = home ? m.score.away : m.score.home; return f > a ? "G" : f < a ? "M" : "B"; };
+function weeklyPage() {
+  const file = "super-lig-bu-hafta.html";
+  const now = new Date();
+  const rounds = fixtures.rounds || [];
+  const idx = rounds.findIndex((r) => r.matches.some((m) => m.kickoff && new Date(m.kickoff) > now));
+  const next = idx >= 0 ? rounds[idx] : null;
+  const prev = idx > 0 ? rounds[idx - 1] : (idx < 0 ? rounds.at(-1) : null);
+  const sources = new Map();
+  const addSrc = (url, name) => { if (url && !sources.has(url)) sources.set(url, { url, name }); };
+  const teamCell = (name) => { const href = teamFile(name); return href ? `<a href="${esc(href)}">${esc(name)}</a>` : esc(name); };
+  const rankText = (name) => { const r = standingRow(name); return r ? `${r.rank}. (${r.points} p)` : "—"; };
+  const form = (name) => { const list = slMatches(name).slice(0, 5); list.forEach((m) => (m.sourceUrls || []).slice(0, 1).forEach((u) => addSrc(u, `Maç kaydı: ${m.homeTeam} ${m.score.home}-${m.score.away} ${m.awayTeam} (${trDate(m.kickoff)})`))); return list.length ? list.map((m) => resultLetter(m, name)).join(" ") : "—"; };
+  const h2h = (home, away) => finishedArchive.filter((m) => (isTeam(m.homeTeam, home) && isTeam(m.awayTeam, away)) || (isTeam(m.homeTeam, away) && isTeam(m.awayTeam, home))).sort((a, b) => b.kickoff.localeCompare(a.kickoff)).slice(0, 3);
+  const nextMatches = next ? [...next.matches].sort((a, b) => String(a.kickoff).localeCompare(String(b.kickoff))) : [];
+  const cards = nextMatches.map((m) => {
+    const meetings = h2h(m.homeTeam, m.awayTeam);
+    meetings.forEach((x) => (x.sourceUrls || []).slice(0, 1).forEach((u) => addSrc(u, `Maç kaydı: ${x.homeTeam} ${x.score.home}-${x.score.away} ${x.awayTeam} (${trDate(x.kickoff)})`)));
+    return `<li><time datetime="${esc(m.kickoff || "")}">${esc(m.kickoff ? trDate(m.kickoff, true) : (m.dateLabel || "Tarih bekleniyor"))}</time><p><strong>${teamCell(m.homeTeam)} – ${teamCell(m.awayTeam)}</strong>${m.venue ? ` · ${esc(m.venue)}` : ""}</p>`
+      + `<p>Sıralama: ${esc(m.homeTeam)} ${esc(rankText(m.homeTeam))} · ${esc(m.awayTeam)} ${esc(rankText(m.awayTeam))}</p>`
+      + `<p>Son 5 Süper Lig maçı (yeniden eskiye): ${esc(m.homeTeam)} ${esc(form(m.homeTeam))} · ${esc(m.awayTeam)} ${esc(form(m.awayTeam))}</p>`
+      + (meetings.length ? `<p>Arşivdeki son karşılaşmalar: ${meetings.map((x) => `${esc(x.homeTeam)} ${x.score.home}-${x.score.away} ${esc(x.awayTeam)} (${esc(trDate(x.kickoff))}${x.league ? `, ${esc(x.league)}` : ""})`).join("; ")}</p>` : "")
+      + `</li>`;
+  });
+  const prevRows = prev ? prev.matches.map((m) => {
+    const played = finishedArchive.find((x) => isTeam(x.homeTeam, m.homeTeam) && isTeam(x.awayTeam, m.awayTeam) && m.kickoff && isoDay(x.kickoff) === isoDay(m.kickoff));
+    if (played) (played.sourceUrls || []).slice(0, 1).forEach((u) => addSrc(u, `Maç kaydı: ${played.homeTeam} ${played.score.home}-${played.score.away} ${played.awayTeam} (${trDate(played.kickoff)})`));
+    return `<tr><th scope="row">${teamCell(m.homeTeam)} – ${teamCell(m.awayTeam)}</th><td>${played ? `${played.score.home}-${played.score.away}` : "Skor arşivde yok"}</td><td>${esc(m.kickoff ? trDate(m.kickoff) : "—")}</td></tr>`;
+  }) : [];
+  const firstKick = nextMatches.find((m) => m.kickoff)?.kickoff;
+  const todayHasMatch = rounds.some((r) => r.matches.some((m) => m.kickoff && isoDay(m.kickoff) === today));
+  const standingsDate = leagueStandings?.updatedAt ? isoDay(leagueStandings.updatedAt) : null;
+  const fixturesDate = fixtures.freshness?.verifiedAt ? isoDay(fixtures.freshness.verifiedAt) : null;
+  const dateModified = maxDay(fixturesDate, standingsDate) > today ? today : maxDay(fixturesDate, standingsDate);
+  const title = next ? `Süper Lig Bu Hafta: ${next.label} (${next.dateRange}) Maçları ve Form | FutbolRadar` : "Süper Lig Bu Hafta | FutbolRadar";
+  const description = next ? `Süper Lig ${next.label} (${next.dateRange}): ${nextMatches.length} maçın tarihi, stadı, takımların sırası, son 5 maç formu ve arşivdeki son karşılaşmalar. Kaynaklı, tahminsiz.` : "Süper Lig haftalık maç rehberi.";
+  const content = `${!todayHasMatch && firstKick ? `<section class="evergreen-section"><h2>Bugün Süper Lig maçı yok</h2><p>Sıradaki Süper Lig maçı: <strong>${esc(trDate(firstKick, true))}</strong> (${esc(nextMatches[0].homeTeam)} – ${esc(nextMatches[0].awayTeam)}).</p></section>` : ""}
+<section class="evergreen-section" aria-labelledby="bu-hafta"><h2 id="bu-hafta">${esc(next ? `${next.label} maçları (${next.dateRange})` : "Sıradaki hafta")}</h2>${cards.length ? `<ol class="kw-list">${cards.join("")}</ol>` : "<p>Fikstürde sıradaki hafta bulunmuyor.</p>"}<p class="evergreen-source">Sıralama: puan tablosu verisi${standingsDate ? `, ${esc(trDate(`${standingsDate}T12:00:00+03:00`))} senkronu` : ""}. Form ve son karşılaşmalar yalnızca sitenin maç arşivindeki, kaynaklı ve bitmiş maçlardan hesaplanır; arşivde olmayan maçlar sayılmaz.</p></section>
+${prev ? `<section class="evergreen-section" aria-labelledby="gecen-hafta"><h2 id="gecen-hafta">${esc(prev.label)} sonuçları</h2>${table(["Maç", "Skor", "Tarih"], prevRows, `${prev.label} (${prev.dateRange})`)}</section>` : ""}
+${linkGrid("Maç günü dışında da", [["./super-lig-puan-durumu", "Süper Lig puan durumu"], ["./super-lig-fikstur.html", "Süper Lig fikstürü"], ["./tarihte-bugun.html", "Tarihte bugün"], ["./kose-yazilari.html", "Köşe yazıları"], ["./super-lig-transferleri-2026-2027.html", "Süper Lig transferleri"], ["./gol-kralligi.html", "Gol krallığı"]])}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([{ name: `TFF — Süper Lig Fikstürü ve Puan Cetveli (fikstür; ${fixtures.freshness?.source || "TFF"}${fixturesDate ? `, doğrulama ${trDate(`${fixturesDate}T12:00:00+03:00`)}` : ""})`, url: "https://www.tff.org/default.aspx?pageID=198" }, { name: "API-Football (sitenin puan tablosu verisi)", url: "https://www.api-football.com/" }, ...sources.values()])}`;
+  const events = nextMatches.filter((m) => m.kickoff).map((m) => ({ "@type": "SportsEvent", name: `${m.homeTeam} – ${m.awayTeam}`, startDate: m.kickoff, sport: "Football", ...(m.venue ? { location: { "@type": "Place", name: m.venue } } : {}), homeTeam: { "@type": "SportsTeam", name: m.homeTeam }, awayTeam: { "@type": "SportsTeam", name: m.awayTeam } }));
+  return { file, dateModified, html: page({ file, dateModified, title, description, h1: next ? `Süper Lig Bu Hafta: ${next.label}` : "Süper Lig Bu Hafta", kicker: "Haftalık rehber", intro: "Sıradaki Süper Lig haftasının maçları, takımların sırası ve son form durumu. Maç olmayan günlerde de güncel kalır: sayfa her derlemede fikstür ve arşivden yeniden üretilir.", crumbs: [{ name: "Süper Lig fikstürü", href: "./super-lig-fikstur.html", url: `${SITE}/super-lig-fikstur.html` }], extraSchema: events.length ? [{ "@type": "ItemList", name: next.label, itemListElement: events.map((e, i) => ({ "@type": "ListItem", position: i + 1, item: e })) }] : [], content }) };
+}
+
 function canonicalizeLinks(html) {
   return html.replace(/href="\.\/([^"#?]+\.html)"/g, (whole, file) => {
     try {
@@ -487,6 +549,6 @@ function writeAll(pages) {
   }
 }
 
-const pages = [galatasarayPage(), fenerbahceTransferPage(), besiktasPage(), cupPage(), historyPage(), squadsPage(), scorersPage(), derbyPage()];
+const pages = [galatasarayPage(), fenerbahceTransferPage(), besiktasPage(), cupPage(), historyPage(), squadsPage(), scorersPage(), derbyPage(), weeklyPage()];
 writeAll(pages);
 console.log(`Anahtar kelime sayfaları: ${pages.length} sayfa üretildi ve sitemap.xml'e eklendi.`);

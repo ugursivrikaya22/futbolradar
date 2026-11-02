@@ -238,7 +238,8 @@ const KEYWORD_HUB_LINKS = [
   ["turkiye-kupasi-fikstur.html", "Türkiye Kupası fikstürü"],
   ["galatasaray-son-dakika.html", "Galatasaray son dakika"],
   ["fenerbahce-transfer.html", "Fenerbahçe transfer"],
-  ["besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"]
+  ["besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"],
+  ["super-lig-bu-hafta.html", "Süper Lig bu hafta"]
 ];
 function keywordHubLinks(base = "./") {
   return KEYWORD_HUB_LINKS.filter(([file]) => fs.existsSync(path.join(root, file)))

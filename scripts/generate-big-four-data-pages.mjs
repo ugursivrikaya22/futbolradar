@@ -55,6 +55,11 @@ const leaders = readJson("data/league-leaders.json", {});
 const managers = readJson("data/managers.json", {});
 const archive = readJson("data/historical-match-archive.json", { records: [] });
 const matchesFile = readJson("data/matches.json", []);
+const clubHistory = readJson("data/club-history-sources.json", { clubs: {} });
+const leagueHistory = readJson("data/evergreen-history-sources.json", { champions: [], source: {} });
+const TR_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+const trDate = (iso) => { const [y, m, d] = String(iso).split("-").map(Number); return `${d} ${TR_MONTHS[m - 1]} ${y}`; };
+const wikiRev = (oldid) => `https://en.wikipedia.org/w/index.php?oldid=${oldid}`;
 const slugMap = new Map((readJson("data/player-url-slugs.json", {}).entries || []).map((e) => [e.id, e.slug]));
 // Lider kaydındaki kimlik (ör. v-muriqi-fenerbahce) kalıcı futbolcu adresine çevrilir; sayfa yoksa bağlantı verilmez.
 function playerProfile(id) {
@@ -171,10 +176,15 @@ function buildTeamData({ slug, name }) {
     : { status: "veri-bekleniyor" };
 
   const mgr = (managers.managers || []).find((m) => sameClub(m.team, name) && m.source?.url);
+  const club = clubHistory.clubs?.[slug];
+  const clubSrc = club ? { sourceName: `Wikipedia (EN) — ${club.source.title}, revizyon ${club.source.oldid}`, sourceUrl: wikiRev(club.source.oldid) } : null;
+  const champSeasons = (leagueHistory.champions || []).filter((row) => row.winner === name).map((row) => row.season);
+  const runnerUps = (leagueHistory.champions || []).filter((row) => row.runnerUp === name).length;
+  const champSrc = leagueHistory.source?.champions;
   const history = {
-    founded: { status: "veri-bekleniyor" },
-    honours: { status: "veri-bekleniyor" },
-    stadium: { status: "veri-bekleniyor" },
+    founded: club ? { status: "ok", date: club.founded, fullName: club.fullName, note: club.foundedNote || null, ...clubSrc } : { status: "veri-bekleniyor" },
+    honours: champSrc && leagueHistory.champions?.length ? { status: "ok", superLigTitles: champSeasons.length, seasons: champSeasons, runnerUps, coverage: `${leagueHistory.champions[0].season} ile ${leagueHistory.champions.at(-1).season} arası`, sourceName: `Wikipedia (EN) — ${champSrc.title}, revizyon ${champSrc.oldid}`, sourceUrl: wikiRev(champSrc.oldid) } : { status: "veri-bekleniyor" },
+    stadium: club ? { status: "ok", name: club.stadium, capacity: club.capacity, ...clubSrc } : { status: "veri-bekleniyor" },
     colours: { status: "veri-bekleniyor" },
     currentManager: mgr
       ? { status: "ok", name: mgr.manager, appointedAt: mgr.appointedAt || null, note: mgr.note || null, confidence: mgr.confidence || null, sourceName: mgr.source.name, sourceUrl: mgr.source.url, publishedAt: mgr.source.publishedAt || null }
@@ -201,7 +211,7 @@ function buildTeamData({ slug, name }) {
 
 // ---------- HTML ----------
 const pending = (label) => `<p class="evergreen-note" data-status="veri-bekleniyor"><strong>${esc(label)}:</strong> ${PENDING}</p>`;
-const src = (url, label = "Kaynak") => (url ? `<a href="${esc(url)}" rel="nofollow noopener" target="_blank">${esc(label)}</a>` : "");
+const src = (url, label = "Kaynak") => (url ? `<a href="${esc(url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(label)}</a>` : "");
 const table = (caption, heads, rows) => `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>${esc(caption)}</caption><thead><tr>${heads.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 const section = (id, title, body) => `<section class="evergreen-section" aria-labelledby="${id}"><h2 id="${id}">${esc(title)}</h2>${body}</section>`;
 
@@ -248,9 +258,24 @@ function historyContent(d) {
   const mgr = h.currentManager.status === "ok"
     ? `<p>Teknik direktör: <strong>${esc(h.currentManager.name)}</strong>${h.currentManager.appointedAt ? ` (göreve başlama: ${esc(h.currentManager.appointedAt)})` : ""}. ${esc(h.currentManager.note || "")}</p><p class="evergreen-source">Kaynak: ${src(h.currentManager.sourceUrl, h.currentManager.sourceName)}</p>`
     : pending("Teknik direktör");
-  return section("kurulus", "Kuruluş ve kulüp kimliği", pending("Kuruluş yılı, renkler"))
-    + section("kupalar", "Şampiyonluklar ve kupalar", pending("Kupa listesi"))
-    + section("stadyum", "Stadyum", pending("Stadyum bilgisi"))
+  const f = h.founded;
+  const founded = f.status === "ok"
+    ? `<p>${esc(f.fullName)}, <time datetime="${esc(f.date)}">${esc(trDate(f.date))}</time> tarihinde kuruldu${f.note ? ` (${esc(f.note)})` : ""}.</p><p class="evergreen-source">Kaynak: ${src(f.sourceUrl, f.sourceName)}</p>${pending("Kulüp renkleri")}`
+    : pending("Kuruluş yılı, renkler");
+  const o = h.honours;
+  const honours = o.status === "ok"
+    ? `<p>Türkiye şampiyonluğu listesine göre (${esc(o.coverage)} sezonlar) ${esc(d.name)} <strong>${o.superLigTitles}</strong> kez şampiyon, ${o.runnerUps} kez ikinci oldu.</p>${o.seasons.length ? `<p>Şampiyonluk sezonları: ${o.seasons.map(esc).join(", ")}.</p>` : ""}<p class="evergreen-source">Kaynak: ${src(o.sourceUrl, o.sourceName)}. Kulüplerin kendi resmî sayımları 1959 öncesini de kapsayabilir; burada yalnızca bu listenin sezonları sayıldı. Türkiye Kupası ve Avrupa kupaları bu listede yok; kaynaklı veri eklenince gösterilecek. Tüm sezonlar: <a href="../../super-lig-tarihcesi.html">Süper Lig tarihçesi</a>.</p>`
+    : pending("Kupa listesi");
+  const st = h.stadium;
+  const stadium = st.status === "ok"
+    ? `<p>İç saha: <strong>${esc(st.name)}</strong>, kapasite ${Number(st.capacity).toLocaleString("tr-TR")}.</p><p class="evergreen-source">Kaynak: ${src(st.sourceUrl, st.sourceName)}</p>`
+    : pending("Stadyum bilgisi");
+  const derby = ["galatasaray", "fenerbahce", "besiktas"].includes(d.slug) && exists("derbi-gecmisi.html")
+    ? section("derbiler", "Derbi geçmişi", `<p>İstanbul derbilerinin kaynaklı karşılaşma özetleri: <a href="../../derbi-gecmisi.html">Derbi geçmişi</a>.</p>`) : "";
+  return section("kurulus", "Kuruluş ve kulüp kimliği", founded)
+    + section("kupalar", "Şampiyonluklar", honours)
+    + section("stadyum", "Stadyum", stadium)
+    + derby
     + section("teknik", "Güncel teknik direktör", mgr);
 }
 
@@ -258,7 +283,7 @@ const META = {
   kadro: (d) => ({ title: `${d.name} Kadrosu ${d.season || ""} | Oyuncular ve Mevkiler | FutbolRadar`, description: `${d.name} güncel kadrosu: ${d.squad.count || ""} oyuncu, mevki ve yaş bilgisiyle. Her kayıt kaynak bağlantılı.`, h1: `${d.name} Kadrosu`, intro: `${d.name} için sağlayıcıdan senkronlanan güncel oyuncu listesi, mevkilere göre.`, body: kadroContent }),
   istatistikler: (d) => ({ title: `${d.name} İstatistikleri ${d.season || ""} | Puan, Gol, Form | FutbolRadar`, description: `${d.name} istatistikleri: Süper Lig sırası, galibiyet-beraberlik-mağlubiyet, atılan/yenilen gol, form ve gol-asist liderleri.`, h1: `${d.name} İstatistikleri`, intro: `${d.name} için kayıtlı lig istatistikleri, form ve oyuncu liderleri.`, body: statsContent }),
   "mac-sonuclari": (d) => ({ title: `${d.name} Maç Sonuçları ${d.season || ""} | Skorlar | FutbolRadar`, description: `${d.name} maç sonuçları: Süper Lig, Avrupa kupaları ve hazırlık maçlarının skorları, kaynak bağlantılarıyla.`, h1: `${d.name} Maç Sonuçları`, intro: `${d.name}'in arşivde kaynağıyla doğrulanmış maç skorları.`, body: resultsContent }),
-  tarihce: (d) => ({ title: `${d.name} Tarihçesi | Kulüp Bilgileri | FutbolRadar`, description: `${d.name} tarihçesi ve kulüp bilgileri. Doğrulanmış kaynak bulunan bilgiler gösterilir; diğer bölümler güncelleniyor.`, h1: `${d.name} Tarihçesi`, intro: `${d.name} kulüp bilgileri. Kaynağı depoda olmayan bilgiler uydurulmaz, "veri bekleniyor" olarak işaretlenir.`, body: historyContent })
+  tarihce: (d) => ({ title: `${d.name} Tarihçesi | Kulüp Bilgileri | FutbolRadar`, description: `${d.name} tarihçesi ve kulüp bilgileri. Doğrulanmış kaynak bulunan bilgiler gösterilir; diğer bölümler güncelleniyor.`, h1: `${d.name} Tarihçesi`, intro: `${d.name} kulüp künyesi: kuruluş, şampiyonluklar, stadyum ve teknik direktör. Her bilgi kaynağıyla verilir; kaynağı olmayan bölümler “veri bekleniyor” olarak işaretlenir.`, body: historyContent })
 };
 
 function pageHtml(d, key, dataDate) {
@@ -277,6 +302,7 @@ function pageHtml(d, key, dataDate) {
       about: { "@id": `${siteUrl}/takimlar/${d.slug}#team` } },
     { "@type": "SportsTeam", "@id": `${siteUrl}/takimlar/${d.slug}#team`, name: d.name, sport: "Football", url: `${siteUrl}/takimlar/${d.slug}`, memberOf: { "@type": "SportsOrganization", name: "Süper Lig" },
       ...(key === "kadro" && d.squad.status === "ok" ? { athlete: d.squad.players.map((p) => ({ "@type": "Person", name: p.name })) } : {}),
+      ...(d.history.founded.status === "ok" ? { foundingDate: d.history.founded.date } : {}),
       ...(d.history.currentManager.status === "ok" ? { coach: { "@type": "Person", name: d.history.currentManager.name } } : {}) },
     { "@type": "BreadcrumbList", itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: c.url })) }
   ];
