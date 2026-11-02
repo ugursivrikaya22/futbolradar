@@ -123,6 +123,15 @@ function buildSite(dir) {
   write("index.html", fs.readFileSync(path.join(repo, "index.html")));
   write("haberler.html", fs.readFileSync(path.join(repo, "haberler.html")));
   write("haber/ornek.html", sample("haber/x"));
+  // Küratörlü öğeler kendi haber sayfamıza bağlanabilir; sayfası olmayan öğe
+  // banda girmez (tickerFeed.newsPageExists). Gerçek üretimdeki gibi bağlanan
+  // sayfaları da kopyala ki geçici sitede bant boş kalmasın.
+  const curated = JSON.parse(fs.readFileSync(path.join(repo, "data", "news-ticker.json"), "utf8")).items || [];
+  for (const item of curated) {
+    const match = /^https:\/\/www\.futbolradar\.com\/haber\/([a-z0-9-]+)$/.exec(item?.source?.url || "");
+    const page = match && path.join(repo, "haber", `${match[1]}.html`);
+    if (page && fs.existsSync(page)) write(`haber/${match[1]}.html`, fs.readFileSync(page));
+  }
   write("karsilastirma/ornek.html", sample("karsilastirma/x"));
   write("en/index.html", fs.readFileSync(path.join(repo, "en", "index.html")));
 }
