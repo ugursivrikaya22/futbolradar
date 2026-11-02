@@ -66,6 +66,16 @@ let thin = 0;
 let indexable = 0;
 let targeted = 0;
 const conflicting = [];
+// Kalıcı maç arşivine 301 ile yönlenen raporlar (middleware.js) site haritası
+// kuralının dışında: adresleri artık arşiv sayfası, kopya değil.
+const archiveIndexPath = path.join(root, "data", "match-archive-index.json");
+const archiveRedirected = new Set();
+if (fs.existsSync(archiveIndexPath)) {
+  for (const rec of JSON.parse(fs.readFileSync(archiveIndexPath, "utf8")).records || []) {
+    if (rec.generated) for (const legacy of rec.legacy || []) archiveRedirected.add(legacy);
+  }
+}
+let redirectedToArchive = 0;
 
 for (const file of fs.readdirSync(dir)) {
   if (!file.endsWith(".html")) continue;
@@ -73,6 +83,7 @@ for (const file of fs.readdirSync(dir)) {
   const html = fs.readFileSync(path.join(dir, file), "utf8");
   const robots = (html.match(/<meta\s+name="robots"\s+content="([^"]+)"/i) || [])[1] || "";
 
+  if (archiveRedirected.has(relative.replace(/\.html$/, ""))) { redirectedToArchive += 1; continue; }
   const record = byFile.get(file);
   // Kaydı olmayan sayfanın kapsamı BİLİNMİYOR; bilinmeyen kapsam ince sayılır.
   const coverage = record && Number.isFinite(record.coveragePercent) ? record.coveragePercent : 0;

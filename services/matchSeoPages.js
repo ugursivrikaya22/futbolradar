@@ -462,6 +462,7 @@ module.exports = {
   slugify,
   trPagePath,
   trPageUrl,
+  teamSlugPart,
   trSlugFor,
   withMatchPages
 };
