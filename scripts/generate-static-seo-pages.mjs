@@ -501,6 +501,17 @@ function publishedEditorialPages() {
   }
 }
 
+function selfCanonicalIsExtensionless(file) {
+  if (!file.endsWith(".html") || file === "index.html") return false;
+  try {
+    const html = fs.readFileSync(path.join(root, file), "utf8");
+    const match = html.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']([^"']+)["']/i);
+    return Boolean(match) && match[1] === `${domain}/${file.replace(/\.html$/, "")}`;
+  } catch {
+    return false;
+  }
+}
+
 function sitemapXml(files) {
   const comparisonPages = generatedComparisonPages();
   const playerPages = generatedPlayerPages();
@@ -584,7 +595,10 @@ ${unique.map((file) => {
   // TEMİZ ADRES SİTE HARİTASINDA DA TEMİZ. `futbolcu/` altındaki sayfanın
   // kanonik hâli uzantısız; site haritasında `.html` listelemek, canonical
   // ile çelişen ikinci bir adres bildirmek olurdu.
-  const canonicalFile = file.startsWith("futbolcu/") ? file.replace(/\.html$/, "") : file;
+  // Aynı kural, sayfanın kendi canonical'ı uzantısız olan diğer dosyalar için
+  // de geçerli (ör. bugunun-maclari-hangi-kanalda.html → /bugunun-maclari-hangi-kanalda).
+  // Yalnızca canonical, dosyanın uzantısız hâliyle birebir eşleşiyorsa uygulanır.
+  const canonicalFile = file.startsWith("futbolcu/") || selfCanonicalIsExtensionless(file) ? file.replace(/\.html$/, "") : file;
   const loc = alternatesByFile.has(file) ? i18nUrl(file) : (file === "index.html" ? `${domain}/` : `${domain}/${canonicalFile}`);
   const priority = file === "index.html" ? "1.0"
     : LIVE_PAGES.has(file) ? "0.9"

@@ -198,7 +198,7 @@ function standingsPage() {
     intro: "Süper Lig takımlarının kayıtlı son puan durumu. Tablo, sağlayıcıdan doğrulanan lig verileriyle derleme sırasında oluşturulur.",
     breadcrumbs,
     schema: { "@type": "CollectionPage", "@id": `${siteUrl}/super-lig-puan-durumu#page`, url: `${siteUrl}/super-lig-puan-durumu`, name: "Süper Lig Puan Durumu", description: "Süper Lig 2026/27 puan durumu ve takım istatistikleri.", inLanguage: "tr-TR", dateModified: dataDate },
-    content: `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel lig tablosu</h2>${table(["Sıra", "Takım", "O", "G", "B", "M", "A", "Y", "Av.", "P"], rows, "Süper Lig 2026/27 puan durumu")}<p><a class="detail-link" href="./puan-durumu-simulator">Puan durumu simülatörü</a></p></section>${relatedLinks("Puan durumundan devam edin")}`
+    content: `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel lig tablosu</h2>${table(["Sıra", "Takım", "O", "G", "B", "M", "A", "Y", "Av.", "P"], rows, "Süper Lig 2026/27 puan durumu")}<p><a class="detail-link" href="./puan-durumu-simulator">Puan durumu simülatörü</a> · <a class="detail-link" href="./super-lig-fikstur.html">Süper Lig fikstürü</a> · <a class="detail-link" href="./gol-kralligi.html">Gol krallığı</a> · <a class="detail-link" href="./super-lig-oyuncu-radari.html">Süper Lig oyuncu radarı</a></p></section><section class="evergreen-section" aria-labelledby="standings-sources"><h2 id="standings-sources">Kaynaklar</h2><ul><li>Puan tablosu: API-Football lig verisi (sitenin /api/standings uç noktası), son senkron ${escapeHtml(dataDate)}.</li><li><a href="https://www.tff.org/default.aspx?pageID=198" rel="nofollow noopener noreferrer" target="_blank">TFF — Süper Lig Fikstürü ve Puan Cetveli</a> (resmî karşılaştırma için).</li></ul></section>${relatedLinks("Puan durumundan devam edin")}`
   });
 }
 
@@ -228,8 +228,25 @@ function formPage() {
   });
 }
 
+// 2 Kasım 2026 anahtar kelime/evergreen sayfaları (scripts/generate-keyword-hub-pages.mjs).
+// Yalnızca diskte varsa bağlanır; böylece kırık link denetimi her koşulda geçer.
+const KEYWORD_HUB_LINKS = [
+  ["super-lig-tarihcesi.html", "Süper Lig tarihçesi"],
+  ["super-lig-gol-kralligi-tum-zamanlar.html", "Tüm zamanların gol krallığı"],
+  ["derbi-gecmisi.html", "Derbi geçmişi"],
+  ["super-lig-kadrolari-2026-2027.html", "Takım kadroları 2026-27"],
+  ["turkiye-kupasi-fikstur.html", "Türkiye Kupası fikstürü"],
+  ["galatasaray-son-dakika.html", "Galatasaray son dakika"],
+  ["fenerbahce-transfer.html", "Fenerbahçe transfer"],
+  ["besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"]
+];
+function keywordHubLinks(base = "./") {
+  return KEYWORD_HUB_LINKS.filter(([file]) => fs.existsSync(path.join(root, file)))
+    .map(([file, label]) => `<a href="${base}${file}">${escapeHtml(label)}</a>`).join("");
+}
+
 function relatedLinks(title, base = "./") {
-  return `<aside class="evergreen-related" aria-labelledby="related-heading"><h2 id="related-heading">${escapeHtml(title)}</h2><div class="evergreen-link-grid"><a href="${base}bugunun-maclari">Bugünün maçları</a><a href="${base}super-lig-puan-durumu">Süper Lig puan durumu</a><a href="${base}form-tablosu/super-lig">Süper Lig form tablosu</a><a href="${base}takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="${base}oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a></div></aside>`;
+  return `<aside class="evergreen-related" aria-labelledby="related-heading"><h2 id="related-heading">${escapeHtml(title)}</h2><div class="evergreen-link-grid"><a href="${base}bugunun-maclari">Bugünün maçları</a><a href="${base}super-lig-puan-durumu">Süper Lig puan durumu</a><a href="${base}form-tablosu/super-lig">Süper Lig form tablosu</a><a href="${base}takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="${base}oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a>${keywordHubLinks(base)}</div></aside>`;
 }
 
 function teamVenueAnswer(name) {
@@ -350,7 +367,7 @@ function patchHomePage(file) {
   const block = `<!-- evergreen-seo-links:start -->
         <section class="container section evergreen-home-links" aria-labelledby="evergreen-home-title">
           <div class="section-head"><div class="section-title"><span class="section-kicker">Futbol Rehberi</span><h2 id="evergreen-home-title">Puan, form, takım ve karşılaştırma sayfaları</h2><p>Bugünün programından takım profillerine uzanan kalıcı FutbolRadar rehberleri.</p></div></div>
-          <nav class="evergreen-link-grid" aria-label="Futbol rehberleri"><a href="./bugunun-maclari">Bugünün maçları</a><a href="./super-lig-puan-durumu">Süper Lig puan durumu</a><a href="./form-tablosu/super-lig">Süper Lig form tablosu</a>${featuredTeams.map((team) => `<a href="./takimlar/${team.slug}">${escapeHtml(team.name)}</a>`).join("")}<a href="./takimlar">Tüm takımlar</a><a href="./takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="./oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a></nav>
+          <nav class="evergreen-link-grid" aria-label="Futbol rehberleri"><a href="./bugunun-maclari">Bugünün maçları</a><a href="./super-lig-puan-durumu">Süper Lig puan durumu</a><a href="./form-tablosu/super-lig">Süper Lig form tablosu</a>${featuredTeams.map((team) => `<a href="./takimlar/${team.slug}">${escapeHtml(team.name)}</a>`).join("")}<a href="./takimlar">Tüm takımlar</a><a href="./takim-karsilastirmalari">Takım karşılaştırmaları</a><a href="./oyuncu-karsilastirmalari">Oyuncu karşılaştırmaları</a>${keywordHubLinks("./")}</nav>
         </section>
         <!-- evergreen-seo-links:end -->`;
   const pattern = /\s*<!-- evergreen-seo-links:start -->[\s\S]*?<!-- evergreen-seo-links:end -->/;

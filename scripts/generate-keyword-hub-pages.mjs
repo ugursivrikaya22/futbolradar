@@ -1,0 +1,492 @@
+/**
+ * ANAHTAR KELİME + EVERGREEN SAYFALARI (2 Kasım 2026).
+ *
+ * Ugur'un seçtiği hedef sorgular için kalıcı, mobil öncelikli sayfalar:
+ *   galatasaray-son-dakika.html            ← "Galatasaray son dakika"
+ *   fenerbahce-transfer.html               ← "Fenerbahçe transfer"
+ *   besiktas-mac-ozetleri.html             ← "Beşiktaş maç özeti"
+ *   turkiye-kupasi-fikstur.html            ← "Türkiye Kupası fikstür"
+ *   super-lig-tarihcesi.html               ← "Süper Lig tarihçesi / şampiyonlar"
+ *   super-lig-kadrolari-2026-2027.html     ← "takım kadroları 2026-2027"
+ *   super-lig-gol-kralligi-tum-zamanlar.html ← "gol krallığı tüm zamanlar"
+ *   derbi-gecmisi.html                     ← "derbi geçmişi"
+ *
+ * UYDURMA YOK KURALI: her sayfa ya sitenin kendi kayıtlı verisinden
+ * (data/news.json, data/transfers.json, data/historical-match-archive.json,
+ * data/super-lig-squads.json — API-Football) ya da kaynağı ve revizyonu
+ * kayıtlı bir dış belgeden (data/evergreen-history-sources.json — Wikipedia
+ * revizyonları; data/turkiye-kupasi-tff.json — tff.org) üretilir ve görünür
+ * bir "Kaynaklar" bölümü taşır. Veri yoksa ilgili bölüm boş geçilir, metin
+ * uydurulmaz.
+ */
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { siteFooter, siteHeader } from "./lib/layout.mjs";
+import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
+import { ROBOTS_INDEX } from "./lib/robots.mjs";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const SITE = "https://www.futbolradar.com";
+const OG = `${SITE}/assets/og-image.png`;
+const read = (file) => JSON.parse(fs.readFileSync(path.join(root, "data", file), "utf8"));
+
+const news = read("news.json");
+const transfers = read("transfers.json");
+const archive = read("historical-match-archive.json").records.map((record) => record.match);
+const squads = read("super-lig-squads.json");
+const teams = read("teams.json");
+const history = read("evergreen-history-sources.json");
+const cup = read("turkiye-kupasi-tff.json");
+const fixtures = read("super-lig-fixtures.json");
+
+export const KEYWORD_PAGES = [
+  { file: "galatasaray-son-dakika.html", keyword: "Galatasaray son dakika" },
+  { file: "fenerbahce-transfer.html", keyword: "Fenerbahçe transfer" },
+  { file: "besiktas-mac-ozetleri.html", keyword: "Beşiktaş maç özeti" },
+  { file: "turkiye-kupasi-fikstur.html", keyword: "Türkiye Kupası fikstür" },
+  { file: "super-lig-tarihcesi.html", keyword: "Süper Lig tarihçesi" },
+  { file: "super-lig-kadrolari-2026-2027.html", keyword: "takım kadroları 2026-2027" },
+  { file: "super-lig-gol-kralligi-tum-zamanlar.html", keyword: "gol krallığı tüm zamanlar" },
+  { file: "derbi-gecmisi.html", keyword: "derbi geçmişi" }
+];
+
+function esc(value) {
+  return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+}
+const exists = (rel) => fs.existsSync(path.join(root, rel.replace(/^\.\//, "").replace(/[?#].*$/, "")));
+const TR_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+function trDate(iso, withTime = false) {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const parts = new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(date);
+  const get = (type) => parts.find((part) => part.type === type)?.value;
+  const text = `${Number(get("day"))} ${TR_MONTHS[Number(get("month")) - 1]} ${get("year")}`;
+  return withTime ? `${text}, ${get("hour")}:${get("minute")} TSİ` : text;
+}
+const isoDay = (iso) => {
+  const date = new Date(iso);
+  return Number.isNaN(date.getTime()) ? null : new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Istanbul" }).format(date);
+};
+const today = isoDay(new Date().toISOString());
+const maxDay = (...days) => days.filter(Boolean).sort().at(-1) || today;
+
+/** İç bağlantı yalnızca hedef dosya diskte varsa çizilir (kırık link olmaz). */
+function link(href, text) {
+  const file = href.replace(/^\.\//, "").replace(/[?#].*$/, "");
+  const candidates = [file, `${file}.html`];
+  if (!candidates.some((candidate) => exists(candidate))) return "";
+  return `<a href="${esc(href)}">${esc(text)}</a>`;
+}
+function linkGrid(title, items) {
+  const html = items.map(([href, text]) => link(href, text)).filter(Boolean);
+  if (!html.length) return "";
+  return `<aside class="evergreen-related" aria-labelledby="rel-${esc(title.length)}"><h2 id="rel-${esc(title.length)}">${esc(title)}</h2><div class="evergreen-link-grid">${html.join("")}</div></aside>`;
+}
+function table(headers, rows, caption) {
+  return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>${esc(caption)}</caption><thead><tr>${headers.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
+}
+function sourcesSection(sources) {
+  const unique = [];
+  const seen = new Set();
+  for (const source of sources) {
+    if (!source || !source.url || seen.has(source.url)) continue;
+    seen.add(source.url);
+    unique.push(source);
+  }
+  return `<section class="evergreen-section" aria-labelledby="kaynaklar"><h2 id="kaynaklar">Kaynaklar</h2><ul class="evergreen-sources">${unique
+    .map((source) => `<li>${source.url.startsWith(SITE) || source.url.startsWith("/") ? `<a href="${esc(source.url)}">${esc(source.name)}</a>` : `<a href="${esc(source.url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(source.name)}</a>`}${source.note ? ` — ${esc(source.note)}` : ""}</li>`)
+    .join("")}</ul></section>`;
+}
+const wiki = (key) => ({ name: `Wikipedia (EN) — ${history.source[key].title}, revizyon ${history.source[key].oldid} (erişim ${trDate(history.retrievedAt)})`, url: `https://en.wikipedia.org/w/index.php?oldid=${history.source[key].oldid}` });
+const SITE_DATA = { name: "FutbolRadar maç verisi (API-Football kaynaklı, sitenin /api/matches ve maç arşivi)", url: `${SITE}/mac-sonuclari.html` };
+
+function page({ file, title, description, h1, kicker, intro, crumbs, schemaType = "CollectionPage", extraSchema = [], content, dateModified }) {
+  const canonical = `${SITE}/${file}`;
+  const breadcrumb = [{ name: "Ana Sayfa", href: "./", url: `${SITE}/` }, ...crumbs, { name: h1, href: `./${file}`, url: canonical }];
+  const graph = [
+    { "@type": schemaType, "@id": `${canonical}#page`, url: canonical, name: h1, headline: title, description, inLanguage: "tr-TR", dateModified, isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${SITE}/` }, publisher: { "@type": "Organization", name: "FutbolRadar", url: `${SITE}/`, logo: { "@type": "ImageObject", url: OG } } },
+    { "@type": "BreadcrumbList", itemListElement: breadcrumb.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.url })) },
+    ...extraSchema
+  ];
+  const crumbHtml = `<nav class="evergreen-breadcrumb" aria-label="İçerik yolu">${breadcrumb.map((item, index) => index === breadcrumb.length - 1 ? `<span aria-current="page">${esc(item.name)}</span>` : `<a href="${esc(item.href)}">${esc(item.name)}</a><span aria-hidden="true">/</span>`).join("")}</nav>`;
+  return `<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${esc(title)}</title>
+    <meta name="description" content="${esc(description)}" />
+    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <link rel="canonical" href="${canonical}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="${esc(title)}" />
+    <meta property="og:description" content="${esc(description)}" />
+    <meta property="og:url" content="${canonical}" />
+    <meta property="og:image" content="${OG}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(title)}" />
+    <meta name="twitter:description" content="${esc(description)}" />
+    <meta name="twitter:image" content="${OG}" />
+    <meta name="theme-color" content="#0b1520" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="stylesheet" href="./page.css" />
+    <style>.kw-badge{display:inline-block;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700}.kw-official{background:#0b8f5a;color:#fff}.kw-rumour{background:#b26a00;color:#fff}.kw-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}.kw-list li{border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:12px}.kw-list time{font-size:12px;opacity:.75;display:block}.evergreen-sources{padding-left:18px;font-size:14px;line-height:1.55;word-break:break-word}.kw-squad{display:grid;gap:12px}@media(min-width:760px){.kw-squad{grid-template-columns:repeat(2,minmax(0,1fr))}}</style>
+    <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replaceAll("<", "\\u003c")}</script>
+  </head>
+  <body>
+    <div class="site-shell">
+      ${siteHeader({ base: "./" })}
+      <main class="evergreen-page">
+        <div class="container">
+          ${crumbHtml}
+          <header class="evergreen-hero">
+            <span class="section-kicker">${esc(kicker)}</span>
+            <h1>${esc(h1)}</h1>
+            <p>${esc(intro)}</p>
+            <p class="evergreen-freshness"><time datetime="${dateModified}">Son güncelleme: ${trDate(`${dateModified}T12:00:00+03:00`)}</time> · Yalnızca kaynağı gösterilen bilgiler yer alır.</p>
+          </header>
+          ${content}
+        </div>
+      </main>
+      ${siteFooter({ base: "./" })}
+    </div>
+    <script src="./site.js" defer></script>
+  </body>
+</html>
+`;
+}
+
+const HUB_LINKS = [
+  ["./super-lig-puan-durumu", "Süper Lig puan durumu"],
+  ["./super-lig-fikstur.html", "Süper Lig fikstürü"],
+  ["./gol-kralligi.html", "Gol krallığı (bu sezon)"],
+  ["./super-lig-tarihcesi.html", "Süper Lig tarihçesi"],
+  ["./derbi-gecmisi.html", "Derbi geçmişi"],
+  ["./super-lig-kadrolari-2026-2027.html", "Takım kadroları 2026-27"],
+  ["./super-lig-gol-kralligi-tum-zamanlar.html", "Tüm zamanların gol krallığı"],
+  ["./turkiye-kupasi-fikstur.html", "Türkiye Kupası fikstürü"],
+  ["./galatasaray-son-dakika.html", "Galatasaray son dakika"],
+  ["./fenerbahce-transfer.html", "Fenerbahçe transfer"],
+  ["./besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"]
+];
+/**
+ * Maç dosyası "adaları": iç link denetiminde (seo-ic-link-yetim-sayfalar.csv)
+ * ana sayfadan ulaşılamayan küme. Her kümenin KÖK dosyasına (başka bir
+ * dosyanın öneki olan en kısa ad) takım sayfasından bağlanınca alt sayfalar
+ * da ulaşılabilir olur.
+ */
+function matchDossierRoots(slug) {
+  const dir = path.join(root, "mac-dosyasi");
+  if (!fs.existsSync(dir)) return [];
+  const files = fs.readdirSync(dir).filter((name) => name.endsWith(".html") && name.includes(slug)).map((name) => name.replace(/\.html$/, ""));
+  return files.filter((name) => !files.some((other) => other !== name && name.startsWith(`${other}-`))).sort()
+    .map((name) => [`./mac-dosyasi/${name}.html`, `Maç dosyası: ${name.replace(/-mac-(dosyasi|analizi)$/, "").split("-").map((w) => w.charAt(0).toLocaleUpperCase("tr") + w.slice(1)).join(" ")}`]);
+}
+// Maç takvimi ve aylık arşivleri (iç link denetiminde gelen linki zayıf sayfalar).
+const CALENDAR_LINKS = [["./mac-takvimi.html", "Maç takvimi"],
+  ...(fs.existsSync(path.join(root, "mac-takvimi")) ? fs.readdirSync(path.join(root, "mac-takvimi")).filter((n) => /^\d{4}-\d{2}\.html$/.test(n)).sort()
+    .map((n) => [`./mac-takvimi/${n}`, `Maç takvimi ${n.slice(5, 7)}/${n.slice(0, 4)}`]) : [])];
+const hubLinksExcept = (file) => [...HUB_LINKS.filter(([href]) => !href.endsWith(file)), ...CALENDAR_LINKS];
+
+function matchRowLink(match) {
+  const report = match.reportPage && exists(match.reportPage) ? `./${match.reportPage}` : null;
+  return report ? `<a href="${esc(report)}">Maç raporu</a>` : "—";
+}
+const finishedArchive = archive.filter((m) => m && m.status === "FINISHED" && m.score && Number.isFinite(m.score.home) && Number.isFinite(m.score.away));
+const isTeam = (name, team) => String(name || "").replace(/\s+U\d+$/, "") === team && !/\bU\d+\b/.test(name);
+const teamMatches = (team) => finishedArchive.filter((m) => isTeam(m.homeTeam, team) || isTeam(m.awayTeam, team)).sort((a, b) => b.kickoff.localeCompare(a.kickoff));
+const upcomingFixtures = (team) => fixtures.rounds.flatMap((round) => round.matches.map((m) => ({ ...m, round: round.round })))
+  .filter((m) => (m.homeTeam === team || m.awayTeam === team) && m.kickoff && new Date(m.kickoff) > new Date())
+  .sort((a, b) => a.kickoff.localeCompare(b.kickoff));
+
+// ---------------------------------------------------------------- Galatasaray
+function galatasarayPage() {
+  const file = "galatasaray-son-dakika.html";
+  const items = news.filter((n) => n.status === "verified" && (n.team === "Galatasaray" || n.category === "Galatasaray") && exists(`haber/${n.slug}.html`))
+    .sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt))).slice(0, 20);
+  const next = upcomingFixtures("Galatasaray").slice(0, 3);
+  const last = teamMatches("Galatasaray").slice(0, 5);
+  const list = items.length
+    ? `<ul class="kw-list">${items.map((n) => `<li><time datetime="${esc(n.publishedAt)}">${esc(trDate(n.publishedAt, true))}</time><a href="./haber/${esc(n.slug)}.html"><strong>${esc(n.title)}</strong></a>${n.summary ? `<p>${esc(n.summary)}</p>` : ""}</li>`).join("")}</ul>`
+    : "<p>Arşivimizde şu an doğrulanmış Galatasaray haberi yok.</p>";
+  const nextRows = next.map((m) => `<tr><td>${esc(trDate(m.kickoff, true))}</td><td>${esc(m.round)}. hafta</td><th scope="row">${esc(m.homeTeam)} - ${esc(m.awayTeam)}</th><td>${esc(m.venue || "—")}</td></tr>`);
+  const lastRows = last.map((m) => `<tr><td>${esc(trDate(m.kickoff))}</td><td>${esc(m.competition)}</td><th scope="row">${esc(m.homeTeam)} ${m.score.home}-${m.score.away} ${esc(m.awayTeam)}</th><td>${matchRowLink(m)}</td></tr>`);
+  const sources = items.flatMap((n) => (n.sources || []).slice(0, 2));
+  const dateModified = maxDay(...items.map((n) => isoDay(n.publishedAt)), ...last.map((m) => isoDay(m.kickoff)));
+  return {
+    file, dateModified,
+    html: page({
+      file, dateModified,
+      title: "Galatasaray Son Dakika: Haberler, Fikstür ve Sonuçlar | FutbolRadar",
+      description: "Galatasaray son dakika gelişmeleri: FutbolRadar'da yayımlanan doğrulanmış Galatasaray haberleri, sıradaki Süper Lig maçları ve son sonuçlar tek sayfada.",
+      h1: "Galatasaray Son Dakika", kicker: "Takım merkezi",
+      intro: "Bu sayfa FutbolRadar'da yayımlanmış ve kaynakları haber sayfasında listelenmiş Galatasaray haberlerini, TFF fikstürüne göre sıradaki maçları ve maç arşivimizdeki son sonuçları bir araya getirir. Burada yeni haber yazılmaz.",
+      crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Galatasaray", href: "./takimlar/galatasaray", url: `${SITE}/takimlar/galatasaray` }],
+      content: `<section class="evergreen-section" aria-labelledby="gs-news"><h2 id="gs-news">Son Galatasaray haberleri</h2>${list}<p>${link("./haberler.html", "Tüm haberler")}</p></section>
+<section class="evergreen-section" aria-labelledby="gs-next"><h2 id="gs-next">Sıradaki maçlar</h2>${nextRows.length ? table(["Tarih", "Hafta", "Maç", "Stat"], nextRows, "Galatasaray sıradaki Süper Lig maçları") : "<p>Kayıtlı yaklaşan maç yok.</p>"}<p>${link("./galatasaray-maclari.html", "Galatasaray'ın tüm maçları")}</p></section>
+<section class="evergreen-section" aria-labelledby="gs-last"><h2 id="gs-last">Son sonuçlar</h2>${lastRows.length ? table(["Tarih", "Turnuva", "Skor", "Rapor"], lastRows, "Galatasaray son maç sonuçları") : "<p>Arşivde sonuç yok.</p>"}</section>
+${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./galatasaray-maclari.html", "Galatasaray maçları"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./galatasaray-form-durumu.html", "Galatasaray form durumu"], ["./galatasaray-oyuncu-radari.html", "Galatasaray oyuncu radarı"], ["./karsilastirma/takimlar/galatasaray-vs-fenerbahce", "Galatasaray - Fenerbahçe karşılaştırması"]])}
+${linkGrid("Galatasaray maç dosyaları", matchDossierRoots("galatasaray"))}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([{ name: "FutbolRadar haber arşivi (her haberin kaynakları kendi sayfasında)", url: `${SITE}/haberler.html` }, { name: "TFF — Süper Lig 2026-27 fikstürü (sitenin data/super-lig-fixtures.json kaydı)", url: "https://www.tff.org/default.aspx?pageID=198" }, SITE_DATA, ...sources])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Fenerbahçe
+function fenerbahceTransferPage() {
+  const file = "fenerbahce-transfer.html";
+  const fb = transfers.filter((t) => t.toTeam === "Fenerbahçe" || t.fromTeam === "Fenerbahçe").sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  const row = (t) => `<tr><td>${esc(trDate(`${t.date}T12:00:00+03:00`))}</td><th scope="row">${esc(t.playerName)}</th><td>${esc(t.toTeam === "Fenerbahçe" ? t.fromTeam : t.toTeam)}</td><td>${esc(t.type || "—")}</td><td><span class="kw-badge kw-official">Resmî</span></td><td><a href="${esc(t.sourceUrl)}" rel="nofollow noopener noreferrer" target="_blank">${esc(t.sourceName)}</a></td></tr>`;
+  const ins = fb.filter((t) => t.toTeam === "Fenerbahçe");
+  const outs = fb.filter((t) => t.fromTeam === "Fenerbahçe");
+  const TRANSFER_RE = /transfer|imza|teklif|kiral|bonservis|ilgileniyor|ilgilendi|görüşme|sözleşme/i;
+  const rumours = news.filter((n) => n.status === "verified" && /Fenerbah/.test(`${n.team} ${n.category} ${n.title}`) && TRANSFER_RE.test(`${n.title} ${n.summary}`) && exists(`haber/${n.slug}.html`))
+    .sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt))).slice(0, 12);
+  const rumourHtml = rumours.length
+    ? `<ul class="kw-list">${rumours.map((n) => `<li><span class="kw-badge kw-rumour">Gündem / iddia</span><time datetime="${esc(n.publishedAt)}">${esc(trDate(n.publishedAt, true))}</time><a href="./haber/${esc(n.slug)}.html"><strong>${esc(n.title)}</strong></a></li>`).join("")}</ul>`
+    : "<p>Haber arşivimizde şu an Fenerbahçe ile ilgili kaynaklı bir transfer iddiası yok. İddia çıktığında burada, resmî transferlerden ayrı ve “Gündem / iddia” etiketiyle listelenir.</p>";
+  const dateModified = maxDay(...fb.map((t) => String(t.lastVerifiedAt || t.date).slice(0, 10)), ...rumours.map((n) => isoDay(n.publishedAt)));
+  const headers = ["Tarih", "Oyuncu", "Kulüp", "Tür", "Durum", "Kaynak"];
+  return {
+    file, dateModified,
+    html: page({
+      file, dateModified,
+      title: "Fenerbahçe Transfer 2026-27: Resmî Gelenler, Gidenler ve İddialar | FutbolRadar",
+      description: "Fenerbahçe transfer listesi: kaynağıyla doğrulanmış resmî gelen ve giden oyuncular, iddialar ise ayrı ve açıkça etiketli. 2026-27 sezonu Fenerbahçe transferleri.",
+      h1: "Fenerbahçe Transfer", kicker: "2026-27 transfer dönemi",
+      intro: "Resmî transferler yalnızca kulüp, KAP ya da güvenilir haber ajansı kaynağıyla doğrulandıysa “Resmî” olarak gösterilir. Henüz resmîleşmemiş haberler ayrı bir bölümde “Gündem / iddia” etiketiyle durur.",
+      crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Fenerbahçe", href: "./takimlar/fenerbahce", url: `${SITE}/takimlar/fenerbahce` }],
+      content: `<section class="evergreen-section" aria-labelledby="fb-in"><h2 id="fb-in">Resmî gelen oyuncular (${ins.length})</h2>${ins.length ? table(headers, ins.map(row), "Fenerbahçe resmî gelen transferler") : "<p>Kayıt yok.</p>"}</section>
+<section class="evergreen-section" aria-labelledby="fb-out"><h2 id="fb-out">Resmî giden oyuncular (${outs.length})</h2>${outs.length ? table(headers, outs.map(row), "Fenerbahçe resmî giden transferler") : "<p>Kayıt yok.</p>"}</section>
+<section class="evergreen-section" aria-labelledby="fb-rumour"><h2 id="fb-rumour">Gündemdeki iddialar (resmî değil)</h2>${rumourHtml}</section>
+${linkGrid("Fenerbahçe ve transfer sayfaları", [["./takimlar/fenerbahce", "Fenerbahçe takım profili"], ["./fenerbahce-maclari.html", "Fenerbahçe maçları"], ["./fenerbahce-puan-durumu.html", "Fenerbahçe puan durumu"], ["./fenerbahce-oyuncu-radari.html", "Fenerbahçe oyuncu radarı"], ["./super-lig-transferleri-2026-2027.html", "Süper Lig transferleri 2026-27"], ["./transfer-donemi-2026-27.html", "Transfer dönemi 2026-27"]])}
+${linkGrid("Fenerbahçe maç dosyaları", matchDossierRoots("fenerbahce"))}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([{ name: "FutbolRadar transfer kaydı (data/transfers.json; her satırın kaynağı tabloda)", url: `${SITE}/super-lig-transferleri-2026-2027.html` }, ...fb.map((t) => ({ name: `${t.sourceName} — ${t.playerName}`, url: t.sourceUrl }))])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Beşiktaş
+function besiktasPage() {
+  const file = "besiktas-mac-ozetleri.html";
+  const list = teamMatches("Beşiktaş");
+  const rows = list.map((m) => {
+    const home = isTeam(m.homeTeam, "Beşiktaş");
+    const own = home ? m.score.home : m.score.away;
+    const opp = home ? m.score.away : m.score.home;
+    const result = own > opp ? "G" : own < opp ? "M" : "B";
+    return `<tr><td>${esc(trDate(m.kickoff))}</td><td>${esc(m.competition)}</td><th scope="row">${esc(m.homeTeam)} ${m.score.home}-${m.score.away} ${esc(m.awayTeam)}</th><td>${result}</td><td>${matchRowLink(m)}</td></tr>`;
+  });
+  const lig = list.filter((m) => m.competition === "Süper Lig");
+  const tally = lig.reduce((acc, m) => {
+    const home = isTeam(m.homeTeam, "Beşiktaş");
+    const own = home ? m.score.home : m.score.away;
+    const opp = home ? m.score.away : m.score.home;
+    acc[own > opp ? "w" : own < opp ? "l" : "d"] += 1; acc.gf += own; acc.ga += opp; return acc;
+  }, { w: 0, d: 0, l: 0, gf: 0, ga: 0 });
+  const next = upcomingFixtures("Beşiktaş").slice(0, 3);
+  const dateModified = maxDay(...list.slice(0, 1).map((m) => isoDay(m.kickoff)));
+  return {
+    file, dateModified,
+    html: page({
+      file, dateModified,
+      title: "Beşiktaş Maç Özeti ve Sonuçları 2026-27 | FutbolRadar",
+      description: "Beşiktaş maç özetleri: 2026-27 sezonunda oynanan tüm Beşiktaş maçlarının skorları ve FutbolRadar maç raporları (gol, kart, istatistik) tek listede.",
+      h1: "Beşiktaş Maç Özetleri", kicker: "Sonuçlar ve maç raporları",
+      intro: "Sitemizin maç arşivinde (API-Football verisi) kayıtlı, sonuçlanmış Beşiktaş A takım maçları. Her satırdaki “Maç raporu” bağlantısı golleri, kartları ve istatistikleri gösteren yazılı özet sayfasına gider. Video özet barındırmıyoruz.",
+      crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Beşiktaş", href: "./takimlar/besiktas", url: `${SITE}/takimlar/besiktas` }],
+      content: `${lig.length ? `<section class="evergreen-section" aria-labelledby="bjk-sum"><h2 id="bjk-sum">Süper Lig özeti (arşivdeki ${lig.length} maç)</h2><p>${tally.w} galibiyet, ${tally.d} beraberlik, ${tally.l} mağlubiyet; atılan gol ${tally.gf}, yenilen gol ${tally.ga}. Bu sayılar yalnızca aşağıdaki tabloda listelenen maçlardan hesaplanır.</p></section>` : ""}
+<section class="evergreen-section" aria-labelledby="bjk-list"><h2 id="bjk-list">Oynanan maçlar ve raporlar</h2>${rows.length ? table(["Tarih", "Turnuva", "Skor", "Sonuç", "Özet"], rows, "Beşiktaş 2026-27 maç sonuçları") : "<p>Arşivde maç yok.</p>"}</section>
+${next.length ? `<section class="evergreen-section" aria-labelledby="bjk-next"><h2 id="bjk-next">Sıradaki Süper Lig maçları</h2>${table(["Tarih", "Hafta", "Maç"], next.map((m) => `<tr><td>${esc(trDate(m.kickoff, true))}</td><td>${esc(m.round)}. hafta</td><th scope="row">${esc(m.homeTeam)} - ${esc(m.awayTeam)}</th></tr>`), "Beşiktaş sıradaki maçlar")}</section>` : ""}
+${linkGrid("Beşiktaş sayfaları", [["./takimlar/besiktas", "Beşiktaş takım profili"], ["./besiktas-maclari.html", "Beşiktaş maçları"], ["./besiktas-puan-durumu.html", "Beşiktaş puan durumu"], ["./besiktas-form-durumu.html", "Beşiktaş form durumu"], ["./besiktas-oyuncu-radari.html", "Beşiktaş oyuncu radarı"], ["./besiktas-yeni-transferleri-2026-2027.html", "Beşiktaş yeni transferleri"], ["./mac-sonuclari.html", "Tüm maç sonuçları"]])}
+${linkGrid("Beşiktaş maç dosyaları", matchDossierRoots("besiktas"))}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([SITE_DATA, { name: "API-Football (sitenin maç verisi sağlayıcısı)", url: "https://www.api-football.com/" }, { name: "TFF — Süper Lig 2026-27 fikstürü", url: "https://www.tff.org/default.aspx?pageID=198" }])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Türkiye Kupası
+function cupPage() {
+  const file = "turkiye-kupasi-fikstur.html";
+  const calendarRows = cup.roundCalendar.map((r) => `<tr><th scope="row">${esc(r.round)}</th><td>${esc(r.dates)}</td></tr>`);
+  const roundKeys = Object.keys(cup.rounds).sort().reverse();
+  const roundsHtml = roundKeys.map((key) => `<section class="evergreen-section" aria-labelledby="tk-${esc(key[0])}"><h2 id="tk-${esc(key[0])}">${esc(key)} maçları (${cup.rounds[key].length})</h2>${table(["Tarih / saat", "Ev sahibi", "Skor", "Deplasman"], cup.rounds[key].map((m) => `<tr><td>${esc(m.date)}</td><td>${esc(m.home)}</td><td>${esc(m.score || "Oynanmadı")}</td><td>${esc(m.away)}</td></tr>`), `Ziraat Türkiye Kupası ${key} (TFF)`)}</section>`).join("");
+  return {
+    file, dateModified: cup.retrievedAt,
+    html: page({
+      file, dateModified: cup.retrievedAt,
+      title: "Türkiye Kupası Fikstür 2026-27: Tur Tarihleri ve Sonuçlar | FutbolRadar",
+      description: "Ziraat Türkiye Kupası 2026-27 fikstürü: TFF'nin açıkladığı tur tarihleri (final 29 Mayıs 2027), eleme turu sonuçları ve sıradaki kura bilgisi, kaynaklarıyla.",
+      h1: "Türkiye Kupası Fikstürü 2026-27", kicker: "Ziraat Türkiye Kupası",
+      intro: `Tur tarihleri ve maç sonuçları TFF'nin resmî fikstür sayfasından alınmıştır. ${cup.note} ${cup.draw}`,
+      crumbs: [{ name: "Ligler", href: "./lig/super-lig.html", url: `${SITE}/lig/super-lig.html` }],
+      content: `<section class="evergreen-section" aria-labelledby="tk-cal"><h2 id="tk-cal">2026-27 tur takvimi</h2>${table(["Tur", "Tarih"], calendarRows, "Ziraat Türkiye Kupası 2026-27 tur tarihleri (TFF)")}</section>
+${roundsHtml}
+${linkGrid("Kupa ve lig sayfaları", [["./lig/turkiye-kupasi.html", "Türkiye Kupası lig sayfası"], ["./super-lig-fikstur.html", "Süper Lig fikstürü"], ["./bugunun-maclari.html", "Bugünün maçları"], ["./mac-takvimi.html", "Maç takvimi"], ["./canli-skor.html", "Canlı skor"]])}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([{ ...cup.sources.fixture, note: `erişim ${trDate(cup.retrievedAt)}` }, cup.sources.calendar, cup.sources.calendarAa, cup.sources.draw])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Tarihçe
+function historyPage() {
+  const file = "super-lig-tarihcesi.html";
+  const champs = history.champions;
+  const counts = new Map();
+  for (const season of champs) counts.set(season.winner, (counts.get(season.winner) || 0) + 1);
+  const countRows = [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "tr")).map(([club, n]) => `<tr><th scope="row">${esc(club)}</th><td>${n}</td></tr>`);
+  const rows = [...champs].reverse().map((s) => `<tr><td>${esc(s.season)}</td><th scope="row">${esc(s.winner)}</th><td>${esc(s.runnerUp)}</td><td>${esc(s.third)}</td><td>${esc(s.topScorer.replace(/\s{2,}/g, " / "))} (${s.goals})</td></tr>`);
+  return {
+    file, dateModified: history.retrievedAt,
+    html: page({
+      file, dateModified: history.retrievedAt, schemaType: "Article",
+      title: "Süper Lig Tarihçesi: Sezon Sezon Şampiyonlar Listesi (1959-2026) | FutbolRadar",
+      description: `Süper Lig şampiyonları listesi: 1959'dan ${champs.at(-1).season} sezonuna kadar her sezonun şampiyonu, ikincisi, üçüncüsü ve gol kralı. Kaynak: Wikipedia, revizyon numarasıyla.`,
+      h1: "Süper Lig Tarihçesi ve Şampiyonlar", kicker: "1959'dan bugüne",
+      intro: `Süper Lig (1. Lig) 1959'da başladı. Aşağıdaki tablo ${champs.length} sezonun şampiyon, ikinci, üçüncü ve gol krallarını Wikipedia'nın “List of Turkish football champions” maddesinin belirtilen revizyonundan aktarır. Şampiyonluk sayıları yalnızca bu tablodaki Süper Lig sezonlarından sayılmıştır (1959 öncesi şampiyonluklar dahil değildir).`,
+      crumbs: [{ name: "Süper Lig", href: "./lig/super-lig.html", url: `${SITE}/lig/super-lig.html` }],
+      content: `<section class="evergreen-section" aria-labelledby="h-count"><h2 id="h-count">Süper Lig şampiyonluk sayıları (1959-${champs.at(-1).season})</h2>${table(["Kulüp", "Şampiyonluk"], countRows, "Süper Lig dönemi şampiyonluk sayıları")}</section>
+<section class="evergreen-section" aria-labelledby="h-list"><h2 id="h-list">Sezon sezon şampiyonlar</h2>${table(["Sezon", "Şampiyon", "İkinci", "Üçüncü", "Gol kralı (gol)"], rows, "Süper Lig şampiyonları listesi")}</section>
+${linkGrid("İlgili sayfalar", [["./super-lig-puan-durumu", "Bu sezon puan durumu"], ["./super-lig-gol-kralligi-tum-zamanlar.html", "Tüm zamanların gol krallığı"], ["./derbi-gecmisi.html", "Derbi geçmişi"], ["./tarihte-bugun.html", "Tarihte bugün"], ["./arsiv.html", "Sezon arşivi"], ["./takimlar", "Süper Lig takımları"]])}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([wiki("champions"), { name: "TFF — Süper Lig Fikstürü ve Puan Cetveli", url: "https://www.tff.org/default.aspx?pageID=198" }])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Kadrolar
+const POS_TR = { Goalkeeper: "Kaleci", Defender: "Defans", Midfielder: "Orta saha", Attacker: "Forvet" };
+function squadsPage() {
+  const file = "super-lig-kadrolari-2026-2027.html";
+  const teamById = new Map(teams.map((t) => [t.name, t]));
+  const blocks = [...squads].sort((a, b) => a.teamName.localeCompare(b.teamName, "tr")).map((squad) => {
+    const team = teamById.get(squad.teamName);
+    const groups = ["Goalkeeper", "Defender", "Midfielder", "Attacker"].map((pos) => {
+      const list = squad.players.filter((p) => p.position === pos);
+      return list.length ? `<p><strong>${POS_TR[pos]} (${list.length}):</strong> ${list.map((p) => `${esc(p.name)}${p.number ? ` (${p.number})` : ""}`).join(", ")}</p>` : "";
+    }).join("");
+    const teamLink = team ? link(`./takimlar/${team.id}`, `${squad.teamName} profili`) : "";
+    return `<article class="evergreen-card" id="${esc(team ? team.id : squad.teamId)}"><h3>${esc(squad.teamName)} kadrosu (${squad.players.length} oyuncu)</h3>${groups}<p class="evergreen-note">Sağlayıcı senkronu: ${esc(trDate(squad.syncedAt, true))}${teamLink ? ` · ${teamLink}` : ""}</p></article>`;
+  });
+  const dateModified = maxDay(...squads.map((s) => isoDay(s.syncedAt)));
+  const toc = [...squads].sort((a, b) => a.teamName.localeCompare(b.teamName, "tr")).map((s) => { const t = teamById.get(s.teamName); return `<a href="#${esc(t ? t.id : s.teamId)}">${esc(s.teamName)}</a>`; }).join("");
+  return {
+    file, dateModified,
+    html: page({
+      file, dateModified,
+      title: "Süper Lig Takım Kadroları 2026-2027: 18 Takımın Oyuncu Listesi | FutbolRadar",
+      description: "Süper Lig 2026-2027 takım kadroları: 18 kulübün kaleci, defans, orta saha ve forvet oyuncuları, API-Football kadro verisinden ve senkron tarihiyle.",
+      h1: "Süper Lig Takım Kadroları 2026-2027", kicker: "18 takım, mevki mevki",
+      intro: "Kadrolar sitenin kullandığı API-Football kadro verisinden (data/super-lig-squads.json) otomatik oluşturulur; oyuncu adları sağlayıcının yazımıyla gösterilir. Her kartta son senkron zamanı yazar.",
+      crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }],
+      content: `<nav class="evergreen-link-grid" aria-label="Takıma git">${toc}</nav>
+<section class="evergreen-section kw-squad" aria-label="Takım kadroları">${blocks.join("")}</section>
+${linkGrid("İlgili sayfalar", [["./takimlar", "Tüm takımlar"], ["./super-lig-transferleri-2026-2027.html", "Süper Lig transferleri 2026-27"], ["./super-lig-oyuncu-radari.html", "Süper Lig oyuncu radarı"], ["./oyuncu-liderleri.html", "Oyuncu liderleri"], ["./genc-yetenekler.html", "Genç yetenekler"]])}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([{ name: "API-Football — takım kadroları (sitenin /api/squad ve /api/teams verisi)", url: "https://www.api-football.com/documentation-v3#tag/Players/operation/get-players-squads" }, { name: "FutbolRadar takımlar sayfası", url: `${SITE}/takimlar` }])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Gol krallığı
+function scorersPage() {
+  const file = "super-lig-gol-kralligi-tum-zamanlar.html";
+  const rows = history.allTimeScorers.map((p) => `<tr><td>${p.rank}</td><th scope="row">${esc(p.player)}</th><td><strong>${p.goals}</strong></td><td>${p.apps}</td><td>${p.first}-${p.last}</td><td>${esc(p.clubs)}</td></tr>`);
+  const seasonRows = [...history.champions].reverse().slice(0, 20).map((s) => `<tr><td>${esc(s.season)}</td><th scope="row">${esc(s.topScorer.replace(/\s{2,}/g, " / "))}</th><td>${s.goals}</td></tr>`);
+  const top = history.allTimeScorers[0];
+  const faq = [{ q: "Süper Lig tarihinin en golcü oyuncusu kim?", a: `Wikipedia'nın ${trDate(history.source.scorers.allTimeAsOf + "T12:00:00+03:00")} itibarıyla güncellenen listesine göre ${top.player}, ${top.apps} maçta ${top.goals} golle zirvede.` }];
+  return {
+    file, dateModified: history.retrievedAt,
+    html: page({
+      file, dateModified: history.retrievedAt, schemaType: "Article",
+      extraSchema: [{ "@type": "FAQPage", mainEntity: faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) }],
+      title: "Süper Lig Gol Krallığı Tüm Zamanlar: En Golcü 20 Oyuncu | FutbolRadar",
+      description: `Süper Lig tüm zamanların gol krallığı: ${top.player} ${top.goals} golle zirvede. İlk 20 golcü, maç sayıları ve son 20 sezonun gol kralları, kaynaklarıyla.`,
+      h1: "Süper Lig Tüm Zamanların Gol Krallığı", kicker: "Rekorlar",
+      intro: `Liste, Wikipedia'nın “List of Süper Lig top scorers” maddesinden alınmıştır; maddedeki tablo ${trDate(history.source.scorers.allTimeAsOf + "T12:00:00+03:00")} itibarıyla güncellenmiştir. Bu sezonun gol krallığı yarışı için ayrı sayfamıza bakın.`,
+      crumbs: [{ name: "Süper Lig", href: "./lig/super-lig.html", url: `${SITE}/lig/super-lig.html` }],
+      content: `<section class="evergreen-section" aria-labelledby="s-all"><h2 id="s-all">En çok gol atan 20 oyuncu</h2>${table(["Sıra", "Oyuncu", "Gol", "Maç", "Yıllar", "Kulüpler (gol/maç)"], rows, "Süper Lig tüm zamanların golcüleri")}</section>
+<section class="evergreen-section" aria-labelledby="s-season"><h2 id="s-season">Son 20 sezonun gol kralları</h2>${table(["Sezon", "Gol kralı", "Gol"], seasonRows, "Süper Lig sezonluk gol kralları")}</section>
+<section class="evergreen-section" aria-labelledby="s-faq"><h2 id="s-faq">Sık sorulan</h2>${faq.map((f) => `<h3>${esc(f.q)}</h3><p>${esc(f.a)}</p>`).join("")}</section>
+${linkGrid("İlgili sayfalar", [["./gol-kralligi.html", "2026-27 gol krallığı"], ["./asist-kralligi.html", "Asist krallığı"], ["./oyuncu-liderleri.html", "Oyuncu liderleri"], ["./en-iyi-forvetler.html", "En iyi forvetler"], ["./super-lig-tarihcesi.html", "Süper Lig şampiyonları"]])}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([wiki("scorers"), wiki("champions")])}`
+    })
+  };
+}
+
+// ---------------------------------------------------------------- Derbiler
+function derbyPage() {
+  const file = "derbi-gecmisi.html";
+  const big = ["Galatasaray", "Fenerbahçe", "Beşiktaş"];
+  const blocks = [["gsfb", "Galatasaray - Fenerbahçe (Kıtalararası Derbi)"], ["fbbjk", "Fenerbahçe - Beşiktaş"], ["bjkgs", "Beşiktaş - Galatasaray"]].map(([key, title]) => {
+    const d = history.derbies[key];
+    const rows = d.rows.map((r) => `<tr><th scope="row">${esc(r.competition)}</th><td>${r.played}</td><td>${r.winsA}</td><td>${r.draws}</td><td>${r.winsB}</td><td>${r.goalsA}-${r.goalsB}</td></tr>`);
+    const recent = finishedArchive.filter((m) => [d.teamA, d.teamB].includes(m.homeTeam) && [d.teamA, d.teamB].includes(m.awayTeam)).sort((a, b) => b.kickoff.localeCompare(a.kickoff));
+    return `<section class="evergreen-section" aria-labelledby="d-${key}"><h2 id="d-${key}">${esc(title)}</h2>
+<ul><li>İlk resmî karşılaşma (Wikipedia bilgi kutusu): ${esc(d.infobox["First meeting"])}</li><li>Tüm maçlar, hazırlık dahil (bilgi kutusu): ${esc(d.infobox["All-time series"].replace("Drawn", "Beraberlik"))}</li><li>En farklı skor (bilgi kutusu): ${esc(d.infobox["Largest victory"])}</li></ul>
+${table(["Turnuva", "Maç", `${d.teamA} galibiyeti`, "Beraberlik", `${d.teamB} galibiyeti`, `Gol (${d.teamA}-${d.teamB})`], rows, `${title} baş başa istatistikleri (Wikipedia tablosu)`)}
+${recent.length ? `<p><strong>Bu sezon (sitemizin maç arşivi):</strong> ${recent.map((m) => `${esc(trDate(m.kickoff))} ${esc(m.homeTeam)} ${m.score.home}-${m.score.away} ${esc(m.awayTeam)} ${m.reportPage && exists(m.reportPage) ? `(<a href="./${esc(m.reportPage)}">maç raporu</a>)` : ""}`).join("; ")}</p>` : ""}
+<p class="evergreen-note">Kaynak: ${esc(history.source[key].title)} maddesi, revizyon ${history.source[key].oldid}. Wikipedia tablosu en son maçları içermeyebilir; tablo ile bilgi kutusu sayıları farklı kapsamdadır (resmî maçlar / hazırlık dahil).</p></section>`;
+  }).join("");
+  void big;
+  return {
+    file, dateModified: history.retrievedAt,
+    html: page({
+      file, dateModified: history.retrievedAt, schemaType: "Article",
+      title: "Derbi Geçmişi: Galatasaray-Fenerbahçe, Fenerbahçe-Beşiktaş, Beşiktaş-Galatasaray | FutbolRadar",
+      description: "İstanbul derbilerinin geçmişi: GS-FB, FB-BJK ve BJK-GS baş başa istatistikleri, ilk maçlar ve en farklı skorlar; Wikipedia revizyonları ve kendi maç arşivimizle.",
+      h1: "Derbi Geçmişi: Üç Büyüklerin Rekabeti", kicker: "Baş başa istatistikler",
+      intro: "Üç büyük İstanbul derbisinin Süper Lig, Türkiye Kupası ve tüm resmî maç istatistikleri. Sayılar ilgili Wikipedia maddelerinin belirtilen revizyonlarından aktarılır; bu sezon oynanan derbiler sitemizin maç arşivinden eklenir.",
+      crumbs: [{ name: "Süper Lig", href: "./lig/super-lig.html", url: `${SITE}/lig/super-lig.html` }],
+      content: `${blocks}
+${linkGrid("Derbi sayfaları", [["./super-lig-derbi-takvimi-2026-2027.html", "2026-27 derbi takvimi"], ["./derbi-radari.html", "Derbi radarı"], ["./karsilastirma/takimlar/galatasaray-vs-fenerbahce", "Galatasaray - Fenerbahçe karşılaştırması"], ["./karsilastirma/takimlar/fenerbahce-vs-besiktas", "Fenerbahçe - Beşiktaş karşılaştırması"], ["./karsilastirma/takimlar/galatasaray-vs-besiktas", "Galatasaray - Beşiktaş karşılaştırması"], ["./takim-karsilastirmalari", "Takım karşılaştırmaları"]])}
+${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
+${sourcesSection([wiki("gsfb"), wiki("fbbjk"), wiki("bjkgs"), SITE_DATA])}`
+    })
+  };
+}
+
+/**
+ * Kanonik iç link: hedef dosyanın kendi canonical'ı uzantısızsa (ör.
+ * mac-takvimi.html → /mac-takvimi) link de doğrudan o adrese gider; böylece
+ * kanonik olmayan .html varyantına link verilmez.
+ */
+function canonicalizeLinks(html) {
+  return html.replace(/href="\.\/([^"#?]+\.html)"/g, (whole, file) => {
+    try {
+      const target = fs.readFileSync(path.join(root, file), "utf8");
+      const m = target.match(/<link[^>]+rel=["']canonical["'][^>]*href=["']https:\/\/www\.futbolradar\.com\/([^"']*)["']/i);
+      if (m && m[1] === file.replace(/\.html$/, "")) return `href="./${m[1]}"`;
+    } catch {}
+    return whole;
+  });
+}
+
+function writeAll(pages) {
+  for (const p of pages) p.html = canonicalizeLinks(p.html);
+  for (const outputRoot of [root, path.join(root, "public")]) {
+    if (outputRoot !== root && !fs.existsSync(outputRoot)) continue;
+    for (const p of pages) fs.writeFileSync(path.join(outputRoot, p.file), p.html, "utf8");
+    const sitemap = path.join(outputRoot, "sitemap.xml");
+    if (!fs.existsSync(sitemap)) continue;
+    const xml = fs.readFileSync(sitemap, "utf8");
+    const urls = new Map(pages.map((p) => [`${SITE}/${p.file}`, p.dateModified > today ? today : p.dateModified]));
+    const entries = (xml.match(URL_ENTRY_RE) || []).filter((entry) => ![...urls.keys()].some((url) => entry.includes(`<loc>${url}</loc>`)));
+    for (const [url, lastmod] of urls) entries.push(`  <url>\n    <loc>${url}</loc>\n    <lastmod>${lastmod}</lastmod>\n    <changefreq>${/tarihcesi|tum-zamanlar|derbi-gecmisi/.test(url) ? "monthly" : "daily"}</changefreq>\n    <priority>0.8</priority>\n  </url>`);
+    fs.writeFileSync(sitemap, wrapUrlset(entries), "utf8");
+  }
+}
+
+const pages = [galatasarayPage(), fenerbahceTransferPage(), besiktasPage(), cupPage(), historyPage(), squadsPage(), scorersPage(), derbyPage()];
+writeAll(pages);
+console.log(`Anahtar kelime sayfaları: ${pages.length} sayfa üretildi ve sitemap.xml'e eklendi.`);
