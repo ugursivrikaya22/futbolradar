@@ -50,7 +50,8 @@ export const KEYWORD_PAGES = [
   { file: "super-lig-kadrolari-2026-2027.html", keyword: "takım kadroları 2026-2027" },
   { file: "super-lig-gol-kralligi-tum-zamanlar.html", keyword: "gol krallığı tüm zamanlar" },
   { file: "derbi-gecmisi.html", keyword: "derbi geçmişi" },
-  { file: "super-lig-bu-hafta.html", keyword: "Süper Lig bu hafta" }
+  { file: "super-lig-bu-hafta.html", keyword: "Süper Lig bu hafta" },
+  { file: "galatasaray-stuttgart.html", keyword: "Galatasaray Stuttgart" }
 ];
 
 function esc(value) {
@@ -77,9 +78,11 @@ const maxDay = (...days) => days.filter(Boolean).sort().at(-1) || today;
 function link(href, text) {
   const file = href.replace(/^\.\//, "").replace(/[?#].*$/, "");
   const candidates = [file, `${file}.html`];
-  if (!candidates.some((candidate) => exists(candidate))) return "";
+  if (!candidates.some((candidate) => exists(candidate) || MATCH_HUB_FILES.has(candidate))) return "";
   return `<a href="${esc(href)}">${esc(text)}</a>`;
 }
+/** Bu çalıştırmada üretilecek maç merkezleri: ilk üretimde de bağlantı verilebilsin. */
+const MATCH_HUB_FILES = new Set(fs.existsSync(path.join(root, "data", "match-hubs")) ? fs.readdirSync(path.join(root, "data", "match-hubs")).filter((n) => n.endsWith(".json")).map((n) => JSON.parse(fs.readFileSync(path.join(root, "data", "match-hubs", n), "utf8")).file) : []);
 function linkGrid(title, items) {
   const html = items.map(([href, text]) => link(href, text)).filter(Boolean);
   if (!html.length) return "";
@@ -233,7 +236,7 @@ function galatasarayPage() {
       content: `<section class="evergreen-section" aria-labelledby="gs-news"><h2 id="gs-news">Son Galatasaray haberleri</h2>${list}<p>${link("./haberler.html", "Tüm haberler")}</p></section>
 <section class="evergreen-section" aria-labelledby="gs-next"><h2 id="gs-next">Sıradaki maçlar</h2>${nextRows.length ? table(["Tarih", "Hafta", "Maç", "Stat"], nextRows, "Galatasaray sıradaki Süper Lig maçları") : "<p>Kayıtlı yaklaşan maç yok.</p>"}<p>${link("./galatasaray-maclari.html", "Galatasaray'ın tüm maçları")}</p></section>
 <section class="evergreen-section" aria-labelledby="gs-last"><h2 id="gs-last">Son sonuçlar</h2>${lastRows.length ? table(["Tarih", "Turnuva", "Skor", "Rapor"], lastRows, "Galatasaray son maç sonuçları") : "<p>Arşivde sonuç yok.</p>"}</section>
-${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./galatasaray-maclari.html", "Galatasaray maçları"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./galatasaray-form-durumu.html", "Galatasaray form durumu"], ["./galatasaray-oyuncu-radari.html", "Galatasaray oyuncu radarı"], ["./karsilastirma/takimlar/galatasaray-vs-fenerbahce", "Galatasaray - Fenerbahçe karşılaştırması"]])}
+${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./galatasaray-maclari.html", "Galatasaray maçları"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./galatasaray-form-durumu.html", "Galatasaray form durumu"], ["./galatasaray-oyuncu-radari.html", "Galatasaray oyuncu radarı"], ["./karsilastirma/takimlar/galatasaray-vs-fenerbahce", "Galatasaray - Fenerbahçe karşılaştırması"], ["./galatasaray-stuttgart.html", "Galatasaray - Stuttgart (Şampiyonlar Ligi, 3 Kasım 2026)"]])}
 ${linkGrid("Galatasaray maç dosyaları", matchDossierRoots("galatasaray"))}
 ${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
 ${sourcesSection([{ name: "FutbolRadar haber arşivi (her haberin kaynakları kendi sayfasında)", url: `${SITE}/haberler.html` }, { name: "TFF — Süper Lig 2026-27 fikstürü (sitenin data/super-lig-fixtures.json kaydı)", url: "https://www.tff.org/default.aspx?pageID=198" }, SITE_DATA, ...sources])}`
@@ -523,6 +526,72 @@ ${sourcesSection([{ name: `TFF — Süper Lig Fikstürü ve Puan Cetveli (fikst�
   return { file, dateModified, html: page({ file, dateModified, title, description, h1: next ? `Süper Lig Bu Hafta: ${next.label}` : "Süper Lig Bu Hafta", kicker: "Haftalık rehber", intro: "Sıradaki Süper Lig haftasının maçları, takımların sırası ve son form durumu. Maç olmayan günlerde de güncel kalır: sayfa her derlemede fikstür ve arşivden yeniden üretilir.", crumbs: [{ name: "Süper Lig fikstürü", href: "./super-lig-fikstur.html", url: `${SITE}/super-lig-fikstur.html` }], extraSchema: events.length ? [{ "@type": "ItemList", name: next.label, itemListElement: events.map((e, i) => ({ "@type": "ListItem", position: i + 1, item: e })) }] : [], content }) };
 }
 
+// ---------------------------------------------------------------- Maç merkezi (UEFA)
+// data/match-hubs/*.json: her bilgi bir kaynak anahtarı taşır. Maç sonrası
+// `result` ve `lineups` alanları kaynaklı olarak doldurulunca sayfa maç özetine döner.
+function matchHubPages() {
+  const dir = path.join(root, "data", "match-hubs");
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((n) => n.endsWith(".json")).sort().map((n) => matchHubPage(JSON.parse(fs.readFileSync(path.join(dir, n), "utf8"))));
+}
+function matchHubPage(h) {
+  const S = h.sources;
+  const cite = (keys) => [].concat(keys).map((k) => S[k] ? `<a href="${esc(S[k].url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(S[k].name.split(" — ")[0])}</a>` : "").filter(Boolean).join(", ");
+  const f = h.facts;
+  const ul = (block) => `<ul>${block.items.map((t) => `<li>${esc(t)}</li>`).join("")}</ul><p class="evergreen-source">Kaynak: ${cite(block.source)}</p>`;
+  const when = trDate(h.kickoff, true);
+  const played = Boolean(h.result);
+  const title = played ? `${h.home} ${h.result.home}-${h.result.away} ${h.awayShort} Maç Sonucu ve Özeti | FutbolRadar` : `${h.home} - ${h.awayShort} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda? | FutbolRadar`;
+  const h1 = `${h.home} - ${h.awayShort}`;
+  const info = table(["Bilgi", "Değer", "Kaynak"], [
+    ["Turnuva", h.competition, cite("uefa")], ["Tarih ve saat", `${when} · ${h.kickoffCET}`, cite(f.kickoff)], ["Stat", h.venue, cite(f.venue)], ["Hakem", h.referee, cite(f.referee)], ["Yayın", h.broadcast, cite(f.broadcast)]
+  ].map(([k, v, c]) => `<tr><th scope="row">${esc(k)}</th><td>${esc(v)}</td><td>${c}</td></tr>`), "Maç künyesi");
+  const result = played
+    ? `<p><strong>${esc(h.home)} ${h.result.home}-${h.result.away} ${esc(h.away)}</strong></p><p class="evergreen-source">Kaynak: ${cite(h.result.source)}</p>`
+    : `<p>Maç henüz oynanmadı. Skor, goller ve kartlar maçtan sonra resmî kaynaktan doğrulanınca bu bölüme eklenecek.</p>`;
+  const lineups = h.lineups ? `<p class="evergreen-source">Kaynak: ${cite(h.lineups.source)}</p>` : `<p data-status="veri-bekleniyor"><strong>İlk 11:</strong> Güncelleniyor — veri bekleniyor. Resmî kadrolar açıklanmadan tahmini kadro yazılmaz.</p>`;
+  const tbl = table(["Sıra", "Takım", "Puan"], f.table.rows.map((r) => `<tr><td>${r.rank}</td><th scope="row">${esc(r.team)}</th><td>${r.points}</td></tr>`), `Şampiyonlar Ligi lig aşaması (${trDate(f.table.asOf)} itibarıyla)`) + `<p class="evergreen-source">Kaynak: ${cite(f.table.source)}. Tablonun tamamı: ${link("./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu")}</p>`;
+  const faq = [
+    [`${h.home} - ${h.awayShort} maçı ne zaman, saat kaçta?`, `${when}, ${h.kickoffCET}.`, f.kickoff],
+    [`${h.home} - ${h.awayShort} maçı hangi kanalda?`, `${h.broadcast}.`, f.broadcast],
+    [`${h.home} - ${h.awayShort} maçı nerede oynanacak?`, `${h.venue}.`, f.venue],
+    [`${h.home} - ${h.awayShort} maçının hakemi kim?`, `${h.referee}.`, f.referee]
+  ];
+  const faqHtml = `<section class="evergreen-section" aria-labelledby="sss"><h2 id="sss">Sık sorulan sorular</h2>${faq.map(([q, a, s]) => `<h3>${esc(q)}</h3><p>${esc(a)} <span class="evergreen-source">Kaynak: ${cite(s)}</span></p>`).join("")}</section>`;
+  const event = { "@type": "SportsEvent", "@id": `${SITE}/${h.file}#event`, name: `${h.home} - ${h.away}`, startDate: h.kickoff, eventStatus: played ? "https://schema.org/EventCompleted" : "https://schema.org/EventScheduled", eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", sport: "Football",
+    location: { "@type": "Place", name: h.venue, address: { "@type": "PostalAddress", addressLocality: "İstanbul", addressCountry: "TR" } },
+    homeTeam: { "@type": "SportsTeam", name: h.home }, awayTeam: { "@type": "SportsTeam", name: h.away }, competitor: [{ "@type": "SportsTeam", name: h.home }, { "@type": "SportsTeam", name: h.away }],
+    superEvent: { "@type": "SportsEvent", name: "UEFA Şampiyonlar Ligi 2026-27" }, organizer: { "@type": "SportsOrganization", name: "UEFA", url: "https://www.uefa.com/" } };
+  const faqLd = { "@type": "FAQPage", mainEntity: faq.map(([q, a]) => ({ "@type": "Question", name: q, acceptedAnswer: { "@type": "Answer", text: a } })) };
+  const gsMatches = [["./mac/lille-galatasaray-21-ekim-2026.html", "Lille - Galatasaray (21 Ekim 2026)"], ["./mac/galatasaray-barcelona-13-ekim-2026.html", "Galatasaray - Barcelona (13 Ekim 2026)"], ["./mac/sporting-cp-galatasaray-9-eylul-2026.html", "Sporting CP - Galatasaray (9 Eylül 2026)"]];
+  const vfbMatches = [["./mac/vfb-stuttgart-atletico-madrid-20-ekim-2026.html", "Stuttgart - Atlético Madrid (20 Ekim 2026)"], ["./mac/slovan-bratislava-vfb-stuttgart-14-ekim-2026.html", "Slovan Bratislava - Stuttgart (14 Ekim 2026)"], ["./mac/vfb-stuttgart-viking-9-eylul-2026.html", "Stuttgart - Viking (9 Eylül 2026)"], ["./mac/hamburger-sv-vfb-stuttgart-17-ekim-2026.html", "Hamburger SV - Stuttgart (17 Ekim 2026)"]];
+  return {
+    file: h.file, dateModified: h.updatedAt,
+    html: page({
+      file: h.file, dateModified: h.updatedAt, schemaType: "WebPage", extraSchema: [event, faqLd],
+      title,
+      description: played ? `${h.home} - ${h.awayShort} maç sonucu ve özeti, kaynaklarıyla.` : `${h.home} - ${h.awayShort} maçı ${when} ${h.venue}'ta. Yayın: ${h.broadcast}. Hakem, puan durumu ve maç öncesi istatistikler kaynaklarıyla.`,
+      h1, kicker: "Şampiyonlar Ligi maç merkezi",
+      intro: `${h.competition} kapsamında ${h.home}, ${h.away} takımını ağırlıyor. Bu sayfadaki her bilgi yanında kaynağıyla verilir; maçtan sonra sonuç ve özet aynı adreste güncellenir.`,
+      crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Galatasaray", href: "./takimlar/galatasaray", url: `${SITE}/takimlar/galatasaray` }],
+      content: `<section class="evergreen-section" aria-labelledby="kunye"><h2 id="kunye">Maç künyesi</h2>${info}</section>
+<section class="evergreen-section" aria-labelledby="sonuc"><h2 id="sonuc">Maç sonucu ve özet</h2>${result}</section>
+<section class="evergreen-section" aria-labelledby="ilk11"><h2 id="ilk11">İlk 11'ler</h2>${lineups}</section>
+<section class="evergreen-section" aria-labelledby="tablo"><h2 id="tablo">Puan durumu</h2>${tbl}</section>
+<section class="evergreen-section" aria-labelledby="gs-form"><h2 id="gs-form">Galatasaray maç öncesi</h2>${ul(f.homeForm)}<p>${link("./galatasaray-son-dakika.html", "Galatasaray son dakika")} · ${link("./galatasaray-maclari.html", "Galatasaray maçları")} · ${link("./galatasaray-form-durumu.html", "Galatasaray form durumu")}</p></section>
+<section class="evergreen-section" aria-labelledby="vfb-form"><h2 id="vfb-form">Stuttgart maç öncesi</h2>${ul(f.awayForm)}</section>
+<section class="evergreen-section" aria-labelledby="gecmis"><h2 id="gecmis">İki takımın geçmişi</h2>${ul(f.history)}</section>
+<section class="evergreen-section" aria-labelledby="oyuncular"><h2 id="oyuncular">Oyuncuların Stuttgart karnesi</h2>${ul(f.players)}</section>
+<section class="evergreen-section" aria-labelledby="sonraki"><h2 id="sonraki">Sıradaki maç</h2>${ul(f.next)}</section>
+${faqHtml}
+${linkGrid("Galatasaray'ın bu sezonki Şampiyonlar Ligi maçları", gsMatches)}
+${linkGrid("Stuttgart'ın son maçları", vfbMatches)}
+${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu"], ["./takimlar/galatasaray/istatistikler.html", "Galatasaray istatistikleri"], ["./takimlar/galatasaray/tarihce.html", "Galatasaray tarihçesi"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu"]])}
+${sourcesSection(Object.values(S))}`
+    })
+  };
+}
+
 function canonicalizeLinks(html) {
   return html.replace(/href="\.\/([^"#?]+\.html)"/g, (whole, file) => {
     try {
@@ -549,6 +618,6 @@ function writeAll(pages) {
   }
 }
 
-const pages = [galatasarayPage(), fenerbahceTransferPage(), besiktasPage(), cupPage(), historyPage(), squadsPage(), scorersPage(), derbyPage(), weeklyPage()];
+const pages = [galatasarayPage(), fenerbahceTransferPage(), besiktasPage(), cupPage(), historyPage(), squadsPage(), scorersPage(), derbyPage(), weeklyPage(), ...matchHubPages()];
 writeAll(pages);
 console.log(`Anahtar kelime sayfaları: ${pages.length} sayfa üretildi ve sitemap.xml'e eklendi.`);
