@@ -58,7 +58,7 @@ export function renderHomeTicker(items, options = {}) {
   return `<link rel="stylesheet" href="${base}home-ticker.css" />
 <section class="home-ticker" data-home-ticker aria-labelledby="home-ticker-title">
   <div class="container-wide home-ticker__inner">
-    <h2 class="home-ticker__label" id="home-ticker-title">Transfer Gündemi</h2>
+    <h2 class="home-ticker__label" id="home-ticker-title">Gündem ve Transfer</h2>
     <div class="home-ticker__viewport">
       <div class="home-ticker__track" style="--home-ticker-duration:${tickerDurationSeconds(list)}s">${group(false)}${group(true)}</div>
     </div>

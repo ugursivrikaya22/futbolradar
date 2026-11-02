@@ -90,3 +90,20 @@ listesindeki Türk kulüpleri, Hatayspor notu, SSS).
   `transfer-donemi-2026-27.html` dosyasına gider; `.html` adresi 308 ile temiz
   adrese yönlenir.
 - Test: `scripts/test-transfer-period-page.mjs`.
+
+## Haber akışından besleme (2 Kasım 2026)
+
+Ana sayfa bandı artık iki kaynaktan beslenir:
+
+1. `data/ticker.json` — elle girilen, haftalarca geçerli notlar (değişmedi).
+2. `data/news.json` — `status: "verified"`, `includeInTicker` kapalı olmayan ve
+   `ticker` bloğu taşıyan haberler (`services/homeTicker.js` →
+   `newsToHomeTickerEntries`). Başlık `ticker.text`, bağlantı kalıcı haber
+   sayfası `/haber/<slug>`, kaynak künyesi haberin beyaz listedeki ilk kaynağı.
+   En yeni önce, en fazla 9 öğe; kendi `expiresAt`'i yoksa 72 saat sonra düşer.
+
+Kategori eşlemesi: `post-match`/`fixture` → **Maç**, `transfer-rumour` ya da
+`confidence: rumour|reported` → **İddia**, diğerleri → **Haber**. Aynı sayfaya
+giden ikinci öğe düşer (elle girilen öncelikli). Toplam üst sınır 12 öğe.
+Yeni veri dosyası yoktur; PR #517'deki `data/transfer-ticker.json` birleşirse
+aynı `mergeTickerSources` ile üçüncü kaynak olarak eklenebilir.

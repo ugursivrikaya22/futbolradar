@@ -2077,8 +2077,16 @@ function trendPlayerCategoriesSlot() {
  * öğe yoksa yuva boş kalır ve bant hiç basılmaz. Belge: docs/ticker.md.
  */
 function homeTickerSlot() {
-  const { readTickerFile, selectHomeTickerItems } = require("../services/homeTicker.js");
-  const { items, rejected } = selectHomeTickerItems(readTickerFile(path.join(root, "data", "ticker.json")));
+  const { readTickerFile, selectHomeTickerItems, newsToHomeTickerEntries, mergeTickerSources } = require("../services/homeTicker.js");
+  // Elle girilen notlar + data/news.json haber akışı (ticker bloğu olan
+  // doğrulanmış haberler, en yeni önce). Bkz. docs/ticker.md §Haber akışı.
+  let newsEntries = [];
+  try {
+    newsEntries = newsToHomeTickerEntries(JSON.parse(fs.readFileSync(path.join(root, "data", "news.json"), "utf8")));
+  } catch (error) {
+    console.warn(`[home-ticker] news.json okunamadı: ${error.message}`);
+  }
+  const { items, rejected } = selectHomeTickerItems(mergeTickerSources(readTickerFile(path.join(root, "data", "ticker.json")), newsEntries));
   for (const entry of rejected) console.warn(`[home-ticker] öğe atlandı (${entry.id || "?"}): ${entry.errors.join(", ")}`);
   return renderHomeTicker(items, { base: "./" });
 }
