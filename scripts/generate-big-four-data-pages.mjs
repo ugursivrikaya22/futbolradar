@@ -23,6 +23,7 @@ import { createRequire } from "node:module";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { confirmedTransfersFor, leaguePointsFor, loadTeamUpdates, pendingFor, pendingListHtml, resultsListHtml, sourceLink, transferWindowNote, transfersHtml, updateResultsFor, usableSource } from "./lib/bigFourUpdates.mjs";
 
 const require = createRequire(import.meta.url);
 const { sameClub } = require("../services/superLigTeams.js");
@@ -55,6 +56,8 @@ const leaders = readJson("data/league-leaders.json", {});
 const managers = readJson("data/managers.json", {});
 const archive = readJson("data/historical-match-archive.json", { records: [] });
 const matchesFile = readJson("data/matches.json", []);
+// 20 Ekim sonrası elle doğrulanmış maçlar (otomatik veri o tarihte dondu).
+const updates = loadTeamUpdates(root);
 const slugMap = new Map((readJson("data/player-url-slugs.json", {}).entries || []).map((e) => [e.id, e.slug]));
 // Lider kaydındaki kimlik (ör. v-muriqi-fenerbahce) kalıcı futbolcu adresine çevrilir; sayfa yoksa bağlantı verilmez.
 function playerProfile(id) {
@@ -94,7 +97,8 @@ function teamResults(teamName) {
     const date = String(m.kickoff || "").slice(0, 10);
     const opponent = home ? m.awayTeam : m.homeTeam;
     const key = `${date}|${String(opponent).toLocaleLowerCase("tr").replace(/[^a-z0-9çğıöşü]/g, "").slice(0, 6)}`;
-    const urls = Array.isArray(m.sourceUrls) ? m.sourceUrls.filter((u) => /^https?:\/\//.test(u)) : [];
+    // Yalnızca onaylı kaynaklar (TheSportsDB gibi onaysız künyeler düşer).
+    const urls = Array.isArray(m.sourceUrls) ? m.sourceUrls.filter((u) => /^https?:\/\//.test(u) && usableSource(u)) : [];
     const providerId = m.providerIds?.apiFootball || m.providerId || null;
     const sourceUrl = urls[0] || (providerId ? `${API}/fixtures?id=${providerId}` : null);
     const record = {
@@ -121,6 +125,10 @@ function teamResults(teamName) {
     if (!prev || (!prev.sourceUrl && record.sourceUrl) || (prev.sourceType === "api-football" && record.sourceType !== "api-football" && record.sourceUrl)) {
       byKey.set(key, { ...prev, ...record, reportPage: record.reportPage || prev?.reportPage || null });
     }
+  }
+  for (const r of updateResultsFor(updates, teamName)) {
+    const key = `${r.date}|${String(r.opponent).toLocaleLowerCase("tr").replace(/[^a-z0-9çğıöşü]/g, "").slice(0, 6)}`;
+    byKey.set(key, r);
   }
   const all = [...byKey.values()].sort((a, b) => String(b.kickoff).localeCompare(String(a.kickoff)));
   const withSource = all.filter((r) => r.sourceUrl);
@@ -187,8 +195,13 @@ function buildTeamData({ slug, name }) {
     ? { status: "ok", matches: played, won: results.filter((r) => r.result === "G").length, drawn: results.filter((r) => r.result === "B").length, lost: results.filter((r) => r.result === "M").length, goalsFor: sum("goalsFor"), goalsAgainst: sum("goalsAgainst"), note: "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları" }
     : { status: "veri-bekleniyor" };
 
+  const latestPoints = leaguePointsFor(updates, name);
+  const transfers = confirmedTransfersFor(root, name);
   return {
     slug, name, season: team?.standingsSeason || null,
+    latestPoints: latestPoints ? { status: "ok", ...latestPoints } : { status: "veri-bekleniyor" },
+    pendingMatches: pendingFor(updates, name),
+    transfers: { status: transfers.length ? "ok" : "veri-bekleniyor", items: transfers },
     pages: Object.fromEntries(SECTIONS.map((s) => [s.key, `${siteUrl}/takimlar/${slug}/${s.key}.html`])),
     teamPage: `${siteUrl}/takimlar/${slug}`,
     standings, form: { league: leagueForm, allCompetitions: allCompForm },
@@ -201,7 +214,7 @@ function buildTeamData({ slug, name }) {
 
 // ---------- HTML ----------
 const pending = (label) => `<p class="evergreen-note" data-status="veri-bekleniyor"><strong>${esc(label)}:</strong> ${PENDING}</p>`;
-const src = (url, label = "Kaynak") => (url ? `<a href="${esc(url)}" rel="nofollow noopener" target="_blank">${esc(label)}</a>` : "");
+const src = (url, label) => sourceLink(url, label);
 const table = (caption, heads, rows) => `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>${esc(caption)}</caption><thead><tr>${heads.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 const section = (id, title, body) => `<section class="evergreen-section" aria-labelledby="${id}"><h2 id="${id}">${esc(title)}</h2>${body}</section>`;
 
@@ -213,12 +226,17 @@ function sectionNav(d, current) {
 }
 
 function kadroContent(d) {
-  if (d.squad.status !== "ok") return section("kadro", "Kadro", pending("Kadro"));
+  if (d.squad.status !== "ok") return section("kadro", "Kadro", pending("Kadro")) + transferSection(d);
   const groups = POS_ORDER.map((pos) => [pos, d.squad.players.filter((p) => p.position === pos)]).filter(([, l]) => l.length);
   const other = d.squad.players.filter((p) => !POS_ORDER.includes(p.position));
   const body = groups.map(([pos, list]) => table(`${POS_TR[pos]} (${list.length})`, ["Oyuncu", "Yaş", "Forma"], list.map((p) => `<tr><th scope="row">${esc(p.name)}</th><td>${p.age ?? "—"}</td><td>${p.number ?? "—"}</td></tr>`))).join("")
     + (other.length ? table("Mevkisi kayıtlı olmayan", ["Oyuncu", "Yaş", "Forma"], other.map((p) => `<tr><th scope="row">${esc(p.name)}</th><td>${p.age ?? "—"}</td><td>${p.number ?? "—"}</td></tr>`)) : "");
-  return section("kadro", `${d.name} kadrosu (${d.squad.count} oyuncu)`, `${body}<p class="evergreen-source">Kaynak: ${src(d.squad.sourceUrl, d.squad.sourceName)} · Senkron: ${esc(String(d.squad.syncedAt || "").slice(0, 10))}. Forma numarası sağlayıcıda yoksa "—" gösterilir.</p>`);
+  return section("kadro", `${d.name} kadrosu (${d.squad.count} oyuncu)`, `${body}<p class="evergreen-source">Kaynak: ${src(d.squad.sourceUrl, d.squad.sourceName)} · Senkron: ${esc(String(d.squad.syncedAt || "").slice(0, 10))}. Forma numarası sağlayıcıda yoksa "—" gösterilir. Senkron sonrası kadro değişikliği: Güncelleniyor.</p>`)
+    + transferSection(d);
+}
+
+function transferSection(d) {
+  return section("transferler", `${d.name} transfer haberleri`, transfersHtml(d.name, d.transfers.items, transferWindow));
 }
 
 function statsContent(d) {
@@ -231,16 +249,26 @@ function statsContent(d) {
   const lead = (list, label, key) => (list.length ? table(label, ["Oyuncu", key === "goals" ? "Gol" : "Asist", "Maç", "Kaynak"], list.map((p) => `<tr><th scope="row">${p.profile ? `<a href="${esc(p.profile.replace(siteUrl, "../.."))}">${esc(p.name)}</a>` : esc(p.name)}</th><td>${p[key] ?? "—"}</td><td>${p.appearances ?? "—"}</td><td>${src(p.sourceUrl)}</td></tr>`)) : pending(label));
   const r = d.stats.resultsSummary;
   const rs = r.status === "ok" ? table("Arşivdeki kaynaklı maçlar (tüm turnuvalar)", ["Gösterge", "Değer"], [["Maç", r.matches], ["G-B-M", `${r.won}-${r.drawn}-${r.lost}`], ["Gol", `${r.goalsFor}-${r.goalsAgainst}`]].map(([k, v]) => `<tr><th scope="row">${k}</th><td>${v}</td></tr>`)) : pending("Maç özeti");
-  return section("lig", "Lig istatistikleri", st) + section("form", "Form durumu", form) + section("liderler", "Gol ve asist liderleri", lead(d.stats.topScorers, "Gol krallığındaki oyuncular", "goals") + lead(d.stats.topAssists, "Asist listesindeki oyuncular", "assists")) + section("ozet", "Maç özeti", rs)
+  const lp = d.latestPoints;
+  const latest = lp.status === "ok"
+    ? `<p><strong>${esc(d.name)}</strong>: ${lp.played} maçta <strong>${lp.points} puan</strong> (${esc(lp.asOf)} itibarıyla).</p><p class="evergreen-source">Kaynak: ${src(lp.source)}</p>`
+    : pending("Güncel puan");
+  const recent = d.results.items.slice(0, 5);
+  const recentHtml = recent.length
+    ? `<p class="evergreen-form" aria-label="Son 5 maç, tüm turnuvalar (en yeni solda)">${recent.map((r) => `<b data-form="${esc(r.result)}">${esc(r.result)}</b>`).join(" ")}</p><p class="evergreen-source">Son 5 maç (tüm turnuvalar, en yeni solda): ${recent.map((r) => `${esc(r.homeTeam)} ${r.score.home}-${r.score.away} ${esc(r.awayTeam)}`).join(" · ")}. Ayrıntı ve kaynaklar: <a href="./mac-sonuclari.html">maç sonuçları</a>.</p>`
+    : pending("Son maçlar");
+  return section("guncel", "Güncel puan ve son 5 maç", latest + recentHtml)
+    + section("lig", `Lig istatistikleri (API-Football senkronu: ${esc(String(s.syncedAt || "").slice(0, 10) || "—")})`, st) + section("form", "Form durumu", form) + section("liderler", "Gol ve asist liderleri", lead(d.stats.topScorers, "Gol krallığındaki oyuncular", "goals") + lead(d.stats.topAssists, "Asist listesindeki oyuncular", "assists")) + section("ozet", "Maç özeti", rs)
     + section("ileri", "İleri istatistikler", pending("xG, topa sahip olma ve şut ortalamaları"));
 }
 
 function resultsContent(d) {
   if (d.results.status !== "ok") return section("sonuclar", "Maç sonuçları", pending("Maç sonuçları"));
   // Mobil öncelikli: 390 px'te yatay kaydırma gerektiren tablo yerine kart listesi.
-  const items = d.results.items.map((r) => `<li data-result="${r.result}"><p><time datetime="${esc(r.date)}">${esc(r.date)}</time> · ${esc(r.competition || "—")} · <strong>${r.result === "G" ? "Galibiyet" : r.result === "M" ? "Mağlubiyet" : "Beraberlik"}</strong></p><p><strong>${esc(r.homeTeam)} ${r.score.home}-${r.score.away} ${esc(r.awayTeam)}</strong></p><p>${r.reportPage ? `<a href="${esc(r.reportPage.replace(siteUrl, "../.."))}">Maç raporu</a> · ` : ""}${src(r.sourceUrl)}</p></li>`).join("");
+  const items = resultsListHtml(d.results.items, { reportBase: "../../" });
+  const pend = d.pendingMatches.length ? section("bekleyen", "Sonucu doğrulanmayı bekleyen maç", pendingListHtml(d.pendingMatches)) : "";
   const note = d.results.excludedWithoutSource ? `<p class="evergreen-note">${d.results.excludedWithoutSource} maç kaynak URL'si olmadığı için listelenmedi.</p>` : "";
-  return section("sonuclar", `${d.name} maç sonuçları (${d.results.items.length})`, `<ol class="evergreen-results">${items}</ol>` + note);
+  return section("sonuclar", `${d.name} maç sonuçları (${d.results.items.length})`, items + note) + pend;
 }
 
 function historyContent(d) {
@@ -254,10 +282,11 @@ function historyContent(d) {
     + section("teknik", "Güncel teknik direktör", mgr);
 }
 
+const fit = (t) => (t.length <= 60 ? t : t.replace(" | FutbolRadar", ""));
 const META = {
-  kadro: (d) => ({ title: `${d.name} Kadrosu ${d.season || ""} | Oyuncular ve Mevkiler | FutbolRadar`, description: `${d.name} güncel kadrosu: ${d.squad.count || ""} oyuncu, mevki ve yaş bilgisiyle. Her kayıt kaynak bağlantılı.`, h1: `${d.name} Kadrosu`, intro: `${d.name} için sağlayıcıdan senkronlanan güncel oyuncu listesi, mevkilere göre.`, body: kadroContent }),
-  istatistikler: (d) => ({ title: `${d.name} İstatistikleri ${d.season || ""} | Puan, Gol, Form | FutbolRadar`, description: `${d.name} istatistikleri: Süper Lig sırası, galibiyet-beraberlik-mağlubiyet, atılan/yenilen gol, form ve gol-asist liderleri.`, h1: `${d.name} İstatistikleri`, intro: `${d.name} için kayıtlı lig istatistikleri, form ve oyuncu liderleri.`, body: statsContent }),
-  "mac-sonuclari": (d) => ({ title: `${d.name} Maç Sonuçları ${d.season || ""} | Skorlar | FutbolRadar`, description: `${d.name} maç sonuçları: Süper Lig, Avrupa kupaları ve hazırlık maçlarının skorları, kaynak bağlantılarıyla.`, h1: `${d.name} Maç Sonuçları`, intro: `${d.name}'in arşivde kaynağıyla doğrulanmış maç skorları.`, body: resultsContent }),
+  kadro: (d) => ({ title: fit(`${d.name} Kadrosu 2026-27 ve Transferler | FutbolRadar`), description: `${d.name} kadrosu 2026-27: ${d.squad.count ? `${d.squad.count} oyuncu, ` : ""}mevki ve yaş bilgisi; yaz döneminde resmîleşen gelen-giden transferler; her kayıt doğrulanmış kaynak bağlantılı.`, h1: `${d.name} Kadrosu`, intro: `${d.name} için sağlayıcıdan senkronlanan güncel oyuncu listesi, mevkilere göre.`, body: kadroContent }),
+  istatistikler: (d) => ({ title: fit(`${d.name} İstatistikleri 2026-27: Form | FutbolRadar`), description: `${d.name} istatistikleri 2026-27: güncel puan, son 5 maç formu, galibiyet-beraberlik-mağlubiyet, atılan/yenilen gol ve gol-asist liderleri, kaynaklı.`, h1: `${d.name} İstatistikleri`, intro: `${d.name} için kayıtlı lig istatistikleri, form ve oyuncu liderleri.`, body: statsContent }),
+  "mac-sonuclari": (d) => ({ title: fit(`${d.name} Maç Sonuçları 2026-27: Son Skorlar | FutbolRadar`), description: `${d.name} son maç sonuçları 2026-27: Süper Lig ve Avrupa kupası skorları, her maç için doğrulanmış kaynak bağlantısı ve güncel lig puanı bir arada.`, h1: `${d.name} Maç Sonuçları`, intro: `${d.name}'in arşivde kaynağıyla doğrulanmış maç skorları.`, body: resultsContent }),
   tarihce: (d) => ({ title: `${d.name} Tarihçesi | Kulüp Bilgileri | FutbolRadar`, description: `${d.name} tarihçesi ve kulüp bilgileri. Doğrulanmış kaynak bulunan bilgiler gösterilir; diğer bölümler güncelleniyor.`, h1: `${d.name} Tarihçesi`, intro: `${d.name} kulüp bilgileri. Kaynağı depoda olmayan bilgiler uydurulmaz, "veri bekleniyor" olarak işaretlenir.`, body: historyContent })
 };
 
@@ -335,13 +364,16 @@ function write(rel, content) {
   }
 }
 
+let transferWindow = { closedAt: null, nextOpensAt: null };
+
 export function buildAll() {
   return BIG_FOUR.map(buildTeamData);
 }
 
 function main() {
   const data = buildAll();
-  const dataDate = teams.map((t) => t.lastStandingsSyncedAt).filter(Boolean).sort().at(-1)?.slice(0, 10) || "1970-01-01";
+  const dataDate = [...teams.map((t) => t.lastStandingsSyncedAt?.slice(0, 10)), updates.updatedAt].filter(Boolean).sort().at(-1) || "1970-01-01";
+  transferWindow = transferWindowNote(root, dataDate);
   const files = [];
   for (const d of data) {
     for (const s of SECTIONS) {
@@ -356,7 +388,7 @@ function main() {
       rules: "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
       form: d.form, standings: d.standings,
       stats: { resultsSummary: d.stats.resultsSummary, topScorers: d.stats.topScorers, topAssists: d.stats.topAssists },
-      results: d.results, squad: d.squad, history: d.history
+      results: d.results, pendingMatches: d.pendingMatches, latestPoints: d.latestPoints, transfers: d.transfers, squad: d.squad, history: d.history
     };
     write(`data/kose-feed/${d.slug}.json`, `${JSON.stringify(feed, null, 2)}\n`);
   }

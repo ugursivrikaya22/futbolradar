@@ -5,6 +5,8 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { buildAll as buildBigFour } from "./generate-big-four-data-pages.mjs";
+import { loadTeamUpdates, resultsListHtml, pendingListHtml, sourceLink, transferWindowNote } from "./lib/bigFourUpdates.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastFinishedMatch, lastMatchAnswer, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
@@ -43,6 +45,12 @@ const dataDate = teams
   .sort()
   .at(-1)?.slice(0, 10) || new Date().toISOString().slice(0, 10);
 
+// Büyük dört: 20 Ekim sonrası elle doğrulanmış maçlar ve resmî transferler.
+const teamUpdates = loadTeamUpdates(root);
+const bigFourData = new Map(buildBigFour().map((d) => [d.slug, d]));
+const bigFourDate = [dataDate, teamUpdates.updatedAt].filter(Boolean).sort().at(-1);
+const transferWindow = transferWindowNote(root, bigFourDate);
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replaceAll("&", "&amp;")
@@ -76,7 +84,7 @@ function breadcrumbHtml(items) {
     .join("")}</nav>`;
 }
 
-function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null, faq = null }) {
+function pageDocument({ base, title, description, canonicalPath, h1, kicker, intro, breadcrumbs, schema, content, indexable = true, enPath = null, faq = null, modified = dataDate }) {
   const canonical = `${siteUrl}${canonicalPath}`;
   // Gerçekten var olan İngilizce karşılık: İngilizce sayfa Türkçe sayfayı alternate
   // ilan ediyor; karşılık verilmezse Google tek yönlü bildirimi yok sayar.
@@ -120,7 +128,7 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
             <span class="section-kicker">${escapeHtml(kicker)}</span>
             <h1>${escapeHtml(h1)}</h1>
             <p>${escapeHtml(intro)}</p>
-            <p class="evergreen-freshness"><time datetime="${dataDate}">Veri tarihi: ${dataDate}</time> · Yalnızca kayıtlı sağlayıcı verileri gösterilir.</p>
+            <p class="evergreen-freshness"><time datetime="${modified}">Veri tarihi: ${modified}</time> · Yalnızca kayıtlı sağlayıcı verileri gösterilir.</p>
           </header>
           ${content}
           ${faqSectionHtml(faq, { className: "evergreen-section" })}
@@ -270,11 +278,15 @@ function teamPage(featured) {
   const teamComparisons = comparisonPairs.filter(([a, b]) => a.slug === featured.slug || b.slug === featured.slug)
     .map(([a, b]) => `<a href="../karsilastirma/takimlar/${a.slug}-vs-${b.slug}">${escapeHtml(a.name)} vs ${escapeHtml(b.name)}</a>`).join("");
   const lastGame = lastFinishedMatch(richSources, team.name);
+  const big = bigFourData.get(featured.slug) || null;
+  const bigLast = big?.results.items[0] || null;
+  const bigLastAnswer = bigLast ? `${featured.name}, son maçında ${bigLast.date} tarihinde ${bigLast.homeTeam} ${bigLast.score.home}-${bigLast.score.away} ${bigLast.awayTeam} skoruyla ${bigLast.result === "G" ? "kazandı" : bigLast.result === "M" ? "kaybetti" : "berabere kaldı"} (${bigLast.competition}).` : null;
   const faq = faqItems([
-    { q: `${featured.name} son maç sonucu ne?`, a: lastMatchAnswer(lastGame) },
+    { q: `${featured.name} son maç sonucu ne?`, a: big ? bigLastAnswer : lastMatchAnswer(lastGame) },
     { q: `${featured.name} Süper Lig'de kaçıncı sırada?`, a: Number(team.played) > 0 && Number.isFinite(team.points) && team.rank ? `${featured.name}, Süper Lig puan durumunda ${team.played} maçta ${team.points} puanla ${team.rank}. sırada.` : null },
     { q: `${genitive(featured.name)} iç saha statı hangisi?`, a: teamVenueAnswer(featured.name) }
   ]);
+  if (big) return bigFourTeamPage({ featured, team, big, faq, breadcrumbs, factRows, formSection, teamLinks, teamPlayers, teamComparisons });
   return pageDocument({
     base: "../",
     faq,
@@ -290,6 +302,62 @@ function teamPage(featured) {
     schema: { "@type": "ProfilePage", "@id": `${siteUrl}/takimlar/${featured.slug}#page`, url: `${siteUrl}/takimlar/${featured.slug}`, name: `${featured.name} Takım Profili`, description: `${featured.name} takım profili, puan durumu ve form verileri.`, inLanguage: "tr-TR", dateModified: dataDate, mainEntity: sportsTeamNode(richSources, { name: featured.name, providerId: team.providerId, url: `${siteUrl}/takimlar/${featured.slug}`, id: `${siteUrl}/takimlar/${featured.slug}#team` }) },
     indexable: featured.indexable !== false,
     content: `<div class="evergreen-two-column"><section class="evergreen-section" aria-labelledby="team-facts"><h2 id="team-facts">Lig görünümü</h2>${table(["Gösterge", "Kayıtlı değer"], factRows, `${featured.name} 2026/27 takım verileri`)}</section>${formSection}</div>${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(featured.name)} sayfaları">${teamLinks}</nav>` : ""}<section class="evergreen-section" aria-labelledby="team-players"><h2 id="team-players">Kayıtlı oyuncu profilleri</h2>${teamPlayers}</section>${teamComparisons ? `<aside class="evergreen-related"><h2>${featured.name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım profilinden devam edin", "../")}`
+  });
+}
+
+/**
+ * Büyük dört kalıcı takım sayfası (/takimlar/<slug>): kadro, son maç sonuçları,
+ * istatistikler ve transfer haberleri. Veriler generate-big-four-data-pages.mjs
+ * ile aynı kaynaktan gelir; her sonuç/transfer kaynak bağlantısı taşır.
+ */
+function bigFourTeamPage({ featured, team, big, faq, breadcrumbs, factRows, formSection, teamLinks, teamPlayers, teamComparisons }) {
+  const name = featured.name;
+  const sub = (key) => `../takimlar/${featured.slug}/${key}.html`;
+  const recent = big.results.items.slice(0, 6);
+  const lp = big.latestPoints;
+  const last = recent[0];
+  const resultsHtml = recent.length ? resultsListHtml(recent, { reportBase: "../" }) : `<p class="evergreen-note" data-status="veri-bekleniyor">Son maç sonuçları: Güncelleniyor.</p>`;
+  const pend = big.pendingMatches.length ? pendingListHtml(big.pendingMatches) : "";
+  const pointsHtml = lp.status === "ok"
+    ? `<p><strong>${escapeHtml(name)}</strong> Süper Lig'de ${lp.played} maçta <strong>${lp.points} puan</strong> topladı (${escapeHtml(lp.asOf)} itibarıyla). Kaynak: ${sourceLink(lp.source)}</p>`
+    : `<p class="evergreen-note" data-status="veri-bekleniyor">Güncel puan: Güncelleniyor.</p>`;
+  const squadLine = big.squad.status === "ok"
+    ? `<p>${big.squad.count} oyuncunun mevki, yaş ve forma bilgisi (senkron: ${escapeHtml(String(big.squad.syncedAt || "").slice(0, 10))}, ${sourceLink(big.squad.sourceUrl)}). <a class="detail-link" href="${sub("kadro")}">${escapeHtml(name)} kadrosunun tamamı</a></p>`
+    : `<p class="evergreen-note" data-status="veri-bekleniyor">Kadro: Güncelleniyor.</p>`;
+  const tIn = big.transfers.items.filter((t) => t.direction === "gelen");
+  const tOut = big.transfers.items.filter((t) => t.direction === "giden");
+  const tItem = (t) => `<li><p><time datetime="${escapeHtml(t.date)}">${escapeHtml(t.date)}</time> · ${escapeHtml(t.type || "Transfer")}</p><p><strong>${escapeHtml(t.playerName)}</strong> · ${escapeHtml(t.fromTeam)} → ${escapeHtml(t.toTeam)}</p><p>${sourceLink(t.sourceUrl)}</p></li>`;
+  const windowNote = transferWindow.closedAt
+    ? `<p class="evergreen-note"><strong>Transfer dönemi kapalı.</strong> 2026 yaz tescil dönemi ${escapeHtml(transferWindow.closedAt)} tarihinde kapandı${transferWindow.nextOpensAt ? `; ara dönem ${escapeHtml(transferWindow.nextOpensAt)} tarihinde açılıyor` : ""}. Yalnızca resmîleşen transferler listelenir.</p>`
+    : "";
+  const transfers = big.transfers.items.length
+    ? `${windowNote}${tIn.length ? `<h3>Gelenler (${tIn.length})</h3><ul class="evergreen-results">${tIn.slice(0, 5).map(tItem).join("")}</ul>` : ""}${tOut.length ? `<h3>Gidenler (${tOut.length})</h3><ul class="evergreen-results">${tOut.slice(0, 3).map(tItem).join("")}</ul>` : ""}<p><a class="detail-link" href="${sub("kadro")}#transferler">Tüm ${escapeHtml(name)} transferleri</a></p>`
+    : `${windowNote}<p class="evergreen-note" data-status="veri-bekleniyor">Transfer haberleri: Güncelleniyor.</p>`;
+  const descLast = last ? ` Son maç: ${last.homeTeam} ${last.score.home}-${last.score.away} ${last.awayTeam}.` : "";
+  const descPoints = lp.status === "ok" ? ` Ligde ${lp.played} maçta ${lp.points} puan.` : "";
+  const descLong = `${name} 2026-27: kadro, son maç sonuçları, istatistikler ve resmî transferler.${descPoints}${descLast}`;
+  // Meta description hedefi ~140-160 karakter: uzunsa son maç cümlesini kısalt.
+  const description = descLong.length <= 160 ? descLong : `${name} 2026-27: kadro, son maç sonuçları, istatistikler ve resmî transferler.${descPoints}`;
+  const subNav = `<nav class="evergreen-link-grid" aria-label="${escapeHtml(name)} veri sayfaları"><a href="${sub("kadro")}">${escapeHtml(name)} kadrosu</a><a href="${sub("mac-sonuclari")}">${escapeHtml(name)} maç sonuçları</a><a href="${sub("istatistikler")}">${escapeHtml(name)} istatistikleri</a><a href="${sub("tarihce")}">${escapeHtml(name)} tarihçesi</a></nav>`;
+  const canonical = `${siteUrl}/takimlar/${featured.slug}`;
+  return pageDocument({
+    base: "../",
+    faq,
+    modified: bigFourDate,
+    title: `${name} Kadrosu, Son Maçlar ve İstatistik | FutbolRadar`,
+    description,
+    canonicalPath: `/takimlar/${featured.slug}`,
+    h1: `${name}: Kadro, Son Maçlar ve İstatistikler`,
+    kicker: "Süper Lig 2026-27",
+    intro: `${name} için kalıcı takım sayfası: kadro, son maç sonuçları, istatistikler ve transfer haberleri. Her skor ve transfer kaynak bağlantısı taşır; doğrulanamayan bilgi "Güncelleniyor" olarak işaretlenir.`,
+    breadcrumbs,
+    schema: { "@type": "ProfilePage", "@id": `${canonical}#page`, url: canonical, name: `${name} Takım Sayfası`, description, inLanguage: "tr-TR", dateModified: bigFourDate, mainEntity: sportsTeamNode(richSources, { name, providerId: team.providerId, url: canonical, id: `${canonical}#team` }) },
+    indexable: featured.indexable !== false,
+    content: `${subNav}<section class="evergreen-section" aria-labelledby="son-maclar"><h2 id="son-maclar">${escapeHtml(name)} son maç sonuçları</h2>${resultsHtml}${pend}<p><a class="detail-link" href="${sub("mac-sonuclari")}">Tüm ${escapeHtml(name)} maç sonuçları</a></p></section>`
+      + `<section class="evergreen-section" aria-labelledby="istatistikler"><h2 id="istatistikler">${escapeHtml(name)} istatistikleri</h2>${pointsHtml}<div class="evergreen-two-column"><div>${table(["Gösterge", "Kayıtlı değer"], factRows, `${name} lig verisi (API-Football senkronu ${String(team.lastStandingsSyncedAt || "").slice(0, 10) || "—"})`)}<p class="evergreen-source">${sourceLink(big.standings.sourceUrl || "https://www.api-football.com/")} · Tablo otomatik senkron tarihindeki değerdir; sonraki maçlar yukarıdaki kaynaklı sonuçlarda.</p></div>${formSection}</div><p><a class="detail-link" href="${sub("istatistikler")}">Ayrıntılı ${escapeHtml(name)} istatistikleri</a></p></section>`
+      + `<section class="evergreen-section" aria-labelledby="kadro"><h2 id="kadro">${escapeHtml(name)} kadrosu</h2>${squadLine}${teamPlayers}</section>`
+      + `<section class="evergreen-section" aria-labelledby="transfer-haberleri"><h2 id="transfer-haberleri">${escapeHtml(name)} transfer haberleri</h2>${transfers}</section>`
+      + `${teamLinks ? `<nav class="evergreen-link-grid" aria-label="${escapeHtml(name)} sayfaları">${teamLinks}</nav>` : ""}${teamComparisons ? `<aside class="evergreen-related"><h2>${name} karşılaştırmaları</h2><div class="evergreen-link-grid">${teamComparisons}</div></aside>` : ""}${relatedLinks("Takım sayfasından devam edin", "../")}`
   });
 }
 
@@ -368,7 +436,8 @@ function updateSitemap(file) {
   ];
   const urls = new Set(newPaths.map((item) => `${siteUrl}${item}`));
   const entries = (xml.match(URL_ENTRY_RE) || []).filter((entry) => ![...urls].some((url) => entry.includes(`<loc>${url}</loc>`)));
-  entries.push(...[...urls].map((url) => `  <url>\n    <loc>${url}</loc>\n    <lastmod>${dataDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${url.includes("/karsilastirma/") ? "0.7" : "0.8"}</priority>\n  </url>`));
+  const bigFourUrls = new Set(featuredTeams.map((team) => `${siteUrl}/takimlar/${team.slug}`));
+  entries.push(...[...urls].map((url) => `  <url>\n    <loc>${url}</loc>\n    <lastmod>${bigFourUrls.has(url) ? bigFourDate : dataDate}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>${url.includes("/karsilastirma/") ? "0.7" : "0.8"}</priority>\n  </url>`));
   fs.writeFileSync(file, wrapUrlset(entries), "utf8");
 }
 

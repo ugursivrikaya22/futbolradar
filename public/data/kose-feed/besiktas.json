@@ -12,7 +12,7 @@
       "tarihce": "https://www.futbolradar.com/takimlar/besiktas/tarihce.html"
     }
   },
-  "dataDate": "2026-10-19",
+  "dataDate": "2026-11-01",
   "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
   "form": {
     "league": {
@@ -31,13 +31,23 @@
     "allCompetitions": {
       "status": "ok",
       "last": [
+        "G",
+        "B",
         "M",
-        "G",
-        "G",
         "G",
         "G"
       ],
       "matches": [
+        {
+          "id": "2026-10-26-besiktas-basaksehir",
+          "result": "G",
+          "sourceUrl": "https://www.cnnturk.com/spor/futbol/live-besiktas-2-0-basaksehir-kartal-derin-bir-oh-cekti-3484643"
+        },
+        {
+          "id": "2026-10-22-besiktas-crystal-palace",
+          "result": "B",
+          "sourceUrl": "https://www.takvim.com.tr/spor/2026/10/22/avrupa-ligi-ve-konferans-liginde-alinan-sonuclar"
+        },
         {
           "id": "trabzonspor-besiktas-2026-10-19",
           "result": "M",
@@ -46,22 +56,12 @@
         {
           "id": "hoffenheim-besiktas-2026-10-15",
           "result": "G",
-          "sourceUrl": "https://www.thesportsdb.com/event/2594833"
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1636268"
         },
         {
           "id": "besiktas-erzurumspor-fk-2026-09-11",
           "result": "G",
           "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584405"
-        },
-        {
-          "id": "midtjylland-besiktas-2026-07-30",
-          "result": "G",
-          "sourceUrl": "https://www.hurriyet.com.tr/sporarena/midtjylland-0-2-besiktas-uefa-avrupa-ligi-maci-ozeti-43256213"
-        },
-        {
-          "id": "besiktas-midtjylland-2026-07-23",
-          "result": "G",
-          "sourceUrl": "https://bjk.com.tr/tr/mobil/haber?news_id=94748"
         }
       ]
     }
@@ -85,22 +85,22 @@
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 6,
-      "won": 4,
-      "drawn": 0,
+      "matches": 8,
+      "won": 5,
+      "drawn": 1,
       "lost": 2,
-      "goalsFor": 11,
-      "goalsAgainst": 7,
+      "goalsFor": 15,
+      "goalsAgainst": 9,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "D. Vlahović",
-        "rank": 5,
+        "rank": 6,
         "goals": 6,
         "assists": 0,
-        "appearances": 5,
-        "minutes": 369,
+        "appearances": 6,
+        "minutes": 459,
         "profile": "https://www.futbolradar.com/futbolcu/dusan-vlahovic",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
@@ -109,7 +109,7 @@
     "topAssists": [
       {
         "name": "O. Kökçü",
-        "rank": 13,
+        "rank": 14,
         "goals": 2,
         "assists": 2,
         "appearances": 7,
@@ -124,6 +124,56 @@
     "status": "ok",
     "excludedWithoutSource": 9,
     "items": [
+      {
+        "id": "2026-10-26-besiktas-basaksehir",
+        "date": "2026-10-26",
+        "kickoff": "2026-10-26T23:59:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "İstanbul Başakşehir",
+        "opponent": "İstanbul Başakşehir",
+        "score": {
+          "home": 2,
+          "away": 0
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": null,
+        "sourceUrl": "https://www.cnnturk.com/spor/futbol/live-besiktas-2-0-basaksehir-kartal-derin-bir-oh-cekti-3484643",
+        "sourceUrls": [
+          "https://www.cnnturk.com/spor/futbol/live-besiktas-2-0-basaksehir-kartal-derin-bir-oh-cekti-3484643",
+          "https://t24.com.tr/spor/trendyol-super-ligde-9-haftanin-ardindan-gorunum-puan-durumu-ve-10-hafta-programi,1355474"
+        ],
+        "sourceType": "haber-ya-da-kulup",
+        "note": null
+      },
+      {
+        "id": "2026-10-22-besiktas-crystal-palace",
+        "date": "2026-10-22",
+        "kickoff": "2026-10-22T23:59:00+03:00",
+        "competition": "Avrupa Ligi",
+        "venue": "İç saha",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "Crystal Palace",
+        "opponent": "Crystal Palace",
+        "score": {
+          "home": 2,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 2,
+        "result": "B",
+        "reportPage": null,
+        "sourceUrl": "https://www.takvim.com.tr/spor/2026/10/22/avrupa-ligi-ve-konferans-liginde-alinan-sonuclar",
+        "sourceUrls": [
+          "https://www.takvim.com.tr/spor/2026/10/22/avrupa-ligi-ve-konferans-liginde-alinan-sonuclar",
+          "https://www.aa.com.tr/tr/spor/besiktas-avrupada-yoluna-yenilgisiz-devam-etti/4097852"
+        ],
+        "sourceType": "haber-ya-da-kulup",
+        "note": null
+      },
       {
         "id": "trabzonspor-besiktas-2026-10-19",
         "date": "2026-10-19",
@@ -163,8 +213,8 @@
         "goalsAgainst": 2,
         "result": "G",
         "reportPage": "https://www.futbolradar.com/mac-raporu/1899-hoffenheim-besiktas-2026-10-15.html",
-        "sourceUrl": "https://www.thesportsdb.com/event/2594833",
-        "sourceType": "resmi-ya-da-yayin"
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1636268",
+        "sourceType": "api-football"
       },
       {
         "id": "besiktas-erzurumspor-fk-2026-09-11",
@@ -249,6 +299,112 @@
         "reportPage": "https://www.futbolradar.com/mac-raporu/besiktas-spartak-trnava-2026-07-14.html",
         "sourceUrl": "https://www.bjk.com.tr/tr/haber/94728/besiktas-2-spartak-trnava-3-hazirlik-maci.html",
         "sourceType": "resmi-ya-da-yayin"
+      }
+    ]
+  },
+  "pendingMatches": [
+    {
+      "id": "2026-11-01-kasimpasa-besiktas",
+      "date": "2026-11-01",
+      "competition": "Süper Lig",
+      "week": 10,
+      "homeTeam": "Kasımpaşa",
+      "awayTeam": "Beşiktaş",
+      "status": "Güncelleniyor",
+      "note": "Maç 1 Kasım 19.00'da başladı; derleme anında kesin sonuç iki izinli kaynakta doğrulanmadı."
+    }
+  ],
+  "latestPoints": {
+    "status": "ok",
+    "team": "Beşiktaş",
+    "played": 9,
+    "points": 18,
+    "asOf": "2026-10-26",
+    "source": "https://t24.com.tr/spor/trendyol-super-ligde-9-haftanin-ardindan-gorunum-puan-durumu-ve-10-hafta-programi,1355474"
+  },
+  "transfers": {
+    "status": "ok",
+    "items": [
+      {
+        "playerName": "Fabio Miretti",
+        "date": "2026-08-28",
+        "fromTeam": "Juventus",
+        "toTeam": "Beşiktaş",
+        "type": "Kiralık",
+        "direction": "gelen",
+        "sourceUrl": "https://www.hurriyet.com.tr/sporarena/besiktas-fabio-miretti-transferini-resmen-acikladi-43286815"
+      },
+      {
+        "playerName": "Ernest Poku",
+        "date": "2026-08-27",
+        "fromTeam": "Bayer Leverkusen",
+        "toTeam": "Beşiktaş",
+        "type": "Kiralık",
+        "direction": "gelen",
+        "sourceUrl": "https://www.fotomac.com.tr/besiktas/2026/08/27/besiktas-ernest-pokuyu-resmen-acikladi"
+      },
+      {
+        "playerName": "Salih Uçan",
+        "date": "2026-08-14",
+        "fromTeam": "Beşiktaş",
+        "toTeam": "Gençlerbirliği",
+        "type": "Serbest transfer",
+        "direction": "giden",
+        "sourceUrl": "https://genclerbirligi.org.tr/haberler/salih-ucan-genclerbirligimizde-14-agustos-2026"
+      },
+      {
+        "playerName": "Dusan Vlahovic",
+        "date": "2026-08-13",
+        "fromTeam": "Serbest oyuncu",
+        "toTeam": "Beşiktaş",
+        "type": "Serbest transfer",
+        "direction": "gelen",
+        "sourceUrl": "https://www.bjk.com.tr/tr/haber/94879/besiktasimiza-hos-geldin-dusan-vlahovic.html"
+      },
+      {
+        "playerName": "Tayyip Talha Sanuç",
+        "date": "2026-07-19",
+        "fromTeam": "Beşiktaş",
+        "toTeam": "Çaykur Rizespor",
+        "type": "Bonservis",
+        "direction": "giden",
+        "sourceUrl": "https://www.bjk.com.tr/tr/haber/94750/tayyip-talha-sanuc-caykur-rizespora-transfer-oldu.html"
+      },
+      {
+        "playerName": "Leandro Trossard",
+        "date": "2026-07-15",
+        "fromTeam": "Arsenal",
+        "toTeam": "Beşiktaş",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.bjk.com.tr/tr/haber/94734/besiktasimiza-hos-geldin-leandro-trossard.html"
+      },
+      {
+        "playerName": "Salih Özcan",
+        "date": "2026-07-09",
+        "fromTeam": "Serbest oyuncu",
+        "toTeam": "Beşiktaş",
+        "type": "Serbest transfer",
+        "direction": "gelen",
+        "sourceUrl": "https://www.bjk.com.tr/tr/haber/94700/besiktasimiza-hos-geldin-salih-ozcan.html"
+      },
+      {
+        "playerName": "Alexander Nübel",
+        "date": "2026-07-08",
+        "fromTeam": "Bayern Münih",
+        "toTeam": "Beşiktaş",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://bjk.com.tr/tr/haber/94690/besiktasimiza-hos-geldin-alexander-nubel.html"
+      },
+      {
+        "playerName": "Doğan Alemdar",
+        "date": "2026-07-08",
+        "fromTeam": "Başakşehir FK",
+        "toTeam": "Beşiktaş",
+        "type": "Bonservis",
+        "direction": "gelen",
+        "sourceUrl": "https://www.bjk.com.tr/tr/haber/94689/besiktasimiza-hos-geldin-dogan-alemdar.html"
       }
     ]
   },
