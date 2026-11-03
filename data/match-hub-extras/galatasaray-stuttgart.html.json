@@ -1,0 +1,21 @@
+{
+  "note": "Maç merkezi ek bölümleri (head-to-head, sezon istatistikleri). Ana veri dosyası data/match-hubs/*.json ayrı tutulur; maç sonrası rutini onu güncellerken bu dosya etkilenmez.",
+  "file": "galatasaray-stuttgart.html",
+  "sources": {
+    "uefa": { "name": "UEFA.com — 2026/27 Champions League: All the league phase fixtures and results", "url": "https://www.uefa.com/uefachampionsleague/news/02a8-2174c9e9019d-f909a77bd77a-1000--2026-27-champions-league-all-the-league-phase-fixtures-a/", "accessed": "2026-11-03" },
+    "gs": { "name": "Galatasaray.org — Maça Doğru | Galatasaray - Stuttgart (2 Kasım 2026)", "url": "https://www.galatasaray.org/haber/futbol/sampiyonlar-ligi/maca-dogru-galatasaray-stuttgart/61284", "accessed": "2026-11-03" }
+  },
+  "h2h": { "source": "gs", "matches": [], "emptyText": "Galatasaray ile Stuttgart resmî UEFA maçlarında daha önce hiç karşılaşmadı; 3 Kasım 2026 iki takımın UEFA organizasyonlarındaki ilk maçı." },
+  "season": { "source": "uefa", "teams": [
+    { "team": "Galatasaray", "matches": [
+      { "date": "2026-09-09", "md": 1, "home": "Sporting CP", "away": "Galatasaray", "score": "3-1" },
+      { "date": "2026-10-13", "md": 2, "home": "Galatasaray", "away": "Barcelona", "score": "1-4" },
+      { "date": "2026-10-21", "md": 3, "home": "Lille", "away": "Galatasaray", "score": "2-4" }
+    ] },
+    { "team": "Stuttgart", "matches": [
+      { "date": "2026-09-09", "md": 1, "home": "Stuttgart", "away": "Viking", "score": "3-1" },
+      { "date": "2026-10-14", "md": 2, "home": "Slovan Bratislava", "away": "Stuttgart", "score": "0-3" },
+      { "date": "2026-10-20", "md": 3, "home": "Stuttgart", "away": "Atlético de Madrid", "score": "1-1" }
+    ] }
+  ] }
+}
