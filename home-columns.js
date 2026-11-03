@@ -79,7 +79,12 @@
   }).then(function (rows) {
     clearTimeout(timer);
     if (!Array.isArray(rows) || rows.length === 0) return;
-    var cards = rows.map(card).filter(Boolean);
+    var hidden = String(target.getAttribute("data-hide-slugs") || "").split(/\s+/).filter(Boolean);
+    var cards = rows.filter(function (row) {
+      if (!row) return false;
+      var fromUrl = String(row.url || "").replace(/[?#].*$/, "").replace(/\.html$/, "").split("/").pop();
+      return hidden.indexOf(String(row.slug || "")) === -1 && hidden.indexOf(fromUrl) === -1;
+    }).map(card).filter(Boolean);
     if (!cards.length) return;
     var fragment = document.createDocumentFragment();
     cards.forEach(function (c) { fragment.appendChild(c); });
