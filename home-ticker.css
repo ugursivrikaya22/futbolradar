@@ -74,6 +74,7 @@
   font-size: var(--fs-xs, 0.8125rem);
   font-weight: 750;
 }
+.home-ticker__link, .home-ticker__source { display: inline-flex; align-items: center; min-height: 32px; }
 .home-ticker__link { color: var(--text, #0f1c17); font-weight: 600; text-decoration: none; }
 .home-ticker__link:hover, .home-ticker__link:focus-visible { color: var(--green, #0b8f5a); text-decoration: underline; }
 .home-ticker__source { color: var(--muted, #6b7c76); font-size: var(--fs-xs, 0.8125rem); text-decoration: underline; text-underline-offset: 2px; }
@@ -143,7 +144,7 @@
     padding-block: 6px 2px;
   }
   .home-ticker__label { grid-area: label; justify-self: start; }
-  .home-ticker__toggle { grid-area: toggle; min-height: 28px; padding: 2px 10px; }
+  .home-ticker__toggle { grid-area: toggle; min-height: 32px; padding: 2px 10px; }
   .home-ticker__viewport { grid-area: viewport; }
 }
 /* Hareket azaltma: kaymaz, kopya gizlenir, öğeler alt alta düz liste. */
