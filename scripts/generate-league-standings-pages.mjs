@@ -23,6 +23,7 @@ import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsC
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 import { hubsForCompetition, loadMatchHubs, matchHubLinksSection } from "./lib/matchHubLinks.mjs";
+import { standingsTeamHref } from "./lib/standingsTeamRegistry.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const MATCH_HUBS = loadMatchHubs(root);
@@ -99,6 +100,7 @@ ${enUrl ? `    <link rel="alternate" hreflang="en" href="${enUrl}" />\n` : ""}  
     <meta name="twitter:image" content="${socialImage}" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="./page.css" />
+    <style data-standings-team-links>.evergreen-table a.standings-team-link{display:inline-flex;align-items:center;min-height:32px}</style>
     <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replaceAll("<", "\\u003c")}</script>
   </head>
   <body>
@@ -132,9 +134,15 @@ function writePage(relativePath, html) {
   }
 }
 
+// Her satır kalıcı takım sayfasına bağlanır (scripts/lib/standingsTeamRegistry.mjs).
+function teamNameCell(row) {
+  const href = standingsTeamHref(row, "./");
+  return href ? `<a class="standings-team-link" href="${escapeHtml(href)}">${escapeHtml(row.name)}</a>` : escapeHtml(row.name);
+}
+
 function tableHtml(rows) {
-  const body = rows.map((row) => `<tr><td>${cell(row.rank)}</td><th scope="row">${escapeHtml(row.name)}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`).join("");
-  return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>Güncel puan durumu</caption><thead><tr><th scope="col">Sıra</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">A</th><th scope="col">Y</th><th scope="col">Av.</th><th scope="col">P</th></tr></thead><tbody>${body}</tbody></table></div>`;
+  const body = rows.map((row) => `<tr><td>${cell(row.rank)}</td><th scope="row">${teamNameCell(row)}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`).join("");
+  return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>Güncel puan durumu</caption><thead><tr><th scope="col">Sıra</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">A</th><th scope="col">Y</th><th scope="col">Av.</th><th scope="col">P</th></tr></thead><tbody>${body}</tbody></table></div><p class="evergreen-note">${rows.length} takım · Takım adına dokunarak takım sayfasına geçin. Veri: <a href="https://www.api-football.com/" rel="nofollow noopener noreferrer" target="_blank">API-Football</a></p>`;
 }
 
 function emptyStateHtml(nameTr) {
