@@ -10835,12 +10835,18 @@
   }
 
   /** Takımın tüm doğrulanmış maçları; API yoksa günün önbelleğine düşer. */
-  function loadAllMatches() {
+  function loadAllMatches(teamName) {
     if (window.location.protocol === "file:") {
       return loadData("matches").catch(function () { return []; });
     }
 
-    return fetchJson(API_ROOT + "matches?date=all")
+    // PERFORMANS: filtresiz "date=all" yanıtı ~4.000 maç (~15 MB JSON,
+    // ~1,5 MB br) taşıyor; takım detayı bunun yalnızca birkaç kaydını
+    // kullanıyor. Takım adı sunucuya iletilir, sunucu listeyi o takımın
+    // maçlarına daraltır. İstemci filtresi (tdFixturesHtml) aynen durur,
+    // bu yüzden parametreyi tanımayan eski bir API yanıtı da doğru çalışır.
+    var teamQuery = teamName ? "&team=" + encodeURIComponent(teamName) : "";
+    return fetchJson(API_ROOT + "matches?date=all" + teamQuery)
       .then(function (result) {
         return (result && result.data) || [];
       })
@@ -10902,7 +10908,7 @@
         // yapılır.
         withDeadline(Promise.all([
           loadData("squad").catch(function () { return []; }),
-          loadAllMatches().catch(function () { return []; }),
+          loadAllMatches(team.name).catch(function () { return []; }),
           loadData("transfers").catch(function () { return []; })
         ]), PROVIDER_LOAD_DEADLINE_MS).catch(function () {
           return [[], [], []];
