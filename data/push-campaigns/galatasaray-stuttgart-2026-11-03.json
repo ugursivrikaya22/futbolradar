@@ -1,0 +1,18 @@
+{
+  "_comment": "TEK SEFERLİK MAÇ DUYURUSU PUSH ŞABLONU — HAZIR, GÖNDERİLMEDİ. Gönderim yalnızca site sahibinin elle çalıştıracağı `node scripts/push-campaign.mjs data/push-campaigns/galatasaray-stuttgart-2026-11-03.json --send --confirm=galatasaray-stuttgart-2026-11-03` komutuyla olur; varsayılan dry-run'dır. Saat/stat kaynağı: galatasaray.org Maça Doğru (2 Kasım 2026) ve UEFA.com fikstürü. Biçim sw.js push işleyicisinin beklediği {title, body, tag, url}.",
+  "id": "galatasaray-stuttgart-2026-11-03",
+  "audience": { "favoriteTeams": ["galatasaray"] },
+  "notBefore": "2026-11-03T09:00:00+03:00",
+  "sendBefore": "2026-11-03T20:30:00+03:00",
+  "kickoff": "2026-11-03T20:45:00+03:00",
+  "payload": {
+    "title": "Bu akşam Galatasaray – Stuttgart",
+    "body": "Şampiyonlar Ligi · 20.45 TSİ · RAMS Park. Saat, kadrolar ve geçmiş maçlar maç sayfasında.",
+    "tag": "match-galatasaray-stuttgart-2026-11-03",
+    "url": "https://www.futbolradar.com/galatasaray-stuttgart.html"
+  },
+  "sources": [
+    "https://www.galatasaray.org/haber/futbol/sampiyonlar-ligi/maca-dogru-galatasaray-stuttgart/61284",
+    "https://www.uefa.com/uefachampionsleague/news/02a8-2174c9e9019d-f909a77bd77a-1000--2026-27-champions-league-all-the-league-phase-fixtures-a/"
+  ]
+}
