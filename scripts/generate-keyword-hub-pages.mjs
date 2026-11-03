@@ -577,7 +577,7 @@ function matchHubPage(h) {
     html: page({
       file: h.file, dateModified: h.updatedAt, schemaType: "WebPage", extraSchema: [event, faqLd],
       title,
-      description: played ? `${h.home} - ${h.awayShort} maç sonucu ve özeti, kaynaklarıyla.` : `${h.home} - ${h.awayShort} maçı ${when} ${h.venue}'ta. Yayın: ${h.broadcast}. Hakem, puan durumu ve maç öncesi istatistikler kaynaklarıyla.`,
+      description: played ? `${h.home} - ${h.awayShort} maç sonucu ve özeti, kaynaklarıyla.` : `${h.home} - ${h.awayShort} maçı saat kaçta, hangi kanalda? ${when}, ${channel}. Hakem, kadro, puan durumu ve maç özeti kaynaklarıyla.`,
       h1, kicker: "Şampiyonlar Ligi maç merkezi",
       intro: `${h.competition} kapsamında ${h.home}, ${h.away} takımını ağırlıyor. Bu sayfadaki her bilgi yanında kaynağıyla verilir; maçtan sonra sonuç ve özet aynı adreste güncellenir.`,
       crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Galatasaray", href: "./takimlar/galatasaray", url: `${SITE}/takimlar/galatasaray` }],
