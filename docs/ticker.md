@@ -54,7 +54,7 @@ de `data/ticker.json`'daki her dış alan adını beyaz listeye karşı tarar.
 ## Nasıl çalışır
 
 - `scripts/prerender-core-pages.mjs` → `homeTickerSlot()` geçerli ve süresi
-  dolmamış öğeleri (en yeni önce, en fazla 8) seçip `index.html`'deki
+  dolmamış öğeleri (en yeni önce, en fazla 12) seçip `index.html`'deki
   `<!-- prerender:home-ticker:start/end -->` yuvasına basar. Öğe yoksa yuva
   **boş** kalır, bant hiç görünmez.
 - İstemci JSON çekmez: veri HTML'in içinde gelir. `home-ticker.js` yalnızca

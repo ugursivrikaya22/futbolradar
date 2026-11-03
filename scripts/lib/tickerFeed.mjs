@@ -115,8 +115,12 @@ export const MIN_CURATED_SLOTS = 4;
  * kulüp gündemi) ve gündem dosyası dokuz habere büyüdü. Altı slotta gündeme
  * üç yer kalıyordu. Sekiz, kayan bir şeritte hâlâ okunabilir bir uzunluk —
  * 320px'e kadar tek satır kalması ayrıca sınanıyor.
+ *
+ * 2 Kasım 2026: sekizden on ikiye çıktı; hafta sonu maç raporları, transfer
+ * söylentileri ve Avrupa programı aynı anda gündemde olduğunda sekiz slot
+ * çeşitliliği kesiyordu. Şerit tek satır kalmaya devam ediyor.
  */
-export const MAX_ITEMS = 8;
+export const MAX_ITEMS = 12;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 

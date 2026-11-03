@@ -32,7 +32,7 @@ const CATEGORIES = Object.freeze({
   mac: "Maç",
   haber: "Haber"
 });
-const MAX_ITEMS = 8;
+const MAX_ITEMS = 12;
 const ISO_WITH_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/;
 /** Saat farkı / ufak giriş hataları için tolerans: tarih en fazla 1 saat ileride olabilir. */
 const FUTURE_TOLERANCE_MS = 60 * 60 * 1000;

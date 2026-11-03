@@ -1,371 +1,286 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-10-20T19:23:32.863Z",
+  "updatedAt": "2026-11-02T08:44:21.506Z",
   "items": [
     {
-      "id": "auto-news-bfa9329a303b7e63233c",
+      "id": "news-ismail-kartal-istifa-dirk-kuyt-gecici-teknik-sorumlu",
+      "origin": "news.json",
       "category": "official",
       "confidence": "confirmed",
-      "section": "news",
-      "text": "Teknik Direktörümüz Okan Buruk: \"Kritik bir maça çıkıyoruz\"",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-20T18:56:00.000Z",
+      "text": "İsmail Kartal istifa etti, Fenerbahçe'de Dirk Kuyt geçici olarak görevde",
+      "timestamp": "2026-10-28T15:20:00+03:00",
       "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMivAFBVV95cUxQS2NZamFBNFBjX1NObW1UNWd0Wm5Jd0xlbF9ObFF5djN1aXpGV1R2SW9tZWFtTjFYN0V3VVRwWkFzTVM1TF9lSWo4d0JlYzhJV1N4dC1EaXRiVEZIdDY2YTczTkptSlZpUWJ5aFQ2cmhscmxUZXdLYl9uR0VLcU5kNTZTRThvTm5WZ1FqUTdUcGpaX3RwdVd4T2NXRUI2dTFMbW1sM0JPY1dUMDRja056OUFIUmtyakc3Rjdiaw?oc=5",
-        "publisher": "galatasaray.org"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/ismail-kartal-istifa-dirk-kuyt-gecici-teknik-sorumlu",
+        "publisher": "fenerbahce.org"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-98a84410710036bacd8f",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe 2-2 Slavia Prag",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-20T18:49:30.000Z",
+      "expiresAt": "2026-11-04T23:59:59+03:00",
+      "important": true
+    },
+    {
+      "id": "news-kasimpasa-2-2-besiktas-mac-raporu-super-lig-10-hafta",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Kasımpaşa 2-2 Beşiktaş: Trossard ve Vlahovic'le 2-0 öne geçen Beşiktaş, 87'de Rafferty'ye takıldı",
+      "timestamp": "2026-11-02T11:20:00+03:00",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMigwFBVV95cUxOdTB4Y1lqNVpwMXhyckl2blFrODZMRTEzMmJjR052TWVwQWZGMGpTT3VxNTRaN1dlMnI0R3pzdjdxX2p0U1FRTDlxZS1LRE51RTFzOE1FRV9aSGFlenBET004WXR4Sm1TaExra2pyb2xRanVTUUJTdHNNLXlpdDliVHRmWQ?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/kasimpasa-2-2-besiktas-mac-raporu-super-lig-10-hafta"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL",
-        "mergedReports": 4,
-        "firstSeenAt": "2026-10-19T13:12:35.000Z"
+      "team": "Beşiktaş"
+    },
+    {
+      "id": "muci-sezon-3-gol-7-asist-2026-11-02",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Ernest Muçi Gaziantep'e golünü ve asistini yaptı; sezonda tüm kulvarlarda 12 maçta 3 gol, 7 asist (Ajansspor)",
+      "team": "Trabzonspor",
+      "timestamp": "2026-11-02T11:10:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-2-0-gaziantep-fk-mac-raporu-super-lig-10-hafta"
       }
     },
     {
-      "id": "auto-news-b7346552cc91a4b89e08",
-      "category": "official",
+      "id": "news-trabzonspor-2-0-gaziantep-fk-mac-raporu-super-lig-10-hafta",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Trabzonspor 2-0 Gaziantep FK: Savic ve Muçi attı, Thomas Reis ligde 5'te 5 yaptı",
+      "timestamp": "2026-11-02T11:10:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/trabzonspor-2-0-gaziantep-fk-mac-raporu-super-lig-10-hafta"
+      },
+      "team": "Trabzonspor"
+    },
+    {
+      "id": "news-fenerbahce-1-2-goztepe-mac-raporu-super-lig-10-hafta",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Fenerbahçe 1-2 Göztepe: oyuna sonradan giren Armstrong ve André, Kuyt'ın ilk maçında skoru çevirdi",
+      "timestamp": "2026-11-02T11:05:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/fenerbahce-1-2-goztepe-mac-raporu-super-lig-10-hafta"
+      },
+      "team": "Fenerbahçe"
+    },
+    {
+      "id": "fenerbahce-liverpool-sampiyonlar-ligi-2026-11-04",
+      "category": "fixture",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Bilfen Filarmoni Orkestrası’ndan Fenerbahçe Marşı",
+      "text": "Şampiyonlar Ligi: Fenerbahçe, 4 Kasım Çarşamba 20.45'te Liverpool'u ağırlıyor",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-20T17:29:28.000Z",
+      "timestamp": "2026-11-02T11:38:00+03:00",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxOWjBVSmZtZTVCUXRuUG8xclhQTjBtQ1RxTXNxaGdNMUlrdE8zblNsNlh3TUZGSlBLOEs4V05TVWhhcDhTWEY4OWtMWGxLbVI0NUNTcktRMl8yTGRUVm1aRWg2WUVJRmIwdzR0dDl4TjVkalFNU25XSWdibktBdTFPcjRBT2stZEZSaW9nQ1hGOG5vQW1aUUFIZ09BU28yWDlEa09oWktNNWxjdFc0SWpRLQ?oc=5",
-        "publisher": "fenerbahce.org"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/sampiyonlar-ligi-4-hafta-galatasaray-stuttgart-fenerbahce-liverpool-programi"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
+      "expiresAt": "2026-11-04T23:59:59+03:00"
+    },
+    {
+      "id": "news-sampiyonlar-ligi-4-hafta-galatasaray-stuttgart-fenerbahce-liverpool-programi",
+      "origin": "news.json",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "text": "Şampiyonlar Ligi: Galatasaray-Stuttgart 3 Kasım, Fenerbahçe-Liverpool 4 Kasım, iki maç da 20.45'te",
+      "timestamp": "2026-11-02T11:38:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/sampiyonlar-ligi-4-hafta-galatasaray-stuttgart-fenerbahce-liverpool-programi"
+      },
+      "team": "Galatasaray",
+      "expiresAt": "2026-11-04T23:59:59+03:00"
+    },
+    {
+      "id": "galatasaray-amedspor-11-hafta-zirve-2026-11-02",
+      "category": "fixture",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "11. haftada zirve maçı: lider Galatasaray, ikinci sıradaki Amedspor'u ağırlayacak (TFF fikstürü)",
+      "team": "Galatasaray",
+      "timestamp": "2026-11-02T11:31:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/super-lig-10-hafta-puan-durumu-galatasaray-zirvede-2-kasim-2026"
+      },
+      "expiresAt": "2026-11-09T23:59:59+03:00"
+    },
+    {
+      "id": "news-super-lig-10-hafta-puan-durumu-galatasaray-zirvede-2-kasim-2026",
+      "origin": "news.json",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "text": "Süper Lig 10. hafta: Galatasaray 25 puanla lider; Amedspor 23, Trabzonspor 22 puanda (TFF)",
+      "timestamp": "2026-11-02T11:30:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/super-lig-10-hafta-puan-durumu-galatasaray-zirvede-2-kasim-2026"
+      },
+      "team": "Galatasaray"
+    },
+    {
+      "id": "galatasaray-kavukcu-istifa-2026-11-01",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Galatasaray Sportif AŞ Başkan Vekili Abdullah Kavukcu, yönetim kurulu üyeliğinden istifa etti (1 Kasım 2026, kaynak: NTV)",
+      "team": "Galatasaray",
+      "timestamp": "2026-11-01T18:29:00+03:00",
+      "source": {
+        "name": "NTV",
+        "url": "https://www.ntv.com.tr/sporskor/galeri-galatasarayda-istifa-krizi-metin-ozturkun-ardindan-abdullah-kavukcu-da-istifa-etti-1748894",
+        "publisher": "ntv.com.tr"
       }
     },
     {
-      "id": "auto-news-2b9cb6364502bc3c7153",
-      "category": "official",
+      "id": "galatasaray-metin-ozturk-istifa-2026-11-01",
+      "category": "club-agenda",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Orex ile birlikte yola devam ediyoruz",
+      "text": "Galatasaray İkinci Başkanı Metin Öztürk, yönetim kurulu ve bağlı şirketlerdeki görevlerinden istifa etti (1 Kasım 2026, kaynak: AA)",
+      "team": "Galatasaray",
+      "timestamp": "2026-11-01T12:58:00+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/galatasaray-kulubu-ikinci-baskani-metin-ozturk-istifa-etti/4107910",
+        "publisher": "aa.com.tr"
+      }
+    },
+    {
+      "id": "kerem-akturkoglu-suudi-iddiasi-2026-11-02",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "section": "news",
+      "text": "Ajansspor'a göre Suudi kulüpleri Kerem Aktürkoğlu'nun durumunu yakından izliyor",
       "team": "Fenerbahçe",
-      "timestamp": "2026-10-20T14:09:23.000Z",
+      "timestamp": "2026-11-02T11:35:00+03:00",
       "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMipAFBVV95cUxPbUlHVThKWkpMeHZXbzE4QV9Za2tGWlBaVkdaZzVOa1Y4M2RFRl9ibkRQUW1iZWRzTUNobWpDR0dtejRBNmJjRWtQOTJvT3R0cC1xX3VrcE95NWZyeXprTWJYR0c4YmxUT1hnOVJOYzMycjRSVlNHaUpMLU1NRUZuTnVmcmswaWZKanhRTzlWSzJ4UllvOXZ2OW45dUpYQnRpZzFfNQ?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/transfer-kulisi-hafta-sonu-iddialari-muriqi-kerem-doumbia-2-kasim-2026"
       }
     },
     {
-      "id": "auto-news-427dd1c531e3ef6964d3",
-      "category": "official",
-      "confidence": "confirmed",
+      "id": "doumbia-trabzonspor-hacken-iddiasi-2026-11-02",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
       "section": "news",
-      "text": "Maça Doğru | Lille - Galatasaray",
+      "text": "Ajansspor'a göre Trabzonspor, Doumbia için Häcken'le 2 Kasım'da görüşecek",
+      "team": "Trabzonspor",
+      "timestamp": "2026-11-02T11:35:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/transfer-kulisi-hafta-sonu-iddialari-muriqi-kerem-doumbia-2-kasim-2026"
+      }
+    },
+    {
+      "id": "nwaiwu-fulham-iddiasi-2026-11-02",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "section": "news",
+      "text": "İngiliz basınına göre Fulham, ocakta Nwaiwu için Trabzonspor'a yeni teklif hazırlıyor",
+      "team": "Trabzonspor",
+      "timestamp": "2026-11-02T11:35:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/transfer-kulisi-hafta-sonu-iddialari-muriqi-kerem-doumbia-2-kasim-2026"
+      }
+    },
+    {
+      "id": "galatasaray-rusya-listesi-iddiasi-2026-11-02",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "section": "news",
+      "text": "Ajansspor'a göre Galatasaray, Kislyak, Glebov ve Alip'i takibe aldı",
       "team": "Galatasaray",
-      "timestamp": "2026-10-20T12:52:00.000Z",
+      "timestamp": "2026-11-02T11:35:00+03:00",
       "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMilwFBVV95cUxPWE5VeUxmN2NFVzBtZjlHeHZKUG5IR1RHVkZYNUcxTEItU0VQd1pvVWRITjYzTWoxSTYwdlBFZGdnN3dIYWFZTmpFRXRUSVcyazdPcEpvcjFJRHRQdTd3YWpiaTd2QXVmRmlkVXpKNGJndmlaWkRrNGxHdHRXOUhsVVdKUDl6UXJKd2QtNk1PQkYyV0dpSkE0?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/transfer-kulisi-hafta-sonu-iddialari-muriqi-kerem-doumbia-2-kasim-2026"
       }
     },
     {
-      "id": "auto-news-125ddeeaa9a7118f934b",
-      "category": "official",
+      "id": "news-transfer-kulisi-hafta-sonu-iddialari-muriqi-kerem-doumbia-2-kasim-2026",
+      "origin": "news.json",
+      "category": "transfer-rumour",
+      "confidence": "rumour",
+      "text": "Ajansspor ve A Spor'a göre Valencia, ocak için Vedat Muriqi'yi listesine aldı",
+      "timestamp": "2026-11-02T11:35:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/transfer-kulisi-hafta-sonu-iddialari-muriqi-kerem-doumbia-2-kasim-2026"
+      },
+      "team": "Fenerbahçe"
+    },
+    {
+      "id": "news-amedspor-5-1-eyupspor-ballet-hat-trick-super-lig-10-hafta",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Amedspor 5-1 Eyüpspor: Ballet hat-trick yaptı, kırmızı kart gördü; Amed 23 puanla ikinci",
+      "timestamp": "2026-11-02T11:25:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/amedspor-5-1-eyupspor-ballet-hat-trick-super-lig-10-hafta"
+      },
+      "team": "Amedspor"
+    },
+    {
+      "id": "news-basaksehir-5-2-samsunspor-mac-raporu-super-lig-10-hafta",
+      "origin": "news.json",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "text": "Başakşehir 5-2 Samsunspor: haftanın en gollü maçı; Samsunspor üst üste 8. kez kaybetti",
+      "timestamp": "2026-11-02T11:15:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/basaksehir-5-2-samsunspor-mac-raporu-super-lig-10-hafta"
+      },
+      "team": "Başakşehir"
+    },
+    {
+      "id": "genclerbirligi-alanyaspor-bu-aksam-2026-11-02",
+      "category": "fixture",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Kadın Futbol Takımımız, Dünya Osteoporoz Günü Etkinliği'ne Katıldı - Beşiktaş JK",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-20T12:47:10.000Z",
+      "text": "Bu akşam 20.00: Gençlerbirliği-Alanyaspor, Eryaman'da; hakem Fatih Tokail, yayın beIN SPORTS 1",
+      "team": "Gençlerbirliği",
+      "timestamp": "2026-11-02T11:30:00+03:00",
       "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1EVnUxaGVEeDlESGMwLXdPQ0VXWjlKZFM0Mkd1MjZoWC13VG9iaEZ3aXRlaDZUVGlJNTI2OTMwVzctVjJqZkdBTW1rdkttQk42Y3lsa29rekJZX1k?oc=5",
-        "publisher": "bjk.com.tr"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/super-lig-10-hafta-puan-durumu-galatasaray-zirvede-2-kasim-2026"
       },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-18T15:22:01.000Z"
+      "expiresAt": "2026-11-02T22:00:00+03:00"
+    },
+    {
+      "id": "ballet-kirmizi-kart-galatasaray-maci-2026-11-02",
+      "category": "squad-update",
+      "confidence": "reported",
+      "section": "news",
+      "text": "Hürriyet'e göre kırmızı kart gören Amedspor'un golcüsü Ballet, Galatasaray maçında forma giyemeyecek",
+      "team": "Amedspor",
+      "timestamp": "2026-11-02T11:25:00+03:00",
+      "source": {
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/amedspor-5-1-eyupspor-ballet-hat-trick-super-lig-10-hafta"
       }
     },
     {
-      "id": "auto-news-bdffb3e077c7ec5c8d04",
-      "category": "official",
+      "id": "arda-guler-asist-racing-real-madrid-2026-11-01",
+      "category": "post-match",
       "confidence": "confirmed",
       "section": "news",
-      "text": "Hearts maçı biletleri satışa çıktı",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-20T12:26:51.000Z",
+      "text": "Arda Güler, Racing Santander 0-3 Real Madrid maçında Bellingham'ın golüne asist yaptı",
+      "timestamp": "2026-11-02T11:38:00+03:00",
       "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxPVWRhMFZ5OXJiRWtzY0dmMmk3OFJ1SkE3MU5Ic2JCbk1Fa3ZvdWxaOXlyUzZwRTJpc2M0dUJhZjM3RGRkNEU3U1NpRUVwVDRFM3BpNUcyYl84eEp0M0JNNnVuZ3VfYnVlTG5peGhhcDF5TlNTandUQWZfZlZyY0RaRUU1bnZ6T01K?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-3e74d09b9ab28ac0d85c",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Hearts Maçı Medya Programı Belli Oldu | Trabzonspor Kulübü Resmi Web Sitesi",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-20T11:31:38.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxQRFJ2WDRCbHZSczlmS1VESTJ6dnZGTkVXVG0tQ2RCTW1qNklaVXN4M1FBdEFsWlJHcVJlb241Y2FKMkJGZW01SFZ2c3FveTlnZHVIQkszcC1DLVF6VkMweFh0UUszazFxZ2hNWHpkZWloaTRUNHpkTjBYS28wcHV1VmVob3Y4OTNZRHMxM1h0dE45ZllJOW54WjBZVDViVWM?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-7d08e0a8b6e9133e221a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Lille maçı hazırlıkları tamamlandı",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-20T10:57:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMinwFBVV95cUxPdy12UnRMd2hfalFmYWhoODJuaVZjVjRCQlBhcUNmVndoQUNuaTIyZWFoemtIeGhBT3lqd2hLT2hqLW9Xa3hGSkh4M3dXYkhwZGlTZUEwLXRWdEtpUHNVSC1VbDVTZHdkalgxLWdTUkljVHZjcEp4OHBaUU92WTNlSEo3dHllOHZJaUlVdTM3ZzNrUkMxa2tGemIxNmdJajQ?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-79c03b0260235951880d",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe Tarfin - Baskonia Vitoria-Gasteiz maçının bilet satışı başladı",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-10-19T18:36:52.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMizAFBVV95cUxQMHREVUhZSVVRMk9HWlFNNWxCX2dKd0dsQlE4RHFfV0EzbU51Mldocm0zdGlMU1daYW9FeXNQcjMydXhibzFSbkF0Ty0wRHdnUDlpc3kxMTd4SkRYYmswQU1XbW5Udkc4eXJZanhBdG1ILWUtSy1jekhJcmFKMVZuNUNGTlIxRUNqVnJ3Z1Vwc1ZXYkFXRWhYNzg1bzF5R09QWXY5emVDSVc3YUJHdVRfUkM4VWFPOW90bHMzSkowUTlDTjhUQURHa3luYXU?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-1d9023a565f272ad29c1",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "transfer",
-      "text": "Forma şort arkası sponsorumuz Albayrak Finans ile sözleşme imzaladık",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-19T15:04:25.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxQZ2ZVX3dXSXpsT1I4RU5iOHpvWU9nZWdLenZOMGRMc3NKN0tiX0xlWUhYdnd0WTdOOGwza2VkUkJ6NWQtWlZMWmZNZVktbDZibEJ0REtFS3R5VTR1MGVTOU1Ya29kUE4wT3FJcndqOTF5bFF2amVhbGpteEJqSTlYYkF2THU5eS14bFBOeXczemk3MDVvNllvanBoNVRsR2lPekh0ZUlneW9UV2VGMGt3VEJtZHVEd1pFM2hF?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-7935ee012bd041429f7e",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Futbolcumuz Arseniy Batagov’un Sağlık Durumuyla İlgili Açıklama",
-      "team": "Trabzonspor",
-      "timestamp": "2026-10-19T14:34:18.000Z",
-      "source": {
-        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
-        "url": "https://news.google.com/rss/articles/CBMisAFBVV95cUxQQTBmQUNQS2NyNF82UU43a0MySkxhLUtNUFVmb19FMkZnNVdwSGg4SjhuV3BaUGlmeURGTE4yN0tUWEZJTkFLMEROZ0EtZ2hobHhwamhFYml2aVdtbG1yc0hLMW9TcWlvRUlSUFFnRnpfMm16aTB5ZGVxZklYajRJWHhEN3hTSFFYOC1pMFJRdmpUa2hNZmhqUjg2WUR4dTkwTHh2bE1IU1pNRTBFTlZweg?oc=5",
-        "publisher": "trabzonspor.org.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "trabzonspor",
-        "priority": 4,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-bafde4fd6a888c219c6a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "1905 GSYİAD, Galatasaray Futbol Akademisi'ne şort sponsoru oldu",
-      "team": "Galatasaray",
-      "timestamp": "2026-10-19T13:21:00.000Z",
-      "source": {
-        "name": "GALATASARAY.ORG",
-        "url": "https://news.google.com/rss/articles/CBMiugFBVV95cUxQXy1DTGZsdzY3VGJabmtXYXdjYnp4SjBvWHlEOUowMmhxVV8tbGliWWMwdjRjYXdHRFpSZFBReFd6dGo4T2ZuYnBVVEhVSmRmRlpPa2ZWRzlrMmg4aVJPWlZOQ0tOSWNEZUJNeS1ZOFA0d0NkWjBQSFByTEJ4SG8tTmtlMmJBSUJBVE13VVZacTFZWVFOT1NBdnhUU1B6ZnNRSXNPTUw2OHExUEVadktqOTBoQi1SYmd1eVE?oc=5",
-        "publisher": "galatasaray.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "galatasaray",
-        "priority": 1,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-b2bf95aa3bfd29a83ac3",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Trabzonspor:1 Beşiktaş:4 (U-19)",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-19T13:16:57.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiX0FVX3lxTFBEYjdtTGpOMTNrX2pTN09mNWVVeURtV282WEx3UFhZNldKc2VxaXV2am9WWGcwS05TRk9WNmthRlNkMGEwVDFDOTFYUUtFRkNZZmN5UG5nbjdIemowQkxr?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-10-19T13:16:57.000Z"
-      }
-    },
-    {
-      "id": "auto-news-4dc80ed0ddb848e7e9e0",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Crystal Palace Maçı Biletleri Hakkında Bilgilendirme",
-      "team": "Beşiktaş",
-      "timestamp": "2026-10-18T09:27:35.000Z",
-      "source": {
-        "name": "Bjk.com.tr",
-        "url": "https://news.google.com/rss/articles/CBMiW0FVX3lxTE1ibkN4LUZncGt5VUhjeEVKMDdBREJTM3JNTmJKNTNaRkFyTEdUSVZKQ0xhNTVCMWV3UHdZRDJwTHdLZ2tScjVTb0NJakNONlFaWi1waGd2MkdDZVU?oc=5",
-        "publisher": "bjk.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "besiktas",
-        "priority": 3,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-1378fac1c122670a314a",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "inside: Fenerbahçe vs C. Alanyaspor",
-      "team": "Alanyaspor",
-      "timestamp": "2026-10-19T17:32:51.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxPakI0eUtRa1NDNVRhVEplVlI2OHN6WDh2cTk5WmhqSE81Vm9BdG1EZDFkNlF3N1Q2TGY2bXpNUDVxRUx5M1FDOXNISFZzcnVfNGJDczl5S2pCcmFDYWtzbW9IVmJPWW1KWlJFMzlkMHVCY3dnbDhaTXFlN3IzbldNYzNhajBtdFBNMXVz?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "diger-super-lig",
-        "priority": 7,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-2f1aa7d3ea75526189dc",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "Fenerbahçe 3-0 Corendon Alanyaspor",
-      "team": "Alanyaspor",
-      "timestamp": "2026-10-18T10:25:00.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNUkJiLUpFVEhNbVE1eFRsWjc2d2FmQk1FRWc2eDlRWWN3TnYwRzZ4YndvZ3pMeGJza1pwSjlhUkFYZU5HZG5jcHZRVGJwOFo0MUhSc2IwTXUwaExpYnI5QVVSNEdSck1HMURtLS1kMTVsUDYwMEhOZnR4MVR1cFJ1YnVEV21YZnpLRjNGREtR?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "diger-super-lig",
-        "priority": 7,
-        "status": "OFFICIAL"
-      }
-    },
-    {
-      "id": "auto-news-370d8aa09b058bd2d891",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "UEFA'dan Oğuzhan Çakır'a Görev",
-      "team": "Süper Lig",
-      "timestamp": "2026-10-19T09:01:29.000Z",
-      "source": {
-        "name": "TFF",
-        "url": "https://news.google.com/rss/articles/CBMiZ0FVX3lxTFBBZGIwQlgxX2lQb0ZZd0FFdUFnQzc2bmdMVEgzc2ZrM0xieEtUSVJ2amZjRE5CamdIWjdja2FqT3YzbGZteHY2cHlHRnlmYkUxbTYydk1PNlRLS2NJOGdMWTdJY2JnZnM?oc=5",
-        "publisher": "tff.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "super-lig",
-        "priority": 5,
-        "status": "OFFICIAL"
+        "name": "FutbolRadar",
+        "url": "https://www.futbolradar.com/haber/sampiyonlar-ligi-4-hafta-galatasaray-stuttgart-fenerbahce-liverpool-programi"
       }
     }
   ]
