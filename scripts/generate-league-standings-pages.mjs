@@ -22,8 +22,10 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { hubsForCompetition, loadMatchHubs, matchHubLinksSection } from "./lib/matchHubLinks.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const MATCH_HUBS = loadMatchHubs(root);
 const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-image.png`;
 const today = new Date().toISOString().slice(0, 10);
@@ -111,6 +113,7 @@ ${enUrl ? `    <link rel="alternate" hreflang="en" href="${enUrl}" />\n` : ""}  
             <p>${escapeHtml(intro)}</p>
             <p class="evergreen-freshness"><time datetime="${dataDate}">Veri tarihi: ${dataDate}</time> · Yalnızca kayıtlı sağlayıcı verileri gösterilir.</p>
           </header>
+          ${canonicalPath === "/sampiyonlar-ligi-puan-durumu" ? matchHubLinksSection(hubsForCompetition(MATCH_HUBS, "Şampiyonlar Ligi"), { heading: "Şampiyonlar Ligi maç merkezleri" }) : ""}
           ${content}
         </div>
       </main>
