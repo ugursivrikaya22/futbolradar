@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { renderHomeTicker } from "./lib/homeTicker.mjs";
+import { renderPwaMinimalHome } from "./lib/pwaMinimalHome.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -66,7 +67,7 @@ const { editorialStatusOf } = require("../services/editorialStatus.js");
 const { localizePoll, selectHomePoll } = require("../services/homePoll.js");
 // Transfer bandının seçim/sıralama kuralı da tek yerde; İngilizce bant da
 // aynı servisi kullanıyor.
-const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
+const { selectLiveTickerRecords, isCurrentlyLive, minuteOrStatusLabel } = require("../services/liveScoresTicker.js");
 const { latestQuotes, RECENT_QUOTE_WINDOW_HOURS } = require("../services/managerQuotes.js");
 // Maç ilgi puanı: sıralama kuralı tek yerde (API de aynı servisi kullanır).
 const { sortByRelevance, withRelevance } = require("../services/matchRelevance.js");
@@ -2083,6 +2084,98 @@ function homeTickerSlot() {
   return renderHomeTicker(items, { base: "./" });
 }
 
+/**
+ * PWA MİNİMAL ANA EKRAN (scripts/lib/pwaMinimalHome.mjs). Yalnızca sitede
+ * zaten bulunan veriden seçer: öne çıkan maç (selectFeaturedMatches), en son
+ * yayımlanmış Türk takımı maç raporu (post-match-reports.json, gol atanlar
+ * raporun kendi olay akışından) ve Süper Lig puan durumu ilk üç. Yeni API
+ * isteği yok; eksik kart düşer, yerine uydurma basılmaz.
+ */
+function pwaMinimalHomeSlot() {
+  const today = istanbulToday();
+  const all = currentMatches();
+  const todays = all
+    .filter((match) => istanbulDay(match.kickoff) === today && isHomeFixture(match))
+    .sort((left, right) => String(left.kickoff).localeCompare(String(right.kickoff)));
+  const liveCount = todays.filter((match) => isDisplayableLive(match)).length;
+  const cards = [];
+
+  const selection = (selectFeaturedMatches(all, { today }) || [])[0];
+  const featured = selection && selection.match;
+  if (featured) {
+    const finished = String(featured.status || "").toUpperCase() === "FINISHED" && hasCompleteScore(featured);
+    const live = isCurrentlyLive(featured);
+    const score = (finished || live) && hasCompleteScore(featured) ? ` ${featured.score.home}-${featured.score.away} ` : " - ";
+    cards.push({
+      kind: "featured-match",
+      kicker: live ? "Canlı maç" : "Öne çıkan maç",
+      title: `${featured.homeTeam}${score}${featured.awayTeam}`,
+      meta: [featured.league, live ? minuteOrStatusLabel(featured) : (finished ? "MS" : longDateLabel(featured.kickoff) + (featured.time ? ` · ${featured.time}` : ""))].filter(Boolean).join(" · "),
+      href: matchDetailPath(featured),
+      cta: "Maç detayı ve analiz"
+    });
+  }
+
+  const report = postMatchStore()
+    .filter((record) => record && record.turkish && String(record.status || "").toUpperCase() === "FINISHED" &&
+      record.analysisStatus !== "failed" && record.reportUrl && record.score &&
+      typeof record.score.home === "number" && typeof record.score.away === "number" &&
+      fs.existsSync(path.join(root, String(record.reportUrl).replace(/^\.\//, ""))))
+    .sort((left, right) => String(right.kickoff || "").localeCompare(String(left.kickoff || "")))[0];
+  if (report) {
+    const moments = (report.digest && report.digest.turningPoints && report.digest.turningPoints.moments) || [];
+    const goals = moments.filter((moment) => moment && /^gol$/i.test(String(moment.type || "")) && moment.detail)
+      .slice(0, 4)
+      .map((moment) => `⚽ ${moment.minute || ""} ${moment.detail}${moment.team ? ` (${moment.team})` : ""}`.replace(/\s+/g, " ").trim());
+    cards.push({
+      kind: "post-match-report",
+      kicker: "Son maç raporu",
+      title: `${report.homeTeam} ${report.score.home}-${report.score.away} ${report.awayTeam}`,
+      meta: [report.league, postMatchDateLabel(report.kickoff)].filter(Boolean).join(" · "),
+      lines: goals,
+      href: report.reportUrl,
+      // xG / korner vaadi yalnızca raporda istatistik gerçekten varsa.
+      cta: report.availability && Number(report.availability.statistics) > 0 ? "Gol atanlar, xG ve korner istatistikleri" : "Maç raporu ve gol atanlar"
+    });
+  }
+
+  const table = standingsSeasonRows().slice().sort((left, right) => Number(left.rank || 0) - Number(right.rank || 0)).slice(0, 3);
+  if (table.length) {
+    cards.push({
+      kind: "standings",
+      kicker: "Süper Lig puan durumu",
+      title: `Lider: ${table[0].name}`,
+      lines: table.map((team) => `${team.rank}. ${team.name} — ${team.points} P`),
+      href: "./super-lig-puan-durumu.html",
+      cta: "Tüm tablo"
+    });
+  }
+
+  const strip = todays.map((match) => {
+    const live = isCurrentlyLive(match);
+    const finished = String(match.status || "").toUpperCase() === "FINISHED";
+    const scored = (live || finished) && hasCompleteScore(match);
+    return {
+      homeTeam: match.homeTeam,
+      awayTeam: match.awayTeam,
+      homeScore: scored ? match.score.home : null,
+      awayScore: scored ? match.score.away : null,
+      time: match.time || "",
+      minute: live ? minuteOrStatusLabel(match) : (finished && scored ? "MS" : ""),
+      live,
+      href: matchDetailPath(match)
+    };
+  }).sort((left, right) => Number(right.live) - Number(left.live));
+
+  return renderPwaMinimalHome({
+    dateLabel: longDateLabel(`${today}T12:00:00+03:00`) || "Bugün",
+    todayCount: todays.length,
+    liveCount,
+    cards,
+    strip
+  });
+}
+
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
@@ -2109,6 +2202,7 @@ writePage("index.html", {
   "trend-player-categories": trendPlayerCategoriesSlot(),
   "match-quotes": matchQuotesTicker(),
   "home-ticker": homeTickerSlot(),
+  "pwa-minimal-home": pwaMinimalHomeSlot(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
   // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu

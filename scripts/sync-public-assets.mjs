@@ -51,6 +51,8 @@ for (const file of [
   "match-center-plus.css",
   "home-ticker.css",
   "home-ticker.js",
+  "pwa-minimal-home.css",
+  "pwa-minimal-home.js",
   "home-columns.js",
   "site.webmanifest",
   "404.html",
