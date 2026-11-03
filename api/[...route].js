@@ -23,6 +23,7 @@ const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
 const { handleColumnsPublish } = require("../server/columnsPublishRoute");
 const { handleOnThisDayCron } = require("../server/onThisDayCronRoute");
+const { handleLiveMatchPushCron } = require("../server/liveMatchPushCronRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -417,6 +418,11 @@ module.exports = async function handler(req, res) {
   // Tarihte Bugün günlük cron'u: CRON_SECRET ile korunur, hiçbir şey yazmaz.
   if (routeName(req) === "cron-on-this-day") {
     return handleOnThisDayCron(req, res);
+  }
+
+  // Canlı maç push cron'u: CRON_SECRET ile korunur (server/cronAuth.js).
+  if (routeName(req) === "cron-live-match-push") {
+    return handleLiveMatchPushCron(req, res);
   }
 
   if (rejectUnsupportedMethod(req, res)) {
