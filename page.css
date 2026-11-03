@@ -24400,3 +24400,24 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
     display: none;
   }
 }
+
+/* Maç sonu otomatik özeti (/ozet/<slug>) — mobil öncelikli */
+.ozet-comment{font-size:1.05rem;line-height:1.5;margin:.5rem 0 0}
+.ozet-section h2{font-size:1.15rem;margin:0 0 .6rem}
+.ozet-list{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+.ozet-list li{display:flex;flex-wrap:wrap;gap:.35rem;align-items:baseline;padding:.55rem .7rem;border-radius:10px;background:var(--surface-2,rgba(127,127,127,.08))}
+.ozet-list b{min-width:2.6rem;font-variant-numeric:tabular-nums}
+.ozet-team{opacity:.75;font-size:.9em}
+.ozet-stats{display:grid;gap:.6rem}
+.ozet-stat{display:grid;grid-template-columns:3.5rem 1fr 3.5rem;align-items:center;text-align:center;gap:.25rem .5rem}
+.ozet-stat-head{font-weight:600;font-size:.9rem}
+.ozet-stat-val{font-weight:700;font-variant-numeric:tabular-nums}
+.ozet-bar{grid-column:1/-1;height:6px;border-radius:3px;background:rgba(127,127,127,.25);overflow:hidden}
+.ozet-bar i{display:block;height:100%;background:var(--accent,#16a34a)}
+.ozet-source{font-size:.85rem;opacity:.75;margin:1rem 0}
+.ozet-recent{list-style:none;margin:0;padding:0;display:grid;gap:.5rem;grid-template-columns:1fr}
+.ozet-recent a{display:grid;gap:.2rem;padding:.75rem .9rem;border-radius:12px;background:var(--surface-2,rgba(127,127,127,.08));text-decoration:none;color:inherit;min-height:44px}
+.ozet-recent-date{font-size:.8rem;opacity:.7}
+.ozet-recent-cta{font-size:.85rem;color:var(--accent,#16a34a)}
+@media (min-width:720px){.ozet-recent{grid-template-columns:repeat(2,1fr)}.ozet-stat{grid-template-columns:5rem 1fr 5rem}}
+@media (min-width:1080px){.ozet-home .ozet-recent{grid-template-columns:repeat(4,1fr)}}

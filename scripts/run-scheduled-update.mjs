@@ -573,6 +573,11 @@ function transformSteps(type, hasChanges, providerReady) {
     nodeStep("match-archive", "backfill-historical-match-archive.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-store", "generate-post-match-reports.mjs", ["--apply"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
     nodeStep("post-match-backfill", "backfill-post-match-analyses.mjs", ["--apply", "--limit=40"], { kind: "transform", timeoutMs: 8 * 60 * 1000 }),
+    // MAÇ SONU OTOMATİK ÖZETİ — sonuç takvime yazıldığı aynı koşuda.
+    // Sağlayıcıya istek ATMAZ (takvimdeki skor/olay/istatistik okunur);
+    // yeni özetler X kuyruğuna `queued` girer, gönderim ayrı bayraklara bağlı.
+    // Bkz. docs/match-summary.md.
+    nodeStep("match-summaries", "build-match-summaries.mjs", ["--apply", "--enqueue"], { kind: "transform", timeoutMs: 2 * 60 * 1000 }),
     // OYUNCU ÖZELLİK PUANLARI — maç/istatistik güncellemesinden HEMEN SONRA.
     //
     // Puanlar maç defterinden besleniyor (arşiv + fikstür takvimi); yeni bir

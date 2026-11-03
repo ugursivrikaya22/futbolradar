@@ -79,7 +79,19 @@ async function defaultRunners() {
     health: () => engine.runHealth(),
     // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
     // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
-    "x-autopost": () => require("../services/xAutopost").runXAutopost(),
+    //
+    // Maç özeti kuyruğu (#mac-sonu-ozet) aynı işte boşaltılır: YENİ cron yok.
+    // X_AUTOPOST_ENABLED + dört X anahtarı + X_MATCH_SUMMARY_SHARE_ENABLED
+    // birlikte yoksa drain hiçbir ağ/DB isteği atmaz (satırlar `queued` kalır).
+    "x-autopost": async () => {
+      const result = await require("../services/xAutopost").runXAutopost();
+      try {
+        result.matchSummaryQueue = await require("../services/matchSummary/xQueue").drainSummaryQueue();
+      } catch (error) {
+        result.matchSummaryQueue = { mode: "error", error: String(error && error.message || error).slice(0, 200) };
+      }
+      return result;
+    },
     // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
     // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
     "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()
