@@ -60,7 +60,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // El Clásico (25 Ekim 2026) yazısı: kadro, sakatlık ve resmî transfer
     // duyuruları iki kulübün kendi sitelerinden doğrulandı.
     "fcbarcelona.com",
-    "realmadrid.com"
+    "realmadrid.com",
+    // VfB Stuttgart resmî sitesi: Galatasaray'ın UCL rakibi Stuttgart takım
+    // sayfasında kadro, kulüp künyesi/başarılar ve maç programı buradan.
+    "vfb.de"
   ]),
 
   // Existing calendar provider: retain its event citation when archiving a match.

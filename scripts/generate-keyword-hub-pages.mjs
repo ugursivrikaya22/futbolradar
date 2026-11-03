@@ -586,7 +586,7 @@ function matchHubPage(h) {
 ${faqHtml}
 ${linkGrid("Galatasaray'ın bu sezonki Şampiyonlar Ligi maçları", gsMatches)}
 ${linkGrid("Stuttgart'ın son maçları", vfbMatches)}
-${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu"], ["./takimlar/galatasaray/istatistikler.html", "Galatasaray istatistikleri"], ["./takimlar/galatasaray/tarihce.html", "Galatasaray tarihçesi"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu"]])}
+${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu"], ["./takimlar/galatasaray/istatistikler.html", "Galatasaray istatistikleri"], ["./takimlar/galatasaray/tarihce.html", "Galatasaray tarihçesi"], ["./takimlar/galatasaray/fikstur.html", "Galatasaray fikstürü"], ["./takimlar/stuttgart", "VfB Stuttgart takım sayfası"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu"]])}
 ${sourcesSection(Object.values(S))}`
     })
   };
