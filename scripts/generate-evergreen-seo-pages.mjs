@@ -287,7 +287,7 @@ function teamPage(featured) {
     fs.existsSync(path.join(root, `${featured.slug}-maclari.html`)) ? `<a href="../${featured.slug}-maclari.html">${escapeHtml(featured.name)} maçları ve fikstür</a>` : "",
     standingsPageIndexable(team) ? `<a href="../${featured.slug}-puan-durumu">${escapeHtml(featured.name)} puan durumu</a>` : "",
     // Takım alt sayfaları (generate-big-four-data-pages.mjs): kadro, istatistik, sonuçlar, tarihçe.
-    ...[["kadro", "kadrosu"], ["istatistikler", "istatistikleri"], ["mac-sonuclari", "maç sonuçları"], ["tarihce", "tarihçesi"]]
+    ...[["kadro", "kadrosu"], ["istatistikler", "istatistikleri"], ["mac-sonuclari", "maç sonuçları"], ["tarihce", "tarihçesi"], ["fikstur", "fikstürü"]]
       .filter(([key]) => fs.existsSync(path.join(root, "takimlar", featured.slug, `${key}.html`)))
       .map(([key, label]) => `<a href="../takimlar/${featured.slug}/${key}.html">${escapeHtml(featured.name)} ${label}</a>`)
   ].join("");

@@ -622,7 +622,7 @@ ${matchHubExtras(h, cite)}
 ${faqHtml}
 ${linkGrid("Galatasaray'ın bu sezonki Şampiyonlar Ligi maçları", gsMatches)}
 ${linkGrid("Stuttgart'ın son maçları", vfbMatches)}
-${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu"], ["./takimlar/galatasaray/istatistikler.html", "Galatasaray istatistikleri"], ["./takimlar/galatasaray/tarihce.html", "Galatasaray tarihçesi"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu"], ["./super-lig-puan-durumu", "Süper Lig puan durumu"], ["./super-lig-bu-hafta.html", "Süper Lig bu hafta"]])}
+${linkGrid("Galatasaray sayfaları", [["./takimlar/galatasaray", "Galatasaray takım profili"], ["./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu"], ["./takimlar/galatasaray/istatistikler.html", "Galatasaray istatistikleri"], ["./takimlar/galatasaray/tarihce.html", "Galatasaray tarihçesi"], ["./galatasaray-puan-durumu.html", "Galatasaray puan durumu"], ["./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu"], ["./super-lig-puan-durumu", "Süper Lig puan durumu"], ["./super-lig-bu-hafta.html", "Süper Lig bu hafta", ["./takimlar/galatasaray/fikstur.html", "Galatasaray fikstürü"], ["./takimlar/stuttgart", "VfB Stuttgart takım sayfası"]]])}
 ${sourcesSection(Object.values(S))}`
     })
   };
