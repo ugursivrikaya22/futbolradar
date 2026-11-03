@@ -585,8 +585,9 @@ function matchHubPage(h) {
     ? `<p class="mh-score"><strong>${esc(h.home)} ${h.result.home}-${h.result.away} ${esc(h.away)}</strong>${h.result.halftime ? ` <span>(İY ${esc(h.result.halftime)})</span>` : ""}</p>`
       + (h.result.summary ? `<p>${esc(h.result.summary)}</p>` : "")
       + (h.result.scorers?.length ? `<h3>Goller</h3><ul>${h.result.scorers.map((g) => `<li>${esc(g.minute)}' ${esc(g.player)} (${esc(sideName(g.team))})</li>`).join("")}</ul>` : "")
-      + (h.result.cards?.length ? `<h3>Kartlar</h3><ul>${h.result.cards.map((c) => `<li>${esc(c.minute)}' ${esc(c.player)} (${esc(sideName(c.team))}, ${esc(c.type)})</li>`).join("")}</ul>` : "")
-      + (h.result.stats?.length ? table(["İstatistik", h.home, h.awayShort], h.result.stats.map((r) => `<tr><th scope="row">${esc(r.label)}</th><td>${esc(r.home)}</td><td>${esc(r.away)}</td></tr>`), "Maç istatistikleri") : "")
+      + (h.result.cards?.length ? `<h3>Kartlar</h3><ul>${h.result.cards.map((c) => `<li>${esc(c.minute)}' ${esc(c.player)} (${esc(sideName(c.team))}, ${esc(c.type)})</li>`).join("")}</ul>${h.result.cardsNote ? `<p>${esc(h.result.cardsNote)}</p>` : ""}` : "")
+      + (h.result.stats?.length ? table(["İstatistik", h.home, h.awayShort], h.result.stats.map((r) => `<tr><th scope="row">${esc(r.label)}</th><td>${esc(r.home)}</td><td>${esc(r.away)}</td></tr>`), "Maç istatistikleri") + (h.result.statsSource ? `<p class="evergreen-source">İstatistik kaynağı: ${cite(h.result.statsSource)}</p>` : "") : "")
+      + (h.result.notes?.length ? `<h3>Maçın öne çıkanları</h3><ul>${h.result.notes.map((n) => `<li>${esc(n.text)} <span class="evergreen-source">Kaynak: ${cite(n.source)}</span></li>`).join("")}</ul>` : "")
       + `<p class="evergreen-source">Kaynak: ${cite(h.result.source)}</p>`
     : `<p data-status="mac-sonrasi"><strong>Maç sonrası güncellenecek.</strong> Maç henüz oynanmadı. Skor, goller, kartlar ve maç istatistikleri maçtan sonra resmî kaynaktan doğrulanınca bu bölüme eklenecek.</p>`;
   // Son 5 maç, karşılaştırma ve gol krallığı blokları (data/match-hubs: her satır kaynaklı).
@@ -597,17 +598,30 @@ function matchHubPage(h) {
   const ts = f.topScorers;
   const scorerRows = ts ? [...ts.home.map((p) => [h.home, p]), ...ts.away.map((p) => [h.awayShort, p])].map(([team, p]) => `<tr><td>${esc(team)}</td><th scope="row">${esc(p.player)}</th><td>${p.goals}</td><td>${p.apps}</td><td>${cite(p.source)}</td></tr>`) : [];
   const scorers = ts ? `${table(["Takım", "Oyuncu", "Gol", "Maç", "Kaynak"], scorerRows, `Takımların en golcüleri (${trDate(`${ts.asOf}T12:00:00+03:00`)} itibarıyla)`)}<p class="evergreen-source">${esc(ts.note)}</p>${ts.uclGoalsHome ? `<p>${esc(ts.uclGoalsHome.text)} <span class="evergreen-source">Kaynak: ${cite(ts.uclGoalsHome.source)}</span></p>` : ""}<ul>${ts.pending.map((t) => `<li>${esc(t)}: <strong data-status="veri-bekleniyor">Güncelleniyor</strong></li>`).join("")}</ul>` : "";
-  const lineups = h.lineups ? `<p class="evergreen-source">Kaynak: ${cite(h.lineups.source)}</p>` : `<p data-status="veri-bekleniyor"><strong>İlk 11:</strong> Güncelleniyor — veri bekleniyor. Resmî kadrolar açıklanmadan tahmini kadro yazılmaz.</p>`;
+  // Maç sonrası kadro: lineups.home/away = { coach, formation, xi:[{no,name}], subs:[{no,name}], changes:[{minute,out,in}] }.
+  const lineupSide = (name, t) => {
+    const li = (p) => `<li>${p.no != null ? `${esc(p.no)} ` : ""}${esc(p.name)}</li>`;
+    const changes = (t.changes || []).map((c) => `<li>${esc(c.minute)}' ${esc(c.out)} çıktı, ${esc(c.in)} girdi</li>`).join("");
+    return `<h3>${esc(name)}${t.formation ? ` (${esc(t.formation)})` : ""}</h3>${t.coach ? `<p>Teknik direktör: ${esc(t.coach)}</p>` : ""}<h4>İlk 11</h4><ol class="mh-xi">${t.xi.map(li).join("")}</ol>${changes ? `<h4>Oyuncu değişiklikleri</h4><ul>${changes}</ul>` : ""}<h4>Yedekler</h4><ul>${(t.subs || []).map(li).join("")}</ul>`;
+  };
+  const lineups = h.lineups?.home?.xi?.length && h.lineups?.away?.xi?.length
+    ? `${lineupSide(h.home, h.lineups.home)}${lineupSide(h.awayShort, h.lineups.away)}${h.lineups.note ? `<p>${esc(h.lineups.note)}</p>` : ""}<p class="evergreen-source">Kaynak: ${cite(h.lineups.source)}</p>`
+    : h.lineups ? `<p class="evergreen-source">Kaynak: ${cite(h.lineups.source)}</p>` : `<p data-status="veri-bekleniyor"><strong>İlk 11:</strong> Güncelleniyor — veri bekleniyor. Resmî kadrolar açıklanmadan tahmini kadro yazılmaz.</p>`;
   const tbl = table(["Sıra", "Takım", "Puan"], f.table.rows.map((r) => `<tr><td>${r.rank}</td><th scope="row">${esc(r.team)}</th><td>${r.points}</td></tr>`), `Şampiyonlar Ligi lig aşaması (${trDate(f.table.asOf)} itibarıyla)`) + `<p class="evergreen-source">Kaynak: ${cite(f.table.source)}. Tablonun tamamı: ${link("./sampiyonlar-ligi-puan-durumu.html", "Şampiyonlar Ligi puan durumu")}</p>`;
+  const goalLine = played && h.result.scorers?.length ? `Goller: ${h.result.scorers.map((g) => `${g.player} ${g.minute}'`).join(", ")}.` : "";
   const faq = [
-    [`${h.home} - ${h.awayShort} maçı ne zaman, saat kaçta?`, `${when}, ${h.kickoffCET}.`, f.kickoff],
-    [`${h.home} - ${h.awayShort} maçı hangi kanalda?`, `${h.broadcast}.`, f.broadcast],
-    [`${h.home} - ${h.awayShort} maçı nerede oynanacak?`, `${h.venue}.`, f.venue],
-    [`${h.home} - ${h.awayShort} maçının hakemi kim?`, `${h.referee}.`, f.referee],
+    ...(played ? [
+      [`${h.home} - ${h.awayShort} maçı kaç kaç bitti?`, `${h.home} ${h.result.home}-${h.result.away} ${h.away}${h.result.halftime ? ` (ilk yarı ${h.result.halftime})` : ""}. ${goalLine}`.trim(), h.result.source],
+      ...(h.result.cards?.length ? [[`${h.home} - ${h.awayShort} maçında kırmızı kart çıktı mı?`, h.result.cardsNote || `Kartlar: ${h.result.cards.map((c) => `${c.player} (${c.minute}', ${c.type})`).join(", ")}.`, h.result.source]] : [])
+    ] : []),
+    [`${h.home} - ${h.awayShort} maçı ne zaman${played ? " oynandı" : ", saat kaçta"}?`, `${when}, ${h.kickoffCET}.`, f.kickoff],
+    [`${h.home} - ${h.awayShort} maçı hangi kanalda${played ? " yayınlandı" : ""}?`, `${h.broadcast}.`, f.broadcast],
+    [`${h.home} - ${h.awayShort} maçı nerede ${played ? "oynandı" : "oynanacak"}?`, `${h.venue}.`, f.venue],
+    [`${h.home} - ${h.awayShort} maçının hakemi kim${played ? "ydi" : ""}?`, `${h.referee}.`, f.referee],
     ...(f.h2h ? [[`${h.home} ile ${h.awayShort} daha önce karşılaştı mı?`, f.h2h.text, f.h2h.source]] : [])
   ];
   const faqHtml = `<section class="evergreen-section" aria-labelledby="sss"><h2 id="sss">Sık sorulan sorular</h2>${faq.map(([q, a, s]) => `<h3>${esc(q)}</h3><p>${esc(a)} <span class="evergreen-source">Kaynak: ${cite(s)}</span></p>`).join("")}</section>`;
-  const event = { "@type": "SportsEvent", "@id": `${SITE}/${h.file}#event`, name: `${h.home} - ${h.away}`, startDate: h.kickoff, eventStatus: played ? "https://schema.org/EventCompleted" : "https://schema.org/EventScheduled", eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", sport: "Football",
+  const event = { "@type": "SportsEvent", "@id": `${SITE}/${h.file}#event`, name: `${h.home} - ${h.away}`, startDate: h.kickoff, eventStatus: "https://schema.org/EventScheduled", /* schema.org'da "EventCompleted" yok; oynanmış maç da EventScheduled (bkz. lib/reportSchemaRepair.mjs) */ eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", sport: "Football",
     location: { "@type": "Place", name: h.venue, address: { "@type": "PostalAddress", addressLocality: "İstanbul", addressCountry: "TR" } },
     homeTeam: { "@type": "SportsTeam", name: h.home }, awayTeam: { "@type": "SportsTeam", name: h.away }, competitor: [{ "@type": "SportsTeam", name: h.home }, { "@type": "SportsTeam", name: h.away }],
     superEvent: { "@type": "SportsEvent", name: "UEFA Şampiyonlar Ligi 2026-27" }, organizer: { "@type": "SportsOrganization", name: "UEFA", url: "https://www.uefa.com/" } };
@@ -619,15 +633,15 @@ function matchHubPage(h) {
     html: page({
       file: h.file, dateModified: h.updatedAt, schemaType: "WebPage", extraSchema: [event, faqLd],
       title,
-      description: played ? `${h.home} - ${h.awayShort} maç sonucu ve özeti: goller, kartlar, istatistikler kaynaklarıyla.` : `${h.home} - ${h.awayShort} maçı saat kaçta, hangi kanalda? ${when}, ${channel}. Son maçlar, H2H, gol kralları ve kadrolar.`,
+      description: played ? `${h.home} ${h.result.home}-${h.result.away} ${h.awayShort}: maç sonucu ve özeti. Goller, kartlar, ilk 11'ler ve istatistikler kaynaklarıyla.` : `${h.home} - ${h.awayShort} maçı saat kaçta, hangi kanalda? ${when}, ${channel}. Son maçlar, H2H, gol kralları ve kadrolar.`,
       h1, kicker: "Şampiyonlar Ligi maç merkezi",
-      intro: `${h.competition} kapsamında ${h.home}, ${h.away} takımını ağırlıyor. Bu sayfadaki her bilgi yanında kaynağıyla verilir; maçtan sonra sonuç ve özet aynı adreste güncellenir.`,
+      intro: played ? `${h.competition} kapsamında ${trDate(h.kickoff)} günü oynanan ${h.home} - ${h.away} maçı ${h.result.home}-${h.result.away} bitti. Bu sayfadaki her bilgi yanında kaynağıyla verilir; sonuç, goller, kartlar ve kadrolar aşağıdadır.` : `${h.competition} kapsamında ${h.home}, ${h.away} takımını ağırlıyor. Bu sayfadaki her bilgi yanında kaynağıyla verilir; maçtan sonra sonuç ve özet aynı adreste güncellenir.`,
       crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Galatasaray", href: "./takimlar/galatasaray", url: `${SITE}/takimlar/galatasaray` }],
       content: `<section class="evergreen-section" aria-labelledby="kunye"><h2 id="kunye">Maç künyesi</h2>${info}</section>
-<section class="evergreen-section" aria-labelledby="canli"><h2 id="canli">Canlı skor</h2><p>Bu sayfa canlı skor göstermez. Maç oynanırken anlık skor ve dakika için ${link("./canli-skor.html", "canlı skor")} ve ${link("./canli-maclar.html", "canlı maçlar")} sayfalarını açın; sonuç doğrulanınca aşağıdaki özet bölümüne eklenir.</p></section>
+<section class="evergreen-section" aria-labelledby="canli"><h2 id="canli">${played ? "Maç sona erdi" : "Canlı skor"}</h2>${played ? `<p>Maç bitti; kesinleşen sonuç aşağıda. Diğer maçların anlık skorları için ${link("./canli-skor.html", "canlı skor")} ve ${link("./canli-maclar.html", "canlı maçlar")} sayfalarına bakabilirsiniz.</p>` : `<p>Bu sayfa canlı skor göstermez. Maç oynanırken anlık skor ve dakika için ${link("./canli-skor.html", "canlı skor")} ve ${link("./canli-maclar.html", "canlı maçlar")} sayfalarını açın; sonuç doğrulanınca aşağıdaki özet bölümüne eklenir.</p>`}</section>
 <section class="evergreen-section" aria-labelledby="sonuc"><h2 id="sonuc">Maç özeti ve sonucu</h2>${result}</section>
 <section class="evergreen-section" aria-labelledby="ilk11"><h2 id="ilk11">İlk 11'ler</h2>${lineups}</section>
-<section class="evergreen-section" aria-labelledby="kadrolar"><h2 id="kadrolar">Kadrolar</h2><p>${link("./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu")} (sağlayıcı verisinden) · ${link("./vfb-stuttgart.html", "VfB Stuttgart profili ve sezonu")}${link("./takimlar/stuttgart.html", "x") ? ` · ${link("./takimlar/stuttgart.html", "VfB Stuttgart kadrosu (vfb.de)")}` : ""}. Muhtemel 11 resmî/güvenilir bir kaynakta yayımlanmadıkça yazılmaz; resmî ilk 11'ler açıklanınca yukarıya eklenir.</p></section>
+<section class="evergreen-section" aria-labelledby="kadrolar"><h2 id="kadrolar">Kadrolar</h2><p>${link("./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu")} (sağlayıcı verisinden) · ${link("./vfb-stuttgart.html", "VfB Stuttgart profili ve sezonu")}${link("./takimlar/stuttgart.html", "x") ? ` · ${link("./takimlar/stuttgart.html", "VfB Stuttgart kadrosu (vfb.de)")}` : ""}. ${played ? "Maçın ilk 11 ve yedek listeleri yukarıda, kaynağıyla birlikte verilmiştir." : "Muhtemel 11 resmî/güvenilir bir kaynakta yayımlanmadıkça yazılmaz; resmî ilk 11'ler açıklanınca yukarıya eklenir."}</p></section>
 <section class="evergreen-section" aria-labelledby="tablo"><h2 id="tablo">Puan durumu</h2>${tbl}</section>
 ${matchHubExtras(h, cite)}
 ${recent ? `<section class="evergreen-section" aria-labelledby="son-maclar"><h2 id="son-maclar">Son maçlar</h2>${recent}</section>` : ""}
