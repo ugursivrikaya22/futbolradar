@@ -539,6 +539,32 @@ function matchHubPages() {
   if (!fs.existsSync(dir)) return [];
   return fs.readdirSync(dir).filter((n) => n.endsWith(".json")).sort().map((n) => matchHubPage(JSON.parse(fs.readFileSync(path.join(dir, n), "utf8"))));
 }
+/** Maç merkezi ek bölümleri: data/match-hub-extras/<file>.json (yoksa bölüm basılmaz). */
+function matchHubExtras(h, cite) {
+  const p = path.join(root, "data", "match-hub-extras", `${h.file}.json`);
+  if (!fs.existsSync(p)) return "";
+  const x = JSON.parse(fs.readFileSync(p, "utf8"));
+  const c = (k) => x.sources[k] ? `<a href="${esc(x.sources[k].url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(x.sources[k].name.split(" — ")[0])}</a>` : cite(k);
+  let out = "";
+  if (x.h2h) {
+    const rows = x.h2h.matches.map((m) => `<tr><td>${esc(trDate(m.date))}</td><td>${esc(m.competition)}</td><th scope="row">${esc(m.home)} ${esc(m.score)} ${esc(m.away)}</th><td>${c(m.source || x.h2h.source)}</td></tr>`);
+    out += `<section class="evergreen-section" aria-labelledby="h2h"><h2 id="h2h">Head-to-head: önceki resmî karşılaşmalar</h2>${rows.length ? table(["Tarih", "Turnuva", "Maç", "Kaynak"], rows, "Resmî maçlar") : `<p>${esc(x.h2h.emptyText)}</p>`}<p class="evergreen-source">Kaynak: ${c(x.h2h.source)}</p></section>`;
+  }
+  if (x.season) {
+    const blocks = x.season.teams.map((t) => {
+      let w = 0, d = 0, l = 0, gf = 0, ga = 0;
+      const rows = t.matches.map((m) => {
+        const [a, b] = m.score.split("-").map(Number); const home = m.home === t.team; const f = home ? a : b, g = home ? b : a;
+        gf += f; ga += g; if (f > g) w++; else if (f === g) d++; else l++;
+        return `<tr><td>${m.md}</td><td>${esc(trDate(m.date))}</td><th scope="row">${esc(m.home)} ${esc(m.score)} ${esc(m.away)}</th><td>${f > g ? "G" : f === g ? "B" : "M"}</td></tr>`;
+      });
+      return table(["Hafta", "Tarih", "Maç", "Sonuç"], rows, `${t.team}: ${t.matches.length} maç, ${w}G ${d}B ${l}M, gol ${gf}-${ga}, ${w * 3 + d} puan`);
+    }).join("");
+    out += `<section class="evergreen-section" aria-labelledby="sezon-ist"><h2 id="sezon-ist">Maç öncesi istatistikler: 2026-27 lig aşaması</h2>${blocks}<p class="evergreen-source">Kaynak: ${c(x.season.source)} (galibiyet/beraberlik/mağlubiyet, gol ve puan toplamları bu skorlardan hesaplanmıştır).</p></section>`;
+  }
+  return out;
+}
+
 function matchHubPage(h) {
   const S = h.sources;
   const cite = (keys) => [].concat(keys).map((k) => S[k] ? `<a href="${esc(S[k].url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(S[k].name.split(" — ")[0])}</a>` : "").filter(Boolean).join(", ");
@@ -587,6 +613,7 @@ function matchHubPage(h) {
 <section class="evergreen-section" aria-labelledby="ilk11"><h2 id="ilk11">İlk 11'ler</h2>${lineups}</section>
 <section class="evergreen-section" aria-labelledby="kadrolar"><h2 id="kadrolar">Kadrolar</h2><p>${link("./takimlar/galatasaray/kadro.html", "Galatasaray kadrosu")} (sağlayıcı verisinden) · ${link("./vfb-stuttgart.html", "VfB Stuttgart profili ve sezonu")}. Muhtemel 11 yazılmaz; resmî ilk 11'ler açıklanınca yukarıya eklenir.</p></section>
 <section class="evergreen-section" aria-labelledby="tablo"><h2 id="tablo">Puan durumu</h2>${tbl}</section>
+${matchHubExtras(h, cite)}
 <section class="evergreen-section" aria-labelledby="gs-form"><h2 id="gs-form">Galatasaray maç öncesi</h2>${ul(f.homeForm)}<p>${link("./galatasaray-son-dakika.html", "Galatasaray son dakika")} · ${link("./galatasaray-maclari.html", "Galatasaray maçları")} · ${link("./galatasaray-form-durumu.html", "Galatasaray form durumu")}</p></section>
 <section class="evergreen-section" aria-labelledby="vfb-form"><h2 id="vfb-form">Stuttgart maç öncesi</h2>${ul(f.awayForm)}</section>
 <section class="evergreen-section" aria-labelledby="gecmis"><h2 id="gecmis">İki takımın geçmişi</h2>${ul(f.history)}</section>
