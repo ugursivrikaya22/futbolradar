@@ -278,6 +278,9 @@ function presentColumn(entry, locale) {
       ? text((entry.en || {}).featuredImageAlt)
       : text(entry.featuredImageAlt),
     hideStandfirst: Boolean(entry.hideStandfirst),
+    // Ana sayfada (öne çıkan yazı + Son Köşe Yazıları) gösterme; yazı sayfası,
+    // arşiv, site haritası ve takım sayfaları etkilenmez.
+    hideFromHome: Boolean(entry.hideFromHome),
     // Yazının konu aldığı maç için doğrulanmış etkinlik künyesi (SportsEvent).
     sportsEvent: entry.sportsEvent && typeof entry.sportsEvent === "object" ? entry.sportsEvent : null,
     body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
