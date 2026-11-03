@@ -24,6 +24,7 @@
  * uydurma tarih zengin sonuçta yanlış bilgi yayar).
  */
 import fs from "node:fs";
+import { hubsForTeam, loadMatchHubs, matchHubLinksSection } from "./lib/matchHubLinks.mjs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
@@ -600,6 +601,7 @@ function buildPage(team, today) {
         ${nextMatchCard(next, team, today)}
       </section>
       ${currentMatchCard(todayGame, team)}
+      ${matchHubLinksSection(hubsForTeam(loadMatchHubs(root), team.name), { heading: `${team.name} maç merkezleri` })}
       ${section(`${team.name} puan durumu ve son form`, `${seasonLabel} Süper Lig sıralaması; puan durumu sayfasıyla aynı sağlayıcı tablosundan.`, `<div class="team-overview-grid">${standingCard(standing, seasonLabel, team)}${lastMatchCard(lastGame)}</div>`, "Güncel durum")}
       ${section("Yaklaşan maçlar", "Gün ve saati doğrulanmış karşılaşmalar, en yakın tarih önde.", upcomingRows(upcoming, team), "Takvim")}
       ${section("İlgili maç analizleri", "Yalnızca doğrulanmış sonuçtan üretilmiş maç raporları ve analizler listelenir.", resultRows(results, team), "Analiz")}
