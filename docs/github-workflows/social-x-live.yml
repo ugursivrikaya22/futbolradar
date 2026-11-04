@@ -1,0 +1,47 @@
+name: Social — X canlı maç tweetleri
+
+# Her 15 dakikada bir (UTC */15 → İstanbul her saatin :00/:15/:30/:45'i).
+# Daha sık koşmak anlamsız: kaynak `data/fixture-calendar.json` sitede saatlik
+# iş + deploy ile yenileniyor (doğrulanacak), yeni API-Football isteği atılmıyor.
+# BİRİNCİL Vercel cron `/api/cron/x-autopost` (canlı tweetler aynı koşuda).
+# Zamanlanmış koşu yalnızca SOCIAL_AUTOPOST_RUNNER = "actions" ise; elle
+# tetikleme her zaman (varsayılan kuru koşu). Supabase anahtarları
+# (x_autopost_posts) Actions + Vercel birlikte çalışsa da çift tweeti engeller.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Kuru koşu (hiçbir şey gönderme)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: social-x-live
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  live:
+    if: github.event_name == 'workflow_dispatch' || vars.SOCIAL_AUTOPOST_RUNNER == 'actions'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: X canlı maç tweetleri
+        env:
+          X_LIVE_ENABLED: ${{ secrets.X_LIVE_ENABLED }}
+          X_LIVE_STATS_ENABLED: ${{ secrets.X_LIVE_STATS_ENABLED }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/social-x-live.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }}
