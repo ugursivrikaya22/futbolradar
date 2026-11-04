@@ -350,7 +350,18 @@ function getLiveScoreHub() {
     // bu dosyayı değil `getLiveScoreHub`ı hiç import etmiyor, ama ileride
     // etseydi bu satır modül yükleme sırasına bağlı kalmazdı.
     const { notifyMatchEvents } = require("./pushNotifier");
-    globalThis[key] = new LiveScoreHub({ onMatchEvents: notifyMatchEvents });
+    // ÇİFT BİLDİRİM YOK: cron (services/liveMatchPush.js) ile aynı olay
+    // anahtarı push_reminder_log'da alınır; alınamayan olay gönderilmez.
+    // Kayıt deposu erişilemezse eski davranış sürer (olaylar doğrudan gider).
+    const onMatchEvents = async (events) => {
+      let toSend = events;
+      try {
+        const { claimEvents, createStore } = require("./liveMatchPush");
+        toSend = await claimEvents(events, createStore());
+      } catch (error) { toSend = events; }
+      if (toSend.length) await notifyMatchEvents(toSend).catch(() => {});
+    };
+    globalThis[key] = new LiveScoreHub({ onMatchEvents });
   }
   return globalThis[key];
 }
