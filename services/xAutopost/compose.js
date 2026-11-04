@@ -100,13 +100,125 @@ function analysisSentence(m) {
 
 /* ---------------------------- tweet türleri ------------------------- */
 
-function composeResult(m, slug) {
+/**
+ * Golcü satırı — yalnızca veride olan oyuncu + dakika: "⚽ Batrakov 12', 15'".
+ * `m.scorers` (maç merkezi dosyası: {team, player, minute}) varsa o, yoksa
+ * sağlayıcı olayları (goalEvents). Oyuncu adı/dakikası eksik gol yazılmaz.
+ */
+function scorersLine(m) {
+  const list = Array.isArray(m.scorers) && m.scorers.length
+    ? m.scorers.map((s) => ({ player: s.player, minute: s.minute }))
+    : goalEvents(m).map((e) => ({ player: scorerName(e.playerName), minute: e.minute != null ? `${e.minute}${e.extraMinute ? `+${e.extraMinute}` : ""}` : null }));
+  const by = new Map();
+  for (const g of list) {
+    if (!g.player || g.minute == null || g.minute === "") continue;
+    if (!by.has(g.player)) by.set(g.player, []);
+    by.get(g.player).push(`${g.minute}'`);
+  }
+  if (!by.size) return "";
+  return `⚽ ${[...by].map(([p, mins]) => `${p} ${mins.join(", ")}`).join(" · ")}`;
+}
+
+function composeResult(m, slug, { url: urlOverride } = {}) {
   const sc = scoreOf(m);
-  if (!sc || !slug) return null;
+  const url = urlOverride || (slug ? matchUrl(slug) : null);
+  if (!sc || !url) return null;
   const head = `🏁 MAÇ SONU${m.league ? ` | ${m.league}` : ""}\n${m.homeTeam} ${sc.home}-${sc.away} ${m.awayTeam}`;
-  const url = matchUrl(slug);
-  const text = fitText((a) => (a ? `${head}\n\n${a}\n\n${url}` : `${head}\n\n${url}`), analysisSentence(m) || "");
-  return { key: `result:${m.providerIds && m.providerIds.apiFootball ? `af:${m.providerIds.apiFootball}` : m.id}`, kind: "result", text };
+  const goals = scorersLine(m);
+  const withGoals = goals ? `${head}\n${goals}` : head;
+  const build = (h) => (a) => (a ? `${h}\n\n${a}\n\n${url}` : `${h}\n\n${url}`);
+  let text = fitText(build(withGoals), analysisSentence(m) || "");
+  if (weightedLength(text) > MAX_WEIGHT) text = fitText(build(head), analysisSentence(m) || "");
+  const id = m.providerIds && m.providerIds.apiFootball ? `af:${m.providerIds.apiFootball}` : m.id;
+  return { key: `result:${id}`, kind: "result", text };
+}
+
+/**
+ * Elle doğrulanmış maç merkezi dosyası (data/match-hubs/*.json, kaynaklı
+ * alanlar) → composeResult girdisi. Yalnızca dosyadaki skor/golcü/istatistik.
+ */
+function matchFromHub(hub) {
+  if (!hub || !hub.result || !Number.isFinite(hub.result.home) || !Number.isFinite(hub.result.away)) return null;
+  const side = (t) => (t === "home" ? hub.home : hub.away);
+  const num = (v) => Number(String(v).replace(",", "."));
+  const label = (l) => String(l).replace(/\s*\(%\)$/, "");
+  return {
+    id: `hub:${String(hub.file || "").replace(/\.html$/, "")}`,
+    homeTeam: hub.home, awayTeam: hub.away,
+    league: /Şampiyonlar Ligi/i.test(hub.competition || "") ? "Şampiyonlar Ligi" : (hub.competition || "").split(",")[0],
+    score: { home: hub.result.home, away: hub.result.away },
+    scorers: (hub.result.scorers || []).map((s) => ({ ...s, teamName: side(s.team) })),
+    statistics: (hub.result.stats || []).map((s) => ({ type: label(s.label), home: num(s.home), away: num(s.away) })).filter((s) => Number.isFinite(s.home) && Number.isFinite(s.away)),
+    events: []
+  };
+}
+
+/* --------------------- şeffaflık + bağlantı modu --------------------- */
+
+/** Otomasyon şeffaflığı (X otomasyon kuralları: otomatik hesap açıkça belirtilmeli). */
+const AUTOMATED_MARKER = "🤖 Otomatik";
+const TRAILING_URL = /\s*(https?:\/\/\S+)\s*$/;
+
+function splitUrl(text) {
+  const m = String(text).match(TRAILING_URL);
+  return m ? { body: String(text).slice(0, m.index).trim(), url: m[1] } : { body: String(text).trim(), url: null };
+}
+
+function withMarker(body, marker) {
+  if (!marker) return body;
+  const candidate = `${body}\n\n${marker}`;
+  return weightedLength(candidate) <= MAX_WEIGHT ? candidate : body;
+}
+
+/**
+ * Son bağlantıyı moda göre yerleştirir:
+ *  - "reply":  ana gönderi bağlantısız; bağlantı ilk yanıtta (`reply`).
+ *  - "inline": bağlantı ana gönderide (tek istek).
+ *  - "none":   bağlantı yok (en ucuz).
+ * NOT (maliyet): X fiyat tablosu URL içeren HER gönderiyi "Post: Create
+ * (with URL)" sayar; kendi gönderine yanıt "summoned" değildir. Yani
+ * "reply" modu bağlantı başına inline'dan $0.015 PAHALIDIR (bkz. docs).
+ */
+function applyLinkMode(item, mode = "reply", { marker = AUTOMATED_MARKER } = {}) {
+  const { body, url } = splitUrl(item.text);
+  if (!url || mode === "none") return { ...item, text: withMarker(body, marker), reply: null, url: url || null };
+  if (mode === "inline") {
+    const marked = marker ? `${body}\n\n${marker}\n${url}` : `${body}\n\n${url}`;
+    return { ...item, text: weightedLength(marked) <= MAX_WEIGHT ? marked : `${body}\n\n${url}`, reply: null, url };
+  }
+  return { ...item, text: withMarker(body, marker), reply: `🔗 Ayrıntılar ve istatistikler: ${url}`, url };
+}
+
+/* ------------------- maçsız gün: kalıcı istatistik sayfaları -------------- */
+
+/** Sitede VAR OLAN takım karşılaştırma sayfaları (karsilastirma/takimlar/*.html). */
+const TEAM_COMPARISON_PAGES = [
+  ["galatasaray", "fenerbahce"], ["galatasaray", "besiktas"], ["galatasaray", "trabzonspor"],
+  ["fenerbahce", "besiktas"], ["fenerbahce", "trabzonspor"], ["besiktas", "trabzonspor"]
+];
+const TEAM_NAMES = { galatasaray: "Galatasaray", fenerbahce: "Fenerbahçe", besiktas: "Beşiktaş", trabzonspor: "Trabzonspor" };
+
+/**
+ * Takım karşılaştırması — yalnızca puan durumu tablosundaki gerçek alanlar
+ * (sıra, puan, G-B-M, atılan-yenilen). `dayIndex` ile çiftler döner.
+ */
+function composeTeamComparison(standings, dayIndex = 0) {
+  const sl = standings && (standings["super-lig"] || standings);
+  const table = sl && Array.isArray(sl.table) ? sl.table : [];
+  if (!table.length) return null;
+  const norm = (s) => String(s || "").toLocaleLowerCase("tr-TR");
+  const row = (slug) => table.find((r) => norm(r.team || r.name) === norm(TEAM_NAMES[slug]));
+  for (let i = 0; i < TEAM_COMPARISON_PAGES.length; i += 1) {
+    const [a, b] = TEAM_COMPARISON_PAGES[(dayIndex + i) % TEAM_COMPARISON_PAGES.length];
+    const ra = row(a); const rb = row(b);
+    if (!ra || !rb || ![ra, rb].every((r) => [r.rank, r.points, r.won, r.drawn, r.lost, r.goalsFor, r.goalsAgainst].every(Number.isFinite))) continue;
+    const line = (r) => `${r.team || r.name}: ${r.rank}. sıra, ${r.points} puan (${r.won}G ${r.drawn}B ${r.lost}M), gol ${r.goalsFor}-${r.goalsAgainst}`;
+    const url = `${SITE}/karsilastirma/takimlar/${a}-vs-${b}`;
+    const text = `⚖️ Takım karşılaştırması | Süper Lig\n${TEAM_NAMES[a]} – ${TEAM_NAMES[b]}\n\n${line(ra)}\n${line(rb)}\n\n${url}`;
+    const sig = [ra, rb].map((r) => `${r.played}:${r.points}:${r.goalsFor}:${r.goalsAgainst}`).join("|");
+    return { key: `filler:teamCompare:${a}-${b}:${sig}`, kind: "filler", text };
+  }
+  return null;
 }
 
 /** Favori takım golleri — olay kimlikleri web push çekirdeğiyle AYNI (match-notifications-core.js#events). */
@@ -225,5 +337,7 @@ function composePrematchAsk(m, slug, { now = new Date() } = {}) {
 module.exports = {
   SITE, MAX_WEIGHT, weightedLength, fitText, analysisSentence, goalEvents,
   composeResult, composeGoal, composeColumn, composeTransferDigest, composeLeaderStat,
-  composePrematchPoll, composePrematchAsk, kickoffLabel, pollOption, POLL_OPTION_MAX
+  composePrematchPoll, composePrematchAsk, kickoffLabel, pollOption, POLL_OPTION_MAX,
+  scorersLine, matchFromHub, AUTOMATED_MARKER, applyLinkMode, splitUrl,
+  composeTeamComparison, TEAM_COMPARISON_PAGES, TEAM_NAMES
 };

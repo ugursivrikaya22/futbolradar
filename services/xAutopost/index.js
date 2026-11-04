@@ -23,6 +23,9 @@
 const compose = require("./compose");
 const { authorizationHeader } = require("./oauth1");
 const { createStore } = require("./store");
+const { createThrottle, rateLimitWaitMs, WINDOW_15M, WINDOW_24H } = require("./throttle");
+const { hashKey } = require("./dedupe");
+const oauth2 = require("./oauth2");
 const { normalizeName } = require("../teamIdentity");
 
 const TWEET_ENDPOINT = "https://api.x.com/2/tweets";
@@ -34,7 +37,7 @@ const TRANSFER_WINDOW_DAYS = 7;
 const PREMATCH_MIN_LEAD_MS = 10 * 60e3;  // başlamaya 10 dk'dan az kaldıysa anket açılmaz
 
 /** Maçsız günde dolgu saatleri (İstanbul): 12:xx ve 19:xx. */
-const FILLER_SLOTS = [{ id: "noon", hour: 12, prefer: ["transfers", "topAssists", "topScorers"] }, { id: "evening", hour: 19, prefer: ["topScorers", "transfers", "topAssists"] }];
+const FILLER_SLOTS = [{ id: "noon", hour: 12, prefer: ["transfers", "topAssists", "topScorers", "teamCompare"] }, { id: "evening", hour: 19, prefer: ["topScorers", "teamCompare", "transfers", "topAssists"] }];
 
 const FINISHED = /^(FINISHED|FT|AET|PEN)$/i;
 const LIVE = /^(LIVE|IN_PLAY|1H|2H|ET|HT|BT|P|PAUSED)$/i;
@@ -47,14 +50,30 @@ function config(env = process.env) {
     tokenSecret: String(env.X_ACCESS_TOKEN_SECRET || "").trim()
   };
   const enabled = /^(1|true|yes|on)$/i.test(String(env.X_AUTOPOST_ENABLED || "").trim());
-  const missing = Object.entries({ X_API_KEY: creds.consumerKey, X_API_SECRET: creds.consumerSecret, X_ACCESS_TOKEN: creds.token, X_ACCESS_TOKEN_SECRET: creds.tokenSecret }).filter(([, v]) => !v).map(([k]) => k);
+  // ACİL DURDURMA: X_AUTOPOST_KILL=1 her şeyi (x-autopost + x-live) kuru koşuya çeker.
+  const killed = /^(1|true|yes|on)$/i.test(String(env.X_AUTOPOST_KILL || "").trim());
+  // Kimlik: OAuth 2.0 (X_OAUTH2_CLIENT_ID + X_OAUTH2_REFRESH_TOKEN) varsa o;
+  // yoksa mevcut OAuth 1.0a dört anahtarı.
+  const authMode = oauth2.oauth2Configured(env) ? "oauth2" : "oauth1";
+  if (authMode === "oauth2") creds.oauth2 = true;
+  const missing = authMode === "oauth2" ? [] : Object.entries({ X_API_KEY: creds.consumerKey, X_API_SECRET: creds.consumerSecret, X_ACCESS_TOKEN: creds.token, X_ACCESS_TOKEN_SECRET: creds.tokenSecret }).filter(([, v]) => !v).map(([k]) => k);
+  const linkRaw = String(env.X_LINK_MODE || "").trim().toLowerCase();
   const num = (v, d, max) => { const n = Number(v); return Number.isInteger(n) && n >= 0 ? Math.min(n, max) : d; };
   const favorites = String(env.X_FAVORITE_TEAMS || "").split(",").map((s) => s.trim()).filter(Boolean);
   return {
-    creds, enabled, missing,
-    live: enabled && missing.length === 0,
-    maxPerRun: num(env.X_MAX_PER_RUN, 4, 10),
-    maxPerDay: num(env.X_MAX_PER_DAY, 8, 50),
+    creds, enabled, missing, killed, authMode,
+    live: enabled && !killed && missing.length === 0,
+    // Bağlantı: reply (varsayılan; kullanıcı isteği) | inline | none. X_INCLUDE_LINKS=0 → none.
+    linkMode: /^(0|false|no|off)$/i.test(String(env.X_INCLUDE_LINKS || "").trim()) ? "none" : (["reply", "inline", "none"].includes(linkRaw) ? linkRaw : "reply"),
+    marker: /^(0|false|no|off)$/i.test(String(env.X_AUTOMATED_MARKER || "").trim()) ? "" : compose.AUTOMATED_MARKER,
+    // Gol kapsamı: superlig (varsayılan: tüm Süper Lig maçları + favorilerin diğer maçları) | favorites
+    goalScope: /^favorites$/i.test(String(env.X_GOAL_SCOPE || "").trim()) ? "favorites" : "superlig",
+    // Gol tweetinde bağlantı (bağlantılı gönderi $0.20) — varsayılan KAPALI.
+    goalLinks: /^(1|true|yes|on)$/i.test(String(env.X_GOAL_LINKS || "").trim()),
+    rateSafety: Math.min(1, Math.max(0.1, Number(env.X_RATE_SAFETY) || 0.8)),
+    maxPerRun: num(env.X_MAX_PER_RUN, 6, 10),
+    // Günlük tavan HER isteği sayar (ana gönderi + bağlantı yanıtı). Resmî sınırın çok altında; maliyet koruması.
+    maxPerDay: num(env.X_MAX_PER_DAY, 30, 200),
     // X pay-per-use: bağlantılı gönderi $0.20, bağlantısız $0.015 (docs.x.com/x-api/getting-started/pricing).
     includeLinks: !/^(0|false|no|off)$/i.test(String(env.X_INCLUDE_LINKS || "").trim()),
     prematch: {
@@ -80,7 +99,7 @@ function matchList(calendar) {
 function status(m) { return String(m.providerStatus || m.status || ""); }
 
 /** Aday tweetler (öncelik sırasıyla). Saf: yalnızca girdilere ve `now`a bakar. */
-function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { now = new Date(), favorites = DEFAULT_FAVORITES.map(normalizeName), prematch = null } = {}) {
+function buildCandidates({ calendar, seoIndex, columns, transfers, leaders, standings }, { now = new Date(), favorites = DEFAULT_FAVORITES.map(normalizeName), prematch = null, goalScope = "favorites" } = {}) {
   const t = now.getTime();
   // matchSeoPages#slugForMatch ile aynı dizin anahtarları (af:/tsdb:). O modül
   // data/*.json'u require ettiği için cron işlevinde (paket içinde data/ yok)
@@ -125,7 +144,8 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
       if (prematch.mode !== "poll") items.push(compose.composePrematchAsk(m, slug, { now }));
       for (const c of items) if (c) prematchList.push({ ...c, at: kick });
     }
-    if (isFav && !finished && (LIVE.test(status(m)) || m.live) && t - kick <= GOAL_WINDOW_MS) {
+    const goalEligible = isFav || (goalScope === "superlig" && /^Süper Lig$/i.test(String(m.league || "").trim()));
+    if (goalEligible && !finished && (LIVE.test(status(m)) || m.live) && t - kick <= GOAL_WINDOW_MS) {
       const evs = compose.goalEvents(m);
       evs.forEach((e, i) => {
         const c = compose.composeGoal(m, e, slug, { isLatest: i === evs.length - 1 });
@@ -149,7 +169,8 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
       const options = {
         transfers: () => compose.composeTransferDigest(recent, today),
         topScorers: () => compose.composeLeaderStat(leaders, "topScorers"),
-        topAssists: () => compose.composeLeaderStat(leaders, "topAssists")
+        topAssists: () => compose.composeLeaderStat(leaders, "topAssists"),
+        teamCompare: () => compose.composeTeamComparison(standings, Math.floor(Date.parse(`${today}T00:00:00Z`) / 864e5))
       };
       for (const id of slot.prefer) {
         const c = options[id]();
@@ -163,19 +184,44 @@ function buildCandidates({ calendar, seoIndex, columns, transfers, leaders }, { 
   return { goals, results, prematch: prematchList, columns: cols, fillers, todayHasMatch };
 }
 
-async function postTweet(text, creds, { fetcher = fetch, poll = null } = {}) {
-  const auth = authorizationHeader({ method: "POST", url: TWEET_ENDPOINT, ...creds });
-  const response = await fetcher(TWEET_ENDPOINT, {
+let tokenProvider = null;
+/** OAuth 2.0 erişim belirteci sağlayıcısı (koşular arasında süreç içinde önbellek). */
+function oauth2Provider({ env = process.env, fetcher = fetch, log } = {}) {
+  if (!tokenProvider) {
+    const tokenStore = /^supabase$/i.test(String(env.X_OAUTH2_TOKEN_STORE || "").trim()) ? oauth2.createSupabaseTokenStore() : null;
+    tokenProvider = oauth2.createTokenProvider({ env, fetcher, tokenStore, log });
+  }
+  return tokenProvider;
+}
+
+async function authHeader(creds, { fetcher, env, tokens }) {
+  if (creds && creds.oauth2) return `Bearer ${await (tokens || oauth2Provider({ env, fetcher })).getAccessToken()}`;
+  return authorizationHeader({ method: "POST", url: TWEET_ENDPOINT, ...creds });
+}
+
+/**
+ * POST /2/tweets. `replyTo`: bağlantı yanıtı için ana gönderinin kimliği.
+ * Hata nesnesi `status` ve 429'da `waitMs` (Retry-After / x-rate-limit-reset) taşır.
+ */
+async function postTweet(text, creds, { fetcher = fetch, poll = null, replyTo = null, env = process.env, tokens = null, now = Date.now } = {}) {
+  const payload = { text };
+  // Anket: X API v2 `poll` alanı (2-4 seçenek, ≤25 karakter, 5-10080 dk; medya ile birlikte olamaz).
+  if (poll) payload.poll = { options: poll.options, duration_minutes: poll.duration_minutes };
+  if (replyTo) payload.reply = { in_reply_to_tweet_id: String(replyTo) };
+  const send = async () => fetcher(TWEET_ENDPOINT, {
     method: "POST",
-    headers: { Authorization: auth, "Content-Type": "application/json" },
-    // Anket: X API v2 `poll` alanı (2-4 seçenek, ≤25 karakter, 5-10080 dk; medya ile birlikte olamaz).
-    body: JSON.stringify(poll ? { text, poll: { options: poll.options, duration_minutes: poll.duration_minutes } } : { text }),
+    headers: { Authorization: await authHeader(creds, { fetcher, env, tokens }), "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
     signal: AbortSignal.timeout(15_000)
   });
+  let response = await send();
+  // OAuth 2.0: süresi dolmuş belirteç → bir kez yenile ve tekrar dene.
+  if (response.status === 401 && creds && creds.oauth2) { (tokens || oauth2Provider({ env, fetcher })).invalidate(); response = await send(); }
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
     const error = new Error(`x-http-${response.status}: ${String(body && (body.detail || body.title) || "").slice(0, 160)}`);
     error.status = response.status;
+    if (response.status === 429) error.waitMs = rateLimitWaitMs(response.headers, { now: now() });
     throw error;
   }
   return body && body.data && body.data.id;
@@ -186,7 +232,8 @@ const DATA_FILES = {
   seoIndex: "data/match-seo-index.json",
   columns: "data/columns.json",
   transfers: "data/transfers.json",
-  leaders: "data/league-leaders.json"
+  leaders: "data/league-leaders.json",
+  standings: "data/league-standings.json"
 };
 
 /** Yayımlanmış veri dosyalarını siteden indirir (cron işlevinde `data/` yok). */
@@ -215,27 +262,39 @@ function supabaseConfigured() {
   try { return require("../supabase/client").isConfigured(); } catch { return false; }
 }
 
+/** Aday tweete bağlantı modu + şeffaflık işaretini uygular. */
+function finalize(item, cfg) {
+  const mode = item.kind === "goal" && !cfg.goalLinks ? "none" : cfg.linkMode;
+  // Anket gönderisi yanıt zinciriyle değil, tek gönderide kalır (bağlantı yanıtı yine olabilir).
+  return compose.applyLinkMode(item, mode, { marker: cfg.marker });
+}
+
 /**
  * Bir koşu. Dönen: { mode, posted[], skipped[], dryRun[] }.
- * `store`/`fetcher`/`data` testte enjekte edilir.
+ * `store`/`fetcher`/`data`/`tokens` testte enjekte edilir.
+ *
+ * KUYRUK: öncelik sırası (goller → maç sonu → maç öncesi → köşe → dolgu).
+ * KISICI: her istek (ana gönderi + bağlantı yanıtı) throttle.js'den geçer;
+ * pencere sayımları depodan gelir (son 15 dk / son 24 sa). 429'da
+ * Retry-After / x-rate-limit-reset okunur, anahtar bırakılır, koşu durur;
+ * sonraki 15 dk'lık cron koşusu kuyruğu kaldığı yerden sürdürür.
  */
-async function runXAutopost({ env = process.env, now = new Date(), data, loader = loadFromSite, store, fetcher = fetch, log = console.log } = {}) {
+async function runXAutopost({ env = process.env, now = new Date(), data, loader = loadFromSite, store, fetcher = fetch, log = console.log, tokens = null, clock = () => now.getTime() } = {}) {
   const cfg = config(env);
   const live = cfg.live && (store || supabaseConfigured());
   const input = data || await loader({ fetcher });
-  const c = buildCandidates(input, { now, favorites: cfg.favorites, prematch: cfg.prematch });
-  if (!cfg.includeLinks) {
-    const strip = (item) => ({ ...item, text: item.text.replace(/\n*https?:\/\/\S+\s*$/, "").trim() });
-    for (const k of ["goals", "results", "prematch", "columns", "fillers"]) c[k] = c[k].map(strip);
-  }
+  const c = buildCandidates(input, { now, favorites: cfg.favorites, prematch: cfg.prematch, goalScope: cfg.goalScope });
+  for (const k of ["goals", "results", "prematch", "columns", "fillers"]) c[k] = c[k].map((item) => finalize(item, cfg));
   const ordered = [...c.goals, ...c.results, ...c.prematch, ...c.columns];
-  const summary = { mode: live ? "live" : "dry-run", reason: live ? null : (!cfg.enabled ? "X_AUTOPOST_ENABLED kapalı" : cfg.missing.length ? `eksik: ${cfg.missing.join(",")}` : "Supabase yapılandırılmamış"), todayHasMatch: c.todayHasMatch, candidates: ordered.length + (c.fillers.length ? 1 : 0), posted: [], skipped: [], dryRun: [] };
+  const reason = live ? null : (cfg.killed ? "X_AUTOPOST_KILL açık (acil durdurma)" : !cfg.enabled ? "X_AUTOPOST_ENABLED kapalı" : cfg.missing.length ? `eksik: ${cfg.missing.join(",")}` : "Supabase yapılandırılmamış");
+  const summary = { mode: live ? "live" : "dry-run", reason, auth: cfg.authMode, linkMode: cfg.linkMode, todayHasMatch: c.todayHasMatch, candidates: ordered.length + (c.fillers.length ? 1 : 0), posted: [], skipped: [], dryRun: [] };
 
   if (!live) {
-    const preview = [...ordered, ...c.fillers.slice(0, 1)].slice(0, cfg.maxPerRun);
+    const seen = new Set();
+    const preview = [...ordered, ...c.fillers.slice(0, 1)].filter((item) => { const h = hashKey(item.text); if (seen.has(h)) return false; seen.add(h); return true; }).slice(0, cfg.maxPerRun);
     for (const item of preview) {
-      summary.dryRun.push({ key: item.key, kind: item.kind, length: compose.weightedLength(item.text), text: item.text, ...(item.poll ? { poll: item.poll } : {}) });
-      log(`[x-autopost] KURU KOŞU (${summary.reason}) ${item.key} (${compose.weightedLength(item.text)}/280)\n${item.text}${item.poll ? `\n[anket: ${item.poll.options.join(" / ")} · ${item.poll.duration_minutes} dk]` : ""}\n---`);
+      summary.dryRun.push({ key: item.key, kind: item.kind, length: compose.weightedLength(item.text), text: item.text, reply: item.reply || null, ...(item.poll ? { poll: item.poll } : {}) });
+      log(`[x-autopost] KURU KOŞU (${summary.reason}) ${item.key} (${compose.weightedLength(item.text)}/280)\n${item.text}${item.poll ? `\n[anket: ${item.poll.options.join(" / ")} · ${item.poll.duration_minutes} dk]` : ""}${item.reply ? `\n  ↳ yanıt: ${item.reply}` : ""}\n---`);
     }
     return summary;
   }
@@ -244,40 +303,83 @@ async function runXAutopost({ env = process.env, now = new Date(), data, loader 
   const day = istanbul(now);
   let today = await db.countSince(day.dayStartIso);
   let prematchToday = c.prematch.length ? (await db.countSince(day.dayStartIso, "prematch-poll")) + (await db.countSince(day.dayStartIso, "prematch-ask")) : 0;
+  const t0 = clock();
+  const throttle = createThrottle({
+    safety: cfg.rateSafety,
+    seed15m: await db.countSince(new Date(t0 - WINDOW_15M).toISOString()),
+    seed24h: await db.countSince(new Date(t0 - WINDOW_24H).toISOString()),
+    now: clock
+  });
   const seen = await db.existing([...ordered.map((x) => x.key), ...c.fillers.flatMap((f) => [f.key, f.slotKey])]);
   const queue = ordered.filter((x) => !seen.has(x.key));
   const filler = c.fillers.find((f) => !seen.has(f.key) && !seen.has(f.slotKey));
   if (filler && !queue.length) queue.push(filler);
 
+  const send = async (text, opts) => {
+    const gate = throttle.check();
+    if (!gate.ok) { const e = new Error(`throttle:${gate.reason}`); e.throttled = true; throw e; }
+    throttle.record();
+    return postTweet(text, cfg.creds, { fetcher, env, tokens, now: clock, ...opts });
+  };
+
   for (const item of queue) {
     if (summary.posted.length >= cfg.maxPerRun) { summary.skipped.push({ key: item.key, reason: "run-cap" }); continue; }
+    const gate = throttle.check();
+    if (!gate.ok) { summary.skipped.push({ key: item.key, reason: `throttle:${gate.reason}` }); continue; }
     if (today >= cfg.maxPerDay) { summary.skipped.push({ key: item.key, reason: "day-cap" }); continue; }
     const isPrematch = /^prematch-/.test(item.kind);
     if (isPrematch && prematchToday >= cfg.prematch.maxPerDay) { summary.skipped.push({ key: item.key, reason: "prematch-day-cap" }); continue; }
     if (compose.weightedLength(item.text) > compose.MAX_WEIGHT) { summary.skipped.push({ key: item.key, reason: "too-long" }); continue; }
     if (!(await db.claim(item))) { summary.skipped.push({ key: item.key, reason: "already-claimed" }); continue; }
+    // İçerik tekrarı: aynı (normalize) metin daha önce gönderildiyse/gönderimdeyse atla.
+    const hKey = hashKey(item.text);
+    if (!(await db.claim({ key: hKey, kind: "content-hash", text: item.key }))) {
+      await db.finish({ key: item.key, status: "skipped", error: "duplicate-content" });
+      summary.skipped.push({ key: item.key, reason: "duplicate-content" }); continue;
+    }
     if (item.slotKey && !(await db.claim({ key: item.slotKey, kind: "filler-slot", text: item.key }))) {
-      await db.finish({ key: item.key, status: "skipped", error: "slot-taken" });
+      await db.finish({ key: item.key, status: "skipped", error: "slot-taken" }); await db.release(hKey);
       summary.skipped.push({ key: item.key, reason: "slot-taken" }); continue;
     }
     today += 1; if (isPrematch) prematchToday += 1;
+    let id;
     try {
-      const id = await postTweet(item.text, cfg.creds, { fetcher, poll: item.poll || null });
+      id = await send(item.text, { poll: item.poll || null });
       await db.finish({ key: item.key, status: "posted", tweetId: id });
+      await db.finish({ key: hKey, status: "hash", tweetId: id }); // pencere sayımına girmez
       summary.posted.push({ key: item.key, id });
       log(`[x-autopost] paylaşıldı ${item.key} → ${id}`);
     } catch (error) {
       // Kalıcı hata (ör. 403 duplicate) tekrar DENENMEZ.
-      // Kota/yetki/geçici hata: anahtar bırakılır, sonraki koşu yeniden dener.
-      const transient = error.status === 429 || error.status === 401 || !error.status || error.status >= 500;
-      if (transient) { await db.release(item.key); if (item.slotKey) await db.release(item.slotKey); today -= 1; if (isPrematch) prematchToday -= 1; }
-      else await db.finish({ key: item.key, status: "failed", error: error.message });
+      // Kota/yetki/geçici hata/kısıcı: anahtar bırakılır, sonraki koşu yeniden dener.
+      const transient = error.throttled || error.status === 429 || error.status === 401 || !error.status || error.status >= 500;
+      if (transient) { await db.release(item.key); await db.release(hKey); if (item.slotKey) await db.release(item.slotKey); today -= 1; if (isPrematch) prematchToday -= 1; }
+      else { await db.finish({ key: item.key, status: "failed", error: error.message }); await db.finish({ key: hKey, status: "hash" }); }
+      if (error.status === 429) { throttle.block(clock() + (error.waitMs || WINDOW_15M)); summary.retryAfterMs = error.waitMs; }
       summary.skipped.push({ key: item.key, reason: error.message });
       log(`[x-autopost] hata ${item.key}: ${error.message}`);
       if (transient || error.status === 403) break; // kota/yetki: koşuyu durdur
+      continue;
+    }
+    // Bağlantı yanıtı (X_LINK_MODE=reply): ayrı istek, ayrı anahtar (`reply:<anahtar>`).
+    if (item.reply && id) {
+      const rKey = `reply:${item.key}`;
+      if (!(await db.claim({ key: rKey, kind: "reply", text: item.reply }))) continue;
+      try {
+        const rid = await send(item.reply, { replyTo: id });
+        await db.finish({ key: rKey, status: "posted", tweetId: rid });
+        (summary.replies = summary.replies || []).push({ key: rKey, id: rid, replyTo: id });
+      } catch (error) {
+        // Yanıt tekrar denenmez (ana gönderi zaten yayında; ikinci kez yanıt riskine girilmez).
+        await db.finish({ key: rKey, status: "failed", error: error.message });
+        if (error.status === 429) { throttle.block(clock() + (error.waitMs || WINDOW_15M)); summary.retryAfterMs = error.waitMs; }
+        summary.skipped.push({ key: rKey, reason: error.message });
+        log(`[x-autopost] yanıt hatası ${rKey}: ${error.message}`);
+        if (error.throttled || error.status === 429) break;
+      }
     }
   }
   return summary;
 }
 
-module.exports = { config, buildCandidates, runXAutopost, postTweet, loadFromSite, loadFromDisk, istanbul, TWEET_ENDPOINT, FILLER_SLOTS, DATA_FILES };
+module.exports = { config, buildCandidates, runXAutopost, postTweet, finalize, loadFromSite, loadFromDisk, istanbul, TWEET_ENDPOINT, FILLER_SLOTS, DATA_FILES };

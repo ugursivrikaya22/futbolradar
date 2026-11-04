@@ -39,7 +39,7 @@ function config(env = process.env) {
   const enabled = on(env.X_LIVE_ENABLED);
   return {
     creds: x.creds, missing: x.missing, enabled, favorites: x.favorites,
-    live: enabled && x.missing.length === 0,
+    live: enabled && !x.killed && x.missing.length === 0, marker: x.marker,
     stats: on(env.X_LIVE_STATS_ENABLED),
     favoritesOnly: !/^(0|false|no|off)$/i.test(String(env.X_LIVE_FAVORITES_ONLY || "").trim()),
     maxPerRun: int(env.X_LIVE_MAX_PER_RUN, 3, 1, 10),
@@ -186,7 +186,7 @@ async function runXLive({ env = process.env, now = new Date(), data, loader = xA
     if (!(await db.claim({ key: c.key, kind: KIND, text: c.text }))) { summary.skipped.push({ key: c.key, reason: "already-claimed" }); continue; }
     today += 1; perMatch.set(c.matchKey, perMatch.get(c.matchKey) + 1);
     try {
-      const id = await xAutopost.postTweet(c.text, cfg.creds, { fetcher });
+      const id = await xAutopost.postTweet(require("../xAutopost/compose").applyLinkMode({ text: c.text }, "inline", { marker: cfg.marker }).text, cfg.creds, { fetcher });
       await db.finish({ key: c.key, status: "posted", tweetId: id });
       summary.posted.push({ key: c.key, id });
       log(`[x-live] paylaşıldı ${c.key} → ${id}`);

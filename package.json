@@ -26,7 +26,7 @@
     "test:scheduled-updates": "node scripts/test-scheduled-updates.mjs",
     "test:vercel-cron": "node scripts/test-vercel-cron.mjs",
     "test:matchday-reminder": "node scripts/test-matchday-reminder.mjs",
-    "test:x-autopost": "node scripts/test-x-autopost.mjs",
+    "test:x-autopost": "node scripts/test-x-autopost.mjs && node scripts/test-x-autopost-queue.mjs",
     "test:social-autopost": "node scripts/test-social-autopost.mjs",
     "social:x-news:dry-run": "node scripts/social-x-news.mjs --local --dry-run",
     "social:telegram:dry-run": "node scripts/social-telegram.mjs --local --dry-run",

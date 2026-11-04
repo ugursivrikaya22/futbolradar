@@ -29,7 +29,7 @@ function config(env = process.env) {
   const enabled = on(env.X_NEWS_ENABLED);
   return {
     creds: x.creds, missing: x.missing, enabled,
-    live: enabled && x.missing.length === 0,
+    live: enabled && !x.killed && x.missing.length === 0, marker: x.marker,
     maxPerDay: int(env.X_NEWS_MAX_PER_DAY, 4, 1, 5),
     minGapMinutes: int(env.X_NEWS_MIN_GAP_MINUTES, 150, 30, 720),
     windowHours: int(env.X_NEWS_WINDOW_HOURS, news.DEFAULT_WINDOW_HOURS, 1, 72),
@@ -74,7 +74,7 @@ async function runXNews({ env = process.env, now = new Date(), data, loader = (o
     if (weightedLength(item.text) > MAX_WEIGHT) { summary.skipped.push({ key: item.key, reason: "too-long" }); continue; }
     if (!(await db.claim({ key: item.key, kind: KIND, text: item.text }))) { summary.skipped.push({ key: item.key, reason: "already-claimed" }); continue; }
     try {
-      const id = await postTweet(item.text, cfg.creds, { fetcher });
+      const id = await postTweet(require("../xAutopost/compose").applyLinkMode({ text: item.text }, "inline", { marker: cfg.marker }).text, cfg.creds, { fetcher });
       await db.finish({ key: item.key, status: "posted", tweetId: id });
       summary.posted.push({ key: item.key, id });
       log(`[x-news] paylaşıldı ${item.key} → ${id}`);

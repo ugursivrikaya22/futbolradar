@@ -1,62 +1,121 @@
-# X (Twitter) otomatik paylaşım
+# X (Twitter) otomatik paylaşım — FutbolRadar
 
-Cron işi: `/api/cron/x-autopost` (her 15 dk, `CRON_SECRET` korumalı, `server/cronRoute.js`).
-Kod: `services/xAutopost/` (oauth1.js, compose.js, store.js, index.js). Yeni npm bağımlılığı yok:
-X API v2 `POST /2/tweets` yerleşik `fetch` + `node:crypto` HMAC-SHA1 OAuth 1.0a ile çağrılır.
+> **Varsayılan KURU KOŞU.** Gerçek gönderi için `X_AUTOPOST_ENABLED=true` **ve** geçerli kimlik bilgileri gerekir.
+> Acil durdurma: `X_AUTOPOST_KILL=1` (tüm X akışları — maç günü, canlı, haber — anında kuru koşuya döner).
 
-## Ne paylaşılır
-| Tür | Kaynak | Pencere | Anahtar |
+## Ne paylaşır?
+| Gün | İçerik | Kaynak (gerçek veri) | Bağlantı |
 |---|---|---|---|
-| Favori takım golü | `data/fixture-calendar.json` olayları, `match-notifications-core.js#events` (web push ile aynı olay kimliği) | canlı maç, başlama +3 sa | `goal:<olay>` |
-| Maç sonu | aynı dosya; skor + istatistikten kural tabanlı tek cümle | başlama +6 sa | `result:af:<id>` |
-| Maç öncesi anket (X yerel anketi) | `data/fixture-calendar.json` (yalnızca takımlar + başlama saati) | başlamadan `X_PREMATCH_HOURS` (4) sa önce → 10 dk önce | `prematch-poll:af:<id>` |
-| "Senin tahminin ne?" | aynı | aynı | `prematch-ask:af:<id>` |
-| Köşe yazısı | `data/columns.json` (başlık + spot/özet) | yayın +48 sa | `column:<slug>` |
-| Maçsız gün dolgusu | `data/transfers.json` (son 7 gün) / `data/league-leaders.json` | 12:xx ve 19:xx (İstanbul) | `slot:<gün>:noon/evening` + içerik anahtarı |
+| Maç günü | Her gol: `⚽ GOL! … 67' Oyuncu` | `data/fixture-calendar.json` (API-Football) | Varsayılan yok (`X_GOAL_LINKS=1` ile var) |
+| Maç günü | Maç sonu özeti + golcüler | fixture-calendar / `data/match-hubs/*.json` | `/mac/<slug>` veya maç merkezi sayfası |
+| Maç olmayan gün | Gol krallığı, asist krallığı, transfer, takım karşılaştırması | `data/league-leaders.json`, `data/league-standings.json` | `/gol-kralligi.html`, `/asist-kralligi.html`, `/karsilastirma/takimlar/a-vs-b`, transfer sayfası |
+| Her gün | Yeni köşe yazısı | `data/columns` | yazı sayfası |
 
-Kapsam: Süper Lig maçları, Süper Lig takımlarının tüm maçları (Avrupa dahil), Türkiye millî takımı;
-yalnızca kalıcı `/mac/<slug>` sayfası olan maçlar (bağlantı her zaman var olan sayfaya gider).
-Yeni API-Football isteği yok: dosyalar `SITE_URL/data/...`den okunur (saatlik iş zaten üretiyor).
+TheSportsDB **kullanılmaz**. Uydurma metin yoktur: her satır veri dosyasındaki alanlardan kurulur; veri yoksa tweet üretilmez.
+Her tweetin sonunda `🤖 Otomatik` işareti vardır (`X_AUTOMATED_MARKER=0` ile kapanır; 280'i aşarsa otomatik düşülür).
 
-## Maç öncesi anket / "Senin tahminin ne?"
-- **Varsayılan KAPALI.** `X_PREMATCH_POLLS_ENABLED=1` ile açılır (ek maliyet olduğu için ayrı, bilinçli açılır);
-  ayrıca `X_AUTOPOST_ENABLED=1` ve X anahtarları gerekir — aksi hâlde yalnızca kuru koşu logu.
-- Kapsam: favori takımların (`X_FAVORITE_TEAMS`) ve Türkiye millî takımının `/mac/` sayfası olan maçları.
-- `X_PREMATCH_MODE`: `poll` (varsayılan; "Kim kazanır?" anketi: ev sahibi / Beraberlik / deplasman),
-  `ask` (anketsiz "Senin tahminin ne? Skor tahminini yanıtlara yaz 👇"), `both` (ikisi de).
-- `X_PREMATCH_HOURS` (varsayılan 4, 1–24): başlamaya bu kadar saat kala ilk 15 dk'lık cron koşusunda gönderilir.
-- Anket süresi = başlamaya kalan dakika (X sınırı 5–10080 dk): anket düdükle kapanır. Seçenekler ≤25 karakter.
-- Maç başına her tür en fazla bir kez (`x_autopost_posts` anahtarı); genel `X_MAX_PER_RUN`/`X_MAX_PER_DAY`
-  tavanlarına ek olarak `X_PREMATCH_MAX_PER_DAY` (varsayılan 3).
-- Metinlerde oy/katılımcı sayısı YOK; X anketi sonucu zaten yüzde gösterir. Takım adı/saat yalnızca takvimden.
-- X anketi medya/alıntı ile birleşemez; metinde bağlantı olabilir (maç sayfası). `X_INCLUDE_LINKS=0` bağlantıyı çıkarır.
-- Sıra: goller → maç sonuçları → maç öncesi → köşe yazıları → dolgu.
+## Akış ve güvenlik
+- Zamanlayıcı: Vercel cron `/api/cron/x-autopost` (`*/15 * * * *`) — GitHub Actions'a bağlı **değil**.
+- **Kuyruk/kısıt** (`services/xAutopost/throttle.js`): resmî sınırlar 100 istek/15 dk (kullanıcı), 10.000/24 sa (uygulama); `X_RATE_SAFETY` (varsayılan 0,8) ile %80'inde durur. Pencere sayımları Supabase `x_autopost_posts` tablosundan tohumlanır (koşular arası kalıcı).
+- **429**: `Retry-After` (varsa) → `x-rate-limit-reset` (unix sn) → yoksa üstel geri çekilme (60 sn·2ⁿ, en çok 15 dk). Koşu durur, anahtarlar serbest bırakılır, sonraki cron yeniden dener.
+- **Tekilleştirme**: (1) olay anahtarı (`goal:af:<fixture>:<sıra>`, `result:af:<id>` …), (2) içerik özeti `hash:<sha256>` — bağlantı/işaret/etiket/boşluk/büyük-küçük harf farkı aynı sayılır. İkisi de aynı tabloda; **yeni migration gerekmez**.
+- Günlük tavan `X_MAX_PER_DAY` (varsayılan 30, **her isteği** sayar: ana gönderi + bağlantı yanıtı), koşu tavanı `X_MAX_PER_RUN` (varsayılan 6).
 
-## Kurulum
-1. https://developer.x.com → Developer Console → proje + uygulama oluştur.
-2. Uygulama → *User authentication settings* → **App permissions: Read and write** (Web App/Automated App;
-   callback olarak `https://www.futbolradar.com` yazılabilir). İzni değiştirdikten SONRA token üret.
-3. *Keys and tokens*: **API Key & Secret** (consumer) ve FutbolRadar hesabı için **Access Token & Secret** üret
-   (token "Read and Write" yazmalı).
-4. Developer Console → Billing: kredi yükle ve **aylık harcama limiti** koy (ücretsiz katman yok, aşağıya bak).
-5. Supabase SQL Editor'de `supabase/migrations/0014_x_autopost.sql` çalıştır (idempotent).
-6. Vercel → Project → Settings → Environment Variables (Production):
-   `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET`
-   (isteğe bağlı: `X_FAVORITE_TEAMS="Galatasaray,Fenerbahçe,Beşiktaş,Trabzonspor"`, `X_MAX_PER_RUN=4`,
-   `X_MAX_PER_DAY=8`, `X_INCLUDE_LINKS=1`; maç öncesi: `X_PREMATCH_POLLS_ENABLED=1`, `X_PREMATCH_MODE=poll`,
-   `X_PREMATCH_HOURS=4`, `X_PREMATCH_MAX_PER_DAY=3`).
-7. Önce bayrak KAPALI bırakıp Vercel loglarında `[x-autopost] KURU KOŞU` çıktısını kontrol et.
-8. Açmak için `X_AUTOPOST_ENABLED=1` ekle ve yeniden deploy et. Kapatmak: değişkeni sil/0 yap.
+## Bağlantı stratejisi ve FİYAT BULGUSU (önemli)
+`X_LINK_MODE=reply` (varsayılan, istenen strateji): ana tweet bağlantısız, bağlantı ilk yanıtta.
+**Ancak resmî fiyat sayfası URL içeren *her* gönderiyi $0,20 sayar; kendi tweetine yanıt için istisna yazmaz.** Tek ucuz yanıt türü "summoned" ($0,01) — o da yalnızca *başkası seni etiketlediğinde/alıntıladığında*. Yani:
 
-Bayrak kapalıysa, X anahtarlarından biri ya da Supabase eksikse iş **kuru koşu** yapar:
-tweetleri loglar; X'e ve Supabase'e hiçbir şey yazmaz.
+| Mod | Bağlantılı paylaşım başına |
+|---|---|
+| `reply` | $0,015 (ana) + $0,20 (bağlantılı yanıt) = **$0,215** |
+| `inline` | **$0,20** |
+| `none` | **$0,015** (bağlantı yok) |
 
-## Maliyet (Ekim 2026, https://docs.x.com/x-api/getting-started/pricing)
-Ücretsiz katman yok; pay-per-use kredi: `Post: Create` $0.015, `Post: Create (with URL)` $0.200.
-Varsayılan günlük 8 tweet bağlantılı → en fazla ~$1.6/gün (~$48/ay). `X_INCLUDE_LINKS=0` → ~$0.12/gün.
-Anket de normal gönderi gibi ücretlenir. Maç öncesi (tavan 3/gün): bağlantılı ≤ $0.60/gün, bağlantısız ≤ $0.045/gün.
-Gerçekçi kullanım (4 favori takım, haftada ~4–6 maç, `poll` modu): bağlantılı ~$3.2–4.8/ay, bağlantısız ~$0.25–0.36/ay;
-`both` modunda iki katı. Maç öncesi gönderiler genel `X_MAX_PER_DAY` içinde sayılır (toplam tavan aşılmaz).
+Maliyet açısından `reply` tasarruf sağlamaz, `inline`'dan $0,015 pahalıdır. Erişim (algoritma) gerekçesiyle tercih edilebilir; tasarruf isteniyorsa `none`. Kod üç modu da destekler.
 
-## Yerel test
-`npm run test:x-autopost` (ağ yok) · `npm run x-autopost:dry-run -- --now=2026-10-20T23:40:00+03:00`
+## Doğrulama tablosu (2026-11-04)
+| İddia | Durum | Kaynak |
+|---|---|---|
+| Gönderi $0,015 | Doğrulandı | https://docs.x.com/x-api/getting-started/pricing · https://console.x.com/api/credits/pricing (`PostCreate 0.015`) |
+| URL'li gönderi $0,20 | Doğrulandı | aynı + https://docs.x.com/changelog (20 Nisan 2026'dan itibaren) |
+| Bağlantıyı yanıta koymak ucuzdur | **Farklı** — URL'li yanıt da $0,20 | pricing + changelog ("summoned replies remain $0.01") |
+| 100 gönderi/15 dk (kullanıcı) | Doğrulandı | https://docs.x.com/x-api/fundamentals/rate-limits |
+| 10.000/24 sa (uygulama) | Doğrulandı | aynı |
+| 429'da `x-rate-limit-reset` | Doğrulandı | aynı |
+| 429'da `Retry-After` | Bulunamadı (dokümanda yok; kod yine de okur) | aynı |
+| OAuth 2.0 PKCE + `tweet.write` | Doğrulandı (POST /2/tweets: `tweet.read tweet.write users.read`) | https://docs.x.com/fundamentals/authentication/oauth-2-0/authorization-code |
+| Erişim belirteci 2 sa; yenileme için `offline.access` | Doğrulandı | aynı |
+| console.x.com'da uygulama + anahtarlar (bir kez gösterilir) | Doğrulandı | https://docs.x.com/x-api/getting-started/getting-access |
+| Pay-per-use'ta yanıtlar yalnızca "summoned" iken | Doğrulandı (kendi gönderine yanıt istisnası resmî dokümanda **yok**; üçüncü taraf kaynaklar istisna diyor → doğrulanmadı) | https://docs.x.com/x-api/posts/manage-tweets/integrate |
+| Otomasyon: "Automated" etiketi, yönetici hesap, aynı metni tekrar etmeme | Doğrulandı (kural metni help.x.com'da; Cloudflare nedeniyle okunamadı) | https://docs.x.com/developer-guidelines |
+| Ayarlar → Hesabın → Otomasyon menü yolu | Bulunamadı (yalnızca üçüncü taraf) | — |
+| Aynı metni reddetme kuralı | Bulunamadı | — (biz yine de içerik özetiyle engelliyoruz) |
+
+## Kurulum (console.x.com)
+1. https://console.x.com → FutbolRadar X hesabıyla giriş → Developer Agreement'ı kabul et.
+2. **Pay-per-use** krediyi yükle (Billing/Credits). Harcama limiti koy.
+3. **New App** → *User authentication settings*: OAuth 2.0 aç, tür **Web App / Automated App or Bot** (gizli istemci), izin **Read and write**, Callback URI örn. `https://www.futbolradar.com/` .
+4. **Keys and tokens**: OAuth 2.0 *Client ID* ve *Client Secret* (bir kez gösterilir; parola yöneticisine kaydet).
+5. Kendi bilgisayarında:
+   ```bash
+   X_OAUTH2_CLIENT_ID=... X_OAUTH2_REDIRECT_URI=https://www.futbolradar.com/ node scripts/x-oauth2-setup.mjs authorize
+   # bağlantıyı aç → onayla → adres çubuğundaki ?code=... değerini al
+   X_OAUTH2_CLIENT_ID=... X_OAUTH2_CLIENT_SECRET=... X_OAUTH2_REDIRECT_URI=https://www.futbolradar.com/ \
+     node scripts/x-oauth2-setup.mjs exchange --code=KOD
+   ```
+   Refresh token `.x-oauth2-tokens.json` (0600, gitignore'da) dosyasına yazılır; ekrana yazılmaz.
+6. Vercel'e (elle) gir: `X_OAUTH2_CLIENT_ID`, `X_OAUTH2_CLIENT_SECRET`, `X_OAUTH2_REFRESH_TOKEN`. Önce `X_AUTOPOST_ENABLED` **olmadan** dağıt, cron günlüğündeki "would post" satırlarını kontrol et; sonra `X_AUTOPOST_ENABLED=true`.
+7. X hesabında "Automated" etiketini aç, yönetici (insan) hesabı bağla, biyografiye "Otomatik maç bildirimleri" yaz.
+
+OAuth 1.0a (eski 4 anahtar) hâlâ çalışır; OAuth 2.0 değişkenleri varsa öncelik onlarda.
+
+## Ortam değişkenleri
+| Değişken | Varsayılan | Açıklama |
+|---|---|---|
+| `X_AUTOPOST_ENABLED` | kapalı | `true` + kimlik = gerçek gönderi |
+| `X_AUTOPOST_KILL` | kapalı | `1` = acil durdurma (tüm X akışları) |
+| `X_OAUTH2_CLIENT_ID` / `X_OAUTH2_CLIENT_SECRET` / `X_OAUTH2_REFRESH_TOKEN` | — | OAuth 2.0 (önerilen) |
+| `X_OAUTH2_ACCESS_TOKEN` | — | isteğe bağlı, kısa ömürlü |
+| `X_OAUTH2_TOKEN_STORE` | — | `supabase` = dönen yeni refresh token'ı `x_oauth_tokens`'a yaz (tablo ÖNERİ: `docs/proposals/x-oauth-tokens.sql`) |
+| `X_API_KEY` / `X_API_SECRET` / `X_ACCESS_TOKEN` / `X_ACCESS_TOKEN_SECRET` | — | OAuth 1.0a (alternatif) |
+| `X_LINK_MODE` | `reply` | `reply` / `inline` / `none` |
+| `X_INCLUDE_LINKS` | açık | `0` = `none` zorlar |
+| `X_GOAL_LINKS` | kapalı | `1` = gol tweetlerine de bağlantı ($0,20+) |
+| `X_GOAL_SCOPE` | `superlig` | `favorites` = yalnızca favori takımlar |
+| `X_FAVORITE_TEAMS` | GS,FB,BJK,TS | virgüllü liste |
+| `X_AUTOMATED_MARKER` | açık | `0` = `🤖 Otomatik` kapalı |
+| `X_RATE_SAFETY` | 0,8 | resmî sınırın oranı |
+| `X_MAX_PER_RUN` / `X_MAX_PER_DAY` | 6 / 30 | tavanlar (gün tavanı yanıtları da sayar) |
+| `X_PREMATCH_POLLS_ENABLED`, `X_PREMATCH_MODE`, `X_PREMATCH_HOURS`, `X_PREMATCH_MAX_PER_DAY` | kapalı | maç önü anketleri |
+| `X_LIVE_ENABLED` | — | `services/socialAutopost/xLive.js` canlı akışı (aynı kill switch'e bağlı) |
+
+## Kuru koşu ve testler (ağ yok)
+```bash
+npm run x-autopost:dry-run                                   # bugünkü adaylar
+node scripts/x-autopost-dry-run.mjs --now=2026-11-05T19:05:00+03:00
+node scripts/x-autopost-dry-run.mjs --hub=data/match-hubs/galatasaray-stuttgart-2026-11-03.json
+node scripts/x-autopost-dry-run.mjs --site                   # canlı sitedeki data/*.json (yalnızca GET)
+X_LINK_MODE=inline npm run x-autopost:dry-run
+npm run test:x-autopost        # test-x-autopost + test-x-autopost-queue
+npm run test:social-autopost
+```
+
+## Aylık maliyet tahmini (sitenin kendi verisinden)
+Kaynak: `data/historical-match-archive` Süper Lig — Ağustos 2026: 25 maç, 73 gol, 11 maç günü; Eylül 2026: 27 maç, 85 gol, 11 maç günü → maçsız gün ≈ 20 / 19.
+
+Formül: `aylık = gol × 0,015 + maç × B + maçsız_gün × 2 × B` (B = bağlantılı paylaşım: reply 0,215 · inline 0,20 · none 0,015; maçsız günlerde 2 dolgu tweeti).
+
+| Senaryo | reply (varsayılan) | inline | none |
+|---|---|---|---|
+| Düşük (73 gol, 25 maç, 20 gün) | 1,10 + 5,38 + 8,60 = **$15,07** | **$14,10** | **$2,07** |
+| Yüksek (85 gol, 27 maç, 19 gün) | 1,28 + 5,81 + 8,17 = **$15,25** | **$14,28** | **$2,25** |
+
+Eklemeler: favori takımların Avrupa maçı başına ≈ gol×0,015 + 0,215 (ayda ~8 maç ≈ +$2); köşe yazısı başına +$0,215; `X_GOAL_LINKS=1` gol başına +$0,20 (~+$15–17). Teorik tavan: 30 istek/gün × 30 gün × $0,20 ≈ **$180/ay** — gerçek harcamayı console.x.com harcama limitiyle sınırla.
+
+## Bilinen kısıtlar
+- **Veri bayat**: `data/fixture-calendar.json` (repo ve canlı site) ~20 Ekim'de kalmış; Süper Lig maçları hâlâ SCHEDULED. Veri hattı düzelene kadar gol/maç sonu tweeti üretilmez (dolgu tweetleri üretilir). Veri GitHub Actions ile yenileniyorsa →
+- **GitHub Actions** 21 Ekim'den beri `startup_failure`. Paylaşım Vercel cron'da çalışır ama veri tazeliği Actions'a bağlı.
+- Gecikme: cron 15 dakikada bir → gol tweeti 0–15 dk gecikebilir.
+- Refresh token dönüşümü: X yeni refresh token döndürürse, `X_OAUTH2_TOKEN_STORE=supabase` + önerilen tablo olmadan soğuk başlangıçta eski env değeri kullanılır. Tablo uygulanana kadar OAuth 1.0a anahtarları daha az riskli.
+- "Automated" etiketi ve yönetici hesap elle açılır (API yok).
+- Kendi gönderine yanıtın pay-per-use'ta izinli olduğu resmî dokümanda açık değil; reddedilirse yanıt bir kez denenir, ana tweet kalır (`X_LINK_MODE=inline` ile geç).
