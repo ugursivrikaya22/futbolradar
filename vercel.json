@@ -19,6 +19,14 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/cron/x-news",
+      "schedule": "20 */2 * * *"
+    },
+    {
+      "path": "/api/cron/telegram-notify",
+      "schedule": "35 * * * *"
+    },
+    {
       "path": "/api/cron/scheduled-update?phase=resume",
       "schedule": "27 * * * *"
     },

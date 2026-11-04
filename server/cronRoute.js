@@ -12,6 +12,8 @@
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
  *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
+ *   /api/cron/x-news                           X haber tweeti (data/news.json; varsayılan kuru koşu)
+ *   /api/cron/telegram-notify                  Telegram haber + maç sonucu bildirimi (varsayılan kuru koşu)
  *   /api/cron/matchday-reminder                PWA push: "favori takımının maçı bugün" (saatlik, 09–22 İstanbul)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
@@ -30,7 +32,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "x-autopost", "matchday-reminder"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "x-autopost", "matchday-reminder", "x-news", "telegram-notify"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -80,6 +82,10 @@ async function defaultRunners() {
     // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
     // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
     "x-autopost": () => require("../services/xAutopost").runXAutopost(),
+    // Sosyal paylaşım (services/socialAutopost): yayımlanmış data/news.json +
+    // takvimi okur; bayrak/anahtar yoksa yalnızca loglar.
+    "x-news": () => require("../services/socialAutopost/xNews").runXNews(),
+    "telegram-notify": () => require("../services/socialAutopost/telegram").runTelegramNotify(),
     // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
     // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
     "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()

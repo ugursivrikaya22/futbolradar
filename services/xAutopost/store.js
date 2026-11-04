@@ -10,36 +10,41 @@ function defaultRequest() {
   return require("../supabase/client").request;
 }
 
-function createStore({ request = defaultRequest() } = {}) {
+/**
+ * `table`/`idColumn`: aynı anahtar-tabanlı dedup mantığı başka kanallar için de
+ * kullanılır (Telegram → `telegram_posts`, `message_id`). Varsayılanlar X için.
+ */
+function createStore({ request = defaultRequest(), table = TABLE, idColumn = "tweet_id" } = {}) {
+  const TABLE_NAME = table;
   return {
     async existing(keys) {
       if (!keys.length) return new Set();
       const list = keys.map((k) => `"${String(k).replace(/"/g, "")}"`).join(",");
-      const rows = await request(`${TABLE}?select=post_key&post_key=in.(${encodeURIComponent(list)})`, { method: "GET" });
+      const rows = await request(`${TABLE_NAME}?select=post_key&post_key=in.(${encodeURIComponent(list)})`, { method: "GET" });
       return new Set((Array.isArray(rows) ? rows : []).map((r) => r.post_key));
     },
     async claim({ key, kind, text }) {
-      const rows = await request(`${TABLE}?on_conflict=post_key`, {
+      const rows = await request(`${TABLE_NAME}?on_conflict=post_key`, {
         method: "POST",
         headers: { Prefer: "resolution=ignore-duplicates,return=representation" },
         body: JSON.stringify([{ post_key: key, kind, text, status: "pending" }])
       });
       return Array.isArray(rows) && rows.length > 0;
     },
-    async finish({ key, status, tweetId = null, error = null }) {
-      await request(`${TABLE}?post_key=eq.${encodeURIComponent(key)}`, {
+    async finish({ key, status, tweetId = null, messageId = null, error = null }) {
+      await request(`${TABLE_NAME}?post_key=eq.${encodeURIComponent(key)}`, {
         method: "PATCH",
         headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ status, tweet_id: tweetId, error: error ? String(error).slice(0, 300) : null, posted_at: status === "posted" ? new Date().toISOString() : null })
+        body: JSON.stringify({ status, [idColumn]: tweetId ?? messageId, error: error ? String(error).slice(0, 300) : null, posted_at: status === "posted" ? new Date().toISOString() : null })
       });
     },
     /** Geçici hatada anahtarı bırakır (yalnızca kendi `pending` satırı). */
     async release(key) {
-      await request(`${TABLE}?post_key=eq.${encodeURIComponent(key)}&status=eq.pending`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
+      await request(`${TABLE_NAME}?post_key=eq.${encodeURIComponent(key)}&status=eq.pending`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
     },
     /** Bugün (İstanbul) gönderilen + gönderimde olan tweet sayısı — günlük tavan. */
     async countSince(iso, kind) {
-      const rows = await request(`${TABLE}?select=post_key&status=in.(posted,pending)&created_at=gte.${encodeURIComponent(iso)}${kind ? `&kind=eq.${kind}` : ""}`, { method: "GET" });
+      const rows = await request(`${TABLE_NAME}?select=post_key&status=in.(posted,pending)&created_at=gte.${encodeURIComponent(iso)}${kind ? `&kind=eq.${kind}` : ""}`, { method: "GET" });
       return Array.isArray(rows) ? rows.length : 0;
     }
   };
