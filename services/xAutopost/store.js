@@ -42,6 +42,12 @@ function createStore({ request = defaultRequest(), table = TABLE, idColumn = "tw
     async release(key) {
       await request(`${TABLE_NAME}?post_key=eq.${encodeURIComponent(key)}&status=eq.pending`, { method: "DELETE", headers: { Prefer: "return=minimal" } });
     },
+    /** Anahtarı `prefix` ile başlayan gönderilmiş/gönderimdeki satır sayısı (maç başına tavan). */
+    async countPrefix(prefix) {
+      const like = `${String(prefix).replace(/[*,()"]/g, "")}*`;
+      const rows = await request(`${TABLE_NAME}?select=post_key&status=in.(posted,pending)&post_key=like.${encodeURIComponent(like)}`, { method: "GET" });
+      return Array.isArray(rows) ? rows.length : 0;
+    },
     /** Bugün (İstanbul) gönderilen + gönderimde olan tweet sayısı — günlük tavan. */
     async countSince(iso, kind) {
       const rows = await request(`${TABLE_NAME}?select=post_key&status=in.(posted,pending)&created_at=gte.${encodeURIComponent(iso)}${kind ? `&kind=eq.${kind}` : ""}`, { method: "GET" });

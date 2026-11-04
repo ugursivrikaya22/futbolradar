@@ -10,6 +10,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const news = require("../services/socialAutopost/news.js");
 const xNews = require("../services/socialAutopost/xNews.js");
+const xLive = require("../services/socialAutopost/xLive.js");
 const tg = require("../services/socialAutopost/telegram.js");
 const { createStore, TABLE: X_TABLE } = require("../services/xAutopost/store.js");
 const { weightedLength } = require("../services/xAutopost/compose.js");
@@ -52,6 +53,7 @@ function fakeSupabase(table) {
     if (method === "PATCH") { const k = eq("post_key"); rows.set(k, { ...rows.get(k), ...body }); return []; }
     if (method === "DELETE") { const k = eq("post_key"); if (rows.get(k)?.status === "pending") rows.delete(k); return []; }
     if (/post_key=in\./.test(query)) { const list = decodeURIComponent(query.match(/in\.\(([^)]*)\)/)[1]).split(",").map((s) => s.replace(/"/g, "")); return [...rows.values()].filter((r) => list.includes(r.post_key)); }
+    if (/post_key=like\./.test(query)) { const pre = decodeURIComponent(query.match(/like\.([^&]+)/)[1]).replace(/\*$/, ""); return [...rows.values()].filter((r) => ["posted", "pending"].includes(r.status) && r.post_key.startsWith(pre)); }
     if (/status=in\./.test(query)) {
       const kind = eq("kind"); const since = decodeURIComponent((query.match(/created_at=gte\.([^&]+)/) || [])[1] || "");
       return [...rows.values()].filter((r) => ["posted", "pending"].includes(r.status) && (!kind || r.kind === kind) && (!since || r.created_at >= since));
@@ -185,6 +187,79 @@ await test("Telegram: biten maç sonucu (X otomatik paylaşımıyla aynı aday) 
   const msgs = tg.buildMessages({ news: [], calendar, seoIndex: { "af:77": "galatasaray-fenerbahce-28-ekim-2026" } }, { now: NOW, cfg: tg.config({}) });
   assert.equal(msgs.length, 1); assert.equal(msgs[0].key, "result:af:77");
   assert.ok(msgs[0].text.includes(`<a href="${SITE}/mac/galatasaray-fenerbahce-28-ekim-2026">`));
+});
+
+
+/* ---------------- X canlı maç ---------------- */
+const LIVE_SLUG = "galatasaray-fenerbahce-1-kasim-2026";
+const LIVE_NOW = new Date("2026-11-01T20:40:00+03:00");
+function liveMatch(over = {}) {
+  return {
+    id: "gs-fb", providerIds: { apiFootball: "900" }, league: "Süper Lig", kickoff: "2026-11-01T20:00:00+03:00",
+    homeTeam: "Galatasaray", awayTeam: "Fenerbahçe", status: "LIVE", providerStatus: "1H", minute: 38, score: { home: 1, away: 0 },
+    events: [
+      { providerEventId: 1, time: "12'", team: { name: "Galatasaray" }, type: "Goal", detail: "Normal Goal", value: "Mauro Icardi · Normal Goal" },
+      { providerEventId: 2, time: "20'", team: { name: "Fenerbahçe" }, type: "Card", detail: "Yellow Card", value: "X" },
+      { providerEventId: 3, time: "30'", team: { name: "Fenerbahçe" }, type: "Card", detail: "Red Card", value: "Oyuncu B" },
+      { providerEventId: 4, time: "35'", team: { name: "Galatasaray" }, type: "Goal", detail: "Missed Penalty", value: "Oyuncu C · Missed Penalty" }
+    ],
+    ...over
+  };
+}
+const liveData = (m = liveMatch()) => ({ calendar: { matches: [m, { ...liveMatch({ id: "x", providerIds: { apiFootball: "901" }, homeTeam: "Ajax", awayTeam: "PSV", league: "Eredivisie" }) }] }, seoIndex: { "af:900": LIVE_SLUG, "af:901": "ajax-psv" } });
+const LIVE_ENV = { ...X_ENV, X_NEWS_ENABLED: "0", X_LIVE_ENABLED: "1" };
+
+await test("canlı: gol, kırmızı kart, kaçan penaltı; sarı kart yok; kapsam dışı maç yok; bağlantı maç sayfası", () => {
+  const { candidates, liveMatches } = xLive.buildLiveCandidates(liveData(), { now: LIVE_NOW, favorites: ["Galatasaray", "Fenerbahçe"] });
+  assert.equal(liveMatches.length, 1);
+  assert.deepEqual(candidates.map((c) => c.type), ["goal", "red_card", "penalty_missed"]);
+  assert.equal(candidates[0].key, "goal:gs-fb:provider:1", "gol anahtarı x-autopost ile aynı");
+  assert.equal(candidates[1].key, "live:gs-fb:provider:3");
+  for (const c of candidates) assert.ok(c.text.endsWith(`${SITE}/mac/${LIVE_SLUG}`));
+  assert.ok(candidates[0].text.includes("Mauro Icardi 12'"));
+  assert.ok(candidates[2].text.includes("Galatasaray 1-0 Fenerbahçe"), "skor yalnızca son olayda");
+});
+await test("canlı: devre arası tweeti; bitmiş maç canlı tweet üretmez", () => {
+  const ht = xLive.buildLiveCandidates(liveData(liveMatch({ providerStatus: "HT", events: [] })), { now: LIVE_NOW, favorites: ["Galatasaray"] });
+  assert.deepEqual(ht.candidates.map((c) => c.key), ["live:gs-fb:ht"]);
+  const ft = xLive.buildLiveCandidates(liveData(liveMatch({ status: "FINISHED", providerStatus: "FT" })), { now: LIVE_NOW, favorites: ["Galatasaray"] });
+  assert.equal(ft.candidates.length, 0);
+});
+await test("canlı: korner/pozisyon yalnızca iki kümülatif ölçüm farkından", () => {
+  const { liveMatches } = xLive.buildLiveCandidates(liveData(), { now: LIVE_NOW, favorites: ["Galatasaray"] });
+  const s = (minute, corner, sot) => ({ minute, statistics: [{ type: "Korner", home: corner[0], away: corner[1] }, { type: "İsabetli şut", home: sot[0], away: sot[1] }] });
+  const out = xLive.statCandidates(liveMatches[0], [s(30, [2, 1], [3, 1]), s(34, [3, 1], [3, 2])]);
+  assert.deepEqual(out.map((c) => c.key), ["live:gs-fb:corner:34:home", "live:gs-fb:chance:34:away"]);
+  assert.ok(out[0].text.includes("Korner: 3-1")); assert.ok(out[0].text.includes("(30'-34')"));
+  assert.equal(xLive.statCandidates(liveMatches[0], [s(34, [3, 1], [3, 2])]).length, 0, "tek ölçümle tweet yok");
+});
+await test("canlı kuru koşu: X_LIVE_ENABLED yoksa hiçbir şey gönderilmez", async () => {
+  const tw = fakeX();
+  const r = await xLive.runXLive({ env: X_ENV, now: LIVE_NOW, data: liveData(), fetcher: tw.fetcher, log: quiet });
+  assert.equal(r.mode, "dry-run"); assert.equal(tw.sent.length, 0); assert.equal(r.dryRun.length, 3);
+});
+await test("canlı: olay başına tek tweet, maç başına tavan, x-autopost golüyle çift yok", async () => {
+  const db = fakeSupabase(X_TABLE); const store = createStore({ request: db.request }); const tw = fakeX();
+  await store.claim({ key: "goal:gs-fb:provider:1", kind: "goal", text: "x-autopost atmıştı" });
+  const env = { ...LIVE_ENV, X_LIVE_MAX_PER_MATCH: "2" };
+  const r = await xLive.runXLive({ env, now: LIVE_NOW, data: liveData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.deepEqual(r.posted.map((p) => p.key), ["live:gs-fb:provider:3"], "gol zaten atılmış; tavan 2 (gol + kart)");
+  assert.ok(r.skipped.some((s) => s.reason === "match-cap"));
+  assert.equal(db.rows.get("live:gs-fb:provider:3").kind, "live");
+  const r2 = await xLive.runXLive({ env: { ...LIVE_ENV, X_LIVE_MAX_PER_MATCH: "10" }, now: LIVE_NOW, data: liveData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.deepEqual(r2.posted.map((p) => p.key), ["live:gs-fb:provider:4"]);
+  const r3 = await xLive.runXLive({ env: { ...LIVE_ENV, X_LIVE_MAX_PER_MATCH: "10" }, now: LIVE_NOW, data: liveData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.equal(r3.posted.length, 0); assert.equal(tw.sent.length, 2);
+});
+await test("canlı: koşu ve günlük tavan", async () => {
+  const db = fakeSupabase(X_TABLE); const store = createStore({ request: db.request }); const tw = fakeX();
+  const r = await xLive.runXLive({ env: { ...LIVE_ENV, X_LIVE_MAX_PER_RUN: "1" }, now: LIVE_NOW, data: liveData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.equal(r.posted.length, 1); assert.ok(r.skipped.some((s) => s.reason === "run-cap"));
+  const r2 = await xLive.runXLive({ env: { ...LIVE_ENV, X_LIVE_MAX_PER_DAY: "1" }, now: LIVE_NOW, data: liveData(), store, fetcher: tw.fetcher, log: quiet });
+  assert.equal(r2.posted.length, 0); assert.ok(r2.skipped.some((s) => s.reason === "day-cap"));
+});
+await test("cron: x-autopost canlı işi aynı veriyle koşturur; x-live elle çağrılabilir", () => {
+  assert.ok(JOBS.has("x-live"));
 });
 
 /* ---------------- geriye dönük uyumluluk ---------------- */

@@ -42,3 +42,35 @@ Yerel kuru koşu: `npm run social:x-news:dry-run`, `npm run social:telegram:dry-
 Otomasyonun GitHub token'ında `workflow` yetkisi olmadığı için `.github/workflows/` altına dosya push edilemedi.
 Actions yedeğini kullanmak istersen iki dosyayı elle taşı:
 `git mv docs/github-workflows/social-*.yml .github/workflows/` (içerik hazır, değişiklik gerekmez).
+
+## Canlı maç tweetleri (`services/socialAutopost/xLive.js`)
+Varsayılan KAPALI / kuru koşu: `X_LIVE_ENABLED=1` + X anahtarları + Supabase gerekir.
+
+**Yeni API-Football isteği YOK.** Kaynaklar:
+| Tür | Kaynak | Durum |
+|---|---|---|
+| Gol, penaltı golü | `data/fixture-calendar.json` olayları (`match-notifications-core.js#events`) | ✅ |
+| Kırmızı kart | aynı | ✅ |
+| Kaçan penaltı ("pozisyon") | aynı (`Missed Penalty`) | ✅ |
+| Penaltı kararı, VAR gol iptali | aynı | ✅ |
+| Devre arası (HT) | maç durumu | ✅ |
+| Maç sonu (FT) | mevcut x-autopost `result:` tweeti (tekrar edilmez) | ✅ (mevcut) |
+| Korner, isabetli şut ("pozisyon") | Supabase `live_pulse_samples` iki kümülatif ölçüm farkı — **yalnızca** `X_LIVE_STATS_ENABLED=1` ve maç detay sayfası canlıyken ziyaret edildiyse | ⚠️ kısmi |
+| Dakikalı korner / şut / pozisyon OLAYI | sağlayıcı olay akışında yok; ek istek gerekir | ❌ |
+
+**Gecikme:** Vercel Pro dakikalık cron'a izin veriyor (vercel.com/docs/cron-jobs/usage-and-pricing), ama
+`data/fixture-calendar.json` sitede saatlik iş + deploy ile yenileniyor (doğrulanacak) ve 33 MB. Bu yüzden ayrı ve
+sık bir cron eklenmedi: canlı tweetler mevcut `/api/cron/x-autopost` (her 15 dk) koşusunda, **aynı indirilen
+veriyle** üretilir. Gerçek "dakika dakika" için yeni veri kaynağı (ek sağlayıcı isteği) gerekir — kapsam dışı.
+
+**Dedup:** anahtar = maç kimliği + olay türü + dakika + oyuncu/takım (sağlayıcı olay kimliği varsa o).
+Goller x-autopost'la aynı `goal:<olay>` anahtarını kullanır → çift gol tweeti yok. Diğerleri `live:<olay>`,
+korner/şut `live:<maç>:corner|chance:<dakika>:<home|away>`, devre arası `live:<maç>:ht`.
+
+**Tavanlar:** `X_LIVE_MAX_PER_RUN` (3), `X_LIVE_MAX_PER_MATCH` (6; x-autopost golleri dahil),
+`X_LIVE_MAX_PER_DAY` (15). Kapsam: `X_LIVE_FAVORITES_ONLY` (varsayılan 1: favori takımlar + Türkiye;
+0 → tüm Süper Lig takımları). Canlı tweetler `x_autopost_posts`'a yazıldığı için x-autopost'un `X_MAX_PER_DAY`
+sayımına da girer (x-autopost koşuda önce çalışır). X API katmanı/kotası ve tweet başı ücret: **doğrulanacak**.
+`live_pulse_samples.fixture_id` = API-Football maç kimliği varsayımı: **doğrulanacak**.
+
+Actions yedeği: `docs/github-workflows/social-x-live.yml` (her 15 dk, yalnızca `SOCIAL_AUTOPOST_RUNNER=actions`).
