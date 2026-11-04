@@ -25,7 +25,8 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { readJsonFile } from "./lib/readJsonFile.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { LEAGUE_GOAL_PAGES, buildLeagueGoalPage, loadEventSources, subgroupLabel } from "./lib/archiveLeagueGoals.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -52,7 +53,7 @@ function formatDate(value) {
 /**
  * Sayfa iskeleti. `base` arşiv alt klasöründen köke çıkmak için "../".
  */
-function pageHtml({ file, base, title, description, h1, lead, breadcrumb, schema, body, bodyClass }) {
+function pageHtml({ file, base, title, description, h1, lead, breadcrumb, schema, body, bodyClass, robots }) {
   const url = `${DOMAIN}/${file}`;
 
   const crumbs = breadcrumb.map((crumb, index) => (
@@ -68,7 +69,7 @@ function pageHtml({ file, base, title, description, h1, lead, breadcrumb, schema
       "@type": "ListItem",
       position: index + 1,
       name: crumb.label,
-      item: crumb.href ? `${DOMAIN}/${String(crumb.href).replace(/^\.\.\//, "").replace(/^\.\//, "")}` : url
+      item: crumb.href ? `${DOMAIN}/${String(crumb.href).replace(/^(\.\.\/)+/, "").replace(/^\.\//, "")}` : url
     }))
   };
 
@@ -82,7 +83,7 @@ function pageHtml({ file, base, title, description, h1, lead, breadcrumb, schema
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${url}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${robots || ROBOTS_INDEX}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -224,13 +225,23 @@ function seasonPage(entry) {
     { label: "Arşivlenen kadro", value: entry.squads.length }
   ]);
 
-  const competitionRows = summary.competitions.map((row) =>
-    `<tr><th scope="row">${escapeHtml(row.competition)}</th><td>${row.matches}</td><td>${row.goals}</td></tr>`).join("");
+  // Seçili turnuvaların adı maç maç gol dökümü sayfasına bağlanır.
+  const goalPageByLabel = new Map();
+  for (const page of LEAGUE_GOAL_PAGES) {
+    for (const leagueLabel of page.labels) goalPageByLabel.set(leagueLabel, page);
+  }
+  const competitionRows = summary.competitions.map((row) => {
+    const goalPage = goalPageByLabel.get(row.competition);
+    const name = goalPage
+      ? `<a href="../${escapeHtml(leagueGoalFile(season, goalPage.slug))}" data-link="archive-league-goals">${escapeHtml(row.competition)}</a>`
+      : escapeHtml(row.competition);
+    return `<tr><th scope="row">${name}</th><td>${row.matches}</td><td>${row.goals}</td></tr>`;
+  }).join("");
 
   const body = [
     section(`${label} sezon özeti`, "Aşağıdaki sayıların tamamı kayıtlı maç skorlarından doğrudan türetilmiştir.", stats, "İstatistik"),
 
-    section("Turnuvaya göre dağılım", "Arşiv yalnızca sitede kaydı bulunan maçları toplar.",
+    section("Turnuvaya göre dağılım", "Arşiv yalnızca sitede kaydı bulunan maçları toplar. Bağlantılı turnuva adları maç maç gol dökümünü (dakika, golcü, takım) açar.",
       `<div class="archive-table-wrap"><table class="archive-table"><thead><tr><th scope="col">Turnuva</th><th scope="col">Maç</th><th scope="col">Gol</th></tr></thead><tbody>${competitionRows}</tbody></table></div>`,
       "Kapsam"),
 
@@ -455,6 +466,166 @@ function managerPage(entry, season, seasonEntry) {
   };
 }
 
+// ── Lig gol dökümü sayfası ────────────────────────────────────────────────
+
+const LEAGUE_GOAL_INDEX_MIN_DETAIL_SHARE = 0.1;
+
+function leagueGoalFile(season, pageSlug) {
+  return `arsiv/sezon-${season}/${pageSlug}.html`;
+}
+
+function teamLink(team, base) {
+  const file = `${slug(team)}-maclari.html`;
+  return fs.existsSync(path.join(root, file))
+    ? `<a href="${base}${escapeHtml(file)}">${escapeHtml(team)}</a>`
+    : escapeHtml(team);
+}
+
+function goalItem(goal, base) {
+  const minute = goal.minute ? escapeHtml(goal.minute) : "Dakika yok";
+  const team = goal.team ? teamLink(goal.team, base) : "Takım belirtilmedi";
+  if (goal.note) {
+    return `<li><strong>${minute}</strong> · ${team} · <span>${escapeHtml(goal.note)}</span> <span class="tag soft">Editoryal kayıt metni</span></li>`;
+  }
+  const player = goal.player ? escapeHtml(goal.player) : "Golcü kayıtta yok";
+  const kind = goal.kind ? ` <span class="tag soft">${escapeHtml(goal.kind)}</span>` : "";
+  const assist = goal.assist ? ` · Asist: ${escapeHtml(goal.assist)}` : "";
+  return `<li><strong>${minute}</strong> · ${player} (${team})${kind}${assist}</li>`;
+}
+
+const STATUS_TAG = {
+  complete: "",
+  goalless: `<span class="tag soft">Golsüz</span>`,
+  missing: `<span class="tag soft">Gol detayı yok</span>`,
+  mismatch: `<span class="tag soft">Gol detayı eksik</span>`
+};
+
+function goalMatchHtml(row, base) {
+  const match = row.match;
+  const reportExists = fs.existsSync(path.join(root, match.reportPage));
+  const score = `${match.score.home}-${match.score.away}`;
+  let inner;
+  if (row.status === "goalless") {
+    inner = `<p>Maç golsüz bitti.</p>`;
+  } else if (row.status === "missing") {
+    inner = `<p><strong>Gol detayı yok.</strong> Kaynak kayıtta bu maç için dakika/golcü bilgisi bulunmuyor; yalnızca skor (${escapeHtml(score)}) doğrulanmış. Golcü tahmin edilmez.</p>`;
+  } else {
+    inner = `<ol class="archive-goal-list">${row.goals.map((goal) => goalItem(goal, base)).join("")}</ol>` +
+      (row.status === "mismatch"
+        ? `<p><strong>Gol detayı eksik:</strong> kayıtlı gol olayı ${row.goals.length}, skordaki gol ${row.scoreGoals}. Eksik goller tahmin edilmedi.</p>`
+        : "");
+  }
+  const sourceLabel = row.eventSource === "manual"
+    ? "Kaynak: FutbolRadar editoryal kaydı"
+    : "Kaynak: API-Football";
+  const flags = [
+    row.unapproved ? "Bu maçın kayıt zincirinde onaylı olmayan ikincil bir kaynak var; kayıt incelemede." : "",
+    row.groupMethod === "team-set" ? "Turnuva kimliği, iki takımın aynı kimlikli turnuvada kayıtlı olmasından belirlendi." : ""
+  ].filter(Boolean).map((line) => `<p class="archive-match-meta">${escapeHtml(line)}</p>`).join("");
+  const verified = match.lastVerifiedAt ? ` · Doğrulama: ${formatDate(match.lastVerifiedAt)}` : "";
+  return `<details class="archive-match-row" data-card="archive-goal-match" data-match="${escapeHtml(match.id)}">
+      <summary><span class="archive-match-date">${escapeHtml(formatDate(match.kickoff))}</span> <strong>${escapeHtml(match.homeTeam)} ${escapeHtml(score)} ${escapeHtml(match.awayTeam)}</strong> ${STATUS_TAG[row.status]}</summary>
+      <p class="archive-match-meta">${teamLink(match.homeTeam, base)} – ${teamLink(match.awayTeam, base)} · ${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""} · ${escapeHtml(sourceLabel)}${escapeHtml(verified)}</p>
+      ${inner}${flags}
+      ${reportExists ? `<a class="detail-link" href="${base}${escapeHtml(match.reportPage)}">Maç raporu</a>` : ""}
+    </details>`;
+}
+
+function percent(part, whole) {
+  return whole ? `%${Math.round((part / whole) * 100)}` : "—";
+}
+
+function leagueGoalPage(result, seasonEntry, freshness) {
+  const { page, rows, stats } = result;
+  const season = seasonEntry.season;
+  const label = seasonLabel(season);
+  const file = leagueGoalFile(season, page.slug);
+  const base = "../../";
+
+  // İçerik kuralı: gollü maçların en az %10'unda gol dökümü yoksa sayfa
+  // büyük ölçüde sezon sayfasındaki skorların tekrarıdır (ince içerik);
+  // `noindex,follow` kalır ve sitemap'e girmez. Veri geldikçe kendiliğinden açılır.
+  const indexable = stats.matchesWithGoals > 0 && stats.withAnyDetail / stats.matchesWithGoals >= LEAGUE_GOAL_INDEX_MIN_DETAIL_SHARE;
+
+  const groups = new Map();
+  for (const row of rows) {
+    if (!groups.has(row.group)) groups.set(row.group, []);
+    groups.get(row.group).push(row);
+  }
+  const orderedGroups = [...groups.entries()].sort((left, right) => {
+    if (left[0] === null) return 1;
+    if (right[0] === null) return -1;
+    return right[1].length - left[1].length;
+  });
+
+  const statBlock = statGrid([
+    { label: "Kayıtlı maç", value: stats.matches },
+    { label: "Toplam gol (skor)", value: stats.archiveGoals, note: "Sezon arşivi tablosundaki sayıyla aynı kaynaktan." },
+    { label: "Listelenen gol olayı", value: stats.goalEvents, note: "Dakika/golcü kaydı olan goller." },
+    { label: "Gol detayı tam", value: stats.completeDetail, note: `Gollü ${stats.matchesWithGoals} maçın ${percent(stats.completeDetail, stats.matchesWithGoals)}'i.` },
+    { label: "Gol detayı yok", value: stats.missingDetail, note: `Gollü maçların ${percent(stats.missingDetail, stats.matchesWithGoals)}'i; yalnızca skor var.` },
+    { label: "Gol detayı eksik", value: stats.mismatch, note: "Olay sayısı skorla tutmuyor." }
+  ]);
+
+  const labelNote = page.labels.length > 1
+    ? `Bu sayfa arşivdeki şu etiketleri birlikte gösterir: ${stats.byLabel.map((entry) => `${entry.label} (${entry.matches} maç)`).join(", ")}.`
+    : `Arşiv etiketi: ${page.labels[0]}.`;
+
+  const sourceCard = `<article class="card" data-card="archive-goal-source"><h3>Kaynak: API-Football</h3><p>Skorlar ve gol olayları (dakika, golcü, takım) API-Football maç olay akışından alınır; birkaç Avrupa maçı FutbolRadar editoryal kaydından gelir ve öyle işaretlenir. ${escapeHtml(labelNote)}</p><p>Son doğrulanan maç kaydı: ${escapeHtml(stats.lastVerifiedAt ? formatDate(stats.lastVerifiedAt) : "kayıtlı değil")}. Kalıcı maç arşivi güncellemesi: ${escapeHtml(freshness.historicalUpdatedAt ? formatDate(freshness.historicalUpdatedAt) : "kayıtlı değil")}.</p></article>`;
+
+  const groupSections = orderedGroups.map(([key, groupRows]) => {
+    const title = orderedGroups.length > 1 || key ? subgroupLabel(key) : page.title;
+    const intro = key === null && orderedGroups.length > 1
+      ? "Bu maçların sağlayıcı lig kimliği kayıtta yok ve takımlar tek bir kimlikli turnuvayla eşleşmedi; ülke tahmin edilmedi."
+      : `${groupRows.length} maç, yeniden eskiye.`;
+    return section(title, intro, `<div class="archive-match-list">${groupRows.map((row) => goalMatchHtml(row, base)).join("")}</div>`, "Maç maç goller");
+  }).join("");
+
+  const mixedNote = orderedGroups.length > 1
+    ? section("Aynı ad, farklı turnuvalar", "",
+      `<article class="data-empty" data-card="empty-state"><strong>"${escapeHtml(page.labels.join(" / "))}" etiketi birden fazla turnuvayı kapsıyor</strong><span>Sağlayıcı aynı adı farklı ülkelerin turnuvalarına veriyor. Maçlar, kayıttaki API-Football lig kimliğine göre gruplandı; kimliği olmayanlar ayrı listede.</span></article>`,
+      "Veri notu")
+    : "";
+
+  const body = [
+    section(`${page.title} — ${label} gol dökümü`, "Sayılar bu sayfadaki maç kayıtlarından doğrudan hesaplanır.", statBlock, "Özet"),
+    section("Kaynak ve güncellik", "", sourceCard, "Künye"),
+    mixedNote,
+    groupSections,
+    section("Bağlantılar", "", `<div class="grid"><article class="card"><h3>${escapeHtml(label)} sezon arşivi</h3><p>Turnuvaya göre dağılım, takım bilançosu ve tüm maçlar.</p><a class="detail-link" href="${base}arsiv/sezon-${escapeHtml(season)}.html">Sezon arşivine dön</a></article></div>`, "İç bağlantılar")
+  ].join("");
+
+  return {
+    file,
+    indexable,
+    html: pageHtml({
+      file, base, bodyClass: "archive-page archive-league-goals-page",
+      robots: indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW,
+      title: `${page.title} ${label} Gol Dökümü: Maç Maç Goller | FutbolRadar Arşiv`,
+      description: `${page.title} ${label}: ${stats.matches} kayıtlı maç, ${stats.archiveGoals} gol; ${stats.goalEvents} golün dakikası, golcüsü ve takımı. Kaynak: API-Football.`,
+      h1: `${page.title} — ${label} Gol Dökümü`,
+      lead: `${stats.matches} maç, maç maç goller: dakika, golcü ve takım. Gol detayı kaynakta olmayan maçlar açıkça işaretlenir.`,
+      breadcrumb: [
+        { label: "Ana Sayfa", href: `${base}index.html` },
+        { label: "Arşiv", href: `${base}arsiv.html` },
+        { label: `${label} sezonu`, href: `${base}arsiv/sezon-${season}.html` },
+        { label: page.title }
+      ],
+      schema: {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        name: `${page.title} ${label} gol dökümü`,
+        url: `${DOMAIN}/${file}`,
+        isAccessibleForFree: true,
+        creator: { "@type": "Organization", name: "FutbolRadar", url: `${DOMAIN}/` },
+        temporalCoverage: season.replace("-", "/"),
+        variableMeasured: ["Maç sonucu", "Gol dakikası", "Golcü", "Takım"]
+      },
+      body
+    })
+  };
+}
+
 // ── Arşiv dizini ───────────────────────────────────────────────────────────
 
 function indexPage(seasons) {
@@ -534,6 +705,31 @@ for (const entry of seasons) {
   }
 }
 
+// Lig gol dökümü sayfaları. Yalnızca indekslenebilir olanlar sitemap'e girer.
+const notIndexed = new Set();
+const goalPageStats = [];
+for (const entry of seasons) {
+  const wantedLabels = new Set(LEAGUE_GOAL_PAGES.flatMap((page) => page.labels));
+  const wantedIds = new Set(entry.matches.filter((match) => wantedLabels.has(match.league)).map((match) => match.id));
+  if (!wantedIds.size) continue;
+  const sources = loadEventSources(root, wantedIds);
+  for (const goalPage of LEAGUE_GOAL_PAGES) {
+    const result = buildLeagueGoalPage(goalPage, entry.matches, sources);
+    if (!result.stats.matches) {
+      console.log(`[archive-pages] ${entry.season} ${goalPage.title}: arşivde maç yok, sayfa üretilmedi.`);
+      continue;
+    }
+    const page = leagueGoalPage(result, entry, sources.freshness);
+    writePage(page.file, page.html);
+    written.push(page.file);
+    if (!page.indexable) notIndexed.add(page.file);
+    goalPageStats.push({ season: entry.season, slug: goalPage.slug, file: page.file, indexable: page.indexable, ...result.stats });
+  }
+}
+if (process.env.ARCHIVE_GOAL_STATS) {
+  fs.writeFileSync(process.env.ARCHIVE_GOAL_STATS, JSON.stringify(goalPageStats, null, 2));
+}
+
 for (const entry of seasons) {
   const page = seasonPage(entry);
   writePage(page.file, page.html);
@@ -552,6 +748,7 @@ if (fs.existsSync(sitemapPath)) {
   let added = 0;
 
   for (const file of written) {
+    if (notIndexed.has(file)) continue;
     const loc = `${DOMAIN}/${file}`;
     if (xml.includes(`<loc>${loc}</loc>`)) continue;
     xml = xml.replace("</urlset>", `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>0.6</priority></url>\n</urlset>`);
