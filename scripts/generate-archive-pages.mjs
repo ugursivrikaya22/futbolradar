@@ -233,7 +233,7 @@ function seasonPage(entry) {
   const competitionRows = summary.competitions.map((row) => {
     const goalPage = goalPageByLabel.get(row.competition);
     const name = goalPage
-      ? `<a href="../${escapeHtml(leagueGoalFile(season, goalPage.slug))}" data-link="archive-league-goals">${escapeHtml(row.competition)}</a>`
+      ? `<a href="../${escapeHtml(leagueGoalFile(season, goalPage.slug))}" data-link="archive-league-goals" style="text-decoration:underline">${escapeHtml(row.competition)} ›</a>`
       : escapeHtml(row.competition);
     return `<tr><th scope="row">${name}</th><td>${row.matches}</td><td>${row.goals}</td></tr>`;
   }).join("");
@@ -489,6 +489,11 @@ function goalItem(goal, base) {
   }
   const player = goal.player ? escapeHtml(goal.player) : "Golcü kayıtta yok";
   const kind = goal.kind ? ` <span class="tag soft">${escapeHtml(goal.kind)}</span>` : "";
+  // Kendi kalesine golde olay kaydındaki takım, golün YAZILDIĞI takımdır;
+  // oyuncunun takımı sanılmasın.
+  if (goal.kind === "Kendi kalesine") {
+    return `<li><strong>${minute}</strong> · ${player}${kind} · gol ${team} hanesine yazıldı</li>`;
+  }
   const assist = goal.assist ? ` · Asist: ${escapeHtml(goal.assist)}` : "";
   return `<li><strong>${minute}</strong> · ${player} (${team})${kind}${assist}</li>`;
 }
