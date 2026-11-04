@@ -24400,3 +24400,30 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
     display: none;
   }
 }
+
+/* Ana sayfa en üst: maç köşe yazıları şeridi (mobilde yatay kaydırma). */
+.home-match-columns .home-match-columns__track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.home-match-columns__card { min-width: 0; }
+.home-match-columns__card .column-card-head time { margin-left: auto; font-size: 0.8rem; opacity: 0.8; }
+.home-match-columns__match { margin: 0; font-size: 0.8rem; font-weight: 600; opacity: 0.85; }
+.home-match-columns__excerpt {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+@media (max-width: 760px) {
+  .home-main > .home-match-columns { order: -3; }
+  .home-match-columns .home-match-columns__track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .home-match-columns__card { flex: 0 0 82%; scroll-snap-align: start; }
+}

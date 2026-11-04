@@ -308,6 +308,65 @@ export function featuredColumnHtml(columns, now = Date.now()) {
           </article>`;
 }
 
+/**
+ * ANA SAYFA EN ÜST "KÖŞE YAZISI · MAÇ ANALİZLERİ" ŞERİDİ.
+ *
+ * Yalnızca yayımlanmış MAÇ yazıları (kategori `mac-yorumu` ya da slug'da
+ * maç önü/sonu): Süper Lig veya Türk takımlarının Avrupa kupası maçları
+ * (etiketlerde lig/kupa adı). En yeni önce, en fazla 6 kart. Gelecek tarihli
+ * kayıt çıkmaz. Maç bilgisi YALNIZCA veriden: `sportsEvent` varsa ev–deplasman
+ * ve organizasyon, yoksa etiketlerdeki organizasyon ve aşama (Maç önü/sonu,
+ * Canlı Analiz). Uydurma alan yok; veri yoksa satır basılmaz.
+ */
+const MATCH_COMPETITION_TAGS = ["Süper Lig", "Şampiyonlar Ligi", "Avrupa Ligi", "Konferans Ligi", "Türkiye Kupası"];
+const MATCH_PHASE_TAGS = ["maç önü", "maç önü analiz", "maç sonu", "canlı analiz"];
+
+export function pickMatchColumns(columns, now = Date.now(), limit = 6) {
+  return (columns || [])
+    .map((column) => ({ column, time: Date.parse(column && column.date) }))
+    .filter(({ column, time }) => column && column.path && Number.isFinite(time) && time <= now)
+    .filter(({ column }) => {
+      const slug = String(column.slug || column.id || "");
+      const isMatch = column.category === "mac-yorumu" || /(^|-)mac-(onu|sonu)(-|$)/.test(slug) || Boolean(column.sportsEvent);
+      const tags = column.tags || [];
+      return isMatch && tags.some((tag) => MATCH_COMPETITION_TAGS.includes(tag));
+    })
+    .sort((left, right) => right.time - left.time)
+    .slice(0, limit)
+    .map(({ column }) => column);
+}
+
+function matchInfo(column) {
+  const event = column.sportsEvent;
+  const tags = column.tags || [];
+  const parts = [];
+  if (event && event.home && event.away) parts.push(`${event.home} – ${event.away}`);
+  const competition = (event && event.competition) || tags.find((tag) => MATCH_COMPETITION_TAGS.includes(tag));
+  if (competition) parts.push(competition);
+  const phase = tags.find((tag) => MATCH_PHASE_TAGS.includes(String(tag).toLocaleLowerCase("tr")));
+  if (phase) parts.push(phase);
+  return parts;
+}
+
+export function matchColumnsHtml(columns, now = Date.now()) {
+  const picked = pickMatchColumns(columns, now);
+  if (!picked.length) return "";
+  return picked.map((column) => {
+    const href = escapeHtml(`./${cleanPublicPath(column.path)}`);
+    const info = matchInfo(column);
+    return `<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">${escapeHtml(column.contentType || column.badge || OPINION_BADGE)}</span>
+                <time datetime="${escapeHtml(column.date)}">${escapeHtml(formatDate(column.date, column.locale))}</time>
+              </div>
+              ${info.length ? `<p class="home-match-columns__match">${info.map(escapeHtml).join(" · ")}</p>` : ""}
+              <h3><a href="${href}">${escapeHtml(column.title)}</a></h3>
+              ${column.excerpt ? `<p class="home-match-columns__excerpt">${escapeHtml(column.excerpt)}</p>` : ""}
+              <div class="column-card-actions"><a class="column-card-detail" href="${href}" aria-label="Yazıyı Oku: ${escapeHtml(column.title)}">Yazıyı Oku</a></div>
+            </article>`;
+  }).join("\n");
+}
+
 export function groupAuthors(columns) {
   const authors = new Map();
 
@@ -779,6 +838,13 @@ export function generateColumnPages() {
     // İstemci tarafı Supabase yenilemesi (home-columns.js) aynı yazıları atlasın.
     const hiddenSlugs = columns.filter((column) => column.hideFromHome).map((column) => path.basename(String(column.path || column.id), ".html")).join(" ");
     html = html.replace(/(<div class="column-grid column-grid-home" data-api-target="home-columns")( data-hide-slugs="[^"]*")?/, (_, head) => hiddenSlugs ? `${head} data-hide-slugs="${escapeHtml(hiddenSlugs)}"` : head);
+
+    // En üst maç köşe yazıları şeridi.
+    const matchStrip = matchColumnsHtml(homeColumns);
+    html = replaceSlot(html, "home-match-columns", matchStrip);
+    html = html.replace(/<section\b[^>]*\bdata-match-columns\b[^>]*>/, (tag) => matchStrip.trim()
+      ? tag.replace(/\s+hidden(?=[\s>])/, "")
+      : (/\s+hidden(?=[\s>])/.test(tag) ? tag : tag.replace(/>$/, " hidden>")));
 
     // Öne çıkan köşe yazısı: en yeni yayımlanmış yazı, her derlemede yeniden seçilir.
     const featured = featuredColumnHtml(homeColumns);

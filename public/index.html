@@ -62,10 +62,6 @@
 <meta property="og:image:alt" content="FutbolRadar — Ücretsiz. Reklamsız. Doğrudan Futbol. — FutbolRadar paylaşım görseli" />
 <meta name="twitter:image:alt" content="FutbolRadar — Ücretsiz. Reklamsız. Doğrudan Futbol. — FutbolRadar paylaşım görseli" />
 <link rel="stylesheet" href="/referee-agenda.css">
-  <!-- preconnect:start -->
-<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
-<link rel="dns-prefetch" href="https://media.api-sports.io" />
-<!-- preconnect:end -->
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -76,7 +72,9 @@
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <!-- favicon:end -->
-  <!-- pwa:start -->
+  <meta name="fr-supabase-url" content="https://gxhntmzjvwnhjrapmixx.supabase.co" />
+<meta name="fr-supabase-publishable-key" content="sb_publishable_T-EO6IGyn0Slkk02qtT7DQ_qwetq92Z" />
+<!-- pwa:start -->
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -84,7 +82,11 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=6f20d450"></script>
 <!-- pwa:end -->
-  <!-- hreflang:start -->
+  <!-- preconnect:start -->
+<link rel="preconnect" href="https://media.api-sports.io" crossorigin />
+<link rel="dns-prefetch" href="https://media.api-sports.io" />
+<!-- preconnect:end -->
+<!-- hreflang:start -->
 <link rel="alternate" hreflang="tr-TR" href="https://www.futbolradar.com/" />
 <link rel="alternate" hreflang="en" href="https://www.futbolradar.com/en" />
 <link rel="alternate" hreflang="x-default" href="https://www.futbolradar.com/" />
@@ -150,6 +152,77 @@
     </div>
 
       <main class="home-main">
+      <!-- KÖŞE YAZISI · MAÇ ANALİZLERİ (en üst şerit).
+           İçerik scripts/generate-column-pages.mjs tarafından her derlemede
+           yazılır: yayımlanmış maç köşe yazıları, en yeni önce. Statik HTML
+           olduğu için sayfa açılışında kayma (CLS) yaratmaz. -->
+      <section class="container section home-match-columns" id="mac-kose-yazilari" data-match-columns aria-labelledby="mac-kose-yazilari-title">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Köşe Yazısı</span><h2 id="mac-kose-yazilari-title">Maç Analizleri</h2></div><a class="section-link" href="./kose-yazilari.html">Tüm Köşe Yazıları</a></div>
+        <div class="home-match-columns__track">
+          <!-- prerender:home-match-columns:start -->
+<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">Köşe Yazısı</span>
+                <time datetime="2026-11-04T12:30:00+03:00">04 Kasım 2026</time>
+              </div>
+              <p class="home-match-columns__match">Şampiyonlar Ligi · Maç önü</p>
+              <h3><a href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu">Liverpool Kazanıyor Ama Kapanmıyor: Kadıköy&#39;de Fenerbahçe&#39;nin Aradığı Açık Burada</a></h3>
+              <p class="home-match-columns__excerpt">Liverpool Şampiyonlar Ligi&#39;nde üç maçın üçünü kazandı ama yedi gol yedi. Stoperleri eksik Fenerbahçe, Chobani Stadı&#39;nda bu açığı kullanabilir mi?</p>
+              <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu" aria-label="Yazıyı Oku: Liverpool Kazanıyor Ama Kapanmıyor: Kadıköy&#39;de Fenerbahçe&#39;nin Aradığı Açık Burada">Yazıyı Oku</a></div>
+            </article>
+<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">Köşe Yazısı</span>
+                <time datetime="2026-11-03T21:10:00+03:00">03 Kasım 2026</time>
+              </div>
+              <p class="home-match-columns__match">Şampiyonlar Ligi · Canlı Analiz</p>
+              <h3><a href="./kose-yazilari/canli-galatasaray-stuttgart-batrakov-iki-gol-ilk-yari-analizi-3-kasim-2026">Batrakov&#39;un 3 Dakikası: Galatasaray İlk Yarı Sınavını Geçti, Asıl Soru 46&#39;da</a></h3>
+              <p class="home-match-columns__excerpt">Batrakov 12. ve 15. dakikalarda iki kez attı, Galatasaray 2-0 önde. Ama bu takım ŞL&#39;de üç maçta da öne geçip 6 puan bıraktı; maç hâlâ 46. dakikada başlıyor.</p>
+              <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/canli-galatasaray-stuttgart-batrakov-iki-gol-ilk-yari-analizi-3-kasim-2026" aria-label="Yazıyı Oku: Batrakov&#39;un 3 Dakikası: Galatasaray İlk Yarı Sınavını Geçti, Asıl Soru 46&#39;da">Yazıyı Oku</a></div>
+            </article>
+<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">Köşe Yazısı</span>
+                <time datetime="2026-11-03T12:30:00+03:00">03 Kasım 2026</time>
+              </div>
+              <p class="home-match-columns__match">Şampiyonlar Ligi · Maç Önü</p>
+              <h3><a href="./kose-yazilari/mac-onu-galatasaray-stuttgart-sampiyonlar-ligi-4-mac-gunu-ikinci-yari-testi-3-kasim-2026">Galatasaray – Stuttgart: Maç 46. Dakikada Başlıyor</a></h3>
+              <p class="home-match-columns__excerpt">Galatasaray, Şampiyonlar Ligi&#39;ndeki üç maçında da öne geçti ama skor üstünlüğünden 6 puan bıraktı. Stuttgart ise 41 şutla turnuvanın en ısrarcı takımlarından.</p>
+              <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/mac-onu-galatasaray-stuttgart-sampiyonlar-ligi-4-mac-gunu-ikinci-yari-testi-3-kasim-2026" aria-label="Yazıyı Oku: Galatasaray – Stuttgart: Maç 46. Dakikada Başlıyor">Yazıyı Oku</a></div>
+            </article>
+<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">Köşe Yazısı</span>
+                <time datetime="2026-10-31T21:26:00+03:00">31 Ekim 2026</time>
+              </div>
+              <p class="home-match-columns__match">Süper Lig · Maç sonu</p>
+              <h3><a href="./kose-yazilari/fenerbahce-goztepe-yedek-kulube">Kadıköy&#39;de Maçı Göztepe&#39;nin Yedek Kulübesi Kazandı</a></h3>
+              <p class="home-match-columns__excerpt">Fenerbahçe, Kadıköy&#39;de Göztepe&#39;ye 1-2 yenildi. Göztepe&#39;nin iki golünde de topa son dokunan oyuncular yedek kulübesinden geldi; maçı ilk 11&#39;ler değil kulübeler belirledi.</p>
+              <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/fenerbahce-goztepe-yedek-kulube" aria-label="Yazıyı Oku: Kadıköy&#39;de Maçı Göztepe&#39;nin Yedek Kulübesi Kazandı">Yazıyı Oku</a></div>
+            </article>
+<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">Köşe Yazısı</span>
+                <time datetime="2026-10-26T23:45:00+03:00">26 Ekim 2026</time>
+              </div>
+              <p class="home-match-columns__match">Süper Lig</p>
+              <h3><a href="./kose-yazilari/galatasaray-fenerbahce-2-1-mac-sonu-osimhen-destani">Rams Park&#39;ta Osimhen Destanı: Galatasaray Derbide Fenerbahçe&#39;yi 2-1 Devirdi</a></h3>
+              <p class="home-match-columns__excerpt">Victor Osimhen&#39;in 29. ve 44. dakikalardaki golleri Rams Park&#39;ı ayağa kaldırdı. İrfan Can Kahveci&#39;nin 62. dakikadaki golü Fenerbahçe&#39;yi umutlandırdı ama son sözü Galatasaray söyledi: 2-1.</p>
+              <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/galatasaray-fenerbahce-2-1-mac-sonu-osimhen-destani" aria-label="Yazıyı Oku: Rams Park&#39;ta Osimhen Destanı: Galatasaray Derbide Fenerbahçe&#39;yi 2-1 Devirdi">Yazıyı Oku</a></div>
+            </article>
+<article class="column-card home-match-columns__card" data-card="match-column">
+              <div class="column-card-head">
+                <span class="column-badge">Köşe Yazısı</span>
+                <time datetime="2026-10-21T22:00:00+03:00">21 Ekim 2026</time>
+              </div>
+              <p class="home-match-columns__match">Şampiyonlar Ligi</p>
+              <h3><a href="./kose-yazilari/lille-galatasaray-2-4-mac-sonu-yorumu-2026-10-21">Lille 2-4 Galatasaray: Topa Lille Sahipti, Maçın Sahibi Galatasaray Oldu</a></h3>
+              <p class="home-match-columns__excerpt">Galatasaray, Pierre Mauroy&#39;da Lille&#39;i 4-2 yenerek Şampiyonlar Ligi lig aşamasındaki ilk puanlarını aldı. Topa ve şuta Lille hükmetti; büyük fırsatları ve golleri Galatasaray buldu. Osimhen eski kulübüne attığı golün ardından özür diledi, Batrakov üst üste ikinci maçında gol attı.</p>
+              <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/lille-galatasaray-2-4-mac-sonu-yorumu-2026-10-21" aria-label="Yazıyı Oku: Lille 2-4 Galatasaray: Topa Lille Sahipti, Maçın Sahibi Galatasaray Oldu">Yazıyı Oku</a></div>
+            </article>
+<!-- prerender:home-match-columns:end -->
+        </div>
+      </section>
       <!-- Favori takım kutusunun yeri baştan ayrılır (site.js doldurur). Kutu veri gelince sayfanın en
            üstüne eklenseydi altındaki her şey ~130 px kayardı (ana sayfa CLS'inin ana nedeni). -->
       <section class="container favourite-team" data-favourite-team data-placeholder aria-hidden="true"></section>
@@ -310,14 +383,14 @@
 <article class="home-featured-column__card" data-card="featured-column">
             <div class="home-featured-column__meta">
               <span class="column-badge">Köşe Yazısı</span>
-              <span class="column-category">Maç yorumu</span>
-              <time datetime="2026-10-20T16:30:00+03:00">20 Ekim 2026</time>
+              <span class="column-category">Fenerbahçe</span>
+              <time datetime="2026-11-04T12:30:00+03:00">04 Kasım 2026</time>
             </div>
-            <h2 class="home-featured-column__title" id="home-featured-column-title"><a href="./kose-yazilari/fenerbahce-slavia-prag-mac-onu-derin-analiz-20-ekim-2026">Fenerbahçe-Slavia Prag: Adam adama baskıya karşı üç plan, Kadıköy&#39;de &#39;kazanılması gereken&#39; gece</a></h2>
-            <p class="home-featured-column__excerpt">Slavia&#39;nın adam adama baskısına karşı Kartal üç plan hazırladı. Greenwood farklı rolde, Kanté ağrılı ama hazır, Slavia Chorý&#39;siz. UEFA verileri ilk golü atan Fenerbahçe&#39;yi işaret ediyor.</p>
+            <h2 class="home-featured-column__title" id="home-featured-column-title"><a href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu">Liverpool Kazanıyor Ama Kapanmıyor: Kadıköy&#39;de Fenerbahçe&#39;nin Aradığı Açık Burada</a></h2>
+            <p class="home-featured-column__excerpt">Liverpool Şampiyonlar Ligi&#39;nde üç maçın üçünü kazandı ama yedi gol yedi. Stoperleri eksik Fenerbahçe, Chobani Stadı&#39;nda bu açığı kullanabilir mi?</p>
             <div class="home-featured-column__foot">
               <span class="home-featured-column__author">FutbolRadar</span>
-              <a class="home-featured-column__cta" href="./kose-yazilari/fenerbahce-slavia-prag-mac-onu-derin-analiz-20-ekim-2026" aria-label="Devamını Oku: Fenerbahçe-Slavia Prag: Adam adama baskıya karşı üç plan, Kadıköy&#39;de &#39;kazanılması gereken&#39; gece">Devamını Oku <span aria-hidden="true">→</span></a>
+              <a class="home-featured-column__cta" href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu" aria-label="Devamını Oku: Liverpool Kazanıyor Ama Kapanmıyor: Kadıköy&#39;de Fenerbahçe&#39;nin Aradığı Açık Burada">Devamını Oku <span aria-hidden="true">→</span></a>
             </div>
           </article>
 <!-- prerender:home-featured-column:end -->
@@ -681,50 +754,50 @@
 
 <section class="container section section-columns" id="radar-yorumu" aria-labelledby="radar-yorumu-title" data-api-section="columns" data-empty-hide>
           <div class="section-head"><div class="section-title"><span class="section-kicker">Radar Yorumu</span><h2 id="radar-yorumu-title">Son Köşe Yazıları</h2><p>Yazarların kişisel değerlendirmesi. Bu bölüm yorumdur; sitenin doğrulanmış maç verisinden ayrıdır.</p></div><a class="section-link" href="./kose-yazilari.html">Tüm Köşe Yazıları</a></div>
-          <div class="column-grid column-grid-home" data-api-target="home-columns" data-static-fallback="true">
+          <div class="column-grid column-grid-home" data-api-target="home-columns" data-hide-slugs="kasimpasa-besiktas-formdaki-ev-sahibi" data-static-fallback="true">
             <!-- prerender:home-columns:start -->
 <article class="column-card" data-card="column">
-      <a class="column-card-image" href="./kose-yazilari/fenerbahce-slavia-prag-mac-onu-derin-analiz-20-ekim-2026.html" aria-label="Fenerbahçe-Slavia Prag: Adam adama baskıya karşı üç plan, Kadıköy&#39;de &#39;kazanılması gereken&#39; gece yazısını oku"><img src="./assets/og-image.svg" alt="Fenerbahçe-Slavia Prag Şampiyonlar Ligi maç önü FutbolRadar köşe yazısı" loading="lazy" decoding="async" /></a>
+      <a class="column-card-image" href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu.html" aria-label="Liverpool Kazanıyor Ama Kapanmıyor: Kadıköy&#39;de Fenerbahçe&#39;nin Aradığı Açık Burada yazısını oku"><img src="./assets/og-image.svg" alt="Fenerbahçe - Liverpool maç önü FutbolRadar köşe yazısı" loading="lazy" decoding="async" /></a>
       <div class="column-card-head">
         <span class="column-badge">Köşe Yazısı</span>
-        <span class="column-category">Maç yorumu</span>
+        <span class="column-category">Fenerbahçe</span>
       </div>
-      <h3><a href="./kose-yazilari/fenerbahce-slavia-prag-mac-onu-derin-analiz-20-ekim-2026.html">Fenerbahçe-Slavia Prag: Adam adama baskıya karşı üç plan, Kadıköy&#39;de &#39;kazanılması gereken&#39; gece</a></h3>
-      <p>Slavia&#39;nın adam adama baskısına karşı Kartal üç plan hazırladı. Greenwood farklı rolde, Kanté ağrılı ama hazır, Slavia Chorý&#39;siz. UEFA verileri ilk golü atan Fenerbahçe&#39;yi işaret ediyor.</p>
+      <h3><a href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu.html">Liverpool Kazanıyor Ama Kapanmıyor: Kadıköy&#39;de Fenerbahçe&#39;nin Aradığı Açık Burada</a></h3>
+      <p>Liverpool Şampiyonlar Ligi&#39;nde üç maçın üçünü kazandı ama yedi gol yedi. Stoperleri eksik Fenerbahçe, Chobani Stadı&#39;nda bu açığı kullanabilir mi?</p>
       <div class="column-card-meta">
         <a class="column-author" href="./yazarlar/futbolradar.html">FutbolRadar</a>
-        <time datetime="2026-10-20T16:30:00+03:00">20 Ekim 2026</time>
+        <time datetime="2026-11-04T12:30:00+03:00">04 Kasım 2026</time>
       </div>
-      <div class="column-tags"><span class="column-tag">Fenerbahçe</span><span class="column-tag">Slavia Prag</span><span class="column-tag">Şampiyonlar Ligi</span></div>
-      <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/fenerbahce-slavia-prag-mac-onu-derin-analiz-20-ekim-2026.html">Yazıyı Oku</a></div>
+      <div class="column-tags"><span class="column-tag">Fenerbahçe</span><span class="column-tag">Liverpool</span><span class="column-tag">Şampiyonlar Ligi</span></div>
+      <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/mac-onu-fenerbahce-liverpool-sampiyonlar-ligi-4-mac-gunu.html">Yazıyı Oku</a></div>
     </article><article class="column-card" data-card="column">
-      <a class="column-card-image" href="./kose-yazilari/trabzonspor-besiktas-2-0-mac-sonu-analiz-19-ekim-2026.html" aria-label="Trabzonspor 2-0 Beşiktaş: Papara Park&#39;ta Reis&#39;in Takımı Kazandı, Gol Yağmuru Yağmadı yazısını oku"><img src="./assets/og-image.svg" alt="Trabzonspor&#39;un Beşiktaş&#39;ı 2-0 yendiği maça dair FutbolRadar maç sonu köşe yazısı" loading="lazy" decoding="async" /></a>
+      <a class="column-card-image" href="./kose-yazilari/canli-galatasaray-stuttgart-batrakov-iki-gol-ilk-yari-analizi-3-kasim-2026.html" aria-label="Batrakov&#39;un 3 Dakikası: Galatasaray İlk Yarı Sınavını Geçti, Asıl Soru 46&#39;da yazısını oku"><img src="./assets/og-image.svg" alt="Galatasaray–Stuttgart canlı ilk yarı analizi FutbolRadar köşe yazısı" loading="lazy" decoding="async" /></a>
       <div class="column-card-head">
         <span class="column-badge">Köşe Yazısı</span>
         <span class="column-category">Maç yorumu</span>
       </div>
-      <h3><a href="./kose-yazilari/trabzonspor-besiktas-2-0-mac-sonu-analiz-19-ekim-2026.html">Trabzonspor 2-0 Beşiktaş: Papara Park&#39;ta Reis&#39;in Takımı Kazandı, Gol Yağmuru Yağmadı</a></h3>
-      <p>Trabzonspor, Papara Park&#39;ta Beşiktaş&#39;ı Ozan Tufan ve Mohamed Salah&#39;ın golleriyle 2-0 yendi ve puanını 16&#39;ya çıkardı. Topu Beşiktaş tuttu, maçı Trabzonspor kazandı; bizim bol gol tahminimiz ise tutmadı.</p>
+      <h3><a href="./kose-yazilari/canli-galatasaray-stuttgart-batrakov-iki-gol-ilk-yari-analizi-3-kasim-2026.html">Batrakov&#39;un 3 Dakikası: Galatasaray İlk Yarı Sınavını Geçti, Asıl Soru 46&#39;da</a></h3>
+      <p>Batrakov 12. ve 15. dakikalarda iki kez attı, Galatasaray 2-0 önde. Ama bu takım ŞL&#39;de üç maçta da öne geçip 6 puan bıraktı; maç hâlâ 46. dakikada başlıyor.</p>
       <div class="column-card-meta">
         <a class="column-author" href="./yazarlar/futbolradar.html">FutbolRadar</a>
-        <time datetime="2026-10-19T22:00:00+03:00">19 Ekim 2026</time>
+        <time datetime="2026-11-03T21:10:00+03:00">03 Kasım 2026</time>
       </div>
-      <div class="column-tags"><span class="column-tag">Trabzonspor</span><span class="column-tag">Beşiktaş</span><span class="column-tag">Süper Lig</span></div>
-      <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/trabzonspor-besiktas-2-0-mac-sonu-analiz-19-ekim-2026.html">Yazıyı Oku</a></div>
+      <div class="column-tags"><span class="column-tag">Galatasaray</span><span class="column-tag">Stuttgart</span><span class="column-tag">Şampiyonlar Ligi</span></div>
+      <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/canli-galatasaray-stuttgart-batrakov-iki-gol-ilk-yari-analizi-3-kasim-2026.html">Yazıyı Oku</a></div>
     </article><article class="column-card" data-card="column">
-      <a class="column-card-image" href="./kose-yazilari/trabzonspor-besiktas-mac-onu-analiz-19-ekim-2026.html" aria-label="Papara Park&#39;ta Ağlar Susmayacak: Trabzonspor–Beşiktaş Derbisinde Gol Yağmuru Kapıda yazısını oku"><img src="./assets/og-image.svg" alt="Trabzonspor–Beşiktaş derbisi öncesi FutbolRadar maç önü köşe yazısı" loading="lazy" decoding="async" /></a>
+      <a class="column-card-image" href="./kose-yazilari/mac-onu-galatasaray-stuttgart-sampiyonlar-ligi-4-mac-gunu-ikinci-yari-testi-3-kasim-2026.html" aria-label="Galatasaray – Stuttgart: Maç 46. Dakikada Başlıyor yazısını oku"><img src="./assets/og-image.svg" alt="Galatasaray–Stuttgart maç önü FutbolRadar köşe yazısı" loading="lazy" decoding="async" /></a>
       <div class="column-card-head">
         <span class="column-badge">Köşe Yazısı</span>
         <span class="column-category">Maç yorumu</span>
       </div>
-      <h3><a href="./kose-yazilari/trabzonspor-besiktas-mac-onu-analiz-19-ekim-2026.html">Papara Park&#39;ta Ağlar Susmayacak: Trabzonspor–Beşiktaş Derbisinde Gol Yağmuru Kapıda</a></h3>
-      <p>İki takımın ligdeki 14 maçının 10&#39;unda 3 ve üzeri gol, Beşiktaş maçlarında maç başı 3,43 gol, geçen sezon Papara Park&#39;ta 3-3. Bu akşam bir derbi değil, bir gol şöleni bekliyoruz.</p>
+      <h3><a href="./kose-yazilari/mac-onu-galatasaray-stuttgart-sampiyonlar-ligi-4-mac-gunu-ikinci-yari-testi-3-kasim-2026.html">Galatasaray – Stuttgart: Maç 46. Dakikada Başlıyor</a></h3>
+      <p>Galatasaray, Şampiyonlar Ligi&#39;ndeki üç maçında da öne geçti ama skor üstünlüğünden 6 puan bıraktı. Stuttgart ise 41 şutla turnuvanın en ısrarcı takımlarından.</p>
       <div class="column-card-meta">
         <a class="column-author" href="./yazarlar/futbolradar.html">FutbolRadar</a>
-        <time datetime="2026-10-19T15:04:00+03:00">19 Ekim 2026</time>
+        <time datetime="2026-11-03T12:30:00+03:00">03 Kasım 2026</time>
       </div>
-      <div class="column-tags"><span class="column-tag">Trabzonspor</span><span class="column-tag">Beşiktaş</span><span class="column-tag">Trendyol Süper Lig</span></div>
-      <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/trabzonspor-besiktas-mac-onu-analiz-19-ekim-2026.html">Yazıyı Oku</a></div>
+      <div class="column-tags"><span class="column-tag">Galatasaray</span><span class="column-tag">Stuttgart</span><span class="column-tag">Şampiyonlar Ligi</span></div>
+      <div class="column-card-actions"><a class="column-card-detail" href="./kose-yazilari/mac-onu-galatasaray-stuttgart-sampiyonlar-ligi-4-mac-gunu-ikinci-yari-testi-3-kasim-2026.html">Yazıyı Oku</a></div>
     </article>
 <!-- prerender:home-columns:end -->
           </div>
@@ -768,12 +841,13 @@
   <div class="container-wide home-ticker__inner">
     <h2 class="home-ticker__label" id="home-ticker-title">Transfer Gündemi</h2>
     <div class="home-ticker__viewport">
-      <div class="home-ticker__track" style="--home-ticker-duration:95s"><ul class="home-ticker__group"><li class="home-ticker__item" data-ticker-id="superlig-ara-transfer-donemi-2027" data-expires="2027-02-05T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#tarihler">Süper Lig&#039;de yaz transfer dönemi 4 Eylül 2026&#039;da kapandı; ara transfer dönemi 1 Ocak – 5 Şubat 2027</a><a class="home-ticker__source" href="https://www.tff.org/default.aspx?ftxtID=50633&amp;pageID=687" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: TFF">TFF</a></li><li class="home-ticker__item" data-ticker-id="eyupspor-fifa-tescil-yasagi-2026-10-15" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar">FIFA, Eyüpspor&#039;a 15 Ekim 2026&#039;dan geçerli 3 dönem transfer tescil yasağı getirdi</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="antalyaspor-karagumruk-fifa-yasagi-2026-10" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar">1. Lig&#039;den Antalyaspor ve Fatih Karagümrük de FIFA&#039;nın transfer yasağı listesinde</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="avrupa-buyuk-ligler-yaz-penceresi-kapandi-2026" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Haber</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#avrupa">Premier Lig, LaLiga, Serie A, Bundesliga ve Ligue 1&#039;de yaz transfer dönemi 1 Eylül 2026&#039;da kapandı</a><a class="home-ticker__source" href="https://www.premierleague.com/en/news/4698998/summer-2026-transfer-deadline-day-everything-you-need-to-know" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: Premier League">Premier League</a></li></ul><ul class="home-ticker__group" aria-hidden="true"><li class="home-ticker__item" data-ticker-id="superlig-ara-transfer-donemi-2027" data-expires="2027-02-05T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#tarihler" tabindex="-1">Süper Lig&#039;de yaz transfer dönemi 4 Eylül 2026&#039;da kapandı; ara transfer dönemi 1 Ocak – 5 Şubat 2027</a><a class="home-ticker__source" href="https://www.tff.org/default.aspx?ftxtID=50633&amp;pageID=687" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: TFF">TFF</a></li><li class="home-ticker__item" data-ticker-id="eyupspor-fifa-tescil-yasagi-2026-10-15" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar" tabindex="-1">FIFA, Eyüpspor&#039;a 15 Ekim 2026&#039;dan geçerli 3 dönem transfer tescil yasağı getirdi</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="antalyaspor-karagumruk-fifa-yasagi-2026-10" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar" tabindex="-1">1. Lig&#039;den Antalyaspor ve Fatih Karagümrük de FIFA&#039;nın transfer yasağı listesinde</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="avrupa-buyuk-ligler-yaz-penceresi-kapandi-2026" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Haber</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#avrupa" tabindex="-1">Premier Lig, LaLiga, Serie A, Bundesliga ve Ligue 1&#039;de yaz transfer dönemi 1 Eylül 2026&#039;da kapandı</a><a class="home-ticker__source" href="https://www.premierleague.com/en/news/4698998/summer-2026-transfer-deadline-day-everything-you-need-to-know" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: Premier League">Premier League</a></li></ul></div>
+      <div class="home-ticker__track" style="--home-ticker-duration:168s"><ul class="home-ticker__group"><li class="home-ticker__item home-ticker__item--breaking" data-ticker-id="fenerbahce-ismail-kartal-istifa-dirk-kuyt-gecici-2026-10-28" data-expires="2026-11-04T23:59:59+03:00"><span class="home-ticker__tag">Son dakika</span><a class="home-ticker__link" href="./haber/ismail-kartal-istifa-dirk-kuyt-gecici-teknik-sorumlu">İsmail Kartal istifa etti, Fenerbahçe&#039;de Dirk Kuyt geçici olarak görevde.</a><a class="home-ticker__source" href="https://www.fenerbahce.org/haberler/futbol/2026/10/kamuoyuna-duyuru" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: Fenerbahçe SK">Fenerbahçe SK</a></li><li class="home-ticker__item" data-ticker-id="galatasaray-stuttgart-bu-aksam-2026-11-03" data-expires="2026-11-03T23:59:59+03:00"><span class="home-ticker__tag">Maç</span><a class="home-ticker__link" href="./galatasaray-stuttgart.html">Bu akşam Galatasaray – Stuttgart: UEFA Şampiyonlar Ligi 4. maç günü, 20.45 TSİ, RAMS Park</a><a class="home-ticker__source" href="https://www.galatasaray.org/haber/futbol/sampiyonlar-ligi/maca-dogru-galatasaray-stuttgart/61284" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: Galatasaray.org">Galatasaray.org</a></li><li class="home-ticker__item" data-ticker-id="tff-a-milli-takim-sergen-yalcin-2026-10-20" data-expires="2026-11-30T23:59:59+03:00"><span class="home-ticker__tag">Haber</span><a class="home-ticker__link" href="./milli-takim.html">Resmî: TFF, A Millî Takım teknik direktörlüğüne Sergen Yalçın&#039;ı getirdi; 4 yıllık sözleşme imzalanacak</a><a class="home-ticker__source" href="https://www.tff.org/default.aspx?ftxtID=51696&amp;pageID=687" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: TFF">TFF</a></li><li class="home-ticker__item" data-ticker-id="superlig-ara-transfer-donemi-2027" data-expires="2027-02-05T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#tarihler">Süper Lig&#039;de yaz transfer dönemi 4 Eylül 2026&#039;da kapandı; ara transfer dönemi 1 Ocak – 5 Şubat 2027</a><a class="home-ticker__source" href="https://www.tff.org/default.aspx?ftxtID=50633&amp;pageID=687" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: TFF">TFF</a></li><li class="home-ticker__item" data-ticker-id="eyupspor-fifa-tescil-yasagi-2026-10-15" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar">FIFA, Eyüpspor&#039;a 15 Ekim 2026&#039;dan geçerli 3 dönem transfer tescil yasağı getirdi</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="antalyaspor-karagumruk-fifa-yasagi-2026-10" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar">1. Lig&#039;den Antalyaspor ve Fatih Karagümrük de FIFA&#039;nın transfer yasağı listesinde</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="avrupa-buyuk-ligler-yaz-penceresi-kapandi-2026" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Haber</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#avrupa">Premier Lig, LaLiga, Serie A, Bundesliga ve Ligue 1&#039;de yaz transfer dönemi 1 Eylül 2026&#039;da kapandı</a><a class="home-ticker__source" href="https://www.premierleague.com/en/news/4698998/summer-2026-transfer-deadline-day-everything-you-need-to-know" target="_blank" rel="nofollow noopener noreferrer" aria-label="Kaynak: Premier League">Premier League</a></li></ul><ul class="home-ticker__group" aria-hidden="true"><li class="home-ticker__item home-ticker__item--breaking" data-ticker-id="fenerbahce-ismail-kartal-istifa-dirk-kuyt-gecici-2026-10-28" data-expires="2026-11-04T23:59:59+03:00"><span class="home-ticker__tag">Son dakika</span><a class="home-ticker__link" href="./haber/ismail-kartal-istifa-dirk-kuyt-gecici-teknik-sorumlu" tabindex="-1">İsmail Kartal istifa etti, Fenerbahçe&#039;de Dirk Kuyt geçici olarak görevde.</a><a class="home-ticker__source" href="https://www.fenerbahce.org/haberler/futbol/2026/10/kamuoyuna-duyuru" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: Fenerbahçe SK">Fenerbahçe SK</a></li><li class="home-ticker__item" data-ticker-id="galatasaray-stuttgart-bu-aksam-2026-11-03" data-expires="2026-11-03T23:59:59+03:00"><span class="home-ticker__tag">Maç</span><a class="home-ticker__link" href="./galatasaray-stuttgart.html" tabindex="-1">Bu akşam Galatasaray – Stuttgart: UEFA Şampiyonlar Ligi 4. maç günü, 20.45 TSİ, RAMS Park</a><a class="home-ticker__source" href="https://www.galatasaray.org/haber/futbol/sampiyonlar-ligi/maca-dogru-galatasaray-stuttgart/61284" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: Galatasaray.org">Galatasaray.org</a></li><li class="home-ticker__item" data-ticker-id="tff-a-milli-takim-sergen-yalcin-2026-10-20" data-expires="2026-11-30T23:59:59+03:00"><span class="home-ticker__tag">Haber</span><a class="home-ticker__link" href="./milli-takim.html" tabindex="-1">Resmî: TFF, A Millî Takım teknik direktörlüğüne Sergen Yalçın&#039;ı getirdi; 4 yıllık sözleşme imzalanacak</a><a class="home-ticker__source" href="https://www.tff.org/default.aspx?ftxtID=51696&amp;pageID=687" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: TFF">TFF</a></li><li class="home-ticker__item" data-ticker-id="superlig-ara-transfer-donemi-2027" data-expires="2027-02-05T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#tarihler" tabindex="-1">Süper Lig&#039;de yaz transfer dönemi 4 Eylül 2026&#039;da kapandı; ara transfer dönemi 1 Ocak – 5 Şubat 2027</a><a class="home-ticker__source" href="https://www.tff.org/default.aspx?ftxtID=50633&amp;pageID=687" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: TFF">TFF</a></li><li class="home-ticker__item" data-ticker-id="eyupspor-fifa-tescil-yasagi-2026-10-15" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar" tabindex="-1">FIFA, Eyüpspor&#039;a 15 Ekim 2026&#039;dan geçerli 3 dönem transfer tescil yasağı getirdi</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="antalyaspor-karagumruk-fifa-yasagi-2026-10" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Transfer</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#yasaklar" tabindex="-1">1. Lig&#039;den Antalyaspor ve Fatih Karagümrük de FIFA&#039;nın transfer yasağı listesinde</a><a class="home-ticker__source" href="https://knowledge.fifa.com/registration-bans" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: FIFA">FIFA</a></li><li class="home-ticker__item" data-ticker-id="avrupa-buyuk-ligler-yaz-penceresi-kapandi-2026" data-expires="2026-12-31T23:59:59+03:00"><span class="home-ticker__tag">Haber</span><a class="home-ticker__link" href="./transfer-donemi-2026-27#avrupa" tabindex="-1">Premier Lig, LaLiga, Serie A, Bundesliga ve Ligue 1&#039;de yaz transfer dönemi 1 Eylül 2026&#039;da kapandı</a><a class="home-ticker__source" href="https://www.premierleague.com/en/news/4698998/summer-2026-transfer-deadline-day-everything-you-need-to-know" target="_blank" rel="nofollow noopener noreferrer" tabindex="-1" aria-label="Kaynak: Premier League">Premier League</a></li></ul></div>
     </div>
     <button type="button" class="home-ticker__toggle" data-home-ticker-toggle aria-pressed="false" aria-label="Kayan yazıyı durdur">Durdur</button>
   </div>
 </section>
 <script src="./home-ticker.js" defer></script>
+<script src="./home-columns.js" defer></script>
 <!-- prerender:home-ticker:end -->
         <section class="container source-strip" aria-label="Güncelleme bilgisi">
           <div data-stale="false"><span>Son güncelleme</span><b>20 Ekim 2026 22:11 TSİ</b></div>
