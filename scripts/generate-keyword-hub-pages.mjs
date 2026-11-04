@@ -259,7 +259,7 @@ function fenerbahceTransferPage() {
   const rumours = news.filter((n) => n.status === "verified" && /Fenerbah/.test(`${n.team} ${n.category} ${n.title}`) && TRANSFER_RE.test(`${n.title} ${n.summary}`) && exists(`haber/${n.slug}.html`))
     .sort((a, b) => String(b.publishedAt).localeCompare(String(a.publishedAt))).slice(0, 12);
   const rumourHtml = rumours.length
-    ? `<ul class="kw-list">${rumours.map((n) => `<li><span class="kw-badge kw-rumour">Gündem / iddia</span><time datetime="${esc(n.publishedAt)}">${esc(trDate(n.publishedAt, true))}</time><a href="./haber/${esc(n.slug)}.html"><strong>${esc(n.title)}</strong></a></li>`).join("")}</ul>`
+    ? `<ul class="kw-list">${rumours.map((n) => `<li>${n.ticker && n.ticker.confidence === "confirmed" ? `<span class="kw-badge kw-official">Resmî</span>` : `<span class="kw-badge kw-rumour">Gündem / iddia</span>`}<time datetime="${esc(n.publishedAt)}">${esc(trDate(n.publishedAt, true))}</time><a href="./haber/${esc(n.slug)}.html"><strong>${esc(n.title)}</strong></a></li>`).join("")}</ul>`
     : "<p>Haber arşivimizde şu an Fenerbahçe ile ilgili kaynaklı bir transfer iddiası yok. İddia çıktığında burada, resmî transferlerden ayrı ve “Gündem / iddia” etiketiyle listelenir.</p>";
   const dateModified = maxDay(...fb.map((t) => String(t.lastVerifiedAt || t.date).slice(0, 10)), ...rumours.map((n) => isoDay(n.publishedAt)));
   const headers = ["Tarih", "Oyuncu", "Kulüp", "Tür", "Durum", "Kaynak"];
@@ -274,7 +274,7 @@ function fenerbahceTransferPage() {
       crumbs: [{ name: "Takımlar", href: "./takimlar", url: `${SITE}/takimlar` }, { name: "Fenerbahçe", href: "./takimlar/fenerbahce", url: `${SITE}/takimlar/fenerbahce` }],
       content: `<section class="evergreen-section" aria-labelledby="fb-in"><h2 id="fb-in">Resmî gelen oyuncular (${ins.length})</h2>${ins.length ? table(headers, ins.map(row), "Fenerbahçe resmî gelen transferler") : "<p>Kayıt yok.</p>"}</section>
 <section class="evergreen-section" aria-labelledby="fb-out"><h2 id="fb-out">Resmî giden oyuncular (${outs.length})</h2>${outs.length ? table(headers, outs.map(row), "Fenerbahçe resmî giden transferler") : "<p>Kayıt yok.</p>"}</section>
-<section class="evergreen-section" aria-labelledby="fb-rumour"><h2 id="fb-rumour">Gündemdeki iddialar (resmî değil)</h2>${rumourHtml}</section>
+<section class="evergreen-section" aria-labelledby="fb-rumour"><h2 id="fb-rumour">Fenerbahçe transfer haberleri ve gündem</h2>${rumourHtml}</section>
 ${linkGrid("Fenerbahçe ve transfer sayfaları", [["./takimlar/fenerbahce", "Fenerbahçe takım profili"], ["./fenerbahce-maclari.html", "Fenerbahçe maçları"], ["./fenerbahce-puan-durumu.html", "Fenerbahçe puan durumu"], ["./fenerbahce-oyuncu-radari.html", "Fenerbahçe oyuncu radarı"], ["./super-lig-transferleri-2026-2027.html", "Süper Lig transferleri 2026-27"], ["./transfer-donemi-2026-27.html", "Transfer dönemi 2026-27"]])}
 ${linkGrid("Fenerbahçe maç dosyaları", matchDossierRoots("fenerbahce"))}
 ${linkGrid("Süper Lig rehberleri", hubLinksExcept(file))}
