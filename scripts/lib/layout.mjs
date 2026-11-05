@@ -129,10 +129,12 @@ const NAV_NEW_BADGE_KEY = "nav.polls";
  * "Transfer Radar" ve "İstatistik" üst menüye girince 1366-1920 px tek satırlık
  * masaüstü çubuğu 11 bağlantıyı taşıyamıyor (önceki 9 bağlantı bile 0-3 px
  * payla sığıyordu; 1440 px'te ölçülen taşma 11 bağlantıyla ~130 px).
- * "Köşe Yazıları" ve "Arşiv" geniş masaüstü satırında gösterilmez; dar ekran
- * çekmecesinde ve alt bilginin "Maç" sütununda aynen durur.
+ * Yalnızca "Arşiv" geniş masaüstü satırında gösterilmez; dar ekran
+ * çekmecesinde ve alt bilgide aynen durur. "Köşe Yazıları" masaüstü satırına
+ * geri döndü: yer, maç merkezi grubu ve bağlantılar sıkıştırılarak açıldı
+ * (bkz. page.css → "NAV KOMPAKT").
  */
-const DESKTOP_DRAWER_KEYS = new Set(["nav.columns", "nav.archive"]);
+const DESKTOP_DRAWER_KEYS = new Set(["nav.archive"]);
 
 function linkList(items, base, locale, options = {}) {
   // Rözet yalnızca ÜST menüde gösterilir (`showBadges: true` ile açıkça

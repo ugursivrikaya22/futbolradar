@@ -61,6 +61,8 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // duyuruları iki kulübün kendi sitelerinden doğrulandı.
     "fcbarcelona.com",
     "realmadrid.com",
+    // Atlético de Madrid resmî sitesi (en.atleticodemadrid.com alt alanı dahil).
+    "atleticodemadrid.com",
     // VfB Stuttgart resmî sitesi: Galatasaray'ın UCL rakibi Stuttgart takım
     // sayfasında kadro, kulüp künyesi/başarılar ve maç programı buradan.
     "vfb.de",
