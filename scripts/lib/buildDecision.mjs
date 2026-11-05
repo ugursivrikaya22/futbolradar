@@ -12,8 +12,17 @@ export function isOperationalOnly(file) {
     || /^(?:README|AGENTS)\.md$/i.test(file);
 }
 
-export function buildDecision(env = process.env, cwd = process.cwd()) {
+export function buildDecision(env = process.env, cwd = process.cwd(), { deployHook = null } = {}) {
   if (RETIRED_PROJECTS.has(env.VERCEL_PROJECT_ID)) return { build: false, reason: "retired project" };
+  // Deploy Hook (ör. Tarihte Bugün / günlük cron veri tazelemesi) ya da elle
+  // zorlanan derleme: "önceki dağıtımdan beri değişiklik yok" kuralını atla.
+  // Bkz. scripts/lib/deployHookTrigger.mjs ve docs/tarihte-bugun.md.
+  if (/^(1|true|yes)$/i.test(String(env.FUTBOLRADAR_FORCE_BUILD || ""))) {
+    return { build: true, reason: "forced by FUTBOLRADAR_FORCE_BUILD" };
+  }
+  if (deployHook === true && env.VERCEL_ENV !== "preview") {
+    return { build: true, reason: "deploy hook trigger (deployment meta.deployHookId)" };
+  }
   const branch = env.VERCEL_GIT_COMMIT_REF || "";
   if (env.VERCEL_ENV === "preview" && branch && !/^preview\/.+/.test(branch)) {
     return { build: false, reason: "preview builds are opt-in on preview/* branches; production remains enabled" };
