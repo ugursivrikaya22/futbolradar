@@ -59657,22 +59657,46 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-06T17:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:03.839Z",
+    "generatedAt": "2026-11-05T10:47:03.069Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Gaziantep FK",
       "recentForm": {
         "sampleSize": 5,
-        "points": 4,
-        "wins": 1,
-        "draws": 1,
-        "losses": 3,
-        "goalsFor": 5,
-        "goalsAgainst": 9,
-        "goalDifference": -4,
-        "weightedScore": 22,
+        "points": 0,
+        "wins": 0,
+        "draws": 0,
+        "losses": 5,
+        "goalsFor": 2,
+        "goalsAgainst": 12,
+        "goalDifference": -10,
+        "weightedScore": 0,
         "results": [
+          {
+            "matchId": "trabzonspor-gaziantep-fk-2026-11-01",
+            "kickoff": "2026-11-01T16:00:00+03:00",
+            "opponent": "Trabzonspor",
+            "venue": "away",
+            "goalsFor": 0,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
+          {
+            "matchId": "gaziantep-fk-erzurumspor-fk-2026-10-24",
+            "kickoff": "2026-10-24T16:00:00+03:00",
+            "opponent": "Erzurumspor FK",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 3,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "basaksehir-gaziantep-fk-2026-10-18",
             "kickoff": "2026-10-18T19:00:00+03:00",
@@ -59708,45 +59732,33 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "gaziantep-fk-fenerbahce-2026-09-14",
-            "kickoff": "2026-09-14T20:00:00+03:00",
-            "opponent": "Fenerbahçe",
-            "venue": "home",
-            "goalsFor": 0,
-            "goalsAgainst": 0,
-            "outcome": "D",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "goztepe-gaziantep-fk-2026-09-07",
-            "kickoff": "2026-09-07T20:00:00+03:00",
-            "opponent": "Göztepe",
-            "venue": "away",
-            "goalsFor": 4,
-            "goalsAgainst": 2,
-            "outcome": "W",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 4,
+        "sampleSize": 5,
         "points": 2,
         "wins": 0,
         "draws": 2,
-        "losses": 2,
-        "goalsFor": 2,
-        "goalsAgainst": 6,
-        "goalDifference": -4,
-        "weightedScore": 16,
+        "losses": 3,
+        "goalsFor": 3,
+        "goalsAgainst": 9,
+        "goalDifference": -6,
+        "weightedScore": 12,
         "results": [
+          {
+            "matchId": "gaziantep-fk-erzurumspor-fk-2026-10-24",
+            "kickoff": "2026-10-24T16:00:00+03:00",
+            "opponent": "Erzurumspor FK",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 3,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "gaziantep-fk-corum-fk-2026-10-11",
             "kickoff": "2026-10-11T16:00:00+03:00",
@@ -59799,16 +59811,28 @@
         "dataStatus": "sufficient"
       },
       "awayForm": {
-        "sampleSize": 4,
+        "sampleSize": 5,
         "points": 6,
         "wins": 2,
         "draws": 0,
-        "losses": 2,
+        "losses": 3,
         "goalsFor": 6,
-        "goalsAgainst": 6,
-        "goalDifference": 0,
-        "weightedScore": 45,
+        "goalsAgainst": 8,
+        "goalDifference": -2,
+        "weightedScore": 34,
         "results": [
+          {
+            "matchId": "trabzonspor-gaziantep-fk-2026-11-01",
+            "kickoff": "2026-11-01T16:00:00+03:00",
+            "opponent": "Trabzonspor",
+            "venue": "away",
+            "goalsFor": 0,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "basaksehir-gaziantep-fk-2026-10-18",
             "kickoff": "2026-10-18T19:00:00+03:00",
@@ -59861,20 +59885,20 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 1,
-        "direction": "down",
+        "averageGoalsFor": 0.4,
+        "direction": "up",
         "sampleSize": 5,
-        "score": 40
+        "score": 16
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1.8,
-        "direction": "down",
+        "averageGoalsAgainst": 2.4,
+        "direction": "stable",
         "sampleSize": 5,
-        "score": 28
+        "score": 4
       },
-      "restDays": 19,
+      "restDays": 5,
       "scheduleLoad": {
-        "matchesInWindow": 0,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -59905,10 +59929,10 @@
         "wins": 2,
         "draws": 2,
         "losses": 1,
-        "goalsFor": 9,
-        "goalsAgainst": 7,
+        "goalsFor": 8,
+        "goalsAgainst": 6,
         "goalDifference": 2,
-        "weightedScore": 52,
+        "weightedScore": 55,
         "results": [
           {
             "matchId": "kasimpasa-besiktas-2026-11-01",
@@ -59918,6 +59942,18 @@
             "goalsFor": 2,
             "goalsAgainst": 2,
             "outcome": "D",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
+          {
+            "matchId": "eyupspor-kasimpasa-2026-10-24",
+            "kickoff": "2026-10-24T13:30:00+03:00",
+            "opponent": "Eyüpspor",
+            "venue": "away",
+            "goalsFor": 1,
+            "goalsAgainst": 0,
+            "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -59954,18 +59990,6 @@
             "goalsFor": 0,
             "goalsAgainst": 0,
             "outcome": "D",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "genclerbirligi-kasimpasa-2026-09-13",
-            "kickoff": "2026-09-13T17:00:00+03:00",
-            "opponent": "Gençlerbirliği",
-            "venue": "away",
-            "goalsFor": 2,
-            "goalsAgainst": 1,
-            "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -60048,16 +60072,28 @@
         "dataStatus": "sufficient"
       },
       "awayForm": {
-        "sampleSize": 4,
-        "points": 7,
-        "wins": 2,
+        "sampleSize": 5,
+        "points": 10,
+        "wins": 3,
         "draws": 1,
         "losses": 1,
-        "goalsFor": 5,
+        "goalsFor": 6,
         "goalsAgainst": 5,
-        "goalDifference": 0,
-        "weightedScore": 56,
+        "goalDifference": 1,
+        "weightedScore": 66,
         "results": [
+          {
+            "matchId": "eyupspor-kasimpasa-2026-10-24",
+            "kickoff": "2026-10-24T13:30:00+03:00",
+            "opponent": "Eyüpspor",
+            "venue": "away",
+            "goalsFor": 1,
+            "goalsAgainst": 0,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "galatasaray-kasimpasa-2026-10-09",
             "kickoff": "2026-10-09T20:00:00+03:00",
@@ -60110,20 +60146,20 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 1.8,
+        "averageGoalsFor": 1.6,
         "direction": "up",
         "sampleSize": 5,
-        "score": 72
+        "score": 64
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1.4,
-        "direction": "down",
+        "averageGoalsAgainst": 1.2,
+        "direction": "up",
         "sampleSize": 5,
-        "score": 44
+        "score": 52
       },
       "restDays": 5,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -61105,8 +61141,8 @@
         "away": 22
       },
       "form": {
-        "home": 22,
-        "away": 52
+        "home": 0,
+        "away": 55
       },
       "availability": {
         "home": 70,
@@ -61271,18 +61307,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:03.839Z",
+      "generatedAt": "2026-11-05T10:47:03.068Z",
       "asOf": "2026-11-06T17:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
-        "home": 33,
-        "away": 47
+        "home": 27,
+        "away": 49
       },
       "probabilities": {
-        "homeWin": 23,
-        "draw": 31,
-        "awayWin": 46
+        "homeWin": 16,
+        "draw": 28,
+        "awayWin": 56
       },
       "prediction": {
         "primary": "away",
@@ -61290,18 +61326,18 @@
         "confidence": 86
       },
       "goalPotential": {
-        "score": 70,
+        "score": 62,
         "label": "medium"
       },
       "upsetRisk": {
-        "score": 57,
-        "label": "high"
+        "score": 47,
+        "label": "medium"
       },
       "matchBalance": {
-        "score": 72,
+        "score": 56,
         "label": "strong-away"
       },
-      "summary": "Model, ev sahibi için %23, beraberlik için %31, deplasman için %46 ihtimal hesaplıyor. Takım güç puanları 33/100 - 47/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %16, beraberlik için %28, deplasman için %56 ihtimal hesaplıyor. Takım güç puanları 27/100 - 49/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -61333,7 +61369,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-07T10:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:04.115Z",
+    "generatedAt": "2026-11-05T10:47:03.354Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -61345,8 +61381,8 @@
         "draws": 0,
         "losses": 4,
         "goalsFor": 4,
-        "goalsAgainst": 18,
-        "goalDifference": -14,
+        "goalsAgainst": 17,
+        "goalDifference": -13,
         "weightedScore": 24,
         "results": [
           {
@@ -61357,6 +61393,18 @@
             "goalsFor": 4,
             "goalsAgainst": 2,
             "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
+          {
+            "matchId": "eyupspor-kasimpasa-2026-10-24",
+            "kickoff": "2026-10-24T13:30:00+03:00",
+            "opponent": "Kasımpaşa",
+            "venue": "home",
+            "goalsFor": 0,
+            "goalsAgainst": 1,
+            "outcome": "L",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -61396,33 +61444,33 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "eyupspor-caykur-rizespor-2026-09-12",
-            "kickoff": "2026-09-12T17:00:00+03:00",
-            "opponent": "Çaykur Rizespor",
-            "venue": "home",
-            "goalsFor": 0,
-            "goalsAgainst": 2,
-            "outcome": "L",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 4,
+        "sampleSize": 5,
         "points": 3,
         "wins": 1,
         "draws": 0,
-        "losses": 3,
+        "losses": 4,
         "goalsFor": 2,
-        "goalsAgainst": 8,
-        "goalDifference": -6,
-        "weightedScore": 24,
+        "goalsAgainst": 9,
+        "goalDifference": -7,
+        "weightedScore": 18,
         "results": [
+          {
+            "matchId": "eyupspor-kasimpasa-2026-10-24",
+            "kickoff": "2026-10-24T13:30:00+03:00",
+            "opponent": "Kasımpaşa",
+            "venue": "home",
+            "goalsFor": 0,
+            "goalsAgainst": 1,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "eyupspor-goztepe-2026-10-12",
             "kickoff": "2026-10-12T20:00:00+03:00",
@@ -61555,14 +61603,14 @@
         "score": 32
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 3.6,
+        "averageGoalsAgainst": 3.4,
         "direction": "up",
         "sampleSize": 5,
         "score": 0
       },
       "restDays": 3,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -61593,11 +61641,23 @@
         "wins": 2,
         "draws": 0,
         "losses": 3,
-        "goalsFor": 5,
-        "goalsAgainst": 5,
+        "goalsFor": 6,
+        "goalsAgainst": 6,
         "goalDifference": 0,
-        "weightedScore": 36,
+        "weightedScore": 42,
         "results": [
+          {
+            "matchId": "alanyaspor-kocaelispor-2026-10-23",
+            "kickoff": "2026-10-23T20:00:00+03:00",
+            "opponent": "Alanyaspor",
+            "venue": "away",
+            "goalsFor": 2,
+            "goalsAgainst": 1,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "kocaelispor-goztepe-2026-10-18",
             "kickoff": "2026-10-18T16:00:00+03:00",
@@ -61642,18 +61702,6 @@
             "goalsFor": 0,
             "goalsAgainst": 1,
             "outcome": "L",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "kocaelispor-samsunspor-2026-09-06",
-            "kickoff": "2026-09-06T20:00:00+03:00",
-            "opponent": "Samsunspor",
-            "venue": "home",
-            "goalsFor": 1,
-            "goalsAgainst": 0,
-            "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -61712,16 +61760,28 @@
         "dataStatus": "sufficient"
       },
       "awayForm": {
-        "sampleSize": 4,
-        "points": 3,
-        "wins": 1,
+        "sampleSize": 5,
+        "points": 6,
+        "wins": 2,
         "draws": 0,
         "losses": 3,
-        "goalsFor": 3,
-        "goalsAgainst": 6,
-        "goalDifference": -3,
-        "weightedScore": 24,
+        "goalsFor": 5,
+        "goalsAgainst": 7,
+        "goalDifference": -2,
+        "weightedScore": 42,
         "results": [
+          {
+            "matchId": "alanyaspor-kocaelispor-2026-10-23",
+            "kickoff": "2026-10-23T20:00:00+03:00",
+            "opponent": "Alanyaspor",
+            "venue": "away",
+            "goalsFor": 2,
+            "goalsAgainst": 1,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "besiktas-kocaelispor-2026-10-11",
             "kickoff": "2026-10-11T19:00:00+03:00",
@@ -61774,18 +61834,18 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 1,
-        "direction": "up",
+        "averageGoalsFor": 1.2,
+        "direction": "stable",
         "sampleSize": 5,
-        "score": 40
+        "score": 48
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1,
+        "averageGoalsAgainst": 1.2,
         "direction": "down",
         "sampleSize": 5,
-        "score": 60
+        "score": 52
       },
-      "restDays": 20,
+      "restDays": 15,
       "scheduleLoad": {
         "matchesInWindow": 0,
         "windowDays": 14,
@@ -62734,7 +62794,7 @@
       },
       "form": {
         "home": 24,
-        "away": 36
+        "away": 42
       },
       "availability": {
         "home": 100,
@@ -62899,37 +62959,37 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:04.115Z",
+      "generatedAt": "2026-11-05T10:47:03.354Z",
       "asOf": "2026-11-07T10:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 89,
       "teamStrength": {
-        "home": 32,
-        "away": 39
+        "home": 30,
+        "away": 42
       },
       "probabilities": {
-        "homeWin": 30,
-        "draw": 34,
-        "awayWin": 36
+        "homeWin": 24,
+        "draw": 32,
+        "awayWin": 44
       },
       "prediction": {
         "primary": "away",
-        "label": "Deplasman bir adım önde",
+        "label": "Deplasman net önde",
         "confidence": 89
       },
       "goalPotential": {
-        "score": 74,
+        "score": 76,
         "label": "high"
       },
       "upsetRisk": {
-        "score": 66,
+        "score": 58,
         "label": "high"
       },
       "matchBalance": {
-        "score": 86,
-        "label": "slight-away"
+        "score": 76,
+        "label": "strong-away"
       },
-      "summary": "Model, ev sahibi için %30, beraberlik için %34, deplasman için %36 ihtimal hesaplıyor. Takım güç puanları 32/100 - 39/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 89/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %24, beraberlik için %32, deplasman için %44 ihtimal hesaplıyor. Takım güç puanları 30/100 - 42/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 89/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -62961,7 +63021,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-07T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:04.321Z",
+    "generatedAt": "2026-11-05T10:47:03.656Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -62972,11 +63032,23 @@
         "wins": 0,
         "draws": 0,
         "losses": 5,
-        "goalsFor": 2,
-        "goalsAgainst": 14,
+        "goalsFor": 3,
+        "goalsAgainst": 15,
         "goalDifference": -12,
         "weightedScore": 0,
         "results": [
+          {
+            "matchId": "samsunspor-amed-sportif-faaliyetler-2026-10-24",
+            "kickoff": "2026-10-24T19:00:00+03:00",
+            "opponent": "Amed Sportif Faaliyetler",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "kasimpasa-samsunspor-2026-10-18",
             "kickoff": "2026-10-18T13:30:00+03:00",
@@ -63024,33 +63096,33 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "kocaelispor-samsunspor-2026-09-06",
-            "kickoff": "2026-09-06T20:00:00+03:00",
-            "opponent": "Kocaelispor",
-            "venue": "away",
-            "goalsFor": 0,
-            "goalsAgainst": 1,
-            "outcome": "L",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
         "sampleSize": 5,
-        "points": 2,
+        "points": 1,
         "wins": 0,
-        "draws": 2,
-        "losses": 3,
-        "goalsFor": 4,
-        "goalsAgainst": 13,
-        "goalDifference": -9,
-        "weightedScore": 10,
+        "draws": 1,
+        "losses": 4,
+        "goalsFor": 5,
+        "goalsAgainst": 15,
+        "goalDifference": -10,
+        "weightedScore": 5,
         "results": [
+          {
+            "matchId": "samsunspor-amed-sportif-faaliyetler-2026-10-24",
+            "kickoff": "2026-10-24T19:00:00+03:00",
+            "opponent": "Amed Sportif Faaliyetler",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "samsunspor-trabzonspor-2026-10-10",
             "kickoff": "2026-10-10T16:00:00+03:00",
@@ -63098,18 +63170,6 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "samsunspor-raal-la-louviere-2026-07-25",
-            "kickoff": "2026-07-25T15:30:00+03:00",
-            "opponent": "RAAL La Louvière",
-            "venue": "home",
-            "goalsFor": 0,
-            "goalsAgainst": 0,
-            "outcome": "D",
-            "competitionType": "friendly",
-            "formWeight": 0.6,
-            "isFriendly": true
           }
         ],
         "dataStatus": "sufficient"
@@ -63189,20 +63249,20 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 0.4,
+        "averageGoalsFor": 0.6,
         "direction": "stable",
         "sampleSize": 5,
-        "score": 16
+        "score": 24
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 2.8,
+        "averageGoalsAgainst": 3,
         "direction": "stable",
         "sampleSize": 5,
         "score": 0
       },
-      "restDays": 20,
+      "restDays": 14,
       "scheduleLoad": {
-        "matchesInWindow": 0,
+        "matchesInWindow": 1,
         "windowDays": 14,
         "level": "low"
       },
@@ -63233,10 +63293,10 @@
         "wins": 1,
         "draws": 2,
         "losses": 2,
-        "goalsFor": 1,
+        "goalsFor": 2,
         "goalsAgainst": 5,
-        "goalDifference": -4,
-        "weightedScore": 29,
+        "goalDifference": -3,
+        "weightedScore": 33,
         "results": [
           {
             "matchId": "konyaspor-galatasaray-2026-10-30",
@@ -63246,6 +63306,18 @@
             "goalsFor": 0,
             "goalsAgainst": 4,
             "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
+          {
+            "matchId": "konyaspor-genclerbirligi-2026-10-25",
+            "kickoff": "2026-10-25T16:00:00+03:00",
+            "opponent": "Gençlerbirliği",
+            "venue": "home",
+            "goalsFor": 2,
+            "goalsAgainst": 0,
+            "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -63285,32 +63357,20 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "konyaspor-trabzonspor-2026-09-12",
-            "kickoff": "2026-09-12T20:00:00+03:00",
-            "opponent": "Trabzonspor",
-            "venue": "home",
-            "goalsFor": 1,
-            "goalsAgainst": 0,
-            "outcome": "W",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
         "sampleSize": 5,
-        "points": 4,
-        "wins": 1,
+        "points": 7,
+        "wins": 2,
         "draws": 1,
-        "losses": 3,
-        "goalsFor": 2,
-        "goalsAgainst": 7,
-        "goalDifference": -5,
-        "weightedScore": 27,
+        "losses": 2,
+        "goalsFor": 4,
+        "goalsAgainst": 6,
+        "goalDifference": -2,
+        "weightedScore": 47,
         "results": [
           {
             "matchId": "konyaspor-galatasaray-2026-10-30",
@@ -63320,6 +63380,18 @@
             "goalsFor": 0,
             "goalsAgainst": 4,
             "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
+          {
+            "matchId": "konyaspor-genclerbirligi-2026-10-25",
+            "kickoff": "2026-10-25T16:00:00+03:00",
+            "opponent": "Gençlerbirliği",
+            "venue": "home",
+            "goalsFor": 2,
+            "goalsAgainst": 0,
+            "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -63355,18 +63427,6 @@
             "venue": "home",
             "goalsFor": 1,
             "goalsAgainst": 2,
-            "outcome": "L",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "konyaspor-caykur-rizespor-2026-08-15",
-            "kickoff": "2026-08-15T19:00:00+03:00",
-            "opponent": "Çaykur Rizespor",
-            "venue": "home",
-            "goalsFor": 0,
-            "goalsAgainst": 1,
             "outcome": "L",
             "competitionType": "league",
             "formWeight": 1,
@@ -63438,10 +63498,10 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 0.2,
-        "direction": "down",
+        "averageGoalsFor": 0.4,
+        "direction": "up",
         "sampleSize": 5,
-        "score": 8
+        "score": 16
       },
       "defensiveTrend": {
         "averageGoalsAgainst": 1,
@@ -63451,7 +63511,7 @@
       },
       "restDays": 8,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -64623,7 +64683,7 @@
       },
       "form": {
         "home": 0,
-        "away": 29
+        "away": 33
       },
       "availability": {
         "home": 55,
@@ -64788,7 +64848,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:04.321Z",
+      "generatedAt": "2026-11-05T10:47:03.656Z",
       "asOf": "2026-11-07T13:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -64807,7 +64867,7 @@
         "confidence": 86
       },
       "goalPotential": {
-        "score": 40,
+        "score": 51,
         "label": "medium"
       },
       "upsetRisk": {
@@ -64850,7 +64910,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-07T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:04.537Z",
+    "generatedAt": "2026-11-05T10:47:03.924Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -65118,15 +65178,27 @@
       "teamName": "Amed Sportif Faaliyetler",
       "recentForm": {
         "sampleSize": 5,
-        "points": 11,
-        "wins": 3,
-        "draws": 2,
+        "points": 13,
+        "wins": 4,
+        "draws": 1,
         "losses": 0,
         "goalsFor": 13,
-        "goalsAgainst": 6,
-        "goalDifference": 7,
-        "weightedScore": 75,
+        "goalsAgainst": 5,
+        "goalDifference": 8,
+        "weightedScore": 87,
         "results": [
+          {
+            "matchId": "samsunspor-amed-sportif-faaliyetler-2026-10-24",
+            "kickoff": "2026-10-24T19:00:00+03:00",
+            "opponent": "Samsunspor",
+            "venue": "away",
+            "goalsFor": 2,
+            "goalsAgainst": 1,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "amed-sportif-faaliyetler-konyaspor-2026-10-17",
             "kickoff": "2026-10-17T16:00:00+03:00",
@@ -65171,18 +65243,6 @@
             "goalsFor": 5,
             "goalsAgainst": 0,
             "outcome": "W",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "kasimpasa-amed-sportif-faaliyetler-2026-09-06",
-            "kickoff": "2026-09-06T17:00:00+03:00",
-            "opponent": "Kasımpaşa",
-            "venue": "away",
-            "goalsFor": 2,
-            "goalsAgainst": 2,
-            "outcome": "D",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -65253,16 +65313,28 @@
         "dataStatus": "sufficient"
       },
       "awayForm": {
-        "sampleSize": 2,
-        "points": 2,
-        "wins": 0,
+        "sampleSize": 3,
+        "points": 5,
+        "wins": 1,
         "draws": 2,
         "losses": 0,
-        "goalsFor": 4,
-        "goalsAgainst": 4,
-        "goalDifference": 0,
-        "weightedScore": 33,
+        "goalsFor": 6,
+        "goalsAgainst": 5,
+        "goalDifference": 1,
+        "weightedScore": 57,
         "results": [
+          {
+            "matchId": "samsunspor-amed-sportif-faaliyetler-2026-10-24",
+            "kickoff": "2026-10-24T19:00:00+03:00",
+            "opponent": "Samsunspor",
+            "venue": "away",
+            "goalsFor": 2,
+            "goalsAgainst": 1,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "genclerbirligi-amed-sportif-faaliyetler-2026-10-10",
             "kickoff": "2026-10-10T13:30:00+03:00",
@@ -65288,7 +65360,7 @@
             "isFriendly": false
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "goalTrend": {
         "averageGoalsFor": 2.6,
@@ -65297,14 +65369,14 @@
         "score": 100
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1.2,
+        "averageGoalsAgainst": 1,
         "direction": "stable",
         "sampleSize": 5,
-        "score": 52
+        "score": 60
       },
-      "restDays": 21,
+      "restDays": 14,
       "scheduleLoad": {
-        "matchesInWindow": 0,
+        "matchesInWindow": 1,
         "windowDays": 14,
         "level": "low"
       },
@@ -66016,7 +66088,7 @@
       },
       "form": {
         "home": 84,
-        "away": 75
+        "away": 87
       },
       "availability": {
         "home": 85,
@@ -66027,45 +66099,45 @@
         {
           "key": "form",
           "label": "Form",
-          "advantage": "home"
+          "advantage": "balanced"
         }
       ],
-      "summary": "Ev sahibi mevcut verilerde Form alanlarında bir adım önde görünüyor."
+      "summary": "Takımlar mevcut bileşenlerde birbirini dengeliyor; maç öncesi net bir üstünlük yok."
     },
     "keyDuels": [],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:04.537Z",
+      "generatedAt": "2026-11-05T10:47:03.923Z",
       "asOf": "2026-11-07T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
       "teamStrength": {
         "home": 63,
-        "away": 63
+        "away": 74
       },
       "probabilities": {
-        "homeWin": 36,
-        "draw": 36,
-        "awayWin": 28
+        "homeWin": 26,
+        "draw": 32,
+        "awayWin": 42
       },
       "prediction": {
-        "primary": "draw",
-        "label": "Beraberlik ihtimali öne çıkıyor",
-        "confidence": 75
+        "primary": "away",
+        "label": "Deplasman net önde",
+        "confidence": 80
       },
       "goalPotential": {
-        "score": 82,
+        "score": 80,
         "label": "high"
       },
       "upsetRisk": {
-        "score": 68,
+        "score": 62,
         "label": "high"
       },
       "matchBalance": {
-        "score": 100,
-        "label": "balanced"
+        "score": 78,
+        "label": "slight-away"
       },
-      "summary": "Model, ev sahibi için %36, beraberlik için %36, deplasman için %28 ihtimal hesaplıyor. Takım güç puanları 63/100 - 63/100 ve maç dengesi \"balanced\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %26, beraberlik için %32, deplasman için %42 ihtimal hesaplıyor. Takım güç puanları 63/100 - 74/100 ve maç dengesi \"slight-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -66101,7 +66173,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-07T16:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:04.744Z",
+    "generatedAt": "2026-11-05T10:47:04.211Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -67644,7 +67716,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:04.744Z",
+      "generatedAt": "2026-11-05T10:47:04.211Z",
       "asOf": "2026-11-07T16:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -67706,7 +67778,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-08T10:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:04.942Z",
+    "generatedAt": "2026-11-05T10:47:04.500Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -67978,11 +68050,23 @@
         "wins": 3,
         "draws": 1,
         "losses": 1,
-        "goalsFor": 4,
-        "goalsAgainst": 3,
-        "goalDifference": 1,
-        "weightedScore": 67,
+        "goalsFor": 6,
+        "goalsAgainst": 4,
+        "goalDifference": 2,
+        "weightedScore": 70,
         "results": [
+          {
+            "matchId": "gaziantep-fk-erzurumspor-fk-2026-10-24",
+            "kickoff": "2026-10-24T16:00:00+03:00",
+            "opponent": "Gaziantep FK",
+            "venue": "away",
+            "goalsFor": 3,
+            "goalsAgainst": 1,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "erzurumspor-fk-eyupspor-2026-10-17",
             "kickoff": "2026-10-17T13:30:00+03:00",
@@ -68027,18 +68111,6 @@
             "goalsFor": 0,
             "goalsAgainst": 3,
             "outcome": "L",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "erzurumspor-fk-konyaspor-2026-09-05",
-            "kickoff": "2026-09-05T17:00:00+03:00",
-            "opponent": "Konyaspor",
-            "venue": "home",
-            "goalsFor": 1,
-            "goalsAgainst": 0,
-            "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
@@ -68109,16 +68181,28 @@
         "dataStatus": "sufficient"
       },
       "awayForm": {
-        "sampleSize": 4,
-        "points": 2,
-        "wins": 0,
+        "sampleSize": 5,
+        "points": 5,
+        "wins": 1,
         "draws": 2,
         "losses": 2,
-        "goalsFor": 1,
-        "goalsAgainst": 7,
-        "goalDifference": -6,
-        "weightedScore": 17,
+        "goalsFor": 4,
+        "goalsAgainst": 8,
+        "goalDifference": -4,
+        "weightedScore": 37,
         "results": [
+          {
+            "matchId": "gaziantep-fk-erzurumspor-fk-2026-10-24",
+            "kickoff": "2026-10-24T16:00:00+03:00",
+            "opponent": "Gaziantep FK",
+            "venue": "away",
+            "goalsFor": 3,
+            "goalsAgainst": 1,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "alanyaspor-erzurumspor-fk-2026-10-10",
             "kickoff": "2026-10-10T16:00:00+03:00",
@@ -68171,18 +68255,18 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 0.8,
+        "averageGoalsFor": 1.2,
         "direction": "up",
         "sampleSize": 5,
-        "score": 32
+        "score": 48
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 0.6,
+        "averageGoalsAgainst": 0.8,
         "direction": "up",
         "sampleSize": 5,
-        "score": 76
+        "score": 68
       },
-      "restDays": 22,
+      "restDays": 15,
       "scheduleLoad": {
         "matchesInWindow": 0,
         "windowDays": 14,
@@ -68766,7 +68850,7 @@
       },
       "form": {
         "home": 22,
-        "away": 67
+        "away": 70
       },
       "availability": {
         "home": 100,
@@ -68844,18 +68928,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:04.942Z",
+      "generatedAt": "2026-11-05T10:47:04.500Z",
       "asOf": "2026-11-08T10:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
       "teamStrength": {
         "home": 33,
-        "away": 46
+        "away": 49
       },
       "probabilities": {
-        "homeWin": 24,
-        "draw": 31,
-        "awayWin": 45
+        "homeWin": 22,
+        "draw": 30,
+        "awayWin": 48
       },
       "prediction": {
         "primary": "away",
@@ -68863,18 +68947,18 @@
         "confidence": 80
       },
       "goalPotential": {
-        "score": 55,
+        "score": 66,
         "label": "medium"
       },
       "upsetRisk": {
-        "score": 59,
+        "score": 56,
         "label": "high"
       },
       "matchBalance": {
-        "score": 74,
+        "score": 68,
         "label": "strong-away"
       },
-      "summary": "Model, ev sahibi için %24, beraberlik için %31, deplasman için %45 ihtimal hesaplıyor. Takım güç puanları 33/100 - 46/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %22, beraberlik için %30, deplasman için %48 ihtimal hesaplıyor. Takım güç puanları 33/100 - 49/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -68908,7 +68992,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-08T13:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:05.144Z",
+    "generatedAt": "2026-11-05T10:47:04.771Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -70699,7 +70783,7 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:05.144Z",
+      "generatedAt": "2026-11-05T10:47:04.771Z",
       "asOf": "2026-11-08T13:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
@@ -70761,22 +70845,34 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-08T15:30:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:05.338Z",
+    "generatedAt": "2026-11-05T10:47:05.128Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
       "teamName": "Alanyaspor",
       "recentForm": {
         "sampleSize": 5,
-        "points": 8,
-        "wins": 2,
+        "points": 5,
+        "wins": 1,
         "draws": 2,
-        "losses": 1,
+        "losses": 2,
         "goalsFor": 5,
-        "goalsAgainst": 6,
-        "goalDifference": -1,
-        "weightedScore": 50,
+        "goalsAgainst": 8,
+        "goalDifference": -3,
+        "weightedScore": 30,
         "results": [
+          {
+            "matchId": "alanyaspor-kocaelispor-2026-10-23",
+            "kickoff": "2026-10-23T20:00:00+03:00",
+            "opponent": "Kocaelispor",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "fenerbahce-alanyaspor-2026-10-17",
             "kickoff": "2026-10-17T19:00:00+03:00",
@@ -70824,33 +70920,33 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "caykur-rizespor-alanyaspor-2026-09-07",
-            "kickoff": "2026-09-07T20:00:00+03:00",
-            "opponent": "Çaykur Rizespor",
-            "venue": "away",
-            "goalsFor": 1,
-            "goalsAgainst": 0,
-            "outcome": "W",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
           }
         ],
         "dataStatus": "sufficient"
       },
       "homeForm": {
-        "sampleSize": 3,
+        "sampleSize": 4,
         "points": 5,
         "wins": 1,
         "draws": 2,
-        "losses": 0,
-        "goalsFor": 3,
-        "goalsAgainst": 2,
-        "goalDifference": 1,
-        "weightedScore": 54,
+        "losses": 1,
+        "goalsFor": 4,
+        "goalsAgainst": 4,
+        "goalDifference": 0,
+        "weightedScore": 38,
         "results": [
+          {
+            "matchId": "alanyaspor-kocaelispor-2026-10-23",
+            "kickoff": "2026-10-23T20:00:00+03:00",
+            "opponent": "Kocaelispor",
+            "venue": "home",
+            "goalsFor": 1,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "alanyaspor-erzurumspor-fk-2026-10-10",
             "kickoff": "2026-10-10T16:00:00+03:00",
@@ -70971,12 +71067,12 @@
         "score": 40
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1.2,
+        "averageGoalsAgainst": 1.6,
         "direction": "stable",
         "sampleSize": 5,
-        "score": 52
+        "score": 36
       },
-      "restDays": 22,
+      "restDays": 16,
       "scheduleLoad": {
         "matchesInWindow": 0,
         "windowDays": 14,
@@ -71005,15 +71101,27 @@
       "teamName": "Trabzonspor",
       "recentForm": {
         "sampleSize": 5,
-        "points": 12,
-        "wins": 4,
+        "points": 15,
+        "wins": 5,
         "draws": 0,
-        "losses": 1,
-        "goalsFor": 13,
-        "goalsAgainst": 6,
-        "goalDifference": 7,
-        "weightedScore": 89,
+        "losses": 0,
+        "goalsFor": 15,
+        "goalsAgainst": 5,
+        "goalDifference": 10,
+        "weightedScore": 100,
         "results": [
+          {
+            "matchId": "trabzonspor-gaziantep-fk-2026-11-01",
+            "kickoff": "2026-11-01T16:00:00+03:00",
+            "opponent": "Gaziantep FK",
+            "venue": "home",
+            "goalsFor": 2,
+            "goalsAgainst": 0,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "caykur-rizespor-trabzonspor-2026-10-26",
             "kickoff": "2026-10-26T19:00:00+03:00",
@@ -71061,18 +71169,6 @@
             "competitionType": "league",
             "formWeight": 1,
             "isFriendly": false
-          },
-          {
-            "matchId": "trabzonspor-drogheda-united-2026-10-01",
-            "kickoff": "2026-10-01T19:00:00+03:00",
-            "opponent": "Drogheda United",
-            "venue": "home",
-            "goalsFor": 0,
-            "goalsAgainst": 1,
-            "outcome": "L",
-            "competitionType": "friendly",
-            "formWeight": 0.6,
-            "isFriendly": true
           }
         ],
         "dataStatus": "sufficient"
@@ -71084,10 +71180,22 @@
         "draws": 0,
         "losses": 1,
         "goalsFor": 13,
-        "goalsAgainst": 2,
-        "goalDifference": 11,
-        "weightedScore": 86,
+        "goalsAgainst": 1,
+        "goalDifference": 12,
+        "weightedScore": 87,
         "results": [
+          {
+            "matchId": "trabzonspor-gaziantep-fk-2026-11-01",
+            "kickoff": "2026-11-01T16:00:00+03:00",
+            "opponent": "Gaziantep FK",
+            "venue": "home",
+            "goalsFor": 2,
+            "goalsAgainst": 0,
+            "outcome": "W",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "trabzonspor-besiktas-2026-10-19",
             "kickoff": "2026-10-19T20:00:00+03:00",
@@ -71131,18 +71239,6 @@
             "venue": "home",
             "goalsFor": 5,
             "goalsAgainst": 0,
-            "outcome": "W",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "trabzonspor-basaksehir-2026-08-23",
-            "kickoff": "2026-08-23T19:00:00+03:00",
-            "opponent": "Başakşehir",
-            "venue": "home",
-            "goalsFor": 2,
-            "goalsAgainst": 1,
             "outcome": "W",
             "competitionType": "league",
             "formWeight": 1,
@@ -71226,20 +71322,20 @@
         "dataStatus": "sufficient"
       },
       "goalTrend": {
-        "averageGoalsFor": 2.6,
-        "direction": "up",
+        "averageGoalsFor": 3,
+        "direction": "down",
         "sampleSize": 5,
         "score": 100
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 1.2,
-        "direction": "down",
+        "averageGoalsAgainst": 1,
+        "direction": "stable",
         "sampleSize": 5,
-        "score": 52
+        "score": 60
       },
-      "restDays": 13,
+      "restDays": 7,
       "scheduleLoad": {
-        "matchesInWindow": 1,
+        "matchesInWindow": 2,
         "windowDays": 14,
         "level": "low"
       },
@@ -72357,8 +72453,8 @@
         "away": 13
       },
       "form": {
-        "home": 50,
-        "away": 89
+        "home": 30,
+        "away": 100
       },
       "availability": {
         "home": 55,
@@ -72523,18 +72619,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:05.338Z",
+      "generatedAt": "2026-11-05T10:47:05.128Z",
       "asOf": "2026-11-08T15:30:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 86,
       "teamStrength": {
-        "home": 44,
-        "away": 56
+        "home": 38,
+        "away": 58
       },
       "probabilities": {
-        "homeWin": 25,
-        "draw": 32,
-        "awayWin": 43
+        "homeWin": 18,
+        "draw": 29,
+        "awayWin": 53
       },
       "prediction": {
         "primary": "away",
@@ -72542,18 +72638,18 @@
         "confidence": 86
       },
       "goalPotential": {
-        "score": 70,
-        "label": "medium"
-      },
-      "upsetRisk": {
-        "score": 60,
+        "score": 76,
         "label": "high"
       },
+      "upsetRisk": {
+        "score": 50,
+        "label": "medium"
+      },
       "matchBalance": {
-        "score": 76,
+        "score": 60,
         "label": "strong-away"
       },
-      "summary": "Model, ev sahibi için %25, beraberlik için %32, deplasman için %43 ihtimal hesaplıyor. Takım güç puanları 44/100 - 56/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %18, beraberlik için %29, deplasman için %53 ihtimal hesaplıyor. Takım güç puanları 38/100 - 58/100 ve maç dengesi \"strong-away\" olarak okunuyor. Bu okuma 86/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
@@ -72585,7 +72681,7 @@
     "includeInLeagueForm": true,
     "kickoff": "2026-11-08T18:00:00.000Z",
     "status": "scheduled",
-    "generatedAt": "2026-11-05T00:53:05.541Z",
+    "generatedAt": "2026-11-05T10:47:05.397Z",
     "preMatchFrozenAt": null,
     "modelVersion": "futbolradar-match-v1",
     "homeContext": {
@@ -72858,10 +72954,22 @@
         "draws": 1,
         "losses": 4,
         "goalsFor": 3,
-        "goalsAgainst": 14,
-        "goalDifference": -11,
+        "goalsAgainst": 11,
+        "goalDifference": -8,
         "weightedScore": 7,
         "results": [
+          {
+            "matchId": "konyaspor-genclerbirligi-2026-10-25",
+            "kickoff": "2026-10-25T16:00:00+03:00",
+            "opponent": "Konyaspor",
+            "venue": "away",
+            "goalsFor": 0,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "genclerbirligi-galatasaray-2026-10-17",
             "kickoff": "2026-10-17T16:00:00+03:00",
@@ -72905,18 +73013,6 @@
             "venue": "home",
             "goalsFor": 1,
             "goalsAgainst": 2,
-            "outcome": "L",
-            "competitionType": "league",
-            "formWeight": 1,
-            "isFriendly": false
-          },
-          {
-            "matchId": "trabzonspor-genclerbirligi-2026-09-06",
-            "kickoff": "2026-09-06T20:00:00+03:00",
-            "opponent": "Trabzonspor",
-            "venue": "away",
-            "goalsFor": 0,
-            "goalsAgainst": 5,
             "outcome": "L",
             "competitionType": "league",
             "formWeight": 1,
@@ -73000,16 +73096,28 @@
         "dataStatus": "sufficient"
       },
       "awayForm": {
-        "sampleSize": 2,
+        "sampleSize": 3,
         "points": 0,
         "wins": 0,
         "draws": 0,
-        "losses": 2,
+        "losses": 3,
         "goalsFor": 0,
-        "goalsAgainst": 9,
-        "goalDifference": -9,
+        "goalsAgainst": 11,
+        "goalDifference": -11,
         "weightedScore": 0,
         "results": [
+          {
+            "matchId": "konyaspor-genclerbirligi-2026-10-25",
+            "kickoff": "2026-10-25T16:00:00+03:00",
+            "opponent": "Konyaspor",
+            "venue": "away",
+            "goalsFor": 0,
+            "goalsAgainst": 2,
+            "outcome": "L",
+            "competitionType": "league",
+            "formWeight": 1,
+            "isFriendly": false
+          },
           {
             "matchId": "basaksehir-genclerbirligi-2026-09-19",
             "kickoff": "2026-09-19T20:00:00+03:00",
@@ -73035,7 +73143,7 @@
             "isFriendly": false
           }
         ],
-        "dataStatus": "limited"
+        "dataStatus": "sufficient"
       },
       "goalTrend": {
         "averageGoalsFor": 0.6,
@@ -73044,12 +73152,12 @@
         "score": 24
       },
       "defensiveTrend": {
-        "averageGoalsAgainst": 2.8,
+        "averageGoalsAgainst": 2.2,
         "direction": "up",
         "sampleSize": 5,
-        "score": 0
+        "score": 12
       },
-      "restDays": 22,
+      "restDays": 14,
       "scheduleLoad": {
         "matchesInWindow": 0,
         "windowDays": 14,
@@ -73900,18 +74008,18 @@
     ],
     "prediction": {
       "modelVersion": "futbolradar-match-v1",
-      "generatedAt": "2026-11-05T00:53:05.541Z",
+      "generatedAt": "2026-11-05T10:47:05.396Z",
       "asOf": "2026-11-08T18:00:00.000Z",
       "predictionStatus": "available",
       "dataConfidence": 80,
       "teamStrength": {
         "home": 58,
-        "away": 32
+        "away": 30
       },
       "probabilities": {
-        "homeWin": 61,
-        "draw": 27,
-        "awayWin": 12
+        "homeWin": 63,
+        "draw": 26,
+        "awayWin": 11
       },
       "prediction": {
         "primary": "home",
@@ -73919,18 +74027,18 @@
         "confidence": 80
       },
       "goalPotential": {
-        "score": 76,
-        "label": "high"
+        "score": 70,
+        "label": "medium"
       },
       "upsetRisk": {
-        "score": 43,
+        "score": 41,
         "label": "medium"
       },
       "matchBalance": {
-        "score": 48,
+        "score": 44,
         "label": "strong-home"
       },
-      "summary": "Model, ev sahibi için %61, beraberlik için %27, deplasman için %12 ihtimal hesaplıyor. Takım güç puanları 58/100 - 32/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
+      "summary": "Model, ev sahibi için %63, beraberlik için %26, deplasman için %11 ihtimal hesaplıyor. Takım güç puanları 58/100 - 30/100 ve maç dengesi \"strong-home\" olarak okunuyor. Bu okuma 80/100 veri güveniyle üretildi; orta-yüksek güven seviyesinde.",
       "warnings": []
     },
     "coverage": {
