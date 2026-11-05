@@ -24400,3 +24400,33 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
     display: none;
   }
 }
+
+/* NAV KOMPAKT — "Köşe Yazıları" masaüstü üst satırına döndü
+   (scripts/lib/layout.mjs → DESKTOP_DRAWER_KEYS artık yalnızca Arşiv).
+   On bağlantıya yer açmak için tek satırlık masaüstü çubuğu (≥1366 px)
+   sıkıştırılıyor; çekmece (≤1365 px) ve mobil düzen DEĞİŞMİYOR.
+     · bağlantı yazısı 13 px (--fs-xs) → 12 px, harf aralığı -0.01em
+     · maç merkezi grubu (Bugünün Maçları / Canlı Skor / Maç Sonuçları)
+       dolgusu 5 px → 3 px
+     · "Maç Merkezi" CTA dolgusu 14 px → 10 px, yazı 12.5 px
+   Taşma güvencesi (overflow-x: auto) yukarıdaki kuraldan aynen geçerli. */
+@media (min-width: 1366px) {
+  .topbar-premium .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .topbar-premium .nav-links a:nth-child(-n+3) {
+    padding: 0 3px;
+  }
+
+  .topbar-premium .nav-links a:nth-child(-n+3)::after {
+    right: 3px;
+    left: 3px;
+  }
+
+  .topbar-premium .nav .cta {
+    padding: 0 10px;
+    font-size: 0.78125rem;
+  }
+}
