@@ -24400,3 +24400,63 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
     display: none;
   }
 }
+
+/* NAV KOMPAKT — "Köşe Yazıları" masaüstü üst satırına döndü
+   (scripts/lib/layout.mjs → DESKTOP_DRAWER_KEYS artık yalnızca Arşiv).
+   On bağlantıya yer açmak için tek satırlık masaüstü çubuğu (≥1366 px)
+   sıkıştırılıyor; çekmece (≤1365 px) ve mobil düzen DEĞİŞMİYOR.
+     · bağlantı yazısı 13 px (--fs-xs) → 12 px, harf aralığı -0.01em
+     · maç merkezi grubu (Bugünün Maçları / Canlı Skor / Maç Sonuçları)
+       dolgusu 5 px → 3 px
+     · "Maç Merkezi" CTA dolgusu 14 px → 10 px, yazı 12.5 px
+   Taşma güvencesi (overflow-x: auto) yukarıdaki kuraldan aynen geçerli. */
+@media (min-width: 1366px) {
+  .topbar-premium .nav-links a {
+    font-size: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .topbar-premium .nav-links a:nth-child(-n+3) {
+    padding: 0 3px;
+  }
+
+  .topbar-premium .nav-links a:nth-child(-n+3)::after {
+    right: 3px;
+    left: 3px;
+  }
+
+  .topbar-premium .nav .cta {
+    padding: 0 10px;
+    font-size: 0.78125rem;
+  }
+}
+
+/* SON KÖŞE YAZILARI — ANA SAYFADA EN ÜSTTE
+   #radar-yorumu belgede canlı skor kahramanının (#hero-canli-skor) ÖNÜNDE
+   duruyor. Mobilde `.home-main` flex sütun ve kahraman `order: -2`
+   taşıyor; blok da `order: -2` alır, eşit sırada belge sırası geçerli
+   olduğu için kahramanın üstünde kalır (favori takım -4 ve şerit -3
+   yine en üstte). İlk ekranda başlık + ilk kart görünsün diye mobilde
+   kart sıkıştırılır: kart görseli, üst etiket (kicker), etiketler ve
+   açıklama paragrafı gizli; özet 2 satır; "Tüm Köşe Yazıları" başlıkla aynı satırda. İçerik/işaretleme değişmez. */
+@media (max-width: 720px) {
+  .home-main > #radar-yorumu { order: -2; }
+
+  #radar-yorumu { margin-top: 10px; padding-top: 4px; padding-bottom: 4px; }
+  #radar-yorumu .section-head { margin-bottom: 8px; }
+  #radar-yorumu .section-head p { display: none; }
+  #radar-yorumu .column-card { gap: 6px; padding: 10px 12px; }
+  #radar-yorumu .column-card-image { display: none; }
+  #radar-yorumu .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  #radar-yorumu .section-kicker { display: none; }
+  #radar-yorumu .section-head h2 { margin: 0; font-size: 1.25rem; }
+  #radar-yorumu .column-card h3 { margin: 0; font-size: 1rem; line-height: 1.3; }
+  #radar-yorumu .column-card p {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin: 0;
+  }
+  #radar-yorumu .column-tags { display: none; }
+}
