@@ -20,6 +20,17 @@ import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { RICH_TEAM_PAGES } from "./lib/richTeamPages.mjs";
+
+/** Zengin (indexable) takım sayfası varsa puan durumu satırını bağla.
+ *  PR #583 tüm satırları bağlar; burada yalnızca RICH_TEAM_PAGES id'leri
+ *  (Liverpool + La Liga üçlüsü) bağlanır — çakışmayı düşük tutmak için.
+ */
+function richTeamHref(row, base = "./") {
+  const entry = RICH_TEAM_PAGES[String(row.id)];
+  return entry ? `${base}${entry.href}` : null;
+}
+
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 import { hubsForCompetition, loadMatchHubs, matchHubLinksSection } from "./lib/matchHubLinks.mjs";
@@ -133,7 +144,13 @@ function writePage(relativePath, html) {
 }
 
 function tableHtml(rows) {
-  const body = rows.map((row) => `<tr><td>${cell(row.rank)}</td><th scope="row">${escapeHtml(row.name)}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`).join("");
+  const body = rows.map((row) => {
+    const href = richTeamHref(row, "./");
+    const nameCell = href
+      ? `<a class="standings-team-link" href="${escapeHtml(href)}" style="display:inline-flex;align-items:center;min-height:32px">${escapeHtml(row.name)}</a>`
+      : escapeHtml(row.name);
+    return `<tr><td>${cell(row.rank)}</td><th scope="row">${nameCell}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`;
+  }).join("");
   return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>Güncel puan durumu</caption><thead><tr><th scope="col">Sıra</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">A</th><th scope="col">Y</th><th scope="col">Av.</th><th scope="col">P</th></tr></thead><tbody>${body}</tbody></table></div>`;
 }
 

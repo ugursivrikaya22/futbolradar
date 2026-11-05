@@ -1148,7 +1148,7 @@ function pageTitles(entry, state, locale, disambiguate) {
       tbd: "Saat Belirlenmedi",
       interrupted: "Yarıda Kaldı",
       cancelled: "İptal Edildi",
-      pre: "Saat Kaçta, Hangi Kanalda?"
+      pre: "Ne Zaman, Saat Kaçta, Hangi Kanalda?"
     }[state] || "";
     const head = `${home} - ${away} | ${[day, leagueText].filter(Boolean).join(" ")}`;
     const full = suffix ? `${head} ${suffix}` : head;
