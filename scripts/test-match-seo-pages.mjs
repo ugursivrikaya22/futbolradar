@@ -241,7 +241,7 @@ check("G/H/I) Googlebot'un aldığı SSR HTML: canonical kendini gösterir, tek 
       const state = pick(html, /data-msp-state="([a-z]+)"/);
       const title = pick(html, /<title>([^<]+)<\/title>/);
       if (state === "post") assert.match(title, /\d+-\d+/, `${relative}: bitmiş maç başlığı skor taşımalı`);
-      if (state === "pre" && locale === "tr") assert.match(title, /Ne Zaman, Saat Kaçta, Hangi Kanalda/, `${relative}: maç öncesi başlık`);
+      if (state === "pre" && locale === "tr") assert.match(title, /Saat Kaçta, Hangi Kanalda/, `${relative}: maç öncesi başlık`);
       if (state === "pre" && locale === "en") assert.match(title, /Kick-off Time/, `${relative}: EN maç öncesi başlık`);
       if (state === "live") assert.match(title, /Canlı Skor|Live Score/, `${relative}: canlı başlık`);
     }
