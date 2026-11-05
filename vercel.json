@@ -4885,6 +4885,16 @@
       "source": "/transfer-izleme",
       "destination": "/super-lig-transferleri-2026-2027.html",
       "permanent": true
+    },
+    {
+      "source": "/sampiyonlar-ligi.html",
+      "destination": "/lig/sampiyonlar-ligi.html",
+      "permanent": true
+    },
+    {
+      "source": "/sampiyonlar-ligi",
+      "destination": "/lig/sampiyonlar-ligi.html",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -5335,6 +5345,10 @@
     {
       "source": "/canli",
       "destination": "/canli-skor.html"
+    },
+    {
+      "source": "/lig/:slug",
+      "destination": "/lig/:slug.html"
     }
   ],
   "headers": [

@@ -9,7 +9,7 @@
     "generate:og-images": "node scripts/generate-og-images.mjs",
     "test:match-focus": "node scripts/test-match-focus.mjs",
     "prebuild": "node scripts/hydrate-data-from-supabase.mjs",
-    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-keyword-hub-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/generate-prediction-league-page.mjs && node scripts/generate-following-page.mjs && node scripts/generate-el-clasico-page.mjs && node scripts/generate-liverpool-team-page.mjs && node scripts/postprocess.mjs && node scripts/apply-brand-copy.mjs && node scripts/verify-production.mjs && node scripts/minify-served-assets.mjs",
+    "postbuild": "node scripts/generate-evergreen-seo-pages.mjs && node scripts/generate-keyword-hub-pages.mjs && node scripts/generate-league-standings-pages.mjs && node scripts/generate-en-league-standings-pages.mjs && node scripts/generate-prediction-league-page.mjs && node scripts/generate-following-page.mjs && node scripts/generate-el-clasico-page.mjs && node scripts/generate-rich-team-pages.mjs && node scripts/postprocess.mjs && node scripts/apply-brand-copy.mjs && node scripts/verify-production.mjs && node scripts/minify-served-assets.mjs",
     "typecheck": "tsc --noEmit",
     "test:routes": "node scripts/audit-interaction-routes.mjs",
     "test:browser": "node scripts/test-clickable-browser.cjs",
@@ -188,7 +188,8 @@
     "generate:prediction-league-page": "node scripts/generate-prediction-league-page.mjs",
     "test:prediction-league-browser": "node scripts/test-prediction-league-browser.mjs",
     "test:organic-growth": "node --test tests/organic-growth.test.mjs",
-    "test:organic-growth:browser": "node scripts/test-organic-growth-browser.cjs"
+    "test:organic-growth:browser": "node scripts/test-organic-growth-browser.cjs",
+    "test:rich-team-pages": "node scripts/test-rich-team-pages.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",
