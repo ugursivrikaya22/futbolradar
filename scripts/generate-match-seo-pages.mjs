@@ -1086,7 +1086,8 @@ function pageTitles(entry, state, locale, disambiguate) {
       h1 = `${home} - ${away} Maçı`;
       description = `${home} - ${away} maçı (${day}) iptal edildi. FutbolRadar maç takvimi.`;
     } else {
-      title = `${home} - ${away} Maçı Ne Zaman, Saat Kaçta, Hangi Kanalda?`;
+      // TR nihai başlık aşağıda `| {tarih} {Lig} Saat Kaçta, Hangi Kanalda?` kalıbıyla kurulur.
+      title = `${home} - ${away} Maçı Saat Kaçta, Hangi Kanalda?`;
       h1 = `${home} - ${away} Maçı`;
       description = featured
         ? `${home} - ${away} maçı ${day} ${hour} TSİ${channel ? `, ${channel}` : ""}. Muhtemel 11'ler, maç analizi, tahmin${hasLast10 ? ", son 10 maç" : ""} ve canlı skor FutbolRadar'da.`
