@@ -66,7 +66,7 @@ function resultLabel(m) {
   const [h, a] = m.score.split("-").map(Number);
   const lfcHome = m.home.startsWith("Liverpool");
   const lf = lfcHome ? h : a, op = lfcHome ? a : h;
-  if (m.note) return "B";
+  if (m.note && /Penaltı/i.test(m.note)) return "B"; // yalnızca penaltılı beraberlik notu
   return lf > op ? "G" : lf < op ? "M" : "B";
 }
 
