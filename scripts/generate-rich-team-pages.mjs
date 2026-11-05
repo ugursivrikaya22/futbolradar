@@ -88,7 +88,7 @@ function resultLabel(m, shortName) {
   const isAway = tokens.some((t) => m.away.toLowerCase().includes(t));
   const usHome = isHome && !isAway ? true : isAway && !isHome ? false : homeUs;
   const us = usHome ? h : a, op = usHome ? a : h;
-  if (m.note) return "B";
+  if (m.note && /Penaltı/i.test(m.note)) return "B"; // yalnızca penaltılı beraberlik notu
   return us > op ? "G" : us < op ? "M" : "B";
 }
 
