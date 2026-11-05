@@ -170,6 +170,8 @@ export const POSTPROCESS_CHAIN = [
   { id: "privacy-notice", script: "inject-privacy-notice.mjs", args: [], timeoutMinutes: 2 },
   // Sitemap ↔ robots tutarlılığı: noindex URL sitemap'e girmez, köşe yazıları lastmod ile girer.
   { id: "sitemap-indexability", script: "sync-sitemap-indexability.mjs", args: [], timeoutMinutes: 2 },
+  // Birleşik urlset → türe göre çocuk haritalar + sitemap-index.xml (üretici sırasına dokunulmaz).
+  { id: "sitemap-index", script: "sync-sitemap-index.mjs", args: [], timeoutMinutes: 2 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];
