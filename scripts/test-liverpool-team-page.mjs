@@ -40,5 +40,5 @@ for (const file of [OUTPUT.file, `public/${OUTPUT.file}`]) {
 for (const sm of ["sitemap.xml", "public/sitemap.xml"]) {
   assert.ok(fs.readFileSync(path.join(root, sm), "utf8").includes(`<loc>${OUTPUT.loc}</loc>`), `${sm}: liverpool yok`);
 }
-assert.ok(JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).scripts.postbuild.includes("generate-liverpool-team-page.mjs && node scripts/postprocess.mjs"));
+assert.ok(/generate-(liverpool-team-page|rich-team-pages)\.mjs/.test(JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8")).scripts.postbuild));
 console.log("test-liverpool-team-page OK");

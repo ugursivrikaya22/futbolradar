@@ -2189,10 +2189,6 @@
     return slug ? "./takimlar/" + slug : "./takim-detay.html?team=" + encodeURIComponent(name || "");
   }
 
-  function teamDetailHref(team) {
-    return teamProfileHref(team.name || team.team || team.id || "");
-  }
-
   function statusTr(status) {
     var normalized = String(status || "").toUpperCase();
     // Sağlayıcının kısa kodları da karşılanır: eskiden "PST" ya da "SUSP"
@@ -3245,26 +3241,57 @@
     return null;
   }
 
+  // match-card-links:start
+  // Organizasyonun puan durumu sayfası — scripts/prerender-core-pages.mjs
+  // COMPETITION_STANDINGS ile özdeş; yalnızca yayında olan sayfalar.
+  var COMPETITION_STANDINGS = [
+    [/^süper lig$/i, "super-lig-puan-durumu.html"],
+    [/^(tff )?1\. lig$/i, "1-lig-puan-durumu.html"],
+    [/şampiyonlar ligi/i, "sampiyonlar-ligi-puan-durumu.html"],
+    [/avrupa ligi/i, "avrupa-ligi-puan-durumu.html"],
+    [/konferans ligi/i, "konferans-ligi-puan-durumu.html"],
+    [/^premier (lig|league)$/i, "premier-lig-puan-durumu.html"],
+    [/^la ?liga$/i, "la-liga-puan-durumu.html"],
+    [/^serie a$/i, "serie-a-puan-durumu.html"],
+    [/^bundesliga$/i, "bundesliga-puan-durumu.html"],
+    [/^ligue 1$/i, "ligue-1-puan-durumu.html"]
+  ];
+
   function quickLinkStandingsHref(match) {
-    var team = quickLinkTeamFor(match);
-    if (team) return "./" + team.slug + "-puan-durumu.html";
-    return match.league === "Süper Lig" ? "./super-lig-puan-durumu.html" : "./puan-durumu.html";
+    var league = String(match.league || "").trim();
+    if (/hazırlık|friendly/i.test(league)) {
+      var team = quickLinkTeamFor(match);
+      return team ? "./" + team.slug + "-puan-durumu.html" : null;
+    }
+    for (var index = 0; index < COMPETITION_STANDINGS.length; index += 1) {
+      if (COMPETITION_STANDINGS[index][0].test(league)) return "./" + COMPETITION_STANDINGS[index][1];
+    }
+    return "./puan-durumu.html";
   }
 
-  function quickLinkFormHref(match) {
-    var team = quickLinkTeamFor(match);
-    var name = (team && team.name) || match.homeTeam || match.awayTeam || "";
-    return teamDetailHref({ name: name });
+  function quickLinkTeamLinksHtml(match) {
+    return [match.homeTeam, match.awayTeam]
+      .filter(function (name) { return name && teamPageSlug(name); })
+      .map(function (name) {
+        return '<a href="' + escapeHtml(teamProfileHref(name)) + '" data-quicklink="team">' + escapeHtml(name) + "</a>";
+      })
+      .join("");
   }
 
   function quickLinkButtonsHtml(match) {
     var analysisLabel = fixtureStatusMeta(match).finished ? "Sonuç Analizi" : "Analiz";
+    var standings = quickLinkStandingsHref(match);
+    var stats = /^süper lig$/i.test(String(match.league || "").trim())
+      ? '<a href="./istatistik-merkezi.html" data-quicklink="stats">İstatistik</a>'
+      : "";
     return (
       '<a href="' + escapeHtml(matchDetailHref(match)) + '">' + analysisLabel + "</a>" +
-      '<a href="' + escapeHtml(quickLinkStandingsHref(match)) + '">Puan Durumu</a>' +
-      '<a href="' + escapeHtml(quickLinkFormHref(match)) + '">Takım Formu</a>'
+      (standings ? '<a href="' + escapeHtml(standings) + '">Puan Durumu</a>' : "") +
+      quickLinkTeamLinksHtml(match) +
+      stats
     );
   }
+  // match-card-links:end
 
   /**
    * Yalnızca ana sayfanın "Bugünün Maçları" önizlemesi (today-matches
@@ -5035,6 +5062,17 @@
     return ["SCHEDULED", "TIMED", "NOT_STARTED", "NS", "TBD"].includes(status) && isFinite(kickoff) && kickoff >= now;
   }
 
+  // Değerler services/homeMatchPriority.js ile aynı (PIN_COUNT, PIN_MIN_SCORE);
+  // scripts/test-home-match-priority.mjs ikisinin eşitliğini denetler.
+  var HOME_PIN_COUNT = 8;
+  var HOME_PIN_MIN_SCORE = 95;
+  var HOME_CARD_VISIBLE = 12;
+
+  function homePriorityOf(match) {
+    var value = Number(match && match.homePriority);
+    return isFinite(value) ? value : 0;
+  }
+
   function selectTodayMatchCards(matches, options) {
     var settings = options || {};
     var today = settings.today || todayInIstanbul();
@@ -5049,7 +5087,7 @@
       return 2;
     }
 
-    return list.sort(function (left, right) {
+    function compareCards(left, right) {
       var stateGap = rank(left) - rank(right);
       if (stateGap !== 0) return stateGap;
 
@@ -5059,8 +5097,37 @@
       // özellikle önemli kılar: "daha fazla göster"e basmadan görünen
       // pencere masaüstünden çok daha az kart taşır.
       var turkishGap = Number(isTurkishMatch(right)) - Number(isTurkishMatch(left));
-      return turkishGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+      if (turkishGap) return turkishGap;
+      // Grup içinde ÖNCELİK PUANI (services/homeMatchPriority.js; sunucu
+      // `homePriority` olarak damgalar). Puansız statik yedekte tüm kayıtlar
+      // 0 sayılır ve eski saat sırası korunur.
+      var priorityGap = homePriorityOf(right) - homePriorityOf(left);
+      return priorityGap || String(left.kickoff || left.time || "").localeCompare(String(right.kickoff || right.time || ""));
+    }
+
+    var ordered = list.sort(compareCards);
+    var limit = typeof settings.visibleLimit === "number" ? settings.visibleLimit : HOME_CARD_VISIBLE;
+    // SABİTLENEN BÜYÜK MAÇLAR: eşiği geçen en yüksek puanlı HOME_PIN_COUNT
+    // maç görünür pencerede garanti edilir. Yer açmak için yalnızca
+    // sabitlenmemiş ve Türk olmayan en alttaki kart pencereden çıkar.
+    var pinned = ordered.filter(function (match) { return homePriorityOf(match) >= HOME_PIN_MIN_SCORE; })
+      .sort(function (a, b) { return homePriorityOf(b) - homePriorityOf(a); })
+      .slice(0, HOME_PIN_COUNT);
+    if (!pinned.length || ordered.length <= limit) return ordered;
+    var head = ordered.slice(0, limit);
+    var tail = ordered.slice(limit);
+    pinned.forEach(function (match) {
+      if (head.indexOf(match) >= 0) return;
+      for (var index = head.length - 1; index >= 0; index -= 1) {
+        if (pinned.indexOf(head[index]) < 0 && !isTurkishMatch(head[index])) {
+          tail.push(head.splice(index, 1)[0]);
+          tail.splice(tail.indexOf(match), 1);
+          head.push(match);
+          return;
+        }
+      }
     });
+    return head.sort(compareCards).concat(tail.sort(compareCards));
   }
   // today-match-card-selection:end
 

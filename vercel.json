@@ -19,6 +19,14 @@
       "schedule": "*/15 * * * *"
     },
     {
+      "path": "/api/cron/x-news",
+      "schedule": "20 */2 * * *"
+    },
+    {
+      "path": "/api/cron/telegram-notify",
+      "schedule": "35 * * * *"
+    },
+    {
       "path": "/api/cron/scheduled-update?phase=resume",
       "schedule": "27 * * * *"
     },
@@ -4885,6 +4893,26 @@
       "source": "/transfer-izleme",
       "destination": "/super-lig-transferleri-2026-2027.html",
       "permanent": true
+    },
+    {
+      "source": "/kose-yazilari/galatasaray-barcelona-4-1-okan-buruk-avrupa-gercegi",
+      "destination": "/kose-yazilari/galatasaray-barcelona-1-4-okan-buruk-avrupa-gercegi",
+      "permanent": true
+    },
+    {
+      "source": "/kose-yazilari/galatasaray-barcelona-4-1-okan-buruk-avrupa-gercegi.html",
+      "destination": "/kose-yazilari/galatasaray-barcelona-1-4-okan-buruk-avrupa-gercegi",
+      "permanent": true
+    },
+    {
+      "source": "/sampiyonlar-ligi.html",
+      "destination": "/lig/sampiyonlar-ligi.html",
+      "permanent": true
+    },
+    {
+      "source": "/sampiyonlar-ligi",
+      "destination": "/lig/sampiyonlar-ligi.html",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -5335,6 +5363,10 @@
     {
       "source": "/canli",
       "destination": "/canli-skor.html"
+    },
+    {
+      "source": "/lig/:slug",
+      "destination": "/lig/:slug.html"
     }
   ],
   "headers": [
