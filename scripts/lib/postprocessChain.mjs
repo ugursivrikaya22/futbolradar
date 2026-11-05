@@ -166,10 +166,14 @@ export const POSTPROCESS_CHAIN = [
   // Sık kullanılan sayfalar şeridi (düz bağlantılar): `served-links`ten ÖNCE,
   // çünkü yazdığı göreli adresler orada sunulan adrese göre doğrulanıyor.
   { id: "quick-links", script: "inject-quick-links.mjs", args: [], timeoutMinutes: 2 },
+  // Takım↔haber↔köşe↔istatistik↔arşiv contextual iç bağlantılar (üreticilere dokunmaz).
+  { id: "related-pages", script: "inject-related-pages.mjs", args: [], timeoutMinutes: 5 },
   // Gizlilik sayfasına "Favoriler ve yerel depolama" bildirimi (işaretli blok, idempotent).
   { id: "privacy-notice", script: "inject-privacy-notice.mjs", args: [], timeoutMinutes: 2 },
   // Sitemap ↔ robots tutarlılığı: noindex URL sitemap'e girmez, köşe yazıları lastmod ile girer.
   { id: "sitemap-indexability", script: "sync-sitemap-indexability.mjs", args: [], timeoutMinutes: 2 },
+  // Birleşik urlset → türe göre çocuk haritalar + sitemap-index.xml (üretici sırasına dokunulmaz).
+  { id: "sitemap-index", script: "sync-sitemap-index.mjs", args: [], timeoutMinutes: 2 },
   { id: "served-links", script: "normalize-served-links.mjs", args: [], timeoutMinutes: 2 },
   { id: "asset-version", script: "inject-asset-version.mjs", args: [], timeoutMinutes: 5 }
 ];

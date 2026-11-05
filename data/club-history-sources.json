@@ -1,195 +1,559 @@
 {
- "note": "Kulüp künyesi. Değerler aşağıdaki Wikipedia (EN) revizyonlarının bilgi kutusundan (infobox) elle aktarıldı; her kulübün kendi kaynağı var. Şampiyonluk sayıları bu dosyada tutulmaz, data/evergreen-history-sources.json sezon listesinden hesaplanır. Stadyum adları Türkçeleştirildi; kapasite ve tarih değerleri bilgi kutusundakiyle aynıdır.",
- "retrievedAt": "2026-11-02",
+ "note": "Kulüp künyesi. Yalnızca kulübün resmî sitesi, tff.org ve uefa.com kaynakları kullanılır; her alan kendi kaynağını taşır. Kaynağı bulunamayan alan yazılmaz. Süper Lig ve Türkiye Kupası sezonları TFF listelerinden aktarıldı. Kuruluş + stadyum + kupa bilgisi kaynaklı olmayan tarihçe sayfası noindex olur ve site haritasına girmez.",
+ "retrievedAt": "2026-11-05",
+ "honoursSources": {
+  "superLig": {
+   "sourceUrl": "https://www.tff.org/default.aspx?pageID=545",
+   "sourceName": "TFF — Süper Lig şampiyonlukları"
+  },
+  "turkiyeKupasi": {
+   "sourceUrl": "https://www.tff.org/default.aspx?pageID=411",
+   "sourceName": "TFF — Türkiye Kupası şampiyonları"
+  },
+  "coverage": "Süper Lig: 1959–2025-26 · Türkiye Kupası: 1962-63–2025-26"
+ },
  "clubs": {
   "galatasaray": {
    "fullName": "Galatasaray Spor Kulübü",
-   "founded": "1905-10-01",
-   "stadium": "Rams Park",
-   "capacity": 53387,
-   "source": {
-    "title": "Galatasaray S.K. (football)",
-    "oldid": 1381328827
+   "founded": {
+    "date": "1905",
+    "text": "1905 yılında, Galatasaray Mektebi öğrencileri tarafından",
+    "note": "Ali Sami Yen'in anlatımıyla \"1 Teşrin 1905\"",
+    "sourceUrl": "https://www.galatasaray.org/s/galatasaray-nasil-kuruldu/13",
+    "sourceName": "Galatasaray resmî sitesi — Galatasaray nasıl kuruldu?"
+   },
+   "colours": {
+    "text": "sarı-kırmızı",
+    "sourceUrl": "https://www.galatasaray.org/s/renklerin-oykusu/15",
+    "sourceName": "Galatasaray resmî sitesi — Renklerin öyküsü"
+   },
+   "stadium": {
+    "name": "Ali Sami Yen Spor Kompleksi RAMS Park",
+    "capacity": 52280,
+    "note": "15 Ocak 2011'de Galatasaray-Ajax maçıyla açıldı",
+    "sourceUrl": "https://www.galatasaray.org/s/ali-sami-yen-spor-kompleksi-rams-global-stadyumu/202",
+    "sourceName": "Galatasaray resmî sitesi — RAMS Park"
+   },
+   "honours": {
+    "superLig": [
+     "1961-1962",
+     "1962-1963",
+     "1968-1969",
+     "1970-1971",
+     "1971-1972",
+     "1972-1973",
+     "1986-1987",
+     "1987-1988",
+     "1992-1993",
+     "1993-1994",
+     "1996-1997",
+     "1997-1998",
+     "1998-1999",
+     "1999-2000",
+     "2001-2002",
+     "2005-2006",
+     "2007-2008",
+     "2011-2012",
+     "2012-2013",
+     "2014-2015",
+     "2017-2018",
+     "2018-2019",
+     "2022-2023",
+     "2023-2024",
+     "2024-2025",
+     "2025-2026"
+    ],
+    "turkiyeKupasi": [
+     "2024-25",
+     "2018-19",
+     "2015-16",
+     "2014-15",
+     "2013-14",
+     "2004-05",
+     "1999-00",
+     "1998-99",
+     "1995-96",
+     "1992-93",
+     "1990-91",
+     "1984-85",
+     "1981-82",
+     "1975-76",
+     "1972-73",
+     "1965-66",
+     "1964-65",
+     "1963-64",
+     "1962-63"
+    ],
+    "european": [
+     {
+      "title": "UEFA Kupası",
+      "season": "1999-2000",
+      "note": "Final: Galatasaray 0-0 Arsenal (pen. 4-1), Kopenhag",
+      "sourceUrl": "https://www.uefa.com/uefaeuropaleague/news/016e-0e6a3091ff2c-b6d02ad6a643-1000--1999-2000-galatasaray-the-pride-of-turkey/",
+      "sourceName": "UEFA.com — 1999/2000: Galatasaray the pride of Turkey"
+     },
+     {
+      "title": "UEFA Süper Kupası",
+      "season": "2000",
+      "note": "Real Madrid 1-2 Galatasaray (uzatmada altın gol), Monako",
+      "sourceUrl": "https://www.uefa.com/uefasupercup/history/2000/",
+      "sourceName": "UEFA.com — 2000 Super Cup: Jardel doubles up for Galatasaray"
+     }
+    ]
    }
   },
   "fenerbahce": {
    "fullName": "Fenerbahçe Spor Kulübü",
-   "founded": "1907-05-03",
-   "foundedNote": "Phener-Bagtche Association Football Club adıyla",
-   "stadium": "Şükrü Saracoğlu Stadyumu",
-   "capacity": 47911,
-   "source": {
-    "title": "Fenerbahçe S.K. (football)",
-    "oldid": 1382784805
+   "founded": {
+    "date": "1907",
+    "text": "1907 yılının bahar aylarında",
+    "sourceUrl": "https://www.fenerbahce.org/kulup/tarihce",
+    "sourceName": "Fenerbahçe resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "Chobani Stadyumu Fenerbahçe Şükrü Saracoğlu Spor Kompleksi",
+    "capacity": 47911,
+    "sourceUrl": "https://www.fenerbahce.org/kulup/tesislerimiz/ulker-stadyumu-fenerbahce-sukru-saracoglu-spor-kompleksi",
+    "sourceName": "Fenerbahçe resmî sitesi — Stadyum"
+   },
+   "honours": {
+    "superLig": [
+     "1959",
+     "1960-1961",
+     "1963-1964",
+     "1964-1965",
+     "1967-1968",
+     "1969-1970",
+     "1973-1974",
+     "1974-1975",
+     "1977-1978",
+     "1982-1983",
+     "1984-1985",
+     "1988-1989",
+     "1995-1996",
+     "2000-2001",
+     "2003-2004",
+     "2004-2005",
+     "2006-2007",
+     "2010-2011",
+     "2013-2014"
+    ],
+    "turkiyeKupasi": [
+     "2022-23",
+     "2012-13",
+     "2011-12",
+     "1982-83",
+     "1978-79",
+     "1973-74",
+     "1967-68"
+    ],
+    "european": []
    }
   },
   "besiktas": {
    "fullName": "Beşiktaş Jimnastik Kulübü",
-   "founded": "1903-03-03",
-   "foundedNote": "Bereket Jimnastik Kulübü adıyla",
-   "stadium": "Beşiktaş Stadyumu",
-   "capacity": 42684,
-   "source": {
-    "title": "Beşiktaş J.K.",
-    "oldid": 1383325035
+   "founded": {
+    "date": "1903",
+    "text": "1903 yılında",
+    "sourceUrl": "https://bjk.com.tr/tr/cms/hakkinda/",
+    "sourceName": "Beşiktaş resmî sitesi — Hakkında"
+   },
+   "colours": {
+    "text": "siyah-beyaz",
+    "sourceUrl": "https://bjk.com.tr/tr/cms/hakkinda/",
+    "sourceName": "Beşiktaş resmî sitesi — Hakkında"
+   },
+   "stadium": {
+    "name": "Tüpraş Stadyumu",
+    "capacity": null,
+    "note": "11 Nisan 2016'da açıldı",
+    "sourceUrl": "https://bjk.com.tr/tr/cms/tesisler/6/106/",
+    "sourceName": "Beşiktaş resmî sitesi — Tüpraş Stadyumu"
+   },
+   "leagueNote": "TFF, TFF Tahkim Kurulu'nun 09.05.2002 tarihli kararıyla 1956-57 ve 1957-58 Türkiye Ligi şampiyonluklarını da Beşiktaş'ın toplamına katar.",
+   "honours": {
+    "superLig": [
+     "1959-1960",
+     "1965-1966",
+     "1966-1967",
+     "1981-1982",
+     "1985-1986",
+     "1989-1990",
+     "1990-1991",
+     "1991-1992",
+     "1994-1995",
+     "2002-2003",
+     "2008-2009",
+     "2015-2016",
+     "2016-2017",
+     "2020-2021"
+    ],
+    "turkiyeKupasi": [
+     "2023-24",
+     "2020-21",
+     "2010-11",
+     "2008-09",
+     "2006-07",
+     "2005-06",
+     "1997-98",
+     "1993-94",
+     "1989-90",
+     "1988-89",
+     "1974-75"
+    ],
+    "european": []
    }
   },
   "trabzonspor": {
    "fullName": "Trabzonspor Kulübü",
-   "founded": "1967-08-02",
-   "stadium": "Papara Park (Şenol Güneş Spor Kompleksi)",
-   "capacity": 41131,
-   "source": {
-    "title": "Trabzonspor",
-    "oldid": 1381468553
+   "founded": {
+    "date": "1967-08-02",
+    "text": null,
+    "sourceUrl": "https://www.trabzonspor.org.tr/tr/kulup/tarihce",
+    "sourceName": "Trabzonspor resmî sitesi — Tarihçe"
+   },
+   "colours": {
+    "text": "bordo-mavi",
+    "sourceUrl": "https://www.trabzonspor.org.tr/tr/kulup/tarihce",
+    "sourceName": "Trabzonspor resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "Papara Park",
+    "capacity": 41061,
+    "note": "18 Aralık 2016'da açıldı; kapasite stadyum sayfasındaki teknik özellikler tablosundan",
+    "sourceUrl": "https://www.trabzonspor.org.tr/tr/kulup/papara-park",
+    "sourceName": "Trabzonspor resmî sitesi — Papara Park"
+   },
+   "honours": {
+    "superLig": [
+     "1975-1976",
+     "1976-1977",
+     "1978-1979",
+     "1979-1980",
+     "1980-1981",
+     "1983-1984",
+     "2021-2022"
+    ],
+    "turkiyeKupasi": [
+     "2025-26",
+     "2019-20",
+     "2009-10",
+     "2003-04",
+     "2002-03",
+     "1994-95",
+     "1991-92",
+     "1983-84",
+     "1977-78",
+     "1976-77"
+    ],
+    "european": []
    }
   },
   "samsunspor": {
-   "fullName": "Samsunspor Futbol Kulübü A.Ş.",
-   "founded": "1965-06-30",
-   "foundedNote": "19 Mayıs adıyla",
-   "stadium": "Samsun 19 Mayıs Stadyumu",
-   "capacity": 33919,
-   "source": {
-    "title": "Samsunspor",
-    "oldid": 1381221714
+   "fullName": "Samsunspor Kulübü",
+   "founded": {
+    "date": "1965-06-30",
+    "text": null,
+    "note": "kulüp, kökenini 1927'ye dayandırır",
+    "sourceUrl": "https://www.samsunspor.org.tr/tarihce/",
+    "sourceName": "Samsunspor Kulübü — Tarihçe"
+   },
+   "colours": {
+    "text": "kırmızı-beyaz",
+    "sourceUrl": "https://www.samsunspor.org.tr/tarihce/",
+    "sourceName": "Samsunspor Kulübü — Tarihçe"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "basaksehir": {
    "fullName": "İstanbul Başakşehir Futbol Kulübü",
-   "founded": "1990-06-15",
-   "foundedNote": "İstanbul Büyükşehir Belediyesi Spor Kulübü adıyla; 4 Haziran 2014'te İstanbul Başakşehir Futbol Kulübü adını aldı",
-   "stadium": "Başakşehir Fatih Terim Stadyumu",
-   "capacity": 17067,
-   "source": {
-    "title": "İstanbul Başakşehir F.K.",
-    "oldid": 1380558148
+   "founded": {
+    "date": "2014-06-04",
+    "text": null,
+    "sourceUrl": "https://ibfk.com.tr/kulup-hakkinda",
+    "sourceName": "Başakşehir FK resmî sitesi — Kulüp hakkında"
+   },
+   "stadium": {
+    "name": "Başakşehir Fatih Terim Stadı",
+    "capacity": 17319,
+    "sourceUrl": "https://ibfk.com.tr/tesislerimiz",
+    "sourceName": "Başakşehir FK resmî sitesi — Tesislerimiz"
+   },
+   "honours": {
+    "superLig": [
+     "2019-2020"
+    ],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "konyaspor": {
-   "fullName": "Konyaspor Kulübü",
-   "founded": "1922-06-22",
-   "stadium": "Konya Büyükşehir Belediye Stadyumu",
-   "capacity": 41600,
-   "source": {
-    "title": "Konyaspor",
-    "oldid": 1383139139
+   "fullName": "Konyaspor",
+   "founded": {
+    "date": "1922-06-22",
+    "text": null,
+    "sourceUrl": "https://www.konyaspor.org.tr/tarihce",
+    "sourceName": "Konyaspor resmî sitesi — Tarihçe"
+   },
+   "colours": {
+    "text": "yeşil-beyaz",
+    "sourceUrl": "https://www.konyaspor.org.tr/tarihce",
+    "sourceName": "Konyaspor resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "MEDAŞ Konya Büyükşehir Stadyumu",
+    "capacity": null,
+    "sourceUrl": "https://www.konyaspor.org.tr/stadyum",
+    "sourceName": "Konyaspor resmî sitesi — Stadyum"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [
+     "2016-17"
+    ],
+    "european": []
    }
   },
   "goztepe": {
    "fullName": "Göztepe Spor Kulübü",
-   "founded": "1925-06-14",
-   "foundedNote": "Göztepe Gençlik Kulübü adıyla",
-   "stadium": "Gürsel Aksel Stadyumu",
-   "capacity": 23376,
-   "source": {
-    "title": "Göztepe S.K.",
-    "oldid": 1380042783
+   "founded": {
+    "date": "1925-06-14",
+    "text": null,
+    "sourceUrl": "https://www.goztepe.org.tr/Kulup/Tarihce",
+    "sourceName": "Göztepe resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "Gürsel Aksel Stadyumu",
+    "capacity": null,
+    "sourceUrl": "https://www.goztepe.org.tr/Kulup/Tarihce",
+    "sourceName": "Göztepe resmî sitesi — Tarihçe"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [
+     "1969-70",
+     "1968-69"
+    ],
+    "european": []
    }
   },
   "alanyaspor": {
-   "fullName": "Alanyaspor Kulübü",
-   "founded": "1948",
-   "stadium": "Alanya Oba Stadyumu",
-   "capacity": 9789,
-   "source": {
-    "title": "Alanyaspor",
-    "oldid": 1380404687
+   "fullName": "Alanyaspor",
+   "founded": {
+    "date": "1948",
+    "text": "1948 yılında",
+    "sourceUrl": "https://www.alanyaspor.org.tr/sayfa/tarihce",
+    "sourceName": "Alanyaspor resmî sitesi — Tarihçe"
+   },
+   "colours": {
+    "text": "turuncu-yeşil (1982'den bu yana)",
+    "sourceUrl": "https://www.alanyaspor.org.tr/sayfa/tarihce",
+    "sourceName": "Alanyaspor resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "Alanya RGüzel Stadyumu",
+    "capacity": 10128,
+    "sourceUrl": "https://www.alanyaspor.org.tr/sayfa/tesislerimiz",
+    "sourceName": "Alanyaspor resmî sitesi — Tesislerimiz"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "genclerbirligi": {
    "fullName": "Gençlerbirliği Spor Kulübü",
-   "founded": "1923-03-14",
-   "stadium": "Eryaman Stadyumu",
-   "capacity": 20560,
-   "source": {
-    "title": "Gençlerbirliği S.K.",
-    "oldid": 1380965460
+   "founded": {
+    "date": "1923-03-14",
+    "text": null,
+    "sourceUrl": "https://www.genclerbirligi.org.tr/tarihimiz",
+    "sourceName": "Gençlerbirliği resmî sitesi — Tarihimiz"
+   },
+   "colours": {
+    "text": "kırmızı-siyah",
+    "sourceUrl": "https://www.genclerbirligi.org.tr/tarihimiz",
+    "sourceName": "Gençlerbirliği resmî sitesi — Tarihimiz"
+   },
+   "stadium": {
+    "name": "Eryaman Stadı",
+    "capacity": 20560,
+    "note": "Ocak 2019'dan bu yana",
+    "sourceUrl": "https://www.genclerbirligi.org.tr/tarihimiz",
+    "sourceName": "Gençlerbirliği resmî sitesi — Tarihimiz"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [
+     "2000-01",
+     "1986-87"
+    ],
+    "european": []
    }
   },
   "kasimpasa": {
-   "fullName": "Kasımpaşa Sportif Faaliyetler A.Ş.",
-   "founded": "1921-01-15",
-   "foundedNote": "Kasımpaşa Gençlik Kulübü adıyla",
-   "stadium": "Recep Tayyip Erdoğan Stadyumu",
-   "capacity": 14234,
-   "source": {
-    "title": "Kasımpaşa S.K.",
-    "oldid": 1381052638
+   "fullName": "Kasımpaşa Spor Kulübü",
+   "founded": {
+    "date": "1921",
+    "text": "1921 yılında, Kasımpaşa Gençlik Kulübü adı altında",
+    "sourceUrl": "https://www.kasimpasa.com.tr/tr/haberler/a-takim-haberleri/kasimpasa-tarihi_222.html",
+    "sourceName": "Kasımpaşa resmî sitesi — Kasımpaşa tarihi"
+   },
+   "colours": {
+    "text": "lacivert-beyaz",
+    "sourceUrl": "https://www.kasimpasa.com.tr/tr/haberler/a-takim-haberleri/kasimpasa-tarihi_222.html",
+    "sourceName": "Kasımpaşa resmî sitesi — Kasımpaşa tarihi"
+   },
+   "stadium": {
+    "name": "Recep Tayyip Erdoğan Stadyumu",
+    "capacity": 14000,
+    "sourceUrl": "https://www.kasimpasa.com.tr/tr/kulubumuz",
+    "sourceName": "Kasımpaşa resmî sitesi — Kulübümüz"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "rizespor": {
-   "fullName": "Çaykur Rize Spor Kulübü",
-   "founded": "1953-05-19",
-   "stadium": "Rize Şehir Stadyumu",
-   "capacity": 14879,
-   "source": {
-    "title": "Çaykur Rizespor",
-    "oldid": 1381175580
+   "fullName": "Çaykur Rizespor",
+   "founded": {
+    "date": "1953-05-19",
+    "text": null,
+    "sourceUrl": "https://www.caykurrizespor.org.tr/kulup/tarihce-9",
+    "sourceName": "Çaykur Rizespor resmî sitesi — Tarihçe"
+   },
+   "colours": {
+    "text": "yeşil-mavi (1968'den bu yana)",
+    "sourceUrl": "https://www.caykurrizespor.org.tr/kulup/tarihce-9",
+    "sourceName": "Çaykur Rizespor resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "Çaykur Didi Stadyumu",
+    "capacity": 15558,
+    "note": "12 Ağustos 2009'da açıldı",
+    "sourceUrl": "https://www.caykurrizespor.org.tr/kulup/CAYKUR-Didi-Stadyumu-52.html",
+    "sourceName": "Çaykur Rizespor resmî sitesi — Çaykur Didi Stadyumu"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "erzurumspor": {
-   "fullName": "Erzurumspor Futbol Kulübü",
-   "founded": "1972",
-   "foundedNote": "Erzurum Büyükşehir Belediyespor adıyla yeniden yapılanma; sonraki yıllarda ad değişiklikleri oldu",
-   "stadium": "Kazım Karabekir Stadyumu",
-   "capacity": 21374,
-   "source": {
-    "title": "Erzurumspor F.K.",
-    "oldid": 1380669296
+   "fullName": "Erzurumspor FK",
+   "founded": {
+    "date": "1972-03-24",
+    "text": null,
+    "sourceUrl": "https://erzurumsporfk.org/hakkimizda/",
+    "sourceName": "Erzurumspor FK resmî sitesi — Hakkımızda"
+   },
+   "colours": {
+    "text": "mavi-beyaz",
+    "sourceUrl": "https://erzurumsporfk.org/hakkimizda/",
+    "sourceName": "Erzurumspor FK resmî sitesi — Hakkımızda"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "gaziantep-fk": {
-   "fullName": "Gaziantep Futbol Kulübü A.Ş.",
-   "founded": "1988",
-   "foundedNote": "Sankospor adıyla; 1999'da Gaziantep Büyükşehir Belediyespor, 2017'de Gazişehir Gaziantep adlarını aldı",
-   "stadium": "Gaziantep Stadyumu",
-   "capacity": 30320,
-   "source": {
-    "title": "Gaziantep F.K.",
-    "oldid": 1380815793
+   "fullName": "Gaziantep Futbol Kulübü",
+   "founded": {
+    "date": "1988",
+    "text": "1988 yılında, Sankospor adıyla",
+    "sourceUrl": "https://www.gaziantepfk.org/kulubumuz/kulup-tarihcesi",
+    "sourceName": "Gaziantep FK resmî sitesi — Kulüp tarihçesi"
+   },
+   "colours": {
+    "text": "kırmızı-siyah-beyaz (2017'den bu yana)",
+    "sourceUrl": "https://www.gaziantepfk.org/kulubumuz/kulup-tarihcesi",
+    "sourceName": "Gaziantep FK resmî sitesi — Kulüp tarihçesi"
+   },
+   "stadium": {
+    "name": "Gaziantep Büyükşehir Stadyumu",
+    "capacity": null,
+    "sourceUrl": "https://www.gaziantepfk.org/haberler/stadyumumuzun-yeni-i-smi-belli-oldu",
+    "sourceName": "Gaziantep FK resmî sitesi — Stadyumumuzun yeni ismi"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "amed": {
-   "fullName": "Amed Sportif Faaliyetler Kulübü",
-   "founded": "1972",
-   "foundedNote": "bugünkü adını 2015'te aldı",
-   "stadium": "Diyarbakır Stadyumu",
-   "capacity": 33000,
-   "source": {
-    "title": "Amed S.F.K.",
-    "oldid": 1380498595
+   "fullName": "Amed Sportif Faaliyetler",
+   "founded": {
+    "date": "1972",
+    "text": "1972 yılında, Melikahmet Turanspor adıyla",
+    "sourceUrl": "https://www.amedspor.com.tr/club/history",
+    "sourceName": "Amedspor resmî sitesi — Tarihçe"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "eyupspor": {
-   "fullName": "Eyüpspor Kulübü",
-   "founded": "1919",
-   "stadium": "Esenyurt Necmi Kadıoğlu Stadyumu",
-   "capacity": 4274,
-   "source": {
-    "title": "Eyüpspor",
-    "oldid": 1380732488
+   "fullName": "Eyüpspor",
+   "founded": {
+    "date": "1919",
+    "text": "1919 yılında",
+    "sourceUrl": "https://www.eyupspor.org.tr/",
+    "sourceName": "Eyüpspor resmî sitesi"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "corum-fk": {
-   "fullName": "Çorum Futbol Kulübü A.Ş.",
-   "founded": "1997",
-   "foundedNote": "Çorum Belediyespor adıyla; 2018'de Yeni Çorumspor, 2019'da Çorum Futbol Kulübü adını aldı",
-   "stadium": "Çorum Şehir Stadyumu",
-   "capacity": 15000,
-   "source": {
-    "title": "Çorum F.K.",
-    "oldid": 1380598269
+   "fullName": "Çorum Futbol Kulübü",
+   "founded": {
+    "date": "2018",
+    "text": "2018 yılında",
+    "sourceUrl": "https://corumfk.com.tr/tarihce",
+    "sourceName": "Çorum FK resmî sitesi — Tarihçe"
+   },
+   "colours": {
+    "text": "kırmızı-siyah",
+    "sourceUrl": "https://corumfk.com.tr/tarihce",
+    "sourceName": "Çorum FK resmî sitesi — Tarihçe"
+   },
+   "stadium": {
+    "name": "Çorum Şehir Stadyumu",
+    "capacity": 15000,
+    "note": "2022'de açıldı",
+    "sourceUrl": "https://corumfk.com.tr/stadyumumuz",
+    "sourceName": "Çorum FK resmî sitesi — Stadyumumuz"
+   },
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [],
+    "european": []
    }
   },
   "kocaelispor": {
-   "fullName": "Kocaelispor Kulübü",
-   "founded": "1966-04-24",
-   "stadium": "Kocaeli Stadyumu",
-   "capacity": 34829,
-   "source": {
-    "title": "Kocaelispor",
-    "oldid": 1381059042
+   "fullName": "Kocaelispor",
+   "gap": "Resmî kulüp sitesinden kuruluş/stadyum doğrulanamadı (kocaelispor.org.tr 'kulübün resmî sitesi değildir' yazan bağımsız portal).",
+   "honours": {
+    "superLig": [],
+    "turkiyeKupasi": [
+     "2001-02",
+     "1996-97"
+    ],
+    "european": []
    }
   }
  }

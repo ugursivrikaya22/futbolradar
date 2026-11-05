@@ -2,8 +2,8 @@
 /**
  * ROBOTS.TXT, SITEMAP.XML VE NEWS-SITEMAP.XML DOĞRULAMASI.
  *
- *  1. robots.txt: tüm siteyi kapatmıyor, iki harita da mutlak ve kanonik
- *     konakta bildirilmiş, bildirilen dosyalar var.
+ *  1. robots.txt: tüm siteyi kapatmıyor, sitemap-index + news mutlak ve
+ *     kanonik konakta bildirilmiş; kaynak dizinleri Disallow (CSS/JS/assets/data açık).
  *  2. Üç XML dosyası "iyi biçimli" (etiketler dengeli, tek kök, geçerli
  *     varlıklar) — harici XML kütüphanesi kullanmayan sıkı bir ayrıştırıcıyla.
  *  3. sitemap.xml protokol sınırları: <= 50.000 adres, <= 50 MB, adresler
@@ -99,9 +99,15 @@ export function checkWellFormed(xml) {
     assert.ok(sitemap.startsWith(`${DOMAIN}/`), `robots.txt: Sitemap kanonik konakta değil: ${sitemap}`);
     assert.ok(fs.existsSync(path.join(root, sitemap.slice(DOMAIN.length + 1))), `robots.txt: bildirilen dosya yok: ${sitemap}`);
   }
-  assert.ok(sitemaps.includes(`${DOMAIN}/sitemap.xml`), "robots.txt: sitemap.xml bildirilmemiş");
+  assert.ok(sitemaps.includes(`${DOMAIN}/sitemap-index.xml`), "robots.txt: sitemap-index.xml bildirilmemiş");
   assert.ok(sitemaps.includes(`${DOMAIN}/news-sitemap.xml`), "robots.txt: news-sitemap.xml bildirilmemiş");
-  console.log(`  ok  robots.txt: ${groups.length} grup, ${sitemaps.length} harita bildirimi, siteyi kapatan kural yok`);
+  assert.ok(fs.existsSync(path.join(root, "sitemap-index.xml")), "sitemap-index.xml dosyası yok");
+  const disallows = new Set(star.rules.filter(([k]) => k === "disallow").map(([, v]) => v));
+  for (const pathRule of ["/docs/", "/scripts/", "/services/", "/tests/", "/supabase/", "/server/", "/admin-", "/public/"]) {
+    assert.ok(disallows.has(pathRule), `robots.txt: Disallow ${pathRule} eksik`);
+  }
+  assert.ok(!disallows.has("/data/"), "robots.txt: /data/ engellenmemeli");
+  console.log(`  ok  robots.txt: ${groups.length} grup, ${sitemaps.length} harita bildirimi, kaynak dizinleri kapalı`);
 }
 
 // ── 2. Üç XML dosyası iyi biçimli ──────────────────────────────────────────
@@ -111,6 +117,19 @@ for (const file of ["sitemap.xml", "news-sitemap.xml", "public/sitemap.xml", "pu
 }
 assert.equal(read("sitemap.xml"), read("public/sitemap.xml"), "public/sitemap.xml ayna kopyası kökle aynı olmalı");
 assert.equal(read("news-sitemap.xml"), read("public/news-sitemap.xml"), "public/news-sitemap.xml ayna kopyası kökle aynı olmalı");
+if (fs.existsSync(path.join(root, "sitemap-index.xml"))) {
+  assert.ok(checkWellFormed(read("sitemap-index.xml")).ok, "sitemap-index.xml iyi biçimli değil");
+  assert.equal(read("sitemap-index.xml"), read("public/sitemap-index.xml"), "public/sitemap-index.xml ayna kopyası kökle aynı olmalı");
+  const childLocs = [...read("sitemap-index.xml").matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+  assert.ok(childLocs.length >= 1, "sitemap-index.xml boş");
+  for (const loc of childLocs) {
+    assert.ok(loc.startsWith(`${DOMAIN}/`), `indeks çocuğu kanonik konakta değil: ${loc}`);
+    const rel = loc.slice(DOMAIN.length + 1);
+    assert.ok(fs.existsSync(path.join(root, rel)), `indeks çocuğu yok: ${rel}`);
+    assert.ok(checkWellFormed(read(rel)).ok, `${rel}: iyi biçimli değil`);
+  }
+  console.log(`  ok  sitemap-index.xml + ${childLocs.length} çocuk harita iyi biçimli`);
+}
 console.log("  ok  sitemap.xml ve news-sitemap.xml (ve public/ aynaları) iyi biçimli XML");
 
 // ── 3. sitemap.xml protokol sınırları ──────────────────────────────────────

@@ -801,7 +801,8 @@ function checkSeoAndLinks() {
   }
 
   const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
-  expect(robots.includes("Sitemap: https://www.futbolradar.com/sitemap.xml"), "robots.txt missing sitemap URL");
+  expect(robots.split(/\r?\n/).includes("Sitemap: https://www.futbolradar.com/sitemap-index.xml"), "robots.txt missing sitemap index URL");
+  expect(robots.split(/\r?\n/).includes("Sitemap: https://www.futbolradar.com/news-sitemap.xml"), "robots.txt missing news sitemap URL");
   // PAYLAŞIM GÖRSELİ PNG'DİR. X, Facebook, WhatsApp ve Telegram SVG
   // önizleme çözmez; SVG bildiren bir bağlantı o ağlarda GÖRSELSİZ çıkar.
   // Bu yüzden asıl denetlenen varlık PNG: sayfaların og:image/twitter:image
