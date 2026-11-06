@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { DOMAIN, locToFile, isNoindexHtml, pruneNoindexEntries, addMissingColumns, columnLastmod } from "./lib/sitemapIndexability.mjs";
+import { DOMAIN, locToFile, isNoindexHtml, pruneNoindexEntries, pruneMissingLocalEntries, addMissingColumns, columnLastmod } from "./lib/sitemapIndexability.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
