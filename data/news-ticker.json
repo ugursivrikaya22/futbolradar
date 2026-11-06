@@ -1,7 +1,27 @@
 {
   "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-11-06T02:28:47.954Z",
+  "updatedAt": "2026-11-06T09:04:54.977Z",
   "items": [
+    {
+      "id": "auto-news-fb959b1380efe0b1c7cc",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Archie Brown, Şampiyonlar Ligi’nde haftanın 11’inde",
+      "team": "Fenerbahçe",
+      "timestamp": "2026-11-06T08:01:46.000Z",
+      "source": {
+        "name": "Fenerbahce.org",
+        "url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNQjdtcHBGaFJnVDNxUzN3cUpIbXRRaTZpOXh4T0FabXBhUTdVelNhZUd2Zkk1SDZqU2oxd3NHQnlMUVJpaHRVdGVhS3NzWlU3a2ItRE9CaGdPMTVxMzdBc3podEJFdTBOaHF3SEN5ejRLdnBoSHJPVU9iQjI2a09YblNTX0tnZUxadkcxbGtCbmlJR3BoaTU0ckZJRE4xS2dRZGFv?oc=5",
+        "publisher": "fenerbahce.org"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "fenerbahce",
+        "priority": 2,
+        "status": "OFFICIAL"
+      }
+    },
     {
       "id": "auto-news-d34a297ac9f8b9781910",
       "category": "official",
@@ -61,6 +81,26 @@
         "source": "rss",
         "feed": "besiktas",
         "priority": 3,
+        "status": "OFFICIAL"
+      }
+    },
+    {
+      "id": "auto-news-c520421eedcf4f3d1199",
+      "category": "official",
+      "confidence": "confirmed",
+      "section": "news",
+      "text": "Teknik Direktörümüz Thomas Reis’ın Freiburg maçı değerlendirmesi",
+      "team": "Trabzonspor",
+      "timestamp": "2026-11-05T20:32:08.000Z",
+      "source": {
+        "name": "Trabzonspor Kulübü Resmi Web Sitesi",
+        "url": "https://news.google.com/rss/articles/CBMirwFBVV95cUxNVk9nS0tyYThSNzR1ZFJhQ09adlFPaVZNV0lReWI3X1ZSR2J0QmdTWkl1T3FqSXdGeE1CZzlqQldSeEtLWl9uNzBhSFRZckZkdy1iOE5vak13bkJlQlgtcEtVNGtrbmpqWVRBQ2VieEJIRXMxNlRUcFFwZ3ZzT2xvMUllQ2hMWVh0WGxSUTV5Ump2REVRN2N5ZDFEd1dnRno1SlZ1TXVJOGhiN25SSmI4?oc=5",
+        "publisher": "trabzonspor.org.tr"
+      },
+      "automation": {
+        "source": "rss",
+        "feed": "trabzonspor",
+        "priority": 4,
         "status": "OFFICIAL"
       }
     },
@@ -126,26 +166,6 @@
         "status": "OFFICIAL",
         "mergedReports": 2,
         "firstSeenAt": "2026-11-05T13:40:08.000Z"
-      }
-    },
-    {
-      "id": "auto-news-f0bc95ad415fd86d926b",
-      "category": "official",
-      "confidence": "confirmed",
-      "section": "news",
-      "text": "İmza Töreni Hakkında Bilgilendirme",
-      "team": "Fenerbahçe",
-      "timestamp": "2026-11-05T12:40:06.000Z",
-      "source": {
-        "name": "Fenerbahce.org",
-        "url": "https://news.google.com/rss/articles/CBMijgFBVV95cUxNalZha0taWWc4MGxFMkZtRkQzekV0NmlVdlRYSFBtUHg2UmFmX29uSV8tMy1QMjNQWmladjB0R1p1SndKY3VKMjJOcGktc2ZnMzJaYm5MWmdSOGY4UG53ZTlNYUlLS3FmRjRrWFdTSi0tYjJvaW1MVnh1T1ZtOHE5VEJVX21md2xiVXZRbXVR?oc=5",
-        "publisher": "fenerbahce.org"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "fenerbahce",
-        "priority": 2,
-        "status": "OFFICIAL"
       }
     },
     {
@@ -374,26 +394,6 @@
       "section": "news"
     },
     {
-      "id": "auto-news-e8355ec73f09b394126c",
-      "category": "club-agenda",
-      "confidence": "reported",
-      "section": "news",
-      "text": "Beşiktaş'ın beklediği kırmızı kart çıkmadı! İskoçya'da çok konuşulacak karar",
-      "team": "Beşiktaş",
-      "timestamp": "2026-11-05T22:13:00.000Z",
-      "source": {
-        "name": "hurriyet-spor",
-        "url": "https://www.hurriyet.com.tr/sporarena/besiktasin-bekledigi-kirmizi-kart-cikmadi-iskocyada-cok-konusulacak-karar-43367723",
-        "publisher": "hurriyet.com.tr"
-      },
-      "automation": {
-        "source": "rss",
-        "feed": "hurriyet-spor",
-        "priority": 7,
-        "status": "REPORTED"
-      }
-    },
-    {
       "id": "auto-news-e4df645eb5368d49411f",
       "category": "club-agenda",
       "confidence": "reported",
@@ -410,9 +410,7 @@
         "source": "rss",
         "feed": "cnnturk-spor",
         "priority": 8,
-        "status": "REPORTED",
-        "mergedReports": 2,
-        "firstSeenAt": "2026-11-04T18:26:03.000Z"
+        "status": "REPORTED"
       }
     },
     {
