@@ -42,6 +42,19 @@
 <!-- theme-boot:start -->
 <script>(function(){try{var s=localStorage.getItem("fr-theme");var th=s==="light"||s==="dark"?s:(window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.setAttribute("data-theme",th);}catch(e){}})();</script>
 <!-- theme-boot:end -->
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -60,19 +73,6 @@
 <meta name="fr-vapid-public-key" content="" />
 <script defer src="/pwa.js?v=9b0e6386"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
-    <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   </head>
   <body>
     <div class="site-shell">
@@ -188,7 +188,7 @@
       </div>
       <div class="container-wide footer-bottom">
         <span>© 2026 FutbolRadar · Canlı skor ve futbol istatistikleri</span>
-        <span class="footer-links"><a href="../veri-notu.html">Veri Notu</a><a href="../iletisim.html">İletişim</a></span>
+        <span class="footer-links"><a href="../veri-notu.html">Veri Notu</a><a href="../iletisim.html">İletişim</a><a href="../bulten.html">E-posta bülteni</a></span>
       </div>
       <nav class="bottom-nav" data-bottom-nav aria-label="Hızlı gezinme">
         <a class="bottom-nav__item" href="../index.html" data-bottom-nav-item>

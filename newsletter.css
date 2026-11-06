@@ -1,0 +1,16 @@
+/* Bülten formu — mobil öncelikli */
+.newsletter-card{max-width:620px;margin:16px auto;background:var(--surface,#fff);border:1px solid var(--line,rgba(0,0,0,.1));border-radius:16px;padding:18px}
+.newsletter-card h1{font-size:clamp(24px,6vw,34px);margin:8px 0}
+.newsletter-lead{color:var(--text-soft,#3f4f49)}
+.newsletter-form{display:grid;gap:12px;margin:14px 0}
+.newsletter-field{display:grid;gap:4px}
+.newsletter-field label{font-weight:600;font-size:14px}
+.newsletter-field input{font:inherit;font-size:16px;padding:12px;border:1px solid var(--line-strong,rgba(11,143,90,.3));border-radius:10px;width:100%;box-sizing:border-box}
+.newsletter-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.newsletter-consent{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--text-soft,#3f4f49);line-height:1.45}
+.newsletter-consent input{margin-top:3px;width:18px;height:18px;flex:none}
+.newsletter-submit{font:inherit;font-weight:700;font-size:16px;padding:13px;border:0;border-radius:10px;background:var(--green,#0b8f5a);color:#fff;cursor:pointer}
+.newsletter-submit:disabled{opacity:.6}
+.newsletter-status{min-height:1.2em;font-size:14px;margin:0}
+.newsletter-flash{background:var(--green-tint,#e8f5ef);border-radius:10px;padding:10px 12px;font-weight:600}
+.newsletter-notes{font-size:13px;color:var(--muted,#6b7c76);padding-left:18px}

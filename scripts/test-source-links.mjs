@@ -218,7 +218,8 @@ function sampleGeneratedHtml(dir, limit) {
 // hem kırık bir bağlantıdır hem de içeriğin nereden geldiğini sızdırır.
 {
   const FORBIDDEN = ["chatgpt.site", "chatgpt.com", "openai.com", "oaiusercontent", "claude.site"];
-  const skipDirs = new Set(["node_modules", ".git", "public"]);
+  // Nested developer worktrees are separate checkouts, not published site content.
+  const skipDirs = new Set(["node_modules", ".git", ".worktrees", "public"]);
   const hits = [];
 
   function walk(dir) {

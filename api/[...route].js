@@ -23,6 +23,7 @@ const { handleLiveScoreStream } = require("../server/liveScoreStreamRoute");
 const { handlePushSubscription } = require("../server/pushSubscriptionRoute");
 const { handleColumnsPublish } = require("../server/columnsPublishRoute");
 const { handleOnThisDayCron } = require("../server/onThisDayCronRoute");
+const { handleNewsletter } = require("../server/newsletterRoute");
 const {
   DEFAULT_TIMEOUT_MS,
   enforceRateLimit,
@@ -320,6 +321,10 @@ async function handleMatchAnalysis(req, res, query) {
 module.exports = async function handler(req, res) {
   if (routeName(req) === "match-news" || /^\/haber\/galatasaray-kasimpasa-9-ekim-2026-canli-haber(?:\.html)?$/.test(new URL(req.url || "/", "http://localhost").pathname)) {
     return require("../server/matchNewsRoute").handleMatchNews(req, res);
+  }
+  // E-posta bülteni: abonelik (POST), onay ve tek tıkla çıkış (server/newsletterRoute.js).
+  if (routeName(req) === "newsletter") {
+    return handleNewsletter(req, res);
   }
   // OY UÇ NOKTASI EN ÖNDE, ÇÜNKÜ ALTTAKİ KAPILAR ONA UYMUYOR.
   //
