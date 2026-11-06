@@ -11,6 +11,8 @@
  *   /api/cron/deploy                           Deploy Hook (saatte en fazla 1)
  *   /api/cron/health                           günlük sağlık raporu
  *   /api/cron/search-demand                    arama talebi verisi
+ *   /api/cron/newsletter                       haftalık e-posta bülteni (Pzt 09:00 TSİ;
+ *                                              NEWSLETTER_ENABLED=1 değilse kuru çalışma)
  *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
  *   /api/cron/x-live                           canlı maç tweetleri (elle/Actions; Vercel'de x-autopost içinde koşar)
  *   /api/cron/x-news                           X haber tweeti (data/news.json; varsayılan kuru koşu)
@@ -33,7 +35,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "x-autopost", "matchday-reminder", "x-news", "telegram-notify", "x-live"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "newsletter", "x-autopost", "matchday-reminder", "x-news", "telegram-notify", "x-live"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -80,6 +82,8 @@ async function defaultRunners() {
     // Sağlık raporu catch-all'daki mevcut `/api/daily-health-check` ucundan
     // alınır: rapor `data/` okuyor ve bu işlevin paketinde `data/` yok.
     health: () => engine.runHealth(),
+    // Bülten motoru veri çekme motorundan bağımsız: veriyi SITE_URL/data/... üzerinden okur.
+    newsletter: () => require("../services/newsletter/weekly").runWeekly(),
     // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
     // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
     // Canlı maç tweetleri (X_LIVE_ENABLED) AYNI koşuda, AYNI indirilmiş veriyle

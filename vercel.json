@@ -7,6 +7,10 @@
   "outputDirectory": ".",
   "crons": [
     {
+      "path": "/api/cron/newsletter",
+      "schedule": "0 6 * * 1"
+    },
+    {
       "path": "/api/cron-on-this-day",
       "schedule": "0 0 * * *"
     },
@@ -66,6 +70,11 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "redirects": [
+    {
+      "source": "/bulten",
+      "destination": "/bulten.html",
+      "permanent": true
+    },
     {
       "source": "/futbolcu/:slug.html",
       "destination": "/futbolcu/:slug",
