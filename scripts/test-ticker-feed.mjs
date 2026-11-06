@@ -32,7 +32,7 @@ function withTempData(mutate, run) {
   // listeye alınmazsa "tüm kaynaklar boş" senaryosu gerçekten boş olmuyor:
   // küratörlü öğeler bandı doldurmaya devam ediyor ve yedek yoluna hiç
   // girilmiyor. Kaynak eklendiğinde bu liste de büyümeli.
-  const files = ["matches.json", "transfers.json", "news.json", "news-ticker.json"];
+  const files = ["matches.json", "transfers.json", "news.json", "news-ticker.json", "fixture-calendar.json"];
   const backups = new Map();
 
   for (const file of files) {
