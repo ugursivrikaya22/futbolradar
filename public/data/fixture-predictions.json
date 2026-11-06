@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-06T01:30:38.430Z",
-  "predictionCount": 10994,
+  "updatedAt": "2026-11-06T02:20:14.995Z",
+  "predictionCount": 10997,
   "predictions": [
     {
       "fixtureId": "bahia-remo-2026-09-15",
@@ -823578,7 +823578,8 @@
       "calculatedAt": "2026-11-06T01:30:22.227Z",
       "expiresAt": "2026-11-06T02:00:00.000Z",
       "refreshStage": "T-90m",
-      "frozen": false
+      "frozen": true,
+      "frozenAt": "2026-11-06T02:20:12.564Z"
     },
     {
       "fixtureId": "durango-leones-negros-udg-2026-11-06",
@@ -823647,10 +823648,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-11-06T01:30:23.665Z",
-      "calculatedAt": "2026-11-06T01:30:22.227Z",
-      "expiresAt": "2026-11-06T01:35:00.000Z",
-      "refreshStage": "T-6h",
+      "providerUpdatedAt": "2026-11-06T02:20:13.166Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T03:05:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -823720,10 +823721,10 @@
       "marketConsensus": null,
       "modelInputs": null,
       "fallbackChain": [],
-      "providerUpdatedAt": "2026-11-06T01:30:23.797Z",
-      "calculatedAt": "2026-11-06T01:30:22.227Z",
-      "expiresAt": "2026-11-06T01:40:00.000Z",
-      "refreshStage": "T-6h",
+      "providerUpdatedAt": "2026-11-06T02:20:13.379Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T03:10:00.000Z",
+      "refreshStage": "T-90m",
       "frozen": false
     },
     {
@@ -823790,91 +823791,66 @@
       "awayTeam": "Wellington Phoenix W",
       "homeTeamId": "1972",
       "awayTeamId": "17905",
-      "source": "futbolradar_model",
-      "homeProbability": 43,
-      "drawProbability": 24,
-      "awayProbability": 33,
+      "source": "provider_prediction",
+      "homeProbability": 35,
+      "drawProbability": 35,
+      "awayProbability": 30,
       "predictedWinner": {
-        "id": null,
+        "id": "1972",
         "name": "Adelaide United W",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Adelaide United W or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.76",
-        "away": "1.43"
+        "home": "-1.5",
+        "away": "-1.5"
       },
-      "comparison": null,
-      "confidence": 11,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.76,
-        "away": 1.43
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 62,
-        "under": 38
-      },
-      "bothTeamsScore": 63,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.45,
-        "baselineSampleSize": 5,
-        "home": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 1.06,
-          "defenseStrength": 1.06,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 67,
+          "away": 33
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.94,
-          "defenseStrength": 1.06,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 50,
+          "away": 50
+        },
+        "def": {
+          "home": 56,
+          "away": 44
+        },
+        "poisson_distribution": {
+          "home": 0,
+          "away": 0
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 40,
+          "away": 60
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 43,
+          "away": 57
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 51.2,
+          "away": 48.8
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-11-05T10:45:49.384Z",
-      "expiresAt": "2026-11-06T02:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:13.512Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T06:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -823888,91 +823864,66 @@
       "awayTeam": "Deren",
       "homeTeamId": "24722",
       "awayTeamId": "16185",
-      "source": "futbolradar_model",
-      "homeProbability": 65,
-      "drawProbability": 17,
-      "awayProbability": 18,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
-        "name": "Hunters",
-        "side": "home",
-        "comment": null
+        "id": "16185",
+        "name": "Deren",
+        "comment": "Win or draw"
       },
-      "advice": null,
-      "underOver": null,
+      "advice": "Combo Double chance : draw or Deren and +2.5 goals",
+      "underOver": "+2.5",
       "predictedGoals": {
-        "home": "2.96",
-        "away": "1.31"
+        "home": "-3.5",
+        "away": "-3.5"
       },
-      "comparison": null,
-      "confidence": 40,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.96,
-        "away": 1.31
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 80,
-        "under": 20
-      },
-      "bothTeamsScore": 69,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "blended",
-        "baselinePull": 0.3,
-        "baselineSampleSize": 5,
-        "home": {
-          "matches": 6,
-          "venueMatches": 3,
-          "attackStrength": 1.5,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 0,
-          "winRate": 1,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 46,
+          "away": 54
         },
-        "away": {
-          "matches": 3,
-          "venueMatches": 1,
-          "attackStrength": 1.25,
-          "defenseStrength": 1.08,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.33,
-          "cleanSheetRate": 0.33,
-          "winRate": 0.33,
-          "absences": null
+        "att": {
+          "home": 54,
+          "away": 46
+        },
+        "def": {
+          "home": 23,
+          "away": 77
+        },
+        "poisson_distribution": {
+          "home": 30,
+          "away": 70
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 7,
+          "away": 93
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 17,
+          "away": 83
         },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
+        "total": {
+          "home": 29.5,
+          "away": 70.5
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-11-05T10:45:49.384Z",
-      "expiresAt": "2026-11-06T02:00:00.000Z",
-      "refreshStage": "T-24h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:13.647Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T06:30:00.000Z",
+      "refreshStage": "T-6h",
       "frozen": false
     },
     {
@@ -835323,6 +835274,79 @@
       "frozen": false
     },
     {
+      "fixtureId": "kun-khalifat-fc-kano-pillars-2026-11-06",
+      "providerFixtureId": "1628586",
+      "competitionId": "npfl",
+      "leagueId": "399",
+      "season": null,
+      "kickoff": "2026-11-06T18:00:00+03:00",
+      "homeTeam": "Kun Khalifat FC",
+      "awayTeam": "Kano Pillars",
+      "homeTeamId": "26401",
+      "awayTeamId": "5183",
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
+      "predictedWinner": {
+        "id": "26401",
+        "name": "Kun Khalifat FC",
+        "comment": "Win or draw"
+      },
+      "advice": "Combo Double chance : Kun Khalifat FC or draw and -3.5 goals",
+      "underOver": "-3.5",
+      "predictedGoals": {
+        "home": "-1.5",
+        "away": "-1.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 47,
+          "away": 53
+        },
+        "att": {
+          "home": 57,
+          "away": 43
+        },
+        "def": {
+          "home": 57,
+          "away": 43
+        },
+        "poisson_distribution": {
+          "home": 63,
+          "away": 37
+        },
+        "h2h": {
+          "home": 50,
+          "away": 50
+        },
+        "goals": {
+          "home": 50,
+          "away": 50
+        },
+        "total": {
+          "home": 54,
+          "away": 46
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:13.785Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T09:00:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
       "fixtureId": "necaxa-u21-club-tijuana-u21-2026-11-06",
       "providerFixtureId": "1592915",
       "competitionId": "liga-mx-u21",
@@ -836082,104 +836106,6 @@
           "pointsPerGame": 2.5,
           "cleanSheetRate": 0.25,
           "winRate": 0.75,
-          "absences": null
-        },
-        "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
-        },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
-        },
-        {
-          "source": "market_probability",
-          "reason": "request-budget-exhausted"
-        }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-11-05T20:37:36.370Z",
-      "expiresAt": "2026-11-06T10:00:00.000Z",
-      "refreshStage": "T-24h",
-      "frozen": false
-    },
-    {
-      "fixtureId": "celaya-2-deportivo-ayense-2026-11-06",
-      "providerFixtureId": "1631635",
-      "competitionId": "liga-premier-serie-b",
-      "leagueId": "872",
-      "season": null,
-      "kickoff": "2026-11-06T19:00:00+03:00",
-      "homeTeam": "Celaya 2",
-      "awayTeam": "Deportivo Ayense",
-      "homeTeamId": "28297",
-      "awayTeamId": "22054",
-      "source": "futbolradar_model",
-      "homeProbability": 48,
-      "drawProbability": 27,
-      "awayProbability": 25,
-      "predictedWinner": {
-        "id": null,
-        "name": "Celaya 2",
-        "side": "home",
-        "comment": null
-      },
-      "advice": null,
-      "underOver": null,
-      "predictedGoals": {
-        "home": "1.28",
-        "away": "0.76"
-      },
-      "comparison": null,
-      "confidence": 21,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.28,
-        "away": 0.76
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 34,
-        "under": 66
-      },
-      "bothTeamsScore": 39,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "blended",
-        "baselinePull": 0.4,
-        "baselineSampleSize": 5,
-        "home": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 1.04,
-          "defenseStrength": 0.95,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 2,
-          "cleanSheetRate": 0,
-          "winRate": 0.5,
-          "absences": null
-        },
-        "away": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 0.65,
-          "defenseStrength": 0.73,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0.5,
-          "cleanSheetRate": 0.5,
-          "winRate": 0,
           "absences": null
         },
         "h2h": {
@@ -849141,6 +849067,79 @@
       "frozen": false
     },
     {
+      "fixtureId": "rfc-de-liege-u21-lierse-k-u21-2026-11-06",
+      "providerFixtureId": "1611698",
+      "competitionId": "reserve-pro-league",
+      "leagueId": "518",
+      "season": null,
+      "kickoff": "2026-11-06T22:00:00+03:00",
+      "homeTeam": "RFC de Liege U21",
+      "awayTeam": "Lierse K. U21",
+      "homeTeamId": "22200",
+      "awayTeamId": "18387",
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
+      "predictedWinner": {
+        "id": "18387",
+        "name": "Lierse K. U21",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : draw or Lierse K. U21",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-3.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 44,
+          "away": 56
+        },
+        "att": {
+          "home": 25,
+          "away": 75
+        },
+        "def": {
+          "home": 52,
+          "away": 48
+        },
+        "poisson_distribution": {
+          "home": 54,
+          "away": 46
+        },
+        "h2h": {
+          "home": 20,
+          "away": 80
+        },
+        "goals": {
+          "home": 29,
+          "away": 71
+        },
+        "total": {
+          "home": 37.3,
+          "away": 62.7
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:13.923Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T13:00:00.000Z",
+      "refreshStage": "T-24h",
+      "frozen": false
+    },
+    {
       "fixtureId": "rwdm-u21-kortrijk-u21-2026-11-06",
       "providerFixtureId": "1611652",
       "competitionId": "reserve-pro-league",
@@ -857424,91 +857423,66 @@
       "awayTeam": "ADR Jicaral",
       "homeTeamId": "821",
       "awayTeamId": "2043",
-      "source": "futbolradar_model",
-      "homeProbability": 41,
-      "drawProbability": 27,
-      "awayProbability": 32,
+      "source": "provider_prediction",
+      "homeProbability": 45,
+      "drawProbability": 45,
+      "awayProbability": 10,
       "predictedWinner": {
-        "id": null,
+        "id": "821",
         "name": "Guadalupe FC",
-        "side": "home",
-        "comment": null
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : Guadalupe FC or draw",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.17",
-        "away": "1.15"
+        "home": "-1.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 24,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.17,
-        "away": 1.15
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 41,
-        "under": 59
-      },
-      "bothTeamsScore": 47,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "blended",
-        "baselinePull": 0.38,
-        "baselineSampleSize": 7,
-        "home": {
-          "matches": 3,
-          "venueMatches": 1,
-          "attackStrength": 1.09,
-          "defenseStrength": 0.65,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 0.67,
-          "winRate": 1,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 56,
+          "away": 44
         },
-        "away": {
-          "matches": 2,
-          "venueMatches": 1,
-          "attackStrength": 1.5,
-          "defenseStrength": 0.65,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 0.5,
-          "winRate": 1,
-          "absences": null
+        "att": {
+          "home": 47,
+          "away": 53
+        },
+        "def": {
+          "home": 50,
+          "away": 50
+        },
+        "poisson_distribution": {
+          "home": 4,
+          "away": 96
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 71,
+          "away": 29
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 75,
+          "away": 25
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 50.5,
+          "away": 49.5
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-11-06T01:30:22.227Z",
-      "expiresAt": "2026-11-06T02:00:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:14.052Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T20:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -857522,91 +857496,66 @@
       "awayTeam": "Suchitepéquez",
       "homeTeamId": "3662",
       "awayTeamId": "3653",
-      "source": "futbolradar_model",
-      "homeProbability": 61,
-      "drawProbability": 21,
-      "awayProbability": 18,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
-        "name": "Guastatoya",
-        "side": "home",
-        "comment": null
+        "id": "3653",
+        "name": "Suchitepéquez",
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : draw or Suchitepéquez",
       "underOver": null,
       "predictedGoals": {
-        "home": "2.1",
-        "away": "0.8"
+        "home": "-2.5",
+        "away": "-2.5"
       },
-      "comparison": null,
-      "confidence": 37,
-      "dataBasis": "team-history",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 2.1,
-        "away": 0.8
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 55,
-        "under": 45
-      },
-      "bothTeamsScore": 48,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "team-history",
-        "baselineStatus": "blended",
-        "baselinePull": 0.32,
-        "baselineSampleSize": 19,
-        "home": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 0.89,
-          "defenseStrength": 0.85,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.25,
-          "cleanSheetRate": 0,
-          "winRate": 0.25,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 38,
+          "away": 63
         },
-        "away": {
-          "matches": 4,
-          "venueMatches": 2,
-          "attackStrength": 0.75,
-          "defenseStrength": 1.39,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 0.5,
-          "cleanSheetRate": 0,
-          "winRate": 0,
-          "absences": null
+        "att": {
+          "home": 40,
+          "away": 60
+        },
+        "def": {
+          "home": 50,
+          "away": 50
+        },
+        "poisson_distribution": {
+          "home": 75,
+          "away": 25
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 38,
+          "away": 62
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 50,
+          "away": 50
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 48.5,
+          "away": 51.7
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-11-06T01:30:22.227Z",
-      "expiresAt": "2026-11-06T02:00:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:14.208Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T20:00:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -857620,91 +857569,66 @@
       "awayTeam": "Monterrey W",
       "homeTeamId": "14869",
       "awayTeamId": "14879",
-      "source": "futbolradar_model",
-      "homeProbability": 40,
-      "drawProbability": 27,
-      "awayProbability": 33,
+      "source": "provider_prediction",
+      "homeProbability": 10,
+      "drawProbability": 45,
+      "awayProbability": 45,
       "predictedWinner": {
-        "id": null,
-        "name": "Juárez W",
-        "side": "home",
-        "comment": null
+        "id": "14879",
+        "name": "Monterrey W",
+        "comment": "Win or draw"
       },
-      "advice": null,
+      "advice": "Double chance : draw or Monterrey W",
       "underOver": null,
       "predictedGoals": {
-        "home": "1.15",
-        "away": "1.08"
+        "home": "-2.5",
+        "away": "-3.5"
       },
-      "comparison": null,
-      "confidence": 12,
-      "dataBasis": "competition-baseline",
-      "baselineScope": "competition",
-      "missingHistory": {
-        "home": false,
-        "away": false
-      },
-      "modelVersion": "futbolradar-probability-v1",
-      "expectedGoals": {
-        "home": 1.15,
-        "away": 1.08
-      },
-      "modelUnderOver": {
-        "line": 2.5,
-        "over": 38,
-        "under": 62
-      },
-      "bothTeamsScore": 45,
-      "marketConsensus": null,
-      "modelInputs": {
-        "dataBasis": "competition-baseline",
-        "baselineStatus": "blended",
-        "baselinePull": 0.44,
-        "baselineSampleSize": 10,
-        "home": {
-          "matches": 2,
-          "venueMatches": 0,
-          "attackStrength": 0.91,
-          "defenseStrength": 0.91,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 1.5,
-          "cleanSheetRate": 0,
-          "winRate": 0.5,
-          "absences": null
+      "comparison": {
+        "form": {
+          "home": 48,
+          "away": 52
         },
-        "away": {
-          "matches": 1,
-          "venueMatches": 0,
-          "attackStrength": 0.95,
-          "defenseStrength": 0.82,
-          "formDelta": 0,
-          "rank": null,
-          "pointsPerGame": 3,
-          "cleanSheetRate": 1,
-          "winRate": 1,
-          "absences": null
+        "att": {
+          "home": 42,
+          "away": 58
+        },
+        "def": {
+          "home": 55,
+          "away": 45
+        },
+        "poisson_distribution": {
+          "home": 53,
+          "away": 47
         },
         "h2h": {
-          "sampleSize": 0,
-          "averageGoalDifference": null
+          "home": 38,
+          "away": 62
         },
-        "rankDelta": null
-      },
-      "fallbackChain": [
-        {
-          "source": "provider_prediction",
-          "reason": "unavailable"
+        "goals": {
+          "home": 44,
+          "away": 56
         },
-        {
-          "source": "market_probability",
-          "reason": "outside-market-refresh-window"
+        "total": {
+          "home": 46.7,
+          "away": 53.3
         }
-      ],
-      "providerUpdatedAt": null,
-      "calculatedAt": "2026-11-06T01:30:22.227Z",
-      "expiresAt": "2026-11-06T02:10:00.000Z",
-      "refreshStage": "T-72h",
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:14.336Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T20:10:00.000Z",
+      "refreshStage": "T-24h",
       "frozen": false
     },
     {
@@ -982462,6 +982386,104 @@
       "frozen": false
     },
     {
+      "fixtureId": "independente-simao-dias-frei-paulistano-2026-11-07",
+      "providerFixtureId": "1647098",
+      "competitionId": "sergipano-2",
+      "leagueId": "1135",
+      "season": null,
+      "kickoff": "2026-11-07T21:00:00+03:00",
+      "homeTeam": "Independente Simão Dias",
+      "awayTeam": "Frei Paulistano",
+      "homeTeamId": "24813",
+      "awayTeamId": "10001",
+      "source": "futbolradar_model",
+      "homeProbability": 33,
+      "drawProbability": 30,
+      "awayProbability": 37,
+      "predictedWinner": {
+        "id": null,
+        "name": "Frei Paulistano",
+        "side": "away",
+        "comment": null
+      },
+      "advice": null,
+      "underOver": null,
+      "predictedGoals": {
+        "home": "0.69",
+        "away": "0.98"
+      },
+      "comparison": null,
+      "confidence": 12,
+      "dataBasis": "competition-baseline",
+      "baselineScope": "competition",
+      "missingHistory": {
+        "home": false,
+        "away": false
+      },
+      "modelVersion": "futbolradar-probability-v1",
+      "expectedGoals": {
+        "home": 0.69,
+        "away": 0.98
+      },
+      "modelUnderOver": {
+        "line": 2.5,
+        "over": 23,
+        "under": 77
+      },
+      "bothTeamsScore": 31,
+      "marketConsensus": null,
+      "modelInputs": {
+        "dataBasis": "competition-baseline",
+        "baselineStatus": "blended",
+        "baselinePull": 0.44,
+        "baselineSampleSize": 3,
+        "home": {
+          "matches": 1,
+          "venueMatches": 1,
+          "attackStrength": 0.66,
+          "defenseStrength": 0.66,
+          "formDelta": 0,
+          "rank": null,
+          "pointsPerGame": 1,
+          "cleanSheetRate": 1,
+          "winRate": 0,
+          "absences": null
+        },
+        "away": {
+          "matches": 1,
+          "venueMatches": 1,
+          "attackStrength": 1.13,
+          "defenseStrength": 0.66,
+          "formDelta": 0,
+          "rank": null,
+          "pointsPerGame": 3,
+          "cleanSheetRate": 1,
+          "winRate": 1,
+          "absences": null
+        },
+        "h2h": {
+          "sampleSize": 0,
+          "averageGoalDifference": null
+        },
+        "rankDelta": null
+      },
+      "fallbackChain": [
+        {
+          "source": "provider_prediction",
+          "reason": "provider-percentages-unusable:zero-outcome"
+        },
+        {
+          "source": "market_probability",
+          "reason": "outside-market-refresh-window"
+        }
+      ],
+      "providerUpdatedAt": null,
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T18:00:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
       "fixtureId": "irapuato-ii-gorilas-de-juanacatlan-2026-11-07",
       "providerFixtureId": "1631636",
       "competitionId": "liga-premier-serie-b",
@@ -991572,6 +991594,79 @@
       "providerUpdatedAt": null,
       "calculatedAt": "2026-11-06T01:30:22.227Z",
       "expiresAt": "2026-11-06T20:30:00.000Z",
+      "refreshStage": "T-72h",
+      "frozen": false
+    },
+    {
+      "fixtureId": "celaya-2-deportivo-ayense-2026-11-06",
+      "providerFixtureId": "1631635",
+      "competitionId": "liga-premier-serie-b",
+      "leagueId": "872",
+      "season": null,
+      "kickoff": "2026-11-08T00:30:00+03:00",
+      "homeTeam": "Celaya 2",
+      "awayTeam": "Deportivo Ayense",
+      "homeTeamId": "28297",
+      "awayTeamId": "22054",
+      "source": "provider_prediction",
+      "homeProbability": 35,
+      "drawProbability": 35,
+      "awayProbability": 30,
+      "predictedWinner": {
+        "id": "28297",
+        "name": "Celaya 2",
+        "comment": "Win or draw"
+      },
+      "advice": "Double chance : Celaya 2 or draw",
+      "underOver": null,
+      "predictedGoals": {
+        "home": "-2.5",
+        "away": "-2.5"
+      },
+      "comparison": {
+        "form": {
+          "home": 71,
+          "away": 29
+        },
+        "att": {
+          "home": 41,
+          "away": 59
+        },
+        "def": {
+          "home": 38,
+          "away": 62
+        },
+        "poisson_distribution": {
+          "home": 69,
+          "away": 31
+        },
+        "h2h": {
+          "home": 0,
+          "away": 0
+        },
+        "goals": {
+          "home": 0,
+          "away": 0
+        },
+        "total": {
+          "home": 54.8,
+          "away": 45.3
+        }
+      },
+      "confidence": null,
+      "dataBasis": null,
+      "baselineScope": null,
+      "missingHistory": null,
+      "modelVersion": null,
+      "expectedGoals": null,
+      "modelUnderOver": null,
+      "bothTeamsScore": null,
+      "marketConsensus": null,
+      "modelInputs": null,
+      "fallbackChain": [],
+      "providerUpdatedAt": "2026-11-06T02:20:14.623Z",
+      "calculatedAt": "2026-11-06T02:20:12.564Z",
+      "expiresAt": "2026-11-06T21:30:00.000Z",
       "refreshStage": "T-72h",
       "frozen": false
     },

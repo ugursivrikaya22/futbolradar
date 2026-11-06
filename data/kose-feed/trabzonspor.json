@@ -12,7 +12,7 @@
       "tarihce": "https://www.futbolradar.com/takimlar/trabzonspor/tarihce.html"
     }
   },
-  "dataDate": "2026-10-19",
+  "dataDate": "2026-11-05",
   "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
   "form": {
     "league": {
@@ -21,7 +21,7 @@
         "G",
         "G",
         "G",
-        "M",
+        "G",
         "G"
       ],
       "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
@@ -31,11 +31,28 @@
     "allCompetitions": {
       "status": "ok",
       "last": [
+        "M",
+        "G",
         "G",
         "G",
         "G"
       ],
       "matches": [
+        {
+          "id": "trabzonspor-sc-freiburg-2026-11-05",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1636476"
+        },
+        {
+          "id": "trabzonspor-gaziantep-fk-2026-11-01",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584456"
+        },
+        {
+          "id": "caykur-rizespor-trabzonspor-2026-10-26",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584446"
+        },
         {
           "id": "trabzonspor-besiktas-2026-10-19",
           "result": "G",
@@ -45,11 +62,6 @@
           "id": "kups-trabzonspor-2026-10-15",
           "result": "G",
           "sourceUrl": "https://www.thesportsdb.com/event/2594787"
-        },
-        {
-          "id": "trabzonspor-genclerbirligi-2026-09-06",
-          "result": "G",
-          "sourceUrl": "https://www.fotomac.com.tr/superlig/2026/09/06/canli-trabzonspor-genclerbirligi-maci-saat-kacta-hangi-kanalda"
         }
       ]
     }
@@ -57,49 +69,60 @@
   "standings": {
     "status": "ok",
     "season": "2026/27",
-    "rank": 4,
-    "played": 8,
-    "won": 5,
+    "rank": 3,
+    "played": 10,
+    "won": 7,
     "drawn": 1,
     "lost": 2,
-    "goalsFor": 18,
-    "goalsAgainst": 5,
-    "goalDifference": 13,
-    "points": 16,
-    "syncedAt": "2026-10-19T21:29:03.036Z",
+    "goalsFor": 24,
+    "goalsAgainst": 8,
+    "goalDifference": 16,
+    "points": 22,
+    "syncedAt": "2026-11-05T00:52:14.371Z",
     "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
     "sourceName": "API-Football /standings"
   },
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 3,
-      "won": 3,
+      "matches": 6,
+      "won": 5,
       "drawn": 0,
-      "lost": 0,
-      "goalsFor": 11,
-      "goalsAgainst": 2,
+      "lost": 1,
+      "goalsFor": 17,
+      "goalsAgainst": 6,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "Mohamed Salah",
-        "rank": 2,
-        "goals": 7,
+        "rank": 3,
+        "goals": 8,
         "assists": 3,
-        "appearances": 7,
-        "minutes": 558,
+        "appearances": 10,
+        "minutes": 824,
         "profile": "https://www.futbolradar.com/futbolcu/mohamed-salah",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
       },
       {
-        "name": "E. Muçi",
-        "rank": 17,
-        "goals": 2,
+        "name": "Franculino Djú",
+        "rank": 11,
+        "goals": 4,
         "assists": 2,
         "appearances": 6,
-        "minutes": 377,
+        "minutes": 375,
+        "profile": "https://www.futbolradar.com/futbolcu/franculino-dju",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
+        "sourceName": "API-Football /players/topscorers"
+      },
+      {
+        "name": "E. Muçi",
+        "rank": 19,
+        "goals": 3,
+        "assists": 6,
+        "appearances": 9,
+        "minutes": 629,
         "profile": "https://www.futbolradar.com/futbolcu/ernest-muci",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
@@ -107,24 +130,35 @@
     ],
     "topAssists": [
       {
+        "name": "E. Muçi",
+        "rank": 1,
+        "goals": 3,
+        "assists": 6,
+        "appearances": 9,
+        "minutes": 629,
+        "profile": "https://www.futbolradar.com/futbolcu/ernest-muci",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
         "name": "Mohamed Salah",
-        "rank": 6,
-        "goals": 7,
+        "rank": 11,
+        "goals": 8,
         "assists": 3,
-        "appearances": 7,
-        "minutes": 558,
+        "appearances": 10,
+        "minutes": 824,
         "profile": "https://www.futbolradar.com/futbolcu/mohamed-salah",
         "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
         "sourceName": "API-Football /players/topassists"
       },
       {
-        "name": "E. Muçi",
-        "rank": 7,
-        "goals": 2,
+        "name": "Franculino Djú",
+        "rank": 13,
+        "goals": 4,
         "assists": 2,
         "appearances": 6,
-        "minutes": 377,
-        "profile": "https://www.futbolradar.com/futbolcu/ernest-muci",
+        "minutes": 375,
+        "profile": "https://www.futbolradar.com/futbolcu/franculino-dju",
         "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
         "sourceName": "API-Football /players/topassists"
       }
@@ -134,6 +168,69 @@
     "status": "ok",
     "excludedWithoutSource": 10,
     "items": [
+      {
+        "id": "trabzonspor-sc-freiburg-2026-11-05",
+        "date": "2026-11-05",
+        "kickoff": "2026-11-05T20:45:00+03:00",
+        "competition": "Konferans Ligi",
+        "venue": "İç saha",
+        "stadium": "Papara Park",
+        "homeTeam": "Trabzonspor",
+        "awayTeam": "SC Freiburg",
+        "opponent": "SC Freiburg",
+        "score": {
+          "home": 0,
+          "away": 1
+        },
+        "goalsFor": 0,
+        "goalsAgainst": 1,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/trabzonspor-sc-freiburg-2026-11-05.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1636476",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "trabzonspor-gaziantep-fk-2026-11-01",
+        "date": "2026-11-01",
+        "kickoff": "2026-11-01T16:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Papara Park",
+        "homeTeam": "Trabzonspor",
+        "awayTeam": "Gaziantep FK",
+        "opponent": "Gaziantep FK",
+        "score": {
+          "home": 2,
+          "away": 0
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/trabzonspor-gaziantep-fk-2026-11-01.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584456",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "caykur-rizespor-trabzonspor-2026-10-26",
+        "date": "2026-10-26",
+        "kickoff": "2026-10-26T19:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Çaykur Didi Stadyumu",
+        "homeTeam": "Çaykur Rizespor",
+        "awayTeam": "Trabzonspor",
+        "opponent": "Çaykur Rizespor",
+        "score": {
+          "home": 3,
+          "away": 4
+        },
+        "goalsFor": 4,
+        "goalsAgainst": 3,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/caykur-rizespor-trabzonspor-2026-10-26.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584446",
+        "sourceType": "api-football"
+      },
       {
         "id": "trabzonspor-besiktas-2026-10-19",
         "date": "2026-10-19",
@@ -202,8 +299,8 @@
   "squad": {
     "status": "ok",
     "season": "2026",
-    "syncedAt": "2026-10-19T06:07:25.552Z",
-    "count": 34,
+    "syncedAt": "2026-11-06T02:20:47.983Z",
+    "count": 33,
     "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=998",
     "sourceName": "API-Football /players/squads",
     "players": [
@@ -371,8 +468,8 @@
       },
       {
         "name": "M. Kabasakal",
-        "position": "Defender",
-        "positionTr": "Defans",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
         "age": 29,
         "number": null,
         "providerId": "158431",
@@ -412,15 +509,6 @@
         "age": 30,
         "number": null,
         "providerId": "49942",
-        "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=998"
-      },
-      {
-        "name": "O. Yokuşlu",
-        "position": "Midfielder",
-        "positionTr": "Orta saha",
-        "age": 31,
-        "number": null,
-        "providerId": "47443",
         "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=998"
       },
       {
@@ -488,8 +576,8 @@
       },
       {
         "name": "Mohamed Salah",
-        "position": "Attacker",
-        "positionTr": "Forvet",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
         "age": 33,
         "number": null,
         "providerId": "306",
@@ -497,8 +585,8 @@
       },
       {
         "name": "N. Saviolo",
-        "position": "Attacker",
-        "positionTr": "Forvet",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
         "age": 22,
         "number": null,
         "providerId": "454973",
