@@ -12,17 +12,17 @@
       "tarihce": "https://www.futbolradar.com/takimlar/besiktas/tarihce.html"
     }
   },
-  "dataDate": "2026-10-19",
+  "dataDate": "2026-11-05",
   "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
   "form": {
     "league": {
       "status": "ok",
       "last": [
-        "M",
+        "B",
         "G",
         "M",
         "G",
-        "G"
+        "M"
       ],
       "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
       "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
@@ -32,12 +32,27 @@
       "status": "ok",
       "last": [
         "M",
+        "B",
         "G",
-        "G",
-        "G",
+        "M",
         "G"
       ],
       "matches": [
+        {
+          "id": "celtic-besiktas-2026-11-05",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1636250"
+        },
+        {
+          "id": "kasimpasa-besiktas-2026-11-01",
+          "result": "B",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584453"
+        },
+        {
+          "id": "besiktas-basaksehir-2026-10-26",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584440"
+        },
         {
           "id": "trabzonspor-besiktas-2026-10-19",
           "result": "M",
@@ -47,21 +62,6 @@
           "id": "hoffenheim-besiktas-2026-10-15",
           "result": "G",
           "sourceUrl": "https://www.thesportsdb.com/event/2594833"
-        },
-        {
-          "id": "besiktas-erzurumspor-fk-2026-09-11",
-          "result": "G",
-          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584405"
-        },
-        {
-          "id": "midtjylland-besiktas-2026-07-30",
-          "result": "G",
-          "sourceUrl": "https://www.hurriyet.com.tr/sporarena/midtjylland-0-2-besiktas-uefa-avrupa-ligi-maci-ozeti-43256213"
-        },
-        {
-          "id": "besiktas-midtjylland-2026-07-23",
-          "result": "G",
-          "sourceUrl": "https://bjk.com.tr/tr/mobil/haber?news_id=94748"
         }
       ]
     }
@@ -69,38 +69,38 @@
   "standings": {
     "status": "ok",
     "season": "2026/27",
-    "rank": 5,
-    "played": 8,
-    "won": 5,
-    "drawn": 0,
+    "rank": 4,
+    "played": 10,
+    "won": 6,
+    "drawn": 1,
     "lost": 3,
-    "goalsFor": 16,
-    "goalsAgainst": 10,
-    "goalDifference": 6,
-    "points": 15,
-    "syncedAt": "2026-10-19T21:29:03.036Z",
+    "goalsFor": 20,
+    "goalsAgainst": 12,
+    "goalDifference": 8,
+    "points": 19,
+    "syncedAt": "2026-11-05T00:52:14.371Z",
     "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
     "sourceName": "API-Football /standings"
   },
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 6,
-      "won": 4,
-      "drawn": 0,
-      "lost": 2,
-      "goalsFor": 11,
-      "goalsAgainst": 7,
+      "matches": 9,
+      "won": 5,
+      "drawn": 1,
+      "lost": 3,
+      "goalsFor": 17,
+      "goalsAgainst": 12,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "D. Vlahović",
-        "rank": 5,
-        "goals": 6,
+        "rank": 6,
+        "goals": 7,
         "assists": 0,
-        "appearances": 5,
-        "minutes": 369,
+        "appearances": 8,
+        "minutes": 639,
         "profile": "https://www.futbolradar.com/futbolcu/dusan-vlahovic",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
@@ -109,7 +109,7 @@
     "topAssists": [
       {
         "name": "O. Kökçü",
-        "rank": 13,
+        "rank": 14,
         "goals": 2,
         "assists": 2,
         "appearances": 7,
@@ -124,6 +124,69 @@
     "status": "ok",
     "excludedWithoutSource": 9,
     "items": [
+      {
+        "id": "celtic-besiktas-2026-11-05",
+        "date": "2026-11-05",
+        "kickoff": "2026-11-05T23:00:00+03:00",
+        "competition": "Avrupa Ligi",
+        "venue": "Deplasman",
+        "stadium": "Celtic Park",
+        "homeTeam": "Celtic",
+        "awayTeam": "Beşiktaş",
+        "opponent": "Celtic",
+        "score": {
+          "home": 3,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 3,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/celtic-besiktas-2026-11-05.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1636250",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "kasimpasa-besiktas-2026-11-01",
+        "date": "2026-11-01",
+        "kickoff": "2026-11-01T19:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Recep Tayyip Erdogan Stadium",
+        "homeTeam": "Kasımpaşa",
+        "awayTeam": "Beşiktaş",
+        "opponent": "Kasımpaşa",
+        "score": {
+          "home": 2,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 2,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/kasimpasa-besiktas-2026-11-01.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584453",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "besiktas-basaksehir-2026-10-26",
+        "date": "2026-10-26",
+        "kickoff": "2026-10-26T19:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Tüpraş Stadyumu",
+        "homeTeam": "Beşiktaş",
+        "awayTeam": "Başakşehir",
+        "opponent": "Başakşehir",
+        "score": {
+          "home": 2,
+          "away": 0
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/besiktas-basaksehir-2026-10-26.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584440",
+        "sourceType": "api-football"
+      },
       {
         "id": "trabzonspor-besiktas-2026-10-19",
         "date": "2026-10-19",
@@ -255,7 +318,7 @@
   "squad": {
     "status": "ok",
     "season": "2026",
-    "syncedAt": "2026-10-19T06:07:25.198Z",
+    "syncedAt": "2026-11-06T02:20:47.607Z",
     "count": 31,
     "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=549",
     "sourceName": "API-Football /players/squads",
@@ -451,8 +514,8 @@
       },
       {
         "name": "I. Fakili",
-        "position": "Midfielder",
-        "positionTr": "Orta saha",
+        "position": "Attacker",
+        "positionTr": "Forvet",
         "age": 19,
         "number": null,
         "providerId": "446824",
@@ -505,8 +568,8 @@
       },
       {
         "name": "M. Rashica",
-        "position": "Attacker",
-        "positionTr": "Forvet",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
         "age": 29,
         "number": null,
         "providerId": "25324",
@@ -543,16 +606,72 @@
   },
   "history": {
     "founded": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "date": "1903",
+      "text": "1903 yılında",
+      "fullName": "Beşiktaş Jimnastik Kulübü",
+      "note": null,
+      "sourceName": "Beşiktaş resmî sitesi — Hakkında",
+      "sourceUrl": "https://bjk.com.tr/tr/cms/hakkinda/"
     },
     "honours": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "superLigTitles": 16,
+      "superLigSeasons": [
+        "1959-1960",
+        "1965-1966",
+        "1966-1967",
+        "1981-1982",
+        "1985-1986",
+        "1989-1990",
+        "1990-1991",
+        "1991-1992",
+        "1994-1995",
+        "2002-2003",
+        "2008-2009",
+        "2015-2016",
+        "2016-2017",
+        "2020-2021"
+      ],
+      "leagueNote": "TFF, TFF Tahkim Kurulu'nun 09.05.2002 tarihli kararıyla 1956-57 ve 1957-58 Türkiye Ligi şampiyonluklarını da Beşiktaş'ın toplamına katar.",
+      "turkiyeKupasiTitles": 11,
+      "turkiyeKupasiSeasons": [
+        "2023-24",
+        "2020-21",
+        "2010-11",
+        "2008-09",
+        "2006-07",
+        "2005-06",
+        "1997-98",
+        "1993-94",
+        "1989-90",
+        "1988-89",
+        "1974-75"
+      ],
+      "european": [],
+      "coverage": "Süper Lig: 1959–2025-26 · Türkiye Kupası: 1962-63–2025-26",
+      "superLigSource": {
+        "sourceUrl": "https://www.tff.org/default.aspx?pageID=545",
+        "sourceName": "TFF — Süper Lig şampiyonlukları"
+      },
+      "turkiyeKupasiSource": {
+        "sourceUrl": "https://www.tff.org/default.aspx?pageID=411",
+        "sourceName": "TFF — Türkiye Kupası şampiyonları"
+      }
     },
     "stadium": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "name": "Tüpraş Stadyumu",
+      "capacity": null,
+      "note": "11 Nisan 2016'da açıldı",
+      "sourceName": "Beşiktaş resmî sitesi — Tüpraş Stadyumu",
+      "sourceUrl": "https://bjk.com.tr/tr/cms/tesisler/6/106/"
     },
     "colours": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "text": "siyah-beyaz",
+      "sourceName": "Beşiktaş resmî sitesi — Hakkında",
+      "sourceUrl": "https://bjk.com.tr/tr/cms/hakkinda/"
     },
     "currentManager": {
       "status": "ok",

@@ -5,7 +5,7 @@ son 7 günün Süper Lig sonuçları, güncel puan durumu ve köşe yazılarıyl
 İçerik yalnızca mevcut site verisinden (`SITE_URL/data/*.json` + Supabase `columns`) üretilir; LLM ve ek API-Football isteği yoktur.
 
 ## Açılış adımları (sahibi yapar)
-1. **Migrasyon**: Supabase SQL Editor'de `supabase/migrations/0016_newsletter.sql` çalıştır (idempotent, RLS açık, politikasız → yalnızca service role).
+1. **Migrasyon**: Supabase SQL Editor'de `supabase/migrations/0017_newsletter.sql` çalıştır (idempotent, RLS açık, politikasız → yalnızca service role).
 2. **Resend hesabı**: resend.com'da hesap aç, `futbolradar.com` (öneri: `bulten.futbolradar.com` alt alanı) ekle.
 3. **DNS**: Resend'in verdiği SPF (TXT/MX, `send.` alt alanı) ve DKIM (`resend._domainkey` TXT) kayıtlarını ekle; isteğe bağlı DMARC: `_dmarc TXT "v=DMARC1; p=none;"`. Resend panelinde "Verified" olmasını bekle.
 4. **Ortam değişkenleri (Vercel → Production)**:

@@ -3,7 +3,8 @@
  *
  * Sitede tek bir yerde yaşayan dört sorumluluk:
  *   1. Service worker kaydı (`/sw.js`).
- *   2. "Ana ekrana ekle" bandı — üç saniyelik gezinme sonrası, bir kere.
+ *   2. "Ana ekrana ekle" bandı — etkileşim sonrası (2. sayfa, %40 kaydırma
+ *      ya da 25 sn), kapatılırsa 14 gün sessiz.
  *      Android/masaüstü Chrome `beforeinstallprompt` olayını kullanır;
  *      iOS Safari bu olayı hiç ateşlemediği için ayrı, adım adım bir
  *      talimat kartı gösterir (bkz. `showIosInstallCard`).
@@ -24,8 +25,7 @@
   var LS_BANNER_SHOWN = "fr_pwa_banner_shown";
   var LS_FAVORITE_TEAM = "fr_favorite_team";
   var LS_PUSH_SUBSCRIBED_TEAM = "fr_push_subscribed_team";
-  var ENGAGEMENT_MS = 3000;
-
+  
   var TEAMS_WITH_DEDICATED_PAGES = ["besiktas", "fenerbahce", "galatasaray", "trabzonspor"];
 
   function isStandalone() {
@@ -105,21 +105,51 @@
   // ---------------------------------------------------------------------
   // "Ana ekrana ekle" bandı
   // ---------------------------------------------------------------------
+  //
+  // UX / GOOGLE KURALLARI: sayfa açılır açılmaz içeriği örten bir pencere
+  // (intrusive interstitial) YOK. Bant yalnızca kullanıcı siteyle gerçekten
+  // ilgilendikten sonra (ikinci sayfa görüntüleme, sayfanın %40'ını kaydırma
+  // ya da 25 sn) altta, içeriği örtmeyen ince bir şerit olarak çıkar. Kapatılınca
+  // 14 gün boyunca tekrar gösterilmez; kurulum yapılırsa bir daha hiç çıkmaz.
+
+  var LS_BANNER_DISMISSED_AT = "fr_pwa_banner_dismissed_at";
+  var LS_PAGEVIEWS = "fr_pwa_pageviews";
+  var LS_INSTALLED = "fr_pwa_installed";
+  var LS_PUSH_NUDGE_DISMISSED_AT = "fr_push_nudge_dismissed_at";
+  var DISMISS_DAYS = 14;
+  var ENGAGEMENT_FALLBACK_MS = 25000;
 
   var deferredPrompt = null;
   var engagementElapsed = false;
+  var activeBanner = null;
+
+  function dismissedRecently(key) {
+    var at = Number(readLocal(key) || 0);
+    return at > 0 && Date.now() - at < DISMISS_DAYS * 86400000;
+  }
 
   function bannerAlreadyShown() {
-    return readLocal(LS_BANNER_SHOWN) === "1";
+    // Eski sürüm "bir kere gösterildi" bayrağını yazıyordu; onu da bir kapatma
+    // sayıp 14 günlük sayacı bugünden başlatıyoruz (kullanıcının seçimine saygı).
+    if (readLocal(LS_BANNER_SHOWN) === "1" && !readLocal(LS_BANNER_DISMISSED_AT)) {
+      writeLocal(LS_BANNER_DISMISSED_AT, String(Date.now()));
+    }
+    return readLocal(LS_INSTALLED) === "1" || dismissedRecently(LS_BANNER_DISMISSED_AT);
   }
 
   function markBannerShown() {
-    writeLocal(LS_BANNER_SHOWN, "1");
+    /* Gösterim artık kalıcı bir yasak yazmaz; yalnızca kapatma sayılır. */
+  }
+
+  function dismissBanner(toast) {
+    writeLocal(LS_BANNER_DISMISSED_AT, String(Date.now()));
+    if (toast) toast.remove();
+    activeBanner = null;
   }
 
   function showGenericInstallBanner() {
     var toast = showToast(
-      "<div><p>FutbolRadar'ı ana ekranına ekle; canlı skor ve favori takım bildirimlerine hızlı eriş.</p>" +
+      "<div><p><strong>FutbolRadar uygulamasını yükle</strong></p><p>Canlı skorlar tek dokunuşla; favori takımının maç başı, gol ve devre arası bildirimleri.</p>" +
       '<button class="fr-pwa-primary" data-action="install">Ana ekrana ekle</button></div>' +
       '<button class="fr-pwa-dismiss" data-action="dismiss" aria-label="Kapat">✕</button>',
       [
@@ -127,67 +157,127 @@
           selector: '[data-action="install"]',
           onClick: function () {
             toast.remove();
+            activeBanner = null;
             if (deferredPrompt) {
               deferredPrompt.prompt();
-              deferredPrompt.userChoice.finally(function () { deferredPrompt = null; });
+              deferredPrompt.userChoice.then(function (choice) {
+                if (choice && choice.outcome === "accepted") writeLocal(LS_INSTALLED, "1");
+                else writeLocal(LS_BANNER_DISMISSED_AT, String(Date.now()));
+              }).finally(function () { deferredPrompt = null; });
             }
           }
         },
-        { selector: '[data-action="dismiss"]', onClick: function () { toast.remove(); } }
+        { selector: '[data-action="dismiss"]', onClick: function () { dismissBanner(toast); } }
       ]
     );
-    markBannerShown();
+    toast.setAttribute("role", "dialog");
+    toast.setAttribute("aria-label", "Uygulamayı yükle");
+    activeBanner = toast;
   }
 
   /**
    * iOS Safari `beforeinstallprompt` ateşlemez; bu kart onun yerine geçer.
-   * İki ayrı bağlamdan çağrılır: üç saniyelik genel gezinme bandı VE bir
+   * İki ayrı bağlamdan çağrılır: etkileşim sonrası genel bant VE bir
    * kullanıcı henüz ana ekrana eklemeden bildirim açmaya çalıştığında
-   * (bkz. `subscribeToPush`) — ikinci durumda "neden şimdi" bağlamı zaten
-   * belli olduğu için mesaj aynı kalır, yalnızca tetikleyici farklıdır.
+   * (bkz. `subscribeToPush`).
    */
   function showIosInstallCard() {
     var toast = showToast(
-      "<div><p><strong>Ana ekrana ekle</strong></p>" +
+      "<div><p><strong>FutbolRadar'ı ana ekrana ekle</strong></p>" +
       '<ol class="fr-pwa-steps">' +
-      "<li>Altta paylaş simgesine dokun</li>" +
+      "<li>Safari'de alttaki paylaş simgesine (kare ve yukarı ok) dokun</li>" +
       '<li>"Ana Ekrana Ekle" seçeneğini seç</li>' +
       '<li>Sağ üstten "Ekle"ye dokun</li>' +
       "</ol>" +
-      '<p class="fr-pwa-note">Gol ve maç başı bildirimleri iOS\'ta yalnızca ana ekrana eklendikten sonra çalışır.</p></div>' +
+      '<p class="fr-pwa-note">Gol, maç başı ve devre arası bildirimleri iOS\'ta (16.4+) yalnızca ana ekrana eklendikten sonra çalışır.</p></div>' +
       '<button class="fr-pwa-dismiss" data-action="dismiss" aria-label="Kapat">✕</button>',
-      [{ selector: '[data-action="dismiss"]', onClick: function () { toast.remove(); } }]
+      [{ selector: '[data-action="dismiss"]', onClick: function () { dismissBanner(toast); } }]
     );
-    markBannerShown();
+    toast.setAttribute("role", "dialog");
+    toast.setAttribute("aria-label", "Ana ekrana ekleme adımları");
+    activeBanner = toast;
     return toast;
   }
 
   function maybeShowEngagementBanner() {
-    if (bannerAlreadyShown() || isStandalone() || !engagementElapsed) return;
+    if (activeBanner || bannerAlreadyShown() || isStandalone() || !engagementElapsed) return;
     if (isIos()) {
       showIosInstallCard();
     } else if (deferredPrompt) {
       showGenericInstallBanner();
     }
-    // Ne iOS ne de hazır bir `beforeinstallprompt` varsa bu oturumda hiçbir
-    // şey gösterilmez; "bir kere göster" kuralı yalnızca GERÇEKTEN
-    // gösterildiğinde localStorage'a yazılır, böylece hak sonraki bir
-    // ziyarette (örn. olay geç ateşlendiğinde) hâlâ kullanılabilir kalır.
+    // Ne iOS ne de hazır bir `beforeinstallprompt` varsa hiçbir şey
+    // gösterilmez; hak sonraki bir sayfa görüntülemesinde hâlâ kullanılabilir.
+  }
+
+  function markEngaged() {
+    if (engagementElapsed) return;
+    engagementElapsed = true;
+    maybeShowEngagementBanner();
+    maybeShowPushNudge();
   }
 
   function armInstallBanner() {
-    if (bannerAlreadyShown() || isStandalone()) return;
+    window.addEventListener("appinstalled", function () {
+      writeLocal(LS_INSTALLED, "1");
+      if (activeBanner) activeBanner.remove();
+      activeBanner = null;
+    });
+    if (isStandalone()) {
+      writeLocal(LS_INSTALLED, "1");
+      return;
+    }
+
+    var views = Number(readLocal(LS_PAGEVIEWS) || 0) + 1;
+    writeLocal(LS_PAGEVIEWS, String(views));
 
     window.addEventListener("beforeinstallprompt", function (event) {
+      if (bannerAlreadyShown()) return;
       event.preventDefault();
       deferredPrompt = event;
       maybeShowEngagementBanner();
     });
 
-    window.setTimeout(function () {
-      engagementElapsed = true;
-      maybeShowEngagementBanner();
-    }, ENGAGEMENT_MS);
+    if (views >= 2) {
+      // İkinci sayfa: kısa bir gecikmeyle (içerik önce görünsün).
+      window.setTimeout(markEngaged, 4000);
+    }
+    window.addEventListener("scroll", function onScroll() {
+      var doc = document.documentElement;
+      var max = (doc.scrollHeight || 0) - window.innerHeight;
+      if (max > 0 && window.scrollY / max >= 0.4) {
+        window.removeEventListener("scroll", onScroll);
+        markEngaged();
+      }
+    }, { passive: true });
+    window.setTimeout(markEngaged, ENGAGEMENT_FALLBACK_MS);
+  }
+
+  /**
+   * BİLDİRİM DÜRTMESİ: tarayıcı izin penceresi ASLA kendiliğinden açılmaz.
+   * Yalnızca (a) VAPID anahtarı gömülüyse, (b) izin henüz sorulmamışsa,
+   * (c) kullanıcı abone değilse ve (d) ana ekrana kurulmuş uygulamada ya da
+   * favori takım seçmiş bir ziyaretçide küçük bir kart gösterilir; "Aç"
+   * düğmesi 🔔 panelini açar, izin isteği oradaki tıklamayla gelir.
+   */
+  function maybeShowPushNudge() {
+    if (activeBanner || !vapidPublicKey()) return;
+    if (typeof Notification === "undefined" || Notification.permission !== "default") return;
+    if (readLocal(LS_PUSH_SUBSCRIBED_TEAM) || dismissedRecently(LS_PUSH_NUDGE_DISMISSED_AT)) return;
+    if (isIos() && !isStandalone()) return;
+    if (!isStandalone() && !readLocal(LS_FAVORITE_TEAM)) return;
+    var toast = showToast(
+      "<div><p><strong>Maç bildirimlerini aç</strong></p><p>Takip ettiğin takım ve maçlar için maç başı, gol ve devre arası bildirimi.</p>" +
+      '<button class="fr-pwa-primary" data-action="open">Bildirimleri ayarla</button></div>' +
+      '<button class="fr-pwa-dismiss" data-action="dismiss" aria-label="Kapat">✕</button>',
+      [
+        { selector: '[data-action="open"]', onClick: function () { toast.remove(); activeBanner = null; var fab = document.querySelector(".fr-pwa-fab"); if (fab) fab.click(); } },
+        { selector: '[data-action="dismiss"]', onClick: function () { writeLocal(LS_PUSH_NUDGE_DISMISSED_AT, String(Date.now())); toast.remove(); activeBanner = null; } }
+      ]
+    );
+    toast.setAttribute("role", "dialog");
+    toast.setAttribute("aria-label", "Maç bildirimleri");
+    activeBanner = toast;
   }
 
   // ---------------------------------------------------------------------
@@ -231,7 +321,7 @@
 
     var key = vapidPublicKey();
     if (!key) {
-      setPanelNote(panel, "Bildirimler şu anda kapalı.");
+      setPanelNote(panel, "Bildirimler henüz devrede değil; çok yakında açılacak.");
       return;
     }
     if (!("serviceWorker" in navigator) || !("PushManager" in window) || typeof Notification === "undefined") {
@@ -313,7 +403,7 @@
       "<select>" + options + "</select>" +
       '<button type="button" data-action="subscribe">Bildirimleri Aç</button>' +
       (subscribedTeam ? '<button type="button" class="fr-pwa-unsubscribe" data-action="unsubscribe">Bildirimleri Kapat</button>' : "") +
-      '<p class="fr-pwa-note">' + (subscribedTeam ? "Bildirimler açık." : "Gol ve maç başı bildirimi almak için seç ve aç.") + "</p>";
+      '<p class="fr-pwa-note">' + (subscribedTeam ? "Bildirimler açık." : "Maç başı, gol ve devre arası bildirimi almak için seç ve aç.") + "</p>";
 
     var select = panel.querySelector("select");
     panel.querySelector('[data-action="subscribe"]').addEventListener("click", function () {

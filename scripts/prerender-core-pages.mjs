@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { renderHomeTicker } from "./lib/homeTicker.mjs";
+import { renderHomeMatchBanner, selectHomeMatchBannerItems } from "./lib/homeMatchBanner.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -2076,6 +2077,13 @@ function trendPlayerCategoriesSlot() {
  * Elle girilen, kaynaklı transfer/gündem notları; süresi geçen öğe düşer,
  * öğe yoksa yuva boş kalır ve bant hiç basılmaz. Belge: docs/ticker.md.
  */
+/** ANA SAYFA "BU AKŞAM" MAÇ BANDI (data/home-match-banner.json). */
+function homeMatchBannerSlot() {
+  const file = path.join(root, "data", "home-match-banner.json");
+  if (!fs.existsSync(file)) return "";
+  return renderHomeMatchBanner(selectHomeMatchBannerItems(JSON.parse(fs.readFileSync(file, "utf8"))), { base: "./" });
+}
+
 function homeTickerSlot() {
   const { readTickerFile, selectHomeTickerItems } = require("../services/homeTicker.js");
   const { items, rejected } = selectHomeTickerItems(readTickerFile(path.join(root, "data", "ticker.json")));
@@ -2109,6 +2117,7 @@ writePage("index.html", {
   "trend-player-categories": trendPlayerCategoriesSlot(),
   "match-quotes": matchQuotesTicker(),
   "home-ticker": homeTickerSlot(),
+  "home-match-banner": homeMatchBannerSlot(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci
   // yeniden çizdiğinde dokunmuyordu ama bir önceki elle-taşıma turunda bu

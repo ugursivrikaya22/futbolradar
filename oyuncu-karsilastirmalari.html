@@ -124,8 +124,8 @@
                         {
                                 "@type": "ListItem",
                                 "position": 16,
-                                "name": "N. Sonko-Sundberg vs Nélson Semedo",
-                                "url": "https://www.futbolradar.com/karsilastirma/n-sonko-sundberg-goztepe-vs-nelson-semedo.html"
+                                "name": "Nélson Semedo vs Tiago Djaló",
+                                "url": "https://www.futbolradar.com/karsilastirma/nelson-semedo-vs-tiago-djalo.html"
                         },
                         {
                                 "@type": "ListItem",
@@ -155,7 +155,20 @@
         }
 }
     </script>
-    <link rel="stylesheet" href="./page.css?v=f3937751" />
+    <link rel="stylesheet" href="./page.css?v=c68d3b47" />
+    <script data-futbolradar-theme>
+    (function () {
+      try {
+        var stored = window.localStorage.getItem("futbolradar-theme");
+        if (stored === "dark" || stored === "light") {
+          document.documentElement.setAttribute("data-theme", stored);
+        }
+      } catch (error) {
+        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
+      }
+    })();
+  </script>
+  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
   <!-- favicon:start -->
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -172,26 +185,13 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="FutbolRadar" />
 <meta name="fr-vapid-public-key" content="" />
-<script defer src="/pwa.js?v=6f20d450"></script>
+<script defer src="/pwa.js?v=9b0e6386"></script>
 <!-- pwa:end -->
-    <script data-futbolradar-theme>
-    (function () {
-      try {
-        var stored = window.localStorage.getItem("futbolradar-theme");
-        if (stored === "dark" || stored === "light") {
-          document.documentElement.setAttribute("data-theme", stored);
-        }
-      } catch (error) {
-        /* localStorage kapalıysa sistem tercihi geçerli kalır. */
-      }
-    })();
-  </script>
   <!-- preconnect:start -->
 <link rel="preconnect" href="https://media.api-sports.io" crossorigin />
 <link rel="dns-prefetch" href="https://media.api-sports.io" />
 <!-- preconnect:end -->
-  <meta data-futbolradar-verification name="google-site-verification" content="1lqNuyji33r6_AcAJ26wxgpZGmq7BLsHwH43xKLZl8I">
-  </head>
+</head>
   <body class="subpage">
     <header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
@@ -203,8 +203,8 @@
           <button class="nav-search-toggle nav-search-toggle-mobile" type="button" aria-label="Takım ve futbolcu ara" aria-controls="primary-menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></button><a class="lang-switch" href="./en/index.html" lang="en" hreflang="en" data-lang-switch="en" aria-label="Switch to English" title="Switch to English">ENG</a>
           <button class="nav-toggle" type="button" aria-label="Menüyü aç" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
           <div class="nav-menu" id="primary-menu">
-            <div class="nav-links"><a href="./bugunun-maclari.html">Bugünün Maçları</a><a href="./canli-skor.html">Canlı Skor</a><a href="./mac-sonuclari.html">Maç Sonuçları</a><a href="./super-lig-fikstur.html">Süper Lig</a><a href="./analizler.html">Analizler</a><a href="./takimlar.html">Takımlar</a><a href="./kose-yazilari.html">Köşe Yazıları</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./arsiv.html">Arşiv</a></div>
-            <div class="nav-links nav-links-secondary"><a href="./mac-takvimi.html">Maç Takvimi</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./istatistik-merkezi.html">İstatistik Merkezi</a><a href="./momentum.html">Momentum</a><a href="./gol-kralligi.html">Gol Krallığı</a><a href="./haberler.html">Haberler</a><a href="./anketler.html">Anketler <span class="nav-badge" data-nav-badge-until="2026-08-22T21:00:00+03:00">Yeni</span></a><a href="./milli-takim.html">A Millî Takım</a></div>
+            <div class="nav-links"><a href="./bugunun-maclari.html">Bugünün Maçları</a><a href="./canli-skor.html">Canlı Skor</a><a href="./mac-sonuclari.html">Maç Sonuçları</a><a href="./super-lig-fikstur.html">Süper Lig</a><a href="./analizler.html">Analizler</a><a href="./takimlar.html">Takımlar</a><a href="./kose-yazilari.html">Köşe Yazıları</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./istatistik-merkezi.html">İstatistik</a><a href="./super-lig-transferleri-2026-2027.html">Transfer Radar</a><a href="./arsiv.html" data-nav-drawer-only>Arşiv</a></div>
+            <div class="nav-links nav-links-secondary"><a href="./mac-takvimi.html">Maç Takvimi</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a><a href="./gol-kralligi.html">Gol Krallığı</a><a href="./haberler.html">Haberler</a><a href="./anketler.html">Anketler <span class="nav-badge" data-nav-badge-until="2026-08-22T21:00:00+03:00">Yeni</span></a><a href="./milli-takim.html">A Millî Takım</a><a href="./tarihte-bugun.html">Tarihte Bugün</a></div>
             <a class="cta" href="./mac-merkezi.html">Maç Merkezi</a>
             <button class="nav-search-toggle nav-search-toggle-desktop" type="button" data-search-open aria-label="Takım ve futbolcu ara" aria-expanded="false" title="Takım ve futbolcu ara"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg></button>
             <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false" aria-label="Koyu temaya geç">
@@ -336,9 +336,9 @@
     <p>kaleci profili</p>
     <em>Doğrulanmış puan bekleniyor</em>
   </a>
-        <a class="comparison-index-card" href="./karsilastirma/n-sonko-sundberg-goztepe-vs-nelson-semedo.html">
+        <a class="comparison-index-card" href="./karsilastirma/nelson-semedo-vs-tiago-djalo.html">
     <span>defans eslesmesi</span>
-    <strong>N. Sonko-Sundberg vs Nélson Semedo</strong>
+    <strong>Nélson Semedo vs Tiago Djaló</strong>
     <p>Rol, rating ve piyasa yakinligi</p>
     <em>Doğrulanmış puan bekleniyor</em>
   </a>
@@ -387,11 +387,11 @@
         </div>
         <div class="footer-col">
           <h2>Maç</h2>
-          <div class="footer-col-links"><a href="./bugunun-maclari.html">Bugünün Maçları</a><a href="./canli-skor.html">Canlı Skor</a><a href="./mac-sonuclari.html">Maç Sonuçları</a><a href="./super-lig-fikstur.html">Süper Lig</a><a href="./analizler.html">Analizler</a><a href="./takimlar.html">Takımlar</a><a href="./kose-yazilari.html">Köşe Yazıları</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./arsiv.html">Arşiv</a></div>
+          <div class="footer-col-links"><a href="./bugunun-maclari.html">Bugünün Maçları</a><a href="./canli-skor.html">Canlı Skor</a><a href="./mac-sonuclari.html">Maç Sonuçları</a><a href="./super-lig-fikstur.html">Süper Lig</a><a href="./analizler.html">Analizler</a><a href="./takimlar.html">Takımlar</a><a href="./kose-yazilari.html">Köşe Yazıları</a><a href="./puan-durumu.html">Puan Durumu</a><a href="./istatistik-merkezi.html">İstatistik</a><a href="./super-lig-transferleri-2026-2027.html">Transfer Radar</a><a href="./arsiv.html">Arşiv</a></div>
         </div>
         <div class="footer-col">
           <h2>Veri</h2>
-          <div class="footer-col-links"><a href="./mac-takvimi.html">Maç Takvimi</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./istatistik-merkezi.html">İstatistik Merkezi</a><a href="./momentum.html">Momentum</a><a href="./gol-kralligi.html">Gol Krallığı</a><a href="./haberler.html">Haberler</a><a href="./anketler.html">Anketler</a><a href="./milli-takim.html">A Millî Takım</a></div>
+          <div class="footer-col-links"><a href="./mac-takvimi.html">Maç Takvimi</a><a href="./oyuncu-radari.html">Oyuncu Radarı</a><a href="./momentum.html">Momentum</a><a href="./gol-kralligi.html">Gol Krallığı</a><a href="./haberler.html">Haberler</a><a href="./anketler.html">Anketler</a><a href="./milli-takim.html">A Millî Takım</a><a href="./tarihte-bugun.html">Tarihte Bugün</a></div>
         </div>
         <div class="footer-col">
           <h2>Kurumsal</h2>
@@ -422,7 +422,7 @@
         </button>
       </nav>
     </footer>
-    <script src="./site.js?v=b984b3e8" defer></script>
-    <script src="./app.js?v=503c00ee" defer></script>
+    <script src="./site.js?v=4e6aaa62" defer></script>
+    <script src="./app.js?v=5f74c363" defer></script>
   </body>
 </html>

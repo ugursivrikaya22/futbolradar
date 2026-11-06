@@ -772,11 +772,16 @@ export function generateColumnPages() {
   const homePath = path.join(root, "index.html");
   if (fs.existsSync(homePath)) {
     let html = fs.readFileSync(homePath, "utf8");
-    const content = homeHtml(columns);
+    // `hideFromHome: true` olan yazılar ana sayfanın hiçbir köşe alanında görünmez.
+    const homeColumns = columns.filter((column) => !column.hideFromHome);
+    const content = homeHtml(homeColumns);
     html = replaceSlot(html, "home-columns", content);
+    // İstemci tarafı Supabase yenilemesi (home-columns.js) aynı yazıları atlasın.
+    const hiddenSlugs = columns.filter((column) => column.hideFromHome).map((column) => path.basename(String(column.path || column.id), ".html")).join(" ");
+    html = html.replace(/(<div class="column-grid column-grid-home" data-api-target="home-columns")( data-hide-slugs="[^"]*")?/, (_, head) => hiddenSlugs ? `${head} data-hide-slugs="${escapeHtml(hiddenSlugs)}"` : head);
 
     // Öne çıkan köşe yazısı: en yeni yayımlanmış yazı, her derlemede yeniden seçilir.
-    const featured = featuredColumnHtml(columns);
+    const featured = featuredColumnHtml(homeColumns);
     html = replaceSlot(html, "home-featured-column", featured);
     const featuredTag = (html.match(/<section\b[^>]*\bdata-featured-column\b[^>]*>/) || [])[0];
     if (featuredTag) {

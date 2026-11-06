@@ -1,0 +1,42 @@
+name: Social — Telegram bildirimi
+
+# Her saat (UTC :35 → İstanbul her saatin :35'i). BİRİNCİL ZAMANLAYICI Vercel
+# cron `/api/cron/telegram-notify`'dır; bu iş yalnızca depo değişkeni
+# SOCIAL_AUTOPOST_RUNNER = "actions" ise zamanlanmış koşuda çalışır. Elle
+# tetikleme (workflow_dispatch) her zaman çalışır. Supabase dedup
+# (telegram_posts) aynı mesajın iki kez gitmesini engeller.
+on:
+  schedule:
+    - cron: "35 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Kuru koşu (hiçbir şey gönderme)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: social-telegram
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    if: github.event_name == 'workflow_dispatch' || vars.SOCIAL_AUTOPOST_RUNNER == 'actions'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Telegram bildirimi
+        env:
+          TELEGRAM_ENABLED: ${{ secrets.TELEGRAM_ENABLED }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/social-telegram.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }}

@@ -14,6 +14,9 @@
  *   /api/cron/newsletter                       haftalık e-posta bülteni (Pzt 09:00 TSİ;
  *                                              NEWSLETTER_ENABLED=1 değilse kuru çalışma)
  *   /api/cron/x-autopost                       X (Twitter) otomatik paylaşım (varsayılan kuru koşu)
+ *   /api/cron/x-live                           canlı maç tweetleri (elle/Actions; Vercel'de x-autopost içinde koşar)
+ *   /api/cron/x-news                           X haber tweeti (data/news.json; varsayılan kuru koşu)
+ *   /api/cron/telegram-notify                  Telegram haber + maç sonucu bildirimi (varsayılan kuru koşu)
  *   /api/cron/matchday-reminder                PWA push: "favori takımının maçı bugün" (saatlik, 09–22 İstanbul)
  *
  * HER İSTEK ÖNCE `CRON_SECRET` İLE DOĞRULANIR (server/cronAuth.js). Ortam
@@ -32,7 +35,7 @@ function enginePath() {
 }
 
 const SOURCE = "vercel-cron";
-const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "newsletter", "x-autopost", "matchday-reminder"]);
+const JOBS = new Set(["daily", "scheduled-update", "full-update", "deploy", "health", "search-demand", "newsletter", "x-autopost", "matchday-reminder", "x-news", "telegram-notify", "x-live"]);
 
 function send(res, statusCode, payload) {
   res.setHeader("Cache-Control", "no-store");
@@ -83,7 +86,23 @@ async function defaultRunners() {
     newsletter: () => require("../services/newsletter/weekly").runWeekly(),
     // X paylaşımı motoru kullanmaz: yayımlanmış veriyi okur, tweet atar
     // (ya da X_AUTOPOST_ENABLED kapalıyken yalnızca loglar).
-    "x-autopost": () => require("../services/xAutopost").runXAutopost(),
+    // Canlı maç tweetleri (X_LIVE_ENABLED) AYNI koşuda, AYNI indirilmiş veriyle
+    // çalışır: 33 MB'lık takvim ikinci kez indirilmez. Önce x-autopost (maç
+    // sonu/gol/köşe yazısı), sonra canlı olaylar.
+    "x-autopost": async () => {
+      const xa = require("../services/xAutopost");
+      const data = await xa.loadFromSite();
+      const result = await xa.runXAutopost({ data });
+      let live;
+      try { live = await require("../services/socialAutopost/xLive").runXLive({ data }); }
+      catch (error) { live = { status: "failed", error: String(error && error.message || error).slice(0, 200) }; }
+      return { ...result, live };
+    },
+    "x-live": () => require("../services/socialAutopost/xLive").runXLive(),
+    // Sosyal paylaşım (services/socialAutopost): yayımlanmış data/news.json +
+    // takvimi okur; bayrak/anahtar yoksa yalnızca loglar.
+    "x-news": () => require("../services/socialAutopost/xNews").runXNews(),
+    "telegram-notify": () => require("../services/socialAutopost/telegram").runTelegramNotify(),
     // Maç günü hatırlatması motoru kullanmaz: yayımlanmış takvimi okur,
     // VAPID ile push gönderir (VAPID/Supabase/0015 tablosu yoksa göndermez).
     "matchday-reminder": () => require("../services/matchdayReminder").runMatchdayReminder()

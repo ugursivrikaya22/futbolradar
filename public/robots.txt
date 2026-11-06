@@ -1,5 +1,21 @@
+# FutbolRadar robots.txt
+# Kaynak dizinleri ve yönetim yüzeyleri tarama bütçesini boşa harcamasın diye
+# kapatılır. CSS/JS/assets/data AÇIK kalır (Googlebot render eder).
 User-agent: *
 Allow: /
 
-Sitemap: https://www.futbolradar.com/sitemap.xml
+Disallow: /docs/
+Disallow: /scripts/
+Disallow: /services/
+Disallow: /tests/
+Disallow: /supabase/
+Disallow: /server/
+Disallow: /components/
+Disallow: /locales/
+Disallow: /api/cron
+Disallow: /admin-
+Disallow: /public/
+
+# Birleşik harita üreticiler için diskte kalır; tarayıcıya indeks + news yeter.
+Sitemap: https://www.futbolradar.com/sitemap-index.xml
 Sitemap: https://www.futbolradar.com/news-sitemap.xml

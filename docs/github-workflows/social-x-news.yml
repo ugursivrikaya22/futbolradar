@@ -1,0 +1,46 @@
+name: Social — X haber tweeti
+
+# Her 2 saatte bir (UTC :20 → İstanbul 03:20, 05:20, … 23:20; betik yalnızca
+# 09:00–22:59 İstanbul arası tweet atar). BİRİNCİL ZAMANLAYICI Vercel cron
+# `/api/cron/x-news`'tir; bu iş yalnızca depo değişkeni
+# SOCIAL_AUTOPOST_RUNNER = "actions" ise zamanlanmış koşuda çalışır
+# (Actions faturalama sorunu çözülünce ya da Vercel cron yerine). Elle
+# tetikleme (workflow_dispatch) her zaman çalışır. İkisi birden açık kalsa
+# bile Supabase dedup aynı haberin iki kez paylaşılmasını engeller.
+on:
+  schedule:
+    - cron: "20 */2 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Kuru koşu (hiçbir şey gönderme)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: social-x-news
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  post:
+    if: github.event_name == 'workflow_dispatch' || vars.SOCIAL_AUTOPOST_RUNNER == 'actions'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: X haber tweeti
+        env:
+          X_NEWS_ENABLED: ${{ secrets.X_NEWS_ENABLED }}
+          X_API_KEY: ${{ secrets.X_API_KEY }}
+          X_API_SECRET: ${{ secrets.X_API_SECRET }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/social-x-news.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.dry_run) && '--dry-run' || '' }}

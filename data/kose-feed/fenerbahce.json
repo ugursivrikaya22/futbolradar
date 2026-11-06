@@ -12,17 +12,17 @@
       "tarihce": "https://www.futbolradar.com/takimlar/fenerbahce/tarihce.html"
     }
   },
-  "dataDate": "2026-10-19",
+  "dataDate": "2026-11-05",
   "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
   "form": {
     "league": {
       "status": "ok",
       "last": [
+        "M",
+        "M",
         "G",
         "G",
-        "G",
-        "B",
-        "M"
+        "G"
       ],
       "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
       "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
@@ -33,35 +33,35 @@
       "last": [
         "G",
         "M",
+        "M",
         "B",
-        "G",
-        "B"
+        "G"
       ],
       "matches": [
+        {
+          "id": "fenerbahce-liverpool-2026-11-04",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635658"
+        },
+        {
+          "id": "fenerbahce-goztepe-2026-10-31",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584451"
+        },
+        {
+          "id": "galatasaray-fenerbahce-2026-10-26",
+          "result": "M",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584442"
+        },
+        {
+          "id": "fenerbahce-slavia-praha-2026-10-20",
+          "result": "B",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635661"
+        },
         {
           "id": "fenerbahce-alanyaspor-2026-10-17",
           "result": "G",
           "sourceUrl": "https://www.thesportsdb.com/event/2527788"
-        },
-        {
-          "id": "aston-villa-fenerbahce-2026-10-14",
-          "result": "M",
-          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635620"
-        },
-        {
-          "id": "gaziantep-fk-fenerbahce-2026-09-14",
-          "result": "B",
-          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584408"
-        },
-        {
-          "id": "lyon-fenerbahce-2026-08-26",
-          "result": "G",
-          "sourceUrl": "https://www.aspor.com.tr/fenerbahce/2026/08/26/ve-fenerbahce-sampiyonlar-liginde-lyonu-deviren-temsilcimiz-17-yillik-hasreti-bitirdi"
-        },
-        {
-          "id": "gornik-zabrze-fenerbahce-2026-07-29",
-          "result": "B",
-          "sourceUrl": "https://www.sporx.com/fenerbahce-sampiyonlar-ligi-nde-sturm-graz-ile-eslesti-SXHBQ1170767SXQ"
         }
       ]
     }
@@ -69,71 +69,60 @@
   "standings": {
     "status": "ok",
     "season": "2026/27",
-    "rank": 3,
-    "played": 8,
+    "rank": 6,
+    "played": 10,
     "won": 5,
     "drawn": 1,
-    "lost": 2,
-    "goalsFor": 22,
-    "goalsAgainst": 6,
-    "goalDifference": 16,
+    "lost": 4,
+    "goalsFor": 24,
+    "goalsAgainst": 10,
+    "goalDifference": 14,
     "points": 16,
-    "syncedAt": "2026-10-17T19:18:57.313Z",
+    "syncedAt": "2026-11-05T00:52:14.371Z",
     "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
     "sourceName": "API-Football /standings"
   },
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 6,
-      "won": 3,
-      "drawn": 2,
-      "lost": 1,
-      "goalsFor": 7,
-      "goalsAgainst": 8,
+      "matches": 10,
+      "won": 4,
+      "drawn": 3,
+      "lost": 3,
+      "goalsFor": 14,
+      "goalsAgainst": 16,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "V. Muriqi",
-        "rank": 1,
+        "rank": 5,
         "goals": 7,
         "assists": 1,
-        "appearances": 8,
-        "minutes": 414,
+        "appearances": 10,
+        "minutes": 439,
         "profile": "https://www.futbolradar.com/futbolcu/vedat-muriqi",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
       },
       {
         "name": "M. Greenwood",
-        "rank": 11,
+        "rank": 15,
         "goals": 4,
         "assists": 2,
-        "appearances": 8,
-        "minutes": 597,
+        "appearances": 9,
+        "minutes": 652,
         "profile": "https://www.futbolradar.com/futbolcu/mason-greenwood",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
       },
       {
-        "name": "O. Aydın",
-        "rank": 18,
-        "goals": 2,
-        "assists": 3,
-        "appearances": 8,
-        "minutes": 379,
-        "profile": "https://www.futbolradar.com/futbolcu/oguz-aydin",
-        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
-        "sourceName": "API-Football /players/topscorers"
-      },
-      {
         "name": "İ. Kahveci",
-        "rank": 19,
-        "goals": 2,
+        "rank": 18,
+        "goals": 3,
         "assists": 3,
-        "appearances": 7,
-        "minutes": 406,
+        "appearances": 9,
+        "minutes": 574,
         "profile": "https://www.futbolradar.com/futbolcu/irfan-can-kahveci",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
@@ -141,45 +130,45 @@
     ],
     "topAssists": [
       {
-        "name": "K. Aktürkoğlu",
-        "rank": 2,
-        "goals": 1,
-        "assists": 3,
-        "appearances": 7,
-        "minutes": 368,
-        "profile": null,
-        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
-        "sourceName": "API-Football /players/topassists"
-      },
-      {
         "name": "O. Aydın",
-        "rank": 3,
+        "rank": 2,
         "goals": 2,
-        "assists": 3,
-        "appearances": 8,
-        "minutes": 379,
+        "assists": 4,
+        "appearances": 10,
+        "minutes": 540,
         "profile": "https://www.futbolradar.com/futbolcu/oguz-aydin",
         "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
         "sourceName": "API-Football /players/topassists"
       },
       {
-        "name": "İ. Kahveci",
-        "rank": 4,
-        "goals": 2,
+        "name": "K. Aktürkoğlu",
+        "rank": 8,
+        "goals": 1,
         "assists": 3,
-        "appearances": 7,
-        "minutes": 406,
+        "appearances": 9,
+        "minutes": 486,
+        "profile": null,
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "İ. Kahveci",
+        "rank": 10,
+        "goals": 3,
+        "assists": 3,
+        "appearances": 9,
+        "minutes": 574,
         "profile": "https://www.futbolradar.com/futbolcu/irfan-can-kahveci",
         "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
         "sourceName": "API-Football /players/topassists"
       },
       {
         "name": "M. Greenwood",
-        "rank": 15,
+        "rank": 16,
         "goals": 4,
         "assists": 2,
-        "appearances": 8,
-        "minutes": 597,
+        "appearances": 9,
+        "minutes": 652,
         "profile": "https://www.futbolradar.com/futbolcu/mason-greenwood",
         "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
         "sourceName": "API-Football /players/topassists"
@@ -190,6 +179,90 @@
     "status": "ok",
     "excludedWithoutSource": 10,
     "items": [
+      {
+        "id": "fenerbahce-liverpool-2026-11-04",
+        "date": "2026-11-04",
+        "kickoff": "2026-11-04T20:45:00+03:00",
+        "competition": "Şampiyonlar Ligi",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadium",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Liverpool",
+        "opponent": "Liverpool",
+        "score": {
+          "home": 3,
+          "away": 2
+        },
+        "goalsFor": 3,
+        "goalsAgainst": 2,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-liverpool-2026-11-04.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635658",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "fenerbahce-goztepe-2026-10-31",
+        "date": "2026-10-31",
+        "kickoff": "2026-10-31T19:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadium",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Göztepe",
+        "opponent": "Göztepe",
+        "score": {
+          "home": 1,
+          "away": 2
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-goztepe-2026-10-31.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584451",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "galatasaray-fenerbahce-2026-10-26",
+        "date": "2026-10-26",
+        "kickoff": "2026-10-26T21:30:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Rams Park Stadyumu",
+        "homeTeam": "Galatasaray",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Galatasaray",
+        "score": {
+          "home": 2,
+          "away": 1
+        },
+        "goalsFor": 1,
+        "goalsAgainst": 2,
+        "result": "M",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/galatasaray-fenerbahce-2026-10-26.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584442",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "fenerbahce-slavia-praha-2026-10-20",
+        "date": "2026-10-20",
+        "kickoff": "2026-10-20T19:45:00+03:00",
+        "competition": "Şampiyonlar Ligi",
+        "venue": "İç saha",
+        "stadium": "Chobani Stadium",
+        "homeTeam": "Fenerbahçe",
+        "awayTeam": "Slavia Praha",
+        "opponent": "Slavia Praha",
+        "score": {
+          "home": 2,
+          "away": 2
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 2,
+        "result": "B",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/fenerbahce-slavia-praha-2026-10-20.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1635661",
+        "sourceType": "api-football"
+      },
       {
         "id": "fenerbahce-alanyaspor-2026-10-17",
         "date": "2026-10-17",
@@ -321,7 +394,7 @@
   "squad": {
     "status": "ok",
     "season": "2026",
-    "syncedAt": "2026-10-19T06:07:24.845Z",
+    "syncedAt": "2026-11-06T02:20:47.231Z",
     "count": 29,
     "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=611",
     "sourceName": "API-Football /players/squads",
@@ -535,8 +608,8 @@
       },
       {
         "name": "O. Aydın",
-        "position": "Midfielder",
-        "positionTr": "Orta saha",
+        "position": "Attacker",
+        "positionTr": "Forvet",
         "age": 25,
         "number": null,
         "providerId": "134590",
@@ -544,8 +617,8 @@
       },
       {
         "name": "M. Greenwood",
-        "position": "Midfielder",
-        "positionTr": "Orta saha",
+        "position": "Attacker",
+        "positionTr": "Forvet",
         "age": 24,
         "number": null,
         "providerId": "897",
@@ -553,8 +626,8 @@
       },
       {
         "name": "İ. Kahveci",
-        "position": "Midfielder",
-        "positionTr": "Orta saha",
+        "position": "Attacker",
+        "positionTr": "Forvet",
         "age": 30,
         "number": null,
         "providerId": "49857",
@@ -591,13 +664,67 @@
   },
   "history": {
     "founded": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "date": "1907",
+      "text": "1907 yılının bahar aylarında",
+      "fullName": "Fenerbahçe Spor Kulübü",
+      "note": null,
+      "sourceName": "Fenerbahçe resmî sitesi — Tarihçe",
+      "sourceUrl": "https://www.fenerbahce.org/kulup/tarihce"
     },
     "honours": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "superLigTitles": 19,
+      "superLigSeasons": [
+        "1959",
+        "1960-1961",
+        "1963-1964",
+        "1964-1965",
+        "1967-1968",
+        "1969-1970",
+        "1973-1974",
+        "1974-1975",
+        "1977-1978",
+        "1982-1983",
+        "1984-1985",
+        "1988-1989",
+        "1995-1996",
+        "2000-2001",
+        "2003-2004",
+        "2004-2005",
+        "2006-2007",
+        "2010-2011",
+        "2013-2014"
+      ],
+      "leagueNote": null,
+      "turkiyeKupasiTitles": 7,
+      "turkiyeKupasiSeasons": [
+        "2022-23",
+        "2012-13",
+        "2011-12",
+        "1982-83",
+        "1978-79",
+        "1973-74",
+        "1967-68"
+      ],
+      "european": [],
+      "coverage": "Süper Lig: 1959–2025-26 · Türkiye Kupası: 1962-63–2025-26",
+      "superLigSource": {
+        "sourceUrl": "https://www.tff.org/default.aspx?pageID=545",
+        "sourceName": "TFF — Süper Lig şampiyonlukları"
+      },
+      "turkiyeKupasiSource": {
+        "sourceUrl": "https://www.tff.org/default.aspx?pageID=411",
+        "sourceName": "TFF — Türkiye Kupası şampiyonları"
+      }
     },
     "stadium": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "name": "Chobani Stadyumu Fenerbahçe Şükrü Saracoğlu Spor Kompleksi",
+      "capacity": 47911,
+      "note": null,
+      "sourceName": "Fenerbahçe resmî sitesi — Stadyum",
+      "sourceUrl": "https://www.fenerbahce.org/kulup/tesislerimiz/ulker-stadyumu-fenerbahce-sukru-saracoglu-spor-kompleksi"
     },
     "colours": {
       "status": "veri-bekleniyor"

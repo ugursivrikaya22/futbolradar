@@ -60,12 +60,35 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // El Clásico (25 Ekim 2026) yazısı: kadro, sakatlık ve resmî transfer
     // duyuruları iki kulübün kendi sitelerinden doğrulandı.
     "fcbarcelona.com",
-    "realmadrid.com"
+    "realmadrid.com",
+    // Atlético de Madrid resmî sitesi (en.atleticodemadrid.com alt alanı dahil).
+    "atleticodemadrid.com",
+    // VfB Stuttgart resmî sitesi: Galatasaray'ın UCL rakibi Stuttgart takım
+    // sayfasında kadro, kulüp künyesi/başarılar ve maç programı buradan.
+    "vfb.de",
+    // 2026-11-05 tarihçe kaynakları — sahip onayı bekliyor:
+    "samsunspor.org.tr",
+    "goztepe.org.tr",
+    "alanyaspor.org.tr",
+    "kasimpasa.com.tr",
+    "erzurumsporfk.org",
+    "gaziantepfk.org",
+    "amedspor.com.tr",
+    "eyupspor.org.tr",
+    "corumfk.com.tr"
   ]),
 
   // Existing calendar provider: retain its event citation when archiving a match.
   dataProvider: Object.freeze([
-    "thesportsdb.com"
+    "thesportsdb.com",
+    // Kadro/maç verisinin sağlayıcısı (anahtar kelime sayfalarında kaynak olarak gösteriliyor).
+    "api-football.com"
+  ]),
+
+  // Ansiklopedik kaynak: yalnızca belirli revizyon (oldid) bağlantıları,
+  // tarihçe / gol krallığı / derbi geçmişi sayfalarında.
+  encyclopedia: Object.freeze([
+    "en.wikipedia.org"
   ]),
 
   // Lig ve turnuva siteleri

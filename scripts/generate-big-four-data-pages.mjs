@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
 const { sameClub } = require("../services/superLigTeams.js");
@@ -43,6 +43,17 @@ export const BIG_FOUR = [
   { slug: "besiktas", name: "Beşiktaş" },
   { slug: "trabzonspor", name: "Trabzonspor" }
 ];
+// Tüm Süper Lig takımları: slug = takimlar/<slug>.html profil dosyası.
+export const ALL_TEAMS = [
+  ...BIG_FOUR,
+  { slug: "samsunspor", name: "Samsunspor" }, { slug: "basaksehir", name: "Başakşehir" },
+  { slug: "konyaspor", name: "Konyaspor" }, { slug: "goztepe", name: "Göztepe" },
+  { slug: "alanyaspor", name: "Alanyaspor" }, { slug: "genclerbirligi", name: "Gençlerbirliği" },
+  { slug: "kasimpasa", name: "Kasımpaşa" }, { slug: "rizespor", name: "Rizespor" },
+  { slug: "erzurumspor", name: "Erzurumspor" }, { slug: "gaziantep-fk", name: "Gaziantep FK" },
+  { slug: "amed", name: "Amed" }, { slug: "eyupspor", name: "Eyüpspor" },
+  { slug: "corum-fk", name: "Çorum FK" }, { slug: "kocaelispor", name: "Kocaelispor" }
+];
 const PENDING = "Güncelleniyor — veri bekleniyor";
 
 const exists = (rel) => fs.existsSync(path.join(root, rel));
@@ -55,6 +66,9 @@ const leaders = readJson("data/league-leaders.json", {});
 const managers = readJson("data/managers.json", {});
 const archive = readJson("data/historical-match-archive.json", { records: [] });
 const matchesFile = readJson("data/matches.json", []);
+const clubHistory = readJson("data/club-history-sources.json", { clubs: {} });
+const TR_MONTHS = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+const trDate = (iso) => { const [y, m, d] = String(iso).split("-").map(Number); return m ? `${d} ${TR_MONTHS[m - 1]} ${y}` : `${y} yılında`; };
 const slugMap = new Map((readJson("data/player-url-slugs.json", {}).entries || []).map((e) => [e.id, e.slug]));
 // Lider kaydındaki kimlik (ör. v-muriqi-fenerbahce) kalıcı futbolcu adresine çevrilir; sayfa yoksa bağlantı verilmez.
 function playerProfile(id) {
@@ -171,11 +185,21 @@ function buildTeamData({ slug, name }) {
     : { status: "veri-bekleniyor" };
 
   const mgr = (managers.managers || []).find((m) => sameClub(m.team, name) && m.source?.url);
+  const club = clubHistory.clubs?.[slug];
+  // Tarihçe: yalnızca resmî kulüp sitesi + tff.org + uefa.com (data/club-history-sources.json). Wikipedia kullanılmaz.
+  const hs = clubHistory.honoursSources || {};
+  const hon = club?.honours;
+  const okSrc = (x) => x && x.sourceUrl ? x : null;
+  const fo = okSrc(club?.founded), co = okSrc(club?.colours), sto = okSrc(club?.stadium);
   const history = {
-    founded: { status: "veri-bekleniyor" },
-    honours: { status: "veri-bekleniyor" },
-    stadium: { status: "veri-bekleniyor" },
-    colours: { status: "veri-bekleniyor" },
+    founded: fo ? { status: "ok", date: fo.date, text: fo.text || null, fullName: club.fullName, note: fo.note || null, sourceName: fo.sourceName, sourceUrl: fo.sourceUrl } : { status: "veri-bekleniyor" },
+    honours: hon && hs.superLig?.sourceUrl && hs.turkiyeKupasi?.sourceUrl
+      ? { status: "ok", superLigTitles: hon.superLig.length + (slug === "besiktas" ? 2 : 0), superLigSeasons: hon.superLig, leagueNote: club.leagueNote || null,
+          turkiyeKupasiTitles: hon.turkiyeKupasi.length, turkiyeKupasiSeasons: hon.turkiyeKupasi, european: (hon.european || []).filter((e) => e.sourceUrl),
+          coverage: hs.coverage, superLigSource: hs.superLig, turkiyeKupasiSource: hs.turkiyeKupasi }
+      : { status: "veri-bekleniyor" },
+    stadium: sto ? { status: "ok", name: sto.name, capacity: sto.capacity ?? null, note: sto.note || null, sourceName: sto.sourceName, sourceUrl: sto.sourceUrl } : { status: "veri-bekleniyor" },
+    colours: co ? { status: "ok", text: co.text, sourceName: co.sourceName, sourceUrl: co.sourceUrl } : { status: "veri-bekleniyor" },
     currentManager: mgr
       ? { status: "ok", name: mgr.manager, appointedAt: mgr.appointedAt || null, note: mgr.note || null, confidence: mgr.confidence || null, sourceName: mgr.source.name, sourceUrl: mgr.source.url, publishedAt: mgr.source.publishedAt || null }
       : { status: "veri-bekleniyor" }
@@ -195,21 +219,24 @@ function buildTeamData({ slug, name }) {
     stats: { standings, resultsSummary, topScorers, topAssists },
     results: { status: results.length ? "ok" : "veri-bekleniyor", excludedWithoutSource: excluded, items: results },
     squad: squadBlock,
-    history
+    history,
+    // Tarihçe yalnızca kuruluş + stadyum + kupa bilgisi kaynaklıysa indekslenir.
+    historyIndexable: ["founded", "stadium", "honours"].every((k) => history[k].status === "ok"),
+    historyGap: club?.gap || null
   };
 }
 
 // ---------- HTML ----------
 const pending = (label) => `<p class="evergreen-note" data-status="veri-bekleniyor"><strong>${esc(label)}:</strong> ${PENDING}</p>`;
-const src = (url, label = "Kaynak") => (url ? `<a href="${esc(url)}" rel="nofollow noopener" target="_blank">${esc(label)}</a>` : "");
+const src = (url, label = "Kaynak") => (url ? `<a href="${esc(url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(label)}</a>` : "");
 const table = (caption, heads, rows) => `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>${esc(caption)}</caption><thead><tr>${heads.map((h) => `<th scope="col">${esc(h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 const section = (id, title, body) => `<section class="evergreen-section" aria-labelledby="${id}"><h2 id="${id}">${esc(title)}</h2>${body}</section>`;
 
 function sectionNav(d, current) {
   return `<nav class="evergreen-related" aria-label="${esc(d.name)} veri sayfaları"><h2>${esc(d.name)} veri sayfaları</h2><ul class="evergreen-link-list">${SECTIONS.map((s) =>
     s.key === current ? `<li><span aria-current="page">${esc(s.label)}</span></li>` : `<li><a href="./${s.key}.html">${esc(d.name)} ${esc(s.label.toLocaleLowerCase("tr"))}</a></li>`).join("")}
-    <li><a href="../${d.slug}">${esc(d.name)} takım profili</a></li><li><a href="../../${d.slug}-form-durumu.html">${esc(d.name)} form durumu</a></li><li><a href="../../${d.slug}-maclari.html">${esc(d.name)} maçları</a></li><li><a href="../../${d.slug}-puan-durumu.html">${esc(d.name)} puan durumu</a></li></ul>
-    <p>Diğer büyükler: ${BIG_FOUR.filter((t) => t.slug !== d.slug).map((t) => `<a href="../${t.slug}/${current}.html">${esc(t.name)}</a>`).join(" · ")}</p></nav>`;
+    <li><a href="../${d.slug}">${esc(d.name)} takım profili</a></li>${[["form-durumu", "form durumu"], ["maclari", "maçları"], ["puan-durumu", "puan durumu"]].filter(([k]) => exists(`${d.slug}-${k}.html`)).map(([k, l]) => `<li><a href="../../${d.slug}-${k}.html">${esc(d.name)} ${l}</a></li>`).join("")}${exists("super-lig-puan-durumu.html") ? `<li><a href="../../super-lig-puan-durumu.html">Süper Lig puan durumu</a></li>` : ""}${exists("super-lig-bu-hafta.html") ? `<li><a href="../../super-lig-bu-hafta.html">Süper Lig bu hafta</a></li>` : ""}</ul>
+    <p>${BIG_FOUR.some((t) => t.slug === d.slug) ? "Diğer büyükler" : "Diğer Süper Lig takımları"}: ${(BIG_FOUR.some((t) => t.slug === d.slug) ? BIG_FOUR : ALL_TEAMS).filter((t) => t.slug !== d.slug).map((t) => `<a href="../${t.slug}/${current}.html">${esc(t.name)}</a>`).join(" · ")}</p></nav>`;
 }
 
 function kadroContent(d) {
@@ -248,9 +275,28 @@ function historyContent(d) {
   const mgr = h.currentManager.status === "ok"
     ? `<p>Teknik direktör: <strong>${esc(h.currentManager.name)}</strong>${h.currentManager.appointedAt ? ` (göreve başlama: ${esc(h.currentManager.appointedAt)})` : ""}. ${esc(h.currentManager.note || "")}</p><p class="evergreen-source">Kaynak: ${src(h.currentManager.sourceUrl, h.currentManager.sourceName)}</p>`
     : pending("Teknik direktör");
-  return section("kurulus", "Kuruluş ve kulüp kimliği", pending("Kuruluş yılı, renkler"))
-    + section("kupalar", "Şampiyonluklar ve kupalar", pending("Kupa listesi"))
-    + section("stadyum", "Stadyum", pending("Stadyum bilgisi"))
+  const f = h.founded;
+  const colours = h.colours.status === "ok"
+    ? `<p>Kulüp renkleri: <strong>${esc(h.colours.text)}</strong>.</p><p class="evergreen-source">Kaynak: ${src(h.colours.sourceUrl, h.colours.sourceName)}</p>`
+    : pending("Kulüp renkleri");
+  const founded = f.status === "ok"
+    ? `<p>${esc(f.fullName)}, ${f.text ? `<time datetime="${esc(f.date)}">${esc(f.text)}</time>` : `<time datetime="${esc(f.date)}">${esc(trDate(f.date))}</time> tarihinde`} kuruldu${f.note ? ` (${esc(f.note)})` : ""}.</p><p class="evergreen-source">Kaynak: ${src(f.sourceUrl, f.sourceName)}</p>${colours}`
+    : pending("Kuruluş tarihi") + colours;
+  const o = h.honours;
+  const list = (arr) => (arr.length ? `: ${arr.map(esc).join(", ")}` : "");
+  const honours = o.status === "ok"
+    ? `<ul class="evergreen-honours"><li>Süper Lig şampiyonluğu: <strong>${o.superLigTitles}</strong>${list(o.superLigSeasons)}${o.leagueNote ? `. ${esc(o.leagueNote)}` : ""}</li><li>Türkiye Kupası: <strong>${o.turkiyeKupasiTitles}</strong>${list(o.turkiyeKupasiSeasons)}</li>${o.european.length ? o.european.map((e) => `<li>${esc(e.title)} (${esc(e.season)})${e.note ? ` — ${esc(e.note)}` : ""}. Kaynak: ${src(e.sourceUrl, e.sourceName)}</li>`).join("") : "<li>Avrupa kupası: yok</li>"}</ul><p class="evergreen-source">Kaynak: ${src(o.superLigSource.sourceUrl, o.superLigSource.sourceName)} · ${src(o.turkiyeKupasiSource.sourceUrl, o.turkiyeKupasiSource.sourceName)} (kapsam: ${esc(o.coverage)}). Tüm sezonlar: <a href="../../super-lig-tarihcesi.html">Süper Lig tarihçesi</a>.</p>`
+    : pending("Kupa listesi");
+  const st = h.stadium;
+  const stadium = st.status === "ok"
+    ? `<p>İç saha: <strong>${esc(st.name)}</strong>${st.capacity ? `, kapasite ${Number(st.capacity).toLocaleString("tr-TR")}` : ""}${st.note ? ` (${esc(st.note)})` : ""}.</p><p class="evergreen-source">Kaynak: ${src(st.sourceUrl, st.sourceName)}</p>`
+    : pending("Stadyum bilgisi");
+  const derby = ["galatasaray", "fenerbahce", "besiktas"].includes(d.slug) && exists("derbi-gecmisi.html")
+    ? section("derbiler", "Derbi geçmişi", `<p>İstanbul derbilerinin kaynaklı karşılaşma özetleri: <a href="../../derbi-gecmisi.html">Derbi geçmişi</a>.</p>`) : "";
+  return section("kurulus", "Kuruluş ve kulüp kimliği", founded)
+    + section("kupalar", "Şampiyonluklar", honours)
+    + section("stadyum", "Stadyum", stadium)
+    + derby
     + section("teknik", "Güncel teknik direktör", mgr);
 }
 
@@ -258,7 +304,7 @@ const META = {
   kadro: (d) => ({ title: `${d.name} Kadrosu ${d.season || ""} | Oyuncular ve Mevkiler | FutbolRadar`, description: `${d.name} güncel kadrosu: ${d.squad.count || ""} oyuncu, mevki ve yaş bilgisiyle. Her kayıt kaynak bağlantılı.`, h1: `${d.name} Kadrosu`, intro: `${d.name} için sağlayıcıdan senkronlanan güncel oyuncu listesi, mevkilere göre.`, body: kadroContent }),
   istatistikler: (d) => ({ title: `${d.name} İstatistikleri ${d.season || ""} | Puan, Gol, Form | FutbolRadar`, description: `${d.name} istatistikleri: Süper Lig sırası, galibiyet-beraberlik-mağlubiyet, atılan/yenilen gol, form ve gol-asist liderleri.`, h1: `${d.name} İstatistikleri`, intro: `${d.name} için kayıtlı lig istatistikleri, form ve oyuncu liderleri.`, body: statsContent }),
   "mac-sonuclari": (d) => ({ title: `${d.name} Maç Sonuçları ${d.season || ""} | Skorlar | FutbolRadar`, description: `${d.name} maç sonuçları: Süper Lig, Avrupa kupaları ve hazırlık maçlarının skorları, kaynak bağlantılarıyla.`, h1: `${d.name} Maç Sonuçları`, intro: `${d.name}'in arşivde kaynağıyla doğrulanmış maç skorları.`, body: resultsContent }),
-  tarihce: (d) => ({ title: `${d.name} Tarihçesi | Kulüp Bilgileri | FutbolRadar`, description: `${d.name} tarihçesi ve kulüp bilgileri. Doğrulanmış kaynak bulunan bilgiler gösterilir; diğer bölümler güncelleniyor.`, h1: `${d.name} Tarihçesi`, intro: `${d.name} kulüp bilgileri. Kaynağı depoda olmayan bilgiler uydurulmaz, "veri bekleniyor" olarak işaretlenir.`, body: historyContent })
+  tarihce: (d) => ({ title: `${d.name} Tarihçesi | Kulüp Bilgileri | FutbolRadar`, description: `${d.name} tarihçesi ve kulüp bilgileri. Doğrulanmış kaynak bulunan bilgiler gösterilir; diğer bölümler güncelleniyor.`, h1: `${d.name} Tarihçesi`, intro: `${d.name} kulüp künyesi: kuruluş, şampiyonluklar, stadyum ve teknik direktör. Her bilgi kaynağıyla verilir; kaynağı olmayan bölümler “veri bekleniyor” olarak işaretlenir.`, body: historyContent })
 };
 
 function pageHtml(d, key, dataDate) {
@@ -277,6 +323,7 @@ function pageHtml(d, key, dataDate) {
       about: { "@id": `${siteUrl}/takimlar/${d.slug}#team` } },
     { "@type": "SportsTeam", "@id": `${siteUrl}/takimlar/${d.slug}#team`, name: d.name, sport: "Football", url: `${siteUrl}/takimlar/${d.slug}`, memberOf: { "@type": "SportsOrganization", name: "Süper Lig" },
       ...(key === "kadro" && d.squad.status === "ok" ? { athlete: d.squad.players.map((p) => ({ "@type": "Person", name: p.name })) } : {}),
+      ...(d.history.founded.status === "ok" ? { foundingDate: d.history.founded.date } : {}),
       ...(d.history.currentManager.status === "ok" ? { coach: { "@type": "Person", name: d.history.currentManager.name } } : {}) },
     { "@type": "BreadcrumbList", itemListElement: crumbs.map((c, i) => ({ "@type": "ListItem", position: i + 1, name: c.name, item: c.url })) }
   ];
@@ -288,7 +335,7 @@ function pageHtml(d, key, dataDate) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${esc(meta.title.replace(/\s+\|/g, " |"))}</title>
     <meta name="description" content="${esc(meta.description)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${key === "tarihce" && !d.historyIndexable ? ROBOTS_NOINDEX_FOLLOW : ROBOTS_INDEX}" />
     <link rel="canonical" href="${canonical}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="tr_TR" />
@@ -336,19 +383,22 @@ function write(rel, content) {
 }
 
 export function buildAll() {
-  return BIG_FOUR.map(buildTeamData);
+  return ALL_TEAMS.map(buildTeamData);
 }
 
 function main() {
   const data = buildAll();
   const dataDate = teams.map((t) => t.lastStandingsSyncedAt).filter(Boolean).sort().at(-1)?.slice(0, 10) || "1970-01-01";
   const files = [];
+  const unindexed = [];
   for (const d of data) {
     for (const s of SECTIONS) {
       const rel = `takimlar/${d.slug}/${s.key}.html`;
       write(rel, pageHtml(d, s.key, dataDate));
-      files.push(rel);
+      if (s.key !== "tarihce" || d.historyIndexable) files.push(rel);
+      else unindexed.push(rel);
     }
+    if (!BIG_FOUR.some((t) => t.slug === d.slug)) continue; // Köşe beslemesi yalnızca büyük dört için.
     const feed = {
       schema: "futbolradar.kose-feed.v1",
       team: { slug: d.slug, name: d.name, season: d.season, teamPage: d.teamPage, pages: d.pages },
@@ -360,16 +410,16 @@ function main() {
     };
     write(`data/kose-feed/${d.slug}.json`, `${JSON.stringify(feed, null, 2)}\n`);
   }
-  write("data/kose-feed/index.json", `${JSON.stringify({ schema: "futbolradar.kose-feed.index.v1", dataDate, teams: data.map((d) => ({ slug: d.slug, name: d.name, feed: `data/kose-feed/${d.slug}.json`, url: `${siteUrl}/data/kose-feed/${d.slug}.json` })) }, null, 2)}\n`);
+  write("data/kose-feed/index.json", `${JSON.stringify({ schema: "futbolradar.kose-feed.index.v1", dataDate, teams: data.filter((d) => BIG_FOUR.some((t) => t.slug === d.slug)).map((d) => ({ slug: d.slug, name: d.name, feed: `data/kose-feed/${d.slug}.json`, url: `${siteUrl}/data/kose-feed/${d.slug}.json` })) }, null, 2)}\n`);
 
   for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(sitemapPath)) continue;
     const retained = (fs.readFileSync(sitemapPath, "utf8").match(URL_ENTRY_RE) || [])
-      .filter((e) => !files.some((f) => e.includes(`<loc>${siteUrl}/${f}</loc>`)));
+      .filter((e) => !files.concat(unindexed).some((f) => e.includes(`<loc>${siteUrl}/${f}</loc>`)));
     const entries = files.map((f) => `  <url>\n    <loc>${siteUrl}/${f}</loc>\n    <lastmod>${dataDate}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.75</priority>\n  </url>`);
     fs.writeFileSync(sitemapPath, wrapUrlset(retained.concat(entries)), "utf8");
   }
-  console.log(`[big-four-data-pages] ${files.length} sayfa, ${data.length} Köşe beslemesi yazıldı.`);
+  console.log(`[big-four-data-pages] ${files.length + unindexed.length} sayfa (${unindexed.length} tarihçe noindex: ${unindexed.join(", ") || "yok"}), ${BIG_FOUR.length} Köşe beslemesi yazıldı.`);
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

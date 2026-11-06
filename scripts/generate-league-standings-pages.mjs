@@ -20,10 +20,23 @@ import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { RICH_TEAM_PAGES } from "./lib/richTeamPages.mjs";
+
+/** Zengin (indexable) takım sayfası varsa puan durumu satırını bağla.
+ *  PR #583 tüm satırları bağlar; burada yalnızca RICH_TEAM_PAGES id'leri
+ *  (Liverpool + La Liga üçlüsü) bağlanır — çakışmayı düşük tutmak için.
+ */
+function richTeamHref(row, base = "./") {
+  const entry = RICH_TEAM_PAGES[String(row.id)];
+  return entry ? `${base}${entry.href}` : null;
+}
+
 import { getStandings } from "./lib/standingsData.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { hubsForCompetition, loadMatchHubs, matchHubLinksSection } from "./lib/matchHubLinks.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const MATCH_HUBS = loadMatchHubs(root);
 const siteUrl = "https://www.futbolradar.com";
 const socialImage = `${siteUrl}/assets/og-image.png`;
 const today = new Date().toISOString().slice(0, 10);
@@ -111,6 +124,7 @@ ${enUrl ? `    <link rel="alternate" hreflang="en" href="${enUrl}" />\n` : ""}  
             <p>${escapeHtml(intro)}</p>
             <p class="evergreen-freshness"><time datetime="${dataDate}">Veri tarihi: ${dataDate}</time> · Yalnızca kayıtlı sağlayıcı verileri gösterilir.</p>
           </header>
+          ${canonicalPath === "/sampiyonlar-ligi-puan-durumu" ? matchHubLinksSection(hubsForCompetition(MATCH_HUBS, "Şampiyonlar Ligi"), { heading: "Şampiyonlar Ligi maç merkezleri" }) : ""}
           ${content}
         </div>
       </main>
@@ -130,7 +144,13 @@ function writePage(relativePath, html) {
 }
 
 function tableHtml(rows) {
-  const body = rows.map((row) => `<tr><td>${cell(row.rank)}</td><th scope="row">${escapeHtml(row.name)}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`).join("");
+  const body = rows.map((row) => {
+    const href = richTeamHref(row, "./");
+    const nameCell = href
+      ? `<a class="standings-team-link" href="${escapeHtml(href)}" style="display:inline-flex;align-items:center;min-height:32px">${escapeHtml(row.name)}</a>`
+      : escapeHtml(row.name);
+    return `<tr><td>${cell(row.rank)}</td><th scope="row">${nameCell}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`;
+  }).join("");
   return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>Güncel puan durumu</caption><thead><tr><th scope="col">Sıra</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">A</th><th scope="col">Y</th><th scope="col">Av.</th><th scope="col">P</th></tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
@@ -138,8 +158,27 @@ function emptyStateHtml(nameTr) {
   return `<div class="standings-empty" data-card="standings-preseason"><strong>Puan durumu bekleniyor</strong><p>${escapeHtml(nameTr)} için doğrulanmış puan durumu tablosu henüz senkronize edilmedi. Sağlayıcıdan veri geldiğinde bu sayfa otomatik olarak dolacak.</p><a class="detail-link" href="./bugunun-maclari.html">Bugünün maçlarını gör</a></div>`;
 }
 
+/**
+ * Güncel maç merkezleri (data/match-hubs): başlama saatinden 14 gün öncesine
+ * ve 7 gün sonrasına kadar ilgili lig puan durumundan bağlanır. Şampiyonlar
+ * Ligi maçları UCL tablosundan; Süper Lig / Bundesliga takımı oynuyorsa o ligin
+ * tablosundan da.
+ */
+function matchHubLinks(entryId) {
+  const dir = path.join(root, "data", "match-hubs");
+  if (!fs.existsSync(dir)) return [];
+  const now = Date.now();
+  const superLigNames = new Set(["Galatasaray", "Fenerbahçe", "Beşiktaş", "Trabzonspor", "Başakşehir", "Samsunspor", "Göztepe"]);
+  return fs.readdirSync(dir).filter((n) => n.endsWith(".json")).map((n) => JSON.parse(fs.readFileSync(path.join(dir, n), "utf8")))
+    .filter((h) => h && h.file && fs.existsSync(path.join(root, h.file)))
+    .filter((h) => { const t = Date.parse(h.kickoff); return Number.isFinite(t) && t > now - 7 * 864e5 && t < now + 14 * 864e5; })
+    .filter((h) => (entryId === "sampiyonlar-ligi" && /Şampiyonlar Ligi/.test(h.competition || "")) || (entryId === "super-lig" && (superLigNames.has(h.home) || superLigNames.has(h.away))) || (entryId === "bundesliga" && /Stuttgart|Bayern|Dortmund|Leverkusen|Frankfurt/.test(`${h.home} ${h.away}`)))
+    .map((h) => ["./" + h.file, `${h.home} - ${h.awayShort || h.away}: maç saati, kanal ve kadro`]);
+}
+
 function relatedLinksHtml(entry) {
   const links = [
+    ...matchHubLinks(entry.id),
     ["./puan-durumu.html", "Tüm ligler — puan durumu merkezi"],
     ["./lig/" + entry.id + ".html", `${entry.nameTr} fikstür ve sonuçlar`],
     ["./bugunun-maclari.html", "Bugünün maçları"],

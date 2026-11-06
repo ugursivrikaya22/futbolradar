@@ -63,6 +63,33 @@ export function pruneNoindexEntries(xml, readHtml) {
   return { xml: out, removed };
 }
 
+
+/**
+ * Yerel HTML karşılığı olmayan (404) sabit-ağaç URL'lerini çıkarır.
+ * Rewrite/dinamik olabilecek adreslere dokunulmaz (`isStaticPath` false).
+ */
+export function pruneMissingLocalEntries(xml, readHtml, isStaticPath = defaultStaticPath) {
+  const removed = [];
+  const out = xml.replace(URL_BLOCK_RE, (block) => {
+    const loc = (block.match(/<loc>([^<]+)<\/loc>/) || [])[1];
+    if (!loc) return block;
+    const trimmed = loc.trim();
+    if (!isStaticPath(trimmed)) return block;
+    const html = readHtml(trimmed);
+    if (html === null || html === undefined) {
+      removed.push(trimmed);
+      return "";
+    }
+    return block;
+  });
+  return { xml: out, removed };
+}
+
+function defaultStaticPath(loc) {
+  const pathPart = loc.startsWith(DOMAIN) ? loc.slice(DOMAIN.length) : loc;
+  return /^\/(futbolcu|oyuncular|karsilastirma|haber|kose-yazilari|takimlar|mac|mac-raporu|en\/player|en\/news)\b/.test(pathPart);
+}
+
 /** Eksik, indekslenebilir köşe yazılarını lastmod ile ekler. */
 export function addMissingColumns(xml, columns) {
   const present = new Set([...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1].trim()));

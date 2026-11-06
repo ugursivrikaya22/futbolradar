@@ -12,7 +12,7 @@
       "tarihce": "https://www.futbolradar.com/takimlar/galatasaray/tarihce.html"
     }
   },
-  "dataDate": "2026-10-19",
+  "dataDate": "2026-11-05",
   "rules": "Her kayıt sourceUrl taşır. status:'veri-bekleniyor' olan alan için içerik ÜRETME/TAHMİN ETME.",
   "form": {
     "league": {
@@ -20,9 +20,9 @@
       "last": [
         "G",
         "G",
-        "M",
         "G",
-        "G"
+        "G",
+        "M"
       ],
       "note": "Süper Lig son maçlar (soldan sağa, sağlayıcı sırası)",
       "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
@@ -32,12 +32,22 @@
       "status": "ok",
       "last": [
         "G",
+        "G",
+        "G",
         "M",
-        "G",
-        "G",
-        "M"
+        "G"
       ],
       "matches": [
+        {
+          "id": "konyaspor-galatasaray-2026-10-30",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584455"
+        },
+        {
+          "id": "galatasaray-fenerbahce-2026-10-26",
+          "result": "G",
+          "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584442"
+        },
         {
           "id": "genclerbirligi-galatasaray-2026-10-17",
           "result": "G",
@@ -52,16 +62,6 @@
           "id": "galatasaray-kocaelispor-2026-09-13",
           "result": "G",
           "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584407"
-        },
-        {
-          "id": "basaksehir-galatasaray-2026-09-04",
-          "result": "G",
-          "sourceUrl": "https://www.futbolradar.com/kose-yazilari/basaksehir-galatasaray-90-1-gabriel-sara-karakter"
-        },
-        {
-          "id": "galatasaray-monza-2026-07-24",
-          "result": "M",
-          "sourceUrl": "https://www.acmonza.com/en/news/galatasaray-monza-friendly-match-24-july-in-austria/"
         }
       ]
     }
@@ -70,84 +70,73 @@
     "status": "ok",
     "season": "2026/27",
     "rank": 1,
-    "played": 8,
-    "won": 6,
+    "played": 10,
+    "won": 8,
     "drawn": 1,
     "lost": 1,
-    "goalsFor": 17,
-    "goalsAgainst": 11,
-    "goalDifference": 6,
-    "points": 19,
-    "syncedAt": "2026-10-17T16:21:36.773Z",
+    "goalsFor": 23,
+    "goalsAgainst": 12,
+    "goalDifference": 11,
+    "points": 25,
+    "syncedAt": "2026-11-05T00:52:14.371Z",
     "sourceUrl": "https://v3.football.api-sports.io/standings?league=203&season=2026",
     "sourceName": "API-Football /standings"
   },
   "stats": {
     "resultsSummary": {
       "status": "ok",
-      "matches": 6,
-      "won": 4,
+      "matches": 8,
+      "won": 6,
       "drawn": 0,
       "lost": 2,
-      "goalsFor": 11,
-      "goalsAgainst": 9,
+      "goalsFor": 17,
+      "goalsAgainst": 10,
       "note": "Arşivdeki kaynaklı tüm resmî ve hazırlık maçları"
     },
     "topScorers": [
       {
         "name": "V. Osimhen",
-        "rank": 6,
-        "goals": 6,
+        "rank": 1,
+        "goals": 9,
         "assists": 3,
-        "appearances": 6,
-        "minutes": 406,
-        "profile": "https://www.futbolradar.com/futbolcu/victor-osimhen",
-        "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
-        "sourceName": "API-Football /players/topscorers"
-      },
-      {
-        "name": "Gabriel Sara",
-        "rank": 20,
-        "goals": 2,
-        "assists": 2,
         "appearances": 8,
-        "minutes": 619,
-        "profile": "https://www.futbolradar.com/futbolcu/gabriel-sara",
+        "minutes": 555,
+        "profile": "https://www.futbolradar.com/futbolcu/victor-osimhen",
         "sourceUrl": "https://v3.football.api-sports.io/players/topscorers?league=203&season=2026",
         "sourceName": "API-Football /players/topscorers"
       }
     ],
     "topAssists": [
       {
-        "name": "V. Osimhen",
-        "rank": 5,
-        "goals": 6,
-        "assists": 3,
-        "appearances": 6,
-        "minutes": 406,
-        "profile": "https://www.futbolradar.com/futbolcu/victor-osimhen",
-        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
-        "sourceName": "API-Football /players/topassists"
-      },
-      {
-        "name": "L. Torreira",
-        "rank": 10,
-        "goals": 1,
-        "assists": 2,
-        "appearances": 7,
-        "minutes": 567,
-        "profile": "https://www.futbolradar.com/futbolcu/lucas-torreira",
-        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
-        "sourceName": "API-Football /players/topassists"
-      },
-      {
         "name": "Gabriel Sara",
-        "rank": 16,
+        "rank": 4,
         "goals": 2,
-        "assists": 2,
-        "appearances": 8,
-        "minutes": 619,
+        "assists": 4,
+        "appearances": 10,
+        "minutes": 690,
         "profile": "https://www.futbolradar.com/futbolcu/gabriel-sara",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "A. Batrakov",
+        "rank": 7,
+        "goals": 1,
+        "assists": 3,
+        "appearances": 8,
+        "minutes": 464,
+        "profile": "https://www.futbolradar.com/futbolcu/aleksey-batrakov",
+        "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
+        "sourceName": "API-Football /players/topassists"
+      },
+      {
+        "name": "V. Osimhen",
+        "rank": 9,
+        "goals": 9,
+        "assists": 3,
+        "appearances": 8,
+        "minutes": 555,
+        "profile": "https://www.futbolradar.com/futbolcu/victor-osimhen",
         "sourceUrl": "https://v3.football.api-sports.io/players/topassists?league=203&season=2026",
         "sourceName": "API-Football /players/topassists"
       }
@@ -157,6 +146,48 @@
     "status": "ok",
     "excludedWithoutSource": 9,
     "items": [
+      {
+        "id": "konyaspor-galatasaray-2026-10-30",
+        "date": "2026-10-30",
+        "kickoff": "2026-10-30T20:00:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "Deplasman",
+        "stadium": "Medas Konya Büyüksehir Belediyesi Stadium",
+        "homeTeam": "Konyaspor",
+        "awayTeam": "Galatasaray",
+        "opponent": "Konyaspor",
+        "score": {
+          "home": 0,
+          "away": 4
+        },
+        "goalsFor": 4,
+        "goalsAgainst": 0,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/konyaspor-galatasaray-2026-10-30.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584455",
+        "sourceType": "api-football"
+      },
+      {
+        "id": "galatasaray-fenerbahce-2026-10-26",
+        "date": "2026-10-26",
+        "kickoff": "2026-10-26T21:30:00+03:00",
+        "competition": "Süper Lig",
+        "venue": "İç saha",
+        "stadium": "Rams Park Stadyumu",
+        "homeTeam": "Galatasaray",
+        "awayTeam": "Fenerbahçe",
+        "opponent": "Fenerbahçe",
+        "score": {
+          "home": 2,
+          "away": 1
+        },
+        "goalsFor": 2,
+        "goalsAgainst": 1,
+        "result": "G",
+        "reportPage": "https://www.futbolradar.com/mac-raporu/galatasaray-fenerbahce-2026-10-26.html",
+        "sourceUrl": "https://v3.football.api-sports.io/fixtures?id=1584442",
+        "sourceType": "api-football"
+      },
       {
         "id": "genclerbirligi-galatasaray-2026-10-17",
         "date": "2026-10-17",
@@ -288,7 +319,7 @@
   "squad": {
     "status": "ok",
     "season": "2026",
-    "syncedAt": "2026-10-19T06:07:24.492Z",
+    "syncedAt": "2026-11-06T02:20:46.853Z",
     "count": 36,
     "sourceUrl": "https://v3.football.api-sports.io/players/squads?team=645",
     "sourceName": "API-Football /players/squads",
@@ -403,8 +434,8 @@
       },
       {
         "name": "R. Sallai",
-        "position": "Attacker",
-        "positionTr": "Forvet",
+        "position": "Defender",
+        "positionTr": "Defans",
         "age": 28,
         "number": null,
         "providerId": "26252",
@@ -565,8 +596,8 @@
       },
       {
         "name": "Rafael Leão",
-        "position": "Midfielder",
-        "positionTr": "Orta saha",
+        "position": "Attacker",
+        "positionTr": "Forvet",
         "age": 27,
         "number": null,
         "providerId": "22236",
@@ -601,8 +632,8 @@
       },
       {
         "name": "B. Yılmaz",
-        "position": "Defender",
-        "positionTr": "Defans",
+        "position": "Midfielder",
+        "positionTr": "Orta saha",
         "age": 25,
         "number": null,
         "providerId": "63274",
@@ -621,16 +652,107 @@
   },
   "history": {
     "founded": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "date": "1905",
+      "text": "1905 yılında, Galatasaray Mektebi öğrencileri tarafından",
+      "fullName": "Galatasaray Spor Kulübü",
+      "note": "Ali Sami Yen'in anlatımıyla \"1 Teşrin 1905\"",
+      "sourceName": "Galatasaray resmî sitesi — Galatasaray nasıl kuruldu?",
+      "sourceUrl": "https://www.galatasaray.org/s/galatasaray-nasil-kuruldu/13"
     },
     "honours": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "superLigTitles": 26,
+      "superLigSeasons": [
+        "1961-1962",
+        "1962-1963",
+        "1968-1969",
+        "1970-1971",
+        "1971-1972",
+        "1972-1973",
+        "1986-1987",
+        "1987-1988",
+        "1992-1993",
+        "1993-1994",
+        "1996-1997",
+        "1997-1998",
+        "1998-1999",
+        "1999-2000",
+        "2001-2002",
+        "2005-2006",
+        "2007-2008",
+        "2011-2012",
+        "2012-2013",
+        "2014-2015",
+        "2017-2018",
+        "2018-2019",
+        "2022-2023",
+        "2023-2024",
+        "2024-2025",
+        "2025-2026"
+      ],
+      "leagueNote": null,
+      "turkiyeKupasiTitles": 19,
+      "turkiyeKupasiSeasons": [
+        "2024-25",
+        "2018-19",
+        "2015-16",
+        "2014-15",
+        "2013-14",
+        "2004-05",
+        "1999-00",
+        "1998-99",
+        "1995-96",
+        "1992-93",
+        "1990-91",
+        "1984-85",
+        "1981-82",
+        "1975-76",
+        "1972-73",
+        "1965-66",
+        "1964-65",
+        "1963-64",
+        "1962-63"
+      ],
+      "european": [
+        {
+          "title": "UEFA Kupası",
+          "season": "1999-2000",
+          "note": "Final: Galatasaray 0-0 Arsenal (pen. 4-1), Kopenhag",
+          "sourceUrl": "https://www.uefa.com/uefaeuropaleague/news/016e-0e6a3091ff2c-b6d02ad6a643-1000--1999-2000-galatasaray-the-pride-of-turkey/",
+          "sourceName": "UEFA.com — 1999/2000: Galatasaray the pride of Turkey"
+        },
+        {
+          "title": "UEFA Süper Kupası",
+          "season": "2000",
+          "note": "Real Madrid 1-2 Galatasaray (uzatmada altın gol), Monako",
+          "sourceUrl": "https://www.uefa.com/uefasupercup/history/2000/",
+          "sourceName": "UEFA.com — 2000 Super Cup: Jardel doubles up for Galatasaray"
+        }
+      ],
+      "coverage": "Süper Lig: 1959–2025-26 · Türkiye Kupası: 1962-63–2025-26",
+      "superLigSource": {
+        "sourceUrl": "https://www.tff.org/default.aspx?pageID=545",
+        "sourceName": "TFF — Süper Lig şampiyonlukları"
+      },
+      "turkiyeKupasiSource": {
+        "sourceUrl": "https://www.tff.org/default.aspx?pageID=411",
+        "sourceName": "TFF — Türkiye Kupası şampiyonları"
+      }
     },
     "stadium": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "name": "Ali Sami Yen Spor Kompleksi RAMS Park",
+      "capacity": 52280,
+      "note": "15 Ocak 2011'de Galatasaray-Ajax maçıyla açıldı",
+      "sourceName": "Galatasaray resmî sitesi — RAMS Park",
+      "sourceUrl": "https://www.galatasaray.org/s/ali-sami-yen-spor-kompleksi-rams-global-stadyumu/202"
     },
     "colours": {
-      "status": "veri-bekleniyor"
+      "status": "ok",
+      "text": "sarı-kırmızı",
+      "sourceName": "Galatasaray resmî sitesi — Renklerin öyküsü",
+      "sourceUrl": "https://www.galatasaray.org/s/renklerin-oykusu/15"
     },
     "currentManager": {
       "status": "ok",
