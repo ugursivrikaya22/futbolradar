@@ -24460,3 +24460,39 @@ a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var
   }
   #radar-yorumu .column-tags { display: none; }
 }
+
+/* ==========================================================================
+   CANLI SKOR PANOSU — KOMPAKT (2026-11-06)
+   Canlı sayfalardaki (canli-skor, canli-maclar, canli-mac-sonuclari) skor
+   satırları ve lig blokları mobilde/masaüstünde fazla yer kaplıyordu.
+   Yalnızca .live-compact-board kapsamı; dokunma hedefi 36px altına inmez.
+   ========================================================================== */
+.live-compact-board .league-block {
+  padding: 8px 10px;
+  border-radius: 12px;
+}
+.live-compact-board .league-block + .league-block { margin-top: 8px; }
+.live-compact-board .league-block-head { margin-bottom: 6px; gap: 8px; }
+.live-compact-board .league-block-title { font-size: 0.86rem; gap: 6px; }
+.live-compact-board .league-block-title img { width: 18px; height: 18px; }
+.live-compact-board .league-block-count { padding: 1px 7px; font-size: 0.68rem; }
+.live-compact-board .league-match-grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr));
+  gap: 4px;
+}
+.live-compact-card {
+  gap: 6px;
+  min-height: 36px;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.live-compact-status { min-width: 30px; font-size: 0.64rem; gap: 3px; }
+.live-compact-team { font-size: 0.8rem; font-weight: 700; }
+.live-compact-score { font-size: 0.88rem; }
+.live-score-daily-head { margin-bottom: 6px; }
+@media (max-width: 640px) {
+  .live-compact-board .league-match-grid { grid-template-columns: 1fr; gap: 3px; }
+  .live-compact-board .league-block { padding: 6px 8px; }
+  .live-compact-card { padding: 2px 6px; }
+  .live-compact-team { font-size: 0.78rem; }
+}
