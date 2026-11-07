@@ -1239,7 +1239,8 @@ function schemaFor(entry, state, locale, ctx, urls) {
 
 function pageHtml(entry, locale, options) {
   const { state, detail, analysis, report, disambiguate, hrefForMatch, probability } = options;
-  const editorial = locale === "tr" ? readMatchEditorial(root, entry) : null;
+  // Availability/form safety must be identical in both language variants.
+  const editorial = readMatchEditorial(root, entry);
   if (editorial) entry = { ...entry, referee: editorial.referee };
   const base = locale === "en" ? "../../" : "../";
   const text = STR[locale];
@@ -1448,7 +1449,7 @@ function pageHtml(entry, locale, options) {
    * silinmez, böylece eski derin bağlantılar çalışmaya devam eder.
    */
   const aiCtx = { ...ctx, shortDate, sourceLabel: aiSourceDisplay ? `${aiSourceDisplay.icon} ${aiSourceDisplay.title}` : null };
-  if (editorial) sections.unshift(matchEditorialHtml(editorial));
+  if (editorial && locale === "tr") sections.unshift(matchEditorialHtml(editorial));
   const matchTabs = tabsHtml([
     { id: "mac", label: AI_STR[locale].tabMatch, panel: sections.filter(Boolean).join("\n        "), checked: true },
     { id: "ai", label: AI_STR[locale].tabAi, badge: AI_STR[locale].proBadge, panel: `<section class="msp-section ai-match-center" data-ai-match-center data-ai-locale="${locale}" data-ai-state="${escapeHtml(state)}" data-ai-home="${escapeHtml(entry.homeTeam)}" data-ai-away="${escapeHtml(entry.awayTeam)}">${aiMatchCenterPanelHtml(aiModel, aiCtx)}</section>` }
