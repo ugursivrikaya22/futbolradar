@@ -399,7 +399,9 @@
       '<article class="player-stat-card">' +
       "<span>" + escapeHtml(metric.label) + "</span>" +
       "<b>" + escapeHtml(metric.display) + "</b>" +
-      (metric.per90 !== null ? '<em>90 dk: ' + escapeHtml(metric.per90) + "</em>" : "") +
+      (metric.per90 !== null ? '<em>90 dk: ' + escapeHtml(metric.per90) + " (değer / dakika × 90)</em>" : "") +
+      (metric.source ? '<em>Veri: ' + escapeHtml(metric.source) + "</em>" : "") +
+      (metric.formula ? '<em>' + escapeHtml(metric.formula) + "</em>" : "") +
       "</article>"
     );
   }

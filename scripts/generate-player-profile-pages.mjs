@@ -249,6 +249,7 @@ function hasSubstantivePlayerContent(model) {
   if (!model) return false;
   const rows = (block) => Boolean(block && (block.available || (Array.isArray(block.rows) && block.rows.length) || (Array.isArray(block.items) && block.items.length)));
   return Boolean(
+    (model.profileEvidence && model.profileEvidence.matches.length > 0) ||
     (model.seasonStats && model.seasonStats.available) ||
     (model.matchLog && model.matchLog.available) ||
     rows(model.career) || rows(model.transfers) ||
