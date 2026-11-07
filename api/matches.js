@@ -43,6 +43,12 @@ const {
  * endpoint now degrades instead of failing, and reports what happened in
  * `meta` so the same class of outage is diagnosable from the response.
  */
+function teamKeys(value) {
+  const raw = String(value || "");
+  const strip = (text) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\u0131/g, "i").trim();
+  return [strip(raw).toLowerCase(), strip(raw.toLocaleLowerCase("tr-TR"))].filter(Boolean);
+}
+
 module.exports = async function handler(req, res) {
   if (rejectUnsupportedMethod(req, res)) {
     return;
@@ -96,9 +102,21 @@ module.exports = async function handler(req, res) {
   // bağlanabilsin diye). Türkçe istek bu ek tabloyu hiç yüklemez.
   // ANA SAYFA ÖNCELİK PUANI (services/homeMatchPriority.js): lig + takım +
   // derbi/zirve. Zirve için yalnızca mevcut puan durumu dosyası okunur.
-  const data = withMatchPages(withTeamIds(withHomePriority(withRelevance(rawData), { standings: homeStandings() })), undefined, {
+  const allData = withMatchPages(withTeamIds(withHomePriority(withRelevance(rawData), { standings: homeStandings() })), undefined, {
     includeEn: String(query.locale || "").toLowerCase() === "en"
   });
+
+  // TAKIM FİLTRESİ (yalnızca date=all): takım detay sayfası tüm sezonun
+  // maç listesinden yalnızca kendi maçlarını kullanır. Filtresiz yanıt
+  // ~15 MB JSON olduğundan, `team` verildiğinde liste sunucuda daraltılır.
+  // Günlük/canlı sorgular (date=all olmayan) bu bloktan etkilenmez.
+  let data = allData;
+  const teamFilter = query.date === "all" && query.team ? teamKeys(query.team) : null;
+  if (teamFilter) {
+    data = allData.filter((match) => [match.homeTeam, match.awayTeam].some((name) => teamKeys(name).some((key) => teamFilter.includes(key))));
+    // Canlı yoklama yapılmayan, sezon geneli liste: kısa CDN önbelleği yeterli.
+    setCachePolicy(res, "matches");
+  }
 
   // BAYATLIK YANITTA BİLDİRİLİR.
   //
