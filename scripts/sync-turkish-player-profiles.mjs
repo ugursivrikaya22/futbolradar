@@ -118,6 +118,7 @@ function selectedSnapshots(snapshots, args) {
  * sağlayıcı gerçekten bir profil kaydı döndürdüğünde yazıyor.
  */
 function selectedPlayer(player, args) {
+  if (player.isCurrentSuperLigPlayer === false || /departed|inactive|free.agent/i.test(player.squadStatus || "")) return false;
   if (args.playerId && ![player.id, player.slug, player.providerId].some((value) => String(value || "") === String(args.playerId))) {
     return false;
   }
@@ -170,6 +171,8 @@ function quotaExhausted() {
  */
 async function enrichFromProvider(working, snapshots, args) {
   const chosenIds = new Set(working.filter((player) => selectedPlayer(player, args)).map((player) => player.providerId).filter(Boolean));
+  if (!chosenIds.size) return { players: working, enriched: 0, providerPlayers: 0,
+    transferRows: 0, requests: 0, coverage: [], stoppedBy: "no-selected-players", teamConflicts: [] };
   const providerPlayers = [];
   const providerTransfers = [];
   const coverage = [];
@@ -196,6 +199,7 @@ async function enrichFromProvider(working, snapshots, args) {
       team: snapshot.teamName,
       status: result.complete ? "complete" : "partial",
       players: result.players.length,
+      rejectedSeasonRecords: result.players.filter(player => player.seasonStatisticsRejected).length,
       pages: result.pages,
       totalPages: result.totalPages,
       reason: result.stoppedBy || null
@@ -233,11 +237,10 @@ async function enrichFromProvider(working, snapshots, args) {
   let enriched = 0;
   const teamConflicts = [];
   const next = working.map((player) => {
-    if (!player.providerId || (chosenIds.size && !chosenIds.has(player.providerId))) return player;
+    if (!player.providerId || !chosenIds.has(player.providerId)) return player;
     const provider = playerByProviderId.get(String(player.providerId));
     const transfers = transfersByPlayer.get(String(player.providerId)) || [];
-    if (!provider && !transfers.length) return player;
-    enriched += 1;
+    if ((!provider && !transfers.length) || provider?.seasonStatisticsRejected) return player;
 
     // KULÜP ÜYELİĞİ BU ADIMIN İŞİ DEĞİL.
     //
@@ -264,8 +267,11 @@ async function enrichFromProvider(working, snapshots, args) {
         detectedAt: new Date().toISOString(),
         resolution: "kept-local-flagged-for-review"
       });
+      // Do not attach another club's season numbers or freshness to this player.
+      return player;
     }
 
+    enriched += 1;
     const merged = mergePlayerWithProvider(player, {
       ...(provider || {}),
       id: player.id,

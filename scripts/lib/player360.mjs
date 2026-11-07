@@ -132,6 +132,27 @@ function renderSeason(model, locale) {
   const heading = text("player360.season.heading", locale, name, model.season);
   const stats = model.seasonStats;
 
+  if (stats.snapshot) {
+    const cards = stats.metrics.map(row => {
+      const value = row.available ? row.display : "—";
+
+      const per90 = row.available && row.per90 !== null
+        ? `<small>90 ${locale === "en" ? "min" : "dk"}: ${escapeHtml(row.per90)}</small>` : "";
+      return `<div class="p360-stat"><span>${escapeHtml(text(`player360.stat.${row.key}`, locale))}</span><b>${escapeHtml(value)}</b>${per90}</div>`;
+    }).join("");
+    const formulas = stats.metrics.filter(row => row.available && row.formula).map(row => `<li>${escapeHtml(text(`player360.stat.${row.key}`, locale))}: ${escapeHtml(locale === "en" ? row.sourceField : row.formula)}</li>`).join("");
+    const scope = stats.snapshot.competitions.map(row => `${row.team} / ${competitionLabel(row.name, locale)} (#${row.id})`).join(" · ");
+    return `<section class="p360" aria-labelledby="p360-season-title" data-p360-section="season">
+      <div class="p360-head"><h2 id="p360-season-title">${escapeHtml(text("player360.season.heading", locale, name, stats.season))}</h2></div>
+      <p class="p360-source">${locale === "en" ? "Data" : "Veri"}: <a href="https://www.api-football.com/news/post/how-to-get-started-with-api-football-the-complete-beginners-guide" rel="nofollow noopener noreferrer" target="_blank">API-Football</a> · ${escapeHtml(stats.season)} · ${escapeHtml(scope)}</p>
+      ${stats.verifiedAt ? `<p class="p360-source">${escapeHtml(text("player360.season.checked", locale))}: ${escapeHtml(formatDate(stats.verifiedAt, locale))} (Europe/Istanbul)</p>` : ""}
+      <div class="p360-stat-grid">${cards}</div>
+      <p class="p360-source">—: ${escapeHtml(text("player360.season.pending", locale))}. ${locale === "en" ? "Per 90: value / minutes × 90" : "90 dk: değer / dakika × 90"}.</p>
+      <details><summary>${locale === "en" ? "Source fields / aggregation" : "Kaynak alanlar / toplama yöntemi"}</summary><p>${locale === "en" ? "Counts are summed over the listed team/competition blocks for this season. A missing block field stays empty." : "Sayımlar aynı sezondaki listelenen takım/turnuva bloklarından toplanır. Bir blokta alan eksikse toplam boş kalır."}</p><ul>${formulas}</ul></details>
+      <p class="p360-source">${escapeHtml(text("player360.season.apiMissing", locale))}</p>
+    </section>`;
+  }
+
   if (!stats.available) {
     return `<section class="p360" aria-labelledby="p360-season-title" data-p360-section="season">
         <div class="p360-head"><h2 id="p360-season-title">${escapeHtml(heading)}</h2></div>
@@ -560,9 +581,12 @@ export function player360Description(model, options = {}) {
     const goals = stats.get("goals");
     const assists = stats.get("assists");
     const matches = stats.get("appearances");
-    parts.push(locale === "en"
-      ? `${model.season} season: ${matches !== undefined ? `${matches} apps, ` : ""}${goals ?? 0} goals, ${assists ?? 0} assists`
-      : `${model.season} sezonu: ${matches !== undefined ? `${matches} maç, ` : ""}${goals ?? 0} gol, ${assists ?? 0} asist`);
+    const measured = [
+      matches !== undefined ? `${matches} ${locale === "en" ? "apps" : "maç"}` : null,
+      goals !== undefined ? `${goals} ${locale === "en" ? "goals" : "gol"}` : null,
+      assists !== undefined ? `${assists} ${locale === "en" ? "assists" : "asist"}` : null
+    ].filter(Boolean);
+    parts.push(`${model.season} ${locale === "en" ? "season" : "sezonu"}: ${measured.join(", ")}`);
   }
 
   if (model.matchLog.available) {

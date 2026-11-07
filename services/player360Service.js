@@ -1,3 +1,4 @@
+const { buildMetrics } = require("./playerMetricsService.js");
 /**
  * FUTBOLCU 360 — OYUNCU SAYFASININ TEK VERİ MODELİ.
  *
@@ -162,6 +163,14 @@ const POSITION_METRICS = Object.freeze({
 });
 
 function buildSeasonStats(player, view) {
+  if (player.seasonStatistics?.provider === "api-football" && view.verified) {
+    const snapshot = player.seasonStatistics;
+    const metrics = buildMetrics(player, { positionGroup: player.positionGroup || positionFamily(player) })
+      .map(row => statsAreVerified(player, row.key) ? row : { ...row, value: null, display: null, available: false, per90: null });
+    return { available: metrics.some(row => row.available), season: snapshot.season,
+      core: metrics.filter(row => row.available && ["appearances", "starts", "minutes", "goals", "assists", "yellowCards", "redCards"].includes(row.key)), positional: [], metrics, source: "API-Football", snapshot,
+      verifiedAt: player.statsVerifiedAt || null };
+  }
   const fields = view.fields || {};
   const core = [];
 
@@ -602,7 +611,7 @@ function buildPlayer360(input) {
 
   return {
     id: player.id,
-    season: SEASON_LABEL,
+    season: player.seasonStatistics?.season || SEASON_LABEL,
     verified: view.verified,
     identity,
     seasonStats: buildSeasonStats(player, view),
