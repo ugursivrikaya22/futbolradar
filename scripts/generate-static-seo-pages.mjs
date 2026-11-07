@@ -530,6 +530,7 @@ function sitemapXml(files) {
     "canli-skor.html",
     "puan-durumu.html",
     "takimlar.html",
+    "turk-sporcu-sonuclari.html",
     "oyuncu-radari.html",
     "oyuncu-karsilastirmalari.html",
     "players/position/forvet.html",
