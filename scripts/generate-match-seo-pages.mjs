@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readMatchEditorial, matchEditorialHtml } from "./lib/matchEditorial.mjs";
 /**
  * HER MAÇA ÖZEL SEO SAYFASI — /mac/<ev>-<dep>-<gün>-<ay>-<yıl> (TR)
  *                              /en/match/<home>-<away>-<month>-<day>-<year> (EN)
@@ -120,6 +121,8 @@ const { writeDynamicRoutePairs, competitionLabel } = require("../services/i18n.j
 const { CONFIRMED_FIXTURE_STATUSES } = require("../services/superLigFixtureService.js");
 
 const CHECK_ONLY = process.argv.includes("--check");
+// Targeted regeneration never prunes pages or rewrites the global registry/sitemap.
+const ONLY_SLUG = process.argv.find((arg) => arg.startsWith("--slug="))?.slice(7);
 const NOW = Date.now();
 const SEASON_START = "2026-07-01";
 const HUB_TR = "mac-takvimi.html";
@@ -1236,6 +1239,8 @@ function schemaFor(entry, state, locale, ctx, urls) {
 
 function pageHtml(entry, locale, options) {
   const { state, detail, analysis, report, disambiguate, hrefForMatch, probability } = options;
+  const editorial = locale === "tr" ? readMatchEditorial(root, entry) : null;
+  if (editorial) entry = { ...entry, referee: editorial.referee };
   const base = locale === "en" ? "../../" : "../";
   const text = STR[locale];
   const titles = pageTitles(entry, state, locale, disambiguate);
@@ -1247,8 +1252,8 @@ function pageHtml(entry, locale, options) {
   const league = leagueLinks(entry, locale, base);
   const competitionName = competitionNameFor(entry.competitionId, entry.league) || entry.league || "";
   const { broadcastChannel, broadcastChannels } = require("../services/broadcastSchedule.js");
-  const channel = broadcastChannel(entry) || "";
-  const channels = channel ? broadcastChannels(entry) : [];
+  const channel = editorial?.broadcast || broadcastChannel(entry) || "";
+  const channels = editorial?.broadcast ? [editorial.broadcast] : channel ? broadcastChannels(entry) : [];
   // Mutlak adres: takım profilleri ve lig puan durumu sayfaları uzantısız
   // kanonik taşır; lig sayfaları (`lig/<id>.html`) ve takım fikstürleri
   // uzantılı kalır. Şemadaki `url` sayfanın kendi canonical'ıyla eşleşmeli.
@@ -1277,7 +1282,7 @@ function pageHtml(entry, locale, options) {
     // istemci sağlayıcı kaydını bu maça bağlayamazdı.
     homeTeam: nationLabel(entry.homeTeam, locale),
     awayTeam: nationLabel(entry.awayTeam, locale),
-    predictedLineup: predictedLineupFor(detail.naturalId),
+    predictedLineup: editorial ? null : predictedLineupFor(detail.naturalId),
     predictedLineupSources: predictedLineupsStore.sources || {},
     predictedLineupAsOf: predictedLineupsStore.asOf || null,
     homeHref: home.page,
@@ -1320,7 +1325,7 @@ function pageHtml(entry, locale, options) {
   const focusForms = focus && focus.last10 && (focus.last10.home.length || focus.last10.away.length)
     ? { home: providerFormRows(focus.last10.home, focus.homeTeamId), away: providerFormRows(focus.last10.away, focus.awayTeamId), source: "provider-last10" }
     : null;
-  const forms = focusForms || { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
+  const forms = editorial ? { home: [], away: [] } : focusForms || { home: formFor(entry.homeTeam, entry.kickoff), away: formFor(entry.awayTeam, entry.kickoff) };
   const next = {
     home: nextFor(entry.homeTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) })),
     away: nextFor(entry.awayTeam, entry.kickoff).map((match) => ({ match, href: hrefForMatch(match) }))
@@ -1335,8 +1340,8 @@ function pageHtml(entry, locale, options) {
     probability: aiProbability,
     modelPrediction: aiModelPrediction,
     forms,
-    absences: aiAbsencesFor(entry.homeTeam, entry.awayTeam, competitionLeagueIdFor(entry)),
-    lineups: aiLineupsFor(detail, analysis, predictedLineupFor(detail.naturalId), entry.homeTeam, entry.awayTeam),
+    absences: editorial ? { home: null, away: null } : aiAbsencesFor(entry.homeTeam, entry.awayTeam, competitionLeagueIdFor(entry)),
+    lineups: aiLineupsFor(detail, editorial ? null : analysis, editorial ? null : predictedLineupFor(detail.naturalId), entry.homeTeam, entry.awayTeam),
     h2h: aiH2hFor(h2h, entry.homeTeam),
     state,
     // Skor, SKOR TABLOSUYLA AYNI kaynaktan okunur (heroHtml → entry.score).
@@ -1366,7 +1371,7 @@ function pageHtml(entry, locale, options) {
       shareCardSectionHtml(detail, entry, ctx),
       matchPollSectionHtml(ctx),
       matchCenterPlusSectionsHtml(ctx),
-      lineupsSectionHtml(detail, analysis, ctx),
+      lineupsSectionHtml(detail, editorial ? null : analysis, ctx),
       // Puanlama YALNIZCA bitmiş maçta açılır ve kadro kaydı yoksa hiç
       // basılmaz; kararı bölümün kendisi veriyor (matchSeoPage.mjs).
       ratingsSectionHtml(detail, ctx),
@@ -1393,10 +1398,10 @@ function pageHtml(entry, locale, options) {
       eventsSectionHtml(events, ctx),
       statsSectionHtml(detail.statistics, ctx),
       matchCenterPlusSectionsHtml(ctx),
-      lineupsSectionHtml(detail, analysis, ctx),
+      lineupsSectionHtml(detail, editorial ? null : analysis, ctx),
       // Maça sonradan katılan okuyucu "kim yok" diye de soruyor; blok
       // kendi verisi yoksa zaten hiç basılmıyor.
-      absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
+      editorial ? "" : absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       h2hSectionHtml(h2h, ctx),
@@ -1410,10 +1415,10 @@ function pageHtml(entry, locale, options) {
       state === "tbd" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.tbdNote)}</strong></article></section>` : "",
       broadcastSectionHtml(entry, ctx),
       whenSectionHtml(entry, ctx),
-      lineupsSectionHtml(detail, analysis, ctx),
+      lineupsSectionHtml(detail, editorial ? null : analysis, ctx),
       squadsSectionHtml(squads, ctx),
-      absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
-      formSectionHtml(forms, ctx),
+      editorial ? "" : absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
+      editorial ? "" : formSectionHtml(forms, ctx),
       comparisonSectionHtml(focus && focus.summary, ctx),
       h2hSectionHtml(h2h, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
@@ -1443,6 +1448,7 @@ function pageHtml(entry, locale, options) {
    * silinmez, böylece eski derin bağlantılar çalışmaya devam eder.
    */
   const aiCtx = { ...ctx, shortDate, sourceLabel: aiSourceDisplay ? `${aiSourceDisplay.icon} ${aiSourceDisplay.title}` : null };
+  if (editorial) sections.unshift(matchEditorialHtml(editorial));
   const matchTabs = tabsHtml([
     { id: "mac", label: AI_STR[locale].tabMatch, panel: sections.filter(Boolean).join("\n        "), checked: true },
     { id: "ai", label: AI_STR[locale].tabAi, badge: AI_STR[locale].proBadge, panel: `<section class="msp-section ai-match-center" data-ai-match-center data-ai-locale="${locale}" data-ai-state="${escapeHtml(state)}" data-ai-home="${escapeHtml(entry.homeTeam)}" data-ai-away="${escapeHtml(entry.awayTeam)}">${aiMatchCenterPanelHtml(aiModel, aiCtx)}</section>` }
@@ -1742,6 +1748,7 @@ const candidates = collectCandidates();
 const { added, updated } = mergeRegistry(registry, candidates);
 
 const bySlug = new Map(registry.pages.map((entry) => [entry.slug, entry]));
+if (ONLY_SLUG && !bySlug.has(ONLY_SLUG)) throw new Error(`Unknown match slug: ${ONLY_SLUG}`);
 const lookupIndex = (() => {
   const table = { byApiFootball: new Map(), byIdentity: new Map() };
   for (const entry of registry.pages) {
@@ -1786,6 +1793,7 @@ const stateCounts = { pre: 0, live: 0, post: 0, pending: 0, tbd: 0, interrupted:
 
 for (const plan of plans) {
   const { entry, state } = plan;
+  if (ONLY_SLUG && entry.slug !== ONLY_SLUG) continue;
   stateCounts[state] = (stateCounts[state] || 0) + 1;
   const detail = detailFor(entry);
   const analysis = analysisFor(entry);
@@ -1832,9 +1840,9 @@ function pruneStalePages() {
   }
   return removed;
 }
-const pruned = pruneStalePages();
+const pruned = ONLY_SLUG ? 0 : pruneStalePages();
 
-const hubs = hubPages(registry.pages, hrefForEntry);
+const hubs = ONLY_SLUG ? [] : hubPages(registry.pages, hrefForEntry);
 const hubPairs = new Map();
 for (const page of hubs) {
   if (writeIfChanged(page.relative, page.html)) written += 1; else unchanged += 1;
@@ -1843,7 +1851,7 @@ for (const page of hubs) {
   sitemapEntries.push(sitemapEntry(page.canonical, { tr: page.pair.trUrl, en: page.pair.enUrl }, lastmod, "daily", page.relative === HUB_TR || page.relative === HUB_EN ? "0.8" : "0.5"));
 }
 
-if (!CHECK_ONLY) {
+if (!CHECK_ONLY && !ONLY_SLUG) {
   freshness.save();
   writeDynamicRoutePairs("match-seo", pairs);
   writeDynamicRoutePairs("match-seo-hub", [...hubPairs.values()]);
