@@ -49,7 +49,7 @@ Bu geliştirme oturumunda API anahtarı yapılandırılmamıştı; gerçek `/pla
 - Pas isabeti: tek blokta `passes.accuracy`; çok blokta bildirilen yüzdelerin pas sayısıyla ağırlıklı ortalaması: `Σ (passes.accuracy × passes.total) / Σ passes.total`. Her yüzde 0–100 aralığında olmalı; her blokta pas sayısı bulunmalı ve toplam pas > 0 olmalı. Basit yüzde ortalaması kullanılmaz.
 - 90 dakika değeri: `değer / dakika × 90` (dakika >= 90). Kaynak alanlar, toplama yöntemi, tarih ve `Veri: API-Football` sayfada yer alır.
 - Yeni snapshot, eski el ile girilmiş sezon sayılarını *aynı kaynak etiketi altında karıştırmaz*. Eksik API alanlarına eski düz alanlardan, maç başına ortalamadan veya başka sezondan geri dönüş yok. `Number(null) === 0` tuzağı bu yol için kapatıldı.
-- Kimlik güvenilirliği ve alan bazlı yayın kapısı korunur. Ayrılmış / aktif Süper Lig oyuncusu olmayan kayıtlar derin senkrona alınmaz; kulüp çelişkisinde sezon snapshot'ı yayımlanmaz. `services/playerStatsEligibility.js` güncel `main`de yok (PR #642 ayrı/açık); o PR'ın liste kuralı değiştirilmedi.
+- Kimlik güvenilirliği ve alan bazlı yayın kapısı korunur. Ayrılmış / aktif Süper Lig oyuncusu olmayan kayıtlar derin senkrona alınmaz; kulüp çelişkisinde sezon snapshot'ı yayımlanmaz. `services/playerStatsEligibility.js` güncel main’den alınan ortak aktiflik kuralıdır; liste kuralı değiştirilmedi.
 - Maç geçmişi için mevcut `harvest-player-match-history.mjs` ve maç kadrosu/olay kayıtları kullanılmaya devam eder. Her oyuncu/maç için yeni istek döngüsü eklenmedi. Takım maç xG'si oyuncu xG'si olarak kullanılamaz.
 
 ## Kaynak kullanım koşulları
@@ -97,3 +97,15 @@ Geçti: `test-api-football-player-metrics`, `test-player-profile`, `test-player-
 Sınırlı/kırmızı kontroller:
 - `test-player-360.mjs`, Osimhen'in gol alanının yayımlanmasını bekleyen 174. satırda durdu. `main`deki model aynı veri üzerinde aynı boş sonucu verdi: son doğrulama 64 gün önce olduğu için kimlik güvenilirliği kapalı. Eski veriyi taze göstermek için kapı gevşetilmedi.
 - `test-i18n.mjs`: sözlük anahtar/boş değer kontrolleri geçti; 33 dosya/bağlantı kontrolü, inode sınırı nedeniyle kullanılan sparse worktree'de üretilmiş TR/EN HTML dizinleri bulunmadığından geçmedi. Tam üretim/postprocess çalıştırılmadı ve bu dosyalar commit'e dahil edilmedi.
+
+## Kullanıcının ek isteği: ayrı PR'larla pilot açılım
+
+PR #646 yalnızca ortak altyapıdır. Oyuncu kayıtları küçük, ayrı ve merge edilmeyen PR'larda `data/player-profile-evidence/*.json` dosyalarıyla etkinleşir. Bu yeni kayıtlar mevcut API-Football oyuncu-maç önbelleğindeki belirli gerçek maçları kullanır; sezon verisiymiş gibi göstermez. Tam sezon API dolumu ayrı mevcut senkronla devam eder. Her alan, kayıtlı maçların tamamında ölçülmüşse toplanır; eksikse “Güncelleniyor”. Bitiricilik, pres, yaratıcılık, istikrar ve teknik beceri puanı uydurulmaz. Maç xG'si oyuncuya bölüştürülmez. Ataberk'in tek kayıtlı maçı istikrar puanı üretmek için kullanılmaz.
+
+### Öncelik sinyali
+
+Gerçek “en çok trafik alan oyuncu” sıralaması üretilemiyor: `data/analytics/organic-traffic.json` GA4 bağlı değil/boş; `data/search-demand/search-console-status.json` Search Console bağlı değil diyor. Bu nedenle trafik sayısı/hacmi iddia edilmiyor. Elde olan **arama talebi vekili**: `data/search-demand/signals.json` içindeki 3 Ağustos 2026 tarihli Google autocomplete kayıtları. Doğrudan oyuncu sorgusu `osimhen` (10 kayıtlı öneri), ardından bağlamsal `salah trabzonspor` (9 öneri) ilk pilotu seçtiriyor. Öneri sayısı trafik hacmi değildir. Ataberk kullanıcı tarafından özellikle istendiği için sonraki ayrı pilotta yer alır. Öncelik 1/2/3 trafik puanı değil iş sırasıdır. Sitemap lastmod trafiğe kanıt diye kullanılmadı. Mevcut 80 istek sınırı altında haftalık senkron takım sırası da bu küçük kayıtların önceliğini izler.
+
+Kimlik kontrolü, `super-lig-squads.json` içindeki son gerçekten çekilmiş, complete kadro kaydının tarihiyle yeniden değerlendirilir; bugünün saati doğrulama gibi yazılmaz. Bu dar doğrulama sadece yeni kayıtlı-maç bölümünü açar; eski rating/sezon alanlarını açmaz. Aktiflik için artık main'e birleşmiş `playerStatsEligibility.js` ortak kuralı kullanılır. Kaynak anahtarı gerekmeden mevcut veriden bu bölüm üretilebilir.
+
+PR #642/#645 sonrası güncel main altyapı dalına merge commit'iyle alındı; önceden push edilmiş commitler yeniden yazılmadı. GitHub faturalama kısıtı nedeniyle CI beklenmez; ilgili testler her PR için yerelde çalıştırılır. `test-active-stats-players` sparse worktree'de bulunmayan eski profil HTML'ini bekleyen 50. satırda durur; aktiflik fonksiyonu ve yeni bölümün ayrılan oyuncuları reddetmesi ayrıca yerel testle doğrulanır.

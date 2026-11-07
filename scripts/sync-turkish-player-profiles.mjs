@@ -19,6 +19,8 @@ const {
 } = require("../services/playerService.js");
 const { profileCompleteness } = require("../services/playerProfileCompleteness.js");
 const { sameClub } = require("../services/superLigTeams.js");
+const { isActiveStatsPlayer } = require("../services/playerStatsEligibility.js");
+const { prioritizeProfileSnapshots } = require("../services/playerProfileEvidence.js");
 
 const root = process.cwd();
 const PLAYERS_PATH = path.join(root, "data", "players.json");
@@ -118,7 +120,7 @@ function selectedSnapshots(snapshots, args) {
  * sağlayıcı gerçekten bir profil kaydı döndürdüğünde yazıyor.
  */
 function selectedPlayer(player, args) {
-  if (player.isCurrentSuperLigPlayer === false || /departed|inactive|free.agent/i.test(player.squadStatus || "")) return false;
+  if (!isActiveStatsPlayer(player)) return false;
   if (args.playerId && ![player.id, player.slug, player.providerId].some((value) => String(value || "") === String(args.playerId))) {
     return false;
   }
@@ -179,7 +181,7 @@ async function enrichFromProvider(working, snapshots, args) {
   const before = apiFootballProvider.providerRequestStats().total;
   let stoppedBy = null;
 
-  for (const snapshot of snapshots) {
+  for (const snapshot of prioritizeProfileSnapshots(snapshots)) {
     const used = apiFootballProvider.providerRequestStats().total - before;
     const remainingBudget = args.requestBudget - used;
 

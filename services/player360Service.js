@@ -1,3 +1,4 @@
+const { profileEvidence } = require("./playerProfileEvidence.js");
 const { buildMetrics } = require("./playerMetricsService.js");
 /**
  * FUTBOLCU 360 — OYUNCU SAYFASININ TEK VERİ MODELİ.
@@ -615,6 +616,7 @@ function buildPlayer360(input) {
     verified: view.verified,
     identity,
     seasonStats: buildSeasonStats(player, view),
+    profileEvidence: profileEvidence(player),
     matchLog: {
       available: matchLog.appearances.length > 0,
       // Satırın maç raporu adresi BURADA çözülür: görünüm katmanı rota

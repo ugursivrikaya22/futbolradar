@@ -177,6 +177,26 @@ function renderSeason(model, locale) {
       </section>`;
 }
 
+/** Pilot batches expose only observed match-window numbers, never season totals. */
+function renderRegisteredEvidence(model, locale) {
+  const evidence = model.profileEvidence;
+  if (!evidence) return "";
+  const pending = locale === "en" ? "Updating" : "Güncel<wbr>leniyor";
+  const cards = evidence.metrics.map(row => `<div class="p360-stat"><span>${escapeHtml(text(`player360.stat.${row.key}`, locale))}</span><b>${row.value === null ? pending : escapeHtml(formatNumber(row.value, locale) + row.unit)}</b></div>`).join("");
+  const abilities = (locale === "en" ? ["Finishing", "Pressing", "Creativity", "Consistency", "Technical ability"] : evidence.pending)
+    .map(label => `<div class="p360-stat"><span>${escapeHtml(label)}</span><b>${pending}</b></div>`).join("");
+  const matches = evidence.matches.map(row => `<li>${escapeHtml(row.date)} · ${escapeHtml(row.opponent)} · ${escapeHtml(row.id)}</li>`).join("");
+  const formulas = evidence.metrics.filter(row => row.formula).map(row => `<li>${escapeHtml(text(`player360.stat.${row.key}`, locale))}: ${escapeHtml(locale === "en" ? row.key === "passAccuracy" ? "Σ accuratePasses / Σ passes × 100" : row.key === "appearances" ? "COUNT(matchId); registered matches only" : `Σ ${row.key}; registered matches only` : row.formula)}</li>`).join("");
+  return `<section class="p360" data-p360-section="registered-evidence">
+    <div class="p360-head"><h2>${escapeHtml(model.identity.name)} ${locale === "en" ? "Recorded Match Statistics" : "Kayıtlı Maç İstatistikleri"}</h2></div>
+    <p class="p360-source">${locale === "en" ? "Data" : "Veri"}: API-Football · ${evidence.matches.length} ${locale === "en" ? "recorded matches; NOT season totals" : "kayıtlı maç; sezon toplamı DEĞİLDİR"}. ${escapeHtml(locale === "en" ? "Only the matches listed below are included. Missing fields are not zero; cached match data is not live data." : "Yalnızca aşağıdaki maçlar kapsanır. Eksik alan sıfır değildir; önbellekteki maç verisi canlı veri değildir.")}</p>
+    <div class="p360-stat-grid">${cards}${abilities}</div>
+    <p class="p360-source">${locale === "en" ? "Finishing, pressing, creativity, consistency and technical ability have no verified scalar source; xG/xA are not estimated. Transfermarkt market/contract and Understat/FBref imports are not enabled without permitted reuse." : "Bitiricilik, pres, yaratıcılık, istikrar ve teknik beceri için doğrulanmış sayısal kaynak yok; xG/xA tahmin edilmez. Transfermarkt piyasa/sözleşme ve Understat/FBref aktarımı kullanım izni olmadan etkinleştirilmez."}</p>
+    <details><summary>${locale === "en" ? "Source / match window / formulas" : "Kaynak / maç kapsamı / formüller"}</summary>
+    <p>${escapeHtml(locale === "en" ? "API-Football player-match cache" : "API-Football oyuncu-maç önbelleği")}: data/player-match-history.json · ${escapeHtml(formatDate(evidence.recordedAt, locale))} (Europe/Istanbul). ${locale === "en" ? "Roster identity observation" : "Kadro kimlik doğrulaması"}: ${escapeHtml(formatDate(evidence.verifiedAt, locale))} (Europe/Istanbul).</p><ul>${matches}</ul><ul>${formulas}</ul></details>
+  </section>`;
+}
+
 // ── Son maçlar ──────────────────────────────────────────────────────────────
 
 function cardsCell(row) {
@@ -537,6 +557,7 @@ export function renderPlayer360(model, options = {}) {
   return [
     renderIdentity(model, locale),
     renderSeason(model, locale),
+    renderRegisteredEvidence(model, locale),
     renderMatches(model, locale),
     renderForm(model, locale),
     renderAvailability(model, locale),
