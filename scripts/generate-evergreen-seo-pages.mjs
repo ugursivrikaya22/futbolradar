@@ -240,12 +240,13 @@ const KEYWORD_HUB_LINKS = [
   ["fenerbahce-transfer.html", "Fenerbahçe transfer"],
   ["besiktas-mac-ozetleri.html", "Beşiktaş maç özetleri"],
   ["super-lig-bu-hafta.html", "Süper Lig bu hafta"],
+  ["mac/galatasaray-amed-sportif-faaliyetler-7-kasim-2026.html", "Galatasaray - Amedspor (7 Kasım, 19:00 TSİ)"],
   ["galatasaray-stuttgart.html", "Galatasaray - Stuttgart (Şampiyonlar Ligi)"],
   ["vfb-stuttgart.html", "VfB Stuttgart"]
 ];
 function keywordHubLinks(base = "./") {
   return KEYWORD_HUB_LINKS.filter(([file]) => fs.existsSync(path.join(root, file)))
-    .map(([file, label]) => `<a href="${base}${file}">${escapeHtml(label)}</a>`).join("");
+    .map(([file, label]) => `<a href="${base}${file.startsWith("mac/") ? file.replace(/\.html$/, "") : file}">${escapeHtml(label)}</a>`).join("");
 }
 
 function relatedLinks(title, base = "./") {
