@@ -69,6 +69,7 @@ const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { publishedColumns } = require("../services/columnService.js");
 const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
+const { pageShareHtml } = require("../services/columnShare.js");
 const { canonicalFromPath, columnShareHtml } = require("../services/columnShare.js");
 const { statusLabel, BREAKING_LABEL, editorialStatusOf } = require("../services/editorialStatus.js");
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
@@ -580,6 +581,7 @@ ${body}
         <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
         <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
       </section>
+      ${["topScorers", "topAssists", "statsHub"].includes(routeKey) ? pageShareHtml({ url: canonical, title: heroTitle, locale: "en" }) : ""}
     </main>`;
 
   return `<!doctype html>

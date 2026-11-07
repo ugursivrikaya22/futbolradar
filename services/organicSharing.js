@@ -1,4 +1,4 @@
-const { installColumnShare } = require('./columnShare');
+const { installColumnShare, installContentShareFromDocument, shareSurface } = require('./columnShare');
 const origin = 'https://www.futbolradar.com';
 const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const decode = value => value.replace(/&(?:amp|quot|apos|lt|gt|#39|#(\d+)|#x([0-9a-f]+));/gi, (all, decimal, hex) => {
@@ -43,13 +43,18 @@ function improveOrganicSharing(html) {
   if (canonical && rawTitle && html.includes('</main>')) {
     let parsed;
     try { parsed = new URL(decode(canonical)); } catch { parsed = null; }
-    if (parsed && parsed.origin === origin && /^\/(?:kose-yazilari|en\/columns)\/[^/]+$/.test(parsed.pathname)) {
+    const surface = parsed && parsed.origin === origin ? shareSurface(parsed.pathname) : '';
+    if (surface === 'column') {
       const title = columnArticleTitle(html) || decode(rawTitle);
       html = stripUnusedPageShareAssets(installColumnShare(html, {
         url: parsed.href,
         title,
         locale: turkish ? 'tr' : 'en'
       }));
+      return turkish ? upgradeShareMetadata(html, decode(rawTitle)) : html;
+    }
+    if (surface) {
+      html = stripUnusedPageShareAssets(installContentShareFromDocument(html));
       return turkish ? upgradeShareMetadata(html, decode(rawTitle)) : html;
     }
   }

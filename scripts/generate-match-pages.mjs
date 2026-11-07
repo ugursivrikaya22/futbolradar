@@ -23,6 +23,7 @@ import { findFinalResult, resultRowsFrom } from "./lib/enMatchResult.mjs";
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { internalHref } = require("../services/siteLinks.js");
+const { pageShareHtml } = require("../services/columnShare.js");
 const { playerLink } = require("../services/playerLinks.js");
 const domain = "https://www.futbolradar.com";
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "data", "super-lig-fixtures.json"), "utf8"));
@@ -393,6 +394,9 @@ function pageHtml(match) {
   // durumda maç önü ANALİZİ olarak konumlanır (radar, form, kadro).
   const permanentSlug = match.kickoff ? slugForMatch({ homeTeam: match.homeTeam, awayTeam: match.awayTeam, kickoff: match.kickoff }) : null;
   const resultDay = resultKickoff ? shortDateLabel(resultKickoff) : "";
+  const shareTitle = finalResult
+    ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam}`
+    : `${match.homeTeam} - ${match.awayTeam}`;
   const title = finalResult
     ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam} Maç Sonucu${resultDay ? ` (${resultDay})` : ""} | FutbolRadar`
     : match.kickoff && !permanentSlug
@@ -494,6 +498,7 @@ function pageHtml(match) {
       <p class="match-radar-disclaimer">${escapeHtml(radar.disclaimer)}</p>
       <section class="match-context-grid" aria-label="Maç bağlamı"><article class="card"><span class="card-kicker">${escapeHtml(match.homeTeam)}</span><h2>Form ve kadro</h2>${formHtml(homeTeam)}${squadHtml(match.homeTeam)}${keyPlayersHtml(match.homeTeam)}</article><article class="card"><span class="card-kicker">${escapeHtml(match.awayTeam)}</span><h2>Form ve kadro</h2>${formHtml(awayTeam)}${squadHtml(match.awayTeam)}${keyPlayersHtml(match.awayTeam)}</article></section>
       <section class="match-related-grid" aria-label="İlgili radar ekranları">${liveCenterCard(match)}${relatedComparison(match)}<a class="match-related-card" href="../super-lig-fikstur.html"><span>Fikstür</span><strong>Sezon eşleşmeleri</strong><p>Onaylı eşleşmelerin tamamına dön.</p></a><a class="match-related-card" href="../momentum.html"><span>Takım formu</span><strong>Momentum tablosu</strong><p>Takım trendlerini ayrı ekranda karşılaştır.</p></a></section>
+      ${pageShareHtml({ url: canonical, title: shareTitle, locale: "tr" })}
     </main>
     ${siteFooter({ base: "../" })}
     <script src="../site.js" defer></script>

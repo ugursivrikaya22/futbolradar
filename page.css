@@ -12424,6 +12424,11 @@ a.column-author:focus-visible {
   color: var(--text);
 }
 
+.column-card-share-whatsapp,
+.column-share-whatsapp .column-share-symbol {
+  color: var(--green);
+}
+
 .column-tags {
   display: flex;
   flex-wrap: wrap;
@@ -12538,8 +12543,8 @@ a.column-author:focus-visible {
 }
 
 .column-share-actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
@@ -12548,6 +12553,7 @@ a.column-author:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   min-height: 44px;
   min-width: 0;
   padding: 0 12px;
@@ -12596,7 +12602,12 @@ a.column-author:focus-visible {
   }
 
   .column-share-actions {
-    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
+  }
+
+  .column-share-button {
     width: auto;
   }
 }

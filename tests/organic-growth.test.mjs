@@ -7,16 +7,25 @@ import { spawnSync } from 'node:child_process';
 import { improveOrganicSharing } from '../scripts/lib/organic-growth.mjs';
 import { POSTPROCESS_CHAIN } from '../scripts/lib/postprocessChain.mjs';
 
-const sample = (canonical = 'https://www.futbolradar.com/mac/ornek') => `<!doctype html><html lang="tr"><head><title>Galatasaray &amp; Beşiktaş</title><link rel="canonical" href="${canonical}" /><meta property="og:title" content="Galatasaray &amp; Beşiktaş" /><meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" /></head><body><main><h1>Maç</h1></main></body></html>`;
+const sample = (canonical = 'https://www.futbolradar.com/mac/ornek') => `<!doctype html><html lang="tr"><head><title>Galatasaray &amp; Beşiktaş</title><link rel="canonical" href="${canonical}" /><meta property="og:title" content="Galatasaray &amp; Beşiktaş" /><meta property="og:image" content="https://www.futbolradar.com/assets/og-image.svg" /></head><body><main><h1>Galatasaray &amp; Beşiktaş</h1></main></body></html>`;
 
 test('share destinations preserve Turkish titles, canonical identity and encoding', () => {
   const html = improveOrganicSharing(sample());
   const href = html.match(/href="(https:\/\/wa.me\/[^\"]+)"/)[1].replaceAll('&amp;', '&');
-  assert.equal(new URL(href).searchParams.get('text'), 'Galatasaray & Beşiktaş\nhttps://www.futbolradar.com/mac/ornek');
+  assert.equal(new URL(href).searchParams.get('text'), 'Galatasaray & Beşiktaş https://www.futbolradar.com/mac/ornek');
   const x = html.match(/href="(https:\/\/twitter.com\/intent[^\"]+)"/)[1].replaceAll('&amp;', '&');
-  assert.equal(new URL(x).searchParams.get('url'), 'https://www.futbolradar.com/mac/ornek');
-  assert.match(html, /data-page-share-copy="https:\/\/www.futbolradar.com\/mac\/ornek" hidden/);
+  const xUrl = new URL(x);
+  assert.equal(xUrl.searchParams.get('url'), 'https://www.futbolradar.com/mac/ornek');
+  assert.equal(xUrl.searchParams.get('text'), 'Galatasaray & Beşiktaş');
+  assert.ok(x.indexOf('url=') < x.indexOf('text='));
+  const facebook = html.match(/href="(https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?[^"]+)"/)[1];
+  assert.equal(new URL(facebook).searchParams.get('u'), 'https://www.futbolradar.com/mac/ornek');
+  assert.match(html, /X&#39;te paylaş/);
+  assert.match(html, /WhatsApp&#39;ta paylaş/);
   assert.ok(!html.includes('og-image.svg'));
+  const english = improveOrganicSharing(sample('https://www.futbolradar.com/en/match/ornek').replace('lang="tr"', 'lang="en"'));
+  assert.match(english, /Share on X/);
+  assert.match(english, /Share on WhatsApp/);
 });
 
 test('repeat builds and asset-version stamping do not duplicate UI or scripts', () => {
@@ -27,11 +36,11 @@ test('repeat builds and asset-version stamping do not duplicate UI or scripts', 
 });
 
 test('malformed, foreign, dynamic and non-Turkish pages are untouched', () => {
-  for (const input of [sample('https://example.com/mac/x'), sample('javascript:alert(1)'), sample('https://www.futbolradar.com/mac-detay.html'), sample().replace('lang="tr"', 'lang="en"'), sample().replace('rel="canonical"', 'rel="alternate"')]) assert.equal(improveOrganicSharing(input), input);
+  for (const input of [sample('https://example.com/mac/x'), sample('javascript:alert(1)'), sample('https://www.futbolradar.com/mac-detay.html'), sample('https://www.futbolradar.com/en/index.html').replace('lang="tr"', 'lang="en"'), sample().replace('rel="canonical"', 'rel="alternate"')]) assert.equal(improveOrganicSharing(input), input);
 });
 
 test('editorial images, metadata, canonical and Facebook access survive', () => {
-  const before = sample().replace('og-image.svg', 'editorial.jpg').replace('</main>', '<section class="column-share"><a href="https://facebook.com">Facebook</a></section></main>');
+  const before = sample('https://www.futbolradar.com/haber/ornek').replace('og-image.svg', 'editorial.jpg').replace('</main>', '<section class="column-share"><a href="https://facebook.com">Facebook</a></section></main>');
   const after = improveOrganicSharing(before);
   assert.ok(after.includes('editorial.jpg'));
   assert.match(after, /data-page-share-facebook/);
@@ -58,13 +67,14 @@ test('real home, news, column and match HTML receive one working static share bl
     const after = improveOrganicSharing(before);
     const pageShares = (after.match(/data-page-share aria-label=/g) || []).length;
     const columnShares = (after.match(/<section class="column-share"/g) || []).length;
-    if (file.startsWith('kose-yazilari/')) {
+    if (file.startsWith('kose-yazilari/') || file.startsWith('mac/')) {
       assert.equal(pageShares, 0, file);
       assert.equal(columnShares, 1, file);
       assert.match(after, /twitter\.com\/intent\/tweet\?url=/);
       assert.match(after, /facebook\.com\/sharer\/sharer\.php\?u=/);
+      assert.match(after, /wa\.me\/\?text=/);
       assert.match(after, /X&#39;te paylaş/);
-      assert.ok(after.indexOf('class="column-share"') > after.indexOf('</article>'), file);
+      assert.ok(after.indexOf('class="column-share"') < after.indexOf('</main>'), file);
     } else {
       assert.equal(pageShares, 1, file);
     }

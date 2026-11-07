@@ -27,6 +27,7 @@ import { findFinalResult, resultRowsFrom, resultTitle, resultDescription } from 
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
+const { pageShareHtml } = require("../services/columnShare.js");
 const {
   DOMAIN,
   absoluteUrl,
@@ -325,7 +326,8 @@ ${resultPanel}      <section class="match-radar-board" aria-label="${escapeHtml(
       <section class="match-related-grid" aria-label="${escapeHtml(label("match.related"))}">
         ${liveCentreCard(centreMatch)}<a class="match-related-card" href="../standings.html"><span>Table</span><strong>Süper Lig standings</strong><p>See where both sides stand this season.</p></a>
         <a class="match-related-card" href="../todays-matches.html"><span>Fixtures</span><strong>Today's matches</strong><p>The full Süper Lig fixture list.</p></a>
-      </section>`;
+      </section>
+      ${pageShareHtml({ url: canonical, title: heroTitle, locale: "en" })}`;
 
   const html = `<!doctype html>
 <html lang="${htmlLang(LOCALE)}">
