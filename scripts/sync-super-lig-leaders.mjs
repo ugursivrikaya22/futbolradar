@@ -24,6 +24,8 @@ const require = createRequire(import.meta.url);
 const apiFootballProvider = require("../services/providers/apiFootballProvider.js");
 const { resolveSuperLigLeagueId } = require("../services/leagueResolver.js");
 
+const { filterActiveLeaderRows } = require("../services/playerStatsEligibility.js");
+
 const root = process.cwd();
 const OUTPUT_PATH = path.join(root, "data", "league-leaders.json");
 const PUBLIC_OUTPUT_PATH = path.join(root, "public", "data", "league-leaders.json");
@@ -159,8 +161,8 @@ export async function buildLeagueLeaders(options = {}) {
     generatedAt: (options.now || new Date()).toISOString(),
     updatedAt: [...scorers, ...assists].map(row => row.fetchedAt).filter(Boolean).sort().at(-1) || null,
     source: "api-football:/players/topscorers,/players/topassists",
-    topScorers: scorersResult.rows,
-    topAssists: assistsResult.rows,
+    topScorers: filterActiveLeaderRows(scorersResult.rows, players),
+    topAssists: filterActiveLeaderRows(assistsResult.rows, players),
     diagnostics: {
       rejectedNonSuperLigScorers: scorersResult.rejectedNonSuperLig,
       rejectedNonSuperLigAssists: assistsResult.rejectedNonSuperLig
