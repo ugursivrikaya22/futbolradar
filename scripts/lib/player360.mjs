@@ -610,6 +610,12 @@ export function player360Description(model, options = {}) {
     parts.push(`${model.season} ${locale === "en" ? "season" : "sezonu"}: ${measured.join(", ")}`);
   }
 
+  if (model.profileEvidence?.matches.length) {
+    parts.push(locale === "en"
+      ? `sourced statistics from ${model.profileEvidence.matches.length} recorded matches, not season totals`
+      : `${model.profileEvidence.matches.length} kayıtlı maçın kaynaklı istatistikleri, sezon toplamı değil`);
+  }
+
   if (model.matchLog.available) {
     parts.push(locale === "en"
       ? `recent matches with minutes, goals and cards`
