@@ -1,13 +1,25 @@
 name: Interaction checks
 on:
   pull_request:
-  push:
-    branches: [main]
+    # Site, templates, scripts, tests, data and package manifests. editorial/
+    # stays included: the build and tests/referee-agenda.test.cjs read
+    # editorial/referee-agenda.json. *.md, docs/ and marketing/ are
+    # documentation only — no test reads those files. Other workflow files
+    # are excluded; this file is re-included so a change to the filter is
+    # still checked.
+    paths:
+      - '**'
+      - '!**/*.md'
+      - '!*.md'
+      - '!docs/**'
+      - '!marketing/**'
+      - '!.github/**'
+      - '.github/workflows/interaction-checks.yml'
   workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: interactions-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 jobs:
   production:
