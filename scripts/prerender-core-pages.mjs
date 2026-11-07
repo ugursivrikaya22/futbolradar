@@ -1109,11 +1109,26 @@ function officialLineupAlerts() {
  * (bkz. test-seo-integrity.mjs). Sıra competitions.json'daki priority alanı;
  * bucket'ı olmayan kayıtlar (hazırlık maçı) hiç listelenmez.
  */
+// Lig dizini önem sırası: önce Avrupa kupaları ve büyük 5 lig (sabit), kalanı
+// Türkçe alfabetik. Sıra yalnızca dizin linklerini etkiler; lig verisine dokunmaz.
+const LEAGUE_DIRECTORY_ORDER = Object.freeze([
+  "sampiyonlar-ligi", "avrupa-ligi", "la-liga", "premier-league", "bundesliga", "serie-a", "ligue-1"
+]);
+function compareLeagueDirectory(left, right) {
+  const rank = (competition) => {
+    const index = LEAGUE_DIRECTORY_ORDER.indexOf(competition.id);
+    return index === -1 ? LEAGUE_DIRECTORY_ORDER.length : index;
+  };
+  const diff = rank(left) - rank(right);
+  if (diff) return diff;
+  return String(left.name).localeCompare(String(right.name), "tr");
+}
+
 function leagueDirectoryHtml() {
   const targets = competitions
     .filter((competition) => competition.bucket)
     .slice()
-    .sort((left, right) => (left.priority ?? 999) - (right.priority ?? 999));
+    .sort(compareLeagueDirectory);
   return targets
     .map((competition) => `<a href="./lig/${escapeHtml(competition.id)}.html">${escapeHtml(competition.name)}</a>`)
     .join("");

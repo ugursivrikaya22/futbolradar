@@ -93,6 +93,36 @@ for (const route of ROUTES) {
 // hiç basılmadı — Google tek yönlü bildirimi yok sayar, yani 24 sayfanın
 // İngilizce yüzeyi indekslenmeme riskindeydi. Sessiz ve fark edilmesi zor
 // bir arıza; haritaya giren HER çift artık kendiliğinden kapsanıyor.
+// Yalnızca Türkçe olan sayfalar: İngilizce karşılığı YOK (kanal/iddaa
+// verisi yalnızca TR kaynaklı). Sahte bir EN çifti uydurmak yerine kendine
+// referans veren tr-TR + x-default bloğu yazılır; böylece Google dil/bölge
+// hedefini net okur ve sayfa hreflang denetiminde "eksik" görünmez.
+const TR_ONLY_PAGES = Object.freeze([
+  "bugunun-maclari-hangi-kanalda.html",
+  "yarinki-maclar-hangi-kanalda.html",
+  "iddaa-sonuclari.html",
+  "bahis-sonuclari.html",
+  "canli-mac-sonuclari.html"
+]);
+function trOnlyBlock(relativePath) {
+  const html = fs.readFileSync(path.join(root, relativePath), "utf8");
+  const canonical = (html.match(/rel="canonical"\s+href="([^"]+)"/i) || [])[1]
+    || `https://www.futbolradar.com/${relativePath}`;
+  return `${MARKER_START}
+<link rel="alternate" hreflang="${hreflangOf("tr")}" href="${canonical}" />
+<link rel="alternate" hreflang="x-default" href="${canonical}" />
+${MARKER_END}`;
+}
+for (const page of TR_ONLY_PAGES) {
+  if (!fs.existsSync(path.join(root, page))) continue;
+  const block = trOnlyBlock(page);
+  for (const file of targetsFor(page)) {
+    const result = injectInto(file, block, problems);
+    checked += result.checked ? 1 : 0;
+    updated += result.updated ? 1 : 0;
+  }
+}
+
 const dynamicRoutes = dynamicRoutePairs();
 for (const route of dynamicRoutes) {
   const block = alternateBlock(route);
