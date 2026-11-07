@@ -85,8 +85,8 @@ function canonicalTarget(href) {
 function inlineText(value, base = "", sources = []) {
   const bold = escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   const linked = bold.replace(
-    /\[([^\]]+)\]\(([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
-    (match, label, href) => `<a href="${base}${canonicalTarget(href)}">${label}</a>`
+    /\[([^\]]+)\]\(((?:\.\.\/)*)([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
+    (match, label, relativePrefix, href) => `<a href="${relativePrefix || base}${canonicalTarget(href)}">${label}</a>`
   );
   return linked.replace(/\[(\d+)\](?!\()/g, (marker, number) => {
     const source = sources[Number(number) - 1];
