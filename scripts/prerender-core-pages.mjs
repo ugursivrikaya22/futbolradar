@@ -3,6 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { renderHomeTicker } from "./lib/homeTicker.mjs";
+import { sonDakikaTickerHtml } from "./lib/sonDakikaTicker.mjs";
 import { renderHomeMatchBanner, selectHomeMatchBannerItems } from "./lib/homeMatchBanner.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
@@ -2111,6 +2112,10 @@ function homeTickerSlot() {
   return renderHomeTicker(items, { base: "./" });
 }
 
+function sonDakikaTickerSlot() {
+  return sonDakikaTickerHtml({ base: "./" });
+}
+
 const topPlayers = players.slice().sort((left, right) => Number(right.overallRating || 0) - Number(left.overallRating || 0));
 
 writePage("index.html", {
@@ -2137,6 +2142,7 @@ writePage("index.html", {
   "trend-player-categories": trendPlayerCategoriesSlot(),
   "match-quotes": matchQuotesTicker(),
   "home-ticker": homeTickerSlot(),
+  "son-dakika-ticker": sonDakikaTickerSlot(),
   "home-match-banner": homeMatchBannerSlot(),
   // "Bugünün Maçları" bölümünden yayın programı sayfasına iç bağlantı.
   // Önceden index.html'e elle yazılmıştı; kartın içeriğini istemci

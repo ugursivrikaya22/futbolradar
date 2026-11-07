@@ -150,7 +150,12 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "cnnturk.com",
     "ahaber.com.tr",
     "takvim.com.tr",
-    "t24.com.tr"
+    "t24.com.tr",
+    // 7 Kasım 2026 ana sayfa Son dakika bandı: doğrulanmış Türk kaynakları.
+    "tgrthaber.com",
+    "haber7.com",
+    "abcgazetesi.com.tr",
+    "turkiyegazetesi.com.tr"
   ]),
 
   // Yurt dışı yayın organları. Türk basınında karşılığı olmayan haberlerde
@@ -185,7 +190,16 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     // Yle: Finlandiya kamu yayıncısı; Avrupa kupası maçlarında (ör.
     // KuPS–Trabzonspor) Fin tarafının birincil maç raporu için BİLİNÇLİ
     // eklendi (19 Ekim 2026).
-    "yle.fi"
+    "yle.fi",
+    // 7 Kasım 2026 ana sayfa Son dakika bandı: doğrulanmış yabancı kaynaklar.
+    "gazzetta.it",
+    "sport.sky.it",
+    "fussballnationalmannschaft.net",
+    "psg.fr",
+    "englishmatchday.co.uk",
+    "franceinfo.fr",
+    "teamtalk.com",
+    "standard.co.uk"
   ]),
 
   // BİRİNCİL KAYIT PLATFORMU — diğer gruplardan farkı bilinçli.

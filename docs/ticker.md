@@ -68,6 +68,24 @@ de `data/ticker.json`'daki her dış alan adını beyaz listeye karşı tarar.
   dışındadır. Yükseklik CSS'te rezerve (`min-height: 44px`), bant sayfanın
   altında olduğu için LCP'yi etkilemez.
 
+## Son dakika bandı (`data/ticker-news.json`)
+
+Ana sayfada, kahramanın üstünde duran ayrı kayan yazı. Mobil düzende
+sütun sırası onu favori şeridinin de üstüne alır.
+Üst şeritteki otomatik gündem bandı ve bu belgedeki Transfer Gündemi
+bandından bağımsızdır. Metin uydurulmaz: `items` içindeki `category`,
+`title_tr`, `source_name`, `source_url`, `published_at` ve `is_rumor`
+olduğu gibi basılır. `is_rumor: true` olan satırda ayrıca `iddia` etiketi
+görünür. Kaynak adı `source_url` adresine gider.
+
+Bant, liste boşsa veya bütün `published_at` değerleri 72 saatten eskiyse
+hiç basılmaz. En az bir satır tazeyse dosyadaki sıra korunur.
+
+Güncellemek: `data/ticker-news.json` içindeki `items` dizisini düzenleyin,
+ardından `node scripts/inject-son-dakika-ticker.mjs` çalıştırın. Tam
+derleme (`scripts/prerender-core-pages.mjs`) aynı yuvayı yeniden basar.
+Kaynak alan adı `services/sourceLinks.js` beyaz listesinde olmalıdır.
+
 ## Dosyalar
 
 - `data/ticker.json` — veri
