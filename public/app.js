@@ -65,6 +65,10 @@
     standings: { api: "standings", fallback: "teams", reportSource: true, noStore: true },
     teams: { api: "teams", fallback: "teams", reportSource: true },
     players: { api: "players", fallback: "players", reportSource: true },
+    // Güncel sezon istatistik havuzu. API yok: kadro dosyası ve lig
+    // krallığı statik. services/superLigSeasonStats.js ile aynı kural.
+    superLigSquads: { fallback: "super-lig-squads", reportSource: false },
+    leagueLeaders: { fallback: "league-leaders", reportSource: false },
     transfers: { api: "transfers", fallback: "transfers", reportSource: false },
     squad: { api: "squad", fallback: "players", reportSource: true },
     // Maç detayı canlı takip için açılır; taze kalması önbellekten daha
@@ -1599,7 +1603,10 @@
 
   function renderPlayerSummaryMetrics(players) {
     var list = Array.isArray(players) ? players : [];
-    var highest = topPlayer(list, playerAiScore);
+    var ranked = list.filter(function (player) {
+      return seasonStatMetric(player, "aiRating", superLigStatPool) !== null;
+    });
+    var highest = ranked.length ? topPlayer(ranked, playerAiScore) : null;
     var rising = list.filter(function (player) { return playerMatchesSignal(player, "yukselen"); }).length;
     var needsUpdate = list.filter(playerNeedsDataRefresh).length;
     var youngPotential = list.filter(function (player) {
@@ -8904,6 +8911,15 @@
 
     loadData("players")
       .then(function (players) {
+        return Promise.all([
+          loadData("superLigSquads").catch(function () { return []; }),
+          loadData("leagueLeaders").catch(function () { return null; })
+        ]).then(function (extra) {
+          rememberSuperLigStatPool(extra[0], extra[1]);
+          return players;
+        });
+      })
+      .then(function (players) {
         populatePlayerSelect(teamSelect, uniqueSortedBy(players, playerCurrentTeam), "Tüm takımlar");
         populatePlayerSelect(leagueSelect, uniqueSorted(players, "league"), "Tüm ligler");
         populatePlayerSelect(positionSelect, uniqueSorted(players, "position"), "Tüm mevkiler");
@@ -10265,16 +10281,30 @@
   }
 
   function teamSignalCardsHtml(team, players) {
-    var squad = Array.isArray(players) ? players : [];
+    var squad = teamStatSquad(players);
     var leader = squad.slice().sort(function (a, b) { return playerAiScore(b) - playerAiScore(a); })[0];
-    var scorer = squad.filter(function (player) { return player.goals !== null && player.goals !== undefined; })
-      .sort(function (a, b) { return Number(b.goals) - Number(a.goals); })[0];
-    var creator = squad.slice().sort(function (a, b) { return playerScore(b, "creativityScore") - playerScore(a, "creativityScore"); })[0];
+    var boardScorer = superLigSeasonLeaders
+      ? seasonLeaderboard(superLigSeasonLeaders, "goals", { team: team && team.name, limit: 1 })
+      : null;
+    var scorer = boardScorer && boardScorer.length
+      ? boardScorer[0].item
+      : (superLigSeasonLeaders ? null : squad.filter(function (player) {
+        var goals = statisticNumber(player.goals);
+        return goals !== null && goals > 0;
+      }).sort(function (a, b) { return Number(b.goals) - Number(a.goals); })[0]);
+    var boardCreator = superLigSeasonLeaders
+      ? seasonLeaderboard(superLigSeasonLeaders, "assists", { team: team && team.name, limit: 1 })
+      : null;
+    var creator = boardCreator && boardCreator.length
+      ? boardCreator[0].item
+      : (superLigSeasonLeaders ? null : squad.slice().sort(function (a, b) {
+        return playerScore(b, "creativityScore") - playerScore(a, "creativityScore");
+      })[0]);
     var cards = [
       { label: "Takim yorumu", title: "Radar yorumu", value: displayValue(team.momentum || team.rating), text: teamInsight(team), href: "./momentum.html" },
       leader ? { label: "Kadro lideri", title: leader.name, value: "AI " + displayValue(playerAiScore(leader)), text: playerCurrentTeam(leader) + " - " + displayValue(leader.position), href: playerProfileHref(leader.id) } : null,
-      scorer ? { label: "Gol lideri", title: scorer.name, value: displayValue(scorer.goals) + " gol", text: "Gol tehdidi " + displayValue(playerScore(scorer, "threatScore")), href: playerProfileHref(scorer.id) } : null,
-      creator ? { label: "Yaratıcılık", title: creator.name, value: displayValue(playerScore(creator, "creativityScore")), text: "Pas ve xA etkisi yüksek oyuncu", href: playerCompareHref("?p1=" + encodeURIComponent(creator.id)) } : null
+      scorer ? { label: "Gol lideri", title: scorer.name, value: displayValue(scorer.goals) + " gol", text: playerCurrentTeam(scorer) || displayValue(scorer.team), href: playerProfileHref(scorer.id) } : null,
+      creator ? { label: Number(creator.assists) > 0 ? "Asist" : "Yaratıcılık", title: creator.name, value: Number(creator.assists) > 0 ? displayValue(creator.assists) + " asist" : displayValue(playerScore(creator, "creativityScore")), text: playerCurrentTeam(creator) || displayValue(creator.team), href: playerProfileHref(creator.id) } : null
     ].filter(Boolean);
 
     return '<section class="team-signal-grid">' + cards.map(function (card) {
@@ -10337,7 +10367,7 @@
   }
 
   function teamPlayerSpotlightHtml(team, players) {
-    var squad = Array.isArray(players) ? players : [];
+    var squad = teamStatSquad(players);
     var usedIds = new Set();
 
     if (!squad.length) {
@@ -10602,7 +10632,7 @@
   }
 
   function tdLeadersHtml(team, players) {
-    var rated = players.filter(function (player) {
+    var rated = teamStatSquad(players).filter(function (player) {
       return tdNumber(player.aiRating) !== null;
     }).sort(function (a, b) {
       return playerAiScore(b) - playerAiScore(a);
@@ -10903,13 +10933,16 @@
         withDeadline(Promise.all([
           loadData("squad").catch(function () { return []; }),
           loadAllMatches().catch(function () { return []; }),
-          loadData("transfers").catch(function () { return []; })
+          loadData("transfers").catch(function () { return []; }),
+          loadData("superLigSquads").catch(function () { return []; }),
+          loadData("leagueLeaders").catch(function () { return null; })
         ]), PROVIDER_LOAD_DEADLINE_MS).catch(function () {
-          return [[], [], []];
+          return [[], [], [], [], null];
         }).then(function (results) {
           var squad = results[0] || [];
           var matches = results[1] || [];
           var transfers = Array.isArray(results[2]) ? results[2] : [];
+          rememberSuperLigStatPool(results[3], results[4]);
           setContent(target, renderTeamDetail(team, squad, matches, transfers));
         });
       }).catch(function () {
@@ -13201,6 +13234,153 @@
     });
   }
 
+  /**
+   * 2026/27 SÜPER LİG İSTATİSTİK HAVUZU.
+   *
+   * Kuralın tek tarayıcı kopyası burasıdır; düğüm kopyası
+   * services/superLigSeasonStats.js. İkisi birlikte değişmeli.
+   * İsim kara listesi yok: güncel kadro (sezon 2026) veya bu sezon liginde
+   * süresi olan oyuncu (league-leaders, appearances > 0) girer.
+   */
+  var SUPER_LIG_STAT_SEASON = "2026";
+  var superLigStatPool = null;
+  var superLigSeasonLeaders = null;
+  var SEASON_RATING_KEYS = {
+    aiRating: true, rating: true, overallRating: true, pressingScore: true,
+    threatScore: true, creativityScore: true
+  };
+  var MAINTAINED_RATING_STATUS = { verified: true, current: true };
+
+  function seasonYear(value) {
+    var match = String(value == null ? "" : value).trim().match(/^(\d{4})/);
+    return match ? match[1] : "";
+  }
+
+  function buildSuperLigStatPool(squads, leaders, season) {
+    var wanted = seasonYear(season || SUPER_LIG_STAT_SEASON);
+    var providerIds = Object.create(null);
+    var slugs = Object.create(null);
+    (Array.isArray(squads) ? squads : []).forEach(function (team) {
+      if (seasonYear(team && team.season) !== wanted) return;
+      ((team && team.players) || []).forEach(function (player) {
+        if (player && player.providerId) providerIds[String(player.providerId)] = true;
+      });
+    });
+    if (leaders && seasonYear(leaders.season) === wanted) {
+      []
+        .concat(Array.isArray(leaders.topScorers) ? leaders.topScorers : [])
+        .concat(Array.isArray(leaders.topAssists) ? leaders.topAssists : [])
+        .forEach(function (row) {
+          if (!(Number(row && row.appearances) > 0)) return;
+          if (row.providerId) providerIds[String(row.providerId)] = true;
+          if (row.slug) slugs[String(row.slug)] = true;
+        });
+    }
+    return { season: wanted, providerIds: providerIds, slugs: slugs };
+  }
+
+  function rememberSuperLigStatPool(squads, leaders) {
+    superLigStatPool = buildSuperLigStatPool(squads, leaders);
+    superLigSeasonLeaders = leaders || null;
+    return superLigStatPool;
+  }
+
+  function isCurrentSeasonStatPlayer(player, pool) {
+    var active = pool || superLigStatPool;
+    if (!player || !active) return false;
+    var providerId = String(player.providerId || player.provider_id || "");
+    if (providerId && active.providerIds && active.providerIds[providerId]) return true;
+    var slug = String(player.id || player.slug || "");
+    if (slug && active.slugs && active.slugs[slug]) return true;
+    return false;
+  }
+
+  function readSeasonMetric(player, key) {
+    if (!player) return null;
+    var direct = player[key];
+    if (direct !== null && direct !== undefined && direct !== "") {
+      var directNumber = Number(direct);
+      if (Number.isFinite(directNumber)) return directNumber;
+    }
+    var stats = player.stats && typeof player.stats === "object" ? player.stats : {};
+    var nested = stats[key];
+    if (nested !== null && nested !== undefined && nested !== "") {
+      var nestedNumber = Number(nested);
+      if (Number.isFinite(nestedNumber)) return nestedNumber;
+    }
+    return null;
+  }
+
+  function seasonStatMetric(player, key, pool) {
+    if (!isCurrentSeasonStatPlayer(player, pool)) return null;
+    if (SEASON_RATING_KEYS[key] && !MAINTAINED_RATING_STATUS[String((player && player.ratingStatus) || "").toLowerCase()]) {
+      return null;
+    }
+    if (Array.isArray(player && player.statsVerifiedFields) && player.statsVerifiedFields.indexOf(key) === -1) {
+      return null;
+    }
+    var number = readSeasonMetric(player, key);
+    if (number === null) return null;
+    if (!Array.isArray(player.statsVerifiedFields) && number === 0) return null;
+    return number;
+  }
+
+  function seasonLeaderboard(leaders, metric, options) {
+    var settings = options || {};
+    var wanted = seasonYear(settings.season || SUPER_LIG_STAT_SEASON);
+    if (!leaders || seasonYear(leaders.season) !== wanted) return null;
+    var listKey = metric === "assists" ? "topAssists" : metric === "goals" ? "topScorers" : null;
+    if (!listKey || !Array.isArray(leaders[listKey])) return null;
+    if (settings.league && !/s[uü]per\s*lig/i.test(String(settings.league))) return [];
+    var team = settings.team ? normalizeSearchText(settings.team) : "";
+    var rows = leaders[listKey].filter(function (row) {
+      if (!(Number(row && row.appearances) > 0)) return false;
+      if (!(Number(row && row[metric]) > 0)) return false;
+      if (team && normalizeSearchText(row.team) !== team) return false;
+      return true;
+    });
+    return rows.slice(0, settings.limit || 5).map(function (row) {
+      return {
+        item: {
+          id: row.slug || "",
+          slug: row.slug || "",
+          name: row.name || "",
+          team: row.team || "",
+          currentTeam: row.team || "",
+          position: "",
+          providerId: row.providerId || "",
+          goals: Number(row.goals || 0),
+          assists: Number(row.assists || 0)
+        },
+        value: Number(row[metric])
+      };
+    });
+  }
+
+  function playerSeasonLeaders(players, key, options) {
+    var settings = options || {};
+    var filters = settings.filters || {};
+    if ((key === "goals" || key === "assists") && !filters.position) {
+      var fromLeaders = seasonLeaderboard(settings.leaders, key, {
+        team: filters.team,
+        league: filters.league,
+        limit: 5
+      });
+      if (fromLeaders) return fromLeaders;
+    }
+    return statisticLeaders(players, function (player) {
+      return seasonStatMetric(player, key, settings.pool || superLigStatPool);
+    });
+  }
+
+  function teamStatSquad(players) {
+    var squad = Array.isArray(players) ? players : [];
+    if (!superLigStatPool) return squad;
+    return squad.filter(function (player) {
+      return isCurrentSeasonStatPlayer(player, superLigStatPool);
+    });
+  }
+
   function statisticNumber(value) {
     if (value === null || value === undefined || value === "") {
       return null;
@@ -13249,7 +13429,9 @@
       var name = type === "team" ? displayValue(item.name || item.team) : displayValue(item.name);
       var meta = type === "team"
         ? displayValue(item.league)
-        : displayValue(playerCurrentTeam(item)) + " · " + displayValue(item.position);
+        : (item.position
+          ? displayValue(playerCurrentTeam(item)) + " · " + displayValue(item.position)
+          : displayValue(playerCurrentTeam(item)));
       var href = type === "team"
         ? siteHref(teamProfileHref(name).replace(/^\.\//, ""))
         : playerProfileHref(item.id || item.slug || "");
@@ -13333,22 +13515,26 @@
     }).join("") + '</div>';
   }
 
-  function renderStatisticsHub(players, teams, matches, transfers) {
+  function renderStatisticsHub(players, teams, matches, transfers, options) {
     var playerList = Array.isArray(players) ? players : [];
     var teamList = Array.isArray(teams) ? teams : [];
     var matchList = Array.isArray(matches) ? matches : [];
     var transferList = Array.isArray(transfers) ? transfers : [];
+    var settings = options || {};
+    var leaders = settings.leaders || null;
+    var seasonOptions = { leaders: leaders, pool: settings.pool || superLigStatPool, filters: settings.filters || {} };
 
     return statisticsSummaryHtml(playerList, teamList, matchList, transferList) +
       '<section class="stats-group" data-stat-group="players">' +
         '<div class="stats-group-head"><div><span>Oyuncu İstatistikleri</span><h2>Skor, üretim ve performans liderleri</h2></div><a href="' + siteHref("oyuncu-radari.html") + '">Tüm oyuncuları aç</a></div>' +
+        '<p class="stats-coverage-note">2026/27 Süper Lig listeleri, bu sezon kadrosunda olan ya da ligde süre alan oyunculardan kurulur. Gol ve asist sıralaması lig krallığı tablosudur. Önceki sezonun sayıları ve ölçülmemiş alanlar listeye girmez; eksik metrik için sayı üretilmez.</p>' +
         '<div class="stats-panel-grid">' +
-          statisticPanel("Gol liderleri", "Skor", statisticLeaders(playerList, function (player) { return statisticMetric(player, "goals"); }), "player") +
-          statisticPanel("Asist liderleri", "Üretim", statisticLeaders(playerList, function (player) { return statisticMetric(player, "assists"); }), "player") +
-          statisticPanel("AI rating", "Genel etki", statisticLeaders(playerList, function (player) { return playerAiScore(player); }), "player") +
-          statisticPanel("xG liderleri", "Gol beklentisi", statisticLeaders(playerList, function (player) { return statisticMetric(player, "xg"); }), "player", "", 1) +
-          statisticPanel("Pas isabeti", "Dağıtım", statisticLeaders(playerList, function (player) { return statisticMetric(player, "passAccuracy"); }), "player", "%") +
-          statisticPanel("Pres gücü", "Top rakipteyken", statisticLeaders(playerList, function (player) { return statisticMetric(player, "pressingScore"); }), "player") +
+          statisticPanel("Gol liderleri", "Skor", playerSeasonLeaders(playerList, "goals", seasonOptions), "player") +
+          statisticPanel("Asist liderleri", "Üretim", playerSeasonLeaders(playerList, "assists", seasonOptions), "player") +
+          statisticPanel("AI rating", "Genel etki", playerSeasonLeaders(playerList, "aiRating", seasonOptions), "player") +
+          statisticPanel("xG liderleri", "Gol beklentisi", playerSeasonLeaders(playerList, "xg", seasonOptions), "player", "", 1) +
+          statisticPanel("Pas isabeti", "Dağıtım", playerSeasonLeaders(playerList, "passAccuracy", seasonOptions), "player", "%") +
+          statisticPanel("Pres gücü", "Top rakipteyken", playerSeasonLeaders(playerList, "pressingScore", seasonOptions), "player") +
         '</div>' +
       '</section>' +
       '<section class="stats-group" data-stat-group="teams">' +
@@ -13432,7 +13618,15 @@
     var fallback = target.innerHTML;
     target.dataset.state = "loading";
 
-    Promise.all([loadData("players"), loadData("teams"), loadData("matches"), loadData("transfers")]).then(function (sets) {
+    Promise.all([
+      loadData("players"),
+      loadData("teams"),
+      loadData("matches"),
+      loadData("transfers"),
+      loadData("superLigSquads").catch(function () { return []; }),
+      loadData("leagueLeaders").catch(function () { return null; })
+    ]).then(function (sets) {
+      rememberSuperLigStatPool(sets[4], sets[5]);
       var buttons = Array.from(document.querySelectorAll("[data-stat-view]"));
       var selects = Array.from(document.querySelectorAll("[data-stat-filter]"));
       var reset = document.querySelector("[data-stat-reset]");
@@ -13454,7 +13648,11 @@
         var filters = {};
         selects.forEach(function (select) { filters[select.dataset.statFilter] = select.value; });
         var filtered = filteredStatisticsData(sets, filters);
-        setContent(target, renderStatisticsHub(filtered[0], filtered[1], filtered[2], filtered[3]));
+        setContent(target, renderStatisticsHub(filtered[0], filtered[1], filtered[2], filtered[3], {
+          pool: superLigStatPool,
+          leaders: sets[5],
+          filters: filters
+        }));
         target.querySelectorAll("[data-stat-group]").forEach(function (group) {
           group.hidden = activeView !== "all" && group.dataset.statGroup !== activeView;
         });
