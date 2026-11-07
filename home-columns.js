@@ -53,7 +53,7 @@
     article.appendChild(h3);
     if (row.excerpt) article.appendChild(el("p", "", String(row.excerpt)));
     var metaBox = el("div", "column-card-meta");
-    metaBox.appendChild(link("column-author", "./yazarlar/futbolradar.html", "FutbolRadar"));
+    metaBox.appendChild(link("column-author", "./yazarlar/futbolradar.html", "futbolradar"));
     var date = new Date(row.published_at);
     if (!isNaN(date.getTime())) {
       var time = el("time", "", date.getDate() + " " + MONTHS[date.getMonth()] + " " + date.getFullYear());

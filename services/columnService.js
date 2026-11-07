@@ -91,6 +91,28 @@ const OPINION_DISCLAIMER =
 
 const REQUIRED_FIELDS = ["id", "title", "author", "date", "category", "status"];
 
+/**
+ * Yeni köşe yazısının varsayılan imzası.
+ *
+ * Kişi adı değil, sitenin kurum imzası. JSON-LD'de Organization olarak
+ * basılır. Eski kayıtlardaki "FutbolRadar" yazımı aynı kurumdur; görünür
+ * kart kendi alanını korur.
+ */
+const COLUMN_AUTHOR = "futbolradar";
+
+/** Yalnızca yazar imzası. "Uğur Uçar" gibi haber adları bu kalıba girmez. */
+const PERSONAL_SIGNATURE = /^(?:yazar\s*:\s*)?(?:uğur|ugur)(?:\s+sivrikaya)?$/i;
+
+function canonicalColumnAuthor(name) {
+  const value = text(name);
+  if (PERSONAL_SIGNATURE.test(value)) return COLUMN_AUTHOR;
+  return value;
+}
+
+function isSiteColumnAuthor(name) {
+  return text(name).toLocaleLowerCase("tr") === COLUMN_AUTHOR;
+}
+
 function text(value) {
   return String(value === null || value === undefined ? "" : value).trim();
 }
@@ -246,13 +268,15 @@ function presentColumn(entry, locale) {
   // gibi döner (çağıran taraf `hasEnglish` ile zaten eleme yapıyor).
   const source = wanted === "en" && hasEnglish(entry) ? { ...entry, ...entry.en } : entry;
 
+  const author = canonicalColumnAuthor(entry.author);
+
   return {
     id: text(entry.id),
     locale: wanted,
     hasEnglish: hasEnglish(entry),
     title: text(source.title),
-    author: text(entry.author),
-    authorPath: authorPath(entry.author),
+    author,
+    authorPath: authorPath(author),
     date: text(entry.date),
     category,
     categoryLabel: categoryLabelFor(category, wanted),
@@ -283,7 +307,12 @@ function presentColumn(entry, locale) {
     hideFromHome: Boolean(entry.hideFromHome),
     // Yazının konu aldığı maç için doğrulanmış etkinlik künyesi (SportsEvent).
     sportsEvent: entry.sportsEvent && typeof entry.sportsEvent === "object" ? entry.sportsEvent : null,
-    body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
+    body: Array.isArray(source.body)
+      ? source.body.map((paragraph) => {
+        const value = text(paragraph);
+        return PERSONAL_SIGNATURE.test(value) ? COLUMN_AUTHOR : value;
+      }).filter(Boolean)
+      : [],
     // GÜNCELLEME NOTLARI — süren bir gündemi izleyen yazılar için.
     //
     // Gövde yayımlandığı gibi kalır; yeni gelişme gövdeyi yeniden yazmak
@@ -379,7 +408,10 @@ module.exports = {
   REQUIRED_FIELDS,
   SECTION_NAME,
   STATUSES,
+  COLUMN_AUTHOR,
   authorPath,
+  canonicalColumnAuthor,
+  isSiteColumnAuthor,
   categoryLabelFor,
   columnPath,
   hasEnglish,

@@ -373,6 +373,30 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   assert.match(rendered, /Bilinmeyen \[9\]/);
   assert.ok(!rendered.includes('<script>alert(1)</script>'));
   assert.match(rendered, /"author":\{"@type":"Organization","name":"FutbolRadar"/);
+  const siteSigned = columnPageHtml(presentColumn(column({ author: "futbolradar" })));
+  assert.match(siteSigned, /"author":\{"@type":"Organization","name":"futbolradar"/);
+}
+
+// Yazar imzası: Uğur varyantları kurum imzasına döner; haber metnindeki adlar kalır.
+{
+  for (const name of ["Uğur", "Ugur", "Uğur Sivrikaya", "Ugur Sivrikaya", "Yazar: Uğur", "yazar: ugur sivrikaya"]) {
+    const presented = presentColumn(column({ author: name }));
+    assert.equal(presented.author, "futbolradar", `${name} imzası futbolradar olmalı`);
+    assert.equal(presented.authorPath, "yazarlar/futbolradar.html");
+  }
+  assert.equal(presentColumn(column({ author: "US" })).author, "US", "US ayrı bir imza");
+  assert.equal(presentColumn(column({ author: "FutbolRadar" })).author, "FutbolRadar");
+  const body = presentColumn(column({
+    author: "Uğur",
+    body: ["Uğur", "Yazar: Uğur Sivrikaya", "Uğur Uçar ile yollar ayrıldı.", "Uğurcan Çakır kaleyi korudu."]
+  }));
+  assert.deepEqual(body.body.slice(0, 4), ["futbolradar", "futbolradar", "Uğur Uçar ile yollar ayrıldı.", "Uğurcan Çakır kaleyi korudu."]);
+  const archive = authorPageHtml(groupAuthors([
+    presentColumn(column({ author: "futbolradar", id: "yeni", title: "Yeni" })),
+    presentColumn(column({ author: "FutbolRadar" }))
+  ])[0]);
+  assert.match(archive, /<h1>FutbolRadar Yazıları<\/h1>/);
+  assert.match(archive, /"@type":"Organization","name":"FutbolRadar"/);
 }
 
 // Ana sayfa öne çıkan köşe yazısı: veriye bağlı, en yeni yazı, uzantısız adres, kaçırılmış metin.

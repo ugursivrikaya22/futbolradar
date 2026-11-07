@@ -67,7 +67,7 @@ const { selectFeaturedMatches } = require("../services/featuredMatchSelector.js"
 const { buildDailyHeadlines, scoreOf } = require("../services/dailyHeadlines.js");
 const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
-const { publishedColumns } = require("../services/columnService.js");
+const { COLUMN_AUTHOR, publishedColumns } = require("../services/columnService.js");
 const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
 const { statusLabel, BREAKING_LABEL, editorialStatusOf } = require("../services/editorialStatus.js");
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
@@ -914,7 +914,7 @@ function columnsSection() {
       <h3><a href="${href}">${escapeHtml(column.title || "")}</a></h3>
       <p>${escapeHtml(column.excerpt || "")}</p>
       <div class="column-card-meta">
-        <span class="column-author">${escapeHtml(column.author || "FutbolRadar")}</span>
+        <span class="column-author">${escapeHtml(column.author || COLUMN_AUTHOR)}</span>
         <time datetime="${escapeHtml(column.date || "")}">${escapeHtml(formatDate(column.date, LOCALE))}</time>
       </div>
       <div class="column-tags">${tags}</div>
@@ -1969,7 +1969,7 @@ function columnsPage() {
             <span class="column-category">${escapeHtml(column.categoryLabel || "")}</span></div>
             <h3>${escapeHtml(column.title || "")}</h3>
             ${column.excerpt ? `<p>${escapeHtml(column.excerpt)}</p>` : ""}
-            <div class="column-card-foot"><span>${escapeHtml(column.author || "FutbolRadar")}</span>
+            <div class="column-card-foot"><span>${escapeHtml(column.author || COLUMN_AUTHOR)}</span>
             ${published ? `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time>` : ""}</div>
             <a class="detail-link" href="${href}">Read the column</a>
           </article>`;

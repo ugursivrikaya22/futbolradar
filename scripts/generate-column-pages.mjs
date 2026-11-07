@@ -33,6 +33,7 @@ const {
   OPINION_BADGE,
   OPINION_DISCLAIMER,
   SECTION_NAME,
+  isSiteColumnAuthor,
   logRejected,
   publishedColumns
 } = require("../services/columnService.js");
@@ -312,14 +313,19 @@ export function groupAuthors(columns) {
   const authors = new Map();
 
   for (const column of columns) {
-    if (!authors.has(column.authorPath)) {
+    const existing = authors.get(column.authorPath);
+    if (!existing) {
       authors.set(column.authorPath, {
         name: column.author,
         path: column.authorPath,
-        columns: []
+        columns: [column]
       });
+      continue;
     }
-    authors.get(column.authorPath).columns.push(column);
+    existing.columns.push(column);
+    // "futbolradar" ve "FutbolRadar" aynı yazar sayfasına düşer. Arşiv
+    // başlığı tarihsel kurum adını korur; kart kendi imzasını basar.
+    if (column.author === "FutbolRadar") existing.name = "FutbolRadar";
   }
 
   return [...authors.values()].sort((left, right) => left.name.localeCompare(right.name, "tr"));
@@ -475,7 +481,7 @@ export function columnPageHtml(column, locale = "tr") {
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
-    author: { "@type": column.author === "FutbolRadar" ? "Organization" : "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
+    author: { "@type": isSiteColumnAuthor(column.author) ? "Organization" : "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",
       name: "FutbolRadar",
@@ -591,7 +597,7 @@ export function authorPageHtml(author) {
     name: `${author.name} Yazıları`,
     inLanguage: "tr-TR",
     mainEntity: {
-      "@type": author.name === "FutbolRadar" ? "Organization" : "Person",
+      "@type": isSiteColumnAuthor(author.name) ? "Organization" : "Person",
       name: author.name,
       url
     }

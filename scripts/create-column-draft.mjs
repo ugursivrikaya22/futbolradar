@@ -9,9 +9,11 @@
  * ETKİDİR: gönderilemezse taslak yine oluşmuş olur ve betik çökmez.
  *
  * Kullanım:
- *   node scripts/create-column-draft.mjs --title="..." --author="..." --category=mac-yorumu
+ *   node scripts/create-column-draft.mjs --title="..." --category=mac-yorumu
  *   node scripts/create-column-draft.mjs --title="..." --author="..." --category=lig-analizi \
  *        --tags=fenerbahce,avrupa --excerpt="..." --dry-run
+ *
+ * --author verilmezse imza "futbolradar" olur (services/columnService.js).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -22,6 +24,7 @@ const require = createRequire(import.meta.url);
 
 const {
   CATEGORIES,
+  COLUMN_AUTHOR,
   slugify,
   presentColumn,
   validateColumn
@@ -61,9 +64,9 @@ function writeStore(store) {
 
 const args = parseArgs(process.argv.slice(2));
 
-if (!args.title || !args.author || !args.category) {
+if (!args.title || !args.category) {
   console.error(
-    "[column] --title, --author ve --category zorunlu.\n" +
+    "[column] --title ve --category zorunlu. Yazar verilmezse imza " + COLUMN_AUTHOR + " olur.\n" +
     `[column] geçerli kategoriler: ${Object.keys(CATEGORIES).join(", ")}`
   );
   process.exit(1);
@@ -92,7 +95,7 @@ const draft = {
   id: slug,
   slug,
   title: args.title.trim(),
-  author: args.author.trim(),
+  author: args.author && args.author.trim() ? args.author.trim() : COLUMN_AUTHOR,
   // Tarih üretim anıdır; yayın tarihi yayına alınırken güncellenir.
   date: args.date || new Date().toISOString(),
   category: args.category,
