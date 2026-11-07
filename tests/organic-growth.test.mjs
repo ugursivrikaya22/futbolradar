@@ -56,10 +56,31 @@ test('real home, news, column and match HTML receive one working static share bl
   for (const file of files) {
     const before = fs.readFileSync(file, 'utf8');
     const after = improveOrganicSharing(before);
-    assert.equal((after.match(/data-page-share aria-label=/g) || []).length, 1, file);
+    const pageShares = (after.match(/data-page-share aria-label=/g) || []).length;
+    const columnShares = (after.match(/<section class="column-share"/g) || []).length;
+    if (file.startsWith('kose-yazilari/')) {
+      assert.equal(pageShares, 0, file);
+      assert.equal(columnShares, 1, file);
+      assert.match(after, /twitter\.com\/intent\/tweet\?url=/);
+      assert.match(after, /facebook\.com\/sharer\/sharer\.php\?u=/);
+      assert.match(after, /X&#39;te paylaş/);
+      assert.ok(after.indexOf('class="column-share"') > after.indexOf('</article>'), file);
+    } else {
+      assert.equal(pageShares, 1, file);
+    }
     assert.equal(improveOrganicSharing(after), after, file);
     assert.equal(after.match(/<meta property="og:title"[^>]+>/)?.[0], before.match(/<meta property="og:title"[^>]+>/)?.[0], file);
   }
+});
+
+test('column pages encode apostrophes in the canonical share URL', () => {
+  const html = improveOrganicSharing(`<!doctype html><html lang="tr"><head><title>Park&#39;ta</title><link rel="canonical" href="https://www.futbolradar.com/kose-yazilari/park" /><meta property="og:title" content="Park&#39;ta | FutbolRadar" /></head><body><main><article class="column-article"><h1>Park&#39;ta 46&#39;da</h1><p>Gövde</p></article></main></body></html>`);
+  const href = html.match(/href="(https:\/\/twitter\.com\/intent\/tweet\?[^"]+)"/)[1].replaceAll('&amp;', '&');
+  const url = new URL(href);
+  assert.equal(url.searchParams.get('url'), 'https://www.futbolradar.com/kose-yazilari/park');
+  assert.equal(url.searchParams.get('text'), "Park'ta 46'da");
+  assert.ok(!href.includes('&#'));
+  assert.equal(improveOrganicSharing(html), html);
 });
 
 test('full and scheduled build integration runs sharing before asset stamps', () => {

@@ -306,16 +306,18 @@ function column(overrides = {}) {
   assert.match(detail, /class="column-standfirst">Kısa özet\./, "detay sayfasında özet görünmeli");
   assert.match(detail, /"@type":"Person","name":"Yazar Adı","url":/, "detay şeması yazarı bağlamalı");
   assert.match(detail, /src="\.\.\/site\.js" defer/, "detay sayfası ortak etkileşim betiğini yüklemeli");
-  // KESME İŞARETİ ARTIK KAÇIRILIYOR. Paylaşım etiketleri sabit şablon metni
-  // olmaktan çıkıp dile göre seçilen bir tablodan geliyor ve `escapeHtml`ten
-  // geçiyor; yani `'` çıktıda `&#39;`. Ekranda görünen metin aynı, işaretleme
-  // daha güvenli. Denetim bu yüzden iki biçimi de kabul ediyor.
-  assert.match(detail, /Facebook(?:'|&#39;)ta Paylaş/, "detay sayfası Facebook paylaşım eylemi taşımalı");
-  assert.match(detail, /X(?:'|&#39;)te Paylaş/, "detay sayfası X paylaşım eylemi taşımalı");
-  assert.match(detail, /https:\/\/twitter\.com\/intent\/tweet\?text=/, "X Web Intent kullanılmalı");
-  assert.match(detail, /FutbolRadar%20%7C%20futbolradar\.com/, "X metni FutbolRadar markasını taşımalı");
-  assert.match(detail, /https%3A%2F%2Fwww\.futbolradar\.com%2Fkose-yazilari%2Fornek-yazi/, "X kanonik adresi taşımalı");
-  assert.match(detail, /https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?u=https%3A%2F%2Fwww\.futbolradar\.com%2Fkose-yazilari%2Fornek-yazi/, "Facebook kanonik adresi taşımalı");
+  assert.ok(detail.indexOf('class="column-share"') > detail.indexOf("</article>"), "paylaşım düğmeleri yazının altında olmalı");
+  assert.match(detail, /aria-label="X&#39;te paylaş"/, "detay sayfası X paylaşım etiketi taşımalı");
+  assert.match(detail, /aria-label="Facebook&#39;ta paylaş"/, "detay sayfası Facebook paylaşım etiketi taşımalı");
+  assert.match(detail, /target="_blank" rel="noopener noreferrer"/, "paylaşım bağlantısı yeni sekmede ve korumalı açılmalı");
+  const canonical = "https://www.futbolradar.com/kose-yazilari/ornek-yazi";
+  const xHref = detail.match(/https:\/\/twitter\.com\/intent\/tweet\?[^"]+/)[0].replaceAll("&amp;", "&");
+  const xUrl = new URL(xHref);
+  assert.ok(xHref.indexOf("url=") < xHref.indexOf("text="), "X adresinde url, metinden önce gelmeli");
+  assert.equal(xUrl.searchParams.get("url"), canonical, "X kanonik adresi taşımalı");
+  assert.equal(xUrl.searchParams.get("text"), "Örnek yazı", "X metni yazı başlığı olmalı");
+  const facebookHref = detail.match(/https:\/\/www\.facebook\.com\/sharer\/sharer\.php\?[^"]+/)[0];
+  assert.equal(new URL(facebookHref).searchParams.get("u"), canonical, "Facebook kanonik adresi taşımalı");
   assert.match(detail, /property="og:title" content="Örnek yazı \| FutbolRadar"/, "OG başlığı markalı olmalı");
   assert.match(detail, /property="og:description" content="Kısa özet\. — futbolradar\.com"/, "OG açıklaması markalı olmalı");
   assert.match(detail, /property="og:image:width" content="1200"/, "OG görsel genişliği belirtilmeli");
@@ -359,6 +361,11 @@ function column(overrides = {}) {
   assert.match(card, /class="column-card-share/, "liste kartında kompakt paylaşım simgeleri olmalı");
   assert.match(card, /data-share-popup/, "kart simgeleri ortak popup davranışını kullanmalı");
   assert.match(card, /rel="noopener noreferrer"/, "kart paylaşım bağlantıları korumalı olmalı");
+  assert.match(card, /aria-label="X&#39;te paylaş"/, "kart X etiketi taşımalı");
+  assert.match(card, /aria-label="Facebook&#39;ta paylaş"/, "kart Facebook etiketi taşımalı");
+  const cardX = card.match(/https:\/\/twitter\.com\/intent\/tweet\?[^"]+/)[0].replaceAll("&amp;", "&");
+  assert.equal(new URL(cardX).searchParams.get("text"), "Örnek yazı", "kart X metni yazı başlığı olmalı");
+  assert.equal(new URL(cardX).searchParams.get("url"), "https://www.futbolradar.com/kose-yazilari/ornek-yazi", "kart kendi kanonik adresini paylaşmalı");
   assert.match(siteScript, /function setupSharePopups\(\)/, "ortak paylaşım popup kurulumu bulunmalı");
   assert.match(siteScript, /event\.stopPropagation\(\)/, "paylaşım tıklaması kart gezinmesini tetiklememeli");
   assert.match(siteScript, /noopener,noreferrer/, "popup noopener ve noreferrer korumasıyla açılmalı");
