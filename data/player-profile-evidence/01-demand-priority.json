@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "batch": "demand-priority-1",
+  "requiresInfrastructurePR": 646,
+  "source": "API-Football cached match history",
+  "recordedAt": "2026-11-06T10:45:40.073Z",
+  "note": "Recorded matches only, not season totals. GA4/GSC unavailable; autocomplete is a stale demand proxy, not measured traffic.",
+  "players": [
+    {
+      "playerId": "v-osimhen-galatasaray",
+      "providerId": "2780",
+      "seasonStart": "2026-07-01",
+      "priority": 1,
+      "selectionReason": "Arama talebi vekili: osimhen; 10 kayıtlı autocomplete önerisi. Trafik hacmi değildir.",
+      "signal": {
+        "source": "data/search-demand/signals.json",
+        "recordedAt": "2026-08-03T09:00:52.435Z",
+        "term": "osimhen",
+        "suggestionCount": 10,
+        "measuredTraffic": false
+      },
+      "matchIds": [
+        "basaksehir-galatasaray-2026-09-04",
+        "galatasaray-barcelona-2026-10-13",
+        "genclerbirligi-galatasaray-2026-10-17",
+        "galatasaray-fenerbahce-2026-10-26",
+        "konyaspor-galatasaray-2026-10-30"
+      ]
+    },
+    {
+      "playerId": "mohamed-salah",
+      "providerId": "306",
+      "seasonStart": "2026-07-01",
+      "priority": 2,
+      "selectionReason": "Arama talebi vekili: salah trabzonspor; 9 kayıtlı autocomplete önerisi. Trafik hacmi değildir.",
+      "signal": {
+        "source": "data/search-demand/signals.json",
+        "recordedAt": "2026-08-03T09:00:52.435Z",
+        "term": "salah trabzonspor",
+        "suggestionCount": 9,
+        "measuredTraffic": false
+      },
+      "matchIds": [
+        "kups-trabzonspor-2026-10-15",
+        "trabzonspor-besiktas-2026-10-19",
+        "caykur-rizespor-trabzonspor-2026-10-26",
+        "trabzonspor-gaziantep-fk-2026-11-01",
+        "trabzonspor-sc-freiburg-2026-11-05"
+      ]
+    }
+  ]
+}
