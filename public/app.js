@@ -7480,13 +7480,33 @@
   }
 
   // Keep this predicate identical to services/playerStatsEligibility.js (parity-tested).
-  function isActiveStatsPlayer(player) {
+  function isActiveStatsPlayer(player, options = {}) {
     if (!player || typeof player !== "object") return false;
-    if (player.isCurrentSuperLigPlayer === false) return false;
-    var status = String(player.squadStatus || "").trim().toLowerCase();
-    if (["departed", "released", "transferred_out", "loaned_out", "retired", "inactive"].indexOf(status) !== -1) return false;
+    if (
+      options.superLigOnly !== false &&
+      player.isCurrentSuperLigPlayer === false
+    )
+      return false;
+    var status = String(player.squadStatus || "")
+      .trim()
+      .toLowerCase();
+    if (
+      [
+        "departed",
+        "released",
+        "transferred_out",
+        "loaned_out",
+        "retired",
+        "inactive",
+      ].indexOf(status) !== -1
+    )
+      return false;
     var team = String(player.currentTeam || player.team || "").trim();
-    if (!team || /serbest|free[ -]?agent|kul[üu]ps[üu]z|without club|retired/i.test(team)) return false;
+    if (
+      !team ||
+      /serbest|free[ -]?agent|kul[üu]ps[üu]z|without club|retired/i.test(team)
+    )
+      return false;
     return true;
   }
 

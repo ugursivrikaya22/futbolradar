@@ -98,6 +98,8 @@ export const POSTPROCESS_CHAIN = [
   { id: "uefa-country-table", script: "inject-uefa-country-table.mjs", args: [], timeoutMinutes: 2 },
   // /tarihte-bugun + /en/on-this-day: tarihe bağlı, her koşuda yeniden üretilir (yalnız yerel arşiv verisi).
   { id: "on-this-day-pages", script: "generate-on-this-day-pages.mjs", args: [], timeoutMinutes: 2 },
+  // API-Football snapshots only; also refresh contextual links and sitemap on scheduled builds.
+  { id: "league-statistics", script: "generate-league-statistics-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
