@@ -227,9 +227,38 @@ function hasEnglish(entry) {
   return Boolean(text(en.title) && Array.isArray(en.body) && en.body.filter(Boolean).length);
 }
 
+/**
+ * Köşe yazısı ve maç yorumu künyesi.
+ *
+ * Görünen yazar markadır: `futbolradar`. Eski kişisel künyeler
+ * (Uğur, Ugur, Uğur Sivrikaya, Ugur Sivrikaya, US) ve eski
+ * `FutbolRadar` yazımı aynı ada toplanır. Başka bir yazar adı
+ * (konuk yazar testi gibi) olduğu gibi kalır.
+ */
+const BRAND_AUTHOR = "futbolradar";
+const BRAND_AUTHOR_KEYS = new Set([
+  "futbolradar",
+  "ugur",
+  "uğur",
+  "ugur sivrikaya",
+  "uğur sivrikaya",
+  "u. sivrikaya",
+  "us"
+]);
+
+function authorKey(name) {
+  return text(name).toLocaleLowerCase("tr-TR").replace(/\s+/g, " ").trim();
+}
+
+function displayAuthor(name) {
+  const value = text(name);
+  if (BRAND_AUTHOR_KEYS.has(authorKey(value))) return BRAND_AUTHOR;
+  return value;
+}
+
 /** Yazarın tüm yayımlanmış yazılarını listeleyen kalıcı sayfa yolu. */
 function authorPath(name) {
-  return `yazarlar/${slugify(name)}.html`;
+  return `yazarlar/${slugify(displayAuthor(name))}.html`;
 }
 
 /**
@@ -251,7 +280,7 @@ function presentColumn(entry, locale) {
     locale: wanted,
     hasEnglish: hasEnglish(entry),
     title: text(source.title),
-    author: text(entry.author),
+    author: displayAuthor(entry.author),
     authorPath: authorPath(entry.author),
     date: text(entry.date),
     category,
@@ -379,7 +408,9 @@ module.exports = {
   REQUIRED_FIELDS,
   SECTION_NAME,
   STATUSES,
+  BRAND_AUTHOR,
   authorPath,
+  displayAuthor,
   categoryLabelFor,
   columnPath,
   hasEnglish,

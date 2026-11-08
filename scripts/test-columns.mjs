@@ -372,7 +372,24 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   assert.match(rendered, /href="https:\/\/www\.tff\.org\/default\.aspx\?a=1&amp;b=2"[^>]*>\[1\]<\/a>/);
   assert.match(rendered, /Bilinmeyen \[9\]/);
   assert.ok(!rendered.includes('<script>alert(1)</script>'));
-  assert.match(rendered, /"author":\{"@type":"Organization","name":"FutbolRadar"/);
+  assert.match(rendered, /"author":\{"@type":"Organization","name":"futbolradar"/);
+  assert.ok(!rendered.includes('"@type":"Person"'), "marka künyesi kişi şemasına düşmemeli");
+}
+
+// Kişisel künyeler (Uğur ve varyantları, US) ve eski FutbolRadar yazımı
+// görünen yazarda futbolradar olur; JSON-LD Organization kalır.
+{
+  for (const name of ["Uğur", "Ugur", "Uğur Sivrikaya", "Ugur Sivrikaya", "US", "FutbolRadar", "futbolradar"]) {
+    const presented = presentColumn(column({ author: name }));
+    assert.equal(presented.author, "futbolradar", `${name} künyesi futbolradar olmalı`);
+    assert.equal(presented.authorPath, "yazarlar/futbolradar.html", `${name} yazar arşivi marka sayfasına gitmeli`);
+    const html = columnPageHtml(presented);
+    assert.match(html, />futbolradar<\/a>/, `${name} görünen künye futbolradar olmalı`);
+    assert.match(html, /"author":\{"@type":"Organization","name":"futbolradar"/, `${name} şeması Organization olmalı`);
+    assert.ok(!html.includes('"@type":"Person"'), `${name} Person şeması basılmamalı`);
+  }
+  const guest = columnPageHtml(presentColumn(column({ author: "Yazar Adı" })));
+  assert.match(guest, /"author":\{"@type":"Person","name":"Yazar Adı"/, "marka dışı yazar kişi olarak kalır");
 }
 
 // Ana sayfa öne çıkan köşe yazısı: veriye bağlı, en yeni yazı, uzantısız adres, kaçırılmış metin.

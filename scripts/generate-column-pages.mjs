@@ -46,6 +46,11 @@ const DOMAIN = "https://www.futbolradar.com";
 const SHARE_IMAGE = `${DOMAIN}/assets/og-image.png`;
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
 
+function authorEntity(name, url) {
+  const brand = String(name || "").toLocaleLowerCase("tr-TR") === "futbolradar";
+  return { "@type": brand ? "Organization" : "Person", name, url };
+}
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -475,7 +480,7 @@ export function columnPageHtml(column, locale = "tr") {
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
-    author: { "@type": column.author === "FutbolRadar" ? "Organization" : "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
+    author: authorEntity(column.author, `${DOMAIN}/${column.authorPath}`),
     publisher: {
       "@type": "Organization",
       name: "FutbolRadar",
@@ -590,11 +595,7 @@ export function authorPageHtml(author) {
     url,
     name: `${author.name} Yazıları`,
     inLanguage: "tr-TR",
-    mainEntity: {
-      "@type": author.name === "FutbolRadar" ? "Organization" : "Person",
-      name: author.name,
-      url
-    }
+    mainEntity: authorEntity(author.name, url)
   };
 
   return `<!doctype html>

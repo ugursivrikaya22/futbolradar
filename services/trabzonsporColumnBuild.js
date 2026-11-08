@@ -42,7 +42,7 @@ const {
   enDate
 } = require("./trabzonsporColumnWriter.js");
 
-const AUTHOR = "FutbolRadar";
+const AUTHOR = "futbolradar";
 const CATEGORY = "trabzonspor";
 const CONTENT_TYPE = "Maç Sonu Analizi";
 
