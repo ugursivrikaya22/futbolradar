@@ -38,6 +38,7 @@ const {
 } = require("../services/columnService.js");
 // Dış kaynak künyesi `nofollow` taşır; kural services/sourceLinks.js.
 const { SOURCE_LINK_REL } = require("../services/sourceLinks.js");
+const { columnShareHtml } = require("../services/columnShare.js");
 
 const STORE = path.join(root, "data", "columns.json");
 const OUT_DIR = path.join(root, "kose-yazilari");
@@ -124,64 +125,13 @@ function relativeAssetUrl(filePath, base = "./") {
   return `${base}${String(filePath || "").replace(/^\.?\//, "")}`;
 }
 
-const SHARE_STRINGS = {
-  tr: {
-    label: "Bu yazıyı paylaş",
-    sectionLabel: "Yazıyı paylaş",
-    facebook: "Facebook'ta Paylaş",
-    x: "X'te Paylaş",
-    shareAria: (title) => `${title} yazısını paylaş`,
-    facebookAria: (title) => `${title} yazısını Facebook'ta paylaş`,
-    xAria: (title) => `${title} yazısını X'te paylaş`
-  },
-  en: {
-    label: "Share this column",
-    sectionLabel: "Share the column",
-    facebook: "Share on Facebook",
-    x: "Share on X",
-    shareAria: (title) => `Share the column ${title}`,
-    facebookAria: (title) => `Share the column ${title} on Facebook`,
-    xAria: (title) => `Share the column ${title} on X`
-  }
-};
-
-function shareUrls(column) {
-  const url = publicUrl(column.path);
-  const xText = `${column.title} — FutbolRadar | futbolradar.com`;
-
-  return {
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`,
-    x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(xText)}&url=${encodeURIComponent(url)}`
-  };
-}
-
-/**
- * Paylaşım bağlantıları — ERİŞİLEBİLİRLİK ETİKETLERİ DE ÇEVRİLİR.
- *
- * `aria-label` ekranda görünmez ama ekran okuyucusu onu OKUR. İngilizce
- * sayfada Türkçe bir aria-label, ekran okuyucusu kullanan okuyucu için
- * sayfanın görünen kısmının Türkçe kalmasıyla aynı şey.
- */
-function shareLinks(column, { compact = false } = {}) {
-  const urls = shareUrls(column);
-  const title = escapeHtml(column.title);
-  const locale = column.locale === "en" ? "en" : "tr";
-  const copy = SHARE_STRINGS[locale];
-
-  if (compact) {
-    return `<div class="column-card-share-actions" aria-label="${copy.shareAria(title)}">
-          <a class="column-card-share column-card-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${copy.facebookAria(title)}" title="${escapeHtml(copy.facebook)}"><span aria-hidden="true">f</span></a>
-          <a class="column-card-share column-card-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${copy.xAria(title)}" title="${escapeHtml(copy.x)}"><span aria-hidden="true">X</span></a>
-        </div>`;
-  }
-
-  return `<section class="column-share" aria-label="${escapeHtml(copy.sectionLabel)}">
-          <span class="column-share-label">${escapeHtml(copy.label)}</span>
-          <div class="column-share-actions">
-            <a class="column-share-button column-share-facebook" href="${escapeHtml(urls.facebook)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="facebook" aria-label="${copy.facebookAria(title)}"><span class="column-share-symbol" aria-hidden="true">f</span><span>${escapeHtml(copy.facebook)}</span></a>
-            <a class="column-share-button column-share-x" href="${escapeHtml(urls.x)}" target="_blank" rel="noopener noreferrer" data-share-popup data-share-platform="x" aria-label="${copy.xAria(title)}"><span class="column-share-symbol" aria-hidden="true">X</span><span>${escapeHtml(copy.x)}</span></a>
-          </div>
-        </section>`;
+/** Kart ve yazı sayfası aynı kanonik adresi ve aynı düğme metnini kullanır. */
+function columnShare(column, options) {
+  return columnShareHtml({
+    url: publicUrl(column.path),
+    title: column.title,
+    locale: column.locale
+  }, options);
 }
 
 function readStore() {
@@ -229,7 +179,7 @@ export function columnCard(column, base = "./", { showShareControls = false } = 
   const actions = showShareControls
     ? `<div class="column-card-actions">
         <a class="column-card-detail" href="${href}">Yazıyı Oku</a>
-        ${shareLinks(column, { compact: true })}
+        ${columnShare(column, { compact: true })}
       </div>`
     : `<div class="column-card-actions"><a class="column-card-detail" href="${href}">Yazıyı Oku</a></div>`;
 
@@ -256,7 +206,8 @@ function listingHtml(columns) {
     return `<article class="column-empty" data-card="empty-state">
       <h3>Henüz yayımlanmış yazı yok</h3>
       <p>${escapeHtml(SECTION_NAME)} yazıları taslak olarak hazırlanır ve yayına elle alınır. Yayına alınan yazılar burada listelenecek.</p>
-    </article>`;
+    </article>
+      ${columnShareHtml({ url: `${DOMAIN}/kose-yazilari.html`, title: "Köşe yazıları", locale: "tr" })}`;
   }
 
   return columns.map((column) => columnCard(column, "./", { showShareControls: true })).join("");
@@ -580,7 +531,6 @@ export function columnPageHtml(column, locale = "tr") {
 
         ${column.featuredImage ? `<figure class="column-featured-image"><img src="${escapeHtml(relativeAssetUrl(column.featuredImage, base))}" alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="eager" decoding="async" /></figure>` : ""}
         ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}
-        ${shareLinks(column)}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
         ${updatesHtml}
 
@@ -594,6 +544,7 @@ export function columnPageHtml(column, locale = "tr") {
 
         ${column.tags.length ? `<div class="column-tags">${column.tags.map((tag) => `<span class="column-tag">${escapeHtml(tag)}</span>`).join("")}</div>` : ""}
       </article>
+      ${columnShare(column)}
 
       <section class="column-back">
         <a class="detail-link" href="${base}${copy.indexPath}">${escapeHtml(copy.backAll)}</a>
@@ -738,6 +689,12 @@ function updateSitemap(columns) {
 }
 
 // ── Koşu ───────────────────────────────────────────────────────────────────
+
+/** Liste yuvasını yeniden yazar; yazı sayfalarına ve site haritasına dokunmaz. */
+export function renderListingSlot() {
+  const { columns } = publishedColumns(readStore());
+  return listingHtml(columns);
+}
 
 export function generateColumnPages() {
   const store = readStore();
