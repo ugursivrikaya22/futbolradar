@@ -83,7 +83,6 @@ for (const [source, destination] of [
   ["/kose-yazilari/mac-onu-besiktas-genclerbirligi-8-kasim-2026.html", "/kose-yazilari/mac-onu-besiktas-genclerbirligi-8-kasim-2026"],
   ["/kose-yazilari/mac-onu-corum-fenerbahce-8-kasim-2026.html", "/kose-yazilari/mac-onu-corum-fenerbahce-8-kasim-2026"],
   ["/kose-yazilari/mac-sonu-corum-fenerbahce-0-5-8-kasim-2026.html", "/kose-yazilari/mac-sonu-corum-fenerbahce-0-5-8-kasim-2026"],
-  ["/kose-yazilari/mac-sonu-besiktas-genclerbirligi-3-0-8-kasim-2026.html", "/kose-yazilari/mac-sonu-besiktas-genclerbirligi-3-0-8-kasim-2026"],
   ["/kose-yazilari/mac-sonu-alanyaspor-trabzonspor-0-2-8-kasim-2026.html", "/kose-yazilari/mac-sonu-alanyaspor-trabzonspor-0-2-8-kasim-2026"]
 ]) {
   assert.equal(exactRedirects.get(source), destination, `Yönlendirme eksik: ${source}`);

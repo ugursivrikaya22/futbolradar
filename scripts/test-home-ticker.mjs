@@ -112,6 +112,7 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   const note = raw.find((item) => item.id === "super-lig-milli-ara-basladi");
   assert.equal(note && note.text, "Süper Lig'de milli ara başladı");
   assert.equal(note.editorial, true);
+  assert.ok(validateTickerEntry({ ...note, id: "baska-not" }, { now: Date.parse("2026-11-08T12:00:00+03:00") }).some((message) => /onaylı milli ara/.test(message)), "editorial bayrağı başka nota kaynak muafiyeti vermemeli");
   const visible = selectHomeTickerItems(raw, { now: Date.parse("2026-11-08T12:00:00+03:00") }).items;
   assert.equal(visible[0].id, "super-lig-milli-ara-basladi", "milli ara notu en yeni haber olarak başta kalmalı");
   const noteHtml = renderHomeTicker([note]);

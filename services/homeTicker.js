@@ -12,8 +12,9 @@
  *   • Zorunlu alanlar: id, text, date (ISO, saat dilimli), category,
  *     sourceUrl (http/https), sourceName. Eksik ya da hatalı öğe banda
  *     GİRMEZ ve testte kırmızı yanar (scripts/test-home-ticker.mjs).
- *   • editorial: true olan notta dış kaynak yoktur; metin olduğu gibi
- *     basılır ve kaynak künyesi eklenmez.
+ *   • Kaynaksız tek istisna, kimliği ve metni birebir şu olan nottur:
+ *     id `super-lig-milli-ara-basladi`, text "Süper Lig'de milli ara başladı".
+ *     Başka bir öğede editorial:true kaynak zorunluluğunu kaldırmaz.
  *   • category ∈ transfer | mac | haber.
  *   • sourceUrl alan adı services/sourceLinks.js beyaz listesinde olmalı.
  *   • url isteğe bağlı; verilirse site içi olmalı ("/..." ya da
@@ -61,7 +62,9 @@ function validateTickerEntry(item, options = {}) {
   const errors = [];
   if (!item || typeof item !== "object") return ["öğe nesne değil"];
   if (item.editorial !== undefined && typeof item.editorial !== "boolean") errors.push("editorial boolean olmalı");
-  const editorial = item.editorial === true;
+  const approvedEditorial = item.id === "super-lig-milli-ara-basladi" && item.text === "Süper Lig'de milli ara başladı" && item.editorial === true;
+  if (item.editorial === true && !approvedEditorial) errors.push("editorial yalnızca onaylı milli ara notu için");
+  const editorial = approvedEditorial;
   const required = ["id", "text", "date", "category"];
   if (!editorial) required.push("sourceUrl", "sourceName");
   for (const key of required) {
