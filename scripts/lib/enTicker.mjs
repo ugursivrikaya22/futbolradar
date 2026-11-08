@@ -13,6 +13,10 @@
  * hiçbir bilgi uydurulmaz. Türkçe banttaki resmî açıklama başlıkları burada
  * bilinçli olarak YOK: onlar çevrilmeden İngilizce sayfaya giremez.
  *
+ * Editörün kaynak metinden ayrıca yazdığı İngilizce cümle ayrıdır: küratörlü
+ * kayıt `en.text` taşıyorsa o cümle, aynı kaynak bağlantısıyla İngilizce
+ * banda girer. Bu bir makine çevirisi değildir; alan yoksa kayıt atlanır.
+ *
  * Görsel bileşen aynı: scripts/lib/layout.mjs#newsTicker, locale="en".
  */
 import fs from "node:fs";
@@ -25,8 +29,59 @@ const { formatTime, formatWeekday } = require("../../services/i18n.js");
 
 const { publishableNews, newsHref } = require('../../services/newsFeed.js');
 const { editorialStatusOf } = require('../../services/editorialStatus.js');
+const { normalizeTickerItems } = require('../../services/newsTicker.js');
 const root = process.cwd();
 const MAX_ITEMS = 8;
+
+/** Küratörlü kategorinin İngilizce etiketi. Türkçe etiket İngilizce sayfaya geçmez. */
+const EN_LABEL = Object.freeze({
+  official: "Official",
+  "post-match": "Result",
+  fixture: "Fixture",
+  "squad-update": "Squad",
+  "manager-quote": "Manager",
+  "player-quote": "Player",
+  "club-agenda": "Club",
+  "transfer-rumour": "Rumour"
+});
+
+/** Güven rozeti şablonda olduğu gibi basılır; İngilizce sayfada Türkçe rozet olmaz. */
+const EN_CONFIDENCE_BADGE = Object.freeze({
+  reported: "REPORTED",
+  rumour: "RUMOUR"
+});
+
+/**
+ * Küratörlü dosyada editörün yazdığı İngilizce cümleler.
+ * Sıra Türkçe bantla aynıdır (`normalizeTickerItems`); `en.text` yoksa kayıt
+ * atlanır, Türkçe başlık burada çevrilmez.
+ */
+function curatedEnglishItems() {
+  const payload = readJson("news-ticker.json", { items: [] });
+  const raw = Array.isArray(payload.items) ? payload.items : [];
+  const englishById = new Map();
+  for (const row of raw) {
+    const enText = row && row.en && String(row.en.text || "").trim();
+    if (row && row.id && enText) englishById.set(String(row.id), enText);
+  }
+
+  const { items } = normalizeTickerItems(payload, { now: new Date() });
+  const out = [];
+  for (const item of items) {
+    const text = englishById.get(item.id);
+    if (!text) continue;
+    out.push({
+      label: EN_LABEL[item.category] || "News",
+      text,
+      href: item.href || null,
+      sourceName: item.sourceName || "",
+      publisher: item.sourceName || "",
+      confidence: item.confidence || "",
+      confidenceBadge: EN_CONFIDENCE_BADGE[item.confidence] || ""
+    });
+  }
+  return out;
+}
 
 /** Türkçe transfer türü → İngilizce karşılık. Bilinmeyen tür yazılmaz. */
 const TRANSFER_TYPE_EN = Object.freeze({
@@ -68,9 +123,10 @@ function todayIstanbul() {
 }
 
 export function buildEnTickerItems() {
-  const items = publishableNews(readJson('news.json', []), { locale: 'en' })
+  const items = curatedEnglishItems();
+  items.push(...publishableNews(readJson('news.json', []), { locale: 'en' })
     .filter(row => row.includeInTicker !== false && row.ticker && Date.now() - Date.parse(row.publishedAt) < 72 * 3600000 && Date.parse(row.publishedAt) <= Date.now())
-    .slice(0, 3).map(row => ({ label: editorialStatusOf(row).isBreaking ? 'Breaking' : 'News', text: row.ticker.text || row.title, href: newsHref(row, '', 'en') }));
+    .slice(0, 3).map(row => ({ label: editorialStatusOf(row).isBreaking ? 'Breaking' : 'News', text: row.ticker.text || row.title, href: newsHref(row, '', 'en') })));
   const today = todayIstanbul();
 
   // 1) Kesinleşen transferler — yalnızca status=confirmed ve alanları tam olanlar.

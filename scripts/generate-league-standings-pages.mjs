@@ -20,15 +20,10 @@ import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
-import { RICH_TEAM_PAGES } from "./lib/richTeamPages.mjs";
+import { importanceNavHtml, standingsTeamHref } from "./lib/standingsTeamLinks.mjs";
 
-/** Zengin (indexable) takım sayfası varsa puan durumu satırını bağla.
- *  PR #583 tüm satırları bağlar; burada yalnızca RICH_TEAM_PAGES id'leri
- *  (Liverpool + La Liga üçlüsü) bağlanır — çakışmayı düşük tutmak için.
- */
-function richTeamHref(row, base = "./") {
-  const entry = RICH_TEAM_PAGES[String(row.id)];
-  return entry ? `${base}${entry.href}` : null;
+function richTeamHref(row) {
+  return standingsTeamHref(row, { locale: "tr", from: "" });
 }
 
 import { getStandings } from "./lib/standingsData.mjs";
@@ -145,7 +140,7 @@ function writePage(relativePath, html) {
 
 function tableHtml(rows) {
   const body = rows.map((row) => {
-    const href = richTeamHref(row, "./");
+    const href = richTeamHref(row);
     const nameCell = href
       ? `<a class="standings-team-link" href="${escapeHtml(href)}" style="display:inline-flex;align-items:center;min-height:32px">${escapeHtml(row.name)}</a>`
       : escapeHtml(row.name);
@@ -207,7 +202,7 @@ function competitionPage(entry) {
     { name: `${entry.nameTr} Puan Durumu`, href: `./${entry.slugTr}`, url: `${siteUrl}${canonicalPath}` }
   ];
   const content = hasData
-    ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${tableHtml(rows)}</section>${relatedLinksHtml(entry)}`
+    ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${tableHtml(rows)}${importanceNavHtml(entry.id, { locale: "tr", from: "" })}</section>${relatedLinksHtml(entry)}`
     : `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Güncel puan durumu</h2>${emptyStateHtml(entry.nameTr)}</section>${relatedLinksHtml(entry)}`;
 
   return pageDocument({

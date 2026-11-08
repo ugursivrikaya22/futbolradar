@@ -154,13 +154,18 @@ const calendar = readJson("fixture-calendar.json", { matches: [] });
 const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
 const curatedMatches = readJson("matches.json", []);
 const teams = readJson("teams.json", []);
-const players = getPlayers(readJson("players.json", []));
+const { isActiveStatsPlayer, filterActiveLeaderRows } = require("../services/playerStatsEligibility.js");
+const allPlayers = getPlayers(readJson("players.json", []));
+const players = allPlayers.filter(isActiveStatsPlayer);
 // `scripts/sync-super-lig-leaders.mjs` yazar; `/players/topscorers` ve
 // `/players/topassists` LİGİN KENDİSİYLE sorgulanır — players.json'un
 // turnuva-toplamı goals/assists alanlarından bağımsız, yalnızca Trendyol
 // Süper Lig'e ait bir kaynak. TR ve EN taraflar AYNI dosyayı okur, böylece
 // iki dil arasında sayı farkı olmaz (bkz. görev notu: TR/EN parity).
 const leagueLeaders = readJson("league-leaders.json", { topScorers: [], topAssists: [] });
+for (const key of ["topScorers", "topAssists"]) {
+  leagueLeaders[key] = filterActiveLeaderRows(leagueLeaders[key], allPlayers);
+}
 /**
  * KÖŞE YAZILARI — SERVİSTEN, İNGİLİZCE OLARAK.
  *

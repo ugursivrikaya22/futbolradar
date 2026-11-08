@@ -75,11 +75,10 @@ function injectBlock(html, { name, anchorRe, block, position = "after", requireA
  *    ilk ekranda görünmesi CSS sırasıyla çözülüyor (`.home-poll { order: -1 }`).
  * 2. `poll-promo-matches` — "günün radar maçı" bölümünün ardına, yani maç
  *    önü vitrininin BİTTİĞİ ve "maç sonrası" bölümünün BAŞLADIĞI ara nokta.
- * 3. `poll-promo-columns` — köşe yazısı bölümünün ardına: hızlı gezinme
- *    (puan durumu bağlantısını taşıyor) ile gündem/haber akışının TAM
- *    ORTASI. Apankor eskiden buradaki transfer radarı bölümüydü; o bölüm
- *    kaldırılınca promo sayfada AYNI yerde kalsın diye bir üstündeki
- *    bölüme bağlandı.
+ * 3. `poll-promo-columns` — hızlı gezinme (puan durumu bağlantısını
+ *    taşıyor) ile gündem/haber akışının TAM ORTASI. Apankor eskiden köşe
+ *    yazısı bölümüydü; o bölüm ana içeriğin altına alınınca promo yerinde
+ *    kalsın diye hızlı gezinme bölümüne bağlandı.
  * 4. `poll-sticky` — alt bilginin (`</footer>`) hemen ardına, `</body>`'den
  *    ÖNCE değil: `</body>`'nin hemen önü sabit bir apankor değil (orada başka
  *    içerik olabilir/olmayabilir), `</footer>` sayfada tek ve her zaman var.
@@ -88,7 +87,7 @@ function injectBlock(html, { name, anchorRe, block, position = "after", requireA
  */
 const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n)/;
 const RADAR_MATCH_END_RE = /(<section class="container section home-radar-matches" id="gunun-radar-maci"[\s\S]*?<\/section>\r?\n)/;
-const COLUMNS_END_RE = /(<section class="container section section-columns" id="radar-yorumu"[\s\S]*?<\/section>\r?\n)/;
+const QUICK_NAV_END_RE = /(<section class="container section home-statistics-entry"[\s\S]*?<\/section>\r?\n)/;
 const FOOTER_END_RE = /(<\/footer>\r?\n)/;
 
 const selection = selectHomePoll({
@@ -113,7 +112,7 @@ for (const file of targetsFor("index.html")) {
   const steps = [
     { name: "home-poll", anchorRe: HERO_END_RE, block: homePollHtml, position: "after" },
     { name: "poll-promo-matches", anchorRe: RADAR_MATCH_END_RE, block: promoHtml, position: "after" },
-    { name: "poll-promo-columns", anchorRe: COLUMNS_END_RE, block: promoHtml, position: "after" },
+    { name: "poll-promo-columns", anchorRe: QUICK_NAV_END_RE, block: promoHtml, position: "after" },
     { name: "poll-sticky", anchorRe: FOOTER_END_RE, block: stickyHtml, position: "after" }
   ];
 

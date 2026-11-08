@@ -80,11 +80,9 @@ const ASSETS_BLOCK_RE = /[\t ]*<!-- featured-match-spotlight:assets:start -->[\s
 /** `.test()` için ayrı, genel olmayan kopya: genel bayrak `lastIndex` taşır. */
 const HAS_ASSETS_RE = /<!-- featured-match-spotlight:assets:start -->/;
 
-/** Ana sayfada kutu hero'nun hemen ardına girer; maç dosyası kutusundan önce. */
+/** Ana sayfada kutu hero'nun hemen ardına girer; maç dosyası kutusundan önce.
+ * Köşe yazısı bölümleri ana içeriğin altında durur ve bu kutuyu takip ettirmez. */
 const HERO_END_RE = /(<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n)/;
-// ÖNE ÇIKAN KÖŞE YAZISI canlı skor kahramanının hemen altında durur; maç
-// vitrini onun ARDINA yazılır. Bölüm yoksa (ör. en/index.html) hero'nun ardı.
-const FEATURED_COLUMN_END_RE = /(<section class="container home-featured-column"[^>]*>[\s\S]*?<\/section>\r?\n)/;
 /**
  * Takım/lig sayfasında şerit sayfa yolunun (breadcrumb) hemen ardına girer.
  * Sayfa yolu taşımayan yüzeylerde (bazı İngilizce puan durumu sayfaları)
@@ -389,7 +387,7 @@ for (const page of homePages) {
   applyBlock({
     relative: page.relative,
     blockRe: HOME_BLOCK_RE,
-    anchors: [FEATURED_COLUMN_END_RE, HERO_END_RE],
+    anchors: [HERO_END_RE],
     block,
     anchorLabel: "hero bölümü",
     withAssets: true

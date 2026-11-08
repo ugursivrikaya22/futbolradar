@@ -408,30 +408,37 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   assert.match(home, /<section[^>]*data-featured-column[^>]*aria-label="Öne çıkan köşe yazısı"/, "ana sayfada vitrin bölümü olmalı");
   assert.match(home, /<!-- prerender:home-featured-column:start -->/, "ana sayfada vitrin slot'u olmalı");
 
-  // SIRA: canlı skor kahramanı → öne çıkan köşe yazısı → maç vitrini / maç dosyası.
-  // Şablonda bölüm hero'nun HEMEN ardında (arada yalnızca açıklama yorumu olabilir);
-  // maç günü olmasa da (vitrin bloğu sökülmüşken) bu sıra korunur.
+  // SIRA: canlı skor, maçlar ve haber ana içeriktir. Köşe yazıları onların
+  // ALTINDA, arşiv girişinin ÜSTÜNDE durur. Kahramanın üstünde köşe bloğu kalmaz.
+  const heroAt = home.indexOf('id="hero-canli-skor"');
+  const newsAt = home.indexOf('id="futbol-gundemi"');
+  const featuredAt = home.indexOf("data-featured-column");
+  const columnsAt = home.indexOf('id="radar-yorumu"');
+  const archiveAt = home.indexOf('id="arsiv-girisi"');
+  assert.ok(heroAt >= 0 && newsAt > heroAt, "haber akışı canlı skor kahramanının altında olmalı");
+  assert.ok(featuredAt > newsAt && featuredAt < archiveAt, "öne çıkan köşe yazısı haberin altında, arşivin üstünde olmalı");
+  assert.ok(columnsAt > featuredAt && columnsAt < archiveAt, "son köşe yazıları öne çıkan köşe yazısının altında, arşivin üstünde olmalı");
+  const beforeHero = home.slice(0, heroAt);
+  assert.ok(!beforeHero.includes("data-featured-column") && !beforeHero.includes('id="radar-yorumu"'), "kahramanın üstünde köşe yazısı olmamalı");
+  assert.match(home, /id="radar-yorumu" style="order:0"/, "mobil flex order:-2 kuralı köşe listesini üste çekmemeli");
   const heroEnd = home.match(/<section class="container hero" id="hero-canli-skor"[\s\S]*?<\/section>\r?\n/);
   assert.ok(heroEnd, "ana sayfada canlı skor kahramanı bulunmalı");
-  const afterHero = home.slice(heroEnd.index + heroEnd[0].length);
-  assert.match(afterHero, /^\s*(?:<!--[\s\S]*?-->\s*)?<section class="container home-featured-column"/, "öne çıkan köşe yazısı canlı skor kahramanının hemen altında olmalı");
-  const featuredAt = home.indexOf("data-featured-column");
+  const afterHero = home.slice(heroEnd.index + heroEnd[0].length, heroEnd.index + heroEnd[0].length + 400);
+  assert.ok(!/<section class="container home-featured-column"/.test(afterHero), "öne çıkan köşe yazısı kahramanın hemen altında durmamalı");
   for (const marker of ["<!-- featured-match-spotlight:start -->", "<!-- match-special:start -->"]) {
     const at = home.indexOf(marker);
-    if (at >= 0) assert.ok(featuredAt < at, `öne çıkan köşe yazısı ${marker} bloğunun üstünde olmalı`);
+    if (at >= 0) assert.ok(at < featuredAt && at < columnsAt, `${marker} köşe yazılarının üstünde (kahramanın yanında) kalmalı`);
   }
-  // Enjektörler kendi bloklarını önce köşe yazısı bölümünün ardına, yoksa hero'nun ardına yazar.
+  // Enjektörler maç vitrinini ve maç dosyasını hero'nun ardına yazar; köşe bölümünü takip etmez.
   const spotlightSource = fs.readFileSync(path.join(root, "scripts", "generate-featured-match-spotlight.mjs"), "utf8");
   const specialSource = fs.readFileSync(path.join(root, "scripts", "inject-match-special.mjs"), "utf8");
-  assert.match(spotlightSource, /anchors: \[FEATURED_COLUMN_END_RE, HERO_END_RE\]/, "maç vitrini köşe yazısı bölümünün ardına yazılmalı");
-  assert.match(specialSource, /\[FEATURED_COLUMN_END_RE, HERO_END_RE\]\.find/, "maç dosyası kutusu köşe yazısı bölümünün ardına yazılmalı");
-  // Çapa deseni gerçek bir sayfada bölümün tamamını (ve yalnızca onu) yakalamalı.
-  const anchorSource = (spotlightSource.match(/const FEATURED_COLUMN_END_RE = (\/.+\/);/) || [])[1];
-  assert.ok(anchorSource, "FEATURED_COLUMN_END_RE tanımı bulunmalı");
-  const anchorRe = new Function(`return ${anchorSource}`)();
-  const sample = `<section class="container hero" id="hero-canli-skor"><div></div></section>\n<section class="container home-featured-column" data-featured-column hidden>\n<!-- s --><!-- e -->\n</section>\n<section class="container x"></section>\n`;
-  const caught = sample.match(anchorRe);
-  assert.ok(caught && caught[0].endsWith("</section>\n") && !caught[0].includes("container x") && !caught[0].includes("hero-canli-skor"), "çapa yalnızca köşe yazısı bölümünü yakalamalı");
+  assert.match(spotlightSource, /anchors: \[HERO_END_RE\]/, "maç vitrini canlı skor kahramanının ardına yazılmalı");
+  assert.doesNotMatch(spotlightSource, /FEATURED_COLUMN_END_RE/, "maç vitrini köşe yazısı bölümünü takip etmemeli");
+  assert.match(specialSource, /\[HERO_END_RE\]\.find/, "maç dosyası kutusu canlı skor kahramanının ardına yazılmalı");
+  assert.doesNotMatch(specialSource, /FEATURED_COLUMN_END_RE/, "maç dosyası kutusu köşe yazısı bölümünü takip etmemeli");
+  const pollSource = fs.readFileSync(path.join(root, "scripts", "inject-home-poll.mjs"), "utf8");
+  assert.match(pollSource, /QUICK_NAV_END_RE/, "anket promosu hızlı gezinmenin ardında kalmalı");
+  assert.doesNotMatch(pollSource, /id="radar-yorumu"/, "anket promosu köşe yazısı bölümünü takip etmemeli");
 }
 
 // Öne çıkan köşe yazısı "Köşe notu": vitrinin maçından türetilir, bugün + başlama+2 saat penceresinde görünür.

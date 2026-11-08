@@ -637,13 +637,18 @@ function checkSeoAndLinks() {
       expect(/<section\b[^>]*\bdata-featured-column\b/.test(html), `${page}: missing featured column section`);
       expect(/<aside\b[^>]*\bdata-featured-column-note\b/.test(html), `${page}: missing featured column match note shell`);
       {
-        // Sıra: canlı skor kahramanı → öne çıkan köşe yazısı → maç vitrini / maç dosyası kutusu.
+        // Sıra: canlı skor ve haber ana içeriktir; köşe yazıları onların altında,
+        // arşivin üstünde. Maç vitrini / maç dosyası kutusu kahramanın yanında kalır.
         const heroAt = html.indexOf('id="hero-canli-skor"');
+        const newsAt = html.indexOf('id="futbol-gundemi"');
         const featuredAt = html.search(/<section\b[^>]*\bdata-featured-column\b/);
-        expect(heroAt >= 0 && featuredAt > heroAt, `${page}: featured column must sit below the live-score hero`);
+        const columnsAt = html.indexOf('id="radar-yorumu"');
+        const archiveAt = html.indexOf('id="arsiv-girisi"');
+        expect(heroAt >= 0 && newsAt > heroAt && featuredAt > newsAt && columnsAt > featuredAt && archiveAt > columnsAt, `${page}: column sections must sit below the news and above the archive`);
+        expect(!html.slice(0, heroAt).includes('id="radar-yorumu"'), `${page}: latest columns must not sit above the live-score hero`);
         for (const marker of ["featured-match-spotlight:start", "match-special:start", "data-featured-match-spotlight"]) {
           const at = html.indexOf(marker);
-          if (at >= 0) expect(featuredAt < at, `${page}: featured column must sit above ${marker}`);
+          if (at >= 0) expect(at < featuredAt, `${page}: ${marker} must stay above the featured column`);
         }
       }
     }
