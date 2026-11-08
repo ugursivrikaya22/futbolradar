@@ -38,7 +38,9 @@ function itemHtml(item, { base, hidden }) {
   const text = href
     ? `<a class="home-ticker__link" href="${escapeHtml(href)}"${tab}>${escapeHtml(item.text)}</a>`
     : `<span class="home-ticker__text">${escapeHtml(item.text)}</span>`;
-  const source = `<a class="home-ticker__source" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer"${tab} aria-label="Kaynak: ${escapeHtml(item.sourceName)}">${escapeHtml(item.sourceName)}</a>`;
+  const source = item.sourceUrl
+    ? `<a class="home-ticker__source" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer"${tab} aria-label="Kaynak: ${escapeHtml(item.sourceName)}">${escapeHtml(item.sourceName)}</a>`
+    : "";
   const expires = item.expiresAt ? ` data-expires="${escapeHtml(item.expiresAt)}"` : "";
   const cls = breaking ? "home-ticker__item home-ticker__item--breaking" : "home-ticker__item";
   return `<li class="${cls}" data-ticker-id="${escapeHtml(item.id)}"${expires}><span class="home-ticker__tag">${escapeHtml(label)}</span>${text}${source}</li>`;

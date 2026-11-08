@@ -250,8 +250,9 @@ for (const file of files) {
     ? liveTickerBlock(liveRecords, { locale, base, keepEmpty: true })
     : "";
 
+  const canonicalHome = sitePath === "index.html";
   const headerBlock = [
-    siteHeader({ base, locale, altHref }),
+    siteHeader({ base, locale, altHref, canonicalHome }),
     ticker ? `\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->` : "",
     liveTicker ? `\n      <!-- shared-layout:live-ticker:start -->${liveTicker}<!-- shared-layout:live-ticker:end -->` : ""
   ].join("");
@@ -259,7 +260,7 @@ for (const file of files) {
   let next = original.replace(LIVE_TICKER_RE, "").replace(LEGACY_TRANSFER_TICKER_RE, "");
   next = next.replace(TICKER_RE, "");
   next = next.replace(HEADER_RE, () => headerBlock);
-  next = next.replace(FOOTER_RE, () => siteFooter({ base, locale }));
+  next = next.replace(FOOTER_RE, () => siteFooter({ base, locale, canonicalHome }));
 
   if (next !== original) {
     writeGeneratedFile(file, next);

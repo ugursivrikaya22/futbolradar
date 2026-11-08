@@ -2147,7 +2147,7 @@ writePage("index.html", {
   // İki bağlantı birden: okuyucu bugünü de yarını da buradan açar. Yarın
   // sayfası yalnızca sitemap'te dursaydı hiçbir yerden bağlanmayan bir
   // sayfa olurdu (test-seo-integrity bunu "orphan" diye kırmızı yakar).
-  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda.html">Bugünkü maçlar hangi kanalda?</a><a class="section-link" href="./yarinki-maclar-hangi-kanalda.html">Yarın hangi maçlar hangi kanalda?</a>'
+  "today-quicklink": '<a class="section-link" href="./bugunun-maclari-hangi-kanalda">Bugünkü maçlar hangi kanalda?</a><a class="section-link" href="./yarinki-maclar-hangi-kanalda">Yarın hangi maçlar hangi kanalda?</a>'
 });
 
 writePage("analizler.html", {
