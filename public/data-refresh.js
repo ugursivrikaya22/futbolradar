@@ -83,6 +83,33 @@
   if (leadersTable) table = null;
   if (!table && !panels.length && !teamBody && !leadersTable && !homeLeaders) return;
 
+  // Takım bağlantıları derlemede üretilen haritadan okunur. Süper Lig dahil
+  // her lig aynı sağlayıcı kimliğini kullanır. Harita gelmeden tablo
+  // yeniden çizilirse statik bağlantılar silinirdi.
+  var links = { byId: {}, byName: {} };
+  var linkGate = fetch("/data/standings-team-links.json", { cache: "no-store" }).then(function (response) {
+    return response.ok ? response.json() : null;
+  }).catch(function () { return null; }).then(function (payload) {
+    if (payload && payload.byId) links = payload;
+  });
+  function nameKey(value) {
+    return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\u0131/g, "i").trim().toLowerCase().replace(/[^a-z0-9]+/g, "");
+  }
+  function teamHref(row) {
+    var id = String((row && (row.providerId || row.id)) || "");
+    var hit = (id && links.byId[id]) || links.byName[nameKey(row && (row.name || row.team))];
+    if (!hit) return "";
+    var path = english ? hit.en : hit.tr;
+    return path ? String(path) : "";
+  }
+  function teamLabel(row) {
+    var name = html(row.name || row.team);
+    var href = teamHref(row);
+    return href
+      ? '<a class="standings-team-link" href="' + html(href) + '" style="display:inline-flex;align-items:center;min-height:32px">' + name + "</a>"
+      : name;
+  }
+
   function html(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
@@ -225,7 +252,7 @@
 
   function renderFullTable(view) {
     table.innerHTML = view.rows.map(function (row) {
-      return "<tr" + liveAttrs(row) + "><td>" + number(row.rank) + '</td><th scope="row">' + html(row.name || row.team) + liveBadge(row) + "</th>" + standingCells(row) + "</tr>";
+      return "<tr" + liveAttrs(row) + "><td>" + number(row.rank) + '</td><th scope="row">' + teamLabel(row) + liveBadge(row) + "</th>" + standingCells(row) + "</tr>";
     }).join("");
   }
 
@@ -234,9 +261,11 @@
     if (!body) return;
     body.innerHTML = view.rows.slice(0, 5).map(function (row) {
       var name = html(row.name || row.team);
-      var team = id === "super-lig" ? '<a class="home-standing-team" href="./takim-detay.html?team=' + encodeURIComponent(row.name || row.team) + '">' : '<span class="home-standing-team">';
+      var href = teamHref(row);
+      var teamOpen = href ? '<a class="home-standing-team" href="' + html(href) + '">' : '<span class="home-standing-team">';
+      var teamClose = href ? "</a>" : "</span>";
       var logo = row.logo && /^https:\/\//.test(row.logo) ? '<img class="home-standing-logo" src="' + html(row.logo) + '" alt="" width="22" height="22" loading="lazy">' : '<span class="home-standing-logo home-standing-logo-fallback" aria-hidden="true">' + name.charAt(0) + '</span>';
-      return '<div class="home-standing-row" data-card="standing-row" data-team="' + html(row.id) + '"' + liveAttrs(row) + '><span class="home-standing-rank">' + number(row.rank) + '</span>' + team + logo + '<b>' + name + '</b>' + liveBadge(row) + (id === "super-lig" ? '</a>' : '</span>') +
+      return '<div class="home-standing-row" data-card="standing-row" data-team="' + html(row.id) + '"' + liveAttrs(row) + '><span class="home-standing-rank">' + number(row.rank) + '</span>' + teamOpen + logo + '<b>' + name + '</b>' + liveBadge(row) + teamClose +
         ["played", "won", "drawn", "lost"].map(function (key) { return '<span>' + number(row[key]) + '</span>'; }).join("") + '<span class="home-standing-gd">' + (row.goalDifference > 0 ? "+" : "") + number(row.goalDifference) + '</span><span class="home-standing-points">' + number(row.points) + '</span></div>';
     }).join("");
   }
@@ -364,6 +393,7 @@
   }
 
   function refresh() {
+    return linkGate.then(function () {
     if (document.hidden) return;
     var jobs = activeLeagueIds().map(refreshStanding);
     // Lider listeleri (gol/asist) Türkçe etiketler basıyor; İngilizce
@@ -371,6 +401,7 @@
     // puan durumunu iki dile açıyor.
     if (!english && (leadersTable || homeLeaders)) jobs.push(refreshLeaders());
     Promise.allSettled(jobs);
+    });
   }
 
   // ————————————————————————————————————————————————————————————————
