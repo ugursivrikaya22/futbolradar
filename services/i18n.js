@@ -355,8 +355,8 @@ const ROUTE_META = Object.freeze({
       description: "Süper Lig gol krallığı sıralaması; gol ve asist katkıları."
     },
     en: {
-      title: "Turkish Süper Lig Top Scorers | FutbolRadar",
-      description: "The Trendyol Süper Lig scoring charts: goals and assists for every player with a verified record."
+      title: "Turkish Süper Lig Top Scorers 2026/27 | FutbolRadar",
+      description: "2026/27 Turkish Süper Lig top scorers: league goals and appearances for each listed player. Cup and European goals are not included."
     }
   },
   topAssists: {
