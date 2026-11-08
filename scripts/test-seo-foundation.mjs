@@ -48,8 +48,14 @@ for (const [relativePath, canonicalPath, schemaType] of pages) {
 }
 
 const home = fs.readFileSync(path.join(root, "index.html"), "utf8");
-for (const href of ["./bugunun-maclari", "./super-lig-puan-durumu", "./form-tablosu/super-lig", "./takimlar/galatasaray", "./takimlar/fenerbahce", "./takimlar/besiktas", "./takimlar/trabzonspor", "./takim-karsilastirmalari", "./oyuncu-karsilastirmalari"]) {
+for (const href of ["./bugunun-maclari.html", "./super-lig-puan-durumu", "./form-tablosu/super-lig", "./takimlar/galatasaray", "./takimlar/fenerbahce", "./takimlar/besiktas", "./takimlar/trabzonspor", "./takim-karsilastirmalari", "./oyuncu-karsilastirmalari.html", "./takimlar.html"]) {
   assert.ok(home.includes(`href="${href}"`), `Ana sayfa bağlantısı eksik: ${href}`);
+}
+for (const href of ["./bugunun-maclari", "./oyuncu-karsilastirmalari", "./takimlar", "./index.html", "./en/index.html"]) {
+  assert.equal((home.match(new RegExp(`href="${href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`, "g")) || []).length, 0, `Ana sayfa kopya adres taşıyor: ${href}`);
+}
+for (const href of ["./bugunun-maclari.html?league=super-lig", "./bugunun-maclari.html?status=upcoming", "./bugunun-maclari.html?status=finished"]) {
+  assert.ok(home.includes(`href="${href}"`), `Filtre sorgusu korunmalı: ${href}`);
 }
 
 const today = fs.readFileSync(path.join(root, "bugunun-maclari.html"), "utf8");
@@ -64,6 +70,29 @@ const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"
 for (const route of ["/super-lig-puan-durumu", "/form-tablosu/super-lig", "/takimlar/:slug", "/takim-karsilastirmalari", "/karsilastirma/takimlar/:slug"]) {
   assert.ok(vercel.rewrites.some((rewrite) => rewrite.source === route), `Rewrite eksik: ${route}`);
 }
+const exactRedirects = new Map((vercel.redirects || []).filter((rule) => rule.source && !rule.source.includes(":") && !rule.has).map((rule) => [rule.source, rule.destination]));
+for (const [source, destination] of [
+  ["/index.html", "/"],
+  ["/en/index.html", "/en"],
+  ["/bugunun-maclari", "/bugunun-maclari.html"],
+  ["/oyuncu-karsilastirmalari", "/oyuncu-karsilastirmalari.html"],
+  ["/takimlar", "/takimlar.html"],
+  ["/mac-takvimi.html", "/mac-takvimi"],
+  ["/bugunun-maclari-hangi-kanalda.html", "/bugunun-maclari-hangi-kanalda"],
+  ["/yarinki-maclar-hangi-kanalda.html", "/yarinki-maclar-hangi-kanalda"],
+  ["/kose-yazilari/mac-onu-besiktas-genclerbirligi-8-kasim-2026.html", "/kose-yazilari/mac-onu-besiktas-genclerbirligi-8-kasim-2026"],
+  ["/kose-yazilari/mac-onu-corum-fenerbahce-8-kasim-2026.html", "/kose-yazilari/mac-onu-corum-fenerbahce-8-kasim-2026"],
+  ["/kose-yazilari/mac-sonu-corum-fenerbahce-0-5-8-kasim-2026.html", "/kose-yazilari/mac-sonu-corum-fenerbahce-0-5-8-kasim-2026"],
+  ["/kose-yazilari/mac-sonu-besiktas-genclerbirligi-3-0-8-kasim-2026.html", "/kose-yazilari/mac-sonu-besiktas-genclerbirligi-3-0-8-kasim-2026"],
+  ["/kose-yazilari/mac-sonu-alanyaspor-trabzonspor-0-2-8-kasim-2026.html", "/kose-yazilari/mac-sonu-alanyaspor-trabzonspor-0-2-8-kasim-2026"]
+]) {
+  assert.equal(exactRedirects.get(source), destination, `Yönlendirme eksik: ${source}`);
+  assert.equal(destination.includes("?"), false, `Sorgu hedefe gömülmemeli: ${source}`);
+  assert.equal(exactRedirects.get(destination), undefined, `Döngü: ${destination} yeniden yönleniyor`);
+}
+assert.equal(exactRedirects.has("/bugunun-maclari.html"), false, "filtre sayfasının kendisi yönlenmemeli");
+assert.ok(vercel.rewrites.some((rule) => rule.source === "/en" && rule.destination === "/en/index.html"));
+assert.ok(vercel.rewrites.some((rule) => rule.source === "/takimlar/:slug"));
 
 const liveClient = fs.readFileSync(path.join(root, "app.js"), "utf8");
 assert.ok(liveClient.includes("new EventSource"), "Canlı skor SSE istemcisi korunmalı");

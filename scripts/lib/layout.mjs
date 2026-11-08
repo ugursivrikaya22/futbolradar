@@ -136,11 +136,22 @@ const NAV_NEW_BADGE_KEY = "nav.polls";
  */
 const DESKTOP_DRAWER_KEYS = new Set(["nav.archive"]);
 
+/** Ana sayfada kanonik adres. Diğer sayfalarda göreli dosya yolu aynı kalır. */
+function canonicalNavHref(base, href, canonicalHome) {
+  if (!canonicalHome) return `${base}${href}`;
+  if (href === "index.html") return "/";
+  if (href === "en/index.html") return "/en";
+  if (href === "mac-takvimi.html") return `${base}mac-takvimi`;
+  if (href === "tarihte-bugun.html") return `${base}tarihte-bugun`;
+  return `${base}${href}`;
+}
+
 function linkList(items, base, locale, options = {}) {
   // Rözet yalnızca ÜST menüde gösterilir (`showBadges: true` ile açıkça
   // istenmedikçe): alt bilgi bağlantı listesi gezinme değil kaynakça, aynı
   // rözeti orada da basmak "menü öğesi" iddiasını orada tekrarlamış olurdu.
   const showBadges = Boolean(options.showBadges);
+  const canonicalHome = Boolean(options.canonicalHome);
   return items
     .map((item) => {
       // Türkçe-only hedef: dil işareti hem makineye (`hreflang`) hem
@@ -154,7 +165,7 @@ function linkList(items, base, locale, options = {}) {
       // Geniş masaüstü satırına sığmayan öğe (bkz. page.css → DESKTOP_DRAWER)
       // yalnızca üst menüde işaretlenir; çekmece ve alt bilgide görünür kalır.
       const drawerOnly = options.showBadges && DESKTOP_DRAWER_KEYS.has(item.key) ? " data-nav-drawer-only" : "";
-      return `<a href="${base}${item.href}"${attributes}${drawerOnly}>${escapeHtml(item.label)}${suffix}${badge}</a>`;
+      return `<a href="${canonicalNavHref(base, item.href, canonicalHome)}"${attributes}${drawerOnly}>${escapeHtml(item.label)}${suffix}${badge}</a>`;
     })
     .join("");
 }
@@ -180,11 +191,13 @@ function linkList(items, base, locale, options = {}) {
  *
  * `altHref` köke göre karşı sayfanın yolu; `base` ile birleştirilir.
  */
-function languageSwitch(base, locale, altHref) {
+function languageSwitch(base, locale, altHref, canonicalHome = false) {
   const current = normalizeLocale(locale);
   const target = current === "en" ? "tr" : "en";
   const fallback = target === "en" ? "en/index.html" : "index.html";
-  const href = `${base}${String(altHref || fallback).replace(/^\.?\//, "")}`;
+  const href = canonicalHome
+    ? (target === "en" ? "/en" : "/")
+    : `${base}${String(altHref || fallback).replace(/^\.?\//, "")}`;
   // GÖRÜNEN ETİKET HEDEF DİLİ GÖSTERİR, ERİŞİLEBİLİR AD SAYFANIN DİLİNDEDİR.
   //
   // Görünen "TR"/"ENG" bir dil KODUDUR: hedefi işaret eder ve hangi dili
@@ -202,10 +215,11 @@ function languageSwitch(base, locale, altHref) {
 export function siteHeader(options = {}) {
   const base = normalizeBase(options.base);
   const locale = normalizeLocale(options.locale);
-  const primary = linkList(navList(locale, "primary"), base, locale, { showBadges: true });
+  const canonicalHome = Boolean(options.canonicalHome);
+  const primary = linkList(navList(locale, "primary"), base, locale, { showBadges: true, canonicalHome });
   const secondaryItems = navList(locale, "secondary");
   const secondary = secondaryItems.length
-    ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base, locale, { showBadges: true })}</div>`
+    ? `<div class="nav-links nav-links-secondary">${linkList(secondaryItems, base, locale, { showBadges: true, canonicalHome })}</div>`
     : "";
   // MAÇ MERKEZİ DÜĞMESİ İKİ DİLDE DE KENDİ SAYFASINA GİDER.
   //
@@ -242,11 +256,11 @@ export function siteHeader(options = {}) {
   return `<header class="topbar topbar-premium" data-shared-layout="header">
       <div class="topbar-inner">
         <nav class="container-wide nav" aria-label="${escapeHtml(t("nav.ariaLabel", locale))}">
-          <a class="brand" href="${base}${locale === "en" ? "en/index.html" : "index.html"}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">
+          <a class="brand" href="${canonicalNavHref(base, locale === "en" ? "en/index.html" : "index.html", canonicalHome)}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
-          ${searchToggles.mobile}${languageSwitch(base, locale, options.altHref)}
+          ${searchToggles.mobile}${languageSwitch(base, locale, options.altHref, canonicalHome)}
           <button class="nav-toggle" type="button" aria-label="${escapeHtml(t("nav.openMenu", locale))}" aria-expanded="false" aria-controls="primary-menu"><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span><span class="nav-toggle-bar"></span></button>
           <div class="nav-menu" id="primary-menu">
             <div class="nav-links">${primary}</div>
@@ -470,6 +484,7 @@ export function newsTicker(options = {}) {
 export function siteFooter(options = {}) {
   const base = normalizeBase(options.base);
   const locale = normalizeLocale(options.locale);
+  const canonicalHome = Boolean(options.canonicalHome);
   const year = options.year || new Date().getFullYear();
   const primaryItems = navList(locale, "primary");
   const secondaryItems = navList(locale, "secondary");
@@ -487,7 +502,7 @@ export function siteFooter(options = {}) {
   const column = (titleKey, items) => (items.length
     ? `<div class="footer-col">
           <h2>${escapeHtml(t(titleKey, locale))}</h2>
-          <div class="footer-col-links">${linkList(items, base)}</div>
+          <div class="footer-col-links">${linkList(items, base, locale, { canonicalHome })}</div>
         </div>`
     : "");
 
@@ -498,7 +513,7 @@ export function siteFooter(options = {}) {
   return `<footer class="footer footer-premium" data-shared-layout="footer">
       <div class="container-wide footer-grid">
         <div class="footer-brand">
-          <a class="brand" href="${base}${locale === "en" ? "en/index.html" : "index.html"}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">
+          <a class="brand" href="${canonicalNavHref(base, locale === "en" ? "en/index.html" : "index.html", canonicalHome)}" aria-label="${escapeHtml(t("nav.brandAria", locale))}">
             <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 12 17 8"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></svg></span>
             <span class="brand-text"><b>Futbol</b>Radar</span>
           </a>
@@ -514,7 +529,7 @@ export function siteFooter(options = {}) {
         <span>© ${escapeHtml(year)} FutbolRadar · ${escapeHtml(t("site.tagline", locale))}</span>
         ${bottomLinks}
       </div>
-      ${bottomNav(base, locale)}
+      ${bottomNav(base, locale, canonicalHome)}
     </footer>`;
 }
 
@@ -537,7 +552,7 @@ export function siteFooter(options = {}) {
  * sayfaya aynı çıktıyla basılıyor ve hangi dosyaya yazıldığını bilmiyor.
  * İşaretleme site.js'te `location.pathname` ile yapılıyor.
  */
-function bottomNav(base, locale) {
+function bottomNav(base, locale, canonicalHome = false) {
   const en = locale === "en";
   const items = [
     { key: "bottomNav.home", href: en ? "en/index.html" : "index.html", icon:
@@ -552,7 +567,7 @@ function bottomNav(base, locale) {
 
   const links = items.map((item) => {
     const label = escapeHtml(t(item.key, locale));
-    return `<a class="bottom-nav__item" href="${base}${item.href}" data-bottom-nav-item>
+    return `<a class="bottom-nav__item" href="${canonicalNavHref(base, item.href, canonicalHome)}" data-bottom-nav-item>
           <svg class="bottom-nav__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${item.icon}</svg>
           <span class="bottom-nav__label">${label}</span>
         </a>`;

@@ -108,6 +108,17 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
 
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
   assert.ok(index.includes("<!-- prerender:home-ticker:start -->") && index.includes("<!-- prerender:home-ticker:end -->"), "index.html home-ticker yuvasını taşımalı");
+  const phrase = "Süper Lig&#039;de milli ara başladı";
+  const note = raw.find((item) => item.id === "super-lig-milli-ara-basladi");
+  assert.equal(note && note.text, "Süper Lig'de milli ara başladı");
+  assert.equal(note.editorial, true);
+  const visible = selectHomeTickerItems(raw, { now: Date.parse("2026-11-08T12:00:00+03:00") }).items;
+  assert.equal(visible[0].id, "super-lig-milli-ara-basladi", "milli ara notu en yeni haber olarak başta kalmalı");
+  const noteHtml = renderHomeTicker([note]);
+  assert.equal((noteHtml.match(new RegExp(phrase, "g")) || []).length, 2, "metin bir kez okunur, döngü kopyası aria-hidden");
+  assert.ok(noteHtml.includes('aria-hidden="true"'));
+  assert.equal((noteHtml.match(/home-ticker__source/g) || []).length, 0, "kaynaksız editoryal not künye basmaz");
+  assert.equal((index.match(new RegExp(phrase, "g")) || []).length, 2, "ana sayfa bandında metin iki kopya");
 
   const sw = fs.readFileSync(path.join(root, "sw.js"), "utf8");
   assert.ok(!/home-ticker|ticker\.json/.test(sw), "sw.js bandın dosyalarını yakalamamalı (bayat içerik riski)");

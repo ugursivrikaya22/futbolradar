@@ -265,7 +265,7 @@ function listingHtml(columns) {
 /** Ana sayfadaki son üç yazı. Yazı yoksa BOŞ DİZE — bölüm gizlenir. */
 function homeHtml(columns) {
   if (!columns.length) return "";
-  return columns.slice(0, 3).map((column) => columnCard(column, "./")).join("");
+  return columns.slice(0, 3).map((column) => columnCard({ ...column, path: cleanPublicPath(column.path) }, "./")).join("");
 }
 
 /**

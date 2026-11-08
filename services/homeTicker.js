@@ -12,6 +12,8 @@
  *   • Zorunlu alanlar: id, text, date (ISO, saat dilimli), category,
  *     sourceUrl (http/https), sourceName. Eksik ya da hatalı öğe banda
  *     GİRMEZ ve testte kırmızı yanar (scripts/test-home-ticker.mjs).
+ *   • editorial: true olan notta dış kaynak yoktur; metin olduğu gibi
+ *     basılır ve kaynak künyesi eklenmez.
  *   • category ∈ transfer | mac | haber.
  *   • sourceUrl alan adı services/sourceLinks.js beyaz listesinde olmalı.
  *   • url isteğe bağlı; verilirse site içi olmalı ("/..." ya da
@@ -58,7 +60,11 @@ function validateTickerEntry(item, options = {}) {
   const nowMs = Number.isFinite(options.now) ? options.now : Date.now();
   const errors = [];
   if (!item || typeof item !== "object") return ["öğe nesne değil"];
-  for (const key of ["id", "text", "date", "category", "sourceUrl", "sourceName"]) {
+  if (item.editorial !== undefined && typeof item.editorial !== "boolean") errors.push("editorial boolean olmalı");
+  const editorial = item.editorial === true;
+  const required = ["id", "text", "date", "category"];
+  if (!editorial) required.push("sourceUrl", "sourceName");
+  for (const key of required) {
     if (typeof item[key] !== "string" || !item[key].trim()) errors.push(`${key} eksik`);
   }
   if (errors.length) return errors;
@@ -67,8 +73,10 @@ function validateTickerEntry(item, options = {}) {
   if (!Object.prototype.hasOwnProperty.call(CATEGORIES, item.category)) errors.push(`category geçersiz: ${item.category}`);
   if (!ISO_WITH_ZONE.test(item.date) || !Number.isFinite(Date.parse(item.date))) errors.push("date saat dilimli ISO 8601 olmalı");
   else if (Date.parse(item.date) > nowMs + FUTURE_TOLERANCE_MS) errors.push("date gelecekte");
-  if (!/^https?:\/\//i.test(item.sourceUrl)) errors.push("sourceUrl http(s) olmalı");
-  else if (!isAllowedSourceHost(hostOf(item.sourceUrl))) errors.push(`sourceUrl alan adı beyaz listede değil: ${hostOf(item.sourceUrl)}`);
+  if (!editorial && item.sourceUrl) {
+    if (!/^https?:\/\//i.test(item.sourceUrl)) errors.push("sourceUrl http(s) olmalı");
+    else if (!isAllowedSourceHost(hostOf(item.sourceUrl))) errors.push(`sourceUrl alan adı beyaz listede değil: ${hostOf(item.sourceUrl)}`);
+  }
   if (item.url !== undefined && item.url !== null && item.url !== "" && !isInternalUrl(item.url)) errors.push("url site içi olmalı");
   if (item.breaking !== undefined && typeof item.breaking !== "boolean") errors.push("breaking boolean olmalı");
   if (item.breaking === true && !item.expiresAt) errors.push("breaking öğe expiresAt taşımalı");
