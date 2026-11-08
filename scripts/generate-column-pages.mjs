@@ -365,6 +365,10 @@ const PAGE_STRINGS = {
   }
 };
 
+function schemaAuthorType(name) {
+  return String(name || "").trim().toLocaleLowerCase("tr") === "futbolradar" ? "Organization" : "Person";
+}
+
 /** Tek yazı sayfası. */
 /**
  * KÜME BAĞLANTILARI (yalnızca Türkçe): yazının etiketlediği Süper Lig
@@ -497,7 +501,7 @@ export function columnPageHtml(column, locale = "tr") {
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
-    author: { "@type": column.author === "FutbolRadar" ? "Organization" : "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
+    author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",
       name: "FutbolRadar",
@@ -613,7 +617,7 @@ export function authorPageHtml(author) {
     name: `${author.name} Yazıları`,
     inLanguage: "tr-TR",
     mainEntity: {
-      "@type": author.name === "FutbolRadar" ? "Organization" : "Person",
+      "@type": schemaAuthorType(author.name),
       name: author.name,
       url
     }
