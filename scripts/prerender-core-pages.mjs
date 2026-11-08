@@ -173,7 +173,12 @@ function fixtureTeamLogoHtml(name) {
   return `<span class="fixture-team-logo-fallback" aria-hidden="true">${escapeHtml(fixtureTeamInitials(name))}</span>`;
 }
 
-const players = getPlayers(rawPlayers);
+const { isActiveStatsPlayer, filterActiveLeaderRows } = require("../services/playerStatsEligibility.js");
+const allPlayers = getPlayers(rawPlayers);
+const players = allPlayers.filter(isActiveStatsPlayer);
+for (const key of ["topScorers", "topAssists"]) {
+  leagueLeaders[key] = filterActiveLeaderRows(leagueLeaders[key], allPlayers);
+}
 const fixtureFreshness = normalizeFreshness(fixtures.freshness || freshnessData.records.fixtures);
 const matchSourceTime = currentMatches().filter(match => istanbulDay(match.kickoff || match.date) === istanbulDay(new Date().toISOString()))
   .map(match => match.fetchedAt || match.updatedAt || match.lastVerifiedAt).filter(value => Number.isFinite(Date.parse(value))).sort().at(-1) || null;

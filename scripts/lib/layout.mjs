@@ -395,10 +395,12 @@ export function newsTicker(options = {}) {
     const ariaText = item.confidenceBadge
       ? `${item.confidenceBadge}: ${item.text}`
       : item.text;
+    const sourceWord = locale === "en" ? "source" : "kaynak";
+    const sourceTitle = locale === "en" ? "Source" : "Kaynak";
     const aria = attribution || item.confidenceBadge
-      ? ` aria-label="${escapeHtml(`${ariaText}${attribution ? ` — kaynak: ${attribution}` : ""}`)}"`
+      ? ` aria-label="${escapeHtml(`${ariaText}${attribution ? ` — ${sourceWord}: ${attribution}` : ""}`)}"`
       : "";
-    const title = attribution ? ` title="${escapeHtml(`Kaynak: ${attribution}`)}"` : "";
+    const title = attribution ? ` title="${escapeHtml(`${sourceTitle}: ${attribution}`)}"` : "";
 
     return `<a class="news-ticker-item" href="${escapeHtml(href)}"${rel}${aria}${title}>${label}${confidence}<span>${escapeHtml(item.text)}</span></a>`;
   };

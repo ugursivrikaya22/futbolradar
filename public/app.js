@@ -7479,6 +7479,37 @@
     );
   }
 
+  // Keep this predicate identical to services/playerStatsEligibility.js (parity-tested).
+  function isActiveStatsPlayer(player, options = {}) {
+    if (!player || typeof player !== "object") return false;
+    if (
+      options.superLigOnly !== false &&
+      player.isCurrentSuperLigPlayer === false
+    )
+      return false;
+    var status = String(player.squadStatus || "")
+      .trim()
+      .toLowerCase();
+    if (
+      [
+        "departed",
+        "released",
+        "transferred_out",
+        "loaned_out",
+        "retired",
+        "inactive",
+      ].indexOf(status) !== -1
+    )
+      return false;
+    var team = String(player.currentTeam || player.team || "").trim();
+    if (
+      !team ||
+      /serbest|free[ -]?agent|kul[üu]ps[üu]z|without club|retired/i.test(team)
+    )
+      return false;
+    return true;
+  }
+
   /**
    * ANA SAYFA "TREND" KARTLARI İÇİN AYNI GÜVENİLİRLİK BARI.
    *
@@ -7494,6 +7525,7 @@
    * oyuncu değil) kontrol etmeden bir kaydı "trend" göstermiyor.
    */
   function isHomeTrendEligiblePlayer(player) {
+    if (!isActiveStatsPlayer(player)) return false;
     var providerId = String((player && (player.providerId || player.provider_id)) || "").trim();
     if (!providerId || !/^\d+$/.test(providerId)) {
       return false;
@@ -8810,7 +8842,7 @@
   }
 
   function filterPlayers(players, state) {
-    return players.filter(function (player) {
+    return players.filter(isActiveStatsPlayer).filter(function (player) {
       var search = normalizeSearchText(state.search);
       var searchOk = !search || [
         player.name,
@@ -9246,7 +9278,7 @@
         // Statik ön render doğrulanmamış kartları elemesi işe yaramazdı: JS
         // yüklendiği anda istemci aynı kayıtları geri basardı. Süzgeç bu
         // yüzden iki yerde de var.
-        var credible = players.filter(isPublishablePlayerCard);
+        var credible = players.filter(isActiveStatsPlayer).filter(isPublishablePlayerCard);
         var hiddenCount = players.length - credible.length;
         if (hiddenCount > 0 && window.console && console.warn) {
           console.warn("[futbolradar:card-hidden] " + hiddenCount +
@@ -9807,6 +9839,7 @@
 
   function topPlayerIds(players, getter, limit, filter) {
     return (Array.isArray(players) ? players : [])
+      .filter(isActiveStatsPlayer)
       .filter(function (player) { return !filter || filter(player); })
       .slice()
       .sort(function (a, b) { return Number(getter(b) || 0) - Number(getter(a) || 0); })
@@ -10290,7 +10323,7 @@
     var teamName = normalizeSearchText(team.name);
     var teamId = normalizeSearchText(team.id || team.providerId);
 
-    return squad.filter(function (player) {
+    return squad.filter(isActiveStatsPlayer).filter(function (player) {
       var playerTeam = normalizeSearchText(playerCurrentTeam(player));
       var playerTeamId = normalizeSearchText(player.teamId || player.currentTeamId || player.clubId);
 
@@ -13334,7 +13367,7 @@
   }
 
   function renderStatisticsHub(players, teams, matches, transfers) {
-    var playerList = Array.isArray(players) ? players : [];
+    var playerList = (Array.isArray(players) ? players : []).filter(isActiveStatsPlayer);
     var teamList = Array.isArray(teams) ? teams : [];
     var matchList = Array.isArray(matches) ? matches : [];
     var transferList = Array.isArray(transfers) ? transfers : [];
@@ -13400,7 +13433,7 @@
   }
 
   function filteredStatisticsData(sets, filters) {
-    var players = (sets[0] || []).filter(function (player) {
+    var players = (sets[0] || []).filter(isActiveStatsPlayer).filter(function (player) {
       var rating = statisticNumber(playerAiScore(player));
       var minutes = statisticMetric(player, "minutesPlayed");
       return statisticTextMatches(statisticFilterValue(player, "league"), filters.league) &&
@@ -13433,6 +13466,8 @@
     target.dataset.state = "loading";
 
     Promise.all([loadData("players"), loadData("teams"), loadData("matches"), loadData("transfers")]).then(function (sets) {
+      // Apply before building filter options, counters and every metric ranking.
+      sets[0] = (sets[0] || []).filter(isActiveStatsPlayer);
       var buttons = Array.from(document.querySelectorAll("[data-stat-view]"));
       var selects = Array.from(document.querySelectorAll("[data-stat-filter]"));
       var reset = document.querySelector("[data-stat-reset]");

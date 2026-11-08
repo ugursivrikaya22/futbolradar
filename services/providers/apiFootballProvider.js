@@ -1,3 +1,4 @@
+const { buildSeasonSnapshot } = require("../apiFootballPlayerMetrics.js");
 const {
   APIFOOTBALL_API_KEY_ENV_NAMES,
   APIFOOTBALL_LEAGUE_ID_ENV_NAMES,
@@ -898,14 +899,18 @@ function aggregateStatistics(statistics) {
   };
 }
 
-function normalizePlayer(item) {
+function normalizePlayer(item, expectedSeason) {
   const player = item.player || item;
   const statistics = Array.isArray(item.statistics) && item.statistics.length ? item.statistics : [firstStatistic(item)];
-  const primary = statistics[0] || {};
+  const seasonStatistics = buildSeasonSnapshot(item, expectedSeason);
+  const scoped = seasonStatistics ? statistics.filter(block => String(block.league?.season) === seasonStatistics.season) : statistics;
+  const primary = scoped[0] || {};
   const team = primary.team || item.team || {};
   const games = primary.games || {};
-  const stats = aggregateStatistics(statistics);
-  const rating = stats.rating;
+  const aggregated = aggregateStatistics(scoped);
+  const seasonStatisticsRejected = expectedSeason != null && !seasonStatistics;
+  const stats = seasonStatistics ? seasonStatistics.stats : seasonStatisticsRejected ? {} : aggregated;
+  const rating = aggregated.rating;
   const shirtNumber = numberOrNull(games.number);
 
   return {
@@ -936,6 +941,10 @@ function normalizePlayer(item) {
     contractUntil: null,
     photo: player.photo || null,
     stats,
+    seasonStatistics,
+    seasonStatisticsRejected,
+    ...(seasonStatistics ? { season: seasonStatistics.season, statsSource: "API-Football",
+      statsVerifiedFields: [...Object.keys(seasonStatistics.evidence), ...(stats.minutes === null ? [] : ["minutesPlayed"])] } : {}),
     appearances: stats.appearances,
     minutesPlayed: stats.minutes,
     minutes: stats.minutes,
@@ -1340,7 +1349,7 @@ async function getPlayers(query) {
     search: query && query.search,
     page: query && query.page
   }));
-  return stampProviderData(responseItems(payload).map(normalizePlayer), "players", 24 * 60 * 60 * 1000);
+  return stampProviderData(responseItems(payload).map(item => normalizePlayer(item, resolveSeason(query && query.season))), "players", 24 * 60 * 60 * 1000);
 }
 
 /**
@@ -1405,7 +1414,7 @@ async function getPlayersPaginated(query, options = {}) {
     if (Number.isFinite(reported) && reported > 0) totalPages = reported;
 
     for (const item of responseItems(payload)) {
-      const normalized = normalizePlayer(item);
+      const normalized = normalizePlayer(item, season);
       const key = String(normalized.providerId || normalized.name || "");
       if (!key || seen.has(key)) continue;
       seen.add(key);

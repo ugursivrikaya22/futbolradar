@@ -1,3 +1,4 @@
+const { applySeasonSnapshot } = require("./apiFootballPlayerMetrics.js");
 const players = require("../data/players.json");
 const {
   computeOverallRating,
@@ -86,6 +87,13 @@ function normalizeNumber(value, fallback) {
 }
 
 function normalizeStats(player) {
+  // Keep the authoritative snapshot's nulls. Number(null) === 0 must not
+  // resurrect unknown xG or a missing competition field as a measurement.
+  if (player.seasonStatistics?.provider === "api-football") {
+    const measured = player.seasonStatistics.stats;
+    return { ...measured, minutesPlayed: measured.minutes,
+      rating: player.providerRating == null ? null : normalizeNumber(player.providerRating, null) };
+  }
   const stats = player.stats && typeof player.stats === "object" ? player.stats : {};
 
   return {
@@ -531,7 +539,7 @@ function mergePlayerWithProvider(localPlayer, providerPlayer, providerName) {
     merged.transferConflict = conflictObject("transferHistory.latest.toTeam", merged.currentTeam, latest.toTeam, providerName);
   }
 
-  return normalizePlayer(merged);
+  return normalizePlayer(applySeasonSnapshot(merged, provider));
 }
 
 function mergeProviderPlayers(localPlayers, providerPlayers, providerName) {

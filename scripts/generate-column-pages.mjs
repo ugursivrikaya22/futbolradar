@@ -86,8 +86,8 @@ function canonicalTarget(href) {
 function inlineText(value, base = "", sources = []) {
   const bold = escapeHtml(value).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   const linked = bold.replace(
-    /\[([^\]]+)\]\(([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
-    (match, label, href) => `<a href="${base}${canonicalTarget(href)}">${label}</a>`
+    /\[([^\]]+)\]\(((?:\.\.\/)*)([a-zA-Z0-9][a-zA-Z0-9_\-./]*\.html(?:#[a-zA-Z0-9_-]+)?)\)/g,
+    (match, label, relativePrefix, href) => `<a href="${relativePrefix || base}${canonicalTarget(href)}">${label}</a>`
   );
   return linked.replace(/\[(\d+)\](?!\()/g, (marker, number) => {
     const source = sources[Number(number) - 1];
@@ -267,10 +267,26 @@ export function groupAuthors(columns) {
       authors.set(column.authorPath, {
         name: column.author,
         path: column.authorPath,
-        columns: []
+        columns: [],
+        nameCounts: new Map()
       });
     }
-    authors.get(column.authorPath).columns.push(column);
+    const group = authors.get(column.authorPath);
+    group.columns.push(column);
+    group.nameCounts.set(column.author, (group.nameCounts.get(column.author) || 0) + 1);
+  }
+
+  for (const group of authors.values()) {
+    let best = group.name;
+    let bestCount = -1;
+    for (const [name, count] of group.nameCounts) {
+      if (count > bestCount) {
+        best = name;
+        bestCount = count;
+      }
+    }
+    group.name = best;
+    delete group.nameCounts;
   }
 
   return [...authors.values()].sort((left, right) => left.name.localeCompare(right.name, "tr"));
@@ -299,6 +315,10 @@ const PAGE_STRINGS = {
     byline: (author, title) => `${author} wrote: ${title}`
   }
 };
+
+function schemaAuthorType(name) {
+  return String(name || "").trim().toLocaleLowerCase("tr") === "futbolradar" ? "Organization" : "Person";
+}
 
 /** Tek yazı sayfası. */
 /**
@@ -407,12 +427,18 @@ export function columnPageHtml(column, locale = "tr") {
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
   const body = column.body.map((paragraph) => {
     const line = String(paragraph ?? "");
+    // Markdown H1 sayfanın kendi <h1> başlığıdır; gövdede ikinci kez basılmaz.
+    if (line.startsWith("# ") && !line.startsWith("## ")) {
+      const heading = line.slice(2).trim();
+      if (heading === column.title) return "";
+      return `<h2>${inlineText(heading, base)}</h2>`;
+    }
     if (line.startsWith("## ")) {
       return `<h2>${inlineText(line.slice(3).trim(), base)}</h2>`;
     }
     if (line.startsWith("|")) return tableHtml(line, base, column.sources);
     return `<p>${inlineText(line, base, column.sources)}</p>`;
-  }).join("\n        ");
+  }).filter(Boolean).join("\n        ");
 
   // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.
   const jsonLd = {
@@ -426,7 +452,7 @@ export function columnPageHtml(column, locale = "tr") {
     // tazelik sinyalini yalanlar. Tarihli bir güncelleme notu varsa
     // değişiklik tarihi en yeni notun tarihidir.
     dateModified: column.updates.length ? column.updates[0].date : column.date,
-    author: { "@type": column.author === "FutbolRadar" ? "Organization" : "Person", name: column.author, url: `${DOMAIN}/${column.authorPath}` },
+    author: { "@type": schemaAuthorType(column.author), name: column.author, url: `${DOMAIN}/${column.authorPath}` },
     publisher: {
       "@type": "Organization",
       name: "FutbolRadar",
@@ -542,7 +568,7 @@ export function authorPageHtml(author) {
     name: `${author.name} Yazıları`,
     inLanguage: "tr-TR",
     mainEntity: {
-      "@type": author.name === "FutbolRadar" ? "Organization" : "Person",
+      "@type": schemaAuthorType(author.name),
       name: author.name,
       url
     }
