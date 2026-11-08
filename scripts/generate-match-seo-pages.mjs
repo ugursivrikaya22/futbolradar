@@ -84,6 +84,7 @@ import {
 } from "./lib/matchSeoPage.mjs";
 
 const require = createRequire(import.meta.url);
+const { pageShareHtml } = require("../services/columnShare.js");
 const root = process.cwd();
 const {
   DOMAIN,
@@ -1533,6 +1534,7 @@ function pageHtml(entry, locale, options) {
       ${matchTabs}
       ${relatedLinksHtml(related, locale)}
       <p class="msp-source muted-copy"><b>${escapeHtml(text.dataSource)}:</b> ${escapeHtml(text.dataSourceNote)}</p>
+      ${pageShareHtml({ url: canonical, title: titles.h1, locale })}
     </main>
     ${siteFooter({ base, locale })}
     <script src="${base}site.js" defer></script>

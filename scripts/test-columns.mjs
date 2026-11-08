@@ -309,8 +309,11 @@ function column(overrides = {}) {
   assert.ok(detail.indexOf('class="column-share"') > detail.indexOf("</article>"), "paylaşım düğmeleri yazının altında olmalı");
   assert.match(detail, /aria-label="X&#39;te paylaş"/, "detay sayfası X paylaşım etiketi taşımalı");
   assert.match(detail, /aria-label="Facebook&#39;ta paylaş"/, "detay sayfası Facebook paylaşım etiketi taşımalı");
+  assert.match(detail, /aria-label="WhatsApp&#39;ta paylaş"/, "detay sayfası WhatsApp paylaşım etiketi taşımalı");
   assert.match(detail, /target="_blank" rel="noopener noreferrer"/, "paylaşım bağlantısı yeni sekmede ve korumalı açılmalı");
   const canonical = "https://www.futbolradar.com/kose-yazilari/ornek-yazi";
+  const whatsappHref = detail.match(/https:\/\/wa\.me\/\?text=[^"]+/)[0];
+  assert.equal(new URL(whatsappHref).searchParams.get("text"), `Örnek yazı ${canonical}`, "WhatsApp başlık ve kanonik adresi taşır");
   const xHref = detail.match(/https:\/\/twitter\.com\/intent\/tweet\?[^"]+/)[0].replaceAll("&amp;", "&");
   const xUrl = new URL(xHref);
   assert.ok(xHref.indexOf("url=") < xHref.indexOf("text="), "X adresinde url, metinden önce gelmeli");

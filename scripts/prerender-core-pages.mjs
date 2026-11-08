@@ -22,6 +22,7 @@ import { ROBOTS_INDEX, ROBOTS_META_RE, ROBOTS_NOINDEX_FOLLOW } from "./lib/robot
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { internalHref } = require("../services/siteLinks.js");
+const { installContentShareFromDocument } = require("../services/columnShare.js");
 const { teamProfileHref } = require("../services/teamHubLinks.js");
 const { teamPageSlug } = require("../services/superLigTeamPages.js");
 const retryBuffer = new Int32Array(new SharedArrayBuffer(4));
@@ -2051,6 +2052,7 @@ function writePage(file, slots, freshness, staticSlots = {}) {
     (tag) => tag.replace(/ data-matches-day="[^"]*"/g, "").replace(/>$/, ` data-matches-day="${istanbulDay(new Date().toISOString())}">`));
   html = updateRobotsDirective(html, file);
   if (file === "puan-durumu.html") html = applyStandingsDocumentMeta(html);
+  if (["gol-kralligi.html", "asist-kralligi.html", "istatistik-merkezi.html"].includes(file)) html = installContentShareFromDocument(html);
   writeGeneratedFile(sourcePath, html);
   writeGeneratedFile(path.join(root, "public", file), html);
 }

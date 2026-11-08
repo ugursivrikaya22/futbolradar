@@ -16,6 +16,7 @@ import { RICH_TEAM_PAGES } from "./lib/richTeamPages.mjs";
 
 const require = createRequire(import.meta.url);
 const { isAllowedSourceUrl, sourceLinkAttrs } = require("../services/sourceLinks.js");
+const { pageShareHtml } = require("../services/columnShare.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.futbolradar.com";
@@ -238,6 +239,7 @@ export function buildPage(data, entry) {
             <p class="evergreen-freshness"><time datetime="${data.dataDate}">Veri tarihi: ${data.dataDate}</time> · Saatler Türkiye saatiyle (TSİ). Her bilgi kaynak bağlantısı taşır; doğrulanmamış bilgiler "Güncelleniyor" olarak işaretlenir.</p>
           </header>
           ${main}
+          ${pageShareHtml({ url: canonical, title: h1, locale: "tr" })}
         </div>
       </main>
       ${siteFooter({ base })}
