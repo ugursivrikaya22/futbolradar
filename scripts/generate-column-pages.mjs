@@ -316,10 +316,26 @@ export function groupAuthors(columns) {
       authors.set(column.authorPath, {
         name: column.author,
         path: column.authorPath,
-        columns: []
+        columns: [],
+        nameCounts: new Map()
       });
     }
-    authors.get(column.authorPath).columns.push(column);
+    const group = authors.get(column.authorPath);
+    group.columns.push(column);
+    group.nameCounts.set(column.author, (group.nameCounts.get(column.author) || 0) + 1);
+  }
+
+  for (const group of authors.values()) {
+    let best = group.name;
+    let bestCount = -1;
+    for (const [name, count] of group.nameCounts) {
+      if (count > bestCount) {
+        best = name;
+        bestCount = count;
+      }
+    }
+    group.name = best;
+    delete group.nameCounts;
   }
 
   return [...authors.values()].sort((left, right) => left.name.localeCompare(right.name, "tr"));
@@ -456,12 +472,18 @@ export function columnPageHtml(column, locale = "tr") {
   // (ör. "Olumlu Yanlar") paragraf değil <h2> olarak basılır.
   const body = column.body.map((paragraph) => {
     const line = String(paragraph ?? "");
+    // Markdown H1 sayfanın kendi <h1> başlığıdır; gövdede ikinci kez basılmaz.
+    if (line.startsWith("# ") && !line.startsWith("## ")) {
+      const heading = line.slice(2).trim();
+      if (heading === column.title) return "";
+      return `<h2>${inlineText(heading, base)}</h2>`;
+    }
     if (line.startsWith("## ")) {
       return `<h2>${inlineText(line.slice(3).trim(), base)}</h2>`;
     }
     if (line.startsWith("|")) return tableHtml(line, base, column.sources);
     return `<p>${inlineText(line, base, column.sources)}</p>`;
-  }).join("\n        ");
+  }).filter(Boolean).join("\n        ");
 
   // Article ana tipi SEO sözleşmesini taşır; additionalType yorum niteliğini korur.
   const jsonLd = {
