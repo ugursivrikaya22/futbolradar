@@ -25,6 +25,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { fixtureCard as sharedFixtureCard } from "./lib/matchCards.mjs";
 import { createFreshnessTracker } from "./lib/sitemapFreshness.mjs";
 import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { escapeHtml as escapeTeam, importanceNavHtml, standingsTeamHref } from "./lib/standingsTeamLinks.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
@@ -128,16 +129,22 @@ function resultsSectionHtml(matches) {
 
 function standingsSectionHtml(standingsEntry, competition) {
   if (!standingsEntry || !Array.isArray(standingsEntry.table) || !standingsEntry.table.length) return "";
-  const rows = standingsEntry.table.map((row) => `<tr>
+  const rows = standingsEntry.table.map((row) => {
+    const href = standingsTeamHref(row, { locale: "tr", from: "lig" });
+    const name = href
+      ? `<a class="standings-team-link" href="${escapeTeam(href)}" style="display:inline-flex;align-items:center;min-height:32px">${escapeHtml(row.team)}</a>`
+      : escapeHtml(row.team);
+    return `<tr>
       <td>${escapeHtml(row.rank ?? "")}</td>
-      <td>${escapeHtml(row.team)}</td>
+      <td>${name}</td>
       <td>${escapeHtml(row.played ?? "")}</td>
       <td>${escapeHtml(row.won ?? "")}</td>
       <td>${escapeHtml(row.drawn ?? "")}</td>
       <td>${escapeHtml(row.lost ?? "")}</td>
       <td>${escapeHtml(row.goalDifference ?? "")}</td>
       <td><strong>${escapeHtml(row.points ?? "")}</strong></td>
-    </tr>`).join("");
+    </tr>`;
+  }).join("");
 
   // Katalogda kayıtlı yarışmalar (bkz. scripts/lib/standingsCatalog.mjs) ayrıca
   // kendi SEO'lu puan durumu sayfasına sahip (ör. `/premier-lig-puan-durumu`);
@@ -156,6 +163,7 @@ function standingsSectionHtml(standingsEntry, competition) {
         </table>
       </div>
       ${dedicatedLink}
+      ${importanceNavHtml(competition.id, { locale: "tr", from: "lig" })}
     </section>`;
 }
 

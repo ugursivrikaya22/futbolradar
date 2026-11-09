@@ -5184,7 +5184,7 @@
   // seçiyor (bkz. oradaki TEXT ve EN_LEAGUE_BY_SLUG).
   var lang = document.documentElement.lang;
   if ((lang !== "tr" && lang !== "en") || !document.querySelector(".standings-tabs__panel, .evergreen-table, [data-api-target=standings]")) return;
-  ["/live-standings-core.js?v=20260913", "/data-refresh.js?v=20260913"].forEach(function (src) {
+  ["/live-standings-core.js?v=20260913", "/data-refresh.js?v=20261108"].forEach(function (src) {
     var script = document.createElement("script");
     script.src = src;
     script.async = false;

@@ -1,5 +1,4 @@
-import { createRequire } from "node:module";
-const { teamProfileHref } = createRequire(import.meta.url)("../../services/teamHubLinks.js");
+import { standingsTeamHref } from "./standingsTeamLinks.mjs";
 /**
  * ANA SAYFA "PUAN DURUMLARI" SEKMELİ WIDGET'I — TR ve EN ana sayfası aynı
  * fonksiyonu çağırır (yalnızca `locale` değişir), böylece iki dil hep aynı
@@ -55,14 +54,12 @@ function logoOrFallback(row) {
   return `<span class="home-standing-logo-wrap"><img class="home-standing-logo" src="${escapeHtml(row.logo)}" alt="" width="22" height="22" loading="lazy" decoding="async" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" /><span class="home-standing-logo-fallback" aria-hidden="true" style="display:none">${initials}</span></span>`;
 }
 
-/** Süper Lig satırı Türkçe ana sayfada takım profiline bağlanır (dahili linkleme); diğer 8 yarışmada karşılık gelen bir profil sayfası olmadığı için satır düz metin kalır. */
+/** Satır, kayıtlı takım sayfasına gider. Sayfası olmayan satır düz metin kalır. */
 function teamCell(row, entry, locale) {
   const name = escapeHtml(row.name || "");
   const logo = logoOrFallback(row);
-  if (locale === "tr" && entry.id === "super-lig") {
-    const href = teamProfileHref(row.name || "");
-    return `<a class="home-standing-team" href="${href}">${logo}<b>${name}</b></a>`;
-  }
+  const href = standingsTeamHref(row, { locale, from: locale === "en" ? "en" : "" });
+  if (href) return `<a class="home-standing-team" href="${escapeHtml(href)}">${logo}<b>${name}</b></a>`;
   return `<span class="home-standing-team">${logo}<b>${name}</b></span>`;
 }
 

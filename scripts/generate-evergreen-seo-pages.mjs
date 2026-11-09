@@ -11,6 +11,7 @@ const require = createRequire(import.meta.url);
 const { playerLink } = require("../services/playerLinks.js");
 const { superLigTeamPages, teamHubIndexable, standingsPageIndexable } = require("../services/superLigTeamPages.js");
 const { sameClub } = require("../services/superLigTeams.js");
+const { pageShareHtml } = require("../services/columnShare.js");
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteUrl = "https://www.futbolradar.com";
@@ -124,6 +125,7 @@ function pageDocument({ base, title, description, canonicalPath, h1, kicker, int
           </header>
           ${content}
           ${faqSectionHtml(faq, { className: "evergreen-section" })}
+          ${/^\/takimlar\/[^/]+$/.test(canonicalPath) ? pageShareHtml({ url: canonical, title: h1, locale: "tr" }) : ""}
         </div>
       </main>
       ${siteFooter({ base })}

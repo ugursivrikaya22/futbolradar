@@ -1,7 +1,211 @@
 {
-  "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA; eksik confidence 'kesin' sayılmaz, öğe elenir. transfer-rumour kategorisi confidence 'confirmed' olamaz. Kesinleşmemiş öğenin metninde 'resmen', 'imzaladı', 'duyurdu' gibi kesinlik ifadesi geçemez. Buradaki kayıtların tamamı data/news.json içindeki doğrulanmış, kaynak bağlantılı haberlerden türetilmiştir; hiçbiri elle uydurulmamıştır.",
-  "updatedAt": "2026-11-06T12:06:27.283Z",
+  "_comment": "SON DAKİKA BANDI — küratörlü kaynak. Kural ve doğrulama: services/newsTicker.js, belge: docs/news-ticker.md. Her öğe category, confidence, timestamp ve source.{name,url} taşımak ZORUNDA. transfer-rumour kategorisi confidence confirmed olamaz. Kesinleşmemiş öğenin metninde kesinlik ifadesi geçemez ve çekince ifadesi zorunludur. en.text yalnızca editörün kaynak metinden yazdığı İngilizce cümledir.",
+  "updatedAt": "2026-11-08T20:40:00.000Z",
   "items": [
+    {
+      "id": "cevad-prekazi-vefat-2026-11-08",
+      "category": "club-agenda",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Galatasaray",
+      "text": "Galatasaray efsanesi Cevad Prekazi 70 yaşında hayatını kaybetti.",
+      "en": {
+        "text": "Galatasaray legend Cevad Prekazi has died aged 70."
+      },
+      "timestamp": "2026-11-08T23:18:00+03:00",
+      "source": {
+        "name": "Sözcü",
+        "url": "https://www.sozcu.com.tr/galatasaray-in-efsane-ismi-cevad-prekazi-hayatini-kaybetti-p379323"
+      }
+    },
+    {
+      "id": "gs-amed-4-3-2026-11-07",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Galatasaray",
+      "competition": "Süper Lig",
+      "text": "Galatasaray, Amed Sportif Faaliyetler'i 4-3 yenerek puanını 28'e çıkardı ve liderliğini sürdürdü",
+      "en": {
+        "text": "Galatasaray beat Amed Sportif Faaliyetler 4-3, moved to 28 points and stayed top of the Super Lig"
+      },
+      "timestamp": "2026-11-07T21:13:42+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/galatasaray-sahasindan-galibiyetle-ayrildi/4115380"
+      }
+    },
+    {
+      "id": "okan-buruk-leao-zemin-2026-11-07",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Galatasaray",
+      "competition": "Süper Lig",
+      "text": "Okan Buruk: Rafa'nın inşallah önemli bir şeyi yoktur, kontroller yarın olacak; zemin toparlamadı",
+      "en": {
+        "text": "Okan Buruk: hopefully Rafa's issue is not serious and checks are tomorrow; the pitch did not recover"
+      },
+      "timestamp": "2026-11-07T20:36:00+03:00",
+      "source": {
+        "name": "beIN SPORTS",
+        "url": "https://beinsports.com.tr/haber/okan-buruk-insallah-onemli-bir-seyi-yok"
+      }
+    },
+    {
+      "id": "okan-buruk-osimhen-2026-11-07",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Galatasaray",
+      "competition": "Süper Lig",
+      "text": "Okan Buruk: Osimhen'in dönüşüyle ilgili net bir süre yok; bugünü mutlu bir şekilde bitirdik",
+      "en": {
+        "text": "Okan Buruk: there is no clear timetable for Osimhen's return; we finished today happily"
+      },
+      "timestamp": "2026-11-07T23:56:00+03:00",
+      "source": {
+        "name": "NTV Spor",
+        "url": "https://www.ntvspor.net/futbol/galeri-okan-buruk-tek-tek-anlatti-leao-osimhen-batrakov-torreira-ve-nhaga-432667"
+      }
+    },
+    {
+      "id": "okan-buruk-sergen-yalcin-2026-11-07",
+      "category": "manager-quote",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Galatasaray",
+      "competition": "Süper Lig",
+      "text": "Okan Buruk, Sergen Yalçın için hayırlı olmasını diledi ve telefonla görüştüklerini söyledi",
+      "en": {
+        "text": "Okan Buruk wished Sergen Yalcin well and said they had spoken by phone"
+      },
+      "timestamp": "2026-11-07T21:26:00+03:00",
+      "source": {
+        "name": "beIN SPORTS",
+        "url": "https://beinsports.com.tr/haber/okan-buruk-insallah-onemli-bir-seyi-yok"
+      }
+    },
+    {
+      "id": "sergen-yalcin-aday-kadro-2026-11-06",
+      "category": "squad-update",
+      "confidence": "confirmed",
+      "team": "Türkiye",
+      "competition": "UEFA Uluslar Ligi",
+      "text": "Sergen Yalçın, Belçika ve Fransa maçları için 26 kişilik aday kadroyu açıkladı; tek hedefinin Avrupa Şampiyonası ve Dünya Kupası olduğunu söyledi",
+      "en": {
+        "text": "Sergen Yalcin named a 26-man squad for Belgium and France and said the only target is the European Championship and the World Cup"
+      },
+      "timestamp": "2026-11-06T14:42:59+03:00",
+      "source": {
+        "name": "Anadolu Ajansı",
+        "url": "https://www.aa.com.tr/tr/spor/sergen-yalcin-a-milli-futbol-takiminin-aday-kadrosunu-acikladi/4113966"
+      }
+    },
+    {
+      "id": "forest-manchester-city-3-1-2026-11-07",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Manchester City",
+      "competition": "Premier League",
+      "text": "Nottingham Forest, Manchester City'yi 3-1 yendi; City ligde üst üste üçüncü yenilgisini aldı",
+      "en": {
+        "text": "Nottingham Forest beat Manchester City 3-1; City suffered a third straight league defeat"
+      },
+      "timestamp": "2026-11-07T19:25:00Z",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/live/c5wyrmwlv8wvt"
+      }
+    },
+    {
+      "id": "arsenal-hull-1-0-2026-11-07",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Arsenal",
+      "competition": "Premier League",
+      "text": "Arsenal, Martin Odegaard'ın golüyle Hull City'yi 1-0 yendi ve Premier Lig liderliğini altı puana çıkardı",
+      "en": {
+        "text": "Arsenal beat Hull City 1-0 through Martin Odegaard and extended their Premier League lead to six points"
+      },
+      "timestamp": "2026-11-07T19:25:00Z",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/live/c64g1dvlpjzkt"
+      }
+    },
+    {
+      "id": "real-madrid-valencia-3-0-2026-11-07",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Real Madrid",
+      "competition": "La Liga",
+      "text": "Real Madrid, Valencia deplasmanında 3-0 kazandı ve La Liga'da Barcelona ile puanı eşitledi",
+      "en": {
+        "text": "Real Madrid won 3-0 at Valencia and moved level on points with Barcelona in La Liga"
+      },
+      "timestamp": "2026-11-07T21:57:00Z",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/live/c9y7l4p8v268t"
+      }
+    },
+    {
+      "id": "bayern-mainz-2-1-neuer-2026-11-07",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "breaking": true,
+      "team": "Bayern Munich",
+      "competition": "Bundesliga",
+      "text": "Bayern Münih, Mainz'ı 2-1 yendi; Harry Kane iki asist yaptı, Manuel Neuer sakatlık nedeniyle çıktı",
+      "en": {
+        "text": "Bayern Munich beat Mainz 2-1; Harry Kane made two assists and Manuel Neuer went off injured"
+      },
+      "timestamp": "2026-11-07T19:22:00Z",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/live/c6d09x7zknymt"
+      }
+    },
+    {
+      "id": "psg-troyes-1-0-2026-11-07",
+      "category": "post-match",
+      "confidence": "confirmed",
+      "team": "Paris Saint-Germain",
+      "competition": "Ligue 1",
+      "text": "PSG, Ilia Zabarnyi'nin golüyle Troyes'i 1-0 yendi",
+      "en": {
+        "text": "Paris Saint-Germain beat Troyes 1-0 with an Ilia Zabarnyi goal"
+      },
+      "timestamp": "2026-11-07T21:55:00Z",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/live/c6kg5dynmze1t"
+      }
+    },
+    {
+      "id": "jj-gabriel-real-madrid-sozlu-anlasma-2026-11-07",
+      "category": "transfer-rumour",
+      "confidence": "reported",
+      "breaking": true,
+      "team": "Real Madrid",
+      "teams": [
+        "Real Madrid",
+        "Manchester United"
+      ],
+      "competition": "Transfer",
+      "text": "BBC Sport'a göre JJ Gabriel'in Real Madrid'e geçişi için sözlü anlaşma iddiası var; imza yok, kulüpler arası görüşme yapılmadı",
+      "en": {
+        "text": "BBC Sport reports a verbal agreement for JJ Gabriel to join Real Madrid; no contract is signed and there have been no club-to-club talks"
+      },
+      "timestamp": "2026-11-07T12:25:00Z",
+      "source": {
+        "name": "BBC Sport",
+        "url": "https://www.bbc.com/sport/football/articles/cmy4x9yq3xg3o"
+      }
+    },
     {
       "id": "auto-news-534a706e12f71c15bb5c",
       "category": "official",

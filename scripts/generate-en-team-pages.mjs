@@ -37,6 +37,7 @@ import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const require = createRequire(import.meta.url);
+const { pageShareHtml } = require("../services/columnShare.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const {
   DOMAIN,
@@ -380,6 +381,7 @@ ${body}
         <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
       </section>
       ${englishTeamNews(team)}
+      ${pageShareHtml({ url: canonical, title: team.name, locale: "en" })}
     </main>
     ${siteFooter({ base: BASE, locale: LOCALE })}
     <script src="${BASE}site.js" defer></script>

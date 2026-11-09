@@ -1,3 +1,4 @@
+const { installColumnShare, installContentShareFromDocument, shareSurface } = require('./columnShare');
 const origin = 'https://www.futbolradar.com';
 const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const decode = value => value.replace(/&(?:amp|quot|apos|lt|gt|#39|#(\d+)|#x([0-9a-f]+));/gi, (all, decimal, hex) => {
@@ -8,12 +9,56 @@ const decode = value => value.replace(/&(?:amp|quot|apos|lt|gt|#39|#(\d+)|#x([0-
   return ({'&amp;':'&','&quot;':'"','&apos;':"'",'&#39;':"'",'&lt;':'<','&gt;':'>'})[all.toLowerCase()] || all;
 });
 
+function columnArticleTitle(html) {
+  const article = html.match(/<article\b[^>]*class="[^"]*\bcolumn-article\b[^"]*"[^>]*>([\s\S]*?)<\/article>/);
+  if (!article) return '';
+  const heading = article[1].match(/<h1>([^<]*)<\/h1>/);
+  return heading ? decode(heading[1]).trim() : '';
+}
+
+function stripUnusedPageShareAssets(html) {
+  if (html.includes('data-page-share')) return html;
+  return html
+    .replace(/\n?[ \t]*<link rel="stylesheet" href="\/page-share\.css(?:\?[^"]*)?"\s*\/?>/g, '')
+    .replace(/\n?[ \t]*<script src="\/page-share\.js(?:\?[^"]*)?" defer><\/script>/g, '');
+}
+
+function upgradeShareMetadata(html, title) {
+  html = html.replace(/(content="https:\/\/www\.futbolradar\.com\/assets\/og-image)\.svg"/g, '$1.png"');
+  if (html.includes('content="https://www.futbolradar.com/assets/og-image.png"')) html = html.replace(/(property="og:image:type" content=")image\/svg\+xml"/g, '$1image/png"');
+  for (const [attribute, name] of [['property','og:image:alt'],['name','twitter:image:alt']]) {
+    if (!html.includes(`${attribute}="${name}"`)) html = html.replace('</head>', `<meta ${attribute}="${name}" content="${escape(title)} — FutbolRadar paylaşım görseli" />\n</head>`);
+  }
+  return html;
+}
+
 // Shared by static builds and server-rendered news: links are in the initial HTML.
 function improveOrganicSharing(html) {
-  if (!/<html\b[^>]*lang="tr(?:-TR)?"/i.test(html)) return html;
+  const turkish = /<html\b[^>]*lang="tr(?:-TR)?"/i.test(html);
+  const english = /<html\b[^>]*lang="en(?:-[A-Za-z]+)?"/i.test(html);
+  if (!turkish && !english) return html;
   const canonical = html.match(/<link\b[^>]*rel="canonical"[^>]*href="([^"]+)"/i)?.[1];
   const rawTitle = html.match(/<meta\b[^>]*property="og:title"[^>]*content="([^"]+)"/i)?.[1]
     || html.match(/<title>([^<]+)<\/title>/i)?.[1];
+  if (canonical && rawTitle && html.includes('</main>')) {
+    let parsed;
+    try { parsed = new URL(decode(canonical)); } catch { parsed = null; }
+    const surface = parsed && parsed.origin === origin ? shareSurface(parsed.pathname) : '';
+    if (surface === 'column') {
+      const title = columnArticleTitle(html) || decode(rawTitle);
+      html = stripUnusedPageShareAssets(installColumnShare(html, {
+        url: parsed.href,
+        title,
+        locale: turkish ? 'tr' : 'en'
+      }));
+      return turkish ? upgradeShareMetadata(html, decode(rawTitle)) : html;
+    }
+    if (surface) {
+      html = stripUnusedPageShareAssets(installContentShareFromDocument(html));
+      return turkish ? upgradeShareMetadata(html, decode(rawTitle)) : html;
+    }
+  }
+  if (!turkish) return html;
   if (!canonical || !rawTitle || !html.includes('</main>')) return html;
   let url;
   try { url = new URL(decode(canonical)); } catch { return html; }

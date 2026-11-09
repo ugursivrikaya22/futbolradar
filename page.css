@@ -12388,8 +12388,11 @@ a.column-author:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border: 1px solid var(--glass-border);
   border-radius: 7px;
   background: rgba(var(--surface-rgb), 0.32);
@@ -12419,6 +12422,11 @@ a.column-author:focus-visible {
 .column-card-share-x,
 .column-share-x .column-share-symbol {
   color: var(--text);
+}
+
+.column-card-share-whatsapp,
+.column-share-whatsapp .column-share-symbol {
+  color: var(--green);
 }
 
 .column-tags {
@@ -12516,14 +12524,16 @@ a.column-author:focus-visible {
 }
 
 .column-share {
+  box-sizing: border-box;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--sp-2);
+  width: 100%;
+  max-width: 72ch;
+  margin: 0 auto;
   padding: var(--sp-3) 0;
   border-top: 1px solid var(--glass-border);
-  border-bottom: 1px solid var(--glass-border);
 }
 
 .column-share-label {
@@ -12532,13 +12542,21 @@ a.column-author:focus-visible {
   font-weight: 750;
 }
 
+.column-share-actions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
 .column-share-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-height: 42px;
-  padding: 0 14px;
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  padding: 0 12px;
   border: 1px solid var(--glass-border);
   border-radius: 7px;
   background: rgba(var(--surface-rgb), 0.35);
@@ -12555,8 +12573,14 @@ a.column-author:focus-visible {
   align-items: center;
   justify-content: center;
   width: 18px;
-  font-size: 1rem;
-  font-weight: 900;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.column-share-icon {
+  display: block;
+  width: 18px;
+  height: 18px;
 }
 
 .column-share-button:hover,
@@ -12569,20 +12593,22 @@ a.column-author:focus-visible {
   transform: translateY(-1px);
 }
 
-@media (max-width: 520px) {
+@media (min-width: 521px) {
   .column-share {
-    align-items: stretch;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .column-share-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    width: 100%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: auto;
   }
 
   .column-share-button {
-    min-width: 0;
-    padding-inline: 10px;
+    width: auto;
   }
 }
 

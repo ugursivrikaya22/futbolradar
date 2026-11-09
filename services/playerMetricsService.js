@@ -95,6 +95,9 @@ function readRaw(source, aliases) {
  */
 function readMetric(player, metric, context) {
   const stats = player && player.stats && typeof player.stats === "object" ? player.stats : {};
+  // A sourced season snapshot is authoritative: no legacy flat values or
+  // per-game estimates may leak back into missing provider fields.
+  if (player?.seasonStatistics?.provider === "api-football") return toNumber(stats[metric.key]);
   const direct = readRaw(stats, metric.aliases);
   if (direct !== null) {
     return direct;
@@ -158,6 +161,10 @@ function buildMetrics(player, options) {
       const comparable = metric.per90 ? per90 : value;
 
       return {
+        source: player?.seasonStatistics?.evidence?.[metric.key]?.source || null,
+        sourceField: player?.seasonStatistics?.evidence?.[metric.key]?.field || null,
+        formula: player?.seasonStatistics?.evidence?.[metric.key]?.formula || null,
+        per90Formula: per90 === null ? null : "değer / dakika × 90",
         key: metric.key,
         label: metric.label,
         group: metric.group,

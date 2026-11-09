@@ -16,6 +16,7 @@ import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
 import { EN_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
+import { escapeHtml as escapeTeam, importanceNavHtml, standingsTeamHref } from "./lib/standingsTeamLinks.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -120,7 +121,13 @@ function writePage(relativePath, html) {
 }
 
 function tableHtml(rows, copy) {
-  const body = rows.map((row) => `<tr><td>${cell(row.rank)}</td><th scope="row">${escapeHtml(row.name)}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`).join("");
+  const body = rows.map((row) => {
+    const href = standingsTeamHref(row, { locale: "en", from: "en" });
+    const name = href
+      ? `<a class="standings-team-link" href="${escapeTeam(href)}" style="display:inline-flex;align-items:center;min-height:32px">${escapeHtml(row.name)}</a>`
+      : escapeHtml(row.name);
+    return `<tr><td>${cell(row.rank)}</td><th scope="row">${name}</th><td>${cell(row.played)}</td><td>${cell(row.won)}</td><td>${cell(row.drawn)}</td><td>${cell(row.lost)}</td><td>${cell(row.goalsFor)}</td><td>${cell(row.goalsAgainst)}</td><td>${goalDifferenceCell(row.goalDifference)}</td><td><strong>${cell(row.points)}</strong></td></tr>`;
+  }).join("");
   return `<div class="evergreen-table-wrap"><table class="evergreen-table"><caption>${escapeHtml(copy)}</caption><thead><tr><th scope="col">Rank</th><th scope="col">Team</th><th scope="col">P</th><th scope="col">W</th><th scope="col">D</th><th scope="col">L</th><th scope="col">GF</th><th scope="col">GA</th><th scope="col">GD</th><th scope="col">Pts</th></tr></thead><tbody>${body}</tbody></table></div>`;
 }
 
@@ -154,7 +161,7 @@ function competitionPage(entry) {
     { name: `${entry.nameEn} Standings`, href: `./${entry.slugEn}`, url: `${siteUrl}${canonicalPath}` }
   ];
   const content = hasData
-    ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${tableHtml(rows, `${entry.nameEn} standings`)}</section>${relatedLinksHtml(entry)}`
+    ? `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${tableHtml(rows, `${entry.nameEn} standings`)}${importanceNavHtml(entry.id, { locale: "en", from: "en" })}</section>${relatedLinksHtml(entry)}`
     : `<section class="evergreen-section" aria-labelledby="standings-heading"><h2 id="standings-heading">Current standings</h2>${emptyStateHtml(entry.nameEn)}</section>${relatedLinksHtml(entry)}`;
 
   return pageDocument({

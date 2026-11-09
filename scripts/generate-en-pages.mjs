@@ -69,6 +69,8 @@ const { isHomeFixture } = require("../services/homeFixtureVisibility.js");
 const { publishableNews, newsHref } = require("../services/newsFeed.js");
 const { publishedColumns } = require("../services/columnService.js");
 const { isPublishableEnglish, rankEnglishNews } = require("../services/englishNews.js");
+const { pageShareHtml } = require("../services/columnShare.js");
+const { canonicalFromPath, columnShareHtml } = require("../services/columnShare.js");
 const { statusLabel, BREAKING_LABEL, editorialStatusOf } = require("../services/editorialStatus.js");
 const { selectLiveTickerRecords } = require("../services/liveScoresTicker.js");
 const { withRelevance } = require("../services/matchRelevance.js");
@@ -584,6 +586,7 @@ ${body}
         <div><span>Time zone</span><b>${escapeHtml(label("common.timezoneNote"))}</b></div>
         <div><span>Data policy</span><b>Compiled from official sources — never generated.</b></div>
       </section>
+      ${["topScorers", "topAssists", "statsHub"].includes(routeKey) ? pageShareHtml({ url: canonical, title: heroTitle, locale: "en" }) : ""}
     </main>`;
 
   return `<!doctype html>
@@ -1972,6 +1975,7 @@ function columnsPage() {
             <div class="column-card-foot"><span>${escapeHtml(column.author || "FutbolRadar")}</span>
             ${published ? `<time datetime="${escapeHtml(published)}">${escapeHtml(formatDate(published, LOCALE))}</time>` : ""}</div>
             <a class="detail-link" href="${href}">Read the column</a>
+            ${columnShareHtml({ url: canonicalFromPath(column.path), title: column.title || "", locale: "en" }, { compact: true })}
           </article>`;
   }).join("");
 
@@ -1979,6 +1983,7 @@ function columnsPage() {
         <h2 class="panel-title" id="en-columns-title">Latest columns</h2>
         <p class="muted-copy">Personal assessments by FutbolRadar writers. This section is opinion and is kept separate from the site's verified match data.</p>
         <div class="column-grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
+        ${cards ? "" : columnShareHtml({ url: "https://www.futbolradar.com/en/columns.html", title: "Turkish Football Columns", locale: "en" })}
         <p class="muted-copy">Every column listed here is published in English. Pieces that have not been prepared in English yet stay on the Turkish site rather than appearing here in Turkish.</p>
       </section>
 ${sectionLinks()}`;
