@@ -16,6 +16,8 @@ const { applyOfficialLineupToCoverage } = require("../services/analysisCoverageS
 import { readJsonFile } from "./lib/readJsonFile.mjs";
 
 const ANALYSES_PATH = path.join(root, "data", "match-analyses.json");
+// checkPublicSync iki kopyanın aynı olmasını ister ve derlemeden önce koşar.
+const PUBLIC_ANALYSES_PATH = path.join(root, "public", "data", "match-analyses.json");
 const MAX_TARGETS_PER_RUN = 20;
 
 function parseArgs(argv) {
@@ -106,8 +108,11 @@ async function main() {
   }
 
   const merged = [...byId.values()];
-  atomicWrite(ANALYSES_PATH, merged);
-  console.log(`Wrote ${changedCount} updated record(s) to ${path.relative(root, ANALYSES_PATH)}.`);
+  for (const filePath of [ANALYSES_PATH, PUBLIC_ANALYSES_PATH]) {
+    fs.mkdirSync(path.dirname(filePath), { recursive: true });
+    atomicWrite(filePath, merged);
+  }
+  console.log(`Wrote ${changedCount} updated record(s) to ${path.relative(root, ANALYSES_PATH)} (+ public mirror).`);
 }
 
 main().catch((error) => {

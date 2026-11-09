@@ -158,7 +158,35 @@ export async function prepareWorkdir({
     const prior = (hydration && hydration.lineage && hydration.lineage[relPath]) || [];
     lineage[relPath] = marker && !prior.includes(marker) ? [...prior, marker] : [...prior];
   }
+  // Doğrulayıcı public aynayı ister. İşlev paketi public/** içermez; ayna,
+  // tohum+hydrate sonrası canonical dosyanın birebir kopyasıdır.
+  materializeAnalysisPublicMirror(workdir);
   return { workdir, baseline, lineage, seeded };
+}
+
+/**
+ * `validate-match-analyses` checkPublicSync, data/match-analyses.json ile
+ * public/data/match-analyses.json'ın bayt bayt aynı olmasını ister ve
+ * zamanlanmış akışta derlemeden önce koşar. Cron çalışma dizini yalnızca
+ * data/ tohumlar (vercel.json excludeFiles: public/**). Ayna yoksa
+ * doğrulama, kayıtlar sağlam olsa bile tek sorunla düşer (9 Kasım 2026
+ * 14:00 TSİ). İçerik uydurulmaz: canonical baytlar kopyalanır. Ayna zaten
+ * varsa ya da public/ paketten gelen bir sembolik bağsa dokunulmaz; bir
+ * adım yalnızca bir tarafı yazarsa eşitlik denetimi yine yakalar.
+ */
+export function materializeAnalysisPublicMirror(workdir) {
+  const src = path.join(workdir, "data", "match-analyses.json");
+  const publicDir = path.join(workdir, "public");
+  const dest = path.join(publicDir, "data", "match-analyses.json");
+  if (!fs.existsSync(src) || fs.existsSync(dest)) return false;
+  try {
+    if (fs.existsSync(publicDir) && fs.lstatSync(publicDir).isSymbolicLink()) return false;
+  } catch {
+    return false;
+  }
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(src, dest);
+  return true;
 }
 
 /** Taban çizgisine göre değişen/yeni `data/` dosyaları. Taban güncellenir. */
