@@ -49,7 +49,7 @@ assert.ok(items.every((item) => item.title_tr && item.category && item.source_na
 
 {
   assert.equal(renderSonDakikaTicker([]), "", "boş liste bant basmamalı");
-  const staleNow = Date.parse("2026-11-12T00:00:00Z");
+  const staleNow = Date.parse("2026-11-15T00:00:00Z");
   const stale = selectSonDakikaItems(items, { now: staleNow });
   assert.equal(stale.hidden, true);
   assert.equal(stale.items.length, 0);
@@ -62,7 +62,7 @@ assert.ok(items.every((item) => item.title_tr && item.category && item.source_na
   const slot = index.slice(index.indexOf("<!-- prerender:son-dakika-ticker:start -->"), index.indexOf("<!-- prerender:son-dakika-ticker:end -->"));
   assert.ok(slot.includes('aria-label="Son dakika"'), "yuva dolu basılmalı");
   assert.ok(!/Nau\.ch|Sassuolo/.test(slot), "doğrulanmayan Serie A kaydı ana sayfada olmamalı");
-  assert.ok(slot.includes("Galatasaray, 7 gollü maçta Amedspor&#039;u 4-3 yendi, zirvede kaldı"), "doğrulanmış başlık ana sayfada olmalı");
+  assert.ok(slot.includes("Galatasaray, Amedspor&#039;u 4-3 yendi ve haftayı 28 puanla lider kapattı"), "doğrulanmış başlık ana sayfada olmalı");
 }
 
 {
