@@ -460,11 +460,28 @@ test("yapılandırılmış veri yalnızca kayıtlı alanları taşır", () => {
   assert.equal(node.homeTeam.name, "Fenerbahçe");
   assert.equal(node.broadcastOfEvent[0].name, "beIN Sports 1");
   assert.equal(node.location, undefined, "stat kaydı yoksa location yazılmaz");
+  assert.equal(node.eventAttendanceMode, "https://schema.org/OfflineEventAttendanceMode");
 
   const postponed = hub.structuredData(
     { homeTeam: "A", awayTeam: "B", kickoff: "2026-09-12T21:00:00+03:00", status: "PST" }, {}
   );
   assert.equal(postponed.eventStatus, "https://schema.org/EventPostponed");
+  const finished = hub.structuredData(
+    { homeTeam: "A", awayTeam: "B", kickoff: "2026-10-07T14:00:00+03:00", status: "FT", venue: "Karaelmas Kemal Köksal Stadyumu", city: "Zonguldak" }, {}
+  );
+  assert.equal(finished.eventStatus, undefined, "bitmiş maç EventScheduled yazmaz");
+  assert.equal(finished.location["@type"], "Place");
+  assert.equal(finished.location.name, "Karaelmas Kemal Köksal Stadyumu");
+  assert.equal(finished.location.address.addressLocality, "Zonguldak");
+  assert.equal(finished.startDate, "2026-10-07T14:00:00+03:00");
+  const cityOnly = hub.structuredData(
+    { homeTeam: "A", awayTeam: "B", kickoff: "2026-10-07T14:00:00+03:00", status: "NS", city: "Düzce" }, {}
+  );
+  assert.equal(cityOnly.location.name, undefined, "stat adı yokken uydurulmaz");
+  assert.equal(cityOnly.location.address.addressLocality, "Düzce");
+  assert.equal(hub.structuredData(
+    { homeTeam: "A", awayTeam: "B", kickoff: "2026-10-07T14:00:00+03:00", status: "ABD" }, {}
+  ).eventStatus, "https://schema.org/EventCancelled");
   assert.equal(hub.structuredData({ homeTeam: "A", awayTeam: "B" }, {}), null, "kickoff yoksa şema yok");
 });
 

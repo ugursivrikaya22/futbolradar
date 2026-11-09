@@ -40,6 +40,7 @@ const { sameClub } = require("../services/superLigTeams.js");
 const { calculateMatchRadar, normalizeText } = require("../services/matchRadarService.js");
 const { isSameFixture } = require("../services/fixtureCalendar.js");
 const { slugForMatch, trPagePath } = require("../services/matchSeoPages.js");
+const { eventStatusOf, locationOf, startDateOf } = require("../services/matchSchema.js");
 const { resolveStandingsForMatch } = require("../services/standingsResolver.js");
 const {
   confidenceLabel,
@@ -431,13 +432,18 @@ function pageHtml(match) {
       // skor) güncelleniyor. Burada ikinci bir düğüm bırakmak aynı gerçek
       // olayı iki ayrı adrese bağlar; bu sayfa artık yalnızca maç ÖNÜ
       // analizini taşıyan takma addır.
-      ...((match.kickoff || resultKickoff) && !isCentreAlias ? [{
+      ...((() => {
+        const startDate = startDateOf(match.kickoff || resultKickoff);
+        const eventStatus = finalResult ? null : eventStatusOf(match);
+        const place = locationOf(match, { locale: "tr" });
+        if (!startDate || isCentreAlias) return [];
+        return [{
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
         url: canonical,
         description,
-        startDate: match.kickoff || resultKickoff,
-        ...(finalResult ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
+        startDate,
+        ...(eventStatus ? { eventStatus } : {}),
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
@@ -445,10 +451,11 @@ function pageHtml(match) {
           { "@type": "SportsTeam", name: match.homeTeam },
           { "@type": "SportsTeam", name: match.awayTeam }
         ],
-        ...(match.venue ? { location: { "@type": "Place", name: match.venue } } : {}),
+        ...(place ? { location: place } : {}),
         superEvent: { "@type": "SportsOrganization", name: fixtures.league || "Süper Lig" },
         sport: "Football"
-      }] : []),
+      }];
+      })()),
       {
         "@type": "BreadcrumbList",
         itemListElement: [

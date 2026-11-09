@@ -61,6 +61,7 @@ const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((
 
 const { publicPlayerView } = require("../services/cardCredibility.js");
 const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
+const { eventStatusOf, locationOf, startDateOf } = require("../services/matchSchema.js");
 const seoRegistryPages = loadRegistry().pages;
 
 const root = process.cwd();
@@ -259,18 +260,20 @@ function pageHtml(match) {
       // Maç Merkezi'ne devredilmiş sayfada SportsEvent yazılmaz: olayın
       // kimliği kanonik adreste yaşıyor ve canlı durumla orada güncelleniyor.
       // İkinci düğüm aynı gerçek olayı iki adrese bağlardı.
-      ...((!isCentreAlias && (match.kickoff || (finalResult && finalResult.kickoff))) ? [{
+      ...((() => {
+        const startDate = startDateOf(match.kickoff || (finalResult && finalResult.kickoff));
+        const eventStatus = finalResult ? null : eventStatusOf(match);
+        const place = locationOf(match, { locale: LOCALE });
+        if (isCentreAlias || !startDate) return [];
+        return [{
         "@type": "SportsEvent",
         name: finalResult
           ? `${match.homeTeam} ${finalResult.home}-${finalResult.away} ${match.awayTeam}`
           : `${match.homeTeam} vs ${match.awayTeam}`,
         url: canonical,
         description,
-        startDate: match.kickoff || finalResult.kickoff,
-        // schema.org'da "tamamlandı" değeri yok (EventScheduled/Postponed/
-        // Cancelled/MovedOnline). Bitmiş maçta yanlış bir durum İDDİA
-        // ETMEMEK için alan yalnızca gelecekteki maçlarda yazılır.
-        ...(finalResult ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
+        startDate,
+        ...(eventStatus ? { eventStatus } : {}),
         eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
@@ -278,11 +281,12 @@ function pageHtml(match) {
           { "@type": "SportsTeam", name: match.homeTeam },
           { "@type": "SportsTeam", name: match.awayTeam }
         ],
-        ...(match.venue ? { location: { "@type": "Place", name: venueLabel(match.venue, LOCALE) } } : {}),
+        ...(place ? { location: place } : {}),
         superEvent: { "@type": "SportsOrganization", name: fixtures.league || "Süper Lig" },
         sport: "Football",
         inLanguage: "en"
-      }] : []),
+      }];
+      })()),
       {
         "@type": "BreadcrumbList",
         itemListElement: [

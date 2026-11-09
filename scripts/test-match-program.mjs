@@ -222,11 +222,14 @@ function match(overrides) {
   const withoutVenue = sportsEventNode(match({ venue: null }));
   assert.ok(
     !("location" in withoutVenue),
-    "stadyum bilinmiyorsa location HİÇ yazılmaz — zengin sonuç için yer uydurulmaz"
+    "statı ve ülkesi bilinmeyen hazırlık maçında location yazılmaz"
   );
 
   assert.equal(sportsEventNode(match({ status: "POSTPONED" })).eventStatus, "https://schema.org/EventPostponed");
   assert.equal(sportsEventNode(match({ status: "CANCELLED" })).eventStatus, "https://schema.org/EventCancelled");
+  assert.equal(sportsEventNode(match({ status: "LIVE" })).eventStatus, "https://schema.org/EventScheduled");
+  assert.equal(sportsEventNode(match({ status: "FINISHED" })).eventStatus, undefined);
+  assert.equal(sportsEventNode(match({ status: "ABD" })).eventStatus, "https://schema.org/EventCancelled");
 
   assert.equal(sportsEventNode(match({ kickoff: "" })), null, "zamansız etkinlik işaretlenmez");
   assert.equal(sportsEventNode(match({ homeTeam: "" })), null, "takımsız etkinlik işaretlenmez");

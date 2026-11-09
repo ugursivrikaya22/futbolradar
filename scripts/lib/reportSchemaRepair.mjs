@@ -7,9 +7,9 @@
  * düzeltme eski sayfalara hiç ulaşmaz. Bu işlev eski sayfalardaki bilinen
  * üç hatayı yerinde onarır (idempotent: ikinci çağrı aynı metni döndürür):
  *
- *   • `eventStatus: EventCompleted` — schema.org'da böyle bir değer yok;
- *     Google alanı geçersiz sayar. Oynanmış maç için doğru değer
- *     `EventScheduled` ("planlandığı gibi gerçekleşti").
+ *   • `eventStatus: EventCompleted` — schema.org'da böyle bir değer yok
+ *     (EventStatusType üyesi değil, adres 404). Bitmiş rapor buna da
+ *     `EventScheduled`'a da çevrilmez: ikisi de yanlış iddia. Alan düşer.
  *   • `location.address: ""` — boş zorunlu alan. Adres bilinmiyorsa alan
  *     HİÇ yazılmaz (uydurulmaz).
  *   • `location.name: "Bilinmiyor"/"Açıklanmadı"` — yer tutucu stat adı;
@@ -27,8 +27,8 @@ function repairNode(node) {
   const type = node["@type"];
 
   if (type === "SportsEvent") {
-    if (node.eventStatus === "https://schema.org/EventCompleted") {
-      node.eventStatus = "https://schema.org/EventScheduled";
+    if (node.eventStatus === "https://schema.org/EventCompleted" || node.eventStatus === "https://schema.org/EventScheduled") {
+      delete node.eventStatus;
       changed = true;
     }
     const location = node.location;
@@ -58,7 +58,7 @@ function repairNode(node) {
 export function repairReportJsonLd(html) {
   if (!html.includes("application/ld+json")) return html;
   // Hızlı çıkış: bilinen hataların hiçbiri yoksa ayrıştırma yapılmaz.
-  if (!/EventCompleted|"address":""|Bilinmiyor|Açıklanmadı|"@type":"Article"/.test(html)) return html;
+  if (!/EventCompleted|EventScheduled|"address":""|Bilinmiyor|Açıklanmadı|"@type":"Article"/.test(html)) return html;
   return html.replace(BLOCK_RE, (block, raw) => {
     let parsed;
     try {

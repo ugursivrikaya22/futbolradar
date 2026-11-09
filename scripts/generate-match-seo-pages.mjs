@@ -107,7 +107,8 @@ const {
   trSlugFor
 } = require("../services/matchSeoPages.js");
 const { canonicalStatus, istanbulDay, kickoffMs } = require("../services/matchStatus.js");
-const { nationLabel, venueLabel } = require("../services/displayLabels.js");
+const { eventStatusForPageState, locationOf, startDateOf } = require("../services/matchSchema.js");
+const { nationLabel } = require("../services/displayLabels.js");
 const { sameClub } = require("../services/superLigTeams.js");
 const { teamHubHref, teamProfileHref } = require("../services/teamHubLinks.js");
 const { teamPageSlug } = require("../services/superLigTeamPages.js");
@@ -1164,18 +1165,12 @@ function pageTitles(entry, state, locale, disambiguate) {
 
 function schemaFor(entry, state, locale, ctx, urls) {
   const text = STR[locale];
-  const startDate = istanbulIso(entry.kickoff);
-  // `EventStatusType` yalnızca ŞU değerleri tanır: EventScheduled,
-  // EventCancelled, EventPostponed, EventRescheduled, EventMovedOnline.
-  // "EventCompleted" diye bir değer YOK — yazılırsa Google alanı geçersiz
-  // sayıp atar. Oynanmış maç "planlandığı gibi gerçekleşti" demektir;
-  // doğru değer EventScheduled'dır. Bitmiş sayfalarda alan eskiden hiç
-  // basılmıyordu; artık maçın gerçekleştiği de bildiriliyor.
-  const eventStatus = state === "postponed"
-    ? "https://schema.org/EventPostponed"
-    : state === "cancelled"
-      ? "https://schema.org/EventCancelled"
-      : "https://schema.org/EventScheduled";
+  const startDate = startDateOf(entry.kickoff);
+  // Resmi EventStatusType. Bitmiş / sonuç bekleyen / yarıda kalan maçta
+  // EventScheduled yazılmaz: schema.org'da "tamamlandı" üyesi yoktur
+  // (EventCompleted 404) ve uydurulmaz. Ayrıntı: services/matchSchema.js.
+  const eventStatus = eventStatusForPageState(state);
+  const place = locationOf(entry, { locale });
   // İŞARETLEME SAYFADA GÖRÜNENLE AYNI ADI TAŞIR. Görünen tabelada "Italy"
   // yazıp şemaya "İtalya" yazmak, Google'ın "yapılandırılmış veri sayfayla
   // eşleşmiyor" ihlali olurdu; iki taraf da `ctx` içindeki görünen adı okur.
@@ -1197,7 +1192,7 @@ function schemaFor(entry, state, locale, ctx, urls) {
       ...(eventStatus ? { eventStatus } : {}),
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Football",
-      ...(entry.venue ? { location: { "@type": "Place", name: venueLabel(entry.venue, locale) } } : {}),
+      ...(place ? { location: place } : {}),
       homeTeam: team(homeName, ctx.homeAbsolute),
       awayTeam: team(awayName, ctx.awayAbsolute),
       competitor: [team(homeName, ctx.homeAbsolute), team(awayName, ctx.awayAbsolute)],

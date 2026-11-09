@@ -50,6 +50,8 @@ const playerUrls = require("../services/playerUrl.js").createPlayerUrlResolver((
 
 const { formatDate, formatTime, formatWeekday, absoluteUrl, hreflangOf } = require("../services/i18n.js");
 const { normalizeFixtureCalendar } = require("../services/fixtureCalendar.js");
+const { eventStatusForPageState, eventStatusOf, locationOf, startDateOf } = require("../services/matchSchema.js");
+const { identityOf, loadRegistry, pageStateOf } = require("../services/matchSeoPages.js");
 
 const root = process.cwd();
 const TR_DIR = "mac-dosyasi";
@@ -384,25 +386,59 @@ function moduleCard(module, hubSlug, copy, locale) {
           </a>`;
 }
 
-/** SportsEvent — yalnızca DOĞRULANMIŞ alanlarla. */
+let registryByIdentity = null;
+function registryEntryFor(fixture) {
+  if (!registryByIdentity) {
+    registryByIdentity = new Map();
+    for (const entry of loadRegistry().pages || []) {
+      if (entry && entry.identity) registryByIdentity.set(entry.identity, entry);
+    }
+  }
+  const identity = identityOf(fixture);
+  return (identity && registryByIdentity.get(identity)) || null;
+}
+
+/** SportsEvent — yalnızca DOĞRULANMIŞ alanlarla. Durum sicilden okunur. */
 function sportsEventSchema(special, canonical, locale) {
   const fixture = special.fixture;
+  const startDate = startDateOf(fixture.kickoff);
+  if (!startDate || !fixture.homeTeam || !fixture.awayTeam) return null;
+  const recorded = registryEntryFor(fixture);
+  const state = recorded ? pageStateOf(recorded) : null;
+  let eventStatus = state ? eventStatusForPageState(state) : eventStatusOf(fixture);
+  // Takvimde kaydı kalmamış eski dosya "SCHEDULED" varsayılanı taşır.
+  // Başlama anı geçmişse bu varsayım hâlâ planlıdır denmez.
+  if (!recorded && (!fixture.status || fixture.status === "SCHEDULED")) {
+    const kickoffMs = Date.parse(fixture.kickoff);
+    if (Number.isFinite(kickoffMs) && kickoffMs < Date.now()) eventStatus = null;
+  }
+  const place = locationOf({
+    ...fixture,
+    venue: (recorded && recorded.venue) || fixture.venue,
+    competitionId: recorded && recorded.competitionId,
+    league: (recorded && recorded.league) || fixture.league,
+    city: recorded && recorded.city
+  }, { locale });
+  // Künyedeki stat adı sayfada olduğu gibi durur; çeviri adı şemayı
+  // görünen metinden ayırırdı.
+  if (place && fixture.venue) place.name = fixture.venue;
   return {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     name: `${fixture.homeTeam} - ${fixture.awayTeam}`,
-    startDate: fixture.kickoff,
-    eventStatus: "https://schema.org/EventScheduled",
+    startDate,
+    ...(eventStatus ? { eventStatus } : {}),
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     url: canonical,
     inLanguage: locale === "en" ? "en" : "tr",
-    // Stadyum adı fikstürde var; adres/koordinat YOK ve uydurulmaz.
-    location: fixture.venue ? { "@type": "Place", name: fixture.venue } : undefined,
+    ...(place ? { location: place } : {}),
+    homeTeam: { "@type": "SportsTeam", name: fixture.homeTeam },
+    awayTeam: { "@type": "SportsTeam", name: fixture.awayTeam },
     competitor: [
       { "@type": "SportsTeam", name: fixture.homeTeam },
       { "@type": "SportsTeam", name: fixture.awayTeam }
     ],
-    superEvent: fixture.league ? { "@type": "SportsOrganization", name: fixture.league } : undefined
+    ...(fixture.league ? { superEvent: { "@type": "SportsOrganization", name: fixture.league } } : {})
   };
 }
 

@@ -371,20 +371,27 @@ function tableHtml(line, base, sources) {
  */
 function sportsEventJsonLd(event) {
   if (!event || !event.name || !event.startDate || !event.home || !event.away) return null;
-  const status = { scheduled: "EventScheduled", postponed: "EventPostponed", cancelled: "EventCancelled", rescheduled: "EventRescheduled" }[event.status] || "EventScheduled";
+  const finished = ["finished", "completed", "played", "ft"].includes(String(event.status || "").toLowerCase());
+  const status = finished ? null : ({ scheduled: "EventScheduled", live: "EventScheduled", postponed: "EventPostponed", cancelled: "EventCancelled", rescheduled: "EventRescheduled" }[event.status] || "EventScheduled");
   const ld = {
     "@context": "https://schema.org",
     "@type": "SportsEvent",
     name: event.name,
     startDate: event.startDate,
-    eventStatus: `https://schema.org/${status}`,
+    ...(status ? { eventStatus: `https://schema.org/${status}` } : {}),
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     sport: "Football",
     homeTeam: { "@type": "SportsTeam", name: event.home },
     awayTeam: { "@type": "SportsTeam", name: event.away },
     competitor: [{ "@type": "SportsTeam", name: event.home }, { "@type": "SportsTeam", name: event.away }]
   };
-  if (event.venue) ld.location = { "@type": "Place", name: event.venue, address: { "@type": "PostalAddress", addressLocality: event.city || "", addressCountry: event.country || "" } };
+  if (event.venue) {
+    ld.location = { "@type": "Place", name: event.venue };
+    const address = { "@type": "PostalAddress" };
+    if (event.city) address.addressLocality = event.city;
+    if (event.country) address.addressCountry = event.country;
+    if (address.addressLocality || address.addressCountry) ld.location.address = address;
+  }
   if (event.competition) ld.superEvent = { "@type": "SportsEvent", name: event.competition };
   if (event.description) ld.description = event.description;
   return ld;

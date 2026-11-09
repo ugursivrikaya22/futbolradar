@@ -1167,11 +1167,28 @@
   }
 
   /**
+   * Başlama anı. Saat dilimi yoksa Europe/Istanbul +03:00 yazılır.
+   * Ayrıştırılamayan değer olduğu gibi kalır; saat uydurulmaz.
+   */
+  function kickoffIso(value) {
+    var raw = String(value || "");
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+03:00$/.test(raw)) return raw;
+    var parsed = new Date(raw);
+    if (isNaN(parsed.getTime())) return raw;
+    var parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Europe/Istanbul", year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+    }).formatToParts(parsed).reduce(function (acc, part) { acc[part.type] = part.value; return acc; }, {});
+    var hour = parts.hour === "24" ? "00" : parts.hour;
+    return parts.year + "-" + parts.month + "-" + parts.day + "T" + hour + ":" + parts.minute + ":" + parts.second + "+03:00";
+  }
+
+  /**
    * SportsEvent yapılandırılmış verisi.
    *
-   * Yalnızca KAYITLI alanlar yazılır: stadyum yoksa `location` hiç
-   * eklenmez. Şemaya boş ya da uydurma bir alan yazmak, arama motoruna
-   * doğrulanamayan bir veri bildirmek demektir.
+   * Yalnızca KAYITLI alanlar yazılır: stadyum yoksa ad uydurulmaz. Şehir
+   * kayıtlıysa adres yazılır, stat adı olmadan. Şemaya boş ya da uydurma
+   * bir alan yazmak, arama motoruna doğrulanamayan bir veri bildirmektir.
    */
   function structuredData(detail, options) {
     if (!detail) return null;
@@ -1182,11 +1199,16 @@
     var phase = phaseOf(detail);
     var meta = seoMeta(detail, settings);
 
+    // schema.org EventStatusType'ta "bitti" yoktur. Bitmiş ve yarıda kalmış
+    // maça EventScheduled yazılmaz. Ayrıntı: services/matchSchema.js.
+    var code = statusCodeOf(detail);
     var statusUrl = "https://schema.org/EventScheduled";
-    if (phase === "unplayed") {
-      statusUrl = statusCodeOf(detail).indexOf("CANC") === 0
-        ? "https://schema.org/EventCancelled"
-        : "https://schema.org/EventPostponed";
+    if (code === "CANC" || code === "CANCELLED" || code === "ABD" || code === "ABANDONED") {
+      statusUrl = "https://schema.org/EventCancelled";
+    } else if (code === "PST" || code === "POSTPONED") {
+      statusUrl = "https://schema.org/EventPostponed";
+    } else if (phase === "post" || code === "INT" || code === "SUSP" || code === "SUSPENDED" || code === "INTERRUPTED") {
+      statusUrl = null;
     }
 
     var node = {
@@ -1194,9 +1216,8 @@
       "@type": "SportsEvent",
       name: pair + (detail.league ? " - " + detail.league : ""),
       sport: "Football",
-      startDate: detail.kickoff,
-      eventStatus: statusUrl,
-      eventAttendanceMode: "https://schema.org/OfflineEventAttendance",
+      startDate: kickoffIso(detail.kickoff),
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       homeTeam: { "@type": "SportsTeam", name: detail.homeTeam },
       awayTeam: { "@type": "SportsTeam", name: detail.awayTeam },
       competitor: [
@@ -1204,16 +1225,20 @@
         { "@type": "SportsTeam", name: detail.awayTeam }
       ]
     };
+    if (statusUrl) node.eventStatus = statusUrl;
 
     if (meta && meta.description) node.description = meta.description;
     if (settings.url) {
       node.url = settings.url;
       node["@id"] = settings.url + "#event";
     }
-    if (detail.venue) {
-      node.location = { "@type": "StadiumOrArena", name: detail.venue };
-      if (detail.city) {
-        node.location.address = { "@type": "PostalAddress", addressLocality: detail.city };
+    if (detail.venue || detail.city) {
+      node.location = { "@type": "Place" };
+      if (detail.venue) node.location.name = detail.venue;
+      if (detail.city || detail.country) {
+        node.location.address = { "@type": "PostalAddress" };
+        if (detail.city) node.location.address.addressLocality = detail.city;
+        if (detail.country) node.location.address.addressCountry = detail.country;
       }
     }
     if (detail.league) {
