@@ -120,6 +120,17 @@ function buildSite(dir) {
   for (const f of ["news-ticker.json", "news.json", "ticker-state.json"]) {
     write(`data/${f}`, fs.readFileSync(path.join(repo, "data", f)));
   }
+  // Küratörlü kayıtlar kendi haber sayfasına bağlanır. Sayfa bu geçici
+  // kopyada yoksa bant öğeyi eler; metin değişikliği de veri dosyasına
+  // yansımaz. Bağlanan sayfalar bu yüzden kopyalanır.
+  const ticker = JSON.parse(fs.readFileSync(path.join(repo, "data", "news-ticker.json"), "utf8"));
+  for (const item of ticker.items || []) {
+    const match = String(item.source && item.source.url || "").match(/\/haber\/([^/?#]+)/);
+    if (!match) continue;
+    const slug = match[1].replace(/\.html$/, "");
+    const src = path.join(repo, "haber", `${slug}.html`);
+    if (fs.existsSync(src)) write(`haber/${slug}.html`, fs.readFileSync(src));
+  }
   write("index.html", fs.readFileSync(path.join(repo, "index.html")));
   write("haberler.html", fs.readFileSync(path.join(repo, "haberler.html")));
   write("haber/ornek.html", sample("haber/x"));
