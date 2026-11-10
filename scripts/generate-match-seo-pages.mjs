@@ -40,7 +40,7 @@ import { STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
-import { columnsForTeams } from "./lib/clusterLinks.mjs";
+import { columnsForTeams, columnsForMatch } from "./lib/clusterLinks.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -1245,7 +1245,13 @@ function pageHtml(entry, locale, options) {
   if (editorial) entry = { ...entry, referee: editorial.referee };
   const base = locale === "en" ? "../../" : "../";
   const text = STR[locale];
-  const titles = pageTitles(entry, state, locale, disambiguate);
+  let titles = pageTitles(entry, state, locale, disambiguate);
+  // Maç dosyası (kind=dossier) maç ÖNCESİNDE kendi başlığını taşıyabilir:
+  // genel şablon "Muhtemel 11'ler" diyor, dosyada ise muhtemel 11 yok.
+  // Maç başlayınca genel (canlı/sonuç) başlığa dönülür.
+  if (editorial && editorial.kind === "dossier" && editorial.seo && locale === "tr" && state === "pre") {
+    titles = { ...titles, ...Object.fromEntries(["title", "description", "h1"].filter((k) => editorial.seo[k]).map((k) => [k, editorial.seo[k]])) };
+  }
   const slugValue = locale === "en" ? entry.enSlug : entry.slug;
   const canonical = locale === "en" ? enPageUrl(slugValue) : trPageUrl(slugValue);
   const relative = locale === "en" ? enPagePath(slugValue) : trPagePath(slugValue);
@@ -1359,6 +1365,9 @@ function pageHtml(entry, locale, options) {
   const leaders = resolveMatchLeaders(entry);
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
 
+  // Maç dosyası tam ikili rekabeti (federasyon kaydı) taşıyorsa, arşivden
+  // derlenen kısa liste ikinci ve çelişen bir özet basmasın.
+  const dossierH2h = Boolean(editorial && editorial.kind === "dossier" && editorial.h2h && editorial.h2h.rows && editorial.h2h.rows.length && locale === "tr");
   let sections = [];
   if (state === "post" || state === "pending" || state === "interrupted") {
     sections = [
@@ -1387,7 +1396,7 @@ function pageHtml(entry, locale, options) {
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),
-      h2hSectionHtml(h2h, ctx),
+      dossierH2h ? "" : h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx),
       commentsSectionHtml(ctx)
     ];
@@ -1406,7 +1415,7 @@ function pageHtml(entry, locale, options) {
       editorial ? "" : absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
-      h2hSectionHtml(h2h, ctx),
+      dossierH2h ? "" : h2hSectionHtml(h2h, ctx),
       whenSectionHtml(entry, ctx),
       commentsSectionHtml(ctx)
     ];
@@ -1422,7 +1431,7 @@ function pageHtml(entry, locale, options) {
       editorial ? "" : absencesSectionHtml(scopedSquadStatusFor(entry), ctx),
       editorial ? "" : formSectionHtml(forms, ctx),
       comparisonSectionHtml(focus && focus.summary, ctx),
-      h2hSectionHtml(h2h, ctx),
+      dossierH2h ? "" : h2hSectionHtml(h2h, ctx),
       standingsSectionHtml(table, ctx, { fullHref: league.standings }),
       scorersSectionHtml(players, ctx),
       leadersSectionHtml(leaders, ctx),
@@ -1450,7 +1459,14 @@ function pageHtml(entry, locale, options) {
    * silinmez, böylece eski derin bağlantılar çalışmaya devam eder.
    */
   const aiCtx = { ...ctx, shortDate, sourceLabel: aiSourceDisplay ? `${aiSourceDisplay.icon} ${aiSourceDisplay.title}` : null };
-  if (editorial && locale === "tr") sections.unshift(matchEditorialHtml(editorial));
+  if (editorial && locale === "tr") {
+    // Dosya türü kayıtta köşe bloğu yalnızca BU MAÇA bağlı yayımlanmış yazıları listeler.
+    const columns = editorial.kind === "dossier"
+      ? columnsForMatch({ slugs: editorial.relatedColumnSlugs || [], matchId: detail.naturalId, homeTeam: entry.homeTeam, awayTeam: entry.awayTeam, date: String(entry.kickoff || "").slice(0, 10) })
+        .map((column) => ({ title: column.title, href: `${base}${column.path}` }))
+      : [];
+    sections.unshift(matchEditorialHtml(editorial, { columns }));
+  }
   const matchTabs = tabsHtml([
     { id: "mac", label: AI_STR[locale].tabMatch, panel: sections.filter(Boolean).join("\n        "), checked: true },
     { id: "ai", label: AI_STR[locale].tabAi, badge: AI_STR[locale].proBadge, panel: `<section class="msp-section ai-match-center" data-ai-match-center data-ai-locale="${locale}" data-ai-state="${escapeHtml(state)}" data-ai-home="${escapeHtml(entry.homeTeam)}" data-ai-away="${escapeHtml(entry.awayTeam)}">${aiMatchCenterPanelHtml(aiModel, aiCtx)}</section>` }
