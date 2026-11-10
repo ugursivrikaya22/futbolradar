@@ -3,10 +3,12 @@
  *
  * Bant DÖRT doğrulanmış kaynaktan beslenir ve elle güncelleme gerektirmez:
  *
- *   1. Sitenin kendi doğrulanmış maç kaydı (data/matches.json). Bu kayıtlar
- *      yayın politikasından (services/matchEligibility.js) geçmiştir ve CI'ın
- *      beş dakikalık döngüsünde tazelenir; biten bir maçın skoru bandı
- *      kendiliğinden günceller.
+ *   1. Sitenin kendi doğrulanmış maç kaydı (data/matches.json) ve CI'ın
+ *      senkronladığı fikstür takvimi (data/fixture-calendar.json). Takvimdeki
+ *      satırlar yalnızca kaynak API-Football ise alınır (TheSportsDB içerik
+ *      kaynağı olarak onaylı değildir). Yaş, biten maçta kickoff'a göre
+ *      ölçülür — senkron saati eski bir sonucu "taze" yapamaz. API-Football
+ *      satırında kaynak künyesi "API-Football" yazılır.
  *   2. Doğrulanmış transfer hareketleri (data/transfers.json, status
  *      "confirmed" ve kaynak bağlantısı olanlar).
  *   3. Editoryal haber kayıtları (data/news.json), yalnızca status "verified"
@@ -82,9 +84,10 @@ const TRANSFER_MAX_AGE_HOURS = 24 * 21;
  * altı maç sonucu varken doğrulanmış transferler hiç görünmüyordu; sıralama
  * önceliği doğruydu ama sonuç tek sesli bir banttı.
  *
- * Maç kotası dörtten ikiye indirildi: küratörlü gündem artık maç sonuçlarını
- * da ANLAMIYLA taşıyor ("Beşiktaş tur atladı") ve iki kaynak aynı olayda
- * çakışıyordu.
+ * Maç kotası dörde çıktı: üst bant canlı skor ve maç sonucunu göstermek
+ * için var; iki satır yetmeyince şerit yine yalnızca resmi açıklamalara
+ * kalıyordu. Dört, canlı + sonuç karışımına yer açar; küratörlü gündem
+ * hâlâ kendi kotasıyla korunur.
  *
  * TAVAN, KOTA DEĞİL. Bu sayı bir süre yalnızca "rezervasyon" gibi davrandı:
  * ayrılan yerleri doldurduktan sonra artan slot önceliğe göre dolduğu için
@@ -94,7 +97,9 @@ const TRANSFER_MAX_AGE_HOURS = 24 * 21;
  * dosyasındaki üç transfer iddiası birden banda hiç giremedi — yani söylenti
  * bandı söylentisiz kaldı. Sınır artık `rest` doldururken de uygulanıyor.
  */
-export const MAX_MATCH_ITEMS = 2;
+export const MAX_MATCH_ITEMS = 4;
+export const MAX_LIVE_MATCH_ITEMS = 2;
+export const MAX_RESULT_MATCH_ITEMS = 2;
 const MIN_TRANSFER_SLOTS = 1;
 
 /**
@@ -102,10 +107,10 @@ const MIN_TRANSFER_SLOTS = 1;
  * ayrılan en az yer. Maç sonuçları altı slotu da doldurabildiği için,
  * ayrılmadığında bu kategori hiç görünmüyordu.
  *
- * "Gündem" bandın ASIL işi: bir futbol sitesinin üst şeridi skor tablosu
- * değil, gündem şerididir. Dört slot bu yüzden ayrılıyor.
+ * İki slot, resmi açıklamaların bandı ele geçirmesini önler; canlı skor
+ * ve sonuç satırlarına yer bırakır.
  */
-export const MIN_CURATED_SLOTS = 4;
+export const MIN_CURATED_SLOTS = 2;
 
 /**
  * Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı.
@@ -159,9 +164,42 @@ function slugify(value) {
     .replace(/^-|-$/g, "");
 }
 
-/** Maç kayıtları: canlı skor, biten sonuç ve bugünün başlama saatleri. */
+function isApiFootballMatch(match) {
+  const provider = String((match && (match.source || match.providerName)) || "").toLowerCase();
+  return provider === "api-football";
+}
+
+function matchSourceName(match) {
+  if (isApiFootballMatch(match)) return "API-Football";
+  return String((match && match.sourceName) || "").trim();
+}
+
+/**
+ * Editorial matches.json eski arşiv kalabilir; taze skorlar
+ * fixture-calendar.json içinde durur (sync-live-fixtures). Takvimde
+ * TheSportsDB satırı varsa atlanır.
+ */
+function loadMatchPool() {
+  const editorial = asArray(readJson("matches.json", []), "matches");
+  const calendar = asArray(readJson("fixture-calendar.json", { matches: [] }), "matches")
+    .filter((match) => match && isApiFootballMatch(match));
+  const seen = new Set();
+  const pool = [];
+  for (const match of [...calendar, ...editorial]) {
+    if (!match) continue;
+    const key = match.id != null
+      ? `id:${match.id}`
+      : `${match.homeTeam}|${match.awayTeam}|${match.kickoff}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    pool.push(match);
+  }
+  return pool;
+}
+
+/** Maç kayıtları: canlı skor ve biten sonuç. Kaynaksız satır yazılmaz. */
 function matchItems(now) {
-  const matches = asArray(readJson("matches.json", []), "matches");
+  const matches = loadMatchPool();
   const reports = asArray(readJson("post-match-reports.json", { records: [] }), "records");
   const reportByMatch = new Map(reports
     .filter((record) => record && record.matchId && record.publishState === "page" && record.reportUrl)
@@ -172,12 +210,16 @@ function matchItems(now) {
     if (!match || !match.homeTeam || !match.awayTeam) continue;
 
     const status = String(match.status || "").toUpperCase();
-    const stamp = match.lastVerifiedAt || match.fetchedAt || match.kickoff;
-    const age = hoursSince(stamp, now);
-    if (age > MAX_AGE_HOURS) continue;
-
     const live = ["LIVE", "IN_PLAY", "1H", "2H", "HT", "HALFTIME", "ET"].includes(status);
     const finished = ["FINISHED", "FT", "AET", "PEN"].includes(status);
+    // Biten maçta yaş kickoff'a bakılır. Takvimin fetchedAt alanı her
+    // senkronla yenilendiği için onu kullanmak aylar önceki sonucu taze
+    // gösterirdi.
+    const stamp = live
+      ? (match.fetchedAt || match.lastVerifiedAt || match.kickoff)
+      : (match.kickoff || match.lastVerifiedAt || match.fetchedAt);
+    const age = hoursSince(stamp, now);
+    if (!live && age > MAX_AGE_HOURS) continue;
 
     // Gündem sırası tek yerde tanımlı (services/newsTicker.js): dört
     // büyükler, sonra Avrupa'daki Türk kulüpleri, sonra Süper Lig. Aynı
@@ -188,22 +230,27 @@ function matchItems(now) {
       competition: match.league || match.competition
     });
 
-    if (live && hasScore(match)) {
+    const attributed = matchSourceName(match);
+    if (live && hasScore(match) && attributed) {
       items.push({
         label: "Canlı",
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: `canli-skor.html#${match.id}`,
+        href: match.matchPage || `canli-skor.html#${match.id}`,
         at: stamp,
         source: "match",
+        sourceName: attributed,
+        publisher: attributed,
         priority: 0 + rank / 10
       });
-    } else if (finished && hasScore(match)) {
+    } else if (finished && hasScore(match) && attributed) {
       items.push({
         label: "Sonuç",
         text: `${match.homeTeam} ${match.score.home}-${match.score.away} ${match.awayTeam}`,
-        href: match.matchPage || match.analysisPage || reportByMatch.get(match.id) || `canli-skor.html#${match.id}`,
+        href: match.matchPage || match.analysisPage || reportByMatch.get(match.id) || `mac-sonuclari.html#${match.id}`,
         at: stamp,
         source: "match",
+        sourceName: attributed,
+        publisher: attributed,
         priority: 1 + rank / 10
       });
     }
@@ -229,6 +276,7 @@ function transferItems(now) {
     // transferde karşı taraf yabancı kulüp olabilir, o da lig haberidir.
     .filter((item) => involvesSuperLigTeam(item))
     .filter((item) => hoursSince(item.date, now) <= TRANSFER_MAX_AGE_HOURS)
+    .filter((item) => item.sourceName && item.sourceUrl)
     .map((item) => ({
       label: "Transfer",
       // Yön açıkça yazılıyor: "kadrosunda" ifadesi gidenler için yanıltıcıydı.
@@ -236,6 +284,8 @@ function transferItems(now) {
       href: `super-lig-transferleri-2026-2027.html#transfer-${slugify(item.playerName)}`,
       at: item.date,
       source: "transfer",
+      sourceName: item.sourceName,
+      publisher: item.sourceName,
       priority: 2 + editorialRank({ teams: [item.toTeam, item.fromTeam] }) / 10
     }));
 }
@@ -396,6 +446,27 @@ function writeState(state) {
  * Bandın içeriğini ve rozetini üretir.
  * @returns {{items: Array, badge: string, fresh: boolean, generatedAt: string, usedFallback: boolean}}
  */
+
+function pickCappedMatches(matches, limit) {
+  const live = matches.filter((item) => item.label === "Canlı");
+  const results = matches.filter((item) => item.label === "Sonuç");
+  const chosen = [
+    ...live.slice(0, MAX_LIVE_MATCH_ITEMS),
+    ...results.slice(0, MAX_RESULT_MATCH_ITEMS)
+  ];
+  const selected = [];
+  const seen = new Set();
+  for (const item of [...chosen, ...matches]) {
+    if (selected.length >= limit) break;
+    if (seen.has(item)) continue;
+    if (item.label === "Canlı" && selected.filter((row) => row.label === "Canlı").length >= MAX_LIVE_MATCH_ITEMS) continue;
+    if (item.label === "Sonuç" && selected.filter((row) => row.label === "Sonuç").length >= MAX_RESULT_MATCH_ITEMS) continue;
+    seen.add(item);
+    selected.push(item);
+  }
+  return selected;
+}
+
 export function buildTickerFeed(options = {}) {
   const now = options.now instanceof Date ? options.now : new Date();
 
@@ -441,8 +512,9 @@ export function buildTickerFeed(options = {}) {
     MAX_ITEMS - reservedForTransfers - reservedForCurated
   );
 
+  const pickedMatches = pickCappedMatches(matches, Math.max(matchQuota, 0));
   const picked = [
-    ...matches.slice(0, Math.max(matchQuota, 0)),
+    ...pickedMatches,
     ...curated.slice(0, reservedForCurated),
     ...transfers.slice(0, reservedForTransfers)
   ];
@@ -454,13 +526,22 @@ export function buildTickerFeed(options = {}) {
   // çalışıyor, böylece kalan yer varsa en önemli maç girer — ama tavan
   // aşılmaz. Süzgeç olmasaydı maç en yüksek öncelikli kaynak olduğu için
   // artan her slotu o kapardı ve gündem hiç görünmezdi.
-  let matchRoom = Math.max(0, MAX_MATCH_ITEMS - Math.max(matchQuota, 0));
+  let matchRoom = Math.max(0, MAX_MATCH_ITEMS - pickedMatches.length);
+  let liveRoom = Math.max(0, MAX_LIVE_MATCH_ITEMS - pickedMatches.filter((item) => item.label === "Canlı").length);
+  let resultRoom = Math.max(0, MAX_RESULT_MATCH_ITEMS - pickedMatches.filter((item) => item.label === "Sonuç").length);
   const rest = pool
     .filter((item) => !picked.includes(item))
     .sort(byImportance)
     .filter((item) => {
       if (item.source !== "match") return true;
       if (matchRoom <= 0) return false;
+      if (item.label === "Canlı") {
+        if (liveRoom <= 0) return false;
+        liveRoom -= 1;
+      } else if (item.label === "Sonuç") {
+        if (resultRoom <= 0) return false;
+        resultRoom -= 1;
+      }
       matchRoom -= 1;
       return true;
     });
