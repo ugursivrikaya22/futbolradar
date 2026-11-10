@@ -9,7 +9,10 @@
  *   3. İşaretleme: kaynak künyesi nofollow+noopener, döngü kopyası
  *      aria-hidden ve sekme sırası dışında, Durdur düğmesi var.
  *   4. CSS: hareket azaltmada animasyon kapalı, sabit min-height.
- *   5. Gerçek veri dosyası geçerli; index.html yuvayı taşıyor; sw.js bandın
+ *   1b. Söylenti (category "iddia"): metinde "iddia", en fazla 72 saat,
+ *      "İddia" etiketi; bant başlığı "Transfer Radarı".
+ *   5. Gerçek veri dosyası geçerli; index.html yuvayı Son Dakika bandının
+ *      hemen altında taşıyor; sw.js bandın
  *      dosyalarını önbelleğe almıyor (bayat gösterim riski yok).
  */
 import assert from "node:assert/strict";
@@ -46,6 +49,19 @@ assert.deepEqual(errs({ url: undefined }), [], "url isteğe bağlı");
 assert.ok(errs({ date: "2026-10-18" }).some((m) => /date/.test(m)), "saat dilimsiz tarih reddedilmeli");
 assert.ok(errs({ date: "2026-12-01T10:00:00+03:00" }).some((m) => /gelecekte/.test(m)), "geleceğe tarihli kayıt reddedilmeli");
 assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.test(m)), "expiresAt date'ten önce olamaz");
+// Transfer Radarı söylentileri (category "iddia"): "iddia" sözcüğü + en fazla 72 saat.
+{
+  const rumour = { category: "iddia", text: "Fanatik'in iddiasına göre örnek transfer", expiresAt: "2026-10-21T10:00:00+03:00" };
+  assert.deepEqual(errs(rumour), [], "72 saatlik, 'iddia' sözcüklü söylenti kabul");
+  assert.ok(errs({ ...rumour, text: "Galatasaray örnek oyuncuyu aldı" }).some((m) => /iddia/.test(m)), "kesin dille yazılmış söylenti reddedilmeli");
+  assert.ok(errs({ ...rumour, expiresAt: undefined }).some((m) => /expiresAt/.test(m)), "söylenti expiresAt taşımalı");
+  assert.ok(errs({ ...rumour, expiresAt: "2026-10-21T10:01:00+03:00" }).some((m) => /72 saat/.test(m)), "söylenti 72 saati aşamaz");
+  assert.ok(errs({ ...rumour, breaking: true }).some((m) => /breaking/.test(m)), "söylenti son dakika vurgusu alamaz");
+  const html = renderHomeTicker([{ ...base, ...rumour, sourceUrl: "https://www.fanatik.com.tr/x", sourceName: "Fanatik" }]);
+  assert.ok(html.includes("home-ticker__item--rumour") && html.includes(">İddia<"), "söylenti 'İddia' etiketiyle basılmalı");
+  assert.ok(html.includes(">Transfer Radarı</h2>"), "bant başlığı Transfer Radarı olmalı");
+  assert.ok(html.includes('rel="nofollow noopener noreferrer"'), "kaynak bağlantısı nofollow noopener noreferrer olmalı");
+}
 {
   const { items, rejected } = selectHomeTickerItems([base, { ...base }], { now: NOW });
   assert.equal(items.length, 1);
@@ -108,6 +124,12 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
 
   const index = fs.readFileSync(path.join(root, "index.html"), "utf8");
   assert.ok(index.includes("<!-- prerender:home-ticker:start -->") && index.includes("<!-- prerender:home-ticker:end -->"), "index.html home-ticker yuvasını taşımalı");
+  // Transfer Radarı bandı Son Dakika bandının hemen ALTINDA, canlı skorlar ve <main>'den önce.
+  const sonDakika = index.indexOf("<!-- shared-layout:ticker:end -->");
+  const radar = index.indexOf("<!-- prerender:home-ticker:start -->");
+  const live = index.indexOf('data-component="LiveScoresTicker"');
+  const main = index.indexOf("<main");
+  assert.ok(sonDakika > -1 && radar > sonDakika && radar < live && radar < main, "Transfer Radarı bandı Son Dakika bandının hemen altında olmalı");
 
   const sw = fs.readFileSync(path.join(root, "sw.js"), "utf8");
   assert.ok(!/home-ticker|ticker\.json/.test(sw), "sw.js bandın dosyalarını yakalamamalı (bayat içerik riski)");
