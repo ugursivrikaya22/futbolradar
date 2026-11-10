@@ -106,7 +106,8 @@ const MIN_TRANSFER_SLOTS = 1;
  * değil, gündem şerididir. Dört slot bu yüzden ayrılıyor.
  */
 // 10 Kasım 2026: transfer radarı satırları banda sığsın diye 4 → 24.
-export const MIN_CURATED_SLOTS = 24;
+// Aynı gün akşam: Ugur onayıyla 24 → 36 (MAX_ITEMS 28 → 40 ile orantılı).
+export const MIN_CURATED_SLOTS = 36;
 
 /**
  * Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı.
@@ -119,7 +120,8 @@ export const MIN_CURATED_SLOTS = 24;
  */
 // 10 Kasım 2026: 8 → 28. Sekiz slotta gündem dosyasındaki doğrulanmış
 // transfer iddialarının çoğu banda hiç giremiyordu (tavan gizliyordu).
-export const MAX_ITEMS = 28;
+// Aynı gün akşam: Ugur onayıyla 28 → 40.
+export const MAX_ITEMS = 40;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 

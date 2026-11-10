@@ -210,7 +210,8 @@ const HEDGE_MARKERS = [
  * yoksa sıralamanın altındaki kayıtlar doğrulamaya hiç ulaşamaz.
  */
 // 10 Kasım 2026: 8 → 32; gündem dosyası büyüdü, havuz da geniş kalmalı.
-const MAX_CURATED_ITEMS = 32;
+// Aynı gün akşam: Ugur onayıyla 32 → 44 (MAX_ITEMS 28 → 40 ile orantılı).
+const MAX_CURATED_ITEMS = 44;
 
 /**
  * "Son dakika" bir ZAMAN İDDİASIDIR. Bir öğe `breaking` işaretiyle girse
