@@ -167,6 +167,9 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
     "npr.org",
     "goal.com",
     "skysports.com",
+    // 10 Kasım 2026: Sky Sport Almanya (El Khannouss) ve talkSPORT (Man Utd) için.
+    "sport.sky.de",
+    "talksport.com",
     "si.com",
     "nbcnews.com",
     "nbcsports.com",
