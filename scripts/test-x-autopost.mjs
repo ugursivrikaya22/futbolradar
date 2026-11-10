@@ -113,7 +113,7 @@ await test("uzunluk: bağlantı 23, Türkçe harf 1, emoji 2 sayılır", () => {
 await test("maç sonu: sonuç + tek cümle analiz + kanonik /mac/ bağlantısı", () => {
   const t = compose.composeResult(match(), SLUG);
   assert.equal(t.key, "result:af:1635661");
-  assert.equal(t.text, "🏁 MAÇ SONU | Şampiyonlar Ligi\nFenerbahçe 2-2 Slavia Praha\n\nİsabetli şutta 4-4 biten dengeli maçta puanlar paylaşıldı.\n\nhttps://www.futbolradar.com/mac/fenerbahce-slavia-praha-20-ekim-2026");
+  assert.equal(t.text, "🏁 MAÇ SONU | Şampiyonlar Ligi\nFenerbahçe 2-2 Slavia Praha\n⚽ Oğuz Aydın 4' · Mason Greenwood 11'\n\nİsabetli şutta 4-4 biten dengeli maçta puanlar paylaşıldı.\n\nhttps://www.futbolradar.com/mac/fenerbahce-slavia-praha-20-ekim-2026");
   assert.equal(compose.composeResult(match(), null), null, "sayfası olmayan maç paylaşılmaz");
 });
 
@@ -200,7 +200,8 @@ await test("kuru koşu: anahtar eksikse adlarını bildirir, değer loglamaz", a
 await test("X_INCLUDE_LINKS=0: bağlantısız (ucuz) gönderi", async () => {
   const r = await x.runXAutopost({ env: { X_INCLUDE_LINKS: "0" }, now: NOW, data: data(), log: quiet });
   assert.ok(r.dryRun.length && r.dryRun.every((t) => !/https?:/.test(t.text)));
-  assert.equal(r.dryRun[0].text, "🏁 MAÇ SONU | Şampiyonlar Ligi\nFenerbahçe 2-2 Slavia Praha\n\nİsabetli şutta 4-4 biten dengeli maçta puanlar paylaşıldı.");
+  assert.equal(r.dryRun[0].text, "🏁 MAÇ SONU | Şampiyonlar Ligi\nFenerbahçe 2-2 Slavia Praha\n⚽ Oğuz Aydın 4' · Mason Greenwood 11'\n\nİsabetli şutta 4-4 biten dengeli maçta puanlar paylaşıldı.\n\n🤖 Otomatik");
+  assert.equal(r.dryRun[0].reply, null, "bağlantısız modda yanıt da yok");
 });
 
 /* ---------------- canlı (sahte X) + tekrar yok ---------------- */
@@ -210,7 +211,8 @@ await test("canlı: gönderir, ikinci koşuda aynı maç/yazı tekrar tweetlenme
   assert.equal(r1.mode, "live"); assert.deepEqual(r1.posted.map((p) => p.key), ["result:af:1635661", "column:deneme-yazi"]);
   assert.equal(db.rows.get("result:af:1635661").status, "posted"); assert.equal(db.rows.get("result:af:1635661").tweet_id, "1001");
   const r2 = await x.runXAutopost({ env: LIVE_ENV, now: NOW, data: data(), store, fetcher: tw.fetcher, log: quiet });
-  assert.equal(r2.posted.length, 0); assert.equal(tw.sent.length, 2);
+  // X_LINK_MODE=reply (varsayılan): 2 ana gönderi + 2 bağlantı yanıtı = 4 istek.
+  assert.equal(r2.posted.length, 0); assert.equal(tw.sent.length, 4);
 });
 
 await test("tavan: koşu başına ve günlük sınır", async () => {
@@ -309,7 +311,7 @@ await test("maç öncesi canlı: poll gövdesi gönderilir, maç başına bir ke
   const env = { ...LIVE_ENV, ...PRE_ON, X_INCLUDE_LINKS: "0" };
   const r1 = await x.runXAutopost({ env, now: PRE_NOW, data: preData(), store, fetcher: tw.fetcher, log: quiet });
   assert.deepEqual(r1.posted.map((p) => p.key), ["prematch-poll:af:777"]);
-  assert.deepEqual(tw.bodies[0], { text: "📊 MAÇ ÖNCESİ ANKET | Süper Lig\nGalatasaray – Fenerbahçe\n⏰ Bugün 20:00\n\nSenin tahminin ne? Kim kazanır?", poll: { options: ["Galatasaray", "Beraberlik", "Fenerbahçe"], duration_minutes: 210 } });
+  assert.deepEqual(tw.bodies[0], { text: "📊 MAÇ ÖNCESİ ANKET | Süper Lig\nGalatasaray – Fenerbahçe\n⏰ Bugün 20:00\n\nSenin tahminin ne? Kim kazanır?\n\n🤖 Otomatik", poll: { options: ["Galatasaray", "Beraberlik", "Fenerbahçe"], duration_minutes: 210 } });
   const r2 = await x.runXAutopost({ env, now: new Date("2026-11-01T17:00:00+03:00"), data: preData(), store, fetcher: tw.fetcher, log: quiet });
   assert.equal(r2.posted.length, 0, "aynı maç ikinci kez yok");
   const db2 = fakeSupabase(); const tw2 = fakeX();
