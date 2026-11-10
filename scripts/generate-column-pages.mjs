@@ -369,6 +369,40 @@ function tableHtml(line, base, sources) {
  * taşıyorsa. Tarih, saha ve durum elle doğrulanıp yazılır; alan yoksa hiçbir
  * şey basılmaz (uydurma etkinlik verisi üretilmez).
  */
+function pullQuoteHtml(quote) {
+  if (!quote || !quote.text) return "";
+  const cite = quote.attribution
+    ? `<footer><cite>${escapeHtml(quote.attribution)}</cite></footer>`
+    : "";
+  return `<blockquote class="column-pullquote"><p>${escapeHtml(quote.text)}</p>${cite}</blockquote>`;
+}
+
+function statsHtml(stats) {
+  if (!Array.isArray(stats) || !stats.length) return "";
+  const items = stats.map((row) => `<li class="column-stat"><span class="column-stat-value">${escapeHtml(row.value)}</span><span class="column-stat-label">${escapeHtml(row.label)}</span>${row.note ? `<span class="column-stat-note">${escapeHtml(row.note)}</span>` : ""}</li>`).join("");
+  return `<aside class="column-stats" aria-label="Öne çıkan rakamlar"><ul>${items}</ul></aside>`;
+}
+
+function matchFact(label, value, datetime) {
+  if (!value) return "";
+  const body = datetime
+    ? `<time datetime="${escapeHtml(datetime)}">${escapeHtml(value)}</time>`
+    : escapeHtml(value);
+  return `<div><dt>${escapeHtml(label)}</dt><dd>${body}</dd></div>`;
+}
+
+function matchCardHtml(card) {
+  if (!card || !card.home || !card.away) return "";
+  const kicker = [card.competition, card.round].filter(Boolean).join(" · ");
+  const facts = [
+    matchFact("Başlama", card.kickoffLabel || card.kickoff, card.kickoff),
+    matchFact("Stadyum", [card.venue, card.city].filter(Boolean).join(", ")),
+    matchFact("Yayın", card.broadcast),
+    matchFact("Teknik direktör", card.coach)
+  ].filter(Boolean).join("");
+  return `<section class="column-match-card" aria-label="Maç bilgisi">${kicker ? `<p class="column-match-kicker">${escapeHtml(kicker)}</p>` : ""}<div class="column-match-teams"><span>${escapeHtml(card.home)}</span><span class="column-match-vs">v</span><span>${escapeHtml(card.away)}</span></div>${facts ? `<dl class="column-match-facts">${facts}</dl>` : ""}${card.note ? `<p class="column-match-note">${escapeHtml(card.note)}</p>` : ""}</section>`;
+}
+
 function sportsEventJsonLd(event) {
   if (!event || !event.name || !event.startDate || !event.home || !event.away) return null;
   const status = { scheduled: "EventScheduled", postponed: "EventPostponed", cancelled: "EventCancelled", rescheduled: "EventRescheduled" }[event.status] || "EventScheduled";
@@ -460,13 +494,19 @@ export function columnPageHtml(column, locale = "tr") {
       logo: `${DOMAIN}/favicon-512x512.png`
     },
     articleSection: column.categoryLabel,
-    keywords: column.tags.join(", "),
+    keywords: (column.keywords && column.keywords.length ? column.keywords : column.tags).join(", "),
     mainEntityOfPage: url,
     image: shareImage,
     inLanguage: copy.inLanguage
   };
 
   const eventLd = locale === "en" ? null : sportsEventJsonLd(column.sportsEvent);
+  const showcaseBlocks = [
+    pullQuoteHtml(column.pullQuote),
+    matchCardHtml(column.matchCard),
+    statsHtml(column.stats)
+  ].filter(Boolean);
+  const showcaseHtml = showcaseBlocks.length ? `\n        ${showcaseBlocks.join("\n        ")}` : "";
   // Sayfa yolu (Ana Sayfa > Köşe Yazıları > yazı) görünür breadcrumb ile aynı
   // sırayı yapısal veriye taşır; liste adresi kanonik (uzantısız) biçimdedir.
   const breadcrumbLd = {
@@ -486,7 +526,7 @@ export function columnPageHtml(column, locale = "tr") {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${escapeHtml(pageTitle)}</title>
-    <meta name="description" content="${escapeHtml(pageDescription)}" />
+    <meta name="description" content="${escapeHtml(pageDescription)}" />${column.keywords && column.keywords.length ? `\n    <meta name="keywords" content="${escapeHtml(column.keywords.join(", "))}" />` : ""}
     <link rel="canonical" href="${escapeHtml(url)}" />
     <meta name="robots" content="${ROBOTS_INDEX}" />
     <meta name="theme-color" content="#0b8f5a" />
@@ -506,7 +546,7 @@ export function columnPageHtml(column, locale = "tr") {
     <meta name="twitter:image" content="${escapeHtml(shareImage)}" />
     <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="${base}site.webmanifest" />
-    <link rel="stylesheet" href="${base}page.css" />
+    <link rel="stylesheet" href="${base}page.css" />${(column.pullQuote || (column.stats && column.stats.length) || column.matchCard) ? `\n    <link rel="stylesheet" href="${base}column-showcase.css" />` : ""}
     <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
     <script type="application/ld+json">${JSON.stringify(breadcrumbLd)}</script>
     ${eventLd ? `<script type="application/ld+json">${JSON.stringify(eventLd)}</script>` : ""}
@@ -530,7 +570,7 @@ export function columnPageHtml(column, locale = "tr") {
         </header>
 
         ${column.featuredImage ? `<figure class="column-featured-image"><img src="${escapeHtml(relativeAssetUrl(column.featuredImage, base))}" alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="eager" decoding="async" /></figure>` : ""}
-        ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}
+        ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}${showcaseHtml}
         <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
         ${updatesHtml}
 

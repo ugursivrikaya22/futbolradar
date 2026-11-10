@@ -471,9 +471,12 @@ function updateNewsSitemap(articles) {
 }
 
 const selectedId = process.argv.find(arg => arg.startsWith('--id='))?.slice(5);
+const newsSitemapOnly = process.argv.includes("--news-sitemap-only");
 const articles = publishableArticles().filter(article => !selectedId || article.id === selectedId);
-for (const article of articles) {
-  writeArticle(article, "tr");
+if (!newsSitemapOnly) {
+  for (const article of articles) {
+    writeArticle(article, "tr");
+  }
 }
 
 // ── İNGİLİZCE HABER SAYFALARI ──────────────────────────────────────────────
@@ -482,12 +485,16 @@ for (const article of articles) {
 // burada ayrıca sayfa yazılmayan bir habere İngilizce kart bağlanmasının
 // önüne geçilmiş oluyor — İngilizce liste ile İngilizce sayfa kümesi
 // TANIM GEREĞİ aynı süzgeçten geçiyor.
-const englishArticles = publishableNews(news, { locale: "en" }).filter(article => !selectedId || article.id === selectedId);
-for (const article of englishArticles) {
-  writeArticle(article, "en");
+const englishArticles = newsSitemapOnly ? [] : publishableNews(news, { locale: "en" }).filter(article => !selectedId || article.id === selectedId);
+if (!newsSitemapOnly) {
+  for (const article of englishArticles) {
+    writeArticle(article, "en");
+  }
 }
 
-if (!selectedId) updateSitemap(articles);
+if (!selectedId && !newsSitemapOnly) updateSitemap(articles);
 const freshCount = selectedId ? 0 : updateNewsSitemap(articles);
 
-console.log(`Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"} + ${englishArticles.length} English (news-sitemap: ${freshCount} taze haber)`);
+console.log(newsSitemapOnly
+  ? `news-sitemap only: ${freshCount} taze kayıt (haber sayfaları yeniden yazılmadı)`
+  : `Generated ${articles.length} news article page${articles.length === 1 ? "" : "s"} + ${englishArticles.length} English (news-sitemap: ${freshCount} taze haber)`);
