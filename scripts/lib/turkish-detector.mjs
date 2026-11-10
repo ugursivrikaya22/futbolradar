@@ -144,7 +144,9 @@ function escapeRegex(value) {
  * ki çevre metni ve konumlar kaymasın.
  */
 const PROPER_NOUNS = [
-  "Atatürk Olimpiyat"
+  "Atatürk Olimpiyat",
+  // Haber sitesinin adı (kaynak künyesinde aynen yazılır).
+  "Haberler.com"
 ];
 
 const PROPER_NOUN_PATTERN = new RegExp(PROPER_NOUNS.map(escapeRegex).join("|"), "gi");

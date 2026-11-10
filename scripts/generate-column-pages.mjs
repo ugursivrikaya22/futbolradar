@@ -305,14 +305,19 @@ const PAGE_STRINGS = {
     breadcrumbLabel: "Sayfa yolu", home: "Ana Sayfa",
     indexPath: "kose-yazilari.html", backAll: "Tüm Köşe Yazıları",
     updateLabel: "Güncelleme", sources: "Kaynaklar",
-    byline: (author, title) => `${author} yazdı: ${title}`
+    byline: (author, title) => `${author} yazdı: ${title}`,
+    statsLabel: "Öne çıkan rakamlar", matchLabel: "Maç bilgisi",
+    kickoff: "Başlama", venue: "Stadyum", broadcast: "Yayın", coach: "Teknik direktör"
   },
   en: {
     lang: "en", ogLocale: "en_GB", inLanguage: "en-GB",
     breadcrumbLabel: "Breadcrumb", home: "Home",
     indexPath: "en/columns.html", backAll: "All columns",
     updateLabel: "Update", sources: "Sources",
-    byline: (author, title) => `${author} wrote: ${title}`
+    byline: (author, title) => `${author} wrote: ${title}`,
+    statsLabel: "Key numbers", matchLabel: "Match information",
+    kickoff: "Kick-off", venue: "Stadium", broadcast: "Broadcast", coach: "Head coach",
+    translatedFrom: "Translated from the Turkish original", originalLink: "Read the original column in Turkish"
   }
 };
 
@@ -377,10 +382,10 @@ function pullQuoteHtml(quote) {
   return `<blockquote class="column-pullquote"><p>${escapeHtml(quote.text)}</p>${cite}</blockquote>`;
 }
 
-function statsHtml(stats) {
+function statsHtml(stats, copy = PAGE_STRINGS.tr) {
   if (!Array.isArray(stats) || !stats.length) return "";
   const items = stats.map((row) => `<li class="column-stat"><span class="column-stat-value">${escapeHtml(row.value)}</span><span class="column-stat-label">${escapeHtml(row.label)}</span>${row.note ? `<span class="column-stat-note">${escapeHtml(row.note)}</span>` : ""}</li>`).join("");
-  return `<aside class="column-stats" aria-label="Öne çıkan rakamlar"><ul>${items}</ul></aside>`;
+  return `<aside class="column-stats" aria-label="${escapeHtml(copy.statsLabel)}"><ul>${items}</ul></aside>`;
 }
 
 function matchFact(label, value, datetime) {
@@ -391,16 +396,16 @@ function matchFact(label, value, datetime) {
   return `<div><dt>${escapeHtml(label)}</dt><dd>${body}</dd></div>`;
 }
 
-function matchCardHtml(card) {
+function matchCardHtml(card, copy = PAGE_STRINGS.tr) {
   if (!card || !card.home || !card.away) return "";
   const kicker = [card.competition, card.round].filter(Boolean).join(" · ");
   const facts = [
-    matchFact("Başlama", card.kickoffLabel || card.kickoff, card.kickoff),
-    matchFact("Stadyum", [card.venue, card.city].filter(Boolean).join(", ")),
-    matchFact("Yayın", card.broadcast),
-    matchFact("Teknik direktör", card.coach)
+    matchFact(copy.kickoff, card.kickoffLabel || card.kickoff, card.kickoff),
+    matchFact(copy.venue, [card.venue, card.city].filter(Boolean).join(", ")),
+    matchFact(copy.broadcast, card.broadcast),
+    matchFact(copy.coach, card.coach)
   ].filter(Boolean).join("");
-  return `<section class="column-match-card" aria-label="Maç bilgisi">${kicker ? `<p class="column-match-kicker">${escapeHtml(kicker)}</p>` : ""}<div class="column-match-teams"><span>${escapeHtml(card.home)}</span><span class="column-match-vs">v</span><span>${escapeHtml(card.away)}</span></div>${facts ? `<dl class="column-match-facts">${facts}</dl>` : ""}${card.note ? `<p class="column-match-note">${escapeHtml(card.note)}</p>` : ""}</section>`;
+  return `<section class="column-match-card" aria-label="${escapeHtml(copy.matchLabel)}">${kicker ? `<p class="column-match-kicker">${escapeHtml(kicker)}</p>` : ""}<div class="column-match-teams"><span>${escapeHtml(card.home)}</span><span class="column-match-vs">v</span><span>${escapeHtml(card.away)}</span></div>${facts ? `<dl class="column-match-facts">${facts}</dl>` : ""}${card.note ? `<p class="column-match-note">${escapeHtml(card.note)}</p>` : ""}</section>`;
 }
 
 function sportsEventJsonLd(event) {
@@ -499,12 +504,22 @@ export function columnPageHtml(column, locale = "tr") {
     image: shareImage,
     inLanguage: copy.inLanguage
   };
+  // ÇEVİRİ İŞARETİ: İngilizce sayfa Türkçe yazının çevirisidir. Yapısal
+  // veride kaynak eseri, sayfada da görünür bir bağlantıyla özgün yazıyı
+  // gösterir (yazar, tarih ve kaynaklar özgün yazıyla aynı kalır).
+  const isTranslation = locale === "en" && Boolean(column.counterpartPath);
+  if (isTranslation) {
+    jsonLd.translationOfWork = { "@type": "NewsArticle", url: publicUrl(column.counterpartPath), inLanguage: PAGE_STRINGS.tr.inLanguage };
+  }
+  const translationNoteHtml = isTranslation
+    ? `<p class="column-translation-note">${escapeHtml(copy.translatedFrom)}: <a href="${base}${escapeHtml(column.counterpartPath)}" hreflang="tr">${escapeHtml(copy.originalLink)}</a></p>`
+    : "";
 
   const eventLd = locale === "en" ? null : sportsEventJsonLd(column.sportsEvent);
   const showcaseBlocks = [
     pullQuoteHtml(column.pullQuote),
-    matchCardHtml(column.matchCard),
-    statsHtml(column.stats)
+    matchCardHtml(column.matchCard, copy),
+    statsHtml(column.stats, copy)
   ].filter(Boolean);
   const showcaseHtml = showcaseBlocks.length ? `\n        ${showcaseBlocks.join("\n        ")}` : "";
   // Sayfa yolu (Ana Sayfa > Köşe Yazıları > yazı) görünür breadcrumb ile aynı
@@ -571,7 +586,7 @@ export function columnPageHtml(column, locale = "tr") {
 
         ${column.featuredImage ? `<figure class="column-featured-image"><img src="${escapeHtml(relativeAssetUrl(column.featuredImage, base))}" alt="${escapeHtml(column.featuredImageAlt || column.title)}" loading="eager" decoding="async" /></figure>` : ""}
         ${standfirst ? `<p class="column-standfirst">${escapeHtml(standfirst)}</p>` : ""}${showcaseHtml}
-        <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>
+        <p class="column-disclaimer">${escapeHtml(column.disclaimer)}</p>${translationNoteHtml ? `\n        ${translationNoteHtml}` : ""}
         ${updatesHtml}
 
         <div class="column-body">
