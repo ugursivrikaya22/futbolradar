@@ -232,6 +232,55 @@ function authorPath(name) {
   return `yazarlar/${slugify(name)}.html`;
 }
 
+/** Vurgulu alıntı. Metin yoksa basılmaz; künye boş kalabilir. */
+function presentPullQuote(value) {
+  if (!value || typeof value !== "object") return null;
+  const quote = text(value.text);
+  if (!quote) return null;
+  return { text: quote, attribution: text(value.attribution) };
+}
+
+/** İstatistik kutusu. Değeri veya etiketi boş satır atılır. */
+function presentStats(value) {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((row) => ({
+      value: text(row && row.value),
+      label: text(row && row.label),
+      note: text(row && row.note)
+    }))
+    .filter((row) => row.value && row.label);
+}
+
+/** Maç bilgi kartı. Ev ve deplasman yoksa kart basılmaz. */
+function presentMatchCard(value) {
+  if (!value || typeof value !== "object") return null;
+  const home = text(value.home);
+  const away = text(value.away);
+  if (!home || !away) return null;
+  return {
+    kicker: text(value.kicker),
+    competition: text(value.competition),
+    round: text(value.round),
+    home,
+    away,
+    kickoff: text(value.kickoff),
+    kickoffLabel: text(value.kickoffLabel),
+    venue: text(value.venue),
+    city: text(value.city),
+    broadcast: text(value.broadcast),
+    coach: text(value.coach),
+    note: text(value.note)
+  };
+}
+
+/** Meta keywords. Dizi ya da virgüllü metin; boşsa etiket üretilmez. */
+function presentKeywords(value) {
+  if (Array.isArray(value)) return value.map(text).filter(Boolean);
+  const single = text(value);
+  return single ? single.split(",").map((part) => part.trim()).filter(Boolean) : [];
+}
+
 /**
  * Yazıyı yüzeylerde kullanılacak biçime çevirir.
  *
@@ -283,6 +332,12 @@ function presentColumn(entry, locale) {
     hideFromHome: Boolean(entry.hideFromHome),
     // Yazının konu aldığı maç için doğrulanmış etkinlik künyesi (SportsEvent).
     sportsEvent: entry.sportsEvent && typeof entry.sportsEvent === "object" ? entry.sportsEvent : null,
+    // İsteğe bağlı vitrin alanları. Boşsa sayfa eskisi gibi basılır; doluysa
+    // üretici pull-quote, istatistik kutusu ve maç kartını ekler.
+    pullQuote: presentPullQuote(source.pullQuote),
+    stats: presentStats(source.stats),
+    matchCard: presentMatchCard(source.matchCard),
+    keywords: presentKeywords(source.keywords),
     body: Array.isArray(source.body) ? source.body.map(text).filter(Boolean) : [],
     // GÜNCELLEME NOTLARI — süren bir gündemi izleyen yazılar için.
     //

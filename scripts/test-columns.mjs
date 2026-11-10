@@ -493,3 +493,55 @@ console.log("Radar Yorumu testleri geçti (zorunlu alanlar, taslak gizliliği, y
   const chain = fs.readFileSync(path.join(root, "scripts", "lib", "postprocessChain.mjs"), "utf8");
   assert.match(chain, /inject-match-column-link\.mjs/, "köprü her derlemede yeniden basılmalı");
 }
+
+// İsteğe bağlı vitrin: pull-quote, maç kartı, istatistik kutusu, keywords.
+// Alan yoksa sayfa eskisi gibi kalır; diğer yazıların HTML'i değişmez.
+{
+  const plain = columnPageHtml(presentColumn(column()));
+  assert.ok(!plain.includes("column-pullquote"), "alıntı alanı yoksa pull-quote basılmamalı");
+  assert.ok(!plain.includes("column-match-card"), "maç kartı yoksa kart basılmamalı");
+  assert.ok(!plain.includes("column-stats"), "istatistik yoksa kutu basılmamalı");
+  assert.ok(!plain.includes("column-showcase.css"), "vitrin yoksa ek stil yüklenmemeli");
+  assert.ok(!plain.includes('name="keywords"'), "keywords alanı yoksa meta keywords basılmamalı");
+
+  const shown = columnPageHtml(presentColumn(column({
+    author: "FutbolRadar",
+    keywords: ["Türkiye Belçika", "Uluslar Ligi"],
+    pullQuote: { text: "Sıfır puan <script> bir eşik.", attribution: "FutbolRadar" },
+    stats: [{ value: "0", label: "Puan", note: "4 maç" }, { value: "", label: "Boş" }],
+    matchCard: {
+      competition: "UEFA Uluslar A Ligi",
+      round: "5. maç",
+      home: "Türkiye",
+      away: "Belçika",
+      kickoff: "2026-11-12T20:00:00+03:00",
+      kickoffLabel: "12 Kasım 2026, 20.00 TSİ",
+      venue: "Gürsel Aksel",
+      broadcast: "ATV",
+      coach: "Sergen Yalçın"
+    },
+    sportsEvent: {
+      name: "Türkiye – Belçika",
+      startDate: "2026-11-12T20:00:00+03:00",
+      status: "scheduled",
+      home: "Türkiye",
+      away: "Belçika",
+      venue: "İzmir Gürsel Aksel Stadyumu",
+      city: "İzmir",
+      country: "TR"
+    }
+  })));
+  assert.match(shown, /class="column-pullquote"/, "pull-quote basılmalı");
+  assert.match(shown, /Sıfır puan &lt;script&gt; bir eşik\./, "alıntı kaçırılmalı");
+  assert.match(shown, /<cite>FutbolRadar<\/cite>/, "alıntı FutbolRadar'a bağlanmalı");
+  assert.match(shown, /class="column-match-card"/, "maç kartı basılmalı");
+  assert.match(shown, /datetime="2026-11-12T20:00:00\+03:00"/, "başlama saati time etiketinde olmalı");
+  assert.match(shown, /class="column-stat-value">0</, "dolu istatistik basılmalı");
+  assert.ok(!shown.includes(">Boş<"), "etiketi olup değeri boş istatistik atılmalı");
+  assert.match(shown, /name="keywords" content="Türkiye Belçika, Uluslar Ligi"/, "meta keywords basılmalı");
+  assert.match(shown, /column-showcase\.css/, "vitrin stili bağlanmalı");
+  assert.match(shown, /"@type":"SportsEvent"/, "SportsEvent şeması basılmalı");
+  assert.match(shown, /"homeTeam":\{"@type":"SportsTeam","name":"Türkiye"\}/, "ev sahibi takım şemada olmalı");
+  assert.match(shown, /"awayTeam":\{"@type":"SportsTeam","name":"Belçika"\}/, "deplasman takımı şemada olmalı");
+  assert.match(shown, /"author":\{"@type":"Organization","name":"FutbolRadar"/, "yazar kuruluş olmalı");
+}

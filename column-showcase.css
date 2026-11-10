@@ -1,0 +1,203 @@
+/* Köşe yazısı vitrini — isteğe bağlı. Yalnızca pull-quote, maç kartı veya
+   istatistik kutusu taşıyan yazılar bu dosyayı yükler. page.css'teki
+   belirteçleri kullanır; diğer yazıların düzenine dokunmaz. */
+
+.column-pullquote {
+  margin: 0;
+  padding: var(--sp-5) var(--sp-5) var(--sp-4) var(--sp-5);
+  border-left: 4px solid var(--green);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  background:
+    linear-gradient(135deg, rgba(11, 143, 90, 0.16), rgba(13, 148, 136, 0.08));
+  box-shadow: var(--shadow-card);
+}
+
+.column-pullquote p {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  font-weight: 850;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+}
+
+.column-pullquote footer {
+  margin-top: var(--sp-3);
+}
+
+.column-pullquote cite {
+  color: var(--green-deep);
+  font-size: var(--fs-xs);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.column-match-card {
+  display: grid;
+  gap: var(--sp-3);
+  padding: var(--sp-5);
+  border-radius: var(--radius-lg);
+  background: #0e1a16;
+  color: #f4fff8;
+  box-shadow: var(--shadow-card);
+}
+
+.column-match-kicker {
+  margin: 0;
+  color: #8ee0bf;
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.column-match-teams {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.column-match-vs {
+  flex: 0 0 auto;
+  color: #8ee0bf;
+  font-size: var(--fs-sm);
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.column-match-facts {
+  display: grid;
+  gap: var(--sp-2);
+  margin: 0;
+}
+
+.column-match-facts div {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--sp-2);
+  align-items: baseline;
+}
+
+.column-match-facts dt {
+  color: #8ee0bf;
+  font-size: var(--fs-xs);
+  font-weight: 750;
+}
+
+.column-match-facts dd {
+  margin: 0;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.column-match-note {
+  margin: 0;
+  padding-top: var(--sp-2);
+  border-top: 1px solid rgba(142, 224, 191, 0.28);
+  color: #d7efe4;
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+}
+
+.column-stats {
+  margin: 0;
+}
+
+.column-stats ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--sp-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.column-stat {
+  display: grid;
+  gap: 2px;
+  align-content: start;
+  min-width: 0;
+  padding: var(--sp-3);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--green-tint);
+}
+
+.column-stat-value {
+  color: var(--green-deep);
+  font-size: clamp(1.4rem, 3vw, 1.8rem);
+  font-weight: 850;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.column-stat-label {
+  color: var(--text);
+  font-size: var(--fs-sm);
+  font-weight: 800;
+}
+
+.column-stat-note {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 650;
+}
+
+.column-body .column-table-wrap {
+  margin: var(--sp-2) 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.column-body .column-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-sm);
+}
+
+.column-body .column-table caption {
+  padding: var(--sp-3) var(--sp-3) 0;
+  color: var(--text);
+  font-weight: 800;
+  text-align: left;
+}
+
+.column-body .column-table th,
+.column-body .column-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.column-body .column-table th {
+  color: var(--muted);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.column-body .column-table tbody tr:last-child td {
+  border-bottom: 0;
+  font-weight: 800;
+}
+
+@media (min-width: 720px) {
+  .column-stats ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .column-match-facts {
+    grid-template-columns: 1fr 1fr;
+  }
+}

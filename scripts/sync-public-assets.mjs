@@ -22,6 +22,7 @@ for (const file of [
   "match-news.js",
   "match-news.css",
   "page.css",
+  "column-showcase.css",
   "app.js",
   "daily-fixtures-en.js",
   "data-refresh.js",
