@@ -1,8 +1,10 @@
-# Ana sayfa kayan yazısı (Transfer Gündemi)
+# Ana sayfa kayan yazısı (Transfer Radarı)
 
-Ana sayfanın altında, "Son güncelleme" şeridinin hemen üstünde duran kayan
-bant. Üst şeritteki **Son Dakika** bandından (`data/news-ticker.json`,
-[news-ticker.md](news-ticker.md)) ayrıdır:
+Ana sayfada üst şeritteki **Son Dakika** bandının hemen ALTINDA, Canlı
+Skorlar bandının üstünde duran kayan bant (Kasım 2026'ya kadar adı
+"Transfer Gündemi"ydi ve sayfanın altındaydı; Eylül 2026'da kaldırılan eski
+Transfer Radarı bandının yerine bu bileşen kullanılıyor). Son Dakika
+bandından (`data/news-ticker.json`, [news-ticker.md](news-ticker.md)) ayrıdır:
 
 | | Son Dakika bandı | Transfer Gündemi (bu belge) |
 |---|---|---|
@@ -41,11 +43,22 @@ Bant bir sonraki derlemede (en geç saatlik CI koşusunda) güncellenir.
 | `text` | evet | En fazla 160 karakter. Kaynağın söylediğinden fazlasını yazmayın |
 | `url` | hayır | **Site içi** olmalı (`/...` ya da `https://www.futbolradar.com/...`). Dış site buraya yazılmaz |
 | `date` | evet | Saat dilimli ISO 8601 (`2026-10-17T00:29:00+03:00`). Gelecekte olamaz |
-| `category` | evet | `transfer`, `mac` ya da `haber` |
+| `category` | evet | `transfer`, `mac`, `haber` ya da `iddia` (transfer söylentisi) |
 | `sourceUrl` | **evet** | `http(s)`; alan adı `services/sourceLinks.js` beyaz listesinde olmalı (TFF, FIFA, kulüp siteleri, AA, NTV Spor, Fanatik, Hürriyet, beIN…) |
 | `sourceName` | **evet** | Künyede görünen ad ("TFF", "FIFA", "Fanatik") |
 | `breaking` | hayır | `true` ise öğe kırmızı zemin + beyaz kalın "Son dakika" vurgusuyla ve listenin başında basılır (hafif nabız; hareket azaltmada kapalı). Yalnızca resmî kaynaklı acil gelişmeler için; `expiresAt` zorunlu |
 | `expiresAt` | hayır | Saat dilimli ISO 8601. Bu andan sonra öğe derlemede ve tarayıcıda gizlenir |
+
+### Söylentiler (`category: "iddia"`)
+
+- Metin söylenti diliyle yazılır ve "iddia" sözcüğünü taşır, kaynak adı
+  metinde geçer: "Fanatik'in iddiasına göre …", "NTV Spor'un Sky Sports'a
+  dayandırdığı iddiaya göre …". Kesin dille yazılmış söylenti reddedilir.
+- `expiresAt` zorunlu ve en fazla `date` + 72 saat (Son Dakika bandıyla aynı
+  tazelik penceresi). `breaking` kullanılamaz.
+- Bantta sarı "İddia" etiketiyle basılır.
+- Taraftar hesapları, X paylaşımları, Wikipedia/Transfermarkt kaynak değildir;
+  kaynak beyaz listedeki bir haber sitesinin sayfası olmalıdır.
 
 **Kaynaksız öğe yoktur.** Kuralı bozan öğe banda girmez, derleme uyarı basar
 ve `scripts/test-home-ticker.mjs` kırmızı yanar. `scripts/test-source-links.mjs`
@@ -54,7 +67,7 @@ de `data/ticker.json`'daki her dış alan adını beyaz listeye karşı tarar.
 ## Nasıl çalışır
 
 - `scripts/prerender-core-pages.mjs` → `homeTickerSlot()` geçerli ve süresi
-  dolmamış öğeleri (en yeni önce, en fazla 8) seçip `index.html`'deki
+  dolmamış öğeleri (en yeni önce, en fazla 16) seçip `index.html`'deki
   `<!-- prerender:home-ticker:start/end -->` yuvasına basar. Öğe yoksa yuva
   **boş** kalır, bant hiç görünmez.
 - İstemci JSON çekmez: veri HTML'in içinde gelir. `home-ticker.js` yalnızca
@@ -65,8 +78,8 @@ de `data/ticker.json`'daki her dış alan adını beyaz listeye karşı tarar.
 - Erişilebilirlik: fare üstündeyken ve klavye odağında durur; görünür
   "Durdur" düğmesi (`aria-pressed`); `prefers-reduced-motion: reduce`
   altında kaymaz, düz liste olur; döngü kopyası `aria-hidden` ve sekme sırası
-  dışındadır. Yükseklik CSS'te rezerve (`min-height: 44px`), bant sayfanın
-  altında olduğu için LCP'yi etkilemez.
+  dışındadır. Yükseklik CSS'te rezerve (`min-height: 44px`) ve bant derleme anında
+  HTML'e basıldığı için sayfanın üstünde olsa da düzen kayması üretmez.
 
 ## Dosyalar
 

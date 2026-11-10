@@ -10,6 +10,12 @@
   contain: layout paint;
 }
 .home-ticker[hidden] { display: none; }
+/* Transfer Radarı: Son Dakika bandının hemen altında, bantlar arası boşluksuz. */
+.home-ticker--top { margin: 0; border-top: 0; }
+.home-ticker__item--rumour .home-ticker__tag {
+  background: rgba(196, 120, 0, 0.14);
+  color: #8a4f00;
+}
 .home-ticker__inner {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;

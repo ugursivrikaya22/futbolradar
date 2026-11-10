@@ -12,7 +12,10 @@
  *   • Zorunlu alanlar: id, text, date (ISO, saat dilimli), category,
  *     sourceUrl (http/https), sourceName. Eksik ya da hatalı öğe banda
  *     GİRMEZ ve testte kırmızı yanar (scripts/test-home-ticker.mjs).
- *   • category ∈ transfer | mac | haber.
+ *   • category ∈ transfer | mac | haber | iddia.
+ *   • category "iddia" (Transfer Radarı söylentisi): metin "iddia" sözcüğünü
+ *     taşımalı (ör. "Fanatik'in iddiasına göre …") ve expiresAt ZORUNLU, en
+ *     fazla date + 72 saat. Söylenti kesin bilgi gibi bantta kalamaz.
  *   • sourceUrl alan adı services/sourceLinks.js beyaz listesinde olmalı.
  *   • url isteğe bağlı; verilirse site içi olmalı ("/..." ya da
  *     futbolradar.com). Dış bağlantı yalnızca kaynak künyesidir.
@@ -30,9 +33,12 @@ const DATA_PATH = path.join(process.cwd(), "data", "ticker.json");
 const CATEGORIES = Object.freeze({
   transfer: "Transfer",
   mac: "Maç",
-  haber: "Haber"
+  haber: "Haber",
+  iddia: "İddia"
 });
-const MAX_ITEMS = 8;
+const MAX_ITEMS = 16;
+/** Söylenti (category "iddia") en fazla 72 saat bantta kalır. */
+const RUMOUR_MAX_AGE_MS = 72 * 60 * 60 * 1000;
 const ISO_WITH_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})$/;
 /** Saat farkı / ufak giriş hataları için tolerans: tarih en fazla 1 saat ileride olabilir. */
 const FUTURE_TOLERANCE_MS = 60 * 60 * 1000;
@@ -72,6 +78,13 @@ function validateTickerEntry(item, options = {}) {
   if (item.url !== undefined && item.url !== null && item.url !== "" && !isInternalUrl(item.url)) errors.push("url site içi olmalı");
   if (item.breaking !== undefined && typeof item.breaking !== "boolean") errors.push("breaking boolean olmalı");
   if (item.breaking === true && !item.expiresAt) errors.push("breaking öğe expiresAt taşımalı");
+  if (item.category === "iddia") {
+    if (!/iddia/i.test(item.text)) errors.push("iddia öğesinin metni 'iddia' sözcüğünü taşımalı");
+    if (item.breaking === true) errors.push("iddia öğesi breaking olamaz");
+    if (!item.expiresAt) errors.push("iddia öğesi expiresAt taşımalı");
+    else if (ISO_WITH_ZONE.test(item.date) && ISO_WITH_ZONE.test(item.expiresAt)
+      && Date.parse(item.expiresAt) - Date.parse(item.date) > RUMOUR_MAX_AGE_MS) errors.push("iddia öğesi en fazla 72 saat yayında kalabilir");
+  }
   if (item.expiresAt !== undefined && item.expiresAt !== null && item.expiresAt !== "") {
     if (!ISO_WITH_ZONE.test(item.expiresAt) || !Number.isFinite(Date.parse(item.expiresAt))) errors.push("expiresAt saat dilimli ISO 8601 olmalı");
     else if (ISO_WITH_ZONE.test(item.date) && Date.parse(item.expiresAt) < Date.parse(item.date)) errors.push("expiresAt, date'ten önce");
@@ -116,6 +129,7 @@ module.exports = {
   CATEGORIES,
   DATA_PATH,
   MAX_ITEMS,
+  RUMOUR_MAX_AGE_MS,
   isExpired,
   isInternalUrl,
   readTickerFile,

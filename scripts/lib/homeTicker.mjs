@@ -1,6 +1,10 @@
 /**
  * ANA SAYFA KAYAN YAZISI — İŞARETLEME.
  *
+ * TRANSFER RADARI BANDI (eski adıyla "Transfer Gündemi"). Ana sayfada üst
+ * şeritteki "Son Dakika" bandının hemen ALTINDA durur; söylentiler
+ * (category "iddia") "İddia" etiketiyle ve en fazla 72 saat basılır.
+ *
  * Veri ve kurallar: data/ticker.json → services/homeTicker.js. Burada
  * yalnızca seçilmiş öğeler çizilir. Bant DERLEME ANINDA index.html'e basılır
  * (scripts/prerender-core-pages.mjs, `prerender:home-ticker` yuvası); istemci
@@ -40,7 +44,8 @@ function itemHtml(item, { base, hidden }) {
     : `<span class="home-ticker__text">${escapeHtml(item.text)}</span>`;
   const source = `<a class="home-ticker__source" href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer"${tab} aria-label="Kaynak: ${escapeHtml(item.sourceName)}">${escapeHtml(item.sourceName)}</a>`;
   const expires = item.expiresAt ? ` data-expires="${escapeHtml(item.expiresAt)}"` : "";
-  const cls = breaking ? "home-ticker__item home-ticker__item--breaking" : "home-ticker__item";
+  const cls = breaking ? "home-ticker__item home-ticker__item--breaking"
+    : item.category === "iddia" ? "home-ticker__item home-ticker__item--rumour" : "home-ticker__item";
   return `<li class="${cls}" data-ticker-id="${escapeHtml(item.id)}"${expires}><span class="home-ticker__tag">${escapeHtml(label)}</span>${text}${source}</li>`;
 }
 
@@ -56,9 +61,9 @@ export function renderHomeTicker(items, options = {}) {
   const base = options.base || "./";
   const group = (hidden) => `<ul class="home-ticker__group"${hidden ? ' aria-hidden="true"' : ""}>${list.map((item) => itemHtml(item, { base, hidden })).join("")}</ul>`;
   return `<link rel="stylesheet" href="${base}home-ticker.css" />
-<section class="home-ticker" data-home-ticker aria-labelledby="home-ticker-title">
+<section class="home-ticker home-ticker--top" data-home-ticker aria-labelledby="home-ticker-title">
   <div class="container-wide home-ticker__inner">
-    <h2 class="home-ticker__label" id="home-ticker-title">Transfer Gündemi</h2>
+    <h2 class="home-ticker__label" id="home-ticker-title">Transfer Radarı</h2>
     <div class="home-ticker__viewport">
       <div class="home-ticker__track" style="--home-ticker-duration:${tickerDurationSeconds(list)}s">${group(false)}${group(true)}</div>
     </div>
