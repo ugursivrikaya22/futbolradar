@@ -38,6 +38,7 @@ const DATA_FILES = [
   "news.json",
   "news-ticker.json",
   "ticker.json",
+  "ticker-news.json",
   "transfer-donemi-2026-27.json",
   "transfers.json",
   "matches.json",

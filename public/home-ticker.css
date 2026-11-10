@@ -158,3 +158,33 @@
   .home-ticker__group { width: 100%; }
   .home-ticker__item--breaking { animation: none; box-shadow: none; border-radius: 10px; }
 }
+/* SON DAKİKA (data/ticker-news.json). Aynı kayan yazı iskeleti; etiket
+   canlı skor kırmızısı, iddia rozeti söylenti rozetiyle aynı çekince tonu. */
+.home-ticker--son-dakika {
+  border-top-color: rgba(200, 30, 45, 0.28);
+  background: linear-gradient(90deg, rgba(200, 30, 45, 0.08), rgba(var(--surface-rgb, 255, 255, 255), 0.6) 32%);
+}
+.home-ticker--son-dakika .home-ticker__label {
+  background: var(--live, #c81e2d);
+  color: #fff;
+}
+.home-ticker--son-dakika .home-ticker__text {
+  color: var(--text, #0f1c17);
+  font-weight: 650;
+}
+.home-ticker__rumor {
+  border: 1px solid rgba(200, 30, 45, 0.34);
+  border-radius: 6px;
+  padding: 2px 7px;
+  background: rgba(200, 30, 45, 0.09);
+  color: var(--live, #c81e2d);
+  font-size: var(--fs-xs, 0.8125rem);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.home-ticker--son-dakika { min-width: 0; width: 100%; }
+/* Mobilde ana sütun flex ve kahraman `order: -2`. Bant kahramanın altına
+   düşmesin: favori şeridinden (-4) de önce, sayfanın üstünde kalsın. */
+@media (max-width: 720px) {
+  .home-main > .home-ticker--son-dakika { order: -5; }
+}
