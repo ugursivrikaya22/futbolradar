@@ -170,6 +170,9 @@ export const POSTPROCESS_CHAIN = [
   { id: "quick-links", script: "inject-quick-links.mjs", args: [], timeoutMinutes: 2 },
   // Takım↔haber↔köşe↔istatistik↔arşiv contextual iç bağlantılar (üreticilere dokunmaz).
   { id: "related-pages", script: "inject-related-pages.mjs", args: [], timeoutMinutes: 5 },
+  // Lig, takım, maç, maç dosyası ve haber kümelerine tavanlı iç bağlantı.
+  // `served-links`ten önce: göreli href'ler orada sunulan adrese göre doğrulanır.
+  { id: "contextual-links", script: "inject-contextual-links.mjs", args: [], timeoutMinutes: 8 },
   // Gizlilik sayfasına "Favoriler ve yerel depolama" bildirimi (işaretli blok, idempotent).
   { id: "privacy-notice", script: "inject-privacy-notice.mjs", args: [], timeoutMinutes: 2 },
   // Sitemap ↔ robots tutarlılığı: noindex URL sitemap'e girmez, köşe yazıları lastmod ile girer.
