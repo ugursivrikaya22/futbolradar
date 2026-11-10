@@ -209,7 +209,8 @@ const HEDGE_MARKERS = [
  * dosyasındaki kayıt sayısı arttıkça bu havuzun da geniş kalması gerekiyor,
  * yoksa sıralamanın altındaki kayıtlar doğrulamaya hiç ulaşamaz.
  */
-const MAX_CURATED_ITEMS = 8;
+// 10 Kasım 2026: 8 → 32; gündem dosyası büyüdü, havuz da geniş kalmalı.
+const MAX_CURATED_ITEMS = 32;
 
 /**
  * "Son dakika" bir ZAMAN İDDİASIDIR. Bir öğe `breaking` işaretiyle girse
