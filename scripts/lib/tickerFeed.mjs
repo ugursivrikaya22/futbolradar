@@ -105,7 +105,8 @@ const MIN_TRANSFER_SLOTS = 1;
  * "Gündem" bandın ASIL işi: bir futbol sitesinin üst şeridi skor tablosu
  * değil, gündem şerididir. Dört slot bu yüzden ayrılıyor.
  */
-export const MIN_CURATED_SLOTS = 4;
+// 10 Kasım 2026: transfer radarı satırları banda sığsın diye 4 → 24.
+export const MIN_CURATED_SLOTS = 24;
 
 /**
  * Bant en fazla bu kadar öğe taşır; şerit kalabalıklaşmamalı.
@@ -116,7 +117,9 @@ export const MIN_CURATED_SLOTS = 4;
  * üç yer kalıyordu. Sekiz, kayan bir şeritte hâlâ okunabilir bir uzunluk —
  * 320px'e kadar tek satır kalması ayrıca sınanıyor.
  */
-export const MAX_ITEMS = 8;
+// 10 Kasım 2026: 8 → 28. Sekiz slotta gündem dosyasındaki doğrulanmış
+// transfer iddialarının çoğu banda hiç giremiyordu (tavan gizliyordu).
+export const MAX_ITEMS = 28;
 
 const STATE_FILE = path.join(root, "data", "ticker-state.json");
 
