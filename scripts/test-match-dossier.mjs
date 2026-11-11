@@ -41,7 +41,7 @@ assert.equal(squadCount("home"), 26);
 assert.equal(squadCount("away"), 26);
 
 const html = matchEditorialHtml(data, { columns: [] });
-for (const term of ["20:00 TSİ", "atv", "Gürsel Aksel", "23.376", "Sergen Yalçın", "Mark van Bommel", "Hakan Çalhanoğlu", "108 maç / 22 gol", "Leandro Trossard", "12 kez karşılaştı", "17-21", "Maç sonrası:</strong> Güncelleniyor", "Diziliş: resmî maç kaydında belirtilmedi"]) assert.ok(html.includes(term), term);
+for (const term of ["20:00 TSİ", "ATV", "Gürsel Aksel", "23.376", "Sergen Yalçın", "Mark van Bommel", "Hakan Çalhanoğlu", "108 maç / 22 gol", "Leandro Trossard", "12 kez karşılaştı", "17-21", "Maç sonrası:</strong> Güncelleniyor", "Diziliş: resmî maç kaydında belirtilmedi"]) assert.ok(html.includes(term), term);
 for (const link of html.matchAll(/<a href="https?:[^>]+>/g)) assert.match(link[0], /rel="nofollow noopener noreferrer"/);
 
 // Köşe yuvası boşken bölüm yok; editör alanı ve bahis oranı asla basılmaz.
@@ -55,6 +55,12 @@ assert.ok(html.includes("Santrfor yok mu diyordunuz gelirken getirdim, var. Enes
 assert.ok(html.includes("Belçika maçı öncesi"));
 assert.ok(html.includes("Kenan") && html.includes("Aral") && html.includes("Zeki"));
 assert.ok(html.includes("İlk 11: Güncelleniyor"));
+assert.match(html, /id="muhtemel-11"/);
+assert.ok(html.includes("Muhtemel 11'ler:") && html.includes("Güncelleniyor"));
+assert.match(html, /href="https:\/\/beinsports\.com\.tr\/haber\/a-milli-takim-sergen-yalcin-yonetiminde-ilk-sinavina-cikiyor"[^>]*rel="nofollow noopener noreferrer"/);
+assert.match(html, /href="https:\/\/www\.uefa\.com\/uefanationsleague\/match\/2047873--turkiye-vs-belgium\/matchinfo\/"[^>]*rel="nofollow noopener noreferrer"/);
+assert.ok(html.includes("Sandro Schärer") && html.includes("Stéphane De Almeida") && html.includes("Luca Cibelli"));
+
 assert.match(html, /href="https:\/\/www\.fotomac\.com\.tr\/uluslar-ligi\/2026\/11\/11\/a-milli-takim-teknik-direktoru-sergen-yalcindan-irfan-can-kahveci-sozleri"[^>]*rel="nofollow noopener noreferrer"/);
 
 

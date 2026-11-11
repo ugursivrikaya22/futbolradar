@@ -53,6 +53,7 @@ export function validateMatchDossier(data) {
   for (const [i, l] of (data.lastLineups || []).entries()) need(l.source, `lastLineups[${i}]`);
   if (data.h2h) { need(data.h2h.source, "h2h"); data.h2h.rows.forEach((r) => parseScore(r.score)); }
   if (data.group) { need(data.group.source, "group"); data.group.results.forEach((r) => parseScore(r.score)); }
+  if (data.probableLineups && data.probableLineups.source) need(data.probableLineups.source, "probableLineups");
   if (data.column && data.column.body && data.column.body.length && data.column.author !== "FutbolRadar") throw new Error("Dossier column author must be FutbolRadar");
   return data;
 }
@@ -118,6 +119,19 @@ ${squad.groups.map((g) => `<h4>${esc(g.position)}</h4><ul>${players(g)}</ul>`).j
   out.push(section("kadrolar", "Kadrolar", [squadHtml("home"), squadHtml("away")].filter(Boolean).join("\n")));
 
   out.push(section("son-durum", "Son durum", facts(data.status)));
+
+  const xi = data.probableLineups;
+  const xiOk = xi && xi.source && ((xi.home && xi.home.players && xi.home.players.length) || (xi.away && xi.away.players && xi.away.players.length));
+  const xiSide = (side) => {
+    const block = xi && xi[side];
+    if (!block || !block.players || !block.players.length) return "";
+    return `<h3>${esc(block.label || (side === "home" ? "Türkiye" : "Belçika"))}</h3><p>${esc(block.players.join(", "))}</p>`;
+  };
+  const xiBody = xiOk
+    ? `<p class="muted-copy">Muhtemel 11 (basın iddiası). TFF veya UEFA resmî ilk 11'i yayımlayana kadar kesin değildir. ${cite(xi.source)}</p>
+${[xiSide("home"), xiSide("away")].filter(Boolean).join("\n")}`
+    : `<p><strong>Muhtemel 11'ler:</strong> ${UPDATING}</p><p class="muted-copy">TFF veya UEFA resmî ilk 11'i henüz yayımlamadı. İzinli basında, 11 Kasım basın toplantısı sonrasına ait saat damgalı tam bir muhtemel 11 listesi bulunamadı; bu yüzden kadro uydurulmadı.</p>`;
+  out.push(section("muhtemel-11", "Muhtemel 11'ler", xiBody));
 
   // Son 5 maç
   const recentHtml = (side) => {
