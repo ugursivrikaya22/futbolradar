@@ -103,7 +103,7 @@
   background: var(--surface-sunken, #f1f4f3);
 }
 .mh-ev.is-goal, .mh-ev.is-penalty { border-left-color: var(--green, #0b8f5a); background: rgba(11, 143, 90, .05); }
-.mh-ev.is-goal .mh-ev__mark, .mh-ev.is-penalty .mh-ev__mark { color: var(--green, #0b8f5a); }
+.mh-ev.is-goal .mh-ev__mark, .mh-ev.is-penalty .mh-ev__mark { color: var(--green-text, #086a43); }
 .mh-ev.is-own-goal { border-left-color: var(--warn, #b07410); background: rgba(176, 116, 16, .06); }
 .mh-ev.is-red, .mh-ev.is-second-yellow { border-left-color: var(--live, #c81e2d); background: rgba(200, 30, 45, .05); }
 .mh-ev.is-red .mh-ev__mark, .mh-ev.is-second-yellow .mh-ev__mark { color: var(--live, #c81e2d); }
@@ -135,12 +135,12 @@
 .mh-stat__bar i { display: block; height: 100%; transition: width .45s ease; }
 .mh-stat__bar i.is-home { background: var(--green, #0b8f5a); }
 .mh-stat__bar i.is-away { background: var(--cyan, #0d9488); opacity: .55; }
-.mh-stat.leader-home .mh-stat__val.is-home, .mh-stat.leader-away .mh-stat__val.is-away { color: var(--green, #0b8f5a); }
+.mh-stat.leader-home .mh-stat__val.is-home, .mh-stat.leader-away .mh-stat__val.is-away { color: var(--green-text, #086a43); }
 .mh-stat-group h3 { font-size: 13px; margin: 18px 0 10px; color: var(--muted, #6b7c76); }
 .mh-more { margin-top: 18px; }
 .mh-more > summary {
   cursor: pointer; font-size: 13px; font-weight: 700; padding: 10px 0;
-  color: var(--green, #0b8f5a); min-height: 44px; display: flex; align-items: center;
+  color: var(--green-text, #086a43); min-height: 44px; display: flex; align-items: center;
 }
 
 /* ---------- 4. Kadrolar ve diziliş ---------------------------------- */
@@ -242,7 +242,7 @@
   border: 0; background: transparent; cursor: pointer;
   padding: 9px 14px; font-size: 12px; font-weight: 700; color: inherit; min-height: 44px;
 }
-.mh-toggle button[aria-pressed="true"] { background: var(--green, #0b8f5a); color: #fff; }
+.mh-toggle button[aria-pressed="true"] { background: var(--green-fill, #087a4d); color: #fff; }
 .mh-table-wrap { overflow-x: auto; }
 .mh-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .mh-table th, .mh-table td { padding: 9px 8px; text-align: center; border-bottom: 1px solid var(--line, #eceeed); white-space: nowrap; }
@@ -253,7 +253,7 @@
 .mh-table__caption, .mh-table__foot { font-size: 12px; color: var(--muted, #6b7c76); line-height: 1.6; }
 .mh-table__foot { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
 .mh-delta { font-weight: 800; font-size: 12px; }
-.mh-delta.is-up { color: var(--green, #0b8f5a); }
+.mh-delta.is-up { color: var(--green-text, #086a43); }
 .mh-delta.is-down { color: var(--live, #c81e2d); }
 .mh-delta.is-flat { color: var(--muted, #6b7c76); }
 
@@ -278,7 +278,7 @@
 .mh-summary__empty, .mh-summary__hint { font-size: 12px; color: var(--muted, #6b7c76); margin: 6px 0 0; }
 .mh-impact { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .mh-impact li { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line, #eceeed); border-radius: 10px; font-size: 13px; }
-.mh-impact__pts { font-weight: 800; color: var(--green, #0b8f5a); }
+.mh-impact__pts { font-weight: 800; color: var(--green-text, #086a43); }
 .mh-impact__rank { margin-left: auto; color: var(--muted, #6b7c76); }
 .mh-summary__next ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 13px; }
 .mh-summary__next li { padding: 8px 0; border-bottom: 1px solid var(--line, #eceeed); }

@@ -8,7 +8,7 @@
 .sim-btn, .sim-pick { min-height: var(--tap, 40px); min-width: var(--tap, 40px); padding: 0 12px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .15)); border-radius: var(--radius, 8px); background: var(--surface, #fff); color: inherit; font: inherit; font-weight: 800; cursor: pointer; }
 .sim-btn.ghost { background: transparent; font-weight: 700; font-size: var(--fs-sm, .875rem); }
 .sim-btn:focus-visible, .sim-pick:focus-visible, .sim-card select:focus-visible, .sim-score input:focus-visible { outline: none; box-shadow: var(--ring); }
-.sim-pick[aria-pressed="true"] { background: var(--green, #0b8f5a); border-color: var(--green, #0b8f5a); color: #fff; }
+.sim-pick[aria-pressed="true"] { background: var(--green-fill, #087a4d); border-color: var(--green, #0b8f5a); color: #fff; }
 .sim-round-nav { display: flex; gap: 8px; margin-bottom: 10px; }
 .sim-round-nav select, .sim-card select { flex: 1; min-height: var(--tap, 40px); padding: 0 10px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .15)); border-radius: var(--radius, 8px); background: var(--surface, #fff); color: inherit; font: inherit; max-width: 100%; }
 .sim-label { display: block; margin-bottom: 6px; font-size: var(--fs-sm, .875rem); font-weight: 700; }
@@ -36,10 +36,10 @@
 .sim-row.is-relegation td:first-child { border-left-color: #c81e2d; }
 .sim-row.is-zone-change { background: var(--green-tint, #e8f5ef); }
 .sim-up, .sim-down { display: block; font-style: normal; font-size: 10px; line-height: 1; }
-.sim-up { color: var(--green, #0b8f5a); }
+.sim-up { color: var(--green-text, #086a43); }
 .sim-down { color: #c81e2d; }
 .sim-chip { display: inline-block; width: 18px; margin: 0 1px; border-radius: 4px; background: var(--surface-sunken, #f7f9f8); color: var(--muted, #6b7c76); font-size: 12px; line-height: 18px; text-align: center; }
-.sim-chip.is-clinched { background: var(--green, #0b8f5a); color: #fff; }
+.sim-chip.is-clinched { background: var(--green-fill, #087a4d); color: #fff; }
 .sim-chip.is-eliminated { background: #c81e2d; color: #fff; }
 .sim-legend { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 10px 0 0; padding: 0; list-style: none; font-size: var(--fs-xs, .8125rem); color: var(--muted, #6b7c76); }
 .sim-legend li { display: inline-flex; align-items: center; gap: 4px; }
