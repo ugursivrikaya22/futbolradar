@@ -14518,10 +14518,15 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 @media (max-width: 760px) {
-  .news-ticker-all { display: inline-flex; align-items: center; min-height: 44px; grid-column: 1 / -1; justify-self: end; }
+  /* "Tümü" bağlantısı tam genişlikte ikinci satıra düşüyor, Son Dakika bandı
+     mobilde iki katına çıkıp hemen altındaki Transfer Radarı bandıyla
+     ~150px'lik bir blok oluşturuyordu. Üç sütun korunur; 44px dokunma alanı
+     aynı satırda kalır. */
+  .news-ticker-all { display: inline-flex; align-items: center; min-height: 44px; padding-left: 6px; }
 
   .news-ticker-inner {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--sp-2);
   }
 
   .fixture-card-meta {
