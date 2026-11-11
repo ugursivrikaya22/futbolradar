@@ -118,6 +118,7 @@ const { buildMatchReport, buildMatchEvents } = require("../services/matchReportS
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { quotesForMatch } = require("../services/managerQuotes.js");
 const { isAnalyzableMatch } = require("../services/matchStatus.js");
+const { eventStatusOf, locationOf, startDateOf } = require("../services/matchSchema.js");
 const { slugForMatch } = require("../services/matchSeoPages.js");
 const { buildMatchShareText, renderShareBlock } = require("../services/shareText.js");
 const { t } = require("../services/i18n.js");
@@ -434,29 +435,26 @@ function pageHtml(report, match, indexable) {
     { heading: "Bu raporu paylaş" }
   );
 
+  const eventStart = startDateOf(match.kickoff);
+  const eventStatus = eventStatusOf(match);
+  const eventPlace = locationOf(match, { locale: "tr" });
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      {
+      // startDate yoksa düğüm yazılmaz: tarihsiz SportsEvent, Search Console'da
+      // "startDate missing" hatasıdır. Bitmiş raporda EventScheduled yazılmaz.
+      ...(eventStart && match.homeTeam && match.awayTeam ? [{
         "@type": "SportsEvent",
         name: `${match.homeTeam} - ${match.awayTeam}`,
         url,
-        startDate: match.kickoff,
-        // `EventStatusType` "EventCompleted" diye bir değer TANIMIYOR
-        // (yalnızca Scheduled/Cancelled/Postponed/Rescheduled/MovedOnline).
-        // Geçersiz değer Google tarafından atılıyordu. Oynanmış maç
-        // "planlandığı gibi gerçekleşti" demek: EventScheduled.
-        eventStatus: "https://schema.org/EventScheduled",
+        startDate: eventStart,
+        ...(eventStatus ? { eventStatus } : {}),
         sport: "Football",
-        // Stat/şehir yalnızca kayıtlıysa yazılır. "Bilinmiyor" yer tutucusu ve
-        // boş `address` zorunlu alanı boş bırakan geçersiz şemaydı (7.000+ sayfa).
-        ...(match.venue && match.venue !== "Açıklanmadı" && match.venue !== "Bilinmiyor"
-          ? { location: { "@type": "StadiumOrArena", name: match.venue, ...(match.city ? { address: { "@type": "PostalAddress", addressLocality: match.city } } : {}) } }
-          : {}),
+        ...(eventPlace ? { location: eventPlace } : {}),
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
         description: summary.status === "ready" ? summary.paragraph : match.summary || ""
-      },
+      }] : []),
       {
         "@type": "NewsArticle",
         headline: seo.title,

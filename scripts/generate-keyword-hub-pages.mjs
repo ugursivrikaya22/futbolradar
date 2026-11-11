@@ -621,7 +621,7 @@ function matchHubPage(h) {
     ...(f.h2h ? [[`${h.home} ile ${h.awayShort} daha önce karşılaştı mı?`, f.h2h.text, f.h2h.source]] : [])
   ];
   const faqHtml = `<section class="evergreen-section" aria-labelledby="sss"><h2 id="sss">Sık sorulan sorular</h2>${faq.map(([q, a, s]) => `<h3>${esc(q)}</h3><p>${esc(a)} <span class="evergreen-source">Kaynak: ${cite(s)}</span></p>`).join("")}</section>`;
-  const event = { "@type": "SportsEvent", "@id": `${SITE}/${h.file}#event`, name: `${h.home} - ${h.away}`, startDate: h.kickoff, eventStatus: "https://schema.org/EventScheduled", /* schema.org'da "EventCompleted" yok; oynanmış maç da EventScheduled (bkz. lib/reportSchemaRepair.mjs) */ eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", sport: "Football",
+  const event = { "@type": "SportsEvent", "@id": `${SITE}/${h.file}#event`, name: `${h.home} - ${h.away}`, startDate: h.kickoff, ...(played ? {} : { eventStatus: "https://schema.org/EventScheduled" }), eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode", sport: "Football",
     location: { "@type": "Place", name: h.venue, address: { "@type": "PostalAddress", addressLocality: "İstanbul", addressCountry: "TR" } },
     homeTeam: { "@type": "SportsTeam", name: h.home }, awayTeam: { "@type": "SportsTeam", name: h.away }, competitor: [{ "@type": "SportsTeam", name: h.home }, { "@type": "SportsTeam", name: h.away }],
     superEvent: { "@type": "SportsEvent", name: "UEFA Şampiyonlar Ligi 2026-27" }, organizer: { "@type": "SportsOrganization", name: "UEFA", url: "https://www.uefa.com/" } };

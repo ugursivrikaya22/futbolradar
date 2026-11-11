@@ -16,6 +16,7 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { sameClub } = require("../../services/superLigTeams.js");
 const { canonicalStatus } = require("../../services/matchStatus.js");
+const { eventStatusOf, locationOf, startDateOf } = require("../../services/matchSchema.js");
 
 export const SUPER_LIG_ORG = { "@type": "SportsOrganization", name: "Trendyol Süper Lig" };
 
@@ -102,19 +103,22 @@ export function isSuperLigMatch(match) {
 
 /** SportsEvent: saat dilimli startDate şart; stat yalnızca kayıtta varsa. */
 export function sportsEventNode(match, { url } = {}) {
-  if (!match || !match.kickoff || !/T\d{2}:\d{2}.*(Z|[+-]\d{2}:\d{2})$/.test(match.kickoff)) return null;
+  const startDate = startDateOf(match && match.kickoff);
+  if (!match || !startDate || !/T\d{2}:\d{2}/.test(startDate)) return null;
   const event = {
     "@type": "SportsEvent",
     name: `${match.homeTeam} - ${match.awayTeam}`,
-    startDate: match.kickoff,
-    eventStatus: "https://schema.org/EventScheduled",
+    startDate,
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     sport: "Football",
     homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
     awayTeam: { "@type": "SportsTeam", name: match.awayTeam }
   };
+  const eventStatus = eventStatusOf(match);
+  if (eventStatus) event.eventStatus = eventStatus;
   if (url) event.url = url;
-  if (match.venue) event.location = { "@type": "Place", name: match.venue };
+  const place = locationOf(match);
+  if (place) event.location = place;
   if (isSuperLigMatch(match)) event.superEvent = { ...SUPER_LIG_ORG };
   else if (match.league) event.superEvent = { "@type": "SportsOrganization", name: match.league };
   return event;

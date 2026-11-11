@@ -229,16 +229,25 @@ check("G/H/I) Googlebot'un aldığı SSR HTML: canonical kendini gösterir, tek 
       // başka bir stat üretemez; yalnızca tür sözcüğünü sayfanın diline çevirir
       // ("Chobani Stadyumu" → İngilizce sayfada "Chobani Stadium"), görünen
       // metnin de geçtiği kuralın aynısı.
-      if (event.location) {
+      if (entry.venue) {
+        assert.ok(event.location, `${relative}: stat varken location olmalı`);
+        assert.equal(event.location["@type"], "Place", `${relative}: location Place olmalı`);
         assert.equal(event.location.name, venueLabel(entry.venue, locale), `${relative}: location uydurulmamalı`);
+      } else if (event.location) {
+        assert.equal(event.location.name, undefined, `${relative}: stat yokken stadyum adı uydurulmamalı`);
+        assert.ok(event.location.address && (event.location.address.addressCountry || event.location.address.addressLocality), `${relative}: konum adres taşımıyor`);
       }
+      const state = pick(html, /data-msp-state="([a-z]+)"/);
+      const expectedStatus = { pre: "https://schema.org/EventScheduled", tbd: "https://schema.org/EventScheduled", live: "https://schema.org/EventScheduled", postponed: "https://schema.org/EventPostponed", cancelled: "https://schema.org/EventCancelled" }[state];
+      if (expectedStatus) assert.equal(event.eventStatus, expectedStatus, `${relative}: eventStatus`);
+      else assert.equal(event.eventStatus, undefined, `${relative}: bitmiş/belirsiz maç EventScheduled yazmamalı`);
+      assert.ok(event.homeTeam && event.homeTeam.name && event.awayTeam && event.awayTeam.name, `${relative}: iki takım`);
       assert.ok(graph.some((node) => node["@type"] === "BreadcrumbList"), `${relative}: BreadcrumbList`);
       assert.ok(html.includes(`hreflang="tr-TR" href="${seo.trPageUrl(entry.slug)}"`) && html.includes(`hreflang="en" href="${seo.enPageUrl(entry.enSlug)}"`), `${relative}: hreflang çifti`);
       // Skor SSR'da yazılıysa şemada UYDURMA canlı durum yok, hâl HTML'den okunur.
       assert.ok(html.includes("data-match-center"), `${relative}: canlı merkez kancası`);
       assert.ok(html.includes("match-center.js"), `${relative}: canlı istemci`);
       assert.ok(!html.includes('src="../app.js"') && !html.includes('src="../../app.js"'), `${relative}: tam app.js yüklenmemeli`);
-      const state = pick(html, /data-msp-state="([a-z]+)"/);
       const title = pick(html, /<title>([^<]+)<\/title>/);
       if (state === "post") assert.match(title, /\d+-\d+/, `${relative}: bitmiş maç başlığı skor taşımalı`);
       // TR başlık kalıbı (generate-match-seo-pages pageTitles): 

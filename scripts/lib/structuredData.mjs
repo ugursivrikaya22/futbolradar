@@ -102,10 +102,13 @@ const RULES = {
     const competitors = Array.isArray(node.competitor) ? node.competitor : [];
     if (!(nameOf(node.homeTeam) && nameOf(node.awayTeam)) && competitors.length < 2) e.push("SportsEvent iki takımı bildirmiyor (homeTeam/awayTeam ya da competitor)");
     if (node.location !== undefined) {
-      if (!nameOf(node.location)) e.push("SportsEvent.location.name yok");
-      if (node.location && typeof node.location === "object" && "address" in node.location && !(isNonEmptyString(node.location.address) || (node.location.address && typeof node.location.address === "object"))) e.push("SportsEvent.location.address boş");
+      const address = node.location && typeof node.location === "object" ? node.location.address : null;
+      const locality = address && typeof address === "object" ? String(address.addressLocality || "").trim() : "";
+      const country = address && typeof address === "object" ? String(address.addressCountry || "").trim() : (typeof address === "string" ? address.trim() : "");
+      if (!nameOf(node.location) && !locality && !country) e.push("SportsEvent.location adı veya adresi yok");
+      if (node.location && typeof node.location === "object" && "address" in node.location && !(isNonEmptyString(node.location.address) || (address && typeof address === "object" && (locality || country)))) e.push("SportsEvent.location.address boş");
     } else {
-      w.push("SportsEvent.location yok (Google Event zengin sonucu için önerilir; stat bilinmiyorsa uydurulmaz)");
+      w.push("SportsEvent.location yok (Google Event zengin sonucu için önerilir; stat ve ülke bilinmiyorsa uydurulmaz)");
     }
     if (node.url !== undefined && !isSiteUrl(node.url)) e.push(`SportsEvent.url site dışı: ${node.url}`);
   },
