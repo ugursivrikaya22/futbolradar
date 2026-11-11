@@ -35,7 +35,10 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   federation: Object.freeze([
     "tff.org",
     "uefa.com",
-    "fifa.com"
+    "fifa.com",
+    // Belçika Kraliyet Futbol Federasyonu (RBFA/KBVB): Kırmızı Şeytanlar
+    // kadro duyurusu ve resmî maç kayıtları (static.rbfa.be alt alan adı).
+    "rbfa.be"
   ]),
 
   // Resmî kulüp siteleri

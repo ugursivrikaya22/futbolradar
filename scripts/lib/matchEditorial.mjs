@@ -4,11 +4,18 @@ import path from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { isAllowedSourceUrl } = require("../../services/sourceLinks.js");
+import { validateMatchDossier, matchDossierHtml } from "./matchDossier.mjs";
 const esc = (v) => String(v ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 export function readMatchEditorial(root, entry) {
   const file = path.join(root, "data/match-editorials", `${entry.slug}.json`);
   if (!fs.existsSync(file)) return null;
   const data = JSON.parse(fs.readFileSync(file, "utf8"));
+  if (data.kind === "dossier") {
+    // Sağlayıcı kimliği henüz yoksa maç, sicildeki kimlikle (ev|deplasman|tarih) eşlenir.
+    const idOk = data.fixtureId ? String(entry.providerIds?.apiFootball) === String(data.fixtureId) : Boolean(data.identity) && data.identity === entry.identity;
+    if (data.slug !== entry.slug || !idOk) throw new Error("Editorial fixture identity mismatch");
+    return validateMatchDossier(data);
+  }
   if (data.slug !== entry.slug || String(entry.providerIds?.apiFootball) !== data.fixtureId) throw new Error("Editorial fixture identity mismatch");
   for (const s of Object.values(data.sources)) {
     if (!isAllowedSourceUrl(s.url) || /wikipedia|thesportsdb/i.test(s.url)) throw new Error(`Invalid editorial source: ${s.url}`);
@@ -18,8 +25,9 @@ export function readMatchEditorial(root, entry) {
   }
   return data;
 }
-export function matchEditorialHtml(data) {
+export function matchEditorialHtml(data, options = {}) {
   if (!data) return "";
+  if (data.kind === "dossier") return matchDossierHtml(data, options);
   const cite = (key) => {
     const s = data.sources[key];
     return `<a href="${esc(s.url)}" rel="nofollow noopener noreferrer" target="_blank">${esc(s.name)}</a>`;

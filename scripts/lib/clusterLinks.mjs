@@ -91,6 +91,26 @@ export function columnsForTeams(teamNames, { excludeId = null, limit = 3 } = {})
     .map((column) => ({ path: column.path, title: column.title, date: column.date, id: column.id, matchId: column.generated && column.generated.matchId }));
 }
 
+/**
+ * BU MAÇA BAĞLI yayımlanmış köşe yazıları: editoryal dosyada adı geçen
+ * slug'lar, üreticinin maç kimliğiyle işaretlediği yazılar ya da
+ * `sportsEvent`i aynı gün aynı iki takımı gösteren yazılar. Takım etiketi
+ * tek başına yetmez; o genel küme bağlantısıdır (columnsForTeams).
+ */
+export function columnsForMatch({ slugs = [], matchId = null, homeTeam, awayTeam, date } = {}) {
+  const wanted = new Set(slugs.filter(Boolean));
+  return load().columns
+    .filter((column) => column.path)
+    .filter((column) => {
+      if (wanted.has(column.slug) || wanted.has(column.id)) return true;
+      if (matchId && column.generated && column.generated.matchId === matchId) return true;
+      const event = column.sportsEvent;
+      return Boolean(event && date && String(event.startDate || "").slice(0, 10) === date
+        && ((sameClub(event.home, homeTeam) && sameClub(event.away, awayTeam)) || (sameClub(event.home, awayTeam) && sameClub(event.away, homeTeam))));
+    })
+    .map((column) => ({ path: column.path, title: column.title, id: column.id }));
+}
+
 /** İki takımın verilen tarihe en yakın (±4 gün) maç sayfası. */
 export function matchPageFor(homeOrA, awayOrB, aroundIso) {
   const target = new Date(aroundIso).getTime();

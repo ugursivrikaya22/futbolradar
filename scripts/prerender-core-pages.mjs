@@ -3,7 +3,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { liveTickerTrack } from "./lib/liveScoresTicker.mjs";
 import { renderHomeTicker } from "./lib/homeTicker.mjs";
-import { renderHomeMatchBanner, selectHomeMatchBannerItems } from "./lib/homeMatchBanner.mjs";
+import { renderHomeMatchBanner, selectHomeMatchBannerSchedule } from "./lib/homeMatchBanner.mjs";
 import { matchQuotesTickerBlock } from "./lib/matchQuotesTicker.mjs";
 import {
   fixtureCard as sharedFixtureCard,
@@ -2103,7 +2103,7 @@ function trendPlayerCategoriesSlot() {
 function homeMatchBannerSlot() {
   const file = path.join(root, "data", "home-match-banner.json");
   if (!fs.existsSync(file)) return "";
-  return renderHomeMatchBanner(selectHomeMatchBannerItems(JSON.parse(fs.readFileSync(file, "utf8"))), { base: "./" });
+  return renderHomeMatchBanner(selectHomeMatchBannerSchedule(JSON.parse(fs.readFileSync(file, "utf8"))), { base: "./" });
 }
 
 function homeTickerSlot() {
