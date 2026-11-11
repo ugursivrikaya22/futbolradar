@@ -42,7 +42,7 @@ export function validateMatchDossier(data) {
     if (!keys.length) throw new Error(`Missing dossier source at ${where}`);
     for (const key of keys) if (!data.sources[key]) throw new Error(`Missing editorial source: ${key}`);
   };
-  for (const list of ["facts", "atmosphere", "scenarios", "numbers"]) {
+  for (const list of ["facts", "atmosphere", "scenarios", "numbers", "status"]) {
     for (const [i, fact] of (data[list] || []).entries()) need(fact.source, `${list}[${i}]`);
   }
   for (const side of ["home", "away"]) {
@@ -116,6 +116,8 @@ ${squad.groups.map((g) => `<h4>${esc(g.position)}</h4><ul>${players(g)}</ul>`).j
 <p class="muted-copy">${esc(squad.note || "")} ${cite([squad.source, squad.clubSource].filter(Boolean))}</p></details>`;
   };
   out.push(section("kadrolar", "Kadrolar", [squadHtml("home"), squadHtml("away")].filter(Boolean).join("\n")));
+
+  out.push(section("son-durum", "Son durum", facts(data.status)));
 
   // Son 5 maç
   const recentHtml = (side) => {

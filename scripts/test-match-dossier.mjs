@@ -30,7 +30,7 @@ assert.ok(registry.some((p) => p.slug === "belgium-turkiye-2-ekim-2026"));
 // Kaynaklar: beyaz liste + yasaklı kaynak yok.
 for (const s of Object.values(data.sources)) assert.doesNotMatch(s.url, /wikipedia|thesportsdb|transfermarkt|fbref/i);
 const hosts = new Set(Object.values(data.sources).map((s) => new URL(s.url).hostname.replace(/^www\./, "")));
-for (const host of ["tff.org", "rbfa.be", "uefa.com"]) assert.ok([...hosts].some((h) => h === host || h.endsWith(`.${host}`)), host);
+for (const host of ["tff.org", "rbfa.be", "uefa.com", "fotomac.com.tr"]) assert.ok([...hosts].some((h) => h === host || h.endsWith(`.${host}`)), host);
 
 // Hesaplanan sayılar.
 const table = dossierStandings(data.group.results);
@@ -48,6 +48,15 @@ for (const link of html.matchAll(/<a href="https?:[^>]+>/g)) assert.match(link[0
 assert.ok(!html.includes('id="kose"'), "empty column slot stays hidden");
 for (const idea of data.editorOnly.columnTopicIdeas) assert.ok(!html.includes(idea), "editor-only ideas are not rendered");
 assert.doesNotMatch(html, /iddaa|bahis|oran(lar)?ı/i, "no odds without a licensed official source");
+
+// 11 Kasım basın toplantısı: alıntı + sakatlık notları, görünür Fotomaç kaynağı.
+assert.match(html, /id="son-durum"/);
+assert.ok(html.includes("Santrfor yok mu diyordunuz gelirken getirdim, var. Enes başlayacak, santrfor yanımızda"));
+assert.ok(html.includes("Belçika maçı öncesi"));
+assert.ok(html.includes("Kenan") && html.includes("Aral") && html.includes("Zeki"));
+assert.ok(html.includes("İlk 11: Güncelleniyor"));
+assert.match(html, /href="https:\/\/www\.fotomac\.com\.tr\/uluslar-ligi\/2026\/11\/11\/a-milli-takim-teknik-direktoru-sergen-yalcindan-irfan-can-kahveci-sozleri"[^>]*rel="nofollow noopener noreferrer"/);
+
 
 // Köşe metni geldiğinde FutbolRadar imzasıyla basılır; bağlı yazı listesi de bloğu açar.
 const withColumn = matchEditorialHtml({ ...data, column: { title: "Deneme", body: ["Paragraf."], author: "FutbolRadar", publishedAt: "2026-11-11" } });
