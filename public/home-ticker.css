@@ -11,7 +11,17 @@
 }
 .home-ticker[hidden] { display: none; }
 /* Transfer Radarı: Son Dakika bandının hemen altında, bantlar arası boşluksuz. */
-.home-ticker--top { margin: 0; border-top: 0; }
+.home-ticker--top {
+  margin: 0;
+  border-top: 0;
+  /* Hero ::before (inset -40%, z-index -1) konumlu .hero yığını içinde
+     bandın üstüne biniyordu; bant konumsuz ve yarı saydamdı. Konum + z-index
+     2, üst çubuk (60) / Son Dakika (40) / canlı skor (39) altında kalır.
+     Opak zemin, yarı saydam gradyanın altından hero rengini keser. */
+  position: relative;
+  z-index: 2;
+  background-color: var(--surface, #fff);
+}
 .home-ticker__item--rumour .home-ticker__tag {
   background: rgba(196, 120, 0, 0.14);
   color: #8a4f00;

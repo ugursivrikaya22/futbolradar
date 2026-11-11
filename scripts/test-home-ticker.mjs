@@ -113,6 +113,9 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   assert.ok(/\.home-ticker__inner\s*\{[^}]*min-height:\s*44px/.test(css), "yükseklik rezerve edilmeli (CLS)");
   assert.ok(/viewport:hover[\s\S]*?animation-play-state:\s*paused/.test(css), "hover/odakta durmalı");
   assert.ok(/\.home-ticker__item--breaking\s*\{[^}]*animation:\s*none/.test(reduced), "hareket azaltmada son dakika nabzı kapanmalı");
+  assert.ok(/\.home-ticker--top\s*\{[^}]*position:\s*relative/.test(css), "üst bant konumlu olmalı (hero örtmesi)");
+  assert.ok(/\.home-ticker--top\s*\{[^}]*z-index:\s*2/.test(css), "üst bant z-index 2 (üst çubuk 60 / Son Dakika 40 / canlı skor 39 altında)");
+  assert.ok(/\.home-ticker--top\s*\{[^}]*background-color:\s*var\(--surface/.test(css), "üst bant opak zemin rengi --surface kullanmalı");
 }
 
 // ── 5. Gerçek veri, ana sayfa yuvası, service worker ─────────────────────────
