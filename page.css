@@ -1,39 +1,65 @@
 /* ============================================================================
-   TASARIM BELİRTEÇLERİ (design tokens)
+   TASARIM BELİRTEÇLERİ (design tokens) — TEK KAYNAK
    ----------------------------------------------------------------------------
-   Bu dosyada daha önce 41 ayrı hex renk, 229 ayrı rgba ve 54 ayrı font boyutu
-   vardı; ölçek yoktu, değerler tek tek yazılmıştı. Bu yüzden benzer öğeler
-   birbirinden hafifçe farklı görünüyor ve her düzenleme yeni bir varyant
-   ekliyordu. Aşağıdaki belirteçler tek kaynak oluşturur; yeni kurallar ham
-   değer yerine bunları kullanır.
+   Renk, yazı, boşluk, köşe ve gölge değişkenlerinin TAMAMI bu bölümdedir:
+   açık tema (:root), koyu tema (data-theme) ve sistem tercihi (media).
+   Dosyanın başka hiçbir yerinde :root değişkeni tanımlanmaz. Daha önce üç
+   ayrı :root bloğu vardı ve sonraki bloklar ilkini sessizce eziyordu; burada
+   yazan değerler artık sayfada gerçekten geçerli olan değerlerdir.
+
+   Ayrı bir dosya değil, page.css'in başı: ayrı dosya her sayfaya render'ı
+   bekleten ikinci bir istek ekler.
    ========================================================================== */
+
+/* --- yazı tipi: Inter, kendi sunucumuzdan (harici CDN yok) ---
+   Tek değişken dosya (100-900), Latin + Türkçe + Orta Avrupa alt kümesi.
+   Lisans: SIL OFL 1.1 (fonts/OFL.txt). Dosya adındaki damga içerik özetidir;
+   font değişirse ad da değişir, uzun önbellek güvenli kalır.
+   BİLEREK preload YOK: ölçümde ön yükleme, en büyük öğesi görsel olan
+   sayfalarda (köşe yazısı) fontu görselin önüne geçirip LCP'yi 0,15-0,3 sn
+   uzattı. Font CSS'ten sonra istenir; o ana kadar aşağıdaki yedek görünür. */
+@font-face {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("/fonts/inter-var.b61bd796.woff2") format("woff2");
+}
+
+/* Inter gelene kadar görünen yedek. Ölçüleri Inter'e eşitlenir ki font
+   yüklendiğinde satırlar kaymasın (CLS). */
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial"), local("Roboto"), local("Helvetica Neue");
+  size-adjust: 107.4%;
+  ascent-override: 90.2%;
+  descent-override: 22.48%;
+  line-gap-override: 0%;
+}
+
 :root {
   color-scheme: light;
 
   /* --- yüzeyler (açık tema) ---
-     Saf beyaz zemin düz ve göz yorucu okunuyordu. Sayfa kırık beyaza iner,
-     kartlar sayfadan bir basamak AÇIK durur: derinlik parlaklıkla değil,
-     yüzeyler arası ton farkı ve yumuşak gölgeyle kurulur.
-
      --surface-rgb, yarı saydam katmanların tema ile birlikte değişebilmesi
      için ayrı tutulur; sabit beyaz kullanılsaydı koyu temada kırılırdı. */
-  --bg: #f4f7f5;
-  --bg-soft: #eef2f0;
-  --panel: #ffffff;
+  --bg: #ffffff;
+  --bg-soft: #f6faf8;
+  --panel: rgba(246, 250, 248, 0.72);
   --surface: #ffffff;
   --surface-rgb: 255, 255, 255;
   --surface-raised: #ffffff;
   --surface-sunken: #f7f9f8;
   --surface-tint: #edf5f1;
-  --line: rgba(14, 26, 22, 0.09);
-  --line-strong: rgba(11, 143, 90, 0.22);
+  --line: rgba(11, 143, 90, 0.067);
+  --line-strong: rgba(11, 143, 90, 0.134);
 
   /* --- metin ---
      Üç basamak: başlık/gövde, kart içi ikincil, üçüncül. Açık zeminde
      kontrast oranları AA hedefiyle seçildi. */
-  --text: #0f1c17;
+  --text: #0e1a16;
   --text-soft: #3f4f49;
-  --muted: #6b7c76;
+  --muted: #5b6b65;
 
   /* --- marka ve durum ---
      Zümrüt ana renk; beyaz üzerinde okunması için parlak yeşil yerine
@@ -42,16 +68,16 @@
   --green: #0b8f5a;
   --green-deep: #086a43;
   --green-tint: #e8f5ef;
-  --cyan: #0d9488;
+  --cyan: #0f766e;
   --live: #c81e2d;
-  --warn: #b07410;
+  --warn: #8f5d0a;
   --ink: #0e1a16;
 
   /* Eski adlar. Bir kısmı stil dosyasında kullanılıyordu ama hiçbir yerde
      tanımlı değildi: tanımsız değişken özelliği tümden geçersiz kılar, yani
      o kurallar sessizce hiç uygulanmıyordu. Takma ad olarak bağlanır ki tek
      bir renk kaynağı kalsın ve tema değiştiğinde hepsi birlikte değişsin. */
-  --soft: var(--text-soft);
+  --soft: var(--muted);
   --accent: var(--green);
   --accent-2: var(--cyan);
   --amber: var(--warn);
@@ -84,13 +110,157 @@
   --radius: 8px;
   --radius-lg: 14px;
   --radius-pill: 999px;
-  --shadow-card: 0 1px 2px rgba(14, 26, 22, 0.102), 0 8px 24px rgba(14, 26, 22, 0.075);
+  --shadow-card: var(--shadow-md);
   --ring: 0 0 0 2px rgba(13, 148, 136, 0.275);
 
   /* --- dokunma hedefi ---
      Denetimde 13 bağlantı/düğme 32px altındaydı; parmakla isabet ettirmek
      zor. Etkileşimli öğeler için taban yükseklik. */
   --tap: 40px;
+  --panel-strong: rgba(255, 255, 255, 0.9);
+  --shadow: var(--shadow-lg);
+  --container: 1180px;
+  --wide: 1440px;
+  --gutter: clamp(16px, 3.2vw, 40px);
+  --header-h: 64px;
+  --shadow-sm: 0 1px 2px rgba(14, 26, 22, 0.04), 0 1px 3px rgba(14, 26, 22, 0.06);
+  --shadow-md: 0 2px 6px rgba(14, 26, 22, 0.05), 0 8px 24px rgba(14, 26, 22, 0.07);
+  --shadow-lg: 0 4px 12px rgba(14, 26, 22, 0.06), 0 24px 56px rgba(14, 26, 22, 0.1);
+  --shadow-accent: 0 6px 20px rgba(11, 143, 90, 0.18);
+  --shadow-soft: var(--shadow-sm);
+  --glass: rgba(255, 255, 255, 0.82);
+  --glass-strong: rgba(255, 255, 255, 0.95);
+  --glass-border: rgba(14, 26, 22, 0.08);
+  --grad-accent: linear-gradient(135deg, var(--green-fill), var(--cyan));
+  --grad-surface: linear-gradient(180deg, #ffffff, #fbfdfc);
+  --grad-hero: linear-gradient(180deg, #ffffff 0%, #f7fbf9 55%, var(--green-tint) 100%),
+    radial-gradient(120% 130% at 88% 0%, rgba(11, 143, 90, 0.1), transparent 62%);
+  --grad-deep: linear-gradient(160deg, #0e1a16 0%, #0b3d2c 100%);
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur: 220ms;
+
+  /* --- AA kontrast için yeşilin iki görevi ---
+     --green marka rengidir (çizgi, ikon, çubuk, zemin tonu) ve beyaz üstünde
+     4,13:1 verir; metin için yetmez. Yeşil METİN --green-text (6,7:1),
+     üstünde beyaz yazı taşıyan DOLGU --green-fill (5,4:1) kullanır. */
+  --green-text: var(--green-deep);
+  --green-fill: #087a4d;
+
+  /* Kullanılıp hiç tanımlanmamış adlar; tanımsızken kuralları geçersizdi. */
+  --turquoise: var(--cyan);
+  --primary: var(--green);
+  --radius-md: 10px;
+
+  --font-sans: Inter, "Inter Fallback", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Yüzeyler: sayfa en koyu, kartlar bir basamak açık — açık temadaki
+     katmanlanmanın aynısı, ters yönde. */
+  --bg: #0a1512;
+  --bg-soft: #0d1a16;
+  --panel: #10201b;
+  --surface: #12241e;
+  --surface-rgb: 18, 36, 30;
+  --surface-raised: #162b24;
+  --surface-sunken: #0d1a16;
+  --surface-tint: #122a21;
+  --line: rgba(180, 226, 208, 0.14);
+  --line-strong: rgba(52, 211, 153, 0.32);
+
+  /* Koyu zeminde metin saf beyaz olmaz: hafif yeşilimsi kırık beyaz
+     parlamayı düşürür ve uzun okumada göz yormaz. */
+  --text: #e8f2ee;
+  --text-soft: #b9cbc4;
+  --muted: #8b9e97;
+
+  /* Vurgu koyu zeminde daha açık tona kayar; aynı marka ailesi. */
+  --green: #34d399;
+  --green-deep: #10b981;
+  --green-tint: rgba(52, 211, 153, 0.14);
+  --cyan: #2dd4bf;
+  --live: #fb7185;
+  --warn: #fbbf24;
+  --ink: #e8f2ee;
+
+  /* Koyu zeminde gölge daha derin ve geniş olmalı, yoksa kart yüzmez. */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.36);
+  --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.44), 0 28px 64px rgba(0, 0, 0, 0.5);
+  --shadow-accent: 0 6px 22px rgba(52, 211, 153, 0.22);
+
+  --soft: var(--text-soft);
+  --accent: var(--green);
+  --accent-2: var(--cyan);
+  --amber: var(--warn);
+  --red: var(--live);
+  --surface-strong: var(--surface-raised);
+  --shadow: var(--shadow-lg);
+  --shadow-card: var(--shadow-md);
+  --shadow-soft: var(--shadow-sm);
+  --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
+
+  --glass: rgba(18, 36, 30, 0.82);
+  --glass-strong: rgba(13, 26, 22, 0.95);
+  --glass-border: rgba(180, 226, 208, 0.12);
+  --grad-surface: linear-gradient(180deg, #162b24, #12241e);
+  --grad-hero: linear-gradient(180deg, #0a1512 0%, #0d1a16 55%, #12241e 100%),
+    radial-gradient(120% 130% at 88% 0%, rgba(52, 211, 153, 0.12), transparent 62%);
+  --grad-deep: linear-gradient(160deg, #0a1512 0%, #10352a 100%);
+  --green-text: var(--green);
+  --green-fill: var(--green);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0a1512;
+    --bg-soft: #0d1a16;
+    --panel: #10201b;
+    --surface: #12241e;
+    --surface-rgb: 18, 36, 30;
+    --surface-raised: #162b24;
+    --surface-sunken: #0d1a16;
+    --surface-tint: #122a21;
+    --line: rgba(180, 226, 208, 0.14);
+    --line-strong: rgba(52, 211, 153, 0.32);
+    --text: #e8f2ee;
+    --text-soft: #b9cbc4;
+    --muted: #8b9e97;
+    --green: #34d399;
+    --green-deep: #10b981;
+    --green-tint: rgba(52, 211, 153, 0.14);
+    --cyan: #2dd4bf;
+    --live: #fb7185;
+    --warn: #fbbf24;
+    --ink: #e8f2ee;
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.36);
+    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.44), 0 28px 64px rgba(0, 0, 0, 0.5);
+    --shadow-accent: 0 6px 22px rgba(52, 211, 153, 0.22);
+    --soft: var(--text-soft);
+    --accent: var(--green);
+    --accent-2: var(--cyan);
+    --amber: var(--warn);
+    --red: var(--live);
+    --surface-strong: var(--surface-raised);
+    --shadow: var(--shadow-lg);
+    --shadow-card: var(--shadow-md);
+    --shadow-soft: var(--shadow-sm);
+    --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
+
+    --glass: rgba(18, 36, 30, 0.82);
+    --glass-strong: rgba(13, 26, 22, 0.95);
+    --glass-border: rgba(180, 226, 208, 0.12);
+    --grad-surface: linear-gradient(180deg, #162b24, #12241e);
+    --grad-hero: linear-gradient(180deg, #0a1512 0%, #0d1a16 55%, #12241e 100%),
+      radial-gradient(120% 130% at 88% 0%, rgba(52, 211, 153, 0.12), transparent 62%);
+    --grad-deep: linear-gradient(160deg, #0a1512 0%, #10352a 100%);
+    --green-text: var(--green);
+    --green-fill: var(--green);
+  }
 }
 
 * {
@@ -108,7 +278,7 @@ body {
     repeating-linear-gradient(90deg, rgba(11, 143, 90, 0.022) 0 1px, transparent 1px 92px),
     #ffffff;
   color: var(--text);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.5;
 }
 
@@ -152,7 +322,7 @@ a {
   place-items: center;
   border: 1px solid rgba(11, 143, 90, 0.242);
   border-radius: var(--radius);
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.066);
 }
 
@@ -187,12 +357,12 @@ a {
 
 .nav-links a[aria-current="page"] {
   border-color: rgba(11, 143, 90, 0.176);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .cta {
   border: 1px solid rgba(11, 143, 90, 0.253);
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.055);
   font-weight: 800;
 }
@@ -336,7 +506,7 @@ h1 {
 .competition-chip-row a:focus-visible,
 .competition-chip-row a.is-active {
   border-color: rgba(11, 143, 90, 0.264);
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.055);
   outline: 0;
 }
@@ -433,7 +603,7 @@ h1 {
 .match-status-filters a:focus-visible,
 .match-status-filters a.is-active {
   border-color: rgba(11, 143, 90, 0.275);
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.055);
   outline: 0;
 }
@@ -565,7 +735,7 @@ h1 {
   border: 1px solid rgba(11, 143, 90, 0.28);
   border-radius: 999px;
   background: transparent;
-  color: var(--accent);
+  color: var(--green-text);
   font: inherit;
   font-weight: 600;
   font-size: 0.85rem;
@@ -631,7 +801,7 @@ h1 {
 }
 
 .big-value {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 2rem;
   font-weight: 950;
   line-height: 1;
@@ -659,7 +829,7 @@ h1 {
 
 .tag.green {
   border-color: rgba(11, 143, 90, 0.176);
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.041);
 }
 
@@ -827,7 +997,7 @@ h1 {
 }
 
 .form-dots .win {
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.088);
 }
 
@@ -921,7 +1091,7 @@ h1 {
 }
 
 .score {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .live-score-team-logo,
@@ -945,7 +1115,7 @@ h1 {
   height: 40px;
   border-radius: 8px;
   background: rgba(11, 143, 90, 0.059);
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.85rem;
   font-weight: 800;
 }
@@ -1041,7 +1211,7 @@ h1 {
 }
 
 .footer-links a:hover {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .breadcrumb {
@@ -1145,25 +1315,6 @@ h1 {
 }
 
 /* Home page styles moved from index.html */
-:root {
-        color-scheme: light;
-        --bg: #ffffff;
-        --bg-soft: #f6faf8;
-        --panel: rgba(246, 250, 248, 0.72);
-        --panel-strong: rgba(255, 255, 255, 0.9);
-        --line: rgba(11, 143, 90, 0.067);
-        --line-strong: rgba(11, 143, 90, 0.134);
-        --text: #0e1a16;
-        --muted: #5b6b65;
-        --soft: #5b6b65;
-        --green: #0b8f5a;
-        --cyan: #0d9488;
-        --amber: #b07410;
-        --red: #c81e2d;
-        --shadow: 0 22px 80px rgba(14, 26, 22, 0.122);
-        --radius: 8px;
-        --container: 1180px;
-      }
 
       * {
         box-sizing: border-box;
@@ -1183,8 +1334,7 @@ h1 {
           repeating-linear-gradient(0deg, rgba(13, 148, 136, 0.015) 0 1px, transparent 1px 84px),
           #ffffff;
         color: var(--text);
-        font-family:
-          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-sans);
         line-height: 1.5;
       }
 
@@ -1257,7 +1407,7 @@ a {
         border: 1px solid rgba(11, 143, 90, 0.242);
         border-radius: 8px;
         background: linear-gradient(145deg, rgba(11, 143, 90, 0.11), rgba(13, 148, 136, 0.06));
-        color: var(--green);
+        color: var(--green-text);
         font-weight: 900;
         box-shadow: 0 0 24px rgba(11, 143, 90, 0.088);
       }
@@ -1298,7 +1448,7 @@ a {
         border-radius: 999px;
         padding: 0 15px;
         background: rgba(11, 143, 90, 0.066);
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.86rem;
         font-weight: 800;
         white-space: nowrap;
@@ -1468,7 +1618,7 @@ p {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.78rem;
         font-weight: 800;
         text-transform: uppercase;
@@ -1875,7 +2025,7 @@ p {
       }
 
       .home-transfer-score strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 2rem;
         line-height: 1;
       }
@@ -1930,7 +2080,7 @@ p {
       }
 
       .home-transfer-route em {
-        color: var(--green);
+        color: var(--green-text);
         font-style: normal;
         font-weight: 950;
       }
@@ -2014,7 +2164,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .home-transfer-row b {
-        color: var(--green);
+        color: var(--green-text);
       }
 
       /* ----------------------------------------------------------------
@@ -2079,7 +2229,7 @@ a.home-transfer-row:focus-visible {
 
       .card-badge.transfer {
         color: #ffffff;
-        background: var(--green);
+        background: var(--green-fill);
       }
 
       /* Rozet+cümle DÜRÜSTLÜK sözleşmesi: yalnızca resmî açıklanan bir
@@ -2088,7 +2238,7 @@ a.home-transfer-row:focus-visible {
          okumalı, cümleyi okumak zorunda kalmadan. */
       .status-badge.status-confirmed {
         border-color: rgba(11, 143, 90, 0.187);
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
       }
 
@@ -2124,7 +2274,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .home-transfer-take b {
-        color: var(--green);
+        color: var(--green-text);
       }
 
       .home-transfer-meta-row {
@@ -2157,7 +2307,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .home-transfer-row-badge.status-confirmed {
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.1);
       }
 
@@ -2736,7 +2886,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.132);
         border-radius: 999px;
         background: rgba(11, 143, 90, 0.055);
-        color: var(--green);
+        color: var(--green-text);
         font-weight: 900;
       }
 
@@ -2756,7 +2906,7 @@ a.home-transfer-row:focus-visible {
       .intent-player-card a {
         align-self: end;
         width: fit-content;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.86rem;
         font-weight: 850;
       }
@@ -2847,7 +2997,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .intent-mini-list b {
-        color: var(--green);
+        color: var(--green-text);
         white-space: nowrap;
       }
 
@@ -2874,7 +3024,7 @@ a.home-transfer-row:focus-visible {
       .intent-chip-row a:hover,
 .intent-chip-row a:focus-visible {
         border-color: rgba(11, 143, 90, 0.231);
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.055);
         outline: 0;
       }
@@ -2930,7 +3080,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.11);
         border-radius: 999px;
         padding: 6px 9px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.036);
         font-size: 0.72rem;
         font-weight: 950;
@@ -3069,7 +3219,7 @@ a.home-transfer-row:focus-visible {
       .brief-command-card a {
         align-self: end;
         width: fit-content;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.86rem;
         font-weight: 850;
       }
@@ -3180,7 +3330,7 @@ a.home-transfer-row:focus-visible {
 
       .tag.green {
         border-color: rgba(11, 143, 90, 0.187);
-        color: var(--green);
+        color: var(--green-text);
       }
 
       
@@ -3210,7 +3360,7 @@ a.home-transfer-row:focus-visible {
 
       .signal-value {
         display: block;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.82rem;
         font-weight: 900;
         line-height: 1;
@@ -3256,7 +3406,7 @@ a.home-transfer-row:focus-visible {
 
       .momentum-number {
         flex: 0 0 auto;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.9rem;
         font-weight: 950;
         line-height: 1;
@@ -3282,7 +3432,7 @@ a.home-transfer-row:focus-visible {
 
       .form-dots .win {
         background: rgba(11, 143, 90, 0.088);
-        color: var(--green);
+        color: var(--green-text);
       }
 
       .form-dots .draw {
@@ -3422,7 +3572,7 @@ a.home-transfer-row:focus-visible {
 
       .filter-chip.is-active {
         border-color: rgba(11, 143, 90, 0.264);
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.055);
       }
 
@@ -3464,7 +3614,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.11);
         border-radius: 999px;
         padding: 0 12px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.041);
         font-size: 0.82rem;
         font-weight: 900;
@@ -3489,7 +3639,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .comparison-hub-head span {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.74rem;
         font-weight: 900;
         text-transform: uppercase;
@@ -3543,7 +3693,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .comparison-hub-card strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.94rem;
         line-height: 1.24;
       }
@@ -3587,7 +3737,7 @@ a.home-transfer-row:focus-visible {
       .player-summary-metric strong {
         display: block;
         margin: 8px 0 5px;
-        color: var(--green);
+        color: var(--green-text);
         font-size: clamp(1.45rem, 3vw, 2.1rem);
         line-height: 0.95;
       }
@@ -3613,7 +3763,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .player-trust-note strong {
-        color: var(--green);
+        color: var(--green-text);
         white-space: nowrap;
       }
 
@@ -3639,7 +3789,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.176);
         border-radius: var(--radius);
         padding: 8px;
-        color: var(--green);
+        color: var(--green-text);
         font-weight: 950;
         text-align: center;
         background: rgba(11, 143, 90, 0.044);
@@ -3681,7 +3831,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.154);
         border-radius: 999px;
         padding: 0 9px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
         font-size: 0.74rem;
         font-weight: 850;
@@ -3712,7 +3862,7 @@ a.home-transfer-row:focus-visible {
         place-items: center;
         border: 1px solid rgba(11, 143, 90, 0.187);
         border-radius: 999px;
-        color: var(--green);
+        color: var(--green-text);
         background:
           radial-gradient(circle at 35% 25%, rgba(11, 143, 90, 0.121), transparent 48%),
           rgba(5, 18, 16, 0.88);
@@ -3830,7 +3980,7 @@ a.home-transfer-row:focus-visible {
       .compare-tray strong {
         display: block;
         margin-top: 4px;
-        color: var(--green);
+        color: var(--green-text);
       }
 
       .compare-tray-players,
@@ -3858,7 +4008,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .compare-tray-players button span {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1rem;
         line-height: 1;
       }
@@ -3970,7 +4120,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .player-signal-card a {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.82rem;
         font-weight: 850;
       }
@@ -4052,7 +4202,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.121);
         border-radius: 999px;
         padding: 6px 9px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.041);
         font-size: 0.72rem;
         font-weight: 950;
@@ -4143,7 +4293,7 @@ a.home-transfer-row:focus-visible {
 
       .search-trap-head span,
 .search-trap-links span {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.72rem;
         font-weight: 950;
         letter-spacing: 0.05em;
@@ -4203,7 +4353,7 @@ a.home-transfer-row:focus-visible {
 
       .landing-insights-head span {
         display: block;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.76rem;
         font-weight: 900;
         text-transform: uppercase;
@@ -4267,7 +4417,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.11);
         border-radius: 999px;
         padding: 4px 8px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
         font-size: 0.75rem;
       }
@@ -4344,7 +4494,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.121);
         border-radius: 999px;
         padding: 0 11px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.039);
         font-size: 0.78rem;
       }
@@ -4454,7 +4604,7 @@ a.home-transfer-row:focus-visible {
         align-items: center;
         justify-content: center;
         background: rgba(11, 143, 90, 0.059);
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.68rem;
         font-weight: 800;
       }
@@ -4604,7 +4754,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .fixture-week-jump-item.is-active {
-        color: var(--green);
+        color: var(--green-text);
         border-color: rgba(11, 143, 90, 0.22);
         background: rgba(11, 143, 90, 0.044);
       }
@@ -4688,7 +4838,7 @@ a.home-transfer-row:focus-visible {
         place-items: center;
         border: 1px solid rgba(11, 143, 90, 0.143);
         border-radius: 999px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
         font-weight: 900;
       }
@@ -4719,7 +4869,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.11);
         border-radius: 999px;
         padding: 0 12px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.041);
         font-size: 0.82rem;
         font-weight: 900;
@@ -4740,7 +4890,7 @@ a.home-transfer-row:focus-visible {
 
       .compare-presets-head span {
         display: block;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.76rem;
         font-weight: 900;
         letter-spacing: 0;
@@ -4887,7 +5037,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .compare-row b {
-        color: var(--green);
+        color: var(--green-text);
         text-align: right;
       }
 
@@ -4936,7 +5086,7 @@ a.home-transfer-row:focus-visible {
       .compare-winner strong {
         display: block;
         margin: 6px 0;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.24rem;
       }
 
@@ -4961,7 +5111,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .compare-insights-head span {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.74rem;
         font-weight: 900;
         text-transform: uppercase;
@@ -5009,7 +5159,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.11);
         border-radius: 999px;
         padding: 4px 8px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
         font-size: 0.76rem;
       }
@@ -5052,7 +5202,7 @@ a.home-transfer-row:focus-visible {
       .comparison-share-panel strong {
         display: block;
         margin: 5px 0;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.06rem;
       }
 
@@ -5128,7 +5278,7 @@ a.home-transfer-row:focus-visible {
         place-items: center;
         border: 1px solid rgba(11, 143, 90, 0.198);
         border-radius: var(--radius);
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
         font-size: 1.7rem;
         font-weight: 950;
@@ -5190,7 +5340,7 @@ a.home-transfer-row:focus-visible {
         padding: 0;
         background: transparent;
         box-shadow: none;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 2.5rem;
         line-height: 1;
       }
@@ -5326,7 +5476,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .team-signal-card strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.1rem;
       }
 
@@ -5339,7 +5489,7 @@ a.home-transfer-row:focus-visible {
 
       .team-signal-card a {
         width: fit-content;
-        color: var(--accent);
+        color: var(--green-text);
         font-size: 0.82rem;
         font-weight: 900;
       }
@@ -5418,7 +5568,7 @@ a.home-transfer-row:focus-visible {
 
       .match-signal-card h3 {
         margin: 0;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.05rem;
       }
 
@@ -5431,7 +5581,7 @@ a.home-transfer-row:focus-visible {
 
       .match-signal-card a {
         width: fit-content;
-        color: var(--accent);
+        color: var(--green-text);
         font-size: 0.82rem;
         font-weight: 900;
       }
@@ -5578,7 +5728,7 @@ a.home-transfer-row:focus-visible {
 
       .scouting-summary-card a {
         width: fit-content;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.82rem;
         font-weight: 900;
       }
@@ -5657,7 +5807,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .profile-compare-card b {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.78rem;
       }
 
@@ -5726,7 +5876,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .static-profile-link-card strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.92rem;
         line-height: 1.24;
       }
@@ -5828,7 +5978,7 @@ a.home-transfer-row:focus-visible {
 
       .comparison-mini-card a {
         justify-self: start;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.82rem;
         font-weight: 900;
       }
@@ -5893,7 +6043,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .comparison-index-card strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.98rem;
         line-height: 1.24;
       }
@@ -5957,7 +6107,7 @@ a.home-transfer-row:focus-visible {
 
       .status-badge.verified {
         border-color: rgba(11, 143, 90, 0.187);
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
       }
 
@@ -6060,7 +6210,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .transfer-route em {
-        color: var(--green);
+        color: var(--green-text);
         font-style: normal;
         font-weight: 950;
       }
@@ -6146,7 +6296,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .transfer-radar-card header strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.1rem;
         white-space: nowrap;
       }
@@ -6194,7 +6344,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .transfer-watch-brief strong {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.45rem;
         line-height: 1;
       }
@@ -6370,7 +6520,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .team-player-spotlight-card b {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 1.18rem;
       }
 
@@ -6408,7 +6558,7 @@ a.home-transfer-row:focus-visible {
         border-radius: 999px;
         padding: 0 10px;
         background: rgba(13, 148, 136, 0.03);
-        color: var(--accent);
+        color: var(--green-text);
         font-size: 0.78rem;
         font-weight: 900;
       }
@@ -6456,7 +6606,7 @@ a.home-transfer-row:focus-visible {
         border-radius: 999px;
         padding: 0 8px;
         background: rgba(11, 143, 90, 0.061);
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.68rem;
         font-weight: 900;
       }
@@ -6518,7 +6668,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .team-card-player a {
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.8rem;
         font-weight: 900;
       }
@@ -6548,13 +6698,13 @@ a.home-transfer-row:focus-visible {
         border-radius: 999px;
         padding: 0 10px;
         background: rgba(13, 148, 136, 0.03);
-        color: var(--accent);
+        color: var(--green-text);
         font-size: 0.78rem;
         font-weight: 900;
       }
 
       .squad-player-card a {
-        color: var(--accent);
+        color: var(--green-text);
         font-weight: 800;
       }
 
@@ -6577,7 +6727,7 @@ a.home-transfer-row:focus-visible {
         border: 1px solid rgba(11, 143, 90, 0.132);
         border-radius: 999px;
         padding: 0 11px;
-        color: var(--green);
+        color: var(--green-text);
         background: rgba(11, 143, 90, 0.044);
         font-size: 0.82rem;
         font-weight: 850;
@@ -6736,7 +6886,7 @@ a.home-transfer-row:focus-visible {
       .similar-player-card a {
         display: inline-flex;
         margin-top: 10px;
-        color: var(--green);
+        color: var(--green-text);
         font-size: 0.82rem;
         font-weight: 850;
       }
@@ -6796,7 +6946,7 @@ a.home-transfer-row:focus-visible {
       }
 
       .article-card a {
-        color: var(--green);
+        color: var(--green-text);
         font-weight: 850;
         font-size: 0.88rem;
       }
@@ -7412,7 +7562,7 @@ main.container {
   border-radius: 8px;
   padding: 9px;
   background: rgba(11, 143, 90, 0.055);
-  color: var(--green);
+  color: var(--green-text);
   cursor: pointer;
 }
 
@@ -7914,7 +8064,7 @@ body.home-page .metric-tile {
 .stats-toolbar button.is-active {
   color: #f7faf9;
   border-color: var(--green);
-  background: var(--green);
+  background: var(--green-fill);
   outline: none;
 }
 
@@ -7960,7 +8110,7 @@ body.home-page .metric-tile {
 
 .stats-filter-bar button {
   padding: 0 14px;
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 800;
   cursor: pointer;
 }
@@ -8024,7 +8174,7 @@ body.home-page .metric-tile {
 }
 
 .home-match-command-head > a {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.82rem;
   font-weight: 850;
 }
@@ -8255,7 +8405,7 @@ body.home-page .metric-tile {
 }
 
 .home-post-match-shell strong {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 1.05rem;
 }
 
@@ -8366,7 +8516,7 @@ body.home-page .metric-tile {
 
 .post-match-status.is-full {
   background: rgba(22, 138, 90, 0.12);
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 /* Kısmi ve yalnızca-olay kapsamları uyarı tonunda: yüksek kapsam gibi
@@ -8439,7 +8589,7 @@ body.home-page .metric-tile {
 }
 
 .post-match-kpi-grid strong {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 1.42rem;
 }
 
@@ -8503,7 +8653,7 @@ body.home-page .metric-tile {
 
 .post-match-stat-group h3 {
   margin: 0 0 14px;
-  color: var(--accent);
+  color: var(--green-text);
   font-size: 0.9rem;
 }
 
@@ -8587,7 +8737,7 @@ body.home-page .metric-tile {
 }
 
 .post-match-event time {
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 950;
 }
 
@@ -8642,7 +8792,7 @@ body.home-page .metric-tile {
 }
 
 .post-match-lineup-card header span {
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 900;
 }
 
@@ -8680,7 +8830,7 @@ body.home-page .metric-tile {
 }
 
 .post-match-sub-row time {
-  color: var(--accent);
+  color: var(--green-text);
   font-weight: 900;
 }
 
@@ -8754,7 +8904,7 @@ body.home-page .metric-tile {
 }
 
 .team-latest-match-score > strong {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 2rem;
 }
 
@@ -8881,7 +9031,7 @@ body.home-page .metric-tile {
 .stats-summary strong {
   display: block;
   margin: 8px 0 5px;
-  color: var(--green);
+  color: var(--green-text);
   font-size: clamp(1.7rem, 3vw, 2.35rem);
   line-height: 1;
 }
@@ -8915,7 +9065,7 @@ body.home-page .metric-tile {
 
 .stats-group-head > a {
   flex: 0 0 auto;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.85rem;
   font-weight: 800;
 }
@@ -8992,7 +9142,7 @@ body.home-page .metric-tile {
 }
 
 .stats-leader-list b {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.9rem;
 }
 
@@ -9020,7 +9170,7 @@ body.home-page .metric-tile {
 .stats-match-grid strong {
   display: block;
   margin: 8px 0;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 2rem;
 }
 
@@ -9054,7 +9204,7 @@ body.home-page .metric-tile {
 }
 
 .stats-coverage-grid b {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .stats-coverage-track {
@@ -9191,7 +9341,7 @@ body.home-page .metric-tile {
 }
 
 .match-radar-team-head strong {
-  color: var(--accent);
+  color: var(--green-text);
   font-size: 1.38rem;
 }
 
@@ -9250,7 +9400,7 @@ body.home-page .metric-tile {
 
 .radar-explanation summary {
   cursor: pointer;
-  color: var(--accent);
+  color: var(--green-text);
   font-weight: 700;
 }
 
@@ -9327,7 +9477,7 @@ body.home-page .metric-tile {
 .match-related-card strong {
   display: block;
   margin: 8px 0;
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .match-related-card p {
@@ -9515,7 +9665,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .lineup-bench a:hover,
 .lineup-bench a:focus-visible {
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .match-lineups-note {
@@ -9582,7 +9732,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .match-player-card-body strong a:hover,
 .match-player-card-body strong a:focus-visible {
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .match-player-facts {
@@ -9751,7 +9901,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .match-duel-player a:hover,
 .match-duel-player a:focus-visible {
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .match-duel-player span {
@@ -10300,7 +10450,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 }
 
 .trend-hero aside strong {
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .trend-fact-grid,
@@ -10409,7 +10559,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 }
 
 .trend-transfer-route b {
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .trend-mini-stats {
@@ -10549,7 +10699,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
   place-items: center;
   border-radius: 50%;
   color: #f7faf9;
-  background: var(--accent);
+  background: var(--green-fill);
   font-weight: 850;
 }
 
@@ -10757,7 +10907,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 }
 
 .confidence-warning-card[data-confidence-band="high"] {
-  color: var(--green);
+  color: var(--green-text);
   border-color: rgba(11, 143, 90, 0.193);
 }
 
@@ -10826,7 +10976,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .analysis-confidence[data-level="high"] {
   border-color: rgba(11, 143, 90, 0.22);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .analysis-confidence[data-level="medium"] {
@@ -10864,7 +11014,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 .goal-potential-badge[data-label="high"],
 .upset-risk-badge[data-label="low"] {
   border-color: rgba(11, 143, 90, 0.198);
-  color: var(--green);
+  color: var(--green-text);
   background: rgba(11, 143, 90, 0.044);
 }
 
@@ -10974,7 +11124,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 }
 
 .probability-bar-legend .is-primary b {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .matchup-grid {
@@ -11083,7 +11233,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .key-duel-player a:hover,
 .key-duel-player a:focus-visible {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .key-duel-player span {
@@ -11116,7 +11266,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .key-duel-advantage[data-advantage="home"] {
   border-color: rgba(11, 143, 90, 0.198);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .key-duel-advantage[data-advantage="away"] {
@@ -11161,7 +11311,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .lineup-status-badge[data-status="official"] {
   border-color: rgba(11, 143, 90, 0.22);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .lineup-status-badge[data-status="probable"] {
@@ -11193,7 +11343,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 
 .lineup-player-card a:hover,
 .lineup-player-card a:focus-visible {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .lineup-player-card span {
@@ -11268,7 +11418,7 @@ a.pitch-chip:focus-visible .pitch-chip-badge {
 }
 
 .match-analysis-tab[aria-selected="true"] {
-  color: var(--green);
+  color: var(--green-text);
   border-color: rgba(11, 143, 90, 0.176);
   background: rgba(11, 143, 90, 0.044);
 }
@@ -11522,39 +11672,6 @@ button:focus-visible,
    kuralı silmeden görünümü tek elden yönetmeyi sağlar.
    ========================================================================== */
 
-:root {
-  /* Geniş düzen: içerik 1120px'e sıkışmıştı, 27" ekranda sayfanın %40'ı boştu. */
-  --wide: 1440px;
-  --gutter: clamp(16px, 3.2vw, 40px);
-  --header-h: 64px;
-
-  /* Derinlik basamakları. Açık zeminde gölge, koyu zemindekinin aynısı
-     olamaz: aynı opaklık ekranı kirletir. Üç seviye de iki katmanlıdır —
-     yakın ve sıkı bir kontur gölgesi, uzak ve yumuşak bir alan gölgesi. */
-  --shadow-sm: 0 1px 2px rgba(14, 26, 22, 0.04), 0 1px 3px rgba(14, 26, 22, 0.06);
-  --shadow-md: 0 2px 6px rgba(14, 26, 22, 0.05), 0 8px 24px rgba(14, 26, 22, 0.07);
-  --shadow-lg: 0 4px 12px rgba(14, 26, 22, 0.06), 0 24px 56px rgba(14, 26, 22, 0.1);
-  --shadow-accent: 0 6px 20px rgba(11, 143, 90, 0.18);
-  --shadow: var(--shadow-lg);
-  --shadow-card: var(--shadow-md);
-  --shadow-soft: var(--shadow-sm);
-
-  /* Cam efekti ve marka geçişleri tek yerden. */
-  --glass: rgba(255, 255, 255, 0.82);
-  --glass-strong: rgba(255, 255, 255, 0.95);
-  --glass-border: rgba(14, 26, 22, 0.08);
-  --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
-  --grad-surface: linear-gradient(180deg, #ffffff, #fbfdfc);
-  /* Beyazdan yeşile: sayfa üstünde nefes, altında marka rengine iniş. */
-  --grad-hero: linear-gradient(180deg, #ffffff 0%, #f7fbf9 55%, var(--green-tint) 100%),
-    radial-gradient(120% 130% at 88% 0%, rgba(11, 143, 90, 0.1), transparent 62%);
-  /* Koyu bölümler (footer, vurgu şeritleri) için charcoal-yeşil iniş. */
-  --grad-deep: linear-gradient(160deg, #0e1a16 0%, #0b3d2c 100%);
-
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --dur: 220ms;
-}
-
 /* --- Geniş konteyner --------------------------------------------------------
    `.container` (1120px) korunur ama premium bölümler `.container-wide` ile
    1440px'e kadar açılır; kenar boşluğu viewport ile ölçeklenir. */
@@ -11633,7 +11750,7 @@ body .container {
 }
 
 .brand-text b {
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 800;
 }
 
@@ -11686,7 +11803,7 @@ body .container {
 
 .topbar-premium .nav-links a[aria-current="page"] {
   background: rgba(11, 143, 90, 0.055);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .topbar-premium .nav-links a[aria-current="page"]::after {
@@ -11833,7 +11950,7 @@ body .container {
   place-items: center;
   border-radius: 8px;
   background: rgba(11, 143, 90, 0.066);
-  color: var(--green);
+  color: var(--green-text);
   font-size: 11px;
   font-style: normal;
   font-weight: 800;
@@ -11960,7 +12077,7 @@ body .container {
 }
 
 .news-ticker-item:hover {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 /* İç sayfalardaki kompakt bant: kaymaz, tek satır, en fazla 3 öğe. Aynı
@@ -12030,7 +12147,7 @@ body .container {
   align-items: center;
   gap: 6px;
   padding: 0 clamp(14px, 2vw, 24px);
-  background: #0b8f5a;
+  background: var(--green-fill);
   color: #fff;
   font-size: 0.76rem;
   font-weight: 900;
@@ -12219,7 +12336,7 @@ a.live-scores-ticker__item:focus-visible {
   border-radius: 6px;
   padding: 2px 7px;
   background: rgba(11, 143, 90, 0.066);
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xs);
   font-weight: 750;
 }
@@ -12351,7 +12468,7 @@ a.live-scores-ticker__item:focus-visible {
 
 a.column-author:hover,
 a.column-author:focus-visible {
-  color: var(--green);
+  color: var(--green-text);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -12366,7 +12483,7 @@ a.column-author:focus-visible {
 }
 
 .column-card-detail {
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-sm);
   font-weight: 800;
 }
@@ -12408,7 +12525,7 @@ a.column-author:focus-visible {
 .column-card-share:focus-visible {
   border-color: rgba(11, 143, 90, 0.54);
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
   outline: 2px solid var(--green);
   outline-offset: 2px;
   transform: translateY(-1px);
@@ -12426,7 +12543,7 @@ a.column-author:focus-visible {
 
 .column-card-share-whatsapp,
 .column-share-whatsapp .column-share-symbol {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .column-tags {
@@ -12439,7 +12556,7 @@ a.column-author:focus-visible {
   border-radius: 6px;
   padding: 2px 8px;
   background: rgba(11, 143, 90, 0.066);
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xs);
   font-weight: 700;
 }
@@ -12587,7 +12704,7 @@ a.column-author:focus-visible {
 .column-share-button:focus-visible {
   border-color: rgba(11, 143, 90, 0.6);
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
   outline: 2px solid var(--green);
   outline-offset: 2px;
   transform: translateY(-1px);
@@ -13393,7 +13510,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
    "ekranda sabit" durumu bir bakışta anlaşılır. */
 .featured-carousel-pause.is-paused {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 /* Hareket azaltma tercihi: otomatik dönüş JS tarafında zaten kapanıyor,
@@ -13528,7 +13645,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 .post-match-moments li.is-pivotal b {
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .post-match-late p {
@@ -13714,7 +13831,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 
 .fixture-card-state.is-final {
   background: rgba(11, 143, 90, 0.066);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .fixture-card-rows {
@@ -14013,7 +14130,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   border-radius: var(--radius-pill);
   padding: 0 var(--sp-5);
   background: var(--surface);
-  color: var(--green);
+  color: var(--green-text);
   font: inherit;
   font-size: var(--fs-sm);
   font-weight: 750;
@@ -14155,7 +14272,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
   border-radius: 10px;
   padding: 5px 9px;
   background: rgba(11, 143, 90, 0.066);
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-md);
   font-weight: 850;
   font-variant-numeric: tabular-nums;
@@ -14333,7 +14450,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 .footer-social a:hover {
   transform: translateY(-2px);
   background: rgba(11, 143, 90, 0.066);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .footer-social svg {
@@ -14365,7 +14482,7 @@ main > *:nth-child(n + 5) { animation-delay: 160ms; }
 }
 
 .footer-col-links a:hover {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .footer-bottom {
@@ -14763,7 +14880,7 @@ table {
 }
 
 .stats-match-grid article strong {
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xl);
   font-variant-numeric: tabular-nums;
   line-height: 1.05;
@@ -14832,7 +14949,7 @@ table {
   letter-spacing: 0;
 }
 
-.league-mark-0 { background: rgba(11, 143, 90, 0.088); color: var(--green); }
+.league-mark-0 { background: rgba(11, 143, 90, 0.088); color: var(--green-text); }
 .league-mark-1 { background: rgba(13, 148, 136, 0.08); color: var(--cyan); }
 .league-mark-2 { background: rgba(176, 116, 16, 0.096); color: var(--warn); }
 .league-mark-3 { background: rgba(200, 30, 45, 0.096); color: var(--live); }
@@ -14917,7 +15034,7 @@ table {
 
 .md-state.is-final {
   border-color: var(--line-strong);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .md-scoreboard-main {
@@ -14953,7 +15070,7 @@ table {
   line-height: 1.25;
 }
 
-.md-side.is-winner .md-side-name { color: var(--green); }
+.md-side.is-winner .md-side-name { color: var(--green-text); }
 
 .md-side-role {
   font-size: var(--fs-xs);
@@ -15234,7 +15351,7 @@ table {
   font-weight: 700;
 }
 
-.md-mark.is-goal { background: rgba(11, 143, 90, 0.11); color: var(--green); }
+.md-mark.is-goal { background: rgba(11, 143, 90, 0.11); color: var(--green-text); }
 .md-mark.is-yellow { background: var(--warn); width: 10px; min-width: 10px; height: 14px; border-radius: 2px; }
 .md-mark.is-red { background: var(--live); width: 10px; min-width: 10px; height: 14px; border-radius: 2px; }
 .md-mark.is-off {
@@ -15575,7 +15692,7 @@ table {
   font-weight: 700;
 }
 
-.md-chip.is-goal { background: rgba(11, 143, 90, 0.099); color: var(--green); }
+.md-chip.is-goal { background: rgba(11, 143, 90, 0.099); color: var(--green-text); }
 .md-chip.is-assist { background: rgba(13, 148, 136, 0.08); color: var(--cyan); }
 .md-chip.is-yellow { background: rgba(176, 116, 16, 0.108); color: var(--warn); }
 .md-chip.is-red { background: rgba(200, 30, 45, 0.108); color: var(--live); }
@@ -15781,7 +15898,7 @@ a.fixture-chip.is-lineup i {
 }
 
 .predicted-lineup-sources a {
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 700;
 }
 
@@ -16110,7 +16227,7 @@ section[data-api-target="team-detail"] {
 }
 
 .td-squad-meta b {
-  color: var(--green);
+  color: var(--green-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -16175,7 +16292,7 @@ section[data-api-target="team-detail"] {
 .td-leader-score {
   font-size: var(--fs-md);
   font-weight: 700;
-  color: var(--green);
+  color: var(--green-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -16222,7 +16339,7 @@ section[data-api-target="team-detail"] {
 }
 
 .td-fixture-state.is-live { color: var(--live); border-color: rgba(200, 30, 45, 0.27); }
-.td-fixture-state.is-final { color: var(--green); }
+.td-fixture-state.is-final { color: var(--green-text); }
 
 .td-fixture-teams {
   font-size: var(--fs-sm);
@@ -16287,7 +16404,7 @@ section[data-api-target="team-detail"] {
 
 
 
-.quick-stat.is-ready b { color: var(--green); }
+.quick-stat.is-ready b { color: var(--green-text); }
 
 /* ══════════════════════════════════════════════════════════════════════════
    TEMA KATMANI
@@ -16301,112 +16418,8 @@ section[data-api-target="team-detail"] {
      3. :root                         -> varsayılan (açık)
    ══════════════════════════════════════════════════════════════════════════ */
 
-:root[data-theme="dark"] {
-  color-scheme: dark;
-
-  /* Yüzeyler: sayfa en koyu, kartlar bir basamak açık — açık temadaki
-     katmanlanmanın aynısı, ters yönde. */
-  --bg: #0a1512;
-  --bg-soft: #0d1a16;
-  --panel: #10201b;
-  --surface: #12241e;
-  --surface-rgb: 18, 36, 30;
-  --surface-raised: #162b24;
-  --surface-sunken: #0d1a16;
-  --surface-tint: #122a21;
-  --line: rgba(180, 226, 208, 0.14);
-  --line-strong: rgba(52, 211, 153, 0.32);
-
-  /* Koyu zeminde metin saf beyaz olmaz: hafif yeşilimsi kırık beyaz
-     parlamayı düşürür ve uzun okumada göz yormaz. */
-  --text: #e8f2ee;
-  --text-soft: #b9cbc4;
-  --muted: #8b9e97;
-
-  /* Vurgu koyu zeminde daha açık tona kayar; aynı marka ailesi. */
-  --green: #34d399;
-  --green-deep: #10b981;
-  --green-tint: rgba(52, 211, 153, 0.14);
-  --cyan: #2dd4bf;
-  --live: #fb7185;
-  --warn: #fbbf24;
-  --ink: #e8f2ee;
-
-  /* Koyu zeminde gölge daha derin ve geniş olmalı, yoksa kart yüzmez. */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.36);
-  --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.44), 0 28px 64px rgba(0, 0, 0, 0.5);
-  --shadow-accent: 0 6px 22px rgba(52, 211, 153, 0.22);
-
-  --soft: var(--text-soft);
-  --accent: var(--green);
-  --accent-2: var(--cyan);
-  --amber: var(--warn);
-  --red: var(--live);
-  --surface-strong: var(--surface-raised);
-  --shadow: var(--shadow-lg);
-  --shadow-card: var(--shadow-md);
-  --shadow-soft: var(--shadow-sm);
-  --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
-
-  --glass: rgba(18, 36, 30, 0.82);
-  --glass-strong: rgba(13, 26, 22, 0.95);
-  --glass-border: rgba(180, 226, 208, 0.12);
-  --grad-surface: linear-gradient(180deg, #162b24, #12241e);
-  --grad-hero: linear-gradient(180deg, #0a1512 0%, #0d1a16 55%, #12241e 100%),
-    radial-gradient(120% 130% at 88% 0%, rgba(52, 211, 153, 0.12), transparent 62%);
-  --grad-deep: linear-gradient(160deg, #0a1512 0%, #10352a 100%);
-}
-
 /* İlk ziyaret: kullanıcı henüz seçim yapmadıysa sistem tercihi uygulanır.
    data-theme yazıldığı anda bu blok devre dışı kalır. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme]) {
-    color-scheme: dark;
-    --bg: #0a1512;
-    --bg-soft: #0d1a16;
-    --panel: #10201b;
-    --surface: #12241e;
-    --surface-rgb: 18, 36, 30;
-    --surface-raised: #162b24;
-    --surface-sunken: #0d1a16;
-    --surface-tint: #122a21;
-    --line: rgba(180, 226, 208, 0.14);
-    --line-strong: rgba(52, 211, 153, 0.32);
-    --text: #e8f2ee;
-    --text-soft: #b9cbc4;
-    --muted: #8b9e97;
-    --green: #34d399;
-    --green-deep: #10b981;
-    --green-tint: rgba(52, 211, 153, 0.14);
-    --cyan: #2dd4bf;
-    --live: #fb7185;
-    --warn: #fbbf24;
-    --ink: #e8f2ee;
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.4), 0 10px 28px rgba(0, 0, 0, 0.36);
-    --shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.44), 0 28px 64px rgba(0, 0, 0, 0.5);
-    --shadow-accent: 0 6px 22px rgba(52, 211, 153, 0.22);
-    --soft: var(--text-soft);
-    --accent: var(--green);
-    --accent-2: var(--cyan);
-    --amber: var(--warn);
-    --red: var(--live);
-    --surface-strong: var(--surface-raised);
-    --shadow: var(--shadow-lg);
-    --shadow-card: var(--shadow-md);
-    --shadow-soft: var(--shadow-sm);
-    --grad-accent: linear-gradient(135deg, var(--green), var(--cyan));
-
-    --glass: rgba(18, 36, 30, 0.82);
-    --glass-strong: rgba(13, 26, 22, 0.95);
-    --glass-border: rgba(180, 226, 208, 0.12);
-    --grad-surface: linear-gradient(180deg, #162b24, #12241e);
-    --grad-hero: linear-gradient(180deg, #0a1512 0%, #0d1a16 55%, #12241e 100%),
-      radial-gradient(120% 130% at 88% 0%, rgba(52, 211, 153, 0.12), transparent 62%);
-    --grad-deep: linear-gradient(160deg, #0a1512 0%, #10352a 100%);
-  }
-}
 
 /* Sayfa zemini token'a bağlanır: tema değişince gövde de değişmeli.
    Daha önce doğrudan beyaz yazılıydı ve koyu temada beyaz kalırdı. */
@@ -16559,7 +16572,7 @@ body,
 .topbar-premium .nav-search-toggle-desktop:focus-visible,
 .topbar-premium .nav-search-toggle-desktop[aria-expanded="true"] {
   border-color: var(--line-strong);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .topbar-premium .nav-search-toggle-desktop svg {
@@ -16788,7 +16801,7 @@ body,
 }
 
 .td-transfer-source {
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 600;
   text-decoration: none;
 }
@@ -17042,7 +17055,7 @@ body,
 }
 
 .pmi-performers span { color: var(--muted); font-size: 0.72rem; }
-.pmi-performers b { margin-left: auto; color: var(--green); }
+.pmi-performers b { margin-left: auto; color: var(--green-text); }
 .pmi-performers em { font-style: normal; color: var(--muted); font-size: 0.7rem; }
 
 .pmi-note,
@@ -17201,7 +17214,7 @@ body,
 .archive-squad-number {
   flex: 0 0 auto;
   min-width: 22px;
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xs);
   font-weight: 850;
   font-variant-numeric: tabular-nums;
@@ -17234,7 +17247,7 @@ body,
 }
 
 .archive-stat-value {
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xl);
   font-weight: 850;
   font-variant-numeric: tabular-nums;
@@ -17345,7 +17358,7 @@ body,
 .result-card-head strong {
   padding: 0.2rem 0.45rem;
   border-radius: 4px;
-  color: var(--primary);
+  color: var(--green-text);
   background: color-mix(in srgb, var(--primary) 12%, transparent);
   font-size: 0.78rem;
 }
@@ -17373,7 +17386,7 @@ body,
 }
 
 .result-verified {
-  color: var(--primary);
+  color: var(--green-text);
   font-size: 0.78rem;
   font-weight: 800;
 }
@@ -17689,7 +17702,7 @@ body,
 }
 
 .team-standing-rank strong {
-  color: var(--accent);
+  color: var(--green-text);
   font-size: var(--fs-2xl);
 }
 
@@ -17757,7 +17770,7 @@ body,
 .team-squad-group li span,
 .team-leader-list li > span { color: var(--muted); font-size: var(--fs-xs); }
 .team-leader-list strong { min-width: 0; flex: 1; }
-.team-leader-list b { color: var(--accent); font-variant-numeric: tabular-nums; }
+.team-leader-list b { color: var(--green-text); font-variant-numeric: tabular-nums; }
 
 .team-data-freshness {
   margin: var(--sp-4) 0;
@@ -18363,7 +18376,7 @@ body,
   padding: 3px 10px;
   border-radius: 999px;
   background: rgba(11, 143, 90, 0.12);
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.7rem;
   font-weight: 900;
   letter-spacing: 0.06em;
@@ -18482,7 +18495,7 @@ body,
   padding: 12px 20px;
   border: 0;
   border-radius: 12px;
-  background: var(--green);
+  background: var(--green-fill);
   color: #fff;
   font-size: 0.95rem;
   font-weight: 900;
@@ -18496,7 +18509,7 @@ body,
 
 .home-poll__thanks {
   margin: 0 0 12px;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.9rem;
   font-weight: 800;
 }
@@ -18554,7 +18567,7 @@ body,
 .home-poll__badge {
   padding: 2px 7px;
   border-radius: 999px;
-  background: var(--green);
+  background: var(--green-fill);
   color: #fff;
   font-size: 0.62rem;
   font-weight: 900;
@@ -18565,7 +18578,7 @@ body,
 .home-poll__badge.is-yours { background: var(--text-soft); }
 
 .home-poll__result-percent {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 1rem;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
@@ -18662,7 +18675,7 @@ body,
 
 .poll-podium__medal { font-size: 1.25rem; line-height: 1; }
 .poll-podium__name { flex: 1 1 auto; min-width: 0; font-size: 0.95rem; }
-.poll-podium__percent { color: var(--green); font-size: 1.05rem; font-weight: 900; }
+.poll-podium__percent { color: var(--green-text); font-size: 1.05rem; font-weight: 900; }
 
 /* ==========================================================================
    PAYLAŞIM PANELİ
@@ -18683,7 +18696,7 @@ body,
 
 .poll-share__title {
   margin: 0;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.95rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -18735,7 +18748,7 @@ body,
 
 .poll-share__button:hover { border-color: var(--green); transform: translateY(-1px); }
 .poll-share__button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-.poll-share__button.is-native { background: var(--green); border-color: var(--green); color: #fff; }
+.poll-share__button.is-native { background: var(--green-fill); border-color: var(--green); color: #fff; }
 .poll-share__button[hidden] { display: none; }
 
 .poll-share__status {
@@ -18789,7 +18802,7 @@ body,
 .poll-card__format[aria-pressed="true"] {
   border-color: var(--green);
   background: rgba(11, 143, 90, 0.12);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .poll-card__format:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
@@ -18818,7 +18831,7 @@ body,
   align-items: center;
   min-height: 44px;
   margin-top: 10px;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.85rem;
   font-weight: 800;
   text-decoration: none;
@@ -18861,7 +18874,7 @@ body,
   font-weight: 800;
 }
 
-.poll-page__status.is-open { background: rgba(11, 143, 90, 0.12); color: var(--green); }
+.poll-page__status.is-open { background: rgba(11, 143, 90, 0.12); color: var(--green-text); }
 
 .poll-page__intro {
   margin: 10px 0 0;
@@ -18909,7 +18922,7 @@ body,
 
 .poll-promo-kicker {
   display: block;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.72rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -18934,7 +18947,7 @@ body,
   flex: none;
   padding: 10px 16px;
   border-radius: 10px;
-  background: var(--green);
+  background: var(--green-fill);
   color: #fff;
   font-size: 0.86rem;
   font-weight: 900;
@@ -19007,7 +19020,7 @@ body,
 
 .poll-sticky-kicker {
   display: block;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.7rem;
   font-weight: 900;
   text-transform: uppercase;
@@ -19033,7 +19046,7 @@ body,
   margin-top: 8px;
   padding: 8px 14px;
   border-radius: 8px;
-  background: var(--green);
+  background: var(--green-fill);
   color: #fff;
   font-size: 0.8rem;
   font-weight: 900;
@@ -19143,9 +19156,9 @@ body,
 }
 
 /* Durum rengi TEK sinyal değil: her rozetin kendi metni var. */
-.poll-archive__badge.is-open { background: var(--green); color: #fff; }
+.poll-archive__badge.is-open { background: var(--green-fill); color: #fff; }
 .poll-archive__badge.is-closed { background: var(--surface-sunken); color: var(--text-soft); }
-.poll-archive__badge.is-upcoming { background: rgba(11, 143, 90, 0.12); color: var(--green); }
+.poll-archive__badge.is-upcoming { background: rgba(11, 143, 90, 0.12); color: var(--green-text); }
 
 .poll-archive__when {
   color: var(--muted);
@@ -19413,7 +19426,7 @@ a.motm-week__card:focus-visible {
 }
 
 .motm-week__percent {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 1.05rem;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
@@ -19443,7 +19456,7 @@ a.motm-week__card:focus-visible {
 }
 
 .motm-week__cta {
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -19663,7 +19676,7 @@ a.motm-week__card:focus-visible {
   text-transform: uppercase;
   color: var(--muted);
 }
-.match-special-promo__chip.is-lineup { border-color: var(--accent); color: var(--accent); }
+.match-special-promo__chip.is-lineup { border-color: var(--accent); color: var(--green-text); }
 
 .match-special-promo__breaking {
   display: grid;
@@ -19733,7 +19746,7 @@ a.motm-week__card:focus-visible {
   padding: 3px 10px;
   border-radius: 999px;
   background: rgba(11, 143, 90, 0.14);
-  color: var(--accent);
+  color: var(--green-text);
   font-size: .68rem;
   font-weight: 800;
   letter-spacing: .08em;
@@ -19771,7 +19784,7 @@ a.motm-week__card:focus-visible {
 .match-special-promo__cta {
   justify-self: start;
   font-weight: 800;
-  color: var(--accent);
+  color: var(--green-text);
 }
 
 .match-special-promo__modules-title {
@@ -19872,7 +19885,7 @@ a.motm-week__card:focus-visible {
   padding: 5px 12px;
   border-radius: 999px;
   background: rgba(11, 143, 90, 0.14);
-  color: var(--accent);
+  color: var(--green-text);
   font-size: .72rem;
   font-weight: 800;
   letter-spacing: .07em;
@@ -19923,14 +19936,14 @@ a.motm-week__card:focus-visible {
 
 .match-special__card strong { font-size: 1.02rem; line-height: 1.3; }
 .match-special__card p { margin: 0; color: var(--muted); font-size: .86rem; line-height: 1.45; }
-.match-special__card-cta { font-weight: 800; color: var(--accent); font-size: .84rem; }
+.match-special__card-cta { font-weight: 800; color: var(--green-text); font-size: .84rem; }
 
 .match-special__card-flag {
   justify-self: start;
   padding: 3px 9px;
   border-radius: 999px;
   background: rgba(11, 143, 90, 0.14);
-  color: var(--accent);
+  color: var(--green-text);
   font-size: .64rem;
   font-weight: 800;
   letter-spacing: .06em;
@@ -20014,7 +20027,7 @@ a.motm-week__card:focus-visible {
   line-height: 1.4;
 }
 
-.match-special__source.is-verified { color: var(--accent); }
+.match-special__source.is-verified { color: var(--green-text); }
 .match-special__source.is-editorial { color: var(--muted); }
 
 .match-special__form-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
@@ -20067,7 +20080,7 @@ a.motm-week__card:focus-visible {
 }
 
 /* Açıklandı: durum satırı da rozet rengine döner. */
-.match-special__lineup-status.is-announced { color: var(--accent); }
+.match-special__lineup-status.is-announced { color: var(--green-text); }
 
 .match-special__probable[hidden] { display: none; }
 .match-special__probable {
@@ -20082,7 +20095,7 @@ a.motm-week__card:focus-visible {
 .match-special__probable-head { display: grid; gap: 8px; }
 .match-special__probable-head h2 { margin: 0; font-size: clamp(1.15rem, 3vw, 1.65rem); }
 .match-special__probable-head p { margin: 0; color: var(--muted); line-height: 1.5; }
-.match-special__probable-head > strong { color: var(--accent); font-size: .84rem; }
+.match-special__probable-head > strong { color: var(--green-text); font-size: .84rem; }
 .match-special__probable-badge {
   justify-self: start;
   padding: 5px 11px;
@@ -20237,7 +20250,7 @@ a.motm-week__card:focus-visible {
   height: 22px;
   border-radius: 7px;
   background: rgba(11, 143, 90, 0.14);
-  color: var(--accent);
+  color: var(--green-text);
   font-size: .72rem;
   font-weight: 800;
 }
@@ -20485,7 +20498,7 @@ a.motm-week__card:focus-visible {
 
   .bottom-nav__item.is-active {
     background: var(--green-soft, rgba(11, 143, 90, .1));
-    color: var(--green, #0b8f5a);
+    color: var(--green-text, #086a43);
   }
 
   .bottom-nav__item:focus-visible {
@@ -20567,7 +20580,7 @@ a.motm-week__card:focus-visible {
   padding: 3px 9px;
   border-radius: 999px;
   background: var(--green-soft, rgba(11, 143, 90, .1));
-  color: var(--green, #0b8f5a);
+  color: var(--green-text, #086a43);
   font-size: 12px;
   font-weight: 700;
 }
@@ -20598,7 +20611,7 @@ a.motm-week__card:focus-visible {
   font-weight: 700;
 }
 
-.now-football__meta { flex: 0 0 auto; color: var(--green, #0b8f5a); font-weight: 900; }
+.now-football__meta { flex: 0 0 auto; color: var(--green-text, #086a43); font-weight: 900; }
 
 /* Masaüstünde gizli: orada hero ve canlı skor panosu zaten aynı bilgiyi
    çok daha geniş biçimde veriyor, şerit tekrar olurdu. */
@@ -20748,7 +20761,7 @@ a.motm-week__card:focus-visible {
   font-weight: 700;
 }
 
-.favourite-team__meta { flex: 0 0 auto; color: var(--green, #0b8f5a); font-weight: 900; }
+.favourite-team__meta { flex: 0 0 auto; color: var(--green-text, #086a43); font-weight: 900; }
 
 /* Masaüstünde gizli: geniş ekranda takım sayfaları zaten bir tık uzakta
    ve şerit orada yer kaplamaktan başka iş görmüyor. */
@@ -20876,7 +20889,7 @@ a.motm-week__card:focus-visible {
 
 .home-standing-team:hover,
 .home-standing-team:focus-visible {
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .home-standing-team b {
@@ -20912,7 +20925,7 @@ a.motm-week__card:focus-visible {
   height: 20px;
   border-radius: 50%;
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
   font-size: 9px;
   font-weight: 900;
 }
@@ -20926,7 +20939,7 @@ a.motm-week__card:focus-visible {
 
 .home-standing-points { font-weight: 900; color: var(--text); }
 
-.home-standing-gd.is-positive { color: var(--green); }
+.home-standing-gd.is-positive { color: var(--green-text); }
 .home-standing-gd.is-negative { color: #c81e2d; }
 
 /* Bölge vurgusu: şampiyonluk / Avrupa kupası / küme düşme hattı. Renk TEK
@@ -21077,7 +21090,7 @@ a.motm-week__card:focus-visible {
 #leaders-tab-team:checked ~ .leaders-tabs__list #leaders-tablabel-team {
   border-color: var(--green);
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 #leaders-tab-scorers:focus-visible ~ .leaders-tabs__list #leaders-tablabel-scorers,
@@ -21163,7 +21176,7 @@ a.motm-week__card:focus-visible {
 #standings-tab-konferans-ligi:checked ~ .standings-tabs__list #standings-tablabel-konferans-ligi {
   border-color: var(--green);
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
 }
 
 #standings-tab-super-lig:focus-visible ~ .standings-tabs__list #standings-tablabel-super-lig,
@@ -21222,7 +21235,7 @@ a.motm-week__card:focus-visible {
   height: 22px;
   border-radius: 50%;
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.7rem;
   font-weight: 900;
 }
@@ -21251,7 +21264,7 @@ a.motm-week__card:focus-visible {
   white-space: nowrap;
 }
 
-.leaders-name:hover strong { color: var(--green); }
+.leaders-name:hover strong { color: var(--green-text); }
 
 .leaders-value {
   flex: 0 0 auto;
@@ -21277,7 +21290,7 @@ a.motm-week__card:focus-visible {
   align-items: center;
   font-size: 0.82rem;
   font-weight: 800;
-  color: var(--green);
+  color: var(--green-text);
   text-decoration: none;
 }
 
@@ -21494,7 +21507,7 @@ a.motm-week__card:focus-visible {
 .player-score-card strong {
   font-size: clamp(2.2rem, 7vw, 3rem);
   line-height: 1.05;
-  color: var(--green);
+  color: var(--green-text);
 }
 
 .player-score-card p {
@@ -21765,7 +21778,7 @@ a.motm-week__card:focus-visible {
 .player-peer-card .player-rating-badge {
   grid-column: 2;
   grid-row: 1;
-  color: var(--green);
+  color: var(--green-text);
   font-size: 0.88rem;
   white-space: nowrap;
 }
@@ -21904,7 +21917,7 @@ a.motm-week__card:focus-visible {
   border-radius: 999px;
   padding: 4px 10px;
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
@@ -21953,7 +21966,7 @@ a.motm-week__card:focus-visible {
 }
 
 .match-quotes__who {
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xs);
   font-weight: 700;
 }
@@ -22091,7 +22104,7 @@ a.motm-week__card:focus-visible {
 }
 .msp-lineup-bench span, .msp-squad-group span { color: var(--muted); font-weight: 800; }
 .msp-tag { display: inline-block; padding: 2px 8px; border-radius: 999px; background: var(--green-tint); color: var(--green-deep); font-size: 0.72rem; font-weight: 800; }
-.msp-tag.is-official { background: var(--green); color: #fff; }
+.msp-tag.is-official { background: var(--green-fill); color: #fff; }
 .msp-tag.is-suspended { background: rgba(200, 30, 45, 0.12); color: var(--live); }
 .msp-tag.is-doubtful { background: rgba(176, 116, 16, 0.14); color: var(--warn); }
 .msp-details summary { cursor: pointer; padding: 12px 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); font-weight: 800; }
@@ -22281,7 +22294,7 @@ a.motm-week__card:focus-visible {
   align-items: center;
   padding: 4px 12px;
   border-radius: var(--radius-pill);
-  background: var(--green);
+  background: var(--green-fill);
   color: #fff;
   font-size: var(--fs-xs);
   font-weight: 800;
@@ -22390,7 +22403,7 @@ a.motm-week__card:focus-visible {
 [data-en-match-detail] [role="tablist"] { margin-top: 16px; }
 [data-detail-controls] button { min-width: 44px; min-height: 44px; }
 [data-en-match-detail] [role="tab"] { flex: 0 0 auto; width: auto; min-width: 44px; min-height: 44px; }
-[data-en-match-detail] [role="tab"][aria-selected="true"] { color: var(--green); border-color: var(--green); background: rgba(11, 143, 90, 0.055); }
+[data-en-match-detail] [role="tab"][aria-selected="true"] { color: var(--green-text); border-color: var(--green); background: rgba(11, 143, 90, 0.055); }
 [data-en-match-detail] [role="tab"]:focus-visible { outline-offset: -3px; }
 .player-pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 24px auto; }
 .player-pagination[hidden] { display: none; }
@@ -22499,7 +22512,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .p360-table th[scope="row"], .p360-table thead th:first-child, .p360-table td:nth-child(2), .p360-table td:nth-child(3) { text-align: left; }
 .p360-table tbody tr:last-child th, .p360-table tbody tr:last-child td { border-bottom: 0; }
 .p360-score { font-weight: 800; }
-.p360-result-win { color: var(--green); }
+.p360-result-win { color: var(--green-text); }
 .p360-result-loss { color: var(--live); }
 .p360-result-draw { color: var(--muted); }
 
@@ -22645,7 +22658,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .rating-cell b { font-size: var(--fs-md, 1rem); font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; }
 /* YÜKSEK OLAN DEĞER FUTBOLRADAR YEŞİLİYLE. Renk tek başına taşımıyor:
    çubuk da doluyor ve aria-label sayıyı okuyor. */
-.rating-cell.is-leading b { color: var(--green); }
+.rating-cell.is-leading b { color: var(--green-text); }
 .rating-cell.is-leading .rating-bar-fill { background: var(--green); }
 .rating-cell.is-empty b { color: var(--muted); font-size: var(--fs-xs, 0.78rem); font-weight: 800; }
 
@@ -22851,7 +22864,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
-.rp-side.is-lead .rp-side-value { color: var(--green); }
+.rp-side.is-lead .rp-side-value { color: var(--green-text); }
 .rp-flame { font-size: var(--fs-sm); line-height: 1; }
 .rp-side.is-away .rp-flame { align-self: flex-end; }
 
@@ -23144,7 +23157,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 }
 .rp-home-pulse span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rp-home-pulse b { font-size: var(--fs-lg); font-weight: 800; color: var(--text); font-variant-numeric: tabular-nums; }
-.rp-home-pulse.is-lead b { color: var(--green); }
+.rp-home-pulse.is-lead b { color: var(--green-text); }
 .rp-home-pulse i { font-style: normal; }
 .rp-home-cta { font-size: var(--fs-xs); font-weight: 800; letter-spacing: 0.04em; color: var(--green-deep); }
 .rp-home-link:hover { border-color: var(--green); }
@@ -23287,7 +23300,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   font-weight: 600;
 }
 .fan-poll-result-head b { font-variant-numeric: tabular-nums; }
-.fan-poll-result.is-leader .fan-poll-result-head b { color: var(--green); }
+.fan-poll-result.is-leader .fan-poll-result-head b { color: var(--green-text); }
 .fan-poll-bar {
   display: block;
   height: 10px;
@@ -23303,7 +23316,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
    için sayfayı yeniden okumak gerekmesin. */
 .fan-poll-result.is-mine .fan-poll-result-head span::after {
   content: " ✓";
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 800;
 }
 .fan-poll-result small { font-size: var(--fs-xs); color: var(--muted); }
@@ -23374,7 +23387,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   padding: var(--sp-2) var(--sp-5);
   border: 1px solid var(--green);
   border-radius: 10px;
-  background: var(--green);
+  background: var(--green-fill);
   color: #fff;
   font: inherit;
   font-weight: 700;
@@ -23411,7 +23424,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   padding: 1px var(--sp-2);
   border-radius: 999px;
   background: var(--surface-tint);
-  color: var(--green);
+  color: var(--green-text);
   font-size: var(--fs-xs);
   font-weight: 700;
 }
@@ -23433,7 +23446,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .fan-comment-action:hover:not(:disabled) { border-color: var(--green); color: var(--text); }
 .fan-comment-action:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .fan-comment-action:disabled { opacity: 0.6; cursor: default; }
-.fan-comment-action.is-on { border-color: var(--green); color: var(--green); }
+.fan-comment-action.is-on { border-color: var(--green); color: var(--green-text); }
 .fan-comment-action i { font-style: normal; font-variant-numeric: tabular-nums; }
 .fan-comment-action.is-report { margin-left: auto; }
 
@@ -23468,7 +23481,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   margin-left: auto;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: var(--green);
+  color: var(--green-text);
 }
 .fan-rating-average small { margin-left: var(--sp-1); color: var(--muted); font-weight: 500; font-size: var(--fs-xs); }
 .fan-rating-mine { font-size: var(--fs-xs); color: var(--muted); }
@@ -23491,7 +23504,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 }
 .fan-rating-chip:hover { border-color: var(--green); }
 .fan-rating-chip:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
-.fan-rating-chip.is-on { background: var(--green); border-color: var(--green); color: #fff; }
+.fan-rating-chip.is-on { background: var(--green-fill); border-color: var(--green); color: #fff; }
 
 .fan-rating-error {
   margin: var(--sp-3) 0 0;
@@ -23539,7 +23552,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   padding: 2px var(--sp-3);
   border-radius: 999px;
   background: var(--surface-tint);
-  color: var(--green);
+  color: var(--green-text);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
@@ -23578,7 +23591,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .fan-card-button:hover { border-color: var(--green); background: var(--surface-tint); }
 .fan-card-button:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
 .fan-card-button:disabled { opacity: 0.6; cursor: progress; }
-.fan-card-button.is-share { border-color: var(--green); color: var(--green); }
+.fan-card-button.is-share { border-color: var(--green); color: var(--green-text); }
 
 /* Önizleme 1200×630 çiziliyor; ölçü niteliklerle bildiriliyor ki kart
    yüklenirken sayfa zıplamasın. */
@@ -23698,7 +23711,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .rp-player-rating {
   font-size: var(--fs-lg);
   font-weight: 800;
-  color: var(--green);
+  color: var(--green-text);
   font-variant-numeric: tabular-nums;
 }
 .rp-players-source { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }
@@ -23763,7 +23776,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 2px;
-  color: #0b8f5a;
+  color: var(--green-text);
 }
 .match-column-callout-text { font-size: 15px; font-weight: 600; }
 .match-column-callout-title { font-size: 14px; opacity: 0.78; }
@@ -23840,7 +23853,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
    hiç açılmazdı. */
 .ai-tabs > input:nth-of-type(1):checked ~ .ai-tablist > label:nth-of-type(1),
 .ai-tabs > input:nth-of-type(2):checked ~ .ai-tablist > label:nth-of-type(2) {
-  color: var(--green);
+  color: var(--green-text);
   border-color: var(--line-strong);
   background: var(--green-tint);
 }
@@ -23932,7 +23945,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
   white-space: nowrap;
 }
 .ai-outcome-cell b { font-size: var(--fs-md); font-variant-numeric: tabular-nums; }
-.ai-outcome-cell.is-top b { color: var(--green); }
+.ai-outcome-cell.is-top b { color: var(--green-text); }
 .ai-outcome-cell:nth-child(2) { text-align: center; }
 .ai-outcome-cell:last-child { text-align: right; }
 .ai-source { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); }
@@ -23965,13 +23978,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .ai-why-values b { font-size: var(--fs-sm); }
 .ai-why-values i { color: var(--muted); font-style: normal; }
 .ai-why-lean { grid-area: lean; font-size: var(--fs-xs); color: var(--muted); }
-.ai-why-row.is-home .ai-why-lean { color: var(--green); }
+.ai-why-row.is-home .ai-why-lean { color: var(--green-text); }
 .ai-why-row.is-away .ai-why-lean { color: var(--cyan); }
 
 /* ---------- Güven ---------- */
 .ai-confidence-head { display: flex; align-items: baseline; gap: var(--sp-3); margin: 0 0 var(--sp-2); }
 .ai-confidence-head b { font-size: var(--fs-md); }
-.ai-confidence.is-high .ai-confidence-head b { color: var(--green); }
+.ai-confidence.is-high .ai-confidence-head b { color: var(--green-text); }
 .ai-confidence.is-low .ai-confidence-head b { color: var(--amber); }
 .ai-confidence-meter {
   height: 8px;
@@ -24028,7 +24041,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .ai-ad-row:last-of-type { border-bottom: 0; }
 .ai-ad-row > b { font-size: var(--fs-sm); font-variant-numeric: tabular-nums; }
 .ai-ad-row > b:last-child { text-align: right; }
-.ai-ad-row > b.is-better { color: var(--green); font-weight: 800; }
+.ai-ad-row > b.is-better { color: var(--green-text); font-weight: 800; }
 .ai-ad-label { min-width: 0; text-align: center; font-size: var(--fs-xs); }
 .ai-ad-bars {
   display: flex;
@@ -24078,7 +24091,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .ai-lineup-side { min-width: 0; }
 .ai-lineup-side h4 { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); font-weight: 700; }
 .ai-lineup-status { margin: 0 0 var(--sp-2); font-size: var(--fs-xs); font-weight: 700; }
-.ai-lineup-status.is-official { color: var(--green); }
+.ai-lineup-status.is-official { color: var(--green-text); }
 .ai-lineup-status.is-predicted { color: var(--amber); }
 .ai-lineup-formation { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); }
 .ai-lineup-missing > span { display: block; margin-bottom: var(--sp-2); font-size: var(--fs-xs); color: var(--muted); }
@@ -24227,7 +24240,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 #trend-player-tab-form:checked ~ .standings-tabs__list #trend-player-tablabel-form {
   border-color: var(--green);
   background: rgba(11, 143, 90, 0.1);
-  color: var(--green);
+  color: var(--green-text);
 }
 #trend-player-tab-young:focus-visible ~ .standings-tabs__list #trend-player-tablabel-young,
 #trend-player-tab-surprise:focus-visible ~ .standings-tabs__list #trend-player-tablabel-surprise,
@@ -24263,7 +24276,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .quick-links__title { margin: 0 0 10px; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--muted, #5b6470); }
 .quick-links__list { display: flex; flex-wrap: wrap; gap: 8px; }
 .quick-links__list a { display: inline-flex; align-items: center; min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .12)); border-radius: 999px; background: var(--surface, #fff); color: inherit; font-size: 14px; font-weight: 700; text-decoration: none; }
-.quick-links__list a:hover, .quick-links__list a:focus-visible { border-color: var(--green, #0b8f5a); color: var(--green, #0b8f5a); }
+.quick-links__list a:hover, .quick-links__list a:focus-visible { border-color: var(--green, #0b8f5a); color: var(--green-text, #086a43); }
 .footer-tagline { margin: 0 0 8px; font-size: 14px; line-height: 1.5; }
 
 /* ── TAKIMIMIN MAÇLARI (ana sayfa favori takım kutusu) ────────────────── */
@@ -24271,13 +24284,13 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .favourite-team__rows:empty { display: none; }
 .favourite-team__news { display: grid; gap: 4px; padding-top: 4px; }
 .favourite-team__news-link { color: inherit; font-size: 13px; line-height: 1.4; text-decoration: none; border-bottom: 1px dotted currentColor; width: fit-content; max-width: 100%; }
-.favourite-team__news-link:hover, .favourite-team__news-link:focus-visible { color: var(--green, #0b8f5a); }
+.favourite-team__news-link:hover, .favourite-team__news-link:focus-visible { color: var(--green-text, #086a43); }
 .favourite-team__links { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
 .favourite-team__links:empty { display: none; }
 .favourite-team__links a { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1px solid var(--line-strong, rgba(0, 0, 0, .12)); border-radius: 999px; font-size: 13px; font-weight: 700; color: inherit; text-decoration: none; }
-.favourite-team__links a:hover, .favourite-team__links a:focus-visible { border-color: var(--green, #0b8f5a); color: var(--green, #0b8f5a); }
+.favourite-team__links a:hover, .favourite-team__links a:focus-visible { border-color: var(--green, #0b8f5a); color: var(--green-text, #086a43); }
 a.favourite-team__value { color: inherit; text-decoration: none; }
-a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: var(--green, #0b8f5a); text-decoration: underline; }
+a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: var(--green-text, #086a43); text-decoration: underline; }
 
 /* ── ÖNE ÇIKAN KÖŞE YAZISI (ana sayfa vitrini) ────────────────────────────
    İçerik: scripts/generate-column-pages.mjs → `home-featured-column` slot'u;
@@ -24320,7 +24333,7 @@ a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: va
   letter-spacing: -0.01em;
 }
 .home-featured-column__title a { color: inherit; text-decoration: none; }
-.home-featured-column__title a:hover { color: var(--green, #0b8f5a); }
+.home-featured-column__title a:hover { color: var(--green-text, #086a43); }
 .home-featured-column__title a:focus-visible,
 .home-featured-column__cta:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
 .home-featured-column__excerpt {
@@ -24345,7 +24358,7 @@ a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: va
   min-height: 48px;
   padding: 0 var(--sp-6);
   border-radius: var(--radius-pill);
-  background: var(--green, #0b8f5a);
+  background: var(--green-fill, #087a4d);
   color: #fff;
   font-size: var(--fs-base);
   font-weight: 800;
@@ -24383,7 +24396,7 @@ a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: va
 .home-featured-column__note-kicker {
   padding: 2px 8px;
   border-radius: var(--radius-pill);
-  background: var(--green, #0b8f5a);
+  background: var(--green-fill, #087a4d);
   color: #fff;
   font-size: var(--fs-xs);
   font-weight: 800;
@@ -24400,7 +24413,7 @@ a.favourite-team__value:hover, a.favourite-team__value:focus-visible { color: va
   font-weight: 700;
   text-decoration: none;
 }
-a.home-featured-column__note-link:hover { color: var(--green, #0b8f5a); text-decoration: underline; }
+a.home-featured-column__note-link:hover { color: var(--green-text, #086a43); text-decoration: underline; }
 a.home-featured-column__note-link:focus-visible { outline: none; box-shadow: var(--ring); border-radius: 6px; }
 .home-featured-column__note-link strong { font-weight: 900; }
 @media (min-width: 721px) {
