@@ -41,7 +41,7 @@ assert.equal(squadCount("home"), 26);
 assert.equal(squadCount("away"), 26);
 
 const html = matchEditorialHtml(data, { columns: [] });
-for (const term of ["20:00 TSİ", "ATV", "Gürsel Aksel", "23.376", "Sergen Yalçın", "Mark van Bommel", "Hakan Çalhanoğlu", "108 maç / 22 gol", "Leandro Trossard", "12 kez karşılaştı", "17-21", "Maç sonrası:</strong> Güncelleniyor", "Diziliş: resmî maç kaydında belirtilmedi"]) assert.ok(html.includes(term), term);
+for (const term of ["20:00 TSİ", "ATV", "Gürsel Aksel", "23.376", "Sergen Yalçın", "Mark van Bommel", "Hakan Çalhanoğlu", "108 maç / 22 gol", "Leandro Trossard", "12 kez karşılaştı", "17-21", "Diziliş: resmî maç kaydında belirtilmedi"]) assert.ok(html.includes(term), term);
 for (const link of html.matchAll(/<a href="https?:[^>]+>/g)) assert.match(link[0], /rel="nofollow noopener noreferrer"/);
 
 // Köşe yuvası boşken bölüm yok; editör alanı ve bahis oranı asla basılmaz.
@@ -54,7 +54,9 @@ assert.match(html, /id="son-durum"/);
 assert.ok(html.includes("Santrfor yok mu diyordunuz gelirken getirdim, var. Enes başlayacak, santrfor yanımızda"));
 assert.ok(html.includes("Belçika maçı öncesi"));
 assert.ok(html.includes("Kenan") && html.includes("Aral") && html.includes("Zeki"));
-assert.ok(html.includes("İlk 11: Güncelleniyor"));
+// Maç sonrası: resmî ilk 11'ler ve değişiklikler kaynaklı satır olarak basılır.
+assert.ok(html.includes("İlk 11'ler (resmî)") && html.includes("Enes Ünal") && html.includes("Charles De Ketelaere"));
+assert.ok(html.includes("Oyuncu değişiklikleri") && html.includes("De Bruyne yerine Leandro Trossard"));
 assert.match(html, /id="muhtemel-11"/);
 assert.ok(html.includes("Muhtemel 11'ler:") && html.includes("Güncelleniyor"));
 assert.match(html, /href="https:\/\/beinsports\.com\.tr\/haber\/a-milli-takim-sergen-yalcin-yonetiminde-ilk-sinavina-cikiyor"[^>]*rel="nofollow noopener noreferrer"/);
@@ -69,8 +71,11 @@ const withColumn = matchEditorialHtml({ ...data, column: { title: "Deneme", body
 assert.match(withColumn, /id="kose"[\s\S]*Yazar: FutbolRadar[\s\S]*Deneme/);
 assert.match(matchEditorialHtml(data, { columns: [{ title: "Bağlı yazı", href: "../kose-yazilari/x" }] }), /id="kose"[\s\S]*Bağlı yazı/);
 
-// Maç sonrası özeti kaynaksız basılmaz.
+// Maç sonrası özeti kaynaklıysa basılır; kaynaksız ya da boşken yer tutucu kalır.
+assert.match(html, /id="mac-sonrasi"[\s\S]*Arda Güler 20\. dakikada serbest vuruştan[\s\S]*rel="nofollow noopener noreferrer"/);
+assert.ok(!html.includes("Maç sonrası:</strong> Güncelleniyor"));
 assert.ok(matchEditorialHtml({ ...data, postMatch: { summary: "Özet", sources: [] } }).includes("Güncelleniyor"));
+assert.ok(matchEditorialHtml({ ...data, postMatch: { summary: null, sources: [] } }).includes("Maç sonrası:</strong> Güncelleniyor"));
 
 // Üretilen sayfa (varsa): kanonik, şema, tek H1, dosya bölümleri.
 const pagePath = `mac/${slug}.html`;
