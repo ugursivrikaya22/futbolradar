@@ -160,6 +160,13 @@ export const EN_TAB_ORDER = Object.freeze([
  */
 export const TR_PAGE_ORDER = Object.freeze([...TR_TAB_ORDER, "1-lig"]);
 
+/**
+ * EN SAYFA SIRASI — Türkçesiyle aynı ayrım. 1. Lig'in İngilizce SAYFASI
+ * var, sekmesi yok. Sayfa yokken Türkçe `1-lig-puan-durumu` İngilizce
+ * karşılığı olmayan tek puan durumu sayfasıydı.
+ */
+export const EN_PAGE_ORDER = Object.freeze([...EN_TAB_ORDER, "1-lig"]);
+
 export function orderedLeagues(locale) {
   const order = locale === "en" ? EN_TAB_ORDER : TR_TAB_ORDER;
   return order.map((id) => STANDINGS_LEAGUES[id]);

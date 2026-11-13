@@ -108,6 +108,17 @@ export const POSTPROCESS_CHAIN = [
   { id: "on-this-day-pages", script: "generate-on-this-day-pages.mjs", args: [], timeoutMinutes: 2 },
   // API-Football snapshots only; also refresh contextual links and sitemap on scheduled builds.
   { id: "league-statistics", script: "generate-league-statistics-pages.mjs", args: [], timeoutMinutes: 3 },
+  // Türkçe eşleri (takım puan durumu, lig, lig istatistikleri, kurumsal
+  // sayfalar) bu noktada diskte; İngilizce eşler onlardan SONRA ve ortak
+  // düzen ile hreflang adımlarından ÖNCE üretilir.
+  { id: "en-team-standings-pages", script: "generate-en-team-standings-pages.mjs", args: [], timeoutMinutes: 3 },
+  { id: "en-league-pages", script: "generate-en-league-pages.mjs", args: [], timeoutMinutes: 3 },
+  { id: "en-league-statistics-pages", script: "generate-en-league-statistics-pages.mjs", args: [], timeoutMinutes: 3 },
+  { id: "en-info-pages", script: "generate-en-info-pages.mjs", args: [], timeoutMinutes: 2 },
+  // Oyuncu listeleri kulüp/form sayfalarından ÖNCE: ikincisi ilkine
+  // bağlantı verir ve yalnızca diskte bulduğu hedefe bağlanır.
+  { id: "en-player-list-pages", script: "generate-en-player-list-pages.mjs", args: [], timeoutMinutes: 3 },
+  { id: "en-hub-pages", script: "generate-en-hub-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },

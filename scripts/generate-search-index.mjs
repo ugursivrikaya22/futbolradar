@@ -13,7 +13,7 @@ import fs from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 import { NAV_PRIMARY, NAV_SECONDARY } from "./lib/layout.mjs";
-import { STANDINGS_LEAGUES, TR_PAGE_ORDER, EN_TAB_ORDER } from "./lib/standingsCatalog.mjs";
+import { STANDINGS_LEAGUES, TR_PAGE_ORDER, EN_PAGE_ORDER } from "./lib/standingsCatalog.mjs";
 
 const root = process.cwd();
 const require = createRequire(import.meta.url);
@@ -156,7 +156,7 @@ for (const id of TR_PAGE_ORDER) {
   if (!fs.existsSync(path.join(root, href))) continue;
   push({ type: "page", badge: "SYF", href, title: `${entry.nameTr} Puan Durumu`, subtitle: "Güncel puan durumu" });
 }
-for (const id of EN_TAB_ORDER) {
+for (const id of EN_PAGE_ORDER) {
   const entry = STANDINGS_LEAGUES[id];
   const href = `en/${entry.slugEn}.html`;
   if (!fs.existsSync(path.join(root, href))) continue;

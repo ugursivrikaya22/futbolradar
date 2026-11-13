@@ -19,7 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { EN_TAB_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { EN_PAGE_ORDER, TR_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { importanceNavHtml, standingsTeamHref } from "./lib/standingsTeamLinks.mjs";
 
 function richTeamHref(row) {
@@ -226,7 +226,7 @@ function competitionPage(entry) {
     dataDate,
     // İngilizce karşılık da uzantısız kanonikte; hreflang çifti aynı adresi
     // göstermeli, yoksa iki dil birbirinin kanonik olmayan adresine işaret eder.
-    enPath: EN_TAB_ORDER.includes(entry.id) ? entry.slugEn : null
+    enPath: EN_PAGE_ORDER.includes(entry.id) ? entry.slugEn : null
   });
 }
 

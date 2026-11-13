@@ -281,7 +281,7 @@ export function leagueLabel(leagueId, storedName, locale) {
 export function standingsPageHref(leagueId, locale, from) {
   const entry = STANDINGS_LEAGUES[leagueId];
   if (locale === "en") {
-    if (!entry || !entry.slugEn || leagueId === "1-lig") return null;
+    if (!entry || !entry.slugEn) return null;
     return relativeHref(from, `en/${entry.slugEn}`);
   }
   if (entry) return relativeHref(from, entry.slugTr);
