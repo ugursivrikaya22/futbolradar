@@ -2072,17 +2072,22 @@ function statsHubPage() {
         <h2 class="panel-title" id="en-stats-title">Statistics screens</h2>
         <div class="grid">${cards}</div>
       </section>
+      <section class="data-panel" aria-labelledby="en-stats-compare-title">
+        <h2 class="panel-title" id="en-stats-compare-title">Comparisons</h2>
+        <div class="grid">
+          <article class="card"><span class="card-kicker">Compare</span><h3>Player comparisons</h3>
+            <p>Two players side by side: position, club and attribute ratings.</p>
+            <a class="detail-link" href="./player-comparisons.html">Open player comparisons</a></article>
+        </div>
+      </section>
       <section class="data-panel" aria-labelledby="en-stats-tr-title">
         <h2 class="panel-title" id="en-stats-tr-title">Published in Turkish only</h2>
         <div class="grid">
-          <article class="card"><span class="card-kicker">Compare</span><h3>Player comparisons</h3>
-            <p>Two players side by side across rating, goals and market value.</p>
-            ${trLink("oyuncu-karsilastirmalari.html", "Open the comparison tool")}</article>
           <article class="card"><span class="card-kicker">Trends</span><h3>Team trends</h3>
             <p>Longer-run club form and goal trends.</p>
             ${trLink("takim-trendleri.html", "Open team trends")}</article>
         </div>
-        <p class="muted-copy">These two screens are table-driven and usable in any language, but their labels are published in Turkish; the links say so before you click.</p>
+        <p class="muted-copy">This screen is table-driven and usable in any language, but its labels are published in Turkish; the link says so before you click.</p>
       </section>`;
 
   return pageShell({
@@ -2107,13 +2112,13 @@ function archivePage() {
             <span class="card-kicker">Season</span>
             <h3>${escapeHtml(season.season || "")}</h3>
             <p>${escapeHtml(String(season.matchCount ?? (season.matches || []).length))} recorded matches, written to the season they belong to.</p>
-            ${trLink("arsiv.html", "Open the archive")}
+            <a class="detail-link" href="./archive/season-${escapeHtml(season.season || "")}.html">Open the season archive</a>
           </article>`).join("");
 
   const body = `      <section class="data-panel" aria-labelledby="en-archive-title">
         <h2 class="panel-title" id="en-archive-title">Seasons on record</h2>
         <div class="grid">${cards || `<p class="muted-copy">${escapeHtml(label("common.noData"))}</p>`}</div>
-        <p class="muted-copy">A finished match is written to the season it belongs to and stays there. Season pages themselves are published in Turkish; the links say so before you click.</p>
+        <p class="muted-copy">A finished match is written to the season it belongs to and stays there. Each season page lists its matches, team records, archived squads and head-coach spells.</p>
       </section>
       <section class="data-panel" aria-labelledby="en-archive-what-title">
         <h2 class="panel-title" id="en-archive-what-title">What the archive keeps</h2>

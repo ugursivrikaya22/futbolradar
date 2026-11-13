@@ -11,6 +11,7 @@ const { teamHubFile } = createRequire(import.meta.url)("../services/teamHubLinks
 const { internalHref } = createRequire(import.meta.url)("../services/siteLinks.js");
 // Haber durumu rozeti — İngilizce tarafla aynı servis, aynı ölçü.
 const { editorialStatusOf } = createRequire(import.meta.url)("../services/editorialStatus.js");
+const { writeDynamicRoutePairs } = createRequire(import.meta.url)("../services/i18n.js");
 import { siteHeader, siteFooter, escapeLayoutHtml as escapeHtml } from "./lib/layout.mjs";
 import { findTurkish } from "./lib/turkish-detector.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
@@ -490,6 +491,33 @@ if (!newsSitemapOnly) {
   for (const article of englishArticles) {
     writeArticle(article, "en");
   }
+}
+
+/*
+ * TR ↔ EN HABER EŞLEMESİ.
+ *
+ * İngilizce haber sayfası yazılıyordu ama Türkçe eşine bağlanmıyordu:
+ * iki sayfada da hreflang yoktu ve dil düğmesi haberin İngilizcesine değil
+ * ana sayfaya gidiyordu (748 haberin 747'si). Çiftler rota haritasına
+ * yazılınca `inject-hreflang` iki tarafa alternatifi, `apply-shared-layout`
+ * da dil düğmesine doğru adresi koyuyor. Yalnızca tam üretimde yazılır;
+ * tek haber (`--id`) ya da yalnız site haritası koşusu haritayı daraltmaz.
+ */
+if (!selectedId && !newsSitemapOnly) {
+  const turkishById = new Map(articles.map((article) => [article.id, article]));
+  const pairs = [];
+  for (const english of englishArticles) {
+    const turkish = turkishById.get(english.id);
+    if (!turkish) continue;
+    const seo = turkish.seo && typeof turkish.seo === "object" ? turkish.seo : {};
+    pairs.push({
+      tr: articleFile(turkish, "tr"),
+      en: articleFile(english, "en"),
+      trUrl: /^https?:\/\//i.test(String(seo.canonical || "")) ? String(seo.canonical) : articleUrl(turkish),
+      enUrl: articleUrl(english, "en")
+    });
+  }
+  writeDynamicRoutePairs("news", pairs);
 }
 
 if (!selectedId && !newsSitemapOnly) updateSitemap(articles);
