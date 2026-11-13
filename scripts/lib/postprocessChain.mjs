@@ -119,6 +119,7 @@ export const POSTPROCESS_CHAIN = [
   // bağlantı verir ve yalnızca diskte bulduğu hedefe bağlanır.
   { id: "en-player-list-pages", script: "generate-en-player-list-pages.mjs", args: [], timeoutMinutes: 3 },
   { id: "en-hub-pages", script: "generate-en-hub-pages.mjs", args: [], timeoutMinutes: 3 },
+  { id: "en-market-values-page", script: "generate-en-market-values-page.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },

@@ -512,6 +512,12 @@ function selfCanonicalIsExtensionless(file) {
   }
 }
 
+function handWrittenTransferPages() {
+  const dir = path.join(root, "transfer");
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir).filter((name) => name.endsWith(".html")).sort().map((name) => `transfer/${name}`);
+}
+
 function sitemapXml(files) {
   const comparisonPages = generatedComparisonPages();
   const playerPages = generatedPlayerPages();
@@ -563,6 +569,12 @@ function sitemapXml(files) {
     "takim-trendleri.html",
     "futbol-radar-rehberi.html",
     "gunun-radar-bulteni.html",
+    // Elle yazılıp depoya işlenen transfer dosyaları (`transfer/*.html`).
+    // Bu sayfaların üreticisi yok; harita burada baştan kurulduğu için
+    // listede olmayan sayfanın `<loc>` kaydı her derlemede siliniyordu
+    // (transfer/arda-guler-psg-iddiasi yayındaki haritada yoktu).
+    // `noindex` olan sayfa sonradan `sync-sitemap-indexability` ile çıkar.
+    ...handWrittenTransferPages(),
     ...files,
     // İKİ DİLLİ ÇİFTİN İKİ YÜZÜ DE HARİTADA OLMAK ZORUNDA. İngilizce sayfa
     // Türkçe eşini alternate gösterirken Türkçe eşin kendi `<loc>` kaydı yoksa
