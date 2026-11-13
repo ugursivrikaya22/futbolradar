@@ -17,6 +17,10 @@ import { siteHeader, siteFooter, newsTicker, tickerFeedPayload, TICKER_FEED_PATH
 import { buildTickerFeed } from "./lib/tickerFeed.mjs";
 import { buildEnTickerItems } from "./lib/enTicker.mjs";
 import { liveTickerBlock, LIVE_TICKER_PAGES } from "./lib/liveScoresTicker.mjs";
+import { renderHomeTicker } from "./lib/homeTicker.mjs";
+
+const requireHomeTicker = createRequire(import.meta.url);
+const { readTickerFile, selectHomeTickerItems } = requireHomeTicker("../services/homeTicker.js");
 
 const { counterpartPath, localeOfPath } = createRequire(import.meta.url)("../services/i18n.js");
 const { selectLiveTickerRecords } = createRequire(import.meta.url)("../services/liveScoresTicker.js");
@@ -32,6 +36,7 @@ const LIVE_TICKER_RE = /[\t ]*<!-- shared-layout:live-ticker:start -->[\s\S]*?<!
 // Eski transfer bandının işaretçisi: bir önceki derlemenin bandı hâlâ
 // sayfada duruyor olabilir, bu geçiş derlemesinde de temizlenir.
 const LEGACY_TRANSFER_TICKER_RE = /[\t ]*<!-- shared-layout:transfer-ticker:start -->[\s\S]*?<!-- shared-layout:transfer-ticker:end -->\n?/g;
+const HOME_TICKER_RE = /[\t ]*<!-- shared-layout:home-ticker:start -->[\s\S]*?<!-- shared-layout:home-ticker:end -->\n?/g;
 
 function readGeneratedFile(file) {
   for (let attempt = 0; attempt < 12; attempt += 1) {
@@ -193,10 +198,21 @@ function writeTickerFeedFile() {
   }
   return written;
 }
-const tickerFeedFilesWritten = writeTickerFeedFile();
+const onlyArgsEarly = process.argv.filter((arg) => arg.startsWith("--only=")).flatMap((arg) => arg.slice(7).split(",")).filter(Boolean);
+const tickerFeedFilesWritten = onlyArgsEarly.length ? 0 : writeTickerFeedFile();
 
+
+const onlyArgs = process.argv.filter((arg) => arg.startsWith("--only=")).flatMap((arg) => arg.slice(7).split(",")).filter(Boolean);
 const files = [...collectHtmlFiles(root), ...collectHtmlFiles(path.join(root, "public"))]
-  .filter((file) => !path.relative(root, file).startsWith("node_modules"));
+  .filter((file) => !path.relative(root, file).startsWith("node_modules"))
+  .filter((file) => {
+    if (!onlyArgs.length) return true;
+    const rel = path.relative(root, file).split(path.sep).join("/");
+    return onlyArgs.some((wanted) => rel === wanted || rel === `public/${wanted}` || rel.endsWith(`/${wanted}`));
+  });
+
+const homeTickerSelected = selectHomeTickerItems(readTickerFile(path.join(root, "data", "ticker.json")));
+const HOME_TICKER_PAGES = new Set(["en/index.html"]);
 
 let updated = 0;
 let skipped = 0;
@@ -250,13 +266,23 @@ for (const file of files) {
     ? liveTickerBlock(liveRecords, { locale, base, keepEmpty: true })
     : "";
 
+  // Transfer Radar on the English homepage sits in the same slot as the
+  // Turkish band: immediately under Son Dakika / Headlines, above live scores.
+  // Chrome is English; sourced item text is left in the original language
+  // (lang="tr") rather than machine-translated.
+  const wantsHomeTicker = HOME_TICKER_PAGES.has(sitePath);
+  const homeTicker = wantsHomeTicker
+    ? renderHomeTicker(homeTickerSelected.items, { base, locale: "en" })
+    : "";
+
   const headerBlock = [
     siteHeader({ base, locale, altHref }),
     ticker ? `\n      <!-- shared-layout:ticker:start -->${ticker}<!-- shared-layout:ticker:end -->` : "",
+    homeTicker ? `\n      <!-- shared-layout:home-ticker:start -->${homeTicker}<!-- shared-layout:home-ticker:end -->` : "",
     liveTicker ? `\n      <!-- shared-layout:live-ticker:start -->${liveTicker}<!-- shared-layout:live-ticker:end -->` : ""
   ].join("");
 
-  let next = original.replace(LIVE_TICKER_RE, "").replace(LEGACY_TRANSFER_TICKER_RE, "");
+  let next = original.replace(LIVE_TICKER_RE, "").replace(LEGACY_TRANSFER_TICKER_RE, "").replace(HOME_TICKER_RE, "");
   next = next.replace(TICKER_RE, "");
   next = next.replace(HEADER_RE, () => headerBlock);
   next = next.replace(FOOTER_RE, () => siteFooter({ base, locale }));

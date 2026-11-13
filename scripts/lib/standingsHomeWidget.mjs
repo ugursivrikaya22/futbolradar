@@ -136,9 +136,12 @@ function panelBody(entry, locale, copy, base) {
  *   sayfada köke göre "./", EN ana sayfasında da "./" (en/index.html zaten
  *   en/ klasöründe yaşıyor, bkz. `panelBody` içindeki not).
  */
-export function renderStandingsTabsInner(locale = "tr", base = "./") {
+export function renderStandingsTabsInner(locale = "tr", base = "./", options = {}) {
   const copy = COPY[locale] || COPY.tr;
-  const leagues = orderedLeagues(locale);
+  // Homepage parity: the English home widget uses the Turkish tab order
+  // (Süper Lig first) so both language homes show the same competition first.
+  // Dedicated English standings pages keep EN_TAB_ORDER via the default.
+  const leagues = orderedLeagues(options.tabOrder === "tr" ? "tr" : locale);
 
   const radios = leagues.map((entry, index) =>
     `<input type="radio" name="standings-tab" id="standings-tab-${entry.id}" class="standings-tabs__radio"${index === 0 ? " checked" : ""}>`

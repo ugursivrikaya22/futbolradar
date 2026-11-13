@@ -198,6 +198,14 @@ const columnList = publishedColumns(
  * okunamayacakları yüzeye basılmazlar. Bir yazıya `en` eklendiği anda
  * kendiliğinden buraya da düşer.
  */
+function pickFeaturedColumn(columns, now = Date.now()) {
+  const dated = (columns || [])
+    .map((column) => ({ column, time: Date.parse(column && column.date) }))
+    .filter(({ column, time }) => column && column.path && Number.isFinite(time) && time <= now);
+  dated.sort((left, right) => right.time - left.time);
+  return dated.length ? dated[0].column : null;
+}
+
 function englishColumnList() {
   return columnList.filter((entry) => englishColumn(entry) !== null);
 }
@@ -468,7 +476,7 @@ function sectionHead(kicker, titleId, title, lead, linkHref, linkText) {
 function standingsTabsSection() {
   return `<section class="container section standings-tabs-section" id="en-standings-tabs" aria-labelledby="en-standings-tabs-title">
         ${sectionHead("9 Competitions", "en-standings-tabs-title", "Standings", "Süper Lig, the major European leagues and UEFA competitions — current tables in one place.", "", "")}
-        <div class="standings-tabs">${renderStandingsTabsInner("en", "./")}</div>
+        <div class="standings-tabs">${renderStandingsTabsInner("en", "./", { tabOrder: "tr" })}</div>
       </section>`;
 }
 
@@ -1359,31 +1367,193 @@ function radarHomeCardShell() {
       <script src="${BASE}radar-home-card.js" defer></script>`;
 }
 
+
+function emptyLeadersNote(title, note) {
+  return `<article class="data-empty" data-card="empty"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(note)}</p></article>`;
+}
+
+function homeLeaderRow(rank, name, kicker, value, href, unit) {
+  const nameHtml = href
+    ? `<a class="leaders-name" href="${escapeHtml(href)}"><strong>${escapeHtml(name)}</strong>${kicker ? `<span>${escapeHtml(kicker)}</span>` : ""}</a>`
+    : `<span class="leaders-name"><strong>${escapeHtml(name)}</strong>${kicker ? `<span>${escapeHtml(kicker)}</span>` : ""}</span>`;
+  const valueHtml = value == null || value === ""
+    ? ""
+    : `<span class="leaders-value">${escapeHtml(String(value))}${unit ? `<small>${escapeHtml(unit)}</small>` : ""}</span>`;
+  return `<li class="leaders-row" data-card="leader-player"><span class="leaders-rank">${rank}</span>${nameHtml}${valueHtml}</li>`;
+}
+
+function leadersListHtml(rows, emptyTitle, emptyNote) {
+  if (!rows.length) return emptyLeadersNote(emptyTitle, emptyNote);
+  return `<ol class="leaders-list">${rows.join("")}</ol>`;
+}
+
+/**
+ * SÜPER LIG LEADERS RAIL — same data as the Turkish homepage
+ * (`data/league-leaders.json`, form players, team momentum). English chrome only.
+ */
+function leadersRailSection() {
+  const scorers = (leagueLeaders.topScorers || []).slice(0, 5).map((row, index) =>
+    homeLeaderRow(index + 1, row.name, row.team, row.goals, row.slug ? playerUrls.playerCanonicalHref(row.slug, "./") : "", "goals"));
+  const assists = (leagueLeaders.topAssists || []).slice(0, 5).map((row, index) =>
+    homeLeaderRow(index + 1, row.name, row.team, row.assists, row.slug ? playerUrls.playerCanonicalHref(row.slug, "./") : "", "assists"));
+  const { kept: formPlayers } = filterPlayerCards(
+    players.filter((player) => player && player.id !== "mauro-icardi"),
+    { trend: true, leagueTeams: fixtureTeamNames() }
+  );
+  const formRows = formPlayers.slice(0, 5).map((player, index) =>
+    homeLeaderRow(index + 1, player.name, [player.currentTeam || player.team, player.position].filter(Boolean).join(" · "), "", playerUrls.playerCanonicalHref(player.id, "./"), ""));
+  const teamRows = teams
+    .filter((team) => team && team.name && Number.isFinite(Number(team.momentum)))
+    .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))
+    .slice(0, 5)
+    .map((team, index) => homeLeaderRow(index + 1, team.name, "Form", team.momentum, `./team/${teamSlug(team.name)}.html`, ""));
+
+  const panel = (id, labelId, body, moreHref, moreLabel) =>
+    `<section class="leaders-tabs__panel" id="${id}" role="tabpanel" aria-labelledby="${labelId}">
+                  <div class="leaders-tabs__panel-body">${body}</div>
+                  <a class="leaders-see-all" href="${escapeHtml(moreHref)}">${escapeHtml(moreLabel)}</a>
+                </section>`;
+
+  return `<aside class="home-stats-rail" id="ana-sayfa-istatistik-merkezi" aria-labelledby="home-stats-rail-title">
+            <div class="section-head home-stats-rail__head">
+              <div class="section-title">
+                <span class="section-kicker">Süper Lig</span>
+                <h2 id="home-stats-rail-title">Süper Lig leaders</h2>
+              </div>
+            </div>
+            <div class="leaders-tabs">
+              <input type="radio" name="leaders-tab" id="leaders-tab-scorers" class="leaders-tabs__radio" checked>
+              <input type="radio" name="leaders-tab" id="leaders-tab-assists" class="leaders-tabs__radio">
+              <input type="radio" name="leaders-tab" id="leaders-tab-form" class="leaders-tabs__radio">
+              <input type="radio" name="leaders-tab" id="leaders-tab-team" class="leaders-tabs__radio">
+              <div class="leaders-tabs__list" role="tablist" aria-label="Süper Lig leader categories">
+                <label class="leaders-tabs__label" id="leaders-tablabel-scorers" role="tab" aria-selected="true" aria-controls="leaders-panel-scorers" for="leaders-tab-scorers">Goals</label>
+                <label class="leaders-tabs__label" id="leaders-tablabel-assists" role="tab" aria-selected="false" aria-controls="leaders-panel-assists" for="leaders-tab-assists">Assists</label>
+                <label class="leaders-tabs__label" id="leaders-tablabel-form" role="tab" aria-selected="false" aria-controls="leaders-panel-form" for="leaders-tab-form">Form</label>
+                <label class="leaders-tabs__label" id="leaders-tablabel-team" role="tab" aria-selected="false" aria-controls="leaders-panel-team" for="leaders-tab-team">Team form</label>
+              </div>
+              <div class="leaders-tabs__panels">
+                ${panel("leaders-panel-scorers", "leaders-tablabel-scorers", leadersListHtml(scorers, "Waiting for data", "The top-scorer table updates as official league matches are played."), "./top-scorers.html", "See all top scorers")}
+                ${panel("leaders-panel-assists", "leaders-tablabel-assists", leadersListHtml(assists, "Waiting for data", "The assist table updates as official league matches are played."), "./top-assists.html", "See all top assists")}
+                ${panel("leaders-panel-form", "leaders-tablabel-form", leadersListHtml(formRows, "Waiting for data", "Players in form are drawn only from verified current-season data."), "./player-radar.html", "See all players in form")}
+                ${panel("leaders-panel-team", "leaders-tablabel-team", leadersListHtml(teamRows, "Waiting for data", "Team form is updated from official match results."), "./momentum.html", "See the full team form table")}
+              </div>
+            </div>
+          </aside>`;
+}
+
+function motmWeekSection() {
+  return `<section class="container section motm-week" id="haftanin-oyunculari" aria-labelledby="motm-week-title" data-motm-week data-motm-week-source="/api/motm-week" data-motm-week-locale="en" hidden>
+          ${sectionHead("Man of the match", "motm-week-title", "This week's most-voted players", "Names that readers voted as man of the match. The percentage is the player's share of votes in their own match; voting closes 24 hours after full time.", "./results.html", "Results")}
+          <ol class="motm-week__list" data-motm-week-list aria-live="polite"></ol>
+        </section>`;
+}
+
+function bigClubsSection() {
+  const links = [
+    ["Galatasaray standings", "../galatasaray-puan-durumu"],
+    ["Galatasaray matches", "../galatasaray-maclari.html"],
+    ["Fenerbahçe standings", "../fenerbahce-puan-durumu"],
+    ["Fenerbahçe matches", "../fenerbahce-maclari.html"],
+    ["Beşiktaş standings", "../besiktas-puan-durumu"],
+    ["Beşiktaş matches", "../besiktas-maclari.html"],
+    ["Trabzonspor standings", "../trabzonspor-puan-durumu"],
+    ["Trabzonspor matches", "../trabzonspor-maclari.html"]
+  ];
+  // Prefer English team hubs when the generator has published them; the
+  // dedicated standings/matches pages still live on the Turkish URLs, so
+  // the labels are English and the destinations are the same sourced pages.
+  return `<section class="container section big-clubs-links" id="buyuk-takimlar" aria-labelledby="buyuk-takimlar-title">
+          ${sectionHead("The Big 4", "buyuk-takimlar-title", "Galatasaray, Fenerbahçe, Beşiktaş, Trabzonspor", "Each club's standings and fixture page — one tap away.", "", "")}
+          <div class="popular-links" aria-label="Big 4 club pages">${links.map(([label, href]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join("")}</div>
+        </section>`;
+}
+
+function featuredColumnSection() {
+  const column = pickFeaturedColumn(englishColumnList(), Date.now());
+  if (!column) return "";
+  const resolved = englishColumn(column) || {};
+  const href = resolved.href || `./${String(column.path || "").replace(/^\.?\//, "")}`;
+  const badge = "Column";
+  const when = column.date ? formatDate(column.date, LOCALE) : "";
+  return `<section class="container home-featured-column" id="one-cikan-kose-yazisi" data-featured-column aria-label="Featured column">
+          <article class="home-featured-column__card" data-card="featured-column">
+            <div class="home-featured-column__meta">
+              <span class="column-badge">${escapeHtml(badge)}</span>
+              ${column.date ? `<time datetime="${escapeHtml(column.date)}">${escapeHtml(when)}</time>` : ""}
+            </div>
+            <h2 class="home-featured-column__title" id="home-featured-column-title"><a href="${escapeHtml(href)}">${escapeHtml(resolved.title || column.title)}</a></h2>
+            ${resolved.excerpt || column.excerpt ? `<p class="home-featured-column__excerpt">${escapeHtml(resolved.excerpt || column.excerpt)}</p>` : ""}
+            <div class="home-featured-column__foot">
+              <span class="home-featured-column__author">${escapeHtml(column.author || "FutbolRadar")}</span>
+              <a class="home-featured-column__cta" href="${escapeHtml(href)}" aria-label="Continue reading: ${escapeHtml(resolved.title || column.title)}">Continue reading <span aria-hidden="true">→</span></a>
+            </div>
+          </article>
+        </section>`;
+}
+
+function evergreenSection() {
+  const links = [
+    ["./todays-matches.html", "Today's matches"],
+    ["./super-lig-standings.html", "Süper Lig standings"],
+    ["../form-tablosu/super-lig", "Süper Lig form table"],
+    ["./teams.html", "All teams"],
+    ["./standings.html", "Standings"],
+    ["./stats-hub.html", "Stats hub"],
+    ["./top-scorers.html", "Top scorers"],
+    ["./top-assists.html", "Top assists"],
+    ["./momentum.html", "Team momentum"],
+    ["./player-radar.html", "Player radar"],
+    ["./fixtures.html", "Süper Lig fixtures"],
+    ["./results.html", "Results"],
+    ["./analysis.html", "Analysis"],
+    ["./news.html", "News"],
+    ["./columns.html", "Columns"],
+    ["./archive.html", "Season archive"],
+    ["./turkey-national-team.html", "Türkiye national team"],
+    ["./live-football-scores.html", "Live scores"],
+    ["./match-centre.html", "Match centre"],
+    ["./polls.html", "Polls"]
+  ];
+  return `<section class="container section evergreen-home-links" aria-labelledby="evergreen-home-title">
+          ${sectionHead("Football guide", "evergreen-home-title", "Standings, form, clubs and comparison pages", "Permanent FutbolRadar guides, from today's fixtures to club profiles.", "", "")}
+          <nav class="evergreen-link-grid" aria-label="Football guides">${links.map(([href, label]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join("")}</nav>
+        </section>`;
+}
+
+function homeShareSection() {
+  return pageShareHtml({ url: absoluteUrl("en/index.html"), title: routeMeta("home", "en").title || "FutbolRadar", locale: "en" });
+}
+
+
 function homePage() {
-  // BÖLÜM SIRASI TÜRKÇE ANA SAYFANIN AYNISI (prerender-core-pages.mjs):
-  //   hero → puan durumları (9 sekme) → köşe yazıları → günün başlıkları →
-  //   bugünün maçları → günün radar maçı → son maç raporu → son raporlar →
-  //   oyuncu radarı → trend takımlar → hızlı gezinme → transfer radarı →
-  //   haber akışı → arşiv → kaynak şeridi
-  // Tahmin anketi canlı skor kahramanının HEMEN ARDINDA (Türkçe tarafta da
-  // aynı konum: scripts/inject-home-poll.mjs hero apankoruna yazıyor).
-  // Puan tablosu artık arşivin ardındaki tek-lig özeti DEĞİL: canlı skorun
-  // hemen altında, 9 yarışmalı sekmeli widget (`standingsTabsSection`) —
-  // TR ana sayfasıyla (prerender-core-pages.mjs) aynı konum kuralı.
+  // Section order matches the live Turkish homepage:
+  //   hero → poll → standings (9 tabs) → Süper Lig leaders → lineup alerts →
+  //   man-of-the-match → daily headlines → today's matches → Big 4 →
+  //   radar match → player radar → trend teams → explore → news →
+  //   featured column → latest columns → archive → football guide → share.
+  // Transfer Radar is injected by apply-shared-layout immediately under
+  // the Headlines band, as on the Turkish page.
   const body = `      ${radarHomeCardShell()}
       ${heroSection()}
       ${homePollSection()}
       ${standingsTabsSection()}
+      ${leadersRailSection()}
       ${officialLineupAlertsSection()}
-      ${columnsSection()}
+      ${motmWeekSection()}
       ${dailyHeadlinesSection()}
       ${todaySection()}
+      ${bigClubsSection()}
       ${radarMatchSection()}
       ${playerRadarSection()}
       ${trendTeamsSection()}
       ${quickNavSection()}
       ${newsSection()}
+      ${featuredColumnSection()}
+      ${columnsSection()}
       ${archiveSection()}
+      ${evergreenSection()}
+      ${homeShareSection()}
       ${pollStickySection()}`;
 
   return pageShell({
@@ -2141,11 +2311,15 @@ const EXTERNAL_PAGE_OWNERS = {
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
+const onlyHome = process.argv.includes("--only-home");
+const ONLY_HOME_KEYS = new Set(["home", "todaysMatches"]);
+
 let written = 0;
 for (const route of ROUTES) {
   const build = PAGE_BUILDERS[route.key];
   if (!build) {
     const owner = EXTERNAL_PAGE_OWNERS[route.key];
+    if (onlyHome) continue;
     if (!owner) {
       throw new Error(`Route "${route.key}" has no English page builder; the route map and the generator disagree.`);
     }
@@ -2156,6 +2330,7 @@ for (const route of ROUTES) {
     }
     continue;
   }
+  if (onlyHome && !ONLY_HOME_KEYS.has(route.key)) continue;
   const target = path.join(root, route.en);
   let html = build();
   // `/en` eğik çizgisiz sunulur: göreli href'ler kök dizine düşmesin.
@@ -2170,7 +2345,9 @@ for (const route of ROUTES) {
 
 // Karşılık denetimi: eşlemedeki her Türkçe sayfa gerçekten var mı? Yoksa dil
 // kutusu 404'e bağlanır ve hreflang çifti tek yönlü kalır.
-const missingTurkish = ROUTES.filter((route) => !fs.existsSync(path.join(root, route.tr))).map((route) => route.tr);
+const missingTurkish = onlyHome
+  ? []
+  : ROUTES.filter((route) => !fs.existsSync(path.join(root, route.tr))).map((route) => route.tr);
 if (missingTurkish.length) {
   throw new Error(`Route map points at missing Turkish pages: ${missingTurkish.join(", ")}`);
 }

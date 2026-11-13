@@ -133,9 +133,20 @@ const columnPages = pages.filter((file) => file.includes(`${path.sep}columns${pa
 
 // --- 3. TAM TARAMA: her İngilizce sayfanın görünen metni ------------------
 {
+  // Sourced ticker sentences may be shown on the English homepage in their
+  // original Turkish, marked lang="tr", under English chrome (Transfer Radar /
+  // Headlines). That is not a UI translation leak; it is an attributed
+  // original. Strip only those marked quotations before the page scan.
+  function stripTickerSourceLanguage(html) {
+    return html.replace(/(<(?:section|div)[^>]*(?:data-home-ticker|data-shared-layout="ticker")[^>]*>)([\s\S]*?)(<\/\s*(?:section|div)\s*>)/gi, (full, open, body, close) => {
+      const stripped = body.replace(/<(a|span)[^>]*\bdata-original-language="tr"[^>]*>[\s\S]*?<\/\1>/gi, " ");
+      return `${open}${stripped}${close}`;
+    });
+  }
+
   const dirty = [];
   for (const file of pages) {
-    const hits = scanHtml(fs.readFileSync(file, "utf8"), { limit: 4 });
+    const hits = scanHtml(stripTickerSourceLanguage(fs.readFileSync(file, "utf8")), { limit: 4 });
     if (hits.length) {
       dirty.push({
         file: path.relative(root, file),

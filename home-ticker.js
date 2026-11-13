@@ -24,8 +24,12 @@
       var paused = !root.classList.contains("is-paused");
       root.classList.toggle("is-paused", paused);
       toggle.setAttribute("aria-pressed", paused ? "true" : "false");
-      toggle.textContent = paused ? "Devam" : "Durdur";
-      toggle.setAttribute("aria-label", paused ? "Kayan yazıyı sürdür" : "Kayan yazıyı durdur");
+      var locale = root.getAttribute("data-home-ticker-locale") || "tr";
+      var labels = locale === "en"
+        ? { resume: "Resume", pause: "Pause", resumeAria: "Resume the ticker", pauseAria: "Pause the ticker" }
+        : { resume: "Devam", pause: "Durdur", resumeAria: "Kayan yazıyı sürdür", pauseAria: "Kayan yazıyı durdur" };
+      toggle.textContent = paused ? labels.resume : labels.pause;
+      toggle.setAttribute("aria-label", paused ? labels.resumeAria : labels.pauseAria);
     });
   }
 

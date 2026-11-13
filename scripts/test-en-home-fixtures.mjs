@@ -21,11 +21,16 @@ try {
     const path = new URL(route.request().url()).pathname;
     if (path === '/api/matches') return route.fulfill({ json: { ok: true, data: rows } });
     if (path === '/daily-fixtures-en.js') return route.fulfill({ contentType: 'application/javascript', body: script });
-    return route.fulfill({ contentType: 'text/html', body: '<div data-daily-fixtures-en data-home-only></div><script src="/daily-fixtures-en.js"></script>' });
+    return route.fulfill({ contentType: 'text/html', body: '<div class="quick-stats" aria-label="Today\'s match summary"><a class="quick-stat" href="/en/todays-matches.html"><span>Upcoming</span><b>1</b></a><a class="quick-stat" href="/en/todays-matches.html"><span>Total</span><b>1</b></a></div><div data-daily-fixtures-en data-home-only></div><script src="/daily-fixtures-en.js"></script>' });
   });
   await page.goto('http://fixtures.test/en/');
   await page.locator('[data-fixture-id="live"]').waitFor();
   assert.deepEqual((await page.locator('[data-fixture-id]').evaluateAll(nodes => nodes.map(n => n.dataset.fixtureId))).sort(), ['future', 'live']);
+  assert.equal(await page.locator('.quick-stats .quick-stat').count(), 4);
+  assert.equal(await page.locator('.quick-stat:has-text("Live") b').innerText(), '1');
+  assert.equal(await page.locator('.quick-stat:has-text("Upcoming") b').innerText(), '1');
+  assert.equal(await page.locator('.quick-stat:has-text("Finished") b').innerText(), '1');
+  assert.equal(await page.locator('.quick-stat:has-text("Total") b').innerText(), '4');
   rows = rows.map(row => ({ ...row, providerStatus: 'FT' }));
   await page.clock.fastForward(60001);
   await page.locator('[data-fixture-id]').first().waitFor({ state: 'detached' });
