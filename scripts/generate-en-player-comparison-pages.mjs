@@ -575,6 +575,31 @@ if (pairs.length) {
 
 const registered = writeDynamicRoutePairs("comparison", routePairs);
 
+/*
+ * İNGİLİZCE OYUNCU PROFİLİ İNGİLİZCE KIYAS SAYFASINA BAĞLANIR.
+ *
+ * Profil üreticisi bu adımdan ÖNCE çalışır ve kıyas bağlantısını Türkçe
+ * `karsilastirma/<slug>` sayfasına verir: İngilizce eşin yazılıp
+ * yazılmayacağını o an bilemez. Bağlantı burada, yalnızca GERÇEKTEN
+ * yazılmış İngilizce kıyas sayfaları için çevrilir; İngilizce eşi olmayan
+ * bağlantı olduğu gibi kalır (kırık bağlantı üretilmez).
+ */
+let relinkedProfiles = 0;
+const profileDir = path.join(root, "en", "player");
+if (fs.existsSync(profileDir)) {
+  for (const file of fs.readdirSync(profileDir)) {
+    if (!file.endsWith(".html")) continue;
+    const target = path.join(profileDir, file);
+    const html = fs.readFileSync(target, "utf8");
+    const next = html.replace(/href="\.\.\/\.\.\/karsilastirma\/([^"\/]+?)\.html"/g, (match, slug) =>
+      (expected.has(`${slug}.html`) ? `href="../compare/${slug}.html"` : match));
+    if (next !== html) {
+      fs.writeFileSync(target, next, "utf8");
+      relinkedProfiles += 1;
+    }
+  }
+}
+
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
   const current = fs.readFileSync(sitemapPath, "utf8");
@@ -583,4 +608,5 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
 }
 
 console.log(`English comparisons: ${written} written, ${pairs.length - written} unchanged, ${removed} removed (${pairs.length} Turkish comparison pages).`);
+console.log(`English comparisons: ${relinkedProfiles} English player profiles now link to English comparison pages.`);
 console.log(`English comparisons: ${pairs.length - noindex} indexable, ${noindex} thin (noindex,follow); ${registered} TR↔EN pairs registered.`);

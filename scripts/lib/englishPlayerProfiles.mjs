@@ -1,6 +1,15 @@
 // Keep the published URL when a verified current record exists, even if its
 // canonical record is missing or no longer passes the publication gate.
-export function englishProfilePlayers(players, urls, view) {
+//
+// `includeUnverified`: Türkçe profili olan HER oyuncu İngilizce sayfa alır.
+// Kural bir zamanlar "doğrulanmamış oyuncuya İngilizce sayfa yok" idi;
+// sonuç, Türkçe profillerin büyük çoğunluğunun İngilizce karşılığının hiç
+// olmamasıydı. Artık sayfa üretilir, ama ince içerik kuralı korunur:
+// doğrulanmamış kaydın sayfası `noindex,follow` basılır ve site haritasına
+// girmez (karar üreticide, `view(player).verified` üzerinden). Aynı adres
+// için doğrulanmış kayıt her zaman önceliklidir; doğrulanmamış kayıt bir
+// adresi ancak doğrulanmış sahibi yoksa alır.
+export function englishProfilePlayers(players, urls, view, { includeUnverified = false } = {}) {
   const pages = new Map();
   for (const player of players) {
     if (!view(player).verified) continue;
@@ -8,6 +17,18 @@ export function englishProfilePlayers(players, urls, view) {
     if (!pages.has(pathname) || urls.resolveId(player.id) === player.id) {
       pages.set(pathname, player);
     }
+  }
+  if (includeUnverified) {
+    const fallback = new Map();
+    for (const player of players) {
+      if (view(player).verified) continue;
+      const pathname = urls.enPlayerPagePath(player.id);
+      if (pages.has(pathname)) continue;
+      if (!fallback.has(pathname) || urls.resolveId(player.id) === player.id) {
+        fallback.set(pathname, player);
+      }
+    }
+    for (const [pathname, player] of fallback) pages.set(pathname, player);
   }
   return [...pages.values()];
 }
