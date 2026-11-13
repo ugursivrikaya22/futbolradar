@@ -28,6 +28,7 @@ const {
   allowedSourceHosts,
   hostOf,
   isAllowedSourceHost,
+  isAllowedSourceUrl,
   isOwnProfileHost,
   isShareHost,
   isSiteHost,
@@ -86,8 +87,18 @@ function sampleGeneratedHtml(dir, limit) {
     for (const match of raw.matchAll(/https?:\/\/[^\s"'\\]+/g)) {
       const host = hostOf(match[0]);
       if (!host || isSiteHost(host)) continue;
+      // t.co bir kaynak değil, bir kısaltıcıdır. Kaynak künyesi (url / sourceUrl)
+      // olamaz. @Futbolradarcom tweetlerinin birebir metninde duran son t.co
+      // bağlantısı kaynak sayılmaz; künyedeki tweet URL'si ayrı denetlenir.
+      if (host === "t.co") {
+        const ctx = raw.slice(Math.max(0, match.index - 40), match.index);
+        const isCitation = /"(?:url|sourceUrl|source_url)"\s*:\s*"$/.test(ctx);
+        if (!isCitation) continue;
+      }
       checked += 1;
-      if (isAllowedSourceHost(host)) continue;
+      // Yol kapsamlı istisnalar (yalnızca x.com/Futbolradarcom/status gibi) host
+      // kontrolünden geçmez; tam URL bakılır. x.com'un geri kalanı reddedilir.
+      if (isAllowedSourceUrl(match[0])) continue;
       if (!offenders.has(host)) offenders.set(host, []);
       offenders.get(host).push(`${file}: ${match[0].slice(0, 90)}`);
     }
@@ -150,7 +161,7 @@ function sampleGeneratedHtml(dir, limit) {
         continue;
       }
 
-      if (!isAllowedSourceHost(host)) {
+      if (!isAllowedSourceUrl(match[2]) && !isAllowedSourceHost(host)) {
         if (!unknownHosts.has(host)) unknownHosts.set(host, rel);
         continue;
       }
@@ -244,6 +255,48 @@ function sampleGeneratedHtml(dir, limit) {
 
   walk(root);
   assert.equal(hits.length, 0, `Üretici araç izi bulundu:\n  ${hits.slice(0, 10).join("\n  ")}`);
+}
+
+// ── 5. Kendi X hesabı yol kapsamlı kaynak istisnası ─────────────────────────
+//
+// 13 Kasım 2026: Ugur, @Futbolradarcom tweetlerinin Son Dakika bandına
+// tam metin ve tweet URL'siyle girmesini istedi. x.com'un tamamı hâlâ
+// kapalı; yalnızca bu hesabın durum bağlantıları kaynak olabilir.
+{
+  const ownStatus = "https://x.com/Futbolradarcom/status/2121184124773810451";
+  const ownStatusWww = "https://www.x.com/Futbolradarcom/status/2121184124773810451";
+  const ownTwitter = "https://twitter.com/Futbolradarcom/status/2121184124773810451";
+  const otherUser = "https://x.com/SomeOtherAccount/status/2121184124773810451";
+  const bareHost = "https://x.com/";
+  const profileOnly = "https://x.com/Futbolradarcom";
+
+  assert.equal(isAllowedSourceHost("x.com"), false, "x.com ana bilgisayarı tek başına açılmamalı");
+  assert.equal(isAllowedSourceHost("twitter.com"), false, "twitter.com ana bilgisayarı tek başına açılmamalı");
+  assert.equal(isAllowedSourceUrl(ownStatus), true, "kendi hesap durum URL'si kaynak olabilir");
+  assert.equal(isAllowedSourceUrl(ownStatusWww), true, "www.x.com ayna yol da kabul edilmeli");
+  assert.equal(isAllowedSourceUrl(ownTwitter), true, "twitter.com/Futbolradarcom durum URL'si kabul edilmeli");
+  assert.equal(isAllowedSourceUrl(otherUser), false, "başka bir X hesabı kaynak olamaz");
+  assert.equal(isAllowedSourceUrl(bareHost), false, "çıplak x.com kaynak olamaz");
+  assert.equal(isAllowedSourceUrl("https://t.co/pofFJvnbNq"), false, "t.co kısaltıcısı kaynak olamaz");
+  assert.equal(isAllowedSourceUrl(profileOnly), false, "profil kökü durum URL'si değildir, kaynak olamaz");
+
+  // Kimlik bağlantısı (alt bilgi) ile kaynak künyesi (tweet) ayrışır:
+  // /futbolradar, /futbolradarcom hesabını yutmamalı. Aksi halde banttaki
+  // nofollow künye "kendi hesap" sayılıp testte haksız yere kırmızı yanardı.
+  assert.equal(isOwnProfileHost("https://x.com/futbolradar"), true, "alt bilgi hesabı kimlik bağlantısıdır");
+  assert.equal(isOwnProfileHost("https://x.com/futbolradar/"), true, "sondaki eğik çizgi kimliği bozmamalı");
+  assert.equal(
+    isOwnProfileHost(ownStatus),
+    false,
+    "@Futbolradarcom durum URL'si alt bilgi hesabı sayılmamalı"
+  );
+  assert.equal(
+    isOwnProfileHost(profileOnly),
+    false,
+    "@Futbolradarcom profili /futbolradar önekiyle karışmamalı"
+  );
+
+  console.log("test-source-links: @Futbolradarcom yol kapsamlı kaynak istisnası doğrulandı.");
 }
 
 console.log(

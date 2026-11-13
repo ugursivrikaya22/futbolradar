@@ -239,6 +239,16 @@ const ALLOWED_SOURCE_HOSTS = Object.freeze({
   // (`source.name`, `source.publisher`).
   aggregator: Object.freeze([
     "news.google.com"
+  ]),
+
+  // Sitenin kendi X hesabı. 13 Kasım 2026: Ugur, @Futbolradarcom
+  // gönderilerinin Son Dakika bandında kaynak olarak gösterilmesini
+  // istedi. İstisna YOL KAPSAMLI — x.com'un tamamı açılmaz; yalnızca
+  // bu hesabın durum (status) bağlantıları geçerlidir. twitter.com
+  // aynı yolun ayna alan adıdır. Başka bir X hesabı kaynak olamaz.
+  ownAccount: Object.freeze([
+    "x.com/Futbolradarcom/status",
+    "twitter.com/Futbolradarcom/status"
   ])
 });
 
@@ -319,7 +329,16 @@ function isAllowedSourceHost(host) {
 }
 
 function isAllowedSourceUrl(url) {
-  return isAllowedSourceHost(hostOf(url));
+  const raw = String(url === null || url === undefined ? "" : url).trim();
+  if (!/^https?:\/\//i.test(raw)) return false;
+  const host = hostOf(raw);
+  if (!host) return false;
+  // Yol taşıyan girdiler (x.com/Futbolradarcom gibi) tam adrese bakılır;
+  // salt ana bilgisayar eşlemesi x.com'un tamamını açardı.
+  return allowedSourceHosts().some((entry) => {
+    if (String(entry).includes("/")) return matchesHostEntry(raw, [entry]);
+    return matchesHost(host, entry);
+  });
 }
 
 /**
@@ -345,9 +364,13 @@ function matchesHostEntry(value, entries) {
   return entries.some((entry) => {
     const slash = entry.indexOf("/");
     if (slash === -1) return matchesHost(host, entry);
-    const entryHost = entry.slice(0, slash);
-    const entryPath = entry.slice(slash).toLowerCase();
-    return matchesHost(host, entryHost) && pathname.toLowerCase().startsWith(entryPath);
+    const entryHost = entry.slice(0, slash).toLowerCase();
+    // Yol öneki bir segment olarak eşleşir: /futbolradar, /futbolradar/
+    // ve /futbolradar/status/1 geçer; /futbolradarcom geçmez.
+    const entryPath = (entry.slice(slash).toLowerCase().replace(/\/+$/, "") || "/");
+    const path = (pathname.toLowerCase().replace(/\/+$/, "") || "/");
+    const pathMatches = path === entryPath || path.startsWith(`${entryPath}/`);
+    return matchesHost(host, entryHost) && pathMatches;
   });
 }
 
