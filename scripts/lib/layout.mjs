@@ -294,6 +294,27 @@ export function resolveTickerHref(rawHrefInput, allHref) {
 export const TICKER_FEED_PATH = "data/ticker-feed.json";
 
 /**
+ * KAYNAK ATFINDAKİ TARİH DİLE UYAR.
+ *
+ * Atıf adı veriden gelir ve bazı kaynaklar tarihi adın içinde taşır
+ * ("@Futbolradarcom · 13 Kasım 2026"). İngilizce bantta bu dize olduğu gibi
+ * basılınca sayfaya Türkçe ay adı sızar. Yalnızca "gün AY yıl" kalıbı
+ * çevrilir; kurum adlarına dokunulmaz. Türkçe çıktı değişmez.
+ */
+const TR_MONTHS_TO_EN = {
+  ocak: "January", şubat: "February", mart: "March", nisan: "April", mayıs: "May", haziran: "June",
+  temmuz: "July", ağustos: "August", eylül: "September", ekim: "October", kasım: "November", aralık: "December"
+};
+function localizeAttribution(value, locale) {
+  const raw = String(value || "");
+  if (locale !== "en" || !raw) return raw;
+  return raw.replace(
+    /(\d{1,2}) (Ocak|Şubat|Mart|Nisan|Mayıs|Haziran|Temmuz|Ağustos|Eylül|Ekim|Kasım|Aralık) (\d{4})/g,
+    (match, day, month, year) => `${day} ${TR_MONTHS_TO_EN[month.toLocaleLowerCase("tr-TR")]} ${year}`
+  );
+}
+
+/**
  * İstemci bandı için paylaşılan veri yükü. Sunucudaki `newsTicker` ile AYNI
  * bağlantı kuralını (`resolveTickerHref`) ve aynı kompakt öğe sınırını
  * kullanır; yalnızca sayfaya göre değişen önek (`base`) burada YOKTUR —
@@ -313,7 +334,7 @@ export function tickerFeedPayload({ tr, en } = {}) {
       live: badge === liveBadge,
       items: rows.map((item) => {
         const { href, external } = resolveTickerHref(item.href, allHref);
-        const attribution = item.publisher || item.sourceName || "";
+        const attribution = localizeAttribution(item.publisher || item.sourceName || "", locale);
         const out = { href, text: String(item.text || "") };
         if (external) out.external = true;
         if (item.label) out.label = String(item.label);
@@ -391,7 +412,7 @@ export function newsTicker(options = {}) {
     // kişi kulübün sitesine değil Google News'e düşüyordu ve etiketin
     // arkasındaki kurumu hiçbir yerde göremiyordu. Yayıncı adı artık hem
     // ekran okuyucuya hem de fareyle üzerine gelene gösteriliyor.
-    const attribution = item.publisher || item.sourceName || "";
+    const attribution = localizeAttribution(item.publisher || item.sourceName || "", locale);
     const ariaText = item.confidenceBadge
       ? `${item.confidenceBadge}: ${item.text}`
       : item.text;
