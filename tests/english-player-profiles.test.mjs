@@ -19,6 +19,17 @@ test('an extant verified canonical record wins without generating duplicate page
 test('aliases never make unverified players eligible for publication', () => {
   assert.deepEqual(englishProfilePlayers([{id:'current-id',verified:false}],urls,view),[]);
 });
+test('with includeUnverified an unverified player gets a page, but never displaces a verified owner', () => {
+  const unverified = {id:'former-id',verified:false}, verified = {id:'current-id',verified:true};
+  assert.deepEqual(englishProfilePlayers([unverified],urls,view,{includeUnverified:true}),[unverified]);
+  for (const players of [[unverified,verified],[verified,unverified]])
+    assert.deepEqual(englishProfilePlayers(players,urls,view,{includeUnverified:true}),[verified]);
+});
+test('with includeUnverified the canonical unverified record owns the address over its alias', () => {
+  const alias = {id:'current-id',verified:false}, canonical = {id:'former-id',verified:false};
+  for (const players of [[alias,canonical],[canonical,alias]])
+    assert.deepEqual(englishProfilePlayers(players,urls,view,{includeUnverified:true}),[canonical]);
+});
 test('a stale unverified canonical record cannot suppress its verified replacement', () => {
   const current={id:'current-id',verified:true};
   assert.deepEqual(englishProfilePlayers([{id:'former-id',verified:false},current],urls,view),[current]);

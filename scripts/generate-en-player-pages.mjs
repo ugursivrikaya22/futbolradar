@@ -5,12 +5,16 @@
  * TR tarafındaki `oyuncular/<slug>.html` ile AYNI kanonik oyuncu kaydından
  * (data/players.json) üretilir, aynı slug — sağlayıcıya ikinci istek yok.
  *
- * İNCE İÇERİK YASAĞI BURADA UYGULANIYOR: yalnızca YAYIN KAPISINDAN GEÇMİŞ
- * (publicPlayerView(...).verified === true) oyuncular EN sayfası alır.
- * TR tarafı doğrulanmamış kayıtlar için de "Kulüp bilgisi doğrulanmadı"
- * diyen indirgenmiş bir sayfa yayımlıyor; İngilizcede o indirgenmiş hâlin
- * bir kopyasını yayımlamak yerine sayfa HİÇ üretilmiyor — belirsiz bir
- * profili başka dilde tekrarlamak veriyi zenginleştirmez, tekrarlar.
+ * HER TÜRKÇE PROFİLİN İNGİLİZCE EŞİ VAR. Bu üretici bir zamanlar yalnızca
+ * YAYIN KAPISINDAN GEÇMİŞ (publicPlayerView(...).verified === true)
+ * oyunculara sayfa yazıyordu; Türkçe profillerin büyük çoğunluğunun
+ * İngilizcesi hiç yoktu ve dil düğmesi ana sayfaya düşüyordu. Artık
+ * Türkçe sayfası diskte olan her oyuncu İngilizce sayfa alır.
+ *
+ * İNCE İÇERİK KURALI KORUNUR, ama "sayfa yok" yerine "indekslenmez" olarak:
+ * doğrulanmamış kaydın sayfası `noindex,follow` basılır ve site haritasına
+ * girmez. Sayfa Türkçesiyle aynı indirgenmiş bilgiyi verir ("Club not yet
+ * confirmed"); doğrulanmamış sayı İngilizcede de gösterilmez.
  *
  * Kısıtlı alanlar (rating, piyasa değeri, istatistik, forma numarası,
  * fotoğraf) doğrudan `player.*`den değil, `publicPlayerView(player).fields`
@@ -29,7 +33,8 @@ import {
   player360Title,
   renderPlayer360
 } from "./lib/player360.mjs";
-import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
+import { englishClubName, englishPlayer360 } from "./lib/player360English.mjs";
 import {
   englishProfilePlayers,
   peerHrefForBuiltComparisons,
@@ -177,15 +182,36 @@ function teamHref(name) {
 
 function avatarHtml(player) {
   const photo = resolvePlayerPhoto(player);
-  const alt = `${player.name}${player.currentTeam ? ` — ${player.currentTeam}` : ""} player photo`;
+  const alt = `${player.name}${player.currentTeam ? ` — ${englishClubName(player.currentTeam)}` : ""} player photo`;
   if (photo.isPlaceholder) {
     return `<div class="player-avatar is-placeholder profile-avatar" role="img" aria-label="${escapeHtml(alt)}"><span aria-hidden="true">${escapeHtml(photo.initials)}</span></div>`;
   }
   return `<img class="player-avatar profile-avatar" src="${escapeHtml(photo.url)}" alt="${escapeHtml(alt)}" width="96" height="96" loading="lazy" decoding="async">`;
 }
 
+/**
+ * AÇIKLAMA CÜMLE SINIRINDA KISALIR, SÖZCÜK ORTASINDA DEĞİL.
+ *
+ * `normalize-meta` uzun açıklamayı sözcük sınırında keser. Kulüp listesiyle
+ * biten bir açıklamada bu, çok sözcüklü bir kulüp adını ortadan bölüyordu
+ * ("…, Yeni Malatyaspor" → "…, Yeni."): yarım ad hem anlamsız hem de
+ * İngilizce sayfada Türkçe sözcük olarak kalıyordu. Burada açıklama sınıra
+ * sığana kadar sondaki öğe BÜTÜN olarak düşürülür.
+ */
+const DESCRIPTION_MAX = 155;
+
+function fitDescription(value) {
+  const text = String(value || "");
+  if (text.length <= DESCRIPTION_MAX) return text;
+  const tail = " — on FutbolRadar.";
+  const parts = (text.endsWith(tail) ? text.slice(0, -tail.length) : text.replace(/\.$/, "")).split(", ");
+  while (parts.length > 1 && `${parts.join(", ")}.`.length > DESCRIPTION_MAX) parts.pop();
+  return `${parts.join(", ")}.`;
+}
+
 function pageHtml(player) {
   const view = publicPlayerView(player);
+  const indexable = view.verified === true;
   const fields = view.fields || {};
   const slugValue = enPlayerSlug(player);
   // Türkçe karşılık tek çözücüden: taşınan oyuncuda `futbolcu/<tam-ad>`,
@@ -194,8 +220,7 @@ function pageHtml(player) {
   const trPath = playerUrls.playerPagePath(player.id);
   const enPath = `en/player/${slugValue}.html`;
   const canonical = absoluteUrl(enPath);
-  const team = fields.currentTeam || fields.team || null;
-  const position = player.position || "";
+  const team = englishClubName(fields.currentTeam || fields.team || null);
 
   // Futbolcu 360 modeli. Türkçe üreticiyle AYNI servis, aynı kapı; tek
   // fark rota haritası ve sözlük.
@@ -213,6 +238,10 @@ function pageHtml(player) {
     displayName: playerUrls.playerDisplayName(player),
     comparisonSlugFor: slugForPair
   });
+  // Kayıt Türkçe tutulur (mevki, uyruk, transfer türü…); İngilizce sayfada
+  // elle yazılmış karşılıkları basılır, karşılığı olmayan alan boş kalır.
+  englishPlayer360(model);
+  const position = model.identity.position || "";
   // Static pairs are generated only for canonical records. A verified alias
   // can still own the public profile when its canonical record is unverified;
   // use the existing picker (which resolves IDs) instead of inventing a URL.
@@ -227,7 +256,7 @@ function pageHtml(player) {
   }
 
   const title = player360Title(model, { locale: LOCALE });
-  const description = player360Description(model, { locale: LOCALE });
+  const description = fitDescription(player360Description(model, { locale: LOCALE }));
 
   const teamLinkHref = team ? teamHref(team) : null;
   const teamHtml = team
@@ -266,7 +295,7 @@ function pageHtml(player) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
-    <meta name="robots" content="${ROBOTS_INDEX}" />
+    <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />
     <meta property="og:site_name" content="FutbolRadar" />
@@ -320,17 +349,21 @@ function pageHtml(player) {
 </html>
 `;
 
-  return { html, trPath, enPath, canonical };
+  return { html, trPath, enPath, canonical, indexable };
 }
 
-// Aynı yayın adresi yalnızca bir doğrulanmış kayıttan üretilir.
-const eligible = englishProfilePlayers(players, playerUrls, publicPlayerView);
+// Aynı yayın adresi tek kayıttan üretilir; doğrulanmış kayıt önceliklidir.
+// Türkçe sayfası diskte olmayan oyuncuya İngilizce sayfa yazılmaz.
+const candidates = englishProfilePlayers(players, playerUrls, publicPlayerView, { includeUnverified: true });
+const eligible = candidates.filter((player) => publicPlayerView(player).verified
+  || fs.existsSync(path.join(root, playerUrls.playerPagePath(player.id))));
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
 let written = 0;
 const pairs = [];
 const sitemapEntries = [];
-const skipped = players.length - eligible.length;
+const withoutTurkishPage = candidates.length - eligible.length;
+let indexableCount = 0;
 
 for (const player of eligible) {
   const result = pageHtml(player);
@@ -341,6 +374,9 @@ for (const player of eligible) {
     written += 1;
   }
   pairs.push({ tr: result.trPath, en: result.enPath });
+  // Doğrulanmamış kaydın sayfası noindex; site haritasına girmez.
+  if (!result.indexable) continue;
+  indexableCount += 1;
   sitemapEntries.push(`  <url>\n    <loc>${result.canonical}</loc>\n    <lastmod>${String(player.lastVerifiedAt || player.lastSyncedAt || "").slice(0, 10)}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>0.6</priority>\n  </url>`);
 }
 
@@ -373,7 +409,7 @@ for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "publ
   fs.writeFileSync(sitemapPath, wrapUrlset(retained.concat(sitemapEntries)), "utf8");
 }
 
-console.log(`English player pages: ${written} written, ${eligible.length - written} unchanged (${eligible.length} verified players).`);
-console.log(`English player pages: ${skipped} unverified players skipped (no thin/unconfirmed EN profile).`);
+console.log(`English player pages: ${written} written, ${eligible.length - written} unchanged (${eligible.length} players).`);
+console.log(`English player pages: ${indexableCount} verified and indexable, ${eligible.length - indexableCount} unverified (noindex,follow, outside the sitemap); ${withoutTurkishPage} without a Turkish page skipped.`);
 console.log(`English player pages: ${registered} TR↔EN pairs registered (dynamic route map).`);
 console.log(`English player pages: ${retainedPages.length} page(s) outside current data retained (never deleted).`);

@@ -290,11 +290,24 @@ for (const route of ROUTES) {
     check(`${sample}: dil kutusu var`, html.includes('class="lang-switch"'));
   }
 
-  // Karşılığı olmayan derin sayfa İngilizce ana sayfaya düşmeli, 404'e değil.
+  // Karşılığı olmayan sayfa İngilizce ana sayfaya düşmeli, 404'e değil.
+  // Örnek bir zamanlar oyuncu profiliydi; her oyuncunun İngilizce profili
+  // üretilmeye başlayınca o sayfa artık kendi İngilizcesine gidiyor. Denetim
+  // rota haritasında GERÇEKTEN karşılığı olmayan ilk sayfayla yapılır.
+  const unpaired = ["bulten.html", "tahmin-ligi.html", "takip-ettiklerim.html", "404.html"]
+    .find((file) => read(file) && !counterpartPath(file, "en"));
+  const lonely = unpaired ? read(unpaired) : null;
+  if (lonely) {
+    check(`karşılığı olmayan sayfa /en/ girişine düşer (${unpaired})`,
+      lonely.includes('class="lang-switch" href="./en/index.html"'),
+      (lonely.match(/class="lang-switch" href="[^"]*"/) || [])[0]);
+  }
+  // Karşılığı OLAN derin sayfa kendi İngilizcesine gitmeli.
   const deep = read(deepPlayerPage);
-  if (deep) {
-    check("karşılığı olmayan sayfa /en/ girişine düşer",
-      deep.includes('class="lang-switch" href="../en/index.html"'),
+  const deepEn = counterpartPath(deepPlayerPage, "en");
+  if (deep && deepEn) {
+    check("karşılığı olan oyuncu sayfası kendi İngilizcesine gider",
+      deep.includes(`class="lang-switch" href="../${deepEn}"`),
       (deep.match(/class="lang-switch" href="[^"]*"/) || [])[0]);
   }
 }
