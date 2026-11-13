@@ -148,7 +148,9 @@ const PROPER_NOUNS = [
   // Yayın kuruluşlarının adları; kaynak künyesinde İngilizce sayfada da
   // aynen yazılır ("TRT Haber" kanalın adıdır, "TRT News" başka bir yayın).
   "Haberler.com",
-  "TRT Haber"
+  "TRT Haber",
+  // Sırbistan ve Bulgaristan'daki şehir/kulüp adı; Türkçe "pazar" değil.
+  "Novi Pazar"
 ];
 
 const PROPER_NOUN_PATTERN = new RegExp(PROPER_NOUNS.map(escapeRegex).join("|"), "gi");

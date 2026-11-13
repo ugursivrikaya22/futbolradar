@@ -134,11 +134,20 @@ const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).re
 export function renderDayPage({ month, day, events, matches, canonicalPath, base, isToday = false }) {
   const label = dayLabel(month, day);
   const canonical = `${siteUrl}/${canonicalPath}`;
-  const title = `${label} Futbol Tarihi: Tarihte Bugün | futbolradar.com`;
+  // "Bugün" sayfası ile kalıcı gün sayfası aynı içeriği taşır. Başlık ve
+  // açıklama ayrışmazsa, olayı olan her gün arama dizininde iki sayfa aynı
+  // başlıkla görünür (test-seo-integrity: yinelenen başlık).
+  const title = isToday
+    ? `Tarihte Bugün: Futbolda ${label} | futbolradar.com`
+    : `${label} Futbol Tarihi: Tarihte Bugün | futbolradar.com`;
   const count = events.length + matches.length;
-  const desc = count
-    ? `${label} tarihinde futbol tarihinde yaşananlar: ${count} kaynaklı kayıt — maçlar, goller, doğumlar ve vefatlar. Her olay kaynağına bağlantılı.`
-    : `${label} için henüz kaynaklı bir futbol tarihi kaydımız yok. FutbolRadar uydurma kayıt yayımlamaz.`;
+  const desc = isToday
+    ? (count
+      ? `Futbol tarihinde bugün (${label}): arşivimizden ${count} kaynaklı kayıt. Maçlar, goller, doğumlar ve vefatlar; her olay kaynağına bağlantılı.`
+      : `Futbol tarihinde bugün (${label}): henüz kaynaklı bir kayıt yok. FutbolRadar uydurma kayıt yayımlamaz; kayıt doğrulanana kadar sayfa boş kalır.`)
+    : (count
+      ? `${label} tarihinde futbol tarihinde yaşananlar: ${count} kaynaklı kayıt — maçlar, goller, doğumlar ve vefatlar. Her olay kaynağına bağlantılı.`
+      : `${label} için henüz kaynaklı bir futbol tarihi kaydımız yok. FutbolRadar uydurma kayıt yayımlamaz.`);
   const robots = count ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW;
   const idx = allDays().findIndex((d) => d.month === month && d.day === day);
   const days = allDays();
@@ -188,10 +197,115 @@ export function renderDayPage({ month, day, events, matches, canonicalPath, base
 </html>\n`;
 }
 
+// ── İNGİLİZCE GÜN SAYFALARI ─────────────────────────────────────────────────
+//
+// /en/on-this-day/<gün>-<ay> (ör. /en/on-this-day/26-october): Türkçe
+// /tarih/<gün>-<ay> sayfasının İngilizce eşi. Olay metni ÇEVRİLEREK
+// üretilmez: kayıt `title_en` taşıyorsa basılır, taşımıyorsa o olay
+// İngilizce sayfada yer almaz (yarım çeviri yok). Arşiv maçları dilden
+// bağımsız olduğu için aynen listelenir.
+export const MONTHS_EN = Object.freeze(["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]);
+export const MONTH_SLUGS_EN = Object.freeze(MONTHS_EN.map((name) => name.toLowerCase()));
+export const CATEGORY_LABELS_EN = Object.freeze({ mac: "Match", gol: "Goal", transfer: "Transfer", rekor: "Record / First", dogum: "Birth", olum: "Death" });
+export function daySlugEn(month, day) { return `${day}-${MONTH_SLUGS_EN[month - 1]}`; }
+export function dayLabelEn(month, day) { return `${day} ${MONTHS_EN[month - 1]}`; }
+/** İngilizce metni olan olaylar. */
+export function englishEvents(events) { return events.filter((e) => String(e.title_en || "").trim()); }
+
+function eventItemEn(e) {
+  return `<li class="otd-item" data-category="${esc(e.category)}"><div class="otd-meta"><span class="otd-year">${e.year}</span><span class="otd-tag">${esc(CATEGORY_LABELS_EN[e.category])}</span></div><h3>${esc(e.title_en)}</h3>${e.description_en ? `<p>${esc(e.description_en)}</p>` : ""}<a href="${esc(e.source_url)}" target="_blank" rel="noopener noreferrer nofollow">Source: ${esc(e.source_name || new URL(e.source_url).hostname)}</a></li>`;
+}
+
+function matchItemEn(m, base, hasEnReport) {
+  const report = m.reportPage && hasEnReport(m.reportPage)
+    ? `<a href="${base}en/match-report/${esc(path.basename(m.reportPage))}">Match report</a>`
+    : "";
+  return `<li class="otd-item" data-category="mac"><div class="otd-meta"><span class="otd-year">${m.year}</span><span class="otd-tag">Match archive</span></div><h3>${esc(m.homeTeam)} ${m.score.home}-${m.score.away} ${esc(m.awayTeam)}</h3>${report}</li>`;
+}
+
+/** /en/on-this-day/<gün>-<ay> ve /en/on-this-day (bugün) için ortak gövde. */
+export function renderDayPageEn({ month, day, events, matches, canonicalPath, base, isToday = false, hasEnReport = () => false }) {
+  const shown = englishEvents(events);
+  const label = dayLabelEn(month, day);
+  const canonical = `${siteUrl}/${canonicalPath}`;
+  // Bugünün sayfası ile kalıcı gün sayfası aynı içeriği taşır; başlıkları
+  // ayrışmazsa arama dizininde yinelenen başlık olur.
+  const title = isToday
+    ? `On This Day in Football: ${label} | FutbolRadar`
+    : `${label} in Football History: On This Day | FutbolRadar`;
+  const count = shown.length + matches.length;
+  // Aynı gerekçe açıklama için de geçerli: bugünün sayfası "bugün" diye,
+  // kalıcı sayfa takvim günü diye anlatır.
+  const entries = `${count} sourced ${count === 1 ? "entry" : "entries"}`;
+  const desc = isToday
+    ? (count
+      ? `Today in football history (${label}): ${entries} from our archive. Matches, goals, births and deaths, each linked to its source.`
+      : `Today in football history (${label}): no sourced entry yet. FutbolRadar never publishes invented records, so the page stays empty until one is confirmed.`)
+    : (count
+      ? `What happened in football on ${label}: ${entries} covering matches, goals, births and deaths. Every event links to its source.`
+      : `We do not yet have a sourced football history entry for ${label}. FutbolRadar never publishes invented records.`);
+  const robots = count ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW;
+  const days = allDays();
+  const idx = days.findIndex((d) => d.month === month && d.day === day);
+  const prev = days[(idx + days.length - 1) % days.length];
+  const next = days[(idx + 1) % days.length];
+  const trail = [{ name: "Home", url: `${siteUrl}/en` }, { name: "On This Day", url: `${siteUrl}/en/on-this-day` }];
+  if (!isToday) trail.push({ name: label, url: canonical });
+  const list = count
+    ? `<ul class="otd-list">${shown.map(eventItemEn).join("")}${matches.map((m) => matchItemEn(m, base, hasEnReport)).join("")}</ul>`
+    : `<p class="otd-empty">There is no sourced entry for this date yet. FutbolRadar never publishes invented records; this page fills as verified events are added.</p>`;
+  const itemList = {
+    "@context": "https://schema.org", "@type": "ItemList", name: `${label} in football history`, url: canonical, numberOfItems: count,
+    itemListElement: [
+      ...shown.map((e) => ({ name: `${e.year}: ${e.title_en}`, ...(e.description_en ? { description: e.description_en } : {}), url: e.source_url })),
+      ...matches.map((m) => ({ name: `${m.year}: ${m.homeTeam} ${m.score.home}-${m.score.away} ${m.awayTeam}` }))
+    ].map((it, i) => ({ "@type": "ListItem", position: i + 1, ...it }))
+  };
+  const trAlt = isToday ? "tarihte-bugun.html" : `tarih/${daySlug(month, day)}.html`;
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${esc(title)}</title>
+    <meta name="description" content="${esc(desc)}" />
+    <meta name="robots" content="${robots}" />
+    <link rel="canonical" href="${canonical}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:site_name" content="FutbolRadar" />
+    <meta property="og:title" content="${esc(title)}" />
+    <meta property="og:description" content="${esc(desc)}" />
+    <meta property="og:url" content="${canonical}" />
+    <link rel="icon" href="${base}favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="${base}page.css" />
+    ${dayStyle()}
+    ${ld(breadcrumbJsonLd(trail))}
+    ${count ? ld(itemList) : ""}
+  </head>
+  <body>
+    <div class="site-shell">
+      ${siteHeader({ base, locale: "en", altHref: trAlt })}
+      <main class="container" id="on-this-day" data-on-this-day="${mdKey(month, day)}">
+        <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${base}en/index.html">Home</a> › <a href="${base}en/on-this-day.html">On This Day</a>${isToday ? "" : ` › <span>${esc(label)}</span>`}</nav>
+        <header class="trend-hero"><div><span class="eyebrow">Football history · Sourced entries</span><h1>${esc(label)} in Football History: On This Day</h1><p>${esc(desc)}</p></div></header>
+        <section class="trend-section">${list}
+          <p class="trend-source">Sources: the external source linked under each event; for matches, the FutbolRadar match archive.${isToday ? ` Permanent link: <a href="${base}en/on-this-day/${daySlugEn(month, day)}">${esc(label)}</a>.` : ""}</p>
+          <nav class="otd-days" aria-label="Other days"><a href="${base}en/on-this-day/${daySlugEn(prev.month, prev.day)}">‹ ${esc(dayLabelEn(prev.month, prev.day))}</a><a href="${base}en/on-this-day/${daySlugEn(next.month, next.day)}">${esc(dayLabelEn(next.month, next.day))} ›</a></nav>
+        </section>
+      </main>
+      ${siteFooter({ base, locale: "en" })}
+    </div>
+    <script src="${base}site.js" defer></script>
+  </body>
+</html>\n`;
+}
+
 function updateSitemap(file, urls, lastmod) {
   if (!fs.existsSync(file)) return;
   const xml = fs.readFileSync(file, "utf8");
-  const owned = (loc) => loc === `${siteUrl}/tarihte-bugun` || loc.startsWith(`${siteUrl}/tarih/`);
+  const owned = (loc) => loc === `${siteUrl}/tarihte-bugun` || loc.startsWith(`${siteUrl}/tarih/`)
+    || loc === `${siteUrl}/en/on-this-day` || loc.startsWith(`${siteUrl}/en/on-this-day/`);
   const existing = (xml.match(URL_ENTRY_RE) || []).filter((entry) => { const m = entry.match(/<loc>([^<]+)<\/loc>/); return !(m && owned(m[1])); });
   const fresh = urls.map((u) => `  <url>\n    <loc>${u.loc}</loc>\n    <lastmod>${u.lastmod || lastmod}</lastmod>\n    <changefreq>${u.changefreq}</changefreq>\n    <priority>${u.priority}</priority>\n  </url>`);
   const next = wrapUrlset([...existing, ...fresh]);
@@ -268,11 +382,15 @@ if (isMain) {
   fs.writeFileSync(path.join(root, "data", "on-this-day-today.json"), JSON.stringify(json, null, 2) + "\n", "utf8");
   // TR kanonik /tarihte-bugun: kaynaklı olaylar + arşiv maçları.
   writeBoth("tarihte-bugun.html", renderDayPage({ month: tm, day: td, events: todayEvents, matches: result.entries, canonicalPath: "tarihte-bugun", base: "./", isToday: true }));
-  // EN: yalnız arşiv maçları (olay metinleri yalnız Türkçe).
-  writeBoth("en/on-this-day.html", renderPage({ lang: "en", today: result.today, entries: result.entries }));
+  // EN: İngilizce metni olan olaylar + arşiv maçları.
+  const hasEnReport = (reportPage) => fs.existsSync(path.join(root, "en", "match-report", path.basename(reportPage)));
+  writeBoth("en/on-this-day.html", renderDayPageEn({ month: tm, day: td, events: todayEvents, matches: result.entries, canonicalPath: "en/on-this-day", base: "../", isToday: true, hasEnReport }));
   const sitemapUrls = [];
   if (todayEvents.length + result.entries.length) sitemapUrls.push({ loc: `${siteUrl}/tarihte-bugun`, changefreq: "daily", priority: "0.6", lastmod: result.today });
+  if (englishEvents(todayEvents).length + result.entries.length) sitemapUrls.push({ loc: `${siteUrl}/en/on-this-day`, changefreq: "daily", priority: "0.5", lastmod: result.today });
   let indexed = 0;
+  let indexedEn = 0;
+  const routePairs = [];
   for (const { month, day } of allDays()) {
     const dayEvents = eventsFor(events, month, day);
     const matches = byDay.get(mdKey(month, day)) || [];
@@ -281,7 +399,19 @@ if (isMain) {
       indexed += 1;
       sitemapUrls.push({ loc: `${siteUrl}/tarih/${daySlug(month, day)}`, changefreq: "monthly", priority: "0.5", lastmod: result.today });
     }
+    // İngilizce eş: aynı gün, İngilizce ay adıyla.
+    writeBoth(`en/on-this-day/${daySlugEn(month, day)}.html`, renderDayPageEn({ month, day, events: dayEvents, matches, canonicalPath: `en/on-this-day/${daySlugEn(month, day)}`, base: "../../", hasEnReport }));
+    routePairs.push({
+      tr: `tarih/${daySlug(month, day)}.html`, en: `en/on-this-day/${daySlugEn(month, day)}.html`,
+      trUrl: `${siteUrl}/tarih/${daySlug(month, day)}`, enUrl: `${siteUrl}/en/on-this-day/${daySlugEn(month, day)}`
+    });
+    if (englishEvents(dayEvents).length + matches.length) {
+      indexedEn += 1;
+      sitemapUrls.push({ loc: `${siteUrl}/en/on-this-day/${daySlugEn(month, day)}`, changefreq: "monthly", priority: "0.4", lastmod: result.today });
+    }
   }
+  const { createRequire } = await import("node:module");
+  createRequire(import.meta.url)("../services/i18n.js").writeDynamicRoutePairs("on-this-day", routePairs);
   for (const sm of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) updateSitemap(sm, sitemapUrls, result.today);
-  console.log(`[on-this-day] ${result.today}: ${todayEvents.length} olay + ${result.entries.length} maç; /tarih: 366 gün, ${indexed} indekslenebilir`);
+  console.log(`[on-this-day] ${result.today}: ${todayEvents.length} olay + ${result.entries.length} maç; /tarih: 366 gün, ${indexed} indekslenebilir; /en/on-this-day: 366 gün, ${indexedEn} indekslenebilir`);
 }

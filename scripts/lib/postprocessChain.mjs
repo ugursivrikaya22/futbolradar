@@ -69,6 +69,14 @@ export const POSTPROCESS_CHAIN = [
   // düştü. `en-pages`ten SONRA: haber listesi sayfası da aynı akıştan
   // besleniyor, iki üretici aynı veriyi aynı koşuda okusun.
   { id: "en-news-pages", script: "generate-en-news-pages.mjs", args: [], timeoutMinutes: 5 },
+  // İngilizce maç raporları: Türkçe `mac-raporu/` sayfalarının tamamı için
+  // arşivden üretilir. `hreflang` adımından ÖNCE koşmalı (çiftleri o basar).
+  { id: "en-match-report-pages", script: "generate-en-match-report-pages.mjs", args: [], timeoutMinutes: 5 },
+  // İngilizce oyuncu karşılaştırmaları ve arşiv sayfaları: Türkçe eşleri
+  // diskten okunur, bu yüzden Türkçe üreticilerden SONRA koşar. Arşiv,
+  // maç raporu bağlantıları için bir üstteki adımın çıktısına bakar.
+  { id: "en-comparison-pages", script: "generate-en-player-comparison-pages.mjs", args: [], timeoutMinutes: 5 },
+  { id: "en-archive-pages", script: "generate-en-archive-pages.mjs", args: [], timeoutMinutes: 5 },
   { id: "match-focus-pages", script: "generate-match-focus.mjs", args: [], timeoutMinutes: 5 },
   // Anketin kendi paylaşılabilir sayfaları (`/anket/<slug>`, `/en/poll/<slug>`).
   // ORTAK YERLEŞİMDEN ÖNCE: sayfa yeni doğuyor ve başlık/altlık, favicon,

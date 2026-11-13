@@ -911,12 +911,29 @@ function withUniqueEnglishMetadata(list) {
   });
 }
 
+/*
+ * YAYINCI ADI TÜRKÇE CÜMLE DEĞİLDİR.
+ *
+ * "TRT Haber" ve "Haberler.com" birer kurum adı; İngilizce bir cümlede
+ * kaynak olarak anıldıklarında metin Türkçe olmaz. Ama adın içindeki
+ * "haber" / "haberler" birer işlev sözcüğü sayıldığı için bu iki kaynağı
+ * anan İngilizce kayıt akıştan düşüyordu: sayfası üretiliyor, site
+ * haritasına giriyor ama /en/news listesinde yer almıyordu (öksüz sayfa).
+ * Liste bilerek dar: yalnızca adında işlev sözcüğü taşıyan yayıncılar.
+ * Sayfa taraması (`turkish-detector`) aynı adları zaten maskeliyor.
+ */
+const PUBLISHER_NAMES_WITH_FUNCTION_WORDS = /\b(?:TRT Haber|Haberler\.com|NTV Haber|A Haber|Haber Global)\b/g;
+
+function maskPublisherNames(value) {
+  return text(value).replace(PUBLISHER_NAMES_WITH_FUNCTION_WORDS, " ");
+}
+
 function isPublishableEnglish(article) {
   if (!article || !article.slug) return false;
   if (!Array.isArray(article.sources) || !article.sources.length) return false;
   if (!text(article.title).trim() || !text(article.summary).trim()) return false;
   const composed = [article.title, article.summary, ...(article.body || [])].join(" ");
-  if (containsTurkish(composed)) return false;
+  if (containsTurkish(maskPublisherNames(composed))) return false;
   return true;
 }
 

@@ -101,7 +101,10 @@ function canonicalMatches(actual, relativePath) {
  */
 const MATCH_DUPLICATE_RES = [
   /^mac-raporu\/[^/]+\.html$/,
-  /^[a-z0-9-]+-mac-analizi\.html$/
+  /^[a-z0-9-]+-mac-analizi\.html$/,
+  // İngilizce maç raporu: Türkçe `mac-raporu/` ile aynı aile. Kalıcı
+  // `/en/match/` sayfası olan rapor kanonikliği ona devreder.
+  /^en\/match-report\/[^/]+\.html$/
 ];
 
 const isMatchDuplicate = (relativePath) => {
@@ -131,6 +134,18 @@ const canonicalTargets = new Set();
     if (!canonicalMatches(own, `mac/${name}`)) continue;
     canonicalTargets.add(`${DOMAIN}/mac/${name}`);
     canonicalTargets.add(`${DOMAIN}/mac/${name.replace(/\.html$/, "")}`);
+  }
+  // İngilizce eşler: tarih slug'lı (`...-october-11-2026.html`) ve canonical'ı
+  // kendini gösteren `/en/match/` sayfaları.
+  const enMatchDir = path.join(root, "en", "match");
+  const enEntries = fs.existsSync(enMatchDir) ? fs.readdirSync(enMatchDir) : [];
+  for (const name of enEntries) {
+    if (!name.endsWith(".html") || !/-[a-z]+-\d{1,2}-\d{4}\.html$/.test(name)) continue;
+    const html = fs.readFileSync(path.join(enMatchDir, name), "utf8");
+    const own = pick(html, /<link\s+rel="canonical"\s+href="([^"]+)"/i);
+    if (!canonicalMatches(own, `en/match/${name}`)) continue;
+    canonicalTargets.add(`${DOMAIN}/en/match/${name}`);
+    canonicalTargets.add(`${DOMAIN}/en/match/${name.replace(/\.html$/, "")}`);
   }
 }
 
