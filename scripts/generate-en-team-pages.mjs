@@ -391,16 +391,31 @@ ${body}
 }
 
 /**
- * TÜRKÇE KARŞILIĞI — YALNIZCA GERÇEKTEN VAR OLAN DÖRT KULÜP İÇİN.
+ * TÜRKÇE KARŞILIĞI — DİSKTE GERÇEKTEN VAR OLAN MAÇ SAYFASI.
  *
  * "Takım detayı" TR tarafında `takim-detay.html?team=…` — tek bir
- * istemci-hidrasyonlu ekran, 18 takımın ayrı statik sayfası değil. Ayrı
- * statik bir Türkçe sayfa yalnızca dört öncelikli kulüp için var:
- * `<slug>-maclari.html` (Phase 1'de üretildi). O DÖRT kulüpte hreflang ve
- * dil kutusu bu sayfaya bağlanır; kalan 14 kulüpte karşılığı olmayan bir
- * sayfa UYDURULMAZ — dil kutusu güvenli yedeğe (/en/) düşer.
+ * istemci-hidrasyonlu ekran. Statik Türkçe karşılık `<slug>-maclari.html`
+ * (scripts/generate-team-match-pages.mjs). Bu liste bir zamanlar dört
+ * kulüple sınırlıydı; o sayfa artık 18 Süper Lig kulübünün hepsi için
+ * üretiliyor, ama eşleme dörtte kalmıştı: 14 kulüpte Türkçe sayfa ile
+ * İngilizce sayfa birbirini göstermiyor, dil kutusu ana sayfaya düşüyordu.
+ *
+ * Türkçe slug İngilizce slug'la aynı değildir ("erzurumspor" ↔
+ * "erzurumspor-fk"); doğru dosya `superLigTeamPages` kaydından bulunur.
+ * Dosya diskte yoksa (ince içerik korumasıyla üretilmemişse) eşleme
+ * UYDURULMAZ — dil kutusu güvenli yedeğe (/en/) düşer.
  */
-const STATIC_TR_TEAM_PAGE = new Set(["galatasaray", "fenerbahce", "besiktas", "trabzonspor"]);
+const { superLigTeamPages } = require("../services/superLigTeamPages.js");
+const turkishTeamEntries = superLigTeamPages({ root });
+
+function turkishMatchesPage(team, slugValue) {
+  const entry = turkishTeamEntries.find((candidate) => {
+    const name = (candidate.record && candidate.record.name) || candidate.name;
+    return candidate.slug === slugValue || teamSlug(name) === slugValue || sameClub(name, team.name);
+  });
+  const file = `${entry ? entry.slug : slugValue}-maclari.html`;
+  return fs.existsSync(path.join(root, file)) ? file : null;
+}
 
 const currentTeams = teams.filter((team) => team.isCurrentSuperLigTeam !== false);
 fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -418,9 +433,8 @@ for (const team of currentTeams) {
     fs.writeFileSync(target, html, "utf8");
     written += 1;
   }
-  if (STATIC_TR_TEAM_PAGE.has(slugValue) && fs.existsSync(path.join(root, `${slugValue}-maclari.html`))) {
-    pairs.push({ tr: `${slugValue}-maclari.html`, en: enPath });
-  }
+  const trMatches = turkishMatchesPage(team, slugValue);
+  if (trMatches) pairs.push({ tr: trMatches, en: enPath });
   sitemapEntries.push(`  <url>\n    <loc>${absoluteUrl(enPath)}</loc>\n    <lastmod>${String(team.lastStandingsSyncedAt || team.lastProviderSeenAt || "").slice(0, 10)}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.75</priority>\n  </url>`);
 }
 

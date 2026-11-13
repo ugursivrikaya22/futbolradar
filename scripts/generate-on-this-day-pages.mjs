@@ -410,6 +410,12 @@ if (isMain) {
       sitemapUrls.push({ loc: `${siteUrl}/en/on-this-day/${daySlugEn(month, day)}`, changefreq: "monthly", priority: "0.4", lastmod: result.today });
     }
   }
+  // "Bugün" sayfaları da birbirinin eşidir. Bu çift haritada yoktu: iki
+  // sayfada da hreflang basılmıyor, dil düğmesi ana sayfaya gidiyordu.
+  routePairs.push({
+    tr: "tarihte-bugun.html", en: "en/on-this-day.html",
+    trUrl: `${siteUrl}/tarihte-bugun`, enUrl: `${siteUrl}/en/on-this-day`
+  });
   const { createRequire } = await import("node:module");
   createRequire(import.meta.url)("../services/i18n.js").writeDynamicRoutePairs("on-this-day", routePairs);
   for (const sm of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) updateSitemap(sm, sitemapUrls, result.today);

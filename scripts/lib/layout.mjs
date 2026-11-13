@@ -67,19 +67,21 @@ export const NAV_PRIMARY = navList("tr", "primary");
 export const NAV_SECONDARY = navList("tr", "secondary");
 
 /**
- * Kurumsal bağlantılar yalnızca Türkçede var.
+ * Kurumsal bağlantılar — iki dilde.
  *
- * Bu sayfaların (hakkında, gizlilik, kullanım şartları) İngilizce karşılığı
- * henüz üretilmiyor. İngilizce alt bilgide Türkçe hukuk metinlerine bağlantı
- * vermek, "İngilizce sayfada Türkçe içerik gösterme" kuralını ihlal ederdi;
- * bu yüzden İngilizce alt bilgide bu sütun hiç çizilmiyor.
+ * İngilizce karşılıklar (`scripts/generate-en-info-pages.mjs`) üretilene
+ * kadar İngilizce alt bilgide bu sütun hiç çizilmiyordu: Türkçe hukuk
+ * metnine bağlantı vermek "İngilizce sayfada Türkçe içerik gösterme"
+ * kuralını ihlal ederdi. Sayfalar artık var; İngilizce alt bilgi kendi
+ * dilindeki sayfaya gider (`enHref`). İngilizce karşılığı olmayan bir
+ * öğe eklenirse `enHref` boş bırakılır ve o öğe İngilizcede çizilmez.
  */
 const FOOTER_LEGAL = [
-  { href: "hakkinda.html", key: "footer.about" },
-  { href: "iletisim.html", key: "footer.contact" },
-  { href: "veri-notu.html", key: "footer.dataNote" },
-  { href: "gizlilik.html", key: "footer.privacy" },
-  { href: "kullanim-sartlari.html", key: "footer.terms" }
+  { href: "hakkinda.html", enHref: "en/about.html", key: "footer.about" },
+  { href: "iletisim.html", enHref: "en/contact.html", key: "footer.contact" },
+  { href: "veri-notu.html", enHref: "en/data-note.html", key: "footer.dataNote" },
+  { href: "gizlilik.html", enHref: "en/privacy.html", key: "footer.privacy" },
+  { href: "kullanim-sartlari.html", enHref: "en/terms.html", key: "footer.terms" }
 ];
 
 const ICONS = {
@@ -496,7 +498,7 @@ export function siteFooter(options = {}) {
   const secondaryItems = navList(locale, "secondary");
   const legalItems = locale === "tr"
     ? FOOTER_LEGAL.map((item) => ({ href: item.href, label: t(item.key, locale) }))
-    : [];
+    : FOOTER_LEGAL.filter((item) => item.enHref).map((item) => ({ href: item.enHref, label: t(item.key, locale) }));
 
   const social = SOCIAL.map(
     (item) =>

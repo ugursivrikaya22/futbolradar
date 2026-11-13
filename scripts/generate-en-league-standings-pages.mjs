@@ -14,7 +14,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { URL_ENTRY_RE, wrapUrlset } from "./lib/sitemap.mjs";
-import { EN_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { EN_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import { getStandings } from "./lib/standingsData.mjs";
 import { escapeHtml as escapeTeam, importanceNavHtml, standingsTeamHref } from "./lib/standingsTeamLinks.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
@@ -203,7 +203,7 @@ function updateSitemap(file, entries) {
   fs.writeFileSync(file, wrapUrlset([...existing, ...fresh]), "utf8");
 }
 
-const targets = EN_TAB_ORDER.map((id) => STANDINGS_LEAGUES[id]);
+const targets = EN_PAGE_ORDER.map((id) => STANDINGS_LEAGUES[id]);
 for (const entry of targets) {
   writePage(`${entry.slugEn}.html`, competitionPage(entry));
 }

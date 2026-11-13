@@ -262,7 +262,10 @@ for (const base of [root, path.join(root, "public")]) {
     .filter((o) => o.indexable)
     .map(
       (o) =>
-        `  <url><loc>${site}${o.url}</loc>${o.lastmod ? `<lastmod>${o.lastmod}</lastmod>` : ""}</url>`,
+        // Ortak site haritası biçimi (girintili, çok satırlı). Tek satırlık
+        // girdi `URL_ENTRY_RE` ile eşleşmez: bu adımdan sonra haritayı
+        // yeniden yazan her üretici bu altı adresi sessizce düşürürdü.
+        `  <url>\n    <loc>${site}${o.url}</loc>${o.lastmod ? `\n    <lastmod>${o.lastmod}</lastmod>` : ""}\n  </url>`,
     );
   fs.writeFileSync(file, wrapUrlset([...existing, ...additions]));
 }

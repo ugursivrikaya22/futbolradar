@@ -14,7 +14,8 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { siteFooter, siteHeader } from "./lib/layout.mjs";
 import { ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
-import { EN_TAB_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
+import { createRequire } from "node:module";
+import { EN_PAGE_ORDER, STANDINGS_LEAGUES } from "./lib/standingsCatalog.mjs";
 import {
   escapeHtml,
   generatedTeamRecords,
@@ -30,6 +31,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SITE = "https://www.futbolradar.com";
+const { writeDynamicRoutePairs } = createRequire(import.meta.url)("../services/i18n.js");
 
 const POSITION_TR = {
   Goalkeeper: "Kaleci",
@@ -316,6 +318,7 @@ function pageHtml(record, locale, extras) {
             <h1>${record.logo ? `<img src="${escapeHtml(record.logo)}" alt="" width="36" height="36" /> ` : ""}${escapeHtml(record.name)}</h1>
             <p>${escapeHtml(intro)}</p>
             <p>${en ? "Recorded place" : "Kayıtlı sıra"} ${rank} · ${en ? "points" : "puan"} ${points}.</p>
+            ${en && record.enHref.startsWith("en/team/") ? `<p><a href="${escapeHtml(relativeHref(from, record.enHref))}">Team page: fixtures, results and squad</a></p>` : ""}
             ${en && record.existingTr ? `<p><a href="${escapeHtml(relativeHref(from, record.trHref))}">Full club profile (Turkish)</a></p>` : ""}
           </header>
           ${competitionTables(record, locale)}
@@ -383,7 +386,7 @@ function patchLeagueStandingsPages() {
     if (entry && leagueId !== "super-lig") {
       jobs.push({ file: `${entry.slugTr}.html`, rows, locale: "tr", from: "", cell: "th", leagueId, start: 'id="standings-heading"' });
     }
-    if (entry && EN_TAB_ORDER.includes(leagueId)) {
+    if (entry && EN_PAGE_ORDER.includes(leagueId)) {
       jobs.push({ file: `en/${entry.slugEn}.html`, rows, locale: "en", from: "en", cell: "th", leagueId, start: 'id="standings-heading"' });
     }
     jobs.push({ file: `lig/${leagueId}.html`, rows, locale: "tr", from: "lig", cell: "td", leagueId, start: "<h2>Puan durumu</h2>" });
@@ -466,6 +469,39 @@ function main() {
       enPages += 1;
     }
   }
+  /*
+   * ELLE YAZILMIŞ TÜRKÇE TAKIM SAYFALARININ İNGİLİZCE EŞİ.
+   *
+   * `takimlar/<slug>` sayfası başka bir üreticiden gelen kulüplerde (18
+   * Süper Lig kulübü, zengin kulüp sayfaları, Stuttgart) Türkçe sayfanın
+   * İngilizce karşılığı yoktu ya da vardı ama iki sayfa birbirini
+   * göstermiyordu: hreflang yok, dil kutusu ana sayfaya düşüyordu.
+   * Süper Lig kulüplerinde `en/team/<slug>` ZATEN `<slug>-maclari.html`
+   * ile eşli (hreflang bire birdir), bu yüzden `takimlar/<slug>` için ayrı
+   * bir kulüp kaydı sayfası yazılır. İçerik diğer `en/club` sayfalarıyla
+   * aynı kaynaktan gelir: kayıtlı puan satırı, kadro, maç — çeviri değil.
+   * Eşleme rota haritasına yazılır; Türkçe tarafa hreflang ve dil kutusu
+   * oradan gelir.
+   */
+  const curatedPairs = [];
+  let curatedEnPages = 0;
+  for (const record of loadStandingsTeamIndex().records) {
+    if (!record.existingTr || record.generateTr || !record.slug) continue;
+    if (record.trHref !== `takimlar/${record.slug}` || !record.competitions.length) continue;
+    const enFile = `en/club/${record.slug}.html`;
+    if (!(record.generateEn && record.enHref === `en/club/${record.slug}`)) {
+      writeBoth(enFile, pageHtml(record, "en", extras));
+      curatedEnPages += 1;
+    }
+    curatedPairs.push({
+      tr: `takimlar/${record.slug}.html`,
+      en: enFile,
+      trUrl: `${SITE}/takimlar/${record.slug}`,
+      enUrl: `${SITE}/en/club/${record.slug}`
+    });
+  }
+  writeDynamicRoutePairs("club", curatedPairs);
+  console.log(`[standings-team-pages] elle yazılmış ${curatedPairs.length} Türkçe takım sayfası İngilizce eşine bağlandı (${curatedEnPages} yeni en/club sayfası)`);
   const map = `${JSON.stringify(linkMapPayload())}\n`;
   writeBoth("data/standings-team-links.json", map);
   patchLeagueStandingsPages();
