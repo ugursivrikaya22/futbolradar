@@ -1388,20 +1388,38 @@ function leadersListHtml(rows, emptyTitle, emptyNote) {
 }
 
 /**
+ * İNGİLİZCE ANA SAYFADA OYUNCU BAĞLANTISI — yalnızca İngilizce profil varsa.
+ *
+ * `playerCanonicalHref` TÜRKÇE kanonik yolu (`futbolcu/<slug>`) döndürür;
+ * İngilizce sayfada `./` ile birleşince `/en/futbolcu/<slug>` olur ve bu
+ * adres yoktur (kırık bağlantı — üretim kapısı `audit-interaction-routes`
+ * derlemeyi durdurur). İngilizce profil `en/player/<slug>.html` altında ve
+ * yalnızca yayın kapısından geçen oyuncular için üretilir; sayfa yoksa
+ * bağlantı basılmaz, ad düz metin kalır (`leagueLeaderCell` ile aynı kural).
+ */
+function enHomePlayerHref(playerRef) {
+  if (!playerRef) return "";
+  const profile = playerUrls.enPlayerPagePath(playerRef);
+  return fs.existsSync(path.join(process.cwd(), profile))
+    ? `./player/${playerUrls.slugFor(playerRef)}.html`
+    : "";
+}
+
+/**
  * SÜPER LIG LEADERS RAIL — same data as the Turkish homepage
  * (`data/league-leaders.json`, form players, team momentum). English chrome only.
  */
 function leadersRailSection() {
   const scorers = (leagueLeaders.topScorers || []).slice(0, 5).map((row, index) =>
-    homeLeaderRow(index + 1, row.name, row.team, row.goals, row.slug ? playerUrls.playerCanonicalHref(row.slug, "./") : "", "goals"));
+    homeLeaderRow(index + 1, row.name, row.team, row.goals, enHomePlayerHref(row.slug), "goals"));
   const assists = (leagueLeaders.topAssists || []).slice(0, 5).map((row, index) =>
-    homeLeaderRow(index + 1, row.name, row.team, row.assists, row.slug ? playerUrls.playerCanonicalHref(row.slug, "./") : "", "assists"));
+    homeLeaderRow(index + 1, row.name, row.team, row.assists, enHomePlayerHref(row.slug), "assists"));
   const { kept: formPlayers } = filterPlayerCards(
     players.filter((player) => player && player.id !== "mauro-icardi"),
     { trend: true, leagueTeams: fixtureTeamNames() }
   );
   const formRows = formPlayers.slice(0, 5).map((player, index) =>
-    homeLeaderRow(index + 1, player.name, [player.currentTeam || player.team, player.position].filter(Boolean).join(" · "), "", playerUrls.playerCanonicalHref(player.id, "./"), ""));
+    homeLeaderRow(index + 1, player.name, [player.currentTeam || player.team, player.position].filter(Boolean).join(" · "), "", enHomePlayerHref(player.id), ""));
   const teamRows = teams
     .filter((team) => team && team.name && Number.isFinite(Number(team.momentum)))
     .sort((left, right) => Number(right.momentum || 0) - Number(left.momentum || 0))

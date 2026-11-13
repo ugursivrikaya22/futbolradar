@@ -38,6 +38,16 @@ export function buildRefereeAgenda(now = Date.now()) {
       sources: [...new Map(archive.flatMap(i => i.sources).map(s => [s.url, s])).values()],
       updateNote: 'Bu sayfa tarihli gelişmeleri arşivler. Gözaltı, adliyeye sevk, serbest bırakılma ve tutuklama birbirinin yerine kullanılmaz. Yeni doğrulanmış bilgiler geldikçe güncellenir.',
       internalLinks: [{ href: '../haberler.html', label: 'Futbol haberleri' }] };
+    // İNGİLİZCE SÜRÜM ELLE YAZILIR VE KORUNUR. Bu kayıt her derlemede baştan
+    // kurulduğu için `en` bloğu taşınmazsa İngilizce sayfa bir sonraki
+    // derlemede sessizce kaybolur. Blok yalnızca Türkçe gövde, çevirinin
+    // yazıldığı gövdeyle AYNIYSA taşınır: yeni bir gelişme eklendiğinde eski
+    // çeviri eksik kalır ve yarım çeviri yayımlamaktansa İngilizce sayfa,
+    // çeviri güncellenene kadar üretilmez.
+    if (previous?.en && JSON.stringify(previous.body) === JSON.stringify(article.body)) {
+      article.en = previous.en;
+      if (previous.updateNoteEn) article.updateNoteEn = previous.updateNoteEn;
+    }
     const index = news.findIndex(n => n.id === id); if (index < 0) news.unshift(article); else news[index] = article;
     write('data/news.json', news); write('public/data/news.json', news);
   }
