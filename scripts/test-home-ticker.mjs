@@ -138,4 +138,26 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   assert.ok(!/home-ticker|ticker\.json/.test(sw), "sw.js bandın dosyalarını yakalamamalı (bayat içerik riski)");
 }
 
+// ── 6. İngilizce ana sayfa kromu ─────────────────────────────────────────────
+{
+  const en = renderHomeTicker([
+    { ...base, category: "iddia", text: "Örnek iddia metni", expiresAt: "2026-10-30T00:00:00+03:00" }
+  ], { base: "../", locale: "en" });
+  assert.ok(en.includes("Transfer Radar"), "EN başlık Transfer Radar olmalı");
+  assert.ok(!en.includes("Transfer Radarı"), "EN başlıkta Türkçe Radarı olmamalı");
+  assert.ok(en.includes("Rumour"), "iddia kategorisi EN'de Rumour olmalı");
+  assert.ok(!en.includes(">İddia<") && !en.includes(">Durdur<"), "EN kromunda İddia/Durdur olmamalı");
+  assert.ok(en.includes('data-home-ticker-locale="en"'), "EN locale damgası olmalı");
+  assert.ok(en.includes('data-original-language="tr"'), "kaynak cümle data-source-lang ile işaretlenmeli");
+  assert.ok(en.includes(">Pause<"), "EN durdur düğmesi Pause olmalı");
+  const enIndex = fs.existsSync(path.join(root, "en/index.html")) ? fs.readFileSync(path.join(root, "en/index.html"), "utf8") : "";
+  if (enIndex) {
+    const sonDakika = enIndex.indexOf("<!-- shared-layout:ticker:end -->");
+    const radar = enIndex.indexOf("<!-- shared-layout:home-ticker:start -->");
+    const live = enIndex.indexOf('data-component="LiveScoresTicker"');
+    const main = enIndex.indexOf("<main");
+    assert.ok(sonDakika > -1 && radar > sonDakika && radar < live && radar < main, "EN Transfer Radar bandı Headlines altında olmalı");
+  }
+}
+
 console.log("test-home-ticker: ok");

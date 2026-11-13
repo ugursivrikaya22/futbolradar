@@ -42,6 +42,54 @@
       return r.json();
     });
   }
+  function isLiveStatus(status) {
+    return ['LIVE', 'HALFTIME', '1H', 'HT', '2H', 'ET', 'P', 'INT', 'SUSP', 'INTERRUPTED', 'SUSPENDED'].indexOf(status) !== -1;
+  }
+  function isFinishedStatus(status) {
+    return ['FINISHED', 'FT', 'AET', 'PEN', 'AWARDED', 'AWD', 'WO'].indexOf(status) !== -1;
+  }
+  function isUpcomingStatus(status) {
+    return ['SCHEDULED', 'TIMED', 'NS', 'TBD'].indexOf(status) !== -1;
+  }
+  function statusOf(row) {
+    return String(row.status || row.providerStatus || '').toUpperCase();
+  }
+  // Counts use the full same-day payload from /api/matches — the same live
+  // source as the Turkish homepage — not the stale fixture-calendar.json
+  // snapshot baked at build time.
+  function countsOf(rows) {
+    var live = 0, upcoming = 0, finished = 0, now = Date.now();
+    rows.forEach(function (row) {
+      var status = statusOf(row);
+      if (isLiveStatus(status)) live += 1;
+      else if (isFinishedStatus(status)) finished += 1;
+      else if (isUpcomingStatus(status) && Date.parse(row.kickoff) >= now) upcoming += 1;
+    });
+    return { live: live, upcoming: upcoming, finished: finished, total: rows.length };
+  }
+  function updateQuickStats(counts) {
+    var host = document.querySelector('.quick-stats');
+    if (!host) return;
+    var defs = [
+      { key: 'live', label: 'Live', href: '/en/live-football-scores.html', modifier: 'is-live', valueClass: 'live-number' },
+      { key: 'upcoming', label: 'Upcoming', href: '/en/todays-matches.html', modifier: '', valueClass: '' },
+      { key: 'finished', label: 'Finished', href: '/en/todays-matches.html', modifier: '', valueClass: '' },
+      { key: 'total', label: 'Total', href: '/en/todays-matches.html', modifier: '', valueClass: '' }
+    ];
+    var cells = defs.filter(function (def) { return Math.floor(Number(counts[def.key]) || 0) > 0; })
+      .map(function (def) {
+        var value = Math.floor(Number(counts[def.key]) || 0);
+        return '<a class="quick-stat' + (def.modifier ? ' ' + def.modifier : '') + '" href="' + def.href + '">' +
+          '<span>' + def.label + '</span><b' + (def.valueClass ? ' class="' + def.valueClass + '"' : '') + '>' + value + '</b></a>';
+      }).join('');
+    if (!cells) {
+      host.remove();
+      return;
+    }
+    host.setAttribute('aria-label', "Today's match summary");
+    host.innerHTML = cells;
+  }
+
   function refresh() {
     var date = new URLSearchParams(location.search).get('date') || dayFormat.format(new Date());
     json('/api/matches?locale=en&date=' + encodeURIComponent(date)).then(function (payload) {
@@ -51,6 +99,7 @@
       return json('/data/fixture-calendar.json').then(function (calendar) { return { rows: calendar.matches || [], confirmed: false }; });
     }).then(function (result) {
       var rows = result.rows.filter(function (row) { return Number.isFinite(Date.parse(row.kickoff)) && day(row) === date; });
+      updateQuickStats(countsOf(rows));
       var homeOnly = target.hasAttribute('data-home-only');
       if (homeOnly) rows = rows.filter(function (row) {
         var status = String(row.status || row.providerStatus || '').toUpperCase();
@@ -115,7 +164,12 @@
       });
       target.dataset.fixtureDate = date;
       target.classList.add('league-match-grid');
-      target.replaceChildren(fragment);
+      var grid = target.querySelector('[data-match-list="today-matches"]') || target.querySelector('.matches-grid');
+      if (grid && target.contains(grid)) {
+        grid.replaceChildren(fragment);
+      } else {
+        target.replaceChildren(fragment);
+      }
       document.dispatchEvent(new CustomEvent('futbolradar:rendered', {detail:{target:target}}));
       document.dispatchEvent(new CustomEvent('futbolradar:score-snapshot', {detail:{matches:rows}}));
     }).catch(function () {

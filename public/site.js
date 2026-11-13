@@ -2543,7 +2543,13 @@
     return img;
   }
 
-  function renderRow(row, index) {
+  function motmCopy(section) {
+    var locale = section && section.getAttribute("data-motm-week-locale");
+    if (locale === "en") return { votes: " votes", report: "Match report →" };
+    return { votes: " oy", report: "Maç raporu →" };
+  }
+
+  function renderRow(row, index, copy) {
     var item = document.createElement("li");
     item.className = "motm-week__item";
     item.style.setProperty("--motm-week-delay", (index * 70) + "ms");
@@ -2591,7 +2597,7 @@
     score.appendChild(percent);
     var votes = document.createElement("span");
     votes.className = "motm-week__votes";
-    votes.textContent = row.votes + " oy";
+    votes.textContent = row.votes + copy.votes;
     score.appendChild(votes);
     var bar = document.createElement("span");
     bar.className = "motm-week__bar";
@@ -2602,7 +2608,7 @@
     if (row.reportHref) {
       var cta = document.createElement("span");
       cta.className = "motm-week__cta";
-      cta.textContent = "Maç raporu →";
+      cta.textContent = copy.report;
       score.appendChild(cta);
     }
     card.appendChild(score);
@@ -2633,8 +2639,9 @@
         if (!rows.length) return; // Gerçek sayım yok: bölüm hiç açılmaz.
 
         list.innerHTML = "";
+        var copy = motmCopy(section);
         rows.forEach(function (row, index) {
-          list.appendChild(renderRow(row, index));
+          list.appendChild(renderRow(row, index, copy));
         });
         section.hidden = false;
         window.requestAnimationFrame(function () {
