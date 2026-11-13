@@ -377,10 +377,19 @@ function pullQuoteHtml(quote) {
   return `<blockquote class="column-pullquote"><p>${escapeHtml(quote.text)}</p>${cite}</blockquote>`;
 }
 
-function statsHtml(stats) {
+// Vitrin kutularının ÇERÇEVE METNİ dile göre seçilir. Kutunun içeriği
+// (`en.stats`, `en.matchCard`) çevrilmiş olsa bile etiketler sabit Türkçe
+// kalırsa İngilizce sayfaya "Stadyum / Yayın / Teknik direktör" sızar.
+const SHOWCASE_LABELS = {
+  tr: { stats: "Öne çıkan rakamlar", match: "Maç bilgisi", kickoff: "Başlama", venue: "Stadyum", broadcast: "Yayın", coach: "Teknik direktör" },
+  en: { stats: "Key numbers", match: "Match information", kickoff: "Kick-off", venue: "Stadium", broadcast: "Broadcast", coach: "Head coach" }
+};
+
+function statsHtml(stats, locale = "tr") {
+  const labels = SHOWCASE_LABELS[locale === "en" ? "en" : "tr"];
   if (!Array.isArray(stats) || !stats.length) return "";
   const items = stats.map((row) => `<li class="column-stat"><span class="column-stat-value">${escapeHtml(row.value)}</span><span class="column-stat-label">${escapeHtml(row.label)}</span>${row.note ? `<span class="column-stat-note">${escapeHtml(row.note)}</span>` : ""}</li>`).join("");
-  return `<aside class="column-stats" aria-label="Öne çıkan rakamlar"><ul>${items}</ul></aside>`;
+  return `<aside class="column-stats" aria-label="${escapeHtml(labels.stats)}"><ul>${items}</ul></aside>`;
 }
 
 function matchFact(label, value, datetime) {
@@ -391,16 +400,17 @@ function matchFact(label, value, datetime) {
   return `<div><dt>${escapeHtml(label)}</dt><dd>${body}</dd></div>`;
 }
 
-function matchCardHtml(card) {
+function matchCardHtml(card, locale = "tr") {
+  const labels = SHOWCASE_LABELS[locale === "en" ? "en" : "tr"];
   if (!card || !card.home || !card.away) return "";
   const kicker = [card.competition, card.round].filter(Boolean).join(" · ");
   const facts = [
-    matchFact("Başlama", card.kickoffLabel || card.kickoff, card.kickoff),
-    matchFact("Stadyum", [card.venue, card.city].filter(Boolean).join(", ")),
-    matchFact("Yayın", card.broadcast),
-    matchFact("Teknik direktör", card.coach)
+    matchFact(labels.kickoff, card.kickoffLabel || card.kickoff, card.kickoff),
+    matchFact(labels.venue, [card.venue, card.city].filter(Boolean).join(", ")),
+    matchFact(labels.broadcast, card.broadcast),
+    matchFact(labels.coach, card.coach)
   ].filter(Boolean).join("");
-  return `<section class="column-match-card" aria-label="Maç bilgisi">${kicker ? `<p class="column-match-kicker">${escapeHtml(kicker)}</p>` : ""}<div class="column-match-teams"><span>${escapeHtml(card.home)}</span><span class="column-match-vs">v</span><span>${escapeHtml(card.away)}</span></div>${facts ? `<dl class="column-match-facts">${facts}</dl>` : ""}${card.note ? `<p class="column-match-note">${escapeHtml(card.note)}</p>` : ""}</section>`;
+  return `<section class="column-match-card" aria-label="${escapeHtml(labels.match)}">${kicker ? `<p class="column-match-kicker">${escapeHtml(kicker)}</p>` : ""}<div class="column-match-teams"><span>${escapeHtml(card.home)}</span><span class="column-match-vs">v</span><span>${escapeHtml(card.away)}</span></div>${facts ? `<dl class="column-match-facts">${facts}</dl>` : ""}${card.note ? `<p class="column-match-note">${escapeHtml(card.note)}</p>` : ""}</section>`;
 }
 
 function sportsEventJsonLd(event) {
@@ -503,8 +513,8 @@ export function columnPageHtml(column, locale = "tr") {
   const eventLd = locale === "en" ? null : sportsEventJsonLd(column.sportsEvent);
   const showcaseBlocks = [
     pullQuoteHtml(column.pullQuote),
-    matchCardHtml(column.matchCard),
-    statsHtml(column.stats)
+    matchCardHtml(column.matchCard, locale),
+    statsHtml(column.stats, locale)
   ].filter(Boolean);
   const showcaseHtml = showcaseBlocks.length ? `\n        ${showcaseBlocks.join("\n        ")}` : "";
   // Sayfa yolu (Ana Sayfa > Köşe Yazıları > yazı) görünür breadcrumb ile aynı

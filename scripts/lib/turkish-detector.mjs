@@ -144,7 +144,11 @@ function escapeRegex(value) {
  * ki çevre metni ve konumlar kaymasın.
  */
 const PROPER_NOUNS = [
-  "Atatürk Olimpiyat"
+  "Atatürk Olimpiyat",
+  // Yayın kuruluşlarının adları; kaynak künyesinde İngilizce sayfada da
+  // aynen yazılır ("TRT Haber" kanalın adıdır, "TRT News" başka bir yayın).
+  "Haberler.com",
+  "TRT Haber"
 ];
 
 const PROPER_NOUN_PATTERN = new RegExp(PROPER_NOUNS.map(escapeRegex).join("|"), "gi");
@@ -244,6 +248,10 @@ export function findTurkish(text, options = {}) {
     // harfli kısa rozet Türkçe sözcük değildir.
     if (raw.length <= 3 && raw === raw.toUpperCase()) continue;
     const word = raw.toLowerCase();
+    // İNGİLİZCE KISALTMA YANLIŞ POZİTİFİ. "you’ve", "we've", "they’ve":
+    // kesme işaretinden sonraki "ve" Türkçe bağlaç değil, "have"in kısası.
+    // Kesmeden önce harf varsa (sözcük içi kesme) bu eşleşme sayılmaz.
+    if (word === "ve" && /\p{L}['’]$/u.test(source.slice(Math.max(0, match.index - 2), match.index))) continue;
     const start = Math.max(0, match.index - 60);
     const context = source.slice(start, match.index + raw.length + 60).trim();
     const key = `${word}|${context.slice(0, 40)}`;
