@@ -11,6 +11,9 @@
  *      <kulüp>-oyuncu-radari.html       → en/<kulüp>-player-radar.html
  *      Kaynak: `data/teams.json` (sıra, puan, son sonuçlar, form ve momentum
  *      skoru) ve hesaplanmış oyuncu puanları (`data/player-ratings.json`).
+ *      uefa-ulke-puani-siralamasi.html  → en/uefa-country-ranking.html
+ *      Kaynak: `data/uefa-country-coefficients.json` (UEFA; ülke adları
+ *      kayıtta zaten İngilizce).
  *
  *   2. YÖNLENDİRME SAYFALARI (elle yazılmış kısa metin)
  *      super-lig-form-durumu, super-lig-momentum-siralamasi,
@@ -122,7 +125,12 @@ function shell(page) {
       }
     ]
   };
-  const links = (page.links || []).filter((link) => exists(`en/${link.href.replace(/^\.\//, "").split(/[?#]/)[0]}`));
+  // Uzantısız verilen hedef (puan durumu sayfaları temiz adresle sunulur)
+  // diskte `.html` dosyası olarak aranır.
+  const links = (page.links || []).filter((link) => {
+    const target = link.href.replace(/^\.\//, "").split(/[?#]/)[0];
+    return exists(`en/${target}`) || exists(`en/${target}.html`);
+  });
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -295,6 +303,54 @@ function teamRadarPage(club) {
   };
 }
 
+// ── 1d. UEFA ülke sıralaması ────────────────────────────────────────────
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+function longDate(iso) {
+  const parts = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ""));
+  return parts ? `${Number(parts[3])} ${MONTHS[Number(parts[2]) - 1]} ${parts[1]}` : "";
+}
+
+function uefaPage() {
+  const data = readJson("data/uefa-country-coefficients.json", {});
+  const rows = (Array.isArray(data.rows) ? data.rows : [])
+    .filter((row) => Number.isInteger(row.position) && row.country && Number.isFinite(Number(row.coefficient)) && isClean(row.country))
+    .sort((left, right) => left.position - right.position);
+  if (rows.length < 10 || !/^https:\/\//.test(String(data.sourceUrl || ""))) return null;
+  const top = rows.slice(0, 20);
+  const turkey = rows.find((row) => row.countryCode === "TUR");
+  const dated = longDate(data.asOf);
+  const fixed = (value) => (Number.isFinite(Number(value)) ? Number(value).toFixed(3) : "—");
+  const turkeyLine = turkey
+    ? `Türkiye are ${ordinal(turkey.position)} with ${fixed(turkey.coefficient)} points${Number.isFinite(Number(turkey.teamsStillPlaying)) && Number.isFinite(Number(turkey.teams)) ? `; ${turkey.teamsStillPlaying} of their ${plural(turkey.teams, "club", "clubs")} are still in European competition` : ""}.`
+    : "";
+  const body = `${cards([
+    { title: "Points per club", text: "A country's season score is the points won by its clubs divided by the number of clubs it entered." },
+    { title: "Five seasons", text: "The ranking adds up the last five season scores." },
+    { title: "Updated after each round", text: "UEFA refreshes the table once a round of matches is complete." }
+  ])}
+      <section class="data-panel">
+        <h2 class="panel-title">UEFA country ranking${dated ? ` (${escapeHtml(dated)})` : ""}</h2>
+        <p>${escapeHtml(turkeyLine)} The table shows the top ${top.length} associations with the five-season coefficient and the 2026/27 season coefficient.</p>
+        <div class="table-scroll"><table class="standings-table"><caption>UEFA country ranking</caption><thead><tr><th>#</th><th>Country</th><th>Five seasons</th><th>2026/27</th><th>Clubs</th><th>Still playing</th></tr></thead><tbody>${top.map((row) => `<tr${row.countryCode === "TUR" ? ' class="is-featured-team"' : ""}><td>${row.position}</td><th scope="row">${escapeHtml(row.country)}</th><td><strong>${fixed(row.coefficient)}</strong></td><td>${fixed(row.seasonCoefficient2026_27)}</td><td>${cell(row.teams)}</td><td>${cell(row.teamsStillPlaying)}</td></tr>`).join("")}</tbody></table></div>
+        <p class="evergreen-freshness">Source: <a href="${escapeHtml(data.sourceUrl)}" rel="nofollow noopener noreferrer">UEFA association club coefficients</a>${dated ? ` · Data dated ${escapeHtml(dated)}` : ""}. Not live.</p>
+      </section>`;
+  return {
+    kind: "data", tr: "uefa-ulke-puani-siralamasi.html", en: "en/uefa-country-ranking.html",
+    title: "UEFA Country Ranking 2026/27: Where Türkiye Stand | FutbolRadar",
+    description: `The UEFA country coefficient ranking${dated ? ` as of ${dated}` : ""}: the top 20 associations, the five-season total and the 2026/27 season score, with Türkiye's position.`,
+    eyebrow: "UEFA · 2026/27", h1: "UEFA Country Ranking", crumb: "UEFA Country Ranking", schemaType: "CollectionPage",
+    lead: "Türkiye's place in European competition moves with the results of its clubs and the season coefficients behind them.",
+    body, indexable: true,
+    links: [
+      { href: "./champions-league-standings", kicker: "Table", title: "Champions League standings" },
+      { href: "./europa-league-standings", kicker: "Table", title: "Europa League standings" },
+      { href: "./conference-league-standings", kicker: "Table", title: "Conference League standings" },
+      { href: "./league/champions-league.html", kicker: "Competition", title: "Champions League" }
+    ]
+  };
+}
+
 // ── 2. Yönlendirme sayfaları (elle yazılmış) ────────────────────────────
 function cards(items) {
   return `<section class="grid three">${items.map((item) => `<article class="card"><h2>${escapeHtml(item.title)}</h2><p>${escapeHtml(item.text)}</p></article>`).join("")}</section>`;
@@ -412,6 +468,7 @@ const GATEWAYS = [
 // ── Üretim ──────────────────────────────────────────────────────────────
 const candidates = [];
 if (exists("form-tablosu/super-lig.html")) candidates.push(formTablePage());
+if (exists("uefa-ulke-puani-siralamasi.html")) candidates.push(uefaPage());
 for (const club of CLUBS) {
   if (exists(`${club.slug}-form-durumu.html`)) candidates.push(teamFormPage(club));
   if (exists(`${club.slug}-oyuncu-radari.html`)) candidates.push(teamRadarPage(club));
@@ -454,7 +511,7 @@ for (const club of CLUBS) {
     : "");
 }
 // İstatistik merkezine form tablosu ve yönlendirme sayfaları.
-const hubLinks = writable.filter((page) => page.kind === "gateway" || page.en === "en/super-lig-form-table.html");
+const hubLinks = writable.filter((page) => page.kind === "gateway" || ["en/super-lig-form-table.html", "en/uefa-country-ranking.html"].includes(page.en));
 integrateLinkBlock(root, "en/stats-hub.html", "en-hub-pages", hubLinks.length
   ? `<section class="data-panel" aria-labelledby="en-stats-guides-title"><h2 class="panel-title" id="en-stats-guides-title">Form and guides</h2><div class="trend-link-grid">${hubLinks.map((page) => `<a href="./${path.basename(page.en)}"><span>${escapeHtml(page.eyebrow)}</span><strong>${escapeHtml(page.h1)}</strong></a>`).join("")}</div></section>`
   : "");
@@ -462,7 +519,7 @@ integrateLinkBlock(root, "en/stats-hub.html", "en-hub-pages", hubLinks.length
 const registered = writeDynamicRoutePairs("hub", writable.map((page) => ({ tr: page.tr, en: page.en })));
 
 const stamp = new Date().toISOString().slice(0, 10);
-const owned = /<loc>[^<]*\/en\/(?:super-lig-form-table|super-lig-form|super-lig-momentum-ranking|super-lig-player-radar|todays-match-predictions|matches-of-the-week|derby-radar|[a-z0-9-]+-form|[a-z0-9-]+-player-radar)\.html<\/loc>/;
+const owned = /<loc>[^<]*\/en\/(?:super-lig-form-table|uefa-country-ranking|super-lig-form|super-lig-momentum-ranking|super-lig-player-radar|todays-match-predictions|matches-of-the-week|derby-radar|[a-z0-9-]+-form|[a-z0-9-]+-player-radar)\.html<\/loc>/;
 const entries = writable.filter((page) => page.indexable).map((page) => `  <url>\n    <loc>${DOMAIN}/${page.en}</loc>\n    <lastmod>${stamp}</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.5</priority>\n  </url>`);
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
