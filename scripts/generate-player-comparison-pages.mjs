@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
@@ -70,6 +71,57 @@ const allPlayerRecords = withStoredRatings(
   storedRatings
 );
 const players = allPlayerRecords.filter((player) => !player.isDuplicate);
+
+/**
+ * KAYNAKLI OYUNCU VERİSİ (oyuncu karşılaştırma botu çıktısı).
+ *
+ * data/player-comparison-data.json → scripts/collect-player-comparison.mjs.
+ * Kadro, pozisyon, forma numarası, sezon istatistiği (90 dk / maç başı),
+ * son maçlar ve transfer geçmişi; her alan kendi kaynağıyla ve görünür
+ * "Veri: API-Football" künyesiyle basılır. Eşleşme sağlayıcı kimliğiyle
+ * (kanonik kaydın kopyaları dahil) yapılır; eşleşme yoksa bölüm basılmaz.
+ * Tarayıcıdaki interaktif kıyas da AYNI çiziciyi kullanır
+ * (player-comparison-data.js) — iki yüzey ayrışamaz.
+ */
+const { renderComparison } = require("../player-comparison-data.js");
+const comparisonData = readJsonFile("data/player-comparison-data.json", { meta: {}, players: [] });
+const comparisonByProvider = new Map((comparisonData.players || []).map((record) => [String(record.providerId), record]));
+const comparisonByLocal = new Map((comparisonData.players || []).filter((record) => record.localPlayerId).map((record) => [record.localPlayerId, record]));
+const recordsByCanonical = new Map();
+for (const record of allPlayerRecords) {
+  const key = record.canonicalId || record.id;
+  if (!recordsByCanonical.has(key)) recordsByCanonical.set(key, []);
+  recordsByCanonical.get(key).push(record);
+}
+const comparisonCssHref = (() => {
+  const file = path.join(root, "player-comparison-data.css");
+  if (!fs.existsSync(file)) return "../player-comparison-data.css";
+  const stamp = crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex").slice(0, 8);
+  return `../player-comparison-data.css?v=${stamp}`;
+})();
+
+function comparisonRecordFor(player) {
+  const records = [player].concat(recordsByCanonical.get(player.canonicalId || player.id) || []);
+  for (const record of records) {
+    const ids = [record.providerId, record.providerSnapshot && record.providerSnapshot.providerId].filter(Boolean).map(String);
+    for (const id of ids) if (comparisonByProvider.has(id)) return comparisonByProvider.get(id);
+  }
+  for (const record of records) if (comparisonByLocal.has(record.id)) return comparisonByLocal.get(record.id);
+  return null;
+}
+
+function sourcedDataSectionHtml(left, right) {
+  const leftRecord = comparisonRecordFor(left);
+  const rightRecord = comparisonRecordFor(right);
+  if (!leftRecord && !rightRecord) return "";
+  // Başlıkta sitenin kanonik oyuncu adı kullanılır (sağlayıcı "V. Osimhen" kısaltması değil).
+  const named = (record, player) => (record ? { ...record, name: player.name } : { name: player.name });
+  return `<section class="pcd-section" aria-label="Kaynaklı oyuncu verileri">
+        ${renderComparison(comparisonData, named(leftRecord, left), named(rightRecord, right), {
+          title: `${left.name} ve ${right.name}: kadro, istatistik ve transfer verileri`
+        })}
+      </section>`;
+}
 /** Kıyas adresi tek kaynaktan; editoryal istisnalar dahil. */
 const slugForPair = createComparisonSlugResolver(allPlayerRecords);
 const outDir = path.join(root, "karsilastirma");
@@ -392,6 +444,7 @@ function pageHtml(pair) {
   const description = comparisonDescription(left, right);
   const canonical = `${domain}/karsilastirma/${slug}.html`;
   const insights = comparisonInsight(left, right);
+  const sourcedSection = sourcedDataSectionHtml(left, right);
   const ratingUpdatedAt = oldestRatingUpdatedAt([left, right]);
   const ratingTable = comparisonRatingTableHtml([left, right], {
     updatedLabel: ratingUpdatedAt ? formatFreshnessDate(ratingUpdatedAt) : ""
@@ -473,7 +526,7 @@ function pageHtml(pair) {
     </script>
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../page.css" />
+    <link rel="stylesheet" href="../page.css" />${sourcedSection ? `\n    <link rel="stylesheet" href="${comparisonCssHref}" />` : ""}
   </head>
   <body class="subpage">
     ${siteHeader({ base: "../" })}
@@ -512,6 +565,8 @@ function pageHtml(pair) {
       ${comparisonSourceStripHtml(left, right)}
 
       ${ratingSectionHtml(left, right, ratingTable)}
+
+      ${sourcedSection}
 
       <section class="compare-grid" data-api-target="player-compare" data-compare-seed="${escapeHtml(left.id)},${escapeHtml(right.id)}">
         <article class="data-empty" data-card="empty-state">

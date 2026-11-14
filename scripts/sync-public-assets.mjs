@@ -56,6 +56,8 @@ for (const file of [
   "home-columns.js",
   "newsletter.js",
   "newsletter.css",
+  "player-comparison-data.js",
+  "player-comparison-data.css",
   "site.webmanifest",
   "404.html",
   "index.html",
