@@ -43,6 +43,7 @@ const {
   writeDynamicRoutePairs
 } = require("../services/i18n.js");
 const { venueLabel } = require("../services/displayLabels.js");
+const { publishedLead } = require("../services/aiMatchSummary.js");
 const { slug: teamSlug } = require("../services/superLigTeams.js");
 const { enPathForMatch, loadRegistry } = require("../services/matchSeoPages.js");
 const { getPlayers } = require("../services/playerService.js");
@@ -489,7 +490,10 @@ function pageHtml(file, match, stored) {
     ? `${match.homeTeam} ${score.home}-${score.away} ${match.awayTeam}`
     : `${match.homeTeam} v ${match.awayTeam}`;
   const title = `${headline} – Match Report${dateText ? `, ${dateText}` : ""} | FutbolRadar`;
-  const lead = resultSentence(match, dateText);
+  const aiLead = publishedLead(stored, "en");
+  const useAi = Boolean(aiLead && isClean(aiLead.body) && isClean(aiLead.attribution));
+  const lead = useAi ? aiLead.body : resultSentence(match, dateText);
+  const attribution = useAi ? aiLead.attribution : "";
   const description = [lead, leagueText ? `Competition: ${leagueText}.` : "", sectionList({ events, lineups, stats }) || "Final score and match details on FutbolRadar."]
     .filter(Boolean).join(" ");
 
@@ -567,7 +571,7 @@ function pageHtml(file, match, stored) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Breadcrumb"><a href="${BASE}en/index.html">Home</a><span>/</span><a href="${BASE}en/results.html">Results</a><span>/</span><span>${escapeHtml(match.homeTeam)} v ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
-        <div class="post-match-heading">${leagueText ? `<span class="eyebrow">${escapeHtml(leagueText)}</span>` : ""}<h1>${escapeHtml(headline)} – Match Report</h1><p>${escapeHtml(lead)}</p><div class="post-match-meta">${meta}</div></div>
+        <div class="post-match-heading">${leagueText ? `<span class="eyebrow">${escapeHtml(leagueText)}</span>` : ""}<h1>${escapeHtml(headline)} – Match Report</h1><p>${escapeHtml(lead)}</p>${attribution ? `<p class="muted-copy">${escapeHtml(attribution)}</p>` : ""}<div class="post-match-meta">${meta}</div></div>
         <div class="post-match-scoreboard" aria-label="Final score">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
           ${scored ? `<div class="post-match-score"><span>${escapeHtml(scoreNote)}</span><b>${escapeHtml(score.home)}<i>-</i>${escapeHtml(score.away)}</b>${hasHalftime(score) ? `<small>Half-time ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>` : '<div class="post-match-score is-empty" aria-label="Score not published"><span>Score</span><b>–</b></div>'}
