@@ -125,12 +125,12 @@ ${squad.groups.map((g) => `<h4>${esc(g.position)}</h4><ul>${players(g)}</ul>`).j
   const xiSide = (side) => {
     const block = xi && xi[side];
     if (!block || !block.players || !block.players.length) return "";
-    return `<h3>${esc(block.label || (side === "home" ? "Türkiye" : "Belçika"))}</h3><p>${esc(block.players.join(", "))}</p>`;
+    return `<h3>${esc(block.label || (side === "home" ? homeTeam : awayTeam))}</h3><p>${esc(block.players.join(", "))}</p>`;
   };
   const xiBody = xiOk
     ? `<p class="muted-copy">Muhtemel 11 (basın iddiası). TFF veya UEFA resmî ilk 11'i yayımlayana kadar kesin değildir. ${cite(xi.source)}</p>
 ${[xiSide("home"), xiSide("away")].filter(Boolean).join("\n")}`
-    : `<p><strong>Muhtemel 11'ler:</strong> ${UPDATING}</p><p class="muted-copy">TFF veya UEFA resmî ilk 11'i henüz yayımlamadı. İzinli basında, 11 Kasım basın toplantısı sonrasına ait saat damgalı tam bir muhtemel 11 listesi bulunamadı; bu yüzden kadro uydurulmadı.</p>`;
+    : `<p><strong>Muhtemel 11'ler:</strong> ${UPDATING}</p><p class="muted-copy">${xi && xi.pendingNote ? esc(xi.pendingNote) : "TFF veya UEFA resmî ilk 11'i henüz yayımlamadı. İzinli basında, 11 Kasım basın toplantısı sonrasına ait saat damgalı tam bir muhtemel 11 listesi bulunamadı; bu yüzden kadro uydurulmadı."}</p>`;
   out.push(section("muhtemel-11", "Muhtemel 11'ler", xiBody));
 
   // Son 5 maç
@@ -164,7 +164,8 @@ ${[xiSide("home"), xiSide("away")].filter(Boolean).join("\n")}`
     const keys = ((data.recent && data.recent[side] && data.recent[side].matches) || []).filter((m) => /Uluslar Ligi/.test(m.competition)).map((m) => m.source);
     return rows.length ? `<li><strong>${esc(team)}</strong>: ${rows.map(([n, c]) => `${esc(n)} ${c}`).join(", ")} ${cite(keys)}</li>` : "";
   };
-  const perf = [`<p>Bu sezonki Uluslar Ligi maçlarında gol atan oyuncular (resmî maç kayıtlarından sayıldı):</p><ul>${scorerLine("home")}${scorerLine("away")}</ul>`, facts(data.numbers)].join("\n");
+  const scorerItems = `${scorerLine("home")}${scorerLine("away")}`;
+  const perf = [scorerItems ? `<p>Bu sezonki Uluslar Ligi maçlarında gol atan oyuncular (resmî maç kayıtlarından sayıldı):</p><ul>${scorerItems}</ul>` : "", facts(data.numbers)].filter(Boolean).join("\n");
   out.push(section("oyuncu-performansi", "Oyuncu performansı ve öne çıkan sayılar", perf));
 
   // Son resmî ilk 11'ler (taktik: yalnızca resmî kayıt)
@@ -184,7 +185,7 @@ ${[xiSide("home"), xiSide("away")].filter(Boolean).join("\n")}`
     const rows = dossierStandings(data.group.results);
     const avg = (r) => (r.gf - r.ga > 0 ? `+${r.gf - r.ga}` : String(r.gf - r.ga));
     out.push(section("grup-durumu", `${data.group.label}: puan durumu ve senaryolar`,
-      `<p class="muted-copy">4. hafta sonrası; resmî sonuçlardan hesaplandı. ${cite(data.group.source)}</p>
+      `<p class="muted-copy">${esc(data.groupNote || "4. hafta sonrası; resmî sonuçlardan hesaplandı.")} ${cite(data.group.source)}</p>
 <div class="table-scroll"><table class="standings-table msp-standings"><thead><tr><th scope="col">#</th><th scope="col">Takım</th><th scope="col">O</th><th scope="col">G</th><th scope="col">B</th><th scope="col">M</th><th scope="col">Av</th><th scope="col">P</th></tr></thead><tbody>
 ${rows.map((r, i) => `<tr${r.team === homeTeam || r.team === awayTeam ? ' class="is-highlight"' : ""}><td>${i + 1}</td><td>${esc(r.team)}</td><td>${r.played}</td><td>${r.won}</td><td>${r.drawn}</td><td>${r.lost}</td><td>${avg(r)}</td><td>${r.points}</td></tr>`).join("\n")}
 </tbody></table></div>
