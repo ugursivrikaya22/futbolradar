@@ -34,6 +34,7 @@ try {
     assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: branch }, directory).build, false);
   }
   assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: "preview/release" }, directory).build, true);
+  assert.equal(buildDecision({ VERCEL_ENV: "preview", VERCEL_GIT_COMMIT_REF: "cursor/oyuncu-karsilastirma-3288" }, directory).build, true);
   assert.equal(buildDecision({ VERCEL_ENV: "preview" }, directory).build, true, "unknown metadata must not silently block a manual deployment");
   assert.equal(buildDecision({ VERCEL_ENV: "production", VERCEL_GIT_COMMIT_REF: "main" }, directory).build, true);
   const beforeRename = git("rev-parse", "HEAD");

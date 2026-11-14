@@ -64,7 +64,8 @@
       "**": false,
       "main": true,
       "preview/**": true,
-      "automation/*": false
+      "automation/*": false,
+      "cursor/**": true
     }
   },
   "cleanUrls": false,
@@ -5448,6 +5449,14 @@
     {
       "source": "/oyuncu-karsilastirmalari",
       "destination": "/oyuncu-karsilastirmalari.html"
+    },
+    {
+      "source": "/oyuncu-karsilastirma",
+      "destination": "/oyuncu-karsilastirma.html"
+    },
+    {
+      "source": "/oyuncu-karsilastirma/:slug",
+      "destination": "/oyuncu-karsilastirma/:slug.html"
     },
     {
       "source": "/oyuncular/:slug",

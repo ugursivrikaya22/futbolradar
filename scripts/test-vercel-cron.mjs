@@ -78,7 +78,7 @@ await test("vercel.json: Pro cron takvimi, ayrı küçük cron işlevi, data/ pa
   // Mevcut build/deploy ayarları değişmedi.
   assert.equal(config.buildCommand, "npm run build");
   assert.equal(config.ignoreCommand, "node scripts/vercel-continue-build.mjs");
-  assert.deepEqual(config.git.deploymentEnabled, { "**": false, main: true, "preview/**": true, "automation/*": false });
+  assert.deepEqual(config.git.deploymentEnabled, { "**": false, main: true, "preview/**": true, "automation/*": false, "cursor/**": true });
   // Catch-all'a dokunulmaz; yalnızca ayrı cron işlevi yapılandırılır, data/ hiçbir includeFiles'ta yok.
   assert.deepEqual(Object.keys(config.functions || {}), ["api/cron/[job].js"]);
   const fn = config.functions["api/cron/[job].js"];
