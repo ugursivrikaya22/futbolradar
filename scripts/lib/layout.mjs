@@ -81,7 +81,9 @@ const FOOTER_LEGAL = [
   { href: "iletisim.html", enHref: "en/contact.html", key: "footer.contact" },
   { href: "veri-notu.html", enHref: "en/data-note.html", key: "footer.dataNote" },
   { href: "gizlilik.html", enHref: "en/privacy.html", key: "footer.privacy" },
-  { href: "kullanim-sartlari.html", enHref: "en/terms.html", key: "footer.terms" }
+  { href: "kullanim-sartlari.html", enHref: "en/terms.html", key: "footer.terms" },
+  // Türkçe dizin. İngilizce karşılığı yok; İngilizce alt bilgide çizilmez.
+  { href: "x-hesaplari.html", key: "footer.xAccounts" }
 ];
 
 const ICONS = {

@@ -21,6 +21,9 @@
  * (WhatsApp, Telegram) alıntı değil, kullanıcı eylemidir.
  */
 
+const fs = require("node:fs");
+const path = require("node:path");
+
 /** Sitenin kendi alan adı. Buna giden bağlantı "dış" sayılmaz. */
 const SITE_HOST = "futbolradar.com";
 
@@ -342,6 +345,47 @@ function isAllowedSourceUrl(url) {
 }
 
 /**
+ * `data/x-accounts.json` içindeki hesapların profil kökü.
+ * Büyük/küçük harf duyarsız; yolun devamı (ör. /status/…) eşleşmez.
+ */
+function xDirectoryHandles() {
+  if (xDirectoryHandles.cache) return xDirectoryHandles.cache;
+  const file = path.join(__dirname, "..", "data", "x-accounts.json");
+  const handles = new Set();
+  try {
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    for (const group of data.groups || []) {
+      for (const account of group.accounts || []) {
+        if (account && account.handle) handles.add(String(account.handle).toLowerCase());
+      }
+    }
+    if (data.ownAccount && data.ownAccount.handle) {
+      handles.add(String(data.ownAccount.handle).toLowerCase());
+    }
+  } catch {
+    /* Dosya yoksa dizin istisnası kapalı kalır; x.com yine açılmaz. */
+  }
+  xDirectoryHandles.cache = handles;
+  return handles;
+}
+
+function isXDirectoryProfileUrl(url) {
+  const raw = String(url || "").trim();
+  if (!/^https?:\/\//i.test(raw)) return false;
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return false;
+  }
+  const host = parsed.hostname.replace(/^www\./i, "").toLowerCase();
+  if (host !== "x.com" && host !== "twitter.com") return false;
+  const handle = parsed.pathname.replace(/^\/+|\/+$/g, "");
+  if (!handle || handle.includes("/")) return false;
+  return xDirectoryHandles().has(handle.toLowerCase());
+}
+
+/**
  * "ana bilgisayar" ya da "ana bilgisayar/yol öneki" biçimindeki bir girdiye
  * karşı adres eşleştirir.
  *
@@ -412,6 +456,7 @@ module.exports = {
   hostOf,
   isAllowedSourceHost,
   isAllowedSourceUrl,
+  isXDirectoryProfileUrl,
   isExternalUrl,
   isOwnProfileHost,
   isShareHost,
