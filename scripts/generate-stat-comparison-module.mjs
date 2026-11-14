@@ -680,6 +680,44 @@ function upsertSitemap(pages) {
   freshness.save();
 }
 
+function reverseMap(pairs) {
+  const map = {};
+  for (const pair of pairs) {
+    const parts = pair.slug.split("-vs-");
+    if (parts.length !== 2) continue;
+    const reverse = `${parts[1]}-vs-${parts[0]}`;
+    if (reverse !== pair.slug) map[reverse] = pair.slug;
+  }
+  return map;
+}
+
+function writeCanonicalMiddleware(pairs) {
+  const map = reverseMap(pairs);
+  const body = `/**
+ * Ters kıyas adresini kanoniğe taşır.
+ *
+ * Çift başına vercel.json yönlendirmesi Vercel'in 1024 kural sınırını aşar
+ * (scripts/inject-player-redirects.mjs). Eşleşme yoksa istek statik sayfaya düşer.
+ */
+const CANONICAL = ${JSON.stringify(map, null, 2)};
+
+export const config = {
+  matcher: ["/karsilastirma/:path*"]
+};
+
+export default function middleware(request) {
+  const url = new URL(request.url);
+  const slug = url.pathname.replace(/^\\/karsilastirma\\//, "").replace(/\\.html$/, "");
+  const canonical = CANONICAL[slug];
+  if (!canonical) return;
+  url.pathname = \`/karsilastirma/\${canonical}\`;
+  url.search = "";
+  return Response.redirect(url, 301);
+}
+`;
+  fs.writeFileSync(path.join(root, "middleware.js"), body, "utf8");
+}
+
 function updateVercel(pairs) {
   const file = path.join(root, "vercel.json");
   const previousPath = path.join(root, "data", "comparison-module", "redirect-sources.json");
@@ -690,34 +728,20 @@ function updateVercel(pairs) {
     const pattern = new RegExp(`\\n    \\{\\n      "source": "${escaped}",\\n      "destination": "[^"]+",\\n      "permanent": true\\n    \\},?`);
     raw = raw.replace(pattern, "");
   }
-  const sources = [];
-  const blocks = [];
-  for (const pair of pairs) {
-    const parts = pair.slug.split("-vs-");
-    if (parts.length !== 2) continue;
-    const reverse = `${parts[1]}-vs-${parts[0]}`;
-    if (reverse === pair.slug) continue;
-    for (const source of [`/karsilastirma/${reverse}`, `/karsilastirma/${reverse}.html`]) {
-      sources.push(source);
-      blocks.push(`    {\n      "source": "${source}",\n      "destination": "/karsilastirma/${pair.slug}",\n      "permanent": true\n    }`);
-    }
-  }
-  const marker = `\n  ],\n  "rewrites": [`;
-  if (blocks.length && raw.includes(marker) && !raw.includes(sources[0])) {
-    const index = raw.indexOf(marker);
-    const before = raw.slice(0, index).replace(/,\s*$/, "");
-    const comma = /\[\s*$/.test(before) ? "" : ",";
-    raw = `${before}${comma}\n${blocks.join(",\n")}${marker}${raw.slice(index + marker.length)}`;
-  }
+  raw = raw.replace(/,(\s*\],\s*\n\s*"rewrites")/, "$1");
   if (!raw.includes('"/oyuncu-karsilastirma"')) {
     raw = raw.replace(
       `    {\n      "source": "/oyuncu-karsilastirmalari",\n      "destination": "/oyuncu-karsilastirmalari.html"\n    },`,
       `    {\n      "source": "/oyuncu-karsilastirmalari",\n      "destination": "/oyuncu-karsilastirmalari.html"\n    },\n    {\n      "source": "/oyuncu-karsilastirma",\n      "destination": "/oyuncu-karsilastirma.html"\n    },\n    {\n      "source": "/oyuncu-karsilastirma/:slug",\n      "destination": "/oyuncu-karsilastirma/:slug.html"\n    },`
     );
   }
-  JSON.parse(raw);
+  const config = JSON.parse(raw);
+  if (config.redirects.length > 1024) {
+    throw new Error(`vercel redirects ${config.redirects.length} > 1024`);
+  }
   fs.writeFileSync(file, raw.endsWith("\n") ? raw : `${raw}\n`, "utf8");
-  fs.writeFileSync(previousPath, `${JSON.stringify(sources, null, 2)}\n`);
+  fs.writeFileSync(previousPath, "[]\n");
+  writeCanonicalMiddleware(pairs);
 }
 
 function missingReport(players) {

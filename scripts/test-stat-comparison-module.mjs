@@ -61,9 +61,10 @@ for (const file of modulePairs) {
 const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
 assert.ok(vercel.rewrites.some((rule) => rule.source === "/oyuncu-karsilastirma"));
 assert.equal(vercel.git.deploymentEnabled["cursor/**"], true);
+assert.ok(vercel.redirects.length <= 1024, `yönlendirme sınırı: ${vercel.redirects.length}`);
 const sample = modulePairs[0].replace(/\.html$/, "");
 const [a, b] = sample.split("-vs-");
-const reverse = `/karsilastirma/${b}-vs-${a}`;
-assert.ok(vercel.redirects.some((rule) => rule.source === reverse && rule.destination === `/karsilastirma/${sample}`), reverse);
+const middleware = fs.readFileSync(path.join(root, "middleware.js"), "utf8");
+assert.match(middleware, new RegExp(`"${b}-vs-${a}": "${sample}"`));
 
 console.log(`stat-comparison OK: ${players.length} oyuncu, ${modulePairs.length} kıyas`);
