@@ -158,7 +158,8 @@ function leagueLabelOf(match) {
  *
  * `nowMs` süzgecin kendisine girer (bayat canlı koruması); verilmezse şu an
  * okunur. Derleme anı ile görüntüleme anı farklı olduğu için bant istemcide
- * `/api/matches?status=live` ile tazelenir — o uç da AYNI kapıdan geçer.
+ * `/api/matches?live=all` ile tazelenir — o uç da AYNI kapıdan geçer.
+ * (`?status=live` günün tam listesini çeker; canlı yoklama onu kullanmaz.)
  */
 function selectLiveTickerRecords(matches, options = {}) {
   const limit = Number.isFinite(options.limit) ? options.limit : MAX_ITEMS;

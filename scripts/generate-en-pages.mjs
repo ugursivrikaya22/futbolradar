@@ -635,6 +635,7 @@ ${body}
     ${siteFooter({ base: BASE, locale: LOCALE })}
     ${stickyWidget || ""}
     <script src="${BASE}site.js" defer></script>
+    <script src="/en-live-scores.js" defer></script>
   </body>
 </html>
 `;
@@ -716,10 +717,10 @@ function clubLabelEn(value) {
  *
  * Turkce ana sayfada bandin kabugu index.html icinde duruyor ve icini
  * app.js (LiveScoresTicker) dolduruyor. app.js Ingilizce sayfalara
- * yuklenmiyor - yuklenseydi bandin butun etiketleri Turkce basilirdi - bu
- * yuzden Ingilizce bant DERLEME SIRASINDA yazilir: ayni isaretleme, ayni
- * siniflar, ayni mac anlik goruntusu; takim/lig adlari zaten dilden
- * bagimsiz. Kayan animasyon saf CSS oldugu icin JavaScript siz de calisir.
+ * yuklenmiyor - yuklenseydi bandin butun etiketleri Turkce basilirdi.
+ * Statik kabuk yine burada basilir (JS'siz de skor gorunur) ama
+ * `live:true` kancasi `en-live-scores.js`'in `?live=all` ile tazelemesi
+ * icindir. Takim/lig adlari dilden bagimsizdir.
  *
  * Secim ve siralama SERVISTEN gelir (services/liveScoresTicker.js) -
  * Turkce on derleme de ayni fonksiyonu kullanir.
@@ -737,7 +738,7 @@ function liveScoresTickerRecords() {
  * oynatirdi.
  */
 function liveScoresTicker() {
-  return liveTickerBlock(liveScoresTickerRecords(), { locale: "en", keepEmpty: true, base: BASE });
+  return liveTickerBlock(liveScoresTickerRecords(), { locale: "en", keepEmpty: true, base: BASE, live: true });
 }
 
 /**
@@ -1633,7 +1634,9 @@ function liveScoresPage() {
 
   const body = `      <section class="data-panel" aria-labelledby="en-live-title">
         <h2 class="panel-title" id="en-live-title">Live now</h2>
+        <div data-api-section="live-score" data-api-target="live-score" data-static-fallback="true" data-matches-day="${escapeHtml(TODAY)}">
         ${matchList(live, "common.noData")}
+        </div>
         <p class="muted-copy">A match appears here only when the provider confirms it is live and a real score is available. Matches without a published score are not listed on this page.</p>
       </section>
       <section class="data-panel" aria-labelledby="en-ft-title">

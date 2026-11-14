@@ -176,8 +176,13 @@ export function liveTickerBlock(records, options = {}) {
     return "";
   }
 
+  // İngilizce bant `?live=all` yoklar (~128KB). `?status=live` günün tam
+  // listesini çeker ve ağırdır. Türkçe kabuk (index.html) hâlâ
+  // `?status=live` damgasını taşır; istemci (app.js) zaten `?live=all`
+  // sorar. Burada `live:true` + `locale:"tr"` o damgayı değiştirmez.
+  const liveSource = locale === "en" ? "/api/matches?live=all" : "/api/matches?status=live";
   const liveAttributes = live
-    ? ' data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?status=live" data-source="loading"'
+    ? ` data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="${liveSource}" data-source="loading"`
     : ' data-source="static"';
 
   // Boş metin bandın üzerinde: site.js son öğeyi düşürdüğünde doğru dildeki
