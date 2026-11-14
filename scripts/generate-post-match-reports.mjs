@@ -25,6 +25,7 @@ const require = createRequire(import.meta.url);
 
 const { curatedMatches } = require("../services/providers/mockProvider.js");
 const { syncPostMatchReports, MODEL_VERSION } = require("../services/postMatchReportStore.js");
+const { attachAiMatchSummaries } = require("../services/aiMatchSummary.js");
 const { isAnalyzableMatch, isAwardedMatch, isFinishedMatch } = require("../services/matchStatus.js");
 const { sameClub } = require("../services/superLigTeams.js");
 
@@ -124,7 +125,25 @@ const payload = {
 
 // Yalnızca kayıtlar gerçekten değiştiyse yaz. `updatedAt` tek başına
 // değişmiş bir dosya, içeriği aynı olan gürültülü bir commit demektir.
+// Parmak izi burada, AI özeti kayıtlara yazılmadan önce alınır: yeniden
+// kullanılan kayıtlar depodaki nesnelerle aynı referanstır.
 const previousBody = JSON.stringify(previousStore.records);
+let aiStats = { reason: "disabled" };
+try {
+  const attached = await attachAiMatchSummaries({
+    records,
+    matches: pool,
+    previous: JSON.parse(previousBody),
+    generatedAt: new Date().toISOString()
+  });
+  aiStats = attached.stats;
+} catch (error) {
+  aiStats = { reason: "error" };
+  const message = String((error && error.message) || error || "bilinmeyen hata")
+    .replace(/AI_GATEWAY_API_KEY[=:]\s*\S+/gi, "AI_GATEWAY_API_KEY")
+    .slice(0, 180);
+  console.warn(`[post-match-reports] AI özeti atlandı, şablon rapor duruyor: ${message}`);
+}
 const nextBody = JSON.stringify(records);
 const changed = previousBody !== nextBody;
 
@@ -137,6 +156,22 @@ console.log(
   (stats.failed ? `, ${stats.failed} üretilemedi` : "") +
   ` · ${withPage} rapor sayfası, ${storeOnly} yalnızca depoda`
 );
+
+if (aiStats.reason === "disabled") {
+  console.log("[post-match-reports] AI özeti kapalı (AI_MATCH_SUMMARY_ENABLED).");
+} else if (aiStats.reason === "missing_api_key") {
+  console.log("[post-match-reports] AI özeti atlandı: AI_GATEWAY_API_KEY yok.");
+} else if (aiStats.reason === "missing_model") {
+  console.log("[post-match-reports] AI özeti atlandı: AI_MATCH_SUMMARY_MODEL veya AI_GATEWAY_MODEL yok.");
+} else if (aiStats.reason === "error") {
+  console.log("[post-match-reports] AI özeti bu koşuda üretilemedi.");
+} else {
+  console.log(
+    `[post-match-reports] AI özeti: ${aiStats.generated || 0} üretildi, ` +
+    `${aiStats.reused || 0} korundu, ${aiStats.fallback || 0} şablona düştü, ` +
+    `${aiStats.retry || 0} yeniden denenecek, ${aiStats.deferred || 0} sonraki koşuya kaldı`
+  );
+}
 
 for (const record of records) {
   if (record.publishState === "store-only") {

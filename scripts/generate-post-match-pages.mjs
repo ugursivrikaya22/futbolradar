@@ -26,6 +26,7 @@ import { repairPlayerLinks, repairReportJsonLd } from "./lib/reportSchemaRepair.
 const root = process.cwd();
 const require = createRequire(import.meta.url);
 const { playerLink } = require("../services/playerLinks.js");
+const { publishedLead } = require("../services/aiMatchSummary.js");
 const domain = "https://www.futbolradar.com";
 
 /**
@@ -411,7 +412,7 @@ function nextMatchSectionHtml(report) {
       </section>`;
 }
 
-function pageHtml(report, match, indexable) {
+function pageHtml(report, match, indexable, stored) {
   const { seo } = report;
   const url = `${domain}/${seo.path}`;
   const depth = seo.path.includes("/") ? "../" : "./";
@@ -422,7 +423,12 @@ function pageHtml(report, match, indexable) {
     : `${match.homeTeam} - ${match.awayTeam} Maç Raporu`;
   const summary = report.sections.summary;
   // Uydurulan "bu rapor genişler" beklemesi yok: cümle yoksa hiç basılmaz.
-  const lead = summary.status === "ready" ? summary.paragraph : "";
+  // Doğrulanmış AI özeti varsa o gövde şablon cümlenin yerine geçer; skor
+  // veya golcü uyuşmazsa publishedLead null döner ve şablon kalır.
+  const templateLead = summary.status === "ready" ? summary.paragraph : "";
+  const aiLead = publishedLead(stored, "tr");
+  const lead = aiLead ? aiLead.body : templateLead;
+  const attribution = aiLead ? aiLead.attribution : "";
 
   // PAYLAŞIM METNİ. Yalnızca doğrulanmış alanlardan kurulur
   // (services/shareText.js): skor kayıtta varsa yazılır, analiz başlığı
@@ -455,7 +461,7 @@ function pageHtml(report, match, indexable) {
           : {}),
         homeTeam: { "@type": "SportsTeam", name: match.homeTeam },
         awayTeam: { "@type": "SportsTeam", name: match.awayTeam },
-        description: summary.status === "ready" ? summary.paragraph : match.summary || ""
+        description: lead || match.summary || ""
       },
       {
         "@type": "NewsArticle",
@@ -521,7 +527,7 @@ function pageHtml(report, match, indexable) {
     <main class="container">
       <nav class="breadcrumb" aria-label="Sayfa yolu"><a href="${depth}index.html">Ana Sayfa</a><span>/</span><a href="${depth}mac-merkezi.html">Maç Merkezi</a><span>/</span><span>${escapeHtml(match.homeTeam)} - ${escapeHtml(match.awayTeam)}</span></nav>
       <section class="post-match-hero">
-        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(pageHeading)}</h1>${lead ? `<p>${escapeHtml(lead)}</p>` : ""}<div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}</div></div>
+        <div class="post-match-heading"><span class="eyebrow">${escapeHtml(match.league)}${match.stage ? ` · ${escapeHtml(match.stage)}` : ""}</span><h1>${escapeHtml(pageHeading)}</h1>${lead ? `<p>${escapeHtml(lead)}</p>` : ""}${attribution ? `<p class="muted-copy">${escapeHtml(attribution)}</p>` : ""}<div class="post-match-meta"><span>${escapeHtml(formatDate(match.kickoff))}</span>${match.venue && match.venue !== "Açıklanmadı" ? `<span>${escapeHtml(match.venue)}</span>` : ""}${match.referee ? `<span>Hakem: ${escapeHtml(match.referee)}</span>` : ""}</div></div>
         <div class="post-match-scoreboard" aria-label="Maç sonucu">
           <div><span class="team-monogram">${escapeHtml(monogram(match.homeTeam))}</span><strong>${escapeHtml(match.homeTeam)}</strong></div>
           ${hasScore ? `<div class="post-match-score"><span>Maç sonucu</span><b>${escapeHtml(score.home)}<i>-</i>${escapeHtml(score.away)}</b>${hasHalftime(score) ? `<small>İlk yarı ${escapeHtml(score.halftimeHome)}-${escapeHtml(score.halftimeAway)}</small>` : ""}</div>` : '<div class="post-match-score is-empty" aria-label="Skor verisi bekleniyor"></div>'}
@@ -772,7 +778,7 @@ for (const match of finished) {
   }
 
   const indexable = !shouldNoindex(stored);
-  const html = pageHtml(report, match, indexable);
+  const html = pageHtml(report, match, indexable, stored);
   for (const base of [root, path.join(root, "public")]) {
     const target = path.join(base, relative);
     fs.mkdirSync(path.dirname(target), { recursive: true });
