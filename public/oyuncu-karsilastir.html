@@ -32,6 +32,7 @@
       }
     </script>
     <link rel="stylesheet" href="./page.css?v=c68d3b47" />
+    <link rel="stylesheet" href="./player-comparison-data.css?v=e3503bbb" />
     <script data-futbolradar-theme>
     (function () {
       try {
@@ -150,6 +151,19 @@
           <span>Oyuncu radarları form, rol ve performans göstergeleriyle karşılaştırılıyor.</span>
         </article>
       </section>
+      <section class="pcd-section" data-player-comparison-data data-src="./data/player-comparison-data.json" aria-label="Avrupa ve Türkiye oyuncu kıyası">
+        <div class="profile-section-head">
+          <h2>Avrupa ve Türkiye oyuncu kıyası</h2>
+          <span data-pcd-coverage>Süper Lig, Premier League, La Liga, Serie A, Bundesliga, Ligue 1 ve Şampiyonlar Ligi</span>
+        </div>
+        <div class="pcd-toolbar">
+          <label>Lig<select data-pcd-league aria-label="Lig seç"></select></label>
+          <label>Oyuncu A<select data-pcd-player aria-label="Birinci oyuncu"></select></label>
+          <label>Oyuncu B<select data-pcd-player aria-label="İkinci oyuncu"></select></label>
+        </div>
+        <div data-pcd-output aria-live="polite"><p class="pcd-empty">Kaynaklı oyuncu verisi yükleniyor…</p></div>
+        <p class="pcd-coverage">Kadro, pozisyon, forma numarası, sezon istatistiği (90 dk ve maç başı), son 5 maç ve transfer geçmişi. <a href="https://www.api-football.com/" target="_blank" rel="nofollow noopener noreferrer">Veri: API-Football</a>; kaynağı olmayan alanda “Güncelleniyor” yazar.</p>
+      </section>
       <section class="source-strip" aria-label="Model bilgisi">
         <div><span>Son güncelleme</span><b>Yükleniyor…</b></div>
         <div><span>Veri kaynağı</span><b>FutbolRadar Player Data Layer</b></div>
@@ -206,5 +220,6 @@
     </footer>
       <script src="./site.js?v=4e6aaa62" defer></script>
       <script src="./app.js?v=5f74c363" defer></script>
+      <script src="./player-comparison-data.js?v=18d5ada2" defer></script>
   </body>
 </html>

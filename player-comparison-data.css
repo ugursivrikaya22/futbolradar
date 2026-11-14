@@ -1,0 +1,28 @@
+/* Kaynaklı oyuncu kıyası (player-comparison-data.js). Mobil öncelikli: 390px'te tek sütun kartlar, tablo yatay taşmaz. */
+.pcd-section{margin:16px 0;display:grid;gap:12px}
+.pcd-toolbar{display:grid;grid-template-columns:1fr;gap:8px}
+.pcd-toolbar label{display:grid;gap:4px;font-size:13px;font-weight:600}
+.pcd-toolbar select{width:100%;min-height:44px;font-size:16px;border-radius:10px;padding:0 10px;border:1px solid rgba(127,127,127,.35);background:inherit;color:inherit}
+.pcd-coverage{font-size:12px;opacity:.75;margin:0}
+.pcd-block{display:grid;gap:12px;min-width:0}
+.pcd-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.pcd-head h2,.pcd-head h3{margin:0;font-size:18px;line-height:1.25}
+.pcd-label{display:inline-block;font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;border:1px solid currentColor;text-decoration:none;white-space:nowrap}
+.pcd-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.pcd-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.pcd-table th,.pcd-table td{padding:8px 6px;border-bottom:1px solid rgba(127,127,127,.2);text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.pcd-table thead th{font-size:12px}
+.pcd-table th[scope=row]{width:34%;font-weight:600;opacity:.85}
+.pcd-missing{opacity:.65;font-style:italic}
+.pcd-src{font-size:11px;opacity:.8;white-space:nowrap}
+.pcd-cards{display:grid;grid-template-columns:1fr;gap:10px}
+.pcd-card{border:1px solid rgba(127,127,127,.25);border-radius:12px;padding:12px;min-width:0}
+.pcd-card h3{margin:0 0 8px;font-size:15px}
+.pcd-list{margin:0;padding-left:18px;display:grid;gap:6px;font-size:13px;line-height:1.4}
+.pcd-sub{opacity:.7;font-size:12px}
+.pcd-empty,.pcd-cite,.pcd-note{margin:0;font-size:12px;opacity:.8}
+@media (min-width:720px){
+  .pcd-toolbar{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .pcd-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pcd-table{font-size:14px}
+}
