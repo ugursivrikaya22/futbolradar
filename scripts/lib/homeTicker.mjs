@@ -91,10 +91,12 @@ function itemHtml(item, { base, hidden, locale }) {
   return `<li class="${cls}" data-ticker-id="${escapeHtml(item.id)}"${expires}><span class="home-ticker__tag">${escapeHtml(label)}</span>${text}${source}</li>`;
 }
 
-/** Kaydırma süresi metin uzunluğuyla orantılı: okunabilir hız, en az 30 sn. */
+/** Süre karakterle orantılı (0,11 sn/karakter, en az 15 sn): önceki 0,22 / 30 sn'nin
+ *  yarısı, aynı içerik yarı sürede geçer (hız iki kat). TR ve EN aynı hesabı kullanır.
+ *  prefers-reduced-motion kaymayı home-ticker.css içinde kapatır. */
 export function tickerDurationSeconds(items) {
   const chars = items.reduce((sum, item) => sum + String(item.text || "").length + String(item.sourceName || "").length + 12, 0);
-  return Math.max(30, Math.round(chars * 0.22));
+  return Math.max(15, Math.round(chars * 0.11));
 }
 
 export function renderHomeTicker(items, options = {}) {
