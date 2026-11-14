@@ -219,6 +219,27 @@ function positionFor(squadRow, local, matchRows, squadFetchedAt) {
   return { value: null, source: null };
 }
 
+/**
+ * Sağlayıcının transfer türü Türkçeye çevrilir; bilinmeyen tür olduğu gibi
+ * kalır (bedel etiketi "€ 2M" gibi). "N/A" ve "-" bilgi değildir → null.
+ */
+const TRANSFER_TYPE_TR = Object.freeze({
+  "loan": "Kiralık",
+  "back from loan": "Kiralıktan dönüş",
+  "return from loan": "Kiralıktan dönüş",
+  "free": "Bedelsiz",
+  "free transfer": "Bedelsiz",
+  "free agent": "Bedelsiz",
+  "transfer": "Transfer",
+  "swap": "Takas"
+});
+
+function transferTypeLabel(value) {
+  const raw = String(value === null || value === undefined ? "" : value).trim();
+  if (!raw || /^(n\/?a|-)$/i.test(raw)) return null;
+  return TRANSFER_TYPE_TR[raw.toLowerCase()] || raw;
+}
+
 function transferHistoryFor(local) {
   const rows = [];
   const skipped = [];
@@ -235,7 +256,7 @@ function transferHistoryFor(local) {
       skipped.push(String(item.source || "kaynaksız"));
       continue;
     }
-    const type = item.type && !/^n\/?a$/i.test(String(item.type)) ? String(item.type) : null;
+    const type = transferTypeLabel(item.type);
     rows.push({
       date: item.date || null,
       from: item.fromTeam || null,
@@ -418,6 +439,33 @@ function collectPlayerComparisonData(inputs) {
       const age = finiteNumber(row.age);
       entry.age = age === null ? { value: null, source: null } : { value: age, source: apiFootballSource("/players/squads", team.syncedAt || null) };
     }
+  }
+
+  // 1b) Kadro dosyasında olmayan ama API-Football'dan gelmiş, aktif Süper
+  // Lig oyuncu kayıtları (data/players.json). Takım/pozisyon o kaydın
+  // kendi sağlayıcı alanlarından; kayıt API-Football değilse alınmaz.
+  for (const local of Array.isArray(players) ? players : []) {
+    if (!local || !isApiFootballRecord(local)) continue;
+    const providerId = String(local.providerId || (local.providerSnapshot && local.providerSnapshot.providerId) || "");
+    if (!/^\d+$/.test(providerId) || result.has(providerId)) continue;
+    if (local.league !== "Süper Lig" && local.isCurrentSuperLigPlayer !== true) continue;
+    if (!isActiveStatsPlayer(local, { superLigOnly: true })) {
+      excluded.push({ providerId, name: local.name, reason: "ayrılan / aktif olmayan oyuncu" });
+      continue;
+    }
+    const fetchedAt = (local.providerSnapshot && local.providerSnapshot.lastSyncedAt) || local.lastProviderSeenAt || null;
+    const entry = ensure(providerId);
+    const canonical = canonicalOf(local, players);
+    entry.name = (canonical && canonical.name) || local.name || null;
+    entry.localPlayerId = canonical ? canonical.id : local.id;
+    entry.region = "turkiye";
+    entry.leagues.push("super-lig");
+    const team = local.currentTeam || local.team || null;
+    entry.team = team ? { value: team, source: apiFootballSource("/players/squads", fetchedAt) } : { value: null, source: null };
+    entry.position = positionFor(null, local, matchRowsByProvider.get(providerId) || [], fetchedAt);
+    entry.shirtNumber = shirtNumberFor(local, null, null);
+    const age = finiteNumber(local.age);
+    entry.age = age === null ? { value: null, source: null } : { value: age, source: apiFootballSource("/players/squads", fetchedAt) };
   }
 
   // 2) Lig liderleri (API-Football /players/topscorers + /players/topassists).

@@ -53,6 +53,13 @@ const fixture = {
         { date: "2021-07-01", fromTeam: "R FC", toTeam: "Q FC", type: "Bonservis", feeEur: 0, feeLabel: "", source: "Galatasaray SK" }
       ] },
     { id: "mauro-icardi", name: "Mauro Icardi", providerId: "200", currentTeam: "Serbest oyuncu", squadStatus: "released", isCurrentSuperLigPlayer: false },
+    // Kadro dosyasında yok ama API-Football kaydı ve aktif: havuza girer.
+    { id: "p-only", name: "Provider Only", providerId: "600", currentTeam: "Fenerbahçe", league: "Süper Lig", squadStatus: "active", isCurrentSuperLigPlayer: true,
+      position: "Midfielder", age: 24, sourceName: "API-Football", providerSnapshot: { provider: "api-football", providerId: "600", lastSyncedAt: "2026-11-06" },
+      transferHistory: [{ date: "2026-08-01", fromTeam: "K FC", toTeam: "Fenerbahçe", type: "Loan", feeEur: null, feeLabel: "", source: "api-football" }] },
+    // API-Football kaydı ama ayrılmış: girmez.
+    { id: "p-gone", name: "Provider Gone", providerId: "700", currentTeam: "Kasımpaşa", league: "Süper Lig", squadStatus: "departed", isCurrentSuperLigPlayer: false,
+      sourceName: "API-Football", providerSnapshot: { provider: "api-football", providerId: "700" } },
     // Wikipedia kaynaklı forma numarası kabul edilmez.
     { id: "w-kaynak", name: "Wiki Kaynak", providerId: "500", currentTeam: "Galatasaray", squadStatus: "active", isCurrentSuperLigPlayer: true,
       number: 4, sourceUrl: "https://en.wikipedia.org/wiki/Galatasaray_S.K._(football)", transferHistory: [] }
@@ -76,6 +83,11 @@ assert.equal(byId.has("200"), false, "ayrılan oyuncu (Icardi) karşılaştırma
 assert.ok(output.excluded.some((item) => item.providerId === "200"), "ayrılan oyuncu dışlananlar listesinde gerekçesiyle görünür");
 assert.ok(byId.has("100") && byId.has("400") && byId.has("500"));
 assert.equal(byId.get("400").region, "avrupa");
+assert.equal(byId.get("600").team.value, "Fenerbahçe", "kadro dosyasında olmayan aktif API-Football kaydı girer");
+assert.equal(byId.get("600").position.value, "Orta saha");
+assert.equal(byId.get("600").transferHistory[0].type, "Kiralık", "sağlayıcı transfer türü Türkçeleşir");
+assert.equal(byId.has("700"), false, "ayrılan API-Football kaydı girmez");
+assert.ok(output.excluded.some((item) => item.providerId === "700"));
 assert.equal(byId.get("100").region, "turkiye");
 
 // --- Uydurma değer yok: istatistik girdinin birebir kopyası, oranlar formülden.
