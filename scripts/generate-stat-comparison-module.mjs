@@ -457,7 +457,7 @@ ${shell(`
 function pairPage(pair, allPairs) {
   const { left, right, slug } = pair;
   const base = "../";
-  const canonical = `${domain}/karsilastirma/${slug}`;
+  const canonical = `${domain}/karsilastirma/${slug}.html`;
   const title = `${left.name} vs ${right.name} | FutbolRadar`;
   const lines = analysis(left, right);
   const description = `${left.name} ve ${right.name} kıyası. ${lines[0]} Kaynak Transfermarkt, ${left.retrievedAt}.`.slice(0, 160);
@@ -485,6 +485,8 @@ ${shell(`
         <h1>${escapeHtml(left.name)} vs ${escapeHtml(right.name)}</h1>
         <p class="lead">${escapeHtml(description)}</p>
       </div></div></section>
+      <section class="static-comparison-summary" hidden></section>
+      <section class="compare-grid" hidden data-api-target="player-compare" data-compare-seed="${escapeHtml(left.slug)},${escapeHtml(right.slug)}"></section>
       <section class="cmp-split">${identityCard(left, base)}${identityCard(right, base)}</section>
       <section class="cmp-panel"><h2>Radar</h2>${radarSvg(metrics)}</section>
       <section class="cmp-panel"><h2>Sütunlar</h2>
@@ -666,7 +668,13 @@ function upsertSitemap(pages) {
   for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
     if (!fs.existsSync(sitemapPath)) continue;
     const current = fs.readFileSync(sitemapPath, "utf8");
-    const owned = new Set(locs.flatMap((row) => [row.loc, `${row.loc}.html`]));
+    const owned = new Set();
+    for (const row of locs) {
+      const bare = row.loc.replace(/\.html$/, "");
+      owned.add(row.loc);
+      owned.add(bare);
+      owned.add(`${bare}.html`);
+    }
     const retained = (current.match(URL_ENTRY_RE) || []).filter((entry) => {
       const loc = (entry.match(/<loc>([^<]+)<\/loc>/) || [])[1];
       return !owned.has(loc);
@@ -800,7 +808,7 @@ linkExistingProfiles(players, pairs);
 const pages = [
   { url: "oyuncu-karsilastirma", file: "oyuncu-karsilastirma.html" },
   ...players.map((player) => ({ url: `oyuncu-karsilastirma/${player.slug}`, file: `oyuncu-karsilastirma/${player.slug}.html` })),
-  ...pairs.map((pair) => ({ url: `karsilastirma/${pair.slug}`, file: `karsilastirma/${pair.slug}.html` }))
+  ...pairs.map((pair) => ({ url: `karsilastirma/${pair.slug}.html`, file: `karsilastirma/${pair.slug}.html` }))
 ];
 upsertSitemap(pages);
 updateVercel(pairs);
