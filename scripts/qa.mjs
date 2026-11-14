@@ -337,6 +337,9 @@ function checkFeatureMarkers() {
 
 function checkJavaScriptSyntax() {
   for (const file of walk(root, (full) => full.endsWith(".js"))) {
+    // Vercel edge middleware ESM'dir (`export`). `new Function` yalnızca
+    // klasik betikleri okur; bu dosyayı sözdizimi hatası sanmasın.
+    if (path.basename(file) === "middleware.js") continue;
     try {
       new Function(fs.readFileSync(file, "utf8"));
     } catch (error) {
