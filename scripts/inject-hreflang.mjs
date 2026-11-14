@@ -103,7 +103,8 @@ const TR_ONLY_PAGES = Object.freeze([
   "iddaa-sonuclari.html",
   "bahis-sonuclari.html",
   "canli-mac-sonuclari.html",
-  "turk-sporcu-sonuclari.html"
+  "turk-sporcu-sonuclari.html",
+  "x-hesaplari.html"
 ]);
 function trOnlyBlock(relativePath) {
   const html = fs.readFileSync(path.join(root, relativePath), "utf8");

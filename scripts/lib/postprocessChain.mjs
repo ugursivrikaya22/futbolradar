@@ -100,6 +100,9 @@ export const POSTPROCESS_CHAIN = [
   { id: "transfer-period-page", script: "generate-transfer-period-page.mjs", args: [], timeoutMinutes: 2 },
   // /takip-ettiklerim (kişisel sayfa, noindex): statik kabuk; içerik tarayıcıda yerel favorilerden çizilir.
   { id: "following-page", script: "generate-following-page.mjs", args: [], timeoutMinutes: 2 },
+  // /x-hesaplari.html: doğrulanmış futbol X hesapları. Ortak yerleşimden
+  // ÖNCE üretilir; başlık, favicon, tema ve varlık damgası sonraki adımlarda kalır.
+  { id: "x-accounts-page", script: "generate-x-accounts-page.mjs", args: [], timeoutMinutes: 2 },
   // /puan-durumu-simulator: resmî tablo + kalan fikstür gömülü; saatlik tablo güncellemesini izlemeli.
   { id: "standings-simulator-page", script: "generate-standings-simulator-page.mjs", args: [], timeoutMinutes: 2 },
   // /uefa-ulke-puani-siralamasi: UEFA ülke tablosu data/uefa-country-coefficients.json'dan; API çağrısı yok.

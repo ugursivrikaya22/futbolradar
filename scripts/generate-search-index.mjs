@@ -88,6 +88,7 @@ const EXTRA_PAGES = [
   { href: "takim-trendleri.html", title: "Takım Trendleri", subtitle: "Form ve momentum" },
   { href: "oyuncu-trendleri.html", title: "Oyuncu Trendleri", subtitle: "Yükselen oyuncular" },
   { href: "hakkinda.html", title: "Hakkında", subtitle: "FutbolRadar nedir" },
+  { href: "x-hesaplari.html", title: "Futbol X Hesapları", subtitle: "Doğrulanmış X hesapları" },
   { href: "iletisim.html", title: "İletişim", subtitle: "Bize ulaşın" },
   { href: "veri-notu.html", title: "Veri Notu", subtitle: "Kaynak ve doğrulama" }
 ];

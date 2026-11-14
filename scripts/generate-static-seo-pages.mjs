@@ -568,6 +568,8 @@ function sitemapXml(files) {
     "oyuncu-liderleri.html",
     "takim-trendleri.html",
     "futbol-radar-rehberi.html",
+    // data/x-accounts.json → scripts/generate-x-accounts-page.mjs
+    "x-hesaplari.html",
     "gunun-radar-bulteni.html",
     // Elle yazılıp depoya işlenen transfer dosyaları (`transfer/*.html`).
     // Bu sayfaların üreticisi yok; harita burada baştan kurulduğu için

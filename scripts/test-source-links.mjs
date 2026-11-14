@@ -30,6 +30,7 @@ const {
   isAllowedSourceHost,
   isAllowedSourceUrl,
   isOwnProfileHost,
+  isXDirectoryProfileUrl,
   isShareHost,
   isSiteHost,
   SITE_HOST
@@ -158,6 +159,13 @@ function sampleGeneratedHtml(dir, limit) {
         if (tokens.includes("nofollow")) {
           wrongNofollow.push(`${rel}: ${host}`);
         }
+        continue;
+      }
+
+      // /x-hesaplari.html dizinindeki doğrulanmış profil kökleri. Kaynak
+      // künyesi değiller (durum URL'si hâlâ kapalı) ama sayfada nofollow ile dururlar.
+      if (isXDirectoryProfileUrl(match[2])) {
+        if (!tokens.includes("nofollow")) missingNofollow.push(`${rel}: ${host}`);
         continue;
       }
 
