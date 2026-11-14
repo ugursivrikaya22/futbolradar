@@ -71,7 +71,7 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-empty data-component="LiveScoresTicker" data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?live=all" data-source="loading" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
@@ -100,7 +100,7 @@
     <div class="fixture-card-broadcast is-unknown" data-broadcast="pending"><span class="fixture-card-broadcast-icon" aria-hidden="true">📺</span><span>Broadcast to be confirmed</span></div>
     
     <a class="fixture-card-action" href="./match-detail.html?id=sp-hasselt-u21-rfc-de-liege-u21-2026-10-16&amp;date=2026-11-13">Open match details</a>
-  </article></div></div><script src="/daily-fixtures-en.js" defer></script>
+  </article></div></div><script src="/daily-fixtures-en.js?v=bba723e8" defer></script>
       </section>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","numberOfItems":1,"itemListElement":[{"@type":"ListItem","position":1,"item":{"@type":"SportsEvent","name":"Sp. Hasselt U21 - RFC de Liege U21","startDate":"2026-11-13T22:30:00+03:00","eventStatus":"https://schema.org/EventScheduled","eventAttendanceMode":"https://schema.org/OfflineEventAttendanceMode","sport":"Football","homeTeam":{"@type":"SportsTeam","name":"Sp. Hasselt U21"},"awayTeam":{"@type":"SportsTeam","name":"RFC de Liege U21"},"competitor":[{"@type":"SportsTeam","name":"Sp. Hasselt U21"},{"@type":"SportsTeam","name":"RFC de Liege U21"}],"superEvent":{"@type":"SportsEvent","name":"Reserve Pro League"}}}],"name":"Today's football matches"}</script>
 <section class="trend-section" aria-labelledby="en-sections-title">
@@ -166,5 +166,6 @@
     </footer>
     
     <script src="../site.js" defer></script>
+    <script src="/en-live-scores.js?v=31962c61" defer></script>
   </body>
 </html>

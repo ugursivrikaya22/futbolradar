@@ -25,6 +25,7 @@ for (const file of [
   "column-showcase.css",
   "app.js",
   "daily-fixtures-en.js",
+  "en-live-scores.js",
   "data-refresh.js",
   "player-profile.js",
   "site.js",

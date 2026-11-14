@@ -263,7 +263,10 @@ for (const file of files) {
     // sayfa kapsamı testi (hangi sayfada bant var) derleme anına bağlı
     // hâle gelirdi. Ana sayfalarla AYNI kural: yoksa "şu anda canlı maç
     // yok" mesajı, hiç kaybolmaz.
-    ? liveTickerBlock(liveRecords, { locale, base, keepEmpty: true })
+    // İngilizce sayfalarda bant istemcide tazelenir (`en-live-scores.js`,
+    // `?live=all`). Türkçe iç sayfalar app.js yüklediği için kabuk statik
+    // kalır — `live` yalnızca EN'de açılır, TR çıktısı değişmez.
+    ? liveTickerBlock(liveRecords, { locale, base, keepEmpty: true, live: locale === "en" })
     : "";
 
   // Transfer Radar on the English homepage sits in the same slot as the

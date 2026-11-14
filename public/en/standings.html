@@ -104,7 +104,7 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-component="LiveScoresTicker" data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?live=all" data-source="loading" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
@@ -394,6 +394,7 @@
     </footer>
     
     <script src="../site.js?v=4e6aaa62" defer></script>
+    <script src="/en-live-scores.js?v=31962c61" defer></script>
     <script src="../app-lite.js?v=05175725" defer></script>
   </body>
 </html>

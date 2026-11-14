@@ -104,7 +104,7 @@
         <a class="news-ticker-all" href="../en/news.html">View all</a>
       </div>
     </div><!-- shared-layout:ticker:end -->
-      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-component="LiveScoresTicker" data-source="static" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
+      <!-- shared-layout:live-ticker:start --><div class="live-scores-ticker" data-component="LiveScoresTicker" data-api-target="live-scores-ticker" data-static-fallback="true" data-live-source="/api/matches?live=all" data-source="loading" data-live-empty-text="No live matches at the moment." role="region" aria-label="Live Scores">
       <div class="container-wide live-scores-ticker__inner">
         <span class="live-scores-ticker__label"><i class="live-pulse" aria-hidden="true"></i>Live Scores</span>
         <div class="live-scores-ticker__viewport" aria-live="polite">
@@ -128,6 +128,7 @@
       </section>
       <section class="data-panel" aria-labelledby="en-live-title">
         <h2 class="panel-title" id="en-live-title">Live now</h2>
+        <div data-api-section="live-score" data-api-target="live-score" data-static-fallback="true" data-matches-day="2026-11-06">
         <div class="matches-grid"><article class="fixture-card is-live" data-card="fixture">
     <div class="fixture-card-top"><span class="fixture-card-league"><i class="league-mark league-mark-2" aria-hidden="true">LH</i>Ligat Ha&#039;al</span><span class="fixture-card-state is-live">Live 1&#039;</span></div>
     <div class="fixture-card-rows"><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MT</span><span class="fixture-row-name">Maccabi Tel Aviv</span><span class="fixture-row-score">0</span></div><div class="fixture-row"><span class="fixture-row-fallback" aria-hidden="true">MP</span><span class="fixture-row-name">Maccabi Petah Tikva</span><span class="fixture-row-score">0</span></div></div>
@@ -268,6 +269,7 @@
     
     <a class="fixture-card-action" href="./match-detail.html?id=gaziantep-u19-kasimpasa-u19-2026-11-06&amp;date=2026-11-06">Open match details</a>
   </article></div>
+        </div>
         <p class="muted-copy">A match appears here only when the provider confirms it is live and a real score is available. Matches without a published score are not listed on this page.</p>
       </section>
       <section class="data-panel" aria-labelledby="en-ft-title">
@@ -602,6 +604,7 @@
     </footer>
     
     <script src="../site.js?v=4e6aaa62" defer></script>
+    <script src="/en-live-scores.js?v=31962c61" defer></script>
     <script src="../app-lite.js?v=05175725" defer></script>
   </body>
 </html>
