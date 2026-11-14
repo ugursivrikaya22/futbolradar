@@ -25,7 +25,12 @@ assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(midnight))), ["turkiye-
 assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(after))), []);
 
 const sched = selectHomeMatchBannerSchedule(data, at(yarin));
-assert.deepEqual(ids(sched), ["turkiye-belcika-2026-11-12-yarin", "turkiye-belcika-2026-11-12-bu-aksam"]);
+assert.deepEqual(ids(sched), [
+  "turkiye-belcika-2026-11-12-yarin",
+  "turkiye-belcika-2026-11-12-bu-aksam",
+  "fransa-turkiye-2026-11-15-yarin",
+  "fransa-turkiye-2026-11-15-bu-aksam",
+]);
 
 const html = renderHomeMatchBanner(sched, { base: "./", now: at(yarin) });
 assert.match(html, /Yarın Türkiye–Belçika/);
@@ -41,6 +46,19 @@ const later = renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(match
 assert.match(later, /Bu akşam Türkiye–Belçika/);
 assert.doesNotMatch(later, /Yarın Türkiye–Belçika/);
 
-assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(after)), { now: at(after) }), "");
+// Fransa–Türkiye (15 Kasım 2026, 22.45 TSİ, Matmut Atlantique, TFF kaynaklı)
+const frYarin = "2026-11-14T09:00:00+03:00";
+const frMatchDay = "2026-11-15T12:00:00+03:00";
+const frAfter = "2026-11-16T00:00:00+03:00";
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(after))), []);
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(frYarin))), ["fransa-turkiye-2026-11-15-yarin"]);
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(frMatchDay))), ["fransa-turkiye-2026-11-15-bu-aksam"]);
+const frHtml = renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(frYarin)), { base: "./", now: at(frYarin) });
+assert.match(frHtml, /Yarın Fransa–Türkiye/);
+assert.match(frHtml, /href="\.\/mac\/fransa-turkiye-15-kasim-2026"/);
+assert.match(frHtml, /22\.45 TSİ · Matmut Atlantique Stadyumu, Bordeaux/);
+assert.match(frHtml, /href="https:\/\/www\.tff\.org\/default\.aspx\?pageID=202&amp;ftxtID=51916"[^>]*rel="nofollow noopener noreferrer"/);
+
+assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(frAfter)), { now: at(frAfter) }), "");
 
 console.log("home-match-banner: Yarın/Bu akşam pencereleri, TFF kaynağı, z-index yok, istemci geçiş verisi passed");
