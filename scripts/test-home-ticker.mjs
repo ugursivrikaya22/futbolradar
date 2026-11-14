@@ -19,7 +19,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
-import { renderHomeTicker } from "./lib/homeTicker.mjs";
+import { renderHomeTicker, tickerDurationSeconds } from "./lib/homeTicker.mjs";
 
 const require = createRequire(import.meta.url);
 const root = process.cwd();
@@ -102,6 +102,12 @@ assert.ok(errs({ expiresAt: "2026-10-01T00:00:00+03:00" }).some((m) => /önce/.t
   assert.ok(hiddenCopy.includes('tabindex="-1"'), "aria-hidden kopyadaki bağlantılar sekme sırası dışında");
   assert.ok(/<button[^>]+data-home-ticker-toggle[^>]+aria-pressed="false"/.test(html), "Durdur düğmesi olmalı");
   assert.ok(!html.includes("<script>") && html.includes('home-ticker.js" defer'), "betik ertelenmiş dış dosya");
+  const longText = "a".repeat(400);
+  const chars = longText.length + "TFF".length + 12;
+  const doubled = tickerDurationSeconds([{ ...base, text: longText, sourceName: "TFF" }]);
+  assert.equal(doubled, Math.round(chars * 0.11), "uzun metinde süre 0,11 sn/karakter");
+  assert.ok(Math.abs(doubled - Math.max(30, Math.round(chars * 0.22)) / 2) <= 0.5, "süre eski formülün yarısı (hız iki kat)");
+  assert.equal(tickerDurationSeconds([{ ...base, text: "kısa", sourceName: "TFF" }]), 15, "kısa bant tabanı 15 sn (eski 30 sn'nin yarısı)");
 }
 
 // ── 4. CSS ───────────────────────────────────────────────────────────────────
