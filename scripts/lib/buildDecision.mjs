@@ -15,8 +15,10 @@ export function isOperationalOnly(file) {
 export function buildDecision(env = process.env, cwd = process.cwd()) {
   if (RETIRED_PROJECTS.has(env.VERCEL_PROJECT_ID)) return { build: false, reason: "retired project" };
   const branch = env.VERCEL_GIT_COMMIT_REF || "";
-  if (env.VERCEL_ENV === "preview" && branch && !/^preview\/.+/.test(branch)) {
-    return { build: false, reason: "preview builds are opt-in on preview/* branches; production remains enabled" };
+  // preview/* elle açılan önizleme. cursor/* bulut ajanının doğrulama
+  // dalıdır; önizleme kapalı kalırsa yayın öncesi sayfa kontrolü yapılamaz.
+  if (env.VERCEL_ENV === "preview" && branch && !/^(?:preview|cursor)\/.+/.test(branch)) {
+    return { build: false, reason: "preview builds are opt-in on preview/* and cursor/* branches; production remains enabled" };
   }
   const previous = env.VERCEL_GIT_PREVIOUS_SHA;
   const current = env.VERCEL_GIT_COMMIT_SHA;

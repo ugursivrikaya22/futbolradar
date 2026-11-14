@@ -660,11 +660,20 @@ fs.mkdirSync(publicOutDir, { recursive: true });
 
 const pairs = buildPairs();
 const expectedFiles = new Set(pairs.map((pair) => `${pair.slug}.html`));
+function isStatComparisonModule(file) {
+  try {
+    return fs.readFileSync(file, "utf8").includes('data-fr-module="stat-comparison"');
+  } catch {
+    return false;
+  }
+}
 for (const directory of [outDir, publicOutDir]) {
   for (const file of fs.readdirSync(directory)) {
-    if (file.endsWith(".html") && !expectedFiles.has(file)) {
-      fs.unlinkSync(path.join(directory, file));
-    }
+    if (!file.endsWith(".html") || expectedFiles.has(file)) continue;
+    const full = path.join(directory, file);
+    // Kaynaklı kıyas modülünün sayfaları bu üreticinin listesinde değildir.
+    if (isStatComparisonModule(full)) continue;
+    fs.unlinkSync(full);
   }
 }
 
@@ -683,8 +692,14 @@ const freshness = createFreshnessTracker(root);
 for (const sitemapPath of [path.join(root, "sitemap.xml"), path.join(root, "public", "sitemap.xml")]) {
   if (!fs.existsSync(sitemapPath)) continue;
   const current = fs.readFileSync(sitemapPath, "utf8");
+  const moduleLocPath = path.join(root, "data", "comparison-module", "published-locs.json");
+  const moduleLocs = new Set(fs.existsSync(moduleLocPath) ? JSON.parse(fs.readFileSync(moduleLocPath, "utf8")) : []);
   const retained = (current.match(URL_ENTRY_RE) || [])
-    .filter((entry) => !entry.includes(`${domain}/karsilastirma/`));
+    .filter((entry) => {
+      if (!entry.includes(`${domain}/karsilastirma/`)) return true;
+      const loc = (entry.match(/<loc>([^<]+)<\/loc>/) || [])[1];
+      return moduleLocs.has(loc);
+    });
   // Tarih sabit yazılıyordu (2026-07-13) ve karşılaştırma sayfaları
   // güncellenmesine rağmen hiç ilerlemiyordu; gerekçe lib/sitemapFreshness.mjs.
   const entries = pairs.map((pair) => {

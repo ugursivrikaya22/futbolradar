@@ -122,6 +122,9 @@ export const POSTPROCESS_CHAIN = [
   { id: "en-market-values-page", script: "generate-en-market-values-page.mjs", args: [], timeoutMinutes: 2 },
   { id: "search-index", script: "generate-search-index.mjs", args: [], timeoutMinutes: 4 },
   { id: "news-ticker", script: "refresh-news-ticker.mjs", args: ["--apply"], timeoutMinutes: 5 },
+  // Kaynaklı karşılaştırma sayfaları ortak yerleşimden ÖNCE doğar ki başlık,
+  // favicon, hreflang ve varlık damgası onları da görsün.
+  { id: "stat-comparison", script: "generate-stat-comparison-module.mjs", args: [], timeoutMinutes: 4 },
   { id: "shared-layout", script: "apply-shared-layout.mjs", args: [], timeoutMinutes: 12 },
   // Maç dosyası tanıtım kutusu da saate bağlı: penceresi kapanınca kutu
   // kendiliğinden düşsün diye her derlemede yeniden değerlendirilir.
