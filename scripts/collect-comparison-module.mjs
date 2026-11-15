@@ -64,7 +64,7 @@ function readQueue(name) {
   const file = path.join(root, "data", "comparison-module", name);
   return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : [];
 }
-const ALL_WANTED = WANTED.concat(readQueue("batch2.json"), readQueue("batch3.json"));
+const ALL_WANTED = WANTED.concat(readQueue("batch2.json"), readQueue("batch3.json"), readQueue("batch4.json"));
 
 const clubCache = new Map();
 const competitionCache = new Map();
