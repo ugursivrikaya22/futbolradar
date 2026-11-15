@@ -36,6 +36,13 @@
 .cmp-timeline li { border-left: 3px solid var(--accent, #0f8a5f); padding: 4px 0 4px 10px; }
 .cmp-sources { display: grid; gap: 6px; font-size: 0.88rem; }
 .cmp-sources a { word-break: break-all; }
+.cmp-filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.cmp-filters button {
+  border: 1px solid var(--line, #d5e3dc); background: var(--bg, #fff); color: inherit;
+  border-radius: 999px; min-height: 44px; padding: 8px 14px; font: inherit; white-space: nowrap;
+}
+.cmp-filters button[aria-pressed="true"] { border-color: var(--accent, #0f8a5f); background: var(--bg-soft, #f6faf8); }
+.cmp-league { width: 100%; min-height: 48px; border: 1px solid var(--line, #d5e3dc); border-radius: 12px; padding: 10px 12px; font: inherit; background: var(--bg, #fff); color: inherit; }
 .cmp-form { display: flex; gap: 6px; flex-wrap: wrap; }
 .cmp-form b { min-width: 44px; text-align: center; border-radius: 8px; padding: 6px; background: var(--bg-soft, #f6faf8); }
 @media (min-width: 800px) {
