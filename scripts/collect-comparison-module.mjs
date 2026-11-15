@@ -15,7 +15,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const OUT_DIR = path.join(root, "data", "comparison-module", "players");
-const RETRIEVED_AT = "2026-11-14";
+const RETRIEVED_AT = "2026-11-15";
 const UA = "Mozilla/5.0 (compatible; FutbolRadarEditorial/1.0; +https://www.futbolradar.com)";
 const API = "https://tmapi.transfermarkt.technology";
 
@@ -59,6 +59,10 @@ const WANTED = [
   ["28003", "Lionel Messi"],
   ["68290", "Neymar"]
 ];
+
+const queuePath = path.join(root, "data", "comparison-module", "batch2.json");
+const QUEUE = fs.existsSync(queuePath) ? JSON.parse(fs.readFileSync(queuePath, "utf8")) : [];
+const ALL_WANTED = WANTED.concat(QUEUE);
 
 const clubCache = new Map();
 const competitionCache = new Map();
@@ -504,7 +508,7 @@ async function buildPlayer(id, expectedName) {
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const index = [];
 const failures = [];
-for (const [id, expected] of WANTED) {
+for (const [id, expected] of ALL_WANTED) {
   const preset = fs.readdirSync(OUT_DIR).find((name) => name.endsWith(".json") && fs.readFileSync(path.join(OUT_DIR, name), "utf8").includes(`"transfermarktId":"${id}"`));
   if (preset) {
     const player = JSON.parse(fs.readFileSync(path.join(OUT_DIR, preset), "utf8"));

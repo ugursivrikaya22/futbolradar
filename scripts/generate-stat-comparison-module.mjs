@@ -22,13 +22,59 @@ const LINK_START = "<!-- stat-comparison-links:start -->";
 const LINK_END = "<!-- stat-comparison-links:end -->";
 const LINK_RE = /[\t ]*<!-- stat-comparison-links:start -->[\s\S]*?<!-- stat-comparison-links:end -->\n?/g;
 
-const TEAM_PAGES = [
-  ["takimlar/galatasaray.html", /galatasaray/i],
-  ["takimlar/fenerbahce.html", /fenerbah/i],
-  ["takimlar/besiktas.html", /beşiktaş|besiktas/i],
-  ["takimlar/trabzonspor.html", /trabzonspor/i],
-  ["takimlar/basaksehir.html", /ba[sş]ak[sş]ehir/i]
-];
+const CLUB_PAGES = {
+  galatasaray: "takimlar/galatasaray.html",
+  fenerbahce: "takimlar/fenerbahce.html",
+  "fenerbahçe": "takimlar/fenerbahce.html",
+  "beşiktaş jk": "takimlar/besiktas.html",
+  trabzonspor: "takimlar/trabzonspor.html",
+  "başakşehir fk": "takimlar/basaksehir.html",
+  "istanbul başakşehir": "takimlar/basaksehir.html",
+  "fc barcelona": "takimlar/barcelona.html",
+  "real madrid": "takimlar/real-madrid.html",
+  "manchester city": "takimlar/manchester-city.html",
+  "arsenal fc": "takimlar/arsenal.html",
+  "chelsea fc": "takimlar/chelsea.html",
+  "liverpool fc": "takimlar/liverpool.html",
+  "juventus fc": "takimlar/juventus.html",
+  "inter milan": "takimlar/inter.html",
+  "ac milan": "takimlar/milan.html",
+  "ssc napoli": "takimlar/napoli.html",
+  "as roma": "takimlar/roma.html",
+  "fc bayern munich": "takimlar/bayern-munich.html",
+  "borussia dortmund": "takimlar/dortmund.html",
+  "paris saint-germain": "takimlar/paris-saint-germain.html",
+  "atlético de madrid": "takimlar/atletico-madrid.html",
+  "al-nassr fc": "takimlar/al-nassr.html",
+  "inter miami cf": "takimlar/inter-miami.html",
+  "brighton & hove albion": "takimlar/brighton.html",
+  "como 1907": "takimlar/como.html",
+  "as monaco": "takimlar/monaco.html",
+  "bayer 04 leverkusen": "takimlar/leverkusen.html",
+  "1.fc köln": "takimlar/koln.html",
+  "al-hilal sfc": "takimlar/al-hilal.html",
+  "al-ahli sfc": "takimlar/al-ahli.html",
+  "cr flamengo": "takimlar/flamengo.html",
+  "sociedade esportiva palmeiras": "takimlar/palmeiras.html"
+};
+
+function slugify(name) {
+  const map = { ş: "s", Ş: "s", ğ: "g", Ğ: "g", ü: "u", Ü: "u", ö: "o", Ö: "o", ç: "c", Ç: "c", ı: "i", İ: "i", â: "a", î: "i", û: "u", ă: "a" };
+  const folded = String(name || "").replace(/[şŞğĞüÜöÖçÇıİâîûă]/g, (ch) => map[ch] || ch);
+  return folded.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+function teamRelative(club) {
+  const key = String(club || "").toLocaleLowerCase("tr-TR");
+  if (CLUB_PAGES[key] && fs.existsSync(path.join(root, CLUB_PAGES[key]))) return CLUB_PAGES[key];
+  const slug = slugify(club);
+  const candidates = [slug, slug.replace(/-(jk|fk|fc|sfc|cf)$/u, ""), slug.replace(/^(fc|ac|as|ssc|cr)-/u, "")];
+  for (const item of candidates) {
+    const relative = `takimlar/${item}.html`;
+    if (item && fs.existsSync(path.join(root, relative))) return relative;
+  }
+  return null;
+}
 
 function readPlayers() {
   if (!fs.existsSync(dataDir)) return [];
@@ -116,20 +162,32 @@ function selectPairs(players) {
         candidates.push({ a, b, score });
       }
     }
+    const sameLeague = (pair) => pair.a.identity.league && pair.a.identity.league === pair.b.identity.league;
+    const turkishEurope = (pair) => {
+      const leagues = [pair.a.identity.league, pair.b.identity.league].map((value) => String(value || ""));
+      const superLig = leagues.some((value) => /süper lig/i.test(value));
+      const europe = leagues.some((value) => /premier league|laliga|serie a|bundesliga|ligue 1/i.test(value));
+      return superLig && europe;
+    };
     candidates.sort((a, b) => b.score - a.score || pairSlug(a.a, a.b).localeCompare(pairSlug(b.a, b.b)));
     const load = new Map();
-    for (const candidate of candidates) {
-      const leftLoad = load.get(candidate.a.slug) || 0;
-      const rightLoad = load.get(candidate.b.slug) || 0;
-      if (leftLoad >= 6 || rightLoad >= 6) continue;
-      const slug = pairSlug(candidate.a, candidate.b);
-      if (seen.has(slug)) continue;
-      seen.add(slug);
-      load.set(candidate.a.slug, leftLoad + 1);
-      load.set(candidate.b.slug, rightLoad + 1);
-      const ordered = [candidate.a, candidate.b].sort((x, y) => x.slug.localeCompare(y.slug));
-      chosen.push({ slug, left: ordered[0], right: ordered[1], group: key });
-    }
+    const take = (list, cap) => {
+      for (const candidate of list) {
+        const leftLoad = load.get(candidate.a.slug) || 0;
+        const rightLoad = load.get(candidate.b.slug) || 0;
+        if (leftLoad >= cap || rightLoad >= cap) continue;
+        const slug = pairSlug(candidate.a, candidate.b);
+        if (seen.has(slug)) continue;
+        seen.add(slug);
+        load.set(candidate.a.slug, leftLoad + 1);
+        load.set(candidate.b.slug, rightLoad + 1);
+        const ordered = [candidate.a, candidate.b].sort((x, y) => x.slug.localeCompare(y.slug));
+        chosen.push({ slug, left: ordered[0], right: ordered[1], group: key });
+      }
+    };
+    take(candidates.filter(sameLeague), 4);
+    take(candidates.filter(turkishEurope), 5);
+    take(candidates, 5);
   }
   return chosen;
 }
@@ -163,7 +221,19 @@ function analysis(left, right) {
     cmpNumber("Kırmızı kart", left.career?.redCards, right.career?.redCards),
     cmpNumber("Pas isabeti", left.technical?.passAccuracy, right.technical?.passAccuracy, "%"),
     cmpNumber("Gol/90", per90(left.career?.goals, left.career?.minutes), per90(right.career?.goals, right.career?.minutes)),
-    cmpNumber("Asist/90", per90(left.career?.assists, left.career?.minutes), per90(right.career?.assists, right.career?.minutes))
+    cmpNumber("Asist/90", per90(left.career?.assists, left.career?.minutes), per90(right.career?.assists, right.career?.minutes)),
+    sameScope(left.technical?.dribbles, right.technical?.dribbles, left.technical?.dribblesScope, right.technical?.dribblesScope)
+      ? cmpNumber(`Dribling (${left.technical.dribblesScope})`, left.technical.dribbles, right.technical.dribbles)
+      : "",
+    sameScope(left.technical?.dispossessed, right.technical?.dispossessed, left.technical?.dispossessedScope, right.technical?.dispossessedScope)
+      ? cmpNumber(`Top kaybı (${left.technical.dispossessedScope})`, left.technical.dispossessed, right.technical.dispossessed)
+      : "",
+    sameScope(left.technical?.xg, right.technical?.xg, left.technical?.xgScope, right.technical?.xgScope)
+      ? cmpNumber(`xG (${left.technical.xgScope || "aynı kapsam"})`, left.technical.xg, right.technical.xg)
+      : "",
+    sameScope(left.technical?.xa, right.technical?.xa, left.technical?.xaScope, right.technical?.xaScope)
+      ? cmpNumber(`xA (${left.technical.xaScope || "aynı kapsam"})`, left.technical.xa, right.technical.xa)
+      : ""
   ].filter(Boolean);
   if (!lines.length) return ["Karşılaştırmalık sayı yok. Eksik alanlar Veri yok olarak bırakıldı."];
   return lines;
@@ -213,6 +283,25 @@ function radarSvg(metrics) {
   <p class="cmp-note">Eksen, çiftin kendi içinde büyük olan değere göre 1'e çekilir. Eksik metrik eksene girmez.</p>`;
 }
 
+function scopedShow(value, scope) {
+  if (value == null) return show(null);
+  const note = scope ? `<span class="cmp-note">${escapeHtml(scope)}</span>` : "";
+  return `${escapeHtml(value)}${note}`;
+}
+
+function sameScope(left, right, leftScope, rightScope) {
+  if (left == null || right == null) return false;
+  return (leftScope || "") === (rightScope || "");
+}
+
+function comparableBar(label, left, right, leftScope, rightScope) {
+  if (left != null && right != null && (leftScope || "") !== (rightScope || "")) {
+    return `<p class="cmp-note">${escapeHtml(label)} kapsamları farklı olduğu için sütun çizilmedi: ${escapeHtml(leftScope || "kapsam yok")} / ${escapeHtml(rightScope || "kapsam yok")}.</p>`;
+  }
+  const scope = left != null && right != null && leftScope ? ` (${leftScope})` : "";
+  return barRow(`${label}${scope}`, left, right);
+}
+
 function barRow(label, left, right) {
   const max = Math.max(Number(left) || 0, Number(right) || 0, 1);
   const width = (value) => (value == null ? 0 : Math.max(4, Math.round((Number(value) / max) * 100)));
@@ -252,7 +341,9 @@ function playerSources(player) {
     { label: "Kimlik (Transfermarkt oyuncu kaydı)", sourceUrl: player.identity?.sourceUrl, retrievedAt: player.identity?.retrievedAt },
     { label: "Uyruk / altyapı (Transfermarkt transfer sayfası)", sourceUrl: player.identity?.nationalitySourceUrl || player.careerClubs?.youthSourceUrl, retrievedAt: player.retrievedAt },
     { label: "Maç dökümü ve türetilmiş toplamlar", sourceUrl: player.career?.sourceUrl, retrievedAt: player.career?.retrievedAt },
-    { label: "Kulüp geçmişi", sourceUrl: player.careerClubs?.sourceUrl, retrievedAt: player.careerClubs?.retrievedAt }
+    { label: "Kulüp geçmişi", sourceUrl: player.careerClubs?.sourceUrl, retrievedAt: player.careerClubs?.retrievedAt },
+    { label: player.identity?.weightSourceLabel || "Kilo (resmi sayfa)", sourceUrl: player.identity?.weightSourceUrl, retrievedAt: player.identity?.weightRetrievedAt },
+    { label: "Dribling, top kaybı veya xG/xA (resmi sayfa)", sourceUrl: player.technical?.officialSourceUrl, retrievedAt: player.technical?.officialRetrievedAt }
   ]);
 }
 
@@ -435,10 +526,10 @@ ${shell(`
           <div><dt>İsabetli pas</dt><dd>${show(player.technical?.passesReached)}</dd></div>
           <div><dt>Müdahale</dt><dd>${show(player.technical?.tackles)}</dd></div>
           <div><dt>Kurtarış</dt><dd>${show(player.technical?.saves)}</dd></div>
-          <div><dt>Dribling</dt><dd>${show(player.technical?.dribbles)}</dd></div>
-          <div><dt>Top kaybı</dt><dd>${show(player.technical?.dispossessed)}</dd></div>
-          <div><dt>xG</dt><dd>${show(player.technical?.xg)}</dd></div>
-          <div><dt>xA</dt><dd>${show(player.technical?.xa)}</dd></div>
+          <div><dt>Dribling</dt><dd>${scopedShow(player.technical?.dribbles, player.technical?.dribblesScope)}</dd></div>
+          <div><dt>Top kaybı</dt><dd>${scopedShow(player.technical?.dispossessed, player.technical?.dispossessedScope)}</dd></div>
+          <div><dt>xG</dt><dd>${scopedShow(player.technical?.xg, player.technical?.xgScope)}</dd></div>
+          <div><dt>xA</dt><dd>${scopedShow(player.technical?.xa, player.technical?.xaScope)}</dd></div>
         </dl>
       </section>
       <section class="cmp-panel"><h2>Son 5 maç</h2>${last5(player)}</section>
@@ -499,7 +590,10 @@ ${shell(`
         ${barRow("Pas isabeti %", left.technical?.passAccuracy, right.technical?.passAccuracy)}
         ${barRow("Müdahale", left.technical?.tackles, right.technical?.tackles)}
         ${barRow("Kurtarış", left.technical?.saves, right.technical?.saves)}
-        ${barRow("xG", left.technical?.xg, right.technical?.xg)}
+        ${comparableBar("Dribling", left.technical?.dribbles, right.technical?.dribbles, left.technical?.dribblesScope, right.technical?.dribblesScope)}
+        ${comparableBar("Top kaybı", left.technical?.dispossessed, right.technical?.dispossessed, left.technical?.dispossessedScope, right.technical?.dispossessedScope)}
+        ${comparableBar("xG", left.technical?.xg, right.technical?.xg, left.technical?.xgScope, right.technical?.xgScope)}
+        ${comparableBar("xA", left.technical?.xa, right.technical?.xa, left.technical?.xaScope, right.technical?.xaScope)}
       </section>
       <section class="cmp-panel"><h2>Sayıdan çıkan kıyas</h2><ul>${lines.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>
         <p class="cmp-note">Cümleler yalnızca iki karttaki sayıların karşılaştırmasıdır.</p>
@@ -645,8 +739,14 @@ function linkExistingProfiles(players, pairs) {
 }
 
 function linkTeams(players) {
-  for (const [relative, pattern] of TEAM_PAGES) {
-    const squad = players.filter((player) => pattern.test(player.identity?.club || ""));
+  const grouped = new Map();
+  for (const player of players) {
+    const relative = teamRelative(player.identity?.club);
+    if (!relative) continue;
+    if (!grouped.has(relative)) grouped.set(relative, []);
+    grouped.get(relative).push(player);
+  }
+  for (const [relative, squad] of grouped) {
     if (!squad.length || !fs.existsSync(path.join(root, relative))) continue;
     const links = [`<li><a href="../oyuncu-karsilastirma">Oyuncu karşılaştırma</a></li>`]
       .concat(squad.map((player) => `<li><a href="../oyuncu-karsilastirma/${player.slug}">${escapeHtml(player.name)}</a></li>`));
@@ -785,12 +885,32 @@ function missingReport(players) {
   }));
 }
 
+function keepPublishedPairs(players, selected) {
+  const bySlug = new Map(players.map((player) => [player.slug, player]));
+  const selectedSlugs = new Set(selected.map((pair) => pair.slug));
+  const file = path.join(root, "data", "comparison-module", "published-locs.json");
+  if (!fs.existsSync(file)) return [];
+  const locs = JSON.parse(fs.readFileSync(file, "utf8"));
+  const kept = [];
+  for (const loc of locs) {
+    const match = String(loc).match(/\/karsilastirma\/([^/]+)\.html$/);
+    if (!match || selectedSlugs.has(match[1])) continue;
+    const [leftSlug, rightSlug] = match[1].split("-vs-");
+    const left = bySlug.get(leftSlug);
+    const right = bySlug.get(rightSlug);
+    if (!left || !right) continue;
+    kept.push({ slug: match[1], left, right, group: groupOf(left) });
+  }
+  return kept;
+}
+
 const players = readPlayers();
 if (players.length < 30) {
   console.error(`stat-comparison: ${players.length} oyuncu var, en az 30 gerekli. Önce collect-comparison-module.mjs çalıştırın.`);
   process.exit(1);
 }
-const pairs = selectPairs(players);
+const selectedPairs = selectPairs(players);
+const pairs = selectedPairs.concat(keepPublishedPairs(players, selectedPairs));
 const protectedSlugs = new Set(pairs.map((pair) => `${pair.slug}.html`));
 for (const directory of [path.join(root, "karsilastirma"), path.join(root, "public", "karsilastirma")]) {
   if (!fs.existsSync(directory)) continue;
