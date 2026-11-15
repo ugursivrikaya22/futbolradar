@@ -60,9 +60,11 @@ const WANTED = [
   ["68290", "Neymar"]
 ];
 
-const queuePath = path.join(root, "data", "comparison-module", "batch2.json");
-const QUEUE = fs.existsSync(queuePath) ? JSON.parse(fs.readFileSync(queuePath, "utf8")) : [];
-const ALL_WANTED = WANTED.concat(QUEUE);
+function readQueue(name) {
+  const file = path.join(root, "data", "comparison-module", name);
+  return fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, "utf8")) : [];
+}
+const ALL_WANTED = WANTED.concat(readQueue("batch2.json"), readQueue("batch3.json"));
 
 const clubCache = new Map();
 const competitionCache = new Map();
