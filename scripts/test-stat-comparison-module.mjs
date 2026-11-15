@@ -18,15 +18,22 @@ for (const player of players) {
   assert.equal(player.slug, files.find((name) => name === `${player.slug}.json`)?.replace(/\.json$/, ""));
   assert.ok(!slugs.has(player.slug), `çift slug ${player.slug}`);
   slugs.add(player.slug);
-  assert.equal(player.retrievedAt, "2026-11-14");
+  assert.match(player.retrievedAt, /^2026-11-1[45]$/);
   for (const group of ["identity", "career", "seasons", "technical", "last5", "matches", "careerClubs"]) {
     assert.ok(player[group]?.sourceUrl, `${player.slug} ${group} kaynak yok`);
-    assert.equal(player[group].retrievedAt, "2026-11-14");
+    assert.match(player[group].retrievedAt, /^2026-11-1[45]$/);
   }
-  assert.equal(player.technical.dribbles, null);
-  assert.equal(player.technical.dispossessed, null);
-  assert.equal(player.technical.xg, null);
-  assert.equal(player.technical.xa, null);
+  for (const field of ["dribbles", "dispossessed", "xg", "xa"]) {
+    const value = player.technical[field];
+    assert.ok(value == null || Number.isFinite(value), `${player.slug} ${field}`);
+    if (value != null) {
+      assert.match(player.technical[`${field}Scope`] || "", /2026/);
+      assert.match(player.technical.officialSourceUrl || "", /^https:\/\//);
+    }
+  }
+  if (player.identity.weightKg != null) {
+    assert.match(player.identity.weightSourceUrl || "", /^https:\/\//);
+  }
   assert.ok(player.identity.birthDate == null || /^\d{4}-\d{2}-\d{2}$/.test(player.identity.birthDate));
   assert.ok(player.identity.nationality == null || !/itemprop|<|>/.test(player.identity.nationality), player.identity.nationality);
   assert.ok(Array.isArray(player.careerClubs.stints) && player.careerClubs.stints.length > 0, `${player.slug} kulüp geçmişi yok`);
