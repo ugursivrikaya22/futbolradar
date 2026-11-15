@@ -613,11 +613,40 @@ ${shell(`
 `;
 }
 
+const REGION_IDS = {
+  TR1: "Avrupa", GB1: "Avrupa", ES1: "Avrupa", IT1: "Avrupa", L1: "Avrupa", FR1: "Avrupa",
+  PO1: "Avrupa", NL1: "Avrupa", BE1: "Avrupa", SC1: "Avrupa",
+  BRA1: "Güney Amerika", ARG1: "Güney Amerika", ARGC: "Güney Amerika", COLP: "Güney Amerika", COL1: "Güney Amerika", URU1: "Güney Amerika", URUC: "Güney Amerika", CLPD: "Güney Amerika",
+  MLS1: "Kuzey Amerika", MEXA: "Kuzey Amerika", MEX1: "Kuzey Amerika",
+  SA1: "Asya", QSL: "Asya", UAE1: "Asya", JAP1: "Asya", RSK1: "Asya", CSL: "Asya",
+  EGY1: "Afrika", MAR1: "Afrika", SFA1: "Afrika", TUN1: "Afrika",
+  AUS1: "Okyanusya"
+};
+const REGION_ORDER = ["Avrupa", "Güney Amerika", "Kuzey Amerika", "Asya", "Afrika", "Okyanusya", "Diğer"];
+
+function regionOf(player) {
+  const id = player.identity?.leagueId;
+  if (REGION_IDS[id]) return REGION_IDS[id];
+  const name = String(player.identity?.league || "");
+  if (/süper lig|premier league|laliga|serie a|bundesliga|ligue 1|liga portugal|eredivisie|jupiler|scottish/i.test(name)) return "Avrupa";
+  if (/brasileiro|argentina|dimayor|liga auf|liga de primera|torneo apertura|torneo clausura/i.test(name)) return "Güney Amerika";
+  if (/major league soccer|liga mx/i.test(name)) return "Kuzey Amerika";
+  if (/saudi|qatar|uae|j1 league|k league|chinese super/i.test(name)) return "Asya";
+  if (/egypt|botola|betway premiership|professionnelle/i.test(name)) return "Afrika";
+  if (/a-league/i.test(name)) return "Okyanusya";
+  return "Diğer";
+}
+
+function leagueLabel(player) {
+  if (player.identity?.leagueId === "TUN1") return "Ligue 1 (Tunus)";
+  return player.identity?.league || "Veri yok";
+}
+
 function hubPage(players, pairs) {
   const base = "./";
   const canonical = `${domain}/oyuncu-karsilastirma`;
   const title = "Oyuncu karşılaştırma | FutbolRadar";
-  const description = `Süper Lig ve Avrupa'dan ${players.length} oyuncuyu yan yana kıyasla. Radar, kariyer ve kulüp geçmişi. Kaynak Transfermarkt, ${players[0]?.retrievedAt || "2026-11-14"}.`;
+  const description = `${players.length} oyuncuyu lig ve bölgeye göre kıyasla. Avrupa, Süper Lig, Amerika, Asya, Afrika ve Okyanusya. Kaynak Transfermarkt.`;
   const crumbs = breadcrumb([
     { name: "Ana Sayfa", href: `${base}index.html`, abs: `${domain}/` },
     { name: "Oyuncu karşılaştırma", href: `${base}oyuncu-karsilastirma`, abs: canonical }
@@ -627,7 +656,8 @@ function hubPage(players, pairs) {
     name: player.name,
     club: player.identity?.club || "",
     league: player.identity?.league || "",
-    position: positionLabel(player.identity?.position) || ""
+    position: positionLabel(player.identity?.position) || "",
+    region: regionOf(player)
   }));
   const pairIndex = pairs.map((pair) => ({ slug: pair.slug, left: pair.left.slug, right: pair.right.slug, label: `${pair.left.name} vs ${pair.right.name}` }));
   const jsonLd = {
@@ -665,9 +695,21 @@ ${shell(`
       <section class="cmp-panel"><h2>Hazır kıyaslar</h2>
         <div class="cmp-grid cols-3">${pairs.map((pair) => `<a class="cmp-pair-link" href="./karsilastirma/${escapeHtml(pair.slug)}"><strong>${escapeHtml(pair.left.name)} vs ${escapeHtml(pair.right.name)}</strong><small>${escapeHtml(pair.left.identity?.club || "Veri yok")} · ${escapeHtml(pair.right.identity?.club || "Veri yok")}</small></a>`).join("")}</div>
       </section>
-      <section class="cmp-panel"><h2>Oyuncular</h2>
-        <div class="cmp-grid cols-3">${players.map((player) => `<a class="cmp-player-hit" href="./oyuncu-karsilastirma/${escapeHtml(player.slug)}"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(player.identity?.club || "Veri yok")} · ${escapeHtml(player.identity?.league || "Veri yok")}</small></a>`).join("")}</div>
+      <section class="cmp-panel"><h2>Bölge ve lig</h2>
+        <div class="cmp-filters" role="group" aria-label="Bölge süzgeci">${REGION_ORDER.map((region) => `<button type="button" data-region="${escapeHtml(region)}" aria-pressed="false">${escapeHtml(region)}</button>`).join("")}<button type="button" data-region="Tümü" aria-pressed="true">Tümü</button></div>
+        <label class="cmp-note" for="cmp-league">Lig</label>
+        <select class="cmp-league" id="cmp-league"><option value="">Tüm ligler</option>${[...new Set(players.map((player) => leagueLabel(player)))].sort((a, b) => a.localeCompare(b, "tr")).map((league) => `<option value="${escapeHtml(league)}">${escapeHtml(league)}</option>`).join("")}</select>
       </section>
+      ${REGION_ORDER.map((region) => {
+        const group = players.filter((player) => regionOf(player) === region);
+        if (!group.length) return "";
+        const leagues = [...new Set(group.map((player) => leagueLabel(player)))];
+        const blocks = leagues.map((league) => {
+          const squad = group.filter((player) => leagueLabel(player) === league);
+          return `<h3>${escapeHtml(league)}</h3><div class="cmp-grid cols-3">${squad.map((player) => `<a class="cmp-player-hit" data-region="${escapeHtml(region)}" data-league="${escapeHtml(leagueLabel(player))}" href="./oyuncu-karsilastirma/${escapeHtml(player.slug)}"><strong>${escapeHtml(player.name)}</strong><small>${escapeHtml(player.identity?.club || "Veri yok")}</small></a>`).join("")}</div>`;
+        }).join("");
+        return `<section class="cmp-panel" data-region-section="${escapeHtml(region)}"><h2>${escapeHtml(region)}</h2>${blocks}</section>`;
+      }).join("")}
       <section class="cmp-panel"><h2>Kaynak ve tarih</h2>
         <p>Kimlik, maç dökümü ve kulüp geçmişi Transfermarkt kayıtlarından ${escapeHtml(dateLabel(players[0]?.retrievedAt) || "Veri yok")} tarihinde alındı. Dolu olmayan kutu Veri yok'tur.</p>
       </section>
@@ -707,6 +749,36 @@ ${shell(`
   }
   input.addEventListener("input", function () { render(input.value); });
   render("");
+  var buttons = document.querySelectorAll(".cmp-filters button");
+  var sections = document.querySelectorAll("[data-region-section]");
+  var leagueSelect = document.getElementById("cmp-league");
+  function applyFilters() {
+    var region = "Tümü";
+    buttons.forEach(function (button) {
+      if (button.getAttribute("aria-pressed") === "true") region = button.getAttribute("data-region");
+    });
+    var league = leagueSelect.value;
+    sections.forEach(function (section) {
+      section.hidden = region !== "Tümü" && section.getAttribute("data-region-section") !== region;
+      section.querySelectorAll(".cmp-player-hit").forEach(function (card) {
+        card.hidden = Boolean(league) && card.getAttribute("data-league") !== league;
+      });
+      section.querySelectorAll("h3").forEach(function (heading) {
+        var grid = heading.nextElementSibling;
+        var visible = grid && grid.querySelector(".cmp-player-hit:not([hidden])");
+        heading.hidden = !visible;
+        if (grid) grid.hidden = !visible;
+      });
+    });
+  }
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function () {
+      buttons.forEach(function (item) { item.setAttribute("aria-pressed", "false"); });
+      button.setAttribute("aria-pressed", "true");
+      applyFilters();
+    });
+  });
+  leagueSelect.addEventListener("change", applyFilters);
 })();
 </script>
 </body></html>
