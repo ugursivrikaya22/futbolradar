@@ -1544,13 +1544,40 @@ function homeShareSection() {
   return pageShareHtml({ url: absoluteUrl("en/index.html"), title: routeMeta("home", "en").title || "FutbolRadar", locale: "en" });
 }
 
+/**
+ * ÜÇ KATMAN — ana sayfada duran sabit metin.
+ *
+ * Türkçe karşılık `index.html` kabuğunda, prerender slot'larının dışında
+ * durur; o dosyayı bir sonraki derleme silmez. İngilizce ana sayfa burada
+ * üretildiği için blok da burada basılır.
+ *
+ * Metin yalnızca bugün sitede olanı söyler. Yorum kutusu depo kapalıyken
+ * hiç açılmaz (`radar-fan.js`). Gol, kart ve oyuncu değişikliği maç
+ * sayfasının olay listesine ve canlı skora yazılır. Kısa haber veya grafik,
+ * ancak gerçekten yayımlandıysa eklenir — her olay için ayrı bir grafik
+ * vaat edilmez. Sosyal bağlantılar footer'daki hesaplardır.
+ */
+function homeGrowthSection() {
+  const social = (href, name) =>
+    `<a class="detail-link" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>`;
+  return `<section class="container section home-growth" id="home-growth" aria-labelledby="home-growth-title">
+          ${sectionHead("Three layers", "home-growth-title", "Match day, community and social", "FutbolRadar grows in these three layers. Each line describes what is on the site today.", "", "")}
+          <div class="grid tight">
+            <article class="card"><span class="card-kicker">1 · Match day</span><h3>Goals, bookings and substitutions</h3><p>${escapeHtml("A goal, a booking or a substitution is written into the match page event list, and the live score follows the same feed. A short story or a graphic is added only when one is actually published.")}</p><a class="detail-link" href="./live-football-scores.html">Live scores</a></article>
+            <article class="card"><span class="card-kicker">2 · Community</span><h3>Comments, when the store is open</h3><p>${escapeHtml("Comments are not open on every page. On a match page the box appears only when the comment store is available. Profanity and links are rejected, and a reported comment is reviewed. If the store is off, the box stays hidden.")}</p></article>
+            <article class="card"><span class="card-kicker">3 · Social</span><h3>Share and follow</h3><p>${escapeHtml("Share buttons on a page pass its link. Follow FutbolRadar on these accounts.")}</p>${social("https://x.com/futbolradar", "X")}${social("https://www.instagram.com/futbolradar", "Instagram")}${social("https://www.youtube.com/@futbolradar", "YouTube")}</article>
+          </div>
+        </section>`;
+}
+
 
 function homePage() {
   // Section order matches the live Turkish homepage:
   //   hero → poll → standings (9 tabs) → Süper Lig leaders → lineup alerts →
   //   man-of-the-match → daily headlines → today's matches → Big 4 →
   //   radar match → player radar → trend teams → explore → news →
-  //   featured column → latest columns → archive → football guide → share.
+  //   featured column → latest columns → archive → three layers →
+  //   football guide → share.
   // Transfer Radar is injected by apply-shared-layout immediately under
   // the Headlines band, as on the Turkish page.
   const body = `      ${radarHomeCardShell()}
@@ -1571,6 +1598,7 @@ function homePage() {
       ${featuredColumnSection()}
       ${columnsSection()}
       ${archiveSection()}
+      ${homeGrowthSection()}
       ${evergreenSection()}
       ${homeShareSection()}
       ${pollStickySection()}`;
