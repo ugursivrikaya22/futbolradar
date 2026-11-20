@@ -30,6 +30,8 @@ assert.deepEqual(ids(sched), [
   "turkiye-belcika-2026-11-12-bu-aksam",
   "fransa-turkiye-2026-11-15-yarin",
   "fransa-turkiye-2026-11-15-bu-aksam",
+  "galatasaray-samsunspor-2026-11-21-yarin",
+  "galatasaray-samsunspor-2026-11-21-bugun",
 ]);
 
 const html = renderHomeMatchBanner(sched, { base: "./", now: at(yarin) });
@@ -59,6 +61,20 @@ assert.match(frHtml, /href="\.\/mac\/fransa-turkiye-15-kasim-2026"/);
 assert.match(frHtml, /22\.45 TSİ · Matmut Atlantique Stadyumu, Bordeaux/);
 assert.match(frHtml, /href="https:\/\/www\.tff\.org\/default\.aspx\?pageID=202&amp;ftxtID=51916"[^>]*rel="nofollow noopener noreferrer"/);
 
-assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(frAfter)), { now: at(frAfter) }), "");
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(frAfter))), []);
+
+// Galatasaray–Samsunspor (21 Kasım 2026, 16.00 TSİ, hakem Ali Şansalan; AA/TFF hakem açıklaması)
+const gsYarin = "2026-11-20T09:30:00+03:00";
+const gsMatchDay = "2026-11-21T12:00:00+03:00";
+const gsAfter = "2026-11-21T18:00:00+03:00";
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gsYarin))), ["galatasaray-samsunspor-2026-11-21-yarin"]);
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gsMatchDay))), ["galatasaray-samsunspor-2026-11-21-bugun"]);
+const gsHtml = renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsYarin)), { base: "./", now: at(gsYarin) });
+assert.match(gsHtml, /Yarın Galatasaray – Samsunspor/);
+assert.match(gsHtml, /href="\.\/mac\/galatasaray-samsunspor-21-kasim-2026"/);
+assert.match(gsHtml, /16\.00 TSİ · Hakem: Ali Şansalan/);
+assert.match(gsHtml, /href="https:\/\/www\.aa\.com\.tr\/tr\/spor\/super-ligde-12-hafta-maclarini-yonetecek-hakemler-aciklandi\/4130531"[^>]*rel="nofollow noopener noreferrer"/);
+
+assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsAfter)), { now: at(gsAfter) }), "");
 
 console.log("home-match-banner: Yarın/Bu akşam pencereleri, TFF kaynağı, z-index yok, istemci geçiş verisi passed");
