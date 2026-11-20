@@ -125,3 +125,50 @@ export function englishPlayer360(model) {
   }
   return model;
 }
+
+/** İngilizce sağlayıcı etiketlerini Türkçe sayfada sunum karşılığıyla basar. Uydurma değil, mevcut sözlüğün tersidir; karşılığı yoksa değer olduğu gibi kalır. */
+const POSITIONS_TR = {
+  goalkeeper: "Kaleci", defender: "Defans", midfielder: "Orta saha", attacker: "Forvet",
+  forward: "Forvet", "centre-forward": "Santrfor", "center-forward": "Santrfor",
+  "left winger": "Sol kanat", "right winger": "Sağ kanat", winger: "Kanat",
+  "attacking midfielder": "Ofansif orta saha", "central midfielder": "Merkez orta saha",
+  "defensive midfielder": "Defansif orta saha", "centre-back": "Stoper", "center-back": "Stoper",
+  "right-back": "Sağ bek", "left-back": "Sol bek", "full-back": "Bek"
+};
+
+const COUNTRIES_TR = Object.fromEntries(Object.entries(COUNTRIES).map(([trName, enName]) => [key(enName), trName.charAt(0).toLocaleUpperCase("tr-TR") + trName.slice(1)]));
+// Elle düzeltilen özel adlar (baş harf / ı-i).
+Object.assign(COUNTRIES_TR, {
+  nigeria: "Nijerya", brazil: "Brezilya", portugal: "Portekiz", "south korea": "Güney Kore",
+  croatia: "Hırvatistan", spain: "İspanya", france: "Fransa", germany: "Almanya",
+  netherlands: "Hollanda", england: "İngiltere", italy: "İtalya", belgium: "Belçika",
+  argentina: "Arjantin", morocco: "Fas", algeria: "Cezayir", tunisia: "Tunus",
+  egypt: "Mısır", ghana: "Gana", cameroon: "Kamerun", serbia: "Sırbistan",
+  "bosnia and herzegovina": "Bosna Hersek", albania: "Arnavutluk", kosovo: "Kosova",
+  greece: "Yunanistan", hungary: "Macaristan", poland: "Polonya", romania: "Romanya",
+  bulgaria: "Bulgaristan", russia: "Rusya", ukraine: "Ukrayna", sweden: "İsveç",
+  norway: "Norveç", denmark: "Danimarka", switzerland: "İsviçre", austria: "Avusturya",
+  czechia: "Çekya", slovakia: "Slovakya", slovenia: "Slovenya", georgia: "Gürcistan",
+  azerbaijan: "Azerbaycan", japan: "Japonya", "united states": "ABD", colombia: "Kolombiya",
+  chile: "Şili", mexico: "Meksika", wales: "Galler", scotland: "İskoçya",
+  "republic of ireland": "İrlanda", "north macedonia": "Kuzey Makedonya",
+  montenegro: "Karadağ", gambia: "Gambiya", guinea: "Gine", congo: "Kongo",
+  uzbekistan: "Özbekistan", iceland: "İzlanda", finland: "Finlandiya",
+  armenia: "Ermenistan", cyprus: "Kıbrıs", canada: "Kanada", australia: "Avustralya",
+  "south africa": "Güney Afrika", jamaica: "Jamaika", türkiye: "Türkiye", turkey: "Türkiye"
+});
+
+function fromDictionaryKeep(value, dictionary) {
+  if (value === null || value === undefined || String(value).trim() === "") return value;
+  return dictionary[key(value)] || value;
+}
+
+export function turkishPlayer360(model) {
+  const identity = model && model.identity;
+  if (identity) {
+    identity.position = fromDictionaryKeep(identity.position, POSITIONS_TR);
+    identity.secondaryPosition = fromDictionaryKeep(identity.secondaryPosition, POSITIONS_TR);
+    identity.nationality = fromDictionaryKeep(identity.nationality, COUNTRIES_TR);
+  }
+  return model;
+}

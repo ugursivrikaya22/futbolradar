@@ -75,28 +75,38 @@ function emptyNote(message) {
 // ── Kimlik kartı ────────────────────────────────────────────────────────────
 
 /**
- * Kimlik satırları. `null` değer taşıyan alan HİÇ BASILMAZ — "—" basmak,
- * bilinmeyeni bilinen bir yokluk gibi gösterir.
+ * Kimlik satırları.
+ *
+ * İstenen iskelet alanları (forma no, mevki, uyruk, doğum tarihi) her zaman
+ * basılır: doğrulanmış değer yoksa "Güncelleniyor" yazılır, uydurma sayı
+ * veya "—" yazılmaz. Diğer alanlar bilinmiyorsa hâlâ basılmaz; yokluğu
+ * bilinen bir boşluk gibi göstermemek için.
  */
+const REQUIRED_IDENTITY_KEYS = Object.freeze(["shirtNumber", "position", "nationality", "birthDate"]);
+
 function identityRows(identity, locale) {
   const rows = [];
-  const push = (key, value, href) => {
-    if (value === null || value === undefined || String(value).trim() === "") return;
+  const pending = text("player360.identity.pending", locale);
+  const push = (key, value, href, required = false) => {
+    const missing = value === null || value === undefined || String(value).trim() === "";
+    if (missing && !required) return;
     const label = text(`player360.identity.${key}`, locale);
-    const body = href
-      ? `<a href="${escapeHtml(href)}">${escapeHtml(value)}</a>`
-      : escapeHtml(value);
-    rows.push(`<div class="p360-id-row"><dt>${escapeHtml(label)}</dt><dd>${body}</dd></div>`);
+    const body = missing
+      ? `<span class="p360-pending">${escapeHtml(pending)}</span>`
+      : href
+        ? `<a href="${escapeHtml(href)}">${escapeHtml(value)}</a>`
+        : escapeHtml(value);
+    rows.push(`<div class="p360-id-row${missing ? " is-pending" : ""}"><dt>${escapeHtml(label)}</dt><dd>${body}</dd></div>`);
   };
 
   push("fullName", identity.fullName);
   push("club", identity.team, identity.teamHref);
   push("league", identity.league);
-  push("shirtNumber", identity.shirtNumber);
-  push("position", identity.position);
+  push("shirtNumber", identity.shirtNumber, null, true);
+  push("position", identity.position, null, true);
   push("secondaryPosition", identity.secondaryPosition);
-  push("nationality", identity.nationality);
-  push("birthDate", formatDate(identity.birthDate, locale));
+  push("nationality", identity.nationality, null, true);
+  push("birthDate", formatDate(identity.birthDate, locale), null, true);
   push("age", identity.age);
   push("height", identity.height);
   push("foot", identity.preferredFoot);
@@ -113,10 +123,15 @@ function renderIdentity(model, locale) {
     ? `<img class="p360-club-logo" src="${escapeHtml(model.identity.teamLogo)}" alt="${escapeHtml(model.identity.team || "")}" width="28" height="28" loading="lazy" decoding="async">`
     : "";
 
+  const official = model.identity.shirtNumberSource && model.identity.shirtNumberSource.kind === "official-club"
+    ? `<p class="p360-source">${escapeHtml(text("player360.season.sourceNote", locale, model.identity.shirtNumberSource.sourceName))}${model.identity.shirtNumberSource.sourceUrl ? ` · <a href="${escapeHtml(model.identity.shirtNumberSource.sourceUrl)}" rel="nofollow noopener noreferrer" target="_blank">${escapeHtml(model.identity.shirtNumberSource.sourceUrl.replace(/^https?:\/\/(www\.)?/, "").split("/")[0])}</a>` : ""}</p>`
+    : "";
+
   return `<section class="p360 p360-identity" aria-labelledby="p360-identity-title" data-p360-section="identity">
         <div class="p360-head"><h2 id="p360-identity-title">${escapeHtml(text("player360.identity.heading", locale))}</h2></div>
         ${logo}
         <dl class="p360-id-grid">${rows.join("")}</dl>
+        ${official}
       </section>`;
 }
 
@@ -647,16 +662,28 @@ export function player360Description(model, options = {}) {
   }
 
   const tail = locale === "en" ? "on FutbolRadar." : "FutbolRadar'da.";
-  return `${parts.join(", ")} — ${tail}`;
+  // Arama snippet'i ~150-160 karakter. Bölümleri sırayla ekler; sınırı
+  // aşacak cümle düşer, böylece vaat edilen bölüm sayfada kalanlarla sınırlı kalır.
+  let used = [];
+  let result = `${parts[0]} — ${tail}`;
+  for (const part of parts) {
+    const candidate = `${[...used, part].join(", ")} — ${tail}`;
+    if (used.length && candidate.length > 160) break;
+    used.push(part);
+    result = candidate;
+  }
+  return result;
 }
 
 /** SEO başlığı. */
 export function player360Title(model, options = {}) {
   const locale = options.locale === "en" ? "en" : "tr";
   const name = model.identity.name;
+  // ~60 karakterlik görünür başlık. Uzun adlarda normalize-meta.mjs
+  // 68'i aşınca " | FutbolRadar" ekini zaten düşürür.
   return locale === "en"
-    ? `${name} Stats, Goals, News and Current Status | FutbolRadar`
-    : `${name} İstatistikleri, Golleri, Haberleri ve Son Durumu | FutbolRadar`;
+    ? `${name} Stats and Profile | FutbolRadar`
+    : `${name} Profili ve İstatistikleri | FutbolRadar`;
 }
 
 /**
@@ -671,6 +698,7 @@ export function player360Person(model, canonical, description) {
   const identity = model.identity;
   const person = {
     "@type": "Person",
+    "@id": `${canonical}#person`,
     name: identity.name,
     url: canonical,
     description
@@ -681,9 +709,56 @@ export function player360Person(model, canonical, description) {
   if (identity.birthDate) person.birthDate = identity.birthDate;
   if (identity.height) person.height = identity.height;
   if (identity.position) person.jobTitle = identity.position;
+  if (identity.shirtNumber != null && String(identity.shirtNumber).trim() !== "") {
+    person.additionalProperty = [{
+      "@type": "PropertyValue",
+      name: "shirtNumber",
+      value: String(identity.shirtNumber)
+    }];
+  }
   if (model.verified && identity.team) {
-    person.memberOf = { "@type": "SportsTeam", name: identity.team, sport: "Football" };
+    const team = { "@type": "SportsTeam", name: identity.team, sport: "Football" };
+    if (identity.teamHref) {
+      const abs = identity.teamHref.startsWith("http")
+        ? identity.teamHref
+        : new URL(identity.teamHref.replace(/^\.\//, "/"), "https://www.futbolradar.com/futbolcu/").href;
+      // relative team links are presentation-only; schema uses the club name.
+      team.name = identity.team;
+    }
+    person.memberOf = team;
+    person.affiliation = team;
   }
 
   return person;
+}
+
+/**
+ * Profil sayfasının şema grafiği: Person + BreadcrumbList + ProfilePage.
+ * ProfilePage, WebPage'in alt türüdür; ayrı bir WebPage düğümü tekrardır.
+ */
+export function player360Graph(model, canonical, description, breadcrumbs) {
+  const person = player360Person(model, canonical, description);
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      person,
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: breadcrumbs
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": `${canonical}#profile`,
+        url: canonical,
+        name: model.identity.name,
+        description,
+        mainEntity: { "@id": `${canonical}#person` },
+        isPartOf: {
+          "@type": "WebSite",
+          name: "FutbolRadar",
+          url: "https://www.futbolradar.com/"
+        }
+      }
+    ]
+  };
 }

@@ -1,5 +1,6 @@
 const { profileEvidence } = require("./playerProfileEvidence.js");
 const { buildMetrics } = require("./playerMetricsService.js");
+const { officialSquadIdentity } = require("./officialSquadIdentity.js");
 /**
  * FUTBOLCU 360 — OYUNCU SAYFASININ TEK VERİ MODELİ.
  *
@@ -470,6 +471,37 @@ function buildTransferRecords(player, transfers) {
  * mevki, uyruk, doğum tarihi, boy ve ayak bağımsız olarak güvenli
  * alanlardır (services/cardCredibility.js — SAFE_FIELDS).
  */
+
+/**
+ * Forma numarası: doğrulanmış kayıtta sağlayıcı değeri, yoksa resmî kulüp
+ * kadrosundan (izinli kaynak). Kapı genişlemez — doğrulanmamış kayıtta
+ * resmî sayı da basılmaz; test-player-360 bunu şart koşuyor.
+ */
+function officialShirtNumber(player, view, fields) {
+  if (!view || !view.verified) return null;
+  if (fields.number != null && String(fields.number).trim() !== "") return fields.number;
+  if (player.shirtNumber != null && String(player.shirtNumber).trim() !== "") return player.shirtNumber;
+  const official = officialSquadIdentity(player);
+  return official && official.number != null ? official.number : null;
+}
+
+function officialShirtSource(player, view, fields) {
+  if (!view || !view.verified) return null;
+  const hasProviderNumber = (fields.number != null && String(fields.number).trim() !== "")
+    || (player.shirtNumber != null && String(player.shirtNumber).trim() !== "");
+  if (hasProviderNumber) {
+    return { sourceName: "API-Football", sourceUrl: "https://www.api-football.com/news/post/how-to-get-started-with-api-football-the-complete-beginners-guide", kind: "provider" };
+  }
+  const official = officialSquadIdentity(player);
+  if (!official || official.number == null) return null;
+  return {
+    sourceName: official.sourceName,
+    sourceUrl: official.sourceUrl,
+    verifiedAt: official.verifiedAt,
+    kind: "official-club"
+  };
+}
+
 function buildIdentity(player, view, options) {
   const fields = view.fields || {};
   const team = fields.currentTeam || fields.team || null;
@@ -498,7 +530,8 @@ function buildIdentity(player, view, options) {
     // noktasından gelir ve AYNI kapıdan geçmeli. Ham kayıttan koşulsuz
     // okunduğunda doğrulanmamış kayıtların forma numarası yayına
     // giriyordu; `number` kısıtlı alan listesinde, `shirtNumber` değil.
-    shirtNumber: fields.number ?? (view.verified ? (player.shirtNumber ?? null) : null),
+    shirtNumber: officialShirtNumber(player, view, fields),
+    shirtNumberSource: officialShirtSource(player, view, fields),
     position: player.position || null,
     secondaryPosition: player.secondaryPosition || null,
     nationality: player.nationality || null,
