@@ -53,6 +53,7 @@ for (const file of [
   "match-center-plus.css",
   "home-ticker.css",
   "home-ticker.js",
+  "live-score-widget.js",
   "home-columns.js",
   "newsletter.js",
   "newsletter.css",
