@@ -164,6 +164,88 @@
     </div>
 
       <main class="home-main">
+      <style>
+        .home-duyuru {
+          position: relative;
+          z-index: 1;
+          display: grid;
+          gap: 10px;
+          margin: 12px auto 4px;
+        }
+        .home-duyuru .card {
+          display: grid;
+          gap: 6px;
+          min-height: 0;
+          padding: 14px 16px;
+          border-color: var(--line-strong);
+          border-left: 3px solid var(--green);
+          background: var(--green-tint);
+          box-shadow: var(--shadow-sm);
+        }
+        .home-duyuru .card.home-duyuru__wa {
+          background: var(--surface);
+          border-left-color: var(--cyan);
+        }
+        .home-duyuru .card-head {
+          align-items: baseline;
+          margin-bottom: 0;
+          gap: 12px;
+        }
+        .home-duyuru .card h2 {
+          margin: 0;
+          color: var(--green-text);
+          font-size: var(--fs-sm);
+          font-weight: 800;
+          letter-spacing: 0.02em;
+          line-height: 1.3;
+        }
+        .home-duyuru time {
+          color: var(--muted);
+          font-size: var(--fs-xs);
+          font-weight: 700;
+          white-space: nowrap;
+        }
+        .home-duyuru .card p {
+          margin: 0;
+          color: var(--text);
+          font-size: var(--fs-base);
+          line-height: 1.5;
+        }
+        .home-duyuru__share {
+          justify-self: start;
+          width: auto;
+          max-width: 100%;
+          margin-top: 4px;
+          border: 1px solid var(--line-strong);
+          border-radius: var(--radius-pill);
+          padding: 0 14px;
+          background: var(--green-tint);
+          color: var(--green-text);
+          font-size: var(--fs-sm);
+          font-weight: 800;
+          line-height: 1.2;
+          text-decoration: none;
+          white-space: normal;
+        }
+        @media (max-width: 720px) {
+          .home-main > .home-duyuru { order: -5; }
+          .home-duyuru .card-head { flex-wrap: wrap; }
+        }
+      </style>
+      <section class="container home-duyuru" aria-labelledby="home-duyuru-title">
+        <article class="card">
+          <div class="card-head">
+            <h2 id="home-duyuru-title">Duyuru</h2>
+            <time datetime="2026-11-20">20 Kasım 2026</time>
+          </div>
+          <p>Gençlikspor'dan gelen bilgiye göre, hafta sonu yarışı nedeniyle bu hafta sonu yüzme ve spor okulu çalışmaları yapılmayacaktır.</p>
+        </article>
+        <article class="card home-duyuru__wa" aria-labelledby="home-duyuru-wa-title">
+          <h2 id="home-duyuru-wa-title">Velilere WhatsApp mesajı</h2>
+          <p>Sayın Veliler, Gençlikspor'dan iletilen bilgiye göre bu hafta sonu yarış nedeniyle yüzme ve spor okulu antrenmanları yapılmayacaktır. Anlayışınız için teşekkür ederiz.</p>
+          <a class="button secondary home-duyuru__share" href="https://wa.me/?text=Say%C4%B1n%20Veliler%2C%20Gen%C3%A7likspor&#039;dan%20iletilen%20bilgiye%20g%C3%B6re%20bu%20hafta%20sonu%20yar%C4%B1%C5%9F%20nedeniyle%20y%C3%BCzme%20ve%20spor%20okulu%20antrenmanlar%C4%B1%20yap%C4%B1lmayacakt%C4%B1r.%20Anlay%C4%B1%C5%9F%C4%B1n%C4%B1z%20i%C3%A7in%20te%C5%9Fekk%C3%BCr%20ederiz." target="_blank" rel="noopener noreferrer">WhatsApp&#039;ta paylaş</a>
+        </article>
+      </section>
       <!-- Favori takım kutusunun yeri baştan ayrılır (site.js doldurur). Kutu veri gelince sayfanın en
            üstüne eklenseydi altındaki her şey ~130 px kayardı (ana sayfa CLS'inin ana nedeni). -->
       <section class="container favourite-team" data-favourite-team data-placeholder aria-hidden="true"></section>
