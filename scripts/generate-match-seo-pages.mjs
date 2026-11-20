@@ -41,6 +41,8 @@ import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { loadProbabilityContext } from "./lib/fixtureProbabilityData.mjs";
 import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
 import { columnsForTeams, columnsForMatch } from "./lib/clusterLinks.mjs";
+import { loadTeamSources } from "./lib/teamRichResults.mjs";
+import { venueAddressFor } from "./lib/eventVenueAddress.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -164,6 +166,8 @@ function readJson(relative, fallback) {
 const calendar = readJson("data/fixture-calendar.json", { matches: [] });
 const calendarMatches = Array.isArray(calendar.matches) ? calendar.matches : [];
 const fixtures = readJson("data/super-lig-fixtures.json", { rounds: [] });
+// Ev sahası kayıtları (stat + şehir) — SportsEvent konum adresi için.
+const venueSources = loadTeamSources(root);
 const editorial = readJson("data/matches.json", []);
 const editorialMatches = Array.isArray(editorial) ? editorial : (editorial.matches || []);
 const archive = readJson("data/historical-match-archive.json", { records: [] });
@@ -1190,6 +1194,7 @@ function schemaFor(entry, state, locale, ctx, urls) {
   if (startDate) {
     graph.push({
       "@type": "SportsEvent",
+      "@id": `${urls.canonical}#event`,
       name,
       url: urls.canonical,
       description: ctx.description,
@@ -1197,7 +1202,10 @@ function schemaFor(entry, state, locale, ctx, urls) {
       ...(eventStatus ? { eventStatus } : {}),
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Football",
-      ...(entry.venue ? { location: { "@type": "Place", name: venueLabel(entry.venue, locale) } } : {}),
+      // Adres yalnızca maçın statı ev sahibinin doğrulanmış iç saha kaydıyla
+      // (data/super-lig-fixtures.json → teams) örtüştüğünde yazılır; tarafsız
+      // sahada ya da eşleşme yoksa şehir uydurulmaz.
+      ...(entry.venue ? { location: { "@type": "Place", name: venueLabel(entry.venue, locale), ...venueAddressFor(venueSources, entry.homeTeam, entry.venue) } } : {}),
       homeTeam: team(homeName, ctx.homeAbsolute),
       awayTeam: team(awayName, ctx.awayAbsolute),
       competitor: [team(homeName, ctx.homeAbsolute), team(awayName, ctx.awayAbsolute)],
