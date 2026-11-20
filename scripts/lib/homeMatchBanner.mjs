@@ -10,6 +10,7 @@
  * z-index vermez.
  */
 import { createRequire } from "node:module";
+import { CSS as LIVE_CSS } from "./liveScoreWidget.mjs";
 
 const require = createRequire(import.meta.url);
 const { isAllowedSourceHost, hostOf } = require("../../services/sourceLinks.js");
@@ -58,9 +59,31 @@ const payloadOf = (item) => ({
   expiresAt: item.expiresAt,
   sourceUrl: item.sourceUrl,
   sourceName: item.sourceName,
+  fixtureId: item.fixtureId ? String(item.fixtureId) : "",
 });
 
-function bannerMarkup(item, href, hidden) {
+const LIVE_ENDPOINT = "/api/matches?league=203";
+const BAND_LIVE_CSS = `.home-match-banner__live{flex-basis:100%;min-width:0;padding:10px 12px;border-radius:12px;background:rgba(0,0,0,.22)}
+.home-match-banner__live .lsw__body{min-height:96px}
+.home-match-banner__live .lsw-card__link{display:none}
+.home-match-banner__live .lsw__credit{margin-top:4px}`;
+
+/**
+ * CANLI SKOR YUVASI (live-score-widget.js). Yalnızca öğe bir API-Football
+ * fikstür kimliği taşıyorsa basılır. Skor/dakika/golcüler tarayıcıda mevcut
+ * /api/matches yanıtından gelir; sunucu tarafında skor yazılmaz.
+ */
+function liveMarkup(item, base, hidden) {
+  const fixtureId = String(item.fixtureId || "");
+  if (!/^\d+$/.test(fixtureId)) return "";
+  return `<div class="home-match-banner__live" data-lsw data-lsw-fixture="${esc(fixtureId)}" data-lsw-endpoint="${LIVE_ENDPOINT}" data-lsw-poll="60" data-lsw-base="${esc(base)}"${hidden ? " hidden" : ""}>
+      <div class="lsw__body" data-lsw-body aria-live="polite"><p class="lsw-empty">Canlı skor, dakika ve golcüler maç başlayınca burada güncellenir.</p></div>
+      <p class="lsw__note" data-lsw-note hidden></p>
+      <p class="lsw__credit">Veri: API-Football</p>
+    </div>`;
+}
+
+function bannerMarkup(item, href, hidden, live = "") {
   return `<section class="home-match-banner" data-home-match-banner data-expires="${esc(item.expiresAt)}" aria-label="${esc(item.headline)}"${hidden ? " hidden" : ""}>
   <div class="home-match-banner__card">
     <div class="home-match-banner__text">
@@ -68,6 +91,7 @@ function bannerMarkup(item, href, hidden) {
       <h2 class="home-match-banner__headline">${esc(item.headline)}</h2>
       ${item.detail ? `<p class="home-match-banner__detail">${esc(item.detail)}</p>` : `<p class="home-match-banner__detail" hidden></p>`}
     </div>
+    ${live}
     <a class="home-match-banner__cta" href="${esc(href)}">${esc(item.cta || "Maç sayfasını aç")}</a>
     <span class="home-match-banner__source">Kaynak: <a href="${esc(item.sourceUrl)}" target="_blank" rel="nofollow noopener noreferrer">${esc(item.sourceName)}</a></span>
   </div>
@@ -81,12 +105,14 @@ export function renderHomeMatchBanner(items, { base = "./", now = new Date() } =
   const shown = current || list[0];
   const href = `${base}${shown.url.slice(1)}`;
   const payload = JSON.stringify(list.map(payloadOf)).replaceAll("<", "\\u003c");
-  return `<style>${CSS}</style>
-${bannerMarkup(shown, href, !current)}
+  // Canlı yuva yalnızca GÖRÜNEN öğe bir fikstüre bağlıysa basılır.
+  const live = current ? liveMarkup(current, base, false) : "";
+  return `<style>${CSS}${live ? `\n${LIVE_CSS}\n${BAND_LIVE_CSS}` : ""}</style>
+${bannerMarkup(shown, href, !current, live)}
 <script type="application/json" id="home-match-banner-data">${payload}</script>
 <script>(function(){var d=document.getElementById("home-match-banner-data");if(!d)return;var items;try{items=JSON.parse(d.textContent)}catch(e){return}var base=${JSON.stringify(base)};
 function pick(){var now=Date.now();for(var i=0;i<items.length;i++){var from=Date.parse(items[i].showFrom),to=Date.parse(items[i].expiresAt);if(from<=now&&now<to)return items[i];}return null}
-function apply(item){var b=document.querySelector("[data-home-match-banner]");if(!b)return;b.setAttribute("data-expires",item.expiresAt);b.setAttribute("aria-label",item.headline);var h=b.querySelector(".home-match-banner__headline");if(h)h.textContent=item.headline;var e=b.querySelector(".home-match-banner__eyebrow");if(e){if(item.eyebrow){e.textContent=item.eyebrow;e.removeAttribute("hidden")}else{e.textContent="";e.setAttribute("hidden","")}}var p=b.querySelector(".home-match-banner__detail");if(p){if(item.detail){p.textContent=item.detail;p.removeAttribute("hidden")}else{p.textContent="";p.setAttribute("hidden","")}}var a=b.querySelector(".home-match-banner__cta");if(a){a.setAttribute("href",base+String(item.url||"").replace(/^\//,""));a.textContent=item.cta||"Maç sayfasını aç"}var s=b.querySelector(".home-match-banner__source a");if(s){s.setAttribute("href",item.sourceUrl);s.textContent=item.sourceName}b.removeAttribute("hidden")}
+function apply(item){var b=document.querySelector("[data-home-match-banner]");if(!b)return;b.setAttribute("data-expires",item.expiresAt);b.setAttribute("aria-label",item.headline);var h=b.querySelector(".home-match-banner__headline");if(h)h.textContent=item.headline;var e=b.querySelector(".home-match-banner__eyebrow");if(e){if(item.eyebrow){e.textContent=item.eyebrow;e.removeAttribute("hidden")}else{e.textContent="";e.setAttribute("hidden","")}}var p=b.querySelector(".home-match-banner__detail");if(p){if(item.detail){p.textContent=item.detail;p.removeAttribute("hidden")}else{p.textContent="";p.setAttribute("hidden","")}}var a=b.querySelector(".home-match-banner__cta");if(a){a.setAttribute("href",base+String(item.url||"").replace(/^\\//,""));a.textContent=item.cta||"Maç sayfasını aç"}var s=b.querySelector(".home-match-banner__source a");if(s){s.setAttribute("href",item.sourceUrl);s.textContent=item.sourceName}var l=b.querySelector("[data-lsw]");if(l){if(item.fixtureId&&item.fixtureId===l.getAttribute("data-lsw-fixture"))l.removeAttribute("hidden");else l.setAttribute("hidden","")}b.removeAttribute("hidden")}
 function tick(){var b=document.querySelector("[data-home-match-banner]");if(!b)return;var item=pick();if(!item){b.remove();return}apply(item);var now=Date.now(),next=Infinity;for(var i=0;i<items.length;i++){var from=Date.parse(items[i].showFrom),to=Date.parse(items[i].expiresAt);if(from>now&&from<next)next=from;if(to>now&&to<next)next=to}if(isFinite(next))setTimeout(tick,Math.max(50,Math.min(next-now+50,2147483647)))}
-tick();})();</script>`;
+tick();})();</script>${live ? `\n<script src="/live-score-widget.js" defer></script>` : ""}`;
 }

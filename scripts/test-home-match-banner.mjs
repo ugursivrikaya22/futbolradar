@@ -66,7 +66,8 @@ assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(frAfter))), []);
 // Galatasaray–Samsunspor (21 Kasım 2026, 16.00 TSİ, hakem Ali Şansalan; AA/TFF hakem açıklaması)
 const gsYarin = "2026-11-20T09:30:00+03:00";
 const gsMatchDay = "2026-11-21T12:00:00+03:00";
-const gsAfter = "2026-11-21T18:00:00+03:00";
+const gsFullTime = "2026-11-21T18:30:00+03:00";
+const gsAfter = "2026-11-22T00:00:00+03:00";
 assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gsYarin))), ["galatasaray-samsunspor-2026-11-21-yarin"]);
 assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gsMatchDay))), ["galatasaray-samsunspor-2026-11-21-bugun"]);
 const gsHtml = renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsYarin)), { base: "./", now: at(gsYarin) });
@@ -74,6 +75,22 @@ assert.match(gsHtml, /Yarın Galatasaray – Samsunspor/);
 assert.match(gsHtml, /href="\.\/mac\/galatasaray-samsunspor-21-kasim-2026"/);
 assert.match(gsHtml, /16\.00 TSİ · Hakem: Ali Şansalan/);
 assert.match(gsHtml, /href="https:\/\/www\.aa\.com\.tr\/tr\/spor\/super-ligde-12-hafta-maclarini-yonetecek-hakemler-aciklandi\/4130531"[^>]*rel="nofollow noopener noreferrer"/);
+
+// Maç sonucu ana sayfada görünsün diye "Bugün" penceresi gün sonuna kadar açık;
+// bant canlı skor yuvası taşır (skor/dakika/golcüler /api/matches'ten, API-Football).
+assert.deepEqual(ids(selectHomeMatchBannerItems(data, at(gsFullTime))), ["galatasaray-samsunspor-2026-11-21-bugun"]);
+const gsLiveHtml = renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsMatchDay)), { base: "./", now: at(gsMatchDay) });
+assert.match(gsLiveHtml, /data-lsw data-lsw-fixture="1584469"/);
+assert.match(gsLiveHtml, /Veri: API-Football/);
+assert.match(gsLiveHtml, /<script src="\/live-score-widget\.js" defer><\/script>/);
+assert.equal((gsLiveHtml.match(/data-home-match-banner[ >]/g) || []).length, 1, "ana sayfada maç tek bantta görünür");
+// Satır içi geçiş betiği gerçekten derlenmeli (eskiden `/^//` yüzünden SyntaxError veriyordu).
+for (const h of [gsLiveHtml, frHtml]) {
+  const inline = h.match(/<script>([\s\S]*?)<\/script>/);
+  assert.ok(inline, "satır içi betik var");
+  assert.doesNotThrow(() => new Function(inline[1]), "satır içi bant betiği derlenir");
+}
+assert.doesNotMatch(frHtml, /data-lsw-fixture="/, "fikstür kimliği olmayan öğe canlı yuva basmaz");
 
 assert.equal(renderHomeMatchBanner(selectHomeMatchBannerSchedule(data, at(gsAfter)), { now: at(gsAfter) }), "");
 

@@ -1,0 +1,34 @@
+{
+  "_comment": "CANLI SKOR BİLEŞENİ (live-score-widget.js) — yerleşim ve öne çıkan maç. Basım: scripts/inject-live-score-widget.mjs (postbuild, live-score-widget yuvası). Skor, dakika ve golcüler yalnızca mevcut /api/matches yanıtından (API-Football) okunur; burada skor yazılmaz. Stat/hakem gibi olgular yalnızca sourceUrl'deki kaynaktan yazılır ve alan adı services/sourceLinks.js beyaz listesinde olmalı. Öne çıkan maç yalnızca showFrom ≤ şimdi < expiresAt aralığında basılır.",
+  "endpoint": "/api/matches?league=203",
+  "pollSeconds": 60,
+  "teams": [
+    { "slug": "galatasaray", "name": "Galatasaray", "file": "takimlar/galatasaray.html" },
+    { "slug": "fenerbahce", "name": "Fenerbahçe", "file": "takimlar/fenerbahce.html" },
+    { "slug": "besiktas", "name": "Beşiktaş", "file": "takimlar/besiktas.html" },
+    { "slug": "trabzonspor", "name": "Trabzonspor", "file": "takimlar/trabzonspor.html" },
+    { "slug": "samsunspor", "name": "Samsunspor", "file": "takimlar/samsunspor.html" }
+  ],
+  "featured": [
+    {
+      "id": "galatasaray-samsunspor-2026-11-21",
+      "fixtureId": "1584469",
+      "label": "Kritik maç",
+      "competition": "Trendyol Süper Lig · 12. hafta",
+      "homeTeam": "Galatasaray",
+      "awayTeam": "Samsunspor",
+      "kickoff": "2026-11-21T16:00:00+03:00",
+      "matchPage": "/mac/galatasaray-samsunspor-21-kasim-2026",
+      "venue": "Başakşehir Fatih Terim Stadı",
+      "venueSourceUrl": "https://www.aa.com.tr/tr/spor/galatasaray-rekor-icin-samsunspor-karsisina-cikacak/4130122",
+      "venueSourceName": "Anadolu Ajansı",
+      "referee": "Ali Şansalan",
+      "refereeSourceUrl": "https://www.aa.com.tr/tr/spor/super-ligde-12-hafta-maclarini-yonetecek-hakemler-aciklandi/4130531",
+      "refereeSourceName": "Anadolu Ajansı",
+      "teamSlugs": ["galatasaray", "samsunspor"],
+      "matchPageFile": "mac/galatasaray-samsunspor-21-kasim-2026.html",
+      "showFrom": "2026-11-20T08:00:00+03:00",
+      "expiresAt": "2026-11-22T06:00:00+03:00"
+    }
+  ]
+}
