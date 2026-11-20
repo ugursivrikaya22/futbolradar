@@ -43,6 +43,7 @@ import { matchDiscoveryHtml } from "./lib/matchDiscovery.mjs";
 import { columnsForTeams, columnsForMatch } from "./lib/clusterLinks.mjs";
 import { loadTeamSources } from "./lib/teamRichResults.mjs";
 import { venueAddressFor } from "./lib/eventVenueAddress.mjs";
+import { buildPostMatchSummary, postMatchSummarySectionHtml } from "./lib/postMatchSummary.mjs";
 import {
   STR,
   absencesSectionHtml,
@@ -1373,6 +1374,23 @@ function pageHtml(entry, locale, options) {
   const leaders = resolveMatchLeaders(entry);
   const reportHref = locale === "tr" && report ? `${base}${String(report.seo.path).replace(/^\//, "")}` : null;
 
+  // MAÇ SONU OTOMATİK ÖZETİ (scripts/lib/postMatchSummary.mjs). Koşulları:
+  // TR sayfa, maç bitmiş (state "post"), editoryal özet yok, skor tabelada
+  // ve kayıt API-Football'dan (künye "Veri: API-Football" doğru olsun diye).
+  const fromApiFootball = Boolean(
+    (entry.providerIds && entry.providerIds.apiFootball) ||
+    (detail.calendar && (/api-?football/i.test(String(detail.calendar.source || "")) || (detail.calendar.providerIds && detail.calendar.providerIds.apiFootball))) ||
+    (detail.archive && detail.archive.match && detail.archive.match.providerIds && detail.archive.match.providerIds.apiFootball)
+  );
+  const autoSummary = locale === "tr" && state === "post" && !detail.summary && fromApiFootball && hasScore(entry.score)
+    ? buildPostMatchSummary({
+      homeTeam: ctx.homeTeam,
+      awayTeam: ctx.awayTeam,
+      score: { ...(detail.calendar && detail.calendar.score), ...(detail.archive && detail.archive.match && detail.archive.match.score), ...entry.score },
+      timeline: events,
+      statistics: detail.statistics
+    })
+    : null;
   // Maç dosyası tam ikili rekabeti (federasyon kaydı) taşıyorsa, arşivden
   // derlenen kısa liste ikinci ve çelişen bir özet basmasın.
   const dossierH2h = Boolean(editorial && editorial.kind === "dossier" && editorial.h2h && editorial.h2h.rows && editorial.h2h.rows.length && locale === "tr");
@@ -1384,6 +1402,19 @@ function pageHtml(entry, locale, options) {
       // bu notta, "son doğrulanmış" etiketiyle yazılır; skor tablosuna basılmaz.
       state === "interrupted" ? `<section class="msp-section"><article class="card data-empty"><strong>${escapeHtml(text.interruptedNote)}</strong>${hasScore(entry.score) ? `<span>${escapeHtml(text.lastKnownScore)}: ${escapeHtml(entry.score.home)}-${escapeHtml(entry.score.away)}</span>` : ""}</article></section>` : "",
       eventsSectionHtml(events, ctx),
+      // Özet, olay akışının HEMEN ardından: bitmiş maçta okuyucunun ilk
+      // sorusu "ne oldu", cevap ilk ekranlarda durmalı.
+      // MAÇ ÖZETİ EDİTORYAL TÜRKÇE METİNDİR.
+      //
+      // Kusursuz İngilizce bir maç sayfasının ortasında tek Türkçe paragraf
+      // olarak duruyordu. `reportHref` zaten `locale === "tr"` ile korunuyor;
+      // özet de aynı korumayı alıyor: İngilizce karşılığı varsa basılır,
+      // yoksa bölüm hiç çizilmez (olay akışı ve istatistik zaten İngilizce).
+      // Editoryal özet yoksa TR sayfada veriden otomatik özet (skor, golcüler,
+      // kartlar, istatistik cümlesi). Yalnızca API-Football kaydı olan maçta.
+      autoSummary
+        ? postMatchSummarySectionHtml(autoSummary, { title: text.summary, reportHref, reportLabel: text.report })
+        : summarySectionHtml(locale === "en" ? (detail.summaryEn || "") : detail.summary, reportHref, ctx),
       statsSectionHtml(detail.statistics, ctx),
       // Paylaşım bölümü istatistiklerin ARDINDAN: kartın taşıdığı sayılar
       // hemen yukarıda duruyor, okuyucu neyi paylaştığını görmüş oluyor.
@@ -1394,13 +1425,6 @@ function pageHtml(entry, locale, options) {
       // Puanlama YALNIZCA bitmiş maçta açılır ve kadro kaydı yoksa hiç
       // basılmaz; kararı bölümün kendisi veriyor (matchSeoPage.mjs).
       ratingsSectionHtml(detail, ctx),
-      // MAÇ ÖZETİ EDİTORYAL TÜRKÇE METİNDİR.
-      //
-      // Kusursuz İngilizce bir maç sayfasının ortasında tek Türkçe paragraf
-      // olarak duruyordu. `reportHref` zaten `locale === "tr"` ile korunuyor;
-      // özet de aynı korumayı alıyor: İngilizce karşılığı varsa basılır,
-      // yoksa bölüm hiç çizilmez (olay akışı ve istatistik zaten İngilizce).
-      summarySectionHtml(locale === "en" ? (detail.summaryEn || "") : detail.summary, reportHref, ctx),
       standingsSectionHtml(table, ctx, { post: true, fullHref: league.standings }),
       leadersSectionHtml(leaders, ctx),
       nextMatchesSectionHtml(next, ctx),
