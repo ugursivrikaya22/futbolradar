@@ -96,3 +96,39 @@ export function lastFiveSummary(rows, teamName) {
 export function allFromApiFootball(rows) {
   return rows.length > 0 && rows.every((row) => /api-?football/i.test(row.provider));
 }
+
+/**
+ * "HANGİ TAKIM FORMDA?" SIRALAMASI — /hangi-takim-formda.html.
+ *
+ * Her takımın `lastFiveMatches` satırlarından (aynı hesap, aynı kaynak)
+ * puan/gol bilançosu çıkarılır. Yalnızca 5 maçı tam olan takımlar sıralanır;
+ * eksik olanlar "Güncelleniyor" ile sona yazılır, puanları tahmin edilmez.
+ *
+ * Eşitlik bozma (sayfada da aynen yazar): 1) son 5 maçtaki puan,
+ * 2) son 5 maçtaki averaj (atılan − yenilen), 3) atılan gol,
+ * 4) alfabetik sıra (tr).
+ */
+export const FORM_TIEBREAK_TEXT = "Sıralama son 5 resmî maçta toplanan puana göredir (galibiyet 3, beraberlik 1). Eşitlikte sırasıyla son 5 maçtaki averaj (atılan − yenilen), atılan gol sayısı ve takım adının alfabetik sırası belirleyicidir.";
+
+export function rankFormTable(entries, size = 5) {
+  const scored = entries.map(({ team, rows }) => {
+    const summary = lastFiveSummary(rows, team.name);
+    return {
+      team,
+      rows,
+      complete: rows.length >= size,
+      summary,
+      goalDifference: summary ? summary.scored - summary.conceded : null,
+      lastKickoff: rows.length ? rows[0].kickoff : null
+    };
+  });
+  const complete = scored.filter((row) => row.complete).sort((a, b) =>
+    (b.summary.points - a.summary.points) ||
+    (b.goalDifference - a.goalDifference) ||
+    (b.summary.scored - a.summary.scored) ||
+    a.team.name.localeCompare(b.team.name, "tr"));
+  const incomplete = scored.filter((row) => !row.complete).sort((a, b) => a.team.name.localeCompare(b.team.name, "tr"));
+  complete.forEach((row, index) => { row.rank = index + 1; });
+  incomplete.forEach((row) => { row.rank = null; });
+  return { ranked: complete, pending: incomplete };
+}

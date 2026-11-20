@@ -377,7 +377,7 @@ function lastFiveSection(team, rows) {
         <p><strong>${resultLabel[row.result]}</strong> · <a class="detail-link" href="${escapeHtml(href)}">Maç sonucu ve rapor</a></p>
       </article>`;
       }).join("")}</div>
-    <p class="muted team-last-five-credit">${escapeHtml(credit)} · Hazırlık maçları dahil edilmez; sonuç tabeladaki skordan hesaplanır.</p>`
+    <p class="muted team-last-five-credit">${escapeHtml(credit)} · Hazırlık maçları dahil edilmez; sonuç tabeladaki skordan hesaplanır. <a href="./hangi-takim-formda.html">Tüm Süper Lig takımlarının son 5 maç form sıralaması</a></p>`
     : `<article class="data-empty" data-card="empty-state"><strong>Güncelleniyor</strong><span>${escapeHtml(team.name)} için skoru doğrulanmış resmî maç kaydı henüz yok.</span></article>`;
   return `<section class="trend-section" id="son-5-mac" aria-labelledby="son-5-mac-title">
     <div class="section-head"><div class="section-title"><span class="section-kicker">Form</span><h2 id="son-5-mac-title">${escapeHtml(heading)}</h2><p>Tüm resmî turnuvalarda skoru doğrulanmış son maçlar.</p></div></div>
