@@ -30,6 +30,7 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { newsSlug, readVerifiedTeamNews, renderTeamNewsSection } from "./lib/newsCards.mjs";
 import { ROBOTS_INDEX } from "./lib/robots.mjs";
+import { lastFiveMatches, lastFiveSummary, allFromApiFootball } from "./lib/teamLastFive.mjs";
 import { faqItems, faqSchemaNode, faqSectionHtml, genitive, lastMatchAnswer, loadTeamSources, sportsEventNode, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const root = process.cwd();
@@ -338,6 +339,52 @@ function resultRows(rows, team) {
   }).join("")}</div>`;
 }
 
+/**
+ * "<TAKIM> SON 5 MAÇ" — çapalı bölüm (#son-5-mac).
+ *
+ * Bu sorgu için ayrı adres AÇILMAZ: takım maçları sayfası zaten "son maç"
+ * niyetini taşıyor; ikinci bir sayfa aynı sorguda bu sayfayla yarışırdı.
+ * Bölüm yalnızca doğrulanmış skorlu resmî maçlardan kurulur
+ * (scripts/lib/teamLastFive.mjs); satır yoksa "Güncelleniyor" yazar.
+ */
+function lastFiveRowsFor(team) {
+  return lastFiveMatches({
+    team,
+    calendar,
+    reports: dedupeReports(reports.filter((report) => isTeamMatch(report, team))),
+    sameClub,
+    canonicalStatus,
+    istanbulDay
+  });
+}
+
+function lastFiveSection(team, rows) {
+  const heading = `${team.name} son 5 maç`;
+  const summary = lastFiveSummary(rows, team.name);
+  const resultClass = { G: "win", B: "draw", M: "loss" };
+  const resultLabel = { G: "Galibiyet", B: "Beraberlik", M: "Mağlubiyet" };
+  const credit = allFromApiFootball(rows) ? "Veri: API-Football" : "Veri: API-Football ve FutbolRadar maç sonu raporları";
+  const body = rows.length
+    ? `<p class="team-last-five-summary" data-card="last-five-summary">${escapeHtml(summary.sentence)}</p>
+    <div class="form-dots" aria-label="${escapeHtml(heading)}: en yeni maç solda">${rows.map((row) => `<span class="${resultClass[row.result]}" title="${resultLabel[row.result]}">${row.result}</span>`).join("")}</div>
+    <div class="trend-transfer-grid team-last-five">${rows.map((row) => {
+        const href = row.origin === "report" && row.match.seo && row.match.seo.path
+          ? `./${String(row.match.seo.path).replace(/^\//, "")}`
+          : matchPageHref(row.match);
+        return `<article class="glass-card team-match-result" data-card="last-five-match" data-result="${row.result}">
+        <div class="team-match-result-head"><time datetime="${escapeHtml(row.kickoff)}">${escapeHtml(longDate(row.kickoff))}</time><span>${escapeHtml(row.league)} · ${escapeHtml(row.venue)}</span></div>
+        <h3>${escapeHtml(row.homeTeam)} <b>${escapeHtml(row.score.home)} - ${escapeHtml(row.score.away)}</b> ${escapeHtml(row.awayTeam)}</h3>
+        <p><strong>${resultLabel[row.result]}</strong> · <a class="detail-link" href="${escapeHtml(href)}">Maç sonucu ve rapor</a></p>
+      </article>`;
+      }).join("")}</div>
+    <p class="muted team-last-five-credit">${escapeHtml(credit)} · Hazırlık maçları dahil edilmez; sonuç tabeladaki skordan hesaplanır.</p>`
+    : `<article class="data-empty" data-card="empty-state"><strong>Güncelleniyor</strong><span>${escapeHtml(team.name)} için skoru doğrulanmış resmî maç kaydı henüz yok.</span></article>`;
+  return `<section class="trend-section" id="son-5-mac" aria-labelledby="son-5-mac-title">
+    <div class="section-head"><div class="section-title"><span class="section-kicker">Form</span><h2 id="son-5-mac-title">${escapeHtml(heading)}</h2><p>Tüm resmî turnuvalarda skoru doğrulanmış son maçlar.</p></div></div>
+    ${body}
+  </section>`;
+}
+
 function seasonRows(rows, team) {
   if (!rows.length) return "";
   return `<div class="archive-table-wrap"><table class="archive-table">
@@ -533,6 +580,7 @@ function buildPage(team, today) {
   const squad = squadFor(team);
   const manager = managerFor(team);
   const teamNews = readVerifiedTeamNews(root, team.name, 3);
+  const lastFive = lastFiveRowsFor(team);
 
   // İnce içerik koruması: elde anlamlı satır yoksa sayfa üretilmez.
   const contentRows = upcoming.length + results.length + season.length;
@@ -603,6 +651,7 @@ function buildPage(team, today) {
       ${currentMatchCard(todayGame, team)}
       ${matchHubLinksSection(hubsForTeam(loadMatchHubs(root), team.name), { heading: `${team.name} maç merkezleri` })}
       ${section(`${team.name} puan durumu ve son form`, `${seasonLabel} Süper Lig sıralaması; puan durumu sayfasıyla aynı sağlayıcı tablosundan.`, `<div class="team-overview-grid">${standingCard(standing, seasonLabel, team)}${lastMatchCard(lastGame)}</div>`, "Güncel durum")}
+      ${lastFiveSection(team, lastFive)}
       ${section("Yaklaşan maçlar", "Gün ve saati doğrulanmış karşılaşmalar, en yakın tarih önde.", upcomingRows(upcoming, team), "Takvim")}
       ${section("İlgili maç analizleri", "Yalnızca doğrulanmış sonuçtan üretilmiş maç raporları ve analizler listelenir.", resultRows(results, team), "Analiz")}
       ${section(`${team.name} Süper Lig fikstürü`, `${fixtures.season || ""} sezonu eşleşmeleri. Tarihi atanmamış haftalar için gün uydurulmaz.`, seasonRows(season, team), "Sezon")}
@@ -620,7 +669,7 @@ function buildPage(team, today) {
 </html>`;
 
   const cleanHtml = html.replace(/^[ \t]+$/gm, "");
-  return { file, html: cleanHtml, stats: { upcoming: upcoming.length, results: results.length, season: season.length, scheduled: scheduled.length } };
+  return { file, html: cleanHtml, stats: { upcoming: upcoming.length, results: results.length, season: season.length, scheduled: scheduled.length, lastFive: lastFive.length } };
 }
 
 /**

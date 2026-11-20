@@ -116,6 +116,32 @@ function standingsNarrative(team, sorted, total) {
   return `${base} ${position}`;
 }
 
+/**
+ * "<TAKIM> KAÇINCI SIRADA?" — doğrudan cevap kutusu (#kacinci-sirada).
+ *
+ * Sorgu ("kaçıncı sırada", "hangi sırada") zaten bu sayfanın niyeti; ayrı
+ * bir adres açılmaz, cevap ilk ekranda soru biçimli H2 ile verilir. Sayılar
+ * yalnızca tablonun kendi kaydından (data/teams.json, sağlayıcı
+ * API-Football); eksik alan "Güncelleniyor" olarak yazılır.
+ */
+function rankAnswerSection(team, sorted) {
+  const rank = Number(team.rank);
+  const value = (field) => (team[field] === undefined || team[field] === null || team[field] === "" ? "Güncelleniyor" : team[field]);
+  const leader = sorted[0];
+  const gap = leader && leader.id !== team.id && Number.isFinite(Number(leader.points))
+    ? `Lider ${leader.name} ile arasında ${Math.max(Number(leader.points) - Number(team.points), 0)} puan var.`
+    : rank === 1 ? "Ligin lideri." : "";
+  const synced = team.lastStandingsSyncedAt || team.lastProviderSeenAt || "";
+  const syncedLabel = synced
+    ? new Intl.DateTimeFormat("tr-TR", { timeZone: "Europe/Istanbul", day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" }).format(new Date(synced))
+    : "";
+  return `<section class="trend-section team-rank-answer" id="kacinci-sirada" aria-labelledby="kacinci-sirada-title">
+        <div class="section-head"><div class="section-title"><span class="section-kicker">Kısa cevap</span><h2 id="kacinci-sirada-title">${escapeHtml(team.name)} kaçıncı sırada?</h2></div></div>
+        <p><strong>${escapeHtml(rank)}. sırada.</strong> ${escapeHtml(team.name)} Süper Lig'de ${escapeHtml(value("played"))} maçta ${escapeHtml(value("points"))} puan topladı: ${escapeHtml(value("won"))} galibiyet, ${escapeHtml(value("drawn"))} beraberlik, ${escapeHtml(value("lost"))} mağlubiyet, averaj ${escapeHtml(value("average"))}. ${escapeHtml(gap)}</p>
+        <p class="muted">Veri: API-Football${syncedLabel ? ` · Son tablo senkronu: <time datetime="${escapeHtml(synced)}">${escapeHtml(syncedLabel)} TSİ</time>` : ""}</p>
+      </section>`;
+}
+
 function relatedStandingsLinks(team) {
   const links = [
     { href: "./puan-durumu.html", kicker: "Tablo", title: "Süper Lig puan durumu (tam tablo)", text: "18 takımın tamamı, güncel averaj ve momentum." },
@@ -236,6 +262,7 @@ function buildPage(team, sorted, total) {
           <p class="muted">Tablo tüm 18 takımı gösterir; ${escapeHtml(team.name)} satırı vurgulanmıştır. Sonuçlar geldikçe otomatik güncellenir.</p>
         </div>
       </section>
+      ${rankAnswerSection(fullTeam, sorted)}
       <section class="data-panel team-standings-panel" id="team-standings-page" data-api-section="standings">
         <div class="panel-title"><h2>Süper Lig Tablosu</h2><span>${escapeHtml(team.name)} vurgulu</span></div>
         <div class="table-row header"><span>#</span><span>Takım</span><span>O</span><span>P</span><span>Av</span><span>Mom</span></div>
