@@ -33,6 +33,7 @@ import {
   player360Title,
   renderPlayer360
 } from "./lib/player360.mjs";
+
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { englishClubName, englishPlayer360 } from "./lib/player360English.mjs";
 import {
@@ -49,6 +50,7 @@ const {
   absoluteUrl,
   formatDate,
   htmlLang,
+  hreflangOf,
   ogLocale,
   t,
   writeDynamicRoutePairs
@@ -270,12 +272,11 @@ function pageHtml(player) {
   const marketValue = fields.marketValue || null;
   const number = fields.number ?? null;
 
+  const person = player360Person(model, canonical, description);
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
-      // Görünür bölümlerle aynı modelden. `@id` korunur: İngilizce sayfa
-      // kendi kanonik adresiyle tanımlanır.
-      { ...player360Person(model, canonical, description), "@id": canonical },
+      person,
       {
         "@type": "BreadcrumbList",
         itemListElement: [
@@ -283,6 +284,16 @@ function pageHtml(player) {
           { "@type": "ListItem", position: 2, name: label("nav.teams"), item: absoluteUrl("en/teams.html") },
           { "@type": "ListItem", position: 3, name: player.name, item: canonical }
         ]
+      },
+      {
+        "@type": "ProfilePage",
+        "@id": `${canonical}#profile`,
+        url: canonical,
+        name: model.identity.name,
+        description,
+        mainEntity: { "@id": `${canonical}#person` },
+        isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: "https://www.futbolradar.com/" },
+        inLanguage: "en"
       }
     ]
   };
@@ -295,6 +306,11 @@ function pageHtml(player) {
     <title>${escapeHtml(title)}</title>
     <meta name="description" content="${escapeHtml(description)}" />
     <link rel="canonical" href="${escapeHtml(canonical)}" />
+    <!-- hreflang:start -->
+    <link rel="alternate" hreflang="${hreflangOf("tr")}" href="${absoluteUrl(trPath)}" />
+    <link rel="alternate" hreflang="${hreflangOf("en")}" href="${canonical}" />
+    <link rel="alternate" hreflang="x-default" href="${absoluteUrl(trPath)}" />
+    <!-- hreflang:end -->
     <meta name="robots" content="${indexable ? ROBOTS_INDEX : ROBOTS_NOINDEX_FOLLOW}" />
     <meta property="og:type" content="profile" />
     <meta property="og:locale" content="${ogLocale(LOCALE)}" />

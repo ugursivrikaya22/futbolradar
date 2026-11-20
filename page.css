@@ -22486,6 +22486,18 @@ a:focus-visible, button:focus-visible, select:focus-visible, summary:focus-visib
 .p360-id-row dd { margin: 0; font-weight: 700; font-size: var(--fs-sm); text-align: right; }
 .p360-club-logo { display: block; margin-bottom: var(--sp-2, 8px); object-fit: contain; }
 
+.p360-pending { font-weight: 600; color: var(--muted); }
+
+/* 390px mobil: kimlik tek sütun (zaten 700px altında öyle), tablolar sayfayı değil kapsayıcıyı kaydırır. */
+@media (max-width: 390px) {
+  .p360-stat-grid { grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); }
+  .p360-id-row { gap: 6px; padding: 8px 10px; }
+  .p360-id-row dt, .p360-id-row dd { overflow-wrap: anywhere; }
+  .p360-table-wrap { max-width: 100%; }
+  .p360-feed-item { gap: 8px; }
+}
+
+
 @media (min-width: 700px) {
   .p360-id-grid { grid-template-columns: 1fr 1fr; }
 }

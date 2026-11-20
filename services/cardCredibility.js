@@ -47,10 +47,46 @@ function hasRealProviderId(record) {
   return REAL_PROVIDER_ID.test(id);
 }
 
-function verificationAgeDays(record, now) {
-  const stamp = Date.parse((record && (record.lastVerifiedAt || record.lastSyncedAt)) || "");
+function verificationAgeDays(record, now, stampValue) {
+  const stamp = Date.parse((stampValue != null ? stampValue : (record && (record.lastVerifiedAt || record.lastSyncedAt))) || "");
   if (Number.isNaN(stamp)) return null;
   return (now.getTime() - stamp) / 86400000;
+}
+
+/**
+ * Kimlik tazeliği için en geç tarihli sağlayıcı/kadro damgası.
+ *
+ * Kadro senkronu `lastUpdatedAt` ve `providerSnapshot.lastSyncedAt`
+ * alanlarını güncelliyor (ör. 6 Kasım 2026), ama `lastVerifiedAt` /
+ * `lastSyncedAt` bazen daha eski bir elle doğrulamada (4 Eylül) kalıyor.
+ * Yalnızca o iki alana bakmak, hâlâ kadroda görülen oyuncunun kulübünü
+ * 45 günlük pencerede "bayat" diye gizliyordu. Yeni damga UYDURULMAZ;
+ * kayıtta zaten duran en geç tarih seçilir.
+ *
+ * Trend kartları da bu fonksiyonu kullanır: kadrosu taze senkronlanmış
+ * bir oyuncu "şu an ligde" iddiasını karşılayabilir. Yalnızca
+ * lastVerifiedAt'i eski olan test fikstürleri (başka taze damga yoksa)
+ * davranışı değiştirmez.
+ */
+function identityEvidenceStamp(record) {
+  if (!record || typeof record !== "object") return "";
+  const snapshot = record.providerSnapshot || {};
+  const candidates = [
+    record.lastVerifiedAt,
+    record.lastSyncedAt,
+    record.lastUpdatedAt,
+    record.lastProviderSeenAt,
+    snapshot.lastSyncedAt
+  ];
+  let latest = 0;
+  let raw = "";
+  for (const value of candidates) {
+    const stamp = Date.parse(value || "");
+    if (Number.isNaN(stamp) || stamp < latest) continue;
+    latest = stamp;
+    raw = String(value);
+  }
+  return raw;
 }
 
 /**
@@ -315,10 +351,36 @@ function restrictedFieldIsPublishable(player, key) {
  * @returns {{verified: boolean, reasons: string[], fields: object,
  *   restricted: string[], meta: object}}
  */
+
+/**
+ * PROFİL SAYFASI KAPISI.
+ *
+ * Trend/kart süzgeci (`evaluatePlayerCard`) istemciyle birebir kalır.
+ * Profil sayfası ise kadro senkronunun `lastUpdatedAt` / `lastProviderSeenAt`
+ * damgasını da tazelik kanıtı sayar: 6 Kasım'da kadroda görülen oyuncunun
+ * kulübü, 4 Eylül'deki elle doğrulama damgası yüzünden gizlenmesin.
+ */
+function evaluatePlayerCardForProfile(player, options = {}) {
+  const now = options.now instanceof Date ? options.now : new Date();
+  const identity = evaluatePlayerIdentity(player);
+  if (!player || typeof player !== "object") {
+    return { publishable: false, reasons: identity.reasons, confidence: "none" };
+  }
+  const reasons = identity.reasons.slice();
+  if (REJECTED_RATING_STATUS.has(String((player && player.ratingStatus) || "").toLowerCase())) {
+    reasons.push(`ratingStatus "${player.ratingStatus}"`);
+  }
+  const age = verificationAgeDays(player, now, identityEvidenceStamp(player));
+  if (age !== null && age > MAX_VERIFICATION_AGE_DAYS) {
+    reasons.push(`son doğrulama ${Math.round(age)} gün önce`);
+  }
+  return { publishable: reasons.length === 0, reasons, confidence: reasons.length === 0 ? "high" : "none" };
+}
+
 function publicPlayerView(player, options = {}) {
   const verdict = options.trend
     ? evaluateTrendPlayerCard(player, options)
-    : evaluatePlayerCard(player, options);
+    : evaluatePlayerCardForProfile(player, options);
 
   const fields = {};
   for (const key of SAFE_FIELDS) {
@@ -377,12 +439,14 @@ function logRemovedCards(scope, removed) {
 
 module.exports = {
   evaluatePlayerIdentity,
+  identityEvidenceStamp,
   restrictedFieldIsPublishable,
   ratingIsVerified,
   statsAreVerified,
   MAX_VERIFICATION_AGE_DAYS,
   hasRealProviderId,
   evaluatePlayerCard,
+  evaluatePlayerCardForProfile,
   evaluateTrendPlayerCard,
   publicPlayerView,
   SAFE_FIELDS,

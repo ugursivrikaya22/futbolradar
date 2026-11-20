@@ -4,10 +4,12 @@ import { createRequire } from "node:module";
 import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import {
   player360Description,
+  player360Graph,
   player360Person,
   player360Title,
   renderPlayer360
 } from "./lib/player360.mjs";
+import { turkishPlayer360 } from "./lib/player360English.mjs";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 
 const root = process.cwd();
@@ -18,6 +20,7 @@ const { createPlayerUrlResolver } = require("../services/playerUrl.js");
 const { resolvePlayerPhoto, playerPhotoAlt } = require("../services/playerPhotoService.js");
 const { publicPlayerView, statsAreVerified, ratingIsVerified } = require("../services/cardCredibility.js");
 const { annotateDuplicates } = require("../services/duplicatePlayerService.js");
+const { absoluteUrl, hreflangOf } = require("../services/i18n.js");
 // Kıyas eşleri ve adresleri TEK kaynaktan; kıyas sayfalarını üreten script
 // de aynı listeyi okuyor, böylece buradaki her bağlantının bir sayfası var.
 const { createComparisonSlugResolver, profileCompareCandidates } = require("../services/playerComparisonPairs.js");
@@ -407,6 +410,19 @@ function ratingSectionHtml(player) {
       </section>`;
 }
 
+
+function playerHreflangLinks(player, canonical) {
+  const slug = playerUrls.slugFor(player.id);
+  if (!slug || !playerUrls.hasCanonicalSlug(player.id)) return "";
+  const trUrl = canonical;
+  const enUrl = absoluteUrl(playerUrls.enPlayerPagePath(player.id));
+  return `<!-- hreflang:start -->
+    <link rel="alternate" hreflang="${hreflangOf("tr")}" href="${trUrl}" />
+    <link rel="alternate" hreflang="${hreflangOf("en")}" href="${enUrl}" />
+    <link rel="alternate" hreflang="x-default" href="${trUrl}" />
+    <!-- hreflang:end -->`;
+}
+
 function pageHtml(player) {
   // TEK YETKİLİ KARAR. URL ve sayfa iskeleti korunur — 110 profilin bilgi
   // mimarisi bozulmaz. Değişen tek şey, doğrulanmamış kayıtta hangi
@@ -514,16 +530,20 @@ function pageHtml(player) {
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <script type="application/ld+json">
       ${JSON.stringify({
-        "@context": "https://schema.org",
+        ...player360Graph(
+          model,
+          canonical,
+          stripTags(description),
+          [
+            { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://www.futbolradar.com/" },
+            { "@type": "ListItem", position: 2, name: "Oyuncu Radarı", item: "https://www.futbolradar.com/oyuncu-radari.html" },
+            { "@type": "ListItem", position: 3, name: player.name, item: canonical }
+          ]
+        ),
         "@graph": [
-          // Person düğümü, görünür bölümlerle AYNI modelden kurulur
-          // (scripts/lib/player360.mjs). memberOf hâlâ yalnızca
-          // doğrulanmış kayıtta basılır: doğrulanmamış bir kulüp iddiasını
-          // schema.org ile beyan etmek, onu makine okunur bir olguya
-          // dönüştürür — görünür metinden daha kalıcı bir yanlış.
-          // Hesaplanmış özellik puanları mevcut Person düğümünü BOZMADAN,
-          // `additionalProperty` olarak eklenir; hesaplanamayan kategori
-          // düğüme hiç girmez (bkz. services/playerRatingView.js).
+          // Person düğümü, görünür bölümlerle AYNI modelden kurulur.
+          // ProfilePage (WebPage alt türü) sayfanın kendisini tanımlar.
+          // memberOf yalnızca doğrulanmış kayıtta basılır.
           personWithRatings(player360Person(model, canonical, stripTags(description)), player),
           {
             "@type": "BreadcrumbList",
@@ -532,10 +552,21 @@ function pageHtml(player) {
               { "@type": "ListItem", position: 2, name: "Oyuncu Radarı", item: "https://www.futbolradar.com/oyuncu-radari.html" },
               { "@type": "ListItem", position: 3, name: player.name, item: canonical }
             ]
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": `${canonical}#profile`,
+            url: canonical,
+            name: model.identity.name,
+            description: stripTags(description),
+            mainEntity: { "@id": `${canonical}#person` },
+            isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: "https://www.futbolradar.com/" },
+            inLanguage: "tr-TR"
           }
         ]
       }, null, 8)}
     </script>
+    ${playerHreflangLinks(player, canonical)}
     <link rel="icon" href="../favicon.svg" type="image/svg+xml" />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../page.css" />
