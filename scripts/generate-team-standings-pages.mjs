@@ -25,7 +25,7 @@ import { siteHeader, siteFooter } from "./lib/layout.mjs";
 import { createRequire } from "node:module";
 import { ROBOTS_INDEX, ROBOTS_NOINDEX_FOLLOW } from "./lib/robots.mjs";
 import { columnsForTeams, teamMatchPages } from "./lib/clusterLinks.mjs";
-import { faqItems, faqSchemaNode, faqSectionHtml } from "./lib/teamRichResults.mjs";
+import { faqItems, faqSchemaNode, faqSectionHtml, loadTeamSources, sportsTeamNode } from "./lib/teamRichResults.mjs";
 
 const require = createRequire(import.meta.url);
 const { superLigTeamPages, standingsPageIndexable } = require("../services/superLigTeamPages.js");
@@ -35,7 +35,10 @@ const DOMAIN = "https://www.futbolradar.com";
 
 // Görev 6: büyük 4 sabiti yerine tüm Süper Lig takımları tek listeden
 // (services/superLigTeamPages.js — elle onaylı, değişmeyen slug'lar).
-const TEAMS = superLigTeamPages({ root }).map(({ slug, id, name }) => ({ slug, id, name }));
+const TEAMS = superLigTeamPages({ root }).map(({ slug, id, name, record }) => ({ slug, id, name, providerId: record && record.providerId }));
+// SportsTeam düğümü (logo, stat) yalnızca depodaki doğrulanmış kayıttan;
+// takım maçları ve takım profili sayfalarıyla aynı üretici.
+const richSources = loadTeamSources(root);
 
 const teams = JSON.parse(fs.readFileSync(path.join(root, "data", "teams.json"), "utf8"));
 
@@ -150,8 +153,10 @@ function pageSchema(team, url, title, description, faq) {
         name: title,
         isPartOf: { "@type": "WebSite", name: "FutbolRadar", url: `${DOMAIN}/` },
         inLanguage: "tr-TR",
-        description
+        description,
+        about: { "@id": `${url}#team` }
       },
+      sportsTeamNode(richSources, { name: team.name, providerId: team.providerId, url: `${DOMAIN}/takimlar/${team.slug}`, id: `${url}#team` }),
       {
         "@type": "BreadcrumbList",
         itemListElement: [

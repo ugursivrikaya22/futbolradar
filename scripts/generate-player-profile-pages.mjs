@@ -439,7 +439,9 @@ function pageHtml(player) {
   // bölümleri, hem meta açıklamasını, hem de schema.org düğümünü besler.
   // Üçünün ayrı hesaplanması, sayfada olmayan bir şeyi meta açıklamasının
   // vaat etmesine yol açıyordu.
-  const model = buildPlayer360({
+  // Mevki ve uyruk sağlayıcıdan İngilizce gelir ("Attacker", "Nigeria");
+  // TR sayfada görünen metin, meta ve Person şeması Türkçe karşılığı taşır.
+  const model = turkishPlayer360(buildPlayer360({
     player,
     players: comparablePlayers,
     credibility: view,
@@ -459,7 +461,7 @@ function pageHtml(player) {
       matchReportHref: (matchId) => (matchId && matchReportSlugs.has(matchId) ? `mac-raporu/${matchId}.html` : null),
       newsHref: (slug) => (slug && newsSlugs.has(slug) ? `haber/${slug}.html` : null)
     }
-  });
+  }));
   const team = view.verified
     ? (player.currentTeam || player.team || "Takım bilgisi yakında")
     : "Kulüp bilgisi doğrulanmadı";
