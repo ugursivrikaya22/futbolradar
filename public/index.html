@@ -23,6 +23,7 @@
     <meta name="twitter:description" content="Canlı skor, bugünün maçları, Süper Lig puan durumu ve maç sonuçları tek yerde. Ücretsiz, reklamsız ve üyeliksiz: futbolu doğrudan takip edin." />
     <meta name="twitter:image" content="https://www.futbolradar.com/assets/og-image.png" />
     <link rel="stylesheet" href="./page.css?v=c68d3b47" />
+    <link rel="stylesheet" href="./matchday-summary.css" />
     <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -510,6 +511,22 @@
           </div>
         </section>
 
+
+        <section class="container section section-matchday-summary" id="mac-gunu-ozetleri" data-api-section="matchday-summary" data-empty-hide hidden aria-labelledby="mac-gunu-ozetleri-title">
+          <div class="section-head">
+            <div class="section-title">
+              <span class="section-kicker">Maç günü</span>
+              <h2 id="mac-gunu-ozetleri-title">Günün maç özetleri</h2>
+              <p>Skor, golcüler ve önemli anlar maç verisinden otomatik derlenir. Eksik bilgi Güncelleniyor olarak kalır.</p>
+            </div>
+            <a class="section-link" href="./bugunun-maclari.html">Bugünün maçları</a>
+          </div>
+          <div class="matchday-summary-grid" data-api-target="matchday-summary">
+            <!-- prerender:matchday-summary:start -->
+            <!-- prerender:matchday-summary:end -->
+          </div>
+        </section>
+
         <section class="container section home-radar-matches" id="gunun-radar-maci" aria-labelledby="gunun-radar-maci-title" hidden>
           <div class="section-head"><div class="section-title"><span class="section-kicker">FutbolRadar analizi</span><h2 id="gunun-radar-maci-title">Günün Radar Maçı</h2><p>Kadro, form ve veri güvenilirliğine göre üretilen kural tabanlı maç öncesi okuma.</p></div><a class="section-link" href="./bugunun-maclari.html">Tüm maç merkezini aç</a></div>
           <div class="grid" data-api-target="today-radar-matches"></div>
@@ -852,6 +869,7 @@
     <script src="./site.js?v=4e6aaa62" defer></script>
     <script src="./radar-pulse.js?v=48273418" defer></script>
     <script src="./radar-home-card.js?v=4c890f95" defer></script>
+    <script src="./matchday-summary.js" defer></script>
     <script src="./app.js?v=5f74c363" defer></script>
   <script src="/page-share.js?v=6d259314" defer></script>
 <script src="/referee-agenda.js" defer></script>
